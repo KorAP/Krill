@@ -1,0 +1,9 @@
+package de.ids_mannheim.korap.query.wrap;
+
+import org.apache.lucene.search.spans.SpanQuery;
+
+// Todo: Make this an abstract class to deal with regexes in a parent abstract class!
+
+public interface SpanQueryWrapperInterface {
+    public SpanQuery toQuery ();
+};

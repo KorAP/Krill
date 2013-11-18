@@ -1,0 +1,49 @@
+0.20 2013-11-18
+        - Unboxing from sandbox.
+
+0.11 2013-11-14
+	- JSON file importer (plain and gzip)
+	- [bugfix] Element Query
+	- [bugfix] Sequence Query
+
+0.10 2013-11-11
+        - Added JSON input to indexer.
+
+0.09 2013-11-07
+        - Reconstruction of all wrapper queries using an interface.
+	- Finished KorapQuery (preliminary feature freeze).
+
+0.08 2013-10-18
+        - Changed methods to attributes in KorapMatch.
+	- Changed SimpleJSON to Jackson.
+	- Fixed Highlighting.
+	- Some Refactoring of result classes.
+	- Introduced KorapDocument.
+	- Introduced KorapHTML utility.
+
+0.07 2013-10-14
+        - Added position to offset matching.
+
+0.06 2013-10-01
+        - Added SpanElementQuery for working WithinQeries.
+	- Added KorapResult and KorapMatching.
+
+0.05 2013-09-18
+        - Fixed bug in indexing (MultiTermTokenStream).
+	- Fixed SpanNext.
+	- Added KorapIndex.
+	- First draft for KorapFilter.
+
+0.04 2013-09-01
+        - Introduced optimized SpanNext class (not working atm),
+	  as SpanNear does not always work with nested synonyms.
+
+0.03 2013-08-28
+        - Added within query (not working atm).
+	- Pushed query part to public repo.
+
+0.02 2013-08-26
+        - Added sequences.
+
+0.01 2013-08-20
+        - First version as maven build environment.
