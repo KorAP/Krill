@@ -85,8 +85,8 @@ public class TestNextIndex {
 	assertEquals("StartPos (1)", 4, kr.match(1).startPos);
 	assertEquals("EndPos (1)", 6, kr.match(1).endPos);
 
-	assertEquals(1, ki.numberOf("documents"));
-	assertEquals(10, ki.numberOf("t"));
+	assertEquals(1, ki.numberOf("base", "documents"));
+	assertEquals(10, ki.numberOf("base", "t"));
 
 
 	sq = new SpanNextQuery(
@@ -105,8 +105,8 @@ public class TestNextIndex {
 	assertEquals("StartPos (1)", 3, kr.match(1).startPos);
 	assertEquals("EndPos (1)", 6, kr.match(1).endPos);
 
-	assertEquals(1, ki.numberOf("documents"));
-	assertEquals(10, ki.numberOf("t"));
+	assertEquals(1, ki.numberOf("base", "documents"));
+	assertEquals(10, ki.numberOf("base", "t"));
 
     };
 

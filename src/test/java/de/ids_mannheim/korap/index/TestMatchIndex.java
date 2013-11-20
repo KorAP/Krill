@@ -154,8 +154,8 @@ public class TestMatchIndex {
 	assertEquals("EndPos (1)", 6, kr.match(1).endPos);
 	assertEquals("SnippetBrackets (1)", "abca[{1:b}{2:c}]abac", kr.match(1).snippetBrackets());
 
-	assertEquals("Document count", 1, ki.numberOf("documents"));
-	assertEquals("Token count", 10, ki.numberOf("t"));
+	assertEquals("Document count", 1, ki.numberOf("base", "documents"));
+	assertEquals("Token count", 10, ki.numberOf("base", "t"));
 
 
 	sq = new SpanMatchModifyQuery(
@@ -180,7 +180,7 @@ public class TestMatchIndex {
 	assertEquals("EndPos (1)", 6, kr.match(1).endPos);
 	assertEquals("SnippetBrackets (1)", "abca[bc]abac", kr.match(1).snippetBrackets());
 
-	assertEquals(1, ki.numberOf("documents"));
-	assertEquals(10, ki.numberOf("t"));
+	assertEquals(1, ki.numberOf("base", "documents"));
+	assertEquals(10, ki.numberOf("base", "t"));
     };
 };

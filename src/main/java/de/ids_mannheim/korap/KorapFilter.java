@@ -1,17 +1,10 @@
 package de.ids_mannheim.korap;
 
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-
 import de.ids_mannheim.korap.filter.BooleanFilter;
 import de.ids_mannheim.korap.filter.RegexFilter;
-import de.ids_mannheim.korap.util.KorapDate;
-import org.apache.lucene.index.Term;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.lucene.search.NumericRangeQuery;
 
 
 /*
@@ -46,127 +39,72 @@ import org.apache.lucene.search.NumericRangeQuery;
 
 Suche XYZ in allen Documenten in den Foundries "Treetagger" und "MATE", die entweder den Texttyp "sports" oder den Texttyp "news" haben, bis höchsten 2009 publiziert wurden und deren Autor auf den regulären Ausdruck "Peter .+?" matcht.
 
+textClass
+ID
+title
+subTitle
+author
+corpusID
+pubDate
+pubPlace
+
 */
 
 public class KorapFilter {
-    private KorapFilter filter;
-    private Query query;
+    private BooleanFilter filter;
 
     // Logger
     private final static Logger jlog = LoggerFactory.getLogger(KorapFilter.class);
 
-    /**
-     * Search for documents of a specific genre.
-     * @param genre The name of the genre as a string
-     */
-    public BooleanFilter genre (String genre) {
-	return new BooleanFilter("textClass", new TermQuery(
-            new Term("textClass", genre)
-        ));
-    };
-
-    /**
-     * Search for documents of specific genres.
-     * @param genre The name of the genres as a regular expression.
-     */
-    public BooleanFilter genre (RegexFilter genre) {
-	return new BooleanFilter("textClass", genre.toQuery("textClass"));
-    };
-
-    /**
-     * Search for a documents of specific genres.
-     * @param genre The name of the genre as a string
-     * @param genres The names of further genres as strings
-     *
-     * This method is EXPERIMENTAL and may change without warnings!
-     */
-    public BooleanFilter genre (String genre, String ... genres) {
-	BooleanFilter bf = new BooleanFilter("textClass", new TermQuery(
-            new Term("textClass", genre)
-        ));
-	bf = bf.or(genres);
+    public BooleanFilter and (String type, String ... terms) {
+	BooleanFilter bf = new BooleanFilter();
+	bf.and(type, terms);
 	return bf;
     };
 
-    public RegexFilter re (String value) {
-	return new RegexFilter(value);
+    public BooleanFilter or (String type, String ... terms) {
+	BooleanFilter bf = new BooleanFilter();
+	bf.or(type, terms);
+	return bf;
     };
 
-    public Query since (String date) {
-	int since = new KorapDate(date).floor();
-	if (since == 0 || since == KorapDate.BEGINNING)
-	    return (Query) null;
-
-	return NumericRangeQuery.newIntRange("pubDate", since, KorapDate.END, true, true);
+    public BooleanFilter and (String type, RegexFilter re) {
+	BooleanFilter bf = new BooleanFilter();
+	bf.and(type, re);
+	return bf;
     };
 
-
-    public Query till (String date) {
-	try {
-	    int till =  new KorapDate(date).ceil();
-	    if (till == 0 || till == KorapDate.END)
-		return (Query) null;
-
-	    return NumericRangeQuery.newIntRange("pubDate", KorapDate.BEGINNING, till, true, true);
-	}
-	catch (NumberFormatException e) {
-	    jlog.warn("Parameter of till(date) is invalid");
-	};
-	return (Query) null;
+    public BooleanFilter or (String type, RegexFilter re) {
+	BooleanFilter bf = new BooleanFilter();
+	bf.or(type, re);
+	return bf;
     };
 
-
-    public Query between (String beginStr, String endStr) {
-	KorapDate beginDF = new KorapDate(beginStr);
-
-	int begin = beginDF.floor();
-
-	int end = new KorapDate(endStr).ceil();
-
-	if (end == 0)
-	    return (Query) null;
-
-	if (begin == KorapDate.BEGINNING && end == KorapDate.END)
-	    return (Query) null;
-
-	if (begin == end) {
-	    return new TermQuery(new Term("pubDate", beginDF.toString()));
-	};
-
-	return NumericRangeQuery.newIntRange("pubDate", begin, end, true, true);
+    public BooleanFilter since (String date) {
+	BooleanFilter bf = new BooleanFilter();
+	bf.since(date);
+	return bf;
     };
 
-
-    public Query date (String date) {
-	KorapDate dateDF = new KorapDate(date);
-
-	if (dateDF.year() == 0)
-	    return (Query) null;
-
-	if (dateDF.day() == 0 || dateDF.month() == 0) {
-	    int begin = dateDF.floor();
-	    int end = dateDF.ceil();
-
-	    if (end == 0 || (begin == KorapDate.BEGINNING && end == KorapDate.END))
-		return (Query) null;
-	    
-	    return NumericRangeQuery.newIntRange("pubDate", begin, end, true, true);
-	};
-	
-	return new TermQuery(new Term("pubDate", dateDF.toString()));
+    public BooleanFilter till (String date) {
+	BooleanFilter bf = new BooleanFilter();
+	bf.till(date);
+	return bf;
     };
 
+    public BooleanFilter date (String date) {
+	BooleanFilter bf = new BooleanFilter();
+	bf.date(date);
+	return bf;
+    };
 
-    /*
-textClass
-id
-title
-subtitle
-author
-corpus
-pubDate
-pubPlace
-    */
+    public BooleanFilter between (String date1, String date2) {
+	BooleanFilter bf = new BooleanFilter();
+	bf.between(date1, date2);
+	return bf;
+    };
 
-
+    public RegexFilter re (String regex) {
+	return new RegexFilter(regex);
+    };
 };

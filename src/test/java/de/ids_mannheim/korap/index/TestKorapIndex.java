@@ -49,8 +49,8 @@ public class TestKorapIndex {
 	/* Save documents */
 	ki.commit();
 
-	assertEquals(2, ki.numberOf("documents"));
-	assertEquals(7, ki.numberOf("sentences"));
+	assertEquals(2, ki.numberOf("base", "documents"));
+	assertEquals(7, ki.numberOf("base", "sentences"));
 
 
 	fd = new FieldDocument();
@@ -65,8 +65,8 @@ public class TestKorapIndex {
 	/* Save documents */
 	ki.commit();
 
-	assertEquals(3, ki.numberOf("documents"));
-	assertEquals(10, ki.numberOf("sentences"));
+	assertEquals(3, ki.numberOf("base", "documents"));
+	assertEquals(10, ki.numberOf("base", "sentences"));
 
 
 	// KorapQuery kq = new KorapQuery("text");

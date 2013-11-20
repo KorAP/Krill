@@ -45,7 +45,7 @@ public class KorapResult {
 	// mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
 	mapper.disable(SerializationFeature.WRITE_NULL_MAP_VALUES);
 
-	this.matches = new ArrayList<>();
+	this.matches = new ArrayList<>(itemsPerPage);
 	this.query = query;
 	this.startIndex = startIndex;
 	this.itemsPerPage = (itemsPerPage > 50 || itemsPerPage < 1) ? ITEMS_PER_PAGE : itemsPerPage;

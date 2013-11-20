@@ -31,6 +31,8 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.DocIdSetIterator;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,6 +46,7 @@ import org.apache.lucene.search.DocIdSet;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.document.KorapPrimaryData;
 
@@ -53,6 +56,9 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 
 /*
+
+TODO::: http://lucene.apache.org/core/3_0_3/api/core/org/apache/lucene/analysis/PerFieldAnalyzerWrapper.html
+
 
   Todo: Use FieldCache!
 
@@ -301,7 +307,7 @@ public class KorapIndex {
      * @param foundry The foundry to search in.
      * @param type The type of meta information, e.g. "documents" or "sentences".
      */
-    public long numberOf (String foundry, String type) {
+    public long numberOf (KorapCollection collection, String foundry, String type) {
 	// Short cut for documents
 	if (type.equals("documents")) {
 	    return this.reader().numDocs();
@@ -317,7 +323,7 @@ public class KorapIndex {
 	    // Iterate over all atomic readers and collect occurrences
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
 		occurrences += this.numberOfAtomic(
-                    atomic.reader().getLiveDocs(),
+		   collection.bits(atomic),
 		    atomic,
 		    term
 		);
@@ -332,6 +338,11 @@ public class KorapIndex {
 	return occurrences;
     };
 
+    public long numberOf (String foundry, String type) throws IOException {
+	return this.numberOf(new KorapCollection(this), foundry, type);
+    };
+
+
     /**
      * Search for the number of occurrences of different types,
      * e.g. "documents", "sentences" etc., in the base foundry.
@@ -341,7 +352,7 @@ public class KorapIndex {
      * @see #numberOf(String, String)
      */
     public long numberOf (String type) throws IOException {
-	return this.numberOf("base", type);
+	return this.numberOf("tokens", type);
     };
 
 
@@ -379,14 +390,14 @@ public class KorapIndex {
     };
 
 
-    // Deprecated
+    @Deprecated
     public long countDocuments () throws IOException {
 	log.warn("countDocuments() is DEPRECATED in favor of numberOf(\"documents\")!");
 	return this.numberOf("documents");
     };
 
 
-    // Deprecated
+    @Deprecated
     public long countAllTokens () throws IOException {
 	log.warn("countAllTokens() is DEPRECATED in favor of numberOf(\"tokens\")!");
 	return this.numberOf("tokens");
@@ -422,6 +433,8 @@ public class KorapIndex {
 			   leftTokenContext, leftContext, rightTokenContext, rightContext);
     };
 
+    // This is just a fallback! Delete!
+    @Deprecated
     public KorapResult search (Bits bitset,
 			       SpanQuery query,
 			       int startIndex,
@@ -430,6 +443,21 @@ public class KorapIndex {
 			       short leftContext,
 			       boolean rightTokenContext,
 			       short rightContext) {
+	// TODO: This might leak as hell!!!
+	return this.search(new KorapCollection(this), query, startIndex, count, leftTokenContext, leftContext, rightTokenContext, rightContext);
+    };
+
+
+    // old: Bits bitset
+    public KorapResult search (KorapCollection collection,
+			       SpanQuery query,
+			       int startIndex,
+			       short count,
+			       boolean leftTokenContext,
+			       short leftContext,
+			       boolean rightTokenContext,
+			       short rightContext) {
+
 
 	this.termContexts = new HashMap<Term, TermContext>();
 	String foundry = query.getField();
@@ -449,13 +477,15 @@ public class KorapIndex {
 
 	try {
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
-		if (bitset == null)
-		    bitset = atomic.reader().getLiveDocs();
+
+
+		// Use OpenBitSet;
+		Bits bitset = collection.bits(atomic);
 
 		PositionsToOffset pto = new PositionsToOffset(atomic, foundry);
 
 		// Spans spans = NearSpansOrdered();
-		Spans spans = query.getSpans(atomic, bitset, termContexts);
+		Spans spans = query.getSpans(atomic, (Bits) bitset, termContexts);
 
 		IndexReader lreader = atomic.reader();
 
