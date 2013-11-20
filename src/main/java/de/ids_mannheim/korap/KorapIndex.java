@@ -28,7 +28,10 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.search.Filter;
@@ -56,10 +59,6 @@ import org.slf4j.LoggerFactory;
 import java.nio.ByteBuffer;
 
 /*
-
-TODO::: http://lucene.apache.org/core/3_0_3/api/core/org/apache/lucene/analysis/PerFieldAnalyzerWrapper.html
-
-
   Todo: Use FieldCache!
 
 
@@ -129,9 +128,19 @@ public class KorapIndex {
 	fieldsToLoad.add("pubPlace");
 	fieldsToLoad.add("pubDate");
 	fieldsToLoad.add("corpusID");
+	// don't load foundries and tokenization
 
 	// Base analyzer for searching and indexing
-	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
+	// StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
+
+	Map<String,Analyzer> analyzerPerField = new HashMap<String,Analyzer>();
+	analyzerPerField.put("textClass", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
+	analyzerPerField.put("foundries", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
+	PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(
+            new StandardAnalyzer(Version.LUCENE_CURRENT),
+            analyzerPerField
+        );
+
 
 	// Create configuration with base analyzer
 	IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);

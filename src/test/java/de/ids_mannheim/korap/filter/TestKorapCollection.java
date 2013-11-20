@@ -37,10 +37,13 @@ public class TestKorapCollection {
 	KorapCollection kc = new KorapCollection(ki);
 
 	// The virtual collection consists of all documents that have the textClass "reisen" and "freizeit"
-	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit") );
+	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
 
 	// Subset this to all documents that have also the text
 	kc.filter( kf.and("textClass", "kultur") );
+
+
+	//TODO: nested vc does not work properly
 
 	// Create a query
 	KorapQuery kq = new KorapQuery("tokens");
@@ -48,9 +51,9 @@ public class TestKorapCollection {
 	
 	// Get some statistics (This can be improved):
 	/*
-	System.err.println("Tokens in this virtual collection: " + kc.numberOf("tokens", "t"));
-	System.err.println("Paragraphs in this virtual collection: " + kc.numberOf("tokens", "p"));
-	System.err.println("Sentences in this virtual collection: " + kc.numberOf("tokens", "s"));
+	System.err.println("Tokens in this virtual collection: " + kc.numberOf("tokens", "token"));
+	System.err.println("Paragraphs in this virtual collection: " + kc.numberOf("tokens", "paragraph"));
+	System.err.println("Sentences in this virtual collection: " + kc.numberOf("tokens", "sentence"));
 	*/
 
 	KorapResult kr = kc.search(query);

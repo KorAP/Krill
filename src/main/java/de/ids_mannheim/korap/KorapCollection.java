@@ -16,6 +16,10 @@ import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.util.FixedBitSet;
 import org.apache.lucene.util.Bits;
+/*
+import org.apache.lucene.util.Bits.MatchAllBits;
+import org.apache.lucene.util.Bits.MatchNoBits;
+*/
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.DocIdSet;
 
@@ -70,8 +74,10 @@ public class KorapCollection {
 	  TODO:
 	  Don't check the live docs in advance - combine them afterwards with an "and" operation,
 	  so before this you can fully use "and" and "or" on an empty bitset.
+	  Use Bits.MatchAllBits(int len)
 	*/
 
+	boolean noDoc = false;
 	Bits bitset = (Bits) atomic.reader().getLiveDocs();
 
 	if (this.filterCount > 0) {
@@ -83,14 +89,25 @@ public class KorapCollection {
 	    if (bitset == null) {
 		DocIdSet docids = filters.remove(0).getDocIdSet(atomic, null);
 		DocIdSetIterator filterIter = docids.iterator();
-		fbitset.or(filterIter);
+		if (filterIter != null) {
+		    fbitset.or(filterIter);
+		    noDoc = true;
+		};
 	    };
 
-	    for (Filter kc : filters) {
-		log.trace("FILTER: {}", kc);
-		DocIdSet docids = kc.getDocIdSet(atomic, bitset);
-		DocIdSetIterator filterIter = docids.iterator();
-		fbitset.and(filterIter);
+	    if (!noDoc) {
+		for (Filter kc : filters) {
+		    log.trace("FILTER: {}", kc);
+		    DocIdSet docids = kc.getDocIdSet(atomic, bitset);
+		    DocIdSetIterator filterIter = docids.iterator();
+		    if (filterIter == null) {
+			// There must be a better way ...
+			fbitset.clear(0, fbitset.length());
+			noDoc = true;
+			break;
+		    };
+		    fbitset.and(filterIter);
+		};
 	    };
 	    
 	    bitset = fbitset.bits();
