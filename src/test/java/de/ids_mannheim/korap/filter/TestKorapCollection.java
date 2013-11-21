@@ -39,24 +39,27 @@ public class TestKorapCollection {
 	// The virtual collection consists of all documents that have the textClass "reisen" and "freizeit"
 	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
 
+	assertEquals("Documents", 5, kc.numberOf("documents"));
+	assertEquals("Tokens", 1678, kc.numberOf("tokens"));
+	assertEquals("Sentences", 199, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 144, kc.numberOf("paragraphs"));
+
 	// Subset this to all documents that have also the text
-	kc.filter( kf.and("textClass", "kultur") );
+	kc.filter(kf.and("textClass", "kultur"));
 
-
-	//TODO: nested vc does not work properly
+	assertEquals("Documents", 1, kc.numberOf("documents"));
+	assertEquals("Tokens", 405, kc.numberOf("tokens"));
+	assertEquals("Sentences", 76, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 49, kc.numberOf("paragraphs"));
 
 	// Create a query
 	KorapQuery kq = new KorapQuery("tokens");
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
-	
-	// Get some statistics (This can be improved):
-	/*
-	System.err.println("Tokens in this virtual collection: " + kc.numberOf("tokens", "token"));
-	System.err.println("Paragraphs in this virtual collection: " + kc.numberOf("tokens", "paragraph"));
-	System.err.println("Sentences in this virtual collection: " + kc.numberOf("tokens", "sentence"));
-	*/
 
 	KorapResult kr = kc.search(query);
+	assertEquals(70, kr.totalResults());
+
+
 	// System.err.println(kr.toJSON());
     };
 };

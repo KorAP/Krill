@@ -316,16 +316,24 @@ public class KorapIndex {
      * @param foundry The foundry to search in.
      * @param type The type of meta information, e.g. "documents" or "sentences".
      */
-    public long numberOf (KorapCollection collection, String foundry, String type) {
+    public long numberOf (KorapCollection collection, String foundry, String type) throws IOException {
 	// Short cut for documents
 	if (type.equals("documents")) {
-	    return this.reader().numDocs();
+
+	    if (collection.getCount() <= 0) {
+		return (long) this.reader().numDocs();
+	    };
+
+	    long docCount = 0;
+	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+		docCount += collection.bits(atomic).cardinality();
+	    };
+	    return docCount;
 	};
     
 	// Create search term
 	Term term = new Term(foundry, "-:" + type);
 	// System.err.println(">> Search for -:" + type + " in " + foundry);
-
 
 	long occurrences = 0;
 	try {

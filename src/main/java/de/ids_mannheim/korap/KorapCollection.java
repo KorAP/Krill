@@ -31,20 +31,33 @@ import org.slf4j.LoggerFactory;
 // THIS MAY CHANGE for stuff like combining virtual collections
 // See http://mail-archives.apache.org/mod_mbox/lucene-java-user/200805.mbox/%3C17080852.post@talk.nabble.com%3E
 
-
 public class KorapCollection {
     private KorapIndex index;
     private String id;
     private KorapDate created;
-    private ArrayList<Filter> filter;
-    private int filterCount = 0;
 
+
+    // TODO:
+    // Change this to support join operation
+    /*
+    private class CollectionOperation () {
+	private boolean type;
+	private Filter filter;
+	private CollectionOperation (type, filter) {
+	    this.type = type;
+	    this.filter = filter;
+	};
+    };
+    */
+
+    private ArrayList<Filter> filter;
+
+    private int filterCount = 0;
+    
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapCollection.class);
 
-
     // user?
-
     public KorapCollection (KorapIndex ki) {
 	this.index = ki;
 	this.filter = new ArrayList<Filter>(5);
@@ -68,7 +81,7 @@ public class KorapCollection {
 	return this.index.search(this, query, 0, (short) 5, true, (short) 5, true, (short) 5);
     };
 
-    public Bits bits (AtomicReaderContext atomic) throws IOException  {
+    public FixedBitSet bits (AtomicReaderContext atomic) throws IOException  {
 
 	/*
 	  TODO:
@@ -77,75 +90,62 @@ public class KorapCollection {
 	  Use Bits.MatchAllBits(int len)
 	*/
 
-	boolean noDoc = false;
-	Bits bitset = (Bits) atomic.reader().getLiveDocs();
+	boolean noDoc = true;
+	FixedBitSet bitset;
 
 	if (this.filterCount > 0) {
-	    FixedBitSet fbitset = new FixedBitSet(atomic.reader().numDocs());
+	    bitset = new FixedBitSet(atomic.reader().numDocs());
 
 	    ArrayList<Filter> filters = (ArrayList<Filter>) this.filter.clone();
 
 	    // Init vector
-	    if (bitset == null) {
-		DocIdSet docids = filters.remove(0).getDocIdSet(atomic, null);
-		DocIdSetIterator filterIter = docids.iterator();
-		if (filterIter != null) {
-		    fbitset.or(filterIter);
-		    noDoc = true;
-		};
+	    DocIdSet docids = filters.remove(0).getDocIdSet(atomic, null);
+	    DocIdSetIterator filterIter = docids.iterator();
+
+	    if (filterIter != null) {
+		bitset.or(filterIter);
+		noDoc = false;
 	    };
 
 	    if (!noDoc) {
 		for (Filter kc : filters) {
 		    log.trace("FILTER: {}", kc);
-		    DocIdSet docids = kc.getDocIdSet(atomic, bitset);
-		    DocIdSetIterator filterIter = docids.iterator();
+		    docids = kc.getDocIdSet(atomic, bitset);
+		    filterIter = docids.iterator();
 		    if (filterIter == null) {
 			// There must be a better way ...
-			fbitset.clear(0, fbitset.length());
+			bitset.clear(0, bitset.length());
 			noDoc = true;
 			break;
 		    };
-		    fbitset.and(filterIter);
+		    bitset.and(filterIter);
 		};
+
+		if (!noDoc) {
+		    FixedBitSet livedocs = (FixedBitSet) atomic.reader().getLiveDocs();
+		    if (livedocs != null) {
+			bitset.and(livedocs);
+		    };
+		};
+	    }
+	    else {
+		return bitset;
 	    };
-	    
-	    bitset = fbitset.bits();
+	}
+	else {
+	    bitset = (FixedBitSet) atomic.reader().getLiveDocs();
 	};
 
 	return bitset;
     };
 
-    public long numberOf (String foundry, String type) {
+    public long numberOf (String foundry, String type) throws IOException {
 	return this.index.numberOf(this, foundry, type);
+    };
+
+    public long numberOf (String type) throws IOException {
+	return this.index.numberOf(this, "tokens", type);
     };
 
     // implement "till" with rangefilter
 };
-
-/*
-
-Spans spans = yourSpanQuery.getSpans(reader);
-BitSet bits = yourFilter.bits(reader);
-int filterDoc = bits.nextSetBit(0);
-while ((filterDoc >= 0) and spans.skipTo(filterDoc)) {
-  boolean more = true;
-  while (more and (spans.doc() == filterDoc)) {
-     // use spans.start() and spans.end() here
-     // ...
-     more = spans.next();
-  }
-  if (! more) {
-    break;
-  }
-  filterDoc = bits.nextSetBit(spans.doc());
-}
-
-Please check the javadocs of java.util.BitSet, there may
-be a 1 off error in the arguments to nextSetBit().
-
-At this point, no skipping on the spans should be done when filterDoc 
-equals spans.doc(), so this code still needs some work.
-But I think you get the idea.
-
-*/
