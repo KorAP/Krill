@@ -24,11 +24,9 @@ public abstract class KorapDocument {
     @JsonIgnore
     public int internalDocID, localDocID;
 
-    @JsonIgnore
-    public String foundry;
-
     private String author, textClass, corpusID,
-	           pubPlace, ID, title, subTitle;
+	           pubPlace, ID, title, subTitle,
+	           foundries, tokenization;
     
     private KorapDate pubDate;
 
@@ -153,5 +151,21 @@ public abstract class KorapDocument {
     @JsonIgnore
     public int getPrimaryDataLength () {
 	return this.primaryData.length();
+    };
+
+    public void setFoundries (String foundries) {
+	this.foundries = foundries;
+    };
+
+    public String getFoundries () {
+	return this.foundries;
+    };
+
+    public void setTokenization (String tokenization) {
+	this.tokenization = tokenization;
+    };
+
+    public String getTokenization () {
+	return this.tokenization;
     };
 };

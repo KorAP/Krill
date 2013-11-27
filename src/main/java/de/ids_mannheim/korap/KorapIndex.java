@@ -128,7 +128,9 @@ public class KorapIndex {
 	fieldsToLoad.add("pubPlace");
 	fieldsToLoad.add("pubDate");
 	fieldsToLoad.add("corpusID");
-	// don't load foundries and tokenization
+	fieldsToLoad.add("foundries");
+	fieldsToLoad.add("tokenization");
+	// don't load tokenization
 
 	// Base analyzer for searching and indexing
 	// StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
@@ -631,7 +633,7 @@ public class KorapIndex {
 
 
 		    match.internalDocID = docID;
-		    match.foundry = foundry;
+		    // match.foundry = foundry; // This is "tokens" or "base" or so
 
 		    match.setAuthor(doc.get("author"));
 		    match.setTextClass(doc.get("textClass"));
@@ -641,6 +643,10 @@ public class KorapIndex {
 		    match.setPubPlace(doc.get("pubPlace"));
 		    match.setCorpusID(doc.get("corpusID"));
 		    match.setPubDate(doc.get("pubDate"));
+
+		    // Temporary (later meta fields in term vector)
+		    match.setFoundries(doc.get("foundries"));
+		    match.setTokenization(doc.get("tokenization"));
 
 		    match.setPrimaryData(
 		      new KorapPrimaryData(doc.get(foundry))

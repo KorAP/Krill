@@ -148,6 +148,21 @@ last_modified timestamp or KorapDate
 		mtts.addMultiTermToken(mtt);
 	    };
 
+	    // TODO: This is normally dependend to the tokenization!
+	    //       Add this as meta information to the document
+	    // Store this information as well as tokenization information
+	    // as meta fields in the tokenization term vector
+	    if (field.containsKey("foundries")) {
+		String foundries = (String) field.get("foundries");
+		this.addText("foundries", foundries);
+		super.setFoundries(foundries);
+	    };
+	    if (field.containsKey("tokenization")) {
+		String tokenization = (String) field.get("tokenization");
+		this.addString("tokenization", tokenization);
+		super.setTokenization(tokenization);
+	    };
+
 	    this.addTV(fieldName, this.getPrimaryData(), mtts);
 	};
     };
@@ -200,13 +215,5 @@ last_modified timestamp or KorapDate
     public void setID (String ID) {
 	super.setID(ID);
 	this.addString("ID", ID);
-    };
-
-    public void setFoundries (String foundry) {
-	this.addText("foundries", foundry);
-    };
-
-    public void setTokenization (String tokenization) {
-	this.addString("tokenization", tokenization);
     };
 };

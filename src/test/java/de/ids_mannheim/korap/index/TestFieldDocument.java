@@ -173,8 +173,9 @@ public class TestFieldDocument {
 
 
 	KorapResult kr;
+
 	/*
-	kr = ki.search(query, 0, (short) 20, true, (short) 6, true, (short) 6);
+	kr = ki.search(query, 0, (short) 60, true, (short) 6, true, (short) 6);
 	System.err.println(kr.toJSON());
 	*/
 
