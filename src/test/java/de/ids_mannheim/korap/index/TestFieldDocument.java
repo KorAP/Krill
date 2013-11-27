@@ -179,14 +179,13 @@ public class TestFieldDocument {
 	*/
 
 	kr = ki.search(query, 0, (short) 5, true, (short) 2, false, (short) 5);
-	assertEquals(36, kr.totalResults());
+	assertEquals(37, kr.totalResults());
 	assertEquals(5, kr.itemsPerPage());
-	assertEquals("... Texten eine [{1:{2:durchschnittliche} Häufigkeit}] von  ...", kr.match(0).getSnippetBrackets());
-	assertEquals("... damit der [{1:{2:sechsthäufigste} Buchstabe}] in d ...", kr.match(1).getSnippetBrackets());
-	assertEquals("... A der [{1:{2:einzige} Buchstabe}] im D ...", kr.match(2).getSnippetBrackets());
-	assertEquals("... für den [offenen vorderen {1:{2:ungerundeten} Vokal}] a: A ...", kr.match(3).getSnippetBrackets());
-	assertEquals("... in eine [{1:{2:flache} Stellung}] nied ...", kr.match(4).getSnippetBrackets());
-
+	assertEquals("... Buchstabe des [{1:{2:lateinischen} Alphabets}] und  ...", kr.match(0).getSnippetBrackets());
+	assertEquals("... Texten eine [{1:{2:durchschnittliche} Häufigkeit}] von  ...", kr.match(1).getSnippetBrackets());
+	assertEquals("... damit der [{1:{2:sechsthäufigste} Buchstabe}] in d ...", kr.match(2).getSnippetBrackets());
+	assertEquals("... A der [{1:{2:einzige} Buchstabe}] im D ...", kr.match(3).getSnippetBrackets());
+	assertEquals("... für den [offenen vorderen {1:{2:ungerundeten} Vokal}] a: A ...", kr.match(4).getSnippetBrackets());
 
 	query = kq.seg("tt/l:Norwegen").toQuery();
 	kr = ki.search(query, 0, (short) 5, true, (short) 2, false, (short) 5);

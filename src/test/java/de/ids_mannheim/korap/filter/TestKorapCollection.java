@@ -41,16 +41,16 @@ public class TestKorapCollection {
 
 	assertEquals("Documents", 5, kc.numberOf("documents"));
 	assertEquals("Tokens", 1678, kc.numberOf("tokens"));
-	assertEquals("Sentences", 199, kc.numberOf("sentences"));
-	assertEquals("Paragraphs", 144, kc.numberOf("paragraphs"));
+	assertEquals("Sentences", 194, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 139, kc.numberOf("paragraphs"));
 
 	// Subset this to all documents that have also the text
 	kc.filter(kf.and("textClass", "kultur"));
 
 	assertEquals("Documents", 1, kc.numberOf("documents"));
 	assertEquals("Tokens", 405, kc.numberOf("tokens"));
-	assertEquals("Sentences", 76, kc.numberOf("sentences"));
-	assertEquals("Paragraphs", 49, kc.numberOf("paragraphs"));
+	assertEquals("Sentences", 75, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
 	// Create a query
 	KorapQuery kq = new KorapQuery("tokens");

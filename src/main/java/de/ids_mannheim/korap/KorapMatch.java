@@ -252,6 +252,22 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	    return this.combine;
 	};
 
+	public HighlightCombinatorElement getFirst () {
+	    return this.combine.getFirst();
+	};
+
+	public HighlightCombinatorElement getLast () {
+	    return this.combine.getLast();
+	};
+
+	public HighlightCombinatorElement get (int index) {
+	    return this.combine.get(index);
+	};
+
+	public short size () {
+	    return (short) this.combine.size();
+	};
+
 	public void addString (String characters) {
 	    this.combine.add(new HighlightCombinatorElement(characters));
 	};
@@ -311,7 +327,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	for (int[] element : stack) {
 	    pos = element[3] != 0 ? element[0] : element[1];
 
-	    if (pos != oldPos) {
+	    if (pos > oldPos) {
 		snippetStack.addString(clean.substring(oldPos, pos));
 
 		oldPos = pos;
@@ -325,7 +341,9 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	    };
 	};
 
-	snippetStack.addString(clean.substring(pos));
+	if (clean.length() > pos) {
+	    snippetStack.addString(clean.substring(pos));
+	};
     };
 
     @Deprecated
@@ -339,15 +357,47 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	    return this.snippetHTML;
 
 	StringBuilder sb = new StringBuilder();
-	if (startMore)
-	    sb.append("<span class=\"korap-more-left\"></span>");
 
-	for (HighlightCombinatorElement hce : this.snippetStack.stack()) {
-	    sb.append(hce.toHTML());
+	short start = (short) 0;
+	short end   = this.snippetStack.size();
+
+	HighlightCombinatorElement elem = this.snippetStack.getFirst();
+
+	// Create context, if there is any
+	if ((elem.type == 0) || startMore) {
+	    sb.append("<span class=\"korap-context-left\">");
+	    if (startMore)
+		sb.append("<span class=\"korap-more\"></span>");
+	    if (elem.type == 0) {
+		sb.append(elem.toHTML());
+		start++;
+	    };
+	    sb.append("</span>");
 	};
 
-	if (endMore)
-	    sb.append("<span class=\"korap-more-right\"></span>");
+	elem = this.snippetStack.getLast();
+
+	StringBuilder rightContext = new StringBuilder();
+
+	// Create context, if trhere is any
+	if (endMore || (elem != null && elem.type == 0)) {
+	    rightContext.append("<span class=\"korap-context-right\">");
+	    if (elem != null && elem.type == 0) {
+		rightContext.append(elem.toHTML());
+		end--;
+	    };
+	    if (endMore)
+		rightContext.append("<span class=\"korap-more\"></span>");
+	    rightContext.append("</span>");
+	};
+
+	for (short i = start; i < end; i++) {
+	    sb.append(this.snippetStack.get(i).toHTML());
+	};
+
+	if (rightContext != null) {
+	    sb.append(rightContext);
+	};
 
 	return (this.snippetHTML = sb.toString());
     };
