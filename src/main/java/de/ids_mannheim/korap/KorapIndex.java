@@ -115,7 +115,6 @@ public class KorapIndex {
 	this(FSDirectory.open(new File( index )));
     };
 
-
     public KorapIndex (Directory directory) throws IOException {
 	this.directory = directory;
 
