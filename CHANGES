@@ -1,3 +1,7 @@
+0.21 2013-11-28
+        - Virtual collections can now be defined,
+	  searched, nested and extended.
+
 0.20 2013-11-18
         - Unboxing from sandbox.
 

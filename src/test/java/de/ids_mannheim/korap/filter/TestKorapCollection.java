@@ -59,8 +59,15 @@ public class TestKorapCollection {
 	KorapResult kr = kc.search(query);
 	assertEquals(70, kr.totalResults());
 
+	kc.extend( kf.and("textClass", "uninteresting") );
+	assertEquals("Documents", 1, kc.numberOf("documents"));
 
-	// System.err.println(kr.toJSON());
+	kc.extend( kf.and("textClass", "wissenschaft") );
+	assertEquals("Documents", 3, kc.numberOf("documents"));
+	assertEquals("Tokens", 1669, kc.numberOf("tokens"));
+	assertEquals("Sentences", 188, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
+	System.err.println(kr.toJSON());
     };
 };
 

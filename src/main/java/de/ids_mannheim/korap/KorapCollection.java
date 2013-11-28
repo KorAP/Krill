@@ -10,6 +10,7 @@ import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapFilter;
 import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.filter.BooleanFilter;
+import de.ids_mannheim.korap.filter.FilterOperation;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.FilteredQuery;
@@ -26,6 +27,8 @@ import org.apache.lucene.search.DocIdSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: Make a cache for the bits!!! DELETE IT IN CASE OF AN EXTENSION OR A FILTER!
+
 
 // accepts as first parameter the index
 // THIS MAY CHANGE for stuff like combining virtual collections
@@ -35,23 +38,7 @@ public class KorapCollection {
     private KorapIndex index;
     private String id;
     private KorapDate created;
-
-
-    // TODO:
-    // Change this to support join operation
-    /*
-    private class CollectionOperation () {
-	private boolean type;
-	private Filter filter;
-	private CollectionOperation (type, filter) {
-	    this.type = type;
-	    this.filter = filter;
-	};
-    };
-    */
-
-    private ArrayList<Filter> filter;
-
+    private ArrayList<FilterOperation> filter;
     private int filterCount = 0;
     
     // Logger
@@ -60,7 +47,7 @@ public class KorapCollection {
     // user?
     public KorapCollection (KorapIndex ki) {
 	this.index = ki;
-	this.filter = new ArrayList<Filter>(5);
+	this.filter = new ArrayList<FilterOperation>(5);
     };
 
     public int getCount() {
@@ -68,11 +55,26 @@ public class KorapCollection {
     };
 
     public void filter (BooleanFilter filter) {
-	this.filter.add(new QueryWrapperFilter(filter.toQuery()));
+	this.filter.add(
+	    new FilterOperation(
+				(Filter) new QueryWrapperFilter(filter.toQuery()),
+                false
+            )
+        );
 	this.filterCount++;
     };
 
-    public ArrayList<Filter> getFilters () {
+    public void extend (BooleanFilter filter) {
+	this.filter.add(
+	    new FilterOperation(
+				(Filter) new QueryWrapperFilter(filter.toQuery()),
+                true
+            )
+        );
+	this.filterCount++;
+    };
+
+    public ArrayList<FilterOperation> getFilters () {
 	return this.filter;
     };
 
@@ -96,10 +98,10 @@ public class KorapCollection {
 	if (this.filterCount > 0) {
 	    bitset = new FixedBitSet(atomic.reader().numDocs());
 
-	    ArrayList<Filter> filters = (ArrayList<Filter>) this.filter.clone();
+	    ArrayList<FilterOperation> filters = (ArrayList<FilterOperation>) this.filter.clone();
 
 	    // Init vector
-	    DocIdSet docids = filters.remove(0).getDocIdSet(atomic, null);
+	    DocIdSet docids = filters.remove(0).filter.getDocIdSet(atomic, null);
 	    DocIdSetIterator filterIter = docids.iterator();
 
 	    if (filterIter != null) {
@@ -108,17 +110,27 @@ public class KorapCollection {
 	    };
 
 	    if (!noDoc) {
-		for (Filter kc : filters) {
+		for (FilterOperation kc : filters) {
 		    log.trace("FILTER: {}", kc);
-		    docids = kc.getDocIdSet(atomic, bitset);
+
+		    // BUG!!!
+		    docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null : bitset);
 		    filterIter = docids.iterator();
+
 		    if (filterIter == null) {
 			// There must be a better way ...
-			bitset.clear(0, bitset.length());
-			noDoc = true;
-			break;
+			if (kc.isFilter()) {
+			    bitset.clear(0, bitset.length());
+			    noDoc = true;
+			};
+			continue;
 		    };
-		    bitset.and(filterIter);
+		    if (kc.isExtension()) {
+			bitset.or(filterIter);
+		    }
+		    else {
+			bitset.and(filterIter);
+		    };
 		};
 
 		if (!noDoc) {
