@@ -503,7 +503,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	// right context
 	if (rightTokenContext) {
 	    endOffsetChar = pto.end(ldid, this.endPos + this.rightContext - 1);
-	    log.trace("For endOffset {} pto returns {}", (this.endPos + this.rightContext - 1), endOffsetChar);
+	    log.trace("For endOffset {} ({}+{}-1) pto returns {}", (this.endPos + this.rightContext - 1), this.endPos, this.rightContext, endOffsetChar);
 	}
 	else {
 	    if (endPosChar == -1) {
@@ -542,7 +542,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	    endMore = false;
 	};
 
-	log.trace("Temporary snippet is {}", this.tempSnippet);
+	log.trace("Temporary snippet is \"{}\"", this.tempSnippet);
 
         LinkedList<int[]> spans = new LinkedList<int[]>();
 

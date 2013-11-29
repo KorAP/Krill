@@ -477,6 +477,8 @@ public class KorapIndex {
 			       short rightContext) {
 
 
+	log.trace("Start search");
+
 	this.termContexts = new HashMap<Term, TermContext>();
 	String foundry = query.getField();
 
@@ -494,8 +496,15 @@ public class KorapIndex {
 	fieldsToLoadLocal.add(foundry);
 
 	try {
+	    int i = 0;
+	    long t1 = 0;
+	    long t2 = 0;
+
+	    ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.itemsPerPage());
+
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
 
+		log.trace("NUKULAR!");
 
 		// Use OpenBitSet;
 		Bits bitset = collection.bits(atomic);
@@ -510,10 +519,11 @@ public class KorapIndex {
 		// TODO: Get document information from Cache!
 
 		// See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
-		long t1 = System.nanoTime();
+		t1 = System.nanoTime();
 
-		int i = 0;
 		for (; i < kr.itemsPerPage(); i++) {
+
+		    log.trace("Match Nr {}/{}", i, count);
 
 		    if (spans.next() != true) {
 			break;
@@ -525,7 +535,8 @@ public class KorapIndex {
 		    int localDocID = spans.doc();
 		    int docID = atomic.docBase + localDocID;
 
-		    Document doc = lreader.document(docID, fieldsToLoadLocal);
+		    // Document doc = lreader.document(docID, fieldsToLoadLocal);
+		    Document doc = lreader.document(localDocID, fieldsToLoadLocal);
 		    KorapMatch match = new KorapMatch();
 
 		    match.startPos = spans.start();
@@ -643,6 +654,8 @@ public class KorapIndex {
 		    match.setCorpusID(doc.get("corpusID"));
 		    match.setPubDate(doc.get("pubDate"));
 
+		    log.trace("I've got a match in {} of {}", match.getID(), count);
+
 		    // Temporary (later meta fields in term vector)
 		    match.setFoundries(doc.get("foundries"));
 		    match.setTokenization(doc.get("tokenization"));
@@ -650,26 +663,34 @@ public class KorapIndex {
 		    match.setPrimaryData(
 		      new KorapPrimaryData(doc.get(foundry))
 		    );
-
+		    atomicMatches.add(match);
 		    kr.add(match);
 		};
 
-		long t2 = System.nanoTime();
+		// Benchmark till now
+		if (i >= kr.itemsPerPage() &&
+		    kr.getBenchmarkSearchResults().length() == 0) {
+		    t2 = System.nanoTime();
+		    kr.setBenchmarkSearchResults(t1, t2);
+		};
 
-		kr.setBenchmarkSearchResults(t1, t2);
-
-		while (spans.next() == true) {
+		while (spans.next()) {
 		    i++;
 		};
 
-		kr.setBenchmarkHitCounter(t2, System.nanoTime());
-
-		kr.setTotalResults(i);
-
-		for (KorapMatch km : kr.getMatches()) {
+		for (KorapMatch km : atomicMatches) {
 		    km.processHighlight(pto);
 		};
+		atomicMatches.clear();
 	    };
+
+	    t1 = System.nanoTime();
+	    kr.setBenchmarkHitCounter(t2, t1);
+	    if (kr.getBenchmarkSearchResults().length() == 0) {
+		kr.setBenchmarkSearchResults(t2, t1);
+	    };
+	    kr.setTotalResults(i);
+
 
 	    // if (spans.isPayloadAvailable()) {
 	    // for (byte[] payload : spans.getPayload()) {

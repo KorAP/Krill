@@ -31,6 +31,7 @@ public class KorapResult {
     private String error = null;
 
     // Logger
+    // This is KorapMatch instead of KorapResult!
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     public KorapResult (String query,

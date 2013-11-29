@@ -21,22 +21,6 @@ import org.slf4j.LoggerFactory;
  */
 
 /*
-<request>
-  <query>
-    ...XYZ...
-  </query>
-  <filter>
-    <cond><foundry value="Treetagger" /></cond>
-    <cond><foundry value="MATE" /></cond>
-    <condOr>
-      <cond><textClass value="sports" /></cond>
-      <cond><textClass value="news" /></cond>
-    </condOr>
-    <cond><pubDate till="2009" /></cond>
-    <cond><author regex="Peter .+?" /></cond>
-  </filter>
-</request>
-
 Suche XYZ in allen Documenten in den Foundries "Treetagger" und "MATE", die entweder den Texttyp "sports" oder den Texttyp "news" haben, bis höchsten 2009 publiziert wurden und deren Autor auf den regulären Ausdruck "Peter .+?" matcht.
 
 textClass

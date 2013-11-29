@@ -78,9 +78,10 @@ public class KorapCollection {
 	return this.filter;
     };
 
+    // Todo: Create new KorapSearch Object!
 
     public KorapResult search (SpanQuery query) {
-	return this.index.search(this, query, 0, (short) 5, true, (short) 5, true, (short) 5);
+	return this.index.search(this, query, 17, (short) 20, true, (short) 5, true, (short) 5);
     };
 
     public FixedBitSet bits (AtomicReaderContext atomic) throws IOException  {
@@ -100,11 +101,16 @@ public class KorapCollection {
 
 	    ArrayList<FilterOperation> filters = (ArrayList<FilterOperation>) this.filter.clone();
 
+	    FilterOperation kcInit = filters.remove(0);
+	    log.trace("FILTER: {}", kcInit);
+
+
 	    // Init vector
-	    DocIdSet docids = filters.remove(0).filter.getDocIdSet(atomic, null);
+	    DocIdSet docids = kcInit.filter.getDocIdSet(atomic, null);
 	    DocIdSetIterator filterIter = docids.iterator();
 
 	    if (filterIter != null) {
+		log.trace("InitFilter has effect");
 		bitset.or(filterIter);
 		noDoc = false;
 	    };

@@ -52,6 +52,13 @@ public class TestKorapCollection {
 	assertEquals("Sentences", 75, kc.numberOf("sentences"));
 	assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
+	kc.filter(kf.and("corpusID", "WPD"));
+
+	assertEquals("Documents", 1, kc.numberOf("documents"));
+	assertEquals("Tokens", 405, kc.numberOf("tokens"));
+	assertEquals("Sentences", 75, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
+
 	// Create a query
 	KorapQuery kq = new KorapQuery("tokens");
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
@@ -67,7 +74,55 @@ public class TestKorapCollection {
 	assertEquals("Tokens", 1669, kc.numberOf("tokens"));
 	assertEquals("Sentences", 188, kc.numberOf("sentences"));
 	assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
-	System.err.println(kr.toJSON());
+	// System.err.println(kr.toJSON());
+    };
+
+
+    @Test
+    public void filterExample2 () throws IOException {
+	
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	FieldDocument fd;
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    fd = ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	fd = ki.addDocFile(getClass().getResource("/wiki/AUG-55286.json.gz").getFile(), true);
+
+	ki.commit();
+
+	KorapFilter kf = new KorapFilter();
+
+	// Create Virtual collections:
+	KorapCollection kc = new KorapCollection(ki);
+	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
+	assertEquals("Documents", 6, kc.numberOf("documents"));
+	assertEquals("Tokens", 2089, kc.numberOf("tokens"));
+	assertEquals("Sentences", 234, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 141, kc.numberOf("paragraphs"));
+
+	kc.filter( kf.and("corpusID", "A00") );
+
+	assertEquals("Documents", 1, kc.numberOf("documents"));
+	assertEquals("Tokens", 411, kc.numberOf("tokens"));
+	assertEquals("Sentences", 40, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 2, kc.numberOf("paragraphs"));
+
+	//	assertEquals("Documents", 1, kc.numberOf("documents"));
+
+	// Create a query
+	KorapQuery kq = new KorapQuery("tokens");
+	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
+
+	KorapResult kr = kc.search(query);
+
+	assertEquals(87, kr.totalResults());
+	// System.out.println(kr.toJSON());
     };
 };
 
