@@ -17,7 +17,10 @@ public class KorapIndexer {
     public KorapIndexer () throws IOException {
 
         Properties prop = new Properties();
-	FileReader fr = new FileReader(getClass().getResource("/korap.conf").getFile());
+
+	ClassLoader classLoader = getClass().getClassLoader();
+	InputStream fr = classLoader.getResourceAsStream("korap.conf");
+
 	prop.load(fr);
 
 	this.indexDir = prop.getProperty("lucene.index");
@@ -33,10 +36,7 @@ public class KorapIndexer {
 	    if (file.matches("^[^\\.].+?\\.json\\.gz$")) {
 		String found = dir.getPath() + '/' + file;
 		System.out.print("  Index " + found + " ... ");
-		try {
-		    this.index.addDocFile(found, true);
-		}
-		catch (IOException e) {
+		if (this.index.addDocFile(found, true) == null) {
 		    System.out.println("fail.");
 		    continue;
 		};

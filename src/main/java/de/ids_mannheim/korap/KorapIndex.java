@@ -216,20 +216,26 @@ public class KorapIndex {
     };
 
     public FieldDocument addDoc (File json) throws IOException {
-	FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
-	return this.addDoc(fd);
+      FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
+      return this.addDoc(fd);
     };
 
     public FieldDocument addDocFile(String json) throws IOException {
-	return this.addDocFile(json, false);
+      return this.addDocFile(json, false);
     };
 
-    public FieldDocument addDocFile(String json, boolean gzip) throws IOException {
+    public FieldDocument addDocFile(String json, boolean gzip) {
+      try {
 	if (gzip) {
-	    FieldDocument fd = this.mapper.readValue(new GZIPInputStream(new FileInputStream(json)), FieldDocument.class);
-	    return this.addDoc(fd);
+	  FieldDocument fd = this.mapper.readValue(new GZIPInputStream(new FileInputStream(json)), FieldDocument.class);
+	  return this.addDoc(fd);
 	};
 	return this.addDoc(json);
+      }
+      catch (IOException e) {
+	log.error("File json not found");
+      };
+      return (FieldDocument) null;
     };
 
     public void commit () throws IOException {

@@ -126,6 +126,7 @@
 	  $ java -jar target/KorAP-lucene-index-X.XX-jar-with-dependencies.jar src/test/resources/wiki/
 	  or
 	  $ java -jar target/KorAP-lucene-index-X.XX-jar-with-dependencies.jar /home/ndiewald/Repositories/korap/KorAP-modules/KorAP-lucene-index/sandbox/toindex/A00
+	  $ java -jar target/KorAP-lucene-index-0.21-jar-with-dependencies.jar /home/ndiewald/Repositories/KorAP/KorAP-modules/KorAP-lucene-index/sandbox/toindex/A00
 
       -->
       <plugin>

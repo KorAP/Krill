@@ -83,16 +83,15 @@ public class TestKorapCollection {
 	
 	// Construct index
 	KorapIndex ki = new KorapIndex();
-	FieldDocument fd;
 	// Indexing test files
 	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
-	    fd = ki.addDocFile(
+	  ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
 	};
 	ki.commit();
 
-	fd = ki.addDocFile(getClass().getResource("/wiki/AUG-55286.json.gz").getFile(), true);
+	ki.addDocFile(getClass().getResource("/wiki/AUG-55286.json.gz").getFile(), true);
 
 	ki.commit();
 
