@@ -254,4 +254,39 @@ public class TestMatchIndex {
 	assertEquals("SnippetBrackets (6)", "... [c]", kr.match(6).snippetBrackets());
 	assertEquals("SnippetBrackets (6)", "<span class=\"korap-context-left\"><span class=\"korap-more\"></span></span><span class=\"korap-match\">c</span>", kr.match(6).snippetHTML());
     };
+
+
+    @Test
+    public void indexExample3 () throws IOException {
+	KorapIndex ki = new KorapIndex();
+
+	// abcabcabac
+	FieldDocument fd = new FieldDocument();
+	fd.addTV("base",
+		 "abcabcabac",
+		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
+		 "[(1-2)s:b|i:b|_1#1-2]" +
+		 "[(2-3)s:c|i:c|_2#2-3]" +
+		 "[(3-4)s:a|i:a|_3#3-4]" +
+		 "[(4-5)s:b|i:b|_4#4-5]" +
+		 "[(5-6)s:c|i:c|_5#5-6]" +
+		 "[(6-7)s:a|i:a|_6#6-7]" +
+		 "[(7-8)s:b|i:b|_7#7-8]" +
+		 "[(8-9)s:a|i:a|_8#8-9]" +
+		 "[(9-10)s:c|i:c|_9#9-10]");
+	ki.addDoc(fd);
+
+	ki.commit();
+
+	KorapResult kr;
+
+	KorapQuery kq = new KorapQuery("base");
+
+	SpanQuery sq = kq._(1,kq.seq(kq.seg("s:b")).append(kq.seg("s:a")).append(kq._(2,kq.seg("s:c")))).toQuery();
+
+	kr = ki.search(sq, 0, (short) 20, true, (short) 2, true, (short) 5);
+
+	assertEquals("totalResults", 1, kr.totalResults());
+	assertEquals("SnippetBrackets (0)", "... ca[{1:ba{2:c}}]", kr.match(0).snippetBrackets());
+    };
 };

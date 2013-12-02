@@ -81,7 +81,7 @@ public class KorapCollection {
     // Todo: Create new KorapSearch Object!
 
     public KorapResult search (SpanQuery query) {
-	return this.index.search(this, query, 17, (short) 20, true, (short) 5, true, (short) 5);
+	return this.index.search(this, query, 0, (short) 20, true, (short) 5, true, (short) 5);
     };
 
     public FixedBitSet bits (AtomicReaderContext atomic) throws IOException  {

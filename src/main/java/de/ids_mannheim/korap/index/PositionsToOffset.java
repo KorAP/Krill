@@ -116,6 +116,7 @@ public class PositionsToOffset {
 	Integer[] pair = this.offsets.get(ptoa);
 	if (pair == null)
 	    return -1;
+
 	return  pair[1];
     };
 

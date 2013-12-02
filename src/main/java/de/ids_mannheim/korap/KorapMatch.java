@@ -546,24 +546,53 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 
         LinkedList<int[]> spans = new LinkedList<int[]>();
 
-	spans.add(new int[]{ startPosChar - startOffsetChar, endPosChar - startOffsetChar, -1, 0});
+	// Todo: Simplify
+	int[] intArray = new int[]{ startPosChar - startOffsetChar, endPosChar - startOffsetChar, -1, 0};
+	log.trace("IntArray: {}", intArray);
+	spans.add(intArray);
 
 	// highlights
+	// I'm not sure about this.
 	if (this.highlight != null) {
 	    for (int[] highlight : this.highlight) {
+
+		/*
+
+		int start = pto.start(ldid, highlight[0]);
+		int end = pto.end(ldid, highlight[1]);
+
+		// Todo: Does this have to be and or or?
+		if (start == -1 || end == -1)
+		    continue;
+
+		if (start > startOffsetChar) {
+		    start -= startOffsetChar;
+		}
+		else {
+		    start = 0;
+		};
+
+		end -= startOffsetChar;
+		*/
 
 		int start = pto.start(ldid, highlight[0]) - startOffsetChar;
 		int end = pto.end(ldid, highlight[1]) - startOffsetChar;
 
-		if (start == -1 & end == -1)
+		if (start < 0 || end < 0)
 		    continue;
 
-		spans.add(new int[]{
-			start,
-			end,
-			highlight[2],
-			0 // Dummy value for later
-		    });
+		intArray = new int[]{
+		    start,
+		    end,
+		    highlight[2],
+		    0 // Dummy value for later
+		};
+
+		log.trace("IntArray: {}", intArray);
+		log.trace("PTO-start: {}", pto.start(ldid, highlight[0]));
+		log.trace("PTO-end: {}", pto.end(ldid, highlight[1]));
+
+		spans.add(intArray);
 	    };
 	};
 
