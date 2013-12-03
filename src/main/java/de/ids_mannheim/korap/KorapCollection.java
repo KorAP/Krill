@@ -5,9 +5,11 @@ import java.io.IOException;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.Filter;
+
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapFilter;
+
 import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.filter.BooleanFilter;
 import de.ids_mannheim.korap.filter.FilterOperation;
@@ -17,10 +19,6 @@ import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.util.FixedBitSet;
 import org.apache.lucene.util.Bits;
-/*
-import org.apache.lucene.util.Bits.MatchAllBits;
-import org.apache.lucene.util.Bits.MatchNoBits;
-*/
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.DocIdSet;
 
@@ -36,8 +34,8 @@ import org.slf4j.LoggerFactory;
 
 public class KorapCollection {
     private KorapIndex index;
-    private String id;
     private KorapDate created;
+    private String id;
     private ArrayList<FilterOperation> filter;
     private int filterCount = 0;
     
@@ -50,11 +48,19 @@ public class KorapCollection {
 	this.filter = new ArrayList<FilterOperation>(5);
     };
 
+    public KorapCollection () {
+	this.filter = new ArrayList<FilterOperation>(5);
+    };
+
     public int getCount() {
 	return this.filterCount;
     };
 
-    public void filter (BooleanFilter filter) {
+    public void setIndex (KorapIndex ki) {
+	this.index = ki;
+    };
+
+    public KorapCollection filter (BooleanFilter filter) {
 	this.filter.add(
 	    new FilterOperation(
 				(Filter) new QueryWrapperFilter(filter.toQuery()),
@@ -62,9 +68,10 @@ public class KorapCollection {
             )
         );
 	this.filterCount++;
+	return this;
     };
 
-    public void extend (BooleanFilter filter) {
+    public KorapCollection extend (BooleanFilter filter) {
 	this.filter.add(
 	    new FilterOperation(
 				(Filter) new QueryWrapperFilter(filter.toQuery()),
@@ -72,14 +79,14 @@ public class KorapCollection {
             )
         );
 	this.filterCount++;
+	return this;
     };
 
     public ArrayList<FilterOperation> getFilters () {
 	return this.filter;
     };
 
-    // Todo: Create new KorapSearch Object!
-
+    // DEPRECATED BUT USED IN TEST CASES
     public KorapResult search (SpanQuery query) {
 	return this.index.search(this, query, 0, (short) 20, true, (short) 5, true, (short) 5);
     };
@@ -158,10 +165,16 @@ public class KorapCollection {
     };
 
     public long numberOf (String foundry, String type) throws IOException {
+	if (this.index == null)
+	    return (long) 0;
+
 	return this.index.numberOf(this, foundry, type);
     };
 
     public long numberOf (String type) throws IOException {
+	if (this.index == null)
+	    return (long) 0;
+
 	return this.index.numberOf(this, "tokens", type);
     };
 

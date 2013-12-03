@@ -50,6 +50,7 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.document.KorapPrimaryData;
 
@@ -471,6 +472,23 @@ public class KorapIndex {
 	return this.search(new KorapCollection(this), query, startIndex, count, leftTokenContext, leftContext, rightTokenContext, rightContext);
     };
 
+    public KorapResult search (KorapCollection kc, KorapSearch ks) {
+	return this.search(kc,
+			   ks.getQuery(),
+			   ks.getStartIndex(),
+			   ks.getCount(),
+			   ks.leftContext.isToken(),
+			   ks.leftContext.getLength(),
+			   ks.rightContext.isToken(),
+			   ks.rightContext.getLength()
+			   );
+    };
+
+    public KorapResult search (KorapSearch ks) {
+	return this.search(new KorapCollection(this), ks);
+    };
+
+
 
     // old: Bits bitset
     public KorapResult search (KorapCollection collection,
@@ -506,6 +524,8 @@ public class KorapIndex {
 	    long t1 = 0;
 	    long t2 = 0;
 
+	    int hits = kr.itemsPerPage() + startIndex;
+
 	    ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.itemsPerPage());
 
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
@@ -527,7 +547,7 @@ public class KorapIndex {
 		// See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
 		t1 = System.nanoTime();
 
-		for (; i < kr.itemsPerPage(); i++) {
+		for (; i < hits; i++) {
 
 		    log.trace("Match Nr {}/{}", i, count);
 

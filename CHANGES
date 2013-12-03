@@ -1,3 +1,7 @@
+0.22 2013-12-04
+        - Introduced KorapSearch.
+	- Json deserializer (started).
+
 0.21 2013-11-28
         - Virtual collections can now be defined,
 	  searched, nested and extended.

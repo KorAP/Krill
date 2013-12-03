@@ -5,6 +5,8 @@ import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.*;
 import org.apache.lucene.util.automaton.RegExp;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -28,6 +30,48 @@ public class KorapQuery {
      */
     public KorapQuery (String field) {
 	this.field = field;
+    };
+
+    public SpanQueryWrapperInterface fromJSON (String json) {
+	// Todo:
+	return this.seg("s:test");
+    };
+
+    // http://fasterxml.github.io/jackson-databind/javadoc/2.2.0/com/fasterxml/jackson/databind/JsonNode.html
+    public SpanQueryWrapperInterface fromJSON (JsonNode json) {
+	String type = json.get("@type").asText();
+	if (type.equals("korap:group")) {
+	    String relation = json.get("relation").asText();
+
+	    // Alternation
+	    if (relation.equals("or")) {
+		SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
+		for (JsonNode operand : json.get("operands")) {
+		    ssaq.or(this.fromJSON(operand));
+		};
+		return ssaq;
+	    }
+	    else {
+		System.err.println("Unknown element");
+	    };
+	}
+	else if (type.equals("korap:token")) {
+	    SpanSegmentQueryWrapper ssqw = new SpanSegmentQueryWrapper(this.field);
+	    JsonNode value = json.get("@value");
+	    type = value.get("@type").asText();
+	    if (type.equals("korap:term")) {
+		if (value.get("relation").asText().equals("=")) {
+		    ssqw.with(value.get("@value").asText());
+		};
+	    }
+	    else {
+		System.err.println("Unknown type");
+	    };
+
+	    return ssqw;
+	}
+
+	return this.seg("s:test");
     };
 
 
