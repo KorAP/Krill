@@ -13,3 +13,4 @@ bsp12.json:	contains(<np>,[base=Mann])
 bsp13.json:	startswith(<np>,[!pos=Det])
 bsp14.json:	'vers{2,3}uch'
 bsp15.json:	[orth='vers.*ch']
+bsp16.json: [(base=bar|base=foo)&orth=foobar]
