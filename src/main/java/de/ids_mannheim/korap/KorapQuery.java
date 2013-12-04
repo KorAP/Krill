@@ -1,13 +1,16 @@
 package de.ids_mannheim.korap;
 
-import org.apache.lucene.search.spans.SpanQuery;
-
 import de.ids_mannheim.korap.query.wrap.*;
+import de.ids_mannheim.korap.util.QueryException;
+
+import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.automaton.RegExp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.*;
+import java.io.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KorapQuery {
     private String field;
+    private ObjectMapper json;
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapQuery.class);
@@ -30,48 +34,119 @@ public class KorapQuery {
      */
     public KorapQuery (String field) {
 	this.field = field;
+	this.json = new ObjectMapper();
     };
 
-    public SpanQueryWrapperInterface fromJSON (String json) {
-	// Todo:
-	return this.seg("s:test");
+    public SpanQueryWrapperInterface fromJSON (String jsonString) throws QueryException {
+	JsonNode json;
+	try {
+	    json = this.json.readValue(jsonString, JsonNode.class);
+	}
+	catch (IOException e) {
+	    throw new QueryException(e.getMessage());
+	};
+
+	if (!json.has("@type") && json.has("query"))
+	    json = json.get("query");
+
+	return this.fromJSON(json);
     };
 
     // http://fasterxml.github.io/jackson-databind/javadoc/2.2.0/com/fasterxml/jackson/databind/JsonNode.html
-    public SpanQueryWrapperInterface fromJSON (JsonNode json) {
+    // TODO: Exception messages are horrible!
+    public SpanQueryWrapperInterface fromJSON (JsonNode json) throws QueryException {
+
+	if (!json.has("@type")) {
+	    throw new QueryException("JSON-LD group has no @type attribute");
+	};
+
 	String type = json.get("@type").asText();
-	if (type.equals("korap:group")) {
+
+	switch (type) {
+
+	case "korap:group":
+	    SpanClassQueryWrapper classWrapper;
+
+	    if (!json.has("relation")) {
+		if (json.has("class")) {
+		    return new SpanClassQueryWrapper(
+			this.fromJSON(json.get("operands").get(0)),
+                        json.get("class").asInt(0)
+                    );
+		}
+		throw new QueryException("Group needs a relation or a class");
+	    };
+
 	    String relation = json.get("relation").asText();
 
+	    if (!json.has("operands"))
+		throw new QueryException("Operation needs operands");
+
 	    // Alternation
-	    if (relation.equals("or")) {
+	    switch (relation) {
+
+	    case "or":
+
 		SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
 		for (JsonNode operand : json.get("operands")) {
 		    ssaq.or(this.fromJSON(operand));
 		};
+		if (json.has("class")) {
+		    return new SpanClassQueryWrapper(ssaq, json.get("class").asInt(0));
+		};
 		return ssaq;
-	    }
-	    else {
-		System.err.println("Unknown element");
+
+	    case "position":
+		if (!json.has("position"))
+		    throw new QueryException("Operation needs position specification");
+
+		// temporary
+		if (json.get("position").asText().equals("contains") || json.get("position").asText().equals("within")) {
+		    return new SpanWithinQueryWrapper(
+			this.fromJSON(json.get("operands").get(0)),
+			this.fromJSON(json.get("operands").get(1))
+                    );
+		};
+		throw new QueryException("Unknown position type "+json.get("position").asText());
+
+	    case "shrink":
+		int number = 0;
+		// temporary
+		if (json.has("shrink"))
+		    number = json.get("shrink").asInt();
+
+		return new SpanMatchModifyQueryWrapper(this.fromJSON(json.get("operands").get(0)), number);
 	    };
-	}
-	else if (type.equals("korap:token")) {
-	    SpanSegmentQueryWrapper ssqw = new SpanSegmentQueryWrapper(this.field);
+	    throw new QueryException("Unknown group relation");
+
+	case "korap:token":
 	    JsonNode value = json.get("@value");
+	    SpanSegmentQueryWrapper ssegqw = new SpanSegmentQueryWrapper(this.field);
 	    type = value.get("@type").asText();
 	    if (type.equals("korap:term")) {
-		if (value.get("relation").asText().equals("=")) {
-		    ssqw.with(value.get("@value").asText());
+		switch (value.get("relation").asText()) {
+		case "=":
+		    ssegqw.with(value.get("@value").asText());
+		    return ssegqw;
+		case "!=":
+		    throw new QueryException("Term relation != not yet supported");
 		};
-	    }
-	    else {
-		System.err.println("Unknown type");
+		throw new QueryException("Unknown term relation");
 	    };
+	    throw new QueryException("Unknown token type");
 
-	    return ssqw;
-	}
 
-	return this.seg("s:test");
+	case "korap:sequence":
+	    if (!json.has("operands"))
+		throw new QueryException("SpanSequenceQuery needs operands");
+
+	    SpanSequenceQueryWrapper sseqqw = new SpanSequenceQueryWrapper(this.field);
+	    for (JsonNode operand : json.get("operands")) {
+		sseqqw.append(this.fromJSON(operand));
+	    };
+	    return sseqqw;
+	};
+	throw new QueryException("Unknown serialized query type: " + type);
     };
 
 
@@ -235,8 +310,6 @@ public class KorapQuery {
 					  SpanQueryWrapperInterface embedded) {
 	return new SpanWithinQueryWrapper(element, embedded);
     };
-
-
 
     // Class
     public SpanClassQueryWrapper _ (byte number, SpanQueryWrapperInterface element) {

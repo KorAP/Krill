@@ -90,29 +90,4 @@ public class TestKorapSearch {
 	assertEquals(6, kr.totalResults());
 	assertEquals(kr.getMatch(0).getSnippetBrackets(), "... dem [Buchstaben] A ...");
     };
-
-    @Test
-    public void searchJSON () throws IOException {
-
-	String jsonFile = getClass().getResource("/queries/bsp1.json").getFile();
-
-	KorapSearch ks = new KorapSearch(getString(jsonFile));
-
-	// assertEquals(ks.getQuery().toString(), "");
-    };
-
-    public static String getString (String path) {
-	StringBuilder contentBuilder = new StringBuilder();
-	try {
-	    BufferedReader in = new BufferedReader(new FileReader(path));
-	    String str;
-	    while ((str = in.readLine()) != null) {
-		contentBuilder.append(str);
-	    };
-	    in.close();
-	} catch (IOException e) {
-	}
-	return contentBuilder.toString();
-    };
-
 };

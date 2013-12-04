@@ -7,6 +7,7 @@ import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.util.QueryException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -85,6 +86,8 @@ public class KorapSearch {
 	    this.query = new KorapQuery("tokens").fromJSON(rootNode.get("query")).toQuery();
 	}
 	catch (IOException e) {
+	}
+	catch (QueryException e) {
 	};
     };
 
