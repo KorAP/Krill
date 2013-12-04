@@ -1,0 +1,29 @@
+{
+    "@context": {
+        "@language": "de", 
+        "class": {
+            "@id": "korap:class", 
+            "@type": "xsd:integer"
+        }, 
+        "filter": "korap:filter", 
+        "korap": "http://korap.ids-mannheim.de/ns/query", 
+        "meta": "korap:meta", 
+        "operands": {
+            "@container": "@list", 
+            "@id": "korap:operands"
+        }, 
+        "query": "korap:query", 
+        "relation": {
+            "@id": "korap:relation", 
+            "@type": "korap:relation#types"
+        }
+    }, 
+    "query": {
+        "@type": "korap:token", 
+        "@value": {
+            "@type": "korap:term", 
+            "@value": "base:Katze", 
+            "relation": "="
+        }
+    }
+}

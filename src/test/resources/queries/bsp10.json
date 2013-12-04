@@ -22,32 +22,26 @@
         "@type": "korap:sequence", 
         "operands": [
             {
-                "@type": "korap:group", 
-                "operands": [
-                    {
-                        "@type": "korap:token", 
-                        "@value": {
-                            "@type": "korap:term", 
-                            "@value": "base:foo", 
-                            "relation": "="
-                        }
-                    }, 
-                    {
-                        "@type": "korap:token", 
-                        "@value": {
-                            "@type": "korap:term", 
-                            "@value": "base:bar", 
-                            "relation": "="
-                        }
-                    }
-                ], 
-                "relation": "or"
+                "@type": "korap:token", 
+                "@value": {
+                    "@type": "korap:term", 
+                    "@value": "base:Katze", 
+                    "relation": "="
+                }
             }, 
             {
                 "@type": "korap:token", 
                 "@value": {
                     "@type": "korap:term", 
-                    "@value": "base:foobar", 
+                    "@value": "orth:und", 
+                    "relation": "="
+                }
+            }, 
+            {
+                "@type": "korap:token", 
+                "@value": {
+                    "@type": "korap:term", 
+                    "@value": "orth:Hunde", 
                     "relation": "="
                 }
             }

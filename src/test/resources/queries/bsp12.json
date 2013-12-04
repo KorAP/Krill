@@ -22,21 +22,19 @@
         "@type": "korap:group", 
         "operands": [
             {
-                "@type": "korap:group", 
-                "class": "0", 
-                "operands": [
-                    {
-                        "@type": "korap:token", 
-                        "@value": {
-                            "@type": "korap:term", 
-                            "@value": "base:Mann", 
-                            "relation": "="
-                        }
-                    }
-                ]
+                "@type": "korap:element", 
+                "@value": "np"
+            }, 
+            {
+                "@type": "korap:token", 
+                "@value": {
+                    "@type": "korap:term", 
+                    "@value": "base:Mann", 
+                    "relation": "="
+                }
             }
         ], 
-        "relation": "shrink", 
-        "shrink": "0"
+        "position": "contains", 
+        "relation": "position"
     }
 }
