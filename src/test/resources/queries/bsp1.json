@@ -47,8 +47,7 @@
                      "@type":"korap:term",
                      "@value":"base:bar",
                      "relation":"="
-                  },
-                  "repetition":"*"
+                  }
                }
             ]
          }
