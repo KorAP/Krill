@@ -68,12 +68,12 @@
                     "operands": [
                         {
                             "@type": "korap:term",
-                            "field": "korap:field#author",
+                            "@field": "korap:field#author",
                             "@value": "Hesse"
                         },
                         {
                             "@type": "korap:group",
-                            "field": "korap:field#pubDate",
+                            "@field": "korap:field#pubDate",
                             "relation": "until",
                             "operands": [
                                 {

@@ -65,7 +65,7 @@
             "@id": "korap-filter#id-1223232",
             "@value": {
                 "@type": "korap:term",
-                "field": "korap:field#textClass",
+                "@field": "korap:field#textClass",
                 "@value": "wissenschaft"
             }
         },
