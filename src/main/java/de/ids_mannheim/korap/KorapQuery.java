@@ -25,6 +25,8 @@ public class KorapQuery {
     private String field;
     private ObjectMapper json;
 
+    private String defaultFoundry = "mate/";
+
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapQuery.class);
 
@@ -161,7 +163,7 @@ public class KorapQuery {
 	    case "=":
 		String value = json.get("@value").asText();
 
-		value = value.replaceFirst("base:", "l:").replaceFirst("orth:", "s:");
+		value = value.replaceFirst("base:", defaultFoundry +"l:").replaceFirst("orth:", "s:");
 	
 		if (json.has("@subtype") && json.get("@subtype").asText().equals("korap:regex")) {
 		    if (value.charAt(0) == '\'' || value.charAt(0) == '"') {

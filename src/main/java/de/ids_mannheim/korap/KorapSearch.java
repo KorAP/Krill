@@ -28,6 +28,7 @@ public class KorapSearch {
     public KorapSearchContext leftContext, rightContext;
     private KorapCollection collection;
     private KorapIndex index;
+    private String error;
 
     {
 	leftContext = new KorapSearchContext();
@@ -76,18 +77,64 @@ public class KorapSearch {
 	public KorapSearchContext setLength (int value) {
 	    return this.setLength((short) value);
 	};
+
+	public void fromJSON (JsonNode json) {
+	    String type = json.get(0).asText();
+	    if (type.equals("token")) {
+		this.setToken(true);
+	    }
+	    else if (type.equals("char")) {
+		this.setCharacter(true);
+	    };
+	    this.setLength(json.get(1).asInt());
+	};
     };
 
-    public KorapSearch (String json) {
+
+    public KorapSearch (String jsonString) {
 	ObjectMapper mapper = new ObjectMapper();
 	try {
-	    JsonNode rootNode = mapper.readValue(json, JsonNode.class);
+	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
 
-	    this.query = new KorapQuery("tokens").fromJSON(rootNode.get("query")).toQuery();
+	    if (json.has("query")) {
+		try {
+		    this.query = new KorapQuery("tokens").fromJSON(json.get("query")).toQuery();
+		}
+		catch (QueryException q) {
+		    this.error = q.getMessage();
+		};
+	    }
+	    else {
+		this.error = "No query defined";
+	    };
+
+	    if (this.error == null) {
+
+		// Defined count
+		if (json.has("count"))
+		    this.setCount(json.get("count").asInt());
+
+		// Defined startIndex
+		if (json.has("startIndex"))
+		    this.setStartIndex(json.get("startIndex").asInt());
+
+		// Defined startPage
+		if (json.has("startPage"))
+		    this.setStartPage(json.get("startPage").asInt());
+
+		// Defined contexts
+		if (json.has("context")) {
+		    JsonNode context = json.get("context");
+		    if (context.has("left"))
+			this.leftContext.fromJSON(context.get("left"));
+		    if (context.has("right"))
+			this.rightContext.fromJSON(context.get("right"));
+
+		};
+	    };
 	}
 	catch (IOException e) {
-	}
-	catch (QueryException e) {
+	    this.error = e.getMessage();
 	};
     };
 
@@ -120,6 +167,17 @@ public class KorapSearch {
 	return this;
     };
 
+    public KorapSearch setStartPage (int value) {
+	if (value >= 0) {
+	    this.startIndex = (value * this.getCount()) - this.getCount();
+	}
+	else {
+	    this.startIndex = 0;
+	};
+
+	return this;
+    };
+
     public short getCount () {
 	return this.count;
     };
@@ -129,6 +187,7 @@ public class KorapSearch {
     };
 
     public KorapSearch setCount (int value) {
+	// Todo: Maybe update startIndex with known startPage!
 	this.setCount((short) value);
 	return this;
     };
@@ -158,6 +217,12 @@ public class KorapSearch {
     };
 
     public KorapResult run (KorapIndex ki) {
+	if (this.error != null) {
+	    KorapResult kr = new KorapResult();
+	    kr.setError(this.error);
+	    return kr;
+	};
+
 	this.getCollection().setIndex(ki);
 	return ki.search(this.getCollection(), this);
     };

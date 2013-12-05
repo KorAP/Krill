@@ -34,6 +34,10 @@ public class KorapResult {
     // This is KorapMatch instead of KorapResult!
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
+    // Empty result
+    public KorapResult () {
+    };
+
     public KorapResult (String query,
 			int startIndex,
 			short itemsPerPage,
