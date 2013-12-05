@@ -101,12 +101,41 @@ public class KorapQuery {
 		    throw new QueryException("Operation needs position specification");
 
 		// temporary
-		if (json.get("position").asText().equals("contains") || json.get("position").asText().equals("within")) {
+		String position = json.get("position").asText();
+		switch (position) {
+		case "contains":
+		    return new SpanWithinQueryWrapper(
+		        this.fromJSON(json.get("operands").get(0)),
+			this.fromJSON(json.get("operands").get(1))
+                    );
+		case "within":
 		    return new SpanWithinQueryWrapper(
 			this.fromJSON(json.get("operands").get(0)),
 			this.fromJSON(json.get("operands").get(1))
                     );
+
+		case "startswith":
+		    return new SpanWithinQueryWrapper(
+			this.fromJSON(json.get("operands").get(0)),
+			this.fromJSON(json.get("operands").get(1)),
+			(short) 1
+                    );
+
+		case "endswith":
+		    return new SpanWithinQueryWrapper(
+			this.fromJSON(json.get("operands").get(0)),
+			this.fromJSON(json.get("operands").get(1)),
+			(short) 2
+                    );
+
+		case "match":
+		    return new SpanWithinQueryWrapper(
+			this.fromJSON(json.get("operands").get(0)),
+			this.fromJSON(json.get("operands").get(1)),
+			(short) 3
+                    );
 		};
+
 		throw new QueryException("Unknown position type "+json.get("position").asText());
 
 	    case "shrink":
@@ -120,21 +149,7 @@ public class KorapQuery {
 	    throw new QueryException("Unknown group relation");
 
 	case "korap:token":
-	    JsonNode value = json.get("@value");
-	    SpanSegmentQueryWrapper ssegqw = new SpanSegmentQueryWrapper(this.field);
-	    type = value.get("@type").asText();
-	    if (type.equals("korap:term")) {
-		switch (value.get("relation").asText()) {
-		case "=":
-		    ssegqw.with(value.get("@value").asText());
-		    return ssegqw;
-		case "!=":
-		    throw new QueryException("Term relation != not yet supported");
-		};
-		throw new QueryException("Unknown term relation");
-	    };
-	    throw new QueryException("Unknown token type");
-
+	    return this._segFromJSON(json.get("@value"));
 
 	case "korap:sequence":
 	    if (!json.has("operands"))
@@ -145,9 +160,51 @@ public class KorapQuery {
 		sseqqw.append(this.fromJSON(operand));
 	    };
 	    return sseqqw;
+
+	case "korap:element":
+	    String value = json.get("@value").asText().replace('=',':');
+	    return this.tag(value);
 	};
 	throw new QueryException("Unknown serialized query type: " + type);
     };
+
+
+    private SpanQueryWrapperInterface _segFromJSON (JsonNode json) throws QueryException {
+	String type = json.get("@type").asText();
+	switch (type) {
+	case "korap:term":
+	    switch (json.get("relation").asText()) {
+	    case "=":
+		return this.seg(json.get("@value").asText());
+	    case "!=":
+		throw new QueryException("Term relation != not yet supported");
+	    };
+	    throw new QueryException("Unknown term relation");
+	case "korap:group":
+	    SpanSegmentQueryWrapper ssegqw = new SpanSegmentQueryWrapper(this.field);
+	    switch (json.get("relation").asText()) {
+	    case "and":
+		for (JsonNode operand : json.get("operands")) {
+		    SpanQueryWrapperInterface part = this._segFromJSON(operand);
+		    if (part instanceof SpanAlterQueryWrapper) {
+			ssegqw.with((SpanAlterQueryWrapper) part);			
+		    }
+		    else if (part instanceof SpanRegexQueryWrapper) {
+			ssegqw.with((SpanRegexQueryWrapper) part);
+		    }
+		    else if (part instanceof SpanSegmentQueryWrapper) {
+			ssegqw.with((SpanSegmentQueryWrapper) part);
+		    }
+		    else {
+			throw new QueryException("Object not supported in segment queries");
+		    };
+		};
+		return ssegqw;
+	    };
+    };
+    throw new QueryException("Unknown token type");    
+};
+
 
 
     // SpanSegmentRegexQuery

@@ -88,6 +88,16 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 	return this;
     };
 
+    public SpanSegmentQueryWrapper with (SpanSegmentQueryWrapper seg) {
+	for (SpanQuery sq : seg.inclusive) {
+	    this.inclusive.add(sq);
+	};
+	for (SpanQuery sq : seg.exclusive) {
+	    this.exclusive.add(sq);
+	};
+	return this;
+    };
+
     public SpanSegmentQueryWrapper without (String term) {
 	this.exclusive.add(new SpanTermQuery(new Term(field, term)));
 	return this;

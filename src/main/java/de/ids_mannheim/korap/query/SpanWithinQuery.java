@@ -122,7 +122,11 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
         buffer.append(wrap.toString());
         buffer.append(", ");
 	buffer.append(embedded.toString(field));
-        buffer.append(")");
+	if (flag > 0) {
+	    buffer.append(", ");
+	    buffer.append(flag);
+	};
+	buffer.append(")");
 	buffer.append(ToStringUtils.boost(getBoost()));
 	return buffer.toString();
     };
@@ -186,7 +190,7 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
     // I don't know what I am doing here
     @Override
     public int hashCode() {
-	int result = 1;
+	int result = flag;
 	result = embedded.hashCode();
 	result += wrap.hashCode();
 	result ^= (result << 4) | (result >>> 29);

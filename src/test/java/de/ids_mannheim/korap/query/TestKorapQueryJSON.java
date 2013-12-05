@@ -90,15 +90,62 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "");
     };
 
-    /*
     @Test
     public void queryJSONBsp9 () {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp9.json").getFile());
 
 	// [base=Katze&orth=Katzen]
+	assertEquals(sqwi.toQuery().toString(), "spanNear([tokens:base:Katze, tokens:orth:Katzen], -1, false)");
+    };
+
+    @Test
+    public void queryJSONBsp10 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp10.json").getFile());
+
+	// [base=Katze][orth=und][orth=Hunde]
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanNext(tokens:base:Katze, tokens:orth:und), tokens:orth:Hunde)");
+    };
+
+    @Ignore
+    public void queryJSONBsp11 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp11.json").getFile());
+
+	// [!(base=Katze&orth=Katzen)]
 	assertEquals(sqwi.toQuery().toString(), "");
     };
-    */
+
+    @Test
+    public void queryJSONBsp12 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp12.json").getFile());
+
+	// contains(<np>,[base=Mann])
+	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:base:Mann)");
+    };
+
+    @Ignore
+    public void queryJSONBsp13 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp13.json").getFile());
+
+	// startswith(<np>,[!pos=Det])
+	assertEquals(sqwi.toQuery().toString(), "");
+    };
+
+    @Test
+    public void queryJSONBsp13b () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp13b.json").getFile());
+
+	// startswith(<np>,[!pos=Det])
+	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:pos:Det, 1)");
+    };
+
+    @Ignore
+    public void queryJSONBsp14 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp14.json").getFile());
+
+	// 'vers{2,3}uch'
+	assertEquals(sqwi.toQuery().toString(), "");
+    };
+
 
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();
