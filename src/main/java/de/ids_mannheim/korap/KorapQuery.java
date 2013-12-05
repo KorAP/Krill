@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * @author Nils Diewald
  *
  * KorapQuery implements a simple API for wrapping
- * KorAP Index I specific query classes.
+ * KorAP Lucene Index specific query classes.
  */
 public class KorapQuery {
     private String field;
@@ -54,6 +54,7 @@ public class KorapQuery {
 
     // http://fasterxml.github.io/jackson-databind/javadoc/2.2.0/com/fasterxml/jackson/databind/JsonNode.html
     // TODO: Exception messages are horrible!
+    // Todo: Use the shortcuts implemented in this class instead of the wrapper constructors
     public SpanQueryWrapperInterface fromJSON (JsonNode json) throws QueryException {
 
 	if (!json.has("@type")) {
@@ -100,43 +101,25 @@ public class KorapQuery {
 		if (!json.has("position"))
 		    throw new QueryException("Operation needs position specification");
 
-		// temporary
 		String position = json.get("position").asText();
+		short flag = 0;
 		switch (position) {
-		case "contains":
-		    return new SpanWithinQueryWrapper(
-		        this.fromJSON(json.get("operands").get(0)),
-			this.fromJSON(json.get("operands").get(1))
-                    );
-		case "within":
-		    return new SpanWithinQueryWrapper(
-			this.fromJSON(json.get("operands").get(0)),
-			this.fromJSON(json.get("operands").get(1))
-                    );
-
 		case "startswith":
-		    return new SpanWithinQueryWrapper(
-			this.fromJSON(json.get("operands").get(0)),
-			this.fromJSON(json.get("operands").get(1)),
-			(short) 1
-                    );
-
+		    flag = (short) 1;
+		    break;
 		case "endswith":
-		    return new SpanWithinQueryWrapper(
-			this.fromJSON(json.get("operands").get(0)),
-			this.fromJSON(json.get("operands").get(1)),
-			(short) 2
-                    );
-
+		    flag = (short) 2;
+		    break;
 		case "match":
-		    return new SpanWithinQueryWrapper(
-			this.fromJSON(json.get("operands").get(0)),
-			this.fromJSON(json.get("operands").get(1)),
-			(short) 3
-                    );
+		    flag = (short) 3;
+		    break;
 		};
 
-		throw new QueryException("Unknown position type "+json.get("position").asText());
+		return new SpanWithinQueryWrapper(
+		    this.fromJSON(json.get("operands").get(0)),
+		    this.fromJSON(json.get("operands").get(1)),
+		    flag
+	        );
 
 	    case "shrink":
 		int number = 0;
@@ -172,14 +155,33 @@ public class KorapQuery {
     private SpanQueryWrapperInterface _segFromJSON (JsonNode json) throws QueryException {
 	String type = json.get("@type").asText();
 	switch (type) {
+
 	case "korap:term":
 	    switch (json.get("relation").asText()) {
 	    case "=":
-		return this.seg(json.get("@value").asText());
+		String value = json.get("@value").asText();
+
+		value = value.replaceFirst("base:", "l:").replaceFirst("orth:", "s:");
+	
+		if (json.has("@subtype") && json.get("@subtype").asText().equals("korap:regex")) {
+		    if (value.charAt(0) == '\'' || value.charAt(0) == '"') {
+			value = "s:" + value;
+		    };
+		    value = value.replace("'", "").replace("\"", "");
+
+		    return this.seg(this.re(value));
+		};
+
+		if (!value.matches("[^:]+?:.+"))
+		    value = "s:" + value;
+
+		return this.seg(value);
+
 	    case "!=":
 		throw new QueryException("Term relation != not yet supported");
 	    };
 	    throw new QueryException("Unknown term relation");
+
 	case "korap:group":
 	    SpanSegmentQueryWrapper ssegqw = new SpanSegmentQueryWrapper(this.field);
 	    switch (json.get("relation").asText()) {
@@ -200,6 +202,12 @@ public class KorapQuery {
 		    };
 		};
 		return ssegqw;
+	    case "or":
+		SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
+		for (JsonNode operand : json.get("operands")) {
+		    ssaq.or(this._segFromJSON(operand));
+		};
+		return ssaq;
 	    };
     };
     throw new QueryException("Unknown token type");    

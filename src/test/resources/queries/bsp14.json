@@ -24,7 +24,7 @@
             "@subtype": "korap:regex", 
             "@value": "'vers{2,3}uch'", 
             "relation": "=", 
-            "type": "korap:term"
+            "@type": "korap:term"
         }
     }
 }

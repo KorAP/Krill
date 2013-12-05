@@ -30,7 +30,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp1b.json").getFile());
 
 	// [base=foo]|([base=foo][base=bar]) meta author=Goethe&year=1815
-	assertEquals(sqwi.toQuery().toString(), "spanOr([tokens:base:foo, spanNext(tokens:base:foo, tokens:base:bar)])");
+	assertEquals(sqwi.toQuery().toString(), "spanOr([tokens:l:foo, spanNext(tokens:l:foo, tokens:l:bar)])");
     };
 
 
@@ -39,7 +39,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp2.json").getFile());
 
 	// ([base=foo]|[base=bar])[base=foobar]
-	assertEquals(sqwi.toQuery().toString(), "spanNext(spanOr([tokens:base:foo, tokens:base:bar]), tokens:base:foobar)");
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanOr([tokens:l:foo, tokens:l:bar]), tokens:l:foobar)");
     };
 
     @Test
@@ -47,7 +47,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp3.json").getFile());
 
 	// shrink({[base=Mann]})
-	assertEquals(sqwi.toQuery().toString(), "shrink(0: {0: tokens:base:Mann})");
+	assertEquals(sqwi.toQuery().toString(), "shrink(0: {0: tokens:l:Mann})");
     };
 
     @Test
@@ -55,7 +55,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp4.json").getFile());
 
 	// shrink({[base=foo]}[orth=bar])
-	assertEquals(sqwi.toQuery().toString(), "shrink(0: spanNext({0: tokens:base:foo}, tokens:orth:bar))");
+	assertEquals(sqwi.toQuery().toString(), "shrink(0: spanNext({0: tokens:l:foo}, tokens:s:bar))");
     };
 
     @Test
@@ -63,7 +63,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp5.json").getFile());
 
 	// shrink(1:[base=Der]{1:[base=Mann]}) 
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanNext(tokens:base:Der, {1: tokens:base:Mann}))");
+	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanNext(tokens:l:Der, {1: tokens:l:Mann}))");
     };
 
     @Test
@@ -71,7 +71,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp6.json").getFile());
 
 	// [base=katze]
-	assertEquals(sqwi.toQuery().toString(), "tokens:base:Katze");
+	assertEquals(sqwi.toQuery().toString(), "tokens:l:Katze");
     };
 
     @Ignore
@@ -95,7 +95,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp9.json").getFile());
 
 	// [base=Katze&orth=Katzen]
-	assertEquals(sqwi.toQuery().toString(), "spanNear([tokens:base:Katze, tokens:orth:Katzen], -1, false)");
+	assertEquals(sqwi.toQuery().toString(), "spanNear([tokens:l:Katze, tokens:s:Katzen], -1, false)");
     };
 
     @Test
@@ -103,7 +103,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp10.json").getFile());
 
 	// [base=Katze][orth=und][orth=Hunde]
-	assertEquals(sqwi.toQuery().toString(), "spanNext(spanNext(tokens:base:Katze, tokens:orth:und), tokens:orth:Hunde)");
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanNext(tokens:l:Katze, tokens:s:und), tokens:s:Hunde)");
     };
 
     @Ignore
@@ -119,7 +119,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp12.json").getFile());
 
 	// contains(<np>,[base=Mann])
-	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:base:Mann)");
+	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:l:Mann)");
     };
 
     @Ignore
@@ -138,14 +138,37 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:pos:Det, 1)");
     };
 
-    @Ignore
+    @Test
     public void queryJSONBsp14 () {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp14.json").getFile());
 
 	// 'vers{2,3}uch'
-	assertEquals(sqwi.toQuery().toString(), "");
+	assertEquals(sqwi.toQuery().toString(), "SpanMultiTermQueryWrapper(tokens:/s:vers{2,3}uch/)");
     };
 
+    @Test
+    public void queryJSONBsp15 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp15.json").getFile());
+
+	// [orth='vers.*ch']
+	assertEquals(sqwi.toQuery().toString(), "SpanMultiTermQueryWrapper(tokens:/s:vers.*ch/)");
+    };
+
+    @Test
+    public void queryJSONBsp16 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp16.json").getFile());
+
+	// [(base=bar|base=foo)&orth=foobar]
+	assertEquals(sqwi.toQuery().toString(), "spanNear([spanOr([tokens:l:bar, tokens:l:foo]), tokens:s:foobar], -1, false)");
+    };
+
+    @Test
+    public void queryJSONBsp17 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp17.json").getFile());
+
+	// within(<np>,[base=Mann])
+	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:l:Mann)");
+    };
 
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();

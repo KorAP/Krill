@@ -21,7 +21,7 @@
     "query": {
         "@type": "korap:token", 
         "@value": {
-            "@subtype": "korap:value#regex", 
+            "@subtype": "korap:regex", 
             "@type": "korap:term", 
             "@value": "orth:'vers.*ch'", 
             "relation": "="
