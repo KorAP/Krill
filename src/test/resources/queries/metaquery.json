@@ -91,13 +91,13 @@
                 "operands": [
                     {
                         "@type": "korap:group",
-                        "relation": "comment: other values can be 'since','until' in combination with a simple korap:term",
+                        "comment": "other values can be 'since','until' in combination with a simple korap:term",
                         "relation": "between",
                         "field: "korap:field#pubDate",
                         "operands": [
                             {
                                 "@type": "korap:date",
-                                "@value": "comment: either long value or String representation '2013-04-29'",
+                                "comment": "either long value or String representation '2013-04-29'",
                                 "@value": "2011"
                             },
                             {
