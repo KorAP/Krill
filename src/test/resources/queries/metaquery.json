@@ -1,0 +1,119 @@
+{
+    "@context": {
+        "korap": "http://korap.ids-mannheim.de/ns/query",
+        "@language": "de",
+        "operands": {
+            "@id": "korap:operands",
+            "@container": "@list"
+        },
+        "relation": {
+            "@id": "korap:relation",
+            "@type": "korap:relation#types"
+        },
+        "class": {
+            "@id": "korap:class",
+            "@type": "xsd:integer"
+        },
+        "query": "korap:query",
+        "filter": "korap:filter",
+        "meta": "korap:meta"
+    },
+    "query": {
+        "@type": "korap:group",
+        "relation": "or",
+        "operands": [
+            {
+                "@type": "korap:token",
+                "@value": {
+                    "@type": "korap:term",
+                    "@value": "base:foo",
+                    "relation": "="
+                }
+            },
+            {
+                "@type": "korap:sequence",
+                "operands": [
+                    {
+                        "@type": "korap:token",
+                        "@value": {
+                            "@type": "korap:term",
+                            "@value": "base:foo",
+                            "relation": "="
+                        }
+                    },
+                    {
+                        "@type": "korap:token",
+                        "@value": {
+                            "@type": "korap:term",
+                            "@value": "base:bar",
+                            "relation": "="
+                        },
+                        "repetition": "*"
+                    }
+                ]
+            }
+        ]
+    },
+    "meta": [
+        {
+            "@type": "korap:meta-filter",
+            "@id": "korap-filter#id-1223232",
+            "@value": {
+                "@type": "korap:term",
+                "@value": "wissenschaft"
+            }
+        },
+        {
+            "@type": "korap:meta-filter",
+            "@id": "korap-filter#id-34345454",
+            "@value": {
+                "@type": "korap:group",
+                "relation": "and",
+                "operands": [
+                    {
+                        "@type": "korap:term",
+                        "@field": "korap:field#pubPlace",
+                        "@value": "Erfurt"
+                    },
+                    {
+                        "@type": "korap:term",
+                        "@field": "korap:field#author",
+                        "@value": "Hesse"
+                    }
+                ]
+            }
+        },
+        {
+            "@type": "korap:meta-extend",
+            "@value": {
+                "@type": "korap:group",
+                "relation": "and",
+                "operands": [
+                    {
+                        "@type": "korap:group",
+                        "relation": "comment: other values can be 'since','until' in combination with a simple korap:term",
+                        "relation": "between",
+                        "operands": [
+                            {
+                                "@type": "korap:term",
+                                "@field": "korap:field#pubDate",
+                                "@value": "comment: either long value or String representation '2013-04-29'",
+                                "@value": "2011"
+                            },
+                            {
+                                "@type": "korap:term",
+                                "@field": "korap:field#pubDate",
+                                "@value": "2013"
+                            }
+                        ]
+                    },
+                    {
+                        "@type": "korap:term",
+                        "@field": "korap:field#textClass",
+                        "@value": "freizeit"
+                    }
+                ]
+            }
+        }
+    ]
+}
