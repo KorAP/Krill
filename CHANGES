@@ -1,3 +1,6 @@
+0.24 2013-12-05
+        - Json deserializer finished for virtual collections.
+
 0.23 2013-12-05
         - Error handling corrected in KorapResult.
 	- Json deserializer finished for queries.
