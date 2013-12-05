@@ -18,6 +18,12 @@
         "filter": "korap:filter",
         "meta": "korap:meta"
     },
+    "startPage" : 2,
+    "count" : 5,
+    "context" : {
+      "left" : [ "token", 6 ],
+      "right" : [ "token", 6 ]
+    },
     "query": {
         "@type": "korap:group",
         "relation": "or",
