@@ -98,7 +98,7 @@
                         "@type": "korap:group",
                         "comment": "other values can be 'since','until' in combination with a simple korap:term",
                         "relation": "between",
-                        "field: "korap:field#pubDate",
+                        "field": "korap:field#pubDate",
                         "operands": [
                             {
                                 "@type": "korap:date",
