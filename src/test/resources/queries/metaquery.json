@@ -21,8 +21,8 @@
     "startPage" : 2,
     "count" : 5,
     "context" : {
-      "left" : [ "token", 6 ],
-      "right" : [ "token", 6 ]
+      "left" : [ "token", 3 ],
+      "right" : [ "char", 6 ]
     },
    "query":{
       "@type":"korap:group",
@@ -51,7 +51,7 @@
                   "@type":"korap:token",
                   "@value":{
                      "@type":"korap:term",
-                     "@value":"mate/p:ADJD",
+                     "@value":"mate/p:ADJA",
                      "relation":"="
                   }
                }
