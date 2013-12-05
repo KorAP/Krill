@@ -24,42 +24,41 @@
       "left" : [ "token", 6 ],
       "right" : [ "token", 6 ]
     },
-    "query": {
-        "@type": "korap:group",
-        "relation": "or",
-        "operands": [
-            {
-                "@type": "korap:token",
-                "@value": {
-                    "@type": "korap:term",
-                    "@value": "base:foo",
-                    "relation": "="
-                }
-            },
-            {
-                "@type": "korap:sequence",
-                "operands": [
-                    {
-                        "@type": "korap:token",
-                        "@value": {
-                            "@type": "korap:term",
-                            "@value": "base:foo",
-                            "relation": "="
-                        }
-                    },
-                    {
-                        "@type": "korap:token",
-                        "@value": {
-                            "@type": "korap:term",
-                            "@value": "base:bar",
-                            "relation": "="
-                        },
-                        "repetition": "*"
-                    }
-                ]
+   "query":{
+      "@type":"korap:group",
+      "relation":"or",
+      "operands":[
+         {
+            "@type":"korap:token",
+            "@value":{
+               "@type":"korap:term",
+               "@value":"base:Vokal",
+               "relation":"="
             }
-        ]
-    },
+         },
+         {
+            "@type":"korap:sequence",
+            "operands":[
+               {
+                  "@type":"korap:token",
+                  "@value":{
+                     "@type":"korap:term",
+                     "@value":"base:der",
+                     "relation":"="
+                  }
+               },
+               {
+                  "@type":"korap:token",
+                  "@value":{
+                     "@type":"korap:term",
+                     "@value":"mate/p:ADJD",
+                     "relation":"="
+                  }
+               }
+            ]
+         }
+      ]
+   },
     "meta": [
         {
             "@type": "korap:meta-filter",
