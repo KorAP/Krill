@@ -1,0 +1,89 @@
+{
+    "@context": {
+        "korap": "http://korap.ids-mannheim.de/ns/query",
+        "@language": "de",
+        "operands": {
+            "@id": "korap:operands",
+            "@container": "@list"
+        },
+        "relation": {
+            "@id": "korap:relation",
+            "@type": "korap:relation#types"
+        },
+        "class": {
+            "@id": "korap:class",
+            "@type": "xsd:integer"
+        },
+        "query": "korap:query",
+        "filter": "korap:filter",
+        "meta": "korap:meta"
+    },
+    "startPage" : 2,
+    "count" : 5,
+    "context" : {
+      "left" : [ "token", 6 ],
+      "right" : [ "token", 6 ]
+    },
+   "query":{
+      "@type":"korap:group",
+      "relation":"or",
+      "operands":[
+         {
+            "@type":"korap:token",
+            "@value":{
+               "@type":"korap:term",
+               "@value":"base:Vokal",
+               "relation":"="
+            }
+         },
+         {
+            "@type":"korap:sequence",
+            "operands":[
+               {
+                  "@type":"korap:token",
+                  "@value":{
+                     "@type":"korap:term",
+                     "@value":"base:der",
+                     "relation":"="
+                  }
+               },
+               {
+                  "@type":"korap:token",
+                  "@value":{
+                     "@type":"korap:term",
+                     "@value":"mate/p:ADJD",
+                     "relation":"="
+                  }
+               }
+            ]
+         }
+      ]
+   },
+    "meta": [
+            {
+                "@type": "korap:meta-filter",
+                "@value": {
+                    "@type": "korap:group",
+                    "relation": "and",
+                    "operands": [
+                        {
+                            "@type": "korap:term",
+                            "field": "korap:field#author",
+                            "@value": "Hesse"
+                        },
+                        {
+                            "@type": "korap:group",
+                            "field": "korap:field#pubDate",
+                            "relation": "until",
+                            "operands": [
+                                {
+                                    "@type": "korap:date",
+                                    "@value": "2013-12-5"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+}
