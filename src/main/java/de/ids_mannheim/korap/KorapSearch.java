@@ -108,6 +108,11 @@ public class KorapSearch {
 		this.error = "No query defined";
 	    };
 
+	    if (json.has("meta")) {
+		KorapCollection kc = new KorapCollection(jsonString);
+		this.setCollection(kc);
+	    };
+
 	    if (this.error == null) {
 
 		// Defined count

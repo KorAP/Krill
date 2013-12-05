@@ -22,6 +22,9 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.DocIdSet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +39,7 @@ public class KorapCollection {
     private KorapIndex index;
     private KorapDate created;
     private String id;
+    private String error;
     private ArrayList<FilterOperation> filter;
     private int filterCount = 0;
     
@@ -48,8 +52,35 @@ public class KorapCollection {
 	this.filter = new ArrayList<FilterOperation>(5);
     };
 
+    public KorapCollection (String jsonString) {
+	this.filter = new ArrayList<FilterOperation>(5);
+	ObjectMapper mapper = new ObjectMapper();
+	try {
+	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
+	    if (json.has("meta")) {
+		for (JsonNode meta : json.get("meta")) {
+		    this.fromJSON(meta);
+		};
+	    };
+	}
+	catch (Exception e) {
+	    this.error = e.getMessage();
+	};
+    };
+
     public KorapCollection () {
 	this.filter = new ArrayList<FilterOperation>(5);
+    };
+
+    public void fromJSON(JsonNode json) {
+	String type = json.get("@type").asText();
+
+	if (type.equals("korap:meta-filter")) {
+	    this.filter(new BooleanFilter(json.get("@value")));
+	}
+	else if (type.equals("korap:meta-extend")) {
+	    this.extend(new BooleanFilter(json.get("@value")));
+	};
     };
 
     public int getCount() {
@@ -60,13 +91,17 @@ public class KorapCollection {
 	this.index = ki;
     };
 
+    // The checks asre not necessary
     public KorapCollection filter (BooleanFilter filter) {
-	this.filter.add(
-	    new FilterOperation(
-				(Filter) new QueryWrapperFilter(filter.toQuery()),
-                false
-            )
-        );
+	if (filter == null)
+	    return this;
+	Filter f = (Filter) new QueryWrapperFilter(filter.toQuery());
+	if (filter == null)
+	    return this;
+	FilterOperation fo = new FilterOperation(f,false);
+	if (fo == null)
+	    return this;
+	this.filter.add(fo);
 	this.filterCount++;
 	return this;
     };
@@ -85,6 +120,11 @@ public class KorapCollection {
     public ArrayList<FilterOperation> getFilters () {
 	return this.filter;
     };
+
+    public FilterOperation getFilter (int i) {
+	return this.filter.get(i);
+    };
+
 
     // DEPRECATED BUT USED IN TEST CASES
     public KorapResult search (SpanQuery query) {

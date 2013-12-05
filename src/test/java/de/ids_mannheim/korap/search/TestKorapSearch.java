@@ -104,14 +104,20 @@ public class TestKorapSearch {
 	};
 	ki.commit();
 
-	String json = getString(getClass().getResource("/queries/metaquery.json").getFile());
-
+	String json = getString(getClass().getResource("/queries/metaquery3.json").getFile());
 
 	KorapResult kr = new KorapSearch(json).run(ki);
 	assertEquals(29, kr.getTotalResults());
 	assertEquals(5, kr.getItemsPerPage());
 	assertEquals(5, kr.getStartIndex());
 	assertEquals("... a: A ist [der klangreichste] der V ...", kr.getMatch(0).getSnippetBrackets());
+
+	json = getString(getClass().getResource("/queries/metaquery4.json").getFile());
+
+	kr = new KorapSearch(json).run(ki);
+	assertEquals(0, kr.getTotalResults());
+	assertEquals(5, kr.getItemsPerPage());
+	assertEquals(5, kr.getStartIndex());
     };
 
 

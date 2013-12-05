@@ -14,12 +14,18 @@ import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.filter.RegexFilter;
 import de.ids_mannheim.korap.KorapFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 /*
   Todo: !not
+
+THE JSON STUFF DEFINITIVELY BELONGS INTO KORAPFILTER
+
 */
 
 /**
@@ -39,6 +45,95 @@ public class BooleanFilter {
 
     public BooleanFilter () {
 	bool = new BooleanQuery();
+    };
+
+    public BooleanFilter (JsonNode json) {
+	bool = new BooleanQuery();
+
+	String type = json.get("@type").asText();
+	String field = _getField(json);
+
+	if (type.equals("korap:term")) {
+	    this.fromJSON(json, field);
+	}
+	else if (type.equals("korap:group")) {
+	    // TODO: relation
+	    for (JsonNode operand : json.get("operands")) {
+		this.fromJSON(operand, field);
+	    };
+	};
+    };
+
+
+    private void fromJSON (JsonNode json, String field) {
+	String type = json.get("@type").asText();
+
+	if (json.has("@field"))
+	    field = _getField(json);
+
+	if (type.equals("korap:term")) {
+	    if (field != null && json.has("@value"))
+		this.and(field, json.get("@value").asText());
+	    return;
+	}
+	else if (type.equals("korap:group")) {
+	    if (!json.has("relation"))
+		return;
+
+	    String date, till;
+
+	    switch (json.get("relation").asText())  {
+	    case "between":
+		date = _getDate(json, 0);
+		till = _getDate(json, 1);
+		if (date != null && till != null)
+		    this.between(date, till);
+		break;
+
+	    case "until":
+		date = _getDate(json, 0);
+		if (date != null)
+		    this.till(date);
+		break;
+
+	    case "since":
+		date = _getDate(json, 0);
+		if (date != null)
+		    this.since(date);
+		break;
+
+	    case "equals":
+		date = _getDate(json, 0);
+		if (date != null)
+		    this.date(date);
+		break;
+	    };
+	}
+    };
+
+    private static String  _getField (JsonNode json)  {
+	if (!json.has("@field"))
+	    return (String) null;
+
+	String field = json.get("@field").asText();
+	return field.replaceFirst("korap:field#", "");
+    };
+
+    private static String _getDate (JsonNode json, int index) {
+	if (!json.has("operands"))
+	    return (String) null;
+
+	if (!json.get("operands").has(index))
+	    return (String) null;
+
+	JsonNode date = json.get("operands").get(index);
+	if (!date.get("@type").asText().equals("korap:date"))
+	    return (String) null;
+
+	if (!date.has("@value"))
+	    return (String) null;
+
+	return date.get("@value").asText();
     };
 
     public BooleanFilter or (String type, String ... terms) {
