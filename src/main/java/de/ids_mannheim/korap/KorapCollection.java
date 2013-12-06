@@ -93,20 +93,28 @@ public class KorapCollection {
 
     // The checks asre not necessary
     public KorapCollection filter (BooleanFilter filter) {
-	if (filter == null)
+	log.trace("Added filter: {}", filter.toString());
+	if (filter == null) {
+	    log.warn("No filter is given");
 	    return this;
+	};
 	Filter f = (Filter) new QueryWrapperFilter(filter.toQuery());
-	if (filter == null)
+	if (f == null) {
+	    log.warn("Filter can't be wrapped");
 	    return this;
+	};
 	FilterOperation fo = new FilterOperation(f,false);
-	if (fo == null)
+	if (fo == null) {
+	    log.warn("Filter operation invalid");
 	    return this;
+	};
 	this.filter.add(fo);
 	this.filterCount++;
 	return this;
     };
 
     public KorapCollection extend (BooleanFilter filter) {
+	log.trace("Added extension: {}", filter.toString());
 	this.filter.add(
 	    new FilterOperation(
 				(Filter) new QueryWrapperFilter(filter.toQuery()),

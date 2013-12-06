@@ -67,8 +67,20 @@ public class TestRealIndex {
             ).toQuery();
 
 
-	KorapResult kr = kc.search(query);
+	// KorapResult kr = kc.search(query);
 
-	System.err.println(kr.toJSON());
+	//	System.err.println(kr.toJSON());
+
+
+	//	kc = new KorapCollection("{\"meta\":[{\"@type\":\"korap:meta-filter\",\"@value\":{\"@type\":\"korap:term\",\"@field\":\"korap:field#corpusID\",\"@value\":\"A00\"}},{\"@type\":\"korap:meta-extend\",\"@value\":{\"@type\":\"korap:term\",\"@field\":\"korap:field#corpusID\",\"@value\":\"A01\"}}]}");
+
+	//	kc = new KorapCollection("{\"meta\":[{\"@type\":\"korap:meta-filter\",\"@value\":{\"@type\":\"korap:term\",\"@field\":\"korap:field#corpusID\",\"@value\":\"A01\"}}]}");
+	kc = new KorapCollection("{\"meta\":[{\"@type\":\"korap:meta-filter\",\"@value\":{\"@type\":\"korap:term\",\"@field\":\"korap:field#textClass\",\"@value\":\"reisen\"}}]}");
+	kc.setIndex(ki);
+
+	System.err.println(kc.getFilter(0).toString());
+	System.err.println(kc.numberOf("documents"));
+
+	// assertEquals(14, kc.numberOf("documents"));
     };
 };

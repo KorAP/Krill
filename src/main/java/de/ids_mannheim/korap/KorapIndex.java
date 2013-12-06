@@ -327,7 +327,6 @@ public class KorapIndex {
     public long numberOf (KorapCollection collection, String foundry, String type) throws IOException {
 	// Short cut for documents
 	if (type.equals("documents")) {
-
 	    if (collection.getCount() <= 0) {
 		return (long) this.reader().numDocs();
 	    };

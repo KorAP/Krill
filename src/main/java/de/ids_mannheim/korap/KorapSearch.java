@@ -174,7 +174,7 @@ public class KorapSearch {
 
     public KorapSearch setStartPage (int value) {
 	if (value >= 0) {
-	    this.startIndex = (value * this.getCount()) - this.getCount();
+	    this.setStartIndex((value * this.getCount()) - this.getCount());
 	}
 	else {
 	    this.startIndex = 0;
