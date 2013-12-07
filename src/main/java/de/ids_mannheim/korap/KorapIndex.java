@@ -704,9 +704,12 @@ public class KorapIndex {
 		    kr.setBenchmarkSearchResults(t1, t2);
 		};
 
+		/*
+TEMPORARY:
 		while (spans.next()) {
 		    i++;
 		};
+		*/
 
 		for (KorapMatch km : atomicMatches) {
 		    km.processHighlight(pto);
