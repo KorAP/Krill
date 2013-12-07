@@ -172,6 +172,14 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:"+defaultFoundry+"l:Mann)");
     };
 
+    @Test
+    public void queryJSONDemo () throws QueryException {
+	SpanQueryWrapperInterface sqwi = new KorapQuery("tokens").fromJSON("{ \"query\" : { \"@type\" : \"korap:token\", \"@value\" : { \"@type\" : \"korap:term\", \"@value\" : \"base_p:foo\", \"relation\" : \"=\" }}}");
+
+	assertEquals(sqwi.toQuery().toString(), "tokens:base/p:foo");
+    };
+
+
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();
 	try {

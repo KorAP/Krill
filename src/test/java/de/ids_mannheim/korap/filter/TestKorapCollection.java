@@ -70,12 +70,85 @@ public class TestKorapCollection {
 	assertEquals("Documents", 1, kc.numberOf("documents"));
 
 	kc.extend( kf.and("textClass", "wissenschaft") );
+
 	assertEquals("Documents", 3, kc.numberOf("documents"));
 	assertEquals("Tokens", 1669, kc.numberOf("tokens"));
 	assertEquals("Sentences", 188, kc.numberOf("sentences"));
 	assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
 	// System.err.println(kr.toJSON());
     };
+
+    @Ignore
+    public void filterExampleAtomic () throws IOException {
+	
+	// That's exactly the same test class, but with multiple atomic indices
+
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    FieldDocument fd = ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	    ki.commit();
+	};
+
+	KorapFilter kf = new KorapFilter();
+
+	// Create Virtual collections:
+	KorapCollection kc = new KorapCollection(ki);
+
+	assertEquals("Documents", 7, kc.numberOf("documents"));
+
+	/*
+	  If this is set - everything is fine automatically ...
+	kc.filter(kf.and("corpusID", "WPD"));
+	assertEquals("Documents", 7, kc.numberOf("documents"));
+	*/
+
+	// The virtual collection consists of all documents that have the textClass "reisen" and "freizeit"
+	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
+
+	assertEquals("Documents", 5, kc.numberOf("documents"));
+	assertEquals("Tokens", 1678, kc.numberOf("tokens"));
+	assertEquals("Sentences", 194, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 139, kc.numberOf("paragraphs"));
+
+	// Subset this to all documents that have also the text
+	kc.filter(kf.and("textClass", "kultur"));
+
+	assertEquals("Documents", 1, kc.numberOf("documents"));
+	assertEquals("Tokens", 405, kc.numberOf("tokens"));
+	assertEquals("Sentences", 75, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
+
+	kc.filter(kf.and("corpusID", "WPD"));
+
+	assertEquals("Documents", 1, kc.numberOf("documents"));
+	assertEquals("Tokens", 405, kc.numberOf("tokens"));
+	assertEquals("Sentences", 75, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
+
+	// Create a query
+	KorapQuery kq = new KorapQuery("tokens");
+	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
+
+	KorapResult kr = kc.search(query);
+	assertEquals(70, kr.totalResults());
+
+	kc.extend( kf.and("textClass", "uninteresting") );
+	assertEquals("Documents", 1, kc.numberOf("documents"));
+
+	kc.extend( kf.and("textClass", "wissenschaft") );
+
+	System.err.println("+++++++++++++++++++++++");
+	assertEquals("Documents", 3, kc.numberOf("documents"));
+	assertEquals("Tokens", 1669, kc.numberOf("tokens"));
+	assertEquals("Sentences", 188, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
+	// System.err.println(kr.toJSON());
+    };
+
 
 
     @Test

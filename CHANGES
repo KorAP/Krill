@@ -1,3 +1,8 @@
+0.24_1 2013-12-05
+        - This is a pseudo version for demo versions with dirty hacks,
+	  meant to be rolled back!
+	- There is now an ignored broken test in TestKorapCollection!
+
 0.24 2013-12-05
         - Json deserializer finished for virtual collections.
 

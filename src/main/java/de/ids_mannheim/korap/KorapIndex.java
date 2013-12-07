@@ -332,8 +332,13 @@ public class KorapIndex {
 	    };
 
 	    long docCount = 0;
+	    // System.err.println("CHECK");
+	    int i = 1;
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+		// System.err.println("READER" + i + "a-" + docCount);
 		docCount += collection.bits(atomic).cardinality();
+		// System.err.println("READER" + i + "b-" + docCount);
+		i++;
 	    };
 	    return docCount;
 	};

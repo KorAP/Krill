@@ -117,7 +117,7 @@ public class KorapCollection {
 	log.trace("Added extension: {}", filter.toString());
 	this.filter.add(
 	    new FilterOperation(
-				(Filter) new QueryWrapperFilter(filter.toQuery()),
+		(Filter) new QueryWrapperFilter(filter.toQuery()),
                 true
             )
         );
@@ -142,9 +142,6 @@ public class KorapCollection {
     public FixedBitSet bits (AtomicReaderContext atomic) throws IOException  {
 
 	/*
-	  TODO:
-	  Don't check the live docs in advance - combine them afterwards with an "and" operation,
-	  so before this you can fully use "and" and "or" on an empty bitset.
 	  Use Bits.MatchAllBits(int len)
 	*/
 
@@ -159,13 +156,14 @@ public class KorapCollection {
 	    FilterOperation kcInit = filters.remove(0);
 	    log.trace("FILTER: {}", kcInit);
 
-
 	    // Init vector
 	    DocIdSet docids = kcInit.filter.getDocIdSet(atomic, null);
+
 	    DocIdSetIterator filterIter = docids.iterator();
 
 	    if (filterIter != null) {
 		log.trace("InitFilter has effect");
+		// System.err.println("Init has an effect");
 		bitset.or(filterIter);
 		noDoc = false;
 	    };
@@ -183,11 +181,18 @@ public class KorapCollection {
 			if (kc.isFilter()) {
 			    bitset.clear(0, bitset.length());
 			    noDoc = true;
+			}
+			else {
+			    // System.err.println("No term found");
 			};
 			continue;
 		    };
 		    if (kc.isExtension()) {
+			// System.err.println("Term found!");
+			// log.trace("Extend filter");
+			// System.err.println("Old Card:" + bitset.cardinality());
 			bitset.or(filterIter);
+			// System.err.println("New Card:" + bitset.cardinality());
 		    }
 		    else {
 			bitset.and(filterIter);

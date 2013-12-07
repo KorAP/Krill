@@ -171,11 +171,17 @@ public class KorapQuery {
 		    };
 		    value = value.replace("'", "").replace("\"", "");
 
+		    // Temporary
+		    value = value.replace("_", "/");
+
 		    return this.seg(this.re(value));
 		};
 
 		if (!value.matches("[^:]+?:.+"))
 		    value = "s:" + value;
+
+		// Temporary
+		value = value.replace("_", "/");
 
 		return this.seg(value);
 
