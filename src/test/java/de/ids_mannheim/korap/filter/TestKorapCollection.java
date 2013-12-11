@@ -26,7 +26,7 @@ public class TestKorapCollection {
 	// Indexing test files
 	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
 	    FieldDocument fd = ki.addDocFile(
-	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+					     getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
 	};
 	ki.commit();
@@ -78,7 +78,7 @@ public class TestKorapCollection {
 	// System.err.println(kr.toJSON());
     };
 
-    @Ignore
+    @Test
     public void filterExampleAtomic () throws IOException {
 	
 	// That's exactly the same test class, but with multiple atomic indices

@@ -56,7 +56,9 @@ public class KorapQuery {
 
     // http://fasterxml.github.io/jackson-databind/javadoc/2.2.0/com/fasterxml/jackson/databind/JsonNode.html
     // TODO: Exception messages are horrible!
-    // Todo: Use the shortcuts implemented in this class instead of the wrapper constructors
+    // TODO: Use the shortcuts implemented in this class instead of the wrapper constructors
+    // TODO: Check for isArray()
+    // TODO: Check for the number of operands before getting them
     public SpanQueryWrapperInterface fromJSON (JsonNode json) throws QueryException {
 
 	if (!json.has("@type")) {
@@ -140,6 +142,10 @@ public class KorapQuery {
 	    if (!json.has("operands"))
 		throw new QueryException("SpanSequenceQuery needs operands");
 
+	    JsonNode operands = json.get("operands");
+	    if (!operands.isArray() || operands.size() < 2)
+		throw new QueryException("SpanSequenceQuery needs operands");		
+		
 	    SpanSequenceQueryWrapper sseqqw = new SpanSequenceQueryWrapper(this.field);
 	    for (JsonNode operand : json.get("operands")) {
 		sseqqw.append(this.fromJSON(operand));

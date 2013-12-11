@@ -61,7 +61,7 @@ import java.nio.ByteBuffer;
 
 /*
   Todo: Use FieldCache!
-
+  TODO: Reuse the indexreader everywhere - it should be threadsafe!
 
   http://invertedindex.blogspot.co.il/2009/04/lucene-dociduid-mapping-and-payload.html
   see korap/search.java -> retrieveTokens
@@ -704,12 +704,10 @@ public class KorapIndex {
 		    kr.setBenchmarkSearchResults(t1, t2);
 		};
 
-		/*
-TEMPORARY:
+		// Can be disabled TEMPORARILY
 		while (spans.next()) {
 		    i++;
 		};
-		*/
 
 		for (KorapMatch km : atomicMatches) {
 		    km.processHighlight(pto);

@@ -179,6 +179,14 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "tokens:base/p:foo");
     };
 
+    @Test
+    public void queryJSONBspClass () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp-class.json").getFile());
+
+	// within(<np>,[base=Mann])
+	assertEquals(sqwi.toQuery().toString(), "{0: spanNext(tokens:tt/p:ADJA, tokens:mate/p:NN)}");
+    };
+
 
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();
