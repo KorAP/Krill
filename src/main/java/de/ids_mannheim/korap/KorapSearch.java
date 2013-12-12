@@ -15,15 +15,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 // Todo: Use configuration file
 
 /*
-KorapResult = new KorapSearch(String json).run(KorapIndex ki);
-startPage!!!
+  Todo: Let this class extend KorapResult!
+  Todo: implement an empty new Result Thingy!
+  KorapResult = new KorapSearch(String json).run(KorapIndex ki);
+  startPage!!!
 */
 
 public class KorapSearch {
     private int startIndex;
     private short count = 25;
     private short countMax = 50;
-    // private int limit = -1;
+    private int limit = 0;
+    private boolean cutoff = false;
     private SpanQuery query;
     public KorapSearchContext leftContext, rightContext;
     private KorapCollection collection;
@@ -189,6 +192,25 @@ public class KorapSearch {
 
     public short getCountMax () {
 	return this.countMax;
+    };
+
+    public int getLimit () {
+	return this.limit;
+    };
+
+    public KorapSearch setLimit (int limit) {
+	if (limit > 0)
+	    this.limit = limit;
+	return this;
+    };
+
+    public boolean doCutOff () {
+	return this.cutoff;
+    };
+
+    public KorapSearch setCutOff (boolean cutoff) {
+	this.cutoff = cutoff;
+	return this;
     };
 
     public KorapSearch setCount (int value) {

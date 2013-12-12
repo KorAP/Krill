@@ -10,13 +10,15 @@ import java.util.HashMap;
 import java.util.zip.GZIPInputStream;
 import java.io.FileInputStream;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
+
 import org.apache.lucene.document.Document;
+
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.DirectoryReader;
@@ -25,32 +27,36 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
+
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.DocIdSetIterator;
-
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.lucene.util.Version;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.OpenBitSet;
-import org.apache.lucene.search.DocIdSet;
 
-import de.ids_mannheim.korap.index.FieldDocument;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.document.KorapPrimaryData;
 
@@ -65,6 +71,8 @@ import java.nio.ByteBuffer;
 
   http://invertedindex.blogspot.co.il/2009/04/lucene-dociduid-mapping-and-payload.html
   see korap/search.java -> retrieveTokens
+
+  Support a callback for interrupts (to stop the searching)!
 
   Support multiple indices.
 
@@ -91,7 +99,7 @@ public class KorapIndex {
     private IndexSearcher searcher;
     private boolean readerOpen = false;
     private int commitCounter = 0;
-    private int autoCommit = 500;
+    private int autoCommit = 500; // Todo: Use configuration
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -437,18 +445,14 @@ public class KorapIndex {
      * search
      */
     public KorapResult search (SpanQuery query) {
-	return this.search((Bits) null, query, 0, (short) 10, true, (short) 6, true, (short) 6);
+	return this.search(new KorapCollection(this), new KorapSearch(query));
     };
 
-    public KorapResult search (SpanQuery query,
-			       short count) {
-	return this.search((Bits) null, query, 0, count, true, (short) 6, true, (short) 6);
-    };
-
-    public KorapResult search (Bits bitset,
-			       SpanQuery query,
-			       short count) {
-	return this.search((Bits) bitset, query, 0, count, true, (short) 6, true, (short) 6);
+    public KorapResult search (SpanQuery query, short count) {
+	return this.search(
+	    new KorapCollection(this),
+	    new KorapSearch(query).setCount(count)
+        );
     };
 
     public KorapResult search (SpanQuery query,
@@ -458,43 +462,23 @@ public class KorapIndex {
 			       short leftContext,
 			       boolean rightTokenContext,
 			       short rightContext) {
-	return this.search((Bits) null, query, startIndex, count,
-			   leftTokenContext, leftContext, rightTokenContext, rightContext);
-    };
-
-    // This is just a fallback! Delete!
-    @Deprecated
-    public KorapResult search (Bits bitset,
-			       SpanQuery query,
-			       int startIndex,
-			       short count,
-			       boolean leftTokenContext,
-			       short leftContext,
-			       boolean rightTokenContext,
-			       short rightContext) {
-	// TODO: This might leak as hell!!!
-	return this.search(new KorapCollection(this), query, startIndex, count, leftTokenContext, leftContext, rightTokenContext, rightContext);
-    };
-
-    public KorapResult search (KorapCollection kc, KorapSearch ks) {
-	return this.search(kc,
-			   ks.getQuery(),
-			   ks.getStartIndex(),
-			   ks.getCount(),
-			   ks.leftContext.isToken(),
-			   ks.leftContext.getLength(),
-			   ks.rightContext.isToken(),
-			   ks.rightContext.getLength()
-			   );
+	return this.search(
+	    new KorapCollection(this),
+	    query,
+	    startIndex,
+	    count,
+	    leftTokenContext,
+	    leftContext,
+	    rightTokenContext,
+	    rightContext
+        );
     };
 
     public KorapResult search (KorapSearch ks) {
+	// TODO: This might leak as hell!!!
 	return this.search(new KorapCollection(this), ks);
     };
 
-
-
-    // old: Bits bitset
     public KorapResult search (KorapCollection collection,
 			       SpanQuery query,
 			       int startIndex,
@@ -503,38 +487,56 @@ public class KorapIndex {
 			       short leftContext,
 			       boolean rightTokenContext,
 			       short rightContext) {
+	KorapSearch ks = new KorapSearch(query);
+	ks.setStartIndex(startIndex).setCount(count);
+	ks.leftContext.setToken(leftTokenContext).setLength(leftContext);
+	ks.rightContext.setToken(rightTokenContext).setLength(rightContext);
+	return this.search(collection, ks);
+    };
 
 
+    public KorapResult search (KorapCollection collection, KorapSearch ks) {
 	log.trace("Start search");
 
 	this.termContexts = new HashMap<Term, TermContext>();
+	SpanQuery query = ks.getQuery();
 	String foundry = query.getField();
 
+	// Todo: Make kr subclassing ks - so ks has a method for a new KorapResult!
 	KorapResult kr = new KorapResult(
 	    query.toString(),
-	    startIndex,
-	    count,
-	    leftTokenContext,
-	    leftContext,
-	    rightTokenContext,
-	    rightContext
-        );
+	    ks.getStartIndex(),
+	    ks.getCount(),
+	    ks.leftContext.isToken(),
+	    ks.leftContext.getLength(),
+	    ks.rightContext.isToken(),
+	    ks.rightContext.getLength()
+	);
 
 	HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
 	fieldsToLoadLocal.add(foundry);
 
+	int i = 0;
+	long t1 = 0, t2 = 0;
+	int startIndex = kr.getStartIndex();
+	int count = kr.getItemsPerPage();
+	int hits = kr.itemsPerPage() + startIndex;
+	int limit = ks.getLimit();
+	boolean cutoff = ks.doCutOff();
+
+	if (limit > 0) {
+	    if (hits > limit)
+		hits = limit;
+
+	    if (limit < startIndex)
+		return kr;
+	};
+
+	ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.itemsPerPage());
+
 	try {
-	    int i = 0;
-	    long t1 = 0;
-	    long t2 = 0;
-
-	    int hits = kr.itemsPerPage() + startIndex;
-
-	    ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.itemsPerPage());
 
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
-
-		log.trace("NUKULAR!");
 
 		// Use OpenBitSet;
 		Bits bitset = collection.bits(atomic);
@@ -555,10 +557,11 @@ public class KorapIndex {
 
 		    log.trace("Match Nr {}/{}", i, count);
 
-		    if (spans.next() != true) {
+		    // There are no more spans to find
+		    if (spans.next() != true)
 			break;
-		    };
 		   
+		    // The next matches are not yet part of the result
 		    if (startIndex > i)
 			continue;
 
@@ -566,8 +569,11 @@ public class KorapIndex {
 		    int docID = atomic.docBase + localDocID;
 
 		    // Document doc = lreader.document(docID, fieldsToLoadLocal);
+
+
+		    // Do not load all of this, in case the doc is the same!
 		    Document doc = lreader.document(localDocID, fieldsToLoadLocal);
-		    KorapMatch match = new KorapMatch();
+		    KorapMatch match = kr.addMatch(); // new KorapMatch();
 
 		    match.startPos = spans.start();
 		    match.endPos = spans.end();
@@ -576,29 +582,28 @@ public class KorapIndex {
 		    pto.add(localDocID, match.startPos);
 		    pto.add(localDocID, match.endPos - 1);
 
+		    /*
 		    match.leftContext = leftContext;
 		    match.rightContext = rightContext;
 
 		    match.leftTokenContext = leftTokenContext;
 		    match.rightTokenContext = rightTokenContext;
-
+		    */
 		    // Add pos for context
-		    if (leftTokenContext) {
-			pto.add(localDocID, match.startPos - leftContext);
+		    if (match.leftTokenContext) {
+			pto.add(localDocID, match.startPos - match.leftContext);
 		    };
 
 		    // Add pos for context
-		    if (rightTokenContext) {
-			pto.add(localDocID, match.endPos + rightContext - 1);
+		    if (match.rightTokenContext) {
+			pto.add(localDocID, match.endPos + match.rightContext - 1);
 		    };
 
 		    if (spans.isPayloadAvailable()) {
 
 			// TODO: Here are offsets and highlight offsets!
 			// <> payloads have 12 bytes (iii) or 8!?
-			// highlightoffsets have 10 bytes (iis)!
-
-			// 11 bytes!!!
+			// highlightoffsets have 11 bytes (iis)!
 
 			/*
 			int[] offsets = getOffsetsFromPayload(spans.getPayload());
@@ -662,10 +667,10 @@ public class KorapIndex {
 
 				bb.clear();
 			    };
-
 			}
 
 			catch (Exception e) {
+			    log.error(e.getMessage());
 			}
 
 			// match.payload(spans.getPayload());
@@ -694,7 +699,7 @@ public class KorapIndex {
 		      new KorapPrimaryData(doc.get(foundry))
 		    );
 		    atomicMatches.add(match);
-		    kr.add(match);
+		    // kr.add(match);
 		};
 
 		// Benchmark till now
@@ -705,7 +710,9 @@ public class KorapIndex {
 		};
 
 		// Can be disabled TEMPORARILY
-		while (spans.next()) {
+		while (!cutoff && spans.next()) {
+		    if (limit > 0 && i <= limit)
+			break;
 		    i++;
 		};
 
@@ -721,15 +728,6 @@ public class KorapIndex {
 		kr.setBenchmarkSearchResults(t2, t1);
 	    };
 	    kr.setTotalResults(i);
-
-
-	    // if (spans.isPayloadAvailable()) {
-	    // for (byte[] payload : spans.getPayload()) {
-	    // // retrieve payload for current matching span
-	    // payloadString.append(new String(payload));
-	    // payloadString.append(" | ");
-	    // };
-	    // };
 	}
 	catch (IOException e) {
 	    kr.setError("There was an IO error");

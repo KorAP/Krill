@@ -25,8 +25,8 @@ public class TestKorapCollection {
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
 	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
-	    FieldDocument fd = ki.addDocFile(
-					     getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+	    ki.addDocFile(
+	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
 	};
 	ki.commit();
@@ -64,6 +64,7 @@ public class TestKorapCollection {
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
 	KorapResult kr = kc.search(query);
+
 	assertEquals(70, kr.totalResults());
 
 	kc.extend( kf.and("textClass", "uninteresting") );

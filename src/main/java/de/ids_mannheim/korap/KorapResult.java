@@ -65,6 +65,17 @@ public class KorapResult {
 	this.matches.add(km);
     };
 
+    public KorapMatch addMatch () {
+	KorapMatch km = new KorapMatch();
+	// Temporary:
+	km.leftContext = this.leftContextOffset;
+	km.leftTokenContext = this.leftTokenContext;
+	km.rightContext = this.rightContextOffset;
+	km.rightTokenContext = this.rightTokenContext;
+	this.add(km);
+	return km;
+    };
+
     public void setTotalResults (int i) {
 	this.totalResults = i;
     };

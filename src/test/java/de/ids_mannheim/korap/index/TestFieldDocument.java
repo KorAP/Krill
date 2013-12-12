@@ -126,7 +126,10 @@ public class TestFieldDocument {
 
 	KorapQuery kq = new KorapQuery("tokens");
 	KorapResult kr = ki.search((SpanQuery) kq.seq(kq._(3, kq.seg("s:b"))).toQuery());
+
 	KorapMatch km = kr.getMatch(0);
+
+	System.err.println("----");
 
 	assertEquals(km.getPrimaryData(),"abc");
 	assertEquals(km.getCorpusID(),"WPD");
