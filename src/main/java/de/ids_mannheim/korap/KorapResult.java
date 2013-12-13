@@ -2,6 +2,7 @@ package de.ids_mannheim.korap;
 
 import java.util.*;
 import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.index.PositionsToOffset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,13 +66,14 @@ public class KorapResult {
 	this.matches.add(km);
     };
 
-    public KorapMatch addMatch () {
-	KorapMatch km = new KorapMatch();
+    public KorapMatch addMatch (PositionsToOffset pto) {
+	KorapMatch km = new KorapMatch(pto);
 	// Temporary:
 	km.leftContext = this.leftContextOffset;
 	km.leftTokenContext = this.leftTokenContext;
 	km.rightContext = this.rightContextOffset;
 	km.rightTokenContext = this.rightTokenContext;
+	km.positionsToOffset = pto;
 	this.add(km);
 	return km;
     };

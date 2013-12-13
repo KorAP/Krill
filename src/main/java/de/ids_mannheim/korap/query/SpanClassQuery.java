@@ -29,7 +29,11 @@ public class SpanClassQuery extends SpanQuery {
     public SpanClassQuery (SpanQuery highlight, byte number) {
 	this.field = highlight.getField();
 	this.highlight = highlight;
-	this.number = number;
+	if (number <= 15) {
+	    this.number = number;
+	} else{
+	    this.number = (byte) 0;
+	};
     };
 
     public SpanClassQuery (SpanQuery highlight) {

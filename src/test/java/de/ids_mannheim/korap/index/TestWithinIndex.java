@@ -702,7 +702,7 @@ public class TestWithinIndex {
 	assertEquals("totalResults", 1, kr.totalResults());
 
 	assertEquals("... schrie: [\"{3:Das war ich}!\"] und ...",kr.match(0).snippetBrackets());
-	assertEquals("<span class=\"korap-context-left\"><span class=\"korap-more\"></span>schrie: </span><span class=\"korap-match\">&quot;<span class=\"korap-highlight korap-class-3\">Das war ich</span>!&quot;</span><span class=\"korap-context-right\"> und<span class=\"korap-more\"></span></span>",kr.match(0).snippetHTML());
+	assertEquals("<span class=\"context-left\"><span class=\"more\"></span>schrie: </span><span class=\"match\">&quot;<em class=\"class-3 level-0\">Das war ich</em>!&quot;</span><span class=\"context-right\"> und<span class=\"more\"></span></span>",kr.match(0).snippetHTML());
 
 
 	kr = ki.search(sq, 0, (short) 15, true, (short) 0, true, (short) 0);

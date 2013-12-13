@@ -70,7 +70,7 @@ public class TestMatchIndex {
 	assertEquals("EndPos (0)", 9, kr.match(0).endPos);
 	assertEquals("SnippetBrackets (0)", "... bcabca[b{a}]c", kr.match(0).snippetBrackets());
 
-	assertEquals("Test no 'more' context", "<span class=\"korap-context-left\"><span class=\"korap-more\"></span>bcabca</span><span class=\"korap-match\">b<span class=\"korap-highlight korap-class-0\">a</span></span><span class=\"korap-context-right\">c</span>", kr.match(0).snippetHTML());
+	assertEquals("Test no 'more' context", "<span class=\"context-left\"><span class=\"more\"></span>bcabca</span><span class=\"match\">b<em class=\"class-0 level-0\">a</em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
 
 	sq = new SpanMatchModifyQuery(
             new SpanNextQuery(
@@ -101,13 +101,13 @@ public class TestMatchIndex {
 	assertEquals("EndPos (0)", 2, kr.match(0).endPos);
 	assertEquals("SnippetBrackets (0)", "a[b]cabcab ...", kr.match(0).snippetBrackets());
 
-	assertEquals("<span class=\"korap-context-left\">a</span><span class=\"korap-match\">b</span><span class=\"korap-context-right\">cabcab<span class=\"korap-more\"></span></span>", kr.match(0).snippetHTML());
+	assertEquals("<span class=\"context-left\">a</span><span class=\"match\">b</span><span class=\"context-right\">cabcab<span class=\"more\"></span></span>", kr.match(0).snippetHTML());
 
 	assertEquals("StartPos (1)", 4, kr.match(1).startPos);
 	assertEquals("EndPos (1)", 5, kr.match(1).endPos);
 	assertEquals("SnippetBrackets (1)", "abca[b]cabac", kr.match(1).snippetBrackets());
 
-	assertEquals("<span class=\"korap-context-left\">abca</span><span class=\"korap-match\">b</span><span class=\"korap-context-right\">cabac</span>", kr.match(1).snippetHTML());
+	assertEquals("<span class=\"context-left\">abca</span><span class=\"match\">b</span><span class=\"context-right\">cabac</span>", kr.match(1).snippetHTML());
 
 	assertEquals("StartPos (2)", 7, kr.match(2).startPos);
 	assertEquals("EndPos (2)", 8, kr.match(2).endPos);
@@ -133,7 +133,7 @@ public class TestMatchIndex {
 	assertEquals("totalResults", 1, kr.totalResults());
 	assertEquals("SnippetBrackets (0)", "... bcabca[b{a}]c", kr.match(0).snippetBrackets());
 
-	assertEquals("SnippetHTML (0) 1", "<span class=\"korap-context-left\"><span class=\"korap-more\"></span>bcabca</span><span class=\"korap-match\">b<span class=\"korap-highlight korap-class-0\">a</span></span><span class=\"korap-context-right\">c</span>", kr.match(0).snippetHTML());
+	assertEquals("SnippetHTML (0) 1", "<span class=\"context-left\"><span class=\"more\"></span>bcabca</span><span class=\"match\">b<em class=\"class-0 level-0\">a</em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
 
 	// Offset tokens
 	kr = ki.search(sq, 0, (short) 10, true, (short) 2, true, (short) 2);
@@ -147,7 +147,7 @@ public class TestMatchIndex {
 	assertEquals("totalResults", 1, kr.totalResults());
 	assertEquals("SnippetBrackets (0)", "... a[b{a}] ...", kr.match(0).snippetBrackets());
 
-	assertEquals("SnippetHTML (0) 2", "<span class=\"korap-context-left\"><span class=\"korap-more\"></span>a</span><span class=\"korap-match\">b<span class=\"korap-highlight korap-class-0\">a</span></span><span class=\"korap-context-right\"><span class=\"korap-more\"></span></span>", kr.match(0).snippetHTML());
+	assertEquals("SnippetHTML (0) 2", "<span class=\"context-left\"><span class=\"more\"></span>a</span><span class=\"match\">b<em class=\"class-0 level-0\">a</em></span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.match(0).snippetHTML());
 
 	// System.err.println(kr.toJSON());
 
@@ -232,27 +232,27 @@ public class TestMatchIndex {
 	kr = ki.search(sq, (short) 20);
 
 	assertEquals("totalResults", 7, kr.totalResults());
-	assertEquals("SnippetBrackets (0)", "<span class=\"korap-match\">a</span><span class=\"korap-context-right\">bcabca<span class=\"korap-more\"></span></span>", kr.match(0).snippetHTML());
+	assertEquals("SnippetBrackets (0)", "<span class=\"context-left\"></span><span class=\"match\">a</span><span class=\"context-right\">bcabca<span class=\"more\"></span></span>", kr.match(0).snippetHTML());
 	assertEquals("SnippetBrackets (0)", "[a]bcabca ...", kr.match(0).snippetBrackets());
 
 	assertEquals("SnippetBrackets (1)", "ab[c]abcaba ...", kr.match(1).snippetBrackets());
-	assertEquals("SnippetBrackets (1)", "<span class=\"korap-context-left\">ab</span><span class=\"korap-match\">c</span><span class=\"korap-context-right\">abcaba<span class=\"korap-more\"></span></span>", kr.match(1).snippetHTML());
+	assertEquals("SnippetBrackets (1)", "<span class=\"context-left\">ab</span><span class=\"match\">c</span><span class=\"context-right\">abcaba<span class=\"more\"></span></span>", kr.match(1).snippetHTML());
 
 	assertEquals("SnippetBrackets (6)", "... abcaba[c]", kr.match(6).snippetBrackets());
-	assertEquals("SnippetBrackets (6)", "<span class=\"korap-context-left\"><span class=\"korap-more\"></span>abcaba</span><span class=\"korap-match\">c</span>", kr.match(6).snippetHTML());
+	assertEquals("SnippetBrackets (6)", "<span class=\"context-left\"><span class=\"more\"></span>abcaba</span><span class=\"match\">c</span><span class=\"context-right\"></span>", kr.match(6).snippetHTML());
 
 
 	kr = ki.search(sq, 0, (short) 20, true, (short) 0, true, (short) 0);
 
 	assertEquals("totalResults", 7, kr.totalResults());
 	assertEquals("SnippetBrackets (0)", "[a] ...", kr.match(0).snippetBrackets());
-	assertEquals("SnippetHTML (0)", "<span class=\"korap-match\">a</span><span class=\"korap-context-right\"><span class=\"korap-more\"></span></span>", kr.match(0).snippetHTML());
+	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"></span><span class=\"match\">a</span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.match(0).snippetHTML());
 
 	assertEquals("SnippetBrackets (1)", "... [c] ...", kr.match(1).snippetBrackets());
-	assertEquals("SnippetHTML (1)", "<span class=\"korap-context-left\"><span class=\"korap-more\"></span></span><span class=\"korap-match\">c</span><span class=\"korap-context-right\"><span class=\"korap-more\"></span></span>", kr.match(1).snippetHTML());
+	assertEquals("SnippetHTML (1)", "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\">c</span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.match(1).snippetHTML());
 
 	assertEquals("SnippetBrackets (6)", "... [c]", kr.match(6).snippetBrackets());
-	assertEquals("SnippetBrackets (6)", "<span class=\"korap-context-left\"><span class=\"korap-more\"></span></span><span class=\"korap-match\">c</span>", kr.match(6).snippetHTML());
+	assertEquals("SnippetBrackets (6)", "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\">c</span><span class=\"context-right\"></span>", kr.match(6).snippetHTML());
     };
 
 

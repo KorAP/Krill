@@ -204,7 +204,7 @@ public class PositionsToOffset {
 	    };
 	}
 	catch (IOException e) {
-	    // log.warn(e.getLocalizedMessage());
+	    log.warn(e.getLocalizedMessage());
 	};
 
 	processed = true;

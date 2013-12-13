@@ -44,8 +44,16 @@ public class KorapMatch extends KorapDocument {
     private Collection<byte[]> payload;
     private ArrayList<int[]> highlight;
 
+    public PositionsToOffset positionsToOffset;
+
+    private boolean processed = false;
+
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
+
+    public KorapMatch (PositionsToOffset pto) {
+	this.positionsToOffset = pto;
+    };
 
     /**
      * Insert a highlight for the snippet view by means of positional
@@ -64,7 +72,7 @@ public class KorapMatch extends KorapDocument {
     };
 
     public void addHighlight (int start, int end) {
-	this.addHighlight(start, end, (int) 1);
+	this.addHighlight(start, end, (int) 0);
     };
 
     public void addHighlight (int start, int end, int number) {
@@ -115,16 +123,15 @@ public class KorapMatch extends KorapDocument {
      * @see #snippetBrackets()
      * @see PositionsToOffset
      */
-    public void processHighlight (PositionsToOffset pto) {
+    public void processHighlight () {
+
+	if (processed)
+	    return;
 
 	log.trace("Start highlight processing ...");
 	
 	// Get the list of spans for matches and highlighting
-	LinkedList<int[]> spans = this._processHighlightSpans(
-            pto,
-	    leftTokenContext,
-	    rightTokenContext
-        );
+	LinkedList<int[]> spans = this._processHighlightSpans(leftTokenContext,rightTokenContext);
 
 	for (int[] s : spans) {
 	    log.trace(" >> [Spans] Start: {}, End: {}, Class: {}, Dummy: {}", s[0], s[1], s[2], s[3]);
@@ -136,11 +143,14 @@ public class KorapMatch extends KorapDocument {
 	    log.trace(" >> [Stack] Start: {}, End: {}, Class: {}, Dummy: {}", s[0], s[1], s[2], s[3]);
 	};
 
-
-	if (this.tempSnippet == null)
+	if (this.tempSnippet == null) {
+	    processed = true;
 	    return;
+	};
 
 	this._processHighlightSnippet(this.tempSnippet, stack);
+
+	processed = true;
 
 	/*
 
@@ -194,23 +204,31 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	    this.characters = characters;
 	};
 
-	public String toHTML () {	    
+	public String toHTML (byte[] level) {	    
 	    if (this.type == 1) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<span class=\"");
 		if (this.number == -1) {
-		    sb.append("korap-match\"");
+		    sb.append("<span class=\"match\">");
 		}
 		else {
-		    sb.append("korap-highlight korap-class-")
-			.append(this.number)
-			.append('"');
+		    byte actLevel = level[255];
+		    if (level[this.number] == '\0') {
+			level[this.number] = actLevel;
+			level[255]++;
+		    };
+		    sb.append("<em class=\"class-")
+                      .append(this.number)
+		      .append(" level-")
+                      .append(actLevel)
+                      .append("\">");
 		};
-		sb.append('>');
 		return sb.toString();
 	    }
 	    else if (this.type == 2) {
-		return "</span>";
+		if (this.number == -1)
+		    return "</span>";
+		// level[]
+		return "</em>";
 	    };
 	    return encodeHTML(this.characters);
 	};
@@ -229,9 +247,8 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 		return sb.toString();
 	    }
 	    else if (this.type == 2) {
-		if (this.number == -1) {
+		if (this.number == -1)
 		    return "]";
-		}
 		return "}";
 	    };
 	    return this.characters;
@@ -353,51 +370,51 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 
     @JsonProperty("snippet")
     public String getSnippetHTML () {
+
+	this.processHighlight();
+
 	if (this.snippetHTML != null)
 	    return this.snippetHTML;
 
 	StringBuilder sb = new StringBuilder();
 
 	short start = (short) 0;
-	short end   = this.snippetStack.size();
+	short end = this.snippetStack.size();
+	byte[] level = new byte[256];
+	level[255] = 0;
 
 	HighlightCombinatorElement elem = this.snippetStack.getFirst();
 
-	// Create context, if there is any
-	if ((elem.type == 0) || startMore) {
-	    sb.append("<span class=\"korap-context-left\">");
-	    if (startMore)
-		sb.append("<span class=\"korap-more\"></span>");
-	    if (elem.type == 0) {
-		sb.append(elem.toHTML());
-		start++;
-	    };
-	    sb.append("</span>");
+	// Create context
+	sb.append("<span class=\"context-left\">");
+	if (startMore)
+	    sb.append("<span class=\"more\"></span>");
+
+	if (elem.type == 0) {
+	    sb.append(elem.toHTML(level));
+	    start++;
 	};
+	sb.append("</span>");
 
 	elem = this.snippetStack.getLast();
 
 	StringBuilder rightContext = new StringBuilder();
 
 	// Create context, if trhere is any
-	if (endMore || (elem != null && elem.type == 0)) {
-	    rightContext.append("<span class=\"korap-context-right\">");
-	    if (elem != null && elem.type == 0) {
-		rightContext.append(elem.toHTML());
-		end--;
-	    };
-	    if (endMore)
-		rightContext.append("<span class=\"korap-more\"></span>");
-	    rightContext.append("</span>");
+	rightContext.append("<span class=\"context-right\">");
+	if (elem != null && elem.type == 0) {
+	    rightContext.append(elem.toHTML(level));
+	    end--;
 	};
+	if (endMore)
+	    rightContext.append("<span class=\"more\"></span>");
+	rightContext.append("</span>");
 
 	for (short i = start; i < end; i++) {
-	    sb.append(this.snippetStack.get(i).toHTML());
+	    sb.append(this.snippetStack.get(i).toHTML(level));
 	};
 
-	if (rightContext != null) {
-	    sb.append(rightContext);
-	};
+	sb.append(rightContext);
 
 	return (this.snippetHTML = sb.toString());
     };
@@ -409,6 +426,9 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
     
     @JsonIgnore
     public String getSnippetBrackets () {
+
+	this.processHighlight();
+
 	if (this.snippetBrackets != null)
 	    return this.snippetBrackets;
 
@@ -428,7 +448,9 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
     };
 
 
-    // Todo: Not very fast - just a direct translation of the perl script
+    // This sorts all highlight and match spans to make them nesting correctly,
+    // even in case they overlap
+    // TODO: Not very fast - improve!
     private ArrayList<int[]> _processHighlightStack (LinkedList<int[]> spans) {
 
 	log.trace("Create Stack");
@@ -445,6 +467,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 
 	ArrayList<int[]> stack = new ArrayList<>(openList.size() * 2);
 
+	// Create stack unless both lists are empty
 	while (!openList.isEmpty() || !closeList.isEmpty()) {
 
 	    if (openList.isEmpty()) {
@@ -465,8 +488,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
     };
 
 
-    private LinkedList<int[]> _processHighlightSpans (PositionsToOffset pto,
-						      boolean leftTokenContext,
+    private LinkedList<int[]> _processHighlightSpans (boolean leftTokenContext,
 						      boolean rightTokenContext) {
 	int startOffsetChar,
 	    endOffsetChar,
@@ -478,14 +500,14 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	int ldid = this.localDocID;
 
 	// Match position
-	startPosChar = pto.start(ldid, this.startPos);
+	startPosChar = this.positionsToOffset.start(ldid, this.startPos);
 
 	// Check potential differing start characters
 	// e.g. from element spans
 	if (potentialStartPosChar != -1 && startPosChar > potentialStartPosChar)
 	    startPosChar = potentialStartPosChar;
 
-	endPosChar = pto.end(ldid, this.endPos - 1);
+	endPosChar = this.positionsToOffset.end(ldid, this.endPos - 1);
 
 	if (endPosChar < potentialEndPosChar)
 	    endPosChar = potentialEndPosChar;
@@ -494,7 +516,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 
 	// left context
 	if (leftTokenContext) {
-	    startOffsetChar = pto.start(ldid, startPos - this.leftContext);
+	    startOffsetChar = this.positionsToOffset.start(ldid, startPos - this.leftContext);
 	}
 	else {
 	    startOffsetChar = startPosChar - this.leftContext;
@@ -502,7 +524,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 
 	// right context
 	if (rightTokenContext) {
-	    endOffsetChar = pto.end(ldid, this.endPos + this.rightContext - 1);
+	    endOffsetChar = this.positionsToOffset.end(ldid, this.endPos + this.rightContext - 1);
 	    log.trace("For endOffset {} ({}+{}-1) pto returns {}", (this.endPos + this.rightContext - 1), this.endPos, this.rightContext, endOffsetChar);
 	}
 	else {
@@ -552,7 +574,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	spans.add(intArray);
 
 	// highlights
-	// I'm not sure about this.
+	// -- I'm not sure about this.
 	if (this.highlight != null) {
 	    for (int[] highlight : this.highlight) {
 
@@ -575,8 +597,8 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 		end -= startOffsetChar;
 		*/
 
-		int start = pto.start(ldid, highlight[0]) - startOffsetChar;
-		int end = pto.end(ldid, highlight[1]) - startOffsetChar;
+		int start = this.positionsToOffset.start(ldid, highlight[0]) - startOffsetChar;
+		int end = this.positionsToOffset.end(ldid, highlight[1]) - startOffsetChar;
 
 		if (start < 0 || end < 0)
 		    continue;
@@ -589,8 +611,8 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 		};
 
 		log.trace("IntArray: {}", intArray);
-		log.trace("PTO-start: {}", pto.start(ldid, highlight[0]));
-		log.trace("PTO-end: {}", pto.end(ldid, highlight[1]));
+		log.trace("PTO-start: {}", start + startOffsetChar);
+		log.trace("PTO-end: {}", end + startOffsetChar);
 
 		spans.add(intArray);
 	    };

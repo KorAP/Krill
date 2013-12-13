@@ -129,8 +129,6 @@ public class TestFieldDocument {
 
 	KorapMatch km = kr.getMatch(0);
 
-	System.err.println("----");
-
 	assertEquals(km.getPrimaryData(),"abc");
 	assertEquals(km.getCorpusID(),"WPD");
 	assertEquals(km.getID(),"WPD-AAA-00001");

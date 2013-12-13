@@ -573,7 +573,7 @@ public class KorapIndex {
 
 		    // Do not load all of this, in case the doc is the same!
 		    Document doc = lreader.document(localDocID, fieldsToLoadLocal);
-		    KorapMatch match = kr.addMatch(); // new KorapMatch();
+		    KorapMatch match = kr.addMatch(pto); // new KorapMatch();
 
 		    match.startPos = spans.start();
 		    match.endPos = spans.end();
@@ -714,10 +714,6 @@ public class KorapIndex {
 		    if (limit > 0 && i <= limit)
 			break;
 		    i++;
-		};
-
-		for (KorapMatch km : atomicMatches) {
-		    km.processHighlight(pto);
 		};
 		atomicMatches.clear();
 	    };
