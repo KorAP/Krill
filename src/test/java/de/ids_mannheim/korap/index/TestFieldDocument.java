@@ -205,5 +205,7 @@ public class TestFieldDocument {
 	kr = ki.search(query, 0, (short) 5, true, (short) 2, false, (short) 5);
 	assertEquals(1, kr.totalResults());
 	assertEquals("... reich an [Vokalen] war, ...", kr.match(0).getSnippetBrackets());
+
+	assertNotNull(kr.toJSON());
     };
 };

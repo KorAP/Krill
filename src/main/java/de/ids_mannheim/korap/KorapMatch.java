@@ -10,6 +10,8 @@ import static de.ids_mannheim.korap.util.KorapHTML.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.lucene.util.FixedBitSet;
+
 /*
   Todo: The implemented classes and private names are horrible!
   Refactor, future-me!
@@ -44,6 +46,7 @@ public class KorapMatch extends KorapDocument {
     private Collection<byte[]> payload;
     private ArrayList<int[]> highlight;
 
+    @JsonIgnore
     public PositionsToOffset positionsToOffset;
 
     private boolean processed = false;
@@ -193,10 +196,18 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	private short type;
 	private int number;
 	private String characters;
+	private boolean terminal = true;
 
 	public HighlightCombinatorElement (short type, int number) {
 	    this.type = type;
 	    this.number = number;
+	};
+
+	public HighlightCombinatorElement (short type, int number, boolean terminal) {
+	    // Type 1: Match, 
+	    this.type = type;
+	    this.number = number;
+	    this.terminal = terminal;
 	};
 
 	public HighlightCombinatorElement (String characters) {
@@ -204,30 +215,39 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	    this.characters = characters;
 	};
 
-	public String toHTML (byte[] level) {	    
+	public String toHTML (FixedBitSet level, byte[] levelCache) {	    
+	    // Opening
 	    if (this.type == 1) {
 		StringBuilder sb = new StringBuilder();
 		if (this.number == -1) {
 		    sb.append("<span class=\"match\">");
 		}
 		else {
-		    byte actLevel = level[255];
-		    if (level[this.number] == '\0') {
-			level[this.number] = actLevel;
-			level[255]++;
+		    // Get the first free level slot
+		    byte pos;
+		    if (levelCache[this.number] != '\0') {
+			pos = levelCache[this.number];
+		    }
+		    else {
+			pos = (byte) level.nextSetBit(0);
+			level.clear(pos);
+			levelCache[this.number] = pos;
 		    };
 		    sb.append("<em class=\"class-")
                       .append(this.number)
 		      .append(" level-")
-                      .append(actLevel)
+                      .append(pos)
                       .append("\">");
 		};
 		return sb.toString();
 	    }
+	    // Closing
 	    else if (this.type == 2) {
 		if (this.number == -1)
 		    return "</span>";
-		// level[]
+
+		if (this.terminal)
+		    level.set((int) levelCache[this.number]);
 		return "</em>";
 	    };
 	    return encodeHTML(this.characters);
@@ -289,35 +309,59 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	    this.combine.add(new HighlightCombinatorElement(characters));
 	};
 
+	// add opening highlight combinator
 	public void addOpen (int number) {
 	    this.combine.add(new HighlightCombinatorElement((short) 1, number));
 	    this.balanceStack.add(number);
 	};
 
+	// add closing highlight combinator
 	public void addClose (int number) {
 	    HighlightCombinatorElement lastComb;
 	    this.tempStack.clear();
 	    int eold = this.balanceStack.removeLast();
+
+	    // the closing element is not balanced
 	    while (eold != number) {
+
+		// Retrieve last combinator on stack
 		lastComb = this.combine.peekLast();
+
+		// combinator is opening and the number is not equal to the last
+		// element on the balanceStack
 		if (lastComb.type == 1 && lastComb.number != eold) {
+		    // Remove the last element - it's empty and uninteresting!
 		    this.combine.removeLast();
 		}
+
+		// combinator is either closing (??) or another opener
 		else {
-		    this.combine.add(new HighlightCombinatorElement((short) 2, eold));
+
+		    // Add a closer for the old element (this has following elements)
+		    this.combine.add(new HighlightCombinatorElement((short) 2, eold, false));
 		};
+
+		// add this element number temporarily on the stack
 		tempStack.add(eold);
+
+		// Check next element
 		eold = this.balanceStack.removeLast();
 	    };
-	    
+
+	    // Get last combinator on the stack
 	    lastComb = this.combine.peekLast();
+
+	    // The last combinator is opening and identical to the current one
 	    if (lastComb.type == 1 && lastComb.number == number) {
+		// Remove the damn thing - It's empty and uninteresting!
 		this.combine.removeLast();
 	    }
 	    else {
+		// Add a closer
 		this.combine.add(new HighlightCombinatorElement((short) 2, number));
 	    };
 	    
+	    // Fetch everything from the tempstack and reopen it
 	    for (int e : tempStack) {
 		combine.add(new HighlightCombinatorElement((short) 1, e));
 		balanceStack.add(e);
@@ -380,8 +424,9 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 
 	short start = (short) 0;
 	short end = this.snippetStack.size();
-	byte[] level = new byte[256];
-	level[255] = 0;
+	FixedBitSet level = new FixedBitSet(16);
+	level.set(0, 15);
+	byte[] levelCache = new byte[16];
 
 	HighlightCombinatorElement elem = this.snippetStack.getFirst();
 
@@ -391,7 +436,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	    sb.append("<span class=\"more\"></span>");
 
 	if (elem.type == 0) {
-	    sb.append(elem.toHTML(level));
+	    sb.append(elem.toHTML(level, levelCache));
 	    start++;
 	};
 	sb.append("</span>");
@@ -403,7 +448,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	// Create context, if trhere is any
 	rightContext.append("<span class=\"context-right\">");
 	if (elem != null && elem.type == 0) {
-	    rightContext.append(elem.toHTML(level));
+	    rightContext.append(elem.toHTML(level, levelCache));
 	    end--;
 	};
 	if (endMore)
@@ -411,7 +456,7 @@ with http://docs.oracle.com/javase/6/docs/api/java/util/Comparator.html
 	rightContext.append("</span>");
 
 	for (short i = start; i < end; i++) {
-	    sb.append(this.snippetStack.get(i).toHTML(level));
+	    sb.append(this.snippetStack.get(i).toHTML(level,levelCache));
 	};
 
 	sb.append(rightContext);

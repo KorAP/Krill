@@ -54,5 +54,8 @@ public class TestHighlight { // extends LuceneTestCase {
 	km = kr.getMatch(0);
 	assertEquals("<span class=\"context-left\">a</span><span class=\"match\"><em class=\"class-1 level-0\">b</em><em class=\"class-2 level-0\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
 
+	// Check {1a:{1b:huhu:1a}hihi:1b}
+
+
     };
 };
