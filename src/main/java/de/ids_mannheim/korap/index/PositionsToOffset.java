@@ -15,7 +15,6 @@ import org.apache.lucene.util.BytesRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class PositionsToOffset {
     private String field;
     private AtomicReaderContext atomic;
@@ -71,6 +70,10 @@ public class PositionsToOffset {
     };
 
     public void add (PositionsToOffsetArray ptoa) {
+	log.trace("Add positionsToOffsetArray {}/{}", ptoa.docID, ptoa.pos);
+	if (this.processed && this.exists(ptoa))
+	    return;
+	log.trace("Reopen processing");
 	this.positions.add(ptoa);
 	this.processed = false;
     };
@@ -135,13 +138,15 @@ public class PositionsToOffset {
 	if (processed)
 	    return offsets;
 
+	log.trace("Process offsets");
+
 	StringBuilder sb = new StringBuilder().append('_');
 
 	try {
 	    Terms terms = atomic.reader().fields().terms(field);
 
 	    if (terms != null) {
-		// Todo: Maybe reuse a termsEnum!
+		// TODO: Maybe reuse a termsEnum!
 
 		final TermsEnum termsEnum = terms.iterator(null);
 

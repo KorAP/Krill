@@ -573,31 +573,12 @@ public class KorapIndex {
 
 		    // Do not load all of this, in case the doc is the same!
 		    Document doc = lreader.document(localDocID, fieldsToLoadLocal);
-		    KorapMatch match = kr.addMatch(pto); // new KorapMatch();
-
-		    match.startPos = spans.start();
-		    match.endPos = spans.end();
-		    match.localDocID = localDocID;
-
-		    pto.add(localDocID, match.startPos);
-		    pto.add(localDocID, match.endPos - 1);
-
-		    /*
-		    match.leftContext = leftContext;
-		    match.rightContext = rightContext;
-
-		    match.leftTokenContext = leftTokenContext;
-		    match.rightTokenContext = rightTokenContext;
-		    */
-		    // Add pos for context
-		    if (match.leftTokenContext) {
-			pto.add(localDocID, match.startPos - match.leftContext);
-		    };
-
-		    // Add pos for context
-		    if (match.rightTokenContext) {
-			pto.add(localDocID, match.endPos + match.rightContext - 1);
-		    };
+		    KorapMatch match = kr.addMatch(
+		        pto,
+			localDocID,
+			spans.start(),
+			spans.end()
+		    ); // new KorapMatch();
 
 		    if (spans.isPayloadAvailable()) {
 
@@ -629,11 +610,6 @@ public class KorapIndex {
 				    byte number = bb.get();
 
 				    log.trace("Have a payload: {}-{}", start, end);
-
-				    // Add this for offset search
-				    pto.add(localDocID, start);
-				    pto.add(localDocID, end);
-
 				    match.addHighlight(start, end, number);
 				}
 

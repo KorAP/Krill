@@ -66,14 +66,24 @@ public class KorapResult {
 	this.matches.add(km);
     };
 
-    public KorapMatch addMatch (PositionsToOffset pto) {
-	KorapMatch km = new KorapMatch(pto);
-	// Temporary:
+    public KorapMatch addMatch (PositionsToOffset pto, int localDocID, int startPos, int endPos) {
+	KorapMatch km = new KorapMatch(pto, localDocID, startPos, endPos);
+	// Temporary - should use the same interface like results in the future:
 	km.leftContext = this.leftContextOffset;
 	km.leftTokenContext = this.leftTokenContext;
 	km.rightContext = this.rightContextOffset;
 	km.rightTokenContext = this.rightTokenContext;
-	km.positionsToOffset = pto;
+
+	// Add pos for context
+	// That's not really a good position for it, to be honest ...
+	// But maybe it will make the offset information in the match be obsolete!
+	if (km.leftTokenContext) {
+	    pto.add(localDocID, startPos - this.leftContextOffset);
+	};
+	if (km.rightTokenContext) {
+	    pto.add(localDocID, endPos + this.rightContextOffset - 1);
+	};
+
 	this.add(km);
 	return km;
     };
