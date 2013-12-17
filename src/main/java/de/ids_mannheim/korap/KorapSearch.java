@@ -130,6 +130,10 @@ public class KorapSearch {
 		if (json.has("startPage"))
 		    this.setStartPage(json.get("startPage").asInt());
 
+		// Defined cutOff
+		if (json.has("cutOff"))
+		    this.setCutOff(json.get("cutOff").asBoolean());
+
 		// Defined contexts
 		if (json.has("context")) {
 		    JsonNode context = json.get("context");

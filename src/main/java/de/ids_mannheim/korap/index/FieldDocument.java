@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
@@ -96,6 +97,15 @@ last_modified timestamp or KorapDate
     public void addString (String key, String value) {
 	doc.add(new StringField(key, value, Field.Store.YES));
     };
+
+    public void addStored (String key, String value) {
+	doc.add(new StoredField(key, value));
+    };
+
+    public void addStored (String key, int value) {
+	doc.add(new StoredField(key, value));
+    };
+
 
     public void addTV (String key, String value, String tsString) {
 	this.addTV(key, value, new MultiTermTokenStream(tsString));
@@ -215,5 +225,11 @@ last_modified timestamp or KorapDate
     public void setID (String ID) {
 	super.setID(ID);
 	this.addString("ID", ID);
+    };
+
+    @Override
+    public void setLayerInfo (String layerInfo) {
+	super.setLayerInfo(layerInfo);
+	this.addStored("layerInfo", layerInfo);
     };
 };

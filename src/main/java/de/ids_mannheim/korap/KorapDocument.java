@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.*;
  *
  * @author ndiewald
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class KorapDocument {
     private KorapPrimaryData primaryData;
 
@@ -26,7 +27,8 @@ public abstract class KorapDocument {
 
     private String author, textClass, corpusID,
 	           pubPlace, ID, title, subTitle,
-	           foundries, tokenization;
+	           foundries, tokenization,
+	           layerInfo;
     
     private KorapDate pubDate;
 
@@ -167,5 +169,13 @@ public abstract class KorapDocument {
 
     public String getTokenization () {
 	return this.tokenization;
+    };
+
+    public void setLayerInfo (String layerInfo) {
+	this.layerInfo = layerInfo;
+    };
+
+    public String getLayerInfo () {
+	return this.layerInfo;
     };
 };

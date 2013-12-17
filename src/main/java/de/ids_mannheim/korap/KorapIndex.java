@@ -137,6 +137,7 @@ public class KorapIndex {
 	fieldsToLoad.add("pubDate");
 	fieldsToLoad.add("corpusID");
 	fieldsToLoad.add("foundries");
+	fieldsToLoad.add("layerInfo");
 	fieldsToLoad.add("tokenization");
 	// don't load tokenization
 
@@ -670,6 +671,8 @@ public class KorapIndex {
 		    // Temporary (later meta fields in term vector)
 		    match.setFoundries(doc.get("foundries"));
 		    match.setTokenization(doc.get("tokenization"));
+
+		    match.setLayerInfo(doc.get("layerInfo"));
 
 		    match.setPrimaryData(
 		      new KorapPrimaryData(doc.get(foundry))

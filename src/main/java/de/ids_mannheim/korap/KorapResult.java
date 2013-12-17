@@ -13,6 +13,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
 import com.fasterxml.jackson.annotation.*;
 
+/*
+TODO: Reuse the KorapSearch code for data serialization!
+*/
+
 public class KorapResult {
     ObjectMapper mapper = new ObjectMapper();
 

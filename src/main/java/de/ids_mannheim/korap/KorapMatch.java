@@ -115,6 +115,17 @@ public class KorapMatch extends KorapDocument {
 	this.highlight.add(new int[]{ start, end, number});
     };
 
+    @JsonProperty("docID")
+    public String getDocID () {
+	return super.getID();
+    };
+
+    @Override
+    @JsonProperty("ID")
+    public String getID () {
+	return this.getDocID() + "#match...";
+    };
+
     private void _reset () {
 	this.processed = false;
 	this.snippetHTML = null;
@@ -368,6 +379,10 @@ public class KorapMatch extends KorapDocument {
 		// Retrieve last combinator on stack
 		lastComb = this.combine.peekLast();
 
+		/*
+		System.err.println("+" + lastComb.type + "|" + lastComb.number + "|" + number + "|" + eold);
+		*/
+
 		// combinator is opening and the number is not equal to the last
 		// element on the balanceStack
 		if (lastComb.type == 1 && lastComb.number != eold) {
@@ -392,6 +407,7 @@ public class KorapMatch extends KorapDocument {
 	    // Get last combinator on the stack
 	    lastComb = this.combine.peekLast();
 
+	    /*
 	    // The last combinator is opening and identical to the current one
 	    if (lastComb.type == 1 && lastComb.number == number) {
 		// Remove the damn thing - It's empty and uninteresting!
@@ -401,7 +417,25 @@ public class KorapMatch extends KorapDocument {
 		// Add a closer
 		this.combine.add(new HighlightCombinatorElement((byte) 2, number));
 	    };
-	    
+	    */
+
+	    /*
+	    System.err.println(":" + lastComb.type + "|" + lastComb.number + "|" + number);
+	    */
+
+	    if (lastComb.type == 1 && lastComb.number == number) {
+		while (lastComb.type == 1 && lastComb.number == number) {
+		    // Remove the damn thing - It's empty and uninteresting!
+		    this.combine.removeLast();
+		    lastComb = this.combine.peekLast();
+		};
+	    }
+	    else {
+		// Add a closer
+		this.combine.add(new HighlightCombinatorElement((byte) 2, number));
+	    };
+
+
 	    // Fetch everything from the tempstack and reopen it
 	    for (int e : tempStack) {
 		combine.add(new HighlightCombinatorElement((byte) 1, e));

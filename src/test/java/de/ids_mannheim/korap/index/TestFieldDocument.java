@@ -131,7 +131,7 @@ public class TestFieldDocument {
 
 	assertEquals(km.getPrimaryData(),"abc");
 	assertEquals(km.getCorpusID(),"WPD");
-	assertEquals(km.getID(),"WPD-AAA-00001");
+	assertEquals(km.getDocID(),"WPD-AAA-00001");
 	assertEquals(km.getTextClass(),"music entertainment");
 	assertEquals(km.getAuthor(),"Peter Frankenfeld");
 	assertEquals(km.getTitle(),"Wikipedia");
@@ -194,11 +194,11 @@ public class TestFieldDocument {
 
 	assertEquals(3, kr.totalResults());
 	assertEquals("... Lofoten in [Norwegen], unt ...", kr.match(0).getSnippetBrackets());
-	assertEquals("WPD_AAA.00002", kr.match(0).getID());
+	assertEquals("WPD_AAA.00002", kr.match(0).getDocID());
 	assertEquals("... es in [Norwegen] noch ...", kr.match(1).getSnippetBrackets());
-	assertEquals("WPD_AAA.00002", kr.match(1).getID());
+	assertEquals("WPD_AAA.00002", kr.match(1).getDocID());
 	assertEquals("... Orte in [Norwegen]: Å i ...", kr.match(2).getSnippetBrackets());
-	assertEquals("WPD_AAA.00005", kr.match(2).getID());
+	assertEquals("WPD_AAA.00005", kr.match(2).getDocID());
 
 
 	query = kq.seg("tt/l:Vokal").without("mate/m:number:sg").toQuery();
