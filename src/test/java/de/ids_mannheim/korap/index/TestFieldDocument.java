@@ -140,6 +140,7 @@ public class TestFieldDocument {
 	assertEquals(km.getPubDate().toDisplay(),"2013-06-17");
 
 	assertEquals(km.getSnippetBrackets(),"a[{3:b}]c");
+	//	System.err.println(kr.toJSON());
     };
 
     @Test
@@ -162,7 +163,7 @@ public class TestFieldDocument {
 	// within(<xip/const:NPA>, {1: {2: [cnx/p=A & mate/m=number:sg]}[opennlp/p=NN & tt/p=NN]})
 	SpanQuery query =
 	    kq.within(
-              kq.tag("xip/const:NPA"),
+              kq.tag("xip/c:NPA"),
               kq._(1,
                 kq.seq(
 	          kq._(2, kq.seg("cnx/p:A").with("mate/m:number:sg"))

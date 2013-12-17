@@ -41,7 +41,7 @@ public class KorapSearch {
     public class KorapSearchContext {
 	private boolean type = true;
 	private short length = 6;
-	private short maxLength = 12;
+	private short maxLength = 300;
 
 	public boolean isToken () {
 	    return this.type;

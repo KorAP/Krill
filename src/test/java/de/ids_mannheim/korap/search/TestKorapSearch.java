@@ -185,6 +185,28 @@ public class TestKorapSearch {
     };
 
 
+    @Test
+    public void searchJSONcontext () throws IOException {
+
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	String json = getString(getClass().getResource("/queries/bsp-context.json").getFile());
+
+	KorapResult kr = new KorapSearch(json).run(ki);
+	assertEquals(10, kr.getTotalResults());
+	assertEquals("A bzw. a ist der erste Buchstabe des lateinischen [Alphabets] und ein Vokal. Der Buchstabe A hat in deutschen Texten eine durchschnittliche Häufigkeit  ...", kr.getMatch(0).getSnippetBrackets());
+    };
+
+
+
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();
 	try {
