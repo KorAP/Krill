@@ -28,11 +28,11 @@ public class SpanRegexQueryWrapper {
 	    if (re.startsWith("s:")) {
 		re = re.replaceFirst("s:", "i:");
 	    };
-	    // TODO: This may break things like \N
 	    re = re.toLowerCase();
 	};
 	RegexpQuery requery = new RegexpQuery(new Term(field, re), flags);
 	query = new SpanMultiTermQueryWrapper<RegexpQuery>( requery );
+
     };
 
     public SpanQuery toQuery() {

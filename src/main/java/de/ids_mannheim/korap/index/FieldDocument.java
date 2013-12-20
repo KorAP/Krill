@@ -39,20 +39,25 @@ public class FieldDocument extends KorapDocument {
 
     public Document doc = new Document();
 
-    private FieldType tvField = new FieldType(TextField.TYPE_STORED);
+    private FieldType tvField   = new FieldType(TextField.TYPE_STORED);
     private FieldType tvNoField = new FieldType(TextField.TYPE_NOT_STORED);
-
-    //    private HashMap<String, MultiTermTokenStream> termFields;
+    private FieldType keywords  = new FieldType(TextField.TYPE_STORED);
 
     {
 	tvField.setStoreTermVectors(true);
 	tvField.setStoreTermVectorPositions(true);
 	tvField.setStoreTermVectorPayloads(true);
+	tvField.setStoreTermVectorOffsets(false);
 
 	tvNoField.setStoreTermVectors(true);
 	tvNoField.setStoreTermVectorPositions(true);
 	tvNoField.setStoreTermVectorPayloads(true);
-	//	termFields = new HashMap<String, MultiTermTokenStream>();
+	tvNoField.setStoreTermVectorOffsets(false);
+
+	keywords.setStoreTermVectors(true);
+	keywords.setStoreTermVectorPositions(false);
+	keywords.setStoreTermVectorPayloads(false);
+	keywords.setStoreTermVectorOffsets(false);
     }
 
     // see http://www.cowtowncoder.com/blog/archives/2011/07/entry_457.html
@@ -94,6 +99,10 @@ last_modified timestamp or KorapDate
 	doc.add(new TextField(key, value, Field.Store.YES));
     };
 
+    public void addKeyword (String key, String value) {
+	doc.add(new Field(key, value, keywords));
+    };
+
     public void addString (String key, String value) {
 	doc.add(new StringField(key, value, Field.Store.YES));
     };
@@ -105,7 +114,6 @@ last_modified timestamp or KorapDate
     public void addStored (String key, int value) {
 	doc.add(new StoredField(key, value));
     };
-
 
     public void addTV (String key, String value, String tsString) {
 	this.addTV(key, value, new MultiTermTokenStream(tsString));
@@ -163,8 +171,9 @@ last_modified timestamp or KorapDate
 	    // Store this information as well as tokenization information
 	    // as meta fields in the tokenization term vector
 	    if (field.containsKey("foundries")) {
+		// TODO: Do not store positions!
 		String foundries = (String) field.get("foundries");
-		this.addText("foundries", foundries);
+		this.addKeyword("foundries", foundries);
 		super.setFoundries(foundries);
 	    };
 	    if (field.containsKey("tokenization")) {

@@ -160,8 +160,20 @@ public class KorapSearch {
 	this.query = sq;
     };
 
+    public KorapSearch () { };
+
     public SpanQuery getQuery () {
 	return this.query;
+    };
+
+    public KorapSearch setQuery (SpanQueryWrapperInterface sqwi) {
+	this.query = sqwi.toQuery();
+	return this;
+    };
+
+    public KorapSearch setQuery (SpanQuery sq) {
+	this.query = sq;
+	return this;
     };
 
     public int getStartIndex () {
@@ -248,6 +260,12 @@ public class KorapSearch {
     };
 
     public KorapResult run (KorapIndex ki) {
+	if (this.query == null) {
+	    KorapResult kr = new KorapResult();
+	    kr.setError(this.getClass() + " expects a query");
+	    return kr;
+	};
+
 	if (this.error != null) {
 	    KorapResult kr = new KorapResult();
 	    kr.setError(this.error);

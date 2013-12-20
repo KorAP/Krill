@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
@@ -500,6 +501,7 @@ public class KorapIndex {
 	log.trace("Start search");
 
 	this.termContexts = new HashMap<Term, TermContext>();
+
 	SpanQuery query = ks.getQuery();
 	String foundry = query.getField();
 
@@ -536,6 +538,11 @@ public class KorapIndex {
 	ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.itemsPerPage());
 
 	try {
+
+	    // Rewrite query
+	    for (Query rewrittenQuery = query.rewrite(this.reader()); rewrittenQuery != (Query) query; rewrittenQuery = query.rewrite(this.reader())) {
+		query = (SpanQuery) rewrittenQuery;
+	    };
 
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
 

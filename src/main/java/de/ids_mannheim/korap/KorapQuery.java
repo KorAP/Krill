@@ -239,7 +239,7 @@ public class KorapQuery {
 
 
 
-    // SpanSegmentRegexQuery
+    // SpanRegexQueryWrapper
     /**
      * Create a query object based on a regular expression.
      * @param re The regular expession as a string.
@@ -257,7 +257,6 @@ public class KorapQuery {
 	return new SpanRegexQueryWrapper(this.field, re, flags, false);
     };
 
-
     /**
      * Create a query object based on a regular expression.
      * @param re The regular expession as a string.
@@ -268,7 +267,6 @@ public class KorapQuery {
 	return new SpanRegexQueryWrapper(this.field, re, flags, caseinsensitive);
     };
 
-
     /**
      * Create a query object based on a regular expression.
      * @param re The regular expession as a string.
@@ -276,6 +274,24 @@ public class KorapQuery {
      */
     public SpanRegexQueryWrapper re (String re, boolean caseinsensitive) {
 	return new SpanRegexQueryWrapper(this.field, re, RegExp.ALL, caseinsensitive);
+    };
+
+    // SpanWildcardQueryWrapper
+    /**
+     * Create a query object based on a wildcard term.
+     * @param wc The wildcard term as a string.
+     */
+    public SpanWildcardQueryWrapper wc (String wc) {
+	return new SpanWildcardQueryWrapper(this.field, wc, false);
+    };
+
+    /**
+     * Create a query object based on a wildcard term.
+     * @param wc The wildcard term as a string.
+     * @param caseinsensitive A boolean value indicating case insensitivity.
+     */
+    public SpanWildcardQueryWrapper wc (String wc, boolean caseinsensitive) {
+	return new SpanWildcardQueryWrapper(this.field, wc, caseinsensitive);
     };
 
 

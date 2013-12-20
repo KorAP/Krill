@@ -25,8 +25,6 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
 
 import org.apache.lucene.index.Term;
 
-// mvn -Dtest=TestWithinIndex#indexExample1 test
-
 @RunWith(JUnit4.class)
 public class TestNextIndex {
 
