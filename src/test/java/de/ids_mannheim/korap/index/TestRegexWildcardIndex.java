@@ -239,4 +239,5 @@ public class TestRegexWildcardIndex {
 	assertEquals(1, kr.getTotalResults());
 	assertEquals("[affe afffe] baum ...", kr.getMatch(0).getSnippetBrackets());
     };
+
 };

@@ -200,9 +200,17 @@ public class TestKorapSearch {
 
 	String json = getString(getClass().getResource("/queries/bsp-context.json").getFile());
 
-	KorapResult kr = new KorapSearch(json).run(ki);
+	KorapSearch ks = new KorapSearch(json);
+	KorapResult kr = ks.run(ki);
 	assertEquals(10, kr.getTotalResults());
 	assertEquals("A bzw. a ist der erste Buchstabe des lateinischen [Alphabets] und ein Vokal. Der Buchstabe A hat in deutschen Texten eine durchschnittliche Häufigkeit  ...", kr.getMatch(0).getSnippetBrackets());
+
+	ks.setCount(5);
+	ks.setStartPage(2);
+	kr = ks.run(ki);
+	assertEquals(10, kr.getTotalResults());
+	assertEquals(5, kr.getStartIndex());
+	assertEquals(5, kr.getItemsPerPage());
     };
 
 
