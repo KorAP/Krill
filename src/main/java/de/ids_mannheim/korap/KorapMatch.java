@@ -120,6 +120,10 @@ public class KorapMatch extends KorapDocument {
 	return super.getID();
     };
 
+    public void setDocID (String id) {
+	super.setID(id);
+    };
+
     @Override
     @JsonProperty("ID")
     public String getID () {

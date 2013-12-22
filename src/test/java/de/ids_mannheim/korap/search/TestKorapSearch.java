@@ -213,6 +213,36 @@ public class TestKorapSearch {
 	assertEquals(5, kr.getItemsPerPage());
     };
 
+    @Test
+    public void searchJSONstartPage () throws IOException {
+
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	String json = getString(getClass().getResource("/queries/bsp-paging.json").getFile());
+
+	KorapSearch ks = new KorapSearch(json);
+	KorapResult kr = ks.run(ki);
+	assertEquals(10, kr.getTotalResults());
+	assertEquals(5, kr.getStartIndex());
+	assertEquals(5, kr.getItemsPerPage());
+
+	json = getString(getClass().getResource("/queries/bsp-cutoff.json").getFile());
+	ks = ks = new KorapSearch(json);
+
+	kr = ks.run(ki);
+	assertEquals(-1, kr.getTotalResults());
+	assertEquals(2, kr.getStartIndex());
+	assertEquals(2, kr.getItemsPerPage());
+
+    };
 
 
     public static String getString (String path) {

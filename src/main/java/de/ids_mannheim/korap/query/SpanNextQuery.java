@@ -33,8 +33,7 @@ import org.slf4j.LoggerFactory;
 /** Matches spans which are directly next to each other.
  */
 public class SpanNextQuery extends SpanQuery implements Cloneable {
-    private SpanQuery firstClause;
-    private SpanQuery secondClause;
+    private SpanQuery firstClause, secondClause;
     public String field;
     private boolean collectPayloads;
 
@@ -42,8 +41,7 @@ public class SpanNextQuery extends SpanQuery implements Cloneable {
     private final static Logger log = LoggerFactory.getLogger(SpanNextQuery.class);
 
     // Constructor
-    public SpanNextQuery(SpanQuery firstClause,
-			 SpanQuery secondClause) {
+    public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause) {
 	this(firstClause, secondClause, true);
     };
 
@@ -54,7 +52,7 @@ public class SpanNextQuery extends SpanQuery implements Cloneable {
 
 	this.field = secondClause.getField();
 	if (!firstClause.getField().equals(field)) {
-	    throw new IllegalArgumentException("Clauses must have same field.");
+	    throw new IllegalArgumentException("Clauses must have same field");
 	};
 
 	this.collectPayloads = collectPayloads;
@@ -79,14 +77,14 @@ public class SpanNextQuery extends SpanQuery implements Cloneable {
 
     @Override
     public String toString(String field) {
-	StringBuilder buffer = new StringBuilder();
-	buffer.append("spanNext(");
-	buffer.append(firstClause.toString(field));
-        buffer.append(", ");
-	buffer.append(secondClause.toString(field));
-	buffer.append(")");
-	buffer.append(ToStringUtils.boost(getBoost()));
-	return buffer.toString();
+	StringBuilder sb = new StringBuilder();
+	sb.append("spanNext(")
+          .append(firstClause.toString(field))
+          .append(", ")
+          .append(secondClause.toString(field))
+          .append(")")
+          .append(ToStringUtils.boost(getBoost()));
+	return sb.toString();
     };
 
     @Override
@@ -96,17 +94,14 @@ public class SpanNextQuery extends SpanQuery implements Cloneable {
 
 	log.trace("Get Spans");
 	return (Spans) new NextSpans (
-            this, context, acceptDocs, termContexts, collectPayloads
+	    this, context, acceptDocs, termContexts, collectPayloads
 	);
     };
 
     @Override
     public Query rewrite (IndexReader reader) throws IOException {
-	// System.err.println(">> Rewrite query");
-
 	SpanNextQuery clone = null;
 
-	// System.err.println(">> Rewrite first clause");
 	SpanQuery query = (SpanQuery) firstClause.rewrite(reader);
 
 	if (query != firstClause) {
@@ -115,7 +110,6 @@ public class SpanNextQuery extends SpanQuery implements Cloneable {
 	    clone.firstClause = query;
 	};
 
-	// System.err.println(">> Rewrite second clause");
 	query = (SpanQuery) secondClause.rewrite(reader);
 	if (query != secondClause) {
 	    if (clone == null)
@@ -123,10 +117,8 @@ public class SpanNextQuery extends SpanQuery implements Cloneable {
 	    clone.secondClause = query;
 	};
 
-	if (clone != null) {
-	    // System.err.println(">> Clone is not null");
+	if (clone != null)
 	    return clone;
-	};
 
 	return this;
     };
@@ -153,7 +145,7 @@ public class SpanNextQuery extends SpanQuery implements Cloneable {
 	final SpanNextQuery spanNextQuery = (SpanNextQuery) o;
 	
 	if (collectPayloads != spanNextQuery.collectPayloads) return false;
-	if (!firstClause.equals(spanNextQuery.firstClause)) return false;
+	if (!firstClause.equals(spanNextQuery.firstClause))   return false;
 	if (!secondClause.equals(spanNextQuery.secondClause)) return false;
 
 	return getBoost() == spanNextQuery.getBoost();

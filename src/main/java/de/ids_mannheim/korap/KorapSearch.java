@@ -16,32 +16,34 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /*
   Todo: Let this class extend KorapResult!
-  Todo: implement an empty new Result Thingy!
   KorapResult = new KorapSearch(String json).run(KorapIndex ki);
-  startPage!!!
 */
 
+/**
+ * @author Nils Diewald
+ *
+ * KoraSearch implements an object for all search relevant parameters.
+ */
 public class KorapSearch {
-    private int startIndex;
-    private short count = 25;
-    private short countMax = 50;
-    private int limit = 0;
+    private int startIndex = 0, limit = 0;
+    private short count = 25,
+	          countMax = 50;
     private boolean cutoff = false;
     private SpanQuery query;
-    public KorapSearchContext leftContext, rightContext;
     private KorapCollection collection;
     private KorapIndex index;
     private String error;
 
+    public KorapSearchContext leftContext, rightContext;
+
     {
-	leftContext = new KorapSearchContext();
+	leftContext  = new KorapSearchContext();
 	rightContext = new KorapSearchContext();
     };
 
     public class KorapSearchContext {
 	private boolean type = true;
-	private short length = 6;
-	private short maxLength = 300;
+	private short length = 6, maxLength = 300;
 
 	public boolean isToken () {
 	    return this.type;
@@ -72,7 +74,7 @@ public class KorapSearch {
 		}
 		else {
 		    this.length = this.maxLength;
-		}
+		};
 	    };
 	    return this;
 	};
@@ -99,6 +101,7 @@ public class KorapSearch {
 	try {
 	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
 
+	    // "query" value
 	    if (json.has("query")) {
 		try {
 		    this.query = new KorapQuery("tokens").fromJSON(json.get("query")).toQuery();
@@ -111,10 +114,9 @@ public class KorapSearch {
 		this.error = "No query defined";
 	    };
 
-	    if (json.has("meta")) {
-		KorapCollection kc = new KorapCollection(jsonString);
-		this.setCollection(kc);
-	    };
+	    // "meta" virtual collections
+	    if (json.has("meta"))
+		this.setCollection(new KorapCollection(jsonString));
 
 	    if (this.error == null) {
 
@@ -139,12 +141,14 @@ public class KorapSearch {
 		    JsonNode context = json.get("context");
 		    if (context.has("left"))
 			this.leftContext.fromJSON(context.get("left"));
+
 		    if (context.has("right"))
 			this.rightContext.fromJSON(context.get("right"));
-
 		};
 	    };
 	}
+
+	// Unable to parse JSON
 	catch (IOException e) {
 	    this.error = e.getMessage();
 	};
@@ -160,6 +164,7 @@ public class KorapSearch {
 	this.query = sq;
     };
 
+    // Empty constructor
     public KorapSearch () { };
 
     public SpanQuery getQuery () {
@@ -237,12 +242,10 @@ public class KorapSearch {
 
     public KorapSearch setCount (short value) {
 	if (value > 0) {
-	    if (value <= this.countMax) {
+	    if (value <= this.countMax)
 		this.count = value;
-	    }
-	    else {
+	    else
 		this.count = this.countMax;
-	    };
 	};
 	return this;
     };

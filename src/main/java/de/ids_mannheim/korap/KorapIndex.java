@@ -666,7 +666,7 @@ public class KorapIndex {
 
 		    match.setAuthor(doc.get("author"));
 		    match.setTextClass(doc.get("textClass"));
-		    match.setID(doc.get("ID"));
+		    match.setDocID(doc.get("ID"));
 		    match.setTitle(doc.get("title"));
 		    match.setSubTitle(doc.get("subTitle"));
 		    match.setPubPlace(doc.get("pubPlace"));
@@ -682,10 +682,9 @@ public class KorapIndex {
 		    match.setLayerInfo(doc.get("layerInfo"));
 
 		    match.setPrimaryData(
-		      new KorapPrimaryData(doc.get(foundry))
+		        new KorapPrimaryData(doc.get(foundry))
 		    );
 		    atomicMatches.add(match);
-		    // kr.add(match);
 		};
 
 		// Benchmark till now
@@ -709,7 +708,8 @@ public class KorapIndex {
 	    if (kr.getBenchmarkSearchResults().length() == 0) {
 		kr.setBenchmarkSearchResults(t2, t1);
 	    };
-	    kr.setTotalResults(i);
+
+	    kr.setTotalResults(cutoff ? -1 : i);
 	}
 	catch (IOException e) {
 	    kr.setError("There was an IO error");
@@ -718,38 +718,4 @@ public class KorapIndex {
 
 	return kr;
     };
-
-
-	/*
-
-    public void getFoundryStatistics {
-- provides statistical information:
-  - which documents have which foundries
-    - Collect all Bitvectors of each foundry and make the intersections afterwards
-  - ???
-    };
-
-
-    public KorapResult search (Bits bits, KorapQuery query) {
-	//	this.search(bits, query);
-    };
-
-    // countAllTokens
-    public int getNumberOfTokens (String corpus) throws IOException {
-	return this.getNumberOf("token", "base", corpus);
-    };
-
-
-    // retrieveTokens(docname, startOffset, endOffset, layer);
-
-
-    /*
-
-
-    // todo mit pagesize und offset
-
-
-    };
-*/
-
 };
