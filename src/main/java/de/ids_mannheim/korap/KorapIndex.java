@@ -429,6 +429,19 @@ public class KorapIndex {
     };
 
 
+    /*
+      Accepts a KorapInfo (with startPos, endPos, docID ... etc.)
+      everything that comes from an ID
+      and collects all information based on a prefix (like cnx/p etc.)
+
+      KorapInfo is associated with a KorapMatch and has an array with all informations
+      per position in the match.
+
+      public KorapInfo infoOf (KorapMatch km, String prefix) {
+
+      };
+    */
+
     @Deprecated
     public long countDocuments () throws IOException {
 	log.warn("countDocuments() is DEPRECATED in favor of numberOf(\"documents\")!");
@@ -477,7 +490,7 @@ public class KorapIndex {
     };
 
     public KorapResult search (KorapSearch ks) {
-	// TODO: This might leak as hell!!!
+	// TODO: This might leak
 	return this.search(new KorapCollection(this), ks);
     };
 
@@ -539,8 +552,10 @@ public class KorapIndex {
 
 	try {
 
-	    // Rewrite query
-	    for (Query rewrittenQuery = query.rewrite(this.reader()); rewrittenQuery != (Query) query; rewrittenQuery = query.rewrite(this.reader())) {
+	    // Rewrite query (for regex and wildcard queries)
+	    for (Query rewrittenQuery = query.rewrite(this.reader());
+                 rewrittenQuery != (Query) query;
+                 rewrittenQuery = query.rewrite(this.reader())) {
 		query = (SpanQuery) rewrittenQuery;
 	    };
 

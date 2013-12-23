@@ -211,6 +211,13 @@ public class TestKorapSearch {
 	assertEquals(10, kr.getTotalResults());
 	assertEquals(5, kr.getStartIndex());
 	assertEquals(5, kr.getItemsPerPage());
+
+
+	json = getString(getClass().getResource("/queries/bsp-context-2.json").getFile());
+
+	kr = new KorapSearch(json).run(ki);
+	assertEquals(-1, kr.getTotalResults());
+	assertEquals("... lls seit den Griechen beibehalten worden. 3. Bedeutungen in der Biologie steht A für das Nukleosid Adenosin steht A die Base Adenin steht A für die Aminosäure Alanin in der Informatik steht a für den dezimalen [Wert] 97 sowohl im ASCII- als auch im Unicode-Zeichensatz steht A für den dezimalen Wert 65 sowohl im ASCII- als auch im Unicode-Zeichensatz als Kfz-Kennzeichen steht A in Deutschland für Augsburg. in Österreich auf ...", kr.getMatch(0).getSnippetBrackets());
     };
 
     @Test
