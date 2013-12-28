@@ -1,3 +1,6 @@
+0.25.1 2013-12-28
+        - Support for pubDate collections.
+
 0.25 2013-12-20
         - Support for Wildcard Queries.
 	- Improved support for regular expressions.

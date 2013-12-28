@@ -252,6 +252,8 @@ public class KorapSearch {
 
     public KorapSearch setCollection (KorapCollection kc) {
 	this.collection = kc;
+	if (kc.getError() != null)
+	    this.error = kc.getError();
 	return this;
     };
 

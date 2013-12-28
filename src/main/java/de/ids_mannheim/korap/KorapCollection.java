@@ -11,6 +11,7 @@ import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapFilter;
 
 import de.ids_mannheim.korap.util.KorapDate;
+import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.filter.BooleanFilter;
 import de.ids_mannheim.korap.filter.FilterOperation;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -58,6 +59,7 @@ public class KorapCollection {
 	try {
 	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
 	    if (json.has("meta")) {
+		log.trace("Add meta collection");
 		for (JsonNode meta : json.get("meta")) {
 		    this.fromJSON(meta);
 		};
@@ -72,13 +74,15 @@ public class KorapCollection {
 	this.filter = new ArrayList<FilterOperation>(5);
     };
 
-    public void fromJSON(JsonNode json) {
+    public void fromJSON(JsonNode json) throws QueryException {
 	String type = json.get("@type").asText();
 
 	if (type.equals("korap:meta-filter")) {
+	    log.trace("Add Filter");
 	    this.filter(new BooleanFilter(json.get("@value")));
 	}
 	else if (type.equals("korap:meta-extend")) {
+	    log.trace("Add Extend");
 	    this.extend(new BooleanFilter(json.get("@value")));
 	};
     };
@@ -133,6 +137,14 @@ public class KorapCollection {
 	return this.filter.get(i);
     };
 
+
+    public String toString () {
+	StringBuffer sb = new StringBuffer();
+	for (FilterOperation fo : this.filter) {
+	    sb.append(fo.toString()).append("; ");
+	};
+	return sb.toString();
+    };
 
     // DEPRECATED BUT USED IN TEST CASES
     public KorapResult search (SpanQuery query) {
@@ -229,6 +241,10 @@ public class KorapCollection {
 	    return (long) 0;
 
 	return this.index.numberOf(this, "tokens", type);
+    };
+
+    public String getError () {
+	return this.error;
     };
 
     // implement "till" with rangefilter

@@ -17,6 +17,8 @@ import de.ids_mannheim.korap.KorapFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.ids_mannheim.korap.util.QueryException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,18 +40,19 @@ public class BooleanFilter {
     private String type;
 
     // Logger
-    private final static Logger jlog = LoggerFactory.getLogger(KorapFilter.class);
-
+    private final static Logger log = LoggerFactory.getLogger(KorapFilter.class);
 
     private BooleanQuery bool;
+    private String error;
 
     public BooleanFilter () {
 	bool = new BooleanQuery();
     };
 
-    public BooleanFilter (JsonNode json) {
+    public BooleanFilter (JsonNode json) throws QueryException {
 	bool = new BooleanQuery();
-
+	this.fromJSON(json, "tokens");
+	/*
 	String type = json.get("@type").asText();
 	String field = _getField(json);
 
@@ -62,11 +65,14 @@ public class BooleanFilter {
 		this.fromJSON(operand, field);
 	    };
 	};
+	*/
     };
 
 
-    private void fromJSON (JsonNode json, String field) {
+    private void fromJSON (JsonNode json, String field) throws QueryException {
 	String type = json.get("@type").asText();
+
+	log.trace("@type: " + type);
 
 	if (json.has("@field"))
 	    field = _getField(json);
@@ -82,7 +88,10 @@ public class BooleanFilter {
 
 	    String date, till;
 
+	    log.trace("relation: " + json.get("relation").asText());
+
 	    switch (json.get("relation").asText())  {
+
 	    case "between":
 		date = _getDate(json, 0);
 		till = _getDate(json, 1);
@@ -107,8 +116,23 @@ public class BooleanFilter {
 		if (date != null)
 		    this.date(date);
 		break;
+
+	    case "and":
+		if (!json.has("operands"))
+		    return;
+
+		for (JsonNode operand : json.get("operands")) {
+		    this.fromJSON(operand, field);
+		};
+		break;
+
+	    default:
+		throw new QueryException(json.get("relation").asText() + " is not a supported relation");
 	    };
 	}
+	else {
+	    throw new QueryException(type + " is not a supported group");
+	};
     };
 
     private static String  _getField (JsonNode json)  {
@@ -232,7 +256,7 @@ public class BooleanFilter {
 	    );
 	}
 	catch (NumberFormatException e) {
-	    jlog.warn("Parameter of till(date) is invalid");
+	    log.warn("Parameter of till(date) is invalid");
 	};
 	return this;
     };

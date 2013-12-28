@@ -37,19 +37,25 @@
       "@type": "korap:meta-filter",
       "@id": "korap-filter#id-1223232",
       "@value": {
-        "@type": "korap:group",
-        "relation": "between",
-        "@field": "korap:field#pubDate",
-        "operands": [
-          {
-            "@type": "korap:date",
-            "@value": "2000-01-01"
-          },
-          {
-            "@type": "korap:date",
-            "@value": "2013-12-31"
-          }
-        ]
+	"@type": "korap:group",
+	"relation": "and",
+	"operands": [
+	  {
+            "@type": "korap:group",
+            "relation": "between",
+            "@field": "korap:field#pubDate",
+            "operands": [
+              {
+		"@type": "korap:date",
+		"@value": "2005-01-01"
+              },
+              {
+		"@type": "korap:date",
+		"@value": "2013-12-31"
+              }
+            ]
+	  }
+	]
       }
     }
   ]

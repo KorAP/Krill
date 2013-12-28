@@ -111,13 +111,38 @@ public class TestKorapSearch {
 	assertEquals(5, kr.getItemsPerPage());
 	assertEquals(5, kr.getStartIndex());
 	assertEquals("... a: A ist [der klangreichste] der V ...", kr.getMatch(0).getSnippetBrackets());
+    };
 
-	json = getString(getClass().getResource("/queries/metaquery4.json").getFile());
+    @Test
+    public void searchJSON2 () throws IOException {
 
-	kr = new KorapSearch(json).run(ki);
-	assertEquals(0, kr.getTotalResults());
-	assertEquals(5, kr.getItemsPerPage());
-	assertEquals(5, kr.getStartIndex());
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02035-substring", "02439", "05663-unbalanced", "07452-deep"}) {
+	    ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	String json = getString(getClass().getResource("/queries/metaquery4.json").getFile());
+
+	KorapSearch ks = new KorapSearch(json);
+	KorapResult kr = ks.run(ki);
+	assertEquals(2, kr.getTotalResults());
+
+	json = getString(getClass().getResource("/queries/metaquery5.json").getFile());
+	ks = new KorapSearch(json);
+	kr = ks.run(ki);
+	assertEquals(2, kr.getTotalResults());
+
+	System.err.println(kr.toJSON());
+
+	json = getString(getClass().getResource("/queries/metaquery6.json").getFile());
+	ks = new KorapSearch(json);
+	kr = ks.run(ki);
+	assertEquals(1, kr.getTotalResults());
     };
 
 
