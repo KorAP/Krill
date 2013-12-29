@@ -37,6 +37,9 @@ public class TestKorapCollection {
 	KorapCollection kc = new KorapCollection(ki);
 
 	// The virtual collection consists of all documents that have the textClass "reisen" and "freizeit"
+
+	assertEquals("Documents", 7, kc.numberOf("documents"));
+
 	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
 
 	assertEquals("Documents", 5, kc.numberOf("documents"));
@@ -88,7 +91,7 @@ public class TestKorapCollection {
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
 	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
-	    FieldDocument fd = ki.addDocFile(
+	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
 	    ki.commit();
@@ -111,6 +114,7 @@ public class TestKorapCollection {
 	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
 
 	assertEquals("Documents", 5, kc.numberOf("documents"));
+
 	assertEquals("Tokens", 1678, kc.numberOf("tokens"));
 	assertEquals("Sentences", 194, kc.numberOf("sentences"));
 	assertEquals("Paragraphs", 139, kc.numberOf("paragraphs"));
@@ -142,12 +146,13 @@ public class TestKorapCollection {
 
 	kc.extend( kf.and("textClass", "wissenschaft") );
 
-	System.err.println("+++++++++++++++++++++++");
 	assertEquals("Documents", 3, kc.numberOf("documents"));
+	/*
 	assertEquals("Tokens", 1669, kc.numberOf("tokens"));
 	assertEquals("Sentences", 188, kc.numberOf("sentences"));
 	assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
 	// System.err.println(kr.toJSON());
+	*/
     };
 
 

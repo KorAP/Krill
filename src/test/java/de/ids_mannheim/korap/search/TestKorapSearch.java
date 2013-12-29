@@ -137,8 +137,6 @@ public class TestKorapSearch {
 	kr = ks.run(ki);
 	assertEquals(2, kr.getTotalResults());
 
-	System.err.println(kr.toJSON());
-
 	json = getString(getClass().getResource("/queries/metaquery6.json").getFile());
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);

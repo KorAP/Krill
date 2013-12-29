@@ -375,6 +375,15 @@ public class KorapMatch extends KorapDocument {
 	public void addClose (int number) {
 	    HighlightCombinatorElement lastComb;
 	    this.tempStack.clear();
+
+	    StringBuilder sb = new StringBuilder("Stack for checking with ");
+	    sb.append(number).append(" is ");
+	    for (int s : this.balanceStack) {
+		sb.append('[').append(s).append(']');
+	    };
+	    log.trace(sb.toString());
+
+	    // class number of the last element
 	    int eold = this.balanceStack.removeLast();
 
 	    // the closing element is not balanced
@@ -383,19 +392,20 @@ public class KorapMatch extends KorapDocument {
 		// Retrieve last combinator on stack
 		lastComb = this.combine.peekLast();
 
-		/*
-		System.err.println("+" + lastComb.type + "|" + lastComb.number + "|" + number + "|" + eold);
-		*/
+		log.trace("Closing element is unbalanced - {} != {} with lastComb {}|{}|{}", eold, number, lastComb.type, lastComb.number, lastComb.characters);
 
 		// combinator is opening and the number is not equal to the last
 		// element on the balanceStack
-		if (lastComb.type == 1 && lastComb.number != eold) {
+		if (lastComb.type == 1 && lastComb.number == eold) {
+
 		    // Remove the last element - it's empty and uninteresting!
 		    this.combine.removeLast();
 		}
 
 		// combinator is either closing (??) or another opener
 		else {
+
+		    log.trace("close element a) {}", eold);
 
 		    // Add a closer for the old element (this has following elements)
 		    this.combine.add(new HighlightCombinatorElement((byte) 2, eold, false));
@@ -411,6 +421,7 @@ public class KorapMatch extends KorapDocument {
 	    // Get last combinator on the stack
 	    lastComb = this.combine.peekLast();
 
+	    log.trace("LastComb: " + lastComb.type + '|' + lastComb.number + '|' + lastComb.characters + " for " + number);
 	    /*
 	    // The last combinator is opening and identical to the current one
 	    if (lastComb.type == 1 && lastComb.number == number) {
@@ -423,9 +434,7 @@ public class KorapMatch extends KorapDocument {
 	    };
 	    */
 
-	    /*
-	    System.err.println(":" + lastComb.type + "|" + lastComb.number + "|" + number);
-	    */
+	    log.trace("Stack for checking 2: {}|{}|{}|{}", lastComb.type, lastComb.number, lastComb.characters, number);
 
 	    if (lastComb.type == 1 && lastComb.number == number) {
 		while (lastComb.type == 1 && lastComb.number == number) {
@@ -435,6 +444,8 @@ public class KorapMatch extends KorapDocument {
 		};
 	    }
 	    else {
+		log.trace("close element b) {}", number);
+
 		// Add a closer
 		this.combine.add(new HighlightCombinatorElement((byte) 2, number));
 	    };
@@ -442,6 +453,7 @@ public class KorapMatch extends KorapDocument {
 
 	    // Fetch everything from the tempstack and reopen it
 	    for (int e : tempStack) {
+		log.trace("Reopen element {}", e);
 		combine.add(new HighlightCombinatorElement((byte) 1, e));
 		balanceStack.add(e);
 	    };

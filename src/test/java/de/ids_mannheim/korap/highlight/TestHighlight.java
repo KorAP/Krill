@@ -104,10 +104,8 @@ public class TestHighlight { // extends LuceneTestCase {
 	assertEquals("<span class=\"context-left\"></span><span class=\"match\"><em class=\"class-7 level-0\">a<em class=\"class-6 level-1\">b</em></em><em class=\"class-6 level-1\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
 
 	km.addHighlight(0, 1, (short) 5);
+	assertEquals("[{7:{5:a{6:b}}}{6:c}]", km.getSnippetBrackets());
 	assertEquals("<span class=\"context-left\"></span><span class=\"match\"><em class=\"class-7 level-0\"><em class=\"class-5 level-1\">a<em class=\"class-6 level-2\">b</em></em></em><em class=\"class-6 level-2\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
-
-
-	// Check {1a:{1b:huhu:1a}hihi:1b}
 
     };
 };
