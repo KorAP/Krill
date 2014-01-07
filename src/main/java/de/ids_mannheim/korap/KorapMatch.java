@@ -1,5 +1,6 @@
 package de.ids_mannheim.korap;
 import java.util.*;
+import java.lang.StringBuffer;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +30,7 @@ public class KorapMatch extends KorapDocument {
     // Snippet information
     @JsonIgnore
     public short leftContext,
-	         rightContext;
+	rightContext;
 
     @JsonIgnore
     public int startPos,
@@ -127,7 +128,19 @@ public class KorapMatch extends KorapDocument {
     @Override
     @JsonProperty("ID")
     public String getID () {
-	return this.getDocID() + "#match...";
+	StringBuffer sb = new StringBuffer();
+	if (this.getDocID() != null)
+	    sb.append(this.getDocID());
+	sb.append('#');
+	sb.append(startPos).append('-').append(endPos);
+	if (this.highlight != null) {
+	    for (int[] h : this.highlight) {
+		sb.append(',').append(h[2]).append(':');
+		sb.append(h[0]).append('-').append(h[1]);
+	    };
+	};
+
+	return sb.toString();
     };
 
     private void _reset () {
