@@ -28,8 +28,8 @@ public abstract class KorapDocument {
     private String author, textClass, corpusID,
 	           pubPlace, ID, title, subTitle,
 	           foundries, tokenization,
-	           layerInfo;
-    
+	           layerInfo, field;
+
     private KorapDate pubDate;
 
     /**
@@ -177,5 +177,13 @@ public abstract class KorapDocument {
 
     public String getLayerInfo () {
 	return this.layerInfo;
+    };
+
+    public void setField (String field) {
+	this.field = field;
+    };
+
+    public String getField () {
+	return this.field;
     };
 };

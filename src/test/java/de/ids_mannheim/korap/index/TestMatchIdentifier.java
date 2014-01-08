@@ -49,6 +49,6 @@ public class TestMatchIdentifier {
 
 	assertEquals("SnippetBrackets (0)", "... bcabca[{2:b{a}}]c", kr.match(0).snippetBrackets());
 
-	assertEquals("ID (0)", "#7-9,0:8-8,2:7-8", kr.match(0).getID());
+	assertEquals("ID (0)", "match-0p7-9(0)8-8(2)7-8c7-9(0)8-9(2)7-9", kr.match(0).getID());
     };
 };

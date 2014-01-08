@@ -13,6 +13,13 @@ import java.io.FileInputStream;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.BooleanClause;
+
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.QueryWrapperFilter;
+
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
@@ -49,6 +56,12 @@ import org.apache.lucene.util.Version;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.util.FixedBitSet;
+
+// Automata
+import org.apache.lucene.util.automaton.Automaton;
+import org.apache.lucene.util.automaton.RegExp;
+import org.apache.lucene.util.automaton.CompiledAutomaton;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,6 +72,7 @@ import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.PositionsToOffset;
+import de.ids_mannheim.korap.index.TermInfo;
 import de.ids_mannheim.korap.document.KorapPrimaryData;
 
 import org.slf4j.Logger;
@@ -140,7 +154,6 @@ public class KorapIndex {
 	fieldsToLoad.add("foundries");
 	fieldsToLoad.add("layerInfo");
 	fieldsToLoad.add("tokenization");
-	// don't load tokenization
 
 	// Base analyzer for searching and indexing
 	// StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
@@ -152,7 +165,6 @@ public class KorapIndex {
             new StandardAnalyzer(Version.LUCENE_CURRENT),
             analyzerPerField
         );
-
 
 	// Create configuration with base analyzer
 	IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
@@ -307,6 +319,7 @@ public class KorapIndex {
 
 		    // Go to first term (initialization phase)
 // TODO: THIS MAY BE WRONG!
+// TODO:: DELETEEEEE AND TESTT!
 		    docs.nextPosition();
 
 		    // Copy payload with the offset of the BytesRef
@@ -331,10 +344,10 @@ public class KorapIndex {
      * Search for the number of occurrences of different types,
      * e.g. "documents", "sentences" etc.
      *
-     * @param foundry The foundry to search in.
+     * @param field The field containing the textual data and the annotations.
      * @param type The type of meta information, e.g. "documents" or "sentences".
      */
-    public long numberOf (KorapCollection collection, String foundry, String type) throws IOException {
+    public long numberOf (KorapCollection collection, String field, String type) throws IOException {
 	// Short cut for documents
 	if (type.equals("documents")) {
 	    if (collection.getCount() <= 0) {
@@ -354,8 +367,8 @@ public class KorapIndex {
 	};
     
 	// Create search term
-	Term term = new Term(foundry, "-:" + type);
-	// System.err.println(">> Search for -:" + type + " in " + foundry);
+	Term term = new Term(field, "-:" + type);
+	// System.err.println(">> Search for -:" + type + " in " + field);
 
 	long occurrences = 0;
 	try {
@@ -377,8 +390,8 @@ public class KorapIndex {
 	return occurrences;
     };
 
-    public long numberOf (String foundry, String type) throws IOException {
-	return this.numberOf(new KorapCollection(this), foundry, type);
+    public long numberOf (String field, String type) throws IOException {
+	return this.numberOf(new KorapCollection(this), field, type);
     };
 
 
@@ -400,12 +413,12 @@ public class KorapIndex {
      * e.g. "documents", "sentences" etc., in a specific set of documents.
      *
      * @param docvec The document vector for filtering the search space.
-     * @param foundry The foundry to search in.
+     * @param field The field containing the textual data and the annotations.
      * @param type The type of meta information, e.g. "documents" or "sentences".
      *
      * @see #numberOf(String, String)
      */
-    public long numberOf (Bits docvec, String foundry, String type) throws IOException {
+    public long numberOf (Bits docvec, String field, String type) throws IOException {
 
 	// Shortcut for documents
 	if (type.equals("documents")) {
@@ -413,7 +426,7 @@ public class KorapIndex {
 	    return os.cardinality();
 	};
     
-	Term term = new Term(foundry, "-:" + type);
+	Term term = new Term(field, "-:" + type);
 
 	int occurrences = 0;
 	try {
@@ -428,20 +441,6 @@ public class KorapIndex {
 	return occurrences;
     };
 
-
-    /*
-      Accepts a KorapInfo (with startPos, endPos, docID ... etc.)
-      everything that comes from an ID
-      and collects all information based on a prefix (like cnx/p etc.)
-
-      KorapInfo is associated with a KorapMatch and has an array with all informations
-      per position in the match.
-
-      public KorapInfo infoOf (KorapMatch km, String prefix) {
-
-      };
-    */
-
     @Deprecated
     public long countDocuments () throws IOException {
 	log.warn("countDocuments() is DEPRECATED in favor of numberOf(\"documents\")!");
@@ -455,9 +454,141 @@ public class KorapIndex {
 	return this.numberOf("tokens");
     };
 
+    /**
+     * Get a match.
+     * BE AWARE - THIS IS STILL A PLAYGROUND!
+     */
+    public KorapMatch getMatch (String id) {
+
+	String corpusID = "WPD";
+	String docID = "WPD_AAA.00003";
+	String field = "tokens"; // text field
+	String foundry = "mate";
+	String layer = "l";
+	int startPos = 20;
+	int endPos = 30;
+	Boolean includeSpans = true;
+
+	KorapMatch km = (KorapMatch) null;
+	LinkedList<TermInfo> termList = new LinkedList<TermInfo>();
+
+	StringBuffer regex = new StringBuffer();
+
+	// Todo: Ignore -: stuff!
+
+	if (includeSpans)
+	    regex.append("((<>|<|>):)?");
+	else
+	    regex.append("[^<>]");
+	if (foundry != null)
+	    regex.append(foundry).append('/');
+	if (layer != null)
+	    regex.append(layer).append(":");
+	regex.append(".+?");
+
+	BooleanQuery bool = new BooleanQuery();
+	bool.add(new TermQuery(new Term("ID", docID)), BooleanClause.Occur.MUST);
+	bool.add(new TermQuery(new Term("corpusID", corpusID)), BooleanClause.Occur.MUST);
+
+	Filter filter = (Filter) new QueryWrapperFilter(bool);
+
+	// Create an automaton for prefixed terms of interest:
+	CompiledAutomaton fst = new CompiledAutomaton(
+            new RegExp(regex.toString()).toAutomaton()
+        );
+
+	try {
+	for (AtomicReaderContext atomic : this.reader().leaves()) {
+	    DocIdSetIterator filterIter = filter.getDocIdSet(
+                atomic,
+		atomic.reader().getLiveDocs()
+            ).iterator();
+
+	    // Go to the matching doc
+	    int localDocID = filterIter.nextDoc();
+	    if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+		continue;
+
+	    // We've found the correct document!
+	    HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
+	    fieldsToLoadLocal.add(field);
+
+	    // Load the necessary fields of the document
+	    Document doc = atomic.reader().document(localDocID, fieldsToLoadLocal);
+	    // Get terms from the document
+	    Terms docTerms = atomic.reader().getTermVector(localDocID, field);
+
+	    km = new KorapMatch(
+	        new PositionsToOffset(atomic, field),
+		localDocID,
+		startPos,
+		endPos
+            );
+
+	    // A termsEnum object could be reused here
+	    final TermsEnum termsEnum = docTerms.intersect(fst, null);
+
+	    // Create a bitset for the correct document
+	    // Yeah ... I know ... it could've been easier probably
+	    FixedBitSet bitset = new FixedBitSet(atomic.reader().numDocs());
+	    bitset.or(filterIter);
+
+	    DocsAndPositionsEnum docs = (DocsAndPositionsEnum) null;
+
+	    // Iterate over all terms in the document
+	    while (termsEnum.next() != null) {
+		docs = termsEnum.docsAndPositions(
+	            bitset,
+		    docs,
+		    DocsAndPositionsEnum.FLAG_PAYLOADS
+		);
+
+		// Init docs
+		docs.nextDoc();
+
+		// How often does this term occur in the document?
+		int termOccurrences = docs.freq();
+
+		// Iterate over all occurrences
+		for (int i = 0; i < termOccurrences; i++) {
+
+		    // Init positions and get the current
+		    int pos = docs.nextPosition();
+
+		    // Check, if the position of the term is in the interesting area
+		    if (pos >= startPos && pos <= endPos) {
+			termList.add(new TermInfo(
+			    termsEnum.term().utf8ToString(),
+			    pos,
+			    docs.getPayload()
+		        ));
+		    };
+		};
+	    };
+
+	    break;
+	};
+	}
+	catch (IOException e) {
+	    // ...
+	};
+
+	return km;
+    };
+
+
+    // TODO: collect all information based on a prefix (like cnx/p etc.)
+    // TODO: Generate a meaningful structure (e.g. a tree)
+    /*
+      KorapInfo is associated with a KorapMatch and has an array with all informations
+      per position in the match.
+
+      public KorapInfo infoOf (KorapMatch km, String prefix);
+    */
+
 
     /**
-     * search
+     * Search in the index.
      */
     public KorapResult search (SpanQuery query) {
 	return this.search(new KorapCollection(this), new KorapSearch(query));
@@ -516,7 +647,9 @@ public class KorapIndex {
 	this.termContexts = new HashMap<Term, TermContext>();
 
 	SpanQuery query = ks.getQuery();
-	String foundry = query.getField();
+
+	// Get the field of textual data and annotations
+	String field = query.getField();
 
 	// Todo: Make kr subclassing ks - so ks has a method for a new KorapResult!
 	KorapResult kr = new KorapResult(
@@ -530,7 +663,7 @@ public class KorapIndex {
 	);
 
 	HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
-	fieldsToLoadLocal.add(foundry);
+	fieldsToLoadLocal.add(field);
 
 	int i = 0;
 	long t1 = 0, t2 = 0;
@@ -564,7 +697,7 @@ public class KorapIndex {
 		// Use OpenBitSet;
 		Bits bitset = collection.bits(atomic);
 
-		PositionsToOffset pto = new PositionsToOffset(atomic, foundry);
+		PositionsToOffset pto = new PositionsToOffset(atomic, field);
 
 		// Spans spans = NearSpansOrdered();
 		Spans spans = query.getSpans(atomic, (Bits) bitset, termContexts);
@@ -677,8 +810,7 @@ public class KorapIndex {
 
 
 		    match.internalDocID = docID;
-		    // match.foundry = foundry; // This is "tokens" or "base" or so
-
+		    match.setField(field);
 		    match.setAuthor(doc.get("author"));
 		    match.setTextClass(doc.get("textClass"));
 		    match.setDocID(doc.get("ID"));
@@ -688,7 +820,7 @@ public class KorapIndex {
 		    match.setCorpusID(doc.get("corpusID"));
 		    match.setPubDate(doc.get("pubDate"));
 
-		    log.trace("I've got a match in {} of {}", match.getID(), count);
+		    log.trace("I've got a match in {} of {}", match.getDocID(), count);
 
 		    // Temporary (later meta fields in term vector)
 		    match.setFoundries(doc.get("foundries"));
@@ -697,7 +829,7 @@ public class KorapIndex {
 		    match.setLayerInfo(doc.get("layerInfo"));
 
 		    match.setPrimaryData(
-		        new KorapPrimaryData(doc.get(foundry))
+		        new KorapPrimaryData(doc.get(field))
 		    );
 		    atomicMatches.add(match);
 		};

@@ -1,12 +1,15 @@
 package de.ids_mannheim.korap;
 import java.util.*;
 import java.lang.StringBuffer;
+import java.nio.ByteBuffer;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import static de.ids_mannheim.korap.util.KorapHTML.*;
+
+// import org.apache.commons.codec.binary.Base64;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +33,7 @@ public class KorapMatch extends KorapDocument {
     // Snippet information
     @JsonIgnore
     public short leftContext,
-	rightContext;
+  	         rightContext;
 
     @JsonIgnore
     public int startPos,
@@ -40,13 +43,16 @@ public class KorapMatch extends KorapDocument {
     public int potentialStartPosChar = -1,
 	       potentialEndPosChar   = -1;
 
+    private int startOffsetChar = 0;
+
     @JsonIgnore
     public boolean leftTokenContext,
 	           rightTokenContext;
 
     private String tempSnippet,
 	           snippetHTML,
-	           snippetBrackets;
+	           snippetBrackets,
+	           identifier;
 
     private HighlightCombinator snippetStack;
 
@@ -55,6 +61,7 @@ public class KorapMatch extends KorapDocument {
 
     private Collection<byte[]> payload;
     private ArrayList<int[]> highlight;
+    private LinkedList<int[]> span;
 
     private PositionsToOffset positionsToOffset;
     private boolean processed = false;
@@ -104,7 +111,7 @@ public class KorapMatch extends KorapDocument {
 
     public void addHighlight (int start, int end, int number) {
 	if (this.highlight == null)
-	    this.highlight = new ArrayList<int[]>();
+	    this.highlight = new ArrayList<int[]>(16);
 	log.trace("Add highlight of class {} from {} to {}", number, start, end);
 
 	this._reset();
@@ -128,25 +135,57 @@ public class KorapMatch extends KorapDocument {
     @Override
     @JsonProperty("ID")
     public String getID () {
-	StringBuffer sb = new StringBuffer();
-	if (this.getDocID() != null)
-	    sb.append(this.getDocID());
-	sb.append('#');
+
+	if (this.identifier != null)
+	    return this.identifier;
+
+	StringBuffer sb = new StringBuffer("match-");
+
+	// Get prefix string corpus/doc
+	if (this.getCorpusID() != null) {
+	    sb.append(this.getCorpusID());
+
+	    if (this.getDocID() != null) {
+		sb.append('-');
+		sb.append(this.getDocID());
+	    };
+	}
+	else {
+	    sb.append(this.localDocID);
+	};
+
+	sb.append('p');
+
+	// Get Position information
 	sb.append(startPos).append('-').append(endPos);
+
 	if (this.highlight != null) {
 	    for (int[] h : this.highlight) {
-		sb.append(',').append(h[2]).append(':');
+		sb.append('(').append(h[2]).append(')');
 		sb.append(h[0]).append('-').append(h[1]);
 	    };
 	};
 
-	return sb.toString();
+	if (this.processed) {
+	    sb.append('c');
+	    for (int[] s : this.span) {
+		if (s[2] != -1)
+		    sb.append('(').append(s[2]).append(')');
+		sb.append(s[0] + this.startOffsetChar);
+		sb.append('-');
+		sb.append(s[1] + this.startOffsetChar);
+	    };
+	};
+	return (this.identifier = sb.toString());
     };
 
     private void _reset () {
 	this.processed = false;
 	this.snippetHTML = null;
 	this.snippetBrackets = null;
+	this.identifier = null;
+	if (this.span != null)
+	    this.span.clear();
     };
 
     // Start building highlighted snippets
@@ -158,10 +197,12 @@ public class KorapMatch extends KorapDocument {
 	log.trace("Start highlight processing ...");
 	
 	// Get the list of spans for matches and highlighting
-	LinkedList<int[]> spans = this._processHighlightSpans(
-	  leftTokenContext,
-	  rightTokenContext
-        );
+	if (this.span == null || this.span.size() == 0) {
+	    this._processHighlightSpans(
+	        leftTokenContext,
+		rightTokenContext
+	    );
+	};
 
 	/*
 	for (int[] s : spans) {
@@ -171,7 +212,7 @@ public class KorapMatch extends KorapDocument {
 	*/
 
 	// Create a stack for highlighted elements (opening and closing elements)
-	ArrayList<int[]> stack = this._processHighlightStack(spans);
+	ArrayList<int[]> stack = this._processHighlightStack();
 
 	/*
 	for (int[] s : stack) {
@@ -603,15 +644,15 @@ public class KorapMatch extends KorapDocument {
     // This sorts all highlight and match spans to make them nesting correctly,
     // even in case they overlap
     // TODO: Not very fast - improve!
-    private ArrayList<int[]> _processHighlightStack (LinkedList<int[]> spans) {
+    private ArrayList<int[]> _processHighlightStack () {
 
 	log.trace("Create Stack");
 
 	LinkedList<int[]> openList  = new LinkedList<int[]>();
 	LinkedList<int[]> closeList = new LinkedList<int[]>();
 
-	openList.addAll(spans);
-	closeList.addAll(spans);
+	openList.addAll(span);
+	closeList.addAll(span);
 
 	Collections.sort(openList, new OpeningTagComparator());
 	Collections.sort(closeList, new ClosingTagComparator());
@@ -639,8 +680,8 @@ public class KorapMatch extends KorapDocument {
     };
 
 
-    private LinkedList<int[]> _processHighlightSpans (boolean leftTokenContext,
-						      boolean rightTokenContext) {
+    private void _processHighlightSpans (boolean leftTokenContext,
+					 boolean rightTokenContext) {
 	int startOffsetChar,
 	    endOffsetChar,
 	    startPosChar,
@@ -675,7 +716,10 @@ public class KorapMatch extends KorapDocument {
 
 	// right context
 	if (rightTokenContext) {
-	    endOffsetChar = this.positionsToOffset.end(ldid, this.endPos + this.rightContext - 1);
+	    endOffsetChar = this.positionsToOffset.end(
+	        ldid,
+		this.endPos + this.rightContext - 1
+	    );
 	    log.trace("For endOffset {} ({}+{}-1) pto returns {}", (this.endPos + this.rightContext - 1), this.endPos, this.rightContext, endOffsetChar);
 	}
 	else {
@@ -703,9 +747,10 @@ public class KorapMatch extends KorapDocument {
 	if (endOffsetChar != -1 && endOffsetChar < endPosChar)
 	    endOffsetChar = endPosChar;
 
+	this.startOffsetChar = startOffsetChar;
+
 
 	log.trace("Offsetposition {} till {} with contexts {} and {}", startOffsetChar, endOffsetChar, leftContext, rightContext);
-
 
 	if (endOffsetChar > -1 && endOffsetChar < this.getPrimaryDataLength()) {
 	    this.tempSnippet = this.getPrimaryData(startOffsetChar, endOffsetChar);
@@ -717,12 +762,15 @@ public class KorapMatch extends KorapDocument {
 
 	log.trace("Temporary snippet is \"{}\"", this.tempSnippet);
 
-        LinkedList<int[]> spans = new LinkedList<int[]>();
+	if (this.span == null)
+	    this.span = new LinkedList<int[]>();
+
+	this.identifier = null;
 
 	// Todo: Simplify
 	int[] intArray = new int[]{ startPosChar - startOffsetChar, endPosChar - startOffsetChar, -1, 0};
 	log.trace("IntArray: {}", intArray);
-	spans.add(intArray);
+	this.span.add(intArray);
 
 	// highlights
 	// -- I'm not sure about this.
@@ -745,11 +793,8 @@ public class KorapMatch extends KorapDocument {
 		log.trace("PTO-start: {}", start + startOffsetChar);
 		log.trace("PTO-end: {}", end + startOffsetChar);
 
-		spans.add(intArray);
+		this.span.add(intArray);
 	    };
 	};
-
-	return spans;
     };
-
 };

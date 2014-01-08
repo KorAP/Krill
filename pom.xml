@@ -85,6 +85,15 @@
       <version>1.0</version>
     </dependency>
 
+    <!-- among others Base4 support -->
+    <!--
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.4</version>
+    </dependency>
+    -->
+
     <!-- Jackson -->
     <!-- see https://github.com/FasterXML/jackson-core -->
     <!-- https://github.com/FasterXML/jackson-databind -->

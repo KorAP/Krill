@@ -15,6 +15,7 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.FieldInfo.IndexOptions;
 
 import java.util.*;
 
@@ -58,6 +59,7 @@ public class FieldDocument extends KorapDocument {
 	keywords.setStoreTermVectorPositions(false);
 	keywords.setStoreTermVectorPayloads(false);
 	keywords.setStoreTermVectorOffsets(false);
+	keywords.setIndexOptions(IndexOptions.DOCS_ONLY);
     }
 
     // see http://www.cowtowncoder.com/blog/archives/2011/07/entry_457.html

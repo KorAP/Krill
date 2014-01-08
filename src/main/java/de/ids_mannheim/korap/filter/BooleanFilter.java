@@ -2,12 +2,13 @@ package de.ids_mannheim.korap.filter;
 
 import java.util.*;
 
+import org.apache.lucene.index.Term;
+
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.RegexpQuery;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.search.NumericRangeQuery;
 
 import de.ids_mannheim.korap.util.KorapDate;
