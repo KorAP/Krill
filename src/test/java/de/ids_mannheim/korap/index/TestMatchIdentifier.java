@@ -64,7 +64,7 @@ public class TestMatchIdentifier {
             );
 	};
 	ki.commit();
-	System.err.println(ki.getMatch("test").toJSON());
+	// System.err.println(ki.getMatch("test").toJSON());
     };
 
 };

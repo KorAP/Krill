@@ -573,24 +573,17 @@ public class KorapIndex {
 		// Iterate over all terms in the document
 		while (termsEnum.next() != null) {
 
-		    log.trace("> {}", termsEnum.term().utf8ToString());
-
 		    docs = termsEnum.docsAndPositions(
-						      null, //bitset.bits(),
-						      null, //docs,
-						      DocsAndPositionsEnum.FLAG_PAYLOADS
+		        null, //bitset.bits(),
+			docs,
+			DocsAndPositionsEnum.FLAG_PAYLOADS
 		    );
 
 		    docs.nextDoc();
 		    // log.trace("Check for '{}'({}) in document {}({}) from {}", termsEnum.term().utf8ToString(), termsEnum.totalTermFreq(), docs.docID(), localDocID, bitset.cardinality());
-		    docs.nextPosition();
 
-		    if (docs.docID() == DocIdSetIterator.NO_MORE_DOCS ||
-			(docs.docID() != localDocID && docs.advance(localDocID) != localDocID))
+		    if (docs.docID() == DocIdSetIterator.NO_MORE_DOCS)
 			continue;
-
-		    log.trace("Frequencies: {}!", docs.getPayload());
-
 
 		    // Init docs
 		    /*
@@ -600,6 +593,7 @@ public class KorapIndex {
 
 		    // How often does this term occur in the document?
 		    int termOccurrences = docs.freq();
+		    String termString = termsEnum.term().utf8ToString();
 
 		    // Iterate over all occurrences
 		    for (int i = 0; i < termOccurrences; i++) {
@@ -607,13 +601,24 @@ public class KorapIndex {
 			// Init positions and get the current
 			int pos = docs.nextPosition();
 
+			log.trace(">> {}: {}-{}-{}!",
+				  termString, docs.freq(), pos, docs.getPayload());
+
+			BytesRef payload = docs.getPayload();
+
+			byte[] pl = new byte[12];
+
+			if (payload != null)
+			    System.arraycopy(payload.bytes, payload.offset, pl, 0, payload.length);
+
+
 			// Check, if the position of the term is in the interesting area
 			if (pos >= startPos && pos <= endPos) {
 			    termList.add(new TermInfo(
-			        termsEnum.term().utf8ToString(),
+				termString,
 				pos,
-				docs.getPayload()
-		            ));
+				pl
+			    ));
 			};
 		    };
 		};

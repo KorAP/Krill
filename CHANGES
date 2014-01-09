@@ -1,9 +1,12 @@
-0.25.1 2013-12-28
-        - Support for pubDate collections.
-	- Changed versioning scheme.
+0.25.3 2014-01-10
+        - Updated Lucene to 4.3.1.
 
 0.25.2 2013-12-29
         - Fixed highlight bug with empty reopened tags.
+
+0.25.1 2013-12-28
+        - Support for pubDate collections.
+	- Changed versioning scheme.
 
 0.25 2013-12-20
         - Support for Wildcard Queries.
