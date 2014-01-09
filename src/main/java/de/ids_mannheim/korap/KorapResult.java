@@ -29,10 +29,13 @@ public class KorapResult {
     private int startIndex = 0;
 
     private short itemsPerPage = ITEMS_PER_PAGE;
-    private short leftContextOffset = 6, rightContextOffset = 6;
-    private boolean leftTokenContext, rightTokenContext;
+    private short leftContextOffset = 6,
+	          rightContextOffset = 6;
+    private boolean leftTokenContext,
+	            rightTokenContext;
 
-    private String benchmarkSearchResults = "", benchmarkHitCounter = "0";
+    private String benchmarkSearchResults = "",
+	           benchmarkHitCounter = "0";
     private String error = null;
 
     // Logger
@@ -72,15 +75,19 @@ public class KorapResult {
 
     public KorapMatch addMatch (PositionsToOffset pto, int localDocID, int startPos, int endPos) {
 	KorapMatch km = new KorapMatch(pto, localDocID, startPos, endPos);
-	// Temporary - should use the same interface like results in the future:
-	km.leftContext = this.leftContextOffset;
-	km.leftTokenContext = this.leftTokenContext;
-	km.rightContext = this.rightContextOffset;
-	km.rightTokenContext = this.rightTokenContext;
+
+	// Temporary - should use the same interface like results
+	// in the future:
+	km.leftContextOffset  = this.leftContextOffset;
+	km.leftTokenContext   = this.leftTokenContext;
+	km.rightContextOffset = this.rightContextOffset;
+	km.rightTokenContext  = this.rightTokenContext;
 
 	// Add pos for context
-	// That's not really a good position for it, to be honest ...
-	// But maybe it will make the offset information in the match be obsolete!
+	// That's not really a good position for it,
+	// to be honest ...
+	// But maybe it will make the offset
+	// information in the match be obsolete!
 	if (km.leftTokenContext) {
 	    pto.add(localDocID, startPos - this.leftContextOffset);
 	};
@@ -159,11 +166,8 @@ public class KorapResult {
 	return startIndex;
     };
 
+    // Identical to KorapMatch!
     public String toJSON () {
-	
-	//	ObjectNode json = (ObjectNode) mapper.createObjectNode();
-	// ObjectNode json = (ObjectNode) mapper.treeAsTokens(this);
-
 	ObjectNode json =  (ObjectNode) mapper.valueToTree(this);
 
 	ArrayNode leftContext = mapper.createArrayNode();
@@ -180,7 +184,7 @@ public class KorapResult {
 	json.put("context", context);
 
 	try {
-	    return mapper.writeValueAsString(json); // mapper.writeValueAsString(treeMapper);
+	    return mapper.writeValueAsString(json);
 	}
 	catch (Exception e) {
 	    log.warn(e.getLocalizedMessage());

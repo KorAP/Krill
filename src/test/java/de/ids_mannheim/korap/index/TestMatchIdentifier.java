@@ -51,4 +51,20 @@ public class TestMatchIdentifier {
 
 	assertEquals("ID (0)", "match-0p7-9(0)8-8(2)7-8c7-9(0)8-9(2)7-9", kr.match(0).getID());
     };
+
+
+    @Test
+    public void indexExample2 () throws IOException {
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    ki.addDocFile(
+	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+	System.err.println(ki.getMatch("test").toJSON());
+    };
+
 };

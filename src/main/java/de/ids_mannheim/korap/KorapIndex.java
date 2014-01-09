@@ -1,12 +1,13 @@
 package de.ids_mannheim.korap;
 
+import java.util.*;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.net.URL;
+
+// import java.net.URL;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.zip.GZIPInputStream;
 import java.io.FileInputStream;
 
@@ -16,7 +17,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.BooleanClause;
-
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.QueryWrapperFilter;
 
@@ -73,12 +73,9 @@ import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.TermInfo;
-import de.ids_mannheim.korap.document.KorapPrimaryData;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.ByteBuffer;
 
 /*
   Todo: Use FieldCache!
@@ -142,7 +139,7 @@ public class KorapIndex {
     public KorapIndex (Directory directory) throws IOException {
 	this.directory = directory;
 
-	fieldsToLoad = new HashSet<String>();
+	fieldsToLoad = new HashSet<String>(16);
 	fieldsToLoad.add("author");
 	fieldsToLoad.add("ID");
 	fieldsToLoad.add("title");
@@ -306,6 +303,7 @@ public class KorapIndex {
 		);
 
 		// Iterator is empty
+		// TODO: Maybe this is an error ...
 		if (docs.docID() == DocsAndPositionsEnum.NO_MORE_DOCS) {
 		    return 0;
 		};
@@ -317,9 +315,7 @@ public class KorapIndex {
 		// Init nextDoc()
 		while (docs.nextDoc() != DocsAndPositionsEnum.NO_MORE_DOCS) {
 
-		    // Go to first term (initialization phase)
-// TODO: THIS MAY BE WRONG!
-// TODO:: DELETEEEEE AND TESTT!
+		    // Initialize (go to first term)
 		    docs.nextPosition();
 
 		    // Copy payload with the offset of the BytesRef
@@ -458,125 +454,6 @@ public class KorapIndex {
      * Get a match.
      * BE AWARE - THIS IS STILL A PLAYGROUND!
      */
-    public KorapMatch getMatch (String id) {
-
-	String corpusID = "WPD";
-	String docID = "WPD_AAA.00003";
-	String field = "tokens"; // text field
-	String foundry = "mate";
-	String layer = "l";
-	int startPos = 20;
-	int endPos = 30;
-	Boolean includeSpans = true;
-
-	KorapMatch km = (KorapMatch) null;
-	LinkedList<TermInfo> termList = new LinkedList<TermInfo>();
-
-	StringBuffer regex = new StringBuffer();
-
-	// Todo: Ignore -: stuff!
-
-	if (includeSpans)
-	    regex.append("((<>|<|>):)?");
-	else
-	    regex.append("[^<>]");
-	if (foundry != null)
-	    regex.append(foundry).append('/');
-	if (layer != null)
-	    regex.append(layer).append(":");
-	regex.append(".+?");
-
-	BooleanQuery bool = new BooleanQuery();
-	bool.add(new TermQuery(new Term("ID", docID)), BooleanClause.Occur.MUST);
-	bool.add(new TermQuery(new Term("corpusID", corpusID)), BooleanClause.Occur.MUST);
-
-	Filter filter = (Filter) new QueryWrapperFilter(bool);
-
-	// Create an automaton for prefixed terms of interest:
-	CompiledAutomaton fst = new CompiledAutomaton(
-            new RegExp(regex.toString()).toAutomaton()
-        );
-
-	try {
-	for (AtomicReaderContext atomic : this.reader().leaves()) {
-	    DocIdSetIterator filterIter = filter.getDocIdSet(
-                atomic,
-		atomic.reader().getLiveDocs()
-            ).iterator();
-
-	    // Go to the matching doc
-	    int localDocID = filterIter.nextDoc();
-	    if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
-		continue;
-
-	    // We've found the correct document!
-	    HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
-	    fieldsToLoadLocal.add(field);
-
-	    // Load the necessary fields of the document
-	    Document doc = atomic.reader().document(localDocID, fieldsToLoadLocal);
-	    // Get terms from the document
-	    Terms docTerms = atomic.reader().getTermVector(localDocID, field);
-
-	    km = new KorapMatch(
-	        new PositionsToOffset(atomic, field),
-		localDocID,
-		startPos,
-		endPos
-            );
-
-	    // A termsEnum object could be reused here
-	    final TermsEnum termsEnum = docTerms.intersect(fst, null);
-
-	    // Create a bitset for the correct document
-	    // Yeah ... I know ... it could've been easier probably
-	    FixedBitSet bitset = new FixedBitSet(atomic.reader().numDocs());
-	    bitset.or(filterIter);
-
-	    DocsAndPositionsEnum docs = (DocsAndPositionsEnum) null;
-
-	    // Iterate over all terms in the document
-	    while (termsEnum.next() != null) {
-		docs = termsEnum.docsAndPositions(
-	            bitset,
-		    docs,
-		    DocsAndPositionsEnum.FLAG_PAYLOADS
-		);
-
-		// Init docs
-		docs.nextDoc();
-
-		// How often does this term occur in the document?
-		int termOccurrences = docs.freq();
-
-		// Iterate over all occurrences
-		for (int i = 0; i < termOccurrences; i++) {
-
-		    // Init positions and get the current
-		    int pos = docs.nextPosition();
-
-		    // Check, if the position of the term is in the interesting area
-		    if (pos >= startPos && pos <= endPos) {
-			termList.add(new TermInfo(
-			    termsEnum.term().utf8ToString(),
-			    pos,
-			    docs.getPayload()
-		        ));
-		    };
-		};
-	    };
-
-	    break;
-	};
-	}
-	catch (IOException e) {
-	    // ...
-	};
-
-	return km;
-    };
-
-
     // TODO: collect all information based on a prefix (like cnx/p etc.)
     // TODO: Generate a meaningful structure (e.g. a tree)
     /*
@@ -585,6 +462,170 @@ public class KorapIndex {
 
       public KorapInfo infoOf (KorapMatch km, String prefix);
     */
+    public KorapMatch getMatch (String id) {
+
+	// List of terms to populate
+	LinkedList<TermInfo> termList = new LinkedList<TermInfo>();
+
+	KorapMatch match = new KorapMatch();
+
+	// That's purely temporary
+	String corpusID = "WPD";
+	String docID    = "WPD_AAA.00003";
+	String field    = "tokens"; // text field
+	String foundry  = "mate";
+	String layer    = "l";
+	int startPos    = 25;
+	int endPos      = 30;
+	Boolean includeSpans = true;
+
+	// Create a filter based on the corpusID and the docID
+	BooleanQuery bool = new BooleanQuery();
+	bool.add(new TermQuery(new Term("ID",       docID)),    BooleanClause.Occur.MUST);
+	bool.add(new TermQuery(new Term("corpusID", corpusID)), BooleanClause.Occur.MUST);
+	Filter filter = (Filter) new QueryWrapperFilter(bool);
+
+	// Create an automaton for prefixed terms of interest based on a Regex
+	// Todo: Ignore -: stuff!
+	StringBuffer regex = new StringBuffer();
+	if (includeSpans)
+	    regex.append("(((\"<>\"|\"<\"|\">\")\":\")?");
+	else
+	    regex.append("[^<>]");
+	if (foundry != null)
+	    regex.append(foundry).append('/');
+	if (layer != null)
+	    regex.append(layer).append(":");
+	regex.append("(.){1,})|_[0-9]+");
+
+	RegExp regexObj = new RegExp(regex.toString());
+	CompiledAutomaton fst = new CompiledAutomaton(regexObj.toAutomaton());
+	log.trace("The final regex is {}", regex.toString());
+
+	try {
+
+	    // Iterate over all atomic indices and find the matching document
+	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+		/*
+		DocIdSetIterator filterIter = filter.getDocIdSet(
+		    atomic,
+		    atomic.reader().getLiveDocs()
+		).iterator();
+		*/
+
+		DocIdSet filterSet = filter.getDocIdSet(
+		    atomic,
+		    atomic.reader().getLiveDocs()
+		);
+
+		// Create a bitset for the correct document
+		// Yeah ... I know ... it could've been easier probably
+		/*
+		FixedBitSet bitset = new FixedBitSet(atomic.reader().numDocs());
+		bitset.or(filterIter);
+		*/
+		Bits bitset = filterSet.bits();
+
+		// Go to the matching doc
+		// int localDocID = bitset.iterator().nextDoc();
+		int localDocID = filterSet.iterator().nextDoc();
+
+		// log.trace("Found documents {} with the docID {}", bitset.cardinality(), localDocID);
+
+		if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+		    continue;
+
+		// We've found the correct document!
+		HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
+		fieldsToLoadLocal.add(field);
+
+		// Get terms from the document
+		Terms docTerms = atomic.reader().getTermVector(localDocID, field);
+
+		/* ---
+		 *
+		 */
+		log.trace("docTerms has Payloads: {}", docTerms.hasPayloads());
+		log.trace("docTerms has Positions: {}", docTerms.hasPositions());
+
+		// Load the necessary fields of the document
+		Document doc = atomic.reader().document(localDocID, fieldsToLoadLocal);
+
+		// Put some more information to the match
+		match.setPositionsToOffset(new PositionsToOffset(atomic, field));
+		match.setLocalDocID(localDocID);
+
+		log.trace("pto and localDocID defined");
+
+		match.setStartPos(startPos);
+		match.setEndPos(endPos);
+		match.populateDocument(doc, field, fieldsToLoadLocal);
+
+		log.trace("We have found the correct document: {}", match.getTitle());
+		// log.trace("The match is: {}", doc.get("tokens"));
+
+		// A termsEnum object could be reused here
+		TermsEnum termsEnum = docTerms.intersect(fst, null);
+
+		DocsAndPositionsEnum docs = (DocsAndPositionsEnum) null;
+		// DocsAndPositionsEnum docs;
+
+		// Iterate over all terms in the document
+		while (termsEnum.next() != null) {
+
+		    log.trace("> {}", termsEnum.term().utf8ToString());
+
+		    docs = termsEnum.docsAndPositions(
+						      null, //bitset.bits(),
+						      null, //docs,
+						      DocsAndPositionsEnum.FLAG_PAYLOADS
+		    );
+
+		    docs.nextDoc();
+		    // log.trace("Check for '{}'({}) in document {}({}) from {}", termsEnum.term().utf8ToString(), termsEnum.totalTermFreq(), docs.docID(), localDocID, bitset.cardinality());
+		    docs.nextPosition();
+
+		    if (docs.docID() == DocIdSetIterator.NO_MORE_DOCS ||
+			(docs.docID() != localDocID && docs.advance(localDocID) != localDocID))
+			continue;
+
+		    log.trace("Frequencies: {}!", docs.getPayload());
+
+
+		    // Init docs
+		    /*
+		    if (docs.advance(localDocID) == DocIdSetIterator.NO_MORE_DOCS || docs.docID() != localDocID)
+			continue;
+		    */
+
+		    // How often does this term occur in the document?
+		    int termOccurrences = docs.freq();
+
+		    // Iterate over all occurrences
+		    for (int i = 0; i < termOccurrences; i++) {
+
+			// Init positions and get the current
+			int pos = docs.nextPosition();
+
+			// Check, if the position of the term is in the interesting area
+			if (pos >= startPos && pos <= endPos) {
+			    termList.add(new TermInfo(
+			        termsEnum.term().utf8ToString(),
+				pos,
+				docs.getPayload()
+		            ));
+			};
+		    };
+		};
+		break;
+	    };
+	}
+	catch (IOException e) {
+	    // ...
+	};
+
+	return match;
+    };
 
 
     /**
@@ -810,27 +851,10 @@ public class KorapIndex {
 
 
 		    match.internalDocID = docID;
-		    match.setField(field);
-		    match.setAuthor(doc.get("author"));
-		    match.setTextClass(doc.get("textClass"));
-		    match.setDocID(doc.get("ID"));
-		    match.setTitle(doc.get("title"));
-		    match.setSubTitle(doc.get("subTitle"));
-		    match.setPubPlace(doc.get("pubPlace"));
-		    match.setCorpusID(doc.get("corpusID"));
-		    match.setPubDate(doc.get("pubDate"));
+		    match.populateDocument(doc, field, fieldsToLoadLocal);
 
 		    log.trace("I've got a match in {} of {}", match.getDocID(), count);
 
-		    // Temporary (later meta fields in term vector)
-		    match.setFoundries(doc.get("foundries"));
-		    match.setTokenization(doc.get("tokenization"));
-
-		    match.setLayerInfo(doc.get("layerInfo"));
-
-		    match.setPrimaryData(
-		        new KorapPrimaryData(doc.get(field))
-		    );
 		    atomicMatches.add(match);
 		};
 

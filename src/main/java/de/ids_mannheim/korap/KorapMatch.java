@@ -5,8 +5,12 @@ import java.nio.ByteBuffer;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.*;
 
 import de.ids_mannheim.korap.index.PositionsToOffset;
+import de.ids_mannheim.korap.document.KorapPrimaryData;
+
 import static de.ids_mannheim.korap.util.KorapHTML.*;
 
 // import org.apache.commons.codec.binary.Base64;
@@ -15,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.lucene.util.FixedBitSet;
+import org.apache.lucene.document.Document;
 
 /*
   Todo: The implemented classes and private names are horrible!
@@ -32,9 +37,10 @@ public class KorapMatch extends KorapDocument {
 
     // Snippet information
     @JsonIgnore
-    public short leftContext,
-  	         rightContext;
+    public short leftContextOffset,
+  	         rightContextOffset;
 
+    // Should be deprecated, but used wildly in tests!
     @JsonIgnore
     public int startPos,
 	       endPos;
@@ -44,6 +50,8 @@ public class KorapMatch extends KorapDocument {
 	       potentialEndPosChar   = -1;
 
     private int startOffsetChar = 0;
+
+    private int localDocID = -1;
 
     @JsonIgnore
     public boolean leftTokenContext,
@@ -90,6 +98,11 @@ public class KorapMatch extends KorapDocument {
     };
 
     /**
+     * Constructs a new KorapMatch object.
+     */
+    public KorapMatch () {};
+
+    /**
      * Insert a highlight for the snippet view by means of positional
      * offsets and an optional class number.
      *
@@ -123,6 +136,40 @@ public class KorapMatch extends KorapDocument {
 	this.highlight.add(new int[]{ start, end, number});
     };
 
+    public void populateDocument (Document doc, String field, HashSet<String> fields) {
+
+	this.setField(field);
+
+	this.setPrimaryData(
+	    new KorapPrimaryData(doc.get(field))
+	);
+
+	if (fields.contains("corpusID"))
+	    this.setCorpusID(doc.get("corpusID"));
+	if (fields.contains("ID"))
+	    this.setDocID(doc.get("ID"));
+	if (fields.contains("author"))
+	    this.setAuthor(doc.get("author"));
+	if (fields.contains("textClass"))
+	    this.setTextClass(doc.get("textClass"));
+	if (fields.contains("title"))
+	    this.setTitle(doc.get("title"));
+	if (fields.contains("subTitle"))
+	    this.setSubTitle(doc.get("subTitle"));
+	if (fields.contains("pubDate"))
+	    this.setPubDate(doc.get("pubDate"));
+	if (fields.contains("pubPlace"))
+	    this.setPubPlace(doc.get("pubPlace"));
+
+	// Temporary (later meta fields in term vector)
+	if (fields.contains("foundries"))
+	    this.setFoundries(doc.get("foundries"));
+	if (fields.contains("tokenization"))
+	    this.setTokenization(doc.get("tokenization"));
+	if (fields.contains("layerInfo"))
+	    this.setLayerInfo(doc.get("layerInfo"));
+    };
+
     @JsonProperty("docID")
     public String getDocID () {
 	return super.getID();
@@ -130,6 +177,66 @@ public class KorapMatch extends KorapDocument {
 
     public void setDocID (String id) {
 	super.setID(id);
+    };
+
+    @JsonIgnore
+    public int getStartPos() {
+	return this.startPos;
+    };
+
+    @JsonIgnore
+    public void setStartPos(int pos) {
+	this.startPos = pos;
+
+	if (this.positionsToOffset == null || this.localDocID == -1) {
+	    log.warn("You have to define " +
+		     "positionsToOffset and localDocID first " +
+		     "before adding position information");
+	    return;
+	};
+
+	// Preprocess matching
+	this.positionsToOffset.add(this.localDocID, pos);
+    };
+
+    @JsonIgnore
+    public int getEndPos() {
+	return this.endPos;
+    };
+
+    @JsonIgnore
+    public void setEndPos(int pos) {
+	this.endPos = pos;
+
+	if (this.positionsToOffset == null || this.localDocID == -1) {
+	    log.warn("You have to define " +
+		     "positionsToOffset and localDocID first " +
+		     "before adding position information");
+	    return;
+	};
+
+	// Preprocess matching
+	this.positionsToOffset.add(this.localDocID, pos - 1);
+    };
+
+    @JsonIgnore
+    public int getLocalDocID () {
+	return this.localDocID;
+    };
+
+    @JsonIgnore
+    public void setLocalDocID (int id) {
+	this.localDocID = id;
+    };
+
+    @JsonIgnore
+    public void setPositionsToOffset (PositionsToOffset pto) {
+	this.positionsToOffset = pto;
+    };
+
+    @JsonIgnore
+    public PositionsToOffset getPositionsToOffset () {
+	return this.positionsToOffset;
     };
 
     @Override
@@ -560,7 +667,6 @@ public class KorapMatch extends KorapDocument {
 
     @JsonProperty("snippet")
     public String getSnippetHTML () {
-
 	this._processHighlight();
 
 	if (this.processed && this.snippetHTML != null)
@@ -708,26 +814,26 @@ public class KorapMatch extends KorapDocument {
 
 	// left context
 	if (leftTokenContext) {
-	    startOffsetChar = this.positionsToOffset.start(ldid, startPos - this.leftContext);
+	    startOffsetChar = this.positionsToOffset.start(ldid, startPos - this.leftContextOffset);
 	}
 	else {
-	    startOffsetChar = startPosChar - this.leftContext;
+	    startOffsetChar = startPosChar - this.leftContextOffset;
 	};
 
 	// right context
 	if (rightTokenContext) {
 	    endOffsetChar = this.positionsToOffset.end(
 	        ldid,
-		this.endPos + this.rightContext - 1
+		this.endPos + this.rightContextOffset - 1
 	    );
-	    log.trace("For endOffset {} ({}+{}-1) pto returns {}", (this.endPos + this.rightContext - 1), this.endPos, this.rightContext, endOffsetChar);
+	    log.trace("For endOffset {} ({}+{}-1) pto returns {}", (this.endPos + this.rightContextOffset - 1), this.endPos, this.rightContextOffset, endOffsetChar);
 	}
 	else {
 	    if (endPosChar == -1) {
 		endOffsetChar = -1;
 	    }
 	    else {
-		endOffsetChar = endPosChar + this.rightContext;
+		endOffsetChar = endPosChar + this.rightContextOffset;
 	    };
 	};
 
@@ -750,7 +856,7 @@ public class KorapMatch extends KorapDocument {
 	this.startOffsetChar = startOffsetChar;
 
 
-	log.trace("Offsetposition {} till {} with contexts {} and {}", startOffsetChar, endOffsetChar, leftContext, rightContext);
+	log.trace("Offsetposition {} till {} with contexts {} and {}", startOffsetChar, endOffsetChar, leftContextOffset, rightContextOffset);
 
 	if (endOffsetChar > -1 && endOffsetChar < this.getPrimaryDataLength()) {
 	    this.tempSnippet = this.getPrimaryData(startOffsetChar, endOffsetChar);
@@ -760,7 +866,7 @@ public class KorapMatch extends KorapDocument {
 	    endMore = false;
 	};
 
-	log.trace("Temporary snippet is \"{}\"", this.tempSnippet);
+	// log.trace("Temporary snippet is \"{}\"", this.tempSnippet);
 
 	if (this.span == null)
 	    this.span = new LinkedList<int[]>();
@@ -796,5 +902,33 @@ public class KorapMatch extends KorapDocument {
 		this.span.add(intArray);
 	    };
 	};
+    };
+
+
+    // Identical to KorapResult!
+    public String toJSON () {
+	ObjectNode json =  (ObjectNode) mapper.valueToTree(this);
+
+	ArrayNode leftContext = mapper.createArrayNode();
+	leftContext.add(this.leftTokenContext ? "token" : "char");
+	leftContext.add(this.leftContextOffset);
+
+	ArrayNode rightContext = mapper.createArrayNode();
+	rightContext.add(this.rightTokenContext ? "token" : "char");
+	rightContext.add(this.rightContextOffset);
+
+	ObjectNode context = mapper.createObjectNode();
+	context.put("left", leftContext);
+	context.put("right", rightContext);
+	json.put("context", context);
+
+	try {
+	    return mapper.writeValueAsString(json);
+	}
+	catch (Exception e) {
+	    log.warn(e.getLocalizedMessage());
+	};
+
+	return "{}";
     };
 };

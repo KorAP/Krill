@@ -59,7 +59,7 @@
       <artifactId>lucene-core</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
-      <version>4.3.0</version>
+      <version>4.3.1</version>
     </dependency>
 
     <!-- Lucene queryparser dependency -->
@@ -67,7 +67,7 @@
       <artifactId>lucene-queryparser</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
-      <version>4.3.0</version>
+      <version>4.3.1</version>
     </dependency>
 
     <!-- Lucene analyzers dependency -->
@@ -75,7 +75,7 @@
       <artifactId>lucene-analyzers-common</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
-      <version>4.3.0</version>
+      <version>4.3.1</version>
     </dependency>
 
     <!-- JCache -->
