@@ -261,7 +261,7 @@ public class KorapMatch extends KorapDocument {
 	    sb.append(this.localDocID);
 	};
 
-	sb.append('p');
+	sb.append("-p");
 
 	// Get Position information
 	sb.append(startPos).append('-').append(endPos);
