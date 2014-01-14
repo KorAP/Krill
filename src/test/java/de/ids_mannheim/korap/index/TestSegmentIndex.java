@@ -68,11 +68,11 @@ public class TestSegmentIndex {
 				
 		assertEquals("totalResults", 3, kr.totalResults());
 		// Match #0
-		assertEquals("doc-number", 1, kr.match(0).localDocID);
+		assertEquals("doc-number", 1, kr.match(0).getLocalDocID());
 		assertEquals("StartPos", 1, kr.match(0).startPos);
 		assertEquals("EndPos", 2, kr.match(0).endPos);
 		// Match #2
-		assertEquals("doc-number", 2, kr.match(2).localDocID);
+		assertEquals("doc-number", 2, kr.match(2).getLocalDocID());
 		assertEquals("StartPos", 2, kr.match(2).startPos);
 		assertEquals("EndPos", 3, kr.match(2).endPos);		
 	}
@@ -91,7 +91,7 @@ public class TestSegmentIndex {
 		ki.close();
 		
 		assertEquals("totalResults", 1, kr.totalResults());
-		assertEquals("doc-number", 2, kr.match(0).localDocID);
+		assertEquals("doc-number", 2, kr.match(0).getLocalDocID());
 		assertEquals("StartPos (0)", 1, kr.match(0).startPos);
 		assertEquals("EndPos (0)", 2, kr.match(0).endPos);		
 	}
@@ -113,11 +113,11 @@ public class TestSegmentIndex {
 		
 		assertEquals("totalResults", 2, kr.totalResults());
 		// Match #0
-		assertEquals("doc-number", 0, kr.match(0).localDocID);
+		assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
 		assertEquals("StartPos", 3, kr.match(0).startPos);
 		assertEquals("EndPos", 5, kr.match(0).endPos);
 		// Match #1
-		assertEquals("doc-number", 1, kr.match(1).localDocID);
+		assertEquals("doc-number", 1, kr.match(1).getLocalDocID());
 		assertEquals("StartPos", 1, kr.match(1).startPos);
 		assertEquals("EndPos", 3, kr.match(1).endPos);				
 	}
@@ -136,7 +136,7 @@ public class TestSegmentIndex {
 		
 		assertEquals("totalResults", 1, kr.totalResults());
 		// Match #0
-		assertEquals("doc-number", 0, kr.match(0).localDocID);
+		assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
 		assertEquals("StartPos", 3, kr.match(0).startPos);
 		assertEquals("EndPos", 5, kr.match(0).endPos);				
 	}

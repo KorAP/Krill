@@ -9,7 +9,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.ToStringUtils;
 
-/** An abstract class for Spanquery having two clauses. 
+/** An abstract class for a Spanquery having two clauses. 
  * 
  * 	@author margaretha
  * */
@@ -73,13 +73,15 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable{
     
 	@Override
 	public Query rewrite(IndexReader reader) throws IOException {		
-		SimpleSpanQuery clone = clone();
+		SimpleSpanQuery clone = null;
 		SpanQuery query = (SpanQuery) firstClause.rewrite(reader);
 		if (!query.equals(firstClause)) {
+			if (clone == null) clone = clone();
 	    	clone.firstClause = query;
 		}		
 		query = (SpanQuery) secondClause.rewrite(reader);
-		if (!query.equals(secondClause)) {		    
+		if (!query.equals(secondClause)) {		
+			if (clone == null) clone = clone();
 		    clone.secondClause = query;
 		}
 		return (clone != null ? clone : this );		

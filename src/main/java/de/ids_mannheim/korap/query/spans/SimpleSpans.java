@@ -46,10 +46,10 @@ public abstract class SimpleSpans extends Spans{
   		matchDocNumber= -1;
   		matchStartPosition= -1;
   		matchEndPosition= -1;
-  				
-  		this.collectPayloads = collectPayloads; 
-  		if (collectPayloads) 
-  			matchPayload = new LinkedList<byte[]>();
+  			
+  		// TODO: what is this
+  		this.collectPayloads = true;
+  		matchPayload = new LinkedList<byte[]>();
   		
   		// Get the enumeration of the two spans to match
   		firstSpans = simpleSpanQuery.getFirstClause().

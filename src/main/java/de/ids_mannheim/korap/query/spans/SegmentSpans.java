@@ -10,8 +10,8 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 
-/**	SegmentSpans is an enumeration of Span matches, which ensures that two spans: 
- * 	a firstspan and a secondspan have exactly the same start and end positions.
+/**	SegmentSpans is an enumeration of Span matches, which ensures that two spans 
+ * 	have exactly the same start and end positions.
  * 
  * 	@author margaretha 
  * */

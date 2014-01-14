@@ -4,14 +4,19 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.SegmentSpans;
 
+/** Matching two spans having exactly the same start and end positions.
+ * @author margaretha 
+ * */
 public class SpanSegmentQuery extends SimpleSpanQuery{
 	
 	private boolean collectPayloads;
@@ -34,10 +39,10 @@ public class SpanSegmentQuery extends SimpleSpanQuery{
 			Map<Term, TermContext> termContexts) throws IOException {
 		return (Spans) new SegmentSpans(this, context, acceptDocs,
 				termContexts, collectPayloads);
-	}
-
+	}		
+	
 	@Override
-	public SimpleSpanQuery clone() {
+	public SpanSegmentQuery clone() {
 		SpanSegmentQuery spanSegmentQuery = new SpanSegmentQuery(
 			    (SpanQuery) firstClause.clone(),
 			    (SpanQuery) secondClause.clone(),
@@ -47,31 +52,29 @@ public class SpanSegmentQuery extends SimpleSpanQuery{
 		return spanSegmentQuery;		
 	}
 	
-	/* TODO: Where is the hashmap?
+	//TODO: Where is the hashmap?
 		
     @Override
     public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof SpanNextQuery)) return false;
+		if (!(o instanceof SpanSegmentQuery)) return false;
 		
-		final SpanNextQuery spanNextQuery = (SpanNextQuery) o;
+		SpanSegmentQuery spanSegmentQuery = (SpanSegmentQuery) o;
 		
-		if (collectPayloads != spanNextQuery.collectPayloads) return false;
-		if (!firstClause.equals(spanNextQuery.firstClause)) return false;
-		if (!secondClause.equals(spanNextQuery.secondClause)) return false;
+		if (collectPayloads != spanSegmentQuery.collectPayloads) return false;
+		if (!firstClause.equals(spanSegmentQuery.firstClause)) return false;
+		if (!secondClause.equals(spanSegmentQuery.secondClause)) return false;
 	
-		return getBoost() == spanNextQuery.getBoost();
+		return getBoost() == spanSegmentQuery.getBoost();
     };
 
-
-    // I don't know what I am doing here
     @Override
     public int hashCode() {
 		int result;
 		result = firstClause.hashCode() + secondClause.hashCode();
-		result ^= (result << 31) | (result >>> 2);  // reversible
+		result ^= (31 << result) | (result >>> 2);
 		result += Float.floatToRawIntBits(getBoost());
 		return result;
     };
-    */
+
 }
