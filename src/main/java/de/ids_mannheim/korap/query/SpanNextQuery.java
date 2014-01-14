@@ -30,99 +30,35 @@ import de.ids_mannheim.korap.query.spans.NextSpans;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Matches spans which are directly next to each other.
+/** Matches spans which are directly next to each other. 
+ * 	This is identical to a phrase query with exactly two clauses. 
  */
-public class SpanNextQuery extends SpanQuery implements Cloneable {
-    private SpanQuery firstClause, secondClause;
-    public String field;
+public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
+    private SpanQuery firstClause;
+    private SpanQuery secondClause;    
     private boolean collectPayloads;
-
-    // Logger
-    private final static Logger log = LoggerFactory.getLogger(SpanNextQuery.class);
 
     // Constructor
     public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause) {
-	this(firstClause, secondClause, true);
+    	this(firstClause, secondClause, true);
     };
 
     // Constructor  
-    public SpanNextQuery(SpanQuery firstClause,
-			 SpanQuery secondClause,
-			 boolean collectPayloads) {
-
-	this.field = secondClause.getField();
-	if (!firstClause.getField().equals(field)) {
-	    throw new IllegalArgumentException("Clauses must have same field");
-	};
-
-	this.collectPayloads = collectPayloads;
-	this.firstClause = firstClause;
-	this.secondClause = secondClause;
+    public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause,
+		boolean collectPayloads) {   
+    	super(firstClause, secondClause, "spanNext");
+		this.collectPayloads = collectPayloads;
+		this.firstClause = firstClause;
+		this.secondClause = secondClause;
     };
 
 
     @Override
-    public String getField() { return field; }
-
-    public SpanQuery firstClause() { return firstClause; };
-
-    public SpanQuery secondClause() { return secondClause; };
-  
-    @Override
-    public void extractTerms(Set<Term> terms) {
-	firstClause.extractTerms(terms);
-	secondClause.extractTerms(terms);
+    public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
+		   Map<Term,TermContext> termContexts) throws IOException {	
+		return (Spans) new NextSpans (this, context, acceptDocs, 
+				termContexts, collectPayloads);
     };
-  
-
-    @Override
-    public String toString(String field) {
-	StringBuilder sb = new StringBuilder();
-	sb.append("spanNext(")
-          .append(firstClause.toString(field))
-          .append(", ")
-          .append(secondClause.toString(field))
-          .append(")")
-          .append(ToStringUtils.boost(getBoost()));
-	return sb.toString();
-    };
-
-    @Override
-    public Spans getSpans (final AtomicReaderContext context,
-			   Bits acceptDocs,
-			   Map<Term,TermContext> termContexts) throws IOException {
-
-	log.trace("Get Spans");
-	return (Spans) new NextSpans (
-	    this, context, acceptDocs, termContexts, collectPayloads
-	);
-    };
-
-    @Override
-    public Query rewrite (IndexReader reader) throws IOException {
-	SpanNextQuery clone = null;
-
-	SpanQuery query = (SpanQuery) firstClause.rewrite(reader);
-
-	if (query != firstClause) {
-	    if (clone == null)
-		clone = this.clone();
-	    clone.firstClause = query;
-	};
-
-	query = (SpanQuery) secondClause.rewrite(reader);
-	if (query != secondClause) {
-	    if (clone == null)
-		clone = this.clone();
-	    clone.secondClause = query;
-	};
-
-	if (clone != null)
-	    return clone;
-
-	return this;
-    };
-  
 
     @Override
     public SpanNextQuery clone() {
@@ -145,7 +81,7 @@ public class SpanNextQuery extends SpanQuery implements Cloneable {
 	final SpanNextQuery spanNextQuery = (SpanNextQuery) o;
 	
 	if (collectPayloads != spanNextQuery.collectPayloads) return false;
-	if (!firstClause.equals(spanNextQuery.firstClause))   return false;
+	if (!firstClause.equals(spanNextQuery.firstClause)) return false;
 	if (!secondClause.equals(spanNextQuery.secondClause)) return false;
 
 	return getBoost() == spanNextQuery.getBoost();

@@ -1,7 +1,6 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
-
 import java.util.Map;
 
 import org.apache.lucene.index.AtomicReaderContext;
@@ -9,24 +8,23 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 
-
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 
-/**	NextSpans is an enumeration of Span matches, which ensures that  
- * 	a span is immediately followed by another span. 
+/**	SegmentSpans is an enumeration of Span matches, which ensures that two spans: 
+ * 	a firstspan and a secondspan have exactly the same start and end positions.
  * 
  * 	@author margaretha 
  * */
-public class NextSpans extends SimpleSpans {	
+public class SegmentSpans extends SimpleSpans {	
 	
-    public NextSpans (SimpleSpanQuery simpleSpanQuery,
+    public SegmentSpans (SimpleSpanQuery simpleSpanQuery,
   	      AtomicReaderContext context,
   	      Bits acceptDocs,
   	      Map<Term,TermContext> termContexts) throws IOException {
     	this(simpleSpanQuery, context, acceptDocs, termContexts, true);    	
     }
     
-    public NextSpans (SimpleSpanQuery simpleSpanQuery,
+    public SegmentSpans (SimpleSpanQuery simpleSpanQuery,
 	      AtomicReaderContext context,
 	      Bits acceptDocs,
 	      Map<Term,TermContext> termContexts,
@@ -34,19 +32,21 @@ public class NextSpans extends SimpleSpans {
 		super(simpleSpanQuery, context, acceptDocs, termContexts,collectPayloads);
 	}
 
-    /** Check weather the end position of the current firstspan equals 
-     *  the start position of the secondspan. 
+    /** Check weather the start and end positions of the current 
+     * 	firstspan and secondspan are identical. 
   	 * */
-	protected int findMatch() {		
-		if (firstSpans.end() == secondSpans.start()) {			
+	protected int findMatch() {
+		
+		if (firstSpans.start() == secondSpans.start() &&
+			firstSpans.end() == secondSpans.end() ){
 			matchDocNumber = firstSpans.doc();
 			matchStartPosition = firstSpans.start();
-			matchEndPosition = secondSpans.end();	
+			matchEndPosition = firstSpans.end();			
 			return 0;
-		}		
-		else if (firstSpans.end() > secondSpans.start())
-			return 1;
+		}
+		else if (firstSpans.start() < secondSpans.start())
+			return -1;
 		
-		return -1;		
+		return 1;
 	}	
 }
