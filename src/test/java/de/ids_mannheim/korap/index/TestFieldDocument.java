@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.index;
+
 import java.util.*;
 import java.io.*;
 
@@ -182,7 +184,10 @@ public class TestFieldDocument {
 	*/
 
 	kr = ki.search(query, 0, (short) 5, true, (short) 2, false, (short) 5);
-	assertEquals(37, kr.totalResults());
+//	System.out.println(query.toString());
+//	System.out.println(kr.match(37));	
+	
+	assertEquals(38, kr.totalResults());
 	assertEquals(5, kr.itemsPerPage());
 	assertEquals("... Buchstabe des [{1:{2:lateinischen} Alphabets}] und  ...", kr.match(0).getSnippetBrackets());
 	assertEquals("... Texten eine [{1:{2:durchschnittliche} Häufigkeit}] von  ...", kr.match(1).getSnippetBrackets());

@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.search;
+
 import java.util.*;
 import java.io.*;
 
@@ -107,7 +109,10 @@ public class TestKorapSearch {
 	String json = getString(getClass().getResource("/queries/metaquery3.json").getFile());
 
 	KorapResult kr = new KorapSearch(json).run(ki);
-	assertEquals(29, kr.getTotalResults());
+	
+	//System.out.println(kr.getQuery().toString());	
+	
+	assertEquals(66, kr.getTotalResults());
 	assertEquals(5, kr.getItemsPerPage());
 	assertEquals(5, kr.getStartIndex());
 	assertEquals("... a: A ist [der klangreichste] der V ...", kr.getMatch(0).getSnippetBrackets());
