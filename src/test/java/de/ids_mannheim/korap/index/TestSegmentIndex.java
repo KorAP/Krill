@@ -10,6 +10,8 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
@@ -24,6 +26,7 @@ public class TestSegmentIndex {
 	private KorapIndex ki;
 	private KorapResult kr;
 	private FieldDocument fd;
+	private Logger log;	
 	
 	public TestSegmentIndex() throws IOException {
 		ki = new KorapIndex();
@@ -31,12 +34,14 @@ public class TestSegmentIndex {
 		ki.addDoc(createFieldDoc2());
 		ki.addDoc(createFieldDoc3());
 		ki.commit();
+		
+		log = LoggerFactory.getLogger(getClass());
 	}
 
 	/** Multiple matches in one document. */
 	@Test
 	public void testCase1() throws IOException {
-		System.out.println("Testcase1");
+//		log.trace("Testcase1");
 		sq = new SpanSegmentQuery(
 				new SpanTermQuery(new Term("base","s:b")),
 				new SpanTermQuery(new Term("base","s:c"))
@@ -56,8 +61,8 @@ public class TestSegmentIndex {
 	 * 	Ensure the same document. The current secondspan is skipped to 
 	 * 	the doc number of the firstspan.  */
 	@Test
-	public void testCase2() throws IOException {
-		System.out.println("Testcase2");
+	public void testCase2() throws IOException {		
+//		log.trace("Testcase2");
 		sq = new SpanSegmentQuery(
 				new SpanTermQuery(new Term("base","s:a")),				
 				new SpanTermQuery(new Term("base","s:b"))
@@ -81,7 +86,7 @@ public class TestSegmentIndex {
 	/** Ensure the same document, skip to a greater doc number */
 	@Test
 	public void testCase3() throws IOException{
-		System.out.println("Testcase3");
+//		log.trace("Testcase3");
 		sq = new SpanSegmentQuery(
 				new SpanTermQuery(new Term("base","s:d")),
 				new SpanTermQuery(new Term("base","s:b"))
@@ -96,10 +101,20 @@ public class TestSegmentIndex {
 		assertEquals("EndPos (0)", 2, kr.match(0).endPos);		
 	}
 	
-	/** Matching a SpanElementQuery and a SpanNextQuery */
+	/** Matching a SpanElementQuery and a SpanNextQuery 
+	 * 	Multiple atomic indices
+	 * */
 	@Test
 	public void testCase4() throws IOException{
-		System.out.println("Testcase4");
+//		log.trace("Testcase4");
+		
+		ki = new KorapIndex();
+		ki.addDoc(createFieldDoc1());
+		ki.commit();
+		ki.addDoc(createFieldDoc2());		
+		ki.addDoc(createFieldDoc3());
+		ki.commit();
+		
 		sq = new SpanSegmentQuery(
 				new SpanElementQuery("base","e"),
 				new SpanNextQuery(
@@ -117,15 +132,15 @@ public class TestSegmentIndex {
 		assertEquals("StartPos", 3, kr.match(0).startPos);
 		assertEquals("EndPos", 5, kr.match(0).endPos);
 		// Match #1
-		assertEquals("doc-number", 1, kr.match(1).getLocalDocID());
+		assertEquals("doc-number", 0, kr.match(1).getLocalDocID());
 		assertEquals("StartPos", 1, kr.match(1).startPos);
 		assertEquals("EndPos", 3, kr.match(1).endPos);				
 	}
 	
-	/** SpanElementQueries */
+	/** Matching SpanElementQueries */
 	@Test
 	public void testCase5() throws IOException{
-		System.out.println("Testcase5");
+//		log.trace("Testcase5");
 		sq = new SpanSegmentQuery(
 				new SpanElementQuery("base","e"),
 				new SpanElementQuery("base","e2")
