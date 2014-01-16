@@ -1,3 +1,9 @@
+0.26 2014-01-16
+        - Introduced standalone SpanSegmentQueries (margaretha)
+        - [bugfix] SpanNextQueries (margaretha)
+	- Support for Match Identifiers (diewald)
+	- Support for distinct Match retrieval (diewald)
+
 0.25.3 2014-01-10
         - Updated Lucene to 4.3.1.
 

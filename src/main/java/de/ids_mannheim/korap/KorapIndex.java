@@ -74,6 +74,7 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.TermInfo;
 import de.ids_mannheim.korap.index.SpanInfo;
+import de.ids_mannheim.korap.index.MatchIdentifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -453,49 +454,40 @@ public class KorapIndex {
 
 
     public KorapMatch getMatch (String id) {
-	return this.getMatchInfo(id, false, null, null, false, true);
+	return this.getMatchInfo(id, "tokens", false, null, null, false, true);
     };
 
-    public KorapMatch getMatchInfo (String id, String foundry, String layer, boolean includeSpans, boolean includeHighlights) {
-	return this.getMatchInfo(id, true, foundry, layer, includeSpans, includeHighlights);
+    public KorapMatch getMatchInfo (String id,
+				    String field,
+				    String foundry,
+				    String layer,
+				    boolean includeSpans,
+				    boolean includeHighlights) {
+	return this.getMatchInfo(id, field, true, foundry, layer, includeSpans, includeHighlights);
     };
 
     /**
      * Get a match.
      * BE AWARE - THIS IS STILL A PLAYGROUND!
      */
-    // TODO: collect all information based on a prefix (like cnx/p etc.)
-    // TODO: Generate a meaningful structure (e.g. a tree)
     /*
       KorapInfo is associated with a KorapMatch and has an array with all informations
       per position in the match.
-
-      public KorapInfo infoOf (KorapMatch km, String prefix);
     */
-    public KorapMatch getMatchInfo (String id, boolean info, String foundry, String layer, boolean includeSpans, boolean includeHighlights) {
+    public KorapMatch getMatchInfo (String idString,
+				    String field,
+				    boolean info,
+				    String foundry,
+				    String layer,
+				    boolean includeSpans,
+				    boolean includeHighlights) {
 
-	// List of terms to populate
-	SpanInfo termList = new SpanInfo();
-
-	KorapMatch match = new KorapMatch();
-
-	// That's purely temporary
-	// From ID:
-	String corpusID = "WPD";
-	String docID    = "WPD_AAA.00003";
-	int startPos    = 25;
-	int endPos      = 30;
-
-	foundry  = "mate";
-	layer    = "l";
-	includeSpans = true;
-
-	String field    = "tokens"; // text field
+	KorapMatch match = new KorapMatch(idString, includeHighlights);
 
 	// Create a filter based on the corpusID and the docID
 	BooleanQuery bool = new BooleanQuery();
-	bool.add(new TermQuery(new Term("ID",       docID)),    BooleanClause.Occur.MUST);
-	bool.add(new TermQuery(new Term("corpusID", corpusID)), BooleanClause.Occur.MUST);
+	bool.add(new TermQuery(new Term("ID",       match.getDocID())),    BooleanClause.Occur.MUST);
+	bool.add(new TermQuery(new Term("corpusID", match.getCorpusID())), BooleanClause.Occur.MUST);
 	Filter filter = (Filter) new QueryWrapperFilter(bool);
 
 	CompiledAutomaton fst = null;
@@ -508,23 +500,25 @@ public class KorapIndex {
 	     */
 	    StringBuffer regex = new StringBuffer();
 
+	    // Todo: Only support one direction!
 	    if (includeSpans)
-		regex.append("(((\"<>\"|\"<\"|\">\")\":\")?");
-	    else
-		regex.append("[^<>-]");
+		regex.append("((\"<>\"|\"<\"|\">\")\":\")?");
 	    if (foundry != null) {
 		regex.append(foundry).append('/');
 		if (layer != null)
 		    regex.append(layer).append(":");
 	    }
 	    else if (includeSpans) {
-		regex.append("[^-]");
+		regex.append("([^-is]+?|[-is][^:])");
+	    }
+	    else {
+		regex.append("([^-is<>]+?|([-is<>]|\"<>\")[^:])");
 	    };
-	    regex.append("(.){1,})|_[0-9]+");
+	    regex.append("(.){1,}|_[0-9]+");
 
+	    log.trace("The final regex is {}", regex.toString());
 	    RegExp regexObj = new RegExp(regex.toString());
 	    fst = new CompiledAutomaton(regexObj.toAutomaton());
-	    log.trace("The final regex is {}", regex.toString());
 	};
 
 
@@ -541,13 +535,20 @@ public class KorapIndex {
 		// Create a bitset for the correct document
 		Bits bitset = filterSet.bits();
 
+		DocIdSetIterator filterIterator = filterSet.iterator();
+
+		// No document found
+		if (filterIterator == null)
+		    continue;
+
 		// Go to the matching doc - and remember its ID
-		int localDocID = filterSet.iterator().nextDoc();
+		int localDocID = filterIterator.nextDoc();
 
 		if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
 		    continue;
 
 		// We've found the correct document! Hurray!
+		log.trace("We've found a matching document");
 		HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
 		fieldsToLoadLocal.add(field);
 
@@ -558,21 +559,22 @@ public class KorapIndex {
 		Document doc = atomic.reader().document(localDocID, fieldsToLoadLocal);
 
 		// Put some more information to the match
-		match.setPositionsToOffset(new PositionsToOffset(atomic, field));
+		PositionsToOffset pto = new PositionsToOffset(atomic, field);
+		match.setPositionsToOffset(pto);
 		match.setLocalDocID(localDocID);
-		match.setStartPos(startPos);
-		match.setEndPos(endPos);
 		match.populateDocument(doc, field, fieldsToLoadLocal);
 
-		log.trace("The document is called '{}'", match.getTitle());
+		log.trace("The document has the id '{}'", match.getDocID());
 
-		if (!info)
-		    break;
+		if (!info) break;
 
 		// Limit the terms to all the terms of interest
 		TermsEnum termsEnum = docTerms.intersect(fst, null);
 
 		DocsAndPositionsEnum docs = null;
+
+		// List of terms to populate
+		SpanInfo termList = new SpanInfo(pto, localDocID);
 
 		// Iterate over all terms in the document
 		while (termsEnum.next() != null) {
@@ -607,7 +609,7 @@ public class KorapIndex {
 			int pos = docs.nextPosition();
 
 			// Check, if the position of the term is in the interesting area
-			if (pos >= startPos && pos < endPos) {
+			if (pos >= match.getStartPos() && pos < match.getEndPos()) {
 
 			    log.trace(
 			        ">> {}: {}-{}-{}",
@@ -632,15 +634,28 @@ public class KorapIndex {
 			};
 		    };
 		};
+
+		// Add annotations based on the retrieved infos
+		for (TermInfo t : termList.getTerms()) {
+		    log.trace("Add term {}/{}:{} to {}({})-{}({})",
+			      t.getFoundry(),
+			      t.getLayer(),
+			      t.getValue(),
+			      t.getStartChar(),
+			      t.getStartPos(),
+			      t.getEndChar(),
+			      t.getEndPos());
+
+		    if (t.getType() == "term" || t.getType() == "span")
+			match.addAnnotation(t.getStartPos(), t.getEndPos(), t.getAnnotation());
+		};
+
 		break;
 	    };
 	}
 	catch (IOException e) {
-	    // ...
-	};
-
-	for (TermInfo t : termList.getTerms()) {
-	    log.trace("Add term {}/{}:{} to {}-{}", t.getFoundry(), t.getLayer(), t.getValue(), t.getStartChar(), t.getEndChar());
+	    log.warn(e.getLocalizedMessage());
+	    match.setError(e.getLocalizedMessage());
 	};
 
 	return match;

@@ -133,6 +133,15 @@ public class PositionsToOffset {
 	return this.offsets.get(ptoa);
     };
 
+    public void addOffset (int docID,
+			   int pos,
+			   int startOffset,
+			   int endOffset) {
+	offsets.put(
+	    new PositionsToOffsetArray(docID, pos),
+            new Integer[]{startOffset, endOffset}
+	);
+    };
 
     public HashMap<PositionsToOffsetArray, Integer[]> offsets () {
 	if (processed)
@@ -170,7 +179,10 @@ public class PositionsToOffset {
 
 		    if (termsEnum.seekExact(term.bytes(), true)) {
 			
-			log.trace("Search for {} in doc {} with pos {}", term.toString(), posDoc.docID, posDoc.pos);
+			log.trace("Search for {} in doc {} with pos {}",
+				  term.toString(),
+				  posDoc.docID,
+				  posDoc.pos);
 
 			// Start an iterator to fetch all payloads of the term
 			DocsAndPositionsEnum docs = termsEnum.docsAndPositions(

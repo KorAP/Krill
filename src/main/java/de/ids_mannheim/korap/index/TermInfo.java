@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.index;
 
 import java.util.*;
 import java.nio.ByteBuffer;
+import java.lang.StringBuffer;
 import java.util.regex.*;
 import de.ids_mannheim.korap.KorapMatch;
 
@@ -13,7 +14,7 @@ public class TermInfo implements Comparable<TermInfo> {
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
-    private String foundry, layer, value, term, type;
+    private String foundry, layer, value, term, type, annotation;
     // type can be "term", "pos", "span", "rel-src", "rel-target"
 
     private int pos = 0;
@@ -33,7 +34,7 @@ public class TermInfo implements Comparable<TermInfo> {
     public TermInfo (String term, int pos, ByteBuffer payload) {
 	this.term     = term;
 	this.startPos = pos;
-	this.endPos   = pos + 1;
+	this.endPos   = pos;
 	this.payload  = payload;
     };
 
@@ -84,6 +85,7 @@ public class TermInfo implements Comparable<TermInfo> {
 	    log.trace("Check {} for {}", tterm, prefixRegex.toString());
 	    matcher = prefixRegex.matcher(tterm);
 	    if (matcher.matches() && matcher.groupCount() == 3) {
+		this.annotation = tterm;
 		this.foundry = matcher.group(1);
 		this.layer   = matcher.group(2);
 		this.value   = matcher.group(3);
@@ -105,7 +107,8 @@ public class TermInfo implements Comparable<TermInfo> {
 
 	// for spans and relations
 	if (ttype > 1)
-	    this.endPos = this.payload.getInt();
+	    // Unsure if this is correct
+	    this.endPos = this.payload.getInt() -1;
 
 	if (ttype == 2 && this.payload.hasRemaining()) {
 	    this.depth = this.payload.get();
@@ -160,10 +163,17 @@ public class TermInfo implements Comparable<TermInfo> {
 	return this.value;
     };
 
+    public String getAnnotation () {
+	return this.annotation;
+    };
+
     @Override
     public int compareTo (TermInfo obj) {
 	this.analyze();
 	obj.analyze();
+
+	// TODO: This sorting does not seem to work!
+	// although it might only be important for depth stuff.
 
 	if (this.startChar < obj.startChar) {
 	    return -1;

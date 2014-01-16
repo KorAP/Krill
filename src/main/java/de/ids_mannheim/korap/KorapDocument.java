@@ -66,7 +66,9 @@ public abstract class KorapDocument {
 
     @JsonProperty("pubDate")
     public String getPubDateString () {
-	return this.pubDate.toDisplay();
+	if (this.pubDate != null)
+	    return this.pubDate.toDisplay();
+	return null;
     };
 
     public void setAuthor (String author) {
