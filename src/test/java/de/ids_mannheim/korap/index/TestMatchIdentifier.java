@@ -99,24 +99,92 @@ public class TestMatchIdentifier {
 	assertEquals("StartPos (0)", 7, km.getStartPos());
 	assertEquals("EndPos (0)", 9, km.getEndPos());
 
-	assertEquals("SnippetBrackets (0)", "... [{2:b{a}}] ...", km.snippetBrackets());
+	assertEquals("SnippetBrackets (0)",
+		     "... [{2:b{a}}] ...",
+		     km.getSnippetBrackets());
 	assertEquals("ID (0)", "match-c1!d1-p7-9(0)8-8(2)7-8", km.getID());
+
+	km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8",
+			     "tokens",
+			     "f",
+			     "m",
+			     false,
+			     false);
+
+	assertEquals("SnippetBrackets (1)",
+		     "... [{f/m:acht:b}{f/m:neun:a}] ...",
+		     km.getSnippetBrackets());
+
+	km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8",
+			     "tokens",
+			     "f",
+			     "m",
+			     false,
+			     true);
+
+	assertEquals("SnippetBrackets (2)",
+		     "... [{2:{f/m:acht:b}{{f/m:neun:a}}}] ...",
+		     km.getSnippetBrackets());
+
+	km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
+			     "tokens",
+			     "f",
+			     "m",
+			     false,
+			     true);
+
+	assertEquals("SnippetBrackets (3)",
+		     "... [{2:{f/m:acht:b}{4:{f/m:neun:a}}}] ...",
+		     km.getSnippetBrackets());
+
+	km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
+			     "tokens",
+			     "f",
+			     null,
+			     false,
+			     true);
+
+	assertEquals("SnippetBrackets (4)",
+		     "... [{2:{f/m:acht:{f/y:eight:b}}{4:{f/m:neun:{f/y:nine:a}}}}] ...",
+		     km.getSnippetBrackets());
+
+	assertEquals("SnippetHTML (4)",
+		     "<span class=\"context-left\">"+
+		     "<span class=\"more\">"+
+		     "</span>"+
+		     "</span>"+
+		     "<span class=\"match\">"+
+		     "<em class=\"class-2 level-0\">"+
+		     "<span title=\"f/m:acht\">"+
+		     "<span title=\"f/y:eight\">"+
+		     "b"+
+		     "</span>"+
+		     "</span>"+
+		     "<em class=\"class-4 level-1\">"+
+		     "<span title=\"f/m:neun\">"+
+		     "<span title=\"f/y:nine\">"+
+		     "a"+
+		     "</span>"+
+		     "</span>"+
+		     "</em>"+
+		     "</em>"+
+		     "</span>"+
+		     "<span class=\"context-right\">"+
+		     "<span class=\"more\">"+
+		     "</span>"+
+		     "</span>",
+		     km.getSnippetHTML());
+
+	km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
+			     "tokens",
+			     null,
+			     null,
+			     false,
+			     true);
+
+	// --> bug:
+	// System.err.println(km.snippetHTML());
     };
-
-
-    public void indexExample3 () throws IOException {
-	// Construct index
-	KorapIndex ki = new KorapIndex();
-	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
-	    ki.addDocFile(
-	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
-            );
-	};
-	ki.commit();
-	//	System.err.println(ki.getMatchInfo("xxx", null, null, true, true).toJSON());
-    };
-
 
     private FieldDocument createSimpleFieldDoc(){
 	FieldDocument fd = new FieldDocument();
@@ -124,16 +192,16 @@ public class TestMatchIdentifier {
 	fd.addString("ID", "d1");
 	fd.addTV("tokens",
 		 "abcabcabac",
-		 "[(0-1)s:a|i:a|f/m:eins|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|f/m:zwei|_1#1-2]" +
-		 "[(2-3)s:c|i:c|f/m:drei|_2#2-3]" +
-		 "[(3-4)s:a|i:a|f/m:vier|_3#3-4]" +
-		 "[(4-5)s:b|i:b|f/m:fuenf|_4#4-5]" +
-		 "[(5-6)s:c|i:c|f/m:sechs|_5#5-6]" +
-		 "[(6-7)s:a|i:a|f/m:sieben|_6#6-7]" +
-		 "[(7-8)s:b|i:b|f/m:acht|_7#7-8]" +
-		 "[(8-9)s:a|i:a|f/m:neun|_8#8-9]" +
-		 "[(9-10)s:c|i:c|f/m:zehn|_9#9-10]");
+		 "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|_0#0-1|-:t$<i>10]" +
+		 "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|_1#1-2]" +
+		 "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|_2#2-3]" +
+		 "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|_3#3-4]" +
+		 "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|_4#4-5]" +
+		 "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|_5#5-6]" +
+		 "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|_6#6-7]" +
+		 "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|_7#7-8]" +
+		 "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|_8#8-9]" +
+		 "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|_9#9-10]");
 	return fd;
     };
 };

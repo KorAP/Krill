@@ -98,10 +98,10 @@ import org.slf4j.LoggerFactory;
 */
 
 /**
- * @author Nils Diewald
- * 
  * KorapIndex implements a simple API for searching in and writing to a
  * Lucene index and equesting several information but the index's nature.
+ *
+ * @author ndiewald
  */
 public class KorapIndex {
     private Directory directory;
@@ -118,9 +118,9 @@ public class KorapIndex {
     private ObjectMapper mapper = new ObjectMapper();
 
 
-    private static ByteBuffer bb       = ByteBuffer.allocate(4);
-    private static ByteBuffer bbOffset = ByteBuffer.allocate(8);
-    private static ByteBuffer bbTerm   = ByteBuffer.allocate(16);
+    private static ByteBuffer bb       = ByteBuffer.allocate(4),
+	                      bbOffset = ByteBuffer.allocate(8),
+	                      bbTerm   = ByteBuffer.allocate(16);
 
     private byte[] pl = new byte[4];
 
@@ -130,7 +130,7 @@ public class KorapIndex {
     private final static Logger log = LoggerFactory.getLogger(KorapIndex.class);
 
     public KorapIndex () throws IOException {
-	this((Directory) new RAMDirectory());
+        this((Directory) new RAMDirectory());
     };
 
 
@@ -516,9 +516,10 @@ public class KorapIndex {
 	    };
 	    regex.append("(.){1,}|_[0-9]+");
 
-	    log.trace("The final regex is {}", regex.toString());
+	    log.trace("The final regexString is {}", regex.toString());
 	    RegExp regexObj = new RegExp(regex.toString());
 	    fst = new CompiledAutomaton(regexObj.toAutomaton());
+	    log.trace("The final regexObj is {}", regexObj.toString());
 	};
 
 

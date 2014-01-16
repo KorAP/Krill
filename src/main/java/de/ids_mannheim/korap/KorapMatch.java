@@ -14,7 +14,6 @@ import de.ids_mannheim.korap.document.KorapPrimaryData;
 
 import static de.ids_mannheim.korap.util.KorapHTML.*;
 import de.ids_mannheim.korap.index.MatchIdentifier;
-// import org.apache.commons.codec.binary.Base64;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
