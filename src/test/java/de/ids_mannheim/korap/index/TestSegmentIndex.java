@@ -147,7 +147,7 @@ public class TestSegmentIndex {
 		);
 		
 		kr = ki.search(sq, (short) 10);
-		ki.close();
+		ki.close();			
 		
 		assertEquals("totalResults", 1, kr.totalResults());
 		// Match #0
@@ -155,7 +155,33 @@ public class TestSegmentIndex {
 		assertEquals("StartPos", 3, kr.match(0).startPos);
 		assertEquals("EndPos", 5, kr.match(0).endPos);				
 	}
-	
+		
+	/** Skip to SegmentSpan */
+	@Test
+	public void testcase6() throws IOException{
+		ki.addDoc(createFieldDoc4());
+		ki.commit();
+		sq = new SpanNextQuery(
+				new SpanSegmentQuery(
+					new SpanTermQuery(new Term("base","s:b")),
+					new SpanTermQuery(new Term("base","s:c"))
+				),
+				new SpanTermQuery(new Term("base","s:d"))
+			);		
+		
+		kr = ki.search(sq, (short) 10);
+		ki.close();
+		
+		assertEquals("totalResults", 2, kr.totalResults());				
+		// Match #0
+		assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
+		assertEquals("StartPos (0)", 4, kr.match(0).startPos);
+		assertEquals("EndPos (0)", 6, kr.match(0).endPos);
+		// Match #1 in the other atomic index
+		assertEquals("doc-number", 0, kr.match(1).getLocalDocID());
+		assertEquals("StartPos (0)", 0, kr.match(1).startPos);
+		assertEquals("EndPos (0)", 2, kr.match(1).endPos);
+	}
 	
 	private FieldDocument createFieldDoc1(){
 		fd = new FieldDocument();
@@ -176,7 +202,7 @@ public class TestSegmentIndex {
 		fd.addString("ID", "doc-1");
 		fd.addTV("base",
 			 "babaa",			 
-			 "[(0-1)s:b|i:b|_1#0-1]" +
+			 "[(0-1)s:b|i:b|s:c_1#0-1]" +
 			 "[(1-2)s:a|i:a|s:b|_2#1-2|<>:e#1-3$<i>3]" +			 
 			 "[(2-3)s:b|i:b|s:a|_3#2-3]" +
 			 "[(3-4)s:a|i:a|_4#3-4]" +
@@ -192,6 +218,17 @@ public class TestSegmentIndex {
 			 "[(0-1)s:b|i:b|_1#0-1]" +
 			 "[(1-2)s:d|i:d|s:b|_2#1-2]"+
 			 "[(2-3)s:b|i:b|s:a|_3#2-3]");			 	
+		return fd;
+	}
+	
+	private FieldDocument createFieldDoc4(){
+		fd = new FieldDocument();
+		fd.addString("ID", "doc-3");
+		fd.addTV("base",
+			 "bdb",			 
+			 "[(0-1)s:b|i:b|s:c|_1#0-1]" +
+			 "[(1-2)s:d|_2#1-2]"+
+			 "[(2-3)s:d|i:d|_3#2-3]");			 	
 		return fd;
 	}
 }
