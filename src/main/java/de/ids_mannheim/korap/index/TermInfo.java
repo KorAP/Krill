@@ -28,7 +28,7 @@ public class TermInfo implements Comparable<TermInfo> {
 
     private byte depth = (byte) 0;
 
-    private Pattern prefixRegex = Pattern.compile("([^/]+)/([^:]+):(.+?)");
+    private Pattern prefixRegex = Pattern.compile("(?:([^/]+)/)?([^:/]+)(?::(.+?))?");
     private Matcher matcher;
 
     public TermInfo (String term, int pos, ByteBuffer payload) {
@@ -44,6 +44,7 @@ public class TermInfo implements Comparable<TermInfo> {
 
 	int ttype = 0;
 	String tterm = this.term;
+	int lastPos = this.payload.position();
 	this.payload.rewind();
 
 	switch (tterm.charAt(0)) {
@@ -86,7 +87,10 @@ public class TermInfo implements Comparable<TermInfo> {
 	    matcher = prefixRegex.matcher(tterm);
 	    if (matcher.matches() && matcher.groupCount() == 3) {
 		this.annotation = tterm;
-		this.foundry = matcher.group(1);
+		if (matcher.group(1) != null)
+		    this.foundry = matcher.group(1);
+		else
+		    this.foundry = "base";
 		this.layer   = matcher.group(2);
 		this.value   = matcher.group(3);
 	    };
@@ -110,7 +114,7 @@ public class TermInfo implements Comparable<TermInfo> {
 	    // Unsure if this is correct
 	    this.endPos = this.payload.getInt() -1;
 
-	if (ttype == 2 && this.payload.hasRemaining()) {
+	if (ttype == 2 && this.payload.position() < lastPos) {
 	    this.depth = this.payload.get();
 	};
 
@@ -165,6 +169,27 @@ public class TermInfo implements Comparable<TermInfo> {
 
     public String getAnnotation () {
 	return this.annotation;
+    };
+
+    public String toString () {
+	this.analyze();
+
+	StringBuffer sb = new StringBuffer();
+	sb.append('<').append(this.getType()).append('>');
+	sb.append(this.getFoundry()).append('/').append(this.getLayer());
+
+	if (this.getValue() != null)
+	    sb.append(':').append(this.getValue());
+
+	if (this.getDepth() != (byte) 0)
+	    sb.append('(').append(this.getDepth()).append(')');
+
+	sb.append('[').append(this.getStartPos());
+	sb.append('-').append(this.getEndPos()).append(']');
+	sb.append('[').append(this.getStartChar());
+	sb.append('-').append(this.getEndChar()).append(']');
+
+	return sb.toString();
     };
 
     @Override

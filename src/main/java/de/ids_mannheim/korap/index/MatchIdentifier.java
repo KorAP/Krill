@@ -1,10 +1,10 @@
 package de.ids_mannheim.korap.index;
 import java.util.*;
 import java.util.regex.*;
+import de.ids_mannheim.korap.index.DocIdentifier;
 
 
-public class MatchIdentifier {
-    private String corpusID, docID;
+public class MatchIdentifier extends DocIdentifier {
     private int startPos, endPos = 0;
 
     private ArrayList<int[]> pos = new ArrayList<>(8);
@@ -38,24 +38,6 @@ public class MatchIdentifier {
 		};
 	    };
 	};
-    };
-
-    public String getCorpusID () {
-	return this.corpusID;
-    };
-
-    public void setCorpusID (String id) {
-	if (id != null && !id.contains("!"))
-	    this.corpusID = id;
-    };
-
-    public String getDocID () {
-	return this.docID;
-    };
-
-    public void setDocID (String id) {
-	if (!id.contains("!"))
-	    this.docID = id;
     };
 
     public int getStartPos () {

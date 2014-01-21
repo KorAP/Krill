@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.index.MatchIdentifier;
+import de.ids_mannheim.korap.index.PosIdentifier;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapQuery;
@@ -66,6 +67,18 @@ public class TestMatchIdentifier {
 
 	id = new MatchIdentifier("match-c1!d1-p4-20(5)7-8(-2)9-10(2)3-4(3)-5-6(4)7-8(5)9--10");
 	assertEquals(id.toString(), "match-c1!d1-p4-20(5)7-8(2)3-4(4)7-8");
+    };
+
+    @Test
+    public void posIdentifierExample1 () throws IOException {
+	PosIdentifier id = new PosIdentifier();
+	id.setCorpusID("c1");
+	id.setDocID("d1");
+	id.setPos(8);
+	assertEquals(id.getCorpusID(), "c1");
+	assertEquals(id.getDocID(), "d1");
+	assertEquals(id.getPos(), 8);
+	assertEquals(id.toString(), "word-c1!d1-p8");
     };
 
     @Test
@@ -174,17 +187,298 @@ public class TestMatchIdentifier {
 		     "</span>"+
 		     "</span>",
 		     km.getSnippetHTML());
+    };
 
-	km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
+
+    @Test
+    public void indexExample3 () throws IOException {
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(createSimpleFieldDoc());
+	ki.commit();
+
+	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
 			     "tokens",
 			     null,
 			     null,
 			     false,
 			     true);
 
-	// --> bug:
-	// System.err.println(km.snippetHTML());
+
+	assertEquals("SnippetHTML (1)",
+		     "<span class=\"context-left\">" +
+		     "<span class=\"more\">" +
+		     "</span>" +
+		     "</span>" +
+		     "<span class=\"match\">" +
+		     "<em class=\"class-2 level-0\">" +
+		     "<span title=\"f/m:acht\">" +
+		     "<span title=\"f/y:eight\">" +
+		     "<span title=\"it/is:8\">" +
+		     "<span title=\"x/o:achtens\">" +
+		     "b" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "<em class=\"class-4 level-1\">" +
+		     "<span title=\"f/m:neun\">" +
+		     "<span title=\"f/y:nine\">" +
+		     "<span title=\"it/is:9\">" +
+		     "<span title=\"x/o:neuntens\">" +
+		     "a" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</em>" +
+		     "</em>" +
+		     "</span>" +
+		     "<span class=\"context-right\">" +
+		     "<span class=\"more\">" +
+		     "</span>" +
+		     "</span>",
+		     km.getSnippetHTML());
     };
+
+    @Test
+    public void indexExample4 () throws IOException {
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(createSimpleFieldDoc());
+	ki.commit();
+
+	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
+			     "tokens",
+			     null,
+			     null,
+			     false,
+			     false);
+
+
+	assertEquals("SnippetHTML (1)",
+		     "<span class=\"context-left\">" +
+		     "<span class=\"more\">" +
+		     "</span>" +
+		     "</span>" +
+		     "<span class=\"match\">" +
+		     "<span title=\"f/m:acht\">" +
+		     "<span title=\"f/y:eight\">" +
+		     "<span title=\"it/is:8\">" +
+		     "<span title=\"x/o:achtens\">" +
+		     "b" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "<span title=\"f/m:neun\">" +
+		     "<span title=\"f/y:nine\">" +
+		     "<span title=\"it/is:9\">" +
+		     "<span title=\"x/o:neuntens\">" +
+		     "a" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "<span class=\"context-right\">" +
+		     "<span class=\"more\">" +
+		     "</span>" +
+		     "</span>",
+		     km.getSnippetHTML());
+    };
+
+    @Test
+    public void indexExample5Spans () throws IOException {
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(createSimpleFieldDoc());
+	ki.commit();
+
+	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
+			     "tokens",
+			     null,
+			     null,
+			     true,
+			     false);
+
+
+	assertEquals("SnippetBrackets (1)",
+		     "... [{f/m:acht:{f/y:eight:{it/is:8:{x/o:achtens:b}}}}{f/m:neun:{f/y:nine:{it/is:9:{x/o:neuntens:a}}}}] ...",
+		     km.getSnippetBrackets());
+    };
+
+    @Test
+    public void indexExample6Spans () throws IOException {
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(createSimpleFieldDoc());
+	ki.commit();
+
+	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-10(4)8-8(2)7-8",
+			     "tokens",
+			     null,
+			     null,
+			     true,
+			     false);
+
+
+	assertEquals("SnippetBrackets (1)",
+		     "... [{x/tag:{f/m:acht:{f/y:eight:{it/is:8:{x/o:achtens:b}}}}{f/m:neun:{f/y:nine:{it/is:9:{x/o:neuntens:a}}}}{f/m:zehn:{f/y:ten:{it/is:10:{x/o:zehntens:c}}}}}]",
+		     km.getSnippetBrackets());
+    };
+
+    @Test
+    public void indexExample7Spans () throws IOException {
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(createSimpleFieldDoc());
+	ki.commit();
+
+	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-10(4)8-8(2)7-8",
+			     "tokens",
+			     null,
+			     null,
+			     true,
+			     true);
+
+
+	assertEquals("SnippetBrackets (1)",
+		     "... [{x/tag:{2:{f/m:acht:{f/y:eight:{it/is:8:{x/o:achtens:b}}}}{4:{f/m:neun:{f/y:nine:{it/is:9:{x/o:neuntens:a}}}}}}{f/m:zehn:{f/y:ten:{it/is:10:{x/o:zehntens:c}}}}}]",
+		     km.getSnippetBrackets());
+
+	assertEquals("SnippetHTML (1)",
+		     "<span class=\"context-left\">" +
+		     "<span class=\"more\">" +
+		     "</span>" +
+		     "</span>" +
+		     "<span class=\"match\">" +
+		     "<span title=\"x/tag\">" +
+		     "<em class=\"class-2 level-0\">" +
+		     "<span title=\"f/m:acht\">" +
+		     "<span title=\"f/y:eight\">" +
+		     "<span title=\"it/is:8\">" +
+		     "<span title=\"x/o:achtens\">" +
+		     "b" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "<em class=\"class-4 level-1\">" +
+		     "<span title=\"f/m:neun\">" +
+		     "<span title=\"f/y:nine\">" +
+		     "<span title=\"it/is:9\">" +
+		     "<span title=\"x/o:neuntens\">" +
+		     "a" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</em>" +
+		     "</em>" +
+		     "<span title=\"f/m:zehn\">" +
+		     "<span title=\"f/y:ten\">" +
+		     "<span title=\"it/is:10\">" +
+		     "<span title=\"x/o:zehntens\">" +
+		     "c" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "</span>" +
+		     "<span class=\"context-right\">" +
+		     "</span>",
+		     km.getSnippetHTML());
+    };
+
+    @Test
+    public void indexExample6Relations () throws IOException {
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(createSimpleFieldDoc());
+	ki.commit();
+
+	KorapMatch km = ki.getMatchInfo("match-c1!d1-p0-5(4)8-8(2)7-8",
+			     "tokens",
+			     "x",
+			     null,
+			     true,
+			     false);
+
+	assertEquals("SnippetBrackets (1)",
+		     "[{x/rel:a>3:{x/o:erstens:a}}{x/o:zweitens:b}{x/o:drittens:c}{#3:{x/o:viertens:a}}{x/o:fünftens:b}] ...",
+		     km.getSnippetBrackets());
+
+	assertEquals("SnippetBrackets (1)",
+		     "<span class=\"context-left\">" +
+		     "</span>" +
+		     "<span class=\"match\">" +
+		     "<span xlink:title=\"x/rel:a\" " +
+		     "xlink:type=\"simple\" " +
+		     "xlink:href=\"#word-c1!d1-p3\">" +
+		     "<span title=\"x/o:erstens\">" +
+		     "a" +
+		     "</span>" +
+		     "</span>" +
+		     "<span title=\"x/o:zweitens\">" +
+		     "b" +
+		     "</span>" +
+		     "<span title=\"x/o:drittens\">" +
+		     "c" +
+		     "</span>" +
+		     "<span xml:id=\"word-c1!d1-p3\">" +
+		     "<span title=\"x/o:viertens\">" +
+		     "a" +
+		     "</span>" +
+		     "</span>" +
+		     "<span title=\"x/o:fünftens\">" +
+		     "b" +
+		     "</span>" +
+		     "</span>" +
+		     "<span class=\"context-right\">" +
+		     "<span class=\"more\">" +
+		     "</span>" +
+		     "</span>",
+		     km.getSnippetHTML());
+
+	 km = ki.getMatchInfo("match-c1!d1-p0-5(7)2-3(4)8-8(2)7-8",
+			     "tokens",
+			     "x",
+			     null,
+			     true,
+			     true);
+
+	assertEquals("SnippetBrackets (1)",
+		     "<span class=\"context-left\">" +
+		     "</span>" +
+		     "<span class=\"match\">" +
+		     "<span xlink:title=\"x/rel:a\" " +
+		     "xlink:type=\"simple\" " +
+		     "xlink:href=\"#word-c1!d1-p3\">" +
+		     "<span title=\"x/o:erstens\">" +
+		     "a" +
+		     "</span>" +
+		     "</span>" +
+		     "<span title=\"x/o:zweitens\">" +
+		     "b" +
+		     "</span>" +
+		     "<em class=\"class-7 level-0\">" +
+		     "<span title=\"x/o:drittens\">" +
+		     "c" +
+		     "</span>" +
+		     "<span xml:id=\"word-c1!d1-p3\">" +
+		     "<span title=\"x/o:viertens\">" +
+		     "a" +
+		     "</span>" +
+		     "</span>" +
+		     "</em>" +
+		     "<span title=\"x/o:fünftens\">" +
+		     "b" +
+		     "</span>" +
+		     "</span>" +
+		     "<span class=\"context-right\">" +
+		     "<span class=\"more\">" +
+		     "</span>" +
+		     "</span>",
+		     km.getSnippetHTML());
+    };
+
+
 
     private FieldDocument createSimpleFieldDoc(){
 	FieldDocument fd = new FieldDocument();
@@ -192,16 +486,16 @@ public class TestMatchIdentifier {
 	fd.addString("ID", "d1");
 	fd.addTV("tokens",
 		 "abcabcabac",
-		 "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|_1#1-2]" +
-		 "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|_2#2-3]" +
-		 "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|_3#3-4]" +
-		 "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|_4#4-5]" +
-		 "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|_5#5-6]" +
-		 "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|_6#6-7]" +
-		 "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|_7#7-8]" +
-		 "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|_8#8-9]" +
-		 "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|_9#9-10]");
+		 "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<i>4|_0#0-1|-:t$<i>10]" +
+		 "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1#1-2]" +
+		 "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2#2-3]" +
+		 "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<i>1|_3#3-4]" +
+		 "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4#4-5]" +
+		 "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5#5-6]" +
+		 "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6#6-7]" +
+		 "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag#7-10$<i>10|_7#7-8]" +
+		 "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8#8-9]" +
+		 "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9#9-10]");
 	return fd;
     };
 };

@@ -1,3 +1,7 @@
+0.26.1 2014-01-21
+        - Distinct Match retrieval including spans
+	  and dependency relations (diewald)
+
 0.26 2014-01-16
         - Introduced standalone SpanSegmentQueries (margaretha)
         - [bugfix] SpanNextQueries (margaretha)

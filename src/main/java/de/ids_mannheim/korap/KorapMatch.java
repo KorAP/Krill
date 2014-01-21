@@ -14,6 +14,7 @@ import de.ids_mannheim.korap.document.KorapPrimaryData;
 
 import static de.ids_mannheim.korap.util.KorapHTML.*;
 import de.ids_mannheim.korap.index.MatchIdentifier;
+import de.ids_mannheim.korap.index.PosIdentifier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,8 @@ import org.apache.lucene.document.Document;
 /*
   Todo: The implemented classes and private names are horrible!
   Refactor, future-me!
+
+  The number based Highlighttype is ugly - UGLY!
 */
 
 /**
@@ -56,8 +59,14 @@ public class KorapMatch extends KorapDocument {
     @JsonIgnore
     public int localDocID = -1;
 
-    HashMap<Integer, String> annotationNumber = new HashMap<>(16);
+    HashMap<Integer, String>   annotationNumber = new HashMap<>(16);
+    HashMap<Integer, Relation> relationNumber   = new HashMap<>(16);
+    HashMap<Integer, Integer>  identifierNumber = new HashMap<>(16);
+
+    // -1 is match highlight
     int annotationNumberCounter = 256;
+    int relationNumberCounter   = 2048;
+    int identifierNumberCounter = -2;
 
     @JsonIgnore
     public boolean leftTokenContext,
@@ -116,29 +125,55 @@ public class KorapMatch extends KorapDocument {
 	this.setEndPos(id.getEndPos());
 
 	if (includeHighlights)
-	    for (int[] pos : id.getPos())
+	    for (int[] pos : id.getPos()) {
+		if (pos[0] < id.getStartPos() || pos[1] > id.getEndPos())
+		    continue;
+
 		this.addHighlight(pos[0], pos[1], pos[2]);
+	    };
     };
 
     private class Highlight {
 	public int start, end;
 	public int number = -1;
 
+	// Relational highlight
+       	public Highlight (int start, int end, String annotation, int ref) {
+	    this.start = start;
+	    this.end = end;
+	    // TODO: This can overflow!
+	    this.number = relationNumberCounter++;
+	    relationNumber.put(this.number, new Relation(annotation, ref));
+	};
+
+	// Span highlight
 	public Highlight (int start, int end, String annotation) {
 	    this.start = start;
 	    this.end = end;
 	    // TODO: This can overflow!
-	    this.number = annotationNumberCounter++;
-	    log.trace("Add annotation: {} ({})", annotation, this.number);
-	    annotationNumber.put(this.number, annotation);
+	    if (annotationNumberCounter < 2048) {
+		this.number = annotationNumberCounter++;
+		annotationNumber.put(this.number, annotation);
+	    };
 	};
 
+	// Simple highlight
 	public Highlight (int start, int end, int number) {
 	    this.start = start;
 	    this.end = end;
 	    this.number = number;
 	};
-    }
+    };
+
+    private class Relation {
+	public int ref;
+	public String annotation;
+	public Relation (String annotation, int ref) {
+	    this.annotation = annotation;
+	    this.ref = ref;
+	};
+    };
+
 
     /**
      * Insert a highlight for the snippet view by means of positional
@@ -178,6 +213,13 @@ public class KorapMatch extends KorapDocument {
 
     public void addAnnotation (int start, int end, String annotation) {
 	this.addHighlight(new Highlight(start, end, annotation));
+    };
+
+    public void addRelation (int src, int target, String annotation) {
+	this.addHighlight(new Highlight(src, src, annotation, target));
+	int id = identifierNumberCounter--;
+	identifierNumber.put(id, target);
+	this.addHighlight(new Highlight(target, target, id));
     };
 
 
@@ -292,6 +334,24 @@ public class KorapMatch extends KorapDocument {
 	};
 
 	return (this.identifier = id.toString());
+    };
+
+    @JsonIgnore
+    public String getPosID (int pos) {
+	if (this.identifier != null)
+	    return this.identifier;
+
+	if (this.localDocID == -1)
+	    return null;
+
+	PosIdentifier id = new PosIdentifier();
+
+	// Get prefix string corpus/doc
+	id.setCorpusID(this.getCorpusID());
+	id.setDocID(this.getDocID());
+	id.setPos(pos);
+
+	return id.toString();
     };
 
     private void _reset () {
@@ -435,17 +495,39 @@ public class KorapMatch extends KorapDocument {
 	};
 
 	// Return html fragment for this combinator element
-	public String toHTML (FixedBitSet level, byte[] levelCache) {	    
+	public String toHTML (KorapMatch match, FixedBitSet level, byte[] levelCache) {	    
 	    // Opening
 	    if (this.type == 1) {
 		StringBuilder sb = new StringBuilder();
 		if (this.number == -1) {
 		    sb.append("<span class=\"match\">");
 		}
-		else if (this.number >= 256) {
-		    sb.append("<span title=\"")
-		      .append(annotationNumber.get(this.number))
+
+		else if (this.number < -1) {
+		    sb.append("<span xml:id=\"")
+		      .append(match.getPosID(
+                          identifierNumber.get(this.number)))
 		      .append("\">");
+		}
+
+		else if (this.number >= 256) {
+		    sb.append("<span ");
+		    if (this.number < 2048) {
+			sb.append("title=\"")
+			  .append(annotationNumber.get(this.number))
+			  .append('"');
+		    }
+		    else {
+			Relation rel = relationNumber.get(this.number);
+			sb.append("xlink:title=\"")
+			  .append(rel.annotation)
+			  .append('"');
+			sb.append(" xlink:type=\"simple\"");
+			sb.append(" xlink:href=\"#");
+			sb.append(match.getPosID(rel.ref));
+			sb.append('"');
+		    };
+		    sb.append('>');
 		}
 		else {
 		    // Get the first free level slot
@@ -468,7 +550,7 @@ public class KorapMatch extends KorapDocument {
 	    }
 	    // Closing
 	    else if (this.type == 2) {
-		if (this.number == -1 || this.number >= 256)
+		if (this.number <= -1 || this.number >= 256)
 		    return "</span>";
 
 		if (this.terminal)
@@ -484,13 +566,32 @@ public class KorapMatch extends KorapDocument {
 	public String toBrackets () {
 	    if (this.type == 1) {
 		StringBuilder sb = new StringBuilder();
+
+		// Match
 		if (this.number == -1) {
 		    sb.append("[");
 		}
+
+		// Identifier
+		else if (this.number < -1) {
+		    sb.append("{#");
+		    sb.append(identifierNumber.get(this.number));
+		    sb.append(':');
+		}
+
+		// Highlight, Relation, Span
 		else {
 		    sb.append("{");
-		    if (this.number >= 256)
-			sb.append(annotationNumber.get(this.number)).append(':');
+		    if (this.number >= 256) {
+			if (this.number < 2048)
+			    sb.append(annotationNumber.get(this.number));
+			else {
+			    Relation rel = relationNumber.get(this.number);
+			    sb.append(rel.annotation);
+			    sb.append('>').append(rel.ref);
+			};
+			sb.append(':');
+		    }
 		    else if (this.number != 0)
 			sb.append(this.number).append(':');
 		};
@@ -704,7 +805,7 @@ public class KorapMatch extends KorapDocument {
 	    sb.append("<span class=\"more\"></span>");
 
 	if (elem.type == 0) {
-	    sb.append(elem.toHTML(level, levelCache));
+	    sb.append(elem.toHTML(this, level, levelCache));
 	    start++;
 	};
 	sb.append("</span>");
@@ -716,7 +817,7 @@ public class KorapMatch extends KorapDocument {
 	// Create context, if trhere is any
 	rightContext.append("<span class=\"context-right\">");
 	if (elem != null && elem.type == 0) {
-	    rightContext.append(elem.toHTML(level, levelCache));
+	    rightContext.append(elem.toHTML(this, level, levelCache));
 	    end--;
 	};
 	if (endMore)
@@ -724,7 +825,7 @@ public class KorapMatch extends KorapDocument {
 	rightContext.append("</span>");
 
 	for (short i = start; i < end; i++) {
-	    sb.append(this.snippetStack.get(i).toHTML(level,levelCache));
+	    sb.append(this.snippetStack.get(i).toHTML(this, level,levelCache));
 	};
 
 	sb.append(rightContext);

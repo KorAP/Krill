@@ -25,7 +25,6 @@ public class TestTermInfo {
 	bb.put((byte) 4);
 
 	TermInfo term = new TermInfo("<>:mate/p:NN", 4, bb).analyze();
-
 	assertEquals("type", term.getType(), "span");
 	assertEquals("value", term.getValue(), "NN");
 	assertEquals("foundry", term.getFoundry(), "mate");
@@ -85,6 +84,36 @@ public class TestTermInfo {
 	assertEquals("endPos", term.getEndPos(), 30);
 	assertEquals("startChar", term.getStartChar(), 240);
 	assertEquals("endChar", term.getEndChar(), 400);
+	assertEquals("depth", term.getDepth(), 0);
+
+	bb.clear();
+	bb.putInt(20); // startOffset
+	bb.putInt(25); // endOffset
+	bb.putInt(24); // endPos
+	term = new TermInfo("<>:s", 20, bb).analyze();
+	assertEquals("type", term.getType(), "span");
+	assertNull("value", term.getValue());
+	assertEquals("foundry", term.getFoundry(), "base");
+	assertEquals("layer", term.getLayer(), "s");
+	assertEquals("startPos", term.getStartPos(), 20);
+	assertEquals("endPos", term.getEndPos(), 23);
+	assertEquals("startChar", term.getStartChar(), 20);
+	assertEquals("endChar", term.getEndChar(), 25);
+	assertEquals("depth", term.getDepth(), 0);
+
+	bb.clear();
+	bb.putInt(20); // startOffset
+	bb.putInt(25); // endOffset
+	bb.putInt(24); // endPos
+	term = new TermInfo("<>:tag/x", 20, bb).analyze();
+	assertEquals("type", term.getType(), "span");
+	assertNull("value", term.getValue());
+	assertEquals("foundry", term.getFoundry(), "tag");
+	assertEquals("layer", term.getLayer(), "x");
+	assertEquals("startPos", term.getStartPos(), 20);
+	assertEquals("endPos", term.getEndPos(), 23);
+	assertEquals("startChar", term.getStartChar(), 20);
+	assertEquals("endChar", term.getEndChar(), 25);
 	assertEquals("depth", term.getDepth(), 0);
     };
 };

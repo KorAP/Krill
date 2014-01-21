@@ -502,22 +502,23 @@ public class KorapIndex {
 
 	    // Todo: Only support one direction!
 	    if (includeSpans)
-		regex.append("((\"<>\"|\"<\"|\">\")\":\")?");
+		regex.append("((\">\"|\"<\"\">\"?)\":\")?");
 	    if (foundry != null) {
 		regex.append(foundry).append('/');
 		if (layer != null)
 		    regex.append(layer).append(":");
 	    }
 	    else if (includeSpans) {
-		regex.append("([^-is]+?|[-is][^:])");
+		regex.append("([^-is]|[-is][^:])");
 	    }
 	    else {
-		regex.append("([^-is<>]+?|([-is<>]|\"<>\")[^:])");
+		regex.append("([^-is<>]|([-is>][^:])|<[^:>])");
 	    };
 	    regex.append("(.){1,}|_[0-9]+");
 
+
 	    log.trace("The final regexString is {}", regex.toString());
-	    RegExp regexObj = new RegExp(regex.toString());
+	    RegExp regexObj = new RegExp(regex.toString(), RegExp.COMPLEMENT);
 	    fst = new CompiledAutomaton(regexObj.toAutomaton());
 	    log.trace("The final regexObj is {}", regexObj.toString());
 	};
@@ -600,6 +601,8 @@ public class KorapIndex {
 		    // How often does this term occur in the document?
 		    int termOccurrences = docs.freq();
 
+		    // log.trace("I found {} documents with this term", termOccurrences);
+
 		    // String representation of the term
 		    String termString = termsEnum.term().utf8ToString();
 
@@ -610,13 +613,17 @@ public class KorapIndex {
 			int pos = docs.nextPosition();
 
 			// Check, if the position of the term is in the interesting area
+
+			// log.trace("Check position!");
+
 			if (pos >= match.getStartPos() && pos < match.getEndPos()) {
 
 			    log.trace(
 			        ">> {}: {}-{}-{}",
 				termString, 
 				docs.freq(),
-				pos, docs.getPayload()
+				pos,
+				docs.getPayload()
 			    );
 
 			    BytesRef payload = docs.getPayload();
@@ -630,8 +637,11 @@ public class KorapIndex {
 				    payload.length
 				);
 			    };
-
-			    termList.add(new TermInfo(termString, pos, bbTerm));
+			    TermInfo ti = new TermInfo(termString, pos, bbTerm).analyze();
+			    if (ti.getEndPos() < match.getEndPos()) {
+				log.trace("Add {}", ti.toString());
+				termList.add(ti);
+			    };
 			};
 		    };
 		};
@@ -649,6 +659,8 @@ public class KorapIndex {
 
 		    if (t.getType() == "term" || t.getType() == "span")
 			match.addAnnotation(t.getStartPos(), t.getEndPos(), t.getAnnotation());
+		    else if (t.getType() == "relSrc")
+			match.addRelation(t.getStartPos(), t.getEndPos(), t.getAnnotation());
 		};
 
 		break;
