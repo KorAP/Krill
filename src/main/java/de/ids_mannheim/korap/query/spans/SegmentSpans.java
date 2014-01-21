@@ -9,6 +9,7 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
+import de.ids_mannheim.korap.query.SpanSegmentQuery;
 
 /**	SegmentSpans is an enumeration of Span matches, which ensures that two spans 
  * 	have exactly the same start and end positions.
@@ -17,19 +18,19 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
  * */
 public class SegmentSpans extends SimpleSpans {	
 	
-    public SegmentSpans (SimpleSpanQuery simpleSpanQuery,
+    public SegmentSpans (SpanSegmentQuery spanSegmentQuery,
   	      AtomicReaderContext context,
   	      Bits acceptDocs,
   	      Map<Term,TermContext> termContexts) throws IOException {
-    	this(simpleSpanQuery, context, acceptDocs, termContexts, true);    	
+    	this(spanSegmentQuery, context, acceptDocs, termContexts, true);    	
     }
     
-    public SegmentSpans (SimpleSpanQuery simpleSpanQuery,
+    public SegmentSpans (SpanSegmentQuery spanSegmentQuery,
 	      AtomicReaderContext context,
 	      Bits acceptDocs,
 	      Map<Term,TermContext> termContexts,
 	      boolean collectPayloads) throws IOException {		 			
-		super(simpleSpanQuery, context, acceptDocs, termContexts,collectPayloads);
+		super(spanSegmentQuery, context, acceptDocs, termContexts,collectPayloads);
 	}
 
     /** Check weather the start and end positions of the current 
@@ -44,7 +45,8 @@ public class SegmentSpans extends SimpleSpans {
 			matchEndPosition = firstSpans.end();			
 			return 0;
 		}
-		else if (firstSpans.start() < secondSpans.start())
+		else if (firstSpans.start() < secondSpans.start() || 
+				firstSpans.end() < secondSpans.end())
 			return -1;
 		
 		return 1;
