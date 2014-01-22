@@ -30,9 +30,9 @@ public class TestSegmentIndex {
 	
 	public TestSegmentIndex() throws IOException {
 		ki = new KorapIndex();
+		ki.addDoc(createFieldDoc0());
 		ki.addDoc(createFieldDoc1());
 		ki.addDoc(createFieldDoc2());
-		ki.addDoc(createFieldDoc3());
 		ki.commit();
 		
 		log = LoggerFactory.getLogger(getClass());
@@ -109,10 +109,10 @@ public class TestSegmentIndex {
 //		log.trace("Testcase4");
 		
 		ki = new KorapIndex();
-		ki.addDoc(createFieldDoc1());
+		ki.addDoc(createFieldDoc0());
 		ki.commit();
-		ki.addDoc(createFieldDoc2());		
-		ki.addDoc(createFieldDoc3());
+		ki.addDoc(createFieldDoc1());		
+		ki.addDoc(createFieldDoc2());
 		ki.commit();
 		
 		sq = new SpanSegmentQuery(
@@ -183,7 +183,7 @@ public class TestSegmentIndex {
 		assertEquals("EndPos (0)", 2, kr.match(1).endPos);
 	}
 	
-	private FieldDocument createFieldDoc1(){
+	private FieldDocument createFieldDoc0(){
 		fd = new FieldDocument();
 		fd.addString("ID", "doc-0");
 		fd.addTV("base",
@@ -197,7 +197,7 @@ public class TestSegmentIndex {
 		return fd;
 	}
 	
-	private FieldDocument createFieldDoc2(){
+	private FieldDocument createFieldDoc1(){
 		fd = new FieldDocument();
 		fd.addString("ID", "doc-1");
 		fd.addTV("base",
@@ -210,7 +210,7 @@ public class TestSegmentIndex {
 		return fd;
 	} 
 	
-	private FieldDocument createFieldDoc3(){
+	private FieldDocument createFieldDoc2(){
 		fd = new FieldDocument();
 		fd.addString("ID", "doc-2");
 		fd.addTV("base",
