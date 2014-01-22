@@ -45,8 +45,7 @@ public class SegmentSpans extends SimpleSpans {
 			matchEndPosition = firstSpans.end();			
 			return 0;
 		}
-		else if (firstSpans.start() < secondSpans.start() || 
-				firstSpans.end() < secondSpans.end())
+		else if (firstSpans.end() < secondSpans.end())
 			return -1;
 		
 		return 1;
