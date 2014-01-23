@@ -13,30 +13,24 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 
 /**	NextSpans is an enumeration of Span matches, which ensures that  
- * 	a span is immediately followed by another span. 
- * 
+ * 	a span is immediately followed by another span.
+ *  
+ * 	TODO: nextSpans needs collectPayloads to be explicitly set true. Why?
  * 	@author margaretha 
  * */
-public class NextSpans extends SimpleSpans {	
+public class NextSpans extends NonPartialOverlappingSpans {	
 	
     public NextSpans (SimpleSpanQuery simpleSpanQuery,
   	      AtomicReaderContext context,
   	      Bits acceptDocs,
   	      Map<Term,TermContext> termContexts) throws IOException {
-    	this(simpleSpanQuery, context, acceptDocs, termContexts, true);    	
+    	super(simpleSpanQuery, context, acceptDocs, termContexts);    	
     }
-    
-    public NextSpans (SimpleSpanQuery simpleSpanQuery,
-	      AtomicReaderContext context,
-	      Bits acceptDocs,
-	      Map<Term,TermContext> termContexts,
-	      boolean collectPayloads) throws IOException {		 			
-		super(simpleSpanQuery, context, acceptDocs, termContexts,collectPayloads);
-	}
 
     /** Check weather the end position of the current firstspan equals 
      *  the start position of the secondspan. 
   	 * */
+    @Override
 	protected int findMatch() {		
 		if (firstSpans.end() == secondSpans.start()) {			
 			matchDocNumber = firstSpans.doc();

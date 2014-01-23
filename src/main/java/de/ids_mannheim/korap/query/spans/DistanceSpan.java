@@ -2,73 +2,39 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.ids_mannheim.korap.query.SimpleSpanQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
-public class DistanceSpan extends Spans{
-	
-	private boolean isStartEnumeration;
-	private boolean hasMoreSpans;
+public class DistanceSpan extends SimpleSpans{	
+
 	private boolean hasMoreFirstSpans;	
 	private boolean collectPayloads;
 	private int minDistance,maxDistance;
-		
-	protected int doc, start, end;	
-	private List<byte[]> payload;   
-    
-    private SpanDistanceQuery query;
-    protected Spans firstSpans, secondSpans;   
+	
 	private List<CandidateSpan> candidateList;
 	private int candidateListIndex;
 	private int candidateListDocNum;
 	
-    private Logger log = LoggerFactory.getLogger(SimpleSpans.class);
+    private Logger log = LoggerFactory.getLogger(DistanceSpan.class);
     
-	public DistanceSpan(SpanDistanceQuery spanDistanceQuery,
+	public DistanceSpan(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
-			Map<Term, TermContext> termContexts,
-			int minDistance,
-			int maxDistance)
-			throws IOException {
-		this(spanDistanceQuery, context, acceptDocs, termContexts, 
-			minDistance, maxDistance, true);		
-	}
-	
-	public DistanceSpan(SpanDistanceQuery spanDistanceQuery,
-			AtomicReaderContext context, Bits acceptDocs,
-			Map<Term, TermContext> termContexts,
-			int minDistance,
-			int maxDistance,
-			boolean collectPayloads)
-			throws IOException {
+			Map<Term, TermContext> termContexts)
+			throws IOException {		
+		super(query, context, acceptDocs, termContexts);
 		
-		this.query = spanDistanceQuery;
-		this.minDistance = minDistance;
-		this.maxDistance = maxDistance;		
-  		this.collectPayloads = collectPayloads; // TODO: always true ?
-  		this.payload = new LinkedList<byte[]>();
-  		this.doc = -1;
-  		this.start = -1;
-  		this.end = -1;
-		  		
-  		// Get the enumeration of the two spans to match
-  		firstSpans = spanDistanceQuery.getFirstClause().
-  			getSpans(context, acceptDocs, termContexts);
-  		secondSpans = spanDistanceQuery.getSecondClause().
-  			getSpans(context, acceptDocs, termContexts);  	  	
+		minDistance = query.getMinDistance();
+		maxDistance = query.getMaxDistance();		
+  		collectPayloads = query.isCollectPayloads();
   		 		  		
   		hasMoreFirstSpans = firstSpans.next();
   		hasMoreSpans = hasMoreFirstSpans;
@@ -76,14 +42,12 @@ public class DistanceSpan extends Spans{
 		candidateList = new ArrayList<>();
 		candidateListIndex = -1;
 		candidateListDocNum = firstSpans.doc();
-		
-		isStartEnumeration=true;
 	}	
 	
 	@Override
 	public boolean next() throws IOException {		
 		isStartEnumeration=false;
-  		payload.clear();
+  		matchPayload.clear();
 		return advance();
 	}
 	
@@ -138,30 +102,6 @@ public class DistanceSpan extends Spans{
 			hasMoreFirstSpans = firstSpans.next();
 		}
 	}
-	
-	
-	
-	/** Skip the current first or second span until both the spans are in the same doc.
-	 * @return true iff the first and second spans are in the same doc.
-	 * */
-  	private boolean ensureSameDoc() throws IOException {  		
-  		while (firstSpans.doc() != secondSpans.doc()) {
-  			if (firstSpans.doc() < secondSpans.doc()){
-  				if (!firstSpans.skipTo(secondSpans.doc())){
-  					hasMoreSpans = false;  					
-  					return false;
-  				}				
-  			}		
-  			else {
-  				if (!secondSpans.skipTo(firstSpans.doc())){
-  					hasMoreSpans = false;
-  					return false;
-  				}	
-  			}			
-  		}  		
-  		return true;
-  	}
-
 
 	protected boolean findMatch() throws IOException {
 		CandidateSpan candidateSpan = candidateList.get(candidateListIndex);		
@@ -170,8 +110,8 @@ public class DistanceSpan extends Spans{
 				candidateSpan.getStart() < secondSpans.end() && 
 				secondSpans.start() < candidateSpan.getEnd()){
 			
-			this.start = Math.min(candidateSpan.getStart(), secondSpans.start());
-			this.end = Math.max(candidateSpan.getEnd(), secondSpans.end());
+			matchStartPosition = Math.min(candidateSpan.getStart(), secondSpans.start());
+			matchEndPosition = Math.max(candidateSpan.getEnd(), secondSpans.end());
 			setDocAndPayload(candidateSpan);
 			return true;			
 		}
@@ -181,8 +121,8 @@ public class DistanceSpan extends Spans{
 				minDistance <= actualDistance && 
 				actualDistance <= maxDistance){
 						
-			this.start = candidateSpan.getStart();
-			this.end = secondSpans.end();
+			matchStartPosition = candidateSpan.getStart();
+			matchEndPosition = secondSpans.end();
 			setDocAndPayload(candidateSpan);
 			return true;
 		}		
@@ -190,15 +130,15 @@ public class DistanceSpan extends Spans{
 	}
 	
 	private void setDocAndPayload(CandidateSpan candidateSpan) throws IOException{ 
-		this.doc = secondSpans.doc();		
+		this.matchDocNumber = secondSpans.doc();		
 		if (collectPayloads){			
   		    if (candidateSpan.getPayloads() != null) {  		    	
-  		    	payload.addAll(candidateSpan.getPayloads());
-  		    	log.trace("first",payload.size());
+  		    	matchPayload.addAll(candidateSpan.getPayloads());
+  		    	log.trace("first",matchPayload.size());
   		    }
   		    if (secondSpans.isPayloadAvailable()) {
-  		    	payload.addAll(secondSpans.getPayload());
-  		    	log.trace("second",payload.size());
+  		    	matchPayload.addAll(secondSpans.getPayload());
+  		    	log.trace("second",matchPayload.size());
   		    }
 		} 
 	}
@@ -213,34 +153,9 @@ public class DistanceSpan extends Spans{
   		} 	
 		
 		setCandidateList();
-		payload.clear();
+		matchPayload.clear();
 		isStartEnumeration=false;
 		return advance();
-	}
-
-	@Override
-	public int doc() {		
-		return this.doc;
-	}
-
-	@Override
-	public int start() {
-		return this.start;
-	}
-
-	@Override
-	public int end() {
-		return this.end;
-	}
-
-	@Override
-	public Collection<byte[]> getPayload() throws IOException {
-		return this.payload;
-	}
-
-	@Override
-	public boolean isPayloadAvailable() throws IOException {		
-		return !this.payload.isEmpty();
 	}
 
 	@Override

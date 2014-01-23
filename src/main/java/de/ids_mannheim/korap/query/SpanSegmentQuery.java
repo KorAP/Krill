@@ -38,7 +38,7 @@ public class SpanSegmentQuery extends SimpleSpanQuery{
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs, 
 			Map<Term, TermContext> termContexts) throws IOException {
 		return (Spans) new SegmentSpans(this, context, acceptDocs,
-				termContexts, collectPayloads);
+				termContexts);
 	}		
 	
 	@Override
@@ -72,7 +72,7 @@ public class SpanSegmentQuery extends SimpleSpanQuery{
     public int hashCode() {
 		int result;
 		result = firstClause.hashCode() + secondClause.hashCode();
-		result ^= (31 << result) | (result >>> 2);
+		result ^= (31 * result) + (result >>> 3);
 		result += Float.floatToRawIntBits(getBoost());
 		return result;
     };

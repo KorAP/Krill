@@ -8,34 +8,27 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.SimpleSpanQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 
 /**	SegmentSpans is an enumeration of Span matches, which ensures that two spans 
- * 	have exactly the same start and end positions.
+ * 	have exactly the same start and end positions. It also represents the span 
+ * 	match object. This is not very neat, but that is the Lucene's design.
  * 
  * 	@author margaretha 
  * */
-public class SegmentSpans extends SimpleSpans {	
+public class SegmentSpans extends NonPartialOverlappingSpans {	
 	
     public SegmentSpans (SpanSegmentQuery spanSegmentQuery,
   	      AtomicReaderContext context,
   	      Bits acceptDocs,
   	      Map<Term,TermContext> termContexts) throws IOException {
-    	this(spanSegmentQuery, context, acceptDocs, termContexts, true);    	
+    	super(spanSegmentQuery, context, acceptDocs, termContexts);    	
     }
-    
-    public SegmentSpans (SpanSegmentQuery spanSegmentQuery,
-	      AtomicReaderContext context,
-	      Bits acceptDocs,
-	      Map<Term,TermContext> termContexts,
-	      boolean collectPayloads) throws IOException {		 			
-		super(spanSegmentQuery, context, acceptDocs, termContexts,collectPayloads);
-	}
 
     /** Check weather the start and end positions of the current 
      * 	firstspan and secondspan are identical. 
   	 * */
+    @Override
 	protected int findMatch() {
 		
 		if (firstSpans.start() == secondSpans.start() &&

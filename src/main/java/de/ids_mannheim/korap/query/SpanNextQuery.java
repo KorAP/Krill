@@ -7,28 +7,16 @@ package de.ids_mannheim.korap.query;
 */
 
 import java.io.IOException;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.NextSpans;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Matches spans which are directly next to each other. 
  * 	This is identical to a phrase query with exactly two clauses. 
@@ -57,7 +45,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
     public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
 		   Map<Term,TermContext> termContexts) throws IOException {	
 		return (Spans) new NextSpans (this, context, acceptDocs, 
-				termContexts, collectPayloads);
+				termContexts);
     };
 
     @Override

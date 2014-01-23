@@ -37,12 +37,12 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 	@Override
 	public SpanDistanceQuery clone() {
 		SpanDistanceQuery spanDistanceQuery = new SpanDistanceQuery(
-			    (SpanQuery) firstClause.clone(),
-			    (SpanQuery) secondClause.clone(),
-			    this.minDistance,
-			    this.maxDistance,
-			    this.collectPayloads
-		        );
+		    (SpanQuery) firstClause.clone(),
+		    (SpanQuery) secondClause.clone(),
+		    this.minDistance,
+		    this.maxDistance,
+		    this.collectPayloads
+        );
 		spanDistanceQuery.setBoost(getBoost());
 		return spanDistanceQuery;	
 	}
@@ -50,8 +50,31 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 	@Override
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {		
-		return new DistanceSpan(this, context, acceptDocs, termContexts, 
-				minDistance, maxDistance);
+		return new DistanceSpan(this, context, acceptDocs, termContexts);
+	}
+
+	public int getMinDistance() {
+		return minDistance;
+	}
+
+	public void setMinDistance(int minDistance) {
+		this.minDistance = minDistance;
+	}
+
+	public int getMaxDistance() {
+		return maxDistance;
+	}
+
+	public void setMaxDistance(int maxDistance) {
+		this.maxDistance = maxDistance;
+	}
+
+	public boolean isCollectPayloads() {
+		return collectPayloads;
+	}
+
+	public void setCollectPayloads(boolean collectPayloads) {
+		this.collectPayloads = collectPayloads;
 	}
 
 }
