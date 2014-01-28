@@ -15,6 +15,7 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanNextQuery;
 
 @RunWith(JUnit4.class)
 public class TestElementDistanceSpan {
@@ -36,8 +37,7 @@ public class TestElementDistanceSpan {
             "[(6-7)s:c|_7#6-7]");
         return fd;
 	}
-	
-	
+		
 	private FieldDocument createFieldDoc1() {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
@@ -62,6 +62,20 @@ public class TestElementDistanceSpan {
             "[(2-3)s:b|_3#2-3|<>:p#2-3$<i>3]" +
             "[(3-4)s:d|_4#3-4|<>:p#3-4$<i>4]" + 
             "[(4-5)s:d|_5#4-5|<>:p#4-5$<i>5]" +             
+            "[(5-6)s:d|_6#5-6]");
+        return fd;
+	}
+	
+	private FieldDocument createFieldDoc3() {
+    	FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-0");
+        fd.addTV("base",
+            "text",             
+            "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>1]" +
+            "[(1-2)s:d|_2#1-2]" +             
+            "[(2-3)s:b|_3#2-3|<>:s#2-3$<i>3]" +
+            "[(3-4)s:c|_4#3-4|<>:s#3-4$<i>4]" + 
+            "[(4-5)s:d|_5#4-5|<>:s#4-5$<i>5]" +             
             "[(5-6)s:d|_6#5-6]");
         return fd;
 	}
@@ -99,17 +113,7 @@ public class TestElementDistanceSpan {
         assertEquals(0, kr.match(0).startPos);
         assertEquals(1, kr.match(0).endPos);
         assertEquals(0, kr.match(1).startPos);
-        assertEquals(3, kr.match(1).endPos);
-        
-//        System.out.print(kr.getTotalResults()+"\n");
-//   		for (int i=0; i< kr.getTotalResults(); i++){
-//   			System.out.println(
-//   				kr.match(i).getLocalDocID()+" "+
-//   				kr.match(i).startPos + " " +
-//   				kr.match(i).endPos
-//   		    );
-//   		}
-         
+        assertEquals(3, kr.match(1).endPos);         
 	}
 	
 	/** Ensure terms and elements are in the same doc
@@ -134,5 +138,38 @@ public class TestElementDistanceSpan {
         
 	}	
 	
+	/** Skip to */
+	@Test
+	public void testCase3() throws IOException{
+		//System.out.println("testCase3");
+		ki = new KorapIndex();
+		ki.addDoc(createFieldDoc0());
+        ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc3());
+        ki.commit();
+        
+        SpanQuery sq, edq;
+        edq = createQuery("s", "s:b", "s:c", 1, 1);
+		
+        sq = new SpanNextQuery(edq, 
+        		new SpanTermQuery(new Term("base", "s:d")));
+        
+        kr = ki.search(sq, (short) 10);
+        
+        assertEquals(1, kr.totalResults());
+        assertEquals(2, kr.match(0).getLocalDocID());
+        assertEquals(2, kr.match(0).startPos);
+        assertEquals(5, kr.match(0).endPos);
+        
+//        System.out.print(kr.getTotalResults()+"\n");
+//    		for (int i=0; i< kr.getTotalResults(); i++){
+//    			System.out.println(
+//    				kr.match(i).getLocalDocID()+" "+
+//    				kr.match(i).startPos + " " +
+//    				kr.match(i).endPos
+//    		    );
+//    		}
+        
+	}
 	
 }
