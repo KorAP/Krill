@@ -51,7 +51,7 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans{
     protected boolean advance() throws IOException {	    	
 		// The complexity is linear for searching in a document. 
 		// It's better if we can skip to >= position in a document.
-	  	while (hasMoreSpans && ensureSameDoc()){
+	  	while (hasMoreSpans && ensureSameDoc(firstSpans,secondSpans)){
 	  		int matchCase = findMatch();
 				if (matchCase == 0){
 					log.trace("Match doc#: {}",matchDocNumber);

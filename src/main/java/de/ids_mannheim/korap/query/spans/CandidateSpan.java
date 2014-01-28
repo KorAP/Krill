@@ -12,6 +12,7 @@ public class CandidateSpan {
 	private int doc,start,end;
 	private long cost;
 	private Collection<byte[]> payloads;
+	private int position;
 	
 	public CandidateSpan(Spans span) throws IOException {
 		this.doc = span.doc();
@@ -25,6 +26,11 @@ public class CandidateSpan {
 		else{ 
 			this.payloads = null;
 		}
+	}	
+	
+	public CandidateSpan(Spans span, int position) throws IOException {
+		this(span);
+		this.position = position;		
 	}
 	
 	public int getDoc() {
@@ -60,6 +66,14 @@ public class CandidateSpan {
 
 	public void setCost(long cost) {
 		this.cost = cost;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
 	}
 	
 	

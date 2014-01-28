@@ -14,15 +14,21 @@ import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
-public class DistanceSpan extends SimpleSpans{	
+/** DistanceSpan is a base class for enumeration of span matches, 
+ * 	whose two child spans have a specific range of distance (within 
+ * 	a min and a max distance). 
+ * 
+ * @author margaretha
+ * */
+public abstract class DistanceSpan extends SimpleSpans{	
 
-	private boolean hasMoreFirstSpans;	
-	private boolean collectPayloads;
-	private int minDistance,maxDistance;
+	protected boolean hasMoreFirstSpans;	
+	protected boolean collectPayloads;
+	protected int minDistance,maxDistance;
 	
-	private List<CandidateSpan> candidateList;
-	private int candidateListIndex;
-	private int candidateListDocNum;
+	protected List<CandidateSpan> candidateList;
+	protected int candidateListIndex;
+	protected int candidateListDocNum;
 	
     private Logger log = LoggerFactory.getLogger(DistanceSpan.class);
     
@@ -37,7 +43,6 @@ public class DistanceSpan extends SimpleSpans{
   		collectPayloads = query.isCollectPayloads();
   		 		  		
   		hasMoreFirstSpans = firstSpans.next();
-  		hasMoreSpans = hasMoreFirstSpans;
   		
 		candidateList = new ArrayList<>();
 		candidateListIndex = -1;
@@ -51,6 +56,8 @@ public class DistanceSpan extends SimpleSpans{
 		return advance();
 	}
 	
+	/** Find a span match in the candidate list.
+	 * */
 	private boolean advance() throws IOException {
 		while( hasMoreSpans && candidateListIndex < candidateList.size() ){					
 			// Check candidates
@@ -66,81 +73,43 @@ public class DistanceSpan extends SimpleSpans{
 		return false;
 	}
 	
- 	private void setCandidateList() throws IOException{
- 		if (candidateListDocNum == secondSpans.doc()){						
-			copyPossibleCandidates();
-			addNewCandidates();
-			candidateListIndex = -1;
- 		}
- 		else {
- 			candidateList.clear(); 			
- 			if (hasMoreFirstSpans && ensureSameDoc()){
- 				candidateListDocNum = firstSpans.doc();
-				addNewCandidates();
-				candidateListIndex = -1;
-			}		
-		} 		
-	}
+	/** Collect all possible firstspan instances as candidate spans for
+	 * 	the current secondspan. The candidate spans are within the max 
+	 * 	distance from the current secondspan. 
+	 *  
+	 * */
+	protected abstract void setCandidateList() throws IOException;
 	
-	private void copyPossibleCandidates(){
-		List<CandidateSpan> temp = new ArrayList<>();
-		for (CandidateSpan cs : candidateList){
-			if (cs.getEnd()+maxDistance > secondSpans.start())
-				temp.add(cs);
-		}
-		candidateList = temp;
-	}
+	/** Define the conditions for a match. 
+	 * */
+	protected abstract boolean findMatch() throws IOException;	
 	
-	private void addNewCandidates() throws IOException{
-		while ( hasMoreFirstSpans && 
-				firstSpans.doc() == candidateListDocNum &&
-				firstSpans.start() < secondSpans.end()){
-			
-			if (firstSpans.end()+maxDistance > secondSpans.start())
-				candidateList.add(new CandidateSpan(firstSpans));
-			
-			hasMoreFirstSpans = firstSpans.next();
-		}
-	}
-
-	protected boolean findMatch() throws IOException {
-		CandidateSpan candidateSpan = candidateList.get(candidateListIndex);		
-		if (minDistance == 0 &&
-				// intersection
-				candidateSpan.getStart() < secondSpans.end() && 
-				secondSpans.start() < candidateSpan.getEnd()){
-			
+	/** Define the properties of a span match.
+	 * */
+	protected void setMatchProperties(CandidateSpan candidateSpan, 
+			boolean isDistanceZero) throws IOException{
+		
+		if (isDistanceZero){
 			matchStartPosition = Math.min(candidateSpan.getStart(), secondSpans.start());
 			matchEndPosition = Math.max(candidateSpan.getEnd(), secondSpans.end());
-			setDocAndPayload(candidateSpan);
-			return true;			
 		}
-		
-		int actualDistance = secondSpans.start() - candidateSpan.getEnd() +1;
-		if (candidateSpan.getStart() < secondSpans.start() &&
-				minDistance <= actualDistance && 
-				actualDistance <= maxDistance){
-						
+		else {
 			matchStartPosition = candidateSpan.getStart();
 			matchEndPosition = secondSpans.end();
-			setDocAndPayload(candidateSpan);
-			return true;
-		}		
-		return false;
-	}
-	
-	private void setDocAndPayload(CandidateSpan candidateSpan) throws IOException{ 
+		}
+		
 		this.matchDocNumber = secondSpans.doc();		
 		if (collectPayloads){			
   		    if (candidateSpan.getPayloads() != null) {  		    	
-  		    	matchPayload.addAll(candidateSpan.getPayloads());
-  		    	log.trace("first",matchPayload.size());
+  		    	matchPayload.addAll(candidateSpan.getPayloads());  		    	
   		    }
   		    if (secondSpans.isPayloadAvailable()) {
-  		    	matchPayload.addAll(secondSpans.getPayload());
-  		    	log.trace("second",matchPayload.size());
+  		    	matchPayload.addAll(secondSpans.getPayload());  		    	
   		    }
 		} 
+		
+		log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
+				matchEndPosition);		
 	}
 
 	@Override

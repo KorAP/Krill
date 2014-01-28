@@ -50,23 +50,23 @@ public abstract class SimpleSpans extends Spans{
   		isStartEnumeration=true;
       }
   	
-  	/** If the current firstspan and secondspan are not in the same document,
-  	 * 	try to skip the span with the smaller document number, to the same 
-  	 * 	OR a greater document number than, the document number of the other 
-  	 * 	span. Do this until the firstspan and the secondspan are in the same 
-  	 * 	doc, OR until reaching the last document. 
+  	/** If the current x and y are not in the same document, to skip the 
+  	 * 	span with the smaller document number, to the same OR a greater 
+  	 * 	document number than, the document number of the other span. Do 
+  	 * 	this until the x and the y are in the same doc, OR until the last 
+  	 * 	document.	
   	 *	@return true iff such a document exists.
   	 * */
-  	protected boolean ensureSameDoc() throws IOException {		
-  		while (firstSpans.doc() != secondSpans.doc()) {
-  			if (firstSpans.doc() < secondSpans.doc()){
-  				if (!firstSpans.skipTo(secondSpans.doc())){
+  	protected boolean ensureSameDoc(Spans x, Spans y) throws IOException {		
+  		while (x.doc() != y.doc()) {
+  			if (x.doc() < y.doc()){
+  				if (!x.skipTo(y.doc())){
   					hasMoreSpans = false;
   					return false;
   				}				
   			}		
   			else {
-  				if (!secondSpans.skipTo(firstSpans.doc())){
+  				if (!y.skipTo(x.doc())){
   					hasMoreSpans = false;
   					return false;
   				}	
