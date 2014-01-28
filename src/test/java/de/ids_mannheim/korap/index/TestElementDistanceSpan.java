@@ -85,21 +85,21 @@ public class TestElementDistanceSpan {
 	 * */
 	@Test
 	public void testCase1() throws IOException{
-		System.out.println("testCase1");
+		//System.out.println("testCase1");
 		ki = new KorapIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.addDoc(createFieldDoc1());        
         ki.commit();
         
         SpanQuery sq;        
-        sq = createQuery("s", "s:b", "s:c", 1, 2);        
+        sq = createQuery("s", "s:b", "s:c", 0, 2);        
         kr = ki.search(sq, (short) 10);
         
-//        assertEquals(4, kr.totalResults());
-//        assertEquals(0, kr.match(0).startPos);
-//        assertEquals(1, kr.match(0).endPos);
-//        assertEquals(0, kr.match(1).startPos);
-//        assertEquals(3, kr.match(1).endPos);
+        assertEquals(4, kr.totalResults());
+        assertEquals(0, kr.match(0).startPos);
+        assertEquals(1, kr.match(0).endPos);
+        assertEquals(0, kr.match(1).startPos);
+        assertEquals(3, kr.match(1).endPos);
         
 //        System.out.print(kr.getTotalResults()+"\n");
 //   		for (int i=0; i< kr.getTotalResults(); i++){
@@ -116,7 +116,7 @@ public class TestElementDistanceSpan {
 	 * */
 	@Test
 	public void testCase2() throws IOException{
-		System.out.println("testCase2");
+		//System.out.println("testCase2");
 		ki = new KorapIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.addDoc(createFieldDoc1());
@@ -127,10 +127,10 @@ public class TestElementDistanceSpan {
         sq = createQuery("p", "s:b", "s:d", 1, 1);
         kr = ki.search(sq, (short) 10);
         
-//        assertEquals(1, kr.totalResults());
-//        assertEquals(2, kr.match(0).getLocalDocID());
-//        assertEquals(2, kr.match(0).startPos);
-//        assertEquals(4, kr.match(0).endPos);
+        assertEquals(1, kr.totalResults());
+        assertEquals(2, kr.match(0).getLocalDocID());
+        assertEquals(2, kr.match(0).startPos);
+        assertEquals(4, kr.match(0).endPos);
         
 	}	
 	
