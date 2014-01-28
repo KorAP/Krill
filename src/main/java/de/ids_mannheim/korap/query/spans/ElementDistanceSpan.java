@@ -12,16 +12,15 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
-/** Enumeration of element-based distance span matches. 
- * 	The distance unit is an element position, including a gap.
- * 	For example:  
- * 	X &lt;p&gt;&lt;/p&gt;
- * 	Z
- * 	&lt;p&gt;&lt;/p&gt; Y. 
- * 	X and Y has a distance of 4.
+/** Span enumeration of element-based distance span matches. 	
+ * 	Each match consists of two child spans. The element-distance between 
+ * 	the child spans is the difference between the element position numbers 
+ * 	where the child spans are. The element-distance unit can be a sentence 
+ * 	or a paragraph. All other child spans occurrence which are not in 
+ * 	a sentence or a paragraph (with respect to the element distance type 
+ * 	current used) are ignored.
  * 
- *	@author margaretha
- *	@deprecated 
+ * @author margaretha
  * */
 public class ElementDistanceSpan extends DistanceSpan {
 			
@@ -29,9 +28,6 @@ public class ElementDistanceSpan extends DistanceSpan {
 	private Spans elements;	
 	private int elementPosition, secondSpanPostion;	
 		
-	private boolean isGap; // refers to the gap right before the current element
-	private int gapPosition;
-	
 	public ElementDistanceSpan(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts)
@@ -83,87 +79,51 @@ public class ElementDistanceSpan extends DistanceSpan {
 		} 		
 	}
 	
-	/** Add new possible candidates
+	/** Add new possible candidates. Candidates must be in an element 
+	 * 	and not too far from the secondspan.
 	 * */
-	private void addNewCandidates() throws IOException{
-		int position;
+	private void addNewCandidates() throws IOException{		
 		while ( hasMoreFirstSpans && 
 				firstSpans.doc() == candidateListDocNum &&
 				firstSpans.start() < secondSpans.end()){
 			
-			advanceElementTo(firstSpans);
-			position = findPosition(firstSpans);
-			candidateList.add(new CandidateSpan(firstSpans,position));
-			filterCandidateList(position);
+			if (advanceElementTo(firstSpans)){
+				candidateList.add(new CandidateSpan(firstSpans,elementPosition));				
+				filterCandidateList(elementPosition);
+			}
 			hasMoreFirstSpans = firstSpans.next();
 		}
 		
-		secondSpanPostion = findSecondSpanPosition();
-		filterCandidateList(secondSpanPostion);
+		if (advanceElementTo(secondSpans)){
+			secondSpanPostion = elementPosition;
+			filterCandidateList(secondSpanPostion);
+		}
+		// second span is not in an element
+		else { candidateList.clear(); }
 	}
 	
-	/** Advance elements until encountering the span. 
-	 * 	Add the elementPosition while searching.
-	 *  Add gap positions too. 
+	/** Advance elements until encountering a span.
+	 * @return true iff an element containing the span, is found.
 	 */
-	private void advanceElementTo(Spans span) throws IOException{	
-		isGap = false;
-		int prevElementEnd = elements.end();
+	private boolean advanceElementTo(Spans span) throws IOException{
 		while (hasMoreElements && 
 				elements.doc() == candidateListDocNum &&
-				elements.end() <= span.start()){			
+				elements.start() < span.end()){
 			
-			// Find a gap
-			if (prevElementEnd < elements.start()){
-				elementPosition++;
+			if (span.start() >= elements.start() &&
+					span.end() <= elements.end()){
+				return true;
 			}
-			
-			prevElementEnd = elements.end();
+
 			hasMoreElements = elements.next();
 			elementPosition++;
 		}
-		
-		// Find the last gap between the prevElement and current element
-		if (hasMoreElements && 
-				elements.doc() == candidateListDocNum &&	
-				prevElementEnd < elements.start()){			
-			isGap = true;			
-			gapPosition = elementPosition;
-			elementPosition++;			
-		}
-		
+		return false;
 	}
-
-	/** Find a span position which can be
-	 * 		in the current element,
-	 *  	in the gap between the previous and current element,
-	 *  	in the very last gap at the end of a doc.
-	 * @return the span position    
+	
+	/** Reduce the number of candidates by removing all candidates that are 
+	 * 	not within a max distance from the given element position.
 	 * */
-	private int findPosition(Spans span){
-		int position = elementPosition;
-		
-		// in the gap
-		if (isGap && span.end() <= elements.start())
-			position = gapPosition;
-		
-		return position;
-	}
-	
-	
-	private int findSecondSpanPosition() throws IOException{		
-		// in the gap
-		if (isGap && secondSpans.end() <= elements.start()){
-			return gapPosition;					
-		}
-		// in current element
-		else if (secondSpans.end() <= elements.end()){
-			return elementPosition;
-		}					
-		advanceElementTo(secondSpans);	
-		return findPosition(secondSpans);		
-	}
-
 	private void filterCandidateList(int position){
 		Iterator<CandidateSpan> i = candidateList.iterator();
 		CandidateSpan cs;
@@ -175,6 +135,7 @@ public class ElementDistanceSpan extends DistanceSpan {
 			}
 			i.remove();
 		}
+		
 		//System.out.println("pos "+position+" " +candidateList.size());
 	}		
 
