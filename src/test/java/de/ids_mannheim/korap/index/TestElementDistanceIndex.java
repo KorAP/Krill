@@ -18,7 +18,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 
 @RunWith(JUnit4.class)
-public class TestElementDistanceSpan {
+public class TestElementDistanceIndex {
 	
 	KorapResult kr;
     KorapIndex ki;   
@@ -81,13 +81,14 @@ public class TestElementDistanceSpan {
 	}
 	
 	public SpanQuery createQuery(String elementType, String x, String y, 
-			int minDistance, int maxDistance){        
+			int minDistance, int maxDistance, boolean isOrdered){        
 		return new SpanDistanceQuery(
         		new SpanElementQuery("base", elementType), 
         		new SpanTermQuery(new Term("base",x)), 
         		new SpanTermQuery(new Term("base",y)), 
         		minDistance, 
         		maxDistance, 
+        		true,
         		true);
 	}
 	
@@ -106,7 +107,7 @@ public class TestElementDistanceSpan {
         ki.commit();
         
         SpanQuery sq;        
-        sq = createQuery("s", "s:b", "s:c", 0, 2);        
+        sq = createQuery("s", "s:b", "s:c", 0, 2,true);        
         kr = ki.search(sq, (short) 10);
         
         assertEquals(4, kr.totalResults());
@@ -128,7 +129,7 @@ public class TestElementDistanceSpan {
         ki.commit();
         
         SpanQuery sq;
-        sq = createQuery("p", "s:b", "s:d", 1, 1);
+        sq = createQuery("p", "s:b", "s:d", 1, 1,true);
         kr = ki.search(sq, (short) 10);
         
         assertEquals(1, kr.totalResults());
@@ -149,7 +150,7 @@ public class TestElementDistanceSpan {
         ki.commit();
         
         SpanQuery sq, edq;
-        edq = createQuery("s", "s:b", "s:c", 1, 1);
+        edq = createQuery("s", "s:b", "s:c", 1, 1,true);
 		
         sq = new SpanNextQuery(edq, 
         		new SpanTermQuery(new Term("base", "s:d")));
