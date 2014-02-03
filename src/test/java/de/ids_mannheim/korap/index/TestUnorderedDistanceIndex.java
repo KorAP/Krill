@@ -108,7 +108,7 @@ public class TestUnorderedDistanceIndex{
      * */
 	@Test
 	public void testCase1() throws IOException{
-		 System.out.println("testcase 1");
+		//System.out.println("testcase 1");
 		ki = new KorapIndex();
 	    ki.addDoc(createFieldDoc0()); 
 	    ki.commit();    
@@ -127,7 +127,7 @@ public class TestUnorderedDistanceIndex{
 	 * */
 	@Test
 	public void testCase2() throws IOException{
-		System.out.println("testcase 2");
+		//System.out.println("testcase 2");
 		ki = new KorapIndex();
 		ki.addDoc(createFieldDoc0());
 	    ki.addDoc(createFieldDoc1()); 
@@ -146,7 +146,7 @@ public class TestUnorderedDistanceIndex{
 	 * */
 	@Test
 	public void testCase3() throws IOException{		
-		System.out.println("testcase 3");
+		//System.out.println("testcase 3");
 		ki = new KorapIndex();
 		ki.addDoc(createFieldDoc0());
 	    ki.addDoc(createFieldDoc1()); 
@@ -168,7 +168,7 @@ public class TestUnorderedDistanceIndex{
 	/** Skip to */
 	@Test
 	public void testCase4() throws IOException{
-		System.out.println("testcase 4");
+		//System.out.println("testcase 4");
 		ki = new KorapIndex();
 		ki.addDoc(createFieldDoc0());
 	    ki.addDoc(createFieldDoc1()); 
@@ -188,16 +188,64 @@ public class TestUnorderedDistanceIndex{
 	    assertEquals(3,kr.getMatch(1).getStartPos());
 	    assertEquals(6,kr.getMatch(1).getEndPos());
 	    
-	    System.out.print(kr.getTotalResults()+"\n");
-			for (int i=0; i< kr.getTotalResults(); i++){
-				System.out.println(
-					kr.match(i).getLocalDocID()+" "+
-					kr.match(i).startPos + " " +
-					kr.match(i).endPos
-			    );
-			}
+//	    System.out.print(kr.getTotalResults()+"\n");
+//			for (int i=0; i< kr.getTotalResults(); i++){
+//				System.out.println(
+//					kr.match(i).getLocalDocID()+" "+
+//					kr.match(i).startPos + " " +
+//					kr.match(i).endPos
+//			    );
+//			}
 	}
 	
 	
+	 /** ElementQueries */    
+    @Test
+    public void testCase5() throws IOException{    	
+    	ki = new KorapIndex();
+	    ki.addDoc(createFieldDoc0()); 
+	    ki.commit();    
+	    
+	    // Intersection ---- Distance 0:0
+	    //System.out.println("Intersection ---- Distance 0:0");
+	    SpanQuery sq = createElementQuery("x","y",0,0,false);                
+	    kr = ki.search(sq, (short) 10);
+    	
+	    assertEquals(4, kr.totalResults());
+	    assertEquals(2, kr.getMatch(0).startPos);
+	    assertEquals(7, kr.getMatch(0).endPos);
+	    assertEquals(3, kr.getMatch(1).startPos);
+	    assertEquals(7, kr.getMatch(1).endPos);
+	    assertEquals(3, kr.getMatch(2).startPos);
+	    assertEquals(8, kr.getMatch(2).endPos);
+    	
+	    // Next to ---- Distance 1:1
+	    //System.out.println("Next to ---- Distance 1:1");
+	    sq = createElementQuery("x","y",1,1,false);                
+	    kr = ki.search(sq, (short) 10);
+	    
+	    assertEquals(1, kr.totalResults());
+	    assertEquals(5, kr.getMatch(0).startPos);
+	    assertEquals(10, kr.getMatch(0).endPos);
+	    
+	    // ---- Distance 1:2
+	    //System.out.println("---- Distance 1:2");
+	    sq = createElementQuery("x","y",1,2,false);                
+	    kr = ki.search(sq, (short) 10);
+	    
+	    assertEquals(2, kr.totalResults());	    
+	    assertEquals(4, kr.getMatch(0).startPos);
+	    assertEquals(9, kr.getMatch(0).endPos);
+	    assertEquals(5, kr.getMatch(1).startPos);
+	    assertEquals(10, kr.getMatch(1).endPos);
+	    
+	    // The same element type ---- Distance 1:2
+	    //System.out.println("The same element type ---- Distance 1:2");
 
+	    sq = createElementQuery("x","x",1,2,false);
+	    kr = ki.search(sq, (short) 10);
+	    
+	    // TO DO: redundant results
+	    assertEquals(2, kr.totalResults());
+    }
 }
