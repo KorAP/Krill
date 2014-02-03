@@ -18,11 +18,11 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 
 @RunWith(JUnit4.class)
-public class TestDistanceQuery {
+public class TestDistanceIndex {
     KorapResult kr;
     KorapIndex ki;   
  
-    private FieldDocument createFieldDoc0() {
+    protected FieldDocument createFieldDoc0() {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base",
@@ -36,7 +36,7 @@ public class TestDistanceQuery {
         return fd;
 	}
     
-    private FieldDocument createFieldDoc1(){
+    protected FieldDocument createFieldDoc1(){
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("base",
@@ -54,7 +54,7 @@ public class TestDistanceQuery {
         return fd;
     }
     
-    private FieldDocument createFieldDoc2() {
+    protected FieldDocument createFieldDoc2() {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV("base",
@@ -68,23 +68,25 @@ public class TestDistanceQuery {
         return fd;
 	}
     
-    private SpanQuery createQuery(String x, String y, int min, int max){
+    protected SpanQuery createQuery(String x, String y, int min, int max, boolean isOrdered){
     	SpanQuery sq = new SpanDistanceQuery(
         		new SpanTermQuery(new Term("base",x)),
         		new SpanTermQuery(new Term("base",y)),
         		min,
         		max,
+        		isOrdered,
         		true
         );
     	return sq;
     }
     
-    private SpanQuery createElementQuery(String x, String y, int min, int max){
+    protected SpanQuery createElementQuery(String x, String y, int min, int max, boolean isOrdered){
     	SpanQuery sq = new SpanDistanceQuery(
         		new SpanElementQuery("base",x),
         		new SpanElementQuery("base",y),
         		min,
         		max,
+        		isOrdered,
         		true
         );
     	return sq;
@@ -101,7 +103,7 @@ public class TestDistanceQuery {
         ki.commit();
         SpanQuery sq;
         // ---- Distance 0 to 1
-        sq = createQuery("s:b","s:c",0,1);                
+        sq = createQuery("s:b","s:c",0,1,true);                
         kr = ki.search(sq, (short) 10);
         
         assertEquals(2, kr.totalResults());
@@ -111,7 +113,7 @@ public class TestDistanceQuery {
         assertEquals(3, kr.match(1).endPos);
         
         // ---- Distance 2 to 2
-        sq = createQuery("s:b","s:c",2,2);                
+        sq = createQuery("s:b","s:c",2,2,true);                
         kr = ki.search(sq, (short) 10);
         
         assertEquals(2, kr.totalResults());
@@ -121,7 +123,7 @@ public class TestDistanceQuery {
         assertEquals(4, kr.match(1).endPos);
         
         // ---- Distance 2 to 3
-        sq = createQuery("s:b","s:c",2,3);                
+        sq = createQuery("s:b","s:c",2,3,true);                
         kr = ki.search(sq, (short) 10);
         
         assertEquals(3, kr.totalResults());
@@ -142,7 +144,7 @@ public class TestDistanceQuery {
 	    
 	    // ---- Distance 1 to 3
 	    // Candidate list for the current secondspan, is empty
-	    SpanQuery sq = createQuery("s:c","s:d",1,3);                
+	    SpanQuery sq = createQuery("s:c","s:d",1,3,true);                
 	    kr = ki.search(sq, (short) 10);
 	        	    
 	    assertEquals(4, kr.getTotalResults());
@@ -156,7 +158,7 @@ public class TestDistanceQuery {
 
 	    // ---- Distance 3 to 3
 	    // Candidate list is empty, but there are secondspans in the other doc
-	    sq = createQuery("s:c","s:d",3,3);                
+	    sq = createQuery("s:c","s:d",3,3,true);                
 	    kr = ki.search(sq, (short) 10);
 	    assertEquals(2, kr.getTotalResults());
 	    
@@ -176,7 +178,7 @@ public class TestDistanceQuery {
         ki.commit();
         
         SpanQuery sq;
-        sq = createQuery("s:c","s:d",3,3);    
+        sq = createQuery("s:c","s:d",3,3,true);    
         kr = ki.search(sq, (short) 10);
         
         assertEquals(2, kr.totalResults());
@@ -197,7 +199,7 @@ public class TestDistanceQuery {
         ki.commit();
                
         // ---- Distance 1 to 2
-        SpanQuery sq = createQuery("s:b","s:c",1,2);                
+        SpanQuery sq = createQuery("s:b","s:c",1,2,true);                
         kr = ki.search(sq, (short) 10);
         
         assertEquals(3, kr.totalResults());
@@ -218,7 +220,7 @@ public class TestDistanceQuery {
 	    ki.commit();    
 	    
 	    // Intersection ---- Distance 0:0
-	    SpanQuery sq = createElementQuery("x","y",0,0);                
+	    SpanQuery sq = createElementQuery("x","y",0,0,true);                
 	    kr = ki.search(sq, (short) 10);
     	
 	    assertEquals(4, kr.totalResults());
@@ -230,7 +232,7 @@ public class TestDistanceQuery {
 	    assertEquals(8, kr.getMatch(2).endPos);
     	
 	    // Next to ---- Distance 1:1
-	    sq = createElementQuery("y","x",1,1);                
+	    sq = createElementQuery("y","x",1,1,true);                
 	    kr = ki.search(sq, (short) 10);
 	    
 	    assertEquals(1, kr.totalResults());
@@ -238,7 +240,7 @@ public class TestDistanceQuery {
 	    assertEquals(10, kr.getMatch(0).endPos);
 	    
 	    // ---- Distance 1:2
-	    sq = createElementQuery("y","x",1,2);                
+	    sq = createElementQuery("y","x",1,2,true);                
 	    kr = ki.search(sq, (short) 10);
 	    
 	    assertEquals(2, kr.totalResults());	    
@@ -248,17 +250,10 @@ public class TestDistanceQuery {
 	    assertEquals(10, kr.getMatch(1).endPos);
 	    
 	    // The same element type ---- Distance 1:2
-	    sq = createElementQuery("x","x",1,2);
+	    sq = createElementQuery("x","x",1,2,true);
 	    kr = ki.search(sq, (short) 10);
 	    
 	    assertEquals(2, kr.totalResults());
-	    
-//    	System.out.print(kr.getTotalResults()+"\n");
-//		for (int i=0; i< kr.getTotalResults(); i++){
-//			System.out.println(
-//				kr.match(i).startPos + " " +kr.match(i).endPos
-//		    );
-//		}
     }
     
     /** Skip to */    
@@ -269,7 +264,7 @@ public class TestDistanceQuery {
 	    ki.addDoc(createFieldDoc1());
 	    ki.commit();
 	    	    
-	    SpanQuery firstClause = createQuery("s:d", "s:e", 3, 4);
+	    SpanQuery firstClause = createQuery("s:d", "s:e", 3, 4,true);
 	    kr = ki.search(firstClause, (short) 10); 
 	    
 	    assertEquals(3, kr.totalResults());
@@ -284,8 +279,8 @@ public class TestDistanceQuery {
 	    
 		// The secondspans is skipped to doc# of the current firstspans
 		SpanQuery sq = new SpanSegmentQuery(
-	    		createQuery("s:d","s:e",3,4),
-	    		createElementQuery("y","x",1,2)
+	    		createQuery("s:d","s:e",3,4,true),
+	    		createElementQuery("y","x",1,2,true)
 		);	    
 	    kr = ki.search(sq, (short) 10);
 	    

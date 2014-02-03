@@ -127,9 +127,4 @@ public abstract class DistanceSpan extends SimpleSpans{
 		return advance();
 	}
 
-	@Override
-	public long cost() {
-		CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
-		return candidateSpan.getCost() + secondSpans.cost();
-	}
 }

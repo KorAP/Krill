@@ -12,6 +12,7 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.ElementDistanceSpan;
 import de.ids_mannheim.korap.query.spans.TokenDistanceSpan;
+import de.ids_mannheim.korap.query.spans.UnorderedDistanceSpans;
 
 /** Match two ordered Spans with minimum and maximum distance constraints.
  * 	The distance unit can be word (token), sentence or paragraph. 
@@ -21,27 +22,28 @@ import de.ids_mannheim.korap.query.spans.TokenDistanceSpan;
 public class SpanDistanceQuery extends SimpleSpanQuery {
 	
 	protected int minDistance, maxDistance;
-	protected boolean collectPayloads;
+	protected boolean isOrdered, collectPayloads;
 	protected SpanQuery firstClause, secondClause; 
 	private SpanQuery elementQuery; // element distance unit
-	
+
 	public SpanDistanceQuery(SpanQuery firstClause, SpanQuery secondClause, 
-			int minDistance, int maxDistance, boolean collectPayloads) {
-		super(firstClause, secondClause, "spanDistance");		
+			int minDistance, int maxDistance, boolean isOrdered, 
+			boolean collectPayloads) {
+		super(firstClause, secondClause, "spanDistance");
     	this.firstClause=firstClause;
     	this.secondClause=secondClause;
     	this.minDistance =minDistance;
 		this.maxDistance = maxDistance;
+		this.isOrdered = isOrdered;
 		this.collectPayloads = collectPayloads;
 	}
 	
-	public SpanDistanceQuery(SpanQuery elementQuery, 
-			SpanQuery firstClause, SpanQuery secondClause, 
-			int minDistance, int maxDistance, 
-			boolean collectPayloads) {
-		this(firstClause, secondClause,minDistance, maxDistance, 
+	public SpanDistanceQuery(SpanQuery elementQuery, SpanQuery firstClause, 
+			SpanQuery secondClause, int minDistance, int maxDistance, 
+			boolean isOrdered, 	boolean collectPayloads) {
+		this(firstClause, secondClause, minDistance, maxDistance, isOrdered, 
 				collectPayloads);
-		this.elementQuery = elementQuery;    	    	
+		this.elementQuery = elementQuery;
 	}
 	
 	@Override
@@ -51,6 +53,7 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 		    (SpanQuery) secondClause.clone(),
 		    this.minDistance,
 		    this.maxDistance,
+		    this.isOrdered,
 		    this.collectPayloads
         );
 		
@@ -66,10 +69,16 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		
-		if (this.elementQuery != null) 
-			return new ElementDistanceSpan(this, context, acceptDocs, termContexts);		
-		
-		return new TokenDistanceSpan(this, context, acceptDocs, termContexts);
+		if (isOrdered){
+			if (this.elementQuery != null) {
+				return new ElementDistanceSpan(this, context, acceptDocs, termContexts);		
+			}
+			return new TokenDistanceSpan(this, context, acceptDocs, termContexts);
+		}
+		else if (this.elementQuery != null) {
+			//return new ElementDistanceSpan(this, context, acceptDocs, termContexts);		
+		}
+		return new UnorderedDistanceSpans(this, context, acceptDocs, termContexts);
 	}
 
 	public int getMinDistance() {

@@ -92,5 +92,11 @@ public class TokenDistanceSpan extends DistanceSpan{
 		}		
 		return false;
 	}
+	
+	@Override
+	public long cost() {
+		CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
+		return candidateSpan.getCost() + secondSpans.cost();
+	}
 
 }
