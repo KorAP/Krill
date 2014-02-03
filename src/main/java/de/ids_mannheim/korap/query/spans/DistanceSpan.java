@@ -16,7 +16,8 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /** DistanceSpan is a base class for enumeration of span matches, 
  * 	whose two child spans have a specific range of distance (within 
- * 	a min and a max distance). 
+ * 	a min and a max distance) and must be in order (a firstspan is 
+ * 	followed by a secondspan). 
  * 
  * @author margaretha
  * */

@@ -15,7 +15,7 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 
 /** An abstract class for Span enumeration including span match properties
- * 	and basic methods;
+ * 	and basic methods.
  *  
  * 	@author margaretha
  * 

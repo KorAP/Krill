@@ -33,6 +33,15 @@ public class CandidateSpan {
 		this.position = position;		
 	}
 	
+	public CandidateSpan(int start, int end, int doc, long cost,
+			Collection<byte[]> payloads) {
+		this.start = start;
+		this.end = end;
+		this.doc = doc;
+		this.cost = cost;
+		this.payloads = payloads;
+	}
+
 	public int getDoc() {
 		return doc;
 	}

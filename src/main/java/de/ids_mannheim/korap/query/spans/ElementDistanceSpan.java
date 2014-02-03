@@ -18,7 +18,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 	where the child spans are. The element-distance unit can be a sentence 
  * 	or a paragraph. All other child spans occurrence which are not in 
  * 	a sentence or a paragraph (with respect to the element distance type 
- * 	current used) are ignored.
+ * 	current used), are ignored.
  * 
  * @author margaretha
  * */

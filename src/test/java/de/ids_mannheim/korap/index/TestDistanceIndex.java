@@ -22,7 +22,7 @@ public class TestDistanceIndex {
     KorapResult kr;
     KorapIndex ki;   
  
-    protected FieldDocument createFieldDoc0() {
+    private FieldDocument createFieldDoc0() {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base",
@@ -36,7 +36,7 @@ public class TestDistanceIndex {
         return fd;
 	}
     
-    protected FieldDocument createFieldDoc1(){
+    private FieldDocument createFieldDoc1(){
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("base",
@@ -54,7 +54,7 @@ public class TestDistanceIndex {
         return fd;
     }
     
-    protected FieldDocument createFieldDoc2() {
+    private FieldDocument createFieldDoc2() {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV("base",
@@ -68,7 +68,7 @@ public class TestDistanceIndex {
         return fd;
 	}
     
-    protected SpanQuery createQuery(String x, String y, int min, int max, boolean isOrdered){
+    private SpanQuery createQuery(String x, String y, int min, int max, boolean isOrdered){
     	SpanQuery sq = new SpanDistanceQuery(
         		new SpanTermQuery(new Term("base",x)),
         		new SpanTermQuery(new Term("base",y)),
@@ -80,7 +80,7 @@ public class TestDistanceIndex {
     	return sq;
     }
     
-    protected SpanQuery createElementQuery(String x, String y, int min, int max, boolean isOrdered){
+    private SpanQuery createElementQuery(String x, String y, int min, int max, boolean isOrdered){
     	SpanQuery sq = new SpanDistanceQuery(
         		new SpanElementQuery("base",x),
         		new SpanElementQuery("base",y),
