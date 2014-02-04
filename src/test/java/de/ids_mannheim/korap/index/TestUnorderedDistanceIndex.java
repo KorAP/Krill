@@ -198,7 +198,6 @@ public class TestUnorderedDistanceIndex{
 //			}
 	}
 	
-	
 	 /** ElementQueries */    
     @Test
     public void testCase5() throws IOException{    	
@@ -239,13 +238,26 @@ public class TestUnorderedDistanceIndex{
 	    assertEquals(5, kr.getMatch(1).startPos);
 	    assertEquals(10, kr.getMatch(1).endPos);
 	    
-	    // The same element type ---- Distance 1:2
-	    //System.out.println("The same element type ---- Distance 1:2");
-
-	    sq = createElementQuery("x","x",1,2,false);
+    }
+    
+    /** The same element type 
+     * 
+     * 	WARNING: 
+     * 	This kind of query is not appropriate for an unordered distance span query.
+     * 	Instead, it must be an ordered distance span query. Such an unordered distance 
+     * 	span query yields "redundant results" because matches are found for each child 
+     * 	span.
+     * */
+    @Test
+    public void testCase6() throws IOException{    	
+    	ki = new KorapIndex();
+	    ki.addDoc(createFieldDoc0()); 
+	    ki.commit();    
+	    
+	    //---- Distance 1:2
+	    SpanQuery sq = createElementQuery("x","x",1,2,false);
 	    kr = ki.search(sq, (short) 10);
 	    
-	    // TO DO: redundant results
-	    assertEquals(2, kr.totalResults());
+	    assertEquals(4, kr.totalResults());
     }
 }
