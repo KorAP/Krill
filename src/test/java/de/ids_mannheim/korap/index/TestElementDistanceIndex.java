@@ -162,15 +162,26 @@ public class TestElementDistanceIndex {
         assertEquals(2, kr.match(0).startPos);
         assertEquals(5, kr.match(0).endPos);
         
-//        System.out.print(kr.getTotalResults()+"\n");
-//    		for (int i=0; i< kr.getTotalResults(); i++){
-//    			System.out.println(
-//    				kr.match(i).getLocalDocID()+" "+
-//    				kr.match(i).startPos + " " +
-//    				kr.match(i).endPos
-//    		    );
-//    		}
-        
 	}
+	
+	/** Same tokens in different elements */
+	@Test
+	public void testCase4() throws IOException{
+		//System.out.println("testCase4");
+		ki = new KorapIndex();
+		ki.addDoc(createFieldDoc0());       
+        ki.commit();
+        
+        SpanQuery sq;
+        sq = createQuery("s", "s:b", "s:b", 1, 2,true);
+        kr = ki.search(sq, (short) 10);
+    		
+        assertEquals(2, kr.totalResults());
+        assertEquals(0, kr.match(0).startPos);
+        assertEquals(4, kr.match(0).endPos);
+        assertEquals(3, kr.match(1).startPos);
+        assertEquals(5, kr.match(1).endPos);
+        
+    }	
 	
 }

@@ -65,18 +65,18 @@ public class ElementDistanceSpan extends DistanceSpan {
 	protected void setCandidateList() throws IOException{
  		if (candidateListDocNum == elements.doc() && 
  				candidateListDocNum == secondSpans.doc()){
-			addNewCandidates();
-			candidateListIndex = -1;
+ 			candidateListIndex = -1;
+ 			addNewCandidates();
  		}
  		else {
  			candidateList.clear(); 			
  			if (hasMoreFirstSpans && findSameDoc()){
  				candidateListDocNum = firstSpans.doc();
  				elementPosition=0;
-				addNewCandidates();
-				candidateListIndex = -1;
+ 				candidateListIndex = -1;
+ 				addNewCandidates();				
 			}		
-		} 		
+		}		
 	}
 	
 	/** Add new possible candidates. Candidates must be in an element 
@@ -93,13 +93,17 @@ public class ElementDistanceSpan extends DistanceSpan {
 			}
 			hasMoreFirstSpans = firstSpans.next();
 		}
-		
+	}
+	
+	@Override
+	protected boolean isSecondSpanValid() throws IOException{
 		if (advanceElementTo(secondSpans)){
 			secondSpanPostion = elementPosition;
 			filterCandidateList(secondSpanPostion);
+			return true;
 		}
 		// second span is not in an element
-		else { candidateList.clear(); }
+		return false;
 	}
 	
 	/** Advance elements until encountering a span.
@@ -113,8 +117,8 @@ public class ElementDistanceSpan extends DistanceSpan {
 			if (span.start() >= elements.start() &&
 					span.end() <= elements.end()){
 				return true;
-			}
-
+			}			
+			
 			hasMoreElements = elements.next();
 			elementPosition++;
 		}

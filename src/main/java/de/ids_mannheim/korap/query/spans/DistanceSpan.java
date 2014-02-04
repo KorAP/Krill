@@ -24,7 +24,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 public abstract class DistanceSpan extends SimpleSpans{	
 
 	protected boolean hasMoreFirstSpans;	
-	protected boolean collectPayloads;
+	protected boolean collectPayloads;	
 	protected int minDistance,maxDistance;
 	
 	protected List<CandidateSpan> candidateList;
@@ -67,17 +67,27 @@ public abstract class DistanceSpan extends SimpleSpans{
 				if (findMatch())					
 					return true;					
 			}			
-			// Forward secondspan
-			if (hasMoreSpans = secondSpans.next())			
+			
+			do { // Forward secondspan 
+				hasMoreSpans = secondSpans.next();
 				setCandidateList();
+			}
+			while (hasMoreSpans && !isSecondSpanValid());
 		}
 		return false;
 	}
 	
+	/** Determine if the current second span is valid. It is always valid in 
+	 * 	TokenDistanceSpan, but it can be invalid in the ElementDistanceSpan,
+	 * 	namely when it is not within a particular element (a sentence or a 
+	 * 	paragraph depends on the element distance unit).
+	 *  
+	 * */
+	protected abstract boolean isSecondSpanValid() throws IOException;
+	
 	/** Collect all possible firstspan instances as candidate spans for
 	 * 	the current secondspan. The candidate spans are within the max 
 	 * 	distance from the current secondspan. 
-	 *  
 	 * */
 	protected abstract void setCandidateList() throws IOException;
 	
