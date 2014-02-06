@@ -289,5 +289,23 @@ public class TestDistanceIndex {
 	    assertEquals(9, kr.getMatch(0).endPos);	    
     }
     
+    /** Same tokens */
+    @Test
+    public void testCase7() throws IOException{    	
+    	ki = new KorapIndex();    	
+	    ki.addDoc(createFieldDoc1());
+	    ki.commit();
+	    	    
+	    SpanQuery firstClause = createQuery("s:c", "s:c", 1, 2,true);
+	    kr = ki.search(firstClause, (short) 10); 
+    
+	    assertEquals(3, kr.totalResults());
+        assertEquals(0, kr.getMatch(0).startPos);
+	    assertEquals(3, kr.getMatch(0).endPos);
+	    assertEquals(2, kr.getMatch(1).startPos);
+	    assertEquals(4, kr.getMatch(1).endPos);
+	    assertEquals(3, kr.getMatch(2).startPos);
+	    assertEquals(6, kr.getMatch(2).endPos);
+    }
     
 }

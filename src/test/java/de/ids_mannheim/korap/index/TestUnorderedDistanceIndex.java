@@ -187,15 +187,7 @@ public class TestUnorderedDistanceIndex{
 	    assertEquals(6,kr.getMatch(0).getEndPos());
 	    assertEquals(3,kr.getMatch(1).getStartPos());
 	    assertEquals(6,kr.getMatch(1).getEndPos());
-	    
-//	    System.out.print(kr.getTotalResults()+"\n");
-//			for (int i=0; i< kr.getTotalResults(); i++){
-//				System.out.println(
-//					kr.match(i).getLocalDocID()+" "+
-//					kr.match(i).startPos + " " +
-//					kr.match(i).endPos
-//			    );
-//			}
+
 	}
 	
 	 /** ElementQueries */    
@@ -245,8 +237,8 @@ public class TestUnorderedDistanceIndex{
      * 	WARNING: 
      * 	This kind of query is not appropriate for an unordered distance span query.
      * 	Instead, it must be an ordered distance span query. Such an unordered distance 
-     * 	span query yields "redundant results" because matches are found for each child 
-     * 	span.
+     * 	span query yields "redundant results" because matches are searched for each 
+     * 	child span.
      * */
     @Test
     public void testCase6() throws IOException{    	

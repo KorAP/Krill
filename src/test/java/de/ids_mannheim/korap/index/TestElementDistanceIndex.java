@@ -54,7 +54,7 @@ public class TestElementDistanceIndex {
 	
 	private FieldDocument createFieldDoc2() {
     	FieldDocument fd = new FieldDocument();
-        fd.addString("ID", "doc-0");
+        fd.addString("ID", "doc-2");
         fd.addTV("base",
             "text",             
             "[(0-1)s:b|_1#0-1|<>:p#0-2$<i>1]" +
@@ -68,7 +68,7 @@ public class TestElementDistanceIndex {
 	
 	private FieldDocument createFieldDoc3() {
     	FieldDocument fd = new FieldDocument();
-        fd.addString("ID", "doc-0");
+        fd.addString("ID", "doc-3");
         fd.addTV("base",
             "text",             
             "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>1]" +
@@ -88,7 +88,7 @@ public class TestElementDistanceIndex {
         		new SpanTermQuery(new Term("base",y)), 
         		minDistance, 
         		maxDistance, 
-        		true,
+        		isOrdered,
         		true);
 	}
 	
