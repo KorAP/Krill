@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 
  * @author margaretha
  * */
-public abstract class DistanceSpan extends SimpleSpans{	
+public abstract class DistanceSpans extends SimpleSpans{	
 
 	protected boolean hasMoreFirstSpans;	
 	protected boolean collectPayloads;	
@@ -31,9 +31,9 @@ public abstract class DistanceSpan extends SimpleSpans{
 	protected int candidateListIndex;
 	protected int candidateListDocNum;
 	
-    private Logger log = LoggerFactory.getLogger(DistanceSpan.class);
+    private Logger log = LoggerFactory.getLogger(DistanceSpans.class);
     
-	public DistanceSpan(SpanDistanceQuery query,
+	public DistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts)
 			throws IOException {		

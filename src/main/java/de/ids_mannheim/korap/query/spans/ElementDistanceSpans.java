@@ -22,14 +22,14 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 
  * @author margaretha
  * */
-public class ElementDistanceSpan extends DistanceSpan {
+public class ElementDistanceSpans extends DistanceSpans {
 
 	private Spans elements;	
 	private boolean hasMoreElements;
 	private int elementPosition;	
 	private int secondSpanPostion;	
 		
-	public ElementDistanceSpan(SpanDistanceQuery query,
+	public ElementDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts)
 			throws IOException {

@@ -18,9 +18,9 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 
  *	@author margaretha 
  * */
-public class TokenDistanceSpan extends DistanceSpan{
+public class TokenDistanceSpans extends DistanceSpans{
 
-	public TokenDistanceSpan(SpanDistanceQuery query,
+	public TokenDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(query, context, acceptDocs, termContexts);		

@@ -10,9 +10,11 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.spans.ElementDistanceSpan;
-import de.ids_mannheim.korap.query.spans.TokenDistanceSpan;
+import de.ids_mannheim.korap.query.spans.ElementDistanceSpans;
+import de.ids_mannheim.korap.query.spans.TokenDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedDistanceSpans;
+import de.ids_mannheim.korap.query.spans.UnorderedElementDistanceSpans;
+import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
 
 /** Match two ordered Spans with minimum and maximum distance constraints.
  * 	The distance unit can be word (token), sentence or paragraph. 
@@ -71,14 +73,14 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 		
 		if (isOrdered){
 			if (this.elementQuery != null) {
-				return new ElementDistanceSpan(this, context, acceptDocs, termContexts);		
+				return new ElementDistanceSpans(this, context, acceptDocs, termContexts);		
 			}
-			return new TokenDistanceSpan(this, context, acceptDocs, termContexts);
+			return new TokenDistanceSpans(this, context, acceptDocs, termContexts);
 		}
 		else if (this.elementQuery != null) {
-			//return new ElementDistanceSpan(this, context, acceptDocs, termContexts);		
+			return new UnorderedElementDistanceSpans(this, context, acceptDocs, termContexts);		
 		}
-		return new UnorderedDistanceSpans(this, context, acceptDocs, termContexts);
+		return new UnorderedTokenDistanceSpans(this, context, acceptDocs, termContexts);
 	}
 
 	public int getMinDistance() {
