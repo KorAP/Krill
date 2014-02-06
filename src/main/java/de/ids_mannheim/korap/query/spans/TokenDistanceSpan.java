@@ -99,4 +99,8 @@ public class TokenDistanceSpan extends DistanceSpan{
 		return candidateSpan.getCost() + secondSpans.cost();
 	}
 
+	@Override
+	protected boolean isSecondSpanValid() throws IOException {
+		return true;
+	}
 }

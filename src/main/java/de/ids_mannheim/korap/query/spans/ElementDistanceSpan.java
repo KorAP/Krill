@@ -23,10 +23,11 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * @author margaretha
  * */
 public class ElementDistanceSpan extends DistanceSpan {
-			
-	private boolean hasMoreElements;
+
 	private Spans elements;	
-	private int elementPosition, secondSpanPostion;	
+	private boolean hasMoreElements;
+	private int elementPosition;	
+	private int secondSpanPostion;	
 		
 	public ElementDistanceSpan(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -70,7 +71,7 @@ public class ElementDistanceSpan extends DistanceSpan {
  		}
  		else {
  			candidateList.clear(); 			
- 			if (hasMoreFirstSpans && findSameDoc()){
+ 			if (hasMoreFirstSpans && findSameDoc(firstSpans, secondSpans, elements)){
  				candidateListDocNum = firstSpans.doc();
  				elementPosition=0;
  				candidateListIndex = -1;
@@ -95,18 +96,8 @@ public class ElementDistanceSpan extends DistanceSpan {
 		}
 	}
 	
-	@Override
-	protected boolean isSecondSpanValid() throws IOException{
-		if (advanceElementTo(secondSpans)){
-			secondSpanPostion = elementPosition;
-			filterCandidateList(secondSpanPostion);
-			return true;
-		}
-		// second span is not in an element
-		return false;
-	}
 	
-	/** Advance elements until encountering a span.
+	/** Advance elements until encountering a span within the given document.
 	 * @return true iff an element containing the span, is found.
 	 */
 	private boolean advanceElementTo(Spans span) throws IOException{
@@ -125,10 +116,12 @@ public class ElementDistanceSpan extends DistanceSpan {
 		return false;
 	}
 	
+
 	/** Reduce the number of candidates by removing all candidates that are 
-	 * 	not within a max distance from the given element position.
+	 * 	not within the max distance from the given element position.
 	 * */
 	private void filterCandidateList(int position){
+		
 		Iterator<CandidateSpan> i = candidateList.iterator();
 		CandidateSpan cs;
 		while(i.hasNext()){
@@ -138,26 +131,19 @@ public class ElementDistanceSpan extends DistanceSpan {
 				break;
 			}
 			i.remove();
-		}
-		
-		//System.out.println("pos "+position+" " +candidateList.size());
-	}		
-
-	/** Find the same doc shared by element, firstspan and secondspan.
-	 *  @return true iff such a doc is found.
-	 * */
-	private boolean findSameDoc() throws IOException{
-		
-		while (hasMoreSpans) {
-			if (ensureSameDoc(firstSpans, secondSpans) &&
-					elements.doc() == firstSpans.doc()){
-				return true;
-			}			
-			if (!ensureSameDoc(elements,secondSpans)){
-				return false;
-			};
 		}		
-  		return false;
+		//System.out.println("pos "+position+" " +candidateList.size());
+	}
+	
+	@Override
+	protected boolean isSecondSpanValid() throws IOException{
+		if (advanceElementTo(secondSpans)){
+			secondSpanPostion = elementPosition;
+			filterCandidateList(secondSpanPostion);
+			return true;
+		}
+		// second span is not in an element
+		return false;
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,18 +18,18 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
 /** An abstract class for Span enumeration including span match properties
  * 	and basic methods.
  *  
- * 	@author margaretha
- * 
+ * 	@author margaretha 
  * */
 public abstract class SimpleSpans extends Spans{
+	private SimpleSpanQuery query;
 	protected boolean isStartEnumeration;
+	
 	protected boolean hasMoreSpans;
-	protected int matchDocNumber, matchStartPosition, matchEndPosition;	
-	protected List<byte[]> matchPayload;	
-    
 	// Warning: enumeration of Spans
 	protected Spans firstSpans, secondSpans;
-	private SimpleSpanQuery query;
+	
+	protected int matchDocNumber, matchStartPosition, matchEndPosition;	
+	protected List<byte[]> matchPayload;	
       
     public SimpleSpans (SimpleSpanQuery simpleSpanQuery,
 			AtomicReaderContext context,
@@ -74,7 +75,25 @@ public abstract class SimpleSpans extends Spans{
   		}		
   		return true;
   	} 	
-
+  	
+	/** Find the same doc shared by element, firstspan and secondspan.
+	 *  @return true iff such a doc is found.
+	 * */
+	protected boolean findSameDoc(Spans x, 
+			Spans y, Spans e) throws IOException{
+		
+		while (hasMoreSpans) {
+			if (ensureSameDoc(x, y) &&
+					e.doc() == x.doc()){
+				return true;
+			}			
+			if (!ensureSameDoc(e,y)){
+				return false;
+			};
+		}		
+  		return false;
+	}
+	
   	@Override
   	public int doc() {
   		return matchDocNumber;

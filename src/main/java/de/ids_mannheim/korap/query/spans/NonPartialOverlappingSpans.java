@@ -16,8 +16,7 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
 /** An abstract class for Span enumeration whose two child spans are matched by 
  * 	their positions and do not have a partial overlap.
  *  
- * 	@author margaretha
- * 
+ * 	@author margaretha  
  * */
 public abstract class NonPartialOverlappingSpans extends SimpleSpans{
 	

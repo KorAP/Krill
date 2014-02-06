@@ -17,21 +17,22 @@ import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
-/** Enumeration of span matches, whose two child spans have a specific 
- * 	range of distance (within a min and a max distance) and can be in 
- * 	any order. 
- * @author margaretha
+/** Enumeration of span matches, whose two child spans have a specific range 
+ * 	of distance (within a min and a max distance) and can be in any order. 
+ * 	
+ * 	@author margaretha
  * */
-public class UnorderedDistanceSpans extends SimpleSpans{
+public abstract class UnorderedDistanceSpans extends SimpleSpans{
 
-	private int minDistance, maxDistance;
+	protected int minDistance, maxDistance;
 	private boolean collectPayloads;	
 	
-	private boolean hasMoreFirstSpans, hasMoreSecondSpans;
-	private List<CandidateSpan> firstSpanList, secondSpanList;
-	
-	private List<CandidateSpan> matchList;
+	protected boolean hasMoreFirstSpans, hasMoreSecondSpans;
+	protected List<CandidateSpan> firstSpanList, secondSpanList;	
+	protected List<CandidateSpan> matchList;
 	private long matchCost;
+	
+	protected int updatedListNum;
 	
 	private Logger log = LoggerFactory.getLogger(UnorderedDistanceSpans.class);
 	
@@ -65,95 +66,85 @@ public class UnorderedDistanceSpans extends SimpleSpans{
 	private boolean advance() throws IOException {
 		while (hasMoreSpans || !matchList.isEmpty()){			
 			if (!matchList.isEmpty()){
-				setMatch();
+				setMatchProperties();
 				return true;
 			}
 			
 			if (firstSpanList.isEmpty() && secondSpanList.isEmpty()){
-				
-				if (hasMoreFirstSpans && hasMoreSecondSpans &&
-						ensureSameDoc(firstSpans, secondSpans)){
-				
-					firstSpanList.add(new CandidateSpan(firstSpans));
-					secondSpanList.add(new CandidateSpan(secondSpans));
-					hasMoreFirstSpans = firstSpans.next();
-					hasMoreSecondSpans = secondSpans.next();
-					
+				if (fillEmptyCandidateLists()){							
 					setMatchList();
 				}
 				else { hasMoreSpans = false; }
 			}
-			else { setMatchList(); }
-			
+			else { setMatchList(); }			
 		}
 		return false;
 	}
 	
+	/** Add the next possible first and second spans. Both the spans must be in the
+	 * 	same document. In UnorderedElementDistanceSpans, a span that is not in 
+	 * 	an element, is not added to its candidate list. The element must also be in
+	 * 	the same document.
+	 *   
+	 * 	@return true iff at least one of the candidate lists can be filled.
+	 * */
+	protected abstract boolean fillEmptyCandidateLists() throws IOException;
+	
 	/** Set the list of matches between the span having the smallest position, and 
 	 * 	its candidates. Simply remove the span if it does not have any candidates.
 	 * */
-	private void setMatchList() throws IOException {
+	protected void setMatchList() throws IOException {
 		
 		hasMoreFirstSpans = setCandidateList(firstSpanList,firstSpans,
 				hasMoreFirstSpans,secondSpanList);
 		hasMoreSecondSpans = setCandidateList(secondSpanList,secondSpans,
-				hasMoreSecondSpans,firstSpanList);		
-	
+				hasMoreSecondSpans,firstSpanList);
+		
 		CandidateSpan currentFirstSpan, currentSecondSpan;
 		if (!firstSpanList.isEmpty() && !secondSpanList.isEmpty()){
 			
 			currentFirstSpan = firstSpanList.get(0)	;
 			currentSecondSpan = secondSpanList.get(0);
 			
-			if (currentFirstSpan.getEnd() < currentSecondSpan.getEnd()){
+			if (currentFirstSpan.getEnd() <= currentSecondSpan.getEnd()){
 				matchList = findMatches(currentFirstSpan, secondSpanList);
-				firstSpanList.remove(0);
+				updateList(firstSpanList);				
 			}
 			else {
 				matchList = findMatches(currentSecondSpan, firstSpanList);
-				secondSpanList.remove(0);
+				updateList(secondSpanList);				
 			}
 		}
-		else if (firstSpanList.isEmpty())
-			secondSpanList.remove(0);
-		else firstSpanList.remove(0);		
+		else if (firstSpanList.isEmpty()){
+			updateList(secondSpanList);			
+		}
+		else{ 
+			updateList(firstSpanList);			
+		}
 	}
+	
+	protected abstract void updateList(List<CandidateSpan> candidateList);
+	
+	/** Set the candidate list for the first element in the target list.
+	 * @return true iff the spans enumeration still has a next element 
+	 * to be a candidate
+	 */
+	protected abstract boolean setCandidateList(List<CandidateSpan> 
+			candidateList, Spans candidate, boolean hasMoreCandidates,
+			List<CandidateSpan> targetList) throws IOException;
 	
 	/** Search all matches between the target span and its candidates in the candidate 
 	 * 	list.
 	 * 	@return the matches in a list 
 	 * */
-	private List<CandidateSpan> findMatches(CandidateSpan target, List<CandidateSpan> 
-		candidateList) {
-		
-		List<CandidateSpan> matches = new ArrayList<>();		
-		int actualDistance;
-		for (CandidateSpan cs : candidateList){
-			if (minDistance == 0 &&
-					//intersection
-					target.getStart() < cs.getEnd() &&
-					cs.getStart() < target.getEnd()){
-				matches.add(createMatchCandidate(target,cs,true));
-				continue;
-			}
-			
-			// left candidate
-			if (cs.getEnd() < target.getStart())
-				actualDistance = target.getStart() - cs.getEnd() +1;			 
-			else // right candidate
-				actualDistance = cs.getStart() - target.getEnd() +1;
-			 
-			if (minDistance <= actualDistance && actualDistance <= maxDistance)
-				matches.add(createMatchCandidate(target, cs, false));			
-		}		
-		return matches;
-	}
+	protected abstract List<CandidateSpan> findMatches(CandidateSpan target, 
+			List<CandidateSpan> candidateList);
 	
 	/** Compute match properties and create a candidate span match 
 	 * 	to be added to the match list.
 	 * 	@return a candidate span match 
 	 * */
-	private CandidateSpan createMatchCandidate(CandidateSpan target,
+	protected CandidateSpan createMatchCandidate(CandidateSpan target,
 			CandidateSpan cs, boolean isDistanceZero) {
 		
 		int start = Math.min(target.getStart(), cs.getStart());
@@ -173,48 +164,10 @@ public class UnorderedDistanceSpans extends SimpleSpans{
 		return new CandidateSpan(start,end,doc,cost,payloads);
 	}
 
-	/** Set the candidate list for the first element in the target list.
-	 * @return true iff the spans enumeration still has a next element 
-	 * to be a candidate
-	 */
-	private boolean setCandidateList(List<CandidateSpan> 
-			candidateList, Spans candidate, boolean hasMoreCandidates,
-			List<CandidateSpan> targetList) throws IOException {
-		
-		if (!targetList.isEmpty()){
-			CandidateSpan target = targetList.get(0);
-			while (hasMoreCandidates && candidate.doc() == target.getDoc()
-					&& isWithinMaxDistance(target,candidate)){
-				candidateList.add(new CandidateSpan(candidate));
-				hasMoreCandidates = candidate.next();
-			}
-		}
-		return hasMoreCandidates;
-	}
 
-	
-	/** Check if the target and candidate spans are not too far from each other.
-	 *  @return true iff the target and candidate spans are within the maximum
-	 *  distance
+	/** Assign the first candidate span in the match list as the current span match.
 	 * */
-	private boolean isWithinMaxDistance(CandidateSpan target, Spans candidate) {
-		// left candidate
-		if (candidate.end() < target.getStart() && 
-				candidate.end() + maxDistance <= target.getStart()){
-			return false;
-		}
-		// right candidate
-		if (candidate.start() > target.getEnd() &&
-				target.getEnd() + maxDistance <= candidate.start()){
-			return false;
-		}
-		return true;
-	}
-
-	/** Assign the first candidate span in the match list as 
-	 * 	the current span match.
-	 * */
-	private void setMatch() {
+	private void setMatchProperties() {
 		CandidateSpan cs = matchList.get(0);
 		matchDocNumber = cs.getDoc();
 		matchStartPosition = cs.getStart();
@@ -222,7 +175,7 @@ public class UnorderedDistanceSpans extends SimpleSpans{
 		matchCost = cs.getCost();
 		matchPayload.addAll(cs.getPayloads());
 		matchList.remove(0);
-		
+				
 		log.trace("Match doc#={} start={} end={}", matchDocNumber,
 				matchStartPosition,matchEndPosition);
 	}
