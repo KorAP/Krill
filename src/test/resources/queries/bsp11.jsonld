@@ -103,7 +103,7 @@
   "query": {
     "@type": "korap:token", 
     "wrap": {
-      "@type": "korap:group", 
+      "@type": "korap:termGroup", 
       "operation": "operation:or",
       "operands": [
         {
