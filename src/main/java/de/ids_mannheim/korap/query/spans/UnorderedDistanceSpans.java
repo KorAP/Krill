@@ -12,8 +12,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
@@ -22,7 +20,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 	
  * 	@author margaretha
  * */
-public abstract class UnorderedDistanceSpans extends SimpleSpans{
+public abstract class UnorderedDistanceSpans extends DistanceSpans{
 
 	protected int minDistance, maxDistance;
 	private boolean collectPayloads;	
@@ -31,10 +29,7 @@ public abstract class UnorderedDistanceSpans extends SimpleSpans{
 	protected List<CandidateSpan> firstSpanList, secondSpanList;	
 	protected List<CandidateSpan> matchList;
 	private long matchCost;
-	
-	protected int updatedListNum;
-	
-	private Logger log = LoggerFactory.getLogger(UnorderedDistanceSpans.class);
+	private int matchListSpanNum; 
 	
 	public UnorderedDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -54,16 +49,7 @@ public abstract class UnorderedDistanceSpans extends SimpleSpans{
 	}
 
 	@Override
-	public boolean next() throws IOException {
-		isStartEnumeration = false;
-		matchPayload.clear();
-		return advance();
-	}
-	
-	/** Find the next span match.
-	 * @return true iff a span match is available.
-	 * */
-	private boolean advance() throws IOException {
+	protected boolean advance() throws IOException {
 		while (hasMoreSpans || !matchList.isEmpty()){			
 			if (!matchList.isEmpty()){
 				setMatchProperties();
@@ -108,10 +94,14 @@ public abstract class UnorderedDistanceSpans extends SimpleSpans{
 			
 			if (currentFirstSpan.getEnd() <= currentSecondSpan.getEnd()){
 				matchList = findMatches(currentFirstSpan, secondSpanList);
-				updateList(firstSpanList);				
+				setMatchFirstSpan(currentFirstSpan);
+				matchListSpanNum = 2;
+				updateList(firstSpanList);
 			}
 			else {
 				matchList = findMatches(currentSecondSpan, firstSpanList);
+				setMatchSecondSpan(currentSecondSpan);
+				matchListSpanNum = 1;
 				updateList(secondSpanList);				
 			}
 		}
@@ -164,7 +154,6 @@ public abstract class UnorderedDistanceSpans extends SimpleSpans{
 		return new CandidateSpan(start,end,doc,cost,payloads);
 	}
 
-
 	/** Assign the first candidate span in the match list as the current span match.
 	 * */
 	private void setMatchProperties() {
@@ -175,7 +164,11 @@ public abstract class UnorderedDistanceSpans extends SimpleSpans{
 		matchCost = cs.getCost();
 		matchPayload.addAll(cs.getPayloads());
 		matchList.remove(0);
-				
+
+		if (matchListSpanNum == 1)
+			setMatchFirstSpan(cs);
+		else setMatchSecondSpan(cs);
+		
 		log.trace("Match doc#={} start={} end={}", matchDocNumber,
 				matchStartPosition,matchEndPosition);
 	}

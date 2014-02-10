@@ -22,7 +22,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 
  * @author margaretha
  * */
-public class ElementDistanceSpans extends DistanceSpans {
+public class ElementDistanceSpans extends OrderedDistanceSpans {
 
 	private Spans elements;	
 	private boolean hasMoreElements;

@@ -18,7 +18,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 
  *	@author margaretha 
  * */
-public class TokenDistanceSpans extends DistanceSpans{
+public class TokenDistanceSpans extends OrderedDistanceSpans{
 
 	public TokenDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,

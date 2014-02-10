@@ -296,8 +296,8 @@ public class TestDistanceIndex {
 	    ki.addDoc(createFieldDoc1());
 	    ki.commit();
 	    	    
-	    SpanQuery firstClause = createQuery("s:c", "s:c", 1, 2,true);
-	    kr = ki.search(firstClause, (short) 10); 
+	    SpanQuery sq = createQuery("s:c", "s:c", 1, 2,true);
+	    kr = ki.search(sq, (short) 10); 
     
 	    assertEquals(3, kr.totalResults());
         assertEquals(0, kr.getMatch(0).startPos);
@@ -306,6 +306,21 @@ public class TestDistanceIndex {
 	    assertEquals(4, kr.getMatch(1).endPos);
 	    assertEquals(3, kr.getMatch(2).startPos);
 	    assertEquals(6, kr.getMatch(2).endPos);
-    }
+	    
+	    ki.addDoc(createFieldDoc2());
+	    ki.commit();
+	    
+	    // with order
+	    sq = createQuery("s:e", "s:e", 1, 1,true);
+	    kr = ki.search(sq, (short) 10);
+	    
+	    assertEquals(1, kr.totalResults());
+	    
+	    // without order
+	    sq = createQuery("s:e", "s:e", 1, 1,false);
+	    kr = ki.search(sq, (short) 10);
+	    
+	    assertEquals(2, kr.totalResults());
+    }    
     
 }

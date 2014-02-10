@@ -199,8 +199,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 		CandidateSpan e;
 		while(i.hasNext()){
 			e = i.next();			
-			if (e.getPosition() < position) {
-				//System.out.println("pos "+position+" size "+ elementList.size());
+			if (e.getPosition() <= position) {
 				i.remove();
 			}
 			break;

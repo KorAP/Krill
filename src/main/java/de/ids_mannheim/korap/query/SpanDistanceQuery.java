@@ -30,8 +30,8 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 
 	public SpanDistanceQuery(SpanQuery firstClause, SpanQuery secondClause, 
 			int minDistance, int maxDistance, boolean isOrdered, 
-			boolean collectPayloads) {
-		super(firstClause, secondClause, "spanDistance");
+			boolean collectPayloads) {		
+		super(firstClause, secondClause, "spanDistance"); 
     	this.firstClause=firstClause;
     	this.secondClause=secondClause;
     	this.minDistance =minDistance;
@@ -42,12 +42,22 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 	
 	public SpanDistanceQuery(SpanQuery elementQuery, SpanQuery firstClause, 
 			SpanQuery secondClause, int minDistance, int maxDistance, 
-			boolean isOrdered, 	boolean collectPayloads) {
-		this(firstClause, secondClause, minDistance, maxDistance, isOrdered, 
-				collectPayloads);
+			boolean isOrdered, boolean collectPayloads) {
+		super(firstClause, secondClause, "spanElementDistance");
+		this.firstClause=firstClause;
+    	this.secondClause=secondClause;
+    	this.minDistance =minDistance;
+		this.maxDistance = maxDistance;
+		this.isOrdered = isOrdered;
+		this.collectPayloads = collectPayloads;
 		this.elementQuery = elementQuery;
 	}
 	
+	public SpanDistanceQuery(SpanQuery firstClause2, SpanQuery secondClause2,
+			String string) {
+		super(firstClause2, secondClause2, string);
+	}
+
 	@Override
 	public SpanDistanceQuery clone() {
 		SpanDistanceQuery spanDistanceQuery = new SpanDistanceQuery(
@@ -106,12 +116,10 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 	public void setCollectPayloads(boolean collectPayloads) {
 		this.collectPayloads = collectPayloads;
 	}
-
 	
 	public SpanQuery getElementQuery() {
 		return elementQuery;
 	}
-
 	
 	public void setElementQuery(SpanQuery elementQuery) {
 		this.elementQuery = elementQuery;

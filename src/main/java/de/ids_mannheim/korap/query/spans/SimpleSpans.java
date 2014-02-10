@@ -76,24 +76,6 @@ public abstract class SimpleSpans extends Spans{
   		return true;
   	} 	
   	
-	/** Find the same doc shared by element, firstspan and secondspan.
-	 *  @return true iff such a doc is found.
-	 * */
-	protected boolean findSameDoc(Spans x, 
-			Spans y, Spans e) throws IOException{
-		
-		while (hasMoreSpans) {
-			if (ensureSameDoc(x, y) &&
-					e.doc() == x.doc()){
-				return true;
-			}			
-			if (!ensureSameDoc(e,y)){
-				return false;
-			};
-		}		
-  		return false;
-	}
-	
   	@Override
   	public int doc() {
   		return matchDocNumber;

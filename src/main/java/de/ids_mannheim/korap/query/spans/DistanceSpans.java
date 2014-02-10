@@ -8,10 +8,12 @@ import java.util.Map;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.ids_mannheim.korap.query.SimpleSpanQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /** DistanceSpan is a base class for enumeration of span matches, 
@@ -22,120 +24,61 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * @author margaretha
  * */
 public abstract class DistanceSpans extends SimpleSpans{	
-
-	protected boolean hasMoreFirstSpans;	
-	protected boolean collectPayloads;	
-	protected int minDistance,maxDistance;
 	
-	protected List<CandidateSpan> candidateList;
-	protected int candidateListIndex;
-	protected int candidateListDocNum;
-	
-    private Logger log = LoggerFactory.getLogger(DistanceSpans.class);
+	protected CandidateSpan matchFirstSpan,matchSecondSpan;	
+	protected Logger log = LoggerFactory.getLogger(DistanceSpans.class);
     
 	public DistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
-			Map<Term, TermContext> termContexts)
-			throws IOException {		
+			Map<Term, TermContext> termContexts) throws IOException {
 		super(query, context, acceptDocs, termContexts);
-		
-		minDistance = query.getMinDistance();
-		maxDistance = query.getMaxDistance();		
-  		collectPayloads = query.isCollectPayloads();
-  		 		  		
-  		hasMoreFirstSpans = firstSpans.next();
-  		
-		candidateList = new ArrayList<>();
-		candidateListIndex = -1;
-		candidateListDocNum = firstSpans.doc();
-	}	
+	}
 	
 	@Override
 	public boolean next() throws IOException {		
 		isStartEnumeration=false;
   		matchPayload.clear();
 		return advance();
-	}
-	
-	/** Find a span match in the candidate list.
+	}	
+
+		
+	/** Find the next span match.
+	 * @return true iff a span match is available.
 	 * */
-	private boolean advance() throws IOException {
-		while( hasMoreSpans && candidateListIndex < candidateList.size() ){					
-			// Check candidates
-			for (candidateListIndex++;candidateListIndex < candidateList.size();
-					candidateListIndex++){
-				if (findMatch())					
-					return true;					
+	protected abstract boolean advance() throws IOException; 
+
+	/** Find the same doc shared by element, firstspan and secondspan.
+	 *  @return true iff such a doc is found.
+	 * */
+	protected boolean findSameDoc(Spans x, 
+			Spans y, Spans e) throws IOException{
+		
+		while (hasMoreSpans) {
+			if (ensureSameDoc(x, y) &&
+					e.doc() == x.doc()){
+				return true;
 			}			
-			
-			do { // Forward secondspan 
-				hasMoreSpans = secondSpans.next();
-				setCandidateList();
-			}
-			while (hasMoreSpans && !isSecondSpanValid());
-		}
-		return false;
+			if (!ensureSameDoc(e,y)){
+				return false;
+			};
+		}		
+  		return false;
 	}
 	
-	/** Determine if the current second span is valid. It is always valid in 
-	 * 	TokenDistanceSpan, but it can be invalid in the ElementDistanceSpan,
-	 * 	namely when it is not within a particular element (a sentence or a 
-	 * 	paragraph depends on the element distance unit).
-	 *  
-	 * */
-	protected abstract boolean isSecondSpanValid() throws IOException;
-	
-	/** Collect all possible firstspan instances as candidate spans for
-	 * 	the current secondspan. The candidate spans are within the max 
-	 * 	distance from the current secondspan. 
-	 * */
-	protected abstract void setCandidateList() throws IOException;
-	
-	/** Define the conditions for a match. 
-	 * */
-	protected abstract boolean findMatch() throws IOException;	
-	
-	/** Define the properties of a span match.
-	 * */
-	protected void setMatchProperties(CandidateSpan candidateSpan, 
-			boolean isDistanceZero) throws IOException{
-		
-		if (isDistanceZero){
-			matchStartPosition = Math.min(candidateSpan.getStart(), secondSpans.start());
-			matchEndPosition = Math.max(candidateSpan.getEnd(), secondSpans.end());
-		}
-		else {
-			matchStartPosition = candidateSpan.getStart();
-			matchEndPosition = secondSpans.end();
-		}
-		
-		this.matchDocNumber = secondSpans.doc();		
-		if (collectPayloads){			
-  		    if (candidateSpan.getPayloads() != null) {  		    	
-  		    	matchPayload.addAll(candidateSpan.getPayloads());  		    	
-  		    }
-  		    if (secondSpans.isPayloadAvailable()) {
-  		    	matchPayload.addAll(secondSpans.getPayload());  		    	
-  		    }
-		} 
-		
-		log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
-				matchEndPosition);		
+	public CandidateSpan getMatchFirstSpan() {
+		return matchFirstSpan;
 	}
 
-	@Override
-	public boolean skipTo(int target) throws IOException {
-		if (hasMoreSpans && (secondSpans.doc() < target)){
-  			if (!secondSpans.skipTo(target)){
-  				candidateList.clear();
-  				return false;
-  			}
-  		} 	
-		
-		setCandidateList();
-		matchPayload.clear();
-		isStartEnumeration=false;
-		return advance();
+	public void setMatchFirstSpan(CandidateSpan matchFirstSpan) {
+		this.matchFirstSpan = matchFirstSpan;
+	}
+
+	public CandidateSpan getMatchSecondSpan() {
+		return matchSecondSpan;
+	}
+
+	public void setMatchSecondSpan(CandidateSpan matchSecondSpan) {
+		this.matchSecondSpan = matchSecondSpan;
 	}
 
 }

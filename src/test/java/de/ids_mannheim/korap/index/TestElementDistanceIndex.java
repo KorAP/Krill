@@ -28,7 +28,7 @@ public class TestElementDistanceIndex {
         fd.addString("ID", "doc-0");
         fd.addTV("base",
             "text",             
-            "[(0-1)s:b|s:c|_1#0-1|<>:s#0-2$<i>1]" +
+            "[(0-1)s:b|s:c|_1#0-1|<>:s#0-1$<i>1]" +
             "[(1-2)s:b|_2#1-2]" +             
             "[(2-3)s:c|_3#2-3|<>:s#2-3$<i>3]" +
             "[(3-4)s:b|_4#3-4|<>:s#3-4$<i>4]" + 
