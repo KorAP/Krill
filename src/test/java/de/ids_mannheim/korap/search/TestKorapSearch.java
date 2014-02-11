@@ -62,7 +62,7 @@ public class TestKorapSearch {
 	    new KorapQuery("field1").seg("a").with("b")
         );
 	// query
-	assertEquals(ks.getQuery().toString(), "spanNear([field1:a, field1:b], -1, false)");
+	assertEquals(ks.getQuery().toString(), "spanSegment(field1:a, field1:b)");
     };
 
     @Test

@@ -97,7 +97,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp9.json").getFile());
 
 	// [base=Katze&orth=Katzen]
-	assertEquals(sqwi.toQuery().toString(), "spanNear([tokens:"+defaultFoundry+"l:Katze, tokens:s:Katzen], -1, false)");
+	assertEquals(sqwi.toQuery().toString(), "spanSegment(tokens:"+defaultFoundry+"l:Katze, tokens:s:Katzen)");
     };
 
     @Test
@@ -161,7 +161,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp16.json").getFile());
 
 	// [(base=bar|base=foo)&orth=foobar]
-	assertEquals(sqwi.toQuery().toString(), "spanNear([spanOr([tokens:"+defaultFoundry+"l:bar, tokens:"+defaultFoundry+"l:foo]), tokens:s:foobar], -1, false)");
+	assertEquals(sqwi.toQuery().toString(), "spanSegment(spanOr([tokens:"+defaultFoundry+"l:bar, tokens:"+defaultFoundry+"l:foo]), tokens:s:foobar)");
     };
 
     @Test

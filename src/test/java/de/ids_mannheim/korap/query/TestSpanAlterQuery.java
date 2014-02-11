@@ -40,7 +40,7 @@ public class TestSpanAlterQuery {
 	SpanSegmentQueryWrapper segquery = new SpanSegmentQueryWrapper("field", "a", "b", "c");
 	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
 	ssaquery.or("d").or(segquery).or("e");
-	assertEquals("spanOr([field:d, spanNear([spanNear([field:a, field:b], -1, false), field:c], -1, false), field:e])", ssaquery.toQuery().toString());
+	assertEquals("spanOr([field:d, spanSegment(spanSegment(field:a, field:b), field:c), field:e])", ssaquery.toQuery().toString());
     };
 
     @Test

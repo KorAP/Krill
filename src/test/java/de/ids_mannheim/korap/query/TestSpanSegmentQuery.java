@@ -18,10 +18,10 @@ public class TestSpanSegmentQuery {
 	assertEquals("field:a", ssquery.toQuery().toString());
 
 	ssquery = new SpanSegmentQueryWrapper("field", "a", "b");
-	assertEquals("spanNear([field:a, field:b], -1, false)", ssquery.toQuery().toString());
+	assertEquals("spanSegment(field:a, field:b)", ssquery.toQuery().toString());
 
 	ssquery = new SpanSegmentQueryWrapper("field","a", "b", "c");
-	assertEquals("spanNear([spanNear([field:a, field:b], -1, false), field:c], -1, false)", ssquery.toQuery().toString());
+	assertEquals("spanSegment(spanSegment(field:a, field:b), field:c)", ssquery.toQuery().toString());
     };
 
     @Test
@@ -31,13 +31,13 @@ public class TestSpanSegmentQuery {
 	assertEquals("field:a", ssquery.toQuery().toString());
 
 	ssquery = new SpanSegmentQueryWrapper("field", "a", "b");
-	assertEquals("spanNear([field:a, field:b], -1, false)", ssquery.toQuery().toString());
+	assertEquals("spanSegment(field:a, field:b)", ssquery.toQuery().toString());
 
 	ssquery.without("c");
-	assertEquals("spanNot(spanNear([field:a, field:b], -1, false), field:c)", ssquery.toQuery().toString());
+	assertEquals("spanNot(spanSegment(field:a, field:b), field:c)", ssquery.toQuery().toString());
 
 	ssquery.without("d");
-	assertEquals("spanNot(spanNear([field:a, field:b], -1, false), spanOr([field:c, field:d]))", ssquery.toQuery().toString());
+	assertEquals("spanNot(spanSegment(field:a, field:b), spanOr([field:c, field:d]))", ssquery.toQuery().toString());
     };
 
 
@@ -50,23 +50,23 @@ public class TestSpanSegmentQuery {
 
 	ssquery.with(new SpanRegexQueryWrapper("field", "a.*b"));
 
-	assertEquals("spanNear([field:a, SpanMultiTermQueryWrapper(field:/a.*b/)], -1, false)", ssquery.toQuery().toString());
+	assertEquals("spanSegment(field:a, SpanMultiTermQueryWrapper(field:/a.*b/))", ssquery.toQuery().toString());
 
 	ssquery.with("c");
 
-	assertEquals("spanNear([spanNear([field:a, SpanMultiTermQueryWrapper(field:/a.*b/)], -1, false), field:c], -1, false)", ssquery.toQuery().toString());
+	assertEquals("spanSegment(spanSegment(field:a, SpanMultiTermQueryWrapper(field:/a.*b/)), field:c)", ssquery.toQuery().toString());
 
 	ssquery.with("d").with("e");
 
-	assertEquals("spanNear([spanNear([spanNear([spanNear([field:a, SpanMultiTermQueryWrapper(field:/a.*b/)], -1, false), field:c], -1, false), field:d], -1, false), field:e], -1, false)", ssquery.toQuery().toString());
+	assertEquals("spanSegment(spanSegment(spanSegment(spanSegment(field:a, SpanMultiTermQueryWrapper(field:/a.*b/)), field:c), field:d), field:e)", ssquery.toQuery().toString());
 
 	ssquery.without(new SpanRegexQueryWrapper("field", "x.?y"));
 
-	assertEquals("spanNot(spanNear([spanNear([spanNear([spanNear([field:a, SpanMultiTermQueryWrapper(field:/a.*b/)], -1, false), field:c], -1, false), field:d], -1, false), field:e], -1, false), SpanMultiTermQueryWrapper(field:/x.?y/))", ssquery.toQuery().toString());
+	assertEquals("spanNot(spanSegment(spanSegment(spanSegment(spanSegment(field:a, SpanMultiTermQueryWrapper(field:/a.*b/)), field:c), field:d), field:e), SpanMultiTermQueryWrapper(field:/x.?y/))", ssquery.toQuery().toString());
 
 	ssquery.without(new SpanRegexQueryWrapper("field", "z{5,9}"));
 
-	assertEquals("spanNot(spanNear([spanNear([spanNear([spanNear([field:a, SpanMultiTermQueryWrapper(field:/a.*b/)], -1, false), field:c], -1, false), field:d], -1, false), field:e], -1, false), spanOr([SpanMultiTermQueryWrapper(field:/x.?y/), SpanMultiTermQueryWrapper(field:/z{5,9}/)]))", ssquery.toQuery().toString());
+	assertEquals("spanNot(spanSegment(spanSegment(spanSegment(spanSegment(field:a, SpanMultiTermQueryWrapper(field:/a.*b/)), field:c), field:d), field:e), spanOr([SpanMultiTermQueryWrapper(field:/x.?y/), SpanMultiTermQueryWrapper(field:/z{5,9}/)]))", ssquery.toQuery().toString());
 
     };
 
@@ -80,14 +80,14 @@ public class TestSpanSegmentQuery {
 	ssquery.with(new SpanAlterQueryWrapper("field", "c", "d"));
 	ssquery.with(new SpanRegexQueryWrapper("field", "a.*b"));
 
-	assertEquals("spanNear([spanNear([field:a, spanOr([field:c, field:d])], -1, false), SpanMultiTermQueryWrapper(field:/a.*b/)], -1, false)", ssquery.toQuery().toString());
+	assertEquals("spanSegment(spanSegment(field:a, spanOr([field:c, field:d])), SpanMultiTermQueryWrapper(field:/a.*b/))", ssquery.toQuery().toString());
     };
 
 
     @Test
     public void spanSegmentCloneQuery () {
 	SpanSegmentQueryWrapper ssquery = new SpanSegmentQueryWrapper("field", "a", "b");
-	assertEquals("spanNear([field:a, field:b], -1, false)", ssquery.toQuery().toString());
+	assertEquals("spanSegment(field:a, field:b)", ssquery.toQuery().toString());
 
 	SpanSegmentQueryWrapper ssquery2 = new SpanSegmentQueryWrapper("field", ssquery);
 	assertEquals(ssquery.toQuery().toString(), ssquery2.toQuery().toString());

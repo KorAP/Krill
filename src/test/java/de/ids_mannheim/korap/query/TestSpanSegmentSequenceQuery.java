@@ -35,7 +35,7 @@ public class TestSpanSegmentSequenceQuery {
 
 	sssq.append(ssq);
 
-	assertEquals("spanNext(spanNext(field:a, field:b), spanNear([spanNear([field:-c, field:-d], -1, false), field:-e], -1, false))", sssq.toQuery().toString());
+	assertEquals("spanNext(spanNext(field:a, field:b), spanSegment(spanSegment(field:-c, field:-d), field:-e))", sssq.toQuery().toString());
 
     };
 
@@ -65,7 +65,7 @@ public class TestSpanSegmentSequenceQuery {
 
 	sssq.prepend(ssq);
 
-	assertEquals("spanNext(spanNext(spanNear([spanNear([field:-a, field:-b], -1, false), field:-c], -1, false), field:d), field:e)", sssq.toQuery().toString());
+	assertEquals("spanNext(spanNext(spanSegment(spanSegment(field:-a, field:-b), field:-c), field:d), field:e)", sssq.toQuery().toString());
     };
 
     @Test

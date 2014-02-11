@@ -15,45 +15,45 @@ public class TestKorapQuery {
     @Test
     public void korapQuerySegment () {
 	SpanQuery sq = new KorapQuery("field1").seg("a").with("b").toQuery();
-	assertEquals("spanNear([field1:a, field1:b], -1, false)", sq.toString());
+	assertEquals("spanSegment(field1:a, field1:b)", sq.toString());
 
 	sq = new KorapQuery("field2").seg("a", "b").with("c").toQuery();
-	assertEquals("spanNear([spanNear([field2:a, field2:b], -1, false), field2:c], -1, false)", sq.toString());
+	assertEquals("spanSegment(spanSegment(field2:a, field2:b), field2:c)", sq.toString());
     };
 
     @Test
     public void korapQueryRegexSegment () {
 	KorapQuery kq = new KorapQuery("field1");
 	SpanQuery sq = kq.seg("a").with(kq.re("b.*c")).toQuery();
-	assertEquals("spanNear([field1:a, SpanMultiTermQueryWrapper(field1:/b.*c/)], -1, false)", sq.toString());
+	assertEquals("spanSegment(field1:a, SpanMultiTermQueryWrapper(field1:/b.*c/))", sq.toString());
 
 	kq = new KorapQuery("field2");
 	sq = kq.seg(kq.re("a.*")).with("b").toQuery();
-	assertEquals("spanNear([SpanMultiTermQueryWrapper(field2:/a.*/), field2:b], -1, false)", sq.toString());
+	assertEquals("spanSegment(SpanMultiTermQueryWrapper(field2:/a.*/), field2:b)", sq.toString());
     };
 
     @Test
     public void korapQueryRegexSegment2 () {
 	KorapQuery kq = new KorapQuery("field");
 	SpanQuery sq = kq.seg("a").with(kq.or("b").or("c")).toQuery();
-	assertEquals("spanNear([field:a, spanOr([field:b, field:c])], -1, false)", sq.toString());
+	assertEquals("spanSegment(field:a, spanOr([field:b, field:c]))", sq.toString());
 
 	kq = new KorapQuery("field");
 	sq = kq.seg("a").with(kq.or("b", "c")).toQuery();
-	assertEquals("spanNear([field:a, spanOr([field:b, field:c])], -1, false)", sq.toString());
+	assertEquals("spanSegment(field:a, spanOr([field:b, field:c]))", sq.toString());
 
 
 	kq = new KorapQuery("field");
 	// [ a & (b | /c.*d/) ]
 	sq = kq.seg("a").with(kq.or("b").or(kq.re("c.*d"))).toQuery();
-	assertEquals("spanNear([field:a, spanOr([field:b, SpanMultiTermQueryWrapper(field:/c.*d/)])], -1, false)", sq.toString());
+	assertEquals("spanSegment(field:a, spanOr([field:b, SpanMultiTermQueryWrapper(field:/c.*d/)]))", sq.toString());
     };
 
     @Test
     public void korapQuerySequenceSegment () {
 	KorapQuery kq = new KorapQuery("field");
 	SpanQuery sq = kq.seq(kq.seg("a").with(kq.or("b", "c"))).append("d").append(kq.re("e.?f")).toQuery();
-	assertEquals("spanNext(spanNext(spanNear([field:a, spanOr([field:b, field:c])], -1, false), field:d), SpanMultiTermQueryWrapper(field:/e.?f/))", sq.toString());
+	assertEquals("spanNext(spanNext(spanSegment(field:a, spanOr([field:b, field:c])), field:d), SpanMultiTermQueryWrapper(field:/e.?f/))", sq.toString());
     };
 
     @Test

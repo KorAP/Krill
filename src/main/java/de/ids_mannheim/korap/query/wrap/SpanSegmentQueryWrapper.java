@@ -6,10 +6,10 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanNotQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
+import de.ids_mannheim.korap.query.SpanSegmentQuery;
 
 /**
  * @author Nils Diewald
@@ -125,6 +125,8 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 	}
 
 	else if (this.inclusive.size() == 0 && this.exclusive.size() >= 1) {
+
+	    // Not supported anymore
 	    return (SpanQuery) new SpanNotQuery(
 		new SpanTermQuery(new Term(this.field, "T")),
 	        this._listToOrQuery(this.exclusive)
@@ -143,15 +145,7 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 	SpanQuery query = list.get(0);
 
 	for (int i = 1; i < list.size(); i++) {
-	    query = new SpanNearQuery(
-	        new SpanQuery[] {
-	            query,
-	            list.get(i)
-	        },
-	        -1,
-	        false,
-		false
-            );
+	    query = new SpanSegmentQuery(query, list.get(i));
 	};
 
 	return (SpanQuery) query;
