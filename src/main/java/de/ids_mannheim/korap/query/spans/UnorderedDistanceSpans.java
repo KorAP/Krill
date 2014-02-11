@@ -29,7 +29,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 	protected List<CandidateSpan> firstSpanList, secondSpanList;	
 	protected List<CandidateSpan> matchList;
 	private long matchCost;
-	private int matchListSpanNum; 
+	private int matchListSpanNum; 	
 	
 	public UnorderedDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -49,10 +49,10 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 	}
 
 	@Override
-	protected boolean advance() throws IOException {
+	protected boolean advance() throws IOException {		
 		while (hasMoreSpans || !matchList.isEmpty()){			
 			if (!matchList.isEmpty()){
-				setMatchProperties();
+				setMatchProperties();				
 				return true;
 			}
 			
@@ -92,12 +92,13 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 			currentFirstSpan = firstSpanList.get(0)	;
 			currentSecondSpan = secondSpanList.get(0);
 			
-			if (currentFirstSpan.getEnd() <= currentSecondSpan.getEnd()){
+			if (currentFirstSpan.getEnd() < currentSecondSpan.getEnd() ||					 
+					isLastCandidateSmaller(currentFirstSpan, currentSecondSpan)){
 				matchList = findMatches(currentFirstSpan, secondSpanList);
 				setMatchFirstSpan(currentFirstSpan);
 				matchListSpanNum = 2;
 				updateList(firstSpanList);
-			}
+			}			
 			else {
 				matchList = findMatches(currentSecondSpan, firstSpanList);
 				setMatchSecondSpan(currentSecondSpan);
@@ -111,6 +112,17 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 		else{ 
 			updateList(firstSpanList);			
 		}
+	}
+	
+	private boolean isLastCandidateSmaller(CandidateSpan currentFirstSpan, CandidateSpan 
+			currentSecondSpan){
+		if (currentFirstSpan.getEnd() == currentSecondSpan.getEnd() ){
+			int secondEnd = secondSpanList.get(secondSpanList.size()-1).getEnd();
+			int firstEnd = firstSpanList.get(firstSpanList.size()-1).getEnd();
+			return (secondEnd < firstEnd ? true : false);
+		}
+		
+		return false;
 	}
 	
 	protected abstract void updateList(List<CandidateSpan> candidateList);

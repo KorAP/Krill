@@ -24,11 +24,11 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * @author margaretha
  * */
 public abstract class DistanceSpans extends SimpleSpans{	
-	
+
 	protected CandidateSpan matchFirstSpan,matchSecondSpan;	
 	protected Logger log = LoggerFactory.getLogger(DistanceSpans.class);
     
-	public DistanceSpans(SpanDistanceQuery query,
+	public DistanceSpans(SimpleSpanQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(query, context, acceptDocs, termContexts);

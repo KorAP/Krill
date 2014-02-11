@@ -12,19 +12,19 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.ElementDistanceSpans;
 import de.ids_mannheim.korap.query.spans.TokenDistanceSpans;
-import de.ids_mannheim.korap.query.spans.UnorderedDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedElementDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
 
-/** Match two ordered Spans with minimum and maximum distance constraints.
- * 	The distance unit can be word (token), sentence or paragraph. 
+/** Match two ordered or unordered Spans with minimum and maximum 
+ * 	distance constraints. The distance unit can be word (token), 
+ * 	sentence or paragraph. 
  * 
  * 	@author margaretha
  * */
 public class SpanDistanceQuery extends SimpleSpanQuery {
 	
 	protected int minDistance, maxDistance;
-	protected boolean isOrdered, collectPayloads;
+	public boolean isOrdered, collectPayloads;
 	protected SpanQuery firstClause, secondClause; 
 	private SpanQuery elementQuery; // element distance unit
 
@@ -51,11 +51,6 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 		this.isOrdered = isOrdered;
 		this.collectPayloads = collectPayloads;
 		this.elementQuery = elementQuery;
-	}
-	
-	public SpanDistanceQuery(SpanQuery firstClause2, SpanQuery secondClause2,
-			String string) {
-		super(firstClause2, secondClause2, string);
 	}
 
 	@Override
