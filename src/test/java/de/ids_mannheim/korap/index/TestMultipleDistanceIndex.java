@@ -71,7 +71,6 @@ public class TestMultipleDistanceIndex {
         return fd;
     }   
     
-    
     private FieldDocument createFieldDoc2() {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
@@ -94,9 +93,10 @@ public class TestMultipleDistanceIndex {
             "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>2|<>:p#0-4$<i>4]" +
             "[(1-2)s:b|s:c|_2#1-2]" +             
             "[(2-3)s:c|_3#2-3|<>:s#2-3$<i>4]" +
-            "[(3-4)s:b|_4#3-4]" + 
-            "[(4-5)s:c|_5#4-5|<>:s#4-6$<i>6|<>:p#4-6$<i>6]" +             
-            "[(5-6)s:d|_6#5-6]");
+            "[(3-4)s:b|_4#3-4]" +
+            "[(4-5)s:b|_5#4-5]" + // gap
+            "[(5-6)s:b|_6#5-6]"+
+            "[(6-7)s:c|_7#6-7|<>:s#6-7$<i>7|<>:p#6-7$<i>7]" );
         return fd;
 	}
     
@@ -203,8 +203,7 @@ public class TestMultipleDistanceIndex {
 		
     }
     
-	/**	Multiple documents 
-     * 	Skip to
+	/**	Skip to
      * */
     @Test
    	public void testCase4() throws IOException {
@@ -225,7 +224,7 @@ public class TestMultipleDistanceIndex {
 		SpanQuery sq = new SpanNextQuery(mdq, 
 				new SpanTermQuery(new Term("base","s:e")));
 		kr = ki.search(sq, (short) 10);
-	    
+		
 		assertEquals(2, kr.getTotalResults());
 	    assertEquals(3, kr.getMatch(0).getStartPos());
 	    assertEquals(6, kr.getMatch(0).getEndPos());
@@ -235,8 +234,7 @@ public class TestMultipleDistanceIndex {
 
     }
     
-    /** Multiple documents
-	 * 	Same tokens: ordered and unordered yield the same results
+    /** Same tokens: ordered and unordered yield the same results
 	 * */
     @Test
    	public void testCase5() throws IOException {
@@ -266,5 +264,40 @@ public class TestMultipleDistanceIndex {
 
     }
 	
+    /** Gaps
+     * */
+    @Test
+   	public void testCase6() throws IOException {
+    	ki = new KorapIndex();
+    	ki.addDoc(createFieldDoc3());
+    	ki.commit();
+    	
+    	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+	    constraints.add(createConstraint("w", 1, 3));	    
+	    constraints.add(createConstraint("s", 1, 1));
+	    
+	    SpanQuery mdq;	   
+		mdq = createQuery("s:b", "s:c", constraints, false);
+		kr = ki.search(mdq, (short) 10);
+		
+		assertEquals(4, kr.getTotalResults());
+	    assertEquals(0, kr.getMatch(0).getStartPos());
+	    assertEquals(3, kr.getMatch(0).getEndPos());
+	    assertEquals(1, kr.getMatch(1).getStartPos());
+	    assertEquals(3, kr.getMatch(1).getEndPos());	    
+	    assertEquals(1, kr.getMatch(2).getStartPos());
+	    assertEquals(4, kr.getMatch(2).getEndPos());
+	    assertEquals(3, kr.getMatch(3).getStartPos());
+	    assertEquals(7, kr.getMatch(3).getEndPos());	
+	    
+      /*System.out.print(kr.getTotalResults()+"\n");
+  		for (int i=0; i< kr.getTotalResults(); i++){
+  			System.out.println(
+  				kr.match(i).getLocalDocID()+" "+
+  				kr.match(i).startPos + " " +
+  				kr.match(i).endPos
+  		    );
+  		}*/
+    }
 }
 
