@@ -26,7 +26,7 @@
                 "operands": [
                     {
                         "@type": "korap:group", 
-                        "class": "0", 
+                        "class": 0, 
                         "operands": [
                             {
                                 "@type": "korap:token", 

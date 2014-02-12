@@ -16,6 +16,7 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
     private SpanQuery query;
     private List<SpanQuery> alternatives;
 
+
     public SpanAlterQueryWrapper (String field) {
 	this.field = field;
 	this.alternatives = new ArrayList<>();

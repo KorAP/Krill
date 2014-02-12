@@ -112,12 +112,14 @@
           "operands": [
             {
               "@type": "korap:term", 
-              "layer": "base",
+	      "foundry": "mate",
+              "layer": "lemma",
               "key" : "bar"
             }, 
             {
               "@type": "korap:term", 
-              "layer": "base",
+	      "foundry": "mate",
+              "layer": "lemma",
               "key" : "foo"
             }
           ]

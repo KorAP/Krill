@@ -106,25 +106,29 @@
     "classRef": [1],
     "operands": [
       {
-        "@type": "korap:sequence",
+        "@type": "korap:group",
+	"operation" : "operation:sequence",
         "operands": [
           {
             "@type": "korap:token", 
             "wrap": {
               "@type": "korap:term", 
-              "layer": "base",
+	      "foundry" : "mate",
+              "layer": "lemma",
               "key" : "Der"
             }
           }, 
           {
             "@type": "korap:group", 
+	    "operation" : "operation:class",
             "class": 1, 
             "operands": [
               {
                 "@type": "korap:token", 
                 "wrap": {
                   "@type": "korap:term", 
-                  "layer": "base",
+                  "foundry": "mate",
+                  "layer": "lemma",
                   "key" : "Mann"
                 }
               }

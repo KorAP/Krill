@@ -112,7 +112,8 @@
             "@type": "korap:token", 
             "wrap": {
               "@type": "korap:term", 
-              "layer": "base", 
+	      "foundry": "mate", 
+              "layer": "lemma", 
               "key" : "foo"
             }
           }, 
@@ -120,7 +121,8 @@
             "@type": "korap:token", 
             "wrap": {
               "@type": "korap:term", 
-              "layer": "base",
+	      "foundry": "mate", 
+              "layer": "lemma",
               "key" : "bar"
             }
           }
@@ -130,7 +132,8 @@
         "@type": "korap:token", 
         "wrap": {
           "@type": "korap:term", 
-          "layer": "base",
+	  "foundry": "mate", 
+          "layer": "lemma",
           "key" : "foobar"
         }
       }

@@ -167,6 +167,10 @@ public class KorapSearch {
     // Empty constructor
     public KorapSearch () { };
 
+    public String getError () {
+	return this.error;
+    };
+
     public SpanQuery getQuery () {
 	return this.query;
     };
@@ -267,7 +271,10 @@ public class KorapSearch {
     public KorapResult run (KorapIndex ki) {
 	if (this.query == null) {
 	    KorapResult kr = new KorapResult();
-	    kr.setError(this.getClass() + " expects a query");
+	    if (this.error != null)
+		kr.setError(this.error);
+	    else
+		kr.setError(this.getClass() + " expects a query");
 	    return kr;
 	};
 

@@ -35,7 +35,8 @@ public class KorapQuery {
     private String field;
     private ObjectMapper json;
 
-    private String defaultFoundry = "mate/";
+    // The default foundry for lemmata and pos
+    // private String defaultFoundry = "mate";
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapQuery.class);
@@ -68,7 +69,7 @@ public class KorapQuery {
     // TODO: Exception messages are horrible!
     // TODO: Use the shortcuts implemented in this class instead of the wrapper constructors
     // TODO: Check for isArray()
-    // TODO: Check for the number of operands before getting them
+    // TODO: Rename this span context!
     public SpanQueryWrapperInterface fromJSON (JsonNode json) throws QueryException {
 
 	if (!json.has("@type")) {
@@ -82,92 +83,145 @@ public class KorapQuery {
 	case "korap:group":
 	    SpanClassQueryWrapper classWrapper;
 
-	    if (!json.has("relation")) {
-		if (json.has("class")) {
-		    return new SpanClassQueryWrapper(
-			this.fromJSON(json.get("operands").get(0)),
-                        json.get("class").asInt(0)
-                    );
-		}
-		throw new QueryException("Group needs a relation or a class");
-	    };
+	    if (!json.has("operation"))
+		throw new QueryException("Group expects operation");
 
-	    String relation = json.get("relation").asText();
+	    String operation = json.get("operation").asText();
 
-	    if (!json.has("operands"))
-		throw new QueryException("Operation needs operands");
+	    // Get all operands
+	    JsonNode operands = json.get("operands");
 
-	    // Alternation
-	    switch (relation) {
+	    if (!json.has("operands") || !operands.isArray())
+		throw new QueryException("Operation needs operand list");
 
-	    case "or":
+	    switch (operation) {
+
+	    case "operation:or":
 
 		SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
-		for (JsonNode operand : json.get("operands")) {
+		for (JsonNode operand : operands) {
 		    ssaq.or(this.fromJSON(operand));
-		};
-		if (json.has("class")) {
-		    return new SpanClassQueryWrapper(ssaq, json.get("class").asInt(0));
 		};
 		return ssaq;
 
-	    case "position":
-		if (!json.has("position"))
-		    throw new QueryException("Operation needs position specification");
+	    case "operation:position":
+		if (!json.has("frame"))
+		    throw new QueryException("Operation needs frame specification");
 
-		String position = json.get("position").asText();
+		if (operands.size() != 2)
+		    throw new QueryException("Operation needs exactly two operands");
+
+		// TODO: Check for operands
+
+		String frame = json.has("frame") ? json.get("frame").asText() : "contains";
 		short flag = 0;
-		switch (position) {
-		case "startswith":
+		switch (frame) {
+		case "frame:contains":
+		    break;
+		case "frame:within":
+		    break;
+		case "frame:startswith":
 		    flag = (short) 1;
 		    break;
-		case "endswith":
+		case "frame:endswith":
 		    flag = (short) 2;
 		    break;
-		case "match":
+		case "frame:matches":
 		    flag = (short) 3;
 		    break;
+		case "frame:overlaps":
+		    throw new QueryException("Frame overlap not yet supported");
+		default:
+		    throw new QueryException("Frame type unknown");
 		};
 
+		// Check for exclusion modificator
+		Boolean exclude;
+		if (json.has("exclude") && json.get("exclude").asBoolean())
+		    throw new QueryException("Exclusion is currently not supported in position operations");
+
+
 		return new SpanWithinQueryWrapper(
-		    this.fromJSON(json.get("operands").get(0)),
-		    this.fromJSON(json.get("operands").get(1)),
+		    this.fromJSON(operands.get(0)),
+		    this.fromJSON(operands.get(1)),
 		    flag
-	        );
+						  );
 
-	    case "shrink":
+	    case "operation:submatch":
 		int number = 0;
-		// temporary
-		if (json.has("shrink"))
-		    number = json.get("shrink").asInt();
 
-		return new SpanMatchModifyQueryWrapper(this.fromJSON(json.get("operands").get(0)), number);
+		if (operands.size() != 1)
+		    throw new QueryException("Operation needs exactly two operands");
+
+		if (json.has("classRef")) {
+		    if (json.has("classRefOp"))
+			throw new QueryException("Class reference operators not supported yet");
+
+		    number = json.get("classRef").get(0).asInt();
+		}
+		else if (json.has("spanRef")) {
+		    throw new QueryException("Span references not supported yet");
+		};
+
+		return new SpanMatchModifyQueryWrapper(
+		    this.fromJSON(operands.get(0)), number
+                );
+
+	    case "operation:sequence":
+		if (operands.size() < 2)
+		    throw new QueryException(
+		        "SpanSequenceQuery needs at least two operands"
+		    );
+
+		if (json.has("distances"))
+		    throw new QueryException("Distances are not supported yet");
+
+		if (json.has("inOrder"))
+		    throw new QueryException("inOrder attribute is not supported yet");
+
+		SpanSequenceQueryWrapper sseqqw = new SpanSequenceQueryWrapper(this.field);
+		for (JsonNode operand : operands) {
+		    sseqqw.append(this.fromJSON(operand));
+		};
+		return sseqqw;
+
+	    case "operation:class":
+		if (json.has("class")) {
+		    if (operands.size() != 1)
+			throw new QueryException(
+			    "Class group expects exactly one operand in list"
+			);
+		    return new SpanClassQueryWrapper(this.fromJSON(operands.get(0)), json.get("class").asInt(0));
+		};
+
+		throw new QueryException("Class group expects class attribute");
+
+	    case "operation:repetition":
+		throw new QueryException("Repetition group not yet supported");
+
+		/*
+		  if (json.has("min") || json.has("max"))
+		  throw new QueryException("Quantifier for repetition group not yet supported");
+		*/
 	    };
-	    throw new QueryException("Unknown group relation");
+
+	    throw new QueryException("Unknown group operation");
 
 	case "korap:token":
-	    return this._segFromJSON(json.get("@value"));
+	    if (!json.has("wrap"))
+		throw new QueryException("Tokens need a wrap attribute");
 
-	case "korap:sequence":
-	    if (!json.has("operands"))
-		throw new QueryException("SpanSequenceQuery needs operands");
+	    return this._segFromJSON(json.get("wrap"));
 
-	    JsonNode operands = json.get("operands");
-	    if (!operands.isArray() || operands.size() < 2)
-		throw new QueryException("SpanSequenceQuery needs operands");		
-		
-	    SpanSequenceQueryWrapper sseqqw = new SpanSequenceQueryWrapper(this.field);
-	    for (JsonNode operand : json.get("operands")) {
-		sseqqw.append(this.fromJSON(operand));
-	    };
-	    return sseqqw;
+	case "korap:span":
+	    if (!json.has("key"))
+		throw new QueryException("A span need at least a key definition");
 
-	case "korap:element":
-	    String value = json.get("@value").asText().replace('=',':');
-	    return this.tag(value);
+	    return this._termFromJSON(json);
 	};
 	throw new QueryException("Unknown serialized query type: " + type);
     };
+
 
 
     private SpanQueryWrapperInterface _segFromJSON (JsonNode json) throws QueryException {
@@ -175,41 +229,32 @@ public class KorapQuery {
 	switch (type) {
 
 	case "korap:term":
-	    switch (json.get("relation").asText()) {
-	    case "=":
-		String value = json.get("@value").asText();
+	    String match = "match:eq";
+	    if (json.has("match"))
+		match = json.get("match").asText();
 
-		value = value.replaceFirst("base:", defaultFoundry +"l:").replaceFirst("orth:", "s:");
-	
-		if (json.has("@subtype") && json.get("@subtype").asText().equals("korap:regex")) {
-		    if (value.charAt(0) == '\'' || value.charAt(0) == '"') {
-			value = "s:" + value;
-		    };
-		    value = value.replace("'", "").replace("\"", "");
-
-		    // Temporary
-		    value = value.replace("_", "/");
-
-		    return this.seg(this.re(value));
-		};
-
-		if (!value.matches("[^:]+?:.+"))
-		    value = "s:" + value;
-
-		// Temporary
-		value = value.replace("_", "/");
-
-		return this.seg(value);
-
-	    case "!=":
-		throw new QueryException("Term relation != not yet supported");
+	    switch (match) {
+	    case "match:ne":
+		return this.seg().without((SpanSegmentQueryWrapper) this._termFromJSON(json));
+	    case "match:eq":
+		return this._termFromJSON(json);
 	    };
-	    throw new QueryException("Unknown term relation");
 
-	case "korap:group":
-	    SpanSegmentQueryWrapper ssegqw = new SpanSegmentQueryWrapper(this.field);
+	    throw new QueryException("Match relation unknown");
+
+	case "korap:termGroup":
+
+	    if (!json.has("operands"))
+		throw new QueryException("TermGroup expects operands");
+
+	    SpanSegmentQueryWrapper ssegqw = this.seg();
+
+	    if (!json.has("relation"))
+		throw new QueryException("termGroup expects a relation");
+
 	    switch (json.get("relation").asText()) {
-	    case "and":
+	    case "relation:and":
+
 		for (JsonNode operand : json.get("operands")) {
 		    SpanQueryWrapperInterface part = this._segFromJSON(operand);
 		    if (part instanceof SpanAlterQueryWrapper) {
@@ -226,17 +271,87 @@ public class KorapQuery {
 		    };
 		};
 		return ssegqw;
-	    case "or":
+
+	    case "relation:or":
 		SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
 		for (JsonNode operand : json.get("operands")) {
 		    ssaq.or(this._segFromJSON(operand));
 		};
 		return ssaq;
 	    };
+	};
+	throw new QueryException("Unknown token type");    
     };
-    throw new QueryException("Unknown token type");    
-};
 
+
+
+    private SpanQueryWrapperInterface _termFromJSON (JsonNode json) throws QueryException {
+	if (!json.has("key") || json.get("key").asText().length() < 1)
+	    throw new QueryException("Terms and spans have to provide key attributes");
+	    
+	Boolean isTerm = json.get("@type").asText().equals("korap:term") ? true : false;
+	Boolean isCaseInsensitive = false;
+
+	if (json.has("caseInsensitive") && json.get("caseInsensitive").asBoolean())
+	    isCaseInsensitive = true;
+
+	StringBuffer value = new StringBuffer();
+
+	// expect orth? expect lemma? 
+	// s:den | i:den | cnx/l:die | mate/m:mood:ind | cnx/syn:@PREMOD |
+	// mate/m:number:sg | opennlp/p:ART
+
+	if (json.has("foundry") && json.get("foundry").asText().length() > 0)
+	    value.append(json.get("foundry").asText()).append('/');
+
+	// value.append(defaultFoundry).append('/');
+
+	if (json.has("layer") && json.get("layer").asText().length() > 0) {
+	    String layer = json.get("layer").asText();
+	    switch (layer) {
+	    case "lemma":
+		layer = "l";
+		break;
+	    case "pos":
+		layer = "p";
+		break;
+	    case "orth":
+		layer = "s";
+		break;
+	    };
+
+	    if (isCaseInsensitive && isTerm && layer.equals("s"))
+		layer = "i";
+
+	    value.append(layer).append(':');
+	};
+
+	if (json.has("key") && json.get("key").asText().length() > 0) {
+	    String key = json.get("key").asText();
+	    value.append(isCaseInsensitive ? key.toLowerCase() : key);
+	};
+
+	// Regular expression or wildcard
+	if (isTerm && json.has("type")) {
+	    switch (json.get("type").asText()) {
+	    case "type:regex":
+		return this.seg(this.re(value.toString(), isCaseInsensitive));
+	    case "type:wildcard":
+		return this.seq(this.wc(value.toString(), isCaseInsensitive));
+	    };
+	};
+
+	if (json.has("value") && json.get("value").asText().length() > 0)
+	    value.append(':').append(json.get("value").asText());
+
+	if (isTerm)
+	    return this.seg(value.toString());
+
+	if (json.has("attr"))
+	    throw new QueryException("Attributes not yet supported in spans");
+
+	return this.tag(value.toString());
+    };
 
 
     // SpanRegexQueryWrapper

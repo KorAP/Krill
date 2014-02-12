@@ -104,7 +104,8 @@
     "@type": "korap:token", 
     "wrap": {
       "@type" : "korap:term",
-      "type": "type:regex", 
+      "type": "type:regex",
+      "layer": "orth",
       "key": "vers{2,3}uch"
     }
   }

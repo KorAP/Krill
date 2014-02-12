@@ -6,15 +6,17 @@
         "operation": "operation:position"
         "operands": [
             {
-                "@type": "korap:element", 
-                "@value": "np"
+              "@type": "korap:span", 
+              "key": "np"
             }, 
             {
                 "@type": "korap:token", 
-                "@value": {
-                    "@type": "korap:term", 
-                    "@value": "base:Mann", 
-                    "relation": "="
+                "wrap": {
+                  "@type": "korap:term", 
+		  "foundry" : "mate",
+                  "layer": "l",
+		  "key" : "Mann", 
+                  "match": "match:eq"
                 }
             }
         ], 

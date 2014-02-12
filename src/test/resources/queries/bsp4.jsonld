@@ -111,13 +111,15 @@
         "operands": [
           {
             "@type": "korap:group", 
+	    "operation":"operation:class",
             "class": 0, 
             "operands": [
               {
                 "@type": "korap:token", 
                 "wrap": {
                   "@type": "korap:term", 
-                  "layer": "base",
+		  "foundry" : "mate",
+                  "layer": "lemma",
                   "key" : "foo"
                 }
               }

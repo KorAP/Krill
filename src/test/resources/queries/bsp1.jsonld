@@ -114,7 +114,7 @@
       }, 
       {
         "@type": "korap:group", 
-        "quantifier": "*", 
+	"min" : 0,
         "operation": "operation:repetition",
         "operands": [
           {
@@ -132,7 +132,7 @@
               {
                 "@type": "korap:token", 
                 "wrap": {
-                  "@type": "korap:term", 
+                  "@type": "korap:term",
                   "layer": "base",
                   "key" : "bar"
                 }

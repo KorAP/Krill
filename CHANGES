@@ -1,3 +1,9 @@
+0.26.2 2014-02-12
+        - Added sequence queries with defined gaps (margaretha)
+	- Support for multiple distance constraints (margaretha)
+	- Updated json-ld serialization (diewald)
+	- [bugfix] Wildcards in segments were ignored (diewald)
+
 0.26.1 2014-01-21
         - Distinct Match retrieval including spans
 	  and dependency relations (diewald)

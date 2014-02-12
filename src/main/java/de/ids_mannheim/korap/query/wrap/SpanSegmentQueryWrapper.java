@@ -9,6 +9,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanNotQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 
 /**
@@ -83,11 +84,17 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 	return this;
     };
 
+    public SpanSegmentQueryWrapper with (SpanWildcardQueryWrapper wc) {
+	this.inclusive.add((SpanQuery) wc.toQuery());
+	return this;
+    };
+
     public SpanSegmentQueryWrapper with (SpanAlterQueryWrapper alter) {
 	this.inclusive.add((SpanQuery) alter.toQuery());
 	return this;
     };
 
+    // Identical to without
     public SpanSegmentQueryWrapper with (SpanSegmentQueryWrapper seg) {
 	for (SpanQuery sq : seg.inclusive) {
 	    this.inclusive.add(sq);
@@ -108,9 +115,19 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 	return this;
     };
 
+    public SpanSegmentQueryWrapper without (SpanWildcardQueryWrapper wc) {
+	this.exclusive.add((SpanQuery) wc.toQuery());
+	return this;
+    };
+
     public SpanSegmentQueryWrapper without (SpanAlterQueryWrapper alter) {
 	this.exclusive.add((SpanQuery) alter.toQuery());
 	return this;
+    };
+
+    // Identical to with
+    public SpanSegmentQueryWrapper without (SpanSegmentQueryWrapper seg) {
+	return this.with(seg);
     };
 
     public SpanQuery toQuery () {
@@ -127,6 +144,7 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 	else if (this.inclusive.size() == 0 && this.exclusive.size() >= 1) {
 
 	    // Not supported anymore
+	    // TODO: Raise error
 	    return (SpanQuery) new SpanNotQuery(
 		new SpanTermQuery(new Term(this.field, "T")),
 	        this._listToOrQuery(this.exclusive)

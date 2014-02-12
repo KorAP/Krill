@@ -106,12 +106,11 @@ public class TestKorapSearch {
 	};
 	ki.commit();
 
-	String json = getString(getClass().getResource("/queries/metaquery3.json").getFile());
+	String json = getString(getClass().getResource("/queries/metaquery3.jsonld").getFile());
 
-	KorapResult kr = new KorapSearch(json).run(ki);
+	KorapSearch ks = new KorapSearch(json);
 	
-	//System.out.println(kr.getQuery().toString());	
-	
+	KorapResult kr = ks.run(ki);
 	assertEquals(66, kr.getTotalResults());
 	assertEquals(5, kr.getItemsPerPage());
 	assertEquals(5, kr.getStartIndex());
@@ -131,18 +130,19 @@ public class TestKorapSearch {
 	};
 	ki.commit();
 
-	String json = getString(getClass().getResource("/queries/metaquery4.json").getFile());
+	String json = getString(getClass().getResource("/queries/metaquery4.jsonld").getFile());
 
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
+
 	assertEquals(2, kr.getTotalResults());
 
-	json = getString(getClass().getResource("/queries/metaquery5.json").getFile());
+	json = getString(getClass().getResource("/queries/metaquery5.jsonld").getFile());
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
 	assertEquals(2, kr.getTotalResults());
 
-	json = getString(getClass().getResource("/queries/metaquery6.json").getFile());
+	json = getString(getClass().getResource("/queries/metaquery6.jsonld").getFile());
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
 	assertEquals(1, kr.getTotalResults());
@@ -183,7 +183,7 @@ public class TestKorapSearch {
 	};
 	ki.commit();
 
-	String json = getString(getClass().getResource("/queries/bsp-fail1.json").getFile());
+	String json = getString(getClass().getResource("/queries/bsp-fail1.jsonld").getFile());
 
 	KorapResult kr = new KorapSearch(json).run(ki);
 	assertEquals(0, kr.getStartIndex());
@@ -204,7 +204,7 @@ public class TestKorapSearch {
 	};
 	ki.commit();
 
-	String json = getString(getClass().getResource("/queries/bsp-fail2.json").getFile());
+	String json = getString(getClass().getResource("/queries/bsp-fail2.jsonld").getFile());
 
 	KorapResult kr = new KorapSearch(json).run(ki);
 	assertEquals(50, kr.getItemsPerPage());
@@ -226,7 +226,7 @@ public class TestKorapSearch {
 	};
 	ki.commit();
 
-	String json = getString(getClass().getResource("/queries/bsp-context.json").getFile());
+	String json = getString(getClass().getResource("/queries/bsp-context.jsonld").getFile());
 
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
@@ -241,7 +241,7 @@ public class TestKorapSearch {
 	assertEquals(5, kr.getItemsPerPage());
 
 
-	json = getString(getClass().getResource("/queries/bsp-context-2.json").getFile());
+	json = getString(getClass().getResource("/queries/bsp-context-2.jsonld").getFile());
 
 	kr = new KorapSearch(json).run(ki);
 	assertEquals(-1, kr.getTotalResults());
@@ -261,7 +261,7 @@ public class TestKorapSearch {
 	};
 	ki.commit();
 
-	String json = getString(getClass().getResource("/queries/bsp-paging.json").getFile());
+	String json = getString(getClass().getResource("/queries/bsp-paging.jsonld").getFile());
 
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
@@ -269,7 +269,7 @@ public class TestKorapSearch {
 	assertEquals(5, kr.getStartIndex());
 	assertEquals(5, kr.getItemsPerPage());
 
-	json = getString(getClass().getResource("/queries/bsp-cutoff.json").getFile());
+	json = getString(getClass().getResource("/queries/bsp-cutoff.jsonld").getFile());
 	ks = ks = new KorapSearch(json);
 
 	kr = ks.run(ki);
