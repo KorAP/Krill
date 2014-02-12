@@ -21,20 +21,15 @@ import de.ids_mannheim.korap.query.spans.MultipleDistanceSpans;
  * */
 public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 	
-	private SpanQuery firstClause, secondClause;	 
 	private List<DistanceConstraint> constraints;  
 	private boolean isOrdered;
-	private boolean collectPayloads;	
 			
 	public SpanMultipleDistanceQuery(SpanQuery firstClause, SpanQuery secondClause,
 			List<DistanceConstraint> constraints, boolean isOrdered, 
 			boolean collectPayloads) {
-		super(firstClause, secondClause, "spanMultipleDistance");
+		super(firstClause, secondClause, "spanMultipleDistance",collectPayloads);
 		this.constraints = constraints;
-    	this.firstClause=firstClause;
-    	this.secondClause=secondClause;
 		this.isOrdered = isOrdered;
-		this.collectPayloads = collectPayloads;
 	}
 
 	@Override
@@ -44,7 +39,7 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 		    (SpanQuery) secondClause.clone(),
 		    this.constraints,
 		    this.isOrdered,
-		    this.collectPayloads
+		    collectPayloads
         );		
 		
 		query.setBoost(getBoost());

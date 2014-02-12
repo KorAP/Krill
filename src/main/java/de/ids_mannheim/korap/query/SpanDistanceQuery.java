@@ -23,33 +23,26 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
  * */
 public class SpanDistanceQuery extends SimpleSpanQuery {
 	
-	protected int minDistance, maxDistance;
-	public boolean isOrdered, collectPayloads;
-	protected SpanQuery firstClause, secondClause; 
+	public boolean isOrdered;
+	protected int minDistance, maxDistance;	
 	private SpanQuery elementQuery; // element distance unit
 
 	public SpanDistanceQuery(SpanQuery firstClause, SpanQuery secondClause, 
 			int minDistance, int maxDistance, boolean isOrdered, 
 			boolean collectPayloads) {		
-		super(firstClause, secondClause, "spanDistance"); 
-    	this.firstClause=firstClause;
-    	this.secondClause=secondClause;
+		super(firstClause, secondClause, "spanDistance",collectPayloads); 
     	this.minDistance =minDistance;
 		this.maxDistance = maxDistance;
 		this.isOrdered = isOrdered;
-		this.collectPayloads = collectPayloads;
 	}
 	
 	public SpanDistanceQuery(SpanQuery elementQuery, SpanQuery firstClause, 
 			SpanQuery secondClause, int minDistance, int maxDistance, 
 			boolean isOrdered, boolean collectPayloads) {
-		super(firstClause, secondClause, "spanElementDistance");
-		this.firstClause=firstClause;
-    	this.secondClause=secondClause;
+		super(firstClause, secondClause, "spanElementDistance",collectPayloads);
     	this.minDistance =minDistance;
 		this.maxDistance = maxDistance;
 		this.isOrdered = isOrdered;
-		this.collectPayloads = collectPayloads;
 		this.elementQuery = elementQuery;
 	}
 
@@ -102,14 +95,6 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 
 	public void setMaxDistance(int maxDistance) {
 		this.maxDistance = maxDistance;
-	}
-
-	public boolean isCollectPayloads() {
-		return collectPayloads;
-	}
-
-	public void setCollectPayloads(boolean collectPayloads) {
-		this.collectPayloads = collectPayloads;
 	}
 	
 	public SpanQuery getElementQuery() {

@@ -1,8 +1,6 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.AtomicReaderContext;
@@ -14,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
-import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /** DistanceSpan is a base class for enumeration of span matches, 
  * 	whose two child spans have a specific range of distance (within 

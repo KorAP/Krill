@@ -19,19 +19,13 @@ import de.ids_mannheim.korap.query.spans.SegmentSpans;
  * */
 public class SpanSegmentQuery extends SimpleSpanQuery{
 	
-	private boolean collectPayloads;
-	private SpanQuery firstClause, secondClause;
-	
 	public SpanSegmentQuery(SpanQuery firstClause, SpanQuery secondClause) {
 		this(firstClause,secondClause,true);
 	}
 	
 	public SpanSegmentQuery(SpanQuery firstClause, SpanQuery secondClause, 
 			boolean collectPayloads) { 
-    	super(firstClause,secondClause,"spanSegment");
-    	this.collectPayloads = collectPayloads;
-    	this.firstClause=firstClause;
-    	this.secondClause=secondClause;
+    	super(firstClause,secondClause,"spanSegment",collectPayloads);
 	}
 	
 	@Override
@@ -46,7 +40,7 @@ public class SpanSegmentQuery extends SimpleSpanQuery{
 		SpanSegmentQuery spanSegmentQuery = new SpanSegmentQuery(
 			    (SpanQuery) firstClause.clone(),
 			    (SpanQuery) secondClause.clone(),
-			    this.collectPayloads
+			    collectPayloads
 		        );
 		spanSegmentQuery.setBoost(getBoost());
 		return spanSegmentQuery;		

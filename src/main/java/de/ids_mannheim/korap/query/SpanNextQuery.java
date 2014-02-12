@@ -22,9 +22,6 @@ import de.ids_mannheim.korap.query.spans.NextSpans;
  * 	This is identical to a phrase query with exactly two clauses. 
  */
 public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
-    private SpanQuery firstClause;
-    private SpanQuery secondClause;    
-    private boolean collectPayloads;
 
     // Constructor
     public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause) {
@@ -34,10 +31,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
     // Constructor  
     public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause,
 		boolean collectPayloads) {   
-    	super(firstClause, secondClause, "spanNext");
-		this.collectPayloads = collectPayloads;
-		this.firstClause = firstClause;
-		this.secondClause = secondClause;
+    	super(firstClause, secondClause, "spanNext",collectPayloads);
     };
 
 
@@ -53,7 +47,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
 	SpanNextQuery spanNextQuery = new SpanNextQuery(
 	    (SpanQuery) firstClause.clone(),
 	    (SpanQuery) secondClause.clone(),
-	    this.collectPayloads
+	    collectPayloads
         );
 	spanNextQuery.setBoost(getBoost());
 	return spanNextQuery;

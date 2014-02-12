@@ -15,11 +15,13 @@ import org.apache.lucene.util.ToStringUtils;
  * */
 public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable{		
 	
-	private SpanQuery firstClause, secondClause;
+	protected SpanQuery firstClause, secondClause;
 	private String field;
 	private String spanName;
+	protected boolean collectPayloads;
     
-    public SimpleSpanQuery(SpanQuery firstClause, SpanQuery secondClause, String spanName) {
+    public SimpleSpanQuery(SpanQuery firstClause, SpanQuery secondClause, 
+    		String spanName, boolean collectPayloads) {
     	this.field = secondClause.getField();
     	if (!firstClause.getField().equals(field)){
     		throw new IllegalArgumentException("Clauses must have the same field.");
@@ -27,6 +29,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable{
     	this.setFirstClause(firstClause);
     	this.setSecondClause(secondClause);    	
     	this.spanName=spanName;
+    	this.collectPayloads = collectPayloads;
 	}  
     	
 	@Override
@@ -61,10 +64,17 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable{
 
 	public void setSecondClause(SpanQuery secondClause) {
 		this.secondClause = secondClause;
+	}	
+		
+	public boolean isCollectPayloads() {
+		return collectPayloads;
 	}
-	
+
+	public void setCollectPayloads(boolean collectPayloads) {
+		this.collectPayloads = collectPayloads;
+	}
+
 	// For rewriting fuzzy searches like wildcard and regex
-	
 	@Override
     public void extractTerms(Set<Term> terms) {
 		firstClause.extractTerms(terms);
