@@ -1,0 +1,31 @@
+{
+  "context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query" : {
+    "@type" : "korap:group",
+    "operation" : "operation:sequence",
+    "inOrder" : true,
+    "distances" : [ {
+      "@type" : "korap:distance",
+      "key" : "w",
+      "min" : 1,
+      "max" : 3
+    } ],
+    "operands" : [ {
+      "@type" : "korap:token",
+      "wrap" : {
+        "@type" : "korap:term",
+        "key" : "das",
+        "layer" : "orth",
+        "match" : "match:eq"
+      }
+    }, {
+      "@type" : "korap:token",
+      "wrap" : {
+        "@type" : "korap:term",
+        "key" : "Buch",
+        "layer" : "orth",
+        "match" : "match:eq"
+      }
+    } ]
+  }
+}

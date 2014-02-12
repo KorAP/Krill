@@ -1,3 +1,6 @@
+0.26.3 2014-02-12
+        - [bugfix] Only open writer in case it's needed (diewald)
+
 0.26.2 2014-02-12
         - Added sequence queries with defined gaps (margaretha)
 	- Support for multiple distance constraints (margaretha)

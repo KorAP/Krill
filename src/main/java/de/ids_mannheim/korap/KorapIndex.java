@@ -110,6 +110,7 @@ public class KorapIndex {
     public IndexReader reader;
 
     private IndexWriter writer;
+    private IndexWriterConfig config;
     private IndexSearcher searcher;
     private boolean readerOpen = false;
     private int commitCounter = 0;
@@ -166,9 +167,7 @@ public class KorapIndex {
         );
 
 	// Create configuration with base analyzer
-	IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
-
-	this.writer = new IndexWriter(this.directory, config);
+	this.config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
     };
 
 
@@ -193,7 +192,8 @@ public class KorapIndex {
     };
 
     public void closeWriter () throws IOException {
-	this.writer.close();
+	if (this.writer != null)
+	    this.writer.close();
     };
 
 
@@ -222,6 +222,10 @@ public class KorapIndex {
 
     public FieldDocument addDoc (FieldDocument fd) throws IOException {
 	
+	if (this.writer == null)
+	    this.writer = new IndexWriter(this.directory, this.config);
+
+
 	// Add document to writer
 	this.writer.addDocument( fd.doc );
 	if (++commitCounter > autoCommit) {
@@ -261,6 +265,9 @@ public class KorapIndex {
     };
 
     public void commit () throws IOException {
+	if (this.writer == null)
+	    return;
+
 	if (commitCounter > 0) {
 	    this.writer.commit();
 	    commitCounter = 0;

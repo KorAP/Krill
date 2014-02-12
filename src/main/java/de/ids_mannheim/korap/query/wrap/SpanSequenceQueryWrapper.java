@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.query.wrap;
 
 import java.util.*;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 
@@ -15,11 +16,47 @@ import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
  */
 public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     private String field;
-    public ArrayList<SpanQuery> segments;
+    private ArrayList<SpanQuery> segments;
+    private ArrayList<DistanceConstraint> constraints;
+    private boolean isInOrder = true;
+
+
+    private class DistanceConstraint {
+	private int min = 0;
+	private int max = 0;
+	private String element = null;
+
+	public DistanceConstraint (int min, int max) {
+	    this.min = min;
+	    this.max = max;
+	};
+
+	public DistanceConstraint (int min, int max, String element) {
+	    this.min = min;
+	    this.max = max;
+	    this.element = element;
+	};
+
+	public boolean hasElement () {
+	    return (this.element != null ? true : false);
+	};
+
+	public String getElement () {
+	    return this.element;
+	};
+
+	public int getMin () {
+	    return this.min;
+	};
+
+	public int getMax () {
+	    return this.max;
+	};
+    };
 
     public SpanSequenceQueryWrapper (String field) {
 	this.field = field;
-	this.segments = new ArrayList<SpanQuery>();
+	this.segments = new ArrayList<SpanQuery>(2);
     };
 
     public SpanSequenceQueryWrapper (String field, String ... terms) {
@@ -82,6 +119,17 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	return this;
     };
 
+    public SpanSequenceQueryWrapper withConstraint (int min, int max) {
+	this.constraints.add(new DistanceConstraint(min, max));
+	return this;
+    };
+
+    public SpanSequenceQueryWrapper withConstraint (int min, int max, String element) {
+	this.constraints.add(new DistanceConstraint(min, max, element));
+	return this;
+    };
+
+
     public SpanQuery toQuery () {
 	if (this.segments.size() == 0) {
 	    return (SpanQuery) null;
@@ -89,13 +137,31 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
 	SpanQuery query = this.segments.get(0);
 
-	for (int i = 1; i < this.segments.size(); i++) {
-	    query = new SpanNextQuery(
-		query,
-	        this.segments.get(i),
-		false
-            );
+	// NextQueries:
+	if (this.constraints == null) {
+	    for (int i = 1; i < this.segments.size(); i++) {
+		query = new SpanNextQuery(
+	            query,
+		    this.segments.get(i) // Todo: Maybe payloads are not necessary
+		);
+	    };
+	    return (SpanQuery) query;
 	};
-	return (SpanQuery) query;
+
+	// DistanceQueries
+	if (this.constraints.size() == 1) {
+	};
+
+	// MultiDistanceQueries
+
+	return (SpanQuery) null;
+    };
+
+    public void setInOrder (boolean isInOrder) {
+	this.isInOrder = isInOrder;
+    };
+
+    public boolean isInOrder () {
+	return this.isInOrder;
     };
 };

@@ -50,7 +50,8 @@ public class TestKorapCollectionJSON {
 		contentBuilder.append(str);
 	    };
 	    in.close();
-	} catch (IOException e) {
+	}
+	catch (IOException e) {
 	    fail(e.getMessage());
 	}
 	return contentBuilder.toString();
