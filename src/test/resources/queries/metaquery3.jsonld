@@ -1,11 +1,13 @@
 {
     "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "meta":{
     "startPage" : 2,
     "count" : 5,
     "context" : {
       "left" : [ "token", 3 ],
       "right" : [ "char", 6 ]
-    },
+    }
+},
    "query":{
       "@type":"korap:group",
       "operation":"operation:or",

@@ -1,10 +1,12 @@
 {
   "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
-  "startPage" : 1,
-  "count" : 5,
-  "context" : {
-    "left" : [ "token", 3 ],
-    "right" : [ "char", 6 ]
+  "meta":{
+    "startPage" : 1,
+    "count" : 5,
+    "context" : {
+      "left" : [ "token", 3 ],
+      "right" : [ "char", 6 ]
+    }
   },
   "query":{
     "@type":"korap:token",
@@ -16,7 +18,7 @@
       "match":"match:eq"
     }
   },
-  "meta": [
+  "collections": [
     {
       "@type": "korap:meta-filter",
       "@id": "korap-filter#id-1223232",

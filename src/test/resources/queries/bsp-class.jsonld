@@ -33,4 +33,5 @@
       }
     ]
   },
-  "meta":[{"@type":"korap:meta-filter","@value":{"@type":"korap:term","@field":"korap:field#corpusID","@value":"WPD"}}],"startPage":1,"count":50,"context":{"left":["token",6],"right":["token",6]}}
+  "collections":[{"@type":"korap:meta-filter","@value":{"@type":"korap:term","@field":"korap:field#corpusID","@value":"WPD"}}],
+  "meta":{"startPage":1,"count":50,"context":{"left":["token",6],"right":["token",6]}}}

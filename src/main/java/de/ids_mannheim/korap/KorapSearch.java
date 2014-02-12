@@ -115,35 +115,38 @@ public class KorapSearch {
 	    };
 
 	    // "meta" virtual collections
-	    if (json.has("meta"))
+	    if (json.has("collections"))
 		this.setCollection(new KorapCollection(jsonString));
 
 	    if (this.error == null) {
+		if (json.has("meta")) {
+		    JsonNode meta = json.get("meta");
 
-		// Defined count
-		if (json.has("count"))
-		    this.setCount(json.get("count").asInt());
+		    // Defined count
+		    if (meta.has("count"))
+			this.setCount(meta.get("count").asInt());
 
-		// Defined startIndex
-		if (json.has("startIndex"))
-		    this.setStartIndex(json.get("startIndex").asInt());
+		    // Defined startIndex
+		    if (meta.has("startIndex"))
+			this.setStartIndex(meta.get("startIndex").asInt());
 
-		// Defined startPage
-		if (json.has("startPage"))
-		    this.setStartPage(json.get("startPage").asInt());
+		    // Defined startPage
+		    if (meta.has("startPage"))
+			this.setStartPage(meta.get("startPage").asInt());
 
-		// Defined cutOff
-		if (json.has("cutOff"))
-		    this.setCutOff(json.get("cutOff").asBoolean());
+		    // Defined cutOff
+		    if (meta.has("cutOff"))
+			this.setCutOff(meta.get("cutOff").asBoolean());
 
-		// Defined contexts
-		if (json.has("context")) {
-		    JsonNode context = json.get("context");
-		    if (context.has("left"))
-			this.leftContext.fromJSON(context.get("left"));
+		    // Defined contexts
+		    if (meta.has("context")) {
+			JsonNode context = meta.get("context");
+			if (context.has("left"))
+			    this.leftContext.fromJSON(context.get("left"));
 
-		    if (context.has("right"))
-			this.rightContext.fromJSON(context.get("right"));
+			if (context.has("right"))
+			    this.rightContext.fromJSON(context.get("right"));
+		    };
 		};
 	    };
 	}

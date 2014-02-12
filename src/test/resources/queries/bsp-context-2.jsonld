@@ -1,4 +1,5 @@
-{"@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+{
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
  "query":{
    "@type":"korap:token",
    "wrap":{
@@ -9,7 +10,7 @@
      "match":"match:eq"
    }
  },
- "meta":[
+ "collections":[
    {
      "@type":"korap:meta-filter",
      "@value":{
@@ -19,6 +20,8 @@
      }
    }
  ],
+  "meta":{
  "startPage":1,
  "count":25,
  "context":{"left":["char",210],"right":["char",210]},"cutOff":true}
+}

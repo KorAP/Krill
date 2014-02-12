@@ -10,8 +10,10 @@
       "match": "match:eq"
     }
   },
-  "context":{
-    "left":["char",90],
-    "right":["char",90]
-  }
+  "meta":{
+    "context":{
+      "left":["char",90],
+      "right":["char",90]
+    }
+  }  
 }

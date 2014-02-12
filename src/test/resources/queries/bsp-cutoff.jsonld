@@ -10,11 +10,13 @@
       "match": "match:eq"
     }
   },
-  "startPage":2,
-  "count": 2,
-  "cutOff": true,
-  "context":{
-    "left":["char",90],
-    "right":["char",90]
-  }
+  "meta":{
+    "startPage":2,
+    "count": 2,
+    "cutOff": true,
+    "context":{	     
+     "left":["char",90],
+      "right":["char",90]
+      }
+}
 }

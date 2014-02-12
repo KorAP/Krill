@@ -10,10 +10,12 @@
       "match": "match:eq"
     }
   },
-  "startPage":2,
-  "count": 5,
-  "context":{
-    "left":["char",90],
-    "right":["char",90]
+  "meta":{
+    "startPage":2,
+    "count": 5,
+    "context":{
+      "left":["char",90],
+      "right":["char",90]
+    }
   }
 }

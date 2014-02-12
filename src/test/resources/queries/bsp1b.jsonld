@@ -42,7 +42,7 @@
          }
       ]
    },
-   "meta":{
+   "poliqarp-meta":{
       "@type":"korap:meta",
       "@value":{
          "@type":"korap:group",

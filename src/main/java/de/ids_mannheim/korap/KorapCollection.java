@@ -59,10 +59,10 @@ public class KorapCollection {
 	ObjectMapper mapper = new ObjectMapper();
 	try {
 	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
-	    if (json.has("meta")) {
+	    if (json.has("collections")) {
 		log.trace("Add meta collection");
-		for (JsonNode meta : json.get("meta")) {
-		    this.fromJSON(meta);
+		for (JsonNode collection : json.get("collections")) {
+		    this.fromJSON(collection);
 		};
 	    };
 	}

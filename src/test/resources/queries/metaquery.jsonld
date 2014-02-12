@@ -1,0 +1,115 @@
+{
+    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+    "meta" : {
+      "startPage" : 2,
+      "count" : 5,
+      "context" : {
+	"left" : [ "token", 3 ],
+	"right" : [ "char", 6 ]
+      }
+    },
+   "query":{
+      "@type":"korap:group",
+      "operation":"operation:or",
+      "operands":[
+         {
+            "@type":"korap:token",
+            "wrap":{
+               "@type":"korap:term",
+               "foundry":"mate",
+	      "layer" : "lemma",
+	      "key" : "Vokal",
+               "match":"match:eq"
+            }
+         },
+         {
+            "@type":"korap:group",
+	   "operation": "operation:sequence",
+            "operands":[
+               {
+                  "@type":"korap:token",
+                  "wrap":{
+                    "@type":"korap:term",
+                    "foundry":"mate",
+		    "layer" : "base",
+		    "key" : "der",
+                    "match":"match:eq"
+                  }
+               },
+               {
+                  "@type":"korap:token",
+                  "wrap":{
+                     "@type":"korap:term",
+                     "foundry":"mate",
+		      "layer" : "pos",
+		      "key" : "ADJA",
+                     "match":"match:eq"
+                  }
+               }
+            ]
+         }
+      ]
+   },
+    "collections": [
+        {
+            "@type": "korap:meta-filter",
+            "@id": "korap-filter#id-1223232",
+            "@value": {
+                "@type": "korap:term",
+                "@field": "korap:field#textClass",
+                "@value": "wissenschaft"
+            }
+        },
+        {
+            "@type": "korap:meta-filter",
+            "@id": "korap-filter#id-34345454",
+            "@value": {
+                "@type": "korap:group",
+                "relation": "and",
+                "operands": [
+                    {
+                        "@type": "korap:term",
+                        "@field": "korap:field#pubPlace",
+                        "@value": "Erfurt"
+                    },
+                    {
+                        "@type": "korap:term",
+                        "@field": "korap:field#author",
+                        "@value": "Hesse"
+                    }
+                ]
+            }
+        },
+        {
+            "@type": "korap:meta-extend",
+            "@value": {
+                "@type": "korap:group",
+                "relation": "and",
+                "operands": [
+                    {
+                        "@type": "korap:group",
+                        "comment": "other values can be 'since','until' in combination with a simple korap:term",
+                        "relation": "between",
+                        "field": "korap:field#pubDate",
+                        "operands": [
+                            {
+                                "@type": "korap:date",
+                                "comment": "either long value or String representation '2013-04-29'",
+                                "@value": "2011-04-29"
+                            },
+                            {
+                                "@type": "korap:date",
+                                "@value": "2013-12-31"
+                            }
+                        ]
+                    },
+                    {
+                        "@type": "korap:term",
+                        "@field": "korap:field#textClass",
+                        "@value": "freizeit"
+                    }
+                ]
+            }
+        }
+    ]
+}

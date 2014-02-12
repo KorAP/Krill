@@ -14,7 +14,7 @@ public class TestKorapCollectionJSON {
 
     @Test
     public void metaQuery1 () {
-	String metaQuery = getString(getClass().getResource("/queries/metaquery.json").getFile());
+	String metaQuery = getString(getClass().getResource("/queries/metaquery.jsonld").getFile());
 	KorapCollection kc = new KorapCollection(metaQuery);
 
 	assertEquals("filter with QueryWrapperFilter(+textClass:wissenschaft)", kc.getFilter(0).toString());
@@ -26,7 +26,7 @@ public class TestKorapCollectionJSON {
 
     @Test
     public void metaQuery2 () {
-	String metaQuery = getString(getClass().getResource("/queries/metaquery2.json").getFile());
+	String metaQuery = getString(getClass().getResource("/queries/metaquery2.jsonld").getFile());
 	KorapCollection kc = new KorapCollection(metaQuery);
 	assertEquals(1,kc.getCount());
 	assertEquals("filter with QueryWrapperFilter(+author:Hesse +pubDate:[0 TO 20131205])",kc.getFilter(0).toString());
@@ -34,7 +34,7 @@ public class TestKorapCollectionJSON {
 
     @Test
     public void metaQuery3 () {
-	String metaQuery = getString(getClass().getResource("/queries/metaquery4.json").getFile());
+	String metaQuery = getString(getClass().getResource("/queries/metaquery4.jsonld").getFile());
 	KorapCollection kc = new KorapCollection(metaQuery);
 	assertEquals(1,kc.getCount());
 	assertEquals("filter with QueryWrapperFilter(+pubDate:[20000101 TO 20131231])",kc.getFilter(0).toString());
