@@ -116,7 +116,7 @@ public class TestMultipleDistanceIndex {
  	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:c", constraints, false);
 		kr = ki.search(mdq, (short) 10);
-		System.out.println(mdq);
+		// System.out.println(mdq);
 		
 		assertEquals(3, kr.getTotalResults());
 	    assertEquals(0, kr.getMatch(0).getStartPos());

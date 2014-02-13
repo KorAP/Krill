@@ -193,8 +193,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas3.json").getFile());
 
 	// "das /+w1:3 Buch"
-	// Todo: Here the serialized constraint information is missing
-	assertEquals(sqwi.toQuery().toString(), "spanDistance(tokens:s:das, tokens:s:Buch)");
+	assertEquals(sqwi.toQuery().toString(), "spanDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded)])");
     };
 
     @Test
@@ -202,8 +201,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas4.json").getFile());
 
 	// "das /+w1:3,s1 Buch"
-	// Todo: Here the serialized constraint information is missing
-	assertEquals(sqwi.toQuery().toString(), "spanMultipleDistance(tokens:s:das, tokens:s:Buch)");
+	assertEquals(sqwi.toQuery().toString(), "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (s[1:1], ordered, notExcluded)])");
     };
 
     @Test

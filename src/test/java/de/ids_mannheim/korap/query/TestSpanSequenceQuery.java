@@ -36,17 +36,13 @@ public class TestSpanSequenceQuery {
 	sssq.withConstraint(2,3);
 	assertTrue(sssq.hasConstraints());
 
-	// Todo: This does not mention the constraint!
-	assertEquals("spanDistance(field:a, field:b)", sssq.toQuery().toString());
+	assertEquals("spanDistance(field:a, field:b, [(w[2:3], ordered, notExcluded)])", sssq.toQuery().toString());
 
 	sssq.append("c");
-	// Todo: This does not mention the constraint!
-	assertEquals("spanDistance(spanDistance(field:a, field:b), field:c)", sssq.toQuery().toString());
+	assertEquals("spanDistance(spanDistance(field:a, field:b, [(w[2:3], ordered, notExcluded)]), field:c, [(w[2:3], ordered, notExcluded)])", sssq.toQuery().toString());
 	sssq.withConstraint(6,8, "s");
 	assertTrue(sssq.hasConstraints());
 
-
-	// Todo: This does not mention the constraint!
-	assertEquals("spanMultipleDistance(spanMultipleDistance(field:a, field:b), field:c)", sssq.toQuery().toString());
+	assertEquals("spanMultipleDistance(spanMultipleDistance(field:a, field:b, [(w[2:3], ordered, notExcluded), (s[6:8], ordered, notExcluded)]), field:c, [(w[2:3], ordered, notExcluded), (s[6:8], ordered, notExcluded)])", sssq.toQuery().toString());
     };
 };
