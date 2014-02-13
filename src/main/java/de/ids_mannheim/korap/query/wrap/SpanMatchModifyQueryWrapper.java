@@ -2,7 +2,7 @@ package de.ids_mannheim.korap.query.wrap;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
-import de.ids_mannheim.korap.query.SpanMatchModifyQuery;
+import de.ids_mannheim.korap.query.SpanMatchModifyClassQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
 
 import java.util.*;
@@ -33,6 +33,6 @@ public class SpanMatchModifyQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public SpanQuery toQuery () {
-	return new SpanMatchModifyQuery(this.subquery.toQuery(), this.number);
+	return new SpanMatchModifyClassQuery(this.subquery.toQuery(), this.number);
     };
 };

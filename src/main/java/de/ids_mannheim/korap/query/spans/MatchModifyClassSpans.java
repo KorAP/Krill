@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
-public class MatchModifySpans extends Spans {
+public class MatchModifyClassSpans extends Spans {
     private List<byte[]> highlightedPayload;
     private Collection<byte[]> payload;
     private final Spans spans;
@@ -28,13 +28,13 @@ public class MatchModifySpans extends Spans {
     private ByteBuffer bb;
 
     private SpanQuery highlight;
-    private final Logger log = LoggerFactory.getLogger(MatchModifySpans.class);
+    private final Logger log = LoggerFactory.getLogger(MatchModifyClassSpans.class);
 
     private int start = -1, end;
     private int tempStart, tempEnd = 0;
 
 
-    public MatchModifySpans (SpanQuery highlight,
+    public MatchModifyClassSpans (SpanQuery highlight,
 		       AtomicReaderContext context,
 		       Bits acceptDocs,
 		       Map<Term,TermContext> termContexts,

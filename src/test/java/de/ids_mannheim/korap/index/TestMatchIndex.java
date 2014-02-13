@@ -15,7 +15,7 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.query.SpanMatchModifyQuery;
+import de.ids_mannheim.korap.query.SpanMatchModifyClassQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
@@ -72,7 +72,7 @@ public class TestMatchIndex {
 
 	assertEquals("Test no 'more' context", "<span class=\"context-left\"><span class=\"more\"></span>bcabca</span><span class=\"match\">b<em class=\"class-0 level-0\">a</em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
 
-	sq = new SpanMatchModifyQuery(
+	sq = new SpanMatchModifyClassQuery(
             new SpanNextQuery(
                 new SpanTermQuery(new Term("base", "s:b")),
                 new SpanClassQuery(
@@ -87,7 +87,7 @@ public class TestMatchIndex {
 	assertEquals("EndPos (0)", 9, kr.match(0).endPos);
 	assertEquals("SnippetBrackets (0)", "... cabcab[a]c", kr.match(0).snippetBrackets());
 
-	sq = new SpanMatchModifyQuery(
+	sq = new SpanMatchModifyClassQuery(
             new SpanNextQuery(
 	        new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 2),
                 new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
@@ -116,7 +116,7 @@ public class TestMatchIndex {
 
 
 	// abcabcabac
-	sq = new SpanMatchModifyQuery( 
+	sq = new SpanMatchModifyClassQuery( 
             new SpanNextQuery(
                 new SpanTermQuery(new Term("base", "s:a")),
                 new SpanClassQuery(
@@ -151,7 +151,7 @@ public class TestMatchIndex {
 
 	// System.err.println(kr.toJSON());
 
-	sq = new SpanMatchModifyQuery(
+	sq = new SpanMatchModifyClassQuery(
             new SpanNextQuery(
 	        new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 1),
                 new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 2)
@@ -172,7 +172,7 @@ public class TestMatchIndex {
 	assertEquals("Token count", 10, ki.numberOf("base", "t"));
 
 
-	sq = new SpanMatchModifyQuery(
+	sq = new SpanMatchModifyClassQuery(
             new SpanNextQuery(
                 new SpanTermQuery(new Term("base", "s:a")),
                 new SpanClassQuery(

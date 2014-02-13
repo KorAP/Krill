@@ -15,29 +15,29 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
-import de.ids_mannheim.korap.query.spans.MatchModifySpans;
+import de.ids_mannheim.korap.query.spans.MatchModifyClassSpans;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 
 /**
  * Shrinks spans to a classed span.
  */
-public class SpanMatchModifyQuery extends SpanClassQuery {
+public class SpanMatchModifyClassQuery extends SpanClassQuery {
     private boolean divide = false;
 
-    public SpanMatchModifyQuery (SpanQuery highlight, byte number, boolean divide) {
+    public SpanMatchModifyClassQuery (SpanQuery highlight, byte number, boolean divide) {
 	super(highlight, number);
 	this.divide = divide;
     };
 
-    public SpanMatchModifyQuery (SpanQuery highlight, boolean divide) {
+    public SpanMatchModifyClassQuery (SpanQuery highlight, boolean divide) {
 	this(highlight, (byte) 0, divide);
     };
 
-    public SpanMatchModifyQuery (SpanQuery highlight, byte number) {
+    public SpanMatchModifyClassQuery (SpanQuery highlight, byte number) {
 	this(highlight, number, false);
     };
 
-    public SpanMatchModifyQuery (SpanQuery highlight) {
+    public SpanMatchModifyClassQuery (SpanQuery highlight) {
 	this(highlight, (byte) 0, false);
     };
 
@@ -60,12 +60,12 @@ public class SpanMatchModifyQuery extends SpanClassQuery {
 
     @Override
     public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs, Map<Term,TermContext> termContexts) throws IOException {
-	return (Spans) new MatchModifySpans(this.highlight, context, acceptDocs, termContexts, number, divide);
+	return (Spans) new MatchModifyClassSpans(this.highlight, context, acceptDocs, termContexts, number, divide);
     };
 
     @Override
     public Query rewrite (IndexReader reader) throws IOException {
-	SpanMatchModifyQuery clone = null;
+	SpanMatchModifyClassQuery clone = null;
 	SpanQuery query = (SpanQuery) this.highlight.rewrite(reader);
 
 	if (query != this.highlight) {
@@ -81,8 +81,8 @@ public class SpanMatchModifyQuery extends SpanClassQuery {
     };
 
     @Override
-    public SpanMatchModifyQuery clone() {
-	SpanMatchModifyQuery spanMatchQuery = new SpanMatchModifyQuery(
+    public SpanMatchModifyClassQuery clone() {
+	SpanMatchModifyClassQuery spanMatchQuery = new SpanMatchModifyClassQuery(
 	    (SpanQuery) this.highlight.clone(),
 	    this.number,
 	    this.divide
@@ -96,14 +96,14 @@ public class SpanMatchModifyQuery extends SpanClassQuery {
     @Override
     public boolean equals(Object o) {
 	if (this == o) return true;
-	if (!(o instanceof SpanMatchModifyQuery)) return false;
+	if (!(o instanceof SpanMatchModifyClassQuery)) return false;
 	
-	final SpanMatchModifyQuery spanMatchModifyQuery = (SpanMatchModifyQuery) o;
+	final SpanMatchModifyClassQuery spanMatchModifyClassQuery = (SpanMatchModifyClassQuery) o;
 	
-	if (!highlight.equals(spanMatchModifyQuery.highlight)) return false;
-	if (this.number != spanMatchModifyQuery.number) return false;
-	if (this.divide != spanMatchModifyQuery.divide) return false;
-	return getBoost() == spanMatchModifyQuery.getBoost();
+	if (!highlight.equals(spanMatchModifyClassQuery.highlight)) return false;
+	if (this.number != spanMatchModifyClassQuery.number) return false;
+	if (this.divide != spanMatchModifyClassQuery.divide) return false;
+	return getBoost() == spanMatchModifyClassQuery.getBoost();
     };
 
 
