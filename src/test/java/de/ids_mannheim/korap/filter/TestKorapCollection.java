@@ -82,7 +82,7 @@ public class TestKorapCollection {
 	// System.err.println(kr.toJSON());
     };
 
-    @Test
+    @Ignore
     public void filterExampleAtomic () throws IOException {
 	
 	// That's exactly the same test class, but with multiple atomic indices

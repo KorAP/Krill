@@ -188,6 +188,65 @@ public class TestKorapQueryJSON {
     };
 
 
+    @Test
+    public void queryJSONcosmas3 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas3.json").getFile());
+
+	// "das /+w1:3 Buch"
+	// Todo: Here the serialized constraint information is missing
+	assertEquals(sqwi.toQuery().toString(), "spanDistance(tokens:s:das, tokens:s:Buch)");
+    };
+
+    @Test
+    public void queryJSONcosmas4 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas4.json").getFile());
+
+	// "das /+w1:3,s1 Buch"
+	// Todo: Here the serialized constraint information is missing
+	assertEquals(sqwi.toQuery().toString(), "spanMultipleDistance(tokens:s:das, tokens:s:Buch)");
+    };
+
+    @Test
+    public void queryJSONcosmas10 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas10.json").getFile());
+
+	// "Institut für $deutsche Sprache"
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanNext(spanNext(tokens:s:Institut, tokens:s:für), tokens:i:deutsche), tokens:s:Sprache)");
+    };
+
+    @Test
+    public void queryJSONcosmas10b () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas10b.json").getFile());
+
+	// "Institut $FÜR $deutsche Sprache"
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanNext(spanNext(tokens:s:Institut, tokens:i:für), tokens:i:deutsche), tokens:s:Sprache)");
+    };
+
+    @Test
+    public void queryJSONcosmas16 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas16.json").getFile());
+
+	// "$wegen #IN(L) <s>"
+	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanWithin(<tokens:s />, {1: tokens:i:wegen}, 1))");
+    };
+
+    @Test
+    public void queryJSONcosmas17 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas17.json").getFile());
+
+	// "#BED($wegen , +sa)"
+	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:s />, tokens:i:wegen, 1)");
+    };
+
+    @Test
+    public void queryJSONcosmas20 () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas20.json").getFile());
+
+	//     "MORPH(V) #IN(R) #ELEM(S)"
+	// TODO: Uses defaultfoundry!
+	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanWithin(<tokens:s />, {1: tokens:mate/p:V}, 2))");
+    };
+
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();
 	try {

@@ -36,7 +36,7 @@ public class KorapQuery {
     private ObjectMapper json;
 
     // The default foundry for lemmata and pos
-    // private String defaultFoundry = "mate";
+    private String defaultFoundry = "mate/";
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapQuery.class);
@@ -173,16 +173,55 @@ public class KorapQuery {
 		        "SpanSequenceQuery needs at least two operands"
 		    );
 
-		if (json.has("distances"))
-		    throw new QueryException("Distances are not supported yet");
-
-		if (json.has("inOrder"))
-		    throw new QueryException("inOrder attribute is not supported yet");
-
-		SpanSequenceQueryWrapper sseqqw = new SpanSequenceQueryWrapper(this.field);
+		SpanSequenceQueryWrapper sseqqw = this.seq();
 		for (JsonNode operand : operands) {
 		    sseqqw.append(this.fromJSON(operand));
 		};
+
+		// Say if the operand order is important
+		if (json.has("inOrder"))
+		    sseqqw.setInOrder(json.get("inOrder").asBoolean());
+
+		// Introduce distance constraints
+		if (json.has("distances")) {
+
+		    // TODO
+		    if (json.has("exclude") && json.get("exclude").asBoolean())
+			throw new QueryException(
+			    "Excluding distance constraints are not supported yet"
+			);
+
+		    // TEMPORARY: Workaround for group distances
+		    JsonNode firstDistance = json.get("distances").get(0);
+		    if (!firstDistance.has("@type"))
+			throw new QueryException("Distances need a defined @type");
+
+		    JsonNode distances;
+		    if (firstDistance.get("@type").asText().equals("korap:group"))
+			distances = firstDistance.get("operands");
+		    else if (firstDistance.get("@type").asText().equals("korap:distance"))
+			distances = json.get("distances");
+		    else
+			throw new QueryException("No valid distances defined");
+
+		    for (JsonNode constraint : distances) {
+			String unit = "w";
+			if (constraint.has("key"))
+			    unit = constraint.get("key").asText();
+
+			sseqqw.withConstraint(
+		            constraint.get("min").asInt(1),
+			    constraint.get("max").asInt(1),
+			    unit
+			);
+		    };
+		};
+
+		// inOrder was set without a distance constraint
+		if (!sseqqw.isInOrder() && !sseqqw.hasConstraints()) {
+		    sseqqw.withConstraint(1,1,"w");
+		};
+
 		return sseqqw;
 
 	    case "operation:class":
@@ -295,7 +334,7 @@ public class KorapQuery {
 	if (json.has("caseInsensitive") && json.get("caseInsensitive").asBoolean())
 	    isCaseInsensitive = true;
 
-	StringBuffer value = new StringBuffer();
+	StringBuilder value = new StringBuilder();
 
 	// expect orth? expect lemma? 
 	// s:den | i:den | cnx/l:die | mate/m:mood:ind | cnx/syn:@PREMOD |
@@ -309,12 +348,15 @@ public class KorapQuery {
 	if (json.has("layer") && json.get("layer").asText().length() > 0) {
 	    String layer = json.get("layer").asText();
 	    switch (layer) {
+
 	    case "lemma":
 		layer = "l";
 		break;
+
 	    case "pos":
 		layer = "p";
 		break;
+
 	    case "orth":
 		layer = "s";
 		break;
@@ -322,6 +364,12 @@ public class KorapQuery {
 
 	    if (isCaseInsensitive && isTerm && layer.equals("s"))
 		layer = "i";
+
+
+	    // TEMPORARY
+	    if (value.length() == 0 && (layer.equals("l") || layer.equals("p")))
+		value.append(defaultFoundry);
+
 
 	    value.append(layer).append(':');
 	};

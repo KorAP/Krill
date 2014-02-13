@@ -1,8 +1,12 @@
 package de.ids_mannheim.korap.query.wrap;
 
 import java.util.*;
+import de.ids_mannheim.korap.query.DistanceConstraint;
+import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
+import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
+
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 
@@ -19,40 +23,6 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     private ArrayList<SpanQuery> segments;
     private ArrayList<DistanceConstraint> constraints;
     private boolean isInOrder = true;
-
-
-    private class DistanceConstraint {
-	private int min = 0;
-	private int max = 0;
-	private String element = null;
-
-	public DistanceConstraint (int min, int max) {
-	    this.min = min;
-	    this.max = max;
-	};
-
-	public DistanceConstraint (int min, int max, String element) {
-	    this.min = min;
-	    this.max = max;
-	    this.element = element;
-	};
-
-	public boolean hasElement () {
-	    return (this.element != null ? true : false);
-	};
-
-	public String getElement () {
-	    return this.element;
-	};
-
-	public int getMin () {
-	    return this.min;
-	};
-
-	public int getMax () {
-	    return this.max;
-	};
-    };
 
     public SpanSequenceQueryWrapper (String field) {
 	this.field = field;
@@ -120,15 +90,18 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public SpanSequenceQueryWrapper withConstraint (int min, int max) {
-	this.constraints.add(new DistanceConstraint(min, max));
+	if (this.constraints == null)
+	    this.constraints = new ArrayList<DistanceConstraint>(1);
+	this.constraints.add(new DistanceConstraint("w", min, max));
 	return this;
     };
 
-    public SpanSequenceQueryWrapper withConstraint (int min, int max, String element) {
-	this.constraints.add(new DistanceConstraint(min, max, element));
+    public SpanSequenceQueryWrapper withConstraint (int min, int max, String unit) {
+	if (this.constraints == null)
+	    this.constraints = new ArrayList<DistanceConstraint>(1);
+	this.constraints.add(new DistanceConstraint(unit, min, max));
 	return this;
     };
-
 
     public SpanQuery toQuery () {
 	if (this.segments.size() == 0) {
@@ -138,7 +111,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	SpanQuery query = this.segments.get(0);
 
 	// NextQueries:
-	if (this.constraints == null) {
+	if (this.constraints == null || this.constraints.size() == 0) {
 	    for (int i = 1; i < this.segments.size(); i++) {
 		query = new SpanNextQuery(
 	            query,
@@ -150,11 +123,52 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
 	// DistanceQueries
 	if (this.constraints.size() == 1) {
+	    DistanceConstraint constraint = this.constraints.get(0);
+
+	    // Create spanElementDistance query
+	    if (!constraint.getUnit().equals("w")) {
+		for (int i = 1; i < this.segments.size(); i++) {
+		    query = new SpanDistanceQuery(
+		        (SpanQuery) new SpanElementQuery(this.field, constraint.getUnit()),
+	                query,
+			this.segments.get(i),
+			constraint.getMinDistance(),
+			constraint.getMaxDistance(),
+			this.isInOrder(),
+			true
+		    );
+		};
+	    }
+
+	    // Create spanDistance query
+	    else {
+		for (int i = 1; i < this.segments.size(); i++) {
+		    query = new SpanDistanceQuery(
+	                query,
+			this.segments.get(i),
+			constraint.getMinDistance(),
+			constraint.getMaxDistance(),
+			this.isInOrder(),
+			true
+		    );
+		};
+	    };
+
+	    return (SpanQuery) query;
 	};
 
-	// MultiDistanceQueries
+	// MultipleDistanceQueries
+	for (int i = 1; i < this.segments.size(); i++) {
+	    query = new SpanMultipleDistanceQuery(
+	        query,
+		this.segments.get(i),
+		this.constraints,
+		this.isInOrder(),
+		true
+	    );
+	};
 
-	return (SpanQuery) null;
+	return (SpanQuery) query;
     };
 
     public void setInOrder (boolean isInOrder) {
@@ -163,5 +177,13 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
     public boolean isInOrder () {
 	return this.isInOrder;
+    };
+
+    public boolean hasConstraints () {
+	if (this.constraints == null)
+	    return false;
+	if (this.constraints.size() <= 0)
+	    return false;
+	return true;
     };
 };
