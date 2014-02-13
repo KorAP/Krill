@@ -36,9 +36,8 @@ public class DistanceExclusionSpan extends DistanceSpans{
 	@Override
 	protected boolean advance() throws IOException {
 		
-		while(hasMoreSpans){
-			if (hasMoreSecondSpans && forward()) 
-				continue;
+		while(hasMoreSpans){			
+			if (hasMoreSecondSpans) forwardSecondSpans();			
 			
 			if (findMatch()){ 
 				hasMoreSpans = firstSpans.next();
@@ -49,27 +48,27 @@ public class DistanceExclusionSpan extends DistanceSpans{
 		return false;
 	}
 
-	private boolean forward() throws IOException{
+	private void forwardSecondSpans() throws IOException{
 		
-		if (secondSpans.doc() <= firstSpans.doc() &&
+		if (secondSpans.doc() < firstSpans.doc()){			
+			hasMoreSecondSpans = secondSpans.skipTo(firstSpans.doc());			
+		}
+		
+		// skip the secondSpan to the right side of the firstspan
+		while (hasMoreSecondSpans && secondSpans.doc() == firstSpans.doc() &&
 				firstSpans.start() >= secondSpans.end()){
 			
 			if (isOrdered){
 				hasMoreSecondSpans = secondSpans.next();
-				return true;
 			}
-			
-			else {			
-				int actualDistance = calculateActualDistance();			
-				if (actualDistance > maxDistance){
-					hasMoreSecondSpans = secondSpans.next();
-					return true;
-				}
+			else if (calculateActualDistance() > maxDistance){
+				hasMoreSecondSpans = secondSpans.next();
 			}
-			
-		}
-				
-		return false;
+			// the firstspan is within maxDistance
+			//if (!isOrdered && calculateActualDistance() <= maxDistance){
+			else { break; }			
+						
+		}		
 	}
 	
 	private int calculateActualDistance(){
@@ -81,7 +80,7 @@ public class DistanceExclusionSpan extends DistanceSpans{
 	}
 	
 	private boolean findMatch() throws IOException {
-		if (!hasMoreSecondSpans){
+		if (!hasMoreSecondSpans || secondSpans.doc() > firstSpans.doc()){
 			setMatchProperties();
 			return true;
 		}
