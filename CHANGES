@@ -1,3 +1,7 @@
+0.30 2014-02-13
+        - This is a major version (prepared for the IDS meeting on the 17th of february)
+	- Improved stringification for distance queries (margaretha)
+
 0.26.4 2014-02-12
         - Serialize SpanDistanceQueries and SpanMultipleDistanceQueries
           (diewald)
