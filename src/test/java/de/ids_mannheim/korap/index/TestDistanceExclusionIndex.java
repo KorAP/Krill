@@ -116,14 +116,14 @@ public class TestDistanceExclusionIndex {
         assertEquals(9, kr.match(0).getStartPos());
 	    assertEquals(10, kr.match(0).getEndPos());
         
-      System.out.print(kr.getTotalResults()+"\n");
+/*      System.out.print(kr.getTotalResults()+"\n");
 		for (int i=0; i< kr.getTotalResults(); i++){
 			System.out.println(
 				kr.match(i).getLocalDocID()+" "+
 				kr.match(i).startPos + " " +
 				kr.match(i).endPos
 		    );
-		}
+		}*/
     }
 	
     private SpanQuery createQuery(String x, String y, int min, int max, boolean isOrdered){
