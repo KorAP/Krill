@@ -23,8 +23,6 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 public abstract class UnorderedDistanceSpans extends DistanceSpans{
 
 	protected int minDistance, maxDistance;
-	private boolean collectPayloads;	
-	
 	protected boolean hasMoreFirstSpans, hasMoreSecondSpans;
 	protected List<CandidateSpan> firstSpanList, secondSpanList;	
 	protected List<CandidateSpan> matchList;

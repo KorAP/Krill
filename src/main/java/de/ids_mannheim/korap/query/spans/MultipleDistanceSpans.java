@@ -9,7 +9,8 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.SimpleSpanQuery;
+import de.ids_mannheim.korap.query.SpanDistanceQuery;
+import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
 /**	Span enumeration of matches whose two sub-spans has exactly the same 
  * 	first and second sub-sub-spans. This class basically filters the span 
@@ -22,12 +23,26 @@ public class MultipleDistanceSpans extends DistanceSpans{
 	private DistanceSpans x,y;
 	private boolean isOrdered;
 	
-	public MultipleDistanceSpans(SimpleSpanQuery query,
+	public MultipleDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts, 
 			Spans firstSpans, Spans secondSpans, boolean isOrdered) 
 			throws IOException {
 		super(query, context, acceptDocs, termContexts);
+		init(firstSpans, secondSpans, isOrdered);
+	}
+	
+	public MultipleDistanceSpans(SpanMultipleDistanceQuery query,
+			AtomicReaderContext context, Bits acceptDocs,
+			Map<Term, TermContext> termContexts, 
+			Spans firstSpans, Spans secondSpans, boolean isOrdered) 
+			throws IOException {
+		super(query, context, acceptDocs, termContexts);
+		init(firstSpans, secondSpans, isOrdered);
+	}
+	
+	private void init(Spans firstSpans, Spans secondSpans, 
+			boolean isOrdered) throws IOException{
 		this.isOrdered =isOrdered;
 		x = (DistanceSpans) firstSpans;
 		y = (DistanceSpans) secondSpans;		
@@ -47,17 +62,17 @@ public class MultipleDistanceSpans extends DistanceSpans{
 		
 		while (hasMoreSpans && ensureSameDoc(x, y)){ 
 			if (findMatch()){
-				advanceChild();
+				moveForward();
 				return true;
 			}
-			advanceChild();
+			moveForward();
 		}		
 		return false;
 	}
 	
 	/** Find the next match of one of the sub/child-span.
 	 * */
-	private void advanceChild() throws IOException{
+	private void moveForward() throws IOException{
 		if (isOrdered){
 			if (x.end() < y.end() || 
 					(x.end() == y.end() && x.start() < y.start()) )

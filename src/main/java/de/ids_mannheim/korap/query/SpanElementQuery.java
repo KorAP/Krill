@@ -124,5 +124,13 @@ public class SpanElementQuery extends SpanQuery {
 
 	// element does exist, but has no positions
 	throw new IllegalStateException("field \"" + element.field() + "\" was indexed without position data; cannot run SpanElementQuery (element=" + element.text() + ")");
-    };
+    }
+
+	public String getElementStr() {
+		return elementStr;
+	}
+
+	public void setElementStr(String elementStr) {
+		this.elementStr = elementStr;
+	};
 };

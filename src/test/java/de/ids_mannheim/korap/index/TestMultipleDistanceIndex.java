@@ -37,10 +37,10 @@ public class TestMultipleDistanceIndex {
 	
 	public DistanceConstraint createConstraint(String unit, int min, int max){		
 		if (unit.equals("w")){
-			return new DistanceConstraint(unit, min, max);
+			return new DistanceConstraint(unit, min, max, false);
 		}
-		SpanQuery sq = new SpanElementQuery("base", unit);
-		return new DistanceConstraint(sq, unit, min, max);	
+		SpanElementQuery sq = new SpanElementQuery("base", unit);
+		return new DistanceConstraint(sq, unit, min, max, false);	
 	}
 	
     private FieldDocument createFieldDoc0() {
@@ -116,6 +116,7 @@ public class TestMultipleDistanceIndex {
  	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:c", constraints, false);
 		kr = ki.search(mdq, (short) 10);
+		System.out.println(mdq);
 		
 		assertEquals(3, kr.getTotalResults());
 	    assertEquals(0, kr.getMatch(0).getStartPos());

@@ -92,14 +92,14 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     public SpanSequenceQueryWrapper withConstraint (int min, int max) {
 	if (this.constraints == null)
 	    this.constraints = new ArrayList<DistanceConstraint>(1);
-	this.constraints.add(new DistanceConstraint("w", min, max));
+	this.constraints.add(new DistanceConstraint("w", min, max,false));
 	return this;
     };
 
     public SpanSequenceQueryWrapper withConstraint (int min, int max, String unit) {
 	if (this.constraints == null)
 	    this.constraints = new ArrayList<DistanceConstraint>(1);
-	this.constraints.add(new DistanceConstraint(unit, min, max));
+	this.constraints.add(new DistanceConstraint(unit, min, max,false));
 	return this;
     };
 
@@ -129,7 +129,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	    if (!constraint.getUnit().equals("w")) {
 		for (int i = 1; i < this.segments.size(); i++) {
 		    query = new SpanDistanceQuery(
-		        (SpanQuery) new SpanElementQuery(this.field, constraint.getUnit()),
+		        new SpanElementQuery(this.field, constraint.getUnit()),
 	                query,
 			this.segments.get(i),
 			constraint.getMinDistance(),

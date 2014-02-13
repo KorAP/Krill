@@ -21,7 +21,6 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
 public abstract class NonPartialOverlappingSpans extends SimpleSpans{
 	
 	private Logger log = LoggerFactory.getLogger(NonPartialOverlappingSpans.class);
-	protected boolean collectPayloads;  
 	
 	public NonPartialOverlappingSpans(SimpleSpanQuery simpleSpanQuery,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -30,7 +29,7 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans{
 		
 		// Warning: not implemented, results in errors for SpanNextQuery 
 		// This.collectPayloads = simpleSpanQuery.isCollectPayloads()
-		this.collectPayloads = true;
+		collectPayloads = true;
 		hasMoreSpans = secondSpans.next();		
 		
 	}

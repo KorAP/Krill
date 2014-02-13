@@ -10,6 +10,7 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.MultipleDistanceSpans;
 
@@ -23,13 +24,15 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 	
 	private List<DistanceConstraint> constraints;  
 	private boolean isOrdered;
+	private String spanName;
 			
 	public SpanMultipleDistanceQuery(SpanQuery firstClause, SpanQuery secondClause,
 			List<DistanceConstraint> constraints, boolean isOrdered, 
 			boolean collectPayloads) {
-		super(firstClause, secondClause, "spanMultipleDistance",collectPayloads);
+		super(firstClause, secondClause, collectPayloads);
 		this.constraints = constraints;
 		this.isOrdered = isOrdered;
+		spanName = "spanMultipleDistance";
 	}
 
 	@Override
@@ -44,7 +47,38 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 		
 		query.setBoost(getBoost());
 		return query;
-	}	
+	}
+	
+	@Override
+	public String toString(String field) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.spanName);
+		sb.append("(");
+		sb.append(firstClause.toString(field));
+	    sb.append(", ");
+		sb.append(secondClause.toString(field));
+		sb.append(", ");
+		sb.append("[");
+		
+		DistanceConstraint c;
+		int size = constraints.size();
+		for (int i=0; i < size; i++){
+			c = constraints.get(i);
+			sb.append("(");
+			sb.append(c.getUnit());
+			sb.append("[");
+			sb.append(c.getMinDistance());
+			sb.append(":");
+			sb.append(c.getMaxDistance());
+			sb.append("], ");		
+			sb.append( isOrdered ? "ordered, " : "notOrdered, " );
+			sb.append( c.isExclusion() ? "excluded)]" : "notExcluded)");			
+			if (i < size-1) sb.append(", ");
+		}		
+		sb.append("])");
+		sb.append(ToStringUtils.boost(getBoost()));
+    	return sb.toString();
+    }
 	
 	/** Filter the span matches of each constraint, returning only the matches 
 	 * 	meeting all the constraints.

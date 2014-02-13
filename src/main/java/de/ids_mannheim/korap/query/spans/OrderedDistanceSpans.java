@@ -18,7 +18,6 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 public abstract class OrderedDistanceSpans extends DistanceSpans {
 
 	protected boolean hasMoreFirstSpans;	
-	protected boolean collectPayloads;	
 	protected int minDistance,maxDistance;
 	
 	protected List<CandidateSpan> candidateList;
@@ -34,7 +33,6 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
 		
 		minDistance = query.getMinDistance();
 		maxDistance = query.getMaxDistance();		
-  		collectPayloads = query.isCollectPayloads();
   		 		  		
   		hasMoreFirstSpans = firstSpans.next();
   		

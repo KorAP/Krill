@@ -17,18 +17,16 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable{
 	
 	protected SpanQuery firstClause, secondClause;
 	private String field;
-	private String spanName;
 	protected boolean collectPayloads;
     
     public SimpleSpanQuery(SpanQuery firstClause, SpanQuery secondClause, 
-    		String spanName, boolean collectPayloads) {
+    		boolean collectPayloads) {
     	this.field = secondClause.getField();
     	if (!firstClause.getField().equals(field)){
     		throw new IllegalArgumentException("Clauses must have the same field.");
     	}    	
     	this.setFirstClause(firstClause);
-    	this.setSecondClause(secondClause);    	
-    	this.spanName=spanName;
+    	this.setSecondClause(secondClause);  	
     	this.collectPayloads = collectPayloads;
 	}  
     	
@@ -36,20 +34,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable{
 	public String getField() {
 		return field;
 	}
-
-	@Override
-	public String toString(String field) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(this.spanName);
-		sb.append("(");
-		sb.append(firstClause.toString(field));
-	        sb.append(", ");
-		sb.append(secondClause.toString(field));
-		sb.append(")");
-		sb.append(ToStringUtils.boost(getBoost()));
-		return sb.toString();		
-	}
-
+	
 	public SpanQuery getFirstClause() {
 		return firstClause;
 	}

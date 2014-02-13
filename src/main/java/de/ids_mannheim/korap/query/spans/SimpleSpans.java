@@ -23,6 +23,7 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
 public abstract class SimpleSpans extends Spans{
 	private SimpleSpanQuery query;
 	protected boolean isStartEnumeration;
+	protected boolean collectPayloads;
 	
 	protected boolean hasMoreSpans;
 	// Warning: enumeration of Spans
@@ -37,6 +38,8 @@ public abstract class SimpleSpans extends Spans{
 			Map<Term,TermContext> termContexts) throws IOException {
     	
     	query = simpleSpanQuery;
+    	collectPayloads = query.isCollectPayloads();
+    	
   		matchDocNumber= -1;
   		matchStartPosition= -1;
   		matchEndPosition= -1;

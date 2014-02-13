@@ -105,7 +105,7 @@ public class TestDistanceIndex {
         // ---- Distance 0 to 1
         sq = createQuery("s:b","s:c",0,1,true);                
         kr = ki.search(sq, (short) 10);
-        
+//        System.out.println(sq);
         assertEquals(2, kr.totalResults());
         assertEquals(0, kr.match(0).startPos);
         assertEquals(1, kr.match(0).endPos);

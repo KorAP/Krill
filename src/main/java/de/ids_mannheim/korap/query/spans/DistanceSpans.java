@@ -11,7 +11,8 @@ import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.ids_mannheim.korap.query.SimpleSpanQuery;
+import de.ids_mannheim.korap.query.SpanDistanceQuery;
+import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
 /** DistanceSpan is a base class for enumeration of span matches, 
  * 	whose two child spans have a specific range of distance (within 
@@ -25,7 +26,13 @@ public abstract class DistanceSpans extends SimpleSpans{
 	protected CandidateSpan matchFirstSpan,matchSecondSpan;	
 	protected Logger log = LoggerFactory.getLogger(DistanceSpans.class);
     
-	public DistanceSpans(SimpleSpanQuery query,
+	public DistanceSpans(SpanDistanceQuery query,
+			AtomicReaderContext context, Bits acceptDocs,
+			Map<Term, TermContext> termContexts) throws IOException {
+		super(query, context, acceptDocs, termContexts);
+	}
+	
+	public DistanceSpans(SpanMultipleDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(query, context, acceptDocs, termContexts);
