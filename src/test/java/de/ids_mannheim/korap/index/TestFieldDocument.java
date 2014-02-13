@@ -208,6 +208,9 @@ public class TestFieldDocument {
 	assertEquals("... Orte in [Norwegen]: Å i ...", kr.match(2).getSnippetBrackets());
 	assertEquals("WPD_AAA.00005", kr.match(2).getDocID());
 
+	/*
+	System.err.println(ki.getMatchInfo(kr.match(2).getID(), "tokens", "xip", "l", true, false).getSnippetHTML());
+	*/
 
 	query = kq.seg("tt/l:Vokal").without("mate/m:number:sg").toQuery();
 	kr = ki.search(query, 0, (short) 5, true, (short) 2, false, (short) 5);

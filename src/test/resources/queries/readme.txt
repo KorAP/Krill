@@ -20,7 +20,7 @@ bsp17:  within(<np>,[base=Mann])
 
 // Based on KorAP-querySerialization/examples/
 cosmas3:  "das /+w1:3 Buch" # word-distance constraint
-cosmas4:  "das /+w1:3,s1 Buch" # combined word-distance and sent-distance constraint
+cosmas4:  "das /+w1:3,s1:1 Buch" # combined word-distance and sent-distance constraint
 cosmas10: "Institut für $deutsche Sprache" # finds both
 cosmas16: "$wegen #IN(L) <s>"  # finds 'wegen' at beginning of sentence, also when capitalised
 cosmas17: "#BED($wegen , +sa)" # equivalent to above

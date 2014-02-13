@@ -75,6 +75,7 @@ import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.TermInfo;
 import de.ids_mannheim.korap.index.SpanInfo;
 import de.ids_mannheim.korap.index.MatchIdentifier;
+import de.ids_mannheim.korap.query.SpanElementQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -461,7 +462,7 @@ public class KorapIndex {
 
 
     public KorapMatch getMatch (String id) {
-	return this.getMatchInfo(id, "tokens", false, null, null, false, true);
+	return this.getMatchInfo(id, "tokens", false, null, null, false, true, false);
     };
 
     public KorapMatch getMatchInfo (String id,
@@ -470,7 +471,17 @@ public class KorapIndex {
 				    String layer,
 				    boolean includeSpans,
 				    boolean includeHighlights) {
-	return this.getMatchInfo(id, field, true, foundry, layer, includeSpans, includeHighlights);
+	return this.getMatchInfo(id, field, true, foundry, layer, includeSpans, includeHighlights, false);
+    };
+
+    public KorapMatch getMatchInfo (String id,
+				    String field,
+				    String foundry,
+				    String layer,
+				    boolean includeSpans,
+				    boolean includeHighlights,
+				    boolean extendToSentence) {
+	return this.getMatchInfo(id, field, true, foundry, layer, includeSpans, includeHighlights, extendToSentence);
     };
 
     /**
@@ -487,7 +498,8 @@ public class KorapIndex {
 				    String foundry,
 				    String layer,
 				    boolean includeSpans,
-				    boolean includeHighlights) {
+				    boolean includeHighlights,
+				    boolean extendToSentence) {
 
 	KorapMatch match = new KorapMatch(idString, includeHighlights);
 
@@ -576,6 +588,47 @@ public class KorapIndex {
 		log.trace("The document has the id '{}'", match.getDocID());
 
 		if (!info) break;
+
+		// Search for minimal surrounding sentences
+		if (extendToSentence) {
+
+		    SpanElementQuery squery = new SpanElementQuery(field, "s");
+		    Spans sentence = squery.getSpans(atomic,
+						     (Bits) bitset,
+						     new HashMap<Term, TermContext>());
+
+		    log.trace("Now search for {}", sentence.toString());
+
+		    int newStart = -1, newEnd = -1;
+
+		    while (true) {
+
+			// Game over
+			if (sentence.next() != true)
+			    break;
+
+			// There's an s found, that starts before the match
+			if (sentence.start() <= match.getStartPos()) {
+			    newStart = sentence.start() > newStart ? sentence.start() : newStart;
+			}
+			else if (newStart == -1)
+			    break;
+			
+			// There's an s found, that ends after the match
+			if (sentence.end() >= match.getEndPos()) {
+			    newEnd = sentence.end();
+			    break;
+			};
+		    };
+
+		    // We have a new match surrounding
+		    if (newStart > -1 && newEnd > -1) {
+			log.trace("New match spans from {}-{}", newStart, newEnd);
+			match.setStartPos(newStart);
+			match.setEndPos(newEnd);
+		    };
+		};
+
 
 		// Limit the terms to all the terms of interest
 		TermsEnum termsEnum = docTerms.intersect(fst, null);

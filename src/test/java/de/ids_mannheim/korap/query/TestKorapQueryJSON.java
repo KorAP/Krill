@@ -200,8 +200,16 @@ public class TestKorapQueryJSON {
     public void queryJSONcosmas4 () {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas4.json").getFile());
 
-	// "das /+w1:3,s1 Buch"
+	// "das /+w1:3,s1:1 Buch"
 	assertEquals(sqwi.toQuery().toString(), "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (s[1:1], ordered, notExcluded)])");
+    };
+
+    @Test
+    public void queryJSONcosmas4b () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas4b.json").getFile());
+
+	// "das /+w1:3,s1 Buch"
+	assertEquals(sqwi.toQuery().toString(), "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (s[0:1], ordered, notExcluded)])");
     };
 
     @Test

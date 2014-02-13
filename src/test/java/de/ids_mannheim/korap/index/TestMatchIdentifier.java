@@ -479,6 +479,33 @@ public class TestMatchIdentifier {
     };
 
 
+    @Test
+    public void indexExample7SentenceExpansion () throws IOException {
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(createSimpleFieldDoc());
+	ki.commit();
+
+	KorapMatch km = ki.getMatchInfo("match-c1!d1-p3-4",
+			     "tokens",
+			     null,
+			     null,
+			     false,
+			     false);
+
+	assertEquals("... [{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}] ...",
+		     km.getSnippetBrackets());
+
+	km = ki.getMatchInfo("match-c1!d1-p3-4",
+			     "tokens",
+			     null,
+			     null,
+			     false,
+			     false,
+			     true);
+
+	assertEquals("... [{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:c}}}}{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}{f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:b}}}}] ...",
+		     km.getSnippetBrackets());
+    };
 
     private FieldDocument createSimpleFieldDoc(){
 	FieldDocument fd = new FieldDocument();
@@ -488,7 +515,7 @@ public class TestMatchIdentifier {
 		 "abcabcabac",
 		 "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<i>4|_0#0-1|-:t$<i>10]" +
 		 "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1#1-2]" +
-		 "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2#2-3]" +
+		 "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2#2-3|<>:s#2-5$<i>5]" +
 		 "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<i>1|_3#3-4]" +
 		 "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4#4-5]" +
 		 "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5#5-6]" +
