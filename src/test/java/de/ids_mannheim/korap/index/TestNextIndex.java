@@ -27,6 +27,8 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 
+import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+
 import org.apache.lucene.index.Term;
 
 @RunWith(JUnit4.class)
@@ -320,18 +322,59 @@ public class TestNextIndex {
 		assertEquals("EndPos", 3, kr.match(0).endPos);	
 		
 	}
+
+	@Test
+	public void indexExample7Distances () throws IOException{
+		KorapIndex ki = new KorapIndex();
+		ki.addDoc(createFieldDoc1());		
+		ki.addDoc(createFieldDoc2());		
+		ki.addDoc(createFieldDoc3());
+		ki.addDoc(createFieldDoc4());
+		ki.commit();
+		
+		SpanSequenceQueryWrapper sq = new SpanSequenceQueryWrapper("base");
+		sq.append("i:b").append("i:d").withConstraint(1,3);
+		
+		KorapResult kr = ki.search(sq.toQuery(), (short) 10);			
+
+		assertEquals("totalResults", 3, kr.totalResults());
+		assertEquals("doc-number", "match-doc-0-p2-5", kr.match(0).getID());
+		assertEquals("doc-number", "match-doc-2-p2-4", kr.match(1).getID());
+		assertEquals("doc-number", "match-doc-3-p2-5", kr.match(2).getID());
+	};
+
+	@Test
+	public void indexExample8Distances () throws IOException{
+		KorapIndex ki = new KorapIndex();
+		ki.addDoc(createFieldDoc1());		
+		ki.addDoc(createFieldDoc2());		
+		ki.addDoc(createFieldDoc3());
+		ki.addDoc(createFieldDoc4());
+		ki.commit();
+		
+		SpanSequenceQueryWrapper sq = new SpanSequenceQueryWrapper("base");
+		sq.append("i:a").append("i:b").withConstraint(0, 3, "e");
+		
+		KorapResult kr = ki.search(sq.toQuery(), (short) 10);			
+
+		assertEquals("totalResults", 3, kr.totalResults());
+		assertEquals("doc-number", "match-doc-0-p3-6", kr.match(0).getID());
+		assertEquals("doc-number", "match-doc-1-p1-3", kr.match(1).getID());
+		assertEquals("doc-number", "match-doc-3-p3-6", kr.match(2).getID());
+	};
+
 	
 	private FieldDocument createFieldDoc1(){
 		FieldDocument fd = new FieldDocument();
 		fd.addString("ID", "doc-0");
 		fd.addTV("base",
-			 "bcbabd",			 
-			 "[(0-1)s:b|i:b|_1#0-1]" +
-			 "[(1-2)s:c|i:c|s:b|_2#1-2]" +			 
-			 "[(2-3)s:b|i:b|_3#2-3]" +
-			 "[(3-4)s:a|i:a|_4#3-4|<>:e#3-5$<i>5]" + 
-			 "[(4-5)s:d|i:d|s:c|_5#4-5]" +			 
-			 "[(5-6)s:b|i:b|_6#5-6]");
+			 "bcbadb",			 
+			 "[(0-1)s:b|i:b|_0#0-1]" +
+			 "[(1-2)s:c|i:c|s:b|_1#1-2]" +			 
+			 "[(2-3)s:b|i:b|_2#2-3]" +
+			 "[(3-4)s:a|i:a|_3#3-4|<>:e#3-6$<i>6]" + 
+			 "[(4-5)s:d|i:d|s:c|_4#4-5]" +			 
+			 "[(5-6)s:b|i:b|_5#5-6]");
 		return fd;
 	}
 	
@@ -339,11 +382,11 @@ public class TestNextIndex {
 		FieldDocument fd = new FieldDocument();
 		fd.addString("ID", "doc-1");
 		fd.addTV("base",
-			 "baba",			 
-			 "[(0-1)s:c|i:c|_1#0-1]" +
-			 "[(1-2)s:a|i:a|s:c|_2#1-2|<>:e#1-3$<i>3]" +			 
-			 "[(2-3)s:b|i:b|s:a|_3#2-3]" +
-			 "[(3-4)s:a|i:a|_4#3-4]");
+			 "caba",			 
+			 "[(0-1)s:c|i:c|_0#0-1]" +
+			 "[(1-2)s:a|i:a|s:c|_1#1-2|<>:e#1-3$<i>3]" +			 
+			 "[(2-3)s:b|i:b|s:a|_2#2-3]" +
+			 "[(3-4)s:a|i:a|_3#3-4]");
 		return fd;
 	} 
 	
@@ -351,12 +394,26 @@ public class TestNextIndex {
 		FieldDocument fd = new FieldDocument();
 		fd.addString("ID", "doc-2");
 		fd.addTV("base",
-			 "bdb",			 
-			 "[(0-1)s:c|i:c|_1#0-1]" +
-			 "[(1-2)s:d|i:d|_2#1-2]"+
-			 "[(2-3)s:b|i:b|s:a|_3#2-3]"+
-			 "[(3-4)s:d|i:d|_4#3-4]");
+			 "cdbd",			 
+			 "[(0-1)s:c|i:c|_0#0-1]" +
+			 "[(1-2)s:d|i:d|_1#1-2]"+
+			 "[(2-3)s:b|i:b|s:a|_2#2-3]"+
+			 "[(3-4)s:d|i:d|_3#3-4]");
 			 	
+		return fd;
+	}
+
+	private FieldDocument createFieldDoc4(){
+		FieldDocument fd = new FieldDocument();
+		fd.addString("ID", "doc-3");
+		fd.addTV("base",
+			 "bcbadb",			 
+			 "[(0-1)s:b|i:b|_0#0-1]" +
+			 "[(1-2)s:c|i:c|s:b|<>:s#1-3$<i>3|_1#1-2]" +			 
+			 "[(2-3)s:b|i:b|_2#2-3]" +
+			 "[(3-4)s:a|i:a|_3#3-4|<>:e#3-6$<i>6]" + 
+			 "[(4-5)s:d|i:d|s:c|_4#4-5]" +			 
+			 "[(5-6)s:b|i:b|_5#5-6]");
 		return fd;
 	}
 	
