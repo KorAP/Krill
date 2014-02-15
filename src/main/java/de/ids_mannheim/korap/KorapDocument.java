@@ -6,12 +6,10 @@ import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.document.KorapPrimaryData;
 import de.ids_mannheim.korap.index.FieldDocument;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.*;
 
 /* Todo:: Author and textClass may be arrays! */
-
 
 /**
  * Abstract class representing a document in the KorAP index.

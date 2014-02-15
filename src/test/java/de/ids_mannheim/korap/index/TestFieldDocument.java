@@ -218,5 +218,20 @@ public class TestFieldDocument {
 	assertEquals("... reich an [Vokalen] war, ...", kr.match(0).getSnippetBrackets());
 
 	assertNotNull(kr.toJSON());
+
+	/*
+	System.err.println(ki.getMatchInfo(
+	    "match-WPD!WPD_AAA.00004-p200-206",
+	    "tokens",
+	    "xip",
+	    "c",
+	    true,
+	    false,
+	    true
+        ).toJSON());
+*/
+	//	ki.getMatch();
+
+
     };
 };

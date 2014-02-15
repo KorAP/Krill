@@ -104,7 +104,7 @@
     "@type": "korap:token", 
     "wrap": {
       "@type": "korap:termGroup", 
-      "operation": "operation:or",
+      "relation": "relation:or",
       "operands": [
         {
           "@type": "korap:term", 

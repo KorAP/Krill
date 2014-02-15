@@ -610,10 +610,11 @@ public class KorapIndex {
 			// There's an s found, that starts before the match
 			if (sentence.start() <= match.getStartPos()) {
 			    newStart = sentence.start() > newStart ? sentence.start() : newStart;
+
 			}
 			else if (newStart == -1)
 			    break;
-			
+
 			// There's an s found, that ends after the match
 			if (sentence.end() >= match.getEndPos()) {
 			    newEnd = sentence.end();
