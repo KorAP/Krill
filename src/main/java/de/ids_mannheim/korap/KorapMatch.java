@@ -755,6 +755,11 @@ public class KorapMatch extends KorapDocument {
 	    pos = element[3] != 0 ? element[0] : element[1];
 
 	    if (pos > oldPos) {
+
+	      if (pos > clean.length() - 1) {
+		pos = clean.length() - 1;
+	      };
+
 		snippetStack.addString(clean.substring(oldPos, pos));
 
 		oldPos = pos;

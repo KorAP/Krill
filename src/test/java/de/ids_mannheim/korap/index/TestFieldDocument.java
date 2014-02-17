@@ -27,6 +27,10 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
 
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
+
+import de.ids_mannheim.korap.util.QueryException;
+
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.index.Term;
@@ -219,6 +223,7 @@ public class TestFieldDocument {
 
 	assertNotNull(kr.toJSON());
 
+
 	/*
 	System.err.println(ki.getMatchInfo(
 	    "match-WPD!WPD_AAA.00004-p200-206",
@@ -231,7 +236,55 @@ public class TestFieldDocument {
         ).toJSON());
 */
 	//	ki.getMatch();
+    };
 
+    @Test
+    public void queryJSONBsp18 () throws IOException {
 
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    FieldDocument fd = ki.addDocFile(
+	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp18.jsonld").getFile());
+
+	KorapResult kr = ki.search(sqwi.toQuery(), 0, (short) 5, true, (short) 2, false, (short) 5);
+
+	// Bug: System.err.println(kr.toJSON());
+    };
+
+    public static String getString (String path) {
+	StringBuilder contentBuilder = new StringBuilder();
+	try {
+	    BufferedReader in = new BufferedReader(new FileReader(path));
+	    String str;
+	    while ((str = in.readLine()) != null) {
+		contentBuilder.append(str);
+	    };
+	    in.close();
+	} catch (IOException e) {
+	    fail(e.getMessage());
+	}
+	return contentBuilder.toString();
+    };
+
+    public static SpanQueryWrapperInterface jsonQuery (String jsonFile) {
+	SpanQueryWrapperInterface sqwi;
+	
+	try {
+	    String json = getString(jsonFile);
+	    sqwi = new KorapQuery("tokens").fromJSON(json);
+	}
+	catch (QueryException e) {
+	    fail(e.getMessage());
+	    sqwi = new KorapQuery("tokens").seg("???");
+	};
+	return sqwi;
     };
 };

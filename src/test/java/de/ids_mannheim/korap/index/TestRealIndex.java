@@ -48,7 +48,6 @@ public class TestRealIndex {
 
 	// This is real slow atm - sorry
 	kc.filter(kf.and("textClass", "kultur"));
-	// kc.filter(kf.and("ID", "A00_JAN.02873"));
 
 
 	// Create a query

@@ -1,0 +1,53 @@
+{
+  "context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query" : {
+    "@type" : "korap:group",
+    "operation" : "operation:sequence",
+    "inOrder" : true,
+    "distances" : [ {
+      "@type" : "korap:distance",
+      "key" : "w",
+      "min" : 0,
+      "max" : 5
+    } ],
+    "operands" : [ {
+      "@type" : "korap:group",
+      "operation" : "operation:class",
+      "class" : 1,
+      "operands" : [ {
+        "@type" : "korap:token",
+        "wrap" : {
+          "@type" : "korap:term",
+          "key" : "der",
+          "layer" : "orth",
+          "match" : "match:eq"
+        }
+      } ]
+    }, {
+      "@type" : "korap:token",
+      "wrap" : {
+        "@type" : "korap:term",
+        "key" : "nicht",
+        "layer" : "orth",
+        "match" : "match:eq"
+      }
+    } ]
+  },
+  "collections" : [ {
+    "@type" : "korap:meta-filter",
+    "@value" : {
+      "@type" : "korap:term",
+      "@field" : "korap:field#corpusID",
+      "@value" : "WPD"
+    }
+  } ],
+  "meta" : {
+    "context" : {
+      "left" : [ "char", 110 ],
+      "right" : [ "char", 110 ]
+    },
+    "cutOff" : true,
+    "startPage" : 1,
+    "count" : 25
+  }
+}
