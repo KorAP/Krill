@@ -284,14 +284,14 @@ public class TestMultipleDistanceIndex {
 		
 		kr = ki.search(sq, (short) 10);
 
-		System.out.print(kr.getTotalResults()+"\n");
-		for (int i=0; i< kr.getTotalResults(); i++){
-			System.out.println(
-				kr.match(i).getLocalDocID()+" "+
-				kr.match(i).startPos + " " +
-				kr.match(i).endPos
-		    );
-		}
+//		System.out.print(kr.getTotalResults()+"\n");
+//		for (int i=0; i< kr.getTotalResults(); i++){
+//			System.out.println(
+//				kr.match(i).getLocalDocID()+" "+
+//				kr.match(i).startPos + " " +
+//				kr.match(i).endPos
+//		    );
+//		}
 		
 		sq = new SpanDistanceQuery(new SpanElementQuery("base", "s"), sx,
 				sy, 1, 1, false, true);
