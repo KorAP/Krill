@@ -16,6 +16,7 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
+import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -35,12 +36,13 @@ public class TestMultipleDistanceIndex {
 		return new SpanMultipleDistanceQuery(sx, sy, constraints, isOrdered, true);
 	}
 	
-	public DistanceConstraint createConstraint(String unit, int min, int max){		
+	public DistanceConstraint createConstraint(String unit, int min, int max, 
+			boolean exclusion){		
 		if (unit.equals("w")){
-			return new DistanceConstraint(unit, min, max, false);
-		}
-		SpanElementQuery sq = new SpanElementQuery("base", unit);
-		return new DistanceConstraint(sq, unit, min, max, false);	
+			return new DistanceConstraint(min, max, exclusion);
+		}		
+		return new DistanceConstraint(new SpanElementQuery("base", unit), 
+				min, max, exclusion);	
 	}
 	
     private FieldDocument createFieldDoc0() {
@@ -92,10 +94,10 @@ public class TestMultipleDistanceIndex {
             "text",             
             "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>2|<>:p#0-4$<i>4]" +
             "[(1-2)s:b|s:c|_2#1-2]" +             
-            "[(2-3)s:c|_3#2-3|<>:s#2-3$<i>4]" +
+            "[(2-3)s:c|_3#2-3|<>:s#2-3$<i>5]" +
             "[(3-4)s:b|_4#3-4]" +
-            "[(4-5)s:b|_5#4-5]" + // gap
-            "[(5-6)s:b|_6#5-6]"+
+            "[(4-5)s:b|_5#4-5]" + 
+            "[(5-6)s:b|_6#5-6]" + // gap
             "[(6-7)s:c|_7#6-7|<>:s#6-7$<i>7|<>:p#6-7$<i>7]" );
         return fd;
 	}
@@ -110,8 +112,8 @@ public class TestMultipleDistanceIndex {
         ki.commit();
         
     	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
- 	    constraints.add(createConstraint("w", 0, 2));	    
- 	    constraints.add(createConstraint("s", 0, 0));
+ 	    constraints.add(createConstraint("w", 0, 2,false));	    
+ 	    constraints.add(createConstraint("s", 0, 0,false));
  	    
  	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:c", constraints, false);
@@ -139,8 +141,8 @@ public class TestMultipleDistanceIndex {
         ki.commit();
 		
 	    List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 0, 2));	    
-	    constraints.add(createConstraint("s", 1, 1));
+	    constraints.add(createConstraint("w", 0, 2,false));	    
+	    constraints.add(createConstraint("s", 1, 1,false));
 	    
 	    SpanQuery mdq;
 	    // Ordered
@@ -163,7 +165,7 @@ public class TestMultipleDistanceIndex {
 	    assertEquals(4, kr.getMatch(2).getEndPos());
 				
 		// Three constraints
-		constraints.add(createConstraint("p", 0, 0));		
+		constraints.add(createConstraint("p", 0, 0,false));		
 		mdq = createQuery("s:b", "s:c", constraints, true);
 		kr = ki.search(mdq, (short) 10);
 		assertEquals(2, kr.getTotalResults());
@@ -186,21 +188,21 @@ public class TestMultipleDistanceIndex {
     	ki.commit();
            
        	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 1, 2));	    
-	    constraints.add(createConstraint("s", 1, 2));
+	    constraints.add(createConstraint("w", 1, 2, false));	    
+	    constraints.add(createConstraint("s", 1, 2, false));
     	    
 	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:e", constraints, false);
-		kr = ki.search(mdq, (short) 10);
-		
-		assertEquals(3, kr.getTotalResults());
-		assertEquals(2, kr.getMatch(0).getLocalDocID());
-	    assertEquals(0, kr.getMatch(0).getStartPos());
-	    assertEquals(3, kr.getMatch(0).getEndPos());
-	    assertEquals(1, kr.getMatch(1).getStartPos());
-	    assertEquals(4, kr.getMatch(1).getEndPos());
-	    assertEquals(3, kr.getMatch(2).getStartPos());
-	    assertEquals(5, kr.getMatch(2).getEndPos());	
+		kr = ki.search(mdq, (short) 10);		
+
+		assertEquals(4, kr.getTotalResults());		
+	    assertEquals(3, kr.getMatch(0).getStartPos());
+	    assertEquals(6, kr.getMatch(0).getEndPos());
+	    assertEquals(2, kr.getMatch(1).getLocalDocID());
+	    assertEquals(1, kr.getMatch(2).getStartPos());
+	    assertEquals(4, kr.getMatch(2).getEndPos());
+	    assertEquals(3, kr.getMatch(3).getStartPos());
+	    assertEquals(5, kr.getMatch(3).getEndPos());	
 		
     }
     
@@ -216,8 +218,8 @@ public class TestMultipleDistanceIndex {
     	ki.commit();
     	
     	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 1, 2));	    
-	    constraints.add(createConstraint("s", 1, 2));
+	    constraints.add(createConstraint("w", 1, 2, false));	    
+	    constraints.add(createConstraint("s", 1, 2, false));
 		
 	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:c", constraints, false);
@@ -245,8 +247,8 @@ public class TestMultipleDistanceIndex {
     	ki.commit();
     	
     	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 1, 2));	    
-	    constraints.add(createConstraint("s", 1, 2));
+	    constraints.add(createConstraint("w", 1, 2, false));	    
+	    constraints.add(createConstraint("s", 1, 2, false));
 		
 	    SpanQuery mdq;	   
 		mdq = createQuery("s:c", "s:c", constraints, false);
@@ -266,39 +268,74 @@ public class TestMultipleDistanceIndex {
     }
 	
     /** Gaps
+     * 	TODO: exclusion is wrong, only need to match the first span,
+     * 
      * */
     @Test
    	public void testCase6() throws IOException {
     	ki = new KorapIndex();
-    	ki.addDoc(createFieldDoc3());
-    	ki.commit();
-    	
+    	ki.addDoc(createFieldDoc3());    	
+    	ki.commit();    	
+    	    	
+    	SpanQuery sx = new SpanTermQuery(new Term("base","s:b")); 
+		SpanQuery sy = new SpanTermQuery(new Term("base","s:c"));
+		SpanDistanceQuery sq = new SpanDistanceQuery(sx, sy, 0, 1, false, true);
+		sq.setExclusion(true);
+		
+		kr = ki.search(sq, (short) 10);
+
+		System.out.print(kr.getTotalResults()+"\n");
+		for (int i=0; i< kr.getTotalResults(); i++){
+			System.out.println(
+				kr.match(i).getLocalDocID()+" "+
+				kr.match(i).startPos + " " +
+				kr.match(i).endPos
+		    );
+		}
+		
+		sq = new SpanDistanceQuery(new SpanElementQuery("base", "s"), sx,
+				sy, 1, 1, false, true);
+		
+		kr = ki.search(sq, (short) 10);
+
+//		System.out.print(kr.getTotalResults()+"\n");
+//		for (int i=0; i< kr.getTotalResults(); i++){
+//			System.out.println(
+//				kr.match(i).getLocalDocID()+" "+
+//				kr.match(i).startPos + " " +
+//				kr.match(i).endPos
+//		    );
+//		}
+		
     	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 1, 3));	    
-	    constraints.add(createConstraint("s", 1, 1));
+	    constraints.add(createConstraint("w", 0, 1, true));	    
+	    constraints.add(createConstraint("s", 1, 1, false));
 	    
 	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:c", constraints, false);
 		kr = ki.search(mdq, (short) 10);
 		
-		assertEquals(4, kr.getTotalResults());
-	    assertEquals(0, kr.getMatch(0).getStartPos());
-	    assertEquals(3, kr.getMatch(0).getEndPos());
-	    assertEquals(1, kr.getMatch(1).getStartPos());
-	    assertEquals(3, kr.getMatch(1).getEndPos());	    
-	    assertEquals(1, kr.getMatch(2).getStartPos());
-	    assertEquals(4, kr.getMatch(2).getEndPos());
-	    assertEquals(3, kr.getMatch(3).getStartPos());
-	    assertEquals(7, kr.getMatch(3).getEndPos());	
+//		System.out.print(kr.getTotalResults()+"\n");
+//		for (int i=0; i< kr.getTotalResults(); i++){
+//			System.out.println(
+//				kr.match(i).getLocalDocID()+" "+
+//				kr.match(i).startPos + " " +
+//				kr.match(i).endPos
+//		    );
+//		}
+		
+//		assertEquals(4, kr.getTotalResults());
+//	    assertEquals(0, kr.getMatch(0).getStartPos());
+//	    assertEquals(3, kr.getMatch(0).getEndPos());
+//	    assertEquals(1, kr.getMatch(1).getStartPos());
+//	    assertEquals(3, kr.getMatch(1).getEndPos());	    
+//	    assertEquals(1, kr.getMatch(2).getStartPos());
+//	    assertEquals(4, kr.getMatch(2).getEndPos());
+//	    assertEquals(3, kr.getMatch(3).getStartPos());
+//	    assertEquals(7, kr.getMatch(3).getEndPos());	
 	    
-      /*System.out.print(kr.getTotalResults()+"\n");
-  		for (int i=0; i< kr.getTotalResults(); i++){
-  			System.out.println(
-  				kr.match(i).getLocalDocID()+" "+
-  				kr.match(i).startPos + " " +
-  				kr.match(i).endPos
-  		    );
-  		}*/
-    }
+
+    }    
+    
 }
 
