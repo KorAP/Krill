@@ -756,7 +756,7 @@ public class KorapMatch extends KorapDocument {
 
 	    if (pos > oldPos) {
 
-	      if (pos > clean.length() - 1) {
+	      if (pos > clean.length()) {
 		pos = clean.length() - 1;
 	      };
 
