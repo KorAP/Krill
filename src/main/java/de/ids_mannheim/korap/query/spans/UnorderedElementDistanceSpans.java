@@ -29,8 +29,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	
 	// contains all previous elements whose position is greater than the last 
 	// target span
-	private List<CandidateSpan> elementList; 
-	private int currentDoc;
+	private List<CandidateSpan> elementList;
 	
 	public UnorderedElementDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -44,33 +43,52 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	}
 	
 	@Override
-	protected boolean fillEmptyCandidateLists() throws IOException {
-		int position;
-		while (firstSpanList.isEmpty() && secondSpanList.isEmpty()){
-			
+	protected boolean prepareLists() throws IOException {
+		
+		if (firstSpanList.isEmpty() && secondSpanList.isEmpty()){			
 			if (hasMoreFirstSpans && hasMoreSecondSpans && hasMoreElements &&
 					findSameDoc(firstSpans, secondSpans, elements)){				
 				
-				if (currentDoc != firstSpans.doc()){
-					currentDoc = firstSpans.doc();
+				if (currentDocNum != firstSpans.doc()){
+					currentDocNum = firstSpans.doc();
 					elementList.clear();
-				}
-				
-				position = findElementPosition(firstSpans);				
-				if (position != -1)
-					firstSpanList.add(new CandidateSpan(firstSpans,position));
-				
-				position = findElementPosition(secondSpans);
-				if (position != -1)
-					secondSpanList.add(new CandidateSpan(secondSpans,position));
-									
-				hasMoreFirstSpans = firstSpans.next();
-				hasMoreSecondSpans = secondSpans.next();
+				}				
+								
+				hasMoreFirstSpans = addSpan(firstSpans,firstSpanList,hasMoreFirstSpans);
+				hasMoreSecondSpans = addSpan(secondSpans, secondSpanList, hasMoreSecondSpans);												
 			}
-			else { return false; }
+			else {
+				hasMoreSpans = false;
+				return false;
+			}
+		}		
+		else if (firstSpanList.isEmpty() && hasMoreFirstSpans && 
+				firstSpans.doc() == currentDocNum){
+			hasMoreFirstSpans = addSpan(firstSpans,firstSpanList,hasMoreFirstSpans);
 		}
+		else if (secondSpanList.isEmpty() && hasMoreSecondSpans && 
+				secondSpans.doc() == currentDocNum){
+			hasMoreSecondSpans = addSpan(secondSpans, secondSpanList, hasMoreSecondSpans);
+		}
+		
 		return true;
 	}
+	
+	private boolean addSpan(Spans span, List<CandidateSpan> list, boolean hasMoreSpan) 
+			throws IOException {
+		int position;
+		while (hasMoreSpan && span.doc() == currentDocNum){
+			position = findElementPosition(span);
+			if (position != -1){
+				list.add(new CandidateSpan(span,position));
+				hasMoreSpan = span.next();
+				return hasMoreSpan;
+			}
+			hasMoreSpan = span.next();
+		}
+		return hasMoreSpan;
+	}
+	
 	
 	/** Find the element position of the span in the element list or by advancing 
 	 * 	the element spans until encountering the span.
@@ -99,7 +117,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	 * */
 	private boolean advanceElementTo(Spans span) throws IOException {
 		while (hasMoreElements && 
-				elements.doc() == currentDoc &&
+				elements.doc() == currentDocNum &&
 				elements.start() < span.end()){
 			
 			if (span.start() >= elements.start() &&

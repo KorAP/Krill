@@ -16,7 +16,6 @@ import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.query.SpanSegmentQuery;
 
 @RunWith(JUnit4.class)
 public class TestUnorderedDistanceIndex{
@@ -252,4 +251,67 @@ public class TestUnorderedDistanceIndex{
 	    
 	    assertEquals(4, kr.totalResults());
     }
+
+    /** Nested distance queries
+     * */
+	@Test
+	public void testCase7() throws IOException{
+		//System.out.println("testcase 7");
+		ki = new KorapIndex();
+		ki.addDoc(createFieldDoc0());
+	    ki.addDoc(createFieldDoc1()); 
+	    ki.commit();    
+	    
+	    SpanQuery sq = createQuery("s:c","s:d",1,2,false);
+	    SpanQuery sq2 = new SpanDistanceQuery(
+        		sq,
+        		new SpanTermQuery(new Term("base","s:e")),
+        		1,
+        		2,
+        		false,
+        		true);
+	    kr = ki.search(sq2, (short) 10);	    
+	    //assertEquals(3, kr.totalResults());		
+	}
+	
+	@Test
+	public void testCase8() throws IOException{
+		//System.out.println("testcase 8");
+		ki = new KorapIndex();
+		for (String i : new String[] {"AUG-53507", "SEP-62389", "NOV-74813"}) {
+		    ki.addDocFile(
+		        getClass().getResource("/a00/" + i + ".json.gz").getFile(), true
+	            );
+		};
+		ki.commit();	    	
+		
+		SpanQuery sq = new SpanDistanceQuery(
+        		new SpanTermQuery(new Term("tokens","s:in")),
+        		new SpanTermQuery(new Term("tokens","s:horrendem")),
+        		0,
+        		2,
+        		false,
+        		true
+        );   
+		kr = ki.search(sq, (short) 10);
+		
+		assertEquals(3, kr.totalResults());
+		assertEquals(170, kr.getMatch(0).startPos);
+	    assertEquals(172, kr.getMatch(0).endPos);
+	    assertEquals(174, kr.getMatch(1).startPos);
+	    assertEquals(176, kr.getMatch(1).endPos);
+	    assertEquals(71, kr.getMatch(2).startPos);
+	    assertEquals(73, kr.getMatch(2).endPos);
+		
+//		System.out.print(kr.getTotalResults()+"\n");
+//		for (int i=0; i< kr.getTotalResults(); i++){
+//			System.out.println(
+//				kr.match(i).getLocalDocID()+" "+
+//				kr.match(i).startPos + " " +
+//				kr.match(i).endPos
+//		    );
+//		}
+	    
+	}
+	
 }

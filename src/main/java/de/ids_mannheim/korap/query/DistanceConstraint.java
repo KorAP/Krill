@@ -6,16 +6,19 @@ public class DistanceConstraint {
 	private SpanElementQuery elementQuery;
 	private boolean exclusion;
 	
-	public DistanceConstraint(String unit, int min, int max, boolean exclusion) {
-		this.unit = unit;
+	public DistanceConstraint(int min, int max, boolean exclusion) {
+		this.unit = "w";
 		this.minDistance = min;
 		this.maxDistance = max;
 		this.exclusion = exclusion;
 	}
 	
-	public DistanceConstraint(SpanElementQuery elementQuery, String unit, 
-			int min, int max, boolean exclusion) {
-		this(unit, min, max, exclusion);
+	public DistanceConstraint(SpanElementQuery elementQuery, int min, int max, 
+			boolean exclusion) {
+		this.unit = elementQuery.getElementStr();
+		this.minDistance = min;
+		this.maxDistance = max;
+		this.exclusion = exclusion;		
 		this.elementQuery = elementQuery;		
 	}
 	

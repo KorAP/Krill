@@ -13,6 +13,7 @@ public class CandidateSpan {
 	private long cost;
 	private Collection<byte[]> payloads;
 	private int position;
+	private CandidateSpan childSpan; // used for multiple distance with unordered constraint 
 	
 	public CandidateSpan(Spans span) throws IOException {
 		this.doc = span.doc();
@@ -83,6 +84,14 @@ public class CandidateSpan {
 
 	public void setPosition(int position) {
 		this.position = position;
+	}
+
+	public CandidateSpan getChildSpan() {
+		return childSpan;
+	}
+
+	public void setChildSpan(CandidateSpan childSpan) {
+		this.childSpan = childSpan;
 	}
 	
 	

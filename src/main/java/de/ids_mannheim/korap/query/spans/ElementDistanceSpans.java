@@ -40,7 +40,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
   		
   		hasMoreElements = elements.next();
   		hasMoreSpans = hasMoreFirstSpans && hasMoreElements;
-  		elementPosition=0;  		
+  		elementPosition=0;
 	}
 
 	@Override

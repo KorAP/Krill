@@ -7,7 +7,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.util.ToStringUtils;
 
 /** An abstract class for a Spanquery having two clauses. 
  * 

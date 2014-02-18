@@ -28,6 +28,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 	protected List<CandidateSpan> matchList;
 	private long matchCost;
 	private int matchListSpanNum; 	
+	protected int currentDocNum;
 	
 	public UnorderedDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -35,7 +36,6 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 		super(query, context, acceptDocs, termContexts);
 		minDistance = query.getMinDistance();
 		maxDistance =  query.getMaxDistance();
-		collectPayloads = query.isCollectPayloads();
 		
 		firstSpanList = new ArrayList<CandidateSpan>();
 		secondSpanList = new ArrayList<CandidateSpan>();
@@ -52,15 +52,8 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 			if (!matchList.isEmpty()){
 				setMatchProperties();				
 				return true;
-			}
-			
-			if (firstSpanList.isEmpty() && secondSpanList.isEmpty()){
-				if (fillEmptyCandidateLists()){							
-					setMatchList();
-				}
-				else { hasMoreSpans = false; }
-			}
-			else { setMatchList(); }			
+			} 			
+			if (prepareLists()) setMatchList();
 		}
 		return false;
 	}
@@ -72,7 +65,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 	 *   
 	 * 	@return true iff at least one of the candidate lists can be filled.
 	 * */
-	protected abstract boolean fillEmptyCandidateLists() throws IOException;
+	protected abstract boolean prepareLists() throws IOException;
 	
 	/** Set the list of matches between the span having the smallest position, and 
 	 * 	its candidates. Simply remove the span if it does not have any candidates.
@@ -83,6 +76,16 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 				hasMoreFirstSpans,secondSpanList);
 		hasMoreSecondSpans = setCandidateList(secondSpanList,secondSpans,
 				hasMoreSecondSpans,firstSpanList);
+//		System.out.println("--------------------");
+//		System.out.println("firstSpanList:");
+//		for (CandidateSpan cs: firstSpanList) {
+//			System.out.println(cs.getStart() +" "+ cs.getEnd());
+//		}
+//		
+//		System.out.println("secondSpanList:");
+//		for (CandidateSpan cs: secondSpanList) {
+//			System.out.println(cs.getStart() +" "+ cs.getEnd());
+//		}
 		
 		CandidateSpan currentFirstSpan, currentSecondSpan;
 		if (!firstSpanList.isEmpty() && !secondSpanList.isEmpty()){
@@ -92,12 +95,24 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 			
 			if (currentFirstSpan.getEnd() < currentSecondSpan.getEnd() ||					 
 					isLastCandidateSmaller(currentFirstSpan, currentSecondSpan)){
+//				System.out.println("current target: "+firstSpanList.get(0).getStart() +" "+firstSpanList.get(0).getEnd());				
+//				System.out.println("candidates:");
+//				for (CandidateSpan cs: secondSpanList) {
+//					System.out.println(cs.getStart() +" "+ cs.getEnd());
+//				}
+				
 				matchList = findMatches(currentFirstSpan, secondSpanList);
 				setMatchFirstSpan(currentFirstSpan);
 				matchListSpanNum = 2;
 				updateList(firstSpanList);
 			}			
 			else {
+//				System.out.println("current target: "+secondSpanList.get(0).getStart() +" "+secondSpanList.get(0).getEnd());
+//				System.out.println("candidates:");
+//				for (CandidateSpan cs: firstSpanList) {
+//					System.out.println(cs.getStart() +" "+ cs.getEnd());
+//				}
+				
 				matchList = findMatches(currentSecondSpan, firstSpanList);
 				setMatchSecondSpan(currentSecondSpan);
 				matchListSpanNum = 1;
@@ -105,9 +120,13 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 			}
 		}
 		else if (firstSpanList.isEmpty()){
+//			System.out.println("current target: "+secondSpanList.get(0).getStart() +" "+secondSpanList.get(0).getEnd());
+//			System.out.println("candidates: empty");
 			updateList(secondSpanList);			
 		}
 		else{ 
+//			System.out.println("current target: "+firstSpanList.get(0).getStart() +" "+firstSpanList.get(0).getEnd());
+//			System.out.println("candidates: empty");
 			updateList(firstSpanList);			
 		}
 	}
@@ -161,7 +180,10 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 				payloads.addAll(cs.getPayloads());
 			}
 		}
-		return new CandidateSpan(start,end,doc,cost,payloads);
+		
+		CandidateSpan match = new CandidateSpan(start,end,doc,cost,payloads);
+		match.setChildSpan(cs);
+		return match;
 	}
 
 	/** Assign the first candidate span in the match list as the current span match.
@@ -174,13 +196,15 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 		matchCost = cs.getCost();
 		matchPayload.addAll(cs.getPayloads());
 		matchList.remove(0);
-
+		
 		if (matchListSpanNum == 1)
-			setMatchFirstSpan(cs);
-		else setMatchSecondSpan(cs);
+			setMatchFirstSpan(cs.getChildSpan());
+		else setMatchSecondSpan(cs.getChildSpan());
 		
 		log.trace("Match doc#={} start={} end={}", matchDocNumber,
 				matchStartPosition,matchEndPosition);
+		//System.out.println("firstspan "+getMatchFirstSpan().getStart()+" "+ getMatchFirstSpan().getEnd());
+		//System.out.println("secondspan "+getMatchSecondSpan().getStart()+" "+ getMatchSecondSpan().getEnd());
 	}
 
 	@Override

@@ -59,10 +59,10 @@ public class TestUnorderedElementDistanceIndex {
         fd.addTV("base",
             "text",             
             "[(0-1)s:e|_1#0-1|<>:p#0-2$<i>1]" +
-            "[(1-2)s:c|_2#1-2|<>:p#1-2$<i>2]" +             
-            "[(2-3)s:d|_3#2-3|<>:p#2-3$<i>3]" +
-            "[(3-4)s:b|_4#3-4|<>:p#3-4$<i>4]" + 
-            "[(4-5)s:d|_5#4-5|<>:p#4-5$<i>5]" +             
+            "[(1-2)s:e|_2#1-2|<>:p#1-2$<i>2]" +             
+            "[(2-3)s:c|_3#2-3|<>:p#2-3$<i>3]" +
+            "[(3-4)s:e|_4#3-4|<>:p#3-4$<i>4]" + 
+            "[(4-5)s:b|_5#4-5|<>:p#4-5$<i>5]" +             
             "[(5-6)s:c|_6#5-6|<>:p#5-6$<i>6]" +
     		"[(6-7)s:e|_7#6-7|<>:p#6-7$<i>7]" +
         	"[(7-8)s:b|_8#7-8|<>:p#7-8$<i>8]");	
@@ -133,7 +133,7 @@ public class TestUnorderedElementDistanceIndex {
 	
 	/** Ensure same doc.
 	 * 	In the beginning, first and second spans are already too far from each other
-	 * 	(one-list-empty case, both-list-empty case). 
+	 * 	(one-list-empty case, both-list-empty-case).
 	 * */
 	@Test
 	public void testCase2() throws IOException{
@@ -147,10 +147,15 @@ public class TestUnorderedElementDistanceIndex {
         SpanQuery sq;        
         sq = createQuery("p", "s:b", "s:e", 0, 2,false);        
         kr = ki.search(sq, (short) 10);
-        
-        assertEquals(1,kr.getTotalResults());
-        assertEquals(6, kr.getMatch(0).startPos);
-        assertEquals(8, kr.getMatch(0).endPos);   
+
+        assertEquals(3,kr.getTotalResults());
+        assertEquals(2,kr.getMatch(0).getLocalDocID());
+        assertEquals(3, kr.getMatch(0).startPos);
+        assertEquals(5, kr.getMatch(0).endPos);
+        assertEquals(4, kr.getMatch(1).startPos);
+        assertEquals(7, kr.getMatch(1).endPos);
+        assertEquals(6, kr.getMatch(2).startPos);
+        assertEquals(8, kr.getMatch(2).endPos);
     }
 	
 	/** Multiple occurrences in an element. 	 

@@ -28,16 +28,33 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans{
 	}
 	
 	@Override
-	protected boolean fillEmptyCandidateLists() throws IOException {
-		if (hasMoreFirstSpans && hasMoreSecondSpans &&
-				ensureSameDoc(firstSpans, secondSpans)){			
-			firstSpanList.add(new CandidateSpan(firstSpans));
-			secondSpanList.add(new CandidateSpan(secondSpans));
-			hasMoreFirstSpans = firstSpans.next();
-			hasMoreSecondSpans = secondSpans.next();
-			return true;			
+	protected boolean prepareLists() throws IOException {		
+		
+		if (firstSpanList.isEmpty() && secondSpanList.isEmpty()){
+			if (hasMoreFirstSpans && hasMoreSecondSpans &&
+					ensureSameDoc(firstSpans, secondSpans)){			
+				firstSpanList.add(new CandidateSpan(firstSpans));
+				secondSpanList.add(new CandidateSpan(secondSpans));
+				hasMoreFirstSpans = firstSpans.next();
+				hasMoreSecondSpans = secondSpans.next();
+				currentDocNum = firstSpans.doc();							
+			}
+			else { 
+				hasMoreSpans = false;
+				return false;
+			}
 		}
-		return false;		
+		else if (firstSpanList.isEmpty() && hasMoreFirstSpans && 
+				firstSpans.doc() == currentDocNum){
+			firstSpanList.add(new CandidateSpan(firstSpans));
+			hasMoreFirstSpans = firstSpans.next();
+		}
+		else if (secondSpanList.isEmpty() && hasMoreSecondSpans && 
+				secondSpans.doc() == currentDocNum){
+			secondSpanList.add(new CandidateSpan(secondSpans));
+			hasMoreSecondSpans = secondSpans.next();
+		}
+		return true;
 	}
 	
 	@Override
