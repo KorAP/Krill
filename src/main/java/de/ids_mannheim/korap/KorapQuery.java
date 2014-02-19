@@ -22,8 +22,7 @@ import org.slf4j.LoggerFactory;
   negation terms (and negation subqueries), like
   [base=Der]([base=alte]|[base=junge])[base=Mann & p!=ADJA]![base=war | base=lag]
   Search for all documents containing "s:Der" and ("s:alte" or "s:junge") and "s:Mann"
-
- */
+*/
 
 /**
  * @author Nils Diewald

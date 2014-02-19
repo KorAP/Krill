@@ -257,7 +257,7 @@ public class TestFieldDocument {
 	KorapResult kr = ki.search(sqwi.toQuery(), 0, (short) 5, true, (short) 2, false, (short) 5);
 
 	// Bug:
-	System.err.println(kr.toJSON());
+	// System.err.println(kr.toJSON());
     };
 
     public static String getString (String path) {

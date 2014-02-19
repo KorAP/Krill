@@ -438,7 +438,7 @@ public class TestMatchIdentifier {
 		     "</span>",
 		     km.getSnippetHTML());
 
-	 km = ki.getMatchInfo("match-c1!d1-p0-5(7)2-3(4)8-8(2)7-8",
+	km = ki.getMatchInfo("match-c1!d1-p0-5(7)2-3(4)8-8(2)7-8",
 			     "tokens",
 			     "x",
 			     null,

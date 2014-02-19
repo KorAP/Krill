@@ -109,8 +109,8 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
 		
 		log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
 				matchEndPosition);	
-		System.out.println("firstspan "+getMatchFirstSpan().getStart()+" "+ getMatchFirstSpan().getEnd());
-		System.out.println("secondspan "+getMatchSecondSpan().getStart()+" "+ getMatchSecondSpan().getEnd());
+		// System.out.println("firstspan "+getMatchFirstSpan().getStart()+" "+ getMatchFirstSpan().getEnd());
+		// System.out.println("secondspan "+getMatchSecondSpan().getStart()+" "+ getMatchSecondSpan().getEnd());
 	}
 
 	@Override

@@ -461,6 +461,15 @@ public class KorapIndex {
     };
 
 
+    public String getMatchIDWithContext (String id) {
+	/*
+	  No includeHighlights
+	 */
+
+	return "";
+    };
+
+
     public KorapMatch getMatch (String id) {
 	return this.getMatchInfo(id, "tokens", false, null, null, false, true, false);
     };
