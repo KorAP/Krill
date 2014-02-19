@@ -56,17 +56,13 @@ public class DistanceExclusionSpan extends DistanceSpans{
 		
 		// skip the secondSpan to the right side of the firstspan
 		while (hasMoreSecondSpans && secondSpans.doc() == firstSpans.doc() &&
-				firstSpans.start() >= secondSpans.end()){
-			
-			if (isOrdered){
-				hasMoreSecondSpans = secondSpans.next();
-			}
-			else if (calculateActualDistance() > maxDistance){
-				hasMoreSecondSpans = secondSpans.next();
-			}
+				firstSpans.start() >= secondSpans.end()){		
+
 			// the firstspan is within maxDistance
-			//if (!isOrdered && calculateActualDistance() <= maxDistance){
-			else { break; }			
+			if (!isOrdered && calculateActualDistance() <= maxDistance){
+				break; 
+			}		
+			hasMoreSecondSpans = secondSpans.next();
 						
 		}		
 	}
@@ -108,7 +104,7 @@ public class DistanceExclusionSpan extends DistanceSpans{
 	    	matchPayload.addAll(firstSpans.getPayload());
   		
   		setMatchFirstSpan(new CandidateSpan(firstSpans));
-  		setMatchSecondSpan(new CandidateSpan(secondSpans));
+  		//setMatchSecondSpan(new CandidateSpan(secondSpans));
   		
   		log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
 				matchEndPosition);		

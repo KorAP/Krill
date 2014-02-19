@@ -138,7 +138,6 @@ public class TestDistanceExclusionIndex {
     	sq.setExclusion(true);
     	return sq;
     }
-
     
     private FieldDocument createFieldDoc0(){
     	FieldDocument fd = new FieldDocument();

@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.index;
+
 import java.util.*;
 import java.io.*;
 
@@ -49,7 +51,7 @@ public class TestRegexWildcardIndex {
 	KorapQuery kq = new KorapQuery("base");
 	SpanQuery sq = kq.re("s:af*e").toQuery();
 	assertEquals("SpanMultiTermQueryWrapper(base:/s:af*e/)", sq.toString());
-
+			
 	KorapSearch ks = new KorapSearch(sq);
 	ks.leftContext.setToken(true).setLength(1);
 	ks.rightContext.setToken(true).setLength(1);

@@ -8,6 +8,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
+import org.hamcrest.core.IsInstanceOf;
 
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
@@ -15,6 +16,11 @@ import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 /**	Span enumeration of matches whose two sub-spans has exactly the same 
  * 	first and second sub-sub-spans. This class basically filters the span 
  * 	matches of its child spans.
+ * 
+ * 	TODO: This doesn't accommodate distance constraint with exclusion
+ * 	Case 1: return the match from another non-exclusion constraint.
+ * 	Case 2: return only the first-span when all constraints are exclusions.
+ * 	Case 3:	spans are not in the same doc 
  * 	 
  *	@author margaretha
  * */
@@ -23,30 +29,17 @@ public class MultipleDistanceSpans extends DistanceSpans{
 	private DistanceSpans x,y;
 	private boolean isOrdered;
 	
-	public MultipleDistanceSpans(SpanDistanceQuery query,
-			AtomicReaderContext context, Bits acceptDocs,
-			Map<Term, TermContext> termContexts, 
-			Spans firstSpans, Spans secondSpans, boolean isOrdered) 
-			throws IOException {
-		super(query, context, acceptDocs, termContexts);
-		init(firstSpans, secondSpans, isOrdered);
-	}
-	
 	public MultipleDistanceSpans(SpanMultipleDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
-			Map<Term, TermContext> termContexts, 
-			Spans firstSpans, Spans secondSpans, boolean isOrdered) 
+			Map<Term, TermContext> termContexts, Spans firstSpans, 
+			Spans secondSpans, boolean isOrdered, boolean exclusion) 
 			throws IOException {
 		super(query, context, acceptDocs, termContexts);
-		init(firstSpans, secondSpans, isOrdered);
-	}
-	
-	private void init(Spans firstSpans, Spans secondSpans, 
-			boolean isOrdered) throws IOException{
-		this.isOrdered =isOrdered;
+		this.isOrdered = isOrdered;
+		this.exclusion = exclusion;		
 		x = (DistanceSpans) firstSpans;
 		y = (DistanceSpans) secondSpans;		
-		hasMoreSpans = x.next() && y.next();
+		hasMoreSpans = x.next() && y.next();		
 	}
 
 	@Override
@@ -58,8 +51,7 @@ public class MultipleDistanceSpans extends DistanceSpans{
 	
 	/** Find the next match.
 	 * */
-	protected boolean advance() throws IOException {
-		
+	protected boolean advance() throws IOException {		
 		while (hasMoreSpans && ensureSameDoc(x, y)){ 
 			if (findMatch()){
 				moveForward();
@@ -101,23 +93,41 @@ public class MultipleDistanceSpans extends DistanceSpans{
 		CandidateSpan yf = y.getMatchFirstSpan();
 		CandidateSpan ys = y.getMatchSecondSpan();
 		
-		if (xf.getStart() == yf.getStart() &&
+		if (x.isExclusion() || y.isExclusion()){			
+			if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()){
+				if (x.isExclusion() && y.isExclusion()){
+					// set x or y doesnt matter
+					setMatchProperties(x,true);
+				}
+				else if (x.isExclusion()){  
+					// set y, the usual match
+					setMatchProperties(y,true);
+				}
+				else { setMatchProperties(x,true); }
+				return true;
+			}
+		}
+		else if (xf.getStart() == yf.getStart() &&
 				xf.getEnd() == yf.getEnd() &&
 				xs.getStart() == ys.getStart() &&
 				xs.getEnd() == ys.getEnd()){
-			
-			matchStartPosition = x.start();
-			matchEndPosition = x.end();
-			matchDocNumber = x.doc();
-			matchPayload = x.matchPayload;	
-			
-			setMatchFirstSpan(x.getMatchFirstSpan());
-			setMatchSecondSpan(x.getMatchSecondSpan());
-			log.trace("doc# {}, start {}, end {}",matchDocNumber,
-					matchStartPosition,matchEndPosition);	
+			setMatchProperties(x,false);			
 			return true;
 		}		
 		return false;
+	}
+	
+
+	private void setMatchProperties(DistanceSpans span, boolean exclusion) {
+		matchStartPosition = span.start();
+		matchEndPosition = span.end();
+		matchDocNumber = span.doc();
+		matchPayload = span.matchPayload;	
+		
+		setMatchFirstSpan(span.getMatchFirstSpan());
+		if (!exclusion) setMatchSecondSpan(span.getMatchSecondSpan());
+		log.trace("doc# {}, start {}, end {}",matchDocNumber,
+				matchStartPosition,matchEndPosition);	
 	}
 
 	@Override

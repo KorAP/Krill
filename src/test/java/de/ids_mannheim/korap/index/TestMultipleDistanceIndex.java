@@ -36,13 +36,12 @@ public class TestMultipleDistanceIndex {
 		return new SpanMultipleDistanceQuery(sx, sy, constraints, isOrdered, true);
 	}
 	
-	public DistanceConstraint createConstraint(String unit, int min, int max, 
-			boolean exclusion){		
+	public DistanceConstraint createConstraint(String unit, int min, int max){		
 		if (unit.equals("w")){
-			return new DistanceConstraint(min, max, exclusion);
+			return new DistanceConstraint(min, max,false);
 		}		
 		return new DistanceConstraint(new SpanElementQuery("base", unit), 
-				min, max, exclusion);	
+				min, max,false);	
 	}
 	
     private FieldDocument createFieldDoc0() {
@@ -102,7 +101,6 @@ public class TestMultipleDistanceIndex {
         return fd;
 	}
     
-  
     /** Unordered, same sentence
      * */
     @Test
@@ -112,8 +110,8 @@ public class TestMultipleDistanceIndex {
         ki.commit();
         
     	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
- 	    constraints.add(createConstraint("w", 0, 2,false));	    
- 	    constraints.add(createConstraint("s", 0, 0,false));
+ 	    constraints.add(createConstraint("w", 0, 2));	    
+ 	    constraints.add(createConstraint("s", 0, 0));
  	    
  	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:c", constraints, false);
@@ -141,8 +139,8 @@ public class TestMultipleDistanceIndex {
         ki.commit();
 		
 	    List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 0, 2,false));	    
-	    constraints.add(createConstraint("s", 1, 1,false));
+	    constraints.add(createConstraint("w", 0, 2));	    
+	    constraints.add(createConstraint("s", 1, 1));
 	    
 	    SpanQuery mdq;
 	    // Ordered
@@ -165,7 +163,7 @@ public class TestMultipleDistanceIndex {
 	    assertEquals(4, kr.getMatch(2).getEndPos());
 				
 		// Three constraints
-		constraints.add(createConstraint("p", 0, 0,false));		
+		constraints.add(createConstraint("p", 0, 0));		
 		mdq = createQuery("s:b", "s:c", constraints, true);
 		kr = ki.search(mdq, (short) 10);
 		assertEquals(2, kr.getTotalResults());
@@ -188,8 +186,8 @@ public class TestMultipleDistanceIndex {
     	ki.commit();
            
        	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 1, 2, false));	    
-	    constraints.add(createConstraint("s", 1, 2, false));
+	    constraints.add(createConstraint("w", 1, 2));	    
+	    constraints.add(createConstraint("s", 1, 2));
     	    
 	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:e", constraints, false);
@@ -218,8 +216,8 @@ public class TestMultipleDistanceIndex {
     	ki.commit();
     	
     	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 1, 2, false));	    
-	    constraints.add(createConstraint("s", 1, 2, false));
+	    constraints.add(createConstraint("w", 1, 2));	    
+	    constraints.add(createConstraint("s", 1, 2));
 		
 	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:c", constraints, false);
@@ -247,8 +245,8 @@ public class TestMultipleDistanceIndex {
     	ki.commit();
     	
     	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 1, 2, false));	    
-	    constraints.add(createConstraint("s", 1, 2, false));
+	    constraints.add(createConstraint("w", 1, 2));	    
+	    constraints.add(createConstraint("s", 1, 2));
 		
 	    SpanQuery mdq;	   
 		mdq = createQuery("s:c", "s:c", constraints, false);
@@ -267,75 +265,76 @@ public class TestMultipleDistanceIndex {
 
     }
 	
-    /** Gaps
-     * 	TODO: exclusion is wrong, only need to match the first span,
-     * 
+    /** Exclusion
+     * 	Gaps
      * */
     @Test
    	public void testCase6() throws IOException {
     	ki = new KorapIndex();
     	ki.addDoc(createFieldDoc3());    	
-    	ki.commit();    	
-    	    	
+    	ki.commit();
+    	
+    	// First constraint - token exclusion
     	SpanQuery sx = new SpanTermQuery(new Term("base","s:b")); 
 		SpanQuery sy = new SpanTermQuery(new Term("base","s:c"));
 		SpanDistanceQuery sq = new SpanDistanceQuery(sx, sy, 0, 1, false, true);
 		sq.setExclusion(true);
 		
 		kr = ki.search(sq, (short) 10);
-
-//		System.out.print(kr.getTotalResults()+"\n");
-//		for (int i=0; i< kr.getTotalResults(); i++){
-//			System.out.println(
-//				kr.match(i).getLocalDocID()+" "+
-//				kr.match(i).startPos + " " +
-//				kr.match(i).endPos
-//		    );
-//		}
+		assertEquals(1, kr.getTotalResults());
+		// 4-5
 		
+    	// Second constraint - element distance
 		sq = new SpanDistanceQuery(new SpanElementQuery("base", "s"), sx,
-				sy, 1, 1, false, true);
-		
-		kr = ki.search(sq, (short) 10);
-
-//		System.out.print(kr.getTotalResults()+"\n");
-//		for (int i=0; i< kr.getTotalResults(); i++){
-//			System.out.println(
-//				kr.match(i).getLocalDocID()+" "+
-//				kr.match(i).startPos + " " +
-//				kr.match(i).endPos
-//		    );
-//		}
+				sy, 1, 1, false, true);		
+		kr = ki.search(sq, (short) 10);		
+		// 0-3, 1-3, 1-4, 1-5, 3-7, 4-7
+		assertEquals(6, kr.getTotalResults());
 		
     	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-	    constraints.add(createConstraint("w", 0, 1, true));	    
-	    constraints.add(createConstraint("s", 1, 1, false));
-	    
+	    constraints.add(new DistanceConstraint(0, 1,true));
+	    constraints.add(createConstraint("s", 1, 1));
+	    	    
 	    SpanQuery mdq;	   
 		mdq = createQuery("s:b", "s:c", constraints, false);
 		kr = ki.search(mdq, (short) 10);
 		
-//		System.out.print(kr.getTotalResults()+"\n");
-//		for (int i=0; i< kr.getTotalResults(); i++){
-//			System.out.println(
-//				kr.match(i).getLocalDocID()+" "+
-//				kr.match(i).startPos + " " +
-//				kr.match(i).endPos
-//		    );
-//		}
-		
-//		assertEquals(4, kr.getTotalResults());
-//	    assertEquals(0, kr.getMatch(0).getStartPos());
-//	    assertEquals(3, kr.getMatch(0).getEndPos());
-//	    assertEquals(1, kr.getMatch(1).getStartPos());
-//	    assertEquals(3, kr.getMatch(1).getEndPos());	    
-//	    assertEquals(1, kr.getMatch(2).getStartPos());
-//	    assertEquals(4, kr.getMatch(2).getEndPos());
-//	    assertEquals(3, kr.getMatch(3).getStartPos());
-//	    assertEquals(7, kr.getMatch(3).getEndPos());	
-	    
-
-    }    
+		assertEquals(2, kr.getTotalResults());
+	    assertEquals(1, kr.getMatch(0).getStartPos());
+	    assertEquals(5, kr.getMatch(0).getEndPos());
+	    assertEquals(4, kr.getMatch(1).getStartPos());
+	    assertEquals(7, kr.getMatch(1).getEndPos());
+    }
     
+    
+    /** Exclusion, multiple documents
+     * 	wait for element distance exclusion 
+     * */
+/*    @Test
+    public void testCase7() throws IOException {
+    	ki = new KorapIndex();
+    	//ki.addDoc(createFieldDoc3());
+    	ki.addDoc(createFieldDoc0());
+    	ki.addDoc(createFieldDoc2());    	
+    	ki.commit();
+    	
+    	List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+	    constraints.add(new DistanceConstraint(0, 1,true));
+	    constraints.add(new DistanceConstraint(new SpanElementQuery("base", "s"), 
+				0, 0,true));
+	    	    
+	    SpanQuery mdq;	   
+		mdq = createQuery("s:b", "s:c", constraints, false);
+		kr = ki.search(mdq, (short) 10);
+		
+		System.out.print(kr.getTotalResults()+"\n");
+		for (int i=0; i< kr.getTotalResults(); i++){
+			System.out.println(
+				kr.match(i).getLocalDocID()+" "+
+				kr.match(i).startPos + " " +
+				kr.match(i).endPos
+		    );
+		}
+	}*/
 }
 

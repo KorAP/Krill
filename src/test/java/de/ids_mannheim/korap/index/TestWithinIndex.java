@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.index;
+
 import java.util.*;
 import java.io.*;
 
@@ -946,4 +948,28 @@ public class TestWithinIndex {
 
 	assertEquals("totalResults", 0, kr.totalResults());
     };
+    
+   /** SpanElementQueries 
+    * */
+   @Test
+   public void indexExample8() throws IOException{	   
+	   	KorapIndex ki = new KorapIndex();		
+		FieldDocument fd = new FieldDocument();
+		// <a>xx <e>hi j <e>hi j</e></e></a>
+		fd.addTV("base",
+			 "xx hi j hi j",
+			 "[(0-1)s:x|i:x|_0#0-1|<>:a#1-12$<i>8]" +
+			 "[(1-2)s:x|i:x|_1#1-2]" +
+			 "[(3-4)s:h|i:h|_2#3-4|<>:e#3-12$<i>8]" +
+			 "[(4-5)s:i|i:i|_3#4-5]" +
+			 "[(6-7)s:j|i:j|_4#6-7]" +
+			 "[(8-9)s:h|i:h|_5#8-9|<>:e#8-9$<i>8]" +
+			 "[(9-10)s:i|i:i|_6#9-10]" +
+			 "[(11-12)s:j|i:j|_7#11-12]");
+		ki.addDoc(fd);
+		
+		
+	}
+   
+    
 };

@@ -18,6 +18,7 @@ import de.ids_mannheim.korap.query.spans.MultipleDistanceSpans;
  * 	No repetition of constraints of the same type is allowed. For example,
  * 	there must only exactly one constraint for word/token-based distance.
  * 	
+ * 	Warning: Exclusion constraint is not suitable yet!
  * 	@author margaretha
  * */
 public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
@@ -71,8 +72,8 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 			sb.append(":");
 			sb.append(c.getMaxDistance());
 			sb.append("], ");		
-			sb.append( isOrdered ? "ordered, " : "notOrdered, " );
-			sb.append( c.isExclusion() ? "excluded)]" : "notExcluded)");			
+			sb.append(isOrdered ? "ordered, " : "notOrdered, ");
+			sb.append(c.isExclusion() ? "excluded)]" : "notExcluded)");			
 			if (i < size-1) sb.append(", ");
 		}		
 		sb.append("])");
@@ -92,6 +93,7 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 		SpanDistanceQuery sdq,sdq2;		
 		Spans ds,ds2;
 		MultipleDistanceSpans mds = null;
+		boolean exclusion;
 		
 		c = constraints.get(0);
 		sdq = createSpanDistanceQuery(c);
@@ -100,9 +102,10 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 		for (int i=1; i< constraints.size(); i++){
 			sdq2 = createSpanDistanceQuery(constraints.get(i));
 			ds2 = sdq2.getSpans(context, acceptDocs, termContexts);			
-						
+			
+			exclusion = sdq.isExclusion() && sdq2.isExclusion();
 			mds = new MultipleDistanceSpans(this, context, acceptDocs, 
-					termContexts, ds, ds2, isOrdered); 
+					termContexts, ds, ds2, isOrdered, exclusion); 
 			ds = mds;
 		}
 		
@@ -113,16 +116,19 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 	 * 	@return a SpanDistanceQuery 
 	 * */
 	private SpanDistanceQuery createSpanDistanceQuery(DistanceConstraint c) {		
-				
+		SpanDistanceQuery sdq;		
 		if (c.getUnit().equals("w")){
-			return new SpanDistanceQuery(firstClause, secondClause,
+			sdq = new SpanDistanceQuery(firstClause, secondClause,
 					c.getMinDistance(), c.getMaxDistance(),isOrdered, 
-					collectPayloads);
+					collectPayloads);		
 		}
-		
-		return new SpanDistanceQuery(c.getElementQuery(), firstClause, 
-				secondClause, c.getMinDistance(), c.getMaxDistance(),
-				isOrdered, collectPayloads);
+		else {
+			sdq = new SpanDistanceQuery(c.getElementQuery(), firstClause, 
+					secondClause, c.getMinDistance(), c.getMaxDistance(),
+					isOrdered, collectPayloads);
+		}
+		sdq.setExclusion(c.isExclusion());
+		return sdq;
 	}
 
 	public List<DistanceConstraint> getConstraints() {

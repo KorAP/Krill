@@ -25,11 +25,13 @@ public abstract class DistanceSpans extends SimpleSpans{
 
 	protected CandidateSpan matchFirstSpan,matchSecondSpan;	
 	protected Logger log = LoggerFactory.getLogger(DistanceSpans.class);
+	protected boolean exclusion; // because MultipleDistanceQuery doesn't have this property
     
 	public DistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(query, context, acceptDocs, termContexts);
+		exclusion = query.isExclusion();
 	}
 	
 	public DistanceSpans(SpanMultipleDistanceQuery query,
@@ -83,6 +85,14 @@ public abstract class DistanceSpans extends SimpleSpans{
 
 	public void setMatchSecondSpan(CandidateSpan matchSecondSpan) {
 		this.matchSecondSpan = matchSecondSpan;
+	}
+
+	public boolean isExclusion() {
+		return exclusion;
+	}
+
+	public void setExclusion(boolean exclusion) {
+		this.exclusion = exclusion;
 	}
 
 }
