@@ -140,7 +140,7 @@ public class KorapResult {
     };
 
     public void setBenchmarkSearchResults (long t1, long t2) {
-	this.benchmarkSearchResults = (t2 - t1) * 1e-6 + " ms";
+	this.benchmarkSearchResults = ((double)(t2 - t1) / 1000000000.0) + " s";
     };
 
     public String getBenchmarkSearchResults () {
@@ -148,7 +148,7 @@ public class KorapResult {
     };
 
     public void setBenchmarkHitCounter (long t1, long t2) {
-	this.benchmarkHitCounter = (t2 - t1) * 1e-6 + " ms";
+	this.benchmarkHitCounter = ((double)(t2 - t1) / 1000000000.0) + " s";
     };
 
     public String getBenchmarkHitCounter () {

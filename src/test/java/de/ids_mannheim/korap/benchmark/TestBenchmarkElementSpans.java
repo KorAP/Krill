@@ -79,9 +79,11 @@ public class TestBenchmarkElementSpans {
 	};
 
 	t2 = System.nanoTime();
-	
-	System.out.println("It took " + ((t2 - t1) / rounds) * 1e-6 + " ms per query");
 
+	//	long seconds = (long) (t2 - t1 / 1000) % 60 ;
+	double seconds = (double)(t2-t1) / 1000000000.0;
+	
+	System.out.println("It took " + seconds + " seconds");
 
 
 	//	kc = new KorapCollection("{\"meta\":[{\"@type\":\"korap:meta-filter\",\"@value\":{\"@type\":\"korap:term\",\"@field\":\"korap:field#corpusID\",\"@value\":\"A00\"}},{\"@type\":\"korap:meta-extend\",\"@value\":{\"@type\":\"korap:term\",\"@field\":\"korap:field#corpusID\",\"@value\":\"A01\"}}]}");
