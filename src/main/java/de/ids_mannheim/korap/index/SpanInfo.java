@@ -17,6 +17,9 @@ public class SpanInfo {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
+        // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
 
     public SpanInfo (PositionsToOffset pto, int localDocID) {
 	this.terms      = new ArrayList<TermInfo>(64);
@@ -46,7 +49,8 @@ public class SpanInfo {
 	// Add character offset information to terms that are
 	// missing this information
 	for (TermInfo t : this.terms) {
-	    log.trace("Check offsets for {} and {}", t.getStartPos(), t.getEndPos());
+	    if (DEBUG)
+		log.trace("Check offsets for {} and {}", t.getStartPos(), t.getEndPos());
 	    found = true;
 	    if (t.getStartChar() == -1) {
 		if (this.startChar.containsKey(t.getStartPos()))
@@ -70,7 +74,8 @@ public class SpanInfo {
 		    t.getEndChar()
 	        );
 	    else {
-		log.trace("{} can't be found!", t.getAnnotation());
+		if (DEBUG)
+		    log.trace("{} can't be found!", t.getAnnotation());
 		this.pto.add(this.localDocID, t.getStartPos());
 		this.pto.add(this.localDocID, t.getStartPos());
 	    };

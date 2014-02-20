@@ -65,7 +65,15 @@ Problem: Es ist nicht garantiert, dass bei
 die Wrapreihenfolge a,b,c rauskommt!
 */
 
+/**
+ * @author ndiewald
+ */
+
 public class WithinSpans extends Spans {
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
     private boolean firstTime = true;
     private boolean more = false;
 
@@ -76,9 +84,15 @@ public class WithinSpans extends Spans {
 
     /** Indicates that the wrap and the embedded spans are in the same doc */
     private boolean inSameDoc = false;
-    private int wrapDoc;
-    private int embeddedDoc;
-    private int wrapStart, wrapEnd, embeddedStart, embeddedEnd;
+
+    private int
+	wrapDoc,
+	embeddedDoc,
+	wrapStart,
+	wrapEnd,
+	embeddedStart,
+	embeddedEnd;
+
     private Collection<byte[]> embeddedPayload;
 
     // Wrap span
@@ -106,7 +120,8 @@ public class WithinSpans extends Spans {
 			Map<Term,TermContext> termContexts,
 			short flag) throws IOException {
 
-	log.trace("Init WithinSpans");
+	if (DEBUG)
+	    log.trace("Init WithinSpans");
 
 	// Init copies
 	this.matchPayload = new LinkedList<byte[]>();
@@ -130,17 +145,24 @@ public class WithinSpans extends Spans {
     /** Move to the next match, returning true iff any such exists. */
     @Override
     public boolean next () throws IOException {
-	log.trace("Next with doc {}", matchDoc);
+	if (DEBUG)
+	    log.trace("Next with doc {}", matchDoc);
 
 	// Check for init next
 	if (firstTime) {
 	    firstTime = false;
 	    if (!embeddedSpans.next() || !wrapSpans.next()) {
-		log.trace("No next in firstSpan nor in secondSpan 1");
+
+		if (DEBUG)
+		    log.trace("No next in firstSpan nor in secondSpan 1");
+		
 		more = false;
 		return false;
 	    };
-	    log.trace("Spans are initialized");
+
+	    if (DEBUG)
+		log.trace("Spans are initialized");
+	    
 	    more = true;
 	    wrapStart = wrapSpans.start();
 	    wrapEnd = wrapSpans.end();
@@ -156,16 +178,20 @@ public class WithinSpans extends Spans {
 		embeddedPayload.addAll(payload);
 	    };
 
-	    log.trace("Init spans: {}", _actPos());
+	    if (DEBUG)
+		log.trace("Init spans: {}", _actPos());
 
 	    if (embeddedDoc == matchDoc) {
 		inSameDoc = true;
-		log.trace("Is now inSameDoc");
+		if (DEBUG)
+		    log.trace("Is now inSameDoc");
 	    }
-	    else {
+	    else if (DEBUG) {
 		log.trace("Is not inSameDoc");
 	    };
-	    log.trace("Next with doc {} (wrap) and {} (embedded)", wrapDoc, embeddedDoc);
+
+	    if (DEBUG)
+		log.trace("Next with doc {} (wrap) and {} (embedded)", wrapDoc, embeddedDoc);
 	};
 
 	matchPayload.clear();
@@ -177,25 +203,27 @@ public class WithinSpans extends Spans {
      * @return true iff there is such a match.
      */
     private boolean advanceAfterCheck() throws IOException {
-	log.trace("advanceAfterChecked inSameDoc: {} and more: {}", inSameDoc, more);
-	log.trace("advanceAfterCheck with doc {} (wrap) and {} (embedded)", wrapDoc, embeddedDoc);
+	if (DEBUG) {
+	    log.trace("advanceAfterChecked inSameDoc: {} and more: {}", inSameDoc, more);
+	    log.trace("advanceAfterCheck with doc {} (wrap) and {} (embedded)", wrapDoc, embeddedDoc);
+	};
 
 	// There are more spans, and both spans are either in the
 	// same doc or can be forwarded to the same doc.
 	while (more && (inSameDoc || toSameDoc())) {
 
-	    log.trace("There are more spans in doc {}", embeddedDoc);
+	    if (DEBUG)
+		log.trace("There are more spans in doc {}", embeddedDoc);
 	    
 	    /* spans are in the same doc */
-	    if (within()) {
+	    if (within())
 		return true;
-	    }
-	    else {
+	    else if (DEBUG)
 		log.trace("No within");
-	    };
 	};
 
-	log.trace("No more matches");
+	if (DEBUG)
+	    log.trace("No more matches");
 
 	return false; // no more matches
     };
@@ -203,7 +231,8 @@ public class WithinSpans extends Spans {
 
     /** Advance the subSpans to the same document */
     private boolean toSameDoc () throws IOException {
-	log.trace("toSameDoc");
+	if (DEBUG)
+	    log.trace("toSameDoc");
 
 	/*
 	wrapDoc = wrapSpansByDoc.doc();
@@ -212,14 +241,17 @@ public class WithinSpans extends Spans {
 	*/
 
 	if (wrapDoc != embeddedDoc) {
-	    log.trace("Docs not identical: {} vs {}", wrapDoc, embeddedDoc);
+	    if (DEBUG)
+		log.trace("Docs not identical: {} vs {}", wrapDoc, embeddedDoc);
 
 	    spanStore1.clear(); // = new LinkedList<KorapLongSpan>();
 	    spanStore2.clear(); // = new LinkedList<KorapLongSpan>();
 
 	    if (wrapDoc < embeddedDoc) {
-		log.trace("Skip wrap from {} to {}", wrapDoc, embeddedDoc);
-		if (!wrapSpansByDoc.skipTo(embeddedDoc)) {
+		if (DEBUG)
+		    log.trace("Skip wrap from {} to {}", wrapDoc, embeddedDoc);
+		
+		if (wrapSpansByDoc.doc() >= embeddedDoc || !wrapSpansByDoc.skipTo(embeddedDoc)) {
 		    more = false;
 		    inSameDoc = false;
 		    return false;
@@ -227,29 +259,33 @@ public class WithinSpans extends Spans {
 		wrapDoc = wrapSpans.doc();
 	    }
 	    else if (wrapDoc > embeddedDoc) {
-		log.trace("Skip embedded from {} to {}", embeddedSpans.doc(), wrapDoc);
+		if (DEBUG)
+		    log.trace("Skip embedded from {} to {}", embeddedSpans.doc(), wrapDoc);
+		
 		//		if (!embeddedSpansByDoc.skipTo( wrapDoc )) {
 		if (wrapDoc != embeddedSpans.doc()) {
-		    if (embeddedSpans.doc() == DocIdSetIterator.NO_MORE_DOCS || !embeddedSpans.skipTo( wrapDoc )) {
+		    if (embeddedSpans.doc() == DocIdSetIterator.NO_MORE_DOCS ||
+			!(embeddedSpans.doc() < wrapDoc && embeddedSpans.skipTo( wrapDoc ))) {
 			more = false;
 			inSameDoc = false;
 			return false;
 		    };
 		}
-		else {
+		else
 		    _add_current();
-		    //		    embeddedDoc = embeddedSpans.doc();
-		};
+		// embeddedDoc = embeddedSpans.doc();
 	    };
 	}
-	else {
+	else if (DEBUG)
 	    log.trace("Docs identical");
-	};
+
 	embeddedStart = embeddedSpans.start();
 	embeddedEnd = embeddedSpans.end();
-	log.trace("The new embedded start is {}-{}", embeddedStart, embeddedEnd);
-	inSameDoc = true;
-	return true;
+
+	if (DEBUG)
+	    log.trace("The new embedded start is {}-{}", embeddedStart, embeddedEnd);
+	
+	return inSameDoc = true;
     };
 
 
@@ -267,20 +303,27 @@ public class WithinSpans extends Spans {
      * Most implementations are considerably more efficient than that.
      */
     public boolean skipTo (int target) throws IOException {
-	log.trace("skipTo {}", target);
+	if (DEBUG)
+	    log.trace("skipTo {}", target);
 
 	// Check for init next
 	if (firstTime) {
 	    firstTime = false;
 	    if (!embeddedSpans.next() || !wrapSpans.next()) {
-		log.trace("No next in firstSpan nor in secondSpan 2");
+		if (DEBUG)
+		    log.trace("No next in firstSpan nor in secondSpan 2");
 		more = false;
 		return false;
 	    };
 	    more = true;
+
+	    // WrapSpans
 	    wrapStart = wrapSpans.start();
 	    wrapEnd = wrapSpans.end();
-	    wrapDoc = embeddedSpans.doc();
+	    // wrapDoc = embeddedSpans.doc();
+	    wrapDoc = wrapSpans.doc();
+
+	    // EmbeddedSpans
 	    embeddedStart = embeddedSpans.start();
 	    embeddedEnd = embeddedSpans.end();
 	    embeddedDoc = embeddedSpans.doc();
@@ -297,10 +340,8 @@ public class WithinSpans extends Spans {
 	    }
 
 	    // Can't be skipped to target
-	    else {
-		more = false;
-		return false;
-	    };
+	    else
+		return more = false;
 	};
 
 	matchPayload.clear();
@@ -317,7 +358,8 @@ public class WithinSpans extends Spans {
 
 
     private boolean within () throws IOException {
-	log.trace("within");
+	if (DEBUG)
+	    log.trace("within");
 	
 	while (more && inSameDoc) {
 
@@ -338,11 +380,11 @@ public class WithinSpans extends Spans {
 	    //  |-|"
 	    // |---|
 	    if (wrapStart > embeddedStart) {
-		log.trace("[Case] 1-5 with {}", _actPos());
+		if (DEBUG)
+		    log.trace("[Case] 1-5 with {}", _actPos());
 
-		if (this.fetchNext()) {
+		if (this.fetchNext())
 		    continue;
-		};
 
 		// Forward wrapSpan
 		if (wrapSpans.next()) {
@@ -354,9 +396,7 @@ public class WithinSpans extends Spans {
 		    };
 		};
 
-		this.more = false;
-		this.inSameDoc = false;
-		return false;
+		return this.more = this.inSameDoc = false;
 	    };
 
 	    // Get wrapEnd
@@ -366,11 +406,14 @@ public class WithinSpans extends Spans {
 	    embedded.start = embeddedStart;
 	    embedded.end = embeddedEnd;
 	    embedded.doc = embeddedDoc;
+
 	    if (embeddedPayload != null)
 		embedded.payload = embeddedPayload;
 
 	    this.spanStore1.add(embedded);
-	    log.trace("pushed to spanStore1: {}", embedded.toString());
+	    
+	    if (DEBUG)
+		log.trace("pushed to spanStore1: {}", embedded.toString());
 
 
 	    // Case 12
@@ -380,22 +423,31 @@ public class WithinSpans extends Spans {
 	    // |---|
 	    //       |-|
 	    if (wrapEnd <= embeddedStart) {
-		log.trace("[Case] 12-13 with {}", _actPos());
+		if (DEBUG)
+		    log.trace("[Case] 12-13 with {}", _actPos());
 
 		// Copy content of spanStores
 		if (!spanStore1.isEmpty()) {
-		    log.trace("First store is not empty - copy to second store!");
+		    if (DEBUG)
+			log.trace("First store is not empty - copy to second store!");
+		    
 		    spanStore2.addAll(0, (LinkedList<KorapLongSpan>) spanStore1.clone());
 		    spanStore1.clear();
-		    log.trace("Second store is now: {}", spanStore2.toString());
+		    
+		    if (DEBUG)
+			log.trace("Second store is now: {}", spanStore2.toString());
 		};
 
 		// Forward wrapSpan
-		log.trace("Try to forward wrapspan");
+		if (DEBUG)
+		    log.trace("Try to forward wrapspan");
 
 		if (wrapSpans.next()) {
 		    wrapDoc = wrapSpans.doc();
-		    log.trace("wrapDoc is now {} while embeddedDoc is {}", wrapDoc, embeddedDoc);
+		    
+		    if (DEBUG)
+			log.trace("wrapDoc is now {} while embeddedDoc is {}", wrapDoc, embeddedDoc);
+		    
 		    if (this.toSameDoc()) {
 			wrapStart = wrapSpans.start();
 			wrapEnd = wrapSpans.end();
@@ -403,13 +455,11 @@ public class WithinSpans extends Spans {
 			    continue;
 		    };
 		}
-		else {
+		else if (DEBUG) {
 		    log.trace("Unable to forward wrapspan");
 		};
 
-		this.inSameDoc = false;
-		this.more = false;
-		return false;
+		return this.inSameDoc = this.more = false;
 	    }
 
 
@@ -420,12 +470,17 @@ public class WithinSpans extends Spans {
 		// |---|
 		// |-|
 		if (wrapEnd > embeddedEnd) {
-		    log.trace("[Case] 6 with {}", _actPos());
+		    if (DEBUG)
+			log.trace("[Case] 6 with {}", _actPos());
 
 		    // neither match nor endWith
 		    if (this.flag < (short) 2) {
-			_setMatch(embedded);
-			log.trace("MATCH1!! with {}", _actPos());
+
+			_setMatch(embedded.payload);
+
+			if (DEBUG)
+			    log.trace("MATCH1!! with {}", _actPos());
+			
 			fetchTwoNext();
 			return true;
 		    };
@@ -438,10 +493,14 @@ public class WithinSpans extends Spans {
 		// |---|
 		// |---|
 		else if (wrapEnd == embeddedEnd) {
-		    log.trace("[Case] 7 with {}", _actPos());
+		    if (DEBUG)
+			log.trace("[Case] 7 with {}", _actPos());
 
-		    _setMatch(embedded);
-		    log.trace("MATCH2!! with {}", _actPos());
+		    _setMatch(embedded.payload);
+
+		    if (DEBUG)
+			log.trace("MATCH2!! with {}", _actPos());
+		    
 		    fetchTwoNext();
 		    return true;
 		};
@@ -450,7 +509,9 @@ public class WithinSpans extends Spans {
 		// |-|
 		// |---|
 		// wrapEnd < embeddedEnd
-		log.trace("[Case] 8 with {}", _actPos());
+		if (DEBUG)
+		    log.trace("[Case] 8 with {}", _actPos());
+		
 		fetchTwoNext();
 		continue;
 	    };
@@ -462,12 +523,16 @@ public class WithinSpans extends Spans {
 	    // |---|
 	    //  |-|
 	    if (wrapEnd > embeddedEnd) {
-		log.trace("[Case] 9 with {}", _actPos());
+		if (DEBUG)
+		    log.trace("[Case] 9 with {}", _actPos());
 
 		// neither match nor endWith
 		if (this.flag == (short) 0) {
-		    _setMatch(embedded);
-		    log.trace("MATCH3!! with {}", _actPos());
+		    _setMatch(embedded.payload);
+
+		    if (DEBUG)
+			log.trace("MATCH3!! with {}", _actPos());
+		    
 		    fetchTwoNext();
 		    return true;
 		};
@@ -479,12 +544,16 @@ public class WithinSpans extends Spans {
 	    // |---|
 	    //   |-|
 	    else if (wrapEnd == embeddedEnd) {
-		log.trace("[Case] 10 with {}", _actPos());
+		if (DEBUG)
+		    log.trace("[Case] 10 with {}", _actPos());
 
 		// neither match nor endWith
 		if (this.flag == (short) 0 || this.flag == (short) 2) {
-		    _setMatch(embedded);
-		    log.trace("MATCH4!! with {}", _actPos());
+		    _setMatch(embedded.payload);
+		    
+		    if (DEBUG)
+			log.trace("MATCH4!! with {}", _actPos());
+		    
 		    fetchTwoNext();
 		    return true;
 		};
@@ -497,30 +566,35 @@ public class WithinSpans extends Spans {
 	    // |---|
 	    //   |---|
 	    // wrapEnd < embeddedEnd
-	    log.trace("[Case] 11 with {}", _actPos());
+	    if (DEBUG)
+		log.trace("[Case] 11 with {}", _actPos());
+	    
 	    fetchTwoNext();
 	    continue;
 	};
 
-	this.more = false;
-	return false;
+	return this.more = false;
     };
 
 
     private boolean fetchNext () throws IOException {
-
 	// Fetch span from first store
 	if (spanStore1.isEmpty()) {
-	    log.trace("First store is empty");
+
+	    if (DEBUG)
+		log.trace("First store is empty");
+	    
 	    return fetchTwoNext();
 	};
 
 	KorapLongSpan current = spanStore1.removeFirst();
-	log.trace("Fetch from first store: {}", current.toString());
+	if (DEBUG)
+	    log.trace("Fetch from first store: {}", current.toString());
 
 	embeddedStart = current.start;
 	embeddedEnd = current.end;
 	embeddedDoc = current.doc;
+	
 	if (current.payload != null)
 	    embeddedPayload = current.payload;
 
@@ -532,22 +606,28 @@ public class WithinSpans extends Spans {
 
 	// Fetch span from second store
 	if (spanStore2.isEmpty()) {
-	    log.trace("Second store is empty");
+	    if (DEBUG)
+		log.trace("Second store is empty");
 
 	    // Forward spans
 	    if (this.embeddedSpans.next()) {
-		log.trace("Forwarded embeddedSpans");
+		if (DEBUG)
+		    log.trace("Forwarded embeddedSpans");
 
 		if (this.embeddedSpans.doc() != wrapDoc && !spanStore1.isEmpty()) {
 
-		    log.trace("No docmatch and still stuff in store");
-		    log.trace("First store is not empty - copy to second store!");
+		    if (DEBUG) {
+			log.trace("No docmatch and still stuff in store");
+			log.trace("First store is not empty - copy to second store!");
+		    };
+		    
 		    spanStore2.addAll(0, (LinkedList<KorapLongSpan>) spanStore1.clone());
 		    spanStore1.clear();
 
 		    _add_current();
 
-		    log.trace("Second store is now: {}", spanStore2.toString());
+		    if (DEBUG)
+			log.trace("Second store is now: {}", spanStore2.toString());
 		}
 		else {
 		    embeddedStart = embeddedSpans.start();
@@ -555,37 +635,44 @@ public class WithinSpans extends Spans {
 		    embeddedDoc = embeddedSpans.doc();
 
 		    if (embeddedSpans.isPayloadAvailable()) {
-			Collection<byte[]> payload = embeddedSpans.getPayload();
-			// Maybe just clear
-			embeddedPayload = new ArrayList<byte[]>(payload.size());
-			embeddedPayload.addAll(payload);
+			embeddedPayload.clear();
+			embeddedPayload.addAll(embeddedSpans.getPayload());
 		    };
 
 		    return this.toSameDoc();
 		};
 	    }
-	    else {
+	    else if (DEBUG)
 		log.trace("Forwarded embeddedSpans failed");
-	    };
 
-	    log.trace("EmbeddedDoc: " + embeddedDoc);
+	    
+	    if (DEBUG)
+		log.trace("EmbeddedDoc: " + embeddedDoc);
 
 	    // Forward wrapSpan
-	    log.trace("Try to forward wrapspan");
+	    if (DEBUG)
+		log.trace("Try to forward wrapspan");
+	    
 	    if (wrapSpans.next()) {
 		wrapDoc = wrapSpans.doc();
 		if (this.toSameDoc()) {	    
 		    wrapStart = wrapSpans.start();
 		    wrapEnd = wrapSpans.end();
 
-		    log.trace("WrapSpan forwarded");
+		    if (DEBUG)
+			log.trace("WrapSpan forwarded");
 
 		    // Copy content of spanStores
 		    if (!spanStore1.isEmpty()) {
-			log.trace("First store is not empty - copy to second store!");
+
+			if (DEBUG)
+			    log.trace("First store is not empty - copy to second store!");
+			
 			spanStore2.addAll(0, (LinkedList<KorapLongSpan>) spanStore1.clone());
 			spanStore1.clear();
-			log.trace("Second store is now: {}", spanStore2.toString());
+
+			if (DEBUG)
+			    log.trace("Second store is now: {}", spanStore2.toString());
 		    };
 
 		    return this.fetchTwoNext();
@@ -593,14 +680,16 @@ public class WithinSpans extends Spans {
 	    };
 
 	    // Don't know.
-	    log.trace("No more fetchNext()");
+	    if (DEBUG)
+		log.trace("No more fetchNext()");
 
-	    more = false;
-	    return false;
+	    return more = false;
 	};
 
 	KorapLongSpan current = spanStore2.removeFirst();
-	log.trace("Fetch from second store: {}", current.toString());
+	
+	if (DEBUG)
+	    log.trace("Fetch from second store: {}", current.toString());
 
 	embeddedStart = current.start;
 	embeddedEnd = current.end;
@@ -614,19 +703,17 @@ public class WithinSpans extends Spans {
     /*
 TODO: Maybe ignore "embedded" parameter and use embeddedPayload directly
      */
-    private void _setMatch (KorapLongSpan embedded) throws IOException {
+    private void _setMatch (Collection<byte[]> embeddedPayload) throws IOException {
 	matchStart = wrapStart;
 	matchEnd = wrapEnd;
 	matchDoc = embeddedDoc;
 	matchPayload.clear();
 
-	if (embedded.payload != null)
-	    matchPayload.addAll(embedded.payload);
+	if (embeddedPayload != null)
+	    matchPayload.addAll(embeddedPayload);
 
-	if (wrapSpans.isPayloadAvailable()) {
-	    Collection<byte[]> payload = wrapSpans.getPayload();
-	    matchPayload.addAll(payload);
-	};
+	if (wrapSpans.isPayloadAvailable())
+	    matchPayload.addAll(wrapSpans.getPayload());
     };
 
 
@@ -637,13 +724,17 @@ TODO: Maybe ignore "embedded" parameter and use embeddedPayload directly
 	embedded.doc = embeddedSpans.doc();
 
 	if (embeddedSpans.isPayloadAvailable()) {
-	    Collection<byte[]> payload = embeddedSpans.getPayload();
-	    embedded.payload = new ArrayList<byte[]>(payload.size());
-	    embedded.payload.addAll(payload);
+	    if (embedded.payload == null)
+		embedded.payload = new ArrayList<byte[]>(5);
+	    else
+		embedded.payload.clear();
+	    embedded.payload.addAll(embeddedSpans.getPayload());
 	};
 
 	this.spanStore2.add(embedded);	    
-	log.trace("pushed to spanStore2: {}", embedded.toString());  
+
+	if (DEBUG)
+	    log.trace("pushed to spanStore2: {}", embedded.toString());  
     };
 
 

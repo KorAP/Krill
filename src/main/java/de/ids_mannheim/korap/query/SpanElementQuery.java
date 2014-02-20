@@ -27,7 +27,7 @@ public class SpanElementQuery extends SpanQuery {
     private String field;
     
     /** Constructor. */
-    public SpanElementQuery(String field, String term) {
+    public SpanElementQuery (String field, String term) {
 	StringBuilder sb = new StringBuilder("<>:");
 	this.field = field;
 	this.elementStr = term;
@@ -94,43 +94,41 @@ public class SpanElementQuery extends SpanQuery {
 		final Terms terms = fields.terms(element.field());
 		if (terms != null) {
 		    final TermsEnum termsEnum = terms.iterator(null);
-		    if (termsEnum.seekExact(element.bytes(), true)) { 
+		    if (termsEnum.seekExact(element.bytes(), true))
 			state = termsEnum.termState();
-		    } else {
+		    else
 			state = null;
-		    }
-		} else {
-		    state = null;
 		}
-	    } else {
-		state = null;
+		else
+		    state = null;
 	    }
-	} else {
+	    else
+		state = null;
+	}
+	else
 	    state = termContext.get(context.ord);
-	};
-    
-	if (state == null) { // term is not present in that reader
+
+	
+	if (state == null) // term is not present in that reader
 	    return ElementSpans.EMPTY_ELEMENT_SPANS;
-	};
     
 	final TermsEnum termsEnum = context.reader().terms(element.field()).iterator(null);
 	termsEnum.seekExact(element.bytes(), state);
     
 	final DocsAndPositionsEnum postings = termsEnum.docsAndPositions(acceptDocs, null, DocsAndPositionsEnum.FLAG_PAYLOADS);
 
-	if (postings != null) {
+	if (postings != null)
 	    return new ElementSpans(postings, element);
-	};
 
 	// element does exist, but has no positions
 	throw new IllegalStateException("field \"" + element.field() + "\" was indexed without position data; cannot run SpanElementQuery (element=" + element.text() + ")");
-    }
+    };
 
-	public String getElementStr() {
-		return elementStr;
-	}
+    public String getElementStr () {
+	return elementStr;
+    };
 
-	public void setElementStr(String elementStr) {
-		this.elementStr = elementStr;
-	};
+    public void setElementStr (String elementStr) {
+	this.elementStr = elementStr;
+    };
 };

@@ -56,7 +56,5 @@ public abstract class KorapSpan implements Comparable<KorapSpan>, Cloneable {
 	    .toString();
     };
 
-    /*
-equals und hashcode implementieren
-     */
+    // equals und hashcode implementieren
 };

@@ -13,6 +13,9 @@ public class TermInfo implements Comparable<TermInfo> {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
 
     private String foundry, layer, value, term, type, annotation;
     // type can be "term", "pos", "span", "rel-src", "rel-target"
@@ -83,7 +86,8 @@ public class TermInfo implements Comparable<TermInfo> {
 
 	// Analyze term value
 	if (ttype != 1) {
-	    log.trace("Check {} for {}", tterm, prefixRegex.toString());
+	    if (DEBUG)
+		log.trace("Check {} for {}", tterm, prefixRegex.toString());
 	    matcher = prefixRegex.matcher(tterm);
 	    if (matcher.matches() && matcher.groupCount() == 3) {
 		this.annotation = tterm;

@@ -1,0 +1,20 @@
+{
+    "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+    "query": {
+	"@type": "korap:token", 
+	"wrap" : {
+	    "@type": "korap:term", 
+	    "layer": "orth",
+	    "key" : "Buchstabe"
+	}
+    },
+    "meta" : {
+	"count": 100,
+	"cutOff": false,
+	"context":{
+	    "left": [ "token", 10 ],
+	    "right": [ "token", 10 ]
+	},
+	"startPage": 1
+    }
+}

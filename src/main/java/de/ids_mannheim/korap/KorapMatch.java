@@ -37,6 +37,7 @@ import org.apache.lucene.document.Document;
  */
 @JsonInclude(Include.NON_NULL)
 public class KorapMatch extends KorapDocument {
+
     ObjectMapper mapper = new ObjectMapper();
 
     // Snippet information
@@ -91,6 +92,9 @@ public class KorapMatch extends KorapDocument {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
 
     /**
      * Constructs a new KorapMatch object.
@@ -203,7 +207,9 @@ public class KorapMatch extends KorapDocument {
 
 	if (this.highlight == null)
 	    this.highlight = new ArrayList<Highlight>(16);
-	log.trace("Add highlight {} from {} to {}", hl.number, hl.start, hl.end);
+
+	if (DEBUG)
+	    log.trace("Add highlight {} from {} to {}", hl.number, hl.start, hl.end);
 
 	this._reset();
 
@@ -376,13 +382,15 @@ public class KorapMatch extends KorapDocument {
 	    return false;
 	};
 
-	log.trace("Start highlight processing ...");
+	if (DEBUG)
+	    log.trace("Start highlight processing ...");
 
 	PositionsToOffset pto = this.positionsToOffset;
 	pto.add(this.localDocID, this.getStartPos());
 	pto.add(this.localDocID, this.getEndPos() - 1);
 
-	log.trace("PTO now has start and end positions {}-{}", this.getStartPos(), this.getEndPos());
+	if (DEBUG)
+	    log.trace("PTO now has start and end positions {}-{}", this.getStartPos(), this.getEndPos());
 
 	if (this.highlight != null) {
 	    for (Highlight hl : this.highlight) {
@@ -391,7 +399,8 @@ public class KorapMatch extends KorapDocument {
 	    };
 	};
 	
-	log.trace("All highlights are added");
+	if (DEBUG)
+	    log.trace("All highlights are added");
 
 	// Get the list of spans for matches and highlighting
 	if (this.span == null || this.span.size() == 0) {
@@ -665,7 +674,8 @@ public class KorapMatch extends KorapDocument {
 	    for (int s : this.balanceStack) {
 		sb.append('[').append(s).append(']');
 	    };
-	    log.trace(sb.toString());
+	    if (DEBUG)
+		log.trace(sb.toString());
 
 	    // class number of the last element
 	    int eold = this.balanceStack.removeLast();
@@ -676,9 +686,14 @@ public class KorapMatch extends KorapDocument {
 		// Retrieve last combinator on stack
 		lastComb = this.combine.peekLast();
 
-		log.trace("Closing element is unbalanced - {} " +
-			  "!= {} with lastComb {}|{}|{}",
-			  eold, number, lastComb.type, lastComb.number, lastComb.characters);
+		if (DEBUG)
+		    log.trace("Closing element is unbalanced - {} " +
+			      "!= {} with lastComb {}|{}|{}",
+			      eold,
+			      number,
+			      lastComb.type,
+			      lastComb.number,
+			      lastComb.characters);
 
 		// combinator is opening and the number is not equal to the last
 		// element on the balanceStack
@@ -691,7 +706,8 @@ public class KorapMatch extends KorapDocument {
 		// combinator is either closing (??) or another opener
 		else {
 
-		    log.trace("close element a) {}", eold);
+		    if (DEBUG)
+			log.trace("close element a) {}", eold);
 
 		    // Add a closer for the old element (this has following elements)
 		    this.combine.add(new HighlightCombinatorElement((byte) 2, eold, false));
@@ -707,8 +723,10 @@ public class KorapMatch extends KorapDocument {
 	    // Get last combinator on the stack
 	    lastComb = this.combine.peekLast();
 
-	    log.trace("LastComb: " + lastComb.type + '|' + lastComb.number + '|' + lastComb.characters + " for " + number);
-	    log.trace("Stack for checking 2: {}|{}|{}|{}", lastComb.type, lastComb.number, lastComb.characters, number);
+	    if (DEBUG) {
+		log.trace("LastComb: " + lastComb.type + '|' + lastComb.number + '|' + lastComb.characters + " for " + number);
+		log.trace("Stack for checking 2: {}|{}|{}|{}", lastComb.type, lastComb.number, lastComb.characters, number);
+	    };
 
 	    if (lastComb.type == 1 && lastComb.number == number) {
 		while (lastComb.type == 1 && lastComb.number == number) {
@@ -718,7 +736,8 @@ public class KorapMatch extends KorapDocument {
 		};
 	    }
 	    else {
-		log.trace("close element b) {}", number);
+		if (DEBUG)
+		    log.trace("close element b) {}", number);
 
 		// Add a closer
 		this.combine.add(new HighlightCombinatorElement((byte) 2, number));
@@ -727,7 +746,8 @@ public class KorapMatch extends KorapDocument {
 
 	    // Fetch everything from the tempstack and reopen it
 	    for (int e : tempStack) {
-		log.trace("Reopen element {}", e);
+		if (DEBUG)
+		    log.trace("Reopen element {}", e);
 		combine.add(new HighlightCombinatorElement((byte) 1, e));
 		balanceStack.add(e);
 	    };
@@ -747,7 +767,8 @@ public class KorapMatch extends KorapDocument {
 	int pos = 0;
 	int oldPos = 0;
 
-	log.trace("Create Snippet");
+	if (DEBUG)
+	    log.trace("Create Snippet");
 
 	this.snippetStack = new HighlightCombinator();
 
@@ -792,7 +813,8 @@ public class KorapMatch extends KorapDocument {
 	if (this.processed && this.snippetHTML != null)
 	    return this.snippetHTML;
 
-	log.trace("Create HTML Snippet");
+	if (DEBUG)
+	    log.trace("Create HTML Snippet");
 
 	StringBuilder sb = new StringBuilder();
 
@@ -873,7 +895,8 @@ public class KorapMatch extends KorapDocument {
     // TODO: Not very fast - improve!
     private ArrayList<int[]> _processHighlightStack () {
 
-	log.trace("Create Stack");
+	if (DEBUG)
+	    log.trace("Create Stack");
 
 	LinkedList<int[]> openList  = new LinkedList<int[]>();
 	LinkedList<int[]> closeList = new LinkedList<int[]>();
@@ -914,7 +937,8 @@ public class KorapMatch extends KorapDocument {
 	    startPosChar,
 	    endPosChar;
 
-	log.trace("Create Spans");
+	if (DEBUG)
+	    log.trace("Create Spans");
 
 	int ldid = this.localDocID;
 
@@ -929,14 +953,17 @@ public class KorapMatch extends KorapDocument {
 	    startPosChar = potentialStartPosChar;
 
 	endPosChar = this.positionsToOffset.end(ldid, this.endPos - 1);
-	log.trace("startPosChar for PTO is {}({})", startPosChar, this.startPos);
-	log.trace("endPosChar for PTO is {}({})", endPosChar, this.endPos);
+	if (DEBUG) {
+	    log.trace("startPosChar for PTO is {}({})", startPosChar, this.startPos);
+	    log.trace("endPosChar for PTO is {}({})", endPosChar, this.endPos);
+	};
 
 
 	if (endPosChar < potentialEndPosChar)
 	    endPosChar = potentialEndPosChar;
 
-	log.trace("Matchposition: {}-{}", startPosChar, endPosChar);
+	if (DEBUG)
+	    log.trace("Matchposition: {}-{}", startPosChar, endPosChar);
 
 	// left context
 	if (leftTokenContext) {
@@ -952,7 +979,12 @@ public class KorapMatch extends KorapDocument {
 	        ldid,
 		this.endPos + this.rightContextOffset - 1
 	    );
-	    log.trace("For endOffset {} ({}+{}-1) pto returns {}", (this.endPos + this.rightContextOffset - 1), this.endPos, this.rightContextOffset, endOffsetChar);
+	    if (DEBUG)
+		log.trace("For endOffset {} ({}+{}-1) pto returns {}",
+			  (this.endPos + this.rightContextOffset - 1),
+			  this.endPos,
+			  this.rightContextOffset,
+			  endOffsetChar);
 	}
 	else {
 	    if (endPosChar == -1) {
@@ -979,7 +1011,12 @@ public class KorapMatch extends KorapDocument {
 	if (endOffsetChar != -1 && endOffsetChar < endPosChar)
 	    endOffsetChar = endPosChar;
 
-	log.trace("Offsetposition {} till {} with contexts {} and {}", startOffsetChar, endOffsetChar, leftContextOffset, rightContextOffset);
+	if (DEBUG)
+	    log.trace("Offsetposition {} till {} with contexts {} and {}",
+		      startOffsetChar,
+		      endOffsetChar,
+		      leftContextOffset,
+		      rightContextOffset);
 
 	if (endOffsetChar > -1 && endOffsetChar < this.getPrimaryDataLength()) {
 	    this.tempSnippet = this.getPrimaryData(startOffsetChar, endOffsetChar);
@@ -996,7 +1033,8 @@ public class KorapMatch extends KorapDocument {
 
 	// Todo: Simplify
 	int[] intArray = new int[]{ startPosChar - startOffsetChar, endPosChar - startOffsetChar, -1, 0};
-	log.trace("IntArray: {}", intArray);
+	if (DEBUG)
+	    log.trace("IntArray: {}", intArray);
 	this.span.add(intArray);
 
 	// highlights
@@ -1016,9 +1054,11 @@ public class KorapMatch extends KorapDocument {
 		    0 // Dummy value for later
 		};
 
-		log.trace("IntArray: {}", intArray);
-		log.trace("PTO-start: {}", start + startOffsetChar);
-		log.trace("PTO-end: {}", end + startOffsetChar);
+		if (DEBUG) {
+		    log.trace("IntArray: {}", intArray);
+		    log.trace("PTO-start: {}", start + startOffsetChar);
+		    log.trace("PTO-end: {}", end + startOffsetChar);
+		};
 
 		this.span.add(intArray);
 	    };

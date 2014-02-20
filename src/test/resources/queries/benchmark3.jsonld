@@ -1,0 +1,27 @@
+{
+    "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+    "query": {
+	"@type": "korap:group", 
+	"operation": "operation:sequence",
+	"operands": [
+	    {
+		"@type": "korap:token",
+		"wrap" : {
+		    "@type": "korap:term", 
+		    "foundry": "mate",
+		    "layer": "pos",
+		    "key" : "ADJA"
+		}
+	    },
+	    {
+		"@type": "korap:token",
+		"wrap" : {
+		    "@type": "korap:term", 
+		    "foundry": "mate",
+		    "layer": "pos",
+		    "key" : "NE"
+		}
+	    }
+	]
+    }
+}

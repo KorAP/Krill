@@ -131,6 +131,10 @@ public class KorapIndex {
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapIndex.class);
 
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
+
     public KorapIndex () throws IOException {
         this((Directory) new RAMDirectory());
     };
@@ -545,10 +549,12 @@ public class KorapIndex {
 	    regex.append("(.){1,}|_[0-9]+");
 
 
-	    log.trace("The final regexString is {}", regex.toString());
+	    if (DEBUG)
+		log.trace("The final regexString is {}", regex.toString());
 	    RegExp regexObj = new RegExp(regex.toString(), RegExp.COMPLEMENT);
 	    fst = new CompiledAutomaton(regexObj.toAutomaton());
-	    log.trace("The final regexObj is {}", regexObj.toString());
+	    if (DEBUG)
+		log.trace("The final regexObj is {}", regexObj.toString());
 	};
 
 
@@ -578,7 +584,8 @@ public class KorapIndex {
 		    continue;
 
 		// We've found the correct document! Hurray!
-		log.trace("We've found a matching document");
+		if (DEBUG)
+		    log.trace("We've found a matching document");
 		HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
 		fieldsToLoadLocal.add(field);
 
@@ -594,7 +601,8 @@ public class KorapIndex {
 		match.setLocalDocID(localDocID);
 		match.populateDocument(doc, field, fieldsToLoadLocal);
 
-		log.trace("The document has the id '{}'", match.getDocID());
+		if (DEBUG)
+		    log.trace("The document has the id '{}'", match.getDocID());
 
 		if (!info) break;
 
@@ -606,7 +614,8 @@ public class KorapIndex {
 						     (Bits) bitset,
 						     new HashMap<Term, TermContext>());
 
-		    log.trace("Now search for {}", sentence.toString());
+		    if (DEBUG)
+			log.trace("Now search for {}", sentence.toString());
 
 		    int newStart = -1, newEnd = -1;
 
@@ -633,7 +642,10 @@ public class KorapIndex {
 
 		    // We have a new match surrounding
 		    if (newStart > -1 && newEnd > -1) {
-			log.trace("New match spans from {}-{}", newStart, newEnd);
+			if (DEBUG)
+			    log.trace("New match spans from {}-{}",
+				      newStart,
+				      newEnd);
 			match.setStartPos(newStart);
 			match.setEndPos(newEnd);
 		    };
@@ -688,13 +700,14 @@ public class KorapIndex {
 
 			if (pos >= match.getStartPos() && pos < match.getEndPos()) {
 
-			    log.trace(
-			        ">> {}: {}-{}-{}",
-				termString, 
-				docs.freq(),
-				pos,
-				docs.getPayload()
-			    );
+			    if (DEBUG)
+				log.trace(
+					  ">> {}: {}-{}-{}",
+					  termString, 
+					  docs.freq(),
+					  pos,
+					  docs.getPayload()
+					  );
 
 			    BytesRef payload = docs.getPayload();
 
@@ -709,7 +722,8 @@ public class KorapIndex {
 			    };
 			    TermInfo ti = new TermInfo(termString, pos, bbTerm).analyze();
 			    if (ti.getEndPos() < match.getEndPos()) {
-				log.trace("Add {}", ti.toString());
+				if (DEBUG)
+				    log.trace("Add {}", ti.toString());
 				termList.add(ti);
 			    };
 			};
@@ -718,7 +732,8 @@ public class KorapIndex {
 
 		// Add annotations based on the retrieved infos
 		for (TermInfo t : termList.getTerms()) {
-		    log.trace("Add term {}/{}:{} to {}({})-{}({})",
+		    if (DEBUG)
+			log.trace("Add term {}/{}:{} to {}({})-{}({})",
 			      t.getFoundry(),
 			      t.getLayer(),
 			      t.getValue(),
@@ -800,7 +815,8 @@ public class KorapIndex {
 
 
     public KorapResult search (KorapCollection collection, KorapSearch ks) {
-	log.trace("Start search");
+	if (DEBUG)
+	    log.trace("Start search");
 
 	this.termContexts = new HashMap<Term, TermContext>();
 
@@ -869,7 +885,8 @@ public class KorapIndex {
 
 		for (; i < hits; i++) {
 
-		    log.trace("Match Nr {}/{}", i, count);
+		    if (DEBUG)
+			log.trace("Match Nr {}/{}", i, count);
 
 		    // There are no more spans to find
 		    if (spans.next() != true)
@@ -910,7 +927,8 @@ public class KorapIndex {
 			    ByteBuffer bb = ByteBuffer.allocate(10);
 			    for (byte[] b : spans.getPayload()) {
 
-				log.trace("Found a payload!!! with length {}", b.length);
+				if (DEBUG)
+				    log.trace("Found a payload!!! with length {}", b.length);
 
 				// Todo element searches!
 
@@ -923,7 +941,10 @@ public class KorapIndex {
 				    int end = bb.getInt() -1;
 				    byte number = bb.get();
 
-				    log.trace("Have a payload: {}-{}", start, end);
+				    if (DEBUG)
+					log.trace("Have a payload: {}-{}",
+						  start,
+						  end);
 				    match.addHighlight(start, end, number);
 				}
 
@@ -944,9 +965,10 @@ public class KorapIndex {
 				    if (bb.getInt(4) > match.potentialEndPosChar)
 					match.potentialEndPosChar = bb.getInt(4);
 
-				    log.trace("Element payload from {} to {}",
-					      match.potentialStartPosChar,
-					      match.potentialEndPosChar);
+				    if (DEBUG)
+					log.trace("Element payload from {} to {}",
+						  match.potentialStartPosChar,
+						  match.potentialEndPosChar);
 				}
 
 				else if (b.length == 4) {
@@ -970,7 +992,9 @@ public class KorapIndex {
 		    match.internalDocID = docID;
 		    match.populateDocument(doc, field, fieldsToLoadLocal);
 
-		    log.trace("I've got a match in {} of {}", match.getDocID(), count);
+		    if (DEBUG)
+			log.trace("I've got a match in {} of {}",
+				  match.getDocID(), count);
 
 		    atomicMatches.add(match);
 		};

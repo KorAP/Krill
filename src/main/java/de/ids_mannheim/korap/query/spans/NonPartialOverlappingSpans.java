@@ -14,98 +14,112 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 
 /** An abstract class for Span enumeration whose two child spans are matched by 
- * 	their positions and do not have a partial overlap.
+ *  their positions and do not have a partial overlap.
  *  
- * 	@author margaretha  
+ *  @author margaretha  
  * */
 public abstract class NonPartialOverlappingSpans extends SimpleSpans{
 	
-	private Logger log = LoggerFactory.getLogger(NonPartialOverlappingSpans.class);
-	
-	public NonPartialOverlappingSpans(SimpleSpanQuery simpleSpanQuery,
-			AtomicReaderContext context, Bits acceptDocs,
-			Map<Term,TermContext> termContexts) throws IOException {	    	  
-		super(simpleSpanQuery, context, acceptDocs, termContexts);
+    private Logger log = LoggerFactory.getLogger(NonPartialOverlappingSpans.class);
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
+    public NonPartialOverlappingSpans(SimpleSpanQuery simpleSpanQuery,
+				      AtomicReaderContext context,
+				      Bits acceptDocs,
+				      Map<Term,TermContext> termContexts) throws IOException {	    	  
+	super(simpleSpanQuery, context, acceptDocs, termContexts);
 		
-		// Warning: not implemented, results in errors for SpanNextQuery 
-		// This.collectPayloads = simpleSpanQuery.isCollectPayloads()
-		collectPayloads = true;
-		hasMoreSpans = secondSpans.next();		
-		
-	}
+	// Warning: not implemented, results in errors for SpanNextQuery 
+	// This.collectPayloads = simpleSpanQuery.isCollectPayloads()
+	collectPayloads = true;
+	hasMoreSpans = secondSpans.next();		
+    };
 	
     @Override
-  	public boolean next() throws IOException {
+    public boolean next() throws IOException {
     	// Warning: this does not work for overlapping spans 
     	// e.g. get multiple second spans in a firstspan
-  		hasMoreSpans &= firstSpans.next();
-  		isStartEnumeration=false;
-  		matchPayload.clear();
-  		return advance();  		
-  	}
+	hasMoreSpans &= firstSpans.next();
+	isStartEnumeration=false;
+	matchPayload.clear();
+	return advance();  		
+    };
   	
-	/** Advance is a lucene terminology to search for the next match.
-	 * */
+    /** Advance is a lucene terminology to search for the next match.
+     * */
     protected boolean advance() throws IOException {	    	
-		// The complexity is linear for searching in a document. 
-		// It's better if we can skip to >= position in a document.
-	  	while (hasMoreSpans && ensureSameDoc(firstSpans,secondSpans)){
-	  		int matchCase = findMatch();
-				if (matchCase == 0){
-					log.trace("Match doc#: {}",matchDocNumber);
-					log.trace("Match positions: {}-{}", matchStartPosition, 
-							matchEndPosition);
-					doCollectPayloads();
-					return true;
-				} 
-				else if (matchCase == 1) {
-					hasMoreSpans = secondSpans.next();			
-				}			
-				else{ 
-					hasMoreSpans = firstSpans.next();
-				}
-			}
-		return false;
-	}
+	// The complexity is linear for searching in a document. 
+	// It's better if we can skip to >= position in a document.
+	while (hasMoreSpans && ensureSameDoc(firstSpans,secondSpans)) {
+	    int matchCase = findMatch();
+	    if (matchCase == 0){
+		if (DEBUG) {
+		    log.trace("Match doc#: {}",
+			      matchDocNumber);
+		    log.trace("Match positions: {}-{}",
+			      matchStartPosition, 
+			      matchEndPosition);
+		};
+		doCollectPayloads();
+		return true;
+	    } 
+	    else if (matchCase == 1)
+		hasMoreSpans = secondSpans.next();			
+	    else
+		hasMoreSpans = firstSpans.next();
+	};
+	return false;
+    };
     
     /** Specify the condition for a match 
      * @return 0 iff match is found,
      * 			-1 to advance the firstspan,		
      * 			1 to advance the secondspan
-     * */
-  	protected abstract int findMatch();
+     **/
+    protected abstract int findMatch();
     
-  	/** Collecting available payloads from the current first and second spans */
-  	private void doCollectPayloads() throws IOException {
-  		if (collectPayloads){
-  			log.trace("Collect payloads");
-  		    if (firstSpans.isPayloadAvailable()) {
-  		    	Collection<byte[]> payload = firstSpans.getPayload();
-  		    	log.trace("Found {} payloads in firstSpans", payload.size());
-  		    	matchPayload.addAll(payload);
-  		    }
-  		    if (secondSpans.isPayloadAvailable()) {
-  		    	Collection<byte[]> payload = secondSpans.getPayload();
-  		    	log.trace("Found {} payloads in secondSpans", payload.size());
-  		    	matchPayload.addAll(payload);
-  		    }
-  		}
-  	}
+    /** Collecting available payloads from the current first and second spans */
+    private void doCollectPayloads() throws IOException {
+	if (collectPayloads){
+
+	    if (DEBUG)
+		log.trace("Collect payloads");
+	    
+	    if (firstSpans.isPayloadAvailable()) {
+		Collection<byte[]> payload = firstSpans.getPayload();
+
+		if (DEBUG)
+		    log.trace("Found {} payloads in firstSpans", payload.size());
+		
+		matchPayload.addAll(payload);
+	    };
+	    
+	    if (secondSpans.isPayloadAvailable()) {
+		Collection<byte[]> payload = secondSpans.getPayload();
+
+		if (DEBUG)
+		    log.trace("Found {} payloads in secondSpans", payload.size());
+		
+		matchPayload.addAll(payload);
+	    };
+	};
+    };
     
-  	@Override
-  	public boolean skipTo(int target) throws IOException {		
-  		if (hasMoreSpans && (firstSpans.doc() < target)){
-  			if (!firstSpans.skipTo(target)){
-  				hasMoreSpans = false;
-  				return false;
-  			}			
-  		} 		
-  		matchPayload.clear();
-  		return advance();
-  	}
+    @Override
+    public boolean skipTo(int target) throws IOException {		
+	if (hasMoreSpans && (firstSpans.doc() < target)){
+	    if (!firstSpans.skipTo(target)){
+		hasMoreSpans = false;
+		return false;
+	    };
+	};
+	matchPayload.clear();
+	return advance();
+    };
   	
-  	@Override
-  	public long cost() {
-  		return firstSpans.cost() + secondSpans.cost();
-  	}
-}
+    @Override
+    public long cost() {
+	return firstSpans.cost() + secondSpans.cost();
+    };
+};

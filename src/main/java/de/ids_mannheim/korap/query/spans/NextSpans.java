@@ -16,31 +16,32 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
  * 	a span is immediately followed by another span.
  *  
  * 	TODO: nextSpans needs collectPayloads to be explicitly set true. Why?
+ *            ndiewald: They don't have to be set explicitely - just make them use it always
  * 	@author margaretha 
  * */
 public class NextSpans extends NonPartialOverlappingSpans {	
 	
     public NextSpans (SimpleSpanQuery simpleSpanQuery,
-  	      AtomicReaderContext context,
-  	      Bits acceptDocs,
-  	      Map<Term,TermContext> termContexts) throws IOException {
+		      AtomicReaderContext context,
+		      Bits acceptDocs,
+		      Map<Term,TermContext> termContexts) throws IOException {
     	super(simpleSpanQuery, context, acceptDocs, termContexts);    	
-    }
+    };
 
     /** Check weather the end position of the current firstspan equals 
      *  the start position of the secondspan. 
-  	 * */
+     **/
     @Override
-	protected int findMatch() {		
-		if (firstSpans.end() == secondSpans.start()) {			
-			matchDocNumber = firstSpans.doc();
-			matchStartPosition = firstSpans.start();
-			matchEndPosition = secondSpans.end();	
-			return 0;
-		}		
-		else if (firstSpans.end() > secondSpans.start())
-			return 1;
-		
-		return -1;		
-	}	
-}
+    protected int findMatch() {		
+	if (firstSpans.end() == secondSpans.start()) {			
+	    matchDocNumber = firstSpans.doc();
+	    matchStartPosition = firstSpans.start();
+	    matchEndPosition = secondSpans.end();	
+	    return 0;
+	}		
+	else if (firstSpans.end() > secondSpans.start())
+	    return 1;
+	
+	return -1;		
+    };	
+};

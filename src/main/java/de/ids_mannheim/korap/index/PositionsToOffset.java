@@ -27,6 +27,10 @@ public class PositionsToOffset {
 
     private final static Logger log = LoggerFactory.getLogger(PositionsToOffset.class);
 
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
+
     private class PositionsToOffsetArray {
 	public int docID;
 	public int pos;
@@ -70,10 +74,14 @@ public class PositionsToOffset {
     };
 
     public void add (PositionsToOffsetArray ptoa) {
-	log.trace("Add positionsToOffsetArray {}/{}", ptoa.docID, ptoa.pos);
+	if (DEBUG)
+	    log.trace("Add positionsToOffsetArray {}/{}", ptoa.docID, ptoa.pos);
 	if (this.processed && this.exists(ptoa))
 	    return;
-	log.trace("Reopen processing");
+
+	if (DEBUG)
+	    log.trace("Reopen processing");
+
 	this.positions.add(ptoa);
 	this.processed = false;
     };
@@ -147,7 +155,8 @@ public class PositionsToOffset {
 	if (processed)
 	    return offsets;
 
-	log.trace("Process offsets");
+	if (DEBUG)
+	    log.trace("Process offsets");
 
 	StringBuilder sb = new StringBuilder().append('_');
 
@@ -179,10 +188,11 @@ public class PositionsToOffset {
 
 		    if (termsEnum.seekExact(term.bytes(), true)) {
 			
-			log.trace("Search for {} in doc {} with pos {}",
-				  term.toString(),
-				  posDoc.docID,
-				  posDoc.pos);
+			if (DEBUG)
+			    log.trace("Search for {} in doc {} with pos {}",
+				      term.toString(),
+				      posDoc.docID,
+				      posDoc.pos);
 
 			// Start an iterator to fetch all payloads of the term
 			DocsAndPositionsEnum docs = termsEnum.docsAndPositions(
@@ -205,7 +215,11 @@ public class PositionsToOffset {
 				offsetArray[1] = bbOffset.getInt();
 				offsets.put(posDoc, offsetArray);
 
-				log.trace("Found {}-{} for {}", offsetArray[0], offsetArray[1], term.toString());
+				if (DEBUG)
+				    log.trace("Found {}-{} for {}",
+					      offsetArray[0],
+					      offsetArray[1],
+					      term.toString());
 			    }
 
 			    else {

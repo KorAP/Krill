@@ -26,6 +26,8 @@ public class ClassSpans extends Spans {
     private byte number;
     private ByteBuffer bb;
     private SpanQuery highlight;
+    private Boolean hasmorespans = false;
+
     private final Logger log = LoggerFactory.getLogger(ClassSpans.class);
 
     public ClassSpans (SpanQuery highlight, AtomicReaderContext context, Bits acceptDocs, Map<Term,TermContext> termContexts, byte number) throws IOException {
@@ -69,6 +71,7 @@ public class ClassSpans extends Spans {
 	log.trace("Forward next");
 
 	if (spans.next()) {
+	    hasmorespans = true;
 
 	    highlightedPayload.clear();
 
@@ -92,13 +95,16 @@ public class ClassSpans extends Spans {
 	    highlightedPayload.add(bb.array());
 	    return true;
 	};
+	hasmorespans = false;
 	return false;
     };
 
     // inherit javadocs
     @Override
     public boolean skipTo(int target) throws IOException {
-	return spans.skipTo(target);
+	if (hasmorespans && spans.doc() < target)
+	    return spans.skipTo(target);
+	return false;
     };
 
     @Override

@@ -1,5 +1,7 @@
 package de.ids_mannheim.korap.query.spans;
 
+import de.ids_mannheim.korap.query.spans.KorapTermSpan;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.DocsAndPositionsEnum;
 import org.apache.lucene.search.DocIdSetIterator;
@@ -20,9 +22,15 @@ import java.util.List;
 
 // TODO: Store payloads in 12 byte instead of the complicated ByteBuffer stuff!
 
-import de.ids_mannheim.korap.query.spans.KorapTermSpan;
-
+/**
+ * @author ndiewald
+ */
 public class ElementSpans extends Spans {
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+  
+
     private byte[] payloadByte = new byte[4];
     private ByteBuffer bb = ByteBuffer.allocate(4);
 
@@ -63,42 +71,53 @@ public class ElementSpans extends Spans {
 	end = -1;
 
 	if (memory.size() > 0) {
-	    log.trace("There is a memory entry");
+	    if (DEBUG)
+		log.trace("There is a memory entry");
 
 	    _setToCurrent(memory.removeFirst());
 
-	    log.trace("Current1: [{}-{}]", position, end);
+	    if (DEBUG)
+		log.trace("Current1: [{}-{}]", position, end);
 
 	    return true;
 	};
 
-	log.trace("There is no memory entry");
+	if (DEBUG)
+	    log.trace("There is no memory entry");
 
 	if (count == freq) {
-	    log.trace("last position in document");
+
+	    if (DEBUG)
+		log.trace("last position in document");
 
 	    // Check for overflow on document boundary
 	    if (overflow.start != -1) {
-		log.trace("  but there is an overflow");
+
+		if (DEBUG)
+		    log.trace("  but there is an overflow");
 
 		_setToCurrent(overflow).clear();
 
-		log.trace("Current2: [{}-{}]", position, end);
+		if (DEBUG)
+		    log.trace("Current2: [{}-{}]", position, end);
 
 		return true;
 	    };
 
 	    if (postings == null) {
-		log.trace("no more postings");
+		if (DEBUG)
+		    log.trace("no more postings");
 		return false;
 	    };
 
-	    log.trace("Go to next doc");
+	    if (DEBUG)
+		log.trace("Go to next doc");
 
 	    doc = postings.nextDoc();
 
 	    if (doc == DocIdSetIterator.NO_MORE_DOCS) {
-		log.trace("no more docs");
+		if (DEBUG)
+		    log.trace("no more docs");
 		return false;
 	    };
 
@@ -114,30 +133,28 @@ public class ElementSpans extends Spans {
 	int pos = overflow.start;
 	
 	while (true) {
-	    /*
-	    if (DEBUG)
-		System.err.println(">> Reset end and payload");
-	    storedPayload.clear();
-	    end = -1;
-	    */
-
-	    log.trace("pos is {}", pos);
-
-	    _log_payloads(1);
+	    if (DEBUG) {
+		log.trace("pos is {}", pos);
+		_log_payloads(1);
+	    };
 
 	    if (count == freq) {
-		log.trace("last position in document");
+		if (DEBUG)
+		    log.trace("last position in document");
 
 		if (postings == null) {
 
-		    log.trace("no more postings");
+		    if (DEBUG)
+			log.trace("no more postings");
 
 		    // Check for overflow on document boundary
 		    if (overflow.start != -1) {
-			log.trace("  but there is an overflow");
+			if (DEBUG)
+			    log.trace("  but there is an overflow");
 
 			_setToCurrent(overflow).clear();
-			log.trace("Current3: [{}-{}]", position, end);
+			if (DEBUG)
+			    log.trace("Current3: [{}-{}]", position, end);
 
 			return true;
 		    };
@@ -145,36 +162,50 @@ public class ElementSpans extends Spans {
 		    return false;
 		};
 
-		log.trace("go to next doc");
-		_log_payloads(2);
+		if (DEBUG) {
+		    log.trace("go to next doc");
+		    _log_payloads(2);
+		};
 
 		if (overflow.start != -1) {
-		    log.trace("Storing overflow {} ...", overflow.toString());
-		    log.trace("... in memory with {}-{}", overflow.startChar(), overflow.endChar());
+		    if (DEBUG) {
+			log.trace("Storing overflow {} ...", overflow.toString());
+			log.trace("... in memory with {}-{}", overflow.startChar(), overflow.endChar());
+		    };
 		    memory.add((KorapTermSpan) overflow.clone());
 		    overflow.clear();
 		};
-		_log_payloads(3);
+		if (DEBUG)
+		    _log_payloads(3);
 
 		if (memory.size() > 0) {
-		    log.trace("sort and return first");
-		    _log_payloads(4);
-		    Collections.sort(memory);
-		    _log_payloads(5);
-		    _setToCurrent(memory.removeFirst());
-		    _log_payloads(6);
+		    if (DEBUG) {
+			log.trace("sort and return first");
+			_log_payloads(4);
+		    };
 
-		    log.trace("Current4: [{}-{}]]", position, end);
+		    Collections.sort(memory);
+
+		    if (DEBUG)
+			_log_payloads(5);
+
+		    _setToCurrent(memory.removeFirst());
+
+		    if (DEBUG)
+			_log_payloads(6);
+
+		    if (DEBUG)
+			log.trace("Current4: [{}-{}]]", position, end);
 		    break;
 		};
 
 		doc = postings.nextDoc();
 		// New doc
-		end = -1;
-		pos = -1;
+		end = pos = -1;
 
 		if (doc == DocIdSetIterator.NO_MORE_DOCS) {
-		    log.trace("no more docs");
+		    if (DEBUG)
+			log.trace("no more docs");
 		    return false;
 		};
 
@@ -183,55 +214,75 @@ public class ElementSpans extends Spans {
 	    };
 
 
-	    log.trace("Forward postings");
+	    if (DEBUG)
+		log.trace("Forward postings");
+	    
 	    position = postings.nextPosition();
 	    // New pos!
 	    end = -1;
-	    _log_payloads(9);
-	    log.trace("CLEAR PAYLOAD");
+
+	    if (DEBUG) {
+		_log_payloads(9);
+		log.trace("CLEAR PAYLOAD");
+	    };
+	
 	    storedPayload.clear();
 	    hasStoredPayload = false;
-	    _log_payloads(10);
 
+	    if (DEBUG) {
+		_log_payloads(10);
+		log.trace("next position is {}", position);
+	    };
+	    
 	    count++;
-
-	    log.trace("next position is {}", position);
 
 	    // There was no overflow
 	    if (pos == -1 || pos == position) {
 		if (pos == position) {
-		    log.trace("Add overflow to memory");
+		    if (DEBUG)
+			log.trace("Add overflow to memory");
+		    
 		    memory.add((KorapTermSpan) overflow.clone());
 		}
 
 		else {
-		    log.trace("There was no overflow");
+		    if (DEBUG)
+			log.trace("There was no overflow");
 		    pos = position;
 		};
 
-		_log_payloads(8);
-		log.trace("*****************************");
+		if (DEBUG) {
+		    _log_payloads(8);
+		    log.trace("*****************************");
+		};
+		
 		_setCurrentTo(overflow);
-		log.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
-		log.trace("Set overflow and continue: {} ...", overflow.toString());
-		log.trace("... with {}-{}", overflow.startChar(), overflow.endChar());
+		if (DEBUG) {
+		    log.trace("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+		    log.trace("Set overflow and continue: {} ...", overflow.toString());
+		    log.trace("... with {}-{}", overflow.startChar(), overflow.endChar());
+		};
+
 		continue;
 	    }
 
 	    // overflow was older
 	    else if (pos != position) {
 
-		log.trace("Overflow was older");
+		if (DEBUG)
+		    log.trace("Overflow was older");
 
 		// Use memory
 		if (memory.size() > 0) {
 
-		    log.trace("Add overflow to memory");
+		    if (DEBUG)
+			log.trace("Add overflow to memory");
 
 		    memory.add((KorapTermSpan) overflow.clone());
 
-		    log.trace("Sort memory");
+		    if (DEBUG)
+			log.trace("Sort memory");
 
 		    // Sort by end position
 		    Collections.sort(memory);
@@ -239,9 +290,10 @@ public class ElementSpans extends Spans {
 		    // Store current information in overflow
 		    _setCurrentTo(overflow);
 
-		    log.trace("Set new overflow: {}", overflow.toString());
-
-		    log.trace("Get first element from sorted memory");
+		    if (DEBUG) {
+			log.trace("Set new overflow: {}", overflow.toString());
+			log.trace("Get first element from sorted memory");
+		    };
 
 		    _setToCurrent(memory.removeFirst());
 		}
@@ -249,25 +301,30 @@ public class ElementSpans extends Spans {
 		// Nothing in memory - use overflow!
 		else {
 
-		    log.trace("There is nothing in memory");
+		    if (DEBUG)
+			log.trace("There is nothing in memory");
 
 		    /* Make overflow active and store last position in overflow */
 		    _setCurrentTo(tempSpan);
 
-		    log.trace("Temp is now {}", overflow.toString());
+		    if (DEBUG)
+			log.trace("Temp is now {}", overflow.toString());
 
 		    _setToCurrent(overflow);
 		    
 		    // Store current information in overflow
 		    overflow.copyFrom(tempSpan);
 
-		    log.trace("Overflow is now {}", overflow.toString());
+		    if (DEBUG)
+			log.trace("Overflow is now {}", overflow.toString());
 
 		};
 		break;
 	    };
 	};
-	log.trace("Current4: [{}-{}]", position, end);
+
+	if (DEBUG)
+	    log.trace("Current4: [{}-{}]", position, end);
 
 	readPayload = false;
 	return true;
@@ -276,7 +333,14 @@ public class ElementSpans extends Spans {
     private KorapTermSpan _setToCurrent (KorapTermSpan act) {
 	if (act.payload != null)
 	    act.payload.rewind();
-	log.trace("Set to current with {}, meaning {} - {}", act.toString(), act.payload.getInt(0), act.payload.getInt(4));
+
+	if (DEBUG)
+	    log.trace("Set to current with {}, meaning {} - {}",
+		      act.toString(),
+		      act.payload.getInt(0),
+		      act.payload.getInt(4)
+		      );
+	
 	if (act.payload != null)
 	    act.payload.rewind();
 
@@ -286,58 +350,73 @@ public class ElementSpans extends Spans {
 	hasStoredPayload = false;
 
 	if (act.payload != null) {
-	    log.trace("Payload is not null");
+	    if (DEBUG)
+		log.trace("Payload is not null");
+
 	    act.payload.rewind();
 	    storedPayload.put(act.payload);
 	    hasStoredPayload = true;
 	}
-	else {
+	else if (DEBUG)
 	    log.trace("Payload is null");
-	};
 
 	return act;
     };
 
     private void _log_payloads (int nr) {
-	if (hasStoredPayload) {
+	if (!DEBUG)
+	    return;
+	
+	if (hasStoredPayload)
 	    log.trace(
 		      "[{}] payload offsets are {}-{}",
 		      nr,
 		      storedPayload.getInt(0),
 		      storedPayload.getInt(4)
 		      );
-	}
-	else {
+	else
 	    log.trace("[{}] payload is empty", nr);
-	};
     };
 
     private void _setCurrentTo () {
 	overflow.start = position;
 	overflow.end = this.end();
 	overflow.payload.clear();
-	if (hasStoredPayload) {
+
+	if (hasStoredPayload)
 	    overflow.payload.put(storedPayload);
-	};
-	log.trace("Set current to Overflow {} with {}-{}", overflow.toString(), overflow.startChar(), overflow.endChar());
+
+	if (DEBUG)
+	    log.trace("Set current to Overflow {} with {}-{}", overflow.toString(), overflow.startChar(), overflow.endChar());
     };
 
     private void _setCurrentTo (KorapTermSpan o) {
-	_log_payloads(7);
+
+	if (DEBUG)
+	    _log_payloads(7);
+	
 	o.start = position;
 	o.end = this.end();
 	o.payload.clear();
+	
 	if (hasStoredPayload) {
 	    storedPayload.rewind();
 	    o.payload.put(storedPayload);
-	    log.trace("Object now has offset {}-{}", o.payload.getInt(0), o.payload.getInt(4));
+
+	    if (DEBUG)
+		log.trace("Object now has offset {}-{}", o.payload.getInt(0), o.payload.getInt(4));
 
 	    // Import:
 	    o.payload.rewind();
 	};
-	log.trace("Set current to object {} ...", o.toString());
+
+	if (DEBUG)
+	    log.trace("Set current to object {} ...", o.toString());
+	
 	if (hasStoredPayload) {
-	    log.trace("with {}-{} from {}-{}", o.startChar(), o.endChar(), storedPayload.getInt(0), storedPayload.getInt(4));
+	    if (DEBUG)
+		log.trace("with {}-{} from {}-{}", o.startChar(), o.endChar(), storedPayload.getInt(0), storedPayload.getInt(4));
+
 	    storedPayload.rewind();
 	};
     };
@@ -352,12 +431,12 @@ public class ElementSpans extends Spans {
 	overflow.clear();
 	storedPayload.clear();
 	hasStoredPayload = false;
+	
 	if (memory != null)
 	    memory.clear();
 
-	if (doc == DocIdSetIterator.NO_MORE_DOCS) {
+	if (doc == DocIdSetIterator.NO_MORE_DOCS)
 	    return false;
-	};
 
 	freq = postings.freq();
 	count = 0;
@@ -403,15 +482,17 @@ public class ElementSpans extends Spans {
 	if (storedPayload.position() <= 0)
 	    this.getPayloadEndPosition();
 
-	if (hasStoredPayload) {
-	    log.trace("storedPayload: {} - {}", storedPayload.getInt(0), storedPayload.getInt(4));
-	}
-	else {
-	    log.trace("storedPayload is empty");
+	if (DEBUG) {
+	    if (hasStoredPayload)
+		log.trace("storedPayload: {} - {}",
+			  storedPayload.getInt(0),
+			  storedPayload.getInt(4));
+	    else
+		log.trace("storedPayload is empty");
 	};
+	
 	System.arraycopy(storedPayload.array(), 0, offsetCharacters, 0, 8);
 
-	//	return Collections.singletonList(storedPayload.array());
 	return Collections.singletonList(offsetCharacters);
     };
 
@@ -431,30 +512,39 @@ public class ElementSpans extends Spans {
     };
 
     private int getPayloadEndPosition () {
-	log.trace("getPayloadEndPosition of element ...");
+	if (DEBUG)
+	    log.trace("getPayloadEndPosition of element ...");
 
 	try {
 	    BytesRef payload = postings.getPayload();
 
-	    log.trace("  BytesRef: {}", payload.toString());
+	    if (DEBUG)
+		log.trace("  BytesRef: {}", payload.toString());
+	    
 	    readPayload = true;
 	    storedPayload.clear();
 	    hasStoredPayload = false;
+
 	    if (payload != null) {
-		log.trace("Do bit magic");
+		if (DEBUG)
+		    log.trace("Do bit magic");
+		
 		storedPayload.put(payload.bytes, payload.offset, 8);
 		storedPayload.put(payload.bytes, payload.offset + 12, payload.length - 12);
 		System.arraycopy(payload.bytes, payload.offset + 8, payloadByte, 0, 4);
 		hasStoredPayload = true;
 
-		log.trace("~~ Bytes: {}-{}-{}",
-			  storedPayload.getInt(0),
-			  storedPayload.getInt(4),
-			  payloadByte);
+		if (DEBUG)
+		    log.trace("~~ Bytes: {}-{}-{}",
+			      storedPayload.getInt(0),
+			      storedPayload.getInt(4),
+			      payloadByte);
 	    }
 
 	    else {
-		log.trace("There's no payload available");
+		if (DEBUG)
+		    log.trace("There's no payload available");
+		
 		payloadByte = null;
 	    };
 
@@ -462,13 +552,16 @@ public class ElementSpans extends Spans {
 		bb.clear();
 		int t = bb.wrap(payloadByte).getInt();
 
-		log.trace("   |-> {}", t);
+		if (DEBUG)
+		    log.trace("   |-> {}", t);
+		
 		return t;
 	    };
 
 	}
 	catch (IOException e) {
-	    log.trace("IOException {}", e);	   
+	    if (DEBUG)
+		log.trace("IOException {}", e);	   
 	};
 	return -1;
     };

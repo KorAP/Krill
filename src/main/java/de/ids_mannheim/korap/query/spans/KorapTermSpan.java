@@ -10,9 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class KorapTermSpan extends KorapSpan {
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
     public ByteBuffer payload;
 
-    private final Logger log = LoggerFactory.getLogger(WithinSpans.class);
+    private final Logger log = LoggerFactory.getLogger(ElementSpans.class);
 
     @Override
     public Object clone() {
@@ -24,14 +27,16 @@ public class KorapTermSpan extends KorapSpan {
 	this.payload.rewind();
 	span.payload.put(this.payload);
 
-	log.trace("Clone payload {} to payload {} ...",
-		  this.payload.toString(),
-		  span.payload.toString());
-	log.trace("... from {}-{} to {}-{}",
-		  this.startChar(),
-		  this.endChar(),
-		  span.startChar(),
-		  span.endChar());
+	if (DEBUG) {
+	    log.trace("Clone payload {} to payload {} ...",
+		      this.payload.toString(),
+		      span.payload.toString());
+	    log.trace("... from {}-{} to {}-{}",
+		      this.startChar(),
+		      this.endChar(),
+		      span.startChar(),
+		      span.endChar());
+	};
 
 	return span;
     };

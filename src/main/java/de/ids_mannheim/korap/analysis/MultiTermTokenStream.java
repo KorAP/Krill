@@ -48,6 +48,9 @@ public class MultiTermTokenStream extends TokenStream {
 
     private final Logger log = LoggerFactory.getLogger(MultiTermTokenStream.class);
 
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
     public MultiTermTokenStream () {
 	//	this.offsetAttr   = this.addAttribute(OffsetAttribute.class);
         this.charTermAttr = this.addAttribute(CharTermAttribute.class);
@@ -173,7 +176,8 @@ public class MultiTermTokenStream extends TokenStream {
 
 	BytesRef payload = new BytesRef();
 	if (mt.start != mt.end) {
-	    log.trace("MultiTerm with payload offset: {}-{}", mt.start, mt.end);
+	    if (DEBUG)
+		log.trace("MultiTerm with payload offset: {}-{}", mt.start, mt.end);
 	    payload.append(new BytesRef(int2byte(mt.start)));
 	    payload.append(new BytesRef(int2byte(mt.end)));
 	    /*
@@ -187,11 +191,13 @@ public class MultiTermTokenStream extends TokenStream {
 	// Payload
 	if (mt.payload != null) {
 	    payload.append(mt.payload());
-	    log.trace("Create payload[1] {}", payload.toString());
+	    if (DEBUG)
+		log.trace("Create payload[1] {}", payload.toString());
 	};
 
 	if (payload.length > 0) {
-	    log.trace("Set payload[2] {}", payload.toString());
+	    if (DEBUG)
+		log.trace("Set payload[2] {}", payload.toString());
 	    payloadAttr.setPayload(payload);
 	};
 
@@ -202,7 +208,8 @@ public class MultiTermTokenStream extends TokenStream {
 		sb.append('$').append(payload.toString());
 	    sb.append(']');
 	    sb.append(" with increment ").append(mt.posIncr);
-	    log.trace(sb.toString());
+	    if (DEBUG)
+		log.trace(sb.toString());
 	};
 
 	this.mtIndex++;

@@ -39,7 +39,7 @@
     },
     "meta" : {
 	"count": 25,
-	"cutOff": true,
+	"cutOff": false,
 	"context":{
 	    "left": [ "char", 110 ],
 	    "right": [ "char", 110 ]
