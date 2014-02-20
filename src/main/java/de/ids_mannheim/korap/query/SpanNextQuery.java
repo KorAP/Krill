@@ -20,7 +20,7 @@ import org.apache.lucene.util.ToStringUtils;
 import de.ids_mannheim.korap.query.spans.NextSpans;
 
 /** Matches spans which are directly next to each other. 
- * 	This is identical to a phrase query with exactly two clauses. 
+ *  this is identical to a phrase query with exactly two clauses. 
  */
 public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
 

@@ -4,7 +4,7 @@
     "@type" : "korap:group",
     "operation" : "operation:submatch",
     "classRef" : [ 1 ],
-    "operands" : [ {
+      "operands" : [ {
       "@type" : "korap:group",
       "operation" : "operation:position",
       "frame" : "frame:endswith",

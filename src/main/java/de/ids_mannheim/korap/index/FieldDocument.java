@@ -19,9 +19,6 @@ import org.apache.lucene.index.FieldInfo.IndexOptions;
 
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /*
 Todo: Store primary data at base/cons field.
 All other Termvectors should have no stored field!
@@ -35,8 +32,6 @@ All other Termvectors should have no stored field!
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FieldDocument extends KorapDocument {
     ObjectMapper mapper = new ObjectMapper();
-
-    private final static Logger log = LoggerFactory.getLogger(FieldDocument.class);
 
     public Document doc = new Document();
 

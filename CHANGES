@@ -1,7 +1,10 @@
 0.30.3 2014-02-20
         - Return json request in response if given (diewald)
-	- [bugfix] ClassSpans and WithinSpans check skipTo in advance now (diewald)
-	- Performance improvements (diewald)
+	- [bugfix] ClassSpans and WithinSpans check skipTo
+	  in advance now (diewald)
+	- Compilerfriendly logging rules, resulting
+	  in significant performance improvements (diewald)
+	- Small refactorings (diewald)
 
 0.30.2 2014-02-14
         - [bugfix] wrapper uses correct distance constraint
