@@ -34,6 +34,8 @@ public class KorapSearch {
     private KorapIndex index;
     private String error;
 
+    private JsonNode request;
+
     public KorapSearchContext leftContext, rightContext;
 
     {
@@ -99,12 +101,12 @@ public class KorapSearch {
     public KorapSearch (String jsonString) {
 	ObjectMapper mapper = new ObjectMapper();
 	try {
-	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
-
+	    this.request = mapper.readValue(jsonString, JsonNode.class);
+	    
 	    // "query" value
-	    if (json.has("query")) {
+	    if (this.request.has("query")) {
 		try {
-		    this.query = new KorapQuery("tokens").fromJSON(json.get("query")).toQuery();
+		    this.query = new KorapQuery("tokens").fromJSON(this.request.get("query")).toQuery();
 		}
 		catch (QueryException q) {
 		    this.error = q.getMessage();
@@ -115,12 +117,12 @@ public class KorapSearch {
 	    };
 
 	    // "meta" virtual collections
-	    if (json.has("collections"))
+	    if (this.request.has("collections"))
 		this.setCollection(new KorapCollection(jsonString));
 
 	    if (this.error == null) {
-		if (json.has("meta")) {
-		    JsonNode meta = json.get("meta");
+		if (this.request.has("meta")) {
+		    JsonNode meta = this.request.get("meta");
 
 		    // Defined count
 		    if (meta.has("count"))
@@ -176,6 +178,10 @@ public class KorapSearch {
 
     public SpanQuery getQuery () {
 	return this.query;
+    };
+
+    public JsonNode getRequest () {
+	return this.request;
     };
 
     public KorapSearch setQuery (SpanQueryWrapperInterface sqwi) {
@@ -274,6 +280,7 @@ public class KorapSearch {
     public KorapResult run (KorapIndex ki) {
 	if (this.query == null) {
 	    KorapResult kr = new KorapResult();
+	    kr.setRequest(this.request);
 	    if (this.error != null)
 		kr.setError(this.error);
 	    else
@@ -283,11 +290,14 @@ public class KorapSearch {
 
 	if (this.error != null) {
 	    KorapResult kr = new KorapResult();
+	    kr.setRequest(this.request);
 	    kr.setError(this.error);
 	    return kr;
 	};
 
 	this.getCollection().setIndex(ki);
-	return ki.search(this.getCollection(), this);
+	KorapResult kr = ki.search(this.getCollection(), this);
+	kr.setRequest(this.request);
+	return kr;
     };
 };

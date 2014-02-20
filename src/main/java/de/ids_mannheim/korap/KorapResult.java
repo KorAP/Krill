@@ -38,6 +38,8 @@ public class KorapResult {
 	           benchmarkHitCounter = "0";
     private String error = null;
 
+    private JsonNode request;
+
     // Logger
     // This is KorapMatch instead of KorapResult!
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
@@ -127,6 +129,14 @@ public class KorapResult {
 
     public void setError (String msg) {
 	this.error = msg;
+    };
+
+    public void setRequest (JsonNode request) {
+	this.request = request;
+    };
+
+    public JsonNode getRequest () {
+	return this.request;
     };
 
     public void setBenchmarkSearchResults (long t1, long t2) {
