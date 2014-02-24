@@ -2,10 +2,9 @@ package de.ids_mannheim.korap;
 
 import java.util.*;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
-// import java.net.URL;
+import java.net.URL;
 
 import java.nio.ByteBuffer;
 import java.util.zip.GZIPInputStream;
@@ -118,6 +117,7 @@ public class KorapIndex {
     private int autoCommit = 500; // Todo: Use configuration
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
+    private String version;
 
 
     private static ByteBuffer bb       = ByteBuffer.allocate(4),
@@ -134,6 +134,16 @@ public class KorapIndex {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
+    {
+	Properties prop = new Properties();
+	URL file = getClass().getResource("/index.properties");
+
+	if (file != null) {
+	    InputStream fr = new FileInputStream(file.getFile());
+	    prop.load(fr);
+	    this.version = prop.getProperty("lucene.index.version");
+	};
+    };
 
     public KorapIndex () throws IOException {
         this((Directory) new RAMDirectory());
@@ -175,6 +185,9 @@ public class KorapIndex {
 	this.config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
     };
 
+    public String getVersion () {
+	return this.version;
+    };
 
     public void close () throws IOException {
 	this.closeReader();
@@ -357,7 +370,9 @@ public class KorapIndex {
      * @param field The field containing the textual data and the annotations.
      * @param type The type of meta information, e.g. "documents" or "sentences".
      */
-    public long numberOf (KorapCollection collection, String field, String type) throws IOException {
+    public long numberOf (KorapCollection collection,
+			  String field,
+			  String type) throws IOException {
 	// Short cut for documents
 	if (type.equals("documents")) {
 	    if (collection.getCount() <= 0) {
@@ -515,6 +530,9 @@ public class KorapIndex {
 				    boolean extendToSentence) {
 
 	KorapMatch match = new KorapMatch(idString, includeHighlights);
+
+	if (this.getVersion() != null)
+	    match.setVersion(this.getVersion());
 
 	// Create a filter based on the corpusID and the docID
 	BooleanQuery bool = new BooleanQuery();
@@ -836,6 +854,9 @@ public class KorapIndex {
 	    ks.rightContext.getLength()
 	);
 
+	if (this.getVersion() != null)
+	    kr.setVersion(this.getVersion());
+
 	HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
 	fieldsToLoadLocal.add(field);
 
@@ -1000,8 +1021,7 @@ public class KorapIndex {
 		};
 
 		// Benchmark till now
-		if (i >= kr.itemsPerPage() &&
-		    kr.getBenchmarkSearchResults().length() == 0) {
+		if (kr.getBenchmarkSearchResults() == null) {
 		    t2 = System.nanoTime();
 		    kr.setBenchmarkSearchResults(t1, t2);
 		};
@@ -1017,7 +1037,7 @@ public class KorapIndex {
 
 	    t1 = System.nanoTime();
 	    kr.setBenchmarkHitCounter(t2, t1);
-	    if (kr.getBenchmarkSearchResults().length() == 0) {
+	    if (kr.getBenchmarkSearchResults() == null) {
 		kr.setBenchmarkSearchResults(t2, t1);
 	    };
 

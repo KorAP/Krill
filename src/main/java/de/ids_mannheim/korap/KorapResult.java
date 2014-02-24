@@ -34,9 +34,10 @@ public class KorapResult {
     private boolean leftTokenContext,
 	            rightTokenContext;
 
-    private String benchmarkSearchResults = "",
-	           benchmarkHitCounter = "0";
+    private String benchmarkSearchResults,
+	           benchmarkHitCounter;
     private String error = null;
+    private String version;
 
     private JsonNode request;
 
@@ -109,11 +110,24 @@ public class KorapResult {
 	return this.totalResults;
     };
 
+
     @Deprecated
     public int totalResults () {
 	return this.totalResults;
     };
 
+    @JsonIgnore
+    public void setVersion (String version) {
+	this.version = version;
+    };
+
+    @JsonIgnore
+    public String getVersion () {
+	if (this.version == null)
+	    return null;
+	return "lucene-backend-" + this.version;
+    };
+    
     public short getItemsPerPage () {
 	return this.itemsPerPage;
     };
@@ -140,7 +154,9 @@ public class KorapResult {
     };
 
     public void setBenchmarkSearchResults (long t1, long t2) {
-	this.benchmarkSearchResults = ((double)(t2 - t1) / 1000000000.0) + " s";
+	this.benchmarkSearchResults =
+	    (t2 - t1) < 100_000_000 ? (((double)(t2 - t1) * 1e-6) + " ms") :
+	    (((double)(t2 - t1) / 1000000000.0) + " s");
     };
 
     public String getBenchmarkSearchResults () {
@@ -148,7 +164,9 @@ public class KorapResult {
     };
 
     public void setBenchmarkHitCounter (long t1, long t2) {
-	this.benchmarkHitCounter = ((double)(t2 - t1) / 1000000000.0) + " s";
+	this.benchmarkHitCounter =
+	    (t2 - t1) < 100_000_000 ? (((double)(t2 - t1) * 1e-6) + " ms") :
+	    (((double)(t2 - t1) / 1000000000.0) + " s");
     };
 
     public String getBenchmarkHitCounter () {
@@ -192,6 +210,9 @@ public class KorapResult {
 	context.put("left", leftContext);
 	context.put("right", rightContext);
 	json.put("context", context);
+
+	if (this.version != null)
+	    json.put("version", this.version);
 
 	try {
 	    return mapper.writeValueAsString(json);

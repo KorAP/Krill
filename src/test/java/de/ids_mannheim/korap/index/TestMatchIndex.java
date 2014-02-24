@@ -290,5 +290,7 @@ public class TestMatchIndex {
 
 	assertEquals("totalResults", 1, kr.totalResults());
 	assertEquals("SnippetBrackets (0)", "... ca[{1:ba{2:c}}]", kr.match(0).snippetBrackets());
+
+	//	System.err.println(kr.toJSON());
     };
 };

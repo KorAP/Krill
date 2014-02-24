@@ -55,6 +55,7 @@ public class KorapMatch extends KorapDocument {
 	       potentialEndPosChar   = -1;
 
     private String error = null;
+    private String version;
 
     // TEMPRARILY
     @JsonIgnore
@@ -270,6 +271,18 @@ public class KorapMatch extends KorapDocument {
 
     public void setDocID (String id) {
 	super.setID(id);
+    };
+
+    @JsonIgnore
+    public void setVersion (String version) {
+	this.version = version;
+    };
+
+    @JsonIgnore
+    public String getVersion () {
+	if (this.version == null)
+	    return null;
+	return "lucene-backend-" + this.version;
     };
 
     @JsonIgnore
@@ -1096,6 +1109,9 @@ public class KorapMatch extends KorapDocument {
 	context.put("left", leftContext);
 	context.put("right", rightContext);
 	json.put("context", context);
+
+	if (this.version != null)
+	    json.put("version", this.getVersion());
 
 	try {
 	    return mapper.writeValueAsString(json);
