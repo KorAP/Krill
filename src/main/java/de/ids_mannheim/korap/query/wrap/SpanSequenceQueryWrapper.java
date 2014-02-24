@@ -117,7 +117,10 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	SpanQuery query = this.segments.get(0);
 
 	// NextQueries:
-	if (this.constraints == null || this.constraints.size() == 0) {
+	if (this.constraints == null || this.constraints.size() == 0 ||
+	    (this.constraints.size() == 1 &&
+	     (this.constraints.get(0).getMinDistance() == 1 &&
+	      this.constraints.get(0).getMaxDistance() == 1))) {
 	    for (int i = 1; i < this.segments.size(); i++) {
 		query = new SpanNextQuery(
 	            query,
