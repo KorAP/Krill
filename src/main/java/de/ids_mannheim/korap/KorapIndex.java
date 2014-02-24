@@ -139,9 +139,15 @@ public class KorapIndex {
 	URL file = getClass().getResource("/index.properties");
 
 	if (file != null) {
-	    InputStream fr = new FileInputStream(file.getFile());
-	    prop.load(fr);
-	    this.version = prop.getProperty("lucene.index.version");
+	    String f = file.getFile();
+	    try {
+		InputStream fr = new FileInputStream(f);
+		prop.load(fr);
+		this.version = prop.getProperty("lucene.index.version");
+	    }
+	    catch (FileNotFoundException e) {
+		log.warn(e.getLocalizedMessage());
+	    };
 	};
     };
 
