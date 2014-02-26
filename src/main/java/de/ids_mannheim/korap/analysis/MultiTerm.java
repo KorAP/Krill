@@ -8,7 +8,7 @@ import java.util.*;
 
 /**
  * @author Nils Diewald
- * @version 0.2
+ * @version 0.3
  *
  * MultiTerm represents a term in a MultiTermToken.
  */
@@ -18,6 +18,12 @@ public class MultiTerm {
     public Integer posIncr = 1;
     public boolean storeOffsets = false;
     public BytesRef payload = null;
+
+    private static ByteBuffer bb = ByteBuffer.allocate(8);
+    private static String[] stringOffset;
+
+    private static short i, l;
+
 
     /**
      * The constructor.
@@ -34,16 +40,14 @@ public class MultiTerm {
 	      MultiTerm test = new MultiTerm("test#0-4");
 	      MultiTerm test = new MultiTerm("test#0-4$Example");
 	      MultiTerm test = new MultiTerm("test#0-4$&lt;i&gt;1278");
+
+	      Strings that are malformed fail silently.
      */
     public MultiTerm (String term) {
-	/*
-	this.start = this.end = 0;
-	this.storeOffsets = false;
-	this.payload = null;
-	*/
 	_fromString(term);
     };
 
+    
     /**
      * The constructor with a separated prefix.
      * new MultiTerm('a', "bcd") is equivalent to
@@ -56,90 +60,177 @@ public class MultiTerm {
      */
     public MultiTerm (char prefix, String term) {
 	StringBuilder sb = new StringBuilder();
-	/*
-	this.start = this.end = 0;
-	this.storeOffsets = false;
-	this.payload = null;
-	*/
-	sb.append(prefix).append(':').append(term);
-	_fromString(sb.toString());
+	_fromString(sb.append(prefix).append(':').append(term).toString());
     };
-
-    public void term (String term) {
-	this.term = term;
-    };
-
-    public String term () {
-	return this.term;
-    };
-
+    
     /**
-     * The constructor.
+     * The empty constructor.
      */
     public MultiTerm () {
 	this.term = "";
-	/*
-	this.start = this.end = 0;
-	this.storeOffsets = false;
-	this.payload = null;
-	*/
     };
 
-    public void payload (Byte pl) {
+    
+    /**
+     * Sets the term value.
+     *
+     * @param term The term as a string
+     */
+    public void setTerm (String term) {
+	this.term = term;
+    };
+
+
+    /**
+     * Returns the term value.
+     *
+     * @return The term value.
+     */
+    public String getTerm () {
+	return this.term;
+    };
+
+    
+    /**
+     * Set the payload as a byte value.
+     *
+     * @param pl The payload.
+     */
+    public void setPayload (Byte pl) {
 	this.payload = new BytesRef( ByteBuffer.allocate(1).put(pl).array());
     };
 
-    public void payload (short pl) {
+    
+    /**
+     * Set the payload as a short value.
+     *
+     * @param pl The payload.
+     */
+    public void setPayload (short pl) {
 	this.payload = new BytesRef( ByteBuffer.allocate(2).putShort(pl).array());
     };
 
-    public void payload (int pl) {
+
+    /**
+     * Set the payload as an integer value.
+     *
+     * @param pl The payload.
+     */
+    public void setPayload (int pl) {
 	this.payload = new BytesRef( ByteBuffer.allocate(4).putInt(pl).array());
     };
 
-    public void payload (long pl) {
+    
+    /**
+     * Set the payload as a long value.
+     *
+     * @param pl The payload.
+     */
+    public void setPayload (long pl) {
 	this.payload = new BytesRef( ByteBuffer.allocate(8).putLong(pl).array());
     };
 
-    public void payload (String pl) {
+
+    /**
+     * Set the payload as a string value.
+     *
+     * @param pl The payload.
+     */
+    public void setPayload (String pl) {
 	this.payload = new BytesRef(pl);
     };
 
-    public void payload (byte[] pl) {
+
+    /**
+     * Set the payload as a byte array.
+     *
+     * @param pl The payload.
+     */
+    public void setPayload (byte[] pl) {
 	this.payload = new BytesRef(pl);
     };
 
-    public void payload (BytesRef pl) {
+
+    /**
+     * Set the payload as a BytesRef.
+     *
+     * @param pl The payload.
+     */
+    public void setPayload (BytesRef pl) {
 	this.payload = pl;
     };
 
-    public BytesRef payload () {
+    /**
+     * Get the payload.
+     *
+     * @return The payload as a BytesRef.
+     */
+    public BytesRef getPayload () {
 	return this.payload;
     };
 
-    public void start (int value) {
+
+    /**
+     * Set the start position of the term.
+     *
+     * @param The start position.
+     */
+    public void setStart (int value) {
 	this.start = value;
     };
 
-    public int start () {
+
+    /**
+     * Get the start position.
+     *
+     * @return The start position.
+     */
+    public int getStart () {
 	return this.start;
     };
 
-    public void end (int value) {
+
+    /**
+     * Set the end position of the term.
+     *
+     * @param The end position.
+     */
+    public void setEnd (int value) {
 	this.end = value;
     };
 
-    public int end () {
+
+    /**
+     * Get the end position.
+     *
+     * @return The end position.
+     */
+    public int getEnd () {
 	return this.end;
     };
 
-    public boolean storeOffsets () {
+
+    /**
+     * Set the flag for stored offsets.
+     *
+     * @param value Boolean value indicating that the term
+     *        contains stored offsets.
+     */
+    public void hasStoredOffsets (boolean value) {
+	this.storeOffsets = value;
+    };
+
+
+    /**
+     * Check if there are offsets stored.
+     *
+     * @return Boolean value indicating that the term
+     *         contains stored offsets.
+     */
+    public boolean hasStoredOffsets () {
 	return this.storeOffsets;
     };
 
-    public void storeOffsets (boolean value) {
-	this.storeOffsets = value;
-    };
 
     private void _fromString (String term) {
 	String[] termSurface = term.split("\\$", 2);
@@ -150,71 +241,52 @@ public class MultiTerm {
 
 	    // Payload has a type
 	    if (payloadStr.charAt(0) == '<' && payloadStr.charAt(2) == '>') {
-		ByteBuffer bb = ByteBuffer.allocate(8);
 
+		// Rewind bytebuffer
+		bb.rewind();
+
+		// Split payload at type marker boundaries
 		String[] pls = payloadStr.split("(?=<)|(?<=>)");
-		int l = 0;
 
-		for (int i = 1; i < pls.length;) {
+		l = 0; // Bytearray length
 
-		    // Resize the buffer
-		    if ((bb.capacity() - l) < 8) {
-			bb = ByteBuffer.allocate(bb.capacity() + 8).put(bb.array());
-			bb.position(l);
+		try {
+		    for (i = 1; i < pls.length;) {
+
+			// Resize the bytebuffer
+			if ((bb.capacity() - l) < 8) {
+			    bb = ByteBuffer.allocate(bb.capacity() + 8)
+				.put(bb.array());
+			    bb.position(l);
+			};
+
+			switch (pls[i]) {
+			case "<b>": // byte
+			    bb.put(Byte.parseByte(pls[i+1]));
+			    l++;
+			    break;
+			case "<s>": // short
+			    bb.putShort(Short.parseShort(pls[i+1]));
+			    l+=2;
+			    break;
+			case "<i>": // integer
+			    bb.putInt(Integer.parseInt(pls[i+1]));
+			    l+=4;
+			    break;
+			case "<l>": // long
+			    bb.putLong(Long.parseLong(pls[i+1]));
+			    l+=8;
+			    break;
+			};
+			i+=2;
 		    };
-		    switch (pls[i]) {
-		    case "<b>": // byte
-			bb.put(Byte.parseByte(pls[i+1]));
-			l++;
-			break;
-		    case "<s>":
-			bb.putShort(Short.parseShort(pls[i+1]));
-			l+=2;
-			break;
-		    case "<i>":
-			bb.putInt(Integer.parseInt(pls[i+1]));
-			l+=4;
-			break;
-		    case "<l>":
-			bb.putLong(Long.parseLong(pls[i+1]));
-			l+=8;
-			break;
-		    };
-		    i+=2;
+		
+		    byte[] bytes = new byte[l];
+		    System.arraycopy(bb.array(), 0, bytes, 0, l);
+		    this.payload = new BytesRef(bytes);
+		}
+		catch (Exception e) {
 		};
-		byte[] bytes = new byte[l];
-		System.arraycopy(bb.array(), 0, bytes, 0, l);
-		this.payload = new BytesRef(bytes);
-
-
-		/*
-		payloadStr = payloadStr.substring(3, payloadStr.length());
-		switch (type) {
-		case 'b':  // byte
-
-		    System.err.println("bbb");
-		    payloadBytes = ByteBuffer.allocate(1).put(new Byte(payloadStr)).array();
-		    break;
-		case 's':  // short
-		    payloadBytes = ByteBuffer.allocate(2).putShort(
-								   Short.parseShort(payloadStr)
-								   ).array();
-		    break;
-		case 'i': // integer
-		    payloadBytes = ByteBuffer.allocate(4).putInt(
-								 Integer.parseInt(payloadStr)
-								 ).array();
-		    break;
-		case 'l': // long
-		    payloadBytes = ByteBuffer.allocate(8).putLong(
-								  Long.parseLong(payloadStr)
-								  ).array();
-		    break;
-		};
-		TODO:
-		case '?': // arbitrary
-		    payloadStr = 
-		*/
 	    }
 
 	    // Payload is a string
@@ -222,18 +294,24 @@ public class MultiTerm {
 		this.payload = new BytesRef(payloadStr);
 	    };
 	};
-	String[] stringOffset = termSurface[0].split("\\#", 2);
-	if (stringOffset.length == 2) {
-	    String[] offset = stringOffset[1].split("\\-", 2);
+	
+	// Parse offset information
+	stringOffset = termSurface[0].split("\\#", 2);
 
+	if (stringOffset.length == 2) {
+
+	    // Split start and end position of the offset
+	    String[] offset = stringOffset[1].split("\\-", 2);
+   
+	    // Start and end is given
 	    if (offset.length == 2 && offset[0].length() > 0) {
-		this.start = Integer.parseInt(offset[0]);
-		this.end   = Integer.parseInt(offset[1]);
-	    /*
-	    }
-	    else {
-		this.storeOffsets(false);
-	    */
+		try {
+		    this.start = Integer.parseInt(offset[0]);
+		    this.end   = Integer.parseInt(offset[1]);
+
+		}
+		catch (NumberFormatException e) {
+		};
 	    };
 	};
 	this.term = stringOffset[0];
@@ -249,14 +327,14 @@ public class MultiTerm {
      * @see #toStringShort().
      */
     public String toString () {
+
 	StringBuilder sb = new StringBuilder(this.term);
+
 	if (this.start != this.end) {
-	    sb.append('#').append(this.start).append('-').append(this.end);
-	/*
-	}
-	else if (!this.storeOffsets()) {
-	    sb.append("#-");
-	*/
+	    sb.append('#')
+	      .append(this.start)
+	      .append('-')
+	      .append(this.end);
 	};
 
 	if (this.payload != null) {
@@ -265,7 +343,8 @@ public class MultiTerm {
 		sb.append(this.payload.utf8ToString());
 	    }
 	    catch (AssertionError e) {
-		sb.append("<?>").append(join(',', this.payload.toString().split(" ")));
+		sb.append("<?>")
+	          .append(this.payload.toString().replace(' ', ','));
 	    };
 	};
 
@@ -283,7 +362,14 @@ public class MultiTerm {
     public String toStringShort () {
 	StringBuilder sb = new StringBuilder(this.term);
 	if (this.payload != null) {
-	    sb.append('$').append(this.payload.utf8ToString());
+	    sb.append('$');
+	    try {
+		sb.append(this.payload.utf8ToString());
+	    }
+	    catch (AssertionError e) {
+		sb.append("<?>")
+		.append(this.payload.toString().replace(' ', ','));
+	    };
 	};
 	return sb.toString();
     };

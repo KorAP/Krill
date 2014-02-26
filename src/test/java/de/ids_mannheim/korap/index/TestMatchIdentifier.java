@@ -130,6 +130,19 @@ public class TestMatchIdentifier {
 		     "... [{f/m:acht:b}{f/m:neun:a}] ...",
 		     km.getSnippetBrackets());
 
+
+	/*
+	km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8",
+			     "tokens",
+			     "f",
+			     null,
+			     false,
+			     false);
+
+	System.err.println(km.toJSON());
+	*/
+
+	
 	km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8",
 			     "tokens",
 			     "f",

@@ -150,6 +150,12 @@ public class TestBenchmarkElementSpans {
 	// 10 times / 350 docs:
 	// 36.26158006 seconds
 	// 32.52575097 seconds
+	// 31.818091536 seconds
+	// 32.055321123 seconds
+	// 32.32125959 seconds
+	// 31.726277979 seconds
+	// 31.65826188 seconds
+	// 31.287057537 seconds
     };
 
 

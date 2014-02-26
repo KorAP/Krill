@@ -68,10 +68,12 @@ public class TestMultiTerm {
     @Test
     public void multiTermStringPayloadType2 () {
 	MultiTerm mt = new MultiTerm();
-	mt.term("beispiel");
-	mt.start(40);
-	mt.end(50);
-	mt.payload((int) 4000);
+	mt.setTerm("beispiel");
+	mt.setStart(40);
+	assertEquals(mt.getStart(), mt.start);
+	mt.setEnd(50);
+	assertEquals(mt.getEnd(), mt.end);
+	mt.setPayload((int) 4000);
 	assertEquals("beispiel#40-50$<?>[0,0,f,a0]", mt.toString());
     };
 
@@ -98,5 +100,21 @@ public class TestMultiTerm {
 
 	mt = new MultiTerm("example$<l>4000<b>120");
 	assertEquals("example$<?>[0,0,0,0,0,0,f,a0,78]", mt.toString());
+    };
+
+    @Test
+    public void multiTermStringFail () {
+	MultiTerm mt = new MultiTerm("example#56-66");
+	assertEquals(56, mt.getStart());
+	assertEquals(66,mt.getEnd());
+
+	mt = new MultiTerm("example#56-66$<i>a");
+	assertEquals(56, mt.getStart());
+	assertEquals(66, mt.getEnd());
+
+	mt = new MultiTerm("example#56$<i>a");
+	assertEquals(mt.getPayload(), null);
+	assertEquals(mt.getStart(), 0);
+	assertEquals(mt.getEnd(), 0);
     };
 };
