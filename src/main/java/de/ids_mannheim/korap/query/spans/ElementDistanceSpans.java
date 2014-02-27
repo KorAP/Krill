@@ -19,6 +19,8 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 	or a paragraph. All other child spans occurrence which are not in 
  * 	a sentence or a paragraph (with respect to the element distance type 
  * 	current used), are ignored.
+ * 	
+ * 	Note: elements cannot overlap to each other.
  * 
  * @author margaretha
  * */

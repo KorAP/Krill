@@ -12,6 +12,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.DistanceExclusionSpan;
+import de.ids_mannheim.korap.query.spans.ElementDistanceExclusionSpan;
 import de.ids_mannheim.korap.query.spans.ElementDistanceSpans;
 import de.ids_mannheim.korap.query.spans.TokenDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedElementDistanceSpans;
@@ -19,7 +20,9 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
 
 /** Match two ordered or unordered Spans with minimum and maximum 
  * 	distance constraints. The distance unit can be word (token), 
- * 	sentence or paragraph. 
+ * 	sentence or paragraph. The distance constraint can also be
+ * 	specified to match some Spans which do not co-occur with some 
+ * 	other Spans within a min and max distance. 
  * 
  * 	@author margaretha
  * */
@@ -105,7 +108,8 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 		
 		if (this.elementQuery != null) {
 			if (isExclusion()){
-				
+				return new ElementDistanceExclusionSpan(this, context, acceptDocs, 
+						termContexts, isOrdered);
 			}			
 			else if (isOrdered){
 				return new ElementDistanceSpans(this, context, acceptDocs, 
