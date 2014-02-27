@@ -101,6 +101,15 @@ public class TestKorapQueryJSON {
     };
 
     @Test
+    public void queryJSONBsp9b () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp9b.jsonld").getFile());
+
+	// [base=Katze&orth=Katzen]
+	assertEquals(sqwi.toQuery().toString(), "spanSegment(tokens:mate/m:number:pl, tokens:tt/p:NN)");
+    };
+
+
+    @Test
     public void queryJSONBsp10 () {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp10.jsonld").getFile());
 

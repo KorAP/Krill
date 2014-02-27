@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * @author Nils Diewald
+ */
 
 /** Matches spans wrapped by an element. */
 public class SpanElementQuery extends SpanQuery {
@@ -121,7 +124,9 @@ public class SpanElementQuery extends SpanQuery {
 	    return new ElementSpans(postings, element);
 
 	// element does exist, but has no positions
-	throw new IllegalStateException("field \"" + element.field() + "\" was indexed without position data; cannot run SpanElementQuery (element=" + element.text() + ")");
+	throw new IllegalStateException("field \"" + element.field() + "\" was indexed " +
+					"without position data; cannot run " +
+					"SpanElementQuery (element=" + element.text() + ")");
     };
 
     public String getElementStr () {

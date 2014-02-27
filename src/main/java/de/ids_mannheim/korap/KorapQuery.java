@@ -40,6 +40,10 @@ public class KorapQuery {
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapQuery.class);
 
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
+
     /**
      * Constructs a new base object for query generation.
      * @param field The specific index field for the query.

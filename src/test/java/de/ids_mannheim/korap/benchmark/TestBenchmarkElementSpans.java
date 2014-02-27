@@ -112,6 +112,45 @@ public class TestBenchmarkElementSpans {
 	//  77.167124985 sec
     };
 
+
+    @Test
+    public void checkBenchmarkSentences () throws IOException {
+	Properties prop = new Properties();
+	InputStream fr = new FileInputStream(getClass().getResource("/korap.conf").getFile());
+	prop.load(fr);
+
+	// Get the real index
+	KorapIndex ki = new KorapIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+
+	// Create a container for virtual collections:
+	KorapCollection kc = new KorapCollection(ki);
+
+	long t1 = 0, t2 = 0;
+	/// cosmas20.json!!!
+	String json = getString(getClass().getResource("/queries/benchmark4.jsonld").getFile());
+
+	int rounds = 10;
+
+	KorapResult kr = new KorapResult();
+
+	t1 = System.nanoTime();
+	double length = 0;
+	for (int i = 1; i <= rounds; i++) {
+	    kr = new KorapSearch(json).run(ki);
+	};
+	t2 = System.nanoTime();
+
+	System.err.println(kr.getMatch(0).toJSON());
+
+	assertEquals("TotalResults1", 4116282, kr.getTotalResults());
+	assertEquals("TotalResults2", kr.getTotalResults(), ki.numberOf("sentences"));
+
+	double seconds = (double)(t2-t1) / 1000000000.0;
+	
+	System.out.println("It took " + seconds + " seconds");
+    };
+
+    
     @Test
     public void checkBenchmarkIndexDocuments () throws IOException {
 	long t1 = 0, t2 = 0;

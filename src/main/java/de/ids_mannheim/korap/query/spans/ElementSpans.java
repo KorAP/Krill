@@ -23,7 +23,7 @@ import java.util.List;
 // TODO: Store payloads in 12 byte instead of the complicated ByteBuffer stuff!
 
 /**
- * @author ndiewald
+ * @author Nils Diewald
  */
 public class ElementSpans extends Spans {
 
@@ -47,6 +47,10 @@ public class ElementSpans extends Spans {
 
     private final static Logger log = LoggerFactory.getLogger(ElementSpans.class);
 
+
+    /**
+     * The constructor.
+     */
     public ElementSpans(DocsAndPositionsEnum postings, Term term) {
 	this.postings = postings;
 	this.term = term;
@@ -61,7 +65,7 @@ public class ElementSpans extends Spans {
     };
 
     // only for EmptyElementSpans (below)
-    ElementSpans() {
+    public ElementSpans() {
 	term = null;
 	postings = null;
     };

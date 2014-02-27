@@ -155,6 +155,64 @@ public class TestKorapQuery {
 	assertEquals("spanNext(spanNext(field:try1, shrink(1: {1: field:try2})), field:try3)", sq.toString());
     };
 
+
+    @Test
+    public void KorapSequenceQuery1 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).toQuery();
+	assertEquals("spanNext(field:try1, field:try2)", sq.toString());
+    };
+
+    @Test
+    public void KorapSequenceQuery2 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).withConstraint(2,3).toQuery();
+	assertEquals("spanDistance(field:try1, field:try2, [(w[2:3], ordered, notExcluded)])", sq.toString());
+    };
+
+    @Test
+    public void KorapSequenceQuery3 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).withConstraint(2,3, "s").toQuery();
+	assertEquals("spanElementDistance(field:try1, field:try2, [(s[2:3], ordered, notExcluded)])", sq.toString());
+    };
+
+    @Test
+    public void KorapSequenceQuery4 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).withConstraint(2,3,"s").withConstraint(5,6,"w").toQuery();
+	assertEquals("spanMultipleDistance(field:try1, field:try2, [(s[2:3], ordered, notExcluded), (w[5:6], ordered, notExcluded)])", sq.toString());
+    };
+
+    @Test
+    public void KorapSequenceQuery5 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).withConstraint(2,3,true).toQuery();
+	assertEquals("spanDistance(field:try1, field:try2, [(w[2:3], ordered, excluded)])", sq.toString());
+    };
+
+    @Test
+    public void KorapSequenceQuery6 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).withConstraint(2,3,"s",true).toQuery();
+	assertEquals("spanElementDistance(field:try1, field:try2, [(s[2:3], ordered, excluded)])", sq.toString());
+    };
+
+    @Test
+    public void KorapSequenceQuery7 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).withConstraint(5,6).withConstraint(2,3,"s",true).toQuery();
+	assertEquals("spanMultipleDistance(field:try1, field:try2, [(w[5:6], ordered, notExcluded), (s[2:3], ordered, excluded)]])", sq.toString());
+    };
+
+    @Test
+    public void KorapSequenceQuery8 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).append("try3").withConstraint(5,6).withConstraint(2,3,"s",true).toQuery();
+	assertEquals("spanMultipleDistance(spanMultipleDistance(field:try1, field:try2, [(w[5:6], ordered, notExcluded), (s[2:3], ordered, excluded)]]), field:try3, [(w[5:6], ordered, notExcluded), (s[2:3], ordered, excluded)]])", sq.toString());
+    };
+
+    
     // kq.seg("a").append(kq.ANY).append("b:c");
     // kq.repeat(kq.seg("a", "b"), 5)
 };
