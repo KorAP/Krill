@@ -20,9 +20,9 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
 
 /** Match two ordered or unordered Spans with minimum and maximum 
  * 	distance constraints. The distance unit can be word (token), 
- * 	sentence or paragraph. The distance constraint can also be
- * 	specified to match some Spans which do not co-occur with some 
- * 	other Spans within a min and max distance. 
+ * 	sentence or paragraph. The distance can also be specified to match 
+ * 	some Spans which do NOT co-occur with some other Spans within a min 
+ * 	and max distance. 
  * 
  * 	@author margaretha
  * */

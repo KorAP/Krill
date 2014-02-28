@@ -1,5 +1,10 @@
 package de.ids_mannheim.korap.query;
 
+/**	Create a distance constraint for multiple distance query.
+ * 	 
+ * 	@author margaretha
+ * */
+
 public class DistanceConstraint {
 	private int minDistance, maxDistance;
 	private String unit;
