@@ -187,6 +187,11 @@ public class TestFieldDocument {
 	System.err.println(kr.toJSON());
 	*/
 
+
+	kr = ki.search(query, 0, (short) 1, true, (short) 2, false, (short) 5);
+	assertEquals("... Buchstabe des [{1:{2:lateinischen} Alphabets}] und  ...", kr.match(0).getSnippetBrackets());
+
+	
 	kr = ki.search(query, 0, (short) 50, true, (short) 2, false, (short) 5);
 
 //	System.err.println(kr.toJSON());

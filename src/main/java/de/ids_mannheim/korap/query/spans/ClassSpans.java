@@ -24,13 +24,20 @@ public class ClassSpans extends Spans {
     private Collection<byte[]> payload;
     private final Spans spans;
     private byte number;
-    private ByteBuffer bb;
     private SpanQuery highlight;
     private Boolean hasmorespans = false;
 
-    private final Logger log = LoggerFactory.getLogger(ClassSpans.class);
+    private ByteBuffer bb = ByteBuffer.allocate(9);
 
-    public ClassSpans (SpanQuery highlight, AtomicReaderContext context, Bits acceptDocs, Map<Term,TermContext> termContexts, byte number) throws IOException {
+    private final static Logger log = LoggerFactory.getLogger(ClassSpans.class);
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
+    public ClassSpans (SpanQuery highlight,
+		       AtomicReaderContext context,
+		       Bits acceptDocs,
+		       Map<Term,TermContext> termContexts,
+		       byte number) throws IOException {
 	spans = highlight.getSpans(context, acceptDocs, termContexts);
 	this.number = number;
 	this.highlight = highlight;
@@ -39,18 +46,11 @@ public class ClassSpans extends Spans {
 
     @Override
     public Collection<byte[]> getPayload() throws IOException {
-	/*
-	for (byte[] x: highlightedPayload) {
-	    ByteBuffer b = ByteBuffer.wrap(x, 0, x.length);
-	    log.trace(">> Get Payload: {}-{} in class {}", b.getInt(), b.getInt(), b.get());
-	};
-	*/
 	return highlightedPayload;
     };
 
     @Override
     public boolean isPayloadAvailable() {
-	// return highlightedPayload.isEmpty() == false;
 	return true;
     };
 
@@ -68,7 +68,8 @@ public class ClassSpans extends Spans {
     // inherit javadocs
     @Override
     public boolean next() throws IOException {
-	log.trace("Forward next");
+	if (DEBUG)
+	    log.trace("Forward next");
 
 	if (spans.next()) {
 	    hasmorespans = true;
@@ -77,22 +78,34 @@ public class ClassSpans extends Spans {
 
 	    if (spans.isPayloadAvailable()) {
 		highlightedPayload.addAll(spans.getPayload());
-		log.trace("Found payload");
+		if (DEBUG)
+		    log.trace("Found payload");
 	    };
 
-
-	    log.trace("Start to create class {} with span {} - {}",
-		      number,
-		      spans.start(),
-		      spans.end());
+	    if (DEBUG)
+		log.trace("Start to create class {} with span {} - {}",
+			  number,
+			  spans.start(),
+			  spans.end());
 
 	    // Todo: Better allocate using a Factory!
 
-	    bb = ByteBuffer.allocate(9);
-
+	    //private
+	    bb.clear();
 	    bb.putInt(spans.start()).putInt(spans.end()).put(number);
+	    /*
+	    if (DEBUG)
+		log.trace("Results in {} with {}", bb.toString(), bb.array());
+	    */
 	    // Add highlight information as byte after offsets
 	    highlightedPayload.add(bb.array());
+	    /*
+	    if (DEBUG) {
+		bb.rewind();
+		log.trace("That was a class from {}-{} of class {}", bb.getInt(), bb.getInt(), bb.get());
+	    };
+	    */
+		
 	    return true;
 	};
 	hasmorespans = false;
@@ -102,6 +115,7 @@ public class ClassSpans extends Spans {
     // inherit javadocs
     @Override
     public boolean skipTo(int target) throws IOException {
+	highlightedPayload.clear();
 	if (hasmorespans && spans.doc() < target)
 	    return spans.skipTo(target);
 	return false;

@@ -65,7 +65,8 @@ public class SpanClassQuery extends SpanQuery {
 
     @Override
     public Spans getSpans (final AtomicReaderContext context,
-			   Bits acceptDocs, Map<Term,TermContext> termContexts) throws IOException {
+			   Bits acceptDocs,
+			   Map<Term,TermContext> termContexts) throws IOException {
 	return (Spans) new ClassSpans(
 	    this.highlight,
 	    context,
@@ -105,7 +106,7 @@ public class SpanClassQuery extends SpanQuery {
 
     /** Returns true iff <code>o</code> is equal to this. */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals (Object o) {
 	if (this == o) return true;
 	if (!(o instanceof SpanClassQuery)) return false;
 	

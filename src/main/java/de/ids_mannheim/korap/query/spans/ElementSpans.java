@@ -27,10 +27,6 @@ import java.util.List;
  */
 public class ElementSpans extends Spans {
 
-    // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
-  
-
     private byte[] payloadByte = new byte[4];
     private ByteBuffer bb = ByteBuffer.allocate(4);
 
@@ -46,6 +42,8 @@ public class ElementSpans extends Spans {
     private KorapTermSpan overflow, tempSpan;
 
     private final static Logger log = LoggerFactory.getLogger(ElementSpans.class);
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
 
 
     /**

@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestBenchmarkElementSpans {
+public class TestBenchmarkSpans {
 
     @Test
     public void checkBenchmark1 () throws IOException {
@@ -149,6 +149,80 @@ public class TestBenchmarkElementSpans {
 	
 	System.out.println("It took " + seconds + " seconds");
     };
+
+    
+    @Test
+    public void checkBenchmarkClasses () throws IOException {
+	// [orth=Der]{1:[orth=Mann]{2:[orth=und]}}
+
+	Properties prop = new Properties();
+	InputStream fr = new FileInputStream(getClass().getResource("/korap.conf").getFile());
+	prop.load(fr);
+
+	// Get the real index
+	KorapIndex ki = new KorapIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+
+	// Create a container for virtual collections:
+	KorapCollection kc = new KorapCollection(ki);
+
+	long t1 = 0, t2 = 0;
+	// Without classes
+	String json = getString(getClass().getResource("/queries/benchmark5-ohne.jsonld").getFile());
+
+	int rounds = 2000;
+
+	KorapResult kr = new KorapResult();
+
+	t1 = System.nanoTime();
+	for (int i = 1; i <= rounds; i++) {
+	    kr = new KorapSearch(json).run(ki);
+	};
+	t2 = System.nanoTime();
+
+	double seconds = (double)(t2-t1) / 1000000000.0;
+	
+	System.out.println("It took " + seconds + " seconds without classes");
+
+	t1 = 0;
+	t2 = 0;
+	// With classes
+	json = getString(getClass().getResource("/queries/benchmark5.jsonld").getFile());
+
+	t1 = System.nanoTime();
+	for (int i = 1; i <= rounds; i++) {
+	    kr = new KorapSearch(json).run(ki);
+	};
+	t2 = System.nanoTime();
+
+	seconds = (double)(t2-t1) / 1000000000.0;
+	
+	System.out.println("It took " + seconds + " seconds with classes");
+
+
+	// System.err.println(kr.toJSON());
+
+	System.err.println(kr.getMatch(3).getSnippetBrackets());
+
+
+	// 2000 rounds:
+	// It took 10.872934435 seconds without classes
+	// It took 22.581117396 seconds with classes
+
+	// It took 10.703933598 seconds without classes
+	// It took 19.354674517 seconds with classes
+
+	// It took 10.939948726 seconds without classes
+	// It took 16.998470662 seconds with classes
+
+	// It took 10.900975837 seconds without classes
+	// It took 14.902590949 seconds with classes
+
+	// It took 10.365989238 seconds without classes
+	// It took 13.833405885 seconds with classes
+
+    };
+
+
 
     
     @Test
