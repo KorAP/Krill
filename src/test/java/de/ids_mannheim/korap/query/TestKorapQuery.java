@@ -194,7 +194,7 @@ public class TestKorapQuery {
     @Test
     public void KorapSequenceQuery6 () {
 	KorapQuery kq = new KorapQuery("field");
-	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).withConstraint(2,3,"s",true).toQuery();
+	SpanQuery sq = kq.seq(kq.seg("try1")).append(kq.seg("try2")).withConstraint(2,3,"s", true).toQuery();
 	assertEquals("spanElementDistance(field:try1, field:try2, [(s[2:3], ordered, excluded)])", sq.toString());
     };
 

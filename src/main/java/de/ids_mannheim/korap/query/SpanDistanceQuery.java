@@ -78,7 +78,7 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 		sb.append(maxDistance);
 		sb.append("], ");		
 		sb.append( isOrdered ? "ordered, " : "notOrdered, " );
-		sb.append( exclusion ? "excluded)]" : "notExcluded)])");
+		sb.append( exclusion ? "excluded)])" : "notExcluded)])");
 		sb.append(ToStringUtils.boost(getBoost()));
     	return sb.toString();
     }

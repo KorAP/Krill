@@ -149,7 +149,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	    // Create spanElementDistance query
 	    if (!constraint.getUnit().equals("w")) {
 		for (int i = 1; i < this.segments.size(); i++) {
-		    query = new SpanDistanceQuery(
+		    SpanDistanceQuery sdquery = new SpanDistanceQuery(
 		        new SpanElementQuery(this.field, constraint.getUnit()),
 	                query,
 			this.segments.get(i),
@@ -158,13 +158,15 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 			this.isInOrder(),
 			true
 		    );
+		    sdquery.setExclusion(constraint.isExclusion());
+		    query = (SpanQuery) sdquery;
 		};
 	    }
 
 	    // Create spanDistance query
 	    else {
 		for (int i = 1; i < this.segments.size(); i++) {
-		    query = new SpanDistanceQuery(
+		    SpanDistanceQuery sdquery = new SpanDistanceQuery(
 	                query,
 			this.segments.get(i),
 			constraint.getMinDistance(),
@@ -172,6 +174,8 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 			this.isInOrder(),
 			true
 		    );
+		    sdquery.setExclusion(constraint.isExclusion());
+		    query = (SpanQuery) sdquery;
 		};
 	    };
 
