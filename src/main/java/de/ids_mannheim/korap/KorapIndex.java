@@ -554,7 +554,7 @@ public class KorapIndex {
 	     * in case the foundry is given, and if span annotations
 	     * are of interest.
 	     */
-	    StringBuffer regex = new StringBuffer();
+	    StringBuilder regex = new StringBuilder();
 
 	    // Todo: Only support one direction!
 	    if (includeSpans)
@@ -1034,7 +1034,7 @@ public class KorapIndex {
 
 		// Can be disabled TEMPORARILY
 		while (!cutoff && spans.next()) {
-		    if (limit > 0 && i <= limit)
+		    if (limit > 0 && i >= limit)
 			break;
 		    i++;
 		};

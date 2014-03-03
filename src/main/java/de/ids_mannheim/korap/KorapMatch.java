@@ -32,12 +32,19 @@ import org.apache.lucene.document.Document;
 /**
  * Representation of Matches in a KorapResult.
  *
+ * @author Nils Diewald
  * @see KorapResult
- * @author ndiewald
  */
 @JsonInclude(Include.NON_NULL)
 public class KorapMatch extends KorapDocument {
 
+    // Logger
+    private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
+    // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
 
     // Snippet information
@@ -47,8 +54,7 @@ public class KorapMatch extends KorapDocument {
 
     // Should be deprecated, but used wildly in tests!
     @JsonIgnore
-    public int startPos,
-	       endPos;
+    public int startPos, endPos;
 
     @JsonIgnore
     public int potentialStartPosChar = -1,
@@ -91,18 +97,16 @@ public class KorapMatch extends KorapDocument {
     private PositionsToOffset positionsToOffset;
     private boolean processed = false;
 
-    // Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
-
-    // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
-
     /**
      * Constructs a new KorapMatch object.
      * TODo: Maybe that's not necessary!
      *
      * @param pto The PositionsToOffset object, containing relevant
      *            positional information for highlighting
+     * @param localDocID Document ID based on the atomic reader.
+     * @param startPos Start position of the match in the document.
+     * @param endPos End position of the match in the document.
+     *
      * @see #snippetHTML()
      * @see #snippetBrackets()
      * @see PositionsToOffset
@@ -114,13 +118,19 @@ public class KorapMatch extends KorapDocument {
 	this.endPos = endPos;
     };
 
+    
     /**
      * Constructs a new KorapMatch object.
      */
     public KorapMatch () {};
 
+    
     /**
      * Constructs a new KorapMatch object.
+     *
+     * @param idString Match identifier string as provided by KorapResult.
+     * @param includeHighlights Boolean value indicating if possible provided
+     *        highlight information should be ignored or not.
      */
     public KorapMatch (String idString, boolean includeHighlights) {
 	MatchIdentifier id = new MatchIdentifier(idString);
@@ -138,6 +148,10 @@ public class KorapMatch extends KorapDocument {
 	    };
     };
 
+    
+    /**
+     * Private class of highlights.
+     */   
     private class Highlight {
 	public int start, end;
 	public int number = -1;
@@ -145,7 +159,7 @@ public class KorapMatch extends KorapDocument {
 	// Relational highlight
        	public Highlight (int start, int end, String annotation, int ref) {
 	    this.start = start;
-	    this.end = end;
+	    this.end   = end;
 	    // TODO: This can overflow!
 	    this.number = relationNumberCounter++;
 	    relationNumber.put(this.number, new Relation(annotation, ref));
@@ -154,7 +168,7 @@ public class KorapMatch extends KorapDocument {
 	// Span highlight
 	public Highlight (int start, int end, String annotation) {
 	    this.start = start;
-	    this.end = end;
+	    this.end   = end;
 	    // TODO: This can overflow!
 	    if (annotationNumberCounter < 2048) {
 		this.number = annotationNumberCounter++;
@@ -164,12 +178,16 @@ public class KorapMatch extends KorapDocument {
 
 	// Simple highlight
 	public Highlight (int start, int end, int number) {
-	    this.start = start;
-	    this.end = end;
+	    this.start  = start;
+	    this.end    = end;
 	    this.number = number;
 	};
     };
 
+    
+    /**
+     * Private class of relations.
+     */   
     private class Relation {
 	public int ref;
 	public String annotation;
@@ -204,24 +222,49 @@ public class KorapMatch extends KorapDocument {
 	this.addHighlight(new Highlight(start, end, number));
     };
 
+    
+    /**
+     * Insert a highlight for the snippet view.
+     *
+     * @param hl A highlight object to add to the match.
+     */
     public void addHighlight (Highlight hl) {
 
 	if (this.highlight == null)
 	    this.highlight = new ArrayList<Highlight>(16);
 
 	if (DEBUG)
-	    log.trace("Add highlight {} from {} to {}", hl.number, hl.start, hl.end);
+	    log.trace("Add highlight from pos {}-{} of class {}",
+		      hl.start, hl.end, hl.number);
 
+	// Reset the fetched match data
 	this._reset();
 
 	this.highlight.add(hl);
     };
 
 
+    /**
+     * Insert a textual annotation for the snippet view by
+     * means of positional offsets and an annotation string.
+     *
+     * @param start      Integer value of a span's positional start offset.
+     * @param end        Integer value of a span's positional end offset.
+     * @param annotation Annotation string.
+     */
     public void addAnnotation (int start, int end, String annotation) {
 	this.addHighlight(new Highlight(start, end, annotation));
     };
 
+    
+    /**
+     * Insert an annotated relation for the snippet view by
+     * means of relational participant positions and an annotation string.
+     *
+     * @param src        Integer value of a span's positional source object.
+     * @param target     Integer value of a span's positional target object.
+     * @param annotation Annotation string.
+     */
     public void addRelation (int src, int target, String annotation) {
 	this.addHighlight(new Highlight(src, src, annotation, target));
 	int id = identifierNumberCounter--;
@@ -230,14 +273,16 @@ public class KorapMatch extends KorapDocument {
     };
 
 
+    /**
+     * Populate document meta information with information coming from the index.
+     *
+     * @param doc    Document object.
+     * @param field  Primary data field.
+     * @param fields Hash object with all supported fields.
+     */
     public void populateDocument (Document doc, String field, HashSet<String> fields) {
-
 	this.setField(field);
-
-	this.setPrimaryData(
-	    new KorapPrimaryData(doc.get(field))
-	);
-
+	this.setPrimaryData( new KorapPrimaryData(doc.get(field)) );
 	if (fields.contains("corpusID"))
 	    this.setCorpusID(doc.get("corpusID"));
 	if (fields.contains("ID"))
@@ -264,74 +309,147 @@ public class KorapMatch extends KorapDocument {
 	    this.setLayerInfo(doc.get("layerInfo"));
     };
 
+
+    /**
+     * Get document id.
+     */
     @JsonProperty("docID")
     public String getDocID () {
 	return super.getID();
     };
 
+    
+    /**
+     * Set document id.
+     *
+     * @param id String representation of document ID.
+     */
     public void setDocID (String id) {
 	super.setID(id);
     };
 
+
+    /**
+     * Set version of the index
+     */
+    @JsonIgnore
+    public String getVersion () {
+	if (this.version == null)
+	    return null;
+	StringBuilder sb = new StringBuilder("lucene-backend-");
+	return sb.append(this.version).toString();
+    };
+
+
+    /**
+     * Set version number.
+     *
+     * @param version The version number of the index as
+     *                a string representation.
+     */
     @JsonIgnore
     public void setVersion (String version) {
 	this.version = version;
     };
 
-    @JsonIgnore
-    public String getVersion () {
-	if (this.version == null)
-	    return null;
-	return "lucene-backend-" + this.version;
-    };
 
+    /**
+     * Get the positional start offset of the match.
+     */
     @JsonIgnore
     public int getStartPos() {
 	return this.startPos;
     };
 
+
+    /**
+     * Set the positional start offset of the match.
+     *
+     * @param pos The positional offset.
+     */
     @JsonIgnore
     public void setStartPos(int pos) {
 	this.startPos = pos;
     };
 
+
+    /**
+     * Get the positional end offset of the match.
+     */
     @JsonIgnore
     public int getEndPos() {
 	return this.endPos;
     };
 
+
+    /**
+     * Set the positional end offset of the match.
+     *
+     * @param pos The positional offset.
+     */
     @JsonIgnore
     public void setEndPos(int pos) {
 	this.endPos = pos;
     };
 
+    
+    /**
+     * Get the local (i.e. Lucene given) ID of the document.
+     */
     @JsonIgnore
     public int getLocalDocID () {
 	return this.localDocID;
     };
 
+
+    /**
+     * Set the local (i.e. Lucene given) ID of the document.
+     *
+     * @param id The id of the document.
+     */
     @JsonIgnore
     public void setLocalDocID (int id) {
 	this.localDocID = id;
     };
 
-    @JsonIgnore
-    public void setPositionsToOffset (PositionsToOffset pto) {
-	this.positionsToOffset = pto;
-    };
-
+    
+    /**
+     * Get the PositionsToOffset object.
+     *
+     * @see PositionsToOffset
+     */
     @JsonIgnore
     public PositionsToOffset getPositionsToOffset () {
 	return this.positionsToOffset;
     };
 
+
+    /**
+     * Set the PositionsToOffset object.
+     *
+     * @param pto The PositionsToOffset object
+     * @see PositionsToOffset
+     */
+    @JsonIgnore
+    public void setPositionsToOffset (PositionsToOffset pto) {
+	this.positionsToOffset = pto;
+    };
+
+
+    /**
+     * Get match ID (for later retrieval).
+     *
+     * @see MatchIdentifier
+     */
     @Override
     @JsonProperty("ID")
     public String getID () {
 
+	// Identifier already given
 	if (this.identifier != null)
 	    return this.identifier;
 
+	// No, nada, nix
 	if (this.localDocID == -1)
 	    return null;
 
@@ -343,11 +461,13 @@ public class KorapMatch extends KorapDocument {
 	id.setStartPos(startPos);
 	id.setEndPos(endPos);
 
+	// There are highlights to integrate
 	if (this.highlight != null) {
 	    for (Highlight h : this.highlight) {
 		if (h.number >= 256)
 		    continue;
 
+		// Add highlight to the snippet
 		id.addPos(h.start, h.end, h.number);
 	    };
 	};
@@ -355,11 +475,20 @@ public class KorapMatch extends KorapDocument {
 	return (this.identifier = id.toString());
     };
 
+
+    /**
+     * Get identifier for a specific position.
+     *
+     * @param int Position to get identifier on.
+     */
     @JsonIgnore
     public String getPosID (int pos) {
+
+	// Identifier already given
 	if (this.identifier != null)
 	    return this.identifier;
 
+	// Nothing here
 	if (this.localDocID == -1)
 	    return null;
 
@@ -373,21 +502,44 @@ public class KorapMatch extends KorapDocument {
 	return id.toString();
     };
 
+    /**
+     * Get possible error message.
+     */
+    // Identical to KorapResult
+    public String getError () {
+	return this.error;
+    };
+
+    /**
+     * Set error message.
+     *
+     * @param msg The error message.
+     */
+    public void setError (String msg) {
+	this.error = msg;
+    };
+
+
+    
+    // Reset all internal data
     private void _reset () {
-	this.processed = false;
-	this.snippetHTML = null;
+	this.processed       = false;
+	this.snippetHTML     = null;
 	this.snippetBrackets = null;
-	this.identifier = null;
+	this.identifier      = null;
+
+	// Delete all spans
 	if (this.span != null)
 	    this.span.clear();
     };
 
+    
     // Start building highlighted snippets
     private boolean _processHighlight () {
-
 	if (processed)
 	    return true;
 
+	// Relevant details are missing
 	if (this.positionsToOffset == null || this.localDocID == -1) {
 	    log.warn("You have to define " +
 		     "positionsToOffset and localDocID first " +
@@ -396,25 +548,30 @@ public class KorapMatch extends KorapDocument {
 	};
 
 	if (DEBUG)
-	    log.trace("Start highlight processing ...");
+	    log.trace("--- Start highlight processing ...");
 
+	// Get pto object
 	PositionsToOffset pto = this.positionsToOffset;
 	pto.add(this.localDocID, this.getStartPos());
 	pto.add(this.localDocID, this.getEndPos() - 1);
 
 	if (DEBUG)
-	    log.trace("PTO now has start and end positions {}-{}", this.getStartPos(), this.getEndPos());
+	    log.trace("PTO will retrieve {} & {} (Match boundary)",
+		      this.getStartPos(),
+		      this.getEndPos());
 
+	// Add all highlights for character retrieval
 	if (this.highlight != null) {
 	    for (Highlight hl : this.highlight) {
 		pto.add(this.localDocID, hl.start);
 		pto.add(this.localDocID, hl.end);
+
+		if (DEBUG)
+		    log.trace("PTO will retrieve {} & {} (Highlight boundary)",
+			      hl.start, hl.end);
 	    };
 	};
 	
-	if (DEBUG)
-	    log.trace("All highlights are added");
-
 	// Get the list of spans for matches and highlighting
 	if (this.span == null || this.span.size() == 0) {
 	    if (!this._processHighlightSpans(
@@ -424,10 +581,11 @@ public class KorapMatch extends KorapDocument {
 		return false;
 	};
 
-	// Create a stack for highlighted elements (opening and closing elements)
+	// Create a stack for highlighted elements
+	// (opening and closing elements)
 	ArrayList<int[]> stack = this._processHighlightStack();
 
-	// The temparary snippet is empty, nothing to do
+	// The temporary snippet is empty, nothing to do
 	if (this.tempSnippet == null) {
 	    processed = true;
 	    return false;
@@ -439,6 +597,7 @@ public class KorapMatch extends KorapDocument {
 	// Match is processed - done
 	return (processed = true);
     };
+
 
     /*
       Comparator class for opening tags
@@ -776,12 +935,14 @@ public class KorapMatch extends KorapDocument {
 	};
     };
 
-    private void _processHighlightSnippet (String clean, ArrayList<int[]> stack) {
-	int pos = 0;
-	int oldPos = 0;
+    private void _processHighlightSnippet (String clean,
+					   ArrayList<int[]> stack) {
 
 	if (DEBUG)
-	    log.trace("Create Snippet");
+	    log.trace("--- Process Highlight snippet");
+
+	int pos = 0,
+	    oldPos = 0;
 
 	this.snippetStack = new HighlightCombinator();
 
@@ -907,19 +1068,21 @@ public class KorapMatch extends KorapDocument {
     // even in case they overlap
     // TODO: Not very fast - improve!
     private ArrayList<int[]> _processHighlightStack () {
-
 	if (DEBUG)
-	    log.trace("Create Stack");
+	    log.trace("--- Process Highlight stack");
 
 	LinkedList<int[]> openList  = new LinkedList<int[]>();
 	LinkedList<int[]> closeList = new LinkedList<int[]>();
 
-	openList.addAll(span);
-	closeList.addAll(span);
+	// Add highlight spans to balance lists
+	openList.addAll(this.span);
+	closeList.addAll(this.span);
 
+	// Sort balance lists
 	Collections.sort(openList, new OpeningTagComparator());
 	Collections.sort(closeList, new ClosingTagComparator());
 
+	// New stack array
 	ArrayList<int[]> stack = new ArrayList<>(openList.size() * 2);
 
 	// Create stack unless both lists are empty
@@ -942,45 +1105,68 @@ public class KorapMatch extends KorapDocument {
 	return stack;
     };
 
-
+    /**
+     * This will retrieve character offsets for all spans.
+     */
     private boolean _processHighlightSpans (boolean leftTokenContext,
-					 boolean rightTokenContext) {
+					    boolean rightTokenContext) {
+
+	if (DEBUG)
+	    log.trace("--- Process Highlight spans");
+
 	int startOffsetChar,
 	    endOffsetChar,
 	    startPosChar,
 	    endPosChar;
 
-	if (DEBUG)
-	    log.trace("Create Spans");
-
+	// Local document ID
 	int ldid = this.localDocID;
 
+	// No positionsToOffset object found
 	if (this.positionsToOffset == null)
 	    return false;
 
 	// Match position
 	startPosChar = this.positionsToOffset.start(ldid, this.startPos);
+
 	// Check potential differing start characters
 	// e.g. from element spans
-	if (potentialStartPosChar != -1 && startPosChar > potentialStartPosChar)
+	if (potentialStartPosChar != -1 &&
+	    (startPosChar > potentialStartPosChar))
 	    startPosChar = potentialStartPosChar;
 
 	endPosChar = this.positionsToOffset.end(ldid, this.endPos - 1);
-	if (DEBUG) {
-	    log.trace("startPosChar for PTO is {}({})", startPosChar, this.startPos);
-	    log.trace("endPosChar for PTO is {}({})", endPosChar, this.endPos);
-	};
+	
+	if (DEBUG)
+	    log.trace("Match offset is pos {}-{} (chars {}-{})",
+		      this.startPos,
+		      this.endPos,
+		      startPosChar,
+		      endPosChar);
 
-
-	if (endPosChar < potentialEndPosChar)
+	// Potential end characters may come from spans with
+	// defined character offsets like sentences including .", ... etc.
+	if (endPosChar < potentialEndPosChar) {
 	    endPosChar = potentialEndPosChar;
 
-	if (DEBUG)
-	    log.trace("Matchposition: {}-{}", startPosChar, endPosChar);
+	    if (DEBUG)
+		log.trace("Refined: Match offset is pos {}-{} (chars {}-{})",
+			  this.startPos,
+			  this.endPos,
+			  startPosChar,
+			  endPosChar);
+	};
 
 	// left context
 	if (leftTokenContext) {
-	    startOffsetChar = this.positionsToOffset.start(ldid, startPos - this.leftContextOffset);
+	    if (DEBUG)
+		log.trace("PTO will retrieve {} (Left context)",
+			  this.startPos - this.leftContextOffset);
+
+	    startOffsetChar = this.positionsToOffset.start(
+	      ldid,
+	      this.startPos - this.leftContextOffset
+	    );
 	}
 	else {
 	    startOffsetChar = startPosChar - this.leftContextOffset;
@@ -988,16 +1174,14 @@ public class KorapMatch extends KorapDocument {
 
 	// right context
 	if (rightTokenContext) {
+	    if (DEBUG)
+		log.trace("PTO will retrieve {} (Right context)",
+			  this.endPos + this.rightContextOffset - 1);
+
 	    endOffsetChar = this.positionsToOffset.end(
 	        ldid,
 		this.endPos + this.rightContextOffset - 1
 	    );
-	    if (DEBUG)
-		log.trace("For endOffset {} ({}+{}-1) pto returns {}",
-			  (this.endPos + this.rightContextOffset - 1),
-			  this.endPos,
-			  this.rightContextOffset,
-			  endOffsetChar);
 	}
 	else {
 	    if (endPosChar == -1) {
@@ -1008,7 +1192,8 @@ public class KorapMatch extends KorapDocument {
 	    };
 	};
 
-	// This can happen in case of non-token characters in the match and null offsets
+	// This can happen in case of non-token characters
+	// in the match and null offsets
 	if (startOffsetChar > startPosChar) {
 	    startOffsetChar = startPosChar;
 	}
@@ -1025,41 +1210,66 @@ public class KorapMatch extends KorapDocument {
 	    endOffsetChar = endPosChar;
 
 	if (DEBUG)
-	    log.trace("Offsetposition {} till {} with contexts {} and {}",
-		      startOffsetChar,
-		      endOffsetChar,
-		      leftContextOffset,
-		      rightContextOffset);
+	    log.trace("The context spans from chars {}-{}",
+		      startOffsetChar, endOffsetChar);
 
-	if (endOffsetChar > -1 && endOffsetChar < this.getPrimaryDataLength()) {
-	    this.tempSnippet = this.getPrimaryData(startOffsetChar, endOffsetChar);
+	if (endOffsetChar > -1 &&
+	    (endOffsetChar < this.getPrimaryDataLength())) {
+	    this.tempSnippet = this.getPrimaryData(
+	        startOffsetChar,
+		endOffsetChar
+	    );
 	}
 	else {
 	    this.tempSnippet = this.getPrimaryData(startOffsetChar);
 	    endMore = false;
 	};
 
+	if (DEBUG)
+	    log.trace("Snippet: '" + this.tempSnippet + "'");
+
+	// No spans yet
 	if (this.span == null)
 	    this.span = new LinkedList<int[]>();
 
 	this.identifier = null;
 
-	// Todo: Simplify
-	int[] intArray = new int[]{ startPosChar - startOffsetChar, endPosChar - startOffsetChar, -1, 0};
-	if (DEBUG)
-	    log.trace("IntArray: {}", intArray);
+	// TODO: Simplify
+	int[] intArray = new int[]{
+	    startPosChar - startOffsetChar,
+	    endPosChar - startOffsetChar,
+	    -1,
+	    0};
+
+	// Add match span
 	this.span.add(intArray);
 
 	// highlights
 	// -- I'm not sure about this.
 	if (this.highlight != null) {
 	    for (Highlight highlight : this.highlight) {
-		int start = this.positionsToOffset.start(ldid, highlight.start) - startOffsetChar;
-		int end = this.positionsToOffset.end(ldid, highlight.end) - startOffsetChar;
+		int start = this.positionsToOffset.start(
+		  ldid, highlight.start
+	        );
+		
+		int end = this.positionsToOffset.end(
+	          ldid,
+		  highlight.end
+		);
 
+		if (DEBUG)
+		    log.trace("PTO has retrieved {}-{} for class {}",
+			      start,
+			      end,
+			      highlight.number);
+		
+		start -= startOffsetChar;
+		end   -= startOffsetChar;
+		
 		if (start < 0 || end < 0)
 		    continue;
 
+		// Create intArray for highlight
 		intArray = new int[]{
 		    start,
 		    end,
@@ -1067,25 +1277,10 @@ public class KorapMatch extends KorapDocument {
 		    0 // Dummy value for later
 		};
 
-		if (DEBUG) {
-		    log.trace("IntArray: {}", intArray);
-		    log.trace("PTO-start: {}", start + startOffsetChar);
-		    log.trace("PTO-end: {}", end + startOffsetChar);
-		};
-
 		this.span.add(intArray);
 	    };
 	};
 	return true;
-    };
-
-    // Identical to KorapResult
-    public String getError () {
-	return this.error;
-    };
-
-    public void setError (String msg) {
-	this.error = msg;
     };
 
 

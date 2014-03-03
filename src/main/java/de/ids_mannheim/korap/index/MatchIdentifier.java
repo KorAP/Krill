@@ -71,7 +71,7 @@ public class MatchIdentifier extends DocIdentifier {
 
 	if (this.docID == null) return null;
 
-	StringBuffer sb = new StringBuffer("match-");
+	StringBuilder sb = new StringBuilder("match-");
 
 	// Get prefix string corpus/doc
 	if (this.corpusID != null) {
@@ -103,6 +103,7 @@ public class MatchIdentifier extends DocIdentifier {
 	    };
 	};
 	*/
+	
 	return sb.toString();
     };
 };

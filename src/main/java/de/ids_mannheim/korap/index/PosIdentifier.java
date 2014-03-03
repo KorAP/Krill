@@ -20,7 +20,7 @@ public class PosIdentifier extends DocIdentifier {
 
 	if (this.docID == null) return null;
 
-	StringBuffer sb = new StringBuffer("word-");
+	StringBuilder sb = new StringBuilder("word-");
 
 	// Get prefix string corpus/doc
 	if (this.corpusID != null) {
