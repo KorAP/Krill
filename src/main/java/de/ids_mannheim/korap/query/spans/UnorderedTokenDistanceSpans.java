@@ -35,9 +35,9 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans{
 					ensureSameDoc(firstSpans, secondSpans)){			
 				firstSpanList.add(new CandidateSpan(firstSpans));
 				secondSpanList.add(new CandidateSpan(secondSpans));
+				currentDocNum = firstSpans.doc();
 				hasMoreFirstSpans = firstSpans.next();
-				hasMoreSecondSpans = secondSpans.next();
-				currentDocNum = firstSpans.doc();							
+				hasMoreSecondSpans = secondSpans.next();				
 			}
 			else { 
 				hasMoreSpans = false;

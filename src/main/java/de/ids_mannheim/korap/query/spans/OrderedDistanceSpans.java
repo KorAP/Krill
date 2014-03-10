@@ -99,8 +99,8 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
 		
 		this.matchDocNumber = secondSpans.doc();		
 		if (collectPayloads){			
-  		    if (candidateSpan.getPayloads() != null) {  		    	
-  		    	matchPayload.addAll(candidateSpan.getPayloads());  		    	
+  		    if (candidateSpan.getPayloads() != null) {
+  		    	matchPayload.addAll(candidateSpan.getPayloads()); 
   		    }
   		    if (secondSpans.isPayloadAvailable()) {
   		    	matchPayload.addAll(secondSpans.getPayload());  		    	

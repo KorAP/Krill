@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.lucene.search.spans.Spans;
@@ -11,7 +12,7 @@ import org.apache.lucene.search.spans.Spans;
 public class CandidateSpan {	
 	private int doc,start,end;
 	private long cost;
-	private Collection<byte[]> payloads;
+	private Collection<byte[]> payloads = new ArrayList<>();
 	private int position;
 	private CandidateSpan childSpan; // used for multiple distance with unordered constraint 
 	
@@ -19,14 +20,9 @@ public class CandidateSpan {
 		this.doc = span.doc();
 		this.start = span.start();
 		this.end = span.end();
-		this.cost = span.cost();
-		
-		if (span.isPayloadAvailable()){
-			this.payloads = span.getPayload();
-		}
-		else{ 
-			this.payloads = null;
-		}
+		this.cost = span.cost();		
+		if (span.isPayloadAvailable())
+			setPayloads(span.getPayload());
 	}	
 	
 	public CandidateSpan(Spans span, int position) throws IOException {
@@ -40,7 +36,7 @@ public class CandidateSpan {
 		this.end = end;
 		this.doc = doc;
 		this.cost = cost;
-		this.payloads = payloads;
+		if (payloads != null) setPayloads(payloads);
 	}
 
 	public int getDoc() {
@@ -67,7 +63,9 @@ public class CandidateSpan {
 	}
 
 	public void setPayloads(Collection<byte[]> payloads) {
-		this.payloads = payloads;
+		for (byte[] b : payloads){			
+			this.payloads.add(b.clone());
+		}
 	}
 
 	public long getCost() {
@@ -93,6 +91,4 @@ public class CandidateSpan {
 	public void setChildSpan(CandidateSpan childSpan) {
 		this.childSpan = childSpan;
 	}
-	
-	
 }

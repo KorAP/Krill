@@ -150,6 +150,14 @@
 	  <!--
               <finalName>KorapTools</finalName>
 	      -->
+	    
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>de.ids_mannheim.korap.KorapIndexer</mainClass>
+            </manifest>
+          </archive>
+        
           <appendAssemblyId>false</appendAssemblyId>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -183,6 +191,7 @@
           <excludes>
             <exclude>**/TestRealIndex.java</exclude>
             <exclude>**/benchmark/*</exclude>
+            <exclude>**/TestWPDIndex.java/*</exclude>
 	  </excludes>
         </configuration>
       </plugin> 

@@ -95,7 +95,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 			
 			if (currentFirstSpan.getEnd() < currentSecondSpan.getEnd() ||					 
 					isLastCandidateSmaller(currentFirstSpan, currentSecondSpan)){
-//				System.out.println("current target: "+firstSpanList.get(0).getStart() +" "+firstSpanList.get(0).getEnd());				
+				log.trace("current target: "+firstSpanList.get(0).getStart() +" "+firstSpanList.get(0).getEnd());				
 //				System.out.println("candidates:");
 //				for (CandidateSpan cs: secondSpanList) {
 //					System.out.println(cs.getStart() +" "+ cs.getEnd());
@@ -107,7 +107,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 				updateList(firstSpanList);
 			}			
 			else {
-//				System.out.println("current target: "+secondSpanList.get(0).getStart() +" "+secondSpanList.get(0).getEnd());
+				log.trace("current target: "+secondSpanList.get(0).getStart() +" "+secondSpanList.get(0).getEnd());
 //				System.out.println("candidates:");
 //				for (CandidateSpan cs: firstSpanList) {
 //					System.out.println(cs.getStart() +" "+ cs.getEnd());
@@ -116,17 +116,17 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 				matchList = findMatches(currentSecondSpan, firstSpanList);
 				setMatchSecondSpan(currentSecondSpan);
 				matchListSpanNum = 1;
-				updateList(secondSpanList);				
+				updateList(secondSpanList);
 			}
 		}
 		else if (firstSpanList.isEmpty()){
-//			System.out.println("current target: "+secondSpanList.get(0).getStart() +" "+secondSpanList.get(0).getEnd());
-//			System.out.println("candidates: empty");
+			log.trace("current target: "+secondSpanList.get(0).getStart() +" "+secondSpanList.get(0).getEnd());
+			log.trace("candidates: empty");
 			updateList(secondSpanList);			
 		}
 		else{ 
-//			System.out.println("current target: "+firstSpanList.get(0).getStart() +" "+firstSpanList.get(0).getEnd());
-//			System.out.println("candidates: empty");
+			log.trace("current target: "+firstSpanList.get(0).getStart() +" "+firstSpanList.get(0).getEnd());
+			log.trace("candidates: empty");
 			updateList(firstSpanList);			
 		}
 	}
@@ -201,10 +201,9 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 			setMatchFirstSpan(cs.getChildSpan());
 		else setMatchSecondSpan(cs.getChildSpan());
 		
-		log.trace("Match doc#={} start={} end={}", matchDocNumber,
-				matchStartPosition,matchEndPosition);
-		//System.out.println("firstspan "+getMatchFirstSpan().getStart()+" "+ getMatchFirstSpan().getEnd());
-		//System.out.println("secondspan "+getMatchSecondSpan().getStart()+" "+ getMatchSecondSpan().getEnd());
+		log.trace("Match doc#={} start={} end={}",matchDocNumber,matchStartPosition,matchEndPosition);
+		log.trace("firstspan "+getMatchFirstSpan().getStart()+" "+ getMatchFirstSpan().getEnd());
+		log.trace("secondspan "+getMatchSecondSpan().getStart()+" "+ getMatchSecondSpan().getEnd());
 	}
 
 	@Override

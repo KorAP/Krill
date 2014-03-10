@@ -125,7 +125,7 @@ public class TestNextIndex {
 		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
 		 "[(1-2)s:b|i:b|_1#1-2]" +
 		 "[(2-3)s:c|i:c|_2#2-3]" +
-		 "[(3-4)s:a|i:a|_3#3-4|<>:x#3-7$<i>7]" +
+		 "[(3-4)s:a|i:a|_3#3-4|<>:x#3-4$<i>4|<>:x#3-7$<i>7]" +
 		 "[(4-5)s:b|i:b|_4#4-5]" +
 		 "[(5-6)s:c|i:c|_5#5-6]" +
 		 "[(6-7)s:a|i:a|_6#6-7]" +
@@ -145,7 +145,7 @@ public class TestNextIndex {
 	);
 	
 	kr = ki.search(sq, (short) 10);
-	assertEquals("ab[cabca]bac", kr.match(0).getSnippetBrackets());
+	assertEquals("ab[cabca]bac", kr.match(1).getSnippetBrackets());
 
     };
 

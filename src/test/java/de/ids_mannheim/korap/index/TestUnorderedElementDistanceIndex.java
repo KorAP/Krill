@@ -215,4 +215,50 @@ public class TestUnorderedElementDistanceIndex {
 
     }
 	
+//	@Test
+//	public void testCase5() throws IOException{
+//		ki = new KorapIndex();		
+//        ki.addDoc(createFieldDoc0());
+//        ki.commit();
+//		SpanQuery sq, edq;
+//        edq = createQuery("s", "s:b", "s:c", 0, 2,false);
+//        kr = ki.search(edq, (short) 10);
+//        
+//        System.out.print(kr.getTotalResults()+"\n");
+//		for (int i=0; i< kr.getTotalResults(); i++){
+//			System.out.println(
+//				kr.match(i).getLocalDocID()+" "+
+//				kr.match(i).startPos + " " +
+//				kr.match(i).endPos
+//		    );
+//		}
+////		
+////		System.out.println("h");
+////		sq = new SpanTermQuery(new Term("base", "s:b"));
+////		
+////		kr = ki.search(sq, (short) 10);
+////        
+////        System.out.print(kr.getTotalResults()+"\n");
+////		for (int i=0; i< kr.getTotalResults(); i++){
+////			System.out.println(
+////				kr.match(i).getLocalDocID()+" "+
+////				kr.match(i).startPos + " " +
+////				kr.match(i).endPos
+////		    );
+////		}
+//		
+//        sq = new SpanNextQuery( 
+//        		new SpanTermQuery(new Term("base", "s:b"))
+//        		,edq);
+//        kr = ki.search(sq, (short) 10);
+//        
+//        System.out.print(kr.getTotalResults()+"\n");
+//		for (int i=0; i< kr.getTotalResults(); i++){
+//			System.out.println(
+//				kr.match(i).getLocalDocID()+" "+
+//				kr.match(i).startPos + " " +
+//				kr.match(i).endPos
+//		    );
+//		}
+//	}
 }

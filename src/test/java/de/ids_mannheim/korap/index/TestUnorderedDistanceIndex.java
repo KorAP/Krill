@@ -115,7 +115,7 @@ public class TestUnorderedDistanceIndex{
 	    SpanQuery sq = createQuery("s:c","s:d",0,3,false);                
 	    kr = ki.search(sq, (short) 10);
 	    	    
-	    assertEquals(5, kr.totalResults());
+	    assertEquals(5, kr.totalResults());	    
 	}
 	
 	/** Multiple documents 
@@ -186,7 +186,6 @@ public class TestUnorderedDistanceIndex{
 	    assertEquals(6,kr.getMatch(0).getEndPos());
 	    assertEquals(3,kr.getMatch(1).getStartPos());
 	    assertEquals(6,kr.getMatch(1).getEndPos());
-
 	}
 	
 	 /** ElementQueries */    
@@ -298,19 +297,37 @@ public class TestUnorderedDistanceIndex{
 		assertEquals(3, kr.totalResults());
 		assertEquals(170, kr.getMatch(0).startPos);
 	    assertEquals(172, kr.getMatch(0).endPos);
+	    //System.out.println(kr.getMatch(0).getSnippetBrackets());
+	    //System.out.println(kr.getMatch(0).toJSON());
 	    assertEquals(174, kr.getMatch(1).startPos);
 	    assertEquals(176, kr.getMatch(1).endPos);
 	    assertEquals(71, kr.getMatch(2).startPos);
-	    assertEquals(73, kr.getMatch(2).endPos);
-		
-//		System.out.print(kr.getTotalResults()+"\n");
-//		for (int i=0; i< kr.getTotalResults(); i++){
-//			System.out.println(
-//				kr.match(i).getLocalDocID()+" "+
-//				kr.match(i).startPos + " " +
-//				kr.match(i).endPos
-//		    );
-//		}
+	    assertEquals(73, kr.getMatch(2).endPos);	    
+	}
+	
+	@Test
+	public void testCase9() throws IOException{
+		ki = new KorapIndex();
+	    ki.addDoc(createFieldDoc1()); 
+	    ki.commit();
+	    SpanQuery sq = new SpanNextQuery(
+	    		new SpanTermQuery(new Term("base","s:d")),
+	    		createQuery("s:c","s:e",1,2,false)
+		);
+	    kr = ki.search(sq, (short) 10);
+//	    
+//	  	System.out.print(kr.getTotalResults()+"\n");
+//			for (int i=0; i< kr.getTotalResults(); i++){
+//				System.out.println(
+//					kr.match(i).getLocalDocID()+" "+
+//					kr.match(i).startPos + " " +
+//					kr.match(i).endPos
+//			    );
+//			}
+	    
+	    assertEquals(3, kr.totalResults());
+	    assertEquals(0,kr.getMatch(1).getStartPos());
+	    assertEquals(4,kr.getMatch(1).getEndPos());
 	    
 	}
 	
