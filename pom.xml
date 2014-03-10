@@ -191,7 +191,7 @@
           <excludes>
             <exclude>**/TestRealIndex.java</exclude>
             <exclude>**/benchmark/*</exclude>
-            <exclude>**/TestWPDIndex.java/*</exclude>
+            <exclude>**/TestWPDIndex.java</exclude>
 	  </excludes>
         </configuration>
       </plugin> 
