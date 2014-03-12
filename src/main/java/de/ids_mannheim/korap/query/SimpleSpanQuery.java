@@ -8,25 +8,31 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
 
-/** An abstract class for a Spanquery having two clauses. 
+/** A base class for Spanqueries 
  * 
  * 	@author margaretha
  * */
-public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable{		
+public abstract class SimpleSpanQuery extends SpanQuery 
+		implements Cloneable{		
 	
 	protected SpanQuery firstClause, secondClause;
 	private String field;
 	protected boolean collectPayloads;
     
+	public SimpleSpanQuery(SpanQuery firstClause, boolean collectPayloads) {
+    	this.field = firstClause.getField();
+    	this.setFirstClause(firstClause);
+    	this.collectPayloads = collectPayloads;
+	}  
+	
     public SimpleSpanQuery(SpanQuery firstClause, SpanQuery secondClause, 
     		boolean collectPayloads) {
-    	this.field = secondClause.getField();
-    	if (!firstClause.getField().equals(field)){
-    		throw new IllegalArgumentException("Clauses must have the same field.");
+    	this(firstClause,collectPayloads);
+    	if (!secondClause.getField().equals(field)){
+    		throw new IllegalArgumentException(
+    				"Clauses must have the same field.");
     	}    	
-    	this.setFirstClause(firstClause);
     	this.setSecondClause(secondClause);  	
-    	this.collectPayloads = collectPayloads;
 	}  
     	
 	@Override
@@ -62,24 +68,31 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable{
 	@Override
     public void extractTerms(Set<Term> terms) {
 		firstClause.extractTerms(terms);
-		secondClause.extractTerms(terms);
+		if (secondClause != null)
+			secondClause.extractTerms(terms);
     };
     
 	@Override
 	public Query rewrite(IndexReader reader) throws IOException {		
 		SimpleSpanQuery clone = null;
-		SpanQuery query = (SpanQuery) firstClause.rewrite(reader);
-		if (!query.equals(firstClause)) {
-			if (clone == null) clone = clone();
-	    	clone.firstClause = query;
-		}		
-		query = (SpanQuery) secondClause.rewrite(reader);
-		if (!query.equals(secondClause)) {		
-			if (clone == null) clone = clone();
-		    clone.secondClause = query;
+		clone = updateClone(reader, clone, firstClause, 1);			
+		if (secondClause != null){
+		    clone = updateClone(reader, clone, secondClause, 2);			
 		}
 		return (clone != null ? clone : this );		
 	}	
+	
+	private SimpleSpanQuery updateClone(IndexReader reader, SimpleSpanQuery clone, 
+			 SpanQuery sq, int clauseNumber) throws IOException{
+		SpanQuery query = (SpanQuery) sq.rewrite(reader);
+		if (!query.equals(sq)) {
+			if (clone == null) clone = clone();
+			if (clauseNumber == 1) 
+				clone.firstClause = query;			
+			else clone.secondClause = query;
+		}
+		return clone;
+	}
 	
 	public abstract SimpleSpanQuery clone();	
 	
