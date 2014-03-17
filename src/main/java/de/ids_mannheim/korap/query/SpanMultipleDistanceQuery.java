@@ -72,7 +72,7 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 			sb.append(":");
 			sb.append(c.getMaxDistance());
 			sb.append("], ");		
-			sb.append(isOrdered ? "ordered, " : "notOrdered, ");
+			sb.append(c.isOrdered() ? "ordered, " : "notOrdered, ");
 			sb.append(c.isExclusion() ? "excluded)]" : "notExcluded)");			
 			if (i < size-1) sb.append(", ");
 		}		
@@ -89,18 +89,17 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {			
 		
-		DistanceConstraint c;		
 		SpanDistanceQuery sdq,sdq2;		
 		Spans ds,ds2;
 		MultipleDistanceSpans mds = null;
 		boolean exclusion;
-		
-		c = constraints.get(0);
-		sdq = createSpanDistanceQuery(c);
+				
+		sdq = new SpanDistanceQuery(firstClause, secondClause, constraints.get(0), collectPayloads);
 		ds = sdq.getSpans(context, acceptDocs, termContexts);
 				
 		for (int i=1; i< constraints.size(); i++){
-			sdq2 = createSpanDistanceQuery(constraints.get(i));
+			sdq2 = new SpanDistanceQuery(firstClause, secondClause, constraints.get(i), 
+					collectPayloads);
 			ds2 = sdq2.getSpans(context, acceptDocs, termContexts);			
 			
 			exclusion = sdq.isExclusion() && sdq2.isExclusion();
@@ -110,26 +109,7 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
 		}
 		
 		return mds;
-	}
-	
-	/** Create a SpanDistanceQuery based on the given constraint.
-	 * 	@return a SpanDistanceQuery 
-	 * */
-	private SpanDistanceQuery createSpanDistanceQuery(DistanceConstraint c) {		
-		SpanDistanceQuery sdq;		
-		if (c.getUnit().equals("w")){
-			sdq = new SpanDistanceQuery(firstClause, secondClause,
-					c.getMinDistance(), c.getMaxDistance(),isOrdered, 
-					collectPayloads);		
-		}
-		else {
-			sdq = new SpanDistanceQuery(c.getElementQuery(), firstClause, 
-					secondClause, c.getMinDistance(), c.getMaxDistance(),
-					isOrdered, collectPayloads);
-		}
-		sdq.setExclusion(c.isExclusion());
-		return sdq;
-	}
+	}	
 
 	public List<DistanceConstraint> getConstraints() {
 		return constraints;

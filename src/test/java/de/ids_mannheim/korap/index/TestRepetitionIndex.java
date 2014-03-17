@@ -13,9 +13,9 @@ import org.junit.Test;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.query.SpanQuantifierQuery;
+import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
-public class TestQuantifierIndex {
+public class TestRepetitionIndex {
 	
     private KorapIndex ki;
 	private KorapResult kr;
@@ -91,7 +91,7 @@ public class TestQuantifierIndex {
         
         SpanQuery sq, sq2;
         // Quantifier only
-        sq = new SpanQuantifierQuery(new SpanTermQuery(new Term("base","s:c")),1,2, true);
+        sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:c")),1,2, true);
         kr = ki.search(sq, (short) 10);
         // 0-1, 2-3, 2-4, 3-4, 5-6
         assertEquals(5,kr.getTotalResults());        
@@ -99,7 +99,7 @@ public class TestQuantifierIndex {
         // ec{1,2}
         sq = new SpanNextQuery(
         		new SpanTermQuery(new Term("base", "s:e")),
-        		new SpanQuantifierQuery(new SpanTermQuery(new Term("base","s:c")),1,2, true)
+        		new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:c")),1,2, true)
     		);
         
         kr = ki.search(sq, (short) 10);
@@ -133,14 +133,14 @@ public class TestQuantifierIndex {
         ki.commit();
         
         SpanQuery sq;
-        sq = new SpanQuantifierQuery(new SpanTermQuery(new Term("base","s:c")),2,2, true);
+        sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:c")),2,2, true);
         kr = ki.search(sq, (short) 10);
         assertEquals(4,kr.getTotalResults());
 		
         kr = ki.search(sq, (short) 10); 
         sq = new SpanNextQuery(
         		new SpanTermQuery(new Term("base", "s:e")),
-        		new SpanQuantifierQuery(new SpanTermQuery(new Term("base","s:c")),2,2, true)
+        		new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:c")),2,2, true)
     		);
         
         kr = ki.search(sq, (short) 10); 
@@ -161,8 +161,8 @@ public class TestQuantifierIndex {
         sq = new SpanNextQuery(
         		new SpanTermQuery(new Term("base", "s:e")),
         		new SpanOrQuery(
-    				new SpanQuantifierQuery(new SpanTermQuery(new Term("base","s:c")),1,1, true),
-    				new SpanQuantifierQuery(new SpanTermQuery(new Term("base","s:b")),1,1, true)
+    				new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:c")),1,1, true),
+    				new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:b")),1,1, true)
 				)
     		);        
         kr = ki.search(sq, (short) 10); 

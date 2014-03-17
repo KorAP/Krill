@@ -34,32 +34,50 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 	private SpanElementQuery elementQuery; // element distance unit
 	private String distanceUnit;
 	private String spanName;
+	private DistanceConstraint constraint;
 
 	public SpanDistanceQuery(SpanQuery firstClause, SpanQuery secondClause, 
-			int minDistance, int maxDistance, boolean isOrdered, 
-			boolean collectPayloads) {		
-		super(firstClause, secondClause, collectPayloads); 
-		init(minDistance, maxDistance, isOrdered);
-		distanceUnit = "w";
-		spanName = "spanDistance";
-	}
-	
-	public SpanDistanceQuery(SpanElementQuery elementQuery, SpanQuery firstClause, 
-			SpanQuery secondClause, int minDistance, int maxDistance, 
-			boolean isOrdered, boolean collectPayloads) {
+			DistanceConstraint constraint, boolean collectPayloads) {
 		super(firstClause, secondClause, collectPayloads);
-    	init(minDistance, maxDistance, isOrdered);
-		this.elementQuery = elementQuery;
-		distanceUnit = elementQuery.getElementStr();
-		spanName = "spanElementDistance";
+		this.constraint = constraint;
+		this.minDistance = constraint.getMinDistance();
+		this.maxDistance = constraint.getMaxDistance();
+		this.isOrdered = constraint.isOrdered();
+		this.exclusion = constraint.isExclusion();
+		this.distanceUnit = constraint.getUnit();
+		
+		if (constraint.getElementQuery() != null){
+			spanName = "spanElementDistance";
+			this.elementQuery = constraint.getElementQuery();
+		}
+		else { spanName = "spanDistance"; }
 	}
 	
-	private void init(int minDistance, int maxDistance,boolean isOrdered){
-		this.minDistance = minDistance;
-		this.maxDistance = maxDistance;
-		this.isOrdered = isOrdered;
-		this.exclusion = false;
-	}
+//	public SpanDistanceQuery(SpanQuery firstClause, SpanQuery secondClause, 
+//			int minDistance, int maxDistance, boolean isOrdered, 
+//			boolean collectPayloads) {		
+//		super(firstClause, secondClause, collectPayloads); 
+//		init(minDistance, maxDistance, isOrdered);
+//		distanceUnit = "w";
+//		spanName = "spanDistance";
+//	}
+//	
+//	public SpanDistanceQuery(SpanElementQuery elementQuery, SpanQuery firstClause, 
+//			SpanQuery secondClause, int minDistance, int maxDistance, 
+//			boolean isOrdered, boolean collectPayloads) {
+//		super(firstClause, secondClause, collectPayloads);
+//    	init(minDistance, maxDistance, isOrdered);
+//		this.elementQuery = elementQuery;
+//		distanceUnit = elementQuery.getElementStr();
+//		spanName = "spanElementDistance";
+//	}
+//	
+//	private void init(int minDistance, int maxDistance,boolean isOrdered){
+//		this.minDistance = minDistance;
+//		this.maxDistance = maxDistance;
+//		this.isOrdered = isOrdered;
+//		this.exclusion = false;
+//	}
 	
 	@Override
 	public String toString(String field) {
@@ -84,20 +102,17 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
     }
 	
 	@Override
-	public SpanDistanceQuery clone() {
+	public SpanDistanceQuery clone() {		
 		SpanDistanceQuery spanDistanceQuery = new SpanDistanceQuery(
 		    (SpanQuery) firstClause.clone(),
 		    (SpanQuery) secondClause.clone(),
-		    this.minDistance,
-		    this.maxDistance,
-		    this.isOrdered,
+		    this.constraint,
 		    this.collectPayloads
         );
 				
 		if (this.elementQuery != null) {
 			spanDistanceQuery.setElementQuery(this.elementQuery);
 		}
-		spanDistanceQuery.setExclusion(this.exclusion);
 		spanDistanceQuery.setBoost(getBoost());
 		return spanDistanceQuery;	
 	}

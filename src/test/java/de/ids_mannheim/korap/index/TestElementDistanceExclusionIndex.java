@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -22,16 +23,13 @@ public class TestElementDistanceExclusionIndex {
     
     private SpanQuery createQuery(String e, String x, String y, int min, int max, boolean isOrdered,
     		boolean exclusion){
-    	SpanDistanceQuery sq = new SpanDistanceQuery(    			
-        		new SpanElementQuery("base",e),
+    	SpanElementQuery eq = new SpanElementQuery("base",e);
+    	SpanDistanceQuery sq = new SpanDistanceQuery(        		
         		new SpanTermQuery(new Term("base",x)),
         		new SpanTermQuery(new Term("base",y)),
-        		min,
-        		max,
-        		isOrdered,
-        		true        		
+        		new DistanceConstraint(eq, min, max, isOrdered, exclusion),
+        		true
         );
-    	sq.setExclusion(exclusion);
     	return sq;
     }
 	

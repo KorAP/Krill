@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query;
 
-/**	Create a distance constraint for multiple distance query.
+/**	Specify constraints of distance in SpanDistanceQueries or 
+ * 	SpanMultipleDistanceQueries
  * 	 
  * 	@author margaretha
  * */
@@ -10,22 +11,42 @@ public class DistanceConstraint {
 	private String unit;
 	private SpanElementQuery elementQuery;
 	private boolean exclusion;
+	private boolean isOrdered;
 	
-	public DistanceConstraint(int min, int max, boolean exclusion) {
+	public DistanceConstraint(int min, int max, boolean isOrdered, boolean exclusion) {
 		this.unit = "w";
 		this.minDistance = min;
 		this.maxDistance = max;
-		this.exclusion = exclusion;
+		this.isOrdered = isOrdered;
+		this.exclusion = exclusion;		
 	}
 	
-	public DistanceConstraint(SpanElementQuery elementQuery, int min, int max, 
-			boolean exclusion) {
+	public DistanceConstraint(SpanElementQuery elementQuery, int min, int max, boolean 
+			isOrdered, boolean exclusion) {
 		this.unit = elementQuery.getElementStr();
 		this.minDistance = min;
 		this.maxDistance = max;
-		this.exclusion = exclusion;		
-		this.elementQuery = elementQuery;		
+		this.isOrdered = isOrdered;
+		this.exclusion = exclusion;
+		this.elementQuery = elementQuery;
 	}
+	
+	
+//	public DistanceConstraint(int min, int max, boolean exclusion) {
+//		this.unit = "w";
+//		this.minDistance = min;
+//		this.maxDistance = max;
+//		this.exclusion = exclusion;
+//	}
+//	
+//	public DistanceConstraint(SpanElementQuery elementQuery, int min, int max, 
+//			boolean exclusion) {
+//		this.unit = elementQuery.getElementStr();
+//		this.minDistance = min;
+//		this.maxDistance = max;
+//		this.exclusion = exclusion;		
+//		this.elementQuery = elementQuery;		
+//	}
 	
 	public int getMinDistance() {
 		return minDistance;
@@ -58,5 +79,13 @@ public class DistanceConstraint {
 
 	public void setExclusion(boolean exclusion) {
 		this.exclusion = exclusion;
+	}
+
+	public boolean isOrdered() {
+		return isOrdered;
+	}
+
+	public void setOrdered(boolean isOrdered) {
+		this.isOrdered = isOrdered;
 	}
 }

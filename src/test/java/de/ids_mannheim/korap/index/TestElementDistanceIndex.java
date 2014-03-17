@@ -12,8 +12,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -82,14 +82,13 @@ public class TestElementDistanceIndex {
 	}
 	
 	public SpanQuery createQuery(String elementType, String x, String y, 
-			int minDistance, int maxDistance, boolean isOrdered){        
-		return new SpanDistanceQuery(
-        		new SpanElementQuery("base", elementType), 
+			int min, int max, boolean isOrdered){
+		
+		SpanElementQuery e = new SpanElementQuery("base", elementType);
+		return new SpanDistanceQuery(        		 
         		new SpanTermQuery(new Term("base",x)), 
         		new SpanTermQuery(new Term("base",y)), 
-        		minDistance, 
-        		maxDistance, 
-        		isOrdered,
+        		new DistanceConstraint( e, min, max, isOrdered, false),
         		true);
 	}
 	
@@ -184,50 +183,5 @@ public class TestElementDistanceIndex {
         assertEquals(5, kr.match(1).endPos);
         
     }	
-	
-	@Test
-	public void testCase5() throws IOException{
-		ki = new KorapIndex();		
-	    ki.addDocFile(getClass().getResource("/a00/SEP-62389.json.gz").getFile(), true);		
-		ki.commit();
 		
-//		KorapQuery kq = new KorapQuery("tokens");
-		SpanQuery sq = new SpanElementQuery("tokens", "s"); 
-//				//kq.seq(kq.tag("s"), kq.tag("s")).toQuery();
-//		System.out.println(sq.toString());
-		//assertEquals("spanNext(<tokens:xip/c:VERB />, <tokens:xip/c:DET />)", sq.toString());
-		kr = ki.search(sq, (short) 100);
-        
-		
-//		for (int i=0; i< kr.getTotalResults(); i++){
-//			System.out.println(
-//				kr.match(i).getLocalDocID()+" "+
-//				kr.match(i).startPos + " " +
-//				kr.match(i).endPos
-//		    );
-//		}
-		//System.out.println(sq.toString());
-		sq = new SpanDistanceQuery(
-				new SpanElementQuery("tokens", "s"),				
-				new SpanTermQuery(new Term("tokens","s:weg")),
-				new SpanTermQuery(new Term("tokens","s:fahren")),
-        		1,
-        		1,
-        		false,
-        		true
-        );   
-        kr = ki.search(sq, (short) 10);
-        
-        
-	/*	System.out.print(kr.getTotalResults()+"\n");
-		for (int i=0; i< kr.getTotalResults(); i++){
-			System.out.println(
-				kr.match(i).getLocalDocID()+" "+
-				kr.match(i).startPos + " " +
-				kr.match(i).endPos
-		    );
-		}*/
-    	   
-	}
-	
 }

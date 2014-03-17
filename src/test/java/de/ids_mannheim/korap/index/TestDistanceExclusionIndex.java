@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 
@@ -107,9 +108,9 @@ public class TestDistanceExclusionIndex {
         SpanDistanceQuery sq;        
         sq = new SpanDistanceQuery(
         		new SpanElementQuery("base", "x"),
-        		new SpanElementQuery("base", "y")
-        		,0,1,false,true);
-        sq.setExclusion(true);
+        		new SpanElementQuery("base", "y"),
+        		new DistanceConstraint(0, 1, false, true),
+        		true);        
         
         kr = ki.search(sq, (short) 10);
         assertEquals(1, kr.getTotalResults());
@@ -130,12 +131,9 @@ public class TestDistanceExclusionIndex {
     	SpanDistanceQuery sq = new SpanDistanceQuery(
         		new SpanTermQuery(new Term("base",x)),
         		new SpanTermQuery(new Term("base",y)),
-        		min,
-        		max,
-        		isOrdered,
+        		new DistanceConstraint(min, max, isOrdered,true),
         		true
-        );
-    	sq.setExclusion(true);
+        );    	
     	return sq;
     }
     

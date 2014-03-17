@@ -11,13 +11,13 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
-import de.ids_mannheim.korap.query.spans.QuantifierSpans;
+import de.ids_mannheim.korap.query.spans.RepetitionSpans;
 
-public class SpanQuantifierQuery extends SimpleSpanQuery{
+public class SpanRepetitionQuery extends SimpleSpanQuery{
 	
 	private int min, max;
 	
-	public SpanQuantifierQuery(SpanQuery sq, int min, int max,
+	public SpanRepetitionQuery(SpanQuery sq, int min, int max,
 			boolean collectPayloads) {
 		super(sq, collectPayloads);
 		this.min = min;
@@ -26,7 +26,7 @@ public class SpanQuantifierQuery extends SimpleSpanQuery{
 
 	@Override
 	public SimpleSpanQuery clone() {
-		SpanQuantifierQuery sq = new SpanQuantifierQuery(
+		SpanRepetitionQuery sq = new SpanRepetitionQuery(
 				(SpanQuery) this.firstClause.clone(), 
 				this.min, 
 				this.max, 
@@ -38,7 +38,7 @@ public class SpanQuantifierQuery extends SimpleSpanQuery{
 	@Override
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
-		return new QuantifierSpans(this, context, acceptDocs, termContexts);
+		return new RepetitionSpans(this, context, acceptDocs, termContexts);
 	}
 
 	@Override

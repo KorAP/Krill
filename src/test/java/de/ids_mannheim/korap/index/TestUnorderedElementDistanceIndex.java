@@ -13,6 +13,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -93,14 +94,12 @@ public class TestUnorderedElementDistanceIndex {
 	}
 	
 	public SpanQuery createQuery(String elementType, String x, String y, 
-			int minDistance, int maxDistance, boolean isOrdered){        
-		return new SpanDistanceQuery(
-        		new SpanElementQuery("base", elementType), 
+			int minDistance, int maxDistance, boolean isOrdered){
+		SpanElementQuery e = new SpanElementQuery("base", elementType);
+		return new SpanDistanceQuery(        		 
         		new SpanTermQuery(new Term("base",x)), 
-        		new SpanTermQuery(new Term("base",y)), 
-        		minDistance, 
-        		maxDistance, 
-        		isOrdered,
+        		new SpanTermQuery(new Term("base",y)),
+        		new DistanceConstraint(e,minDistance, maxDistance, isOrdered, false),
         		true);
 	}
 	
@@ -215,15 +214,28 @@ public class TestUnorderedElementDistanceIndex {
 
     }
 	
-//	@Test
-//	public void testCase5() throws IOException{
-//		ki = new KorapIndex();		
-//        ki.addDoc(createFieldDoc0());
-//        ki.commit();
-//		SpanQuery sq, edq;
-//        edq = createQuery("s", "s:b", "s:c", 0, 2,false);
-//        kr = ki.search(edq, (short) 10);
-//        
+	/** Next */
+	@Test
+	public void testCase5() throws IOException{
+		ki = new KorapIndex();		
+        ki.addDoc(createFieldDoc0());
+        ki.commit();
+		
+        SpanQuery sq, edq;
+        edq = createQuery("s", "s:b", "s:c", 0, 2,false);
+        kr = ki.search(edq, (short) 10);
+        assertEquals(6, kr.getTotalResults());
+
+        sq = new SpanNextQuery( 
+        		new SpanTermQuery(new Term("base", "s:b"))
+        		,edq);
+        kr = ki.search(sq, (short) 10);
+        assertEquals(2, kr.getTotalResults());
+        assertEquals(1, kr.getMatch(0).getStartPos());
+        assertEquals(4, kr.getMatch(0).getEndPos());
+        assertEquals(2, kr.getMatch(1).getStartPos());
+        assertEquals(5, kr.getMatch(1).getEndPos());
+        
 //        System.out.print(kr.getTotalResults()+"\n");
 //		for (int i=0; i< kr.getTotalResults(); i++){
 //			System.out.println(
@@ -232,33 +244,5 @@ public class TestUnorderedElementDistanceIndex {
 //				kr.match(i).endPos
 //		    );
 //		}
-////		
-////		System.out.println("h");
-////		sq = new SpanTermQuery(new Term("base", "s:b"));
-////		
-////		kr = ki.search(sq, (short) 10);
-////        
-////        System.out.print(kr.getTotalResults()+"\n");
-////		for (int i=0; i< kr.getTotalResults(); i++){
-////			System.out.println(
-////				kr.match(i).getLocalDocID()+" "+
-////				kr.match(i).startPos + " " +
-////				kr.match(i).endPos
-////		    );
-////		}
-//		
-//        sq = new SpanNextQuery( 
-//        		new SpanTermQuery(new Term("base", "s:b"))
-//        		,edq);
-//        kr = ki.search(sq, (short) 10);
-//        
-//        System.out.print(kr.getTotalResults()+"\n");
-//		for (int i=0; i< kr.getTotalResults(); i++){
-//			System.out.println(
-//				kr.match(i).getLocalDocID()+" "+
-//				kr.match(i).startPos + " " +
-//				kr.match(i).endPos
-//		    );
-//		}
-//	}
+	}
 }

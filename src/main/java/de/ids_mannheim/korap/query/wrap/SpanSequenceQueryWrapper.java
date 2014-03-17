@@ -96,7 +96,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     public SpanSequenceQueryWrapper withConstraint (int min, int max, boolean exclusion) {
 	if (this.constraints == null)
 	    this.constraints = new ArrayList<DistanceConstraint>(1);
-	this.constraints.add(new DistanceConstraint(min, max, exclusion));
+	this.constraints.add(new DistanceConstraint(min, max, isInOrder, exclusion));
 	return this;
     };
 
@@ -111,11 +111,11 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	if (this.constraints == null)
 	    this.constraints = new ArrayList<DistanceConstraint>(1);
 	if (unit.equals("w"))
-	    this.constraints.add(new DistanceConstraint(min, max, exclusion));
+	    this.constraints.add(new DistanceConstraint(min, max, isInOrder, exclusion));
 	else
 	    this.constraints.add(
 		 new DistanceConstraint(
-                     new SpanElementQuery(this.field, unit), min, max, exclusion)
+                     new SpanElementQuery(this.field, unit), min, max, isInOrder, exclusion)
 	    );
 	return this;
     };
@@ -150,15 +150,11 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	    if (!constraint.getUnit().equals("w")) {
 		for (int i = 1; i < this.segments.size(); i++) {
 		    SpanDistanceQuery sdquery = new SpanDistanceQuery(
-		        new SpanElementQuery(this.field, constraint.getUnit()),
-	                query,
-			this.segments.get(i),
-			constraint.getMinDistance(),
-			constraint.getMaxDistance(),
-			this.isInOrder(),
-			true
+			    query,
+				this.segments.get(i),
+				constraint,
+				true
 		    );
-		    sdquery.setExclusion(constraint.isExclusion());
 		    query = (SpanQuery) sdquery;
 		};
 	    }
@@ -169,12 +165,9 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 		    SpanDistanceQuery sdquery = new SpanDistanceQuery(
 	                query,
 			this.segments.get(i),
-			constraint.getMinDistance(),
-			constraint.getMaxDistance(),
-			this.isInOrder(),
+			constraint,
 			true
 		    );
-		    sdquery.setExclusion(constraint.isExclusion());
 		    query = (SpanQuery) sdquery;
 		};
 	    };
@@ -188,7 +181,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	        query,
 		this.segments.get(i),
 		this.constraints,
-		this.isInOrder(),
+		isInOrder,
 		true
 	    );
 	};

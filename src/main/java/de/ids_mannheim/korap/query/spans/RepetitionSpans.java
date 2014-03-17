@@ -13,16 +13,16 @@ import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.ids_mannheim.korap.query.SpanQuantifierQuery;
+import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
-public class QuantifierSpans extends SimpleSpans{
+public class RepetitionSpans extends SimpleSpans{
 	
 	private int min,max;
 	private long matchCost;
 	private List<CandidateSpan> matchList;
-	private Logger log = LoggerFactory.getLogger(QuantifierSpans.class);
+	private Logger log = LoggerFactory.getLogger(RepetitionSpans.class);
 	
-	public QuantifierSpans(SpanQuantifierQuery query,
+	public RepetitionSpans(SpanRepetitionQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) 
 			throws IOException {

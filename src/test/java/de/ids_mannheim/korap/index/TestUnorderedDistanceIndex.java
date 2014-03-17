@@ -13,6 +13,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -79,9 +80,7 @@ public class TestUnorderedDistanceIndex{
     	SpanQuery sq = new SpanDistanceQuery(
         		new SpanTermQuery(new Term("base",x)),
         		new SpanTermQuery(new Term("base",y)),
-        		min,
-        		max,
-        		isOrdered,
+        		new DistanceConstraint(min, max, isOrdered, false),        		
         		true
         );    	 
     	return sq;
@@ -92,9 +91,7 @@ public class TestUnorderedDistanceIndex{
     	SpanQuery sq = new SpanDistanceQuery(
         		new SpanElementQuery("base",x),
         		new SpanElementQuery("base",y),
-        		min,
-        		max,
-        		isOrdered,
+        		new DistanceConstraint(min, max, isOrdered, false),
         		true
         );
     	return sq;
@@ -135,8 +132,7 @@ public class TestUnorderedDistanceIndex{
 	    SpanQuery sq = createQuery("s:c","s:d",1,2,false);                
 	    kr = ki.search(sq, (short) 10);
 	    	    
-	    assertEquals(6, kr.totalResults());
-		
+	    assertEquals(6, kr.totalResults());	    
 	}
 	
 	/** Multiple documents 
@@ -265,12 +261,17 @@ public class TestUnorderedDistanceIndex{
 	    SpanQuery sq2 = new SpanDistanceQuery(
         		sq,
         		new SpanTermQuery(new Term("base","s:e")),
-        		1,
-        		2,
-        		false,
+        		new DistanceConstraint(1, 2, true, false),        		
         		true);
 	    kr = ki.search(sq2, (short) 10);	    
-	    //assertEquals(3, kr.totalResults());		
+	    assertEquals(3, kr.totalResults());	
+	    assertEquals(5, kr.getMatch(0).getStartPos());
+	    assertEquals(9, kr.getMatch(0).getEndPos());
+	    assertEquals(1, kr.getMatch(1).getLocalDocID());
+	    assertEquals(0, kr.getMatch(1).getStartPos());
+	    assertEquals(3, kr.getMatch(1).getEndPos());
+	    assertEquals(0, kr.getMatch(2).getStartPos());
+	    assertEquals(4, kr.getMatch(2).getEndPos());
 	}
 	
 	@Test
@@ -287,9 +288,7 @@ public class TestUnorderedDistanceIndex{
 		SpanQuery sq = new SpanDistanceQuery(
         		new SpanTermQuery(new Term("tokens","s:in")),
         		new SpanTermQuery(new Term("tokens","s:horrendem")),
-        		0,
-        		2,
-        		false,
+        		new DistanceConstraint(0, 2, false, false),        		
         		true
         );   
 		kr = ki.search(sq, (short) 10);
@@ -305,6 +304,8 @@ public class TestUnorderedDistanceIndex{
 	    assertEquals(73, kr.getMatch(2).endPos);	    
 	}
 	
+	/** Multiple NextSpans in the same first span position
+	 * */
 	@Test
 	public void testCase9() throws IOException{
 		ki = new KorapIndex();
@@ -315,16 +316,7 @@ public class TestUnorderedDistanceIndex{
 	    		createQuery("s:c","s:e",1,2,false)
 		);
 	    kr = ki.search(sq, (short) 10);
-//	    
-//	  	System.out.print(kr.getTotalResults()+"\n");
-//			for (int i=0; i< kr.getTotalResults(); i++){
-//				System.out.println(
-//					kr.match(i).getLocalDocID()+" "+
-//					kr.match(i).startPos + " " +
-//					kr.match(i).endPos
-//			    );
-//			}
-	    
+    
 	    assertEquals(3, kr.totalResults());
 	    assertEquals(0,kr.getMatch(1).getStartPos());
 	    assertEquals(4,kr.getMatch(1).getEndPos());

@@ -13,6 +13,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
@@ -68,13 +69,11 @@ public class TestDistanceIndex {
         return fd;
 	}
     
-    private SpanQuery createQuery(String x, String y, int min, int max, boolean isOrdered){
+    private SpanQuery createQuery(String x, String y, int min, int max, boolean isOrdered){    	
     	SpanQuery sq = new SpanDistanceQuery(
         		new SpanTermQuery(new Term("base",x)),
         		new SpanTermQuery(new Term("base",y)),
-        		min,
-        		max,
-        		isOrdered,
+        		new DistanceConstraint(min, max, isOrdered, false),
         		true
         );
     	return sq;
@@ -84,9 +83,7 @@ public class TestDistanceIndex {
     	SpanQuery sq = new SpanDistanceQuery(
         		new SpanElementQuery("base",x),
         		new SpanElementQuery("base",y),
-        		min,
-        		max,
-        		isOrdered,
+        		new DistanceConstraint(min, max, isOrdered, false),
         		true
         );
     	return sq;

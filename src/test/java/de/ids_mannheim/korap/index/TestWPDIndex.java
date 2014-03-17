@@ -19,10 +19,11 @@ import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.filter.BooleanFilter;
+import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.query.SpanQuantifierQuery;
+import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
 public class TestWPDIndex {
 	long start, end;
@@ -31,26 +32,23 @@ public class TestWPDIndex {
 	KorapSearch ks;
 	
 	private SpanDistanceQuery createElementDistanceQuery(String e, String x, String y, 
-			int min, int max, boolean isOrdered){
-		SpanDistanceQuery sq = new SpanDistanceQuery(	
-				new SpanElementQuery("tokens", "s"),
+			int min, int max, boolean isOrdered, boolean exclusion){
+		SpanElementQuery eq = new SpanElementQuery("tokens", e);
+		SpanDistanceQuery sq = new SpanDistanceQuery(
 				new SpanTermQuery(new Term("tokens",x)),
 				new SpanTermQuery(new Term("tokens",y)),
-        		min,
-        		max,
-        		isOrdered,
+				new DistanceConstraint(eq, min, max, isOrdered, exclusion),
         		true
         ); 
 		return sq;
 	}
 	
-	private SpanDistanceQuery createDistanceQuery(String x, String y, int min, int max, boolean isOrdered){
+	private SpanDistanceQuery createDistanceQuery(String x, String y, int min, int max, 
+			boolean isOrdered, boolean exclusion){
 		SpanDistanceQuery sq = new SpanDistanceQuery(
         		new SpanTermQuery(new Term("tokens",x)),
         		new SpanTermQuery(new Term("tokens",y)),
-        		min,
-        		max,
-        		isOrdered,
+        		new DistanceConstraint(min, max, isOrdered, exclusion),
         		true
         );
     	return sq;
@@ -71,18 +69,18 @@ public class TestWPDIndex {
 	public void testCase1() throws IOException{
 		SpanDistanceQuery sq;
 		// ordered
-		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, true);
+		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, true,false);
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(8, kr.getTotalResults());
 
 		// unordered
-		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, false);				
+		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, false,false);				
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(11, kr.getTotalResults());
 		
-		sq = createDistanceQuery("s:kommen", "s:Wir", 1, 1, false);				
+		sq = createDistanceQuery("s:kommen", "s:Wir", 1, 1, false,false);				
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(11, kr.getTotalResults());
@@ -99,15 +97,13 @@ public class TestWPDIndex {
 		
 		SpanDistanceQuery sq;
 		// ordered
-		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, true);				
-		sq.setExclusion(true);
+		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, true, true);				
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(1899, kr.getTotalResults());
 		
 		// unordered
-		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, false);				
-		sq.setExclusion(true);
+		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, false, true);				
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(1896, kr.getTotalResults());	
@@ -123,19 +119,20 @@ public class TestWPDIndex {
 	@Test
 	public void testCase3() throws IOException{
 		// ordered
-		SpanDistanceQuery sq = createElementDistanceQuery("s","s:weg", "s:fahren", 0, 1, true);
+		SpanDistanceQuery sq = createElementDistanceQuery("s","s:weg", "s:fahren", 
+				0, 1, true, false);
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);		
 		assertEquals(3,kr.getTotalResults());
 		
 		// unordered
-		sq = createElementDistanceQuery("s","s:weg", "s:fahren", 0, 1, false);
+		sq = createElementDistanceQuery("s","s:weg", "s:fahren", 0, 1, false,false);
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(5,kr.getTotalResults());
 		
 		// only 0
-		sq = createElementDistanceQuery("s","s:weg", "s:fahren", 0, 0, false);
+		sq = createElementDistanceQuery("s","s:weg", "s:fahren", 0, 0, false,false);
 		kr = ki.search(sq, (short) 100);
 		assertEquals(2,kr.getTotalResults());
 		assertEquals("WPD_BBB.04463", kr.match(0).getDocID());
@@ -146,7 +143,7 @@ public class TestWPDIndex {
 		assertEquals(451,kr.getMatch(1).getEndPos());
 		
 		// only 1
-		sq = createElementDistanceQuery("s","s:weg", "s:fahren", 1, 1, false);
+		sq = createElementDistanceQuery("s","s:weg", "s:fahren", 1, 1, false,false);
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(3,kr.getTotalResults());		
@@ -155,9 +152,7 @@ public class TestWPDIndex {
 	/** Element distance exclusion */
 	@Test
 	public void testCase4() throws IOException{
-		SpanDistanceQuery sq = createElementDistanceQuery("s","s:weg", "s:fahren", 1, 1, false);
-		sq.setExclusion(true);
-		
+		SpanDistanceQuery sq = createElementDistanceQuery("s","s:weg", "s:fahren", 1, 1, false, true);
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(979,kr.getTotalResults());
@@ -178,18 +173,18 @@ public class TestWPDIndex {
 	@Test
 	public void testCase5() throws IOException{
 		SpanQuery sq;
-		sq = new SpanQuantifierQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),1,2, true);
+		sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),1,2, true);
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(4116416, kr.getTotalResults());
 		//0.9s
 		
-		sq = new SpanQuantifierQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),1,1, true);
+		sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),1,1, true);
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(3879671, kr.getTotalResults());
 		
-		sq = new SpanQuantifierQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),2,2, true);
+		sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),2,2, true);
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(236745, kr.getTotalResults());
@@ -201,7 +196,7 @@ public class TestWPDIndex {
 	public void testCase6() throws IOException{
 		SpanQuery sq = new SpanNextQuery(
         		new SpanTermQuery(new Term("tokens", "tt/p:NN")),
-        		new SpanQuantifierQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),2,2, true)
+        		new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),2,2, true)
     		);
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);

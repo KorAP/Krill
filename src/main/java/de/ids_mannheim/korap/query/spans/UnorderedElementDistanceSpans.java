@@ -197,7 +197,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 			}
 			 
 			if (minDistance <= actualDistance && actualDistance <= maxDistance)
-				matches.add(createMatchCandidate(target, cs, false));			
+				matches.add(createMatchCandidate(target, cs, false));
 		}		
 		return matches;
 	}
