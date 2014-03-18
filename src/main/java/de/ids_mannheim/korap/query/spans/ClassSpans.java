@@ -31,7 +31,7 @@ public class ClassSpans extends Spans {
 
     private final static Logger log = LoggerFactory.getLogger(ClassSpans.class);
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public ClassSpans (SpanQuery highlight,
 		       AtomicReaderContext context,

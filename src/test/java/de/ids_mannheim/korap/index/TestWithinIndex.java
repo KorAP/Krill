@@ -131,7 +131,6 @@ public class TestWithinIndex {
 	ki.addDoc(fd);
 
 
-
 	// Save documents
 	ki.commit();
 
@@ -145,10 +144,14 @@ public class TestWithinIndex {
 
 	kr = ki.search(sq, (short) 15);
 	
-	// System.err.println(kr.toJSON());
-
 	assertEquals("totalResults", 12, kr.totalResults());
 
+
+
+
+	//	System.err.println(kr.toJSON());
+
+	
 	assertEquals("StartPos (0)", 0, kr.match(0).startPos);
 	assertEquals("EndPos (0)", 12, kr.match(0).endPos);
 	assertEquals("Doc (0)", 0, kr.match(0).internalDocID);
@@ -298,9 +301,11 @@ public class TestWithinIndex {
 
 	assertEquals(1, ki.numberOf("documents"));
 
-	SpanQuery sq = new SpanElementQuery("base", "a");
+	SpanQuery sq;
+	KorapResult kr;
 
-	KorapResult kr = ki.search(sq, (short) 10);
+	sq = new SpanElementQuery("base", "a");
+	kr = ki.search(sq, (short) 10);
 
 	assertEquals("totalResults", 3, kr.totalResults());
 	assertEquals("StartPos (0)", 0, kr.match(0).startPos);
@@ -309,7 +314,7 @@ public class TestWithinIndex {
 	assertEquals("EndPos (1)", 7, kr.match(1).endPos);
 	assertEquals("StartPos (2)", 0, kr.match(2).startPos);
 	assertEquals("EndPos (2)", 10, kr.match(2).endPos);
-
+	    
 	sq = new SpanWithinQuery(
 	    new SpanElementQuery("base", "a"),
             new SpanTermQuery(new Term("base", "s:h"))

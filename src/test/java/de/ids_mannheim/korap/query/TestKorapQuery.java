@@ -87,23 +87,23 @@ public class TestKorapQuery {
     @Test
     public void KorapTagQuery5 () {
 	KorapQuery kq = new KorapQuery("field");
-	SpanQuery sq = kq.within(kq.tag("s"), kq.tag("np")).toQuery();
-	assertEquals("spanWithin(<field:s />, <field:np />)", sq.toString());
+	SpanQuery sq = kq.contains(kq.tag("s"), kq.tag("np")).toQuery();
+	assertEquals("spanContain(<field:s />, <field:np />)", sq.toString());
     };
 
     @Test
     public void KorapTagQuery6 () {
 	KorapQuery kq = new KorapQuery("field");
-	SpanQuery sq = kq.seq(kq.seg("tree"), kq.within(kq.tag("s"), kq.tag("np")), kq.re("hey.*")).toQuery();
-	assertEquals("spanNext(spanNext(field:tree, spanWithin(<field:s />, <field:np />)), SpanMultiTermQueryWrapper(field:/hey.*/))", sq.toString());
+	SpanQuery sq = kq.seq(kq.seg("tree"), kq.contains(kq.tag("s"), kq.tag("np")), kq.re("hey.*")).toQuery();
+	assertEquals("spanNext(spanNext(field:tree, spanContain(<field:s />, <field:np />)), SpanMultiTermQueryWrapper(field:/hey.*/))", sq.toString());
     };
 
 
     @Test
     public void KorapClassQuery () {
 	KorapQuery kq = new KorapQuery("field");
-	SpanQuery sq = kq.seq(kq.seg("tree"), kq._(1, kq.within(kq.tag("s"), kq.tag("np"))), kq.re("hey.*")).toQuery();
-	assertEquals("spanNext(spanNext(field:tree, {1: spanWithin(<field:s />, <field:np />)}), SpanMultiTermQueryWrapper(field:/hey.*/))", sq.toString());
+	SpanQuery sq = kq.seq(kq.seg("tree"), kq._(1, kq.contains(kq.tag("s"), kq.tag("np"))), kq.re("hey.*")).toQuery();
+	assertEquals("spanNext(spanNext(field:tree, {1: spanContain(<field:s />, <field:np />)}), SpanMultiTermQueryWrapper(field:/hey.*/))", sq.toString());
     };
 
     @Test
@@ -116,8 +116,8 @@ public class TestKorapQuery {
     @Test
     public void KorapClassQuery3 () {
 	KorapQuery kq = new KorapQuery("field");
-	SpanQuery sq = kq.seq(kq.seg("tree"), kq.within(kq.tag("s"), kq._(kq.tag("np"))), kq.re("hey.*")).toQuery();
-	assertEquals("spanNext(spanNext(field:tree, spanWithin(<field:s />, {0: <field:np />})), SpanMultiTermQueryWrapper(field:/hey.*/))", sq.toString());
+	SpanQuery sq = kq.seq(kq.seg("tree"), kq.contains(kq.tag("s"), kq._(kq.tag("np"))), kq.re("hey.*")).toQuery();
+	assertEquals("spanNext(spanNext(field:tree, spanContain(<field:s />, {0: <field:np />})), SpanMultiTermQueryWrapper(field:/hey.*/))", sq.toString());
     };
 
     @Test
@@ -212,7 +212,28 @@ public class TestKorapQuery {
 	assertEquals("spanMultipleDistance(spanMultipleDistance(field:try1, field:try2, [(w[5:6], ordered, notExcluded), (s[2:3], ordered, excluded)]]), field:try3, [(w[5:6], ordered, notExcluded), (s[2:3], ordered, excluded)]])", sq.toString());
     };
 
-    
+
+    @Test
+    public void KorapWithinQuery1 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.contains(kq.seg("test"), kq.seg("test2")).toQuery();
+	assertEquals("spanContain(field:test, field:test2)", sq.toString());
+    };
+
+    @Test
+    public void KorapWithinQuery2 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.overlaps(kq.seg("test"), kq.seg("test2")).toQuery();
+	assertEquals("spanOverlap(field:test, field:test2)", sq.toString());
+    };
+
+    @Test
+    public void KorapWithinQuery3 () {
+	KorapQuery kq = new KorapQuery("field");
+	SpanQuery sq = kq.startswith(kq.seg("test"), kq.seg("test2")).toQuery();
+	assertEquals("spanStartsWith(field:test, field:test2)", sq.toString());
+    };
+   
     // kq.seg("a").append(kq.ANY).append("b:c");
     // kq.repeat(kq.seg("a", "b"), 5)
 };

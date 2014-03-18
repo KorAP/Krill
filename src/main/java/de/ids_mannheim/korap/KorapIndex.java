@@ -132,7 +132,7 @@ public class KorapIndex {
     private final static Logger log = LoggerFactory.getLogger(KorapIndex.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     {
 	Properties prop = new Properties();

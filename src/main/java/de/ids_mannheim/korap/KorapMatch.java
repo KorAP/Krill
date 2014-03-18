@@ -42,7 +42,7 @@ public class KorapMatch extends KorapDocument {
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();

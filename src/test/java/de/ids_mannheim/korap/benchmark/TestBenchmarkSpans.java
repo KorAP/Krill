@@ -41,7 +41,7 @@ public class TestBenchmarkSpans {
 	/// cosmas20.json!!!
 	String json = getString(getClass().getResource("/queries/benchmark1.jsonld").getFile());
 
-	int rounds = 1000;
+	int rounds = 10;
 
 	KorapResult kr = new KorapResult();
 
@@ -51,7 +51,8 @@ public class TestBenchmarkSpans {
 	};
 	t2 = System.nanoTime();
 
-	assertEquals("TotalResults", 30751, kr.getTotalResults());
+	// assertEquals("TotalResults", 30751, kr.getTotalResults());
+	assertEquals("TotalResults",  4803739, kr.getTotalResults());
 
 	// System.err.println(kr.toJSON());
 
@@ -67,6 +68,13 @@ public class TestBenchmarkSpans {
 
 	// 1000 times:
 	// 36.613 sec
+
+
+	// After refactoring
+	// 100 times
+	// 273.58114372 seconds
+	
+
     };
 
 

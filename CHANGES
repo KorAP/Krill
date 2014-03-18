@@ -1,5 +1,14 @@
+0.30.5 2014-03-18
+	- Support for Quantifier Queries (margaretha)
+	- Some benchmarks (margaretha)
+        - [bugfix] WithinSpans respect match payloads,
+	  and are now way more correct ;) (diewald)
+	- Support for overlap queries (diewald)
+	- Refactoring of WithinSpans (diewald)
+	- Introducing lazy loading for wrapper .end() in WithinSpans (diewald)
+
 0.30.4 2014-02-26
-        - [cleanup] Making MultiTerm* more robust.
+        - [cleanup] Making MultiTerm* more robust (diewald)
 
 0.30.3 2014-02-20
         - Return json request in response if given (diewald)
@@ -10,7 +19,7 @@
 	- Small refactorings (diewald)
 
 0.30.2 2014-02-14
-        - [bugfix] wrapper uses correct distance constraint
+        - [bugfix] wrapper uses correct distance constraint (diewald)
 
 0.30.1 2014-02-13
         - Added sentence extension for match info (diewald)

@@ -3,11 +3,12 @@ package de.ids_mannheim.korap.query.spans;
 import java.lang.StringBuilder;
 
 public abstract class KorapSpan implements Comparable<KorapSpan>, Cloneable {
-    public int start, end, doc;
+    public int
+	start = -1,
+	end   = -1,
+	doc   = -1;
 
     public KorapSpan () {
-	this.start = -1;
-	this.end = -1;
 	initPayload();
     };
 

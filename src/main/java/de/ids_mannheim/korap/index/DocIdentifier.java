@@ -20,7 +20,7 @@ public class DocIdentifier {
     };
 
     public void setDocID (String id) {
-	if (!id.contains("!"))
+	if (id != null && !id.contains("!"))
 	    this.docID = id;
     };
 };

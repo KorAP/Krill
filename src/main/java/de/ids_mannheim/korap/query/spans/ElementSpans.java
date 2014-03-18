@@ -24,6 +24,8 @@ import java.util.List;
 
 /**
  * @author Nils Diewald
+ *
+ * TODO: Support lazy loading for .end()
  */
 public class ElementSpans extends Spans {
 
@@ -35,7 +37,7 @@ public class ElementSpans extends Spans {
     private int doc, freq, count, position, end;
     protected boolean readPayload;
 
-    private  LinkedList<KorapTermSpan> memory;
+    private LinkedList<KorapTermSpan> memory;
     private ByteBuffer storedPayload = ByteBuffer.allocate(128);
     boolean hasStoredPayload = false;
 

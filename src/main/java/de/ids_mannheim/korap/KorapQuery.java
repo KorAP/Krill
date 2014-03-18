@@ -9,6 +9,8 @@ import org.apache.lucene.util.automaton.RegExp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import de.ids_mannheim.korap.query.SpanWithinQuery;
+
 import java.util.*;
 import java.io.*;
 
@@ -42,6 +44,15 @@ public class KorapQuery {
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
+
+    public static final byte
+	OVERLAP      = SpanWithinQuery.OVERLAP,
+	REAL_OVERLAP = SpanWithinQuery.REAL_OVERLAP,
+	WITHIN       = SpanWithinQuery.WITHIN,
+	REAL_WITHIN  = SpanWithinQuery.REAL_WITHIN,
+	ENDSWITH     = SpanWithinQuery.ENDSWITH,
+	STARTSWITH   = SpanWithinQuery.STARTSWITH,
+	MATCH        = SpanWithinQuery.MATCH;
 
 
     /**
@@ -117,23 +128,30 @@ public class KorapQuery {
 		// TODO: Check for operands
 
 		String frame = json.has("frame") ? json.get("frame").asText() : "contains";
-		short flag = 0;
+		byte flag = WITHIN;
 		switch (frame) {
 		case "frame:contains":
+		    break;
+		case "frame:strictlyContains":
+		    flag = REAL_WITHIN;
 		    break;
 		case "frame:within":
 		    break;
 		case "frame:startswith":
-		    flag = (short) 1;
+		    flag = STARTSWITH;
 		    break;
 		case "frame:endswith":
-		    flag = (short) 2;
+		    flag = ENDSWITH;
 		    break;
 		case "frame:matches":
-		    flag = (short) 3;
+		    flag = MATCH;
 		    break;
 		case "frame:overlaps":
-		    throw new QueryException("Frame overlap not yet supported");
+		    flag = OVERLAP;
+		    break;
+		case "frame:strictlyOverlaps":
+		    flag = REAL_OVERLAP;
+		    break;
 		default:
 		    throw new QueryException("Frame type unknown");
 		};
@@ -148,7 +166,7 @@ public class KorapQuery {
 		    this.fromJSON(operands.get(0)),
 		    this.fromJSON(operands.get(1)),
 		    flag
-						  );
+		);
 
 	    case "operation:submatch":
 		int number = 0;
@@ -577,10 +595,36 @@ public class KorapQuery {
      * @param element A SpanQuery.
      * @param embedded A SpanQuery that is wrapped in the element.
      */
+    @Deprecated
     public SpanWithinQueryWrapper within (SpanQueryWrapperInterface element,
 					  SpanQueryWrapperInterface embedded) {
 	return new SpanWithinQueryWrapper(element, embedded);
     };
+
+    public SpanWithinQueryWrapper contains (SpanQueryWrapperInterface element,
+					  SpanQueryWrapperInterface embedded) {
+	return new SpanWithinQueryWrapper(element, embedded, WITHIN);
+    };
+
+    public SpanWithinQueryWrapper startswith (SpanQueryWrapperInterface element,
+					      SpanQueryWrapperInterface embedded) {
+	return new SpanWithinQueryWrapper(element, embedded, STARTSWITH);
+    };
+
+    public SpanWithinQueryWrapper endswith (SpanQueryWrapperInterface element,
+					    SpanQueryWrapperInterface embedded) {
+	return new SpanWithinQueryWrapper(element, embedded, ENDSWITH);
+    };
+
+    public SpanWithinQueryWrapper overlaps (SpanQueryWrapperInterface element,
+					    SpanQueryWrapperInterface embedded) {
+	return new SpanWithinQueryWrapper(element, embedded, OVERLAP);
+    }; 
+
+    public SpanWithinQueryWrapper matches (SpanQueryWrapperInterface element,
+					   SpanQueryWrapperInterface embedded) {
+	return new SpanWithinQueryWrapper(element, embedded, MATCH);
+    }; 
 
     // Class
     public SpanClassQueryWrapper _ (byte number, SpanQueryWrapperInterface element) {

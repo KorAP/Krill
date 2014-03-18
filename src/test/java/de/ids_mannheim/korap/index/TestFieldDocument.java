@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapDocument;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -149,6 +150,7 @@ public class TestFieldDocument {
 	//	System.err.println(kr.toJSON());
     };
 
+
     @Test
     public void indexExample3 () throws IOException {
 
@@ -163,35 +165,66 @@ public class TestFieldDocument {
 	};
 	ki.commit();
 
-	// Start creating query
 	KorapQuery kq = new KorapQuery("tokens");
-	
+
+	KorapSearch ks;
+	KorapResult kr;
+
+	// Start creating query
+	/*
+
+	ks = new KorapSearch(kq.tag("xip/c:NPA"));
+	ks.setCount(1);
+	ks.setCutOff(true);
+
+	assertEquals(("A bzw. [a] ist der erste Buchstabe des lateinischen ...", ks.run(ki).getMatch(0).getSnippetBrackets());
+	*/
+
 	// within(<xip/const:NPA>, {1: {2: [cnx/p=A & mate/m=number:sg]}[opennlp/p=NN & tt/p=NN]})
-	SpanQuery query =
-	    kq.within(
+
+	/**
+	ks = new KorapSearch(kq.within(
               kq.tag("xip/c:NPA"),
               kq._(1,
                 kq.seq(
 	          kq._(2, kq.seg("cnx/p:A").with("mate/m:number:sg"))
                 ).append(
-  		  kq.seg("opennlp/p:NN").with("tt/p:NN")
+		  kq.seg("opennlp/p:NN").with("tt/p:NN")
 	        )
 	      )
-            ).toQuery();
+            ));
+	**/
 
+	ks = new KorapSearch(kq.within(
+              kq.tag("xip/c:NPA"),
+              kq._(1,
+                kq.seq(
+	          kq.seg("cnx/p:A")
+                ).append(
+		  kq.seg("opennlp/p:NN")
+	        )
+	      )
+            ));
+	
+	ks.setCount(1);
+	ks.setCutOff(true);
 
-	KorapResult kr;
+	ks.leftContext.setToken(true).setLength(6);
+	ks.leftContext.setCharacter(true).setLength(6);
+
+	assertEquals("... e des [{1:lateinischen Alphabets}] und ein Vokal. Der Buchstabe A ...", ks.run(ki).getMatch(0).getSnippetBrackets());
+
+	// assertEquals("... e des [{1:lateinischen {2:Alphabets}}] und ein Vokal. Der Buchstabe A ...", ks.run(ki).getMatch(0).getSnippetBrackets());
 
 	/*
-	kr = ki.search(query, 0, (short) 60, true, (short) 6, true, (short) 6);
-	System.err.println(kr.toJSON());
-	*/
-
-
 	kr = ki.search(query, 0, (short) 1, true, (short) 2, false, (short) 5);
 	assertEquals("... Buchstabe des [{1:{2:lateinischen} Alphabets}] und  ...", kr.match(0).getSnippetBrackets());
+	*/
 
-	
+	/*
+
+	SpanQuery query;
+
 	kr = ki.search(query, 0, (short) 50, true, (short) 2, false, (short) 5);
 
 //	System.err.println(kr.toJSON());
@@ -216,18 +249,19 @@ public class TestFieldDocument {
 	assertEquals("WPD_AAA.00002", kr.match(1).getDocID());
 	assertEquals("... Orte in [Norwegen]: Å i ...", kr.match(2).getSnippetBrackets());
 	assertEquals("WPD_AAA.00005", kr.match(2).getDocID());
-
+	*/
 	/*
 	System.err.println(ki.getMatchInfo(kr.match(2).getID(), "tokens", "xip", "l", true, false).getSnippetHTML());
 	*/
 
+	/*
 	query = kq.seg("tt/l:Vokal").without("mate/m:number:sg").toQuery();
 	kr = ki.search(query, 0, (short) 5, true, (short) 2, false, (short) 5);
 	assertEquals(1, kr.totalResults());
 	assertEquals("... reich an [Vokalen] war, ...", kr.match(0).getSnippetBrackets());
 
 	assertNotNull(kr.toJSON());
-
+	*/
 
 	/*
 	System.err.println(ki.getMatchInfo(

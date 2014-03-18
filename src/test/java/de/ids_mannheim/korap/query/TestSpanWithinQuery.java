@@ -16,11 +16,11 @@ public class TestSpanWithinQuery {
 	SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper("field", "a", "b", "c");
 	SpanWithinQuery ssequery = new SpanWithinQuery("s", ssquery.toQuery());
 
-	assertEquals("spanWithin(<field:s />, spanNext(spanNext(field:a, field:b), field:c))", ssequery.toString());
+	assertEquals("spanContain(<field:s />, spanNext(spanNext(field:a, field:b), field:c))", ssequery.toString());
 
 	ssquery = new SpanSequenceQueryWrapper("field", "a", "b");
 	ssequery = new SpanWithinQuery("p", ssquery.toQuery());
-	assertEquals("spanWithin(<field:p />, spanNext(field:a, field:b))", ssequery.toString());
+	assertEquals("spanContain(<field:p />, spanNext(field:a, field:b))", ssequery.toString());
 
     };
     

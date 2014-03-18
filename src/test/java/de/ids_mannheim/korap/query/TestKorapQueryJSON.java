@@ -130,7 +130,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp12.jsonld").getFile());
 
 	// contains(<np>,[base=Mann])
-	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:"+defaultFoundry+"l:Mann)");
+	assertEquals(sqwi.toQuery().toString(), "spanContain(<tokens:np />, tokens:"+defaultFoundry+"l:Mann)");
     };
 
     @Ignore
@@ -146,7 +146,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp13b.jsonld").getFile());
 
 	// startswith(<np>,[pos=Det])
-	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:mate/p:Det, 1)");
+	assertEquals(sqwi.toQuery().toString(), "spanStartsWith(<tokens:np />, tokens:mate/p:Det)");
     };
 
     @Test
@@ -178,7 +178,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp17.jsonld").getFile());
 
 	// within(<np>,[base=Mann])
-	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:np />, tokens:"+defaultFoundry+"l:Mann)");
+	assertEquals(sqwi.toQuery().toString(), "spanContain(<tokens:np />, tokens:"+defaultFoundry+"l:Mann)");
     };
 
     @Test
@@ -242,7 +242,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas16.json").getFile());
 
 	// "$wegen #IN(L) <s>"
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanWithin(<tokens:s />, {1: tokens:i:wegen}, 1))");
+	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanStartsWith(<tokens:s />, {1: tokens:i:wegen}))");
     };
 
     @Test
@@ -250,7 +250,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/cosmas17.json").getFile());
 
 	// "#BED($wegen , +sa)"
-	assertEquals(sqwi.toQuery().toString(), "spanWithin(<tokens:s />, tokens:i:wegen, 1)");
+	assertEquals(sqwi.toQuery().toString(), "spanStartsWith(<tokens:s />, tokens:i:wegen)");
     };
 
     @Test
@@ -259,7 +259,7 @@ public class TestKorapQueryJSON {
 
 	//     "MORPH(V) #IN(R) #ELEM(S)"
 	// TODO: Uses defaultfoundry!
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanWithin(<tokens:s />, {1: tokens:mate/p:V}, 2))");
+	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanEndsWith(<tokens:s />, {1: tokens:mate/p:V}))");
     };
 
     public static String getString (String path) {

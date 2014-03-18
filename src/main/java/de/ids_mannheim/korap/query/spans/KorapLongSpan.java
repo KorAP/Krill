@@ -39,7 +39,6 @@ public class KorapLongSpan extends KorapSpan {
 	return sb.append(this.start).append('-')
 	    .append(this.end)
 	    .append('(').append(this.doc).append(')')
-	    //	    .append('$').append(this.payload.toString())
 	    .append(']')
 	    .toString();
     };

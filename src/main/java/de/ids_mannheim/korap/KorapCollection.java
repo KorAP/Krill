@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // TODO: Make a cache for the bits!!! DELETE IT IN CASE OF AN EXTENSION OR A FILTER!
-
+// Todo: Maybe use radomaccessfilterstrategy
 // TODO: Maybe a constantScoreQuery can make things faster?
 
 // accepts as first parameter the index

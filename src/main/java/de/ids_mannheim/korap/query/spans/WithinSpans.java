@@ -31,261 +31,500 @@ import java.util.*;
 import java.io.*;
 
 /*
-<a>x<b>y<c>z[1]</c>z[2]</b>z[3]</a>
-
-Erst:
-a mit ?
--> fetch empty
--> [].next -> 1
-=> match!
--> speicher [1]
-a mit ?
--> fetch gecheckt! (WIE MERKE ICH MIR DAS?)
--> [].next -> 1
-=> match!
--> speicher [2]
-a mit [3]
-=> match!
--> speicher [3]
-b mit ?
--> fetch [1]
-=> match!
--> wenn [1].end <= b.end
-   -> speicher [1]
-b mit ?
--> fetch [2]
-=> match!
--> wenn [2].end <= b.end
-   -> speicher [2]
-
-Speicher: start, end, payload, wrapStart, wrapEnd
-
-Problem: Es ist nicht garantiert, dass bei
-<a><b><c>x</c>y</b>z</a>
-die Wrapreihenfolge a,b,c rauskommt!
+  TODO: Use the flag in KorapQuery!
 */
 
 /**
- * @author ndiewald
+ * Compare two spans and check, if the second one relates to the first one.
+ *
+ * @author Nils Diewald
  */
-
 public class WithinSpans extends Spans {
 
+    // Logger
+    private final Logger log = LoggerFactory.getLogger(WithinSpans.class);
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-
-    private boolean firstTime = true;
+    
     private boolean more = false;
 
-    // Initialize as invalid
-    private int matchDoc   = -1;
-    private int matchStart = -1;
-    private int matchEnd   = -1;
-
-    /** Indicates that the wrap and the embedded spans are in the same doc */
-    private boolean inSameDoc = false;
+    // Boolean value indicating if span B
+    // should be forwarded next (true)
+    // or span A (false);
+    boolean nextSpanB = true;
 
     private int
-	wrapDoc,
-	embeddedDoc,
-	wrapStart,
-	wrapEnd,
-	embeddedStart,
-	embeddedEnd;
-
+	wrapStart     = -1,
+	wrapEnd       = -1,
+	embeddedStart = -1,
+	embeddedEnd   = -1,
+	wrapDoc       = -1,
+	embeddedDoc   = -1,
+	matchDoc      = -1,
+	matchStart    = -1,
+	matchEnd      = -1;
+    
+    private Collection<byte[]> matchPayload;
     private Collection<byte[]> embeddedPayload;
+    
+    // Indicates that the wrap and the embedded spans are in the same doc
+    private boolean inSameDoc = false;
 
-    // Wrap span
-    private final Spans wrapSpans;
-    private final Spans wrapSpansByDoc; // Necessary?
+    /*
+      Supported flags are currently:
+      ov  -> 0  | overlap:      A & B != empty)
+      rov -> 2  | real overlap: A & B != empty and
+                                ((A | B) != A or
+                                 (A | B) != B)
+      in  -> 4  | within:       A | B = A
+      rin -> 6  | real within:  A | B = A and
+                                A & B != A
+      ew  -> 8  | endswith:     A | B = A and
+                                A.start = B.start
+      sw  -> 10 | startswith:   A | B = A and
+                                A.end = B.end
+      m   -> 12 |               A = B
+     */
+    public static final byte
+	OVERLAP      = (byte) 0,
+	REAL_OVERLAP = (byte) 2,
+	WITHIN       = (byte) 4,
+	REAL_WITHIN  = (byte) 6,
+	ENDSWITH     = (byte) 8,
+	STARTSWITH   = (byte) 10,
+	MATCH        = (byte) 12;
 
-    // Embedded span
-    private final Spans embeddedSpans;
-    private final Spans embeddedSpansByDoc;
+    private byte flag;
 
     private SpanWithinQuery query;
 
-    private LinkedList<KorapLongSpan> spanStore1, spanStore2;
+    private final Spans embeddedSpans, wrapSpans;
 
-    private List<byte[]> matchPayload;
 
-    private short flag;
+    private boolean tryMatch = true;
 
-    private final Logger log = LoggerFactory.getLogger(WithinSpans.class);
+    private LinkedList<KorapLongSpan>
+	spanStore1,
+	spanStore2;
 
-    // Constructor
     public WithinSpans (SpanWithinQuery spanWithinQuery,
 			AtomicReaderContext context,
 			Bits acceptDocs,
 			Map<Term,TermContext> termContexts,
-			short flag) throws IOException {
+			byte flag) throws IOException {
 
 	if (DEBUG)
-	    log.trace("Init WithinSpans");
+	    log.trace("Construct WithinSpans");
 
 	// Init copies
 	this.matchPayload = new LinkedList<byte[]>();
 
-	// Get span
-	this.wrapSpans = spanWithinQuery.wrap().getSpans(context, acceptDocs, termContexts);
-	this.wrapSpansByDoc = wrapSpans; // used in toSameDoc()
-
-	this.embeddedSpans = spanWithinQuery.embedded().getSpans(context, acceptDocs, termContexts);
-	this.embeddedSpansByDoc = embeddedSpans; // used in toSameDoc()
+	// Get spans
+	this.wrapSpans = spanWithinQuery.wrap().getSpans(
+	    context,
+	    acceptDocs,
+	    termContexts
+	);
+	this.embeddedSpans = spanWithinQuery.embedded().getSpans(
+            context,
+	    acceptDocs,
+	    termContexts
+	);
 
 	this.flag = flag;
 
+	// SpanStores for backtracking
 	this.spanStore1 = new LinkedList<KorapLongSpan>();
 	this.spanStore2 = new LinkedList<KorapLongSpan>();
-	
-	this.query = spanWithinQuery; // kept for toString() only.
+
+	// kept for toString() only.
+	this.query = spanWithinQuery;
     };
+    
 
-
-    /** Move to the next match, returning true iff any such exists. */
+    // Move to next match, returning true iff any such exists.
     @Override
     public boolean next () throws IOException {
+
 	if (DEBUG)
-	    log.trace("Next with doc {}", matchDoc);
+	    log.trace("Next with docs {}, {}", wrapDoc, embeddedDoc);
 
-	// Check for init next
-	if (firstTime) {
-	    firstTime = false;
-	    if (!embeddedSpans.next() || !wrapSpans.next()) {
+	// Initialize spans
+	if (!this.init()) {
+	    this.more = false;
+	    this.inSameDoc = false;
+	    this.wrapDoc = DocIdSetIterator.NO_MORE_DOCS;
+	    this.embeddedDoc = DocIdSetIterator.NO_MORE_DOCS;
+	    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
+	    return false;
+	};
 
-		if (DEBUG)
-		    log.trace("No next in firstSpan nor in secondSpan 1");
+	// There are more spans and they are in the same document
+
+	while (this.more && (this.inSameDoc || this.toSameDoc())) {
+
+	    if (DEBUG)
+		log.trace("We are in the same doc: {}, {}", wrapDoc, embeddedDoc);
+
+	    // Both spans match according to the flag
+	    // Silently the next operations are prepared
+	    if (this.tryMatch && this.doesMatch()) {
+
+		if (this.wrapEnd == -1)
+		    this.wrapEnd = this.wrapSpans.end();
 		
-		more = false;
-		return false;
-	    };
+		this.matchStart = embeddedStart < wrapStart ? embeddedStart : wrapStart;
+		this.matchEnd   = embeddedEnd   > wrapEnd   ? embeddedEnd   : wrapEnd;
+		this.matchDoc   = embeddedDoc;
+		this.matchPayload.clear();
 
-	    if (DEBUG)
-		log.trace("Spans are initialized");
-	    
-	    more = true;
-	    wrapStart = wrapSpans.start();
-	    wrapEnd = wrapSpans.end();
-	    wrapDoc = matchDoc = wrapSpans.doc();
+		if (this.embeddedPayload != null)
+		    matchPayload.addAll(embeddedPayload);
 
-	    embeddedStart = embeddedSpans.start();
-	    embeddedEnd = embeddedSpans.end();
-	    embeddedDoc = embeddedSpans.doc();
+		if (this.wrapSpans.isPayloadAvailable())
+		    this.matchPayload.addAll(wrapSpans.getPayload());
 
-	    if (embeddedSpans.isPayloadAvailable()) {
-		Collection<byte[]> payload = embeddedSpans.getPayload();
-		embeddedPayload = new ArrayList<byte[]>(payload.size());
-		embeddedPayload.addAll(payload);
-	    };
-
-	    if (DEBUG)
-		log.trace("Init spans: {}", _actPos());
-
-	    if (embeddedDoc == matchDoc) {
-		inSameDoc = true;
 		if (DEBUG)
-		    log.trace("Is now inSameDoc");
+		    log.trace("   ---- MATCH ---- {}-{} ({})", matchStart, matchEnd, matchDoc);
+
+		this.tryMatch = false;
+		return true;
+	    }
+
+	    // Get next embedded
+	    else if (this.nextSpanB) {
+
+		// Next time try the match
+		this.tryMatch = true;
+		
+		if (DEBUG)
+		    log.trace("In the next embedded branch");
+		
+		// There is nothing in the second store
+		if (this.spanStore2.isEmpty()) {
+		    if (DEBUG)
+			log.trace("SpanStore 2 is empty");
+		  
+		    // Forward with embedding
+		    if (!this.embeddedSpans.next()) {
+			this.nextSpanA();
+			continue;
+		    }
+
+		    else if (DEBUG) {
+			log.trace("Fetch next embedded span");
+		    };
+		    
+		    this.embeddedStart = -1;
+		    this.embeddedEnd = -1;
+		    this.embeddedPayload = null;
+		    this.embeddedDoc = this.embeddedSpans.doc();
+
+		    if (this.embeddedDoc != this.wrapDoc) {
+
+			this.tryMatch = false;
+
+			if (DEBUG) {
+			    log.trace("Embedded span is in a new document {}",
+				      _currentEmbedded().toString());
+			    log.trace("Reset current embedded doc");
+			};	
+	
+			this.embeddedDoc = wrapDoc;
+			this.inSameDoc = true;
+			this.nextSpanA();
+			continue;
+		    };
+		    
+		    if (DEBUG)
+			log.trace(
+			    "   Forward embedded span to {}",
+			    _currentEmbedded().toString()
+			);
+
+		    if (this.embeddedDoc != this.wrapDoc) {
+			if (DEBUG)
+			    log.trace("Delete all span stores");
+			
+			this.spanStore1.clear();
+			this.spanStore2.clear();
+
+			this.embeddedStart = -1;
+			this.embeddedEnd = -1;
+			this.embeddedPayload = null;
+			
+			if (!this.toSameDoc()) {
+			    this.more = false;
+			    this.inSameDoc = false;
+			    return false;
+			};
+		    };
+
+		    this.more = true;
+		    this.inSameDoc = true;
+		    this.tryMatch = true;
+		    
+		    this.nextSpanB();
+		    continue;
+		}
+		
+		// Fetch from second store?
+		else {
+		    /** TODO: Change this to a single embedded object! */
+	
+		    KorapLongSpan current = spanStore2.removeFirst();
+		    this.embeddedStart = current.start;
+		    this.embeddedEnd = current.end;
+		    this.embeddedDoc = current.doc;
+
+		    if (current.payload != null) {
+			this.embeddedPayload = new ArrayList<byte[]>(current.payload.size());
+			this.embeddedPayload.addAll(current.payload);
+		    }
+		    else {
+			this.embeddedPayload = null;
+		    };
+
+		    if (DEBUG)
+			log.trace("Fetch current from SpanStore 2: {}", current.toString());
+		    
+		    this.tryMatch = true;
+		};
+		continue;
+	    };
+
+	    // get next wrap
+	    if (DEBUG)
+		log.trace("In the next wrap branch");
+
+	    this.tryMatch = true;
+
+	    if (DEBUG)
+		log.trace("Try next wrap");
+
+	    // shift the stored spans
+	    if (!this.spanStore1.isEmpty()) {
+		if (DEBUG) {
+		    log.trace("Move everything from SpanStore 1 to SpanStore 2:");
+		    for (KorapLongSpan i : this.spanStore1) {
+			log.trace("     | {}", i.toString());
+		    };
+		};
+
+		// Move everything to spanStore2
+		this.spanStore2.addAll(
+		    0,
+		    (LinkedList<KorapLongSpan>) this.spanStore1.clone()
+	        );
+		this.spanStore1.clear();
+
+		if (DEBUG) {
+		    log.trace("SpanStore 2 now is:");
+		    for (KorapLongSpan i : this.spanStore2) {
+			log.trace("     | {}", i.toString());
+		    };
+		};
+
 	    }
 	    else if (DEBUG) {
-		log.trace("Is not inSameDoc");
+		log.trace("spanStore 1 is empty");
 	    };
 
-	    if (DEBUG)
-		log.trace("Next with doc {} (wrap) and {} (embedded)", wrapDoc, embeddedDoc);
-	};
+	    // Get next wrap
+	    if (this.wrapSpans.next()) {
 
-	matchPayload.clear();
-	return advanceAfterCheck();
-    };
-
-
-    /** Advances the subSpans to just after a within match.
-     * @return true iff there is such a match.
-     */
-    private boolean advanceAfterCheck() throws IOException {
-	if (DEBUG) {
-	    log.trace("advanceAfterChecked inSameDoc: {} and more: {}", inSameDoc, more);
-	    log.trace("advanceAfterCheck with doc {} (wrap) and {} (embedded)", wrapDoc, embeddedDoc);
-	};
-
-	// There are more spans, and both spans are either in the
-	// same doc or can be forwarded to the same doc.
-	while (more && (inSameDoc || toSameDoc())) {
-
-	    if (DEBUG)
-		log.trace("There are more spans in doc {}", embeddedDoc);
-	    
-	    /* spans are in the same doc */
-	    if (within())
-		return true;
-	    else if (DEBUG)
-		log.trace("No within");
-	};
-
-	if (DEBUG)
-	    log.trace("No more matches");
-
-	return false; // no more matches
-    };
-
-
-    /** Advance the subSpans to the same document */
-    private boolean toSameDoc () throws IOException {
-	if (DEBUG)
-	    log.trace("toSameDoc");
-
-	/*
-	wrapDoc = wrapSpansByDoc.doc();
-	embeddedDoc = embeddedSpansByDoc.doc();
-
-	*/
-
-	if (wrapDoc != embeddedDoc) {
-	    if (DEBUG)
-		log.trace("Docs not identical: {} vs {}", wrapDoc, embeddedDoc);
-
-	    spanStore1.clear(); // = new LinkedList<KorapLongSpan>();
-	    spanStore2.clear(); // = new LinkedList<KorapLongSpan>();
-
-	    if (wrapDoc < embeddedDoc) {
-		if (DEBUG)
-		    log.trace("Skip wrap from {} to {}", wrapDoc, embeddedDoc);
+		// Reset wrapping information
+		this.wrapStart = -1;
+		this.wrapEnd = -1;
 		
-		if (wrapSpansByDoc.doc() >= embeddedDoc || !wrapSpansByDoc.skipTo(embeddedDoc)) {
-		    more = false;
-		    inSameDoc = false;
-		    return false;
-		};
-		wrapDoc = wrapSpans.doc();
-	    }
-	    else if (wrapDoc > embeddedDoc) {
 		if (DEBUG)
-		    log.trace("Skip embedded from {} to {}", embeddedSpans.doc(), wrapDoc);
-		
-		//		if (!embeddedSpansByDoc.skipTo( wrapDoc )) {
-		if (wrapDoc != embeddedSpans.doc()) {
-		    if (embeddedSpans.doc() == DocIdSetIterator.NO_MORE_DOCS ||
-			!(embeddedSpans.doc() < wrapDoc && embeddedSpans.skipTo( wrapDoc ))) {
-			more = false;
-			inSameDoc = false;
+		    log.trace(
+		        "   Forward wrap span to {}",
+			_currentWrap().toString()
+		    );
+
+		// Retrieve doc information
+		this.wrapDoc = this.wrapSpans.doc();
+		    
+		if (this.embeddedDoc != this.wrapDoc) {
+		    if (DEBUG)
+			log.trace("Delete all span stores");
+			
+		    this.spanStore1.clear();
+		    this.spanStore2.clear();
+
+		    // Reset embedded:
+		    this.embeddedStart = -1;
+		    this.embeddedEnd = -1;
+		    this.embeddedPayload = null;
+
+		    if (!this.toSameDoc()) {
+			this.inSameDoc = false;
+			this.more = false;
 			return false;
 		    };
 		}
-		else
-		    _add_current();
-		// embeddedDoc = embeddedSpans.doc();
-	    };
-	}
-	else if (DEBUG)
-	    log.trace("Docs identical");
+		else {
+		    this.inSameDoc = true;
+		    // Do not match with the current state
+		    this.tryMatch = false;
+		};
+		
+		this.nextSpanB();
+		continue;
+	    }
+	    this.more = false;
+	    this.inSameDoc = false;
+	    this.spanStore1.clear();
+	    this.spanStore2.clear();
+	    return false;
+	};
 
-	embeddedStart = embeddedSpans.start();
-	embeddedEnd = embeddedSpans.end();
+	// No more matches
+	return false;
+    };
+
+
+    /**
+     * Skip to the next document
+     */
+    private boolean toSameDoc () throws IOException {
 
 	if (DEBUG)
-	    log.trace("The new embedded start is {}-{}", embeddedStart, embeddedEnd);
+	    log.trace("Forward to find same docs");
+
+	this.more = true;
+	this.inSameDoc = true;
+
+	this.wrapDoc     = this.wrapSpans.doc();
+	this.embeddedDoc = this.embeddedSpans.doc();
+
+	// Clear all spanStores
+	if (this.wrapDoc != this.embeddedDoc) {
+	    this.spanStore1.clear();
+	    this.spanStore2.clear();
+	}
+
+	// Last doc was reached
+	else if (this.wrapDoc == DocIdSetIterator.NO_MORE_DOCS) {
+	    this.more      = false;
+	    this.matchDoc  = DocIdSetIterator.NO_MORE_DOCS;
+	    this.inSameDoc = false;
+	    return false;
+	}
+	else {
+	    if (DEBUG)  {
+		log.trace("Current position already is in the same doc");
+		log.trace("Embedded: {}", _currentEmbedded().toString());
+	    };
+	    return true;
+	};
+
+	// Forward till match
+	while (this.wrapDoc != this.embeddedDoc) {
+
+	    // Forward wrapInfo
+	    if (this.wrapDoc < this.embeddedDoc) {
+
+		// Set document information
+		if (!wrapSpans.skipTo(this.embeddedDoc)) {
+		    this.more = false;
+		    this.inSameDoc = false;
+		    return false;
+		};
+
+		if (DEBUG)
+		    log.trace("Skip wrap to doc {}", this.embeddedDoc);
+		
+		this.wrapDoc = this.wrapSpans.doc();
+
+		if (wrapDoc == DocIdSetIterator.NO_MORE_DOCS) {
+		    this.more = false;
+		    this.inSameDoc = false;
+		    this.embeddedDoc = DocIdSetIterator.NO_MORE_DOCS;
+		    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
+		    return false;
+		};
+		
+		this.wrapStart = -1;
+		this.wrapEnd   = -1;
+		
+		if (wrapDoc == embeddedDoc)
+		    return true;
+
+	    }
 	
-	return inSameDoc = true;
+	    // Forward embedInfo
+	    else if (this.wrapDoc > this.embeddedDoc) {
+
+		// Set document information
+		if (!this.embeddedSpans.skipTo(this.wrapDoc)) {
+		    this.more = false;
+		    this.inSameDoc = false;
+		    return false;
+		};
+
+		if (DEBUG)
+		    log.trace("Skip embedded to doc {}", this.wrapDoc);
+
+		this.embeddedDoc = this.embeddedSpans.doc();
+
+		if (this.embeddedDoc == DocIdSetIterator.NO_MORE_DOCS) {
+		    this.more      = false;
+		    this.inSameDoc = false;
+		    this.wrapDoc   = DocIdSetIterator.NO_MORE_DOCS;
+		    this.matchDoc  = DocIdSetIterator.NO_MORE_DOCS;
+		    return false;
+		};
+		
+		this.embeddedStart = -1;
+		this.embeddedEnd = -1;
+		this.embeddedPayload = null;
+	
+		if (this.wrapDoc == this.embeddedDoc)
+		    return true;
+	    }
+	    else {
+		return false;
+	    };
+	};
+	
+	return true;
+    };
+
+
+    // Initialize spans
+    private boolean init () throws IOException {
+
+	// There is a missing span
+	if (this.embeddedDoc >= 0)
+	    return true;
+
+	if (DEBUG)
+	    log.trace("Initialize spans");
+
+	// First tick for both spans
+	if (!(this.embeddedSpans.next() && this.wrapSpans.next())) {
+
+	    if (DEBUG)
+		log.trace("No spans initialized");
+	    
+	    this.embeddedDoc = -1;
+	    this.more = false;
+	    return false;
+	};
+	this.more = true;
+
+	// Store current positions for wrapping and embedded spans
+	this.wrapDoc     = this.wrapSpans.doc();
+	this.embeddedDoc = this.embeddedSpans.doc();
+
+
+	// Set inSameDoc to true, if it is true
+	if (this.embeddedDoc == this.wrapDoc)
+	    this.inSameDoc = true;
+	
+	return true;
     };
 
 
@@ -303,439 +542,443 @@ public class WithinSpans extends Spans {
      * Most implementations are considerably more efficient than that.
      */
     public boolean skipTo (int target) throws IOException {
+
 	if (DEBUG)
-	    log.trace("skipTo {}", target);
+	    log.trace("skipTo document {}", target);
 
-	// Check for init next
-	if (firstTime) {
-	    firstTime = false;
-	    if (!embeddedSpans.next() || !wrapSpans.next()) {
-		if (DEBUG)
-		    log.trace("No next in firstSpan nor in secondSpan 2");
-		more = false;
-		return false;
-	    };
-	    more = true;
+	// Initialize spans
+	if (!this.init())
+	    return false;
 
-	    // WrapSpans
-	    wrapStart = wrapSpans.start();
-	    wrapEnd = wrapSpans.end();
-	    // wrapDoc = embeddedSpans.doc();
-	    wrapDoc = wrapSpans.doc();
+	assert target > embeddedDoc;
 
-	    // EmbeddedSpans
-	    embeddedStart = embeddedSpans.start();
-	    embeddedEnd = embeddedSpans.end();
-	    embeddedDoc = embeddedSpans.doc();
-	}
-
-	/*
-	  See NextSpans for the same problem!
-	  This should be dealt with in toSameDoc!!!
-	 */
-	else if (more && (embeddedSpans.doc() < target)) {
-	    if (embeddedSpans.skipTo(target)) {
-		inSameDoc = false;
-		embeddedDoc = target;
+	// Only forward embedded spans
+	if (this.more && (this.embeddedDoc < target)) {
+	    if (this.embeddedSpans.skipTo(target)) {
+		this.inSameDoc = false;
+		this.embeddedStart = -1;
+		this.embeddedEnd = -1;
+		this.embeddedPayload = null;
+		this.embeddedDoc = this.embeddedSpans.doc();
 	    }
 
 	    // Can't be skipped to target
-	    else
-		return more = false;
+	    else {
+		this.inSameDoc = false;
+		this.more = false;
+		return false;
+	    };
 	};
 
-	matchPayload.clear();
-	return advanceAfterCheck();
+	// Move to same doc
+	return this.toSameDoc();
     };
 
-    private String _actPos () {
-	StringBuilder sb = new StringBuilder();
-	sb.append("<").append(wrapStart).append('-').append(wrapEnd).append('>');
-	sb.append(embeddedStart).append('-').append(embeddedEnd);
-	sb.append("</>");
-	return sb.toString();
-    };
-
-
-    private boolean within () throws IOException {
+    private void nextSpanA () {
 	if (DEBUG)
-	    log.trace("within");
-	
-	while (more && inSameDoc) {
+	    log.trace("Try wrap next time");
+	this.tryMatch = false;
+	this.nextSpanB = false;
+    };
 
-	    // Case 1-5
+    private void nextSpanB () {
+	if (DEBUG)
+	    log.trace("Try embedded next time");
+	this.nextSpanB = true;
+    };
+
+
+    // Check if the current span constellation does match
+    // Store backtracking relevant data and say, how to proceed
+    private boolean doesMatch () {
+	if (DEBUG)
+	    log.trace("In the match test branch");
+
+	if (this.wrapStart == -1)
+	    this.wrapStart = this.wrapSpans.start();
+	
+	if (this.embeddedStart == -1) {
+	    this.embeddedStart = this.embeddedSpans.start();
+	    this.embeddedEnd   = this.embeddedSpans.end();
+	};
+
+	this.wrapEnd = -1;
+	
+
+	// Shortcut to prevent lazyloading of .end()
+	if (this.wrapStart > this.embeddedStart) {
+	    // Can't match for in, rin, ew, sw, and m
+	    // and will always lead to next_b
+	    if (flag >= WITHIN) {
+		this.nextSpanB();
+		if (DEBUG)
+		    _logCurrentCase((byte) 14);
+		return false;
+	    };
+	}
+
+	else if (this.wrapStart < this.embeddedStart) {
+	    // Can't match for sw and m and will always
+	    // lead to next_a
+	    if (flag >= STARTSWITH) {
+		this.nextSpanA();
+		if (DEBUG)
+		    _logCurrentCase((byte) 15);
+		return false;
+	    };
+	};
+
+	// Now check correctly
+	byte currentCase = this.withinCase();
+
+	if (DEBUG)
+	    _logCurrentCase(currentCase);
+
+	boolean match = false;
+
+	// Test case
+	if (currentCase >= (byte) 3 && currentCase <= (byte) 11) {
+	    switch (flag) {
+
+	    case WITHIN:
+		if (currentCase >= 6  && currentCase <= 10 && currentCase != 8)
+		    match = true;
+		break;
+
+	    case REAL_WITHIN:
+		if (currentCase == 6 ||
+		    currentCase == 9 ||
+		    currentCase == 10)
+		    match = true;
+		break;
+
+	    case MATCH:
+		if (currentCase == 7)
+		    match = true;
+		break;
+
+	    case STARTSWITH:
+		if (currentCase == 7 ||
+		    currentCase == 6)
+		    match = true;
+		break;
+
+	    case ENDSWITH:
+		if (currentCase == 7 ||
+		    currentCase == 10)
+		    match = true;
+		break;
+
+	    case OVERLAP:
+		match = true;
+		break;
+
+	    case REAL_OVERLAP:
+		if (currentCase == 3 ||
+		    currentCase == 11)
+		    match = true;
+		break;
+	    };
+	};
+
+	/*
+	if (DEBUG)
+	    log.trace("Match is {}", match);
+	*/
+
+	try {
+	    this.todo(currentCase);
+	}
+	catch (IOException e) {
+	    return false;
+	}
+	return match;
+    };
+
+
+    private void _logCurrentCase (byte currentCase) {
+	log.trace("Current Case is {}", currentCase);
+	
+	String _e = _currentEmbedded().toString();
+	    
+	log.trace("    |---|    {}", _currentWrap().toString());
+
+	switch (currentCase) {
+	case 1:
+	    log.trace("|-|          {}", _e);
+	    break;
+	case 2:
+	    log.trace("|---|        {}", _e);
+	    break;
+	case 3:
+	    log.trace("  |---|      {}", _e);
+	    break;
+	case 4:
+	    log.trace("  |-----|    {}", _e);
+	    break;
+	case 5:
+	    log.trace("  |-------|  {}", _e);
+	    break;
+	case 6:
+	    log.trace("    |-|      {}", _e);
+	    break;
+	case 7:
+	    log.trace("    |---|    {}", _e);
+	    break;
+	case 8:
+	    log.trace("    |-----|  {}", _e);
+	    break;
+	case 9:
+	    log.trace("     |-|     {}", _e);
+	    break;
+	case 10:
+	    log.trace("      |-|    {}", _e);
+	    break;
+	case 11:
+	    log.trace("      |---|  {}", _e);
+	    break;
+	case 12:
+	    log.trace("        |-|  {}", _e);
+	    break;
+	case 13:
+	    log.trace("         |-| {}", _e);
+	    break;
+	    
+	case 15:
+	    // Fake case
+	    log.trace("      |---?  {}", _e);
+	    break;
+
+	case 16:
+	    // Fake case
+	    log.trace("  |---?      {}", _e);
+	    break;
+	};
+    };
+    
+
+    private KorapLongSpan _currentWrap () {
+	KorapLongSpan _wrap = new KorapLongSpan();
+	_wrap.start = this.wrapStart != -1 ? this.wrapStart : this.wrapSpans.start();
+	_wrap.end   = this.wrapEnd   != -1 ? this.wrapEnd   : this.wrapSpans.end();
+	_wrap.doc   = this.wrapDoc   != -1 ? this.wrapDoc   : this.wrapSpans.doc();
+	return _wrap;
+    };
+	    
+    private KorapLongSpan _currentEmbedded () {
+	KorapLongSpan _embedded = new KorapLongSpan();
+	_embedded.start = this.embeddedStart != -1 ? this.embeddedStart : this.embeddedSpans.start();
+	_embedded.end   = this.embeddedEnd   != -1 ? this.embeddedEnd   : this.embeddedSpans.end();
+	_embedded.doc   = this.embeddedDoc   != -1 ? this.embeddedDoc   : this.embeddedSpans.doc();
+	return _embedded;
+    };
+    
+
+    private void todo (byte currentCase) throws IOException {
+	/*
+	  Check what to do next with the spans.
+	  
+	  The different follow up steps are:
+	  - storeEmbedded -> store span B for later checks
+	  - nextSpanA     -> forward a
+	  - nextSpanB     -> forward b
+
+	  These rules were automatically generated
+	*/
+
+	// Case 1, 2
+	if (currentCase <= (byte) 2) {
+	    this.nextSpanB();
+	}
+
+	// Case 12, 13
+	else if (currentCase >= (byte) 12) {
+	    this.storeEmbedded();
+	    this.nextSpanA();
+	}
+
+	// Case 3, 4, 5, 8
+	else if (currentCase <= (byte) 5 ||
+		 currentCase == (byte) 8) {
+	    if (flag <= 2)
+		this.storeEmbedded();
+	    this.nextSpanB();
+	}
+
+	// Case 11
+	else if (currentCase == (byte) 11) {
+	    if (this.flag == REAL_WITHIN) {
+		this.nextSpanB();
+	    }
+	    else if (this.flag >= STARTSWITH) {
+		this.nextSpanA();
+	    }
+	    else {
+		this.storeEmbedded();
+		this.nextSpanB();
+	    };
+	}
+
+
+	// Case 6, 7, 9, 10
+	else {
+	    
+	    if (
+		// Case 6
+		(currentCase == (byte) 6 && this.flag == MATCH) ||
+
+		// Case 7
+		(currentCase == (byte) 7 && this.flag == REAL_WITHIN) ||
+
+		// Case 9, 10
+		(currentCase >= (byte) 9 && this.flag >= STARTSWITH)) {
+	    
+		this.nextSpanA();
+	    }
+	    else {
+		this.storeEmbedded();
+		this.nextSpanB();
+	    };
+	};
+    };
+
+    // Store the current embedded span in the second spanStore
+    private void storeEmbedded () throws IOException {
+
+	// Create a current copy
+	KorapLongSpan embedded = new KorapLongSpan();
+	embedded.start = this.embeddedStart != -1 ? this.embeddedStart : this.embeddedSpans.start();
+	embedded.end   = this.embeddedEnd   != -1 ? this.embeddedEnd : this.embeddedSpans.end();
+	embedded.doc   = this.embeddedDoc;
+
+	// Copy payloads
+	if (this.embeddedPayload != null) {
+	    embedded.payload = new ArrayList<byte[]>(this.embeddedPayload.size());
+	    embedded.payload.addAll(this.embeddedPayload);
+	}
+	else if (this.embeddedSpans.isPayloadAvailable()) {
+	    embedded.payload = new ArrayList<byte[]>(3);
+	    Collection<byte[]> payload = this.embeddedSpans.getPayload();
+
+	    this.embeddedPayload = new ArrayList<byte[]>(payload.size());
+	    this.embeddedPayload.addAll(payload);
+	    embedded.payload.addAll(payload);
+	};
+
+	this.spanStore1.add(embedded);
+
+	if (DEBUG)
+	    log.trace("Pushed to spanStore 1 {} (in storeEmbedded)", embedded.toString());
+    };
+    
+
+    // Return case number
+    private byte withinCase () {
+
+	// case 1-5
+	if (this.wrapStart > this.embeddedStart) {
+
 	    // Case 1
-	    //     |---|
+	    //    |-|
 	    // |-|
+	    if (this.wrapStart > this.embeddedEnd) {
+		return (byte) 1;
+	    }
+
 	    // Case 2
-	    //   |---|
+	    //   |-|
 	    // |-|
+	    else if (this.wrapStart == this.embeddedEnd) {
+		return (byte) 2;
+	    };
+
+	    // Load wrapEnd
+	    this.wrapEnd = this.wrapSpans.end();
+
 	    // Case 3
 	    //   |---|
 	    // |---|
+	    if (this.wrapEnd > this.embeddedEnd) {
+		return (byte) 3;
+	    }
+
 	    // Case 4
 	    //   |-|
 	    // |---|
+	    else if (this.wrapEnd == this.embeddedEnd) {
+		return (byte) 4;
+	    };
+	    
 	    // Case 5
-	    //  |-|"
-	    // |---|
-	    if (wrapStart > embeddedStart) {
-		if (DEBUG)
-		    log.trace("[Case] 1-5 with {}", _actPos());
-
-		if (this.fetchNext())
-		    continue;
-
-		// Forward wrapSpan
-		if (wrapSpans.next()) {
-		    wrapDoc = wrapSpans.doc();
-		    if (this.toSameDoc()) {
-			wrapStart = wrapSpans.start();
-			wrapEnd = wrapSpans.end();
-			continue;
-		    };
-		};
-
-		return this.more = this.inSameDoc = false;
-	    };
-
-	    // Get wrapEnd
-	    // wrapEnd = wrapSpans.end();
-
-	    KorapLongSpan embedded = new KorapLongSpan();
-	    embedded.start = embeddedStart;
-	    embedded.end = embeddedEnd;
-	    embedded.doc = embeddedDoc;
-
-	    if (embeddedPayload != null)
-		embedded.payload = embeddedPayload;
-
-	    this.spanStore1.add(embedded);
-	    
-	    if (DEBUG)
-		log.trace("pushed to spanStore1: {}", embedded.toString());
-
-
-	    // Case 12
-	    // |---|
-	    //     |-|
-	    // Case 13
-	    // |---|
-	    //       |-|
-	    if (wrapEnd <= embeddedStart) {
-		if (DEBUG)
-		    log.trace("[Case] 12-13 with {}", _actPos());
-
-		// Copy content of spanStores
-		if (!spanStore1.isEmpty()) {
-		    if (DEBUG)
-			log.trace("First store is not empty - copy to second store!");
-		    
-		    spanStore2.addAll(0, (LinkedList<KorapLongSpan>) spanStore1.clone());
-		    spanStore1.clear();
-		    
-		    if (DEBUG)
-			log.trace("Second store is now: {}", spanStore2.toString());
-		};
-
-		// Forward wrapSpan
-		if (DEBUG)
-		    log.trace("Try to forward wrapspan");
-
-		if (wrapSpans.next()) {
-		    wrapDoc = wrapSpans.doc();
-		    
-		    if (DEBUG)
-			log.trace("wrapDoc is now {} while embeddedDoc is {}", wrapDoc, embeddedDoc);
-		    
-		    if (this.toSameDoc()) {
-			wrapStart = wrapSpans.start();
-			wrapEnd = wrapSpans.end();
-			if (fetchTwoNext())
-			    continue;
-		    };
-		}
-		else if (DEBUG) {
-		    log.trace("Unable to forward wrapspan");
-		};
-
-		return this.inSameDoc = this.more = false;
-	    }
-
-
-	    // Case 6 - 8
-	    else if (wrapStart == embeddedStart) {
-
-		// Case 6
-		// |---|
-		// |-|
-		if (wrapEnd > embeddedEnd) {
-		    if (DEBUG)
-			log.trace("[Case] 6 with {}", _actPos());
-
-		    // neither match nor endWith
-		    if (this.flag < (short) 2) {
-
-			_setMatch(embedded.payload);
-
-			if (DEBUG)
-			    log.trace("MATCH1!! with {}", _actPos());
-			
-			fetchTwoNext();
-			return true;
-		    };
-
-		    fetchTwoNext();
-		    continue;
-		}
-
-		// Case 7
-		// |---|
-		// |---|
-		else if (wrapEnd == embeddedEnd) {
-		    if (DEBUG)
-			log.trace("[Case] 7 with {}", _actPos());
-
-		    _setMatch(embedded.payload);
-
-		    if (DEBUG)
-			log.trace("MATCH2!! with {}", _actPos());
-		    
-		    fetchTwoNext();
-		    return true;
-		};
-
-		// Case 8
-		// |-|
-		// |---|
-		// wrapEnd < embeddedEnd
-		if (DEBUG)
-		    log.trace("[Case] 8 with {}", _actPos());
-		
-		fetchTwoNext();
-		continue;
-	    };
-
-	    // Case 9-11
-	    // wrapStart < wrapEnd
-
-	    // Case 9
-	    // |---|
 	    //  |-|
-	    if (wrapEnd > embeddedEnd) {
-		if (DEBUG)
-		    log.trace("[Case] 9 with {}", _actPos());
-
-		// neither match nor endWith
-		if (this.flag == (short) 0) {
-		    _setMatch(embedded.payload);
-
-		    if (DEBUG)
-			log.trace("MATCH3!! with {}", _actPos());
-		    
-		    fetchTwoNext();
-		    return true;
-		};
-
-		fetchTwoNext();
-		continue;
-	    }
-	    // Case 10
 	    // |---|
-	    //   |-|
-	    else if (wrapEnd == embeddedEnd) {
-		if (DEBUG)
-		    log.trace("[Case] 10 with {}", _actPos());
+	    return (byte) 5;
+	}
 
-		// neither match nor endWith
-		if (this.flag == (short) 0 || this.flag == (short) 2) {
-		    _setMatch(embedded.payload);
-		    
-		    if (DEBUG)
-			log.trace("MATCH4!! with {}", _actPos());
-		    
-		    fetchTwoNext();
-		    return true;
-		};
+	// case 6-8
+	else if (this.wrapStart == this.embeddedStart) {
 
-		fetchTwoNext();
-		continue;
+	    // Load wrapEnd
+	    this.wrapEnd = this.wrapSpans.end();
+
+	    // Case 6
+	    // |---|
+	    // |-|
+	    if (this.wrapEnd > this.embeddedEnd) {
+		return (byte) 6;
+	    }
+
+	    // Case 7
+	    // |---|
+	    // |---|
+	    else if (this.wrapEnd == this.embeddedEnd) {
+		return (byte) 7;
 	    };
 
-	    // Case 11
+	    // Case 8
+	    // |-|
 	    // |---|
-	    //   |---|
-	    // wrapEnd < embeddedEnd
-	    if (DEBUG)
-		log.trace("[Case] 11 with {}", _actPos());
-	    
-	    fetchTwoNext();
-	    continue;
-	};
+	    return (byte) 8;
+	}
 
-	return this.more = false;
-    };
+	// wrapStart < embeddedStart
 
+	// Load wrapEnd
+	this.wrapEnd = this.wrapSpans.end();
 
-    private boolean fetchNext () throws IOException {
-	// Fetch span from first store
-	if (spanStore1.isEmpty()) {
+	// Case 13
+	// |-|
+	//    |-|
+	if (this.wrapEnd < this.embeddedStart) {
+	    return (byte) 13;
+	}
 
-	    if (DEBUG)
-		log.trace("First store is empty");
-	    
-	    return fetchTwoNext();
-	};
+	// Case 9
+	// |---|
+	//  |-|
+	else if (this.wrapEnd > this.embeddedEnd) {
+	    return (byte) 9;
+	}
 
-	KorapLongSpan current = spanStore1.removeFirst();
-	if (DEBUG)
-	    log.trace("Fetch from first store: {}", current.toString());
+	// Case 10
+	// |---|
+	//   |-|
+	else if (this.wrapEnd == this.embeddedEnd) {
+	    return (byte) 10;
+	}
 
-	embeddedStart = current.start;
-	embeddedEnd = current.end;
-	embeddedDoc = current.doc;
+	// Case 11
+	// |---|
+	//   |---|
+	else if (this.wrapEnd > this.embeddedStart) {
+	    return (byte) 11;
+	}
 	
-	if (current.payload != null)
-	    embeddedPayload = current.payload;
-
-	return true;
-    };
-
-
-    private boolean fetchTwoNext () throws IOException {
-
-	// Fetch span from second store
-	if (spanStore2.isEmpty()) {
-	    if (DEBUG)
-		log.trace("Second store is empty");
-
-	    // Forward spans
-	    if (this.embeddedSpans.next()) {
-		if (DEBUG)
-		    log.trace("Forwarded embeddedSpans");
-
-		if (this.embeddedSpans.doc() != wrapDoc && !spanStore1.isEmpty()) {
-
-		    if (DEBUG) {
-			log.trace("No docmatch and still stuff in store");
-			log.trace("First store is not empty - copy to second store!");
-		    };
-		    
-		    spanStore2.addAll(0, (LinkedList<KorapLongSpan>) spanStore1.clone());
-		    spanStore1.clear();
-
-		    _add_current();
-
-		    if (DEBUG)
-			log.trace("Second store is now: {}", spanStore2.toString());
-		}
-		else {
-		    embeddedStart = embeddedSpans.start();
-		    embeddedEnd = embeddedSpans.end();
-		    embeddedDoc = embeddedSpans.doc();
-
-		    if (embeddedSpans.isPayloadAvailable()) {
-			embeddedPayload.clear();
-			embeddedPayload.addAll(embeddedSpans.getPayload());
-		    };
-
-		    return this.toSameDoc();
-		};
-	    }
-	    else if (DEBUG)
-		log.trace("Forwarded embeddedSpans failed");
-
-	    
-	    if (DEBUG)
-		log.trace("EmbeddedDoc: " + embeddedDoc);
-
-	    // Forward wrapSpan
-	    if (DEBUG)
-		log.trace("Try to forward wrapspan");
-	    
-	    if (wrapSpans.next()) {
-		wrapDoc = wrapSpans.doc();
-		if (this.toSameDoc()) {	    
-		    wrapStart = wrapSpans.start();
-		    wrapEnd = wrapSpans.end();
-
-		    if (DEBUG)
-			log.trace("WrapSpan forwarded");
-
-		    // Copy content of spanStores
-		    if (!spanStore1.isEmpty()) {
-
-			if (DEBUG)
-			    log.trace("First store is not empty - copy to second store!");
-			
-			spanStore2.addAll(0, (LinkedList<KorapLongSpan>) spanStore1.clone());
-			spanStore1.clear();
-
-			if (DEBUG)
-			    log.trace("Second store is now: {}", spanStore2.toString());
-		    };
-
-		    return this.fetchTwoNext();
-		};
-	    };
-
-	    // Don't know.
-	    if (DEBUG)
-		log.trace("No more fetchNext()");
-
-	    return more = false;
-	};
-
-	KorapLongSpan current = spanStore2.removeFirst();
-	
-	if (DEBUG)
-	    log.trace("Fetch from second store: {}", current.toString());
-
-	embeddedStart = current.start;
-	embeddedEnd = current.end;
-	embeddedDoc = current.doc;
-	embeddedPayload = current.payload;
-
-	return true;
-    };
-
-
-    /*
-TODO: Maybe ignore "embedded" parameter and use embeddedPayload directly
-     */
-    private void _setMatch (Collection<byte[]> embeddedPayload) throws IOException {
-	matchStart = wrapStart;
-	matchEnd = wrapEnd;
-	matchDoc = embeddedDoc;
-	matchPayload.clear();
-
-	if (embeddedPayload != null)
-	    matchPayload.addAll(embeddedPayload);
-
-	if (wrapSpans.isPayloadAvailable())
-	    matchPayload.addAll(wrapSpans.getPayload());
-    };
-
-
-    private void _add_current () throws IOException{
-	KorapLongSpan embedded = new KorapLongSpan();
-	embedded.start = embeddedSpans.start();
-	embedded.end = embeddedSpans.end();
-	embedded.doc = embeddedSpans.doc();
-
-	if (embeddedSpans.isPayloadAvailable()) {
-	    if (embedded.payload == null)
-		embedded.payload = new ArrayList<byte[]>(5);
-	    else
-		embedded.payload.clear();
-	    embedded.payload.addAll(embeddedSpans.getPayload());
-	};
-
-	this.spanStore2.add(embedded);	    
-
-	if (DEBUG)
-	    log.trace("pushed to spanStore2: {}", embedded.toString());  
-    };
+	// case 12
+	// |-|
+	//   |-|
+	return (byte) 12;
+    };   
 
 
     /** Returns the document number of the current match.  Initially invalid. */
@@ -744,18 +987,21 @@ TODO: Maybe ignore "embedded" parameter and use embeddedPayload directly
 	return matchDoc;
     };
 
+    
     /** Returns the start position of the embedding wrap.  Initially invalid. */
     @Override
     public int start () {
 	return matchStart;
     };
 
+    
     /** Returns the end position of the embedding wrap.  Initially invalid. */
     @Override
     public int end () {
 	return matchEnd;
     };
 
+    
     /**
      * Returns the payload data for the current span.
      * This is invalid until {@link #next()} is called for
@@ -795,15 +1041,17 @@ TODO: Maybe ignore "embedded" parameter and use embeddedPayload directly
 	return matchPayload.isEmpty() == false;
     };
 
+    
     // Todo: This may be in the wrong version
     @Override
     public long cost() {
-	return Math.min(wrapSpans.cost(), embeddedSpans.cost());
+	return wrapSpans.cost() + embeddedSpans.cost();
     };
 
+    
     @Override
     public String toString() {
 	return getClass().getName() + "("+query.toString()+")@"+
-	    (firstTime?"START":(more?(doc()+":"+start()+"-"+end()):"END"));
+	    (embeddedDoc <= 0?"START":(more?(doc()+":"+start()+"-"+end()):"END"));
     };
 };
