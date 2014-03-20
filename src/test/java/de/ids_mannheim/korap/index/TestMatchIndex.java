@@ -73,9 +73,8 @@ public class TestMatchIndex {
 	assertEquals("SnippetBrackets (0)", "... bcabca[b{a}]c", kr.match(0).snippetBrackets());
 
 	assertEquals("Test no 'more' context", "<span class=\"context-left\"><span class=\"more\"></span>bcabca</span><span class=\"match\">b<em class=\"class-0 level-0\">a</em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
-
 	sq = new SpanMatchModifyClassQuery(
-            new SpanNextQuery(
+  	     new SpanNextQuery(
                 new SpanTermQuery(new Term("base", "s:b")),
                 new SpanClassQuery(
                     new SpanTermQuery(new Term("base", "s:a"))
@@ -88,7 +87,6 @@ public class TestMatchIndex {
 	assertEquals("StartPos (0)", 8, kr.match(0).startPos);
 	assertEquals("EndPos (0)", 9, kr.match(0).endPos);
 	assertEquals("SnippetBrackets (0)", "... cabcab[a]c", kr.match(0).snippetBrackets());
-
 	sq = new SpanMatchModifyClassQuery(
             new SpanNextQuery(
 	        new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 2),
@@ -242,7 +240,6 @@ public class TestMatchIndex {
 
 	assertEquals("SnippetBrackets (6)", "... abcaba[c]", kr.match(6).snippetBrackets());
 	assertEquals("SnippetBrackets (6)", "<span class=\"context-left\"><span class=\"more\"></span>abcaba</span><span class=\"match\">c</span><span class=\"context-right\"></span>", kr.match(6).snippetHTML());
-
 
 	kr = ki.search(sq, 0, (short) 20, true, (short) 0, true, (short) 0);
 

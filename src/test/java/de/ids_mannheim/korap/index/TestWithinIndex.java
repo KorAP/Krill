@@ -277,6 +277,102 @@ public class TestWithinIndex {
 
 
     @Test
+    public void indexExample1d () throws IOException {
+	// Cases 9, 12, 13
+	KorapIndex ki = new KorapIndex();
+
+	// <a>x<a>y<a>zhij</a>hij</a>hij</a>
+	FieldDocument fd = new FieldDocument();
+	fd.addTV("base",
+		 "x   y   z   h   i   j   h   i   j   h   i   j   ",
+		 "[(0-3)s:x|<>:a#0-36$<i>12]" + // 1
+		 "[(3-6)s:y|<>:a#3-27$<i>9]" +  // 2
+		 "[(6-9)s:z|<>:a#6-18$<i>6]" +  // 3
+		 "[(9-12)s:h]" +   // 4
+		 "[(12-15)s:i]" +  // 5
+		 "[(15-18)s:j]" +  // 6
+		 "[(18-21)s:h]" +  // 7
+		 "[(21-24)s:i]" +  // 8
+		 "[(24-27)s:j]" +  // 9
+		 "[(27-30)s:h]" +  // 10
+		 "[(30-33)s:i]" +  // 11
+		 "[(33-36)s:j]");  // 12
+	ki.addDoc(fd);
+
+	fd = new FieldDocument();
+	fd.addTV("base",
+		 "x   y   z   h   ",
+		 "[(0-3)s:x]" +  // 1
+		 "[(3-6)s:y]" +  // 2
+		 "[(6-9)s:z]" +  // 3
+		 "[(9-12)s:h]"); // 4
+	ki.addDoc(fd);
+
+	// <a>x<a>y<a>zabc</a>abc</a>abc</a>
+	fd = new FieldDocument();
+	fd.addTV("base",
+		 "x   y   z   a   b   c   a   b   c   a   b   c   ",
+		 "[(0-3)s:x|<>:a#0-36$<i>12]" + // 1
+		 "[(3-6)s:y|<>:a#3-27$<i>9]" +  // 2
+		 "[(6-9)s:z|<>:a#6-18$<i>6]" +  // 3
+		 "[(9-12)s:a]" +   // 4
+		 "[(12-15)s:b]" +  // 5
+		 "[(15-18)s:c]" +  // 6
+		 "[(18-21)s:a]" +  // 7
+		 "[(21-24)s:b]" +  // 8
+		 "[(24-27)s:c]" +  // 9
+		 "[(27-30)s:a]" +  // 10
+		 "[(30-33)s:b]" +  // 11
+		 "[(33-36)s:c]");  // 12
+	ki.addDoc(fd);
+
+	// Save documents
+	ki.commit();
+
+	SpanQuery sq;
+	KorapResult kr;
+
+	sq = new SpanElementQuery("base", "a");
+	kr = ki.search(sq, (short) 15);
+
+	sq = new SpanWithinQuery(
+	    new SpanElementQuery("base", "a"),
+            new SpanTermQuery(new Term("base", "s:h"))
+        );
+
+	kr = ki.search(sq, (short) 15);
+	
+	// System.err.println(kr.toJSON());
+
+	assertEquals("totalResults", 6, kr.totalResults());
+
+	assertEquals("StartPos (0)", 0, kr.match(0).startPos);
+	assertEquals("EndPos (0)", 12, kr.match(0).endPos);
+	assertEquals("Doc (0)", 0, kr.match(0).internalDocID);
+	assertEquals("StartPos (1)", 0, kr.match(1).startPos);
+	assertEquals("EndPos (1)", 12, kr.match(1).endPos);
+	assertEquals("Doc (1)", 0, kr.match(1).internalDocID);
+	assertEquals("StartPos (2)", 0, kr.match(2).startPos);
+	assertEquals("EndPos (2)", 12, kr.match(2).endPos);
+	assertEquals("Doc (2)", 0, kr.match(2).internalDocID);
+	assertEquals("StartPos (3)", 1, kr.match(3).startPos);
+	assertEquals("EndPos (3)", 9, kr.match(3).endPos);
+	assertEquals("Doc (3)", 0, kr.match(3).internalDocID);
+	assertEquals("StartPos (4)", 1, kr.match(4).startPos);
+	assertEquals("EndPos (4)", 9, kr.match(4).endPos);
+	assertEquals("Doc (4)", 0, kr.match(4).internalDocID);
+	assertEquals("StartPos (5)", 2, kr.match(5).startPos);
+	assertEquals("EndPos (5)", 6, kr.match(5).endPos);
+	assertEquals("Doc (5)", 0, kr.match(5).internalDocID);
+
+	assertEquals(3, ki.numberOf("documents"));
+    };
+
+
+
+
+
+    @Test
     public void indexExample2a () throws IOException {
 	KorapIndex ki = new KorapIndex();
 
@@ -798,12 +894,12 @@ public class TestWithinIndex {
 	FieldDocument fd = new FieldDocument();
 	fd.addTV("base",
 		 "x  y  x  b  c  x  ",
-		 "[(0-3)s:x]" +
-		 "[(3-6)s:y]" +
-		 "[(6-9)s:x|<>:a#6-15$<i>5|<>:a#6-9$<i>3]" +
-		 "[(9-12)s:b]" +
-		 "[(12-15)s:c|<>:a#12-15$<i>5]" +
-		 "[(15-18)s:x]");
+		 "[(0-3)s:x|_0#0-3]" +
+		 "[(3-6)s:y|_1#3-6]" +
+		 "[(6-9)s:x|_2#6-9|<>:a#6-15$<i>5|<>:a#6-9$<i>3]" +
+		 "[(9-12)s:b|_3#9-12]" +
+		 "[(12-15)s:c|_4#12-15|<>:a#12-15$<i>5]" +
+		 "[(15-18)s:x|_5#15-18]");
 	ki.addDoc(fd);
 
 	// Save documents
@@ -818,6 +914,7 @@ public class TestWithinIndex {
 
 	KorapResult kr = ki.search(sq, (short) 10);
 
+	// System.err.println(kr.toJSON());
 	assertEquals("totalResults", 2, kr.totalResults());
 	assertEquals("StartPos (0)", 2, kr.match(0).startPos);
 	assertEquals("EndPos (0)", 3, kr.match(0).endPos);
@@ -954,27 +1051,24 @@ public class TestWithinIndex {
 	assertEquals("totalResults", 0, kr.totalResults());
     };
     
-   /** SpanElementQueries 
-    * */
-   @Test
-   public void indexExample8() throws IOException{	   
-	   	KorapIndex ki = new KorapIndex();		
-		FieldDocument fd = new FieldDocument();
-		// <a>xx <e>hi j <e>hi j</e></e></a>
-		fd.addTV("base",
-			 "xx hi j hi j",
-			 "[(0-1)s:x|i:x|_0#0-1|<>:a#1-12$<i>8]" +
-			 "[(1-2)s:x|i:x|_1#1-2]" +
-			 "[(3-4)s:h|i:h|_2#3-4|<>:e#3-12$<i>8]" +
-			 "[(4-5)s:i|i:i|_3#4-5]" +
-			 "[(6-7)s:j|i:j|_4#6-7]" +
-			 "[(8-9)s:h|i:h|_5#8-9|<>:e#8-9$<i>8]" +
-			 "[(9-10)s:i|i:i|_6#9-10]" +
-			 "[(11-12)s:j|i:j|_7#11-12]");
-		ki.addDoc(fd);
-		
-		
-	}
-   
+    /** SpanElementQueries 
+     * */
+    @Test
+    public void indexExample8() throws IOException{	   
+	KorapIndex ki = new KorapIndex();		
+	FieldDocument fd = new FieldDocument();
+	// <a>xx <e>hi j <e>hi j</e></e></a>
+	fd.addTV("base",
+		 "xx hi j hi j",
+		 "[(0-1)s:x|i:x|_0#0-1|<>:a#1-12$<i>8]" +
+		 "[(1-2)s:x|i:x|_1#1-2]" +
+		 "[(3-4)s:h|i:h|_2#3-4|<>:e#3-12$<i>8]" +
+		 "[(4-5)s:i|i:i|_3#4-5]" +
+		 "[(6-7)s:j|i:j|_4#6-7]" +
+		 "[(8-9)s:h|i:h|_5#8-9|<>:e#8-9$<i>8]" +
+		 "[(9-10)s:i|i:i|_6#9-10]" +
+		 "[(11-12)s:j|i:j|_7#11-12]");
+	ki.addDoc(fd);
+    };
     
 };

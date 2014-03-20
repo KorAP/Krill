@@ -76,6 +76,9 @@ public class PositionsToOffset {
     public void add (PositionsToOffsetArray ptoa) {
 	if (DEBUG)
 	    log.trace("Add positionsToOffsetArray {}/{}", ptoa.docID, ptoa.pos);
+	if (ptoa.pos < 0)
+	    return;
+
 	if (this.processed && this.exists(ptoa))
 	    return;
 

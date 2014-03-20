@@ -42,7 +42,7 @@ public class KorapMatch extends KorapDocument {
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
@@ -841,13 +841,23 @@ public class KorapMatch extends KorapDocument {
 	    HighlightCombinatorElement lastComb;
 	    this.tempStack.clear();
 
-	    StringBuilder sb = new StringBuilder("Stack for checking with ");
-	    sb.append(number).append(" is ");
-	    for (int s : this.balanceStack) {
-		sb.append('[').append(s).append(']');
+	    // Shouldn't happen
+	    if (this.balanceStack.size() == 0) {
+		if (DEBUG)
+		    log.trace("The balance stack is empty");
+		return;
 	    };
-	    if (DEBUG)
+
+	    if (DEBUG) {
+		StringBuilder sb = new StringBuilder(
+		    "Stack for checking with class "
+	        );
+		sb.append(number).append(" is ");
+		for (int s : this.balanceStack) {
+		    sb.append('[').append(s).append(']');
+		};
 		log.trace(sb.toString());
+	    };
 
 	    // class number of the last element
 	    int eold = this.balanceStack.removeLast();
@@ -1091,6 +1101,11 @@ public class KorapMatch extends KorapDocument {
 	    if (openList.isEmpty()) {
 		stack.addAll(closeList);
 		break;
+	    }
+
+	    // Not sure about this, but it can happen
+	    else if (closeList.isEmpty()) {
+		break;
 	    };
 
 	    if (openList.peekFirst()[0] < closeList.peekFirst()[1]) {
@@ -1129,6 +1144,9 @@ public class KorapMatch extends KorapDocument {
 	// Match position
 	startPosChar = this.positionsToOffset.start(ldid, this.startPos);
 
+	if (DEBUG)
+	    log.trace("Unaltered startPosChar is {}", startPosChar);
+
 	// Check potential differing start characters
 	// e.g. from element spans
 	if (potentialStartPosChar != -1 &&
@@ -1136,26 +1154,21 @@ public class KorapMatch extends KorapDocument {
 	    startPosChar = potentialStartPosChar;
 
 	endPosChar = this.positionsToOffset.end(ldid, this.endPos - 1);
-	
+
 	if (DEBUG)
-	    log.trace("Match offset is pos {}-{} (chars {}-{})",
+	    log.trace("Unaltered endPosChar is {}", endPosChar);
+
+	// Potential end characters may come from spans with
+	// defined character offsets like sentences including .", ... etc.
+	if (endPosChar < potentialEndPosChar)
+	    endPosChar = potentialEndPosChar;
+
+	if (DEBUG)
+	    log.trace("Refined: Match offset is pos {}-{} (chars {}-{})",
 		      this.startPos,
 		      this.endPos,
 		      startPosChar,
 		      endPosChar);
-
-	// Potential end characters may come from spans with
-	// defined character offsets like sentences including .", ... etc.
-	if (endPosChar < potentialEndPosChar) {
-	    endPosChar = potentialEndPosChar;
-
-	    if (DEBUG)
-		log.trace("Refined: Match offset is pos {}-{} (chars {}-{})",
-			  this.startPos,
-			  this.endPos,
-			  startPosChar,
-			  endPosChar);
-	};
 
 	// left context
 	if (leftTokenContext) {
@@ -1222,6 +1235,7 @@ public class KorapMatch extends KorapDocument {
 	}
 	else {
 	    this.tempSnippet = this.getPrimaryData(startOffsetChar);
+	    // endPosChar = this.tempSnippet.length() - 1 + startOffsetChar;
 	    endMore = false;
 	};
 
@@ -1241,12 +1255,23 @@ public class KorapMatch extends KorapDocument {
 	    -1,
 	    0};
 
+	if (DEBUG)
+	    log.trace("The match entry is {}-{} ({}-{}) with startOffsetChar {}",
+		      startPosChar - startOffsetChar,
+		      endPosChar - startOffsetChar,
+		      startPosChar,
+		      endPosChar,
+		      startOffsetChar);
+
 	// Add match span
 	this.span.add(intArray);
 
 	// highlights
 	// -- I'm not sure about this.
 	if (this.highlight != null) {
+	    if (DEBUG)
+		log.trace("There are highlights!");
+
 	    for (Highlight highlight : this.highlight) {
 		int start = this.positionsToOffset.start(
 		  ldid, highlight.start

@@ -23,7 +23,7 @@ public abstract class KorapSpan implements Comparable<KorapSpan>, Cloneable {
 	this.start = o.start;
 	this.end = o.end;
 	this.doc = o.doc;
-	clearPayload();
+	this.clearPayload();
 	return this;
     };
 

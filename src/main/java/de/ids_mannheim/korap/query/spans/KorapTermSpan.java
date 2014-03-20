@@ -21,21 +21,23 @@ public class KorapTermSpan extends KorapSpan {
     public Object clone() {
 	KorapTermSpan span = new KorapTermSpan();
 	span.start = this.start;
-	span.end = this.end;
-	span.doc = this.doc;
+	span.end   = this.end;
+	span.doc   = this.doc;
 
-	this.payload.rewind();
-	span.payload.put(this.payload);
+	if (this.payload != null) {
+	    this.payload.rewind();
+	    span.payload.put(this.payload);
 
-	if (DEBUG) {
-	    log.trace("Clone payload {} to payload {} ...",
-		      this.payload.toString(),
-		      span.payload.toString());
-	    log.trace("... from {}-{} to {}-{}",
-		      this.startChar(),
-		      this.endChar(),
-		      span.startChar(),
-		      span.endChar());
+	    if (DEBUG) {
+		log.trace("[TS] Clone payload {} to payload {} ...",
+			  this.payload.toString(),
+			  span.payload.toString());
+		log.trace("[TS] ... from {}-{} to {}-{}",
+			  this.startChar(),
+			  this.endChar(),
+			  span.startChar(),
+			  span.endChar());
+	    };
 	};
 
 	return span;
@@ -47,11 +49,18 @@ public class KorapTermSpan extends KorapSpan {
 	return this;
     };
 
+    public KorapSpan shallowCopyFrom (KorapTermSpan o) {
+	super.copyFrom((KorapSpan) o);
+	this.payload = o.payload;
+	return this;
+    };
+
+
     @Override
     public void clearPayload () {
 	if (this.payload != null) {
 	    this.payload.clear();
-	    this.payload.rewind();
+	    // this.payload.rewind();
 	};
     };
 
@@ -60,12 +69,13 @@ public class KorapTermSpan extends KorapSpan {
 	this.payload = ByteBuffer.allocate(128);
     };
 
-
     @Override
     public String toString () {
 	StringBuilder sb = new StringBuilder("[");
 	return sb.append(this.start).append('-')
 	    .append(this.end)
+	    .append("#")
+	    .append(this.startChar()).append('-').append(this.endChar())
 	    .append('(').append(this.doc).append(')')
 	    .append('$').append(this.payload.toString())
 	    .append(']')
@@ -78,5 +88,12 @@ public class KorapTermSpan extends KorapSpan {
 
     public int endChar () {
 	return this.payload.getInt(4);
+    };
+
+    public void reset () {
+	this.clearPayload();
+	this.start = -1;
+	this.end = -1;
+	this.doc = -1;
     };
 };

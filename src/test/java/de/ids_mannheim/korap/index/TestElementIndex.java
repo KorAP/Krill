@@ -20,6 +20,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.index.Term;
 
 
@@ -323,5 +324,90 @@ public class TestElementIndex {
 	assertEquals("[111111]ccc ...", kr.match(0).getSnippetBrackets());
 	assertEquals("... ccc[222222]fff ...", kr.match(1).getSnippetBrackets());
 	assertEquals("... fff[333333]iii ...", kr.match(2).getSnippetBrackets());
+    };
+
+
+    @Test
+    public void indexExample6 () throws IOException {
+
+	KorapIndex ki = new KorapIndex();
+
+	// <a>x<a>y<a>zhij</a>hij</a>hij</a>
+	FieldDocument fd = new FieldDocument();
+	fd.addTV("base",
+		 "x  y  z  h  i  j  h  i  j  h  i  j  ",
+		 "[(0-3)s:x|_0#0-3|<>:a#0-36$<i>12]" + // 1
+		 "[(3-6)s:y|_1#3-6|<>:a#3-27$<i>9]" +  // 2
+		 "[(6-9)s:z|_2#6-9|<>:a#6-18$<i>6]" +  // 3
+		 "[(9-12)s:h|_3#9-12]" +   // 4
+		 "[(12-15)s:i|_4#12-15]" +  // 5
+		 "[(15-18)s:j|_5#15-18]" +  // 6
+		 "[(18-21)s:h|_6#18-21]" +  // 7
+		 "[(21-24)s:i|_7#21-24]" +  // 8
+		 "[(24-27)s:j|_8#24-27]" +  // 9
+		 "[(27-30)s:h|_9#27-30]" +  // 10
+		 "[(30-33)s:i|_10#30-33]" +  // 11
+		 "[(33-36)s:j|_11#33-36]");  // 12
+	ki.addDoc(fd);
+
+	fd = new FieldDocument();
+	fd.addTV("base",
+		 "x  y  z  h  ",
+		 "[(0-3)s:x|_0#0-3]" +  // 1
+		 "[(3-6)s:y|_1#3-6]" +  // 2
+		 "[(6-9)s:z|_2#6-9]" +  // 3
+		 "[(9-12)s:h|_3#9-12]"); // 4
+	ki.addDoc(fd);
+
+	// Here is a larger offset than expected
+	fd = new FieldDocument();
+	fd.addTV("base",
+		 "x  y  z  h  ",
+		 "[(0-3)s:x|_0#0-3|<>:a#0-36$<i>12]" +  // 1
+		 "[(3-6)s:y|_1#3-6]" +  // 2
+		 "[(6-9)s:z|_2#6-9]" +  // 3
+		 "[(9-12)s:h|_3#9-12]"); // 4
+	ki.addDoc(fd);
+	
+	// <a>x<a>y<a>zabc</a>abc</a>abc</a>
+	fd = new FieldDocument();
+	fd.addTV("base",
+		 "x  y  z  a  b  c  a  b  c  a  b  c  ",
+		 "[(0-3)s:x|_0#0-3|<>:a#0-36$<i>12]" + // 1
+		 "[(3-6)s:y|_1#3-6|<>:a#3-27$<i>9]" +  // 2
+		 "[(6-9)s:z|_2#6-9|<>:a#6-18$<i>6]" +  // 3
+		 "[(9-12)s:a|_3#9-12]" +   // 4
+		 "[(12-15)s:b|_4#12-15]" +  // 5
+		 "[(15-18)s:c|_5#15-18]" +  // 6
+		 "[(18-21)s:a|_6#18-21]" +  // 7
+		 "[(21-24)s:b|_7#21-24]" +  // 8
+		 "[(24-27)s:c|_8#24-27]" +  // 9
+		 "[(27-30)s:a|_9#27-30]" +  // 10
+		 "[(30-33)s:b|_10#30-33]" +  // 11
+		 "[(33-36)s:c|_11#33-36]");  // 12
+	ki.addDoc(fd);
+
+	fd = new FieldDocument();
+	fd.addTV("base",
+		 "x  y  z  h  ",
+		 "[(0-3)s:x|_0#0-3]" +  // 1
+		 "[(3-6)s:y|_1#3-6]" +  // 2
+		 "[(6-9)s:z|_2#6-9]" +  // 3
+		 "[(9-12)s:h|_3#9-12]"); // 4
+	ki.addDoc(fd);
+
+	// Save documents
+	ki.commit();
+
+	SpanQuery sq;
+	KorapResult kr;
+
+	sq = new SpanElementQuery("base", "a");
+	kr = ki.search(sq, (short) 15);
+
+	// System.err.println(kr.toJSON());
+	
+	assertEquals(5, ki.numberOf("documents"));
+	assertEquals("totalResults", 7, kr.totalResults());
     };
 };

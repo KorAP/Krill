@@ -337,14 +337,15 @@ public class WithinSpans extends Spans {
 		this.wrapStart = -1;
 		this.wrapEnd = -1;
 		
+		// Retrieve doc information
+		this.wrapDoc = this.wrapSpans.doc();
+
 		if (DEBUG)
 		    log.trace(
 		        "   Forward wrap span to {}",
 			_currentWrap().toString()
 		    );
 
-		// Retrieve doc information
-		this.wrapDoc = this.wrapSpans.doc();
 		    
 		if (this.embeddedDoc != this.wrapDoc) {
 		    if (DEBUG)

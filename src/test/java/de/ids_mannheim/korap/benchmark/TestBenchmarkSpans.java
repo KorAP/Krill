@@ -73,8 +73,6 @@ public class TestBenchmarkSpans {
 	// After refactoring
 	// 100 times
 	// 273.58114372 seconds
-	
-
     };
 
 
@@ -148,7 +146,7 @@ public class TestBenchmarkSpans {
 	};
 	t2 = System.nanoTime();
 
-	System.err.println(kr.getMatch(0).toJSON());
+	// System.err.println(kr.getMatch(0).toJSON());
 
 	assertEquals("TotalResults1", 4116282, kr.getTotalResults());
 	assertEquals("TotalResults2", kr.getTotalResults(), ki.numberOf("sentences"));
@@ -156,6 +154,8 @@ public class TestBenchmarkSpans {
 	double seconds = (double)(t2-t1) / 1000000000.0;
 	
 	System.out.println("It took " + seconds + " seconds");
+	// 100 rounds
+	// 56.253 secs
     };
 
     

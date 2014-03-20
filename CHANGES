@@ -1,3 +1,7 @@
+0.30.6 2014-03-20
+        - Refactoring and cleaning of ElementSpans (diewald)
+	- [bugfix] Stabilizing KorapMatch (diewald)
+
 0.30.5 2014-03-18
 	- Support for Quantifier Queries (margaretha)
 	- Some benchmarks (margaretha)
