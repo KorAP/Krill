@@ -351,6 +351,7 @@ public class ElementSpans extends Spans {
 
     private void setCurrentToTemp () {
 	this.temp = (KorapTermSpan) this.current.clone();
+	// this.temp.copyFrom(this.current);
     };
 
 

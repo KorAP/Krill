@@ -37,7 +37,7 @@ public class TestElementDistanceExclusionIndex {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base",
-            "text",             
+            "ceccdcdecd",             
             "[(0-1)s:c|_1#0-1|<>:s#0-1$<i>1]" +
             "[(1-2)s:e|_2#1-2|<>:s#1-2$<i>2]" +         
             "[(2-3)s:c|_3#2-3|<>:s#2-4$<i>4]" +
@@ -55,7 +55,7 @@ public class TestElementDistanceExclusionIndex {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("base",
-            "text",             
+            "eedadaeed",             
             "[(0-1)s:e|_1#0-1|<>:s#0-1$<i>1]" +
             "[(1-2)s:e|_2#1-2|<>:s#1-2$<i>2]" +             
             "[(2-3)s:d|_3#2-3|<>:s#2-4$<i>4]" +
@@ -72,7 +72,7 @@ public class TestElementDistanceExclusionIndex {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-");
         fd.addTV("base",
-            "text",             
+            "dcacacdac",             
             "[(0-1)s:d|_1#0-1|<>:s#0-1$<i>1]" +
             "[(1-2)s:c|_2#1-2|<>:s#1-2$<i>2]" +         
             "[(2-3)s:a|_3#2-3|<>:s#2-4$<i>4]" +
@@ -187,6 +187,7 @@ public class TestElementDistanceExclusionIndex {
         
         SpanQuery sq = createQuery("s","s:c","s:d",1,1,false,true);
         kr = ki.search(sq, (short) 10);
+
         assertEquals(3, kr.totalResults());        
         assertEquals(3, kr.match(2).getLocalDocID());
         assertEquals(3, kr.match(2).startPos);

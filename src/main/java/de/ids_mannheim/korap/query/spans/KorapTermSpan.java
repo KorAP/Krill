@@ -44,13 +44,18 @@ public class KorapTermSpan extends KorapSpan {
     };
 
     public KorapSpan copyFrom (KorapTermSpan o) {
-	super.copyFrom((KorapSpan) o);
-	this.payload.put(o.payload);
+	this.start = o.start;
+	this.end = o.end;
+	this.doc = o.doc;
+	this.payload.rewind();
+	this.payload.put(o.payload.array());
 	return this;
     };
 
     public KorapSpan shallowCopyFrom (KorapTermSpan o) {
-	super.copyFrom((KorapSpan) o);
+	this.start = o.start;
+	this.end = o.end;
+	this.doc = o.doc;
 	this.payload = o.payload;
 	return this;
     };
