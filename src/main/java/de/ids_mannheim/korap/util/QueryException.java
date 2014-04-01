@@ -1,7 +1,9 @@
 package de.ids_mannheim.korap.util;
 
 public class QueryException extends Exception {
-
+	
+  int errorCode;
+  
   public QueryException() {
       super();
   }
@@ -17,4 +19,19 @@ public class QueryException extends Exception {
   public QueryException(Throwable cause) {
       super(cause);
   };
+  
+  
+  public QueryException(int code, String message) {	  
+	  super(message);
+	  setErrorCode(code);      
+  }
+
+  public int getErrorCode() {
+	return errorCode;
+  }
+
+  public void setErrorCode(int errorCode) {
+	this.errorCode = errorCode;
+  }
+
 };
