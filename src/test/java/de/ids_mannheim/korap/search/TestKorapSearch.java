@@ -279,6 +279,69 @@ public class TestKorapSearch {
 
     };
 
+    @Test
+    public void searchJSONCollection () throws IOException {
+
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	String json = getString(getClass().getResource("/queries/metaquery8-nocollection.jsonld").getFile());
+	
+	KorapSearch ks = new KorapSearch(json);
+	KorapResult kr = ks.run(ki);
+	assertEquals(276, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(10, kr.getItemsPerPage());
+
+	json = getString(getClass().getResource("/queries/metaquery8.jsonld").getFile());
+	
+	ks = new KorapSearch(json);
+	kr = ks.run(ki);
+
+	assertEquals(147, kr.getTotalResults());
+	assertEquals("WPD_AAA.00001", kr.getMatch(0).getDocID());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(10, kr.getItemsPerPage());
+
+	json = getString(getClass().getResource("/queries/metaquery8-filtered.jsonld").getFile());
+	
+	ks = new KorapSearch(json);
+	kr = ks.run(ki);
+
+	assertEquals(28, kr.getTotalResults());
+	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(10, kr.getItemsPerPage());
+
+	json = getString(getClass().getResource("/queries/metaquery8-filtered-further.jsonld").getFile());
+	
+	ks = new KorapSearch(json);
+	kr = ks.run(ki);
+
+	assertEquals(0, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(10, kr.getItemsPerPage());
+
+	json = getString(getClass().getResource("/queries/metaquery8-filtered-nested.jsonld").getFile());
+	
+	ks = new KorapSearch(json);
+	kr = ks.run(ki);
+
+	assertEquals("filter with QueryWrapperFilter(+(ID:WPD_AAA.00003 (+tokens:s:die +tokens:s:Schriftzeichen)))", ks.getCollection().getFilter(1).toString());
+
+	assertEquals(119, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(10, kr.getItemsPerPage());
+
+    };
+
 
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();

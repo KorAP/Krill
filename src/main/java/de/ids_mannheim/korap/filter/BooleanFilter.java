@@ -15,9 +15,6 @@ import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.filter.RegexFilter;
 import de.ids_mannheim.korap.KorapFilter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
-
 import de.ids_mannheim.korap.util.QueryException;
 
 import org.slf4j.Logger;
@@ -50,117 +47,6 @@ public class BooleanFilter {
 	bool = new BooleanQuery();
     };
 
-    public BooleanFilter (JsonNode json) throws QueryException {
-	bool = new BooleanQuery();
-	this.fromJSON(json, "tokens");
-	/*
-	String type = json.get("@type").asText();
-	String field = _getField(json);
-
-	if (type.equals("korap:term")) {
-	    this.fromJSON(json, field);
-	}
-	else if (type.equals("korap:group")) {
-	    // TODO: relation
-	    for (JsonNode operand : json.get("operands")) {
-		this.fromJSON(operand, field);
-	    };
-	};
-	*/
-    };
-
-
-    private void fromJSON (JsonNode json, String field) throws QueryException {
-	String type = json.get("@type").asText();
-
-	log.trace("@type: " + type);
-
-	if (json.has("@field"))
-	    field = _getField(json);
-
-	if (type.equals("korap:term")) {
-	    if (field != null && json.has("@value"))
-		this.and(field, json.get("@value").asText());
-	    return;
-	}
-	else if (type.equals("korap:group")) {
-	    if (!json.has("relation"))
-		return;
-
-	    String date, till;
-
-	    log.trace("relation: " + json.get("relation").asText());
-
-	    switch (json.get("relation").asText())  {
-
-	    case "between":
-		date = _getDate(json, 0);
-		till = _getDate(json, 1);
-		if (date != null && till != null)
-		    this.between(date, till);
-		break;
-
-	    case "until":
-		date = _getDate(json, 0);
-		if (date != null)
-		    this.till(date);
-		break;
-
-	    case "since":
-		date = _getDate(json, 0);
-		if (date != null)
-		    this.since(date);
-		break;
-
-	    case "equals":
-		date = _getDate(json, 0);
-		if (date != null)
-		    this.date(date);
-		break;
-
-	    case "and":
-		if (!json.has("operands"))
-		    return;
-
-		for (JsonNode operand : json.get("operands")) {
-		    this.fromJSON(operand, field);
-		};
-		break;
-
-	    default:
-		throw new QueryException(json.get("relation").asText() + " is not a supported relation");
-	    };
-	}
-	else {
-	    throw new QueryException(type + " is not a supported group");
-	};
-    };
-
-    private static String  _getField (JsonNode json)  {
-	if (!json.has("@field"))
-	    return (String) null;
-
-	String field = json.get("@field").asText();
-	return field.replaceFirst("korap:field#", "");
-    };
-
-    private static String _getDate (JsonNode json, int index) {
-	if (!json.has("operands"))
-	    return (String) null;
-
-	if (!json.get("operands").has(index))
-	    return (String) null;
-
-	JsonNode date = json.get("operands").get(index);
-	if (!date.get("@type").asText().equals("korap:date"))
-	    return (String) null;
-
-	if (!date.has("@value"))
-	    return (String) null;
-
-	return date.get("@value").asText();
-    };
-
     public BooleanFilter or (String type, String ... terms) {
 	for (String term : terms) {
 	    bool.add(
@@ -180,6 +66,12 @@ public class BooleanFilter {
     };
 
     public BooleanFilter or (BooleanFilter bf) {
+	if (bf.bool.clauses().size() == 1) {
+	    BooleanClause bc = bf.bool.getClauses()[0];
+	    bc.setOccur(BooleanClause.Occur.SHOULD);
+	    bool.add(bc);
+	    return this;
+	}
 	bool.add(
  	    bf.toQuery(),
 	    BooleanClause.Occur.SHOULD
@@ -211,6 +103,12 @@ public class BooleanFilter {
     };
 
     public BooleanFilter and (BooleanFilter bf) {
+	if (bf.bool.clauses().size() == 1) {
+	    BooleanClause bc = bf.bool.getClauses()[0];
+	    bc.setOccur(BooleanClause.Occur.MUST);
+	    bool.add(bc);
+	    return this;
+	}
 	bool.add(
  	    bf.toQuery(),
 	    BooleanClause.Occur.MUST
@@ -325,7 +223,6 @@ public class BooleanFilter {
 	return this;
     };
 
-    
     public Query toQuery () {
 	return this.bool;
     };

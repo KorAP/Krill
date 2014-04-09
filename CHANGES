@@ -1,3 +1,7 @@
+0.30.7 2014-04-09
+        - Moved JSON interpretation from BooleanFilter to KorapFilter (diewald)
+	- Added 'or' and group nesting to KorapFilter (diewald)
+
 0.30.6 2014-03-20
         - Refactoring and cleaning of ElementSpans (diewald)
 	- [bugfix] Stabilizing KorapMatch (diewald)

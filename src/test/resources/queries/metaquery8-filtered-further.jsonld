@@ -1,0 +1,80 @@
+{
+    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+    "query": {
+	"@type": "korap:token", 
+	"wrap": {
+	    "@type": "korap:term", 
+	    "foundry": "mate",
+	    "layer" : "lemma",
+	    "key":"der", 
+	    "match": "match:eq"
+	}
+    },
+    "meta":{
+	"startPage":1,
+	"count": 10,
+	"context":{
+	    "left":["char",90],
+	    "right":["char",90]
+	}
+    },
+    "collections": [
+	{
+	    "@type": "korap:meta-filter",
+	    "@id": "korap-filter#id-1223232",
+	    "@value": {
+		"@type": "korap:group",
+		"relation": "or",
+		"@field": "korap:field#ID",
+		"operands": [
+		    {
+			"@type": "korap:term",
+			"@value": "WPD_AAA.00001"
+		    },
+		    {
+			"@type": "korap:term",
+			"@value": "WPD_AAA.00002"
+		    }
+		]
+	    }
+	},
+	{
+	    "@type": "korap:meta-filter",
+	    "@id": "korap-filter#id-1223232",
+	    "@value": {
+		"@type": "korap:group",
+		"relation": "or",
+		"@field": "korap:field#ID",
+		"operands": [
+		    {
+			"@type": "korap:term",
+			"@value": "WPD_AAA.00003"
+		    },
+		    {
+			"@type": "korap:term",
+			"@value": "WPD_AAA.00002"
+		    }
+		]
+	    }
+	},
+	{
+	    "@type": "korap:meta-filter",
+	    "@id": "korap-filter#id-1223232",
+	    "@value": {
+		"@type": "korap:group",
+		"relation": "or",
+		"@field": "korap:field#ID",
+		"operands": [
+		    {
+			"@type": "korap:term",
+			"@value": "WPD_AAA.00001"
+		    },
+		    {
+			"@type": "korap:term",
+			"@value": "WPD_AAA.00005"
+		    }
+		]
+	    }
+	}
+    ]
+}

@@ -80,11 +80,11 @@ public class KorapCollection {
 
 	if (type.equals("korap:meta-filter")) {
 	    log.trace("Add Filter");
-	    this.filter(new BooleanFilter(json.get("@value")));
+	    this.filter(new KorapFilter(json.get("@value")));
 	}
 	else if (type.equals("korap:meta-extend")) {
 	    log.trace("Add Extend");
-	    this.extend(new BooleanFilter(json.get("@value")));
+	    this.extend(new KorapFilter(json.get("@value")));
 	};
     };
 
@@ -118,6 +118,11 @@ public class KorapCollection {
 	return this;
     };
 
+    public KorapCollection filter (KorapFilter filter) {
+	return this.filter(filter.toBooleanFilter());
+    };
+
+
     public KorapCollection extend (BooleanFilter filter) {
 	log.trace("Added extension: {}", filter.toString());
 	this.filter.add(
@@ -130,6 +135,11 @@ public class KorapCollection {
 	return this;
     };
 
+    public KorapCollection extend (KorapFilter filter) {
+	return this.extend(filter.toBooleanFilter());
+    };
+
+    
     public ArrayList<FilterOperation> getFilters () {
 	return this.filter;
     };

@@ -25,6 +25,8 @@ public class TestKorapFilter {
 	assertEquals("+textClass:tree +textClass:sport", kf.and("textClass","tree").and("textClass","sport").toString());
 	assertEquals("+textClass:tree +textClass:sport textClass:news", kf.and("textClass","tree").and("textClass","sport").or("textClass","news").toString());
 	assertEquals("+textClass:tree +textClass:sport +textClass:news", kf.and("textClass", "tree", "sport", "news").toString());
+
+	assertEquals("corpusID:c-1 corpusID:c-2 corpusID:c-3", kf.or("corpusID", "c-1", "c-2", "c-3").toString());
     };
 
     @Test
