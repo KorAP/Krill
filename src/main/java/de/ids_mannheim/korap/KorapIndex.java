@@ -119,7 +119,7 @@ public class KorapIndex {
     private ObjectMapper mapper = new ObjectMapper();
     private String version;
 
-    private int maxTermRelations = 33;
+    private int maxTermRelations = 50;
 
     private static ByteBuffer bb       = ByteBuffer.allocate(4),
 	                      bbOffset = ByteBuffer.allocate(8),
@@ -849,7 +849,8 @@ public class KorapIndex {
 
 		if (keySize > maxTermRelations) {
 		    throw new Exception(
-		      "termRelations are limited to a " + maxTermRelations + " sets"
+		      "termRelations are limited to " + maxTermRelations + " sets" +
+		      " (requested were at least " + keySize + " sets)"
 		    );
 		};
 		
