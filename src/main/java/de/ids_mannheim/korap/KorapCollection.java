@@ -26,6 +26,8 @@ import org.apache.lucene.search.DocIdSet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import java.io.StringWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,7 @@ public class KorapCollection {
     public KorapCollection (String jsonString) {
 	this.filter = new ArrayList<FilterOperation>(5);
 	ObjectMapper mapper = new ObjectMapper();
+
 	try {
 	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
 	    if (json.has("collections")) {
@@ -150,7 +153,7 @@ public class KorapCollection {
 
 
     public String toString () {
-	StringBuffer sb = new StringBuffer();
+	StringBuilder sb = new StringBuilder();
 	for (FilterOperation fo : this.filter) {
 	    sb.append(fo.toString()).append("; ");
 	};
@@ -172,7 +175,7 @@ public class KorapCollection {
 	FixedBitSet bitset;
 
 	if (this.filterCount > 0) {
-	    bitset = new FixedBitSet(atomic.reader().numDocs());
+	    bitset = new FixedBitSet(atomic.reader().maxDoc());
 
 	    ArrayList<FilterOperation> filters = (ArrayList<FilterOperation>) this.filter.clone();
 
@@ -202,6 +205,8 @@ public class KorapCollection {
 		    if (filterIter == null) {
 			// There must be a better way ...
 			if (kc.isFilter()) {
+			    // TODO: Check if this is really correct!
+			    // Maybe here is the bug
 			    bitset.clear(0, bitset.length());
 			    noDoc = true;
 			}
@@ -254,9 +259,75 @@ public class KorapCollection {
 	return this.index.numberOf(this, "tokens", type);
     };
 
+    // This is only for testing purposes!
+    public HashMap getTermRelation(String field) throws Exception {
+	if (this.index == null) {
+	    HashMap<String,Long> map = new HashMap<>(1);
+	    map.put("-docs", (long) 0);
+	    return map;
+	};
+
+	return this.index.getTermRelation(this, field);
+    };
+
+    public String getTermRelationJSON(String field) throws IOException {
+	ObjectMapper mapper = new ObjectMapper();
+	StringWriter sw = new StringWriter();
+	sw.append("{\"field\":");
+	mapper.writeValue(sw,field);
+	sw.append(",");
+
+	try {
+	    HashMap<String, Long> map = this.getTermRelation(field);
+
+	    sw.append("\"documents\":");
+	    mapper.writeValue(sw,map.remove("-docs"));
+	    sw.append(",");
+
+	    String[] keys = map.keySet().toArray(new String[map.size()]);
+
+	    HashMap<String,Integer> setHash = new HashMap<>(20);
+	    ArrayList<HashMap<String,Long>> set = new ArrayList<>(20);
+	    ArrayList<Long[]> overlap = new ArrayList<>(100);
+	    
+	    int count = 0;
+	    for (String key : keys) {
+		if (!key.startsWith("#__")) {
+		    HashMap<String,Long> simpleMap = new HashMap<>();
+		    simpleMap.put(key, map.remove(key));
+		    set.add(simpleMap);
+		    setHash.put(key, count++);
+		};
+	    };
+
+	    keys = map.keySet().toArray(new String[map.size()]);
+	    for (String key : keys) {
+		String[] comb = key.substring(3).split(":###:");
+		Long[] l = new Long[3];
+		l[0] = (long) setHash.get(comb[0]);
+		l[1] = (long) setHash.get(comb[1]);
+		l[2] = map.remove(key);
+		overlap.add(l);
+	    };
+
+	    
+	    sw.append("\"sets\":");
+	    mapper.writeValue(sw, (Object) set);
+	    sw.append(",\"overlaps\":");
+	    mapper.writeValue(sw, (Object) overlap);
+	    sw.append(",\"error\":null");
+
+	}
+	catch (Exception e) {
+	    sw.append("\"error\":");
+	    mapper.writeValue(sw,e.getMessage());
+	};
+
+	sw.append("}");
+	return sw.getBuffer().toString();
+    };
+    
     public String getError () {
 	return this.error;
     };
-
-    // implement "till" with rangefilter
 };

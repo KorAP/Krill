@@ -1,3 +1,7 @@
+0.30.8 2014-04-10
+        - Added getTermRelationJSON() to KorapCollection (diewald)
+	  This is likely to get deprecated!
+
 0.30.7 2014-04-09
         - Moved JSON interpretation from BooleanFilter to KorapFilter (diewald)
 	- Added 'or' and group nesting to KorapFilter (diewald)

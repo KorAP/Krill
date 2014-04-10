@@ -70,7 +70,6 @@ public class TestKorapIndex {
 	assertEquals(3, ki.numberOf("base", "documents"));
 	assertEquals(10, ki.numberOf("base", "sentences"));
 
-
 	// KorapQuery kq = new KorapQuery("text");
 	// ki.search();
     };

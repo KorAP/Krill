@@ -4,8 +4,10 @@ import java.util.*;
 import java.io.*;
 
 import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapFilter;
 import de.ids_mannheim.korap.KorapResult;
 import java.nio.file.Files;
@@ -339,8 +341,169 @@ public class TestKorapSearch {
 	assertEquals(119, kr.getTotalResults());
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(10, kr.getItemsPerPage());
-
     };
+
+    @Test
+    public void getFoundryDistribution () throws Exception {
+
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	KorapCollection kc = new KorapCollection(ki);
+
+	assertEquals(7, kc.numberOf("documents"));
+
+    	HashMap map = kc.getTermRelation("foundries");
+	assertEquals((long) 7, map.get("-docs"));
+	assertEquals((long) 7, map.get("treetagger"));
+	assertEquals((long) 6, map.get("connexor/syntax"));
+	assertEquals((long) 6, map.get("#__connexor/syntax:###:treetagger"));
+	assertEquals((long) 7, map.get("#__connexor:###:treetagger"));
+    };
+
+    @Test
+    public void getTextClassDistribution () throws Exception {
+
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(
+"{" +
+"  \"fields\" : [" +
+"    { \"primaryData\" : \"abc\" },{" +
+"      \"name\" : \"tokens\"," +
+"      \"data\" : [" +
+"         [ \"s:a\", \"i:a\", \"_0#0-1\", \"-:t$<i>3\"]," +
+"         [ \"s:b\", \"i:b\", \"_1#1-2\" ]," +
+"         [ \"s:c\", \"i:c\", \"_2#2-3\" ]]}]," +
+"  \"textClass\" : \"music entertainment\"" +
+"}");
+
+	ki.addDoc(
+"{" +
+"  \"fields\" : [" +
+"    { \"primaryData\" : \"abc\" },{" +
+"      \"name\" : \"tokens\"," +
+"      \"data\" : [" +
+"         [ \"s:a\", \"i:a\", \"_0#0-1\", \"-:t$<i>3\"]," +
+"         [ \"s:b\", \"i:b\", \"_1#1-2\" ]," +
+"         [ \"s:c\", \"i:c\", \"_2#2-3\" ]]}]," +
+"  \"textClass\" : \"music singing\"" +
+"}");
+
+	ki.addDoc(
+"{" +
+"  \"fields\" : [" +
+"    { \"primaryData\" : \"abc\" },{" +
+"      \"name\" : \"tokens\"," +
+"      \"data\" : [" +
+"         [ \"s:a\", \"i:a\", \"_0#0-1\", \"-:t$<i>3\"]," +
+"         [ \"s:b\", \"i:b\", \"_1#1-2\" ]," +
+"         [ \"s:c\", \"i:c\", \"_2#2-3\" ]]}]," +
+"  \"textClass\" : \"music entertainment jumping\"" +
+"}");
+	ki.commit();
+
+
+	KorapCollection kc = new KorapCollection(ki);
+	assertEquals(3, kc.numberOf("documents"));
+
+    	HashMap map = kc.getTermRelation("textClass");
+	assertEquals((long) 1, map.get("singing"));
+	assertEquals((long) 1, map.get("jumping"));
+	assertEquals((long) 3, map.get("music"));
+	assertEquals((long) 2, map.get("entertainment"));
+	assertEquals((long) 3, map.get("-docs"));
+	assertEquals((long) 2, map.get("#__entertainment:###:music"));
+	assertEquals((long) 1, map.get("#__entertainment:###:jumping"));
+	assertEquals((long) 0, map.get("#__entertainment:###:singing"));
+	assertEquals((long) 0, map.get("#__jumping:###:singing"));
+	assertEquals((long) 1, map.get("#__jumping:###:music"));
+	assertEquals((long) 1, map.get("#__music:###:singing"));
+	assertEquals(11, map.size());
+
+	// System.err.println(kc.getTermRelationJSON("textClass"));
+    };
+
+    @Test
+    public void getTextClassDistribution2 () throws Exception {
+
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(
+"{" +
+"  \"fields\" : [" +
+"    { \"primaryData\" : \"abc\" },{" +
+"      \"name\" : \"tokens\"," +
+"      \"data\" : [" +
+"         [ \"s:a\", \"i:a\", \"_0#0-1\", \"-:t$<i>3\"]," +
+"         [ \"s:b\", \"i:b\", \"_1#1-2\" ]," +
+"         [ \"s:c\", \"i:c\", \"_2#2-3\" ]]}]," +
+"  \"textClass\" : \"\"" +
+"}");
+
+	ki.commit();
+	ki.addDoc(
+"{" +
+"  \"fields\" : [" +
+"    { \"primaryData\" : \"abc\" },{" +
+"      \"name\" : \"tokens\"," +
+"      \"data\" : [" +
+"         [ \"s:a\", \"i:a\", \"_0#0-1\", \"-:t$<i>3\"]," +
+"         [ \"s:b\", \"i:b\", \"_1#1-2\" ]," +
+"         [ \"s:c\", \"i:c\", \"_2#2-3\" ]]}]," +
+"  \"textClass\" : \"music entertainment\"" +
+"}");
+
+	ki.commit();
+	ki.addDoc(
+"{" +
+"  \"fields\" : [" +
+"    { \"primaryData\" : \"abc\" },{" +
+"      \"name\" : \"tokens\"," +
+"      \"data\" : [" +
+"         [ \"s:a\", \"i:a\", \"_0#0-1\", \"-:t$<i>3\"]," +
+"         [ \"s:b\", \"i:b\", \"_1#1-2\" ]," +
+"         [ \"s:c\", \"i:c\", \"_2#2-3\" ]]}]," +
+"  \"textClass\" : \"music singing\"" +
+"}");
+
+	ki.addDoc(
+"{" +
+"  \"fields\" : [" +
+"    { \"primaryData\" : \"abc\" },{" +
+"      \"name\" : \"tokens\"," +
+"      \"data\" : [" +
+"         [ \"s:a\", \"i:a\", \"_0#0-1\", \"-:t$<i>3\"]," +
+"         [ \"s:b\", \"i:b\", \"_1#1-2\" ]," +
+"         [ \"s:c\", \"i:c\", \"_2#2-3\" ]]}]," +
+"  \"textClass\" : \"music entertainment jumping\"" +
+"}");
+	ki.commit();
+
+
+	KorapCollection kc = new KorapCollection(ki);
+	assertEquals(4, kc.numberOf("documents"));
+
+    	HashMap map = kc.getTermRelation("textClass");
+	assertEquals((long) 1, map.get("singing"));
+	assertEquals((long) 1, map.get("jumping"));
+	assertEquals((long) 3, map.get("music"));
+	assertEquals((long) 2, map.get("entertainment"));
+	assertEquals((long) 4, map.get("-docs"));
+	assertEquals((long) 2, map.get("#__entertainment:###:music"));
+	assertEquals((long) 1, map.get("#__entertainment:###:jumping"));
+	assertEquals((long) 0, map.get("#__entertainment:###:singing"));
+	assertEquals((long) 0, map.get("#__jumping:###:singing"));
+	assertEquals((long) 1, map.get("#__jumping:###:music"));
+	assertEquals((long) 1, map.get("#__music:###:singing"));
+	assertEquals(11, map.size());
+    };
+
 
 
     public static String getString (String path) {

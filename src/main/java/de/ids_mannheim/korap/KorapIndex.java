@@ -119,6 +119,7 @@ public class KorapIndex {
     private ObjectMapper mapper = new ObjectMapper();
     private String version;
 
+    private int maxTermRelations = 33;
 
     private static ByteBuffer bb       = ByteBuffer.allocate(4),
 	                      bbOffset = ByteBuffer.allocate(8),
@@ -784,6 +785,102 @@ public class KorapIndex {
     };
 
 
+    public HashMap getTermRelation (String field) throws Exception {
+	return this.getTermRelation(new KorapCollection(this), field);
+    };
+
+
+    public HashMap getTermRelation (KorapCollection kc, String field) throws Exception {
+	HashMap<String,Long> map = new HashMap<>(100);
+	long docNumber = 0, checkNumber = 0;
+
+	try {
+	    if (kc.getCount() <= 0) {
+		checkNumber = (long) this.reader().numDocs();
+	    };
+
+	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+
+		HashMap<String,FixedBitSet> termVector = new HashMap<>(20);
+
+		FixedBitSet docvec = kc.bits(atomic);
+		if (docvec != null) {
+		    docNumber += docvec.cardinality();		    
+		};
+
+		Terms terms = atomic.reader().fields().terms(field);
+
+		if (terms == null) {
+		    continue;
+		};
+		
+		int docLength = atomic.reader().maxDoc();
+		FixedBitSet bitset = new FixedBitSet(docLength);
+
+		// Iterate over all tokens in this field
+		TermsEnum termsEnum = terms.iterator(null);
+
+		while (termsEnum.next() != null) {
+
+		    String termString = termsEnum.term().utf8ToString();
+
+		    // System.err.println("Current term is " + termString);
+		    bitset.clear(0,docLength);
+	    
+		    // Get frequency
+		    bitset.or((DocIdSetIterator) termsEnum.docs((Bits) docvec, null));
+
+		    long value = 0;
+		    if (map.containsKey(termString)) {
+			value = map.get(termString);
+			// System.err.println(termString + " has " + value + " occurrences");
+
+		    };
+		    map.put(termString, value + bitset.cardinality());
+		    // System.err.println(termString + " adds " + bitset.cardinality());
+
+		    termVector.put(termString, bitset.clone());
+		};
+
+		int keySize = termVector.size();
+		String[] keys = termVector.keySet().toArray(new String[keySize]);
+		java.util.Arrays.sort(keys);
+
+
+		if (keySize > maxTermRelations) {
+		    throw new Exception(
+		      "termRelations are limited to a " + maxTermRelations + " sets"
+		    );
+		};
+		
+		for (int i = 0; i < keySize; i++) {
+		    for (int j = i+1; j < keySize; j++) {
+			FixedBitSet comby = termVector.get(keys[i]).clone();
+			comby.and(termVector.get(keys[j]));
+
+			StringBuilder sb = new StringBuilder();
+			sb.append("#__").append(keys[i]).append(":###:").append(keys[j]);
+			String combString = sb.toString();
+
+			long cap = (long) comby.cardinality();
+			if (map.containsKey(combString)) {
+			    cap += map.get(combString);
+			};
+			map.put(combString, cap);
+		    };
+		};
+	    };
+
+	    map.put("-docs", checkNumber != 0 ? checkNumber : docNumber);
+
+	}
+	catch (IOException e) {
+	    log.warn(e.getMessage());	    
+	};
+	return map;
+    };
+
+    
     /**
      * Search in the index.
      */
