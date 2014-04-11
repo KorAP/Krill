@@ -279,6 +279,12 @@ public class TestKorapSearch {
 	assertEquals(2, kr.getStartIndex());
 	assertEquals(2, kr.getItemsPerPage());
 
+
+	json = getString(getClass().getResource("/queries/metaquery9.jsonld").getFile());
+	KorapCollection kc = new KorapCollection(json);
+	kc.setIndex(ki);
+	assertEquals(7, kc.numberOf("documents"));
+	
     };
 
     @Test

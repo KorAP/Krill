@@ -104,6 +104,13 @@ import org.slf4j.LoggerFactory;
  * @author ndiewald
  */
 public class KorapIndex {
+
+    // Todo: Use configuration
+    // Last line of defense for simple DOS attacks!
+    private int maxTermRelations = 100;
+    private int autoCommit = 500;
+
+
     private Directory directory;
 
     // Temp:
@@ -114,12 +121,10 @@ public class KorapIndex {
     private IndexSearcher searcher;
     private boolean readerOpen = false;
     private int commitCounter = 0;
-    private int autoCommit = 500; // Todo: Use configuration
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
     private String version;
 
-    private int maxTermRelations = 50;
 
     private static ByteBuffer bb       = ByteBuffer.allocate(4),
 	                      bbOffset = ByteBuffer.allocate(8),

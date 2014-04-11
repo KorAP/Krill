@@ -49,6 +49,14 @@ public class TestKorapCollectionJSON {
 	assertEquals("filter with QueryWrapperFilter(+(+corpusID:d-1 +corpusID:d-2))",kc.getFilter(1).toString());
     };
 
+    @Test
+    public void metaQuery9 () {
+	String metaQuery = getString(getClass().getResource("/queries/metaquery9.jsonld").getFile());
+	KorapCollection kc = new KorapCollection(metaQuery);
+	assertEquals(1,kc.getCount());
+	assertEquals("filter with QueryWrapperFilter(+corpusID:WPD)",kc.getFilter(0).toString());
+    };
+
 
 
     public static String getString (String path) {

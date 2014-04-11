@@ -1,3 +1,7 @@
+0.30.9 2014-04-11
+        - [bugfix] Prevent multiple identifiers in
+	  relation highlighting (diewald)
+
 0.30.8 2014-04-10
         - Added getTermRelationJSON() to KorapCollection (diewald)
 	  This is likely to get deprecated!

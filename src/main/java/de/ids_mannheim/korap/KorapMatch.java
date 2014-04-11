@@ -1084,6 +1084,9 @@ public class KorapMatch extends KorapDocument {
 	LinkedList<int[]> openList  = new LinkedList<int[]>();
 	LinkedList<int[]> closeList = new LinkedList<int[]>();
 
+	// Filter multiple identifier
+	this._filterMultipleIdentifiers();
+
 	// Add highlight spans to balance lists
 	openList.addAll(this.span);
 	closeList.addAll(this.span);
@@ -1272,6 +1275,14 @@ public class KorapMatch extends KorapDocument {
 	    if (DEBUG)
 		log.trace("There are highlights!");
 
+	    /*
+Here maybe?
+	if (this.highlight.last.start = hl.start && this.highlight.end == hl.end && this.highlight.id < -1) {
+	    return;
+	};
+	*/
+
+	    
 	    for (Highlight highlight : this.highlight) {
 		int start = this.positionsToOffset.start(
 		  ldid, highlight.start
@@ -1341,5 +1352,36 @@ public class KorapMatch extends KorapDocument {
 	};
 
 	return "{}";
+    };
+
+
+    // Remove duplicate identifiers
+    // Yeah ... I mean ... why not?
+    private void _filterMultipleIdentifiers () {
+	ArrayList<Integer> removeDuplicate = new ArrayList<>(10);
+	HashSet<Integer> identifiers = new HashSet<>(20);
+	for (int i = 0; i < this.span.size(); i++) {
+	    // span is an int array: [Start, End, Number, Dummy]
+	    int highlightNumber = this.span.get(i)[2];
+
+	    // number is an identifier
+	    if (highlightNumber < -1) {
+		int idNumber = identifierNumber.get(highlightNumber);
+		if (identifiers.contains(idNumber)) {
+		    removeDuplicate.add(i);
+		}
+		else {
+		    identifiers.add(idNumber);
+		};
+	    };
+	};
+
+	Collections.sort(removeDuplicate);
+	Collections.reverse(removeDuplicate);
+
+	// Delete all duplicate identifiers
+	for (int delete : removeDuplicate) {
+	    this.span.remove(delete);
+	};
     };
 };
