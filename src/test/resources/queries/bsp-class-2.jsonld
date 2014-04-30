@@ -1,0 +1,32 @@
+{
+    "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+    "query" : {
+      "@type" : "korap:group",
+      "operation" : "operation:class",
+      "class" : 0,
+      "operands" : [ {
+        "@type" : "korap:token",
+        "wrap" : {
+          "@type" : "korap:term",
+          "key" : "Straße",
+          "layer" : "l",
+          "foundry" : "cnx",
+          "match" : "match:eq"
+        }
+      } ]
+    },
+    "meta" : {
+      "context" : {
+        "left" : [ "char", 110 ],
+        "right" : [ "char", 110 ]
+      },
+      "cutOff" : false,
+      "startPage" : 1,
+      "count" : 25
+    }
+  },
+  "context" : {
+    "left" : [ "char", 110 ],
+    "right" : [ "char", 110 ]
+  }
+}

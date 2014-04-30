@@ -9,6 +9,7 @@ import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapFilter;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KorapSearch;
 import org.apache.lucene.store.MMapDirectory;
 import de.ids_mannheim.korap.filter.BooleanFilter;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -34,7 +35,8 @@ public class TestRealIndex {
 	// Check if the configuration was loaded fine
 	assertEquals(prop.getProperty("lucene.properties"), "true");
 
-	String indexDir = prop.getProperty("lucene.index");
+	String indexDir = prop.getProperty("lucene.indexDir");
+	System.err.println("Index directory is " + indexDir);
 
 	// Get the real index
 	KorapIndex ki = new KorapIndex(new MMapDirectory(new File(indexDir)));
@@ -85,4 +87,49 @@ public class TestRealIndex {
 
 	// assertEquals(14, kc.numberOf("documents"));
     };
+
+
+    @Test
+    public void realExample2 () throws IOException {
+
+	// Load configuration file
+	Properties prop = new Properties();
+	FileReader fr = new FileReader(getClass().getResource("/korap.conf").getFile());
+	prop.load(fr);
+
+	// Check if the configuration was loaded fine
+	assertEquals(prop.getProperty("lucene.properties"), "true");
+
+	String indexDir = prop.getProperty("lucene.indexDir");
+
+	// Get the real index
+	KorapIndex ki = new KorapIndex(new MMapDirectory(new File(indexDir)));
+
+	// Create a container for virtual collections:
+	KorapCollection kc = new KorapCollection(ki);
+
+	String json = getString(getClass().getResource("/queries/bsp-class-2.jsonld").getFile());
+
+	KorapResult kr = new KorapSearch(json).run(ki);
+
+	System.err.println(kr.toJSON());
+
+	// assertEquals(14, kc.numberOf("documents"));
+    };
+
+    public static String getString (String path) {
+	StringBuilder contentBuilder = new StringBuilder();
+	try {
+	    BufferedReader in = new BufferedReader(new FileReader(path));
+	    String str;
+	    while ((str = in.readLine()) != null) {
+		contentBuilder.append(str);
+	    };
+	    in.close();
+	} catch (IOException e) {
+	    fail(e.getMessage());
+	}
+	return contentBuilder.toString();
+    };
+
 };

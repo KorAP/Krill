@@ -1084,7 +1084,8 @@ public class KorapMatch extends KorapDocument {
 	LinkedList<int[]> openList  = new LinkedList<int[]>();
 	LinkedList<int[]> closeList = new LinkedList<int[]>();
 
-	// Filter multiple identifier
+	// Filter multiple identifiers, that may be introduced and would
+	// result in invalid xml
 	this._filterMultipleIdentifiers();
 
 	// Add highlight spans to balance lists
@@ -1274,14 +1275,6 @@ public class KorapMatch extends KorapDocument {
 	if (this.highlight != null) {
 	    if (DEBUG)
 		log.trace("There are highlights!");
-
-	    /*
-Here maybe?
-	if (this.highlight.last.start = hl.start && this.highlight.end == hl.end && this.highlight.id < -1) {
-	    return;
-	};
-	*/
-
 	    
 	    for (Highlight highlight : this.highlight) {
 		int start = this.positionsToOffset.start(
@@ -1364,8 +1357,10 @@ Here maybe?
 	    // span is an int array: [Start, End, Number, Dummy]
 	    int highlightNumber = this.span.get(i)[2];
 
-	    // number is an identifier
+	    // Number is an identifier
 	    if (highlightNumber < -1) {
+
+		// Get the real identifier
 		int idNumber = identifierNumber.get(highlightNumber);
 		if (identifiers.contains(idNumber)) {
 		    removeDuplicate.add(i);
@@ -1376,6 +1371,7 @@ Here maybe?
 	    };
 	};
 
+	// Order the duplicates to filter from the tail
 	Collections.sort(removeDuplicate);
 	Collections.reverse(removeDuplicate);
 
