@@ -1,5 +1,7 @@
 package de.ids_mannheim.korap;
 import java.util.*;
+import java.io.*;
+
 import java.lang.StringBuffer;
 import java.nio.ByteBuffer;
 
@@ -10,17 +12,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
 
 import de.ids_mannheim.korap.index.PositionsToOffset;
+import de.ids_mannheim.korap.index.SearchContext;
 import de.ids_mannheim.korap.document.KorapPrimaryData;
 
 import static de.ids_mannheim.korap.util.KorapHTML.*;
 import de.ids_mannheim.korap.index.MatchIdentifier;
 import de.ids_mannheim.korap.index.PosIdentifier;
+import de.ids_mannheim.korap.query.SpanElementQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.FixedBitSet;
+import org.apache.lucene.util.Bits;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.spans.Spans;
 
 /*
   Todo: The implemented classes and private names are horrible!
@@ -42,15 +51,14 @@ public class KorapMatch extends KorapDocument {
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
 
     // Snippet information
     @JsonIgnore
-    public short leftContextOffset,
-  	         rightContextOffset;
+    public SearchContext context;
 
     // Should be deprecated, but used wildly in tests!
     @JsonIgnore
@@ -63,7 +71,7 @@ public class KorapMatch extends KorapDocument {
     private String error = null;
     private String version;
 
-    // TEMPRARILY
+    // TEMPORARILY
     @JsonIgnore
     public int localDocID = -1;
 
@@ -76,10 +84,6 @@ public class KorapMatch extends KorapDocument {
     int relationNumberCounter   = 2048;
     int identifierNumberCounter = -2;
 
-    @JsonIgnore
-    public boolean leftTokenContext,
-	           rightTokenContext;
-
     private String tempSnippet,
 	           snippetHTML,
 	           snippetBrackets,
@@ -87,8 +91,8 @@ public class KorapMatch extends KorapDocument {
 
     private HighlightCombinator snippetStack;
 
-    private boolean startMore = true,
-	            endMore = true;
+    public boolean startMore = true,
+	           endMore = true;
 
     private Collection<byte[]> payload;
     private ArrayList<Highlight> highlight;
@@ -99,7 +103,7 @@ public class KorapMatch extends KorapDocument {
 
     /**
      * Constructs a new KorapMatch object.
-     * TODo: Maybe that's not necessary!
+     * Todo: Maybe that's not necessary!
      *
      * @param pto The PositionsToOffset object, containing relevant
      *            positional information for highlighting
@@ -113,9 +117,9 @@ public class KorapMatch extends KorapDocument {
      */
     public KorapMatch (PositionsToOffset pto, int localDocID, int startPos, int endPos) {
 	this.positionsToOffset = pto;
-	this.localDocID = localDocID;
-	this.startPos = startPos;
-	this.endPos = endPos;
+	this.localDocID     = localDocID;
+	this.startPos       = startPos;
+	this.endPos         = endPos;
     };
 
     
@@ -520,6 +524,153 @@ public class KorapMatch extends KorapDocument {
     };
 
 
+    public KorapMatch setContext (SearchContext context) {
+	this.context = context;
+	return this;
+    };
+
+    @JsonIgnore
+    public SearchContext getContext () {
+	if (this.context == null)
+	    this.context = new SearchContext();
+	return this.context;
+    };
+    
+
+    // Expand the context to a span
+    public int[] expandContextToSpan (String element) {
+
+	// TODO: THE BITS HAVE TO BE SET!
+	
+	if (this.positionsToOffset != null)
+	    return this.expandContextToSpan(
+	        this.positionsToOffset.getAtomicReader(),
+		(Bits) null,
+		"tokens",
+		element
+	    );
+	return new int[]{0,0,0,0};
+    };
+
+    // Expand the context to a span
+    // TODO: THIS IS PLAIN DUMB MAKE IT MOAR CLEVER! MOAR!!!
+    public int[] expandContextToSpan (AtomicReaderContext atomic,
+				      Bits bitset,
+				      String field,
+				      String element) {
+
+	try {
+	    // Store character offsets in ByteBuffer
+	    ByteBuffer bb = ByteBuffer.allocate(8);
+
+	    SpanElementQuery cquery =
+		new SpanElementQuery(field, element);
+
+	    Spans contextSpans = cquery.getSpans(
+	        atomic,
+		bitset,
+		new HashMap<Term, TermContext>()
+	    );
+
+	    int newStart = -1,
+		newEnd = -1;
+	    int newStartChar = -1,
+		newEndChar = -1;
+
+	    if (DEBUG)
+		log.trace("Extend match to context boundary with {} in {}",
+			  cquery.toString(),
+			  this.localDocID);
+
+	    while (true) {
+
+		// Game over
+		if (contextSpans.next() != true)
+		    break;
+
+		if (contextSpans.doc() != this.localDocID) {
+		    contextSpans.skipTo(this.localDocID);
+		    if (contextSpans.doc() != this.localDocID)
+			break;
+		};
+
+		// There's a <context> found -- I'm curious,
+		// if it's closer to the match than everything before
+		if (contextSpans.start() <= this.getStartPos() &&
+		    contextSpans.end() >= this.getStartPos()) {
+
+		    // Set as newStart
+		    newStart = contextSpans.start() > newStart ?
+			contextSpans.start() : newStart;
+
+		    // Get character offset (start)
+		    if (contextSpans.isPayloadAvailable()) {
+			try {
+			    bb.rewind();
+			    for (byte[] b : contextSpans.getPayload()) {
+
+				// Not an element span
+				if (b.length != 8)
+				    continue;
+
+				bb.put(b);
+				bb.rewind();
+				newStartChar = bb.getInt();
+				newEndChar = bb.getInt();
+				break;
+			    };
+			}
+			catch (Exception e) {
+			    log.warn(e.getMessage());
+			};
+		    };
+		}
+		else {
+		    // Has to be resettet to avoid multiple readings of the payload
+		    newEndChar = 0;
+		};
+		
+		// There's an s found, that ends after the match
+		if (contextSpans.end() >= this.getEndPos()) {
+		    newEnd = contextSpans.end();
+
+		    // Get character offset (end)
+		    if (newEndChar == 0 && contextSpans.isPayloadAvailable()) {
+			try {
+			    bb.rewind();
+			    for (byte[] b : contextSpans.getPayload()) {
+
+				// Not an element span
+				if (b.length != 8)
+				    continue;
+
+				bb.put(b);
+				bb.rewind();
+				newEndChar = bb.getInt(1);
+				break;
+			    };
+			}
+			catch (Exception e) {
+			    log.warn(e.getMessage());
+			};
+		    };
+		    break;
+		};
+	    };
+	    
+	    // We have a new match surrounding
+	    if (DEBUG)
+		log.trace("New match spans from {}-{}/{}-{}", newStart, newEnd, newStartChar, newEndChar);
+
+	    return new int[]{newStart, newEnd, newStartChar, newEndChar};
+	}
+	catch (IOException e) {
+	    log.error(e.getMessage());
+	};
+	
+	return new int[]{-1,-1,-1,-1};
+    };
+
     
     // Reset all internal data
     private void _reset () {
@@ -574,16 +725,17 @@ public class KorapMatch extends KorapDocument {
 	
 	// Get the list of spans for matches and highlighting
 	if (this.span == null || this.span.size() == 0) {
-	    if (!this._processHighlightSpans(
-	            leftTokenContext,
-		    rightTokenContext
-	       ))
+	    if (!this._processHighlightSpans())
 		return false;
 	};
 
 	// Create a stack for highlighted elements
 	// (opening and closing elements)
 	ArrayList<int[]> stack = this._processHighlightStack();
+
+	if (DEBUG)
+	    log.trace("The snippet is {}", this.tempSnippet);
+
 
 	// The temporary snippet is empty, nothing to do
 	if (this.tempSnippet == null) {
@@ -1127,19 +1279,15 @@ public class KorapMatch extends KorapDocument {
     /**
      * This will retrieve character offsets for all spans.
      */
-    private boolean _processHighlightSpans (boolean leftTokenContext,
-					    boolean rightTokenContext) {
+    private boolean _processHighlightSpans () {
 
 	if (DEBUG)
 	    log.trace("--- Process Highlight spans");
 
-	int startOffsetChar,
-	    endOffsetChar,
-	    startPosChar,
-	    endPosChar;
-
 	// Local document ID
 	int ldid = this.localDocID;
+
+	int startPosChar = -1, endPosChar = -1;
 
 	// No positionsToOffset object found
 	if (this.positionsToOffset == null)
@@ -1154,8 +1302,8 @@ public class KorapMatch extends KorapDocument {
 	// Check potential differing start characters
 	// e.g. from element spans
 	if (potentialStartPosChar != -1 &&
-	    (startPosChar > potentialStartPosChar))
-	    startPosChar = potentialStartPosChar;
+	    (startPosChar > this.potentialStartPosChar))
+	    startPosChar = this.potentialStartPosChar;
 
 	endPosChar = this.positionsToOffset.end(ldid, this.endPos - 1);
 
@@ -1174,98 +1322,17 @@ public class KorapMatch extends KorapDocument {
 		      startPosChar,
 		      endPosChar);
 
-	// left context
-	if (leftTokenContext) {
-	    if (DEBUG)
-		log.trace("PTO will retrieve {} (Left context)",
-			  this.startPos - this.leftContextOffset);
-
-	    startOffsetChar = this.positionsToOffset.start(
-	      ldid,
-	      this.startPos - this.leftContextOffset
-	    );
-	}
-	else {
-	    startOffsetChar = startPosChar - this.leftContextOffset;
-	};
-
-	// right context
-	if (rightTokenContext) {
-	    if (DEBUG)
-		log.trace("PTO will retrieve {} (Right context)",
-			  this.endPos + this.rightContextOffset - 1);
-
-	    endOffsetChar = this.positionsToOffset.end(
-	        ldid,
-		this.endPos + this.rightContextOffset - 1
-	    );
-	}
-	else {
-	    if (endPosChar == -1) {
-		endOffsetChar = -1;
-	    }
-	    else {
-		endOffsetChar = endPosChar + this.rightContextOffset;
-	    };
-	};
-
-	// This can happen in case of non-token characters
-	// in the match and null offsets
-	if (startOffsetChar > startPosChar) {
-	    startOffsetChar = startPosChar;
-	}
-	else if (startOffsetChar < 0) {
-	    startOffsetChar = 0;
-	};
-
-	// No ... at the beginning
-	if (startOffsetChar == 0) {
-	    startMore = false;
-	};
-
-	if (endOffsetChar != -1 && endOffsetChar < endPosChar)
-	    endOffsetChar = endPosChar;
-
-	if (DEBUG)
-	    log.trace("The context spans from chars {}-{}",
-		      startOffsetChar, endOffsetChar);
-
-	if (endOffsetChar > -1 &&
-	    (endOffsetChar < this.getPrimaryDataLength())) {
-	    this.tempSnippet = this.getPrimaryData(
-	        startOffsetChar,
-		endOffsetChar
-	    );
-	}
-	else {
-	    this.tempSnippet = this.getPrimaryData(startOffsetChar);
-	    // endPosChar = this.tempSnippet.length() - 1 + startOffsetChar;
-	    endMore = false;
-	};
-
-	if (DEBUG)
-	    log.trace("Snippet: '" + this.tempSnippet + "'");
+	this.identifier = null;
 
 	// No spans yet
 	if (this.span == null)
 	    this.span = new LinkedList<int[]>();
 
-	this.identifier = null;
+	// Process offset char findings
+	int[] intArray = this._processOffsetChars(ldid, startPosChar, endPosChar);
 
-	// TODO: Simplify
-	int[] intArray = new int[]{
-	    startPosChar - startOffsetChar,
-	    endPosChar - startOffsetChar,
-	    -1,
-	    0};
-
-	if (DEBUG)
-	    log.trace("The match entry is {}-{} ({}-{}) with startOffsetChar {}",
-		      startPosChar - startOffsetChar,
-		      endPosChar - startOffsetChar,
-		      startPosChar,
-		      endPosChar,
-		      startOffsetChar);
+	// Recalculate startOffsetChar
+	int startOffsetChar = startPosChar - intArray[0];
 
 	// Add match span
 	this.span.add(intArray);
@@ -1313,6 +1380,135 @@ public class KorapMatch extends KorapDocument {
     };
 
 
+    // Pass the local docid to retrieve character positions for the offset
+    private int[] _processOffsetChars (int ldid, int startPosChar, int endPosChar) {
+
+	int startOffsetChar = -1, endOffsetChar = -1;
+	int startOffset = -1, endOffset = -1;
+
+	// The offset is defined by a span
+	if (this.getContext().isSpanDefined()) {
+
+	    if (DEBUG)
+		log.trace("Try to expand to <{}>",
+			  this.context.getSpanContext());
+
+	    this.startMore = false;
+	    this.endMore = false;
+
+	    int [] spanContext = this.expandContextToSpan(
+	        this.positionsToOffset.getAtomicReader(),
+	        (Bits) null,
+	        "tokens",
+	        this.context.getSpanContext()
+	    );
+	    startOffset = spanContext[0];
+	    endOffset = spanContext[1];
+	    startOffsetChar = spanContext[2];
+	    endOffsetChar = spanContext[3];
+	    if (DEBUG)
+		log.trace("Got context is based from span {}-{}/{}-{}",
+			  startOffset, endOffset, startOffsetChar, endOffsetChar);
+	};
+
+	// The offset is defined by tokens or characters
+	if (endOffset == -1) {
+
+	    PositionsToOffset pto = this.positionsToOffset;
+	    
+	    // The left offset is defined by tokens
+	    if (this.context.left.isToken()) {
+		startOffset = this.startPos - this.context.left.getLength();
+		if (DEBUG)
+		    log.trace("PTO will retrieve {} (Left context)", startOffset);
+		pto.add(ldid, startOffset);
+	    }
+
+	    // The left offset is defined by characters
+	    else {
+		startOffsetChar = startPosChar - this.context.left.getLength();
+	    };
+
+	    // The right context is defined by tokens
+	    if (this.context.right.isToken()) {
+		endOffset = this.endPos + this.context.right.getLength() -1;
+		if (DEBUG)
+		    log.trace("PTO will retrieve {} (Right context)", endOffset);
+		pto.add(ldid, endOffset);
+
+	    }
+
+	    // The right context is defined by characters
+	    else {
+		endOffsetChar = (endPosChar == -1) ? -1 :
+		    endPosChar + this.context.right.getLength();
+	    };
+
+	    if (startOffset != -1)
+		startOffsetChar = pto.start(ldid, startOffset);
+
+	    if (endOffset != -1)
+		endOffsetChar = pto.end(ldid, endOffset);
+	};
+
+	if (DEBUG)
+	    log.trace("Premature found offsets at {}-{}",
+		      startOffsetChar,
+		      endOffsetChar);
+	
+
+	// This can happen in case of non-token characters
+	// in the match and null offsets
+	if (startOffsetChar > startPosChar)
+	    startOffsetChar = startPosChar;
+	else if (startOffsetChar < 0)
+	    startOffsetChar = 0;
+
+	// No "..." at the beginning
+	if (startOffsetChar == 0)
+	    this.startMore = false;
+
+	if (endOffsetChar != -1 && endOffsetChar < endPosChar)
+	    endOffsetChar = endPosChar;
+
+	if (DEBUG)
+	    log.trace("The context spans from chars {}-{}",
+		      startOffsetChar, endOffsetChar);
+
+	// Get snippet information from the primary data
+	if (endOffsetChar > -1 &&
+	    (endOffsetChar < this.getPrimaryDataLength())) {
+	    this.tempSnippet = this.getPrimaryData(
+		startOffsetChar,
+		endOffsetChar
+	    );
+	}
+	else {
+	    this.tempSnippet = this.getPrimaryData(startOffsetChar);
+	    this.endMore = false;
+	};
+
+	if (DEBUG)
+	    log.trace("Snippet: '" + this.tempSnippet + "'");
+
+	if (DEBUG)
+	    log.trace("The match entry is {}-{} ({}-{}) with absolute offsetChars {}-{}",
+		      startPosChar - startOffsetChar,
+		      endPosChar - startOffsetChar,
+		      startPosChar,
+		      endPosChar,
+		      startOffsetChar,
+		      endOffsetChar);
+
+	// TODO: Simplify
+	return new int[]{
+	    startPosChar - startOffsetChar,
+	    endPosChar - startOffsetChar,
+	    -1,
+	    0};
+    };
+    
+
     // Identical to KorapResult!
     public String toJSON () {
 	ObjectNode json =  (ObjectNode) mapper.valueToTree(this);
@@ -1321,18 +1517,7 @@ public class KorapMatch extends KorapDocument {
 	if (json.size() == 0)
 	    return "{}";
 
-	ArrayNode leftContext = mapper.createArrayNode();
-	leftContext.add(this.leftTokenContext ? "token" : "char");
-	leftContext.add(this.leftContextOffset);
-
-	ArrayNode rightContext = mapper.createArrayNode();
-	rightContext.add(this.rightTokenContext ? "token" : "char");
-	rightContext.add(this.rightContextOffset);
-
-	ObjectNode context = mapper.createObjectNode();
-	context.put("left", leftContext);
-	context.put("right", rightContext);
-	json.put("context", context);
+	json.put("context", this.getContext().toJSON());
 
 	if (this.version != null)
 	    json.put("version", this.getVersion());

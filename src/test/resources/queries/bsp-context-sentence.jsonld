@@ -23,7 +23,6 @@
     "meta":{
 	"startPage":1,
 	"count":25,
-	"context":{"left":["char",210],"right":["char",210]},
-	"cutOff":true
+	"context":"sentence"
     }
 }

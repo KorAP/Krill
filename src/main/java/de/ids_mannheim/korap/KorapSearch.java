@@ -8,6 +8,7 @@ import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.index.SearchContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,67 +37,12 @@ public class KorapSearch {
 
     private JsonNode request;
 
-    public KorapSearchContext leftContext, rightContext;
+    public SearchContext context;
+    private String spanContext;
 
     {
-	leftContext  = new KorapSearchContext();
-	rightContext = new KorapSearchContext();
+	context  = new SearchContext();
     };
-
-    public class KorapSearchContext {
-	private boolean type = true;
-	private short length = 6, maxLength = 300;
-
-	public boolean isToken () {
-	    return this.type;
-	};
-
-	public boolean isCharacter () {
-	    return !(this.type);
-	};
-
-	public KorapSearchContext setToken (boolean value) {
-	    this.type = value;
-	    return this;
-	};
-
-	public KorapSearchContext setCharacter (boolean value) {
-	    this.type = !(value);
-	    return this;
-	};
-
-	public short getLength() {
-	    return this.length;
-	};
-
-	public KorapSearchContext setLength (short value) {
-	    if (value >= 0) {
-		if (value <= maxLength) {
-		    this.length = value;
-		}
-		else {
-		    this.length = this.maxLength;
-		};
-	    };
-	    return this;
-	};
-
-	public KorapSearchContext setLength (int value) {
-	    return this.setLength((short) value);
-	};
-
-	public void fromJSON (JsonNode json) {
-	    String type = json.get(0).asText();
-	    if (type.equals("token")) {
-		this.setToken(true);
-	    }
-	    else if (type.equals("char")) {
-		this.setCharacter(true);
-	    };
-	    this.setLength(json.get(1).asInt());
-	};
-    };
-
 
     public KorapSearch (String jsonString) {
 	ObjectMapper mapper = new ObjectMapper();
@@ -141,14 +87,8 @@ public class KorapSearch {
 			this.setCutOff(meta.get("cutOff").asBoolean());
 
 		    // Defined contexts
-		    if (meta.has("context")) {
-			JsonNode context = meta.get("context");
-			if (context.has("left"))
-			    this.leftContext.fromJSON(context.get("left"));
-
-			if (context.has("right"))
-			    this.rightContext.fromJSON(context.get("right"));
-		    };
+		    if (meta.has("context"))
+			this.context.fromJSON(meta.get("context"));
 		};
 	    };
 	}
@@ -191,6 +131,16 @@ public class KorapSearch {
 
     public KorapSearch setQuery (SpanQuery sq) {
 	this.query = sq;
+	return this;
+    };
+
+    public SearchContext getContext () {
+	return this.context;
+    };
+
+
+    public KorapSearch setContext (SearchContext context) {
+	this.context = context;
 	return this;
     };
 

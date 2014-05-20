@@ -1,3 +1,9 @@
+0.31.0 2014-05-20
+        - [feature] span contexts in JSON-LD are now supported
+        - [bugfix] Multiple bugfixes regarding span context
+          extensions (diewald)
+        - [bugfix] Minor debugging bugs (diewald)
+
 0.30.9 2014-04-11
         - [bugfix] Prevent multiple identifiers in
 	  relation highlighting (diewald)

@@ -30,6 +30,10 @@ public class NextSpans extends SimpleSpans {
 	private boolean hasMoreFirstSpan;
 	
 	private Logger log = LoggerFactory.getLogger(NextSpans.class);
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
 	
     public NextSpans (SpanNextQuery spanNextQuery,
 		      AtomicReaderContext context,
@@ -59,12 +63,13 @@ public class NextSpans extends SimpleSpans {
 			    matchEndPosition = matchList.get(0).getEnd();
 			    if (collectPayloads)
 			    	matchPayload.addAll( matchList.get(0).getPayloads() );
-			    
-			    log.trace("Match doc#: {}",matchDocNumber);
-				log.trace("Match positions: {}-{}", matchStartPosition, 
-						matchEndPosition);
-				matchList.remove(0);
-				return true;
+			    if (DEBUG) {
+				log.trace("Match doc#: {}",matchDocNumber);
+				log.trace("Match positions: {}-{}", matchStartPosition,
+					  matchEndPosition);
+			    };
+			    matchList.remove(0);
+			    return true;
 			}
 			// Forward firstspan
 			hasMoreFirstSpan = firstSpans.next();

@@ -117,6 +117,7 @@ public class TestMatchIdentifier {
 	assertEquals("SnippetBrackets (0)",
 		     "... [{2:b{a}}] ...",
 		     km.getSnippetBrackets());
+
 	assertEquals("ID (0)", "match-c1!d1-p7-9(0)8-8(2)7-8", km.getID());
 
 	km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8",
@@ -498,9 +499,12 @@ public class TestMatchIdentifier {
     public void indexExample7SentenceExpansion () throws IOException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc());
+	ki.addDoc(createSimpleFieldDoc2());
+	ki.addDoc(createSimpleFieldDoc3());
 	ki.commit();
+	KorapMatch km;
 
-	KorapMatch km = ki.getMatchInfo("match-c1!d1-p3-4",
+	km = ki.getMatchInfo("match-c1!d1-p3-4",
 			     "tokens",
 			     null,
 			     null,
@@ -510,16 +514,29 @@ public class TestMatchIdentifier {
 	assertEquals("... [{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}] ...",
 		     km.getSnippetBrackets());
 
+
 	km = ki.getMatchInfo("match-c1!d1-p3-4",
 			     "tokens",
 			     null,
 			     null,
 			     false,
 			     false,
-			     true);
+			     true); // extendToSentence
 
-	assertEquals("... [{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:c}}}}{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}{f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:b}}}}] ...",
+	assertEquals("[{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:c}}}}{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}{f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:b}}}}]",
 		     km.getSnippetBrackets());
+
+	km = ki.getMatchInfo("match-c1!d3-p3-4",
+			     "tokens",
+			     null,
+			     null,
+			     false,
+			     false,
+			     true); // extendToSentence
+
+	assertEquals("[{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:cc}}}} {f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:aa}}}} {f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:bb}}}}]",
+		     km.getSnippetBrackets());
+
     };
 
     @Test
@@ -617,6 +634,25 @@ public class TestMatchIdentifier {
 		 "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag#7-10$<i>10|_7#7-8]" +
 		 "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8#8-9]" +
 		 "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9#9-10]");
+	return fd;
+    };
+
+    private FieldDocument createSimpleFieldDoc3(){
+	FieldDocument fd = new FieldDocument();
+	fd.addString("corpusID", "c1");
+	fd.addString("ID", "d3");
+	fd.addTV("tokens",
+		 "aa bb cc aa bb cc aa bb aa cc ",
+		 "[(0-2)s:aa|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<i>4|_0#0-2|-:t$<i>10]" +
+		 "[(3-5)s:bb|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1#3-5]" +
+		 "[(6-8)s:cc|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2#6-8|<>:s#6-14$<i>5]" +
+		 "[(9-11)s:aa|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<i>1|_3#9-11]" +
+		 "[(12-14)s:bb|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4#12-14]" +
+		 "[(15-17)s:cc|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5#15-17]" +
+		 "[(18-20)s:aa|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6#18-20]" +
+		 "[(21-23)s:bb|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag#7-10$<i>10|_7#21-23]" +
+		 "[(24-26)s:aa|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8#24-26]" +
+		 "[(27-29)s:cc|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9#27-29]");
 	return fd;
     };
 };

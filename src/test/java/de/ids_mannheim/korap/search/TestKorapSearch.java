@@ -8,6 +8,7 @@ import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
+import de.ids_mannheim.korap.index.SearchContext;
 import de.ids_mannheim.korap.KorapFilter;
 import de.ids_mannheim.korap.KorapResult;
 import java.nio.file.Files;
@@ -88,8 +89,8 @@ public class TestKorapSearch {
         );
 	ks.setCount(3);
 	ks.setStartIndex(5);
-	ks.leftContext.setLength(1);
-	ks.rightContext.setLength(1);
+	ks.context.left.setLength(1);
+	ks.context.right.setLength(1);
 	KorapResult kr = ks.run(ki);
 	assertEquals(6, kr.totalResults());
 	assertEquals(kr.getMatch(0).getSnippetBrackets(), "... dem [Buchstaben] A ...");
@@ -348,6 +349,47 @@ public class TestKorapSearch {
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(10, kr.getItemsPerPage());
     };
+
+
+    @Test
+    public void searchJSONSentenceContext () throws IOException {
+
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	String json = getString(getClass().getResource("/queries/bsp-context-2.jsonld").getFile());
+	
+	KorapSearch ks = new KorapSearch(json);
+	ks.setCutOff(false);
+	SearchContext sc = ks.getContext();
+	sc.left.setLength((short) 10);
+	sc.right.setLength((short) 10);
+
+	KorapResult kr = ks.run(ki);
+	assertEquals(kr.getMatch(1).getSnippetBrackets(), "... dezimalen [Wert] 65 sowohl ...");
+	assertEquals(3, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(25, kr.getItemsPerPage());
+
+	json = getString(getClass().getResource("/queries/bsp-context-sentence.jsonld").getFile());
+
+	kr = new KorapSearch(json).run(ki);
+	assertEquals(kr.getMatch(0).getSnippetBrackets(),
+		     "steht a für den dezimalen [Wert] 97 sowohl im ASCII- als auch im Unicode-Zeichensatz");
+	assertEquals(kr.getMatch(1).getSnippetBrackets(),
+		     "steht A für den dezimalen [Wert] 65 sowohl im ASCII- als auch im Unicode-Zeichensatz");
+	assertEquals(kr.getMatch(2).getSnippetBrackets(),
+		     "In einem Zahlensystem mit einer Basis größer als 10 steht A oder a häufig für den dezimalen [Wert] 10, siehe auch Hexadezimalsystem.");
+
+    };
+
 
     @Test
     public void getFoundryDistribution () throws Exception {

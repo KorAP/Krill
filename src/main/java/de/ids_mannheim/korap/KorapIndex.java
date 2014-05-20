@@ -73,6 +73,7 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.TermInfo;
 import de.ids_mannheim.korap.index.SpanInfo;
+import de.ids_mannheim.korap.index.SearchContext;
 import de.ids_mannheim.korap.index.MatchIdentifier;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 
@@ -138,7 +139,7 @@ public class KorapIndex {
     private final static Logger log = LoggerFactory.getLogger(KorapIndex.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     {
 	Properties prop = new Properties();
@@ -502,7 +503,16 @@ public class KorapIndex {
 
 
     public KorapMatch getMatch (String id) {
-	return this.getMatchInfo(id, "tokens", false, null, null, false, true, false);
+	return this.getMatchInfo(
+            id,       // MatchID
+	    "tokens", // field
+	    false,    // info
+	    null,     // foundry
+	    null,     // layer
+	    false,    // includeSpans
+	    true,     // includeHighlights
+	    false     // extendToSentence
+	);
     };
 
     public KorapMatch getMatchInfo (String id,
@@ -523,6 +533,7 @@ public class KorapIndex {
 				    boolean extendToSentence) {
 	return this.getMatchInfo(id, field, true, foundry, layer, includeSpans, includeHighlights, extendToSentence);
     };
+
 
     /**
      * Get a match.
@@ -630,57 +641,44 @@ public class KorapIndex {
 		match.setPositionsToOffset(pto);
 		match.setLocalDocID(localDocID);
 		match.populateDocument(doc, field, fieldsToLoadLocal);
-
 		if (DEBUG)
 		    log.trace("The document has the id '{}'", match.getDocID());
 
-		if (!info) break;
+		SearchContext context = match.getContext();
 
 		// Search for minimal surrounding sentences
 		if (extendToSentence) {
-
-		    SpanElementQuery squery = new SpanElementQuery(field, "s");
-		    Spans sentence = squery.getSpans(atomic,
-						     (Bits) bitset,
-						     new HashMap<Term, TermContext>());
+		    /*
+		    int[] newPos = match.expandContextToSpan(
+		      atomic,
+		      bitset,
+		      field,
+		      "s"
+		    );
+		    if (newPos[0] > 0)
+			match.setStartPos(newPos[0]);
+		    if (newPos[1] > 0)
+			match.setEndPos(newPos[1]);
 
 		    if (DEBUG)
-			log.trace("Now search for {}", sentence.toString());
-
-		    int newStart = -1, newEnd = -1;
-
-		    while (true) {
-
-			// Game over
-			if (sentence.next() != true)
-			    break;
-
-			// There's an s found, that starts before the match
-			if (sentence.start() <= match.getStartPos()) {
-			    newStart = sentence.start() > newStart ? sentence.start() : newStart;
-
-			}
-			else if (newStart == -1)
-			    break;
-
-			// There's an s found, that ends after the match
-			if (sentence.end() >= match.getEndPos()) {
-			    newEnd = sentence.end();
-			    break;
-			};
-		    };
-
-		    // We have a new match surrounding
-		    if (newStart > -1 && newEnd > -1) {
-			if (DEBUG)
-			    log.trace("New match spans from {}-{}",
-				      newStart,
-				      newEnd);
-			match.setStartPos(newStart);
-			match.setEndPos(newEnd);
-		    };
+			log.trace("Expand context to {}-{}", newPos[0], newPos[1]);
+		    */
+		    int [] spanContext = match.expandContextToSpan("s");
+		    match.setStartPos(spanContext[0]);
+		    match.setEndPos(spanContext[1]);
+		    match.startMore = false;
+		    match.endMore = false;
+		}
+		else {
+		    if (DEBUG)
+			log.trace("Don't expand context");
 		};
+		
+		context.left.setToken(true).setLength(0);
+		context.right.setToken(true).setLength(0);
 
+		if (!info)
+		    break;
 
 		// Limit the terms to all the terms of interest
 		TermsEnum termsEnum = docTerms.intersect(fst, null);
@@ -901,6 +899,8 @@ public class KorapIndex {
         );
     };
 
+    // THis should probably be deprecated
+    @Deprecated
     public KorapResult search (SpanQuery query,
 			       int startIndex,
 			       short count,
@@ -908,16 +908,11 @@ public class KorapIndex {
 			       short leftContext,
 			       boolean rightTokenContext,
 			       short rightContext) {
-	return this.search(
-	    new KorapCollection(this),
-	    query,
-	    startIndex,
-	    count,
-	    leftTokenContext,
-	    leftContext,
-	    rightTokenContext,
-	    rightContext
-        );
+
+	KorapSearch ks = new KorapSearch(query);
+	ks.setStartIndex(startIndex).setCount(count);
+	ks.setContext(new SearchContext(leftTokenContext, leftContext, rightTokenContext, rightContext));	
+	return this.search(new KorapCollection(this), ks);
     };
 
     public KorapResult search (KorapSearch ks) {
@@ -925,6 +920,7 @@ public class KorapIndex {
 	return this.search(new KorapCollection(this), ks);
     };
 
+    @Deprecated
     public KorapResult search (KorapCollection collection,
 			       SpanQuery query,
 			       int startIndex,
@@ -934,9 +930,7 @@ public class KorapIndex {
 			       boolean rightTokenContext,
 			       short rightContext) {
 	KorapSearch ks = new KorapSearch(query);
-	ks.setStartIndex(startIndex).setCount(count);
-	ks.leftContext.setToken(leftTokenContext).setLength(leftContext);
-	ks.rightContext.setToken(rightTokenContext).setLength(rightContext);
+	ks.setContext(new SearchContext(leftTokenContext, leftContext, rightTokenContext, rightContext));	
 	return this.search(collection, ks);
     };
 
@@ -957,10 +951,7 @@ public class KorapIndex {
 	    query.toString(),
 	    ks.getStartIndex(),
 	    ks.getCount(),
-	    ks.leftContext.isToken(),
-	    ks.leftContext.getLength(),
-	    ks.rightContext.isToken(),
-	    ks.rightContext.getLength()
+	    ks.getContext()
 	);
 
 	if (this.getVersion() != null)

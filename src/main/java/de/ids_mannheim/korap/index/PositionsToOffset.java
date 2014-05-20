@@ -20,16 +20,17 @@ public class PositionsToOffset {
     private AtomicReaderContext atomic;
     private boolean processed = false;
     private Integer[] pair;
-    private static ByteBuffer bbOffset = ByteBuffer.allocate(8);
+    private static ByteBuffer bbOffset =
+	ByteBuffer.allocate(8);
 
     HashSet<PositionsToOffsetArray> positions;
     HashMap<PositionsToOffsetArray, Integer[]> offsets;
 
-    private final static Logger log = LoggerFactory.getLogger(PositionsToOffset.class);
+    private final static Logger log =
+	LoggerFactory.getLogger(PositionsToOffset.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-
 
     private class PositionsToOffsetArray {
 	public int docID;
@@ -244,5 +245,9 @@ public class PositionsToOffset {
 	processed = true;
 	positions.clear();
 	return offsets;
+    };
+
+    public AtomicReaderContext getAtomicReader () {
+	return this.atomic;
     };
 };

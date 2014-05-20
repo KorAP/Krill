@@ -209,8 +209,8 @@ public class TestFieldDocument {
 	ks.setCount(1);
 	ks.setCutOff(true);
 
-	ks.leftContext.setToken(true).setLength(6);
-	ks.leftContext.setCharacter(true).setLength(6);
+	ks.context.left.setCharacter(true).setLength(6);
+	ks.context.right.setToken(true).setLength(6);
 
 	assertEquals("... e des [{1:lateinischen Alphabets}] und ein Vokal. Der Buchstabe A ...", ks.run(ki).getMatch(0).getSnippetBrackets());
 

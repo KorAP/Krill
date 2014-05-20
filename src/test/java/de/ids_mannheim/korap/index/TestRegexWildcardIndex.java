@@ -53,8 +53,8 @@ public class TestRegexWildcardIndex {
 	assertEquals("SpanMultiTermQueryWrapper(base:/s:af*e/)", sq.toString());
 			
 	KorapSearch ks = new KorapSearch(sq);
-	ks.leftContext.setToken(true).setLength(1);
-	ks.rightContext.setToken(true).setLength(1);
+	ks.context.left.setToken(true).setLength(1);
+	ks.context.right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
 	assertEquals(2, kr.getTotalResults());
@@ -110,8 +110,8 @@ public class TestRegexWildcardIndex {
 	assertEquals("SpanMultiTermQueryWrapper(base:s:af*e)", sq.toString());
 
 	KorapSearch ks = new KorapSearch(sq);
-	ks.leftContext.setToken(true).setLength(1);
-	ks.rightContext.setToken(true).setLength(1);
+	ks.context.left.setToken(true).setLength(1);
+	ks.context.right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
 	assertEquals(2, kr.getTotalResults());
@@ -169,8 +169,8 @@ public class TestRegexWildcardIndex {
 	assertEquals("SpanMultiTermQueryWrapper(base:/i:af*e/)", sq.toString());
 
 	KorapSearch ks = new KorapSearch(sq);
-	ks.leftContext.setToken(true).setLength(1);
-	ks.rightContext.setToken(true).setLength(1);
+	ks.context.left.setToken(true).setLength(1);
+	ks.context.right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
 	assertEquals(2, kr.getTotalResults());
@@ -234,8 +234,8 @@ public class TestRegexWildcardIndex {
 	assertEquals("spanNext(base:s:affe, SpanMultiTermQueryWrapper(base:/s:af*e/))", sq.toString());
 
 	KorapSearch ks = new KorapSearch(sq);
-	ks.leftContext.setToken(true).setLength(1);
-	ks.rightContext.setToken(true).setLength(1);
+	ks.context.left.setToken(true).setLength(1);
+	ks.context.right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
 	assertEquals(1, kr.getTotalResults());

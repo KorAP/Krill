@@ -3,6 +3,7 @@ package de.ids_mannheim.korap;
 import java.util.*;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.index.PositionsToOffset;
+import de.ids_mannheim.korap.index.SearchContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +29,9 @@ public class KorapResult {
     private int totalResults = 0;
     private int startIndex = 0;
 
+    private SearchContext context;
+
     private short itemsPerPage = ITEMS_PER_PAGE;
-    private short leftContextOffset = 6,
-	          rightContextOffset = 6;
-    private boolean leftTokenContext,
-	            rightTokenContext;
 
     private String benchmarkSearchResults,
 	           benchmarkHitCounter;
@@ -46,16 +45,13 @@ public class KorapResult {
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     // Empty result
-    public KorapResult () {
-    };
+    public KorapResult () {};
+
 
     public KorapResult (String query,
 			int startIndex,
 			short itemsPerPage,
-			boolean leftTokenContext,
-			short leftContextOffset,
-			boolean rightTokenContext,
-			short rightContextOffset) {
+			SearchContext context) {
 
 	mapper.enable(SerializationFeature.INDENT_OUTPUT);
 	// mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
@@ -65,11 +61,7 @@ public class KorapResult {
 	this.query = query;
 	this.startIndex = startIndex;
 	this.itemsPerPage = (itemsPerPage > 50 || itemsPerPage < 1) ? ITEMS_PER_PAGE : itemsPerPage;
-	this.leftContextOffset = leftContextOffset;
-	this.rightContextOffset = rightContextOffset;
-
-	this.leftTokenContext = leftTokenContext;
-	this.rightTokenContext = rightTokenContext;
+	this.context = context;
     };
 
     public void add (KorapMatch km) {
@@ -81,22 +73,23 @@ public class KorapResult {
 
 	// Temporary - should use the same interface like results
 	// in the future:
-	km.leftContextOffset  = this.leftContextOffset;
-	km.leftTokenContext   = this.leftTokenContext;
-	km.rightContextOffset = this.rightContextOffset;
-	km.rightTokenContext  = this.rightTokenContext;
+	km.setContext(this.context);
 
 	// Add pos for context
 	// That's not really a good position for it,
 	// to be honest ...
 	// But maybe it will make the offset
 	// information in the match be obsolete!
+
+	// TODO:
+	/*
 	if (km.leftTokenContext) {
 	    pto.add(localDocID, startPos - this.leftContextOffset);
 	};
 	if (km.rightTokenContext) {
 	    pto.add(localDocID, endPos + this.rightContextOffset - 1);
 	};
+	*/
 
 	this.add(km);
 	return km;
@@ -194,22 +187,22 @@ public class KorapResult {
 	return startIndex;
     };
 
+
+    public KorapResult setContext (SearchContext context) {
+	this.context = context;
+	return this;
+    };
+
+    @JsonIgnore
+    public SearchContext getContext () {
+	return this.context;
+    };
+
     // Identical to KorapMatch!
     public String toJSON () {
 	ObjectNode json =  (ObjectNode) mapper.valueToTree(this);
 
-	ArrayNode leftContext = mapper.createArrayNode();
-	leftContext.add(this.leftTokenContext ? "token" : "char");
-	leftContext.add(this.leftContextOffset);
-
-	ArrayNode rightContext = mapper.createArrayNode();
-	rightContext.add(this.rightTokenContext ? "token" : "char");
-	rightContext.add(this.rightContextOffset);
-
-	ObjectNode context = mapper.createObjectNode();
-	context.put("left", leftContext);
-	context.put("right", rightContext);
-	json.put("context", context);
+	json.put("context", this.getContext().toJSON());
 
 	if (this.version != null)
 	    json.put("version", this.version);
