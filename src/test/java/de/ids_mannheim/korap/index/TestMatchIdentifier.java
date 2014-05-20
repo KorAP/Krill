@@ -501,6 +501,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc());
 	ki.addDoc(createSimpleFieldDoc2());
 	ki.addDoc(createSimpleFieldDoc3());
+	ki.addDoc(createSimpleFieldDoc4());
 	ki.commit();
 	KorapMatch km;
 
@@ -535,6 +536,17 @@ public class TestMatchIdentifier {
 			     true); // extendToSentence
 
 	assertEquals("[{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:cc}}}} {f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:aa}}}} {f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:bb}}}}]",
+		     km.getSnippetBrackets());
+
+
+	km = ki.getMatchInfo("match-c1!d4-p4-6",
+			     "tokens",
+			     null,
+			     null,
+			     false,
+			     false,
+			     true); // extendToSentence
+	assertEquals("[{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:c}}}}{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}{f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:b}}}}{f/m:sechs:{f/y:six:{it/is:6:{x/o:sechstens:c}}}}{f/m:sieben:{f/y:seven:{it/is:7:{x/o:siebtens:a}}}}]",
 		     km.getSnippetBrackets());
 
     };
@@ -655,4 +667,24 @@ public class TestMatchIdentifier {
 		 "[(27-29)s:cc|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9#27-29]");
 	return fd;
     };
+
+    private FieldDocument createSimpleFieldDoc4(){
+	FieldDocument fd = new FieldDocument();
+	fd.addString("corpusID", "c1");
+	fd.addString("ID", "d4");
+	fd.addTV("tokens",
+		 "abcabcabac",
+		 "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<i>4|_0#0-1|-:t$<i>10]" +
+		 "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1#1-2]" +
+		 "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2#2-3|<>:s#2-5$<i>5]" +
+		 "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<i>1|_3#3-4]" +
+		 "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4#4-5]" +
+		 "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5#5-6|<>:s#5-7$<i>7]" +
+		 "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6#6-7]" +
+		 "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag#7-10$<i>10|_7#7-8]" +
+		 "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8#8-9]" +
+		 "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9#9-10]");
+	return fd;
+    };
+
 };

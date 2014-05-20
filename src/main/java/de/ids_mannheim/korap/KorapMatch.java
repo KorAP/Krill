@@ -51,7 +51,7 @@ public class KorapMatch extends KorapDocument {
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
@@ -553,7 +553,7 @@ public class KorapMatch extends KorapDocument {
     };
 
     // Expand the context to a span
-    // TODO: THIS IS PLAIN DUMB MAKE IT MOAR CLEVER! MOAR!!!
+    // THIS IS NOT VERY CLEVER - MAKE IT MORE CLEVER!
     public int[] expandContextToSpan (AtomicReaderContext atomic,
 				      Bits bitset,
 				      String field,
@@ -602,6 +602,9 @@ public class KorapMatch extends KorapDocument {
 		    // Set as newStart
 		    newStart = contextSpans.start() > newStart ?
 			contextSpans.start() : newStart;
+
+		    if (DEBUG)
+			log.trace("NewStart is at {}", newStart);
 
 		    // Get character offset (start)
 		    if (contextSpans.isPayloadAvailable()) {
