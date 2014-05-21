@@ -132,7 +132,11 @@ public class SearchContext {
 	};
     };
 
-    public ObjectNode toJSON () {
+    public JsonNode toJSON () {
+	if (this.isSpanDefined()) {
+	    return new TextNode(this.spanContext);
+	};
+	
 	ArrayNode leftContext = mapper.createArrayNode();
 	leftContext.add(this.left.isToken() ? "token" : "char");
 	leftContext.add(this.left.getLength());

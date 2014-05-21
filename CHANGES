@@ -1,3 +1,7 @@
+0.31.1 2014-05-21
+        - [bugfix] Minor bugfix for wrongly serialized contexts
+	  in responses (diewald)
+
 0.31.0 2014-05-20
         - [feature] span contexts in JSON-LD are now supported
         - [bugfix] Multiple bugfixes regarding span context

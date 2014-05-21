@@ -377,6 +377,7 @@ public class TestKorapSearch {
 	assertEquals(3, kr.getTotalResults());
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(25, kr.getItemsPerPage());
+	assertFalse(kr.getContext().toJSON().toString().equals("\"s\""));
 
 	json = getString(getClass().getResource("/queries/bsp-context-sentence.jsonld").getFile());
 
@@ -388,6 +389,7 @@ public class TestKorapSearch {
 	assertEquals(kr.getMatch(2).getSnippetBrackets(),
 		     "In einem Zahlensystem mit einer Basis größer als 10 steht A oder a häufig für den dezimalen [Wert] 10, siehe auch Hexadezimalsystem.");
 
+	assertEquals(kr.getContext().toJSON().toString(), "\"s\"");
     };
 
 
