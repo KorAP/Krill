@@ -967,6 +967,8 @@ public class KorapIndex {
 	int hits = kr.itemsPerPage() + startIndex;
 	int limit = ks.getLimit();
 	boolean cutoff = ks.doCutOff();
+	short itemsPerResource = ks.getItemsPerResource();
+
 
 	if (limit > 0) {
 	    if (hits > limit)
@@ -978,6 +980,8 @@ public class KorapIndex {
 
 	ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.itemsPerPage());
 
+	int itemsPerResourceCounter = 0;
+
 	try {
 
 	    // Rewrite query (for regex and wildcard queries)
@@ -988,6 +992,8 @@ public class KorapIndex {
 	    };
 
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+
+		int oldLocalDocID = -1;
 
 		// Use OpenBitSet;
 		Bits bitset = collection.bits(atomic);
@@ -1012,12 +1018,36 @@ public class KorapIndex {
 		    // There are no more spans to find
 		    if (spans.next() != true)
 			break;
-		   
+
+		    int localDocID = spans.doc();
+
+		    // Count hits per resource
+		    if (itemsPerResource > 0) {
+
+			// IDS are identical
+			if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
+			    if (itemsPerResourceCounter++ >= itemsPerResource) {
+				if (spans.skipTo(localDocID + 1) != true) {
+				    break;
+				}
+				else {
+				    itemsPerResourceCounter = 1;
+				    localDocID = spans.doc();
+				};
+			    };
+			}
+
+			// Reset counter
+			else
+			    itemsPerResourceCounter = 0;
+
+			oldLocalDocID = localDocID;
+		    };
+
 		    // The next matches are not yet part of the result
 		    if (startIndex > i)
 			continue;
 
-		    int localDocID = spans.doc();
 		    int docID = atomic.docBase + localDocID;
 
 		    // Document doc = lreader.document(docID, fieldsToLoadLocal);
@@ -1112,7 +1142,7 @@ public class KorapIndex {
 
 		    match.internalDocID = docID;
 		    match.populateDocument(doc, field, fieldsToLoadLocal);
-
+		    
 		    if (DEBUG)
 			log.trace("I've got a match in {} of {}",
 				  match.getDocID(), count);
@@ -1130,6 +1160,30 @@ public class KorapIndex {
 		while (!cutoff && spans.next()) {
 		    if (limit > 0 && i >= limit)
 			break;
+
+		    // Count hits per resource
+		    if (itemsPerResource > 0) {
+			int localDocID = spans.doc();
+			
+			// IDS are identical
+			if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
+			    if (itemsPerResourceCounter++ >= itemsPerResource)
+				if (spans.skipTo(localDocID + 1) != true) {
+				    break;
+				}
+				else {
+				    itemsPerResourceCounter = 1;
+				    localDocID = spans.doc();
+				};
+			}
+
+			// Reset counter
+			else
+			    itemsPerResourceCounter = 0;
+
+			oldLocalDocID = localDocID;
+		    };
+
 		    i++;
 		};
 		atomicMatches.clear();
@@ -1140,6 +1194,9 @@ public class KorapIndex {
 	    if (kr.getBenchmarkSearchResults() == null) {
 		kr.setBenchmarkSearchResults(t2, t1);
 	    };
+
+	    if (itemsPerResource > 0)
+		kr.setItemsPerResource(itemsPerResource);
 
 	    kr.setTotalResults(cutoff ? -1 : i);
 	}

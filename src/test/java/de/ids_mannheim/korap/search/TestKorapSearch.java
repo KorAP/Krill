@@ -285,8 +285,85 @@ public class TestKorapSearch {
 	KorapCollection kc = new KorapCollection(json);
 	kc.setIndex(ki);
 	assertEquals(7, kc.numberOf("documents"));
-	
     };
+
+    @Test
+    public void searchJSONitemsPerResource () throws IOException {
+
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	String json = getString(getClass().getResource("/queries/bsp-itemsPerResource.jsonld").getFile());
+
+	KorapSearch ks = new KorapSearch(json);
+	KorapResult kr = ks.run(ki);
+	assertEquals(10, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(20, kr.getItemsPerPage());
+
+	assertEquals("WPD_AAA.00001", kr.getMatch(0).getDocID());
+	assertEquals("WPD_AAA.00001", kr.getMatch(1).getDocID());
+	assertEquals("WPD_AAA.00001", kr.getMatch(6).getDocID());
+	assertEquals("WPD_AAA.00002", kr.getMatch(7).getDocID());
+	assertEquals("WPD_AAA.00002", kr.getMatch(8).getDocID());
+	assertEquals("WPD_AAA.00004", kr.getMatch(9).getDocID());
+
+	ks = new KorapSearch(json);
+	ks.setItemsPerResource(1);
+
+	kr = ks.run(ki);
+
+	assertEquals("WPD_AAA.00001", kr.getMatch(0).getDocID());
+	assertEquals("WPD_AAA.00002", kr.getMatch(1).getDocID());
+	assertEquals("WPD_AAA.00004", kr.getMatch(2).getDocID());
+
+	assertEquals(3, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(20, kr.getItemsPerPage());
+
+
+	ks = new KorapSearch(json);
+	ks.setItemsPerResource(2);
+
+	kr = ks.run(ki);
+
+	//	System.err.println(kr.toJSON());
+
+	assertEquals("WPD_AAA.00001", kr.getMatch(0).getDocID());
+	assertEquals("WPD_AAA.00001", kr.getMatch(1).getDocID());
+	assertEquals("WPD_AAA.00002", kr.getMatch(2).getDocID());
+	assertEquals("WPD_AAA.00002", kr.getMatch(3).getDocID());
+	assertEquals("WPD_AAA.00004", kr.getMatch(4).getDocID());
+
+	assertEquals(5, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(20, kr.getItemsPerPage());
+
+
+	ks = new KorapSearch(json);
+	ks.setItemsPerResource(1);
+	ks.setStartIndex(1);
+	ks.setCount(1);
+
+	kr = ks.run(ki);
+	
+	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
+
+	assertEquals(3, kr.getTotalResults());
+	assertEquals(1, kr.getStartIndex());
+	assertEquals(1, kr.getItemsPerPage());
+
+	assertEquals((short) 1, kr.getItemsPerResource());
+    };
+
+    
 
     @Test
     public void searchJSONCollection () throws IOException {

@@ -31,6 +31,7 @@ public class KorapResult {
     private SearchContext context;
 
     private short itemsPerPage = ITEMS_PER_PAGE;
+    private short itemsPerResource = 0;
 
     private String benchmarkSearchResults,
             benchmarkHitCounter;
@@ -182,6 +183,15 @@ public class KorapResult {
         return this.benchmarkHitCounter;
     }
 
+    public void setItemsPerResource (short value) {
+	this.itemsPerResource = value;
+    };
+
+    @JsonIgnore
+    public short getItemsPerResource () {
+	return this.itemsPerResource;
+    };
+
 
     public String getQuery() {
         return this.query;
@@ -226,6 +236,9 @@ public class KorapResult {
         ObjectNode json = (ObjectNode) mapper.valueToTree(this);
 
         json.put("context", this.getContext().toJSON());
+
+	if (this.itemsPerResource > 0)
+	    json.put("itemsPerResource", this.itemsPerResource);
 
         if (this.version != null)
             json.put("version", this.version);
