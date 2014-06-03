@@ -206,10 +206,30 @@ public class TestBenchmarkSpans {
 	
 	System.out.println("It took " + seconds + " seconds with classes");
 
+	t1 = 0;
+	t2 = 0;
+	// With submatch
+	json = getString(getClass().getResource("/queries/benchmark5-submatch.jsonld").getFile());
+
+	t1 = System.nanoTime();
+	for (int i = 1; i <= rounds; i++) {
+	    kr = new KorapSearch(json).run(ki);
+	};
+	t2 = System.nanoTime();
+
+	seconds = (double)(t2-t1) / 1000000000.0;
+	
+	System.out.println("It took " + seconds + " seconds with submatches");
+
+	/** HERE IS A BUG! */
+
+	System.err.println(kr.toJSON());
+
+
 
 	// System.err.println(kr.toJSON());
 
-	System.err.println(kr.getMatch(3).getSnippetBrackets());
+	// System.err.println(kr.getMatch(3).getSnippetBrackets());
 
 
 	// 2000 rounds:
@@ -228,6 +248,13 @@ public class TestBenchmarkSpans {
 	// It took 10.365989238 seconds without classes
 	// It took 13.833405885 seconds with classes
 
+	// It took 15.368675425 seconds without classes
+	// It took 18.347603186 seconds with classes
+	// It took 15.941057294 seconds with submatches
+
+	// It took 15.241253549 seconds without classes
+	// It took 17.30375624 seconds with classes
+	// It took 15.367171254 seconds with submatches
     };
 
 

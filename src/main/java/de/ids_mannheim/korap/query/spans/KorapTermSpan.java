@@ -10,12 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class KorapTermSpan extends KorapSpan {
-    // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
 
     public ByteBuffer payload;
 
     private final Logger log = LoggerFactory.getLogger(ElementSpans.class);
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
 
     @Override
     public Object clone() {

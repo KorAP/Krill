@@ -29,7 +29,10 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 	private long matchCost;
 	private int matchListSpanNum; 	
 	protected int currentDocNum;
-	
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
 	public UnorderedDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
@@ -95,6 +98,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 			
 			if (currentFirstSpan.getEnd() < currentSecondSpan.getEnd() ||					 
 					isLastCandidateSmaller(currentFirstSpan, currentSecondSpan)){
+			    if (DEBUG)
 				log.trace("current target: "+firstSpanList.get(0).getStart() +" "+firstSpanList.get(0).getEnd());				
 //				System.out.println("candidates:");
 //				for (CandidateSpan cs: secondSpanList) {
@@ -107,6 +111,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 				updateList(firstSpanList);
 			}			
 			else {
+			    if (DEBUG)
 				log.trace("current target: "+secondSpanList.get(0).getStart() +" "+secondSpanList.get(0).getEnd());
 //				System.out.println("candidates:");
 //				for (CandidateSpan cs: firstSpanList) {
@@ -120,13 +125,17 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 			}
 		}
 		else if (firstSpanList.isEmpty()){
+		    if (DEBUG) {
 			log.trace("current target: "+secondSpanList.get(0).getStart() +" "+secondSpanList.get(0).getEnd());
 			log.trace("candidates: empty");
+		    };
 			updateList(secondSpanList);			
 		}
-		else{ 
+		else{
+		    if (DEBUG) {
 			log.trace("current target: "+firstSpanList.get(0).getStart() +" "+firstSpanList.get(0).getEnd());
 			log.trace("candidates: empty");
+		    };
 			updateList(firstSpanList);			
 		}
 	}
@@ -200,10 +209,12 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 		if (matchListSpanNum == 1)
 			setMatchFirstSpan(cs.getChildSpan());
 		else setMatchSecondSpan(cs.getChildSpan());
-		
-		log.trace("Match doc#={} start={} end={}",matchDocNumber,matchStartPosition,matchEndPosition);
-		log.trace("firstspan "+getMatchFirstSpan().getStart()+" "+ getMatchFirstSpan().getEnd());
-		log.trace("secondspan "+getMatchSecondSpan().getStart()+" "+ getMatchSecondSpan().getEnd());
+
+		if (DEBUG) {
+		    log.trace("Match doc#={} start={} end={}",matchDocNumber,matchStartPosition,matchEndPosition);
+		    log.trace("firstspan "+getMatchFirstSpan().getStart()+" "+ getMatchFirstSpan().getEnd());
+		    log.trace("secondspan "+getMatchSecondSpan().getStart()+" "+ getMatchSecondSpan().getEnd());
+		};
 	}
 
 	@Override

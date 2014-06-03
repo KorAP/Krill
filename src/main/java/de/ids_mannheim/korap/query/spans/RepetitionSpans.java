@@ -21,7 +21,10 @@ public class RepetitionSpans extends SimpleSpans{
 	private long matchCost;
 	private List<CandidateSpan> matchList;
 	private Logger log = LoggerFactory.getLogger(RepetitionSpans.class);
-	
+        // This advices the java compiler to ignore all loggings
+        public static final boolean DEBUG = false;
+
+
 	public RepetitionSpans(SpanRepetitionQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) 
@@ -102,8 +105,9 @@ public class RepetitionSpans extends SimpleSpans{
 		if (collectPayloads && candidateSpan.getPayloads() != null) {  		    	
 	    	matchPayload.addAll(candidateSpan.getPayloads());  		    	
 	    }
-		log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
-				matchEndPosition);		
+		if (DEBUG)
+		    log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
+			      matchEndPosition);		
 	}
 
 	@Override

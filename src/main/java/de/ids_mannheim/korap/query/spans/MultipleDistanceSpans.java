@@ -3,6 +3,9 @@ package de.ids_mannheim.korap.query.spans;
 import java.io.IOException;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
@@ -25,7 +28,11 @@ import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
  *	@author margaretha
  * */
 public class MultipleDistanceSpans extends DistanceSpans{
-		
+
+    private final static Logger log = LoggerFactory.getLogger(MultipleDistanceSpans.class);
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
 	private DistanceSpans x,y;
 	private boolean isOrdered;
 	
@@ -126,8 +133,9 @@ public class MultipleDistanceSpans extends DistanceSpans{
 		
 		setMatchFirstSpan(span.getMatchFirstSpan());
 		if (!exclusion) setMatchSecondSpan(span.getMatchSecondSpan());
-		log.trace("doc# {}, start {}, end {}",matchDocNumber,
-				matchStartPosition,matchEndPosition);	
+		if (DEBUG)
+		    log.trace("doc# {}, start {}, end {}",matchDocNumber,
+			      matchStartPosition,matchEndPosition);	
 	}
 
 	@Override

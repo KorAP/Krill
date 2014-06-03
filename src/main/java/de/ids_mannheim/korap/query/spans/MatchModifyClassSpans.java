@@ -29,9 +29,12 @@ public class MatchModifyClassSpans extends Spans {
 
     private SpanQuery highlight;
     private final Logger log = LoggerFactory.getLogger(MatchModifyClassSpans.class);
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
 
     private int start = -1, end;
-    private int tempStart, tempEnd = 0;
+    private int tempStart = 0, tempEnd = 0;
 
 
     public MatchModifyClassSpans (SpanQuery highlight,
@@ -72,7 +75,8 @@ public class MatchModifyClassSpans extends Spans {
     // inherit javadocs
     @Override
     public boolean next() throws IOException {
-	log.trace("||> Forward next");
+	if (DEBUG)
+	    log.trace("||> Forward next");
 
 	highlightedPayload.clear();
 
@@ -87,6 +91,7 @@ public class MatchModifyClassSpans extends Spans {
 	    if (spans.isPayloadAvailable()) {
 		end = 0;
 
+		// Iterate over all payloads and find the maximum span per class
 		for (byte[] payload : spans.getPayload()) {
 		    bb.clear();
 		    bb.put(payload);
@@ -99,7 +104,8 @@ public class MatchModifyClassSpans extends Spans {
 			tempStart = bb.getInt();
 			tempEnd = bb.getInt();
 
-			log.trace("Found matching class {}-{}", tempStart, tempEnd);
+			if (DEBUG)
+			    log.trace("Found matching class {}-{}", tempStart, tempEnd);
 
 			if (start == -1)
 			    start = tempStart;
@@ -109,14 +115,19 @@ public class MatchModifyClassSpans extends Spans {
 			if (tempEnd > end)
 			    end = tempEnd;
 		    }
+
+		    // Doesn't mark an important payload - but should be kept
 		    else {
-			log.trace("Remember old payload {}", payload);
+			if (DEBUG)
+			    log.trace("Remember old payload {}", payload);
 			highlightedPayload.add(payload);
 		    };
 		};
 
-		log.trace("All payload processed, now clean up");
+		if (DEBUG)
+		    log.trace("All payload processed, now clean up");
 
+		// We have a payload found that is a class for modification!
 		if (start != -1) {
 		    int i = highlightedPayload.size() - 1;
 
@@ -126,12 +137,15 @@ public class MatchModifyClassSpans extends Spans {
 			bb.rewind();
 			if (bb.getInt() < start || bb.getInt() > end) {
 			    bb.rewind();
-			    log.trace("Remove highlight {} with {}-{} for {}-{}", i, bb.getInt(), bb.getInt(), start, end);
+			    if (DEBUG)
+				log.trace("Remove highlight {} with {}-{} for {}-{}", i, bb.getInt(), bb.getInt(), start, end);
 			    highlightedPayload.remove(i);
 			    continue;
 			};
- 			bb.rewind();
-			log.trace("Highlight {} will stay with {}-{} for {}-{}", i, bb.getInt(), bb.getInt(), start, end);
+			if (DEBUG) {
+			    bb.rewind();
+			    log.trace("Highlight {} will stay with {}-{} for {}-{}", i, bb.getInt(), bb.getInt(), start, end);
+			};
 		    };
 		    /*
 		     * Todo: SPLIT
@@ -146,7 +160,7 @@ public class MatchModifyClassSpans extends Spans {
 		start = spans.start();
 		end = spans.end();
 	    }
-	    else {
+	    else if (DEBUG) {
 		log.trace("Start to shrink to {} - {} class: {}",
 			  start, end, number);
 	    };

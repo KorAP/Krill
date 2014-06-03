@@ -17,6 +17,8 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * */
 public abstract class OrderedDistanceSpans extends DistanceSpans {
 
+        public static final boolean DEBUG = false;
+
 	protected boolean hasMoreFirstSpans;	
 	protected int minDistance,maxDistance;
 	
@@ -106,9 +108,10 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
   		    	matchPayload.addAll(secondSpans.getPayload());  		    	
   		    }
 		}
-		
-		log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
-				matchEndPosition);	
+
+		if (DEBUG)
+		    log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
+			      matchEndPosition);	
 	}
 
 	@Override

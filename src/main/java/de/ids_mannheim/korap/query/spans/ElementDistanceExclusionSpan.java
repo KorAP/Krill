@@ -35,7 +35,9 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 	
 	private int minDistance, maxDistance;
 	private int firstSpanPostion;
-	
+
+        public static final boolean DEBUG = false;
+
 	public ElementDistanceExclusionSpan(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts, boolean isOrdered) 
@@ -227,9 +229,10 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 	    	matchPayload.addAll(match.getPayloads());
   		
   		setMatchFirstSpan(match);
-  		  		
-  		log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
-				matchEndPosition);		
+
+		if (DEBUG)
+		    log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
+			      matchEndPosition);		
 	}
 
 	@Override
