@@ -56,6 +56,22 @@
       <version>1.7.5</version>
     </dependency>
 
+    <!-- solr dependency -->
+    <dependency>
+      <artifactId>solr-core</artifactId>
+      <groupId>org.apache.solr</groupId>
+      <version>4.3.1</version>
+      <type>jar</type>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <artifactId>solr-test-framework</artifactId>
+      <groupId>org.apache.solr</groupId>
+      <version>4.3.1</version>
+    </dependency>
+
+    
     <!-- Lucene core dependency -->
     <dependency>
       <artifactId>lucene-core</artifactId>
@@ -93,6 +109,13 @@
       <version>1.0</version>
     </dependency>
 
+    <!-- servlet dependency -->
+    <dependency>
+      <artifactId>servlet-api</artifactId>
+      <groupId>javax.servlet</groupId>
+      <version>2.5</version>
+    </dependency>
+    
     <!-- among others Base4 support -->
     <!--
     <dependency>
@@ -192,6 +215,7 @@
             <exclude>**/TestRealIndex.java</exclude>
             <exclude>**/benchmark/*</exclude>
             <exclude>**/TestWPDIndex.java</exclude>
+	    <exclude>**/TestKorapSolr.java</exclude>
 	  </excludes>
         </configuration>
       </plugin> 
