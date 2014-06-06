@@ -44,6 +44,7 @@ public abstract class SimpleSpans extends Spans{
   		matchStartPosition= -1;
   		matchEndPosition= -1;
   		matchPayload = new LinkedList<byte[]>(); // why linkedlist?
+		// -> Can be an array as well, don't know if it comes from me or from you (ndiewald)
   		
   		// Get the enumeration of the two spans to match
   		firstSpans = simpleSpanQuery.getFirstClause().

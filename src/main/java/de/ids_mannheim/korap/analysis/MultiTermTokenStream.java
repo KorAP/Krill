@@ -16,6 +16,7 @@ import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Reader;
 import java.io.IOException;
 
 /*
@@ -66,19 +67,24 @@ public class MultiTermTokenStream extends TokenStream {
      */
     public MultiTermTokenStream (String stream) {
 	this();
+	this._fromString(stream);
+    };  
 
-	Matcher matcher = pattern.matcher(stream);
-
-	while (matcher.find()) {
-
-	    String[] seg = matcher.group(1).split("\\|");
-	    MultiTermToken mtt = new MultiTermToken( seg[0] );
-
-	    for (i = 1; i < seg.length; i++)
-		mtt.add(seg[i]);
-
-	    this.addMultiTermToken(mtt);
+    /**
+     * The Constructor.
+     *
+     * @param stream The MultiTermTokenStream as a reader object.
+     */
+    public MultiTermTokenStream (Reader stream) throws IOException {
+	this();
+	
+	StringBuilder sb = new StringBuilder(4096);
+	char[] buf = new char[128];
+	int i;
+	while ((i = stream.read(buf)) > 0) {
+	    sb.append(buf, 0, i);
 	};
+	this._fromString(sb.toString());
     };
 
 
@@ -281,6 +287,20 @@ public class MultiTermTokenStream extends TokenStream {
 	    sb.append( mtt.toString() );
 	};
 	return sb.toString();
+    };
+
+    private void _fromString (String stream) {
+	Matcher matcher = pattern.matcher(stream);
+
+	while (matcher.find()) {
+	    String[] seg = matcher.group(1).split("\\|");
+	    MultiTermToken mtt = new MultiTermToken( seg[0] );
+
+	    for (i = 1; i < seg.length; i++)
+		mtt.add(seg[i]);
+	    
+	    this.addMultiTermToken(mtt);
+	};
     };
 
     @Override

@@ -45,7 +45,7 @@ public class ElementSpans extends Spans {
 
     private final static Logger log = LoggerFactory.getLogger(ElementSpans.class);
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     
     /**

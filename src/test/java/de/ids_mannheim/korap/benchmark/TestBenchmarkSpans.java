@@ -41,7 +41,7 @@ public class TestBenchmarkSpans {
 	/// cosmas20.json!!!
 	String json = getString(getClass().getResource("/queries/benchmark1.jsonld").getFile());
 
-	int rounds = 10;
+	int rounds = 100;
 
 	KorapResult kr = new KorapResult();
 
@@ -73,6 +73,10 @@ public class TestBenchmarkSpans {
 	// After refactoring
 	// 100 times
 	// 273.58114372 seconds
+
+	// After intro of attributes
+	// 100 times
+	// 350.171506379 seconds
     };
 
 
