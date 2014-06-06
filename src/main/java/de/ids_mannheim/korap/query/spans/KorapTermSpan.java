@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 public class KorapTermSpan extends KorapSpan {
 
     public ByteBuffer payload;
-
+    public boolean isPayloadRead = false;
+    
     private final Logger log = LoggerFactory.getLogger(ElementSpans.class);
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -23,6 +24,8 @@ public class KorapTermSpan extends KorapSpan {
 	span.start = this.start;
 	span.end   = this.end;
 	span.doc   = this.doc;
+	span.isPayloadRead = this.isPayloadRead;
+	span.elementRef = this.elementRef;
 
 	if (this.payload != null) {
 	    this.payload.rewind();
@@ -94,11 +97,16 @@ public class KorapTermSpan extends KorapSpan {
     public int endChar () {
 	return this.payload.getInt(4);
     };
-
+    
+    public short elementRef(){
+    	return this.payload.getShort(8);
+    }
+    
     public void reset () {
 	this.clearPayload();
 	this.start = -1;
 	this.end = -1;
 	this.doc = -1;
+	this.isPayloadRead = false;
     };
 };

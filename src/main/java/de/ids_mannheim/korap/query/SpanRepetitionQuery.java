@@ -13,6 +13,12 @@ import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.RepetitionSpans;
 
+/** SpanRepetitionQuery means that the given query can appears 
+ * 	multiple times specified by the minimum and the maximum number 
+ * 	of repetitions parameters.
+ * 
+ * @author margaretha
+ * */
 public class SpanRepetitionQuery extends SimpleSpanQuery{
 	
 	private int min, max;

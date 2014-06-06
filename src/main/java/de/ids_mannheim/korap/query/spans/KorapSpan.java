@@ -7,7 +7,9 @@ public abstract class KorapSpan implements Comparable<KorapSpan>, Cloneable {
 	start = -1,
 	end   = -1,
 	doc   = -1;
-
+    
+    public short elementRef = -1;
+    
     public KorapSpan () {
 	initPayload();
     };
@@ -55,7 +57,15 @@ public abstract class KorapSpan implements Comparable<KorapSpan>, Cloneable {
 	    .append('(').append(this.doc).append(')')
 	    .append(']')
 	    .toString();
-    };
+    }
+
+	public short getElementRef() {
+		return elementRef;
+	}
+
+	public void setElementRef(short elementRef) {
+		this.elementRef = elementRef;
+	};
 
     // equals und hashcode implementieren
 };

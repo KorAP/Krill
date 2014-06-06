@@ -45,9 +45,9 @@ public class ElementSpans extends Spans {
 
     private final static Logger log = LoggerFactory.getLogger(ElementSpans.class);
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
-
+    
     /**
      * The constructor.
      */
@@ -68,7 +68,6 @@ public class ElementSpans extends Spans {
 	this.temp = new KorapTermSpan();
     };
     
-
     // only for EmptyElementSpans (below)
     public ElementSpans() {
 	this.term = null;
@@ -282,20 +281,77 @@ public class ElementSpans extends Spans {
     
     @Override
     public int end() {
-	if (this.current.end >= 0)
-	    return this.current.end;
-
-	try {
-	    this.current.end = this.getPayloadEndPosition();
-	}
-	catch (Exception e) {
-	    this.current.end = this.current.start;
-	};
-	return this.current.end;
+		if (!this.current.isPayloadRead){		    
+			try {
+				readPayload();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}			
+		}
+		return this.current.end;
     };
 
+    public short getElementRef() throws IOException{
+    	if (!this.current.isPayloadRead){
+    		readPayload();
+    	}
+    	return this.current.elementRef;
+    }
     
-    @Override
+    private void readPayload() throws IOException {   	
+    	
+    	this.current.clearPayload();
+	    BytesRef payload = postings.getPayload();
+	    	    
+	    if (payload != null) {
+	    	//System.out.println(payload.bytes.length);
+
+			// Copy some payloads like start character and end character
+			this.current.payload.put(payload.bytes, payload.offset, 8);
+			// Copy rest of payloads after the end position and elementref
+			this.current.payload.put(payload.bytes, payload.offset + 12, payload.length - 12);
+
+			this.current.end = readEndPostion(payload);		
+			this.current.elementRef = readElementRef(payload);
+	    }
+	    else {	
+			this.current.end = this.current.start;
+			this.current.elementRef = -1;
+    	};
+    	
+    	this.current.isPayloadRead = true;
+    	
+	}
+    
+    private short readElementRef(BytesRef payload) {
+    	byte[] b = new byte[2];
+    	System.arraycopy(payload.bytes, payload.offset + 12, b, 0, 2);
+    	ByteBuffer wrapper = ByteBuffer.wrap(b);
+		return wrapper.getShort();
+	}
+
+    
+
+	private int readEndPostion(BytesRef payload) {
+		
+		this.payloadByte = new byte[4];
+		// Copy end position integer to payloadByte
+		System.arraycopy(payload.bytes, payload.offset + 8, this.payloadByte, 0, 4);
+		
+		bb.clear();
+		int t = bb.wrap(payloadByte).getInt();
+
+		if (DEBUG)
+		    log.trace("Get Endposition and payload: {}-{} with end position {} in doc {}",
+			      this.current.payload.getInt(0),
+			      this.current.payload.getInt(4),
+			      t,
+			      this.current.doc);
+		
+		return t;
+	}
+
+	@Override
     public long cost() {
 	// ???
 	return this.postings.cost();
@@ -305,8 +361,8 @@ public class ElementSpans extends Spans {
     @Override
     public Collection<byte[]> getPayload() throws IOException {
 	byte[] offsetCharacters = new byte[8];
-	if (this.current.end <= 0)
-	    this.getPayloadEndPosition();
+	if (!this.current.isPayloadRead)
+	    readPayload();
 
 	System.arraycopy(this.current.payload.array(), 0, offsetCharacters, 0, 8);
 
@@ -335,9 +391,9 @@ public class ElementSpans extends Spans {
     private void setToCurrent (int debugNumber) throws IOException {
 	
 	this.current.start = this.postings.nextPosition();
-
 	// This will directly save stored payloads
-	this.current.end = this.getPayloadEndPosition();
+	//this.current.end = this.getPayloadEndPosition();
+	readPayload();
 
 	if (DEBUG)
 	    log.trace(
@@ -352,59 +408,6 @@ public class ElementSpans extends Spans {
     private void setCurrentToTemp () {
 	this.temp = (KorapTermSpan) this.current.clone();
 	// this.temp.copyFrom(this.current);
-    };
-
-
-    private int getPayloadEndPosition () {
-	try {
-	    BytesRef payload = postings.getPayload();
-
-	    this.current.clearPayload();
-	    
-	    if (payload != null) {
-
-		this.payloadByte = new byte[4];
-
-		// Copy some payloads like start character and end character
-		this.current.payload.put(payload.bytes, payload.offset, 8);
-		this.current.payload.put(payload.bytes, payload.offset + 12, payload.length - 12);
-
-		// Copy end position integer to payloadByte
-		System.arraycopy(payload.bytes, payload.offset + 8, this.payloadByte, 0, 4);
-	    }
-
-	    else {	
-		this.payloadByte = null;
-	    };
-
-	    // Todo: REWRITE!
-	    if (this.payloadByte != null) {
-
-		// Todo: This is weird!
-		
-		bb.clear();
-		int t = bb.wrap(payloadByte).getInt();
-
-
-		if (DEBUG)
-		    log.trace("Get Endposition and payload: {}-{} with end position {} in doc {}",
-			      this.current.payload.getInt(0),
-			      this.current.payload.getInt(4),
-			      t,
-			      this.current.doc);
-		
-		return t;
-	    }
-	    else if (DEBUG) {
-		log.trace("Get Endposition and payload: None found");
-	    };
-	}
-	catch (IOException e) {
-	    if (DEBUG)
-		log.trace("IOException {}", e);	   
-	};
-	
-	return -1;
     };
 
 

@@ -9,6 +9,7 @@ import org.apache.lucene.index.TermState;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 import org.apache.lucene.search.spans.Spans;
@@ -19,8 +20,8 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author Nils Diewald
+/** Extend element with attribute option
+ * 	@author Nils Diewald, Margaretha
  */
 
 /** Matches spans wrapped by an element. */
@@ -28,6 +29,7 @@ public class SpanElementQuery extends SpanQuery {
     protected Term element;
     private String elementStr;
     private String field;
+    private boolean attribute = false;
     
     /** Constructor. */
     public SpanElementQuery (String field, String term) {
@@ -36,6 +38,11 @@ public class SpanElementQuery extends SpanQuery {
 	this.elementStr = term;
 	this.element = new Term(field, sb.append(term).toString());
     };
+    
+    public SpanElementQuery(String field, String term, boolean attribute){
+    	this(field, term);
+    	this.attribute = attribute;
+    }
 
     /** Return the element whose spans are matched. */
     public Term getElement() { return element; };
@@ -119,17 +126,17 @@ public class SpanElementQuery extends SpanQuery {
 	termsEnum.seekExact(element.bytes(), state);
     
 	final DocsAndPositionsEnum postings = termsEnum.docsAndPositions(acceptDocs, null, DocsAndPositionsEnum.FLAG_PAYLOADS);
-
-	if (postings != null)
+	
+	if (postings != null){		
 	    return new ElementSpans(postings, element);
-
+	}
 	// element does exist, but has no positions
 	throw new IllegalStateException("field \"" + element.field() + "\" was indexed " +
 					"without position data; cannot run " +
 					"SpanElementQuery (element=" + element.text() + ")");
     };
 
-    public String getElementStr () {
+	public String getElementStr () {
 	return elementStr;
     };
 
