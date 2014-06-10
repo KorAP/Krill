@@ -648,21 +648,6 @@ public class KorapIndex {
 
 		// Search for minimal surrounding sentences
 		if (extendToSentence) {
-		    /*
-		    int[] newPos = match.expandContextToSpan(
-		      atomic,
-		      bitset,
-		      field,
-		      "s"
-		    );
-		    if (newPos[0] > 0)
-			match.setStartPos(newPos[0]);
-		    if (newPos[1] > 0)
-			match.setEndPos(newPos[1]);
-
-		    if (DEBUG)
-			log.trace("Expand context to {}-{}", newPos[0], newPos[1]);
-		    */
 		    int [] spanContext = match.expandContextToSpan("s");
 		    match.setStartPos(spanContext[0]);
 		    match.setEndPos(spanContext[1]);
@@ -711,8 +696,6 @@ public class KorapIndex {
 		    // How often does this term occur in the document?
 		    int termOccurrences = docs.freq();
 
-		    // log.trace("I found {} documents with this term", termOccurrences);
-
 		    // String representation of the term
 		    String termString = termsEnum.term().utf8ToString();
 
@@ -722,10 +705,7 @@ public class KorapIndex {
 			// Init positions and get the current
 			int pos = docs.nextPosition();
 
-			// Check, if the position of the term is in the interesting area
-
-			// log.trace("Check position!");
-
+			// Check, if the position of the term is in the area of interest
 			if (pos >= match.getStartPos() && pos < match.getEndPos()) {
 
 			    if (DEBUG)
@@ -793,6 +773,9 @@ public class KorapIndex {
     };
 
 
+    /**
+     * Analyze how terms relate
+     */
     public HashMap getTermRelation (KorapCollection kc, String field) throws Exception {
 	HashMap<String,Long> map = new HashMap<>(100);
 	long docNumber = 0, checkNumber = 0;
@@ -827,20 +810,16 @@ public class KorapIndex {
 
 		    String termString = termsEnum.term().utf8ToString();
 
-		    // System.err.println("Current term is " + termString);
 		    bitset.clear(0,docLength);
 	    
 		    // Get frequency
 		    bitset.or((DocIdSetIterator) termsEnum.docs((Bits) docvec, null));
 
 		    long value = 0;
-		    if (map.containsKey(termString)) {
+		    if (map.containsKey(termString))
 			value = map.get(termString);
-			// System.err.println(termString + " has " + value + " occurrences");
 
-		    };
 		    map.put(termString, value + bitset.cardinality());
-		    // System.err.println(termString + " adds " + bitset.cardinality());
 
 		    termVector.put(termString, bitset.clone());
 		};
@@ -1067,12 +1046,6 @@ public class KorapIndex {
 			// TODO: Here are offsets and highlight offsets!
 			// <> payloads have 12 bytes (iii) or 8!?
 			// highlightoffsets have 11 bytes (iis)!
-
-			/*
-			int[] offsets = getOffsetsFromPayload(spans.getPayload());
-			match.startOffset(offsets[0]);
-			match.startOffset(offsets[1]);
-			*/
 
 			try {
 			    ByteBuffer bb = ByteBuffer.allocate(10);
