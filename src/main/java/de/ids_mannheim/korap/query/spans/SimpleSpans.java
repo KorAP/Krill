@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -43,8 +44,7 @@ public abstract class SimpleSpans extends Spans{
   		matchDocNumber= -1;
   		matchStartPosition= -1;
   		matchEndPosition= -1;
-  		matchPayload = new LinkedList<byte[]>(); // why linkedlist?
-		// -> Can be an array as well, don't know if it comes from me or from you (ndiewald)
+  		matchPayload = new ArrayList<byte[]>();
   		
   		// Get the enumeration of the two spans to match
   		firstSpans = simpleSpanQuery.getFirstClause().
@@ -107,7 +107,7 @@ public abstract class SimpleSpans extends Spans{
   	}
   	
   	@Override
-  	public String toString() { // who does call this?				
+  	public String toString() {				
   		return getClass().getName() + "("+query.toString()+")@"+
   		    (isStartEnumeration?"START":(hasMoreSpans?(doc()+":"+
   		    start()+"-"+end()):"END"));

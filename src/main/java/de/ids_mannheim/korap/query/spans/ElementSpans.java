@@ -23,8 +23,8 @@ import java.util.List;
 // TODO: Store payloads in 12 byte instead of the complicated ByteBuffer stuff!
 // Todo: Use copyFrom() instead of clone()
 
-/**
- * @author Nils Diewald
+/**  
+ * @author Nils Diewald, margaretha
  *
  * Use copyFrom instead of clone
  */
@@ -39,6 +39,8 @@ public class ElementSpans extends Spans {
     
     private LinkedList<KorapTermSpan> memory;
     private KorapTermSpan overflow, current, temp;
+    
+	public boolean isElementRef = false; // A dummy flag for 
     
     public static final ElementSpans EMPTY_ELEMENT_SPANS
 	= new EmptyElementSpans();
@@ -308,11 +310,19 @@ public class ElementSpans extends Spans {
 
 			// Copy some payloads like start character and end character
 			this.current.payload.put(payload.bytes, payload.offset, 8);
-			// Copy rest of payloads after the end position and elementref
-			this.current.payload.put(payload.bytes, payload.offset + 12, payload.length - 12);
 
-			this.current.end = readEndPostion(payload);		
-			this.current.elementRef = readElementRef(payload);
+			this.current.end = readEndPostion(payload);
+			
+			if (isElementRef ){
+				// Copy rest of payloads after the end position and elementref
+				this.current.payload.put(payload.bytes, payload.offset + 14, payload.length - 14);				
+				this.current.elementRef = readElementRef(payload);
+			}
+			else{
+				// Copy rest of payloads after the end position
+				this.current.payload.put(payload.bytes, payload.offset + 12, payload.length - 12);
+				this.current.elementRef = 0;
+			}
 	    }
 	    else {	
 			this.current.end = this.current.start;

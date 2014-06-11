@@ -29,7 +29,8 @@ public class ElementAttributeSpans extends SimpleSpans{
 		super(simpleSpanQuery, context, acceptDocs, termContexts);		
 		elements = (ElementSpans) firstSpans;
 		attributes = (AttributeSpans) secondSpans;
-		hasMoreSpans = firstSpans.next() & secondSpans.next();
+		elements.isElementRef = true; // dummy setting enabling reading elementRef
+		hasMoreSpans = elements.next() & attributes.next();		
 	}
 
 	@Override
@@ -40,7 +41,8 @@ public class ElementAttributeSpans extends SimpleSpans{
 
 	private boolean advance() throws IOException {
 		
-		while (hasMoreSpans && ensureSamePosition(elements,attributes)){
+		while (hasMoreSpans && ensureSamePosition(elements,attributes)){ 
+			
 			logger.info("element: " + elements.start() + ","+ elements.end() +" ref:"+elements.getElementRef());
 			logger.info("attribute {} ref:{}", attributes.start(),  attributes.getElementRef());
 			
@@ -55,7 +57,10 @@ public class ElementAttributeSpans extends SimpleSpans{
 			
 			if (elements.getElementRef() < attributes.getElementRef())
 				hasMoreSpans = attributes.next();
-			else hasMoreSpans = elements.next();
+			else {
+				elements.isElementRef = true; // dummy setting enabling reading elementRef
+				hasMoreSpans = elements.next();				
+			}
 		}
 		
 		return false;
