@@ -1,0 +1,15 @@
+{
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query": {
+    "@type": "korap:group",
+    "operation" : "operation:submatch",
+    "classRef" : [0],
+    "operands" : []
+  },
+  "meta":{
+    "context":{
+      "left":["char",90],
+      "right":["char",90]
+    }
+  }  
+}

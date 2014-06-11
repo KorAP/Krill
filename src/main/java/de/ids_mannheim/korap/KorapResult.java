@@ -235,7 +235,8 @@ public class KorapResult {
     public String toJSON() {
         ObjectNode json = (ObjectNode) mapper.valueToTree(this);
 
-        json.put("context", this.getContext().toJSON());
+	if (this.context != null)
+	    json.put("context", this.getContext().toJSON());
 
 	if (this.itemsPerResource > 0)
 	    json.put("itemsPerResource", this.itemsPerResource);

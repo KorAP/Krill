@@ -1520,7 +1520,8 @@ public class KorapMatch extends KorapDocument {
 	if (json.size() == 0)
 	    return "{}";
 
-	json.put("context", this.getContext().toJSON());
+	if (this.context != null)
+	    json.put("context", this.getContext().toJSON());
 
 	if (this.version != null)
 	    json.put("version", this.getVersion());

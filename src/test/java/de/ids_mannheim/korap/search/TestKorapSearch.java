@@ -471,6 +471,26 @@ public class TestKorapSearch {
 
 
     @Test
+    public void searchJSONbug () throws IOException {
+
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	    ki.addDocFile(
+	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            );
+	};
+	ki.commit();
+
+	String json = getString(getClass().getResource("/queries/bsp-bug.jsonld").getFile());
+
+	KorapResult kr = new KorapSearch(json).run(ki);
+	assertEquals(kr.getError(), "Operation needs exactly two operands");
+    };
+
+
+    @Test
     public void getFoundryDistribution () throws Exception {
 
 	// Construct index

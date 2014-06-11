@@ -1,3 +1,7 @@
+0.31.3 2014-06-11
+        - [bugfix] Minor bugfix regarding treatment of
+	  failed search results (diewald)
+
 0.31.2 2014-05-28
         - [feature] Request parameter "itemsPerResource" limits
 	  hits per document (diewald)
