@@ -5,7 +5,7 @@ import de.ids_mannheim.korap.index.DocIdentifier;
 
 
 public class MatchIdentifier extends DocIdentifier {
-    private int startPos, endPos = 0;
+    private int startPos, endPos = -1;
 
     private ArrayList<int[]> pos = new ArrayList<>(8);
 

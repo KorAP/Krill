@@ -557,6 +557,11 @@ public class KorapIndex {
 	if (this.getVersion() != null)
 	    match.setVersion(this.getVersion());
 
+
+	if (match.getStartPos() == -1)
+	    return match;
+
+
 	// Create a filter based on the corpusID and the docID
 	BooleanQuery bool = new BooleanQuery();
 	bool.add(new TermQuery(new Term("ID",       match.getDocID())),    BooleanClause.Occur.MUST);

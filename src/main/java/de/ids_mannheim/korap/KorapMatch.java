@@ -62,7 +62,7 @@ public class KorapMatch extends KorapDocument {
 
     // Should be deprecated, but used wildly in tests!
     @JsonIgnore
-    public int startPos, endPos;
+    public int startPos, endPos = -1;
 
     @JsonIgnore
     public int potentialStartPosChar = -1,
@@ -138,18 +138,20 @@ public class KorapMatch extends KorapDocument {
      */
     public KorapMatch (String idString, boolean includeHighlights) {
 	MatchIdentifier id = new MatchIdentifier(idString);
-	this.setCorpusID(id.getCorpusID());
-	this.setDocID(id.getDocID());
-	this.setStartPos(id.getStartPos());
-	this.setEndPos(id.getEndPos());
+	if (id.getStartPos() > -1) {
+	    this.setCorpusID(id.getCorpusID());
+	    this.setDocID(id.getDocID());
+	    this.setStartPos(id.getStartPos());
+	    this.setEndPos(id.getEndPos());
 
-	if (includeHighlights)
-	    for (int[] pos : id.getPos()) {
-		if (pos[0] < id.getStartPos() || pos[1] > id.getEndPos())
-		    continue;
-
-		this.addHighlight(pos[0], pos[1], pos[2]);
-	    };
+	    if (includeHighlights)
+		for (int[] pos : id.getPos()) {
+		    if (pos[0] < id.getStartPos() || pos[1] > id.getEndPos())
+			continue;
+		    
+		    this.addHighlight(pos[0], pos[1], pos[2]);
+		};
+	};
     };
 
     
