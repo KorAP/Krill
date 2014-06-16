@@ -52,6 +52,7 @@ public class TestFieldDocument {
 	fd.addInt("pubDate", 20130617);
 	fd.addText("title", "Wikipedia");
 	fd.addText("subTitle", "Die freie Enzyklopädie");
+	fd.addStored("layerInfo", "opennlp/p=pos");
 	fd.addString("pubPlace", "Bochum");
 	fd.addInt("lastModified", 20130717);
 	fd.addTV("tokens",
@@ -83,6 +84,9 @@ public class TestFieldDocument {
 
 	assertEquals(fd.doc.getField("author").name(), "author");
 	assertEquals(fd.doc.getField("author").stringValue(), "Peter Frankenfeld");
+
+	assertEquals(fd.doc.getField("layerInfo").name(), "layerInfo");
+	assertEquals(fd.doc.getField("layerInfo").stringValue(), "opennlp/p=pos");
 
 	assertEquals(fd.doc.getField("textClass").name(), "textClass");
 	assertEquals(fd.doc.getField("textClass").stringValue(), "music entertainment");
@@ -162,6 +166,7 @@ public class TestFieldDocument {
 	    FieldDocument fd = ki.addDocFile(
 	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
+	    // System.err.println(fd.getLayerInfo());
 	};
 	ki.commit();
 
@@ -211,6 +216,8 @@ public class TestFieldDocument {
 
 	ks.context.left.setCharacter(true).setLength(6);
 	ks.context.right.setToken(true).setLength(6);
+
+	// System.err.println(ks.run(ki).getMatch(0).toJSON());
 
 	assertEquals("... e des [{1:lateinischen Alphabets}] und ein Vokal. Der Buchstabe A ...", ks.run(ki).getMatch(0).getSnippetBrackets());
 

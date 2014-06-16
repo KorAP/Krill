@@ -235,6 +235,7 @@ last_modified timestamp or KorapDate
 
     @Override
     public void setLayerInfo (String layerInfo) {
+	System.err.println(layerInfo);
 	super.setLayerInfo(layerInfo);
 	this.addStored("layerInfo", layerInfo);
     };

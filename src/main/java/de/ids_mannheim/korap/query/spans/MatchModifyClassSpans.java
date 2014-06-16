@@ -124,6 +124,8 @@ public class MatchModifyClassSpans extends Spans {
 		    };
 		};
 
+		/*
+
 		if (DEBUG)
 		    log.trace("All payload processed, now clean up");
 
@@ -142,17 +144,18 @@ public class MatchModifyClassSpans extends Spans {
 			    highlightedPayload.remove(i);
 			    continue;
 			};
+
 			if (DEBUG) {
 			    bb.rewind();
 			    log.trace("Highlight {} will stay with {}-{} for {}-{}", i, bb.getInt(), bb.getInt(), start, end);
 			};
 		    };
-		    /*
-		     * Todo: SPLIT
-		     * Vorsicht! Bei divide könnten Payloads mehrmals vergeben werden
-		     * müssen!
-		     */
-		};
+		    // Todo: SPLIT
+		    // Vorsicht! Bei divide könnten Payloads mehrmals vergeben werden
+		    // müssen!
+		    
+		    };
+		*/
 	    };
 
 

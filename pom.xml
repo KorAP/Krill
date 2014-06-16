@@ -11,7 +11,7 @@
 -->
   <groupId>KorAP-modules</groupId>
   <artifactId>KorAP-lucene-index</artifactId>
-  <version>0.31.3</version>
+  <version>0.31.4</version>
   <packaging>jar</packaging>
 
   <name>KorAP-lucene-index</name>

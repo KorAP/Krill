@@ -1,3 +1,6 @@
+0.31.4 2014-06-16
+        - [feature] MatchModifyClassQuery now can extend (diewald)
+
 0.31.3 2014-06-11
         - [bugfix] Minor bugfix regarding treatment of
 	  failed search results (diewald)

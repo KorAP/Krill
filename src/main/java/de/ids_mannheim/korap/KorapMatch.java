@@ -51,7 +51,7 @@ public class KorapMatch extends KorapDocument {
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
@@ -717,12 +717,14 @@ public class KorapMatch extends KorapDocument {
 	// Add all highlights for character retrieval
 	if (this.highlight != null) {
 	    for (Highlight hl : this.highlight) {
-		pto.add(this.localDocID, hl.start);
-		pto.add(this.localDocID, hl.end);
+		if (hl.start >= this.getStartPos() && hl.end <= this.getEndPos()) {
+		    pto.add(this.localDocID, hl.start);
+		    pto.add(this.localDocID, hl.end);
 
-		if (DEBUG)
-		    log.trace("PTO will retrieve {} & {} (Highlight boundary)",
-			      hl.start, hl.end);
+		    if (DEBUG)
+			log.trace("PTO will retrieve {} & {} (Highlight boundary)",
+				  hl.start, hl.end);
+		};
 	    };
 	};
 	
