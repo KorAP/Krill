@@ -1,3 +1,9 @@
+0.31.5 2014-06-17
+        - [feature] Batch return of defined foundries and layers in
+	  getMatchInfo() (diewald)
+	- [security] Improve foundry and layer check before injection in
+	  regex (diewald)
+
 0.31.4 2014-06-16
         - [feature] MatchModifyClassQuery now can extend (diewald)
 	- [bugfix] Make matchinfo a bit more robust (diewald)

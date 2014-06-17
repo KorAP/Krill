@@ -8,6 +8,7 @@ import java.net.URL;
 
 import java.nio.ByteBuffer;
 import java.util.zip.GZIPInputStream;
+import java.util.regex.Pattern;
 import java.io.FileInputStream;
 
 import org.apache.lucene.search.IndexSearcher;
@@ -76,6 +77,7 @@ import de.ids_mannheim.korap.index.SpanInfo;
 import de.ids_mannheim.korap.index.SearchContext;
 import de.ids_mannheim.korap.index.MatchIdentifier;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.util.QueryException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -502,25 +504,26 @@ public class KorapIndex {
     };
 
 
-    public KorapMatch getMatch (String id) {
+    public KorapMatch getMatch (String id) throws QueryException {
 	return this.getMatchInfo(
             id,       // MatchID
 	    "tokens", // field
 	    false,    // info
-	    null,     // foundry
-	    null,     // layer
+	    (ArrayList) null,     // foundry
+	    (ArrayList) null,     // layer
 	    false,    // includeSpans
 	    true,     // includeHighlights
 	    false     // extendToSentence
 	);
     };
 
+    // There is a good chance that some of these methods will die ...
     public KorapMatch getMatchInfo (String id,
 				    String field,
 				    String foundry,
 				    String layer,
 				    boolean includeSpans,
-				    boolean includeHighlights) {
+				    boolean includeHighlights) throws QueryException {
 	return this.getMatchInfo(id, field, true, foundry, layer, includeSpans, includeHighlights, false);
     };
 
@@ -530,14 +533,30 @@ public class KorapIndex {
 				    String layer,
 				    boolean includeSpans,
 				    boolean includeHighlights,
-				    boolean extendToSentence) {
+				    boolean extendToSentence) throws QueryException {
 	return this.getMatchInfo(id, field, true, foundry, layer, includeSpans, includeHighlights, extendToSentence);
+    };
+
+    public KorapMatch getMatchInfo (String id,
+				    String field,
+				    boolean info,
+				    String foundry,
+				    String layer,
+				    boolean includeSpans,
+				    boolean includeHighlights,
+				    boolean extendToSentence) throws QueryException {
+    	ArrayList<String> foundryList = new ArrayList<>(1);
+	if (foundry != null)
+	    foundryList.add(foundry);
+	ArrayList<String> layerList = new ArrayList<>(1);
+	if (layer != null)
+	    layerList.add(layer);
+	return this.getMatchInfo(id, field, info, foundryList, layerList, includeSpans, includeHighlights, extendToSentence);
     };
 
 
     /**
      * Get a match.
-     * BE AWARE - THIS IS STILL A PLAYGROUND!
      */
     /*
       KorapInfo is associated with a KorapMatch and has an array with all informations
@@ -546,21 +565,19 @@ public class KorapIndex {
     public KorapMatch getMatchInfo (String idString,
 				    String field,
 				    boolean info,
-				    String foundry,
-				    String layer,
+				    ArrayList<String> foundry,
+				    ArrayList<String> layer,
 				    boolean includeSpans,
 				    boolean includeHighlights,
-				    boolean extendToSentence) {
+				    boolean extendToSentence) throws QueryException {
 
 	KorapMatch match = new KorapMatch(idString, includeHighlights);
 
 	if (this.getVersion() != null)
 	    match.setVersion(this.getVersion());
 
-
 	if (match.getStartPos() == -1)
 	    return match;
-
 
 	// Create a filter based on the corpusID and the docID
 	BooleanQuery bool = new BooleanQuery();
@@ -577,23 +594,68 @@ public class KorapIndex {
 	     * are of interest.
 	     */
 	    StringBuilder regex = new StringBuilder();
-
-	    // Todo: Only support one direction!
+	    Pattern harmlessFoundry = Pattern.compile("^[-a-zA-Z0-9_]+$");
+	    Pattern harmlessLayer   = Pattern.compile("^[-a-zA-Z0-9_:]+$");
+	    Iterator<String> iter;
+	    int i = 0;
+	    
 	    if (includeSpans)
-		regex.append("((\">\"|\"<\"\">\"?)\":\")?");
-	    if (foundry != null) {
-		regex.append(foundry).append('/');
-		if (layer != null)
-		    regex.append(layer).append(":");
+		regex.append("((\">\"|\"<\"\">\")\":\")?");
+
+	    // There is a foundry given
+	    if (foundry != null && foundry.size() > 0) {
+
+		// Filter out bad foundries
+		for (i = foundry.size() - 1; i >= 0 ; i--) {
+		    if (!harmlessFoundry.matcher(foundry.get(i)).matches()) {
+			throw new QueryException("Invalid foundry requested: " + foundry.get(i));
+			// foundry.remove(i);
+		    };
+		};
+
+		// Build regex for multiple foundries
+		if (foundry.size() > 0) {
+		    regex.append("(");
+		    iter = foundry.iterator();
+		    while (iter.hasNext()) {
+			regex.append(iter.next()).append("|");
+		    };
+		    regex.replace(regex.length() - 1, regex.length(), ")");
+		    regex.append("\"/\"");
+
+		    // There is a filter given
+		    if (layer != null && layer.size() > 0) {
+
+			// Filter out bad layers
+			for (i = layer.size() - 1; i >= 0 ; i--) {
+			    if (!harmlessLayer.matcher(layer.get(i)).matches()) {
+				throw new QueryException("Invalid layer requested: " + layer.get(i));
+				// layer.remove(i);
+			    };
+			};
+
+			// Build regex for multiple layers
+			if (layer.size() > 0) {
+			    regex.append("(");
+			    iter = layer.iterator();
+			    while (iter.hasNext()) {
+				regex.append(iter.next()).append("|");
+			    };
+			    regex.replace(regex.length() - 1, regex.length(), ")");
+			    regex.append("\":\"");
+			};
+		    };
+		};
 	    }
 	    else if (includeSpans) {
+		// No foundries - but spans
 		regex.append("([^-is]|[-is][^:])");
 	    }
 	    else {
-		regex.append("([^-is<>]|([-is>][^:])|<[^:>])");
+		// No foundries - no spans
+		regex.append("([^-is<>]|[-is>][^:]|<[^:>])");
 	    };
 	    regex.append("(.){1,}|_[0-9]+");
-
 
 	    if (DEBUG)
 		log.trace("The final regexString is {}", regex.toString());

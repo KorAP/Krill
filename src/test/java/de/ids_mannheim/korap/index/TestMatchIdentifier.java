@@ -17,6 +17,8 @@ import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.util.QueryException;
+
 
 import de.ids_mannheim.korap.index.FieldDocument;
 
@@ -24,7 +26,7 @@ import de.ids_mannheim.korap.index.FieldDocument;
 public class TestMatchIdentifier {
 
     @Test
-    public void identifierExample1 () throws IOException {
+    public void identifierExample1 () throws IOException, QueryException {
 	MatchIdentifier id = new MatchIdentifier("match-c1!d1-p4-20");
 	assertEquals(id.getCorpusID(), "c1");
 	assertEquals(id.getDocID(), "d1");
@@ -104,7 +106,7 @@ public class TestMatchIdentifier {
     };
 
     @Test
-    public void indexExample2 () throws IOException {
+    public void indexExample2 () throws IOException, QueryException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
@@ -207,7 +209,7 @@ public class TestMatchIdentifier {
 
 
     @Test
-    public void indexExample3 () throws IOException {
+    public void indexExample3 () throws IOException, QueryException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
@@ -257,7 +259,7 @@ public class TestMatchIdentifier {
     };
 
     @Test
-    public void indexExample4 () throws IOException {
+    public void indexExample4 () throws IOException, QueryException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
@@ -303,7 +305,7 @@ public class TestMatchIdentifier {
     };
 
     @Test
-    public void indexExample5Spans () throws IOException {
+    public void indexExample5Spans () throws IOException, QueryException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
@@ -322,7 +324,7 @@ public class TestMatchIdentifier {
     };
 
     @Test
-    public void indexExample6Spans () throws IOException {
+    public void indexExample6Spans () throws IOException, QueryException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
@@ -341,7 +343,7 @@ public class TestMatchIdentifier {
     };
 
     @Test
-    public void indexExample7Spans () throws IOException {
+    public void indexExample7Spans () throws IOException, QueryException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
@@ -404,7 +406,7 @@ public class TestMatchIdentifier {
     };
 
     @Test
-    public void indexExample6Relations () throws IOException {
+    public void indexExample6Relations () throws IOException, QueryException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
@@ -496,7 +498,7 @@ public class TestMatchIdentifier {
 
 
     @Test
-    public void indexExample7SentenceExpansion () throws IOException {
+    public void indexExample7SentenceExpansion () throws IOException, QueryException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.addDoc(createSimpleFieldDoc2());
@@ -552,7 +554,7 @@ public class TestMatchIdentifier {
     };
 
     @Test
-    public void indexExample7Dependencies () throws IOException {
+    public void indexExample7Dependencies () throws IOException, QueryException {
 	KorapIndex ki = new KorapIndex();
 	ki.addDoc(createSimpleFieldDoc2());
 	ki.commit();
@@ -610,7 +612,104 @@ public class TestMatchIdentifier {
 		     "</span>",
 		     km.getSnippetHTML());
     };
+
+
+    @Test
+    public void indexExampleMultipleFoundries () throws IOException, QueryException {
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(createSimpleFieldDoc4());
+	ki.commit();
+
+	KorapMatch km = ki.getMatchInfo("match-c1!d4-p3-9",
+					"tokens",
+					"f",
+					"m",
+					false,
+					false);
+	assertEquals("f:m info",
+		     km.getSnippetBrackets(),
+		     "... [{f/m:vier:a}{f/m:fuenf:b}{f/m:sechs:c}{f/m:sieben:a}{f/m:acht:b}{f/m:neun:a}] ...");
+
+	km = ki.getMatchInfo("match-c1!d4-p3-9",
+			     "tokens",
+			     "f",
+			     null,
+			     false,
+			     false);
+	assertEquals("f info",
+		     km.getSnippetBrackets(),
+		     "... [{f/m:vier:{f/y:four:a}}{f/m:fuenf:{f/y:five:b}}{f/m:sechs:{f/y:six:c}}{f/m:sieben:{f/y:seven:a}}{f/m:acht:{f/y:eight:b}}{f/m:neun:{f/y:nine:a}}] ..."
+		     );
+
+
+	km = ki.getMatchInfo("match-c1!d4-p3-4",
+			     "tokens",
+			     null,
+			     null,
+			     false,
+			     false);
+	assertEquals("all info",
+		     km.getSnippetBrackets(),
+		     "... [{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}] ..."
+		     );
+
+	ArrayList<String> foundryList = new ArrayList<>(2);
+	foundryList.add("f");
+	foundryList.add("x");
+
+	km = ki.getMatchInfo("match-c1!d4-p3-4",
+			     "tokens",
+			     true,
+			     foundryList,
+			     (ArrayList<String>) null,
+			     false,
+			     false,
+			     false);
+	assertEquals("f|x info",
+		     km.getSnippetBrackets(),
+		     "... [{f/m:vier:{f/y:four:{x/o:viertens:a}}}] ..."
+		     );
+
+	foundryList.clear();
+	foundryList.add("y");
+	foundryList.add("x");
+
+	km = ki.getMatchInfo("match-c1!d4-p3-4",
+			     "tokens",
+			     true,
+			     foundryList,
+			     (ArrayList<String>) null,
+			     false,
+			     false,
+			     false);
+	assertEquals("y|x info",
+		     km.getSnippetBrackets(),
+		     "... [{x/o:viertens:a}] ..."
+		     );
+
+
+	foundryList.clear();
+	foundryList.add("f");
+	foundryList.add("it");
+
+	ArrayList<String> layerList = new ArrayList<>(2);
+	layerList.add("is");
+
+	km = ki.getMatchInfo("match-c1!d4-p3-4",
+			     "tokens",
+			     true,
+			     foundryList,
+			     layerList,
+			     false,
+			     false,
+			     false);
+	assertEquals("f|it/is",
+		     km.getSnippetBrackets(),
+		     "... [{it/is:4:a}] ..."
+		     );
+    };
     
+
     private FieldDocument createSimpleFieldDoc(){
 	FieldDocument fd = new FieldDocument();
 	fd.addString("corpusID", "c1");
