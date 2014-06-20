@@ -168,8 +168,29 @@ public class KorapQuery {
 		    flag
 		);
 
+	    // TODO: This is DEPRECATED and should be communicated that way
 	    case "operation:submatch":
 		int number = 0;
+
+		if (operands.size() != 1)
+		    throw new QueryException("Operation needs exactly two operands");
+
+		if (json.has("classRef")) {
+		    if (json.has("classRefOp"))
+			throw new QueryException("Class reference operators not supported yet");
+
+		    number = json.get("classRef").get(0).asInt();
+		}
+		else if (json.has("spanRef")) {
+		    throw new QueryException("Span references not supported yet");
+		};
+
+		return new SpanMatchModifyQueryWrapper(
+		    this.fromJSON(operands.get(0)), number
+                );
+
+	    case "operation:focus":
+		number = 0;
 
 		if (operands.size() != 1)
 		    throw new QueryException("Operation needs exactly two operands");
