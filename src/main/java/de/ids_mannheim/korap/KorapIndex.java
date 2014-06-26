@@ -83,7 +83,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
-  Todo: Use FieldCache!
+  TODO: Support layer for specific foundries (IMPORTANT)
+
+  TODO: Use FieldCache!
   TODO: Reuse the indexreader everywhere - it should be threadsafe!
 
   http://invertedindex.blogspot.co.il/2009/04/lucene-dociduid-mapping-and-payload.html
@@ -608,7 +610,7 @@ public class KorapIndex {
 		// Filter out bad foundries
 		for (i = foundry.size() - 1; i >= 0 ; i--) {
 		    if (!harmlessFoundry.matcher(foundry.get(i)).matches()) {
-			throw new QueryException("Invalid foundry requested: " + foundry.get(i));
+			throw new QueryException("Invalid foundry requested: '" + foundry.get(i) + "'");
 			// foundry.remove(i);
 		    };
 		};
