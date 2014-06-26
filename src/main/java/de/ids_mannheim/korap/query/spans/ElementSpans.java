@@ -321,7 +321,7 @@ public class ElementSpans extends Spans {
 			else{
 				// Copy rest of payloads after the end position
 				this.current.payload.put(payload.bytes, payload.offset + 12, payload.length - 12);
-				this.current.elementRef = 0;
+				this.current.elementRef = -1;
 			}
 	    }
 	    else {	

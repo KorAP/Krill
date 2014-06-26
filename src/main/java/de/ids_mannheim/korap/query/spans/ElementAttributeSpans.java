@@ -44,6 +44,14 @@ public class ElementAttributeSpans extends SimpleSpans{
 		while (hasMoreSpans && ensureSamePosition(elements,attributes)){ 
 			
 			logger.info("element: " + elements.start() + ","+ elements.end() +" ref:"+elements.getElementRef());
+			
+			if (elements.getElementRef() < 1){
+				elements.isElementRef = true; // dummy setting enabling reading elementRef
+				hasMoreSpans = elements.next();
+				logger.info("skip");
+				continue;
+			}
+			
 			logger.info("attribute {} ref:{}", attributes.start(),  attributes.getElementRef());
 			
 			if (elements.getElementRef() == attributes.getElementRef()){

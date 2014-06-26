@@ -15,13 +15,12 @@ import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.ids_mannheim.korap.query.SimpleSpanQuery;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 
 /** Span enumeration of attributes which are treated as a normal term with 
  * 	special payload assignment referring to to which element it belongs.  
  * 	The class is basically a wrapper of the TermSpan with additional 
- * 	functionality regarding the element reference. Element reference is 
+ * 	functionality regarding element reference. Element reference is 
  * 	annotated ascendingly starting from the left side.
  * 
  * 	The enumeration is ordered firstly by the start position of the attribute 
