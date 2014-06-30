@@ -1,3 +1,9 @@
+0.31.6 2014-06-30
+        - [feature] support for korap:reference deserialization (diewald)
+	- [feature] Preliminary support for attributes in elements (margaretha)
+	- [feature] Preliminary support operation:repetition deserialization
+	  (unfinished and untested; diewald)
+
 0.31.5 2014-06-17
         - [feature] Batch return of defined foundries and layers in
 	  getMatchInfo() (diewald)

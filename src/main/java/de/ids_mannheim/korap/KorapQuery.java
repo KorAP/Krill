@@ -189,26 +189,6 @@ public class KorapQuery {
 		    this.fromJSON(operands.get(0)), number
                 );
 
-	    case "operation:focus":
-		number = 0;
-
-		if (operands.size() != 1)
-		    throw new QueryException("Operation needs exactly two operands");
-
-		if (json.has("classRef")) {
-		    if (json.has("classRefOp"))
-			throw new QueryException("Class reference operators not supported yet");
-
-		    number = json.get("classRef").get(0).asInt();
-		}
-		else if (json.has("spanRef")) {
-		    throw new QueryException("Span references not supported yet");
-		};
-
-		return new SpanMatchModifyQueryWrapper(
-		    this.fromJSON(operands.get(0)), number
-                );
-
 	    case "operation:sequence":
 		if (operands.size() < 2)
 		    throw new QueryException(
@@ -278,15 +258,66 @@ public class KorapQuery {
 		throw new QueryException("Class group expects class attribute");
 
 	    case "operation:repetition":
-		throw new QueryException("Repetition group not yet supported");
 
-		/*
-		  if (json.has("min") || json.has("max"))
-		  throw new QueryException("Quantifier for repetition group not yet supported");
-		*/
+		// temporary
+		int min = json.get("min").asInt(1);
+		int max = json.get("max").asInt(1);
+
+		// Sanitize max
+		if (max < 0)
+		    max = 100;
+		else if (max > 100)
+		    max = 100;
+
+		// Sanitize min
+		if (min < 0)
+		    min = 0;
+		else if (min > 100)
+		    max = 100;
+
+		// Check relation between min and max
+		if (min > max)
+		    throw new QueryException("The maximum repetition value has to " +
+					     "be greater or equal to the minimum repetition value");
+
+		if (min == 0)
+		    throw new QueryException("Minimum value of zero is not supported yet");
+
+		return new SpanRepetitionQueryWrapper(
+		    this.fromJSON(operands.get(0)), min, max
+		);
 	    };
 
 	    throw new QueryException("Unknown group operation");
+
+	case "korap:reference":
+	    if (json.has("operation") && json.get("operation").asText() != "operation:focus")
+		throw new QueryException("Reference operation not supported yet");
+
+	    int number = 0;
+
+	    operands = json.get("operands");
+
+	    if (operands.size() == 0)
+		throw new QueryException("Focus with peripheral references is not supported yet");
+
+	    if (operands.size() != 1)
+		throw new QueryException("Operation needs exactly two operands");
+
+
+	    if (json.has("classRef")) {
+		if (json.has("classRefOp"))
+		    throw new QueryException("Class reference operators not supported yet");
+
+		number = json.get("classRef").get(0).asInt();
+	    }
+	    else if (json.has("spanRef")) {
+		throw new QueryException("Span references not supported yet");
+	    };
+
+	    return new SpanMatchModifyQueryWrapper(
+	        this.fromJSON(operands.get(0)), number
+	    );
 
 	case "korap:token":
 	    if (!json.has("wrap"))
@@ -680,6 +711,16 @@ public class KorapQuery {
     public SpanMatchModifyQueryWrapper shrink (SpanQueryWrapperInterface element) {
 	return new SpanMatchModifyQueryWrapper(element);
     };
+
+    // Repetition
+    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapperInterface element, int exact) {
+	return new SpanRepetitionQueryWrapper(element, exact);
+    };
+
+    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapperInterface element, int min, int max) {
+	return new SpanRepetitionQueryWrapper(element, min, max);
+    };
+
 
     // split
 
