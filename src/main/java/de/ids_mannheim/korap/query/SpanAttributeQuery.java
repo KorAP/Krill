@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
@@ -15,9 +14,16 @@ import org.apache.lucene.util.ToStringUtils;
 import de.ids_mannheim.korap.query.spans.AttributeSpans;
 
 public class SpanAttributeQuery extends SimpleSpanQuery{
-
+	
+	boolean isNegation;
+	
 	public SpanAttributeQuery(SpanTermQuery firstClause, boolean collectPayloads) {
 		super(firstClause, collectPayloads);
+	}
+	
+	public SpanAttributeQuery(SpanTermQuery firstClause, boolean isNegation, boolean collectPayloads) {
+		super(firstClause, collectPayloads);
+		this.isNegation = isNegation;
 	}
 
 	@Override
@@ -43,6 +49,14 @@ public class SpanAttributeQuery extends SimpleSpanQuery{
 		sb.append(")");
 		sb.append(ToStringUtils.boost(getBoost()));
 		return sb.toString();
+	}
+
+	public boolean isNegation() {
+		return isNegation;
+	}
+
+	public void setNegation(boolean isNegation) {
+		this.isNegation = isNegation;
 	}
 
 }

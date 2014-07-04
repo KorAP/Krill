@@ -49,6 +49,7 @@ public abstract class SimpleSpans extends Spans{
   		// Get the enumeration of the two spans to match
   		firstSpans = simpleSpanQuery.getFirstClause().
   			getSpans(context, acceptDocs, termContexts);
+  		
   		if (simpleSpanQuery.getSecondClause() != null)
   			secondSpans = simpleSpanQuery.getSecondClause().
   				getSpans(context, acceptDocs, termContexts);

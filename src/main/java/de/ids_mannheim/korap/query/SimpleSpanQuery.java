@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.index.IndexReader;
@@ -16,6 +17,7 @@ public abstract class SimpleSpanQuery extends SpanQuery
 		implements Cloneable{		
 	
 	protected SpanQuery firstClause, secondClause;
+	protected List<SpanQuery> clauseList;
 	private String field;
 	protected boolean collectPayloads;
     
@@ -28,13 +30,34 @@ public abstract class SimpleSpanQuery extends SpanQuery
     public SimpleSpanQuery(SpanQuery firstClause, SpanQuery secondClause, 
     		boolean collectPayloads) {
     	this(firstClause,collectPayloads);
-    	if (!secondClause.getField().equals(field)){
+    	checkField(secondClause);
+    	this.setSecondClause(secondClause);  	
+	}
+    
+    public SimpleSpanQuery(SpanQuery firstClause, List<SpanQuery> 
+    		secondClauses, boolean collectPayloads) {
+    	this(firstClause,collectPayloads);
+    	for (SpanQuery secondClause : secondClauses){
+	    	checkField(secondClause);
+		}
+    	this.setClauseList(secondClauses);
+	}
+    
+    private void checkField(SpanQuery clause) {
+    	if (!clause.getField().equals(field)){
     		throw new IllegalArgumentException(
     				"Clauses must have the same field.");
-    	}    	
-    	this.setSecondClause(secondClause);  	
-	}  
-    	
+    	}
+    }
+	
+	public List<SpanQuery> getClauseList() {
+		return clauseList;
+	}
+
+	public void setClauseList(List<SpanQuery> clauseList) {
+		this.clauseList = clauseList;
+	}
+
 	@Override
 	public String getField() {
 		return field;
@@ -68,8 +91,15 @@ public abstract class SimpleSpanQuery extends SpanQuery
 	@Override
     public void extractTerms(Set<Term> terms) {
 		firstClause.extractTerms(terms);
-		if (secondClause != null)
+		if (secondClause != null){
 			secondClause.extractTerms(terms);
+		}
+		else if (clauseList != null){
+			for (SpanQuery clause : clauseList){
+				clause.extractTerms(terms);
+			}
+		}
+			
     };
     
 	@Override
@@ -79,8 +109,24 @@ public abstract class SimpleSpanQuery extends SpanQuery
 		if (secondClause != null){
 		    clone = updateClone(reader, clone, secondClause, 2);			
 		}
+		else if (clauseList != null){
+			clone = updateClone(reader, clone, clauseList);
+		}
 		return (clone != null ? clone : this );		
 	}	
+	
+	private SimpleSpanQuery updateClone(IndexReader reader, SimpleSpanQuery clone, 
+			 List<SpanQuery> spanQueries) throws IOException{
+		
+		for (int i=0; i < spanQueries.size(); i++){
+			SpanQuery query = (SpanQuery) spanQueries.get(i).rewrite(reader);
+			if (!query.equals(spanQueries.get(i))) {
+				if (clone == null) clone = clone();
+				clone.getClauseList().set(i, query);
+			}
+		}
+		return clone;
+	}
 	
 	private SimpleSpanQuery updateClone(IndexReader reader, SimpleSpanQuery clone, 
 			 SpanQuery sq, int clauseNumber) throws IOException{

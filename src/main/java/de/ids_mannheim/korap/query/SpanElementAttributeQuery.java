@@ -1,11 +1,14 @@
 package de.ids_mannheim.korap.query;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
@@ -13,18 +16,42 @@ import de.ids_mannheim.korap.query.spans.ElementAttributeSpans;
 
 public class SpanElementAttributeQuery extends SimpleSpanQuery{
 	
+	boolean isMultipleAttributes;
+	
 	public SpanElementAttributeQuery(SpanElementQuery firstClause,
 			SpanAttributeQuery secondClause, boolean collectPayloads) {
 		super(firstClause, secondClause, collectPayloads);
 	}
+	
+	public SpanElementAttributeQuery(SpanElementQuery firstClause,
+			List<SpanQuery> secondClauses, boolean collectPayloads) {
+		super(firstClause, secondClauses, collectPayloads);
+		isMultipleAttributes = true;
+	}
 
 	@Override
 	public SimpleSpanQuery clone() {
-		SpanElementAttributeQuery sq = new SpanElementAttributeQuery( 
-				(SpanElementQuery) firstClause.clone(), 
-				(SpanAttributeQuery) secondClause.clone(), 
-				collectPayloads);
-		return null;
+		SpanElementAttributeQuery sq;
+		if (!isMultipleAttributes){
+			sq = new SpanElementAttributeQuery( 
+					(SpanElementQuery) firstClause.clone(), 
+					(SpanAttributeQuery) secondClause.clone(), 
+					collectPayloads);
+		}
+		else {
+			List<SpanQuery> clauseList = new ArrayList<SpanQuery>();
+			SpanAttributeQuery saq;
+			for (SpanQuery q : this.clauseList ){
+				saq = (SpanAttributeQuery) q;
+				clauseList.add(saq.clone());
+			}
+			
+			sq = new SpanElementAttributeQuery(
+					(SpanElementQuery) firstClause.clone(), 
+					clauseList, 
+					collectPayloads);
+		}
+		return sq;
 	}
 
 	@Override
@@ -40,7 +67,16 @@ public class SpanElementAttributeQuery extends SimpleSpanQuery{
 		sb.append("(");
 		sb.append(firstClause.toString(field));
 		sb.append(", ");
-		sb.append(secondClause.toString(field));
+		if (isMultipleAttributes){
+			sb.append("[");
+			for (SpanQuery sq : clauseList){
+				sb.append(sq.toString(field));
+			}
+			sb.append("]");
+		}
+		else {
+			sb.append(secondClause.toString(field));
+		}
 		sb.append(")");
 		return sb.toString();
 	}

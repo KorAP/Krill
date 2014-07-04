@@ -1,25 +1,35 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanElementAttributeQuery;
 
-/** A wrapper matching the element and attribute spans. Specifically searching
- * 	the elements to which a certain attribute belongs to. 
+/** Span enumeration of elements that have some attribute and/or do <em>not</em> 
+ * 	have some attributes. This class handles <em>and</em> operation on attributes.
  * 
+ * 	Use SpanOrQuery to perform <em>or</em> operation on attributes, i.e. choose 
+ * 	between two elements with some attribute constraints. Note that the attribute 
+ * 	constraints have to be in Conjunctive Normal Form (CNF). 
+ *
+ * 	@author margaretha
  * */
 public class ElementAttributeSpans extends SimpleSpans{
 	
-	ElementSpans elements;
-	AttributeSpans attributes;
+	private ElementSpans elements;
+	private List<AttributeSpans> attributeList;
+	private List<AttributeSpans> notAttributeList;
 	
 	protected Logger logger = LoggerFactory.getLogger(ElementAttributeSpans.class);
 	
@@ -28,9 +38,25 @@ public class ElementAttributeSpans extends SimpleSpans{
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(simpleSpanQuery, context, acceptDocs, termContexts);		
 		elements = (ElementSpans) firstSpans;
-		attributes = (AttributeSpans) secondSpans;
 		elements.isElementRef = true; // dummy setting enabling reading elementRef
-		hasMoreSpans = elements.next() & attributes.next();		
+		hasMoreSpans = elements.next();
+		
+		attributeList = new ArrayList<AttributeSpans>();
+		notAttributeList = new ArrayList<AttributeSpans>();
+		
+		List<SpanQuery> sqs = simpleSpanQuery.getClauseList();
+		AttributeSpans as;
+		for (SpanQuery sq: sqs){
+			as = (AttributeSpans) sq.getSpans(context, acceptDocs, termContexts);
+			if (((SpanAttributeQuery) sq).isNegation()){
+				notAttributeList.add(as);
+				as.next();
+			}
+			else {
+				attributeList.add(as);
+				hasMoreSpans &= as.next();
+			}
+		}		
 	}
 
 	@Override
@@ -38,42 +64,121 @@ public class ElementAttributeSpans extends SimpleSpans{
 		isStartEnumeration=false;
 		return advance();
 	}
-
+		
 	private boolean advance() throws IOException {
 		
-		while (hasMoreSpans && ensureSamePosition(elements,attributes)){ 
-			
+		while (hasMoreSpans && computeElementPosition()){			
 			logger.info("element: " + elements.start() + ","+ elements.end() +" ref:"+elements.getElementRef());
 			
-			if (elements.getElementRef() < 1){
+			if (checkElementRef() && checkNotElementRef()){			
+				this.matchDocNumber = elements.doc();
+				this.matchStartPosition = elements.start();
+				this.matchEndPosition = elements.end();
+				this.matchPayload = elements.getPayload();
+				hasMoreSpans = attributeList.get(0).next();
+				logger.info("MATCH "+matchDocNumber);
+				
+				hasMoreSpans = elements.next();		
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean checkElementRef() throws IOException{
+		
+		for (AttributeSpans attribute: attributeList){			
+			if (elements.getElementRef() != attribute.getElementRef()){
+				logger.info("attribute ref doesn't match");
+				if (elements.getElementRef() < attribute.getElementRef())
+					hasMoreSpans = attribute.next();
+				else {
+					hasMoreSpans = elements.next();				
+				}
+				
+				return false;
+			}
+		}		
+		return true;
+	}
+	
+	
+	private boolean checkNotElementRef() throws IOException{
+		for (AttributeSpans notAttribute: notAttributeList){
+			if (elements.start() == notAttribute.start() &&
+					elements.getElementRef() == notAttribute.getElementRef()){
+				logger.info("not attribute ref exists");
+				hasMoreSpans = elements.next();	
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	
+	private boolean computeElementPosition() throws IOException {		
+
+		while (hasMoreSpans){
+			
+			if (elements.getElementRef() < 1){ // the element does not have an attribute
 				elements.isElementRef = true; // dummy setting enabling reading elementRef
 				hasMoreSpans = elements.next();
 				logger.info("skip");
 				continue;
 			}
 			
-			logger.info("attribute {} ref:{}", attributes.start(),  attributes.getElementRef());
-			
-			if (elements.getElementRef() == attributes.getElementRef()){
-				this.matchDocNumber = elements.doc();
-				this.matchStartPosition = elements.start();
-				this.matchEndPosition = elements.end();
-				this.matchPayload = elements.getPayload();
-				hasMoreSpans = attributes.next();
+			if (checkAttributeListPosition() && 
+					checkNotAttributeListPosition()){
+				logger.info("element is found: "+ elements.start());
 				return true;
-			}
-			
-			if (elements.getElementRef() < attributes.getElementRef())
-				hasMoreSpans = attributes.next();
-			else {
-				elements.isElementRef = true; // dummy setting enabling reading elementRef
-				hasMoreSpans = elements.next();				
-			}
-		}
+			}			
+		}		
 		
 		return false;
 	}
-
+	
+	private boolean checkNotAttributeListPosition() throws IOException{
+		
+		for (AttributeSpans a : notAttributeList){
+			// advance the doc# of not AttributeSpans
+			logger.info("a "+a.start());
+			while (!a.isFinish() &&	 a.doc() <= elements.doc()){
+				
+				if (a.doc() == elements.doc() &&
+						a.start() >= elements.start())
+					break;
+				
+				if (!a.next()) a.setFinish(true);
+			}
+		}
+		
+		return true;
+	}
+	
+	private boolean checkAttributeListPosition() throws IOException{
+		int currentPosition = elements.start();
+		boolean isSame = true;
+		boolean isFirst = true;
+		
+		for (AttributeSpans a : attributeList){
+			if(!ensureSamePosition(elements, a)) return false;
+				
+				logger.info("pos:" + elements.start());
+				if (isFirst){ 
+					isFirst = false;
+					currentPosition = elements.start();
+				}
+				else if (currentPosition != elements.start()){					
+					currentPosition = elements.start();
+					isSame = false;
+				
+			}				 
+		}
+		logger.info("same pos: "+isSame+ ", pos "+elements.start());
+		return isSame;
+	}
+	
+	
 	private boolean ensureSamePosition(ElementSpans elements,
 			AttributeSpans attributes) throws IOException {
 		
@@ -91,19 +196,26 @@ public class ElementAttributeSpans extends SimpleSpans{
 
 	@Override
 	public boolean skipTo(int target) throws IOException {
-		if (hasMoreSpans && (attributes.doc() < target)){
-  			if (!attributes.skipTo(target)){
+		if (hasMoreSpans && (elements.doc() < target)){
+  			if (!elements.skipTo(target)){
   				return false;
   			}
   		}		
-		matchPayload.clear();
 		isStartEnumeration=false;
 		return advance();
 	}
 
 	@Override
 	public long cost() {
-		return elements.cost() + attributes.cost();
+		
+		long cost = 0;
+		for (AttributeSpans as: attributeList){
+			cost += as.cost();
+		}
+		for (AttributeSpans as: notAttributeList){
+			cost += as.cost();
+		}
+		return elements.cost() + cost;
 	}
 
 

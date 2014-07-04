@@ -33,7 +33,8 @@ public class AttributeSpans extends SimpleSpans{
 	
 	private List<CandidateAttributeSpan> candidateList;
 	private int currentDoc, currentPosition;
-	public short elementRef;
+	private short elementRef;
+	private boolean isFinish;
 	
 	protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
 	
@@ -112,6 +113,14 @@ public class AttributeSpans extends SimpleSpans{
 
 	public void setElementRef(short elementRef) {
 		this.elementRef = elementRef;
+	}
+
+	public boolean isFinish() {
+		return isFinish;
+	}
+
+	public void setFinish(boolean isFinish) {
+		this.isFinish = isFinish;
 	}
 
 	@Override

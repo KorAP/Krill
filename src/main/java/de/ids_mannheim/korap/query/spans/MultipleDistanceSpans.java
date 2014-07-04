@@ -16,11 +16,11 @@ import org.hamcrest.core.IsInstanceOf;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
-/**	Span enumeration of matches whose two sub-spans has exactly the same 
+/**	Span enumeration of matches whose two sub-spans have exactly the same 
  * 	first and second sub-sub-spans. This class basically filters the span 
  * 	matches of its child spans.
  * 
- * 	TODO: This doesn't accommodate distance constraint with exclusion
+ * 	This accommodates distance constraint with exclusion.
  * 	Case 1: return the match from another non-exclusion constraint.
  * 	Case 2: return only the first-span when all constraints are exclusions.
  * 	Case 3:	spans are not in the same doc 
@@ -102,14 +102,17 @@ public class MultipleDistanceSpans extends DistanceSpans{
 		
 		if (x.isExclusion() || y.isExclusion()){			
 			if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()){
+				// case 2
 				if (x.isExclusion() && y.isExclusion()){
 					// set x or y doesnt matter
 					setMatchProperties(x,true);
 				}
+				// case 1
 				else if (x.isExclusion()){  
 					// set y, the usual match
 					setMatchProperties(y,true);
 				}
+				// case 1
 				else { setMatchProperties(x,true); }
 				return true;
 			}

@@ -18,7 +18,6 @@ import de.ids_mannheim.korap.query.spans.MultipleDistanceSpans;
  * 	No repetition of constraints of the same type is allowed. For example,
  * 	there must only exactly one constraint for word/token-based distance.
  * 	
- * 	Warning: Exclusion constraint is not suitable yet!
  * 	@author margaretha
  * */
 public class SpanMultipleDistanceQuery extends SimpleSpanQuery{
