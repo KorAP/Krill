@@ -228,9 +228,10 @@ public class TestAttributeIndex {
 		
 		kr = ki.search(snq, (short) 10);
 		
+		assertEquals(1,kr.getTotalResults());
 		assertEquals(2,kr.getMatch(0).getLocalDocID());
-		assertEquals(2,kr.getMatch(0).getStartPos());
-		assertEquals(5,kr.getMatch(0).getEndPos());
+		assertEquals(1,kr.getMatch(0).getStartPos());
+		assertEquals(5,kr.getMatch(0).getEndPos());		
 	}
 	
 	
