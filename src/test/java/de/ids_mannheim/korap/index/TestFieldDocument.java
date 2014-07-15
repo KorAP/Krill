@@ -177,7 +177,6 @@ public class TestFieldDocument {
 
 	// Start creating query
 	/*
-
 	ks = new KorapSearch(kq.tag("xip/c:NPA"));
 	ks.setCount(1);
 	ks.setCutOff(true);

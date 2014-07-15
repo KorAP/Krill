@@ -770,8 +770,12 @@ public class KorapMatch extends KorapDocument {
 	    }
 	    else if (arg0[0] == arg1[0]) {
 		// Check endpositions
-		if (arg0[1] > arg1[1])
+		if (arg0[1] > arg1[1]) {
 		    return -1;
+		}
+		else if (arg0[1] == arg1[1]) {
+		    return 0;
+		}
 		return 1;
 	    };
 	    return -1;
@@ -790,8 +794,12 @@ public class KorapMatch extends KorapDocument {
 	    }
 	    else if (arg0[1] == arg1[1]) {
 		// Check start positions
-		if (arg0[0] < arg1[0])
+		if (arg0[0] < arg1[0]) {
 		    return 1;
+		}
+		else if (arg0[0] == arg1[0]) {
+		    return 0;
+		};
 		return -1;
 	    };
 	    return -1;
