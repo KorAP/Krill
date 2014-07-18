@@ -291,8 +291,8 @@ public class KorapQuery {
 	    throw new QueryException("Unknown group operation");
 
 	case "korap:reference":
-	    if (json.has("operation") && json.get("operation").asText() != "operation:focus")
-		throw new QueryException("Reference operation not supported yet");
+	    if (json.has("operation") && !json.get("operation").asText().equals("operation:focus"))
+		throw new QueryException("Reference operation " + json.get("operation").asText() + " not supported yet");
 
 	    int number = 0;
 
