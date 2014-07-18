@@ -1,3 +1,6 @@
+0.31.7 2014-07-18
+        - [feature] Added warnings to responses (diewald)
+
 0.31.6 2014-06-30
         - [feature] support for korap:reference deserialization (diewald)
 	- [feature] Preliminary support for attributes in elements (margaretha)
