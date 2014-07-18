@@ -35,6 +35,7 @@ public class KorapSearch {
     private KorapCollection collection;
     private KorapIndex index;
     private String error;
+    private String warning;
 
     private JsonNode request;
 
@@ -63,6 +64,9 @@ public class KorapSearch {
 		this.error = "No query defined";
 	    };
 
+	    if (this.request.has("warning"))
+		this.warning = this.request.get("warning").asText();
+	    
 	    // "meta" virtual collections
 	    if (this.request.has("collections"))
 		this.setCollection(new KorapCollection(jsonString));
@@ -119,6 +123,17 @@ public class KorapSearch {
 
     public String getError () {
 	return this.error;
+    };
+
+    public String getWarning () {
+	return this.warning;
+    };
+
+    public void addWarning (String warning) {
+	if (this.warning == null)
+	    this.warning = warning;
+	else
+	    this.warning += "; " + warning;
     };
 
     public SpanQuery getQuery () {
@@ -261,12 +276,16 @@ public class KorapSearch {
 	    KorapResult kr = new KorapResult();
 	    kr.setRequest(this.request);
 	    kr.setError(this.error);
+	    if (this.warning != null)
+		kr.addWarning(this.warning);
 	    return kr;
 	};
 
 	this.getCollection().setIndex(ki);
 	KorapResult kr = ki.search(this.getCollection(), this);
 	kr.setRequest(this.request);
+	if (this.warning != null)
+	    kr.addWarning(this.warning);
 	return kr;
     };
 };

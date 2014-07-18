@@ -36,6 +36,7 @@ public class KorapResult {
     private String benchmarkSearchResults,
             benchmarkHitCounter;
     private String error = null;
+    private String warning = null;
     private String version;
 
     private JsonNode request;
@@ -144,10 +145,20 @@ public class KorapResult {
         return this.error;
     }
 
-
     public void setError(String msg) {
         this.error = msg;
     }
+
+    public String getWarning() {
+        return this.warning;
+    }
+
+    public void addWarning (String warning) {
+	if (this.warning == null)
+	    this.warning = warning;
+	else
+	    this.warning += "; " + warning;
+    };
 
 
     public void setRequest(JsonNode request) {
