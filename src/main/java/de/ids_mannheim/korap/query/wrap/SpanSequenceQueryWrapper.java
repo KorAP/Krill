@@ -9,6 +9,7 @@ import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -23,6 +24,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     private ArrayList<SpanQuery> segments;
     private ArrayList<DistanceConstraint> constraints;
     private boolean isInOrder = true;
+    private boolean isNull = true;
 
     public SpanSequenceQueryWrapper (String field) {
 	this.field = field;
@@ -34,21 +36,37 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	for (int i = 0; i < terms.length; i++) {
 	    this.segments.add((SpanQuery) new SpanTermQuery(new Term(field, terms[i])));
 	};
+	this.isNull = false;
     };
 
     public SpanSequenceQueryWrapper (String field, SpanQuery sq) {
 	this(field);
 	this.segments.add((SpanQuery) sq);
+	this.isNull = false;
     };
 
     public SpanSequenceQueryWrapper (String field, SpanQueryWrapperInterface sswq) {
 	this(field);
-	this.segments.add((SpanQuery) sswq.toQuery());
+	if (!sswq.isNull()) {
+	    this.segments.add((SpanQuery) sswq.toQuery());
+	    this.isNull = false;
+	};
     };
 
     public SpanSequenceQueryWrapper (String field, SpanRegexQueryWrapper re) {
 	this(field);
-	this.segments.add((SpanQuery) re.toQuery());
+	if (!re.isNull()) {
+	    this.segments.add((SpanQuery) re.toQuery());
+	    this.isNull = false;
+	};
+    };
+
+    public SpanSequenceQueryWrapper (String field, SpanWildcardQueryWrapper wc) {
+	this(field);
+	if (!wc.isNull()) {
+	    this.segments.add((SpanQuery) wc.toQuery());
+	    this.isNull = false;
+	};
     };
 
     public SpanQuery get (int index) {
@@ -61,31 +79,61 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
     public SpanSequenceQueryWrapper append (String term) {
 	this.segments.add((SpanQuery) new SpanTermQuery(new Term(field, term)));
+	this.isNull = false;
 	return this;
     };
 
     public SpanSequenceQueryWrapper append (SpanQueryWrapperInterface ssq) {
-	this.segments.add((SpanQuery) ssq.toQuery());
+	if (!ssq.isNull()) {
+	    this.segments.add((SpanQuery) ssq.toQuery());
+	    this.isNull = false;
+	};
 	return this;
     };
 
     public SpanSequenceQueryWrapper append (SpanRegexQueryWrapper srqw) {
-	this.segments.add((SpanQuery) srqw.toQuery());
+	if (!srqw.isNull()) {
+	    this.segments.add((SpanQuery) srqw.toQuery());
+	    this.isNull = false;
+	};
+	return this;
+    };
+    
+    public SpanSequenceQueryWrapper append (SpanWildcardQueryWrapper swqw) {
+	if (!swqw.isNull()) {
+	    this.segments.add((SpanQuery) swqw.toQuery());
+	    this.isNull = false;
+	};
 	return this;
     };
 
     public SpanSequenceQueryWrapper prepend (String term) {
 	this.segments.add(0, (SpanQuery) new SpanTermQuery(new Term(field, term)));
+	this.isNull = false;
 	return this;
     };
 
     public SpanSequenceQueryWrapper prepend (SpanSegmentQueryWrapper ssq) {
-	this.segments.add(0, (SpanQuery) ssq.toQuery());
+	if (!ssq.isNull()) {
+	    this.segments.add(0, (SpanQuery) ssq.toQuery());
+	    this.isNull = false;
+	};
 	return this;
     };
 
     public SpanSequenceQueryWrapper prepend (SpanRegexQueryWrapper re) {
-	this.segments.add(0, (SpanQuery) re.toQuery());
+	if (!re.isNull()) {
+	    this.segments.add(0, (SpanQuery) re.toQuery());
+	    this.isNull = false;
+	};
+	return this;
+    };
+
+    public SpanSequenceQueryWrapper prepend (SpanWildcardQueryWrapper swqw) {
+	if (!swqw.isNull()) {
+	    this.segments.add(0, (SpanQuery) swqw.toQuery());
+	    this.isNull = false;
+	};
 	return this;
     };
 
@@ -122,7 +170,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
     
     public SpanQuery toQuery () {
-	if (this.segments.size() == 0) {
+	if (this.segments.size() == 0 || this.isNull) {
 	    return (SpanQuery) null;
 	};
 
@@ -203,5 +251,13 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	if (this.constraints.size() <= 0)
 	    return false;
 	return true;
+    };
+
+    public boolean isOptional () {
+	return false;
+    };
+
+    public boolean isNull () {
+	return this.isNull;
     };
 };

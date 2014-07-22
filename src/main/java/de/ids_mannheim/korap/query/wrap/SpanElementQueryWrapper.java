@@ -17,4 +17,12 @@ public class SpanElementQueryWrapper implements SpanQueryWrapperInterface {
     public SpanQuery toQuery () {
 	return (SpanQuery) new SpanElementQuery(this.field, this.element);
     };
+
+    public boolean isOptional () {
+	return false;
+    };
+
+    public boolean isNull () {
+	return false;
+    };
 };

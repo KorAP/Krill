@@ -33,9 +33,20 @@ public class SpanClassQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public SpanQuery toQuery () {
+	if (this.subquery.isNull())
+	    return (SpanQuery) null;
+	
 	if (this.number == (byte) 0) {
 	    return new SpanClassQuery((SpanQuery) this.subquery.toQuery());
 	};
 	return new SpanClassQuery((SpanQuery) this.subquery.toQuery(), (byte) this.number);
+    };
+
+    public boolean isOptional () {
+	return false;
+    };
+
+    public boolean isNull () {
+	return this.subquery.isNull();
     };
 };

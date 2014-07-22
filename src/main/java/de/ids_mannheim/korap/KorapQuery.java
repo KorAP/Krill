@@ -161,7 +161,6 @@ public class KorapQuery {
 		if (json.has("exclude") && json.get("exclude").asBoolean())
 		    throw new QueryException("Exclusion is currently not supported in position operations");
 
-
 		return new SpanWithinQueryWrapper(
 		    this.fromJSON(operands.get(0)),
 		    this.fromJSON(operands.get(1)),

@@ -28,4 +28,12 @@ public class SpanWildcardQueryWrapper {
     public SpanQuery toQuery() {
 	return this.query;
     };
+
+    public boolean isOptional () {
+	return false;
+    };
+
+    public boolean isNull () {
+	return false;
+    };
 };

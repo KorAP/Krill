@@ -8,6 +8,8 @@ import org.apache.lucene.search.Query;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
 import org.apache.lucene.search.spans.SpanQuery;
 
+// This might be irrelevant now with repetition!
+
 public class SpanQuantifierQueryWrapper implements SpanQueryWrapperInterface {
     private String field;
 
@@ -17,6 +19,14 @@ public class SpanQuantifierQueryWrapper implements SpanQueryWrapperInterface {
 
     public SpanQuery toQuery () {
 	return (SpanQuery) null;
+    };
+
+    public boolean isOptional () {
+	return false;
+    };
+
+    public boolean isNull () {
+	return false;
     };
 
 

@@ -8,6 +8,10 @@ import org.apache.lucene.index.Term;
 
 import java.util.*;
 
+/*
+  TODO: Don't allow queries like ".*?"!!!
+*/
+
 public class SpanRegexQueryWrapper {
     private SpanQuery query;
 
@@ -37,5 +41,13 @@ public class SpanRegexQueryWrapper {
 
     public SpanQuery toQuery() {
 	return this.query;
+    };
+
+    public boolean isOptional () {
+	return false;
+    };
+
+    public boolean isNull () {
+	return false;
     };
 };

@@ -33,6 +33,16 @@ public class SpanMatchModifyQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public SpanQuery toQuery () {
+	if (this.subquery.isNull())
+	    return (SpanQuery) null;
 	return new SpanMatchModifyClassQuery(this.subquery.toQuery(), this.number);
+    };
+
+    public boolean isOptional () {
+	return false;
+    };
+
+    public boolean isNull () {
+	return this.subquery.isNull();
     };
 };

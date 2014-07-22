@@ -84,6 +84,10 @@ import org.slf4j.LoggerFactory;
 
 /*
   TODO: Support layer for specific foundries (IMPORTANT)
+  TODO: Implement timeout!!!
+    - https://lucene.apache.org/core/2_9_4/api/all/org/apache/lucene/search/TimeLimitingCollector.html
+    - https://lucene.apache.org/core/2_9_4/api/all/org/apache/lucene/search/TimeLimitingCollector.html
+    - http://stackoverflow.com/questions/19557476/timing-out-a-query-in-solr
 
   TODO: Use FieldCache!
   TODO: Reuse the indexreader everywhere - it should be threadsafe!
