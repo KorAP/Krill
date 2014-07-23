@@ -1,3 +1,6 @@
+0.31.8 2014-07-23
+        - [feature] Added optionality to querys for quantifiers (diewald)
+
 0.31.7 2014-07-18
         - [feature] Added warnings to responses (diewald)
 

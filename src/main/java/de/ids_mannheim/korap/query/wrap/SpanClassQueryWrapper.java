@@ -43,7 +43,7 @@ public class SpanClassQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public boolean isOptional () {
-	return false;
+	return this.subquery.isOptional();
     };
 
     public boolean isNull () {

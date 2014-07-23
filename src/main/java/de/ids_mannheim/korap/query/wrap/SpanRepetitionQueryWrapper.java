@@ -10,7 +10,7 @@ public class SpanRepetitionQueryWrapper implements SpanQueryWrapperInterface {
     private SpanQueryWrapperInterface subquery;
     private int min = 1;
     private int max = 1;
-    private boolean optional = false;
+    private boolean isOptional = false;
     private boolean isNull = false;
 
     public SpanRepetitionQueryWrapper (SpanQueryWrapperInterface subquery, int exact) {
@@ -18,6 +18,7 @@ public class SpanRepetitionQueryWrapper implements SpanQueryWrapperInterface {
 
 	if (exact < 1 || this.subquery.isNull()) {
 	    this.isNull = true;
+	    this.isOptional = true;
 	    return;
 	};
 	
@@ -34,7 +35,8 @@ public class SpanRepetitionQueryWrapper implements SpanQueryWrapperInterface {
 	};
 	
 	if (min == 0) {
-	    this.optional = true;
+	    this.isOptional = true;
+	    min = 1;
 	    if (max == 0)
 		this.isNull = true;
 	};
@@ -45,11 +47,13 @@ public class SpanRepetitionQueryWrapper implements SpanQueryWrapperInterface {
     public SpanQuery toQuery () {
 	if (this.isNull)
 	    return (SpanQuery) null;
+	if (this.min == 1 && this.max == 1)
+	    return this.subquery.toQuery();
 	return new SpanRepetitionQuery(this.subquery.toQuery(), this.min, this.max, true);
     };
 
     public boolean isOptional () {
-	return this.optional;
+	return this.isOptional;
     };
 
     public boolean isNull () {

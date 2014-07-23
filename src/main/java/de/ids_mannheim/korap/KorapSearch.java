@@ -65,7 +65,7 @@ public class KorapSearch {
 	    };
 
 	    if (this.request.has("warning"))
-		this.warning = this.request.get("warning").asText();
+		this.addWarning(this.request.get("warning").asText());
 	    
 	    // "meta" virtual collections
 	    if (this.request.has("collections"))

@@ -39,7 +39,7 @@ public class SpanMatchModifyQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public boolean isOptional () {
-	return false;
+	return this.subquery.isOptional();
     };
 
     public boolean isNull () {

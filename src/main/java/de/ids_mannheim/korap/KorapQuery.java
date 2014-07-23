@@ -24,6 +24,13 @@ import org.slf4j.LoggerFactory;
   negation terms (and negation subqueries), like
   [base=Der]([base=alte]|[base=junge])[base=Mann & p!=ADJA]![base=war | base=lag]
   Search for all documents containing "s:Der" and ("s:alte" or "s:junge") and "s:Mann"
+
+  TODO: korap:reference doesn't work as expected:
+  - Check with
+    - focus(2:{1:[orth=der]{3:{2:[orth=Baum]}}})
+    - focus(3:startswith(<s>,{3:[tt/p=ART]{1:{2:[tt/p=ADJA]{3,4}}[tt/p=NN]}}))
+    - focus(3:endswith(<s>,{3:[tt/p=ART]{1:{2:[tt/p=ADJA]{3,4}}[tt/p=NN]}}))
+
 */
 
 /**
@@ -279,8 +286,10 @@ public class KorapQuery {
 		    throw new QueryException("The maximum repetition value has to " +
 					     "be greater or equal to the minimum repetition value");
 
-		if (min == 0)
-		    throw new QueryException("Minimum value of zero is not supported yet");
+		if (min == 0) {
+		    throw new QueryException(
+		        "Zero minimum of repetition is not supported yet");
+		};
 
 		return new SpanRepetitionQueryWrapper(
 		    this.fromJSON(operands.get(0)), min, max
@@ -320,13 +329,13 @@ public class KorapQuery {
 
 	case "korap:token":
 	    if (!json.has("wrap"))
-		throw new QueryException("Tokens need a wrap attribute");
+		throw new QueryException("Empty Tokens are not supported yet");
 
 	    return this._segFromJSON(json.get("wrap"));
 
 	case "korap:span":
 	    if (!json.has("key"))
-		throw new QueryException("A span need at least a key definition");
+		throw new QueryException("A span needs at least a key definition");
 
 	    return this._termFromJSON(json);
 	};
@@ -722,5 +731,4 @@ public class KorapQuery {
 
 
     // split
-
 };

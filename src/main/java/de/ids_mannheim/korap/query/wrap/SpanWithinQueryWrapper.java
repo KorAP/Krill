@@ -10,13 +10,19 @@ import java.util.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
+/*
+  Document: Optionality of operands will be ignored - while the optionality of the wrap is herited!
+
+  Idea:
+  - Maybe inherit the optionality when it is in an element and rewrite the query to an alternation if the wrap is
+*/
 
 
 public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
     private SpanQueryWrapperInterface element;
     private SpanQueryWrapperInterface wrap;
     private byte flag;
-    private boolean isNull = true;;
+    private boolean isNull = true;
 
     public SpanWithinQueryWrapper (SpanQueryWrapperInterface element, SpanQueryWrapperInterface wrap) {
 	this.element = element;
@@ -30,6 +36,7 @@ public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
 	this.element = element;
 	this.wrap = wrap;
 	this.flag = flag;
+
 	if (!element.isNull() && !wrap.isNull())
 	    this.isNull = false;
     };

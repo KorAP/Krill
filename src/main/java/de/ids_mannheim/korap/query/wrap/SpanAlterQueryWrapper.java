@@ -17,10 +17,17 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
     private SpanQuery query;
     private List<SpanQuery> alternatives;
     private boolean isNull = true;
+    private boolean isOptional = false;
 
     public SpanAlterQueryWrapper (String field) {
 	this.field = field;
 	this.alternatives = new ArrayList<>();
+    };
+
+    public SpanAlterQueryWrapper (String field, SpanQuery query) {
+	this.field = field;
+	this.alternatives = new ArrayList<>();
+	this.alternatives.add(query);
     };
 
     public SpanAlterQueryWrapper (String field, String ... terms) {
@@ -33,7 +40,11 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public SpanAlterQueryWrapper or (String term) {
-	this.alternatives.add(new SpanTermQuery(new Term(this.field, term)));
+	return this.or(new SpanTermQuery(new Term(this.field, term)));
+    };
+
+    public SpanAlterQueryWrapper or (SpanQuery query) {
+	this.alternatives.add(query);
 	this.isNull = false;
 	return this;
     };
@@ -41,6 +52,12 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
     public SpanAlterQueryWrapper or (SpanQueryWrapperInterface term) {
 	if (term.isNull())
 	    return this;
+
+	// If one operand is optional, the whole group can be optional
+	// a | b* | c
+	if (term.isOptional())
+	    this.isOptional = true;
+
 	this.alternatives.add( term.toQuery() );
 	this.isNull = false;
 	return this;
@@ -75,7 +92,7 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public boolean isOptional () {
-	return false;
+	return this.isOptional;
     };
 
     public boolean isNull () {

@@ -38,6 +38,41 @@ corpusID
 pubDate
 pubPlace
 
+Query: (corpusID=BRZ13 | corpusID=WPD) & textClass=wissenschaft
+
+{
+    "@type": "korap:filter",
+    "filter": {
+        "@type": "korap:docGroup",
+        "relation": "relation:and",
+        "operands": [
+            {
+                "@type": "korap:docGroup",
+                "relation": "relation:or",
+                "operands": [
+                    {
+                        "@type": "korap:doc",
+                        "key": "corpusID",
+                        "value": "BRZ13",
+                        "match": "match:eq"
+                    },
+                    {
+                        "@type": "korap:doc",
+                        "key": "corpusID",
+                        "value": "WPD",
+                        "match": "match:eq"
+                    }
+                ]
+            },
+            {
+                "@type": "korap:doc",
+                "key": "textClass",
+                "value": "wissenschaft",
+                "match": "match:eq"
+            }
+        ]
+    }
+}
 */
 
 public class KorapFilter {
