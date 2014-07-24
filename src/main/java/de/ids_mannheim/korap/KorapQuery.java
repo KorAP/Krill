@@ -254,11 +254,18 @@ public class KorapQuery {
 			if (constraint.has("key"))
 			    unit = constraint.get("key").asText();
 
-			sseqqw.withConstraint(
-		            constraint.get("min").asInt(1),
-			    constraint.get("max").asInt(1),
-			    unit
-			);
+			int min, max;
+			if (constraint.has("boundary")) {
+			    Boundary b = new Boundary(constraint.get("boundary"), 1,1);
+			    min = b.min;
+			    max = b.max;
+			}
+			else {
+			    min = constraint.get("min").asInt(1);
+			    max = constraint.get("max").asInt(1);
+			};
+
+			sseqqw.withConstraint(min, max, unit);
 		    };
 		};
 
