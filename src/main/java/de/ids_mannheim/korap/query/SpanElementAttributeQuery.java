@@ -62,6 +62,7 @@ public class SpanElementAttributeQuery extends SimpleSpanQuery{
 
 	@Override
 	public String toString(String field) {
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("spanElementAttribute");
 		sb.append("(");
@@ -69,9 +70,16 @@ public class SpanElementAttributeQuery extends SimpleSpanQuery{
 		sb.append(", ");
 		if (isMultipleAttributes){
 			sb.append("[");
-			for (SpanQuery sq : clauseList){
+			
+			SpanQuery sq;
+			for (int i=0; i < clauseList.size(); i++){
+				sq = clauseList.get(i); 
 				sb.append(sq.toString(field));
+				
+				if (i < clauseList.size() -1)
+					sb.append(", ");
 			}
+			
 			sb.append("]");
 		}
 		else {
