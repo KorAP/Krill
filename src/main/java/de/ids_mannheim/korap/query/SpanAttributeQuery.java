@@ -13,6 +13,13 @@ import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.AttributeSpans;
 
+/** Span enumerations of attributes (i.e. spans with prefix @, for example 
+ * 	@:class=header) commonly used to search elements with some specific 
+ * 	attribute(s). Negation allows for searching element <em>without</em> some 
+ * 	attribute(s). 
+ * 
+ * 	@author margaretha
+ * */
 public class SpanAttributeQuery extends SimpleSpanQuery{
 	
 	boolean isNegation;
@@ -21,7 +28,8 @@ public class SpanAttributeQuery extends SimpleSpanQuery{
 		super(firstClause, collectPayloads);
 	}
 	
-	public SpanAttributeQuery(SpanTermQuery firstClause, boolean isNegation, boolean collectPayloads) {
+	public SpanAttributeQuery(SpanTermQuery firstClause, boolean isNegation, 
+			boolean collectPayloads) {
 		super(firstClause, collectPayloads);
 		this.isNegation = isNegation;
 	}
@@ -30,6 +38,7 @@ public class SpanAttributeQuery extends SimpleSpanQuery{
 	public SimpleSpanQuery clone() {
 		SpanAttributeQuery sq = new SpanAttributeQuery(
 				(SpanTermQuery) this.firstClause.clone(), 
+				this.isNegation,
 				this.collectPayloads);
 		sq.setBoost(getBoost());
 		return sq;
@@ -46,7 +55,8 @@ public class SpanAttributeQuery extends SimpleSpanQuery{
 		StringBuilder sb = new StringBuilder();
 		sb.append("spanAttribute(");
 		sb.append(firstClause.toString(field));
-		sb.append(")");
+		sb.append(",");
+		sb.append(isNegation ? "negated)" : "notNegated)");		
 		sb.append(ToStringUtils.boost(getBoost()));
 		return sb.toString();
 	}

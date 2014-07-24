@@ -14,6 +14,11 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.ElementAttributeSpans;
 
+/** Span enumerations of elements having some specific attribute(s) or <em>not</em>
+ * 	having some attribute(s).
+ * 
+ * 	@author margaretha
+ * */
 public class SpanElementAttributeQuery extends SimpleSpanQuery{
 	
 	boolean isMultipleAttributes;
