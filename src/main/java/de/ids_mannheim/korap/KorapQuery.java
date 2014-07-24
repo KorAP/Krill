@@ -71,6 +71,23 @@ public class KorapQuery {
 	this.json = new ObjectMapper();
     };
 
+    /**
+     * Private class for korap:boundary objects
+     */
+    private class Boundary {
+	public int min, max;
+
+	public Boundary (JsonNode json, int defaultMin, int defaultMax) throws QueryException {
+	    if (!json.has("@type") ||
+		!json.get("@type").asText().equals("korap:boundary")) {
+		throw new QueryException("Boundary definition is not valid");
+	    };
+
+	    min = json.get("min").asInt(defaultMin);
+	    max = json.get("max").asInt(defaultMax);
+	};
+    };
+
     public SpanQueryWrapperInterface fromJSON (String jsonString) throws QueryException {
 	JsonNode json;
 	try {
@@ -265,9 +282,16 @@ public class KorapQuery {
 
 	    case "operation:repetition":
 
-		// temporary
-		int min = json.get("min").asInt(1);
-		int max = json.get("max").asInt(1);
+		int min, max;
+		if (json.has("boundary")) {
+		    Boundary b = new Boundary(json.get("boundary"), 0, 100);
+		    min = b.min;
+		    max = b.max;
+		}
+		else {
+		    min = json.get("min").asInt(0);
+		    max = json.get("max").asInt(100);
+		};
 
 		// Sanitize max
 		if (max < 0)
@@ -279,17 +303,12 @@ public class KorapQuery {
 		if (min < 0)
 		    min = 0;
 		else if (min > 100)
-		    max = 100;
-
+		    min = 100;
+		
 		// Check relation between min and max
 		if (min > max)
 		    throw new QueryException("The maximum repetition value has to " +
 					     "be greater or equal to the minimum repetition value");
-
-		if (min == 0) {
-		    throw new QueryException(
-		        "Zero minimum of repetition is not supported yet");
-		};
 
 		return new SpanRepetitionQueryWrapper(
 		    this.fromJSON(operands.get(0)), min, max
