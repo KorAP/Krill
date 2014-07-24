@@ -99,7 +99,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     };
     
     public SpanSequenceQueryWrapper append (SpanQuery query) {
-	this.isNull = false;
+	this.isNull     = false;
 	this.isOptional = false;
 
 	// Check if there has to be alternation magic in action
@@ -113,6 +113,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	    // Update boundary optionality
 	    if (this.firstIsOptional && this.segments.size() == 0)
 		this.firstIsOptional = false;
+	    
 	    this.lastIsOptional = false;
 
 	    this.segments.add((SpanQuery) saqw.toQuery());
@@ -128,28 +129,22 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	if (!ssq.isNull()) {
 	    SpanQuery appendQuery = ssq.toQuery();
 	    if (!ssq.isOptional()) {
-		return this.append((SpanQuery) ssq.toQuery());
+		return this.append(appendQuery);
 	    };
 	    
-	    // Situation is a?b?
-	    if (this.lastIsOptional) {
+	    // Situation is ab? or a?b?
+	    if (this.segments.size() != 0) {
 		// Remove last element of the list and prepend it
 		SpanQuery lastQuery = this.segments.remove(this.segments.size() - 1);
 		SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, lastQuery);
 		SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(field, appendQuery);
 		ssqw.prepend(lastQuery);
-		saqw.or(appendQuery);
-		saqw.or(ssqw);
-		this.segments.add((SpanQuery) saqw.toQuery());
-	    }
-	    
-	    // Situation is ab?
-	    else if (this.segments.size() != 0) {
-		// Remove last element of the list and prepend it
-		SpanQuery lastQuery = this.segments.remove(this.segments.size() - 1);
-		SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, lastQuery);
-		SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(field, appendQuery);
-		ssqw.prepend(lastQuery);
+
+		// Situation is a?b?
+		if (this.lastIsOptional)
+		    saqw.or(appendQuery);
+		// last stays optional
+
 		saqw.or(ssqw);
 		this.segments.add((SpanQuery) saqw.toQuery());
 	    }
@@ -160,8 +155,8 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
 		// Update boundary optionality
 		this.firstIsOptional = true;
-		this.isOptional = true;
-		this.lastIsOptional = true;
+		this.isOptional      = true;
+		this.lastIsOptional  = true;
 	    };
 	    this.isNull = false;
 	};
@@ -187,7 +182,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public SpanSequenceQueryWrapper prepend (SpanQuery query) {
-	this.isNull = false;
+	this.isNull     = false;
 	this.isOptional = false;
 	
 	// Check if there has to be alternation magic in action
@@ -211,9 +206,40 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	return this;
     };
 
-    public SpanSequenceQueryWrapper prepend (SpanSegmentQueryWrapper ssq) {
+    public SpanSequenceQueryWrapper prepend (SpanQueryWrapperInterface ssq) {
 	if (!ssq.isNull()) {
-	    return this.prepend(ssq.toQuery());
+	    SpanQuery prependQuery = ssq.toQuery();
+	    if (!ssq.isOptional()) {
+		return this.prepend(prependQuery);
+	    };
+	    
+	    // Situation is b?a or b?a?
+	    if (this.segments.size() != 0) {
+		// Remove first element of the list and append it
+		SpanQuery firstQuery = this.segments.remove(0);
+		SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, firstQuery);
+		SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(field, prependQuery);
+		ssqw.append(firstQuery);
+
+		// Situation is b?a?
+		if (this.firstIsOptional)
+		    saqw.or(prependQuery);
+		// first stays optional
+
+		saqw.or(ssqw);
+		this.segments.add(0, (SpanQuery) saqw.toQuery());
+	    }
+	    
+	    // Situation is b?
+	    else {
+		this.segments.add(prependQuery);
+
+		// Update boundary optionality
+		this.firstIsOptional = true;
+		this.isOptional      = true;
+		this.lastIsOptional  = true;
+	    };
+	    this.isNull = false;
 	};
 	return this;
     };
