@@ -254,6 +254,9 @@ public class KorapQuery {
 			if (constraint.has("key"))
 			    unit = constraint.get("key").asText();
 
+			if (unit.equals("t"))
+			    throw new QueryException("Text based distances are not supported yet");
+
 			int min, max;
 			if (constraint.has("boundary")) {
 			    Boundary b = new Boundary(constraint.get("boundary"), 1,1);

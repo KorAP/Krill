@@ -230,12 +230,18 @@ public class KorapIndex {
 	return this.searcher;
     };
 
+
+    /**
+     * Close index writer
+     */
     public void closeWriter () throws IOException {
 	if (this.writer != null)
 	    this.writer.close();
     };
 
-
+    /**
+     * Close index reader
+     */
     public void closeReader () throws IOException {
 	if (readerOpen) {
 	    this.reader.close();
@@ -571,8 +577,8 @@ public class KorapIndex {
     public KorapMatch getMatchInfo (String idString,
 				    String field,
 				    boolean info,
-				    ArrayList<String> foundry,
-				    ArrayList<String> layer,
+				    List<String> foundry,
+				    List<String> layer,
 				    boolean includeSpans,
 				    boolean includeHighlights,
 				    boolean extendToSentence) throws QueryException {
