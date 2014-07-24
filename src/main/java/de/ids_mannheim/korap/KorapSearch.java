@@ -54,7 +54,11 @@ public class KorapSearch {
 	    // "query" value
 	    if (this.request.has("query")) {
 		try {
-		    this.query = new KorapQuery("tokens").fromJSON(this.request.get("query")).toQuery();
+		    SpanQueryWrapperInterface queryIface = new KorapQuery("tokens").fromJSON(this.request.get("query"));
+		    
+		    this.query = queryIface.toQuery();
+		    if (queryIface.isOptional())
+			this.addWarning("Optionality of query is ignored");
 		}
 		catch (QueryException q) {
 		    this.error = q.getMessage();
