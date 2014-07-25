@@ -15,11 +15,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
+
+import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 
@@ -363,6 +366,31 @@ public class TestNextIndex {
 		assertEquals("doc-number", "match-doc-3-p3-6", kr.match(2).getID());
 	};
 
+	@Test
+	public void indexExample9() throws IOException{
+		KorapIndex ki = new KorapIndex();
+		ki.addDoc(createFieldDoc1());	
+		ki.commit();
+		
+		SpanQuery sq = new SpanNextQuery(
+				new SpanOrQuery(
+					new SpanTermQuery(new Term("base","s:a")),
+					new SpanTermQuery(new Term("base","s:b"))),
+				new SpanTermQuery(new Term("base","s:c"))
+			);
+		
+		KorapResult kr = ki.search(sq, (short) 10);
+		
+		assertEquals(0, kr.match(0).getStartPos());
+		assertEquals(2, kr.match(0).getEndPos());
+		assertEquals(3, kr.match(1).getStartPos());
+		assertEquals(5, kr.match(1).getEndPos());
+		
+//		for (KorapMatch m : kr.getMatches()){
+//			System.out.println(m.getStartPos() +" "+ m.getEndPos());
+//		}
+	}
+	
 	
 	private FieldDocument createFieldDoc1(){
 		FieldDocument fd = new FieldDocument();
