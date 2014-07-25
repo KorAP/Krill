@@ -20,13 +20,13 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
 
 /** Matches spans wrapped by an element. */
 public class SpanElementQuery extends SimpleSpanQuery {
-    protected static Term element;
+    //private static Term element;
     private String elementStr;
     
     /** Constructor. */
     public SpanElementQuery (String field, String term) {   
-    	super(new SpanTermQuery(
-    			(element = new Term(field,"<>:"+term))
+    	super(new SpanTermQuery(new Term(field,"<>:"+term)
+    			//(element = new Term(field,"<>:"+term))
     		  ),
     		true
 		);
@@ -50,13 +50,17 @@ public class SpanElementQuery extends SimpleSpanQuery {
 
 	@Override
 	public SimpleSpanQuery clone() {
-		// TODO Auto-generated method stub
-		return null;
+		SpanElementQuery sq = new SpanElementQuery(
+				this.getField(), 
+				this.getElementStr()
+		);
+		sq.setBoost(this.getBoost());
+		return sq;
 	};
 	
     @Override
     public void extractTerms(Set<Term> terms) {
-    	terms.add(element);
+    	terms.add(new Term(getField(),"<>:"+elementStr));
     };
 
     @Override
@@ -71,24 +75,22 @@ public class SpanElementQuery extends SimpleSpanQuery {
     public int hashCode() {
     	final int prime = 37; // Instead of 31
     	int result = super.hashCode();
-    	result = prime * result + ((element == null) ? 0 : element.hashCode());
+    	result = prime * result + ((elementStr == null) ? 0 : elementStr.hashCode());
     	return result;
     };
 
     @Override
     public boolean equals(Object obj) {
-		if (this == obj)
-		    return true;
-		if (!super.equals(obj))
-		    return false;
-		if (getClass() != obj.getClass())
-		    return false;
+		if (this == obj) return true;
+		//if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
+		
 		SpanElementQuery other = (SpanElementQuery) obj;
-		if (element == null) {
-		    if (other.element != null)
+		if (elementStr == null && other.elementStr != null)
 			return false;
-		} else if (!element.equals(other.element))
+		else if (!elementStr.equals(other.elementStr))
 		    return false;
+		
 		return true;
     };
  
