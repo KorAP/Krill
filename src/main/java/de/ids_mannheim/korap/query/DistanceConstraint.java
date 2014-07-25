@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.query;
 
-/**	Specify constraints of distance in SpanDistanceQueries or 
+/**	Specify distance constraints in SpanDistanceQueries or 
  * 	SpanMultipleDistanceQueries
  * 	 
  * 	@author margaretha
@@ -23,6 +23,10 @@ public class DistanceConstraint {
 	
 	public DistanceConstraint(SpanElementQuery elementQuery, int min, int max, boolean 
 			isOrdered, boolean exclusion) {
+		if (elementQuery == null){
+			throw new IllegalArgumentException("Element query cannot be null.");
+		}
+		
 		this.unit = elementQuery.getElementStr();
 		this.minDistance = min;
 		this.maxDistance = max;
@@ -30,23 +34,6 @@ public class DistanceConstraint {
 		this.exclusion = exclusion;
 		this.elementQuery = elementQuery;
 	}
-	
-	
-//	public DistanceConstraint(int min, int max, boolean exclusion) {
-//		this.unit = "w";
-//		this.minDistance = min;
-//		this.maxDistance = max;
-//		this.exclusion = exclusion;
-//	}
-//	
-//	public DistanceConstraint(SpanElementQuery elementQuery, int min, int max, 
-//			boolean exclusion) {
-//		this.unit = elementQuery.getElementStr();
-//		this.minDistance = min;
-//		this.maxDistance = max;
-//		this.exclusion = exclusion;		
-//		this.elementQuery = elementQuery;		
-//	}
 	
 	public int getMinDistance() {
 		return minDistance;

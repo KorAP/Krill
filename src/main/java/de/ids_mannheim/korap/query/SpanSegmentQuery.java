@@ -18,8 +18,6 @@ import de.ids_mannheim.korap.query.spans.SegmentSpans;
  * */
 public class SpanSegmentQuery extends SimpleSpanQuery{
 	
-	private String spanName;
-	
 	public SpanSegmentQuery(SpanQuery firstClause, SpanQuery secondClause) {
 		this(firstClause,secondClause,true);
 	}
@@ -27,7 +25,6 @@ public class SpanSegmentQuery extends SimpleSpanQuery{
 	public SpanSegmentQuery(SpanQuery firstClause, SpanQuery secondClause, 
 			boolean collectPayloads) { 
     	super(firstClause,secondClause,collectPayloads);
-    	spanName = "spanSegment";
 	}
 	
 	@Override
@@ -40,10 +37,10 @@ public class SpanSegmentQuery extends SimpleSpanQuery{
 	@Override
 	public SpanSegmentQuery clone() {
 		SpanSegmentQuery spanSegmentQuery = new SpanSegmentQuery(
-			    (SpanQuery) firstClause.clone(),
-			    (SpanQuery) secondClause.clone(),
-			    collectPayloads
-		        );
+		    (SpanQuery) firstClause.clone(),
+		    (SpanQuery) secondClause.clone(),
+		    collectPayloads
+        );
 		spanSegmentQuery.setBoost(getBoost());
 		return spanSegmentQuery;		
 	}
@@ -51,18 +48,15 @@ public class SpanSegmentQuery extends SimpleSpanQuery{
     @Override
 	public String toString(String field) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(this.spanName);
-		sb.append("(");
+		sb.append("spanSegment(");
 		sb.append(firstClause.toString(field));
-	        sb.append(", ");
+        sb.append(", ");
 		sb.append(secondClause.toString(field));
 		sb.append(")");
 		sb.append(ToStringUtils.boost(getBoost()));
 		return sb.toString();	
     }
 	
-	//TODO: Where is the hashmap?
-		
     @Override
     public boolean equals(Object o) {
 		if (this == o) return true;

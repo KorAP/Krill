@@ -20,8 +20,11 @@ public abstract class SimpleSpanQuery extends SpanQuery
 	protected List<SpanQuery> clauseList;
 	private String field;
 	protected boolean collectPayloads;
-    
+    	
 	public SimpleSpanQuery(SpanQuery firstClause, boolean collectPayloads) {
+		if (firstClause == null){
+			throw new IllegalArgumentException("The first clause cannot be null.");
+		}
     	this.field = firstClause.getField();
     	this.setFirstClause(firstClause);
     	this.collectPayloads = collectPayloads;
@@ -30,6 +33,9 @@ public abstract class SimpleSpanQuery extends SpanQuery
     public SimpleSpanQuery(SpanQuery firstClause, SpanQuery secondClause, 
     		boolean collectPayloads) {
     	this(firstClause,collectPayloads);
+    	if (secondClause == null){
+			throw new IllegalArgumentException("The second clause cannot be null.");
+		}
     	checkField(secondClause);
     	this.setSecondClause(secondClause);  	
 	}
@@ -37,7 +43,18 @@ public abstract class SimpleSpanQuery extends SpanQuery
     public SimpleSpanQuery(SpanQuery firstClause, List<SpanQuery> 
     		secondClauses, boolean collectPayloads) {
     	this(firstClause,collectPayloads);
+    	
+		if (secondClauses == null){
+			throw new IllegalArgumentException("The list of second clauses cannot be null.");
+		}
+		if (secondClauses.size() < 1){
+			throw new IllegalArgumentException("The list of second clauses cannot be empty.");
+		}
+    	
     	for (SpanQuery secondClause : secondClauses){
+    		if (secondClause == null){
+    			throw new IllegalArgumentException("A second clause cannot be null.");
+    		}
 	    	checkField(secondClause);
 		}
     	this.setClauseList(secondClauses);
@@ -90,7 +107,15 @@ public abstract class SimpleSpanQuery extends SpanQuery
 	// For rewriting fuzzy searches like wildcard and regex
 	@Override
     public void extractTerms(Set<Term> terms) {
-		firstClause.extractTerms(terms);
+		
+		if (terms == null){
+			throw new IllegalArgumentException("The term set cannot be null.");
+		}
+		
+		if (firstClause != null){
+			firstClause.extractTerms(terms);
+		}
+		
 		if (secondClause != null){
 			secondClause.extractTerms(terms);
 		}
@@ -98,8 +123,7 @@ public abstract class SimpleSpanQuery extends SpanQuery
 			for (SpanQuery clause : clauseList){
 				clause.extractTerms(terms);
 			}
-		}
-			
+		}			
     };
     
 	@Override

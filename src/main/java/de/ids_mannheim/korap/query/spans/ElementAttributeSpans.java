@@ -64,11 +64,17 @@ public class ElementAttributeSpans extends SimpleSpans{
 		isStartEnumeration=false;
 		return advance();
 	}
-		
+	
+	/** Search for the next match by first identify a possible 
+	 * 	element position, and then ensuring that the element contains
+	 * 	all the attributes and <em>do not</em> contain any of the 
+	 *  not attributes.
+	 * */
 	private boolean advance() throws IOException {
 		
 		while (hasMoreSpans && computeElementPosition()){			
-			logger.info("element: " + elements.start() + ","+ elements.end() +" ref:"+elements.getElementRef());
+			logger.info("element: " + elements.start() + ","+ elements.end() +
+					" ref:"+elements.getElementRef());
 			
 			if (checkElementRef() && checkNotElementRef()){			
 				this.matchDocNumber = elements.doc();
@@ -85,6 +91,9 @@ public class ElementAttributeSpans extends SimpleSpans{
 		return false;
 	}
 	
+	/** Ensuring all the attribute spans having the same elementRef with 
+	 * 	the actual element's elementRef.
+	 * */
 	private boolean checkElementRef() throws IOException{
 		
 		for (AttributeSpans attribute: attributeList){			
@@ -102,7 +111,9 @@ public class ElementAttributeSpans extends SimpleSpans{
 		return true;
 	}
 	
-	
+	/** Ensuring elements do not contain the not attributes. In other words, 
+	 * 	the elementRef is not the same as the not attribute's elementRefs. 
+	 * */
 	private boolean checkNotElementRef() throws IOException{
 		for (AttributeSpans notAttribute: notAttributeList){
 			if (elements.start() == notAttribute.start() &&
@@ -115,7 +126,9 @@ public class ElementAttributeSpans extends SimpleSpans{
 		return true;
 	}
 	
-	
+	/**	Search for a possible element having the same doc and start position as
+	 * 	the attributes.
+	 * */
 	private boolean computeElementPosition() throws IOException {		
 
 		while (hasMoreSpans){
@@ -137,6 +150,11 @@ public class ElementAttributeSpans extends SimpleSpans{
 		return false;
 	}
 	
+	/**	Advancing the not attributes to be in the same or greater doc# than 
+	 * 	element doc#. If a not attribute is in the same doc, advance it to
+	 * 	be in the same or greater start position than the element.
+	 * 
+	 * */
 	private boolean checkNotAttributeListPosition() throws IOException{
 		
 		for (AttributeSpans a : notAttributeList){
@@ -155,6 +173,9 @@ public class ElementAttributeSpans extends SimpleSpans{
 		return true;
 	}
 	
+	/** Advancing the attributes to be in the same doc and start position 
+	 * 	as the element.
+	 * */
 	private boolean checkAttributeListPosition() throws IOException{
 		int currentPosition = elements.start();
 		boolean isSame = true;
@@ -178,7 +199,9 @@ public class ElementAttributeSpans extends SimpleSpans{
 		return isSame;
 	}
 	
-	
+	/** Advance the element or attribute spans to be in the same doc 
+	 * 	and start position.
+	 * */
 	private boolean ensureSamePosition(ElementSpans elements,
 			AttributeSpans attributes) throws IOException {
 		

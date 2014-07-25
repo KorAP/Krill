@@ -47,7 +47,7 @@ public class AttributeSpans extends SimpleSpans{
 		if (hasMoreSpans) {
 			currentDoc = firstSpans.doc();
 			currentPosition = firstSpans.start();
-		}
+		}		
 	}
 
 	@Override
@@ -56,8 +56,11 @@ public class AttributeSpans extends SimpleSpans{
 		return advance();
 	}
 
+
+	/**	Get the next match by first checking the candidate match list
+	 * 	and setting the list when it is empty.
+	 * */
 	private boolean advance() throws IOException {		
-		
 		while(hasMoreSpans || !candidateList.isEmpty()){
 			if (!candidateList.isEmpty()){
 				// set AttributeSpan from 
@@ -72,16 +75,20 @@ public class AttributeSpans extends SimpleSpans{
 			else{
 				logger.info("Setting candidate list");
 				setCandidateList();
-				for (CandidateAttributeSpan cs: candidateList){
-					logger.info("cs ref "+cs.getElementRef());
-				}
+//				for (CandidateAttributeSpan cs: candidateList){
+//					logger.info("cs ref "+cs.getElementRef());
+//				}
 				currentDoc = firstSpans.doc();
 				currentPosition = firstSpans.start();
 			}
 		}
 		return false;
 	}
-
+	
+	/**	Collects all the attributes in the same start position and sort
+	 * 	them by elementRef in reverse order (the ones with the bigger 
+	 * 	elementRef first). 
+	 * */
 	private void setCandidateList() throws IOException {
 		
 		while (hasMoreSpans &&	firstSpans.doc() == currentDoc && 
@@ -96,7 +103,9 @@ public class AttributeSpans extends SimpleSpans{
 		Collections.sort(candidateList);
 		Collections.reverse(candidateList);
 	}
-
+	
+	/**	Get the elementRef from payload
+	 * */
 	private short retrieveElementRef(Spans firstSpans) throws IOException {		
 		List<byte[]> payload = (List<byte[]>) firstSpans.getPayload();
 		long s = System.nanoTime();
@@ -142,7 +151,8 @@ public class AttributeSpans extends SimpleSpans{
 		return firstSpans.cost();
 	}
 	
-	
+	/** Match candidate for attribute spans.
+	 * */
 	class CandidateAttributeSpan extends CandidateSpan 
 			implements Comparable<CandidateAttributeSpan>{
 

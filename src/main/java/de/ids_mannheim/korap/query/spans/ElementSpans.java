@@ -1,470 +1,223 @@
 package de.ids_mannheim.korap.query.spans;
 
-import de.ids_mannheim.korap.query.spans.KorapTermSpan;
-
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.DocsAndPositionsEnum;
-import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.util.BytesRef;
-
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.search.spans.TermSpans;
+import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BytesRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.List;
-
-// TODO: Store payloads in 12 byte instead of the complicated ByteBuffer stuff!
-// Todo: Use copyFrom() instead of clone()
+import de.ids_mannheim.korap.query.SpanElementQuery;
 
 /**  
  * @author Nils Diewald, margaretha
  *
  * Use copyFrom instead of clone
  */
-public class ElementSpans extends Spans {
+public class ElementSpans extends SimpleSpans {
 
-    private byte[] payloadByte;
-    private ByteBuffer bb = ByteBuffer.allocate(4);
-
-    protected final DocsAndPositionsEnum postings;
-    protected final Term term;
-    private int freq = 0, count = 0;
-    
-    private LinkedList<KorapTermSpan> memory;
-    private KorapTermSpan overflow, current, temp;
-    
-	public boolean isElementRef = false; // A dummy flag for 
-    
-    public static final ElementSpans EMPTY_ELEMENT_SPANS
-	= new EmptyElementSpans();
-
-    private final static Logger log = LoggerFactory.getLogger(ElementSpans.class);
-    // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
-
-    
-    /**
-     * The constructor.
-     */
-    public ElementSpans(DocsAndPositionsEnum postings, Term term) {
-	this.postings = postings;
-	this.term = term;
-
-	// storedPayload = null;
-	this.memory   = new LinkedList<KorapTermSpan>();
-
-	// Overflow span
-	this.overflow = new KorapTermSpan();
-
-	// Current span
-	this.current = new KorapTermSpan();
-
-    	// Temporary span
-	this.temp = new KorapTermSpan();
-    };
-    
-    // only for EmptyElementSpans (below)
-    public ElementSpans() {
-	this.term = null;
-	this.postings = null;
-    };
-
-    @Override
-    public boolean next() throws IOException {
+	private List<CandidateElementSpans> candidateList;
+	private int currentDoc, currentPosition;
+	private short elementRef;
+	private TermSpans termSpans;
 	
-	// There is a memory
-	if (this.memory.size() > 0) {
-	    this.setToCurrent(memory.removeFirst(), 1);
-
-	    if (DEBUG)
-		log.trace(" --- MATCH --- Fetch from memory {}",
-			  this.current.toString());
-	    
-	    return true;
-	};
-
-	// Last element in document is reached
-	if (this.count == this.freq) {
-
-	    if (this.postings == null)
-		return false;
-
-
-	    // There is an overflow
-	    if (this.overflow.doc != -1) {
-		if (DEBUG)
-		    log.trace("Fetch from overflow");
-
-		this.setToCurrent(this.overflow, 2);
-
-		// Reset overflow
-		this.overflow.reset();
-
-		if (DEBUG)
-		    log.trace(" --- MATCH --- Fetch from memory {}",
-			      this.current.toString());
-	       
-		return true;
-	    };
-
-	    // There is no next document
-	    if (!this.nextDoc())
-		return false;
-	};
-
-	// overflow is not empty - let's treat this as current
-	if (this.overflow.doc != -1) {
-
-	    if (DEBUG)
-		log.trace("Overflow is not empty");
-	    
-	    this.setToCurrent(this.overflow, 3);
-
-	    // TODO: newOverflow() ???
-	    this.overflow.reset();
-	}
-	else {
-	    if (DEBUG)
-		log.trace("Overflow is empty");
-
-	    // Get next posting - count is still < freq
-	    this.setToCurrent(4);
-
-	    if (this.count == this.freq) {
-		if (DEBUG)
-		    log.trace(" --- MATCH --- Direct {}",
-			      this.current.toString());
-		return true;
-	    };
-	};
-
-	while (this.count < this.freq) {
-
-	    // Temp is now the old current
-	    this.setCurrentToTemp();
-
-	    // Get new current
-	    this.setToCurrent(5);
-
-	    if (DEBUG)
-		log.trace("Compare {} with {}",
-			  this.current.toString(),
-			  this.temp.toString());
-
-	    // The next span is not at the same position
-	    if (this.current.start != this.temp.start) {
-
-		// Add this to memory
-		if (this.memory.size() > 0) {
-		    if (DEBUG)
-			log.trace("[1] Add to memory {}", this.temp.toString());
-		    this.memory.add((KorapTermSpan) this.temp.clone());
-		    this.overflow = this.current;
-		    break;
-		};
-
-		// There is no reason to start a memory
-		this.overflow = this.current;
-		this.current = this.temp;
-
-		if (DEBUG)
-		    log.trace(" --- MATCH --- Fetch from memory {}",
-			      this.current.toString());
-
-		return true;
-	    }
-
-	    // The positions are equal
-	    else {
-		if (DEBUG)
-		    log.trace("[2] Add to memory {}", this.temp.toString());
-		this.memory.add((KorapTermSpan) this.temp.clone());
-	    };
-	};
-
-	if (this.temp.doc == this.current.doc &&
-	    this.temp.start == this.current.start) {
-	    if (DEBUG)
-		log.trace("[3] Add to memory {}", this.current.toString());
-	    this.memory.add((KorapTermSpan) this.current.clone());
-	};
-
-	// Sort the memory
-	Collections.sort(memory);
-
-	// There is now a memory
-	return this.next();
-    };
-    
-
-    // get next doc
-    private boolean nextDoc () throws IOException {
-
-	// Check if this doc is the last
-	if (this.current.doc == DocIdSetIterator.NO_MORE_DOCS)
-	    return false;
-
-	if (DEBUG)
-	    log.trace("Go to next document");
-
-	this.current.reset();
-
-	// Advance to next doc
-	this.current.doc = this.postings.nextDoc();
-
-	// Check if this doc is the last
-	if (this.current.doc == DocIdSetIterator.NO_MORE_DOCS)
-	    return false;
+	public boolean isElementRef = false; // A dummy flag
 	
-	// check frequencies
-	this.freq = this.postings.freq();
-
-	if (DEBUG)
-	    log.trace("Document <{}> has {} occurrences",
-		      this.current.doc,
-		      this.freq);
-
-
-	this.count = 0;
-	return true;
-    };
-
-    
-    @Override
-    public boolean skipTo(int target) throws IOException {
-
-	assert target > this.current.doc;
-
-	// Get this doc
-	this.current.doc = postings.advance(target);
-
-	if (this.current.doc == DocIdSetIterator.NO_MORE_DOCS)
-	    return false;
-
-	if (this.memory != null)
-	    this.memory.clear();
-
-	this.overflow.reset();
+	protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
 	
-
-	this.freq = this.postings.freq();
-
-	if (DEBUG)
-	    log.trace("Document {} has {} occurrences", this.current.doc, this.freq);
-
-	
-	this.count = 0;
-
-	if (this.next())
-	    return true;
-
-	return false;
-    };
-
-    
-    @Override
-    public int doc() {
-	return this.current.doc;
-    };
-
-    
-    @Override
-    public int start() {
-	return this.current.start;
-    };
-
-    
-    @Override
-    public int end() {
-		if (!this.current.isPayloadRead){		    
-			try {
-				readPayload();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}			
+	public ElementSpans(SpanElementQuery spanElementQuery,
+			AtomicReaderContext context, Bits acceptDocs,
+			Map<Term, TermContext> termContexts) throws IOException {
+		super(spanElementQuery, context, acceptDocs, termContexts);
+		candidateList = new ArrayList<>();
+		termSpans = (TermSpans) firstSpans;
+		hasMoreSpans = termSpans.next();
+		if (hasMoreSpans) {
+			currentDoc = termSpans.doc();
+			currentPosition = termSpans.start();
 		}
-		return this.current.end;
-    };
+	}
 
-    public short getElementRef() throws IOException{
-    	if (!this.current.isPayloadRead){
-    		readPayload();
-    	}
-    	return this.current.elementRef;
-    }
-    
-    private void readPayload() throws IOException {   	
-    	
-    	this.current.clearPayload();
-	    BytesRef payload = postings.getPayload();
-	    	    
+	@Override
+	public boolean next() throws IOException {
+		isStartEnumeration=false;
+		return advance();
+	}
+	
+	/**	Get the next match by first checking the candidate match list
+	 * 	and setting the list when it is empty.
+	 * */
+	private boolean advance() throws IOException {
+		while(hasMoreSpans || !candidateList.isEmpty()){
+			if (!candidateList.isEmpty()){
+				CandidateElementSpans cs = candidateList.get(0);
+				this.matchDocNumber = cs.getDoc();
+				this.matchStartPosition = cs.getStart();
+				this.matchEndPosition = cs.getEnd();
+				this.matchPayload = cs.getPayloads();				
+				this.setElementRef(cs.getElementRef());				
+				candidateList.remove(0);
+				return true;
+			}
+			else{
+				logger.info("Setting candidate list");
+				setCandidateList();				
+				currentDoc = termSpans.doc();
+				currentPosition = termSpans.start();
+			}
+		}
+		return false;
+	}
+
+	/**	Collect all the elements in the same start position and sort them by
+	 * 	end position (smallest first).
+	 * */
+	private void setCandidateList() throws IOException {
+		while (hasMoreSpans &&	termSpans.doc() == currentDoc && 
+				termSpans.start() == currentPosition){
+			CandidateElementSpans cs = new CandidateElementSpans(termSpans,
+					elementRef);
+			readPayload(cs);
+			candidateList.add(cs);
+			hasMoreSpans = termSpans.next();
+		}
+		Collections.sort(candidateList);
+	}
+	
+	
+	/**	This method reads the payload of the termSpan and assigns the end 
+	 * 	position and element ref to the candidate match. The character offset
+	 *  payload is set as the candidate match payload.
+	 *  <br/><br/>
+	 * 	<em>Note</em>: payloadbuffer should actually collects all other payload
+	 * 	beside end position and element ref, but KorapIndex identify element's 
+	 * 	payload by its length (8), which is only the character offsets. So
+	 * 	these offsets are directly set as the candidate match payload.	
+	 * 
+	 * 	@author margaretha
+	 * */
+	private void readPayload(CandidateElementSpans cs) throws IOException {   	
+	    BytesRef payload = termSpans.getPostings().getPayload();
+	    //ByteBuffer payloadBuffer = ByteBuffer.allocate(128);
+	    
 	    if (payload != null) {
-	    	//System.out.println(payload.bytes.length);
-
 			// Copy some payloads like start character and end character
-			this.current.payload.put(payload.bytes, payload.offset, 8);
-
-			this.current.end = readEndPostion(payload);
+	    	//payloadBuffer.put(payload.bytes, payload.offset, 8);
+			
+			cs.setEnd(readEndPostion(payload));
 			
 			if (isElementRef ){
 				// Copy rest of payloads after the end position and elementref
-				this.current.payload.put(payload.bytes, payload.offset + 14, payload.length - 14);				
-				this.current.elementRef = readElementRef(payload);
+				//payloadBuffer.put(payload.bytes, payload.offset + 14, payload.length - 14);				
+				cs.setElementRef(readElementRef(payload));
 			}
 			else{
 				// Copy rest of payloads after the end position
-				this.current.payload.put(payload.bytes, payload.offset + 12, payload.length - 12);
-				this.current.elementRef = -1;
+				//payloadBuffer.put(payload.bytes, payload.offset + 12, payload.length - 12);
+				cs.setElementRef((short) -1);
 			}
+			
+			//byte[] offsetCharacters = new byte[8];
+			//System.arraycopy(payloadBuffer.array(), 0, offsetCharacters, 0, 8);
+			
+			cs.setPayloads(Collections.singletonList(readOffset(payload)));
 	    }
 	    else {	
-			this.current.end = this.current.start;
-			this.current.elementRef = -1;
-    	};
-    	
-    	this.current.isPayloadRead = true;
-    	
+			cs.setEnd(cs.getStart());
+			cs.setElementRef((short) -1);
+			cs.setPayloads(null);
+    	}
 	}
-    
-    private short readElementRef(BytesRef payload) {
+	
+	
+	/**	Get the offset bytes from the payload.
+	 * */
+	private byte[] readOffset(BytesRef payload){
+		byte[] b = new byte[8];
+		System.arraycopy(payload.bytes, payload.offset, b, 0, 8);
+		return b;
+	}
+	
+	/**	Get the end position bytes from the payload and cast it to int. 
+	 * */
+	private int readEndPostion(BytesRef payload) {
+		byte[] b = new byte[4];
+		System.arraycopy(payload.bytes, payload.offset + 8, b, 0, 4);
+		return ByteBuffer.wrap(b).getInt();		
+	}
+	
+	/**	Get the elementRef bytes from the payload and cast it into short.
+	 * */
+	private short readElementRef(BytesRef payload) {
     	byte[] b = new byte[2];
     	System.arraycopy(payload.bytes, payload.offset + 12, b, 0, 2);
-    	ByteBuffer wrapper = ByteBuffer.wrap(b);
-		return wrapper.getShort();
-	}
-
-    
-
-	private int readEndPostion(BytesRef payload) {
-		
-		this.payloadByte = new byte[4];
-		// Copy end position integer to payloadByte
-		System.arraycopy(payload.bytes, payload.offset + 8, this.payloadByte, 0, 4);
-		
-		bb.clear();
-		int t = bb.wrap(payloadByte).getInt();
-
-		if (DEBUG)
-		    log.trace("Get Endposition and payload: {}-{} with end position {} in doc {}",
-			      this.current.payload.getInt(0),
-			      this.current.payload.getInt(4),
-			      t,
-			      this.current.doc);
-		
-		return t;
+    	return ByteBuffer.wrap(b).getShort();
 	}
 
 	@Override
-    public long cost() {
-	// ???
-	return this.postings.cost();
-    };
+	public boolean skipTo(int target) throws IOException {
+		if (hasMoreSpans && (firstSpans.doc() < target)){
+  			if (!firstSpans.skipTo(target)){
+  				candidateList.clear();
+  				return false;
+  			}
+  		}		
+		setCandidateList();
+		matchPayload.clear();
+		isStartEnumeration=false;
+		return advance();
+	}
 
-    
-    @Override
-    public Collection<byte[]> getPayload() throws IOException {
-	byte[] offsetCharacters = new byte[8];
-	if (!this.current.isPayloadRead)
-	    readPayload();
-
-	System.arraycopy(this.current.payload.array(), 0, offsetCharacters, 0, 8);
-
-	return Collections.singletonList(offsetCharacters);
-    };
-
-
-    /**
-     * Sets KorapTermSpan to current element
-     */
-    private void setToCurrent (KorapTermSpan act, int debugNumber) {
-
-	if (DEBUG)
-	    log.trace(
-		"[{}] Set to current with {}",
-		debugNumber,
-		act.toString()
-	    );
-
-	this.current = (KorapTermSpan) act.clone();
-    };
-
-    /**
-     * Sets KorapTermSpan to current element
-     */
-    private void setToCurrent (int debugNumber) throws IOException {
+	@Override
+	public long cost() {
+		return termSpans.cost();
+	}
 	
-	this.current.start = this.postings.nextPosition();
-	// This will directly save stored payloads
-	//this.current.end = this.getPayloadEndPosition();
-	readPayload();
+	public short getElementRef() {
+		return elementRef;
+	}
 
-	if (DEBUG)
-	    log.trace(
-		"[{}] Set new to current with {}",
-		debugNumber,
-		this.current.toString()
-	    );
-
-	this.count++;
-    };
-
-    private void setCurrentToTemp () {
-	this.temp = (KorapTermSpan) this.current.clone();
-	// this.temp.copyFrom(this.current);
-    };
-
-
-    @Override
-    public boolean isPayloadAvailable() throws IOException {
-
-	if (current.payload != null)
-	    return true;
+	public void setElementRef(short elementRef) {
+		this.elementRef = elementRef;
+	}
 	
-	return false;
-    };
-
-    
-    @Override
-    public String toString() {
-	return "spans(" + this.term.toString() + ")@" +
-            (this.current.doc == -1 ? "START" : (this.current.doc == Integer.MAX_VALUE) ? "END" : this.current.doc + "-" + this.current.start);
-    };
-
-    public DocsAndPositionsEnum getPostings() {
-	return postings;
-    };
-
-    private static final class EmptyElementSpans extends ElementSpans {
-
-	@Override
-	public boolean next() { return false; };
-
-	@Override
-	public boolean skipTo(int target) { return false; };
-
-	@Override
-	public int doc() { return DocIdSetIterator.NO_MORE_DOCS; };
-	
-	@Override
-	public int start() { return -1; };
-
-	@Override
-	public int end() { return -1; };
-
-	@Override
-	public Collection<byte[]> getPayload() { return null; };
-
-	@Override
-	public boolean isPayloadAvailable() { return false; };
-	
-	@Override
-	public long cost() { return 0; };
-    };
+	/** Match candidate for element spans.
+	 * */	
+	class CandidateElementSpans extends CandidateSpan 
+			implements Comparable<CandidateElementSpans>{
+		
+		private short elementRef;
+		
+		public CandidateElementSpans(Spans span, short elementRef) 
+				throws IOException {
+			super(span);
+			setElementRef(elementRef);
+		}
+		
+		public void setElementRef(short elementRef) {
+			this.elementRef = elementRef;
+		}
+		public short getElementRef() {
+			return elementRef;
+		}
+		
+		@Override
+		public int compareTo(CandidateElementSpans o) {
+			if (this.getEnd() == o.getEnd())
+				return 0;
+			else if (this.getEnd() > o.getEnd() )
+				return 1;
+			return -1;			
+		}
+	}
 };

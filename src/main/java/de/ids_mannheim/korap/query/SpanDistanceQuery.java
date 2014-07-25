@@ -18,10 +18,10 @@ import de.ids_mannheim.korap.query.spans.TokenDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedElementDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
 
-/** Match two ordered or unordered Spans with minimum and maximum 
+/** Match two ordered or unordered spans with some minimum and maximum 
  * 	distance constraints. The distance unit can be word (token), 
  * 	sentence or paragraph. The distance can also be specified to match 
- * 	some Spans which do NOT co-occur with some other Spans within a min 
+ * 	some spans which do <em>not</em> co-occur with some other Spans within a min 
  * 	and max distance. 
  * 
  * 	@author margaretha
@@ -31,7 +31,7 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 	private boolean exclusion;
 	private boolean isOrdered;	
 	private int minDistance, maxDistance;	
-	private SpanElementQuery elementQuery; // element distance unit
+	private SpanElementQuery elementQuery; // element distance unit (sentence or paragraph)
 	private String distanceUnit;
 	private String spanName;
 	private DistanceConstraint constraint;
@@ -39,6 +39,11 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 	public SpanDistanceQuery(SpanQuery firstClause, SpanQuery secondClause, 
 			DistanceConstraint constraint, boolean collectPayloads) {
 		super(firstClause, secondClause, collectPayloads);
+		
+		if (constraint == null){
+			throw new IllegalArgumentException("Distance constraint cannot be null.");
+		}
+		
 		this.constraint = constraint;
 		this.minDistance = constraint.getMinDistance();
 		this.maxDistance = constraint.getMaxDistance();
@@ -52,32 +57,6 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 		}
 		else { spanName = "spanDistance"; }
 	}
-	
-//	public SpanDistanceQuery(SpanQuery firstClause, SpanQuery secondClause, 
-//			int minDistance, int maxDistance, boolean isOrdered, 
-//			boolean collectPayloads) {		
-//		super(firstClause, secondClause, collectPayloads); 
-//		init(minDistance, maxDistance, isOrdered);
-//		distanceUnit = "w";
-//		spanName = "spanDistance";
-//	}
-//	
-//	public SpanDistanceQuery(SpanElementQuery elementQuery, SpanQuery firstClause, 
-//			SpanQuery secondClause, int minDistance, int maxDistance, 
-//			boolean isOrdered, boolean collectPayloads) {
-//		super(firstClause, secondClause, collectPayloads);
-//    	init(minDistance, maxDistance, isOrdered);
-//		this.elementQuery = elementQuery;
-//		distanceUnit = elementQuery.getElementStr();
-//		spanName = "spanElementDistance";
-//	}
-//	
-//	private void init(int minDistance, int maxDistance,boolean isOrdered){
-//		this.minDistance = minDistance;
-//		this.maxDistance = maxDistance;
-//		this.isOrdered = isOrdered;
-//		this.exclusion = false;
-//	}
 	
 	@Override
 	public String toString(String field) {
