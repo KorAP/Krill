@@ -213,6 +213,11 @@ public class KorapQuery {
                 );
 
 	    case "operation:sequence":
+		if (DEBUG)  {
+		    log.trace("Found new sequence");
+		    System.err.println("----");
+		};
+
 		if (operands.size() < 2)
 		    throw new QueryException(
 		        "SpanSequenceQuery needs at least two operands"
@@ -319,6 +324,9 @@ public class KorapQuery {
 		if (min > max)
 		    throw new QueryException("The maximum repetition value has to " +
 					     "be greater or equal to the minimum repetition value");
+
+		if (DEBUG)
+		    log.trace("Found new repetition %d-%d", min, max);
 
 		return new SpanRepetitionQueryWrapper(
 		    this.fromJSON(operands.get(0)), min, max

@@ -108,14 +108,17 @@ public class TestRealIndex {
 	// Create a container for virtual collections:
 	KorapCollection kc = new KorapCollection(ki);
 
-	String json = getString(getClass().getResource("/queries/bsp-class-2.jsonld").getFile());
+	// String json = getString(getClass().getResource("/queries/bsp-class-2.jsonld").getFile());
+	String json = getString(getClass().getResource("/queries/bsp-repetition.jsonld").getFile());
 
+	System.err.println(new KorapSearch(json).getQuery().toString());
 	KorapResult kr = new KorapSearch(json).run(ki);
 
 	System.err.println(kr.toJSON());
 
 	// assertEquals(14, kc.numberOf("documents"));
     };
+
 
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();

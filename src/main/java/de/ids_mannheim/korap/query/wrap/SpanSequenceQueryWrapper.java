@@ -17,6 +17,9 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Nils Diewald
  */
@@ -24,6 +27,13 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     private String field;
     private ArrayList<SpanQuery> segments;
     private ArrayList<DistanceConstraint> constraints;
+
+    // Logger
+    private final static Logger log = LoggerFactory.getLogger(SpanSequenceQueryWrapper.class);
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+    
     private boolean
 	isInOrder = true,
 	isNull = true,
@@ -47,6 +57,8 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
     public SpanSequenceQueryWrapper (String field, SpanQuery sq) {
 	this(field);
+	if (DEBUG)
+	    log.trace("New spanquery sequence " + sq.toString());
 	this.segments.add((SpanQuery) sq);
 	this.isOptional = false;
 	this.isNull = false;
@@ -58,12 +70,18 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	    this.segments.add((SpanQuery) sswq.toQuery());
 	    this.isNull = false;
 	    if (sswq.isOptional()) {
+		if (DEBUG)
+		    log.trace("New optional query sequence " +
+			      sswq.toQuery().toString());
 		this.isOptional = true;
 		this.lastIsOptional = true;
 		this.firstIsOptional = true;
 	    }
 	    else {
 		this.isOptional = false;
+		if (DEBUG)
+		    log.trace("New non-optional query sequence " +
+			      sswq.toQuery().toString());
 	    };
 	};
     };
@@ -95,7 +113,9 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public SpanSequenceQueryWrapper append (String term) {
-	return this.append((SpanQuery) new SpanTermQuery(new Term(field, term)));
+	return this.append(
+	    (SpanQuery) new SpanTermQuery(new Term(field, term))
+        );
     };
     
     public SpanSequenceQueryWrapper append (SpanQuery query) {
@@ -104,6 +124,10 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
 	// Check if there has to be alternation magic in action
 	if (this.lastIsOptional) {
+	    if (DEBUG)
+		log.trace("Append non-opt query to opt query " +
+			  query.toString());
+
 	    SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, query);
 	    SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(field, query);
 	    // Remove last element of the list and prepend it
@@ -119,6 +143,10 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	    this.segments.add((SpanQuery) saqw.toQuery());
 	}
 	else {
+	    if (DEBUG)
+		log.trace("Append non-opt query to non-opt query " +
+			  query.toString());
+
 	    this.segments.add(query);
 	};
 	
@@ -129,6 +157,9 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	if (!ssq.isNull()) {
 	    SpanQuery appendQuery = ssq.toQuery();
 	    if (!ssq.isOptional()) {
+		if (DEBUG)
+		    log.trace("Append non-opt query to non-opt query " +
+			      appendQuery.toString());
 		return this.append(appendQuery);
 	    };
 	    
@@ -141,9 +172,18 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 		ssqw.prepend(lastQuery);
 
 		// Situation is a?b?
-		if (this.lastIsOptional)
+		if (this.lastIsOptional) {
 		    saqw.or(appendQuery);
-		// last stays optional
+		    // last stays optional
+		    if (DEBUG)
+			log.trace("Append opt query to opt query " +
+				  appendQuery.toString());
+
+		}
+		else if (DEBUG) {
+		    log.trace("Append opt query to non-opt query " +
+			      appendQuery.toString());
+		};
 
 		saqw.or(ssqw);
 		this.segments.add((SpanQuery) saqw.toQuery());
@@ -152,6 +192,10 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	    // Situation is b?
 	    else {
 		this.segments.add(appendQuery);
+
+		if (DEBUG)
+		    log.trace("Append opt query " +
+			      appendQuery.toString());
 
 		// Update boundary optionality
 		this.firstIsOptional = true;

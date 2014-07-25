@@ -262,6 +262,15 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanEndsWith(<tokens:s />, {1: tokens:mate/p:V}))");
     };
 
+
+    @Test
+    public void queryJSONrepetition () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp-repetition.jsonld").getFile());
+
+	// der[cnx/p=A]{0,2}[tt/p=NN]
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanOr([tokens:s:der, spanNext(tokens:s:der, spanQuantifier(tokens:cnx/p:A[1:2]))]), tokens:tt/p:NN)");
+    };
+
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();
 	try {
