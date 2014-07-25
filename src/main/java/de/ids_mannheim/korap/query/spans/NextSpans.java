@@ -43,7 +43,6 @@ public class NextSpans extends SimpleSpans {
     	collectPayloads = spanNextQuery.isCollectPayloads();
     	hasMoreSpans =  secondSpans.next();
     	matchList = new ArrayList<>();
-		candidateListDocNum = firstSpans.doc();
 		candidateList = new ArrayList<>();
     }
 
