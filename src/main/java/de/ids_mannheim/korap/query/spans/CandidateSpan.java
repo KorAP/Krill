@@ -9,12 +9,14 @@ import org.apache.lucene.search.spans.Spans;
 /** A span kept as a candidate for matching with another Span
  * 	@author margaretha
  * */
-public class CandidateSpan {	
+public class CandidateSpan implements Comparable<CandidateSpan>{	
 	private int doc,start,end;
 	private long cost;
 	private Collection<byte[]> payloads = new ArrayList<>();
 	private int position;
 	private CandidateSpan childSpan; // used for multiple distance with unordered constraint 
+	private short elementRef;
+	
 	
 	public CandidateSpan(Spans span) throws IOException {
 		this.doc = span.doc();
@@ -23,6 +25,15 @@ public class CandidateSpan {
 		this.cost = span.cost();		
 		if (span.isPayloadAvailable())
 			setPayloads(span.getPayload());
+		
+		/*if (span instanceof ElementSpans ){
+			ElementSpans s = (ElementSpans) span;
+			this.elementRef = s.getElementRef();
+		}
+		else if (span instanceof AttributeSpans){
+			AttributeSpans s = (AttributeSpans) span;
+			this.elementRef = s.getElementRef();
+		}		*/
 	}	
 	
 	public CandidateSpan(Spans span, int position) throws IOException {
@@ -90,5 +101,28 @@ public class CandidateSpan {
 
 	public void setChildSpan(CandidateSpan childSpan) {
 		this.childSpan = childSpan;
+	}
+
+	public short getElementRef() {
+		return elementRef;
+	}
+
+	public void setElementRef(short elementRef) {
+		this.elementRef = elementRef;
+	}
+
+	@Override
+	public int compareTo(CandidateSpan o) {
+		if (this.getStart() == o.getStart()){
+			if (this.getEnd() == o.getEnd())
+				return 0;	
+			if (this.getEnd() > o.getEnd() )
+				return 1;
+			else return -1;
+		}
+		else if (this.getStart() < o.getStart())
+			return -1;
+		else 
+			return 1;	
 	}
 }

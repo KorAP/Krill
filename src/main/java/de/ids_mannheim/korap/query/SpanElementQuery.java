@@ -20,19 +20,22 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
 
 /** Matches spans wrapped by an element. */
 public class SpanElementQuery extends SimpleSpanQuery {
-    //private static Term element;
+	//private SpanTermQuery termQuery;
+    private static Term elementTerm;
     private String elementStr;
     
     /** Constructor. */
     public SpanElementQuery (String field, String term) {   
-    	super(new SpanTermQuery(new Term(field,"<>:"+term)
-    			//(element = new Term(field,"<>:"+term))
-    		  ),
+    	super(new SpanTermQuery(
+    			(elementTerm = new Term(field,"<>:"+term))
+    			),
     		true
 		);
-    	this.elementStr = term;
+    	this.elementStr = term;    	
+    	//this.termQuery = (SpanTermQuery) this.getFirstClause();
+    	//this.elementTerm = termQuery.getTerm();
     };
-    
+
     @Override
     public Spans getSpans(final AtomicReaderContext context,
 			  Bits acceptDocs,
@@ -60,7 +63,7 @@ public class SpanElementQuery extends SimpleSpanQuery {
 	
     @Override
     public void extractTerms(Set<Term> terms) {
-    	terms.add(new Term(getField(),"<>:"+elementStr));
+    	terms.add(elementTerm);
     };
 
     @Override
@@ -91,6 +94,8 @@ public class SpanElementQuery extends SimpleSpanQuery {
 		else if (!elementStr.equals(other.elementStr))
 		    return false;
 		
+		if (!getField().equals(other.getField()))
+		    return false;
 		return true;
     };
  

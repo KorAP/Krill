@@ -193,8 +193,7 @@ public class ElementSpans extends SimpleSpans {
 	
 	/** Match candidate for element spans.
 	 * */	
-	class CandidateElementSpans extends CandidateSpan 
-			implements Comparable<CandidateElementSpans>{
+	class CandidateElementSpans extends CandidateSpan {
 		
 		private short elementRef;
 		
@@ -209,15 +208,6 @@ public class ElementSpans extends SimpleSpans {
 		}
 		public short getElementRef() {
 			return elementRef;
-		}
-		
-		@Override
-		public int compareTo(CandidateElementSpans o) {
-			if (this.getEnd() == o.getEnd())
-				return 0;
-			else if (this.getEnd() > o.getEnd() )
-				return 1;
-			return -1;			
-		}
+		}	
 	}
 };

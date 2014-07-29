@@ -154,7 +154,7 @@ public class AttributeSpans extends SimpleSpans{
 	/** Match candidate for attribute spans.
 	 * */
 	class CandidateAttributeSpan extends CandidateSpan 
-			implements Comparable<CandidateAttributeSpan>{
+			implements Comparable<CandidateSpan>{
 
 		private short elementRef;
 		
@@ -172,10 +172,11 @@ public class AttributeSpans extends SimpleSpans{
 		}
 
 		@Override
-		public int compareTo(CandidateAttributeSpan o) {
-			if (this.elementRef == o.elementRef)
+		public int compareTo(CandidateSpan o) {
+			CandidateAttributeSpan cs = (CandidateAttributeSpan) o;
+			if (this.elementRef == cs.elementRef)
 				return 0;
-			else if (this.elementRef > o.elementRef )
+			else if (this.elementRef > cs.elementRef )
 				return 1;
 			return -1;			
 		}		
