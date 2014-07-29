@@ -113,16 +113,20 @@ public class CandidateSpan implements Comparable<CandidateSpan>{
 
 	@Override
 	public int compareTo(CandidateSpan o) {
-		if (this.getStart() == o.getStart()){
-			if (this.getEnd() == o.getEnd())
-				return 0;	
-			if (this.getEnd() > o.getEnd() )
-				return 1;
-			else return -1;
+		if (this.doc == o.doc){
+			if (this.getStart() == o.getStart()){
+				if (this.getEnd() == o.getEnd())
+					return 0;	
+				if (this.getEnd() > o.getEnd() )
+					return 1;
+				else return -1;
+			}
+			else if (this.getStart() < o.getStart())
+				return -1;
+			else return 1;	
 		}
-		else if (this.getStart() < o.getStart())
+		else if (this.doc < o.doc)
 			return -1;
-		else 
-			return 1;	
+		else return 1;
 	}
 }
