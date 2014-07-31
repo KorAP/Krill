@@ -20,6 +20,11 @@ import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/*
+TODO: Make isNegative work!
+*/
+
+
 /**
  * @author Nils Diewald
  */
@@ -39,7 +44,8 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	isNull = true,
 	isOptional = true,
 	lastIsOptional = false,
-	firstIsOptional = false;
+	firstIsOptional = false,
+	isNegative = false;
 
     public SpanSequenceQueryWrapper (String field) {
 	this.field = field;
@@ -66,7 +72,12 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
     public SpanSequenceQueryWrapper (String field, SpanQueryWrapperInterface sswq) {
 	this(field);
+
 	if (!sswq.isNull()) {
+
+	    if (sswq.isNegative())
+		this.isNegative = true;
+	    
 	    this.segments.add((SpanQuery) sswq.toQuery());
 	    this.isNull = false;
 	    if (sswq.isOptional()) {
@@ -155,6 +166,10 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
     public SpanSequenceQueryWrapper append (SpanQueryWrapperInterface ssq) {
 	if (!ssq.isNull()) {
+
+	    if (ssq.isNegative())
+		this.isNegative = true;
+	    
 	    SpanQuery appendQuery = ssq.toQuery();
 	    if (!ssq.isOptional()) {
 		if (DEBUG)
@@ -252,6 +267,10 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
     public SpanSequenceQueryWrapper prepend (SpanQueryWrapperInterface ssq) {
 	if (!ssq.isNull()) {
+
+	    if (ssq.isNegative())
+		this.isNegative = true;
+	    
 	    SpanQuery prependQuery = ssq.toQuery();
 	    if (!ssq.isOptional()) {
 		return this.prepend(prependQuery);
@@ -424,5 +443,9 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
     public boolean isNull () {
 	return this.isNull;
+    };
+
+    public boolean isNegative () {
+	return this.isNegative;
     };
 };

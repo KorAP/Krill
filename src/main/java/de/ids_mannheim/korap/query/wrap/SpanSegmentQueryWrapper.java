@@ -26,6 +26,7 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
     public ArrayList<SpanQuery> exclusive;
     private String field;
     private boolean isNull = true;
+    private boolean isNegative = false;
 
     /**
      * Constructor.
@@ -61,6 +62,8 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
     public SpanSegmentQueryWrapper (String field, SpanAlterQueryWrapper alter) {
 	this(field);
 	if (!alter.isNull()) {
+	    if (alter.isNegative())
+		this.isNegative = true;
 	    this.inclusive.add((SpanQuery) alter.toQuery());
 	    this.isNull = false;
 	};
@@ -103,6 +106,8 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 
     public SpanSegmentQueryWrapper with (SpanAlterQueryWrapper alter) {
 	if (!alter.isNull()) {
+	    if (alter.isNegative())
+		this.isNegative = true;
 	    this.inclusive.add((SpanQuery) alter.toQuery());
 	    this.isNull = false;
 	};
@@ -143,7 +148,12 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 
     public SpanSegmentQueryWrapper without (SpanAlterQueryWrapper alter) {
 	if (!alter.isNull()) {
-	    this.exclusive.add((SpanQuery) alter.toQuery());
+	    if (alter.isNegative()) {
+		this.inclusive.add((SpanQuery) alter.toQuery());
+	    }
+	    else {
+		this.exclusive.add((SpanQuery) alter.toQuery());
+	    };
 	    this.isNull = false;
 	};
 	return this;
@@ -152,6 +162,7 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
     // Identical to with
     public SpanSegmentQueryWrapper without (SpanSegmentQueryWrapper seg) {
 	if (!seg.isNull()) {
+	    // TODO!!!
 	    this.with(seg);
 	    this.isNull = false;
 	};
@@ -221,6 +232,13 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 
     public boolean isNull () {
 	return this.isNull;
+    };
+
+    public boolean isNegative () {
+	if (this.inclusive.size() == 0 && this.exclusive.size() >= 1) {
+	    return true;
+	};
+	return false;
     };
 };
 

@@ -81,7 +81,8 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp7.jsonld").getFile());
 
 	// [!base=Katze]
-	assertEquals(sqwi.toQuery().toString(), "");
+	assertEquals("tokens:mate/l:Katze", sqwi.toQuery().toString());
+	assertTrue(sqwi.isNegative());
     };
 
     @Ignore

@@ -36,4 +36,8 @@ public class SpanWildcardQueryWrapper {
     public boolean isNull () {
 	return false;
     };
+
+    public boolean isNegative () {
+	return false;
+    };
 };

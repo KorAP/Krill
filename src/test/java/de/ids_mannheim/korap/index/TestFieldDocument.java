@@ -222,12 +222,11 @@ public class TestFieldDocument {
 
 	// assertEquals("... e des [{1:lateinischen {2:Alphabets}}] und ein Vokal. Der Buchstabe A ...", ks.run(ki).getMatch(0).getSnippetBrackets());
 
+	
 	/*
+
 	kr = ki.search(query, 0, (short) 1, true, (short) 2, false, (short) 5);
 	assertEquals("... Buchstabe des [{1:{2:lateinischen} Alphabets}] und  ...", kr.match(0).getSnippetBrackets());
-	*/
-
-	/*
 
 	SpanQuery query;
 

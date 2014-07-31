@@ -45,4 +45,8 @@ public class SpanMatchModifyQueryWrapper implements SpanQueryWrapperInterface {
     public boolean isNull () {
 	return this.subquery.isNull();
     };
+
+    public boolean isNegative () {
+	return this.subquery.isNegative();
+    };
 };

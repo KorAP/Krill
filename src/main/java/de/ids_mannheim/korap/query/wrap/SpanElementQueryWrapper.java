@@ -25,4 +25,8 @@ public class SpanElementQueryWrapper implements SpanQueryWrapperInterface {
     public boolean isNull () {
 	return false;
     };
+
+    public boolean isNegative () {
+	return false;
+    };
 };

@@ -631,9 +631,10 @@ http://stackoverflow.com/questions/1311199/finding-the-position-of-search-hits-f
 
 
 	// [][][p:VAFIN] in s
-	//([e:s:<][]*[T] | [T & e:s:<]) [T] ([p:VAFIN & e:s:>] | [T][]*[e:s:>]
+	// ([e:s:<][]*[T] | [T & e:s:<]) [T] ([p:VAFIN & e:s:>] | [T][]*[e:s:>]
 
 	/*
+
 	SpanSegmentWithinQuery ssequery = new SpanSegmentWithinQuery(
 	    "text","s", new SpanSegmentSequenceQuery("text", "T", "T", "p:VAFIN")
         );

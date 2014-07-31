@@ -18,6 +18,8 @@ import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
+import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 
 
 @RunWith(JUnit4.class)
@@ -50,7 +52,7 @@ public class TestSegmentIndex {
 		kr = ki.search(sq, (short) 10);
 		ki.close();
 		
-		assertEquals("totalResults", 2, kr.totalResults());
+		assertEquals("totalResults", 3, kr.totalResults());
 		assertEquals("StartPos (0)", 1, kr.match(0).startPos);
 		assertEquals("EndPos (0)", 2, kr.match(0).endPos);
 		assertEquals("StartPos (1)", 4, kr.match(1).startPos);
@@ -182,7 +184,8 @@ public class TestSegmentIndex {
 		assertEquals("StartPos (0)", 0, kr.match(1).startPos);
 		assertEquals("EndPos (0)", 2, kr.match(1).endPos);
 	}
-	
+
+    
 	private FieldDocument createFieldDoc0(){
 		fd = new FieldDocument();
 		fd.addString("ID", "doc-0");
@@ -202,7 +205,7 @@ public class TestSegmentIndex {
 		fd.addString("ID", "doc-1");
 		fd.addTV("base",
 			 "babaa",			 
-			 "[(0-1)s:b|i:b|s:c_1#0-1]" +
+			 "[(0-1)s:b|i:b|s:c|_1#0-1]" +
 			 "[(1-2)s:a|i:a|s:b|_2#1-2|<>:e#1-3$<i>3]" +			 
 			 "[(2-3)s:b|i:b|s:a|_3#2-3]" +
 			 "[(3-4)s:a|i:a|_4#3-4]" +
@@ -223,7 +226,7 @@ public class TestSegmentIndex {
 	
 	private FieldDocument createFieldDoc4(){
 		fd = new FieldDocument();
-		fd.addString("ID", "doc-3");
+		fd.addString("ID", "doc-4");
 		fd.addTV("base",
 			 "bdb",			 
 			 "[(0-1)s:b|i:b|s:c|_1#0-1]" +

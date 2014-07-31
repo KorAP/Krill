@@ -18,6 +18,7 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
     private List<SpanQuery> alternatives;
     private boolean isNull = true;
     private boolean isOptional = false;
+    private boolean isNegative = false;
 
     public SpanAlterQueryWrapper (String field) {
 	this.field = field;
@@ -52,6 +53,9 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
     public SpanAlterQueryWrapper or (SpanQueryWrapperInterface term) {
 	if (term.isNull())
 	    return this;
+
+	if (term.isNegative())
+	    this.isNegative = true;
 
 	// If one operand is optional, the whole group can be optional
 	// a | b* | c
@@ -97,5 +101,9 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
 
     public boolean isNull () {
 	return this.isNull;
+    };
+
+    public boolean isNegative () {
+	return this.isNegative;
     };
 };

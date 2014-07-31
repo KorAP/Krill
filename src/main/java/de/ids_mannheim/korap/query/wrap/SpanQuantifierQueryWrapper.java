@@ -29,6 +29,10 @@ public class SpanQuantifierQueryWrapper implements SpanQueryWrapperInterface {
 	return false;
     };
 
+    public boolean isNegative () {
+	return false;
+    };
+
 
     /*
 

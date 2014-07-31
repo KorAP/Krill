@@ -59,4 +59,8 @@ public class SpanRepetitionQueryWrapper implements SpanQueryWrapperInterface {
     public boolean isNull () {
 	return this.isNull;
     };
+
+    public boolean isNegative () {
+	return this.subquery.isNegative();
+    };
 };

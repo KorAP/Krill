@@ -9,4 +9,5 @@ public interface SpanQueryWrapperInterface {
     public SpanQuery toQuery ();
     public boolean isOptional ();
     public boolean isNull ();
+    public boolean isNegative ();
 };

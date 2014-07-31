@@ -55,4 +55,11 @@ public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
     public boolean isNull () {
 	return this.isNull;
     };
+
+    public boolean isNegative () {
+	if (this.element.isNegative() || this.wrap.isNegative()) {
+	    return true;
+	};
+	return false;
+    };
 };

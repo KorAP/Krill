@@ -50,4 +50,8 @@ public class SpanRegexQueryWrapper {
     public boolean isNull () {
 	return false;
     };
+
+    public boolean isNegative () {
+	return false;
+    };
 };
