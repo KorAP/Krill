@@ -1,3 +1,9 @@
+0.32 2014-08-01
+        - [bugfix] Fix for repetition candidates (margaretha)
+ 	- [bugfix] Some fixes for negative segments (diewald)
+ 	- [bugfix] SpanMatchModify now skips in case the requested class isn't found (diewald)
+ 	- [performance] Some logging issues fixed (diewald)
+
 0.31.8 2014-07-24
         - [feature] Added optionality to querys for quantifiers (diewald)
         - [feature] Support for korap:boundary deserialization (diewald)

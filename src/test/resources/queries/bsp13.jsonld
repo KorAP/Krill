@@ -115,7 +115,7 @@
           "@type": "korap:term", 
           "layer": "pos",
           "key" : "Det", 
-	      "match" : "match:ne"
+          "match" : "match:ne"
         }
       }
     ]

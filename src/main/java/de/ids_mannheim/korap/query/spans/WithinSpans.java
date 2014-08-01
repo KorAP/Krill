@@ -32,10 +32,11 @@ import java.io.*;
 
 /*
   TODO: Use the flag in KorapQuery!
+  TODO: Support exclusivity
 */
 
 /**
- * Compare two spans and check, if the second one relates to the first one.
+ * Compare two spans and check how they relate positionally.
  *
  * @author Nils Diewald
  */
@@ -43,6 +44,7 @@ public class WithinSpans extends Spans {
 
     // Logger
     private final Logger log = LoggerFactory.getLogger(WithinSpans.class);
+
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
     
@@ -72,7 +74,7 @@ public class WithinSpans extends Spans {
 
     /*
       Supported flags are currently:
-      ov  -> 0  | overlap:      A & B != empty)
+      ov  -> 0  | overlap:      A & B != empty
       rov -> 2  | real overlap: A & B != empty and
                                 ((A | B) != A or
                                  (A | B) != B)
@@ -84,6 +86,8 @@ public class WithinSpans extends Spans {
       sw  -> 10 | startswith:   A | B = A and
                                 A.end = B.end
       m   -> 12 |               A = B
+
+      This may change in case the system switches to 16bit vector
      */
     public static final byte
 	OVERLAP      = (byte) 0,
@@ -96,10 +100,11 @@ public class WithinSpans extends Spans {
 
     private byte flag;
 
+    // Contains the query
     private SpanWithinQuery query;
 
+    // Contains the spans
     private final Spans embeddedSpans, wrapSpans;
-
 
     private boolean tryMatch = true;
 
@@ -151,11 +156,11 @@ public class WithinSpans extends Spans {
 
 	// Initialize spans
 	if (!this.init()) {
-	    this.more = false;
-	    this.inSameDoc = false;
-	    this.wrapDoc = DocIdSetIterator.NO_MORE_DOCS;
+	    this.more        = false;
+	    this.inSameDoc   = false;
+	    this.wrapDoc     = DocIdSetIterator.NO_MORE_DOCS;
 	    this.embeddedDoc = DocIdSetIterator.NO_MORE_DOCS;
-	    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
+	    this.matchDoc    = DocIdSetIterator.NO_MORE_DOCS;
 	    return false;
 	};
 
@@ -681,11 +686,6 @@ public class WithinSpans extends Spans {
 		break;
 	    };
 	};
-
-	/*
-	if (DEBUG)
-	    log.trace("Match is {}", match);
-	*/
 
 	try {
 	    this.todo(currentCase);

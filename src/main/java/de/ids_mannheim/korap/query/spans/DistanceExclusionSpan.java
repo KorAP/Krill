@@ -21,6 +21,9 @@ public class DistanceExclusionSpan extends DistanceSpans{
 	private boolean isOrdered;
 	private boolean hasMoreSecondSpans;
 
+        // This advices the java compiler to ignore all loggings
+        public static final boolean DEBUG = false;
+
 	public DistanceExclusionSpan(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts, boolean isOrdered) 
@@ -106,8 +109,11 @@ public class DistanceExclusionSpan extends DistanceSpans{
   		setMatchFirstSpan(new CandidateSpan(firstSpans));
   		//setMatchSecondSpan(new CandidateSpan(secondSpans));
   		
-  		log.trace("doc# {}, start {}, end {}",matchDocNumber,matchStartPosition,
-				matchEndPosition);		
+		if (DEBUG)
+		    log.trace("doc# {}, start {}, end {}",
+			      matchDocNumber,
+			      matchStartPosition,
+			      matchEndPosition);		
 	}
 
 	@Override

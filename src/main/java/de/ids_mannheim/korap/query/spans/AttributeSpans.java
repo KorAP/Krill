@@ -37,6 +37,9 @@ public class AttributeSpans extends SimpleSpans{
 	private boolean isFinish;
 	
 	protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
+
+        // This advices the java compiler to ignore all loggings
+        public static final boolean DEBUG = false;
 	
 	public AttributeSpans(SpanAttributeQuery simpleSpanQuery,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -73,7 +76,8 @@ public class AttributeSpans extends SimpleSpans{
 				return true;
 			}
 			else{
-				logger.info("Setting candidate list");
+			        if (DEBUG)
+				    logger.info("Setting candidate list");
 				setCandidateList();
 //				for (CandidateAttributeSpan cs: candidateList){
 //					logger.info("cs ref "+cs.getElementRef());
@@ -95,7 +99,8 @@ public class AttributeSpans extends SimpleSpans{
 				firstSpans.start() == currentPosition){
 			
 			short elementRef = retrieveElementRef(firstSpans); 
-			logger.info("ElementRef: "+elementRef);
+			if (DEBUG)
+                            logger.info("ElementRef: "+elementRef);
 			candidateList.add(new CandidateAttributeSpan(firstSpans,elementRef));
 			hasMoreSpans = firstSpans.next();
 		}
@@ -112,7 +117,8 @@ public class AttributeSpans extends SimpleSpans{
 		ByteBuffer wrapper = ByteBuffer.wrap(payload.get(0));
 		short num = wrapper.getShort();
 		long e = System.nanoTime();
-		logger.info("Bytebuffer runtime "+ (e-s));
+		if (DEBUG)
+                    logger.info("Bytebuffer runtime "+ (e-s));
 		return num;				
 	}
 	

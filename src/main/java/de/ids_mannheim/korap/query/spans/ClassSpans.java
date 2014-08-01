@@ -19,6 +19,10 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
+/**
+ * @author diewald
+ */
+
 public class ClassSpans extends Spans {
     private List<byte[]> highlightedPayload;
     private Collection<byte[]> payload;

@@ -159,10 +159,8 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 	return this;
     };
 
-    // Identical to with
     public SpanSegmentQueryWrapper without (SpanSegmentQueryWrapper seg) {
 	if (!seg.isNull()) {
-	    // TODO!!!
 	    this.with(seg);
 	    this.isNull = false;
 	};
@@ -180,23 +178,16 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
             );
 	}
 
+	// These are now identical but may be negative
 	else if (this.inclusive.size() == 0 && this.exclusive.size() >= 1) {
-
-	    // Not supported anymore
-	    // TODO: Raise error
-	    return (SpanQuery) new SpanNotQuery(
-		new SpanTermQuery(new Term(this.field, "T")),
-	        this._listToOrQuery(this.exclusive)
-            );
+	    return (SpanQuery) this._listToQuery(this.exclusive);
 	}
-
 	else if (this.inclusive.size() >= 1 && this.exclusive.size() == 0) {
 	    return (SpanQuery) this._listToQuery(this.inclusive);
 	};
 
 	return (SpanQuery) null;
     };
-
 
     private SpanQuery _listToQuery (ArrayList<SpanQuery> list) {
 	SpanQuery query = list.get(0);
@@ -207,7 +198,6 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 
 	return (SpanQuery) query;
     };
-
 
     private SpanQuery _listToOrQuery (ArrayList<SpanQuery> list) {
 	if (list.size() == 1) {
@@ -239,6 +229,16 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 	    return true;
 	};
 	return false;
+    };
+
+    public void makeNegative () {
+	/*
+	  TODO: THIS IS A BIT MORE COMPLICATED!
+	  and and or groups have to be switched
+	 */
+
+	this.exclusive.addAll(this.inclusive);
+	this.inclusive.clear();
     };
 };
 

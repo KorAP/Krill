@@ -151,12 +151,12 @@ public class TestMatchIndex {
 
 	assertEquals("SnippetHTML (0) 2", "<span class=\"context-left\"><span class=\"more\"></span>a</span><span class=\"match\">b<em class=\"class-0 level-0\">a</em></span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.match(0).snippetHTML());
 
-	// System.err.println(kr.toJSON());
-
 	sq = new SpanMatchModifyClassQuery(
-            new SpanNextQuery(
-	        new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 1),
-                new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 2)
+            new SpanClassQuery(
+                new SpanNextQuery(
+	            new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 1),
+                    new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 2)
+		), (byte) 3
             ), (byte) 3
 	);
 
@@ -173,6 +173,17 @@ public class TestMatchIndex {
 	assertEquals("Document count", 1, ki.numberOf("base", "documents"));
 	assertEquals("Token count", 10, ki.numberOf("base", "t"));
 
+	// Don't match the expected class!
+	sq = new SpanMatchModifyClassQuery(
+            new SpanNextQuery(
+	        new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 1),
+		new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 2)
+	    ), (byte) 3
+	);
+
+	kr = ki.search(sq, (short) 10);
+	
+	assertEquals("totalResults", 0, kr.totalResults());
 
 	sq = new SpanMatchModifyClassQuery(
             new SpanNextQuery(

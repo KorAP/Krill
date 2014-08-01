@@ -11,10 +11,43 @@ import java.util.*;
 import org.apache.lucene.search.spans.SpanQuery;
 
 /*
-  Document: Optionality of operands will be ignored - while the optionality of the wrap is herited!
+  Todo:
+  - Exclusivity has to be supported
+  - In case the wrap is negative,
+    the query has to be interpreted as being exclusive!
+    - within(<s>,[base=term])   -> all <s> including [base=term]
+    - within(<s>,[base!=term])  -> all <s> not including [base=term]
+    - !within(<s>,[base=term]) -> all <s> not including [base=term]
+    - within(!<s>,[base!=term]) -> failure - embedding span has to be positive
+      -> Exception: It is an Overlap!
+    -> BUT! This becomes weird with classes, as
+       - within(<s>, {2:[base!=term]}) will match quite often!
+    -> so this is no valid solution!
 
-  Idea:
-  - Maybe inherit the optionality when it is in an element and rewrite the query to an alternation if the wrap is
+    Better - Exclusivity and Negation:
+    - within(<s>,[base!=term])  -> all <s>, hitting only [base!=term] tokens
+      -> is this technically doable? NO!
+    - !within(<s>,[base=term])  -> all <s>, not containing [base=term]
+    - within(!<s>,[base=term])  -> failure
+
+
+  - Optionality:
+    - At the moment:
+      - Optionality of operands will be ignored
+        while the optionality of the wrap is herited!
+    - within(<s>?, [base=term])      -> opt
+    - within(<s>, {2:[base=term]*})  -> (<s>|within(<s>, {2:[base=term]+}))
+    - within(<s>?, {2:[base=term]*}) -> (<s>|within(<s>, {2:[base=term]+})) and opt
+
+  - Speed improvement:
+    - Check for classes!
+    - within(<s>, [base=term]*) -> <s>
+    - within(<s>, {2:[base=term]*})  -> (<s>|within(<s>, {2:[base=term]+}))
+
+  - Special case overlaps(), overlapsStrictly():
+    - overlaps(<s>, <p>) == overlaps(<p>, <s>)
+    - overlaps(<s>?, <p>) -> optionality is always inherited!
+
 */
 
 
@@ -27,6 +60,9 @@ public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
     public SpanWithinQueryWrapper (SpanQueryWrapperInterface element, SpanQueryWrapperInterface wrap) {
 	this.element = element;
 	this.wrap = wrap;
+
+	// TODO: if (wrap.isNegative())	    
+
 	this.flag = (byte) SpanWithinQuery.WITHIN;
 	if (!element.isNull() && !wrap.isNull())
 	    this.isNull = false;
@@ -37,6 +73,8 @@ public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
 	this.wrap = wrap;
 	this.flag = flag;
 
+	// TODO: if (wrap.isNegative())
+
 	if (!element.isNull() && !wrap.isNull())
 	    this.isNull = false;
     };
@@ -45,6 +83,8 @@ public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
 	if (this.isNull)
 	    return (SpanQuery) null;
 	
+	// TODO: if (wrap.isNegative())
+
 	return new SpanWithinQuery(this.element.toQuery(), this.wrap.toQuery(), this.flag);
     };
 
@@ -57,9 +97,8 @@ public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
     };
 
     public boolean isNegative () {
-	if (this.element.isNegative() || this.wrap.isNegative()) {
+	if (this.element.isNegative())
 	    return true;
-	};
 	return false;
     };
 };

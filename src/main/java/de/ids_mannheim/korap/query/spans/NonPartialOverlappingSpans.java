@@ -21,6 +21,9 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
 public abstract class NonPartialOverlappingSpans extends SimpleSpans{
 	
 	private Logger log = LoggerFactory.getLogger(NonPartialOverlappingSpans.class);
+
+        // This advices the java compiler to ignore all loggings
+        public static final boolean DEBUG = false;
 	
 	public NonPartialOverlappingSpans(SimpleSpanQuery simpleSpanQuery,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -52,9 +55,11 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans{
 	  	while (hasMoreSpans && ensureSameDoc(firstSpans,secondSpans)){
 	  		int matchCase = findMatch();
 				if (matchCase == 0){
+				    if (DEBUG) {
 					log.trace("Match doc#: {}",matchDocNumber);
 					log.trace("Match positions: {}-{}", matchStartPosition, 
-							matchEndPosition);
+						  matchEndPosition);
+				    };
 					doCollectPayloads();
 					return true;
 				} 
@@ -78,15 +83,18 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans{
   	/** Collecting available payloads from the current first and second spans */
   	private void doCollectPayloads() throws IOException {
   		if (collectPayloads){
+		    if (DEBUG)
   			log.trace("Collect payloads");
   		    if (firstSpans.isPayloadAvailable()) {
   		    	Collection<byte[]> payload = firstSpans.getPayload();
-  		    	log.trace("Found {} payloads in firstSpans", payload.size());
+			if (DEBUG)
+			    log.trace("Found {} payloads in firstSpans", payload.size());
   		    	matchPayload.addAll(payload);
   		    }
   		    if (secondSpans.isPayloadAvailable()) {
   		    	Collection<byte[]> payload = secondSpans.getPayload();
-  		    	log.trace("Found {} payloads in secondSpans", payload.size());
+			if (DEBUG)
+			    log.trace("Found {} payloads in secondSpans", payload.size());
   		    	matchPayload.addAll(payload);
   		    }
   		}

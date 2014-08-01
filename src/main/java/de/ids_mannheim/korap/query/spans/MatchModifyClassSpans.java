@@ -19,46 +19,52 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.ByteBuffer;
 
+/**
+ * Modify matches to, for example, return only certain class or span ranges.
+ *
+ * @author diewald
+ */
+
 public class MatchModifyClassSpans extends Spans {
-    private List<byte[]> highlightedPayload;
+    private List<byte[]> wrappedPayload;
     private Collection<byte[]> payload;
     private final Spans spans;
     private byte number;
     private boolean divide;
     private ByteBuffer bb;
 
-    private SpanQuery highlight;
+    private SpanQuery wrapQuery;
     private final Logger log = LoggerFactory.getLogger(MatchModifyClassSpans.class);
+
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-
 
     private int start = -1, end;
     private int tempStart = 0, tempEnd = 0;
 
-
-    public MatchModifyClassSpans (SpanQuery highlight,
-		       AtomicReaderContext context,
-		       Bits acceptDocs,
-		       Map<Term,TermContext> termContexts,
-		       byte number,
-		       boolean divide) throws IOException {
-	spans = highlight.getSpans(context, acceptDocs, termContexts);
-	this.number = number;
-	this.divide = divide;
-	this.highlight = highlight;
-	this.highlightedPayload = new ArrayList<byte[]>(6);
-	bb = ByteBuffer.allocate(9);
+    public MatchModifyClassSpans (
+      SpanQuery wrapQuery,
+      AtomicReaderContext context,
+      Bits acceptDocs,
+      Map<Term,TermContext> termContexts,
+      byte number,
+      boolean divide) throws IOException {
+	this.spans     = wrapQuery.getSpans(context, acceptDocs, termContexts);
+	this.number    = number;
+	this.divide    = divide;
+	this.wrapQuery = wrapQuery;
+	this.bb        = ByteBuffer.allocate(9);
+	this.wrappedPayload = new ArrayList<byte[]>(6);
     };
 
     @Override
     public Collection<byte[]> getPayload() throws IOException {
-	return highlightedPayload;
+	return wrappedPayload;
     };
 
     @Override
     public boolean isPayloadAvailable() {
-	return highlightedPayload.isEmpty() == false;
+	return wrappedPayload.isEmpty() == false;
     };
 
     public int doc() { return spans.doc(); }
@@ -75,18 +81,24 @@ public class MatchModifyClassSpans extends Spans {
     // inherit javadocs
     @Override
     public boolean next() throws IOException {
+	/* TODO:
+	 * In case of a split() (instead of a submatch())
+	 * Is the cache empty?
+	 * Otherwise: Next from list
+	 */
+
 	if (DEBUG)
-	    log.trace("||> Forward next");
+	    log.trace("Forward next match");
 
-	highlightedPayload.clear();
+	// Next span
+	while (spans.next()) {
 
-	/*
-	  Bei divide:
-	  Ist der Speicher leer?
-	  Sonst der nächste Treffer vom Speicher!
-	*/
+	    if (DEBUG)
+		log.trace("Forward next inner span");
 
-	if (spans.next()) {
+	    // No classes stored
+	    wrappedPayload.clear();
+
 	    start = -1;
 	    if (spans.isPayloadAvailable()) {
 		end = 0;
@@ -95,10 +107,10 @@ public class MatchModifyClassSpans extends Spans {
 		for (byte[] payload : spans.getPayload()) {
 		    bb.clear();
 		    bb.put(payload);
-		    //		    bb = ByteBuffer.wrap(payload, 0, 10);
 		    bb.position(8);
 
 		    // Todo: Implement Divide
+		    // Found class payload of structure <i>start<i>end<b>class
 		    if (payload.length == 9 && bb.get() == this.number) {
 			bb.rewind();
 			tempStart = bb.getInt();
@@ -107,87 +119,61 @@ public class MatchModifyClassSpans extends Spans {
 			if (DEBUG)
 			    log.trace("Found matching class {}-{}", tempStart, tempEnd);
 
+			// Set start position 
 			if (start == -1)
 			    start = tempStart;
 			else if (tempStart < start)
 			    start = tempStart;
 
+			// Set end position
 			if (tempEnd > end)
 			    end = tempEnd;
 		    }
 
-		    // Doesn't mark an important payload - but should be kept
+		    // No class payload - but keep!
 		    else {
 			if (DEBUG)
 			    log.trace("Remember old payload {}", payload);
-			highlightedPayload.add(payload);
+			wrappedPayload.add(payload);
 		    };
 		};
-
-		/*
-
-		if (DEBUG)
-		    log.trace("All payload processed, now clean up");
-
-		// We have a payload found that is a class for modification!
-		if (start != -1) {
-		    int i = highlightedPayload.size() - 1;
-
-		    for (; i >= 0; i--) {
-			bb.clear();
-			bb.put(highlightedPayload.get(i),0,8);
-			bb.rewind();
-			if (bb.getInt() < start || bb.getInt() > end) {
-			    bb.rewind();
-			    if (DEBUG)
-				log.trace("Remove highlight {} with {}-{} for {}-{}", i, bb.getInt(), bb.getInt(), start, end);
-			    highlightedPayload.remove(i);
-			    continue;
-			};
-
-			if (DEBUG) {
-			    bb.rewind();
-			    log.trace("Highlight {} will stay with {}-{} for {}-{}", i, bb.getInt(), bb.getInt(), start, end);
-			};
-		    };
-		    // Todo: SPLIT
-		    // Vorsicht! Bei divide könnten Payloads mehrmals vergeben werden
-		    // müssen!
-		    
-		    };
-		*/
 	    };
 
+	    // Class not found
+	    if (start == -1)
+		continue;
 
-	    if (start == -1) {
-		start = spans.start();
-		end = spans.end();
-	    }
-	    else if (DEBUG) {
-		log.trace("Start to shrink to {} - {} class: {}",
-			  start, end, number);
-	    };
+	    if (DEBUG)
+		log.trace(
+		    "Start to focus on class {} from {} to {}",
+		    number,
+		    start,
+		    end
+		);
 
 	    return true;
 	};
+
+	// No more spans
 	return false;
     };
 
+
     // inherit javadocs
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
 	return spans.skipTo(target);
     };
 
     @Override
-    public String toString() {
-	return getClass().getName() + "(" + this.highlight.toString() + ")@" +
+    public String toString () {
+	return getClass().getName() + "(" + this.wrapQuery.toString() + ")@" +
 	    (doc() + ":" + start() + "-" + end());
     };
 
 
     @Override
-    public long cost() {
+    public long cost () {
 	return spans.cost();
-    }
+    };
 };

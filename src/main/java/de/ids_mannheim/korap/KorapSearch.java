@@ -59,6 +59,9 @@ public class KorapSearch {
 		    this.query = queryIface.toQuery();
 		    if (queryIface.isOptional())
 			this.addWarning("Optionality of query is ignored");
+		    if (queryIface.isNegative())
+			this.addWarning("Exclusivity of query is ignored");
+
 		}
 		catch (QueryException q) {
 		    this.error = q.getMessage();

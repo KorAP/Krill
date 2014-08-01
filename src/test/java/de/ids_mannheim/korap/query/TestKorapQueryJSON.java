@@ -18,12 +18,15 @@ public class TestKorapQueryJSON {
 
     private String defaultFoundry = "mate/";
 
-    @Ignore
+    @Test
     public void queryJSONBsp1 () {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp1.jsonld").getFile());
 
+	// There is a repetition in here
 	// ([base=foo]|[base=bar])[base=foobar]
-	assertEquals(sqwi.toQuery().toString(), "");
+	assertEquals(sqwi.toQuery().toString(),
+            "spanOr([tokens:base:foo, spanQuantifier(spanNext(tokens:base:foo, tokens:base:bar)[1:100])])");
+	assertTrue(sqwi.isOptional());
     };
 
     @Test
@@ -76,21 +79,13 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "tokens:"+defaultFoundry+"l:Katze");
     };
 
-    @Ignore
+    @Test
     public void queryJSONBsp7 () {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp7.jsonld").getFile());
 
 	// [!base=Katze]
 	assertEquals("tokens:mate/l:Katze", sqwi.toQuery().toString());
 	assertTrue(sqwi.isNegative());
-    };
-
-    @Ignore
-    public void queryJSONBsp8 () {
-	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp8.json").getFile());
-
-	// [!base=Katze]
-	assertEquals(sqwi.toQuery().toString(), "");
     };
 
     @Test
@@ -118,12 +113,18 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "spanNext(spanNext(tokens:"+defaultFoundry+"l:Katze, tokens:s:und), tokens:s:Hunde)");
     };
 
-    @Ignore
+    @Test
     public void queryJSONBsp11 () {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp11.jsonld").getFile());
 
-	// [!(base=Katze&orth=Katzen)]
-	assertEquals(sqwi.toQuery().toString(), "");
+	// [base!=Katze | orth!=Katzen]
+	/*
+	  Imagine a([^b]|[^c])d
+	  Matches abd and acd
+	  Interpretation would be not(spanAnd(...))
+	*/
+	assertEquals(sqwi.toQuery().toString(), "spanOr([tokens:mate/l:Katze, tokens:s:Katzen])");
+	assertTrue(sqwi.isNegative());
     };
 
     @Test
@@ -134,12 +135,11 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "spanContain(<tokens:np />, tokens:"+defaultFoundry+"l:Mann)");
     };
 
-    @Ignore
+    @Test
     public void queryJSONBsp13 () {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp13.jsonld").getFile());
 
-	// startswith(<np>,[!pos=Det])
-	assertEquals(sqwi.toQuery().toString(), "");
+	assertEquals(sqwi.toQuery().toString(), "spanStartsWith(<tokens:np />, tokens:mate/p:Det)");
     };
 
     @Test

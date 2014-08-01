@@ -33,7 +33,10 @@ public class ElementSpans extends SimpleSpans {
 	
 	public boolean isElementRef = false; // A dummy flag
 	
-	protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
+	protected Logger logger = LoggerFactory.getLogger(ElementSpans.class);
+
+        // This advices the java compiler to ignore all loggings
+        public static final boolean DEBUG = false;
 	
 	public ElementSpans(SpanElementQuery spanElementQuery,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -70,7 +73,8 @@ public class ElementSpans extends SimpleSpans {
 				return true;
 			}
 			else{
-				logger.info("Setting candidate list");
+			        if (DEBUG)
+				     logger.info("Setting candidate list");
 				setCandidateList();				
 				currentDoc = termSpans.doc();
 				currentPosition = termSpans.start();

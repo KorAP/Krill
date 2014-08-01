@@ -1,46 +1,46 @@
 {
-    "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
-    "query": {
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query": {
+    "@type": "korap:group", 
+    "operation": "operation:or",
+    "operands": [
+      {
+	"@type": "korap:token", 
+	"wrap": {
+	  "@type": "korap:term", 
+	  "layer": "base",
+	  "key": "foo"
+	}
+      }, 
+      {
 	"@type": "korap:group", 
-	"operation": "operation:or",
+	"min" : 0,
+	"operation": "operation:repetition",
 	"operands": [
-	    {
+	  {
+	    "@type": "korap:group", 
+	    "operation" : "operation:sequence",
+	    "operands": [
+	      {
 		"@type": "korap:token", 
 		"wrap": {
-		    "@type": "korap:term", 
-		    "layer": "base",
-		    "key": "foo"
+		  "@type": "korap:term", 
+		  "key": "foo", 
+		  "layer" : "base"
 		}
-	    }, 
-	    {
-		"@type": "korap:group", 
-		"min" : 0,
-		"operation": "operation:repetition",
-		"operands": [
-		    {
-			"@type": "korap:group", 
-			"operation" : "operation:sequence",
-			"operands": [
-			    {
-				"@type": "korap:token", 
-				"wrap": {
-				    "@type": "korap:term", 
-				    "key": "foo", 
-				    "layer" : "base"
-				}
-			    }, 
-			    {
-				"@type": "korap:token", 
-				"wrap": {
-				    "@type": "korap:term",
-				    "layer": "base",
-				    "key" : "bar"
-				}
-			    }
-			]
-		    }
-		]
-	    }
+	      },
+	      {
+		"@type": "korap:token", 
+		"wrap": {
+		  "@type": "korap:term",
+		  "layer": "base",
+		  "key" : "bar"
+		}
+	      }
+	    ]
+	  }
 	]
-    }
+      }
+    ]
+  }
 }
