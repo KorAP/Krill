@@ -25,7 +25,6 @@ public class SubSpans extends SimpleSpans{
 
 	@Override
 	public boolean next() throws IOException {
-		matchPayload.clear();
 		isStartEnumeration=false;		
 		return advance();
 	}

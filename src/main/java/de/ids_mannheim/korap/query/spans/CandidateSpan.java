@@ -22,7 +22,7 @@ public class CandidateSpan implements Comparable<CandidateSpan>{
 		this.doc = span.doc();
 		this.start = span.start();
 		this.end = span.end();
-		this.cost = span.cost();		
+		this.cost = span.cost();
 		if (span.isPayloadAvailable())
 			setPayloads(span.getPayload());
 		
@@ -73,9 +73,13 @@ public class CandidateSpan implements Comparable<CandidateSpan>{
 		return payloads;
 	}
 
-	public void setPayloads(Collection<byte[]> payloads) {
+	public void setPayloads(Collection<byte[]> payloads) {		
+		
 		for (byte[] b : payloads){			
-			this.payloads.add(b.clone());
+			if (b == null)				
+				this.payloads.add(null);			
+			else 
+				this.payloads.add(b.clone());			
 		}
 	}
 
