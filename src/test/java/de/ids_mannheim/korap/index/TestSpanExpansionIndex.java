@@ -11,6 +11,7 @@ import org.junit.Test;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 
 public class TestSpanExpansionIndex {
@@ -18,14 +19,19 @@ public class TestSpanExpansionIndex {
 	KorapResult kr;
     KorapIndex ki;
     
-	@Test
-	public void testCase1() throws IOException {
-		ki = new KorapIndex();
+    public TestSpanExpansionIndex() throws IOException {
+    	ki = new KorapIndex();
 		for (String i : new String[] {"AAA-12402"}) {
 		    ki.addDocFile(
 		        getClass().getResource("/wiki/" + i + ".json.gz").getFile(),true);
 		};
 		ki.commit();
+	}
+    
+    /** Left and right expansions
+     * */
+	@Test
+	public void testCase1() throws IOException {
 		
 		SpanTermQuery stq = new SpanTermQuery(new Term("tokens","s:Kaiser")	);
 		SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 2, true, true);		
@@ -57,4 +63,28 @@ public class TestSpanExpansionIndex {
 //		}	
 		
 	}
+	
+	/** Classnumber
+	 * 	Cannot check the correctness directly
+	 * */
+	@Test
+	public void testCase2() {
+		byte classNumber = 1;
+		
+		// create new payload for the expansion offsets
+		SpanTermQuery stq = new SpanTermQuery(new Term("tokens","s:Kaiser")	);
+		SpanExpansionQuery sq = new SpanExpansionQuery(stq, 0, 2, classNumber, true, true);		
+		kr = ki.search(sq, (short) 10);
+				
+		// add expansion offsets to the existing payload
+		SpanElementQuery seq = new SpanElementQuery("tokens", "cnx/c:np");
+		sq = new SpanExpansionQuery(seq, 1, 2, classNumber, false, true);		
+		kr = ki.search(sq, (short) 10);
+		
+		/*for (KorapMatch km : kr.getMatches()){		
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+				+km.getSnippetBrackets());
+		}*/
+	}
+	
 }

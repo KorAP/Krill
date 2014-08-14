@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +13,13 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 
+/**
+ * @author margaretha
+ * */
 public class ExpandedSpans extends SimpleSpans{
 	
 	private int min, max;
+	private byte classNumber;
 	private boolean isBefore;	
 	private List<CandidateSpan> candidateSpans;
 	private long matchCost;
@@ -25,6 +30,7 @@ public class ExpandedSpans extends SimpleSpans{
 		super(spanExpansionQuery, context, acceptDocs, termContexts);
 		this.min = spanExpansionQuery.getMin();
 		this.max = spanExpansionQuery.getMax();
+		this.classNumber = spanExpansionQuery.getClassNumber();
 		this.isBefore = spanExpansionQuery.isBefore();
 		
 		candidateSpans = new ArrayList<CandidateSpan>();		
@@ -42,7 +48,7 @@ public class ExpandedSpans extends SimpleSpans{
 		while (hasMoreSpans || candidateSpans.size() > 0) {
 			if (candidateSpans.size() > 0 ){
 				setMatch(candidateSpans.get(0));
-				candidateSpans.remove(0);
+				candidateSpans.remove(0);								
 				return true;
 			}
 			else {
@@ -55,17 +61,20 @@ public class ExpandedSpans extends SimpleSpans{
 	
 	private void setCandidateList() throws IOException {
 		CandidateSpan cs;
-		int counter;
+		int counter, start, end;
+		
 		if (isBefore){
 			counter = max;
 			while (counter >= min ){
+				start =  Math.max(0,firstSpans.start() - counter);			
 				cs = new CandidateSpan(
-						firstSpans.start() - counter, 
+						start, 
 						firstSpans.end(), 
 						firstSpans.doc(), 
 						firstSpans.cost(), 
-						firstSpans.getPayload()
+						calculatePayload(start, firstSpans.start())
 				);
+								
 				candidateSpans.add(cs);
 				counter--;
 			}
@@ -73,17 +82,43 @@ public class ExpandedSpans extends SimpleSpans{
 		else{
 			counter = min;
 			while (counter <= max){
+				// TODO: How do I know if the end is already too far (over the end of the doc)? 
+				end = firstSpans.end() + counter;
 				cs = new CandidateSpan(
 						firstSpans.start(), 
-						firstSpans.end() + counter, 
+						end, 
 						firstSpans.doc(), 
 						firstSpans.cost(), 
-						firstSpans.getPayload()
+						calculatePayload(firstSpans.end(), end)
 				);
 				candidateSpans.add(cs);
 				counter++;
 			}
 		}	
+	}
+	
+	private ArrayList<byte[]> calculatePayload(int start, int end)
+			throws IOException{
+		
+		ArrayList<byte[]> payload = new ArrayList<byte[]>();
+		
+		if (classNumber > 0 ){					
+			if (firstSpans.isPayloadAvailable()){				
+				payload.addAll(firstSpans.getPayload());
+			}
+			
+			//System.out.println("Extension offsets "+start+","+end);
+			payload.add(calculateExtensionOffsets(start, end));
+		}
+		return payload;
+	}
+	
+	private byte[] calculateExtensionOffsets(int start, int end) {
+		ByteBuffer buffer = ByteBuffer.allocate(9);
+		buffer.put(classNumber);
+		buffer.putInt(start);					
+		buffer.putInt(end);					
+		return buffer.array();
 	}
 
 	private void setMatch(CandidateSpan candidateSpan) {

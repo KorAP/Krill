@@ -24,8 +24,6 @@ import de.ids_mannheim.korap.query.spans.NextSpans;
  */
 public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
 
-    private String spanName;
-
 	// Constructor
     public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause) {
     	this(firstClause, secondClause, true);
@@ -35,10 +33,14 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
     public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause,
 		boolean collectPayloads) {   
     	super(firstClause, secondClause, collectPayloads);
-    	this.spanName = "spanNext";
     };
 
-
+    public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause, 
+    		boolean isFirstNegated, boolean collectPayloads) {   
+    	super(firstClause, secondClause, collectPayloads);
+    }
+    
+    
     @Override
     public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
 		   Map<Term,TermContext> termContexts) throws IOException {	
@@ -59,8 +61,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
     @Override
 	public String toString(String field) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(this.spanName);
-		sb.append("(");
+		sb.append("spanNext(");
 		sb.append(firstClause.toString(field));
 	        sb.append(", ");
 		sb.append(secondClause.toString(field));

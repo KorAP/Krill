@@ -19,7 +19,8 @@ import de.ids_mannheim.korap.query.spans.ExpandedSpans;
  * */
 public class SpanExpansionQuery extends SimpleSpanQuery{
 
-	int min, max;
+	int min, max; 
+	byte classNumber;
 	boolean isBefore;
 	
 	public SpanExpansionQuery(SpanQuery firstClause, int min, int max,  
@@ -28,6 +29,12 @@ public class SpanExpansionQuery extends SimpleSpanQuery{
 		this.min = min;
 		this.max = max;
 		this.isBefore = isBefore;
+	}
+	
+	public SpanExpansionQuery(SpanQuery firstClause, int min, int max, 
+			byte classNumber, boolean isBefore, boolean collectPayloads) {		
+		this(firstClause, min,max,isBefore,collectPayloads);
+		this.classNumber = classNumber;
 	}
 
 	@Override
@@ -86,5 +93,13 @@ public class SpanExpansionQuery extends SimpleSpanQuery{
 
 	public void setBefore(boolean isBefore) {
 		this.isBefore = isBefore;
+	}
+
+	public byte getClassNumber() {
+		return classNumber;
+	}
+
+	public void setClassNumber(byte classNumber) {
+		this.classNumber = classNumber;
 	}
 }

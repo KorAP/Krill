@@ -51,6 +51,8 @@ public class SubspanQuery extends SimpleSpanQuery{
 	public String toString(String field) {		
 		StringBuilder sb = new StringBuilder();
 		sb.append("subspan(");
+		sb.append(this.firstClause.toString());
+		sb.append(",");
 		sb.append(this.startOffset);
 		sb.append(",");
 		sb.append(this.length);
