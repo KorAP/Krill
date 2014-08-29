@@ -84,6 +84,12 @@ public class TestWPDIndex {
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(11, kr.getTotalResults());
+		//System.out.println(kr.getTotalResults());
+		//for (KorapMatch km : kr.getMatches()){
+			//System.out.println(km.getDocID() +" "+km.getStartPos() +" "+ km.getEndPos());
+        	//System.out.println(km.getSnippetBrackets());
+        	//System.out.println(km.toJSON());
+        //}	
 	}
 	
 	/** Token exclusion distance spans */
@@ -107,12 +113,6 @@ public class TestWPDIndex {
 		ks = new KorapSearch(sq);
 		kr = ks.run(ki);
 		assertEquals(1896, kr.getTotalResults());	
-		
-//		System.out.println(kr.getTotalResults());
-//		for (KorapMatch km : kr.getMatches()){
-//			System.out.println(km.getDocID() +" "+km.getStartPos() +" "+ km.getEndPos());
-//        	System.out.println(km.getSnippetBrackets());
-//        }
 	}
 	
 	/** Element distance spans */
@@ -169,7 +169,7 @@ public class TestWPDIndex {
 		assertEquals(451,kr.getMatch(1).getEndPos());		
 	}
 			
-	/** Quantifier */
+	/** Repetition */
 	@Test
 	public void testCase5() throws IOException{
 		SpanQuery sq;
@@ -191,7 +191,7 @@ public class TestWPDIndex {
 		//0.65s
 	}
 	
-	/** Next and quantifier */
+	/** Next and repetition */
 	@Test
 	public void testCase6() throws IOException{
 		SpanQuery sq = new SpanNextQuery(

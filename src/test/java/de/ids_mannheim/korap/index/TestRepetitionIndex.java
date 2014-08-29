@@ -11,6 +11,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
@@ -43,15 +44,15 @@ public class TestRepetitionIndex {
         fd.addString("ID", "doc-1");
         fd.addTV("base",
             "text",             
-            "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>1]" +
-            "[(1-2)s:e|_2#1-2|<>:s#1-2$<i>4]" +             
+            "[(0-1)s:b|_1#0-1]" +
+            "[(1-2)s:e|_2#1-2]" +             
             "[(2-3)s:c|_3#2-3]" +
-            "[(3-4)s:c|s:d|_4#3-4]" + 
-            "[(4-5)s:d|_5#4-5|<>:s#4-5$<i>7]" +             
-            "[(5-6)s:e|_6#5-6]" +
+            "[(3-4)s:c|s:d]" + 
+            "[(4-5)s:d|s:c|_5#4-5]" +             
+            "[(5-6)s:e|s:c|_6#5-6]" +
     		"[(6-7)s:e|_7#6-7]" +	
-	        "[(7-8)s:c|_8#7-8|<>:x#7-9$<i>9]" + 
-	        "[(8-9)s:d|_9#8-9|<>:x#8-10$<i>10]" + 
+	        "[(7-8)s:c|_8#7-8]" + 
+	        "[(8-9)s:d|_9#8-9]" + 
 	        "[(9-10)s:d|_10#9-10]");
         return fd;
 	}
@@ -81,8 +82,7 @@ public class TestRepetitionIndex {
             "[(2-3)s:e|_3#2-3]");	
         return fd;
 	}
-	
-	
+
 	@Test
 	public void testCase1() throws IOException{
 		ki = new KorapIndex();
@@ -91,6 +91,7 @@ public class TestRepetitionIndex {
         
         SpanQuery sq, sq2;
         // Quantifier only
+        // c{1,2}
         sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:c")),1,2, true);
         kr = ki.search(sq, (short) 10);
         // 0-1, 2-3, 2-4, 3-4, 5-6
@@ -133,10 +134,13 @@ public class TestRepetitionIndex {
         ki.commit();
         
         SpanQuery sq;
+        // c{2,2}
         sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:c")),2,2, true);
         kr = ki.search(sq, (short) 10);
-        assertEquals(4,kr.getTotalResults());
-		
+        // doc1 2-4, 3-5, 4-6
+        assertEquals(6,kr.getTotalResults());
+        
+        // ec{2,2}
         kr = ki.search(sq, (short) 10); 
         sq = new SpanNextQuery(
         		new SpanTermQuery(new Term("base", "s:e")),
@@ -173,6 +177,26 @@ public class TestRepetitionIndex {
         assertEquals(6, kr.getMatch(1).endPos);
         assertEquals(7, kr.getMatch(2).startPos);
         assertEquals(9, kr.getMatch(2).endPos);
+
+	}
+	
+	@Test
+	public void testCase4() throws IOException {
+		ki = new KorapIndex();
+        ki.addDoc(createFieldDoc1());
+        ki.commit();
+        
+		SpanQuery sq;
+        // c{2,2}
+        sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:c")),1,3, true);
+        kr = ki.search(sq, (short) 10);
+        // 2-3, 2-4, 2-5, 3-4, 3-5, 3-6, 4-5, 4-6, 5-6, 7-8  
+        assertEquals(10,kr.getTotalResults());
+        
+        sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("base","s:c")),2,3, true);
+        kr = ki.search(sq, (short) 10);
+        // 2-4, 2-5, 3-5, 3-6, 4-6 
+        assertEquals(5,kr.getTotalResults());
         
 //        System.out.print(kr.getTotalResults()+"\n");
 //		for (int i=0; i< kr.getTotalResults(); i++){
@@ -180,7 +204,45 @@ public class TestRepetitionIndex {
 //				kr.match(i).getLocalDocID()+" "+
 //				kr.match(i).startPos + " " +
 //				kr.match(i).endPos
-//		    );
+//			);
 //		}
+	}
+	
+	@Test
+	public void testCase5() throws IOException {
+		ki = new KorapIndex();
+		for (String i : new String[] {"AAA-12402"}) {
+		    ki.addDocFile(
+		        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+	            );
+		};
+		ki.commit();
+		
+		SpanQuery sq0, sq1, sq2;
+		sq0 = new SpanTermQuery(new Term("tokens", "s:Mann"));
+		sq1 = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","cnx/p:A")),2,3, true);
+        sq2 = new SpanNextQuery(sq1,sq0);        
+        kr = ki.search(sq2, (short) 10);
+        
+        assertEquals(2,kr.getTotalResults());
+        assertEquals(672, kr.getMatch(0).getStartPos());
+        assertEquals(676, kr.getMatch(0).getEndPos());
+        assertEquals(673, kr.getMatch(1).getStartPos());
+        assertEquals(676, kr.getMatch(1).getEndPos());
+        
+        
+        sq2 = new SpanNextQuery(
+        		new SpanTermQuery(new Term("tokens", "s:scheinbar")),
+        		sq2);
+        kr = ki.search(sq2, (short) 10);
+        
+        assertEquals(1,kr.getTotalResults());
+        assertEquals(672, kr.getMatch(0).getStartPos());
+        assertEquals(676, kr.getMatch(0).getEndPos());
+        
+      /*  for (KorapMatch km : kr.getMatches()){
+        	System.out.println(km.getSnippetBrackets());
+        	System.out.println(km.getStartPos() +","+km.getEndPos());
+        }*/
 	}
 }

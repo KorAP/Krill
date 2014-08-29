@@ -50,13 +50,13 @@ public class SpanRepetitionQuery extends SimpleSpanQuery{
 	@Override
 	public String toString(String field) {
 		StringBuilder sb = new StringBuilder();		
-		sb.append("spanQuantifier(");
+		sb.append("spanRepetition(");
 		sb.append(firstClause.toString(field));
-		sb.append("[");
+		sb.append("{");
 		sb.append(min);
-		sb.append(":");
+		sb.append(",");
 		sb.append(max);
-		sb.append("])");
+		sb.append("})");
 		sb.append(ToStringUtils.boost(getBoost()));
 		return sb.toString();
 	}

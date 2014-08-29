@@ -20,7 +20,7 @@ public class ExpandedSpans extends SimpleSpans{
 	
 	private int min, max;
 	private byte classNumber;
-	private boolean isBefore;	
+	private int direction;	
 	private List<CandidateSpan> candidateSpans;
 	private long matchCost;
 	
@@ -30,8 +30,8 @@ public class ExpandedSpans extends SimpleSpans{
 		super(spanExpansionQuery, context, acceptDocs, termContexts);
 		this.min = spanExpansionQuery.getMin();
 		this.max = spanExpansionQuery.getMax();
+		this.direction = spanExpansionQuery.getDirection();
 		this.classNumber = spanExpansionQuery.getClassNumber();
-		this.isBefore = spanExpansionQuery.isBefore();
 		
 		candidateSpans = new ArrayList<CandidateSpan>();		
 		hasMoreSpans = true;		
@@ -63,7 +63,7 @@ public class ExpandedSpans extends SimpleSpans{
 		CandidateSpan cs;
 		int counter, start, end;
 		
-		if (isBefore){
+		if (direction < 0 ){
 			counter = max;
 			while (counter >= min ){
 				start =  Math.max(0,firstSpans.start() - counter);			

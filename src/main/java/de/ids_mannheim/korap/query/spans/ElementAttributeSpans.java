@@ -122,7 +122,8 @@ public class ElementAttributeSpans extends SimpleSpans{
 	 * */
 	private boolean checkNotElementRef() throws IOException{
 		for (AttributeSpans notAttribute: notAttributeList){
-			if (elements.start() == notAttribute.start() &&
+			if (!notAttribute.isFinish() && 
+					elements.start() == notAttribute.start() &&
 					elements.getElementRef() == notAttribute.getElementRef()){
 			        if (DEBUG)
 				    logger.info("not attribute ref exists");

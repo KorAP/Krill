@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.query;
+
 import java.util.*;
 import java.io.*;
 
@@ -25,7 +27,7 @@ public class TestKorapQueryJSON {
 	// There is a repetition in here
 	// ([base=foo]|[base=bar])[base=foobar]
 	assertEquals(sqwi.toQuery().toString(),
-            "spanOr([tokens:base:foo, spanQuantifier(spanNext(tokens:base:foo, tokens:base:bar)[1:100])])");
+            "spanOr([tokens:base:foo, spanRepetition(spanNext(tokens:base:foo, tokens:base:bar){1,100})])");
 	assertTrue(sqwi.isOptional());
     };
 
@@ -269,7 +271,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp-repetition.jsonld").getFile());
 
 	// der[cnx/p=A]{0,2}[tt/p=NN]
-	assertEquals(sqwi.toQuery().toString(), "spanNext(spanOr([tokens:s:der, spanNext(tokens:s:der, spanQuantifier(tokens:cnx/p:A[1:2]))]), tokens:tt/p:NN)");
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanOr([tokens:s:der, spanNext(tokens:s:der, spanRepetition(tokens:cnx/p:A{1,2}))]), tokens:tt/p:NN)");
     };
 
     public static String getString (String path) {

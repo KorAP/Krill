@@ -179,7 +179,7 @@ public class TestMultipleDistanceIndex {
 		constraints.add(createConstraint("p", 0, 0, false, false));
 		mdq = createQuery("s:b", "s:c", constraints,false);
 		kr = ki.search(mdq, (short) 10);		
-		assertEquals(3, kr.getTotalResults());		
+		assertEquals(3, kr.getTotalResults());	
 
 	}
     

@@ -54,9 +54,10 @@ public class SpanAttributeQuery extends SimpleSpanQuery{
 	public String toString(String field) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("spanAttribute(");
-		sb.append(firstClause.toString(field));
-		sb.append(",");
-		sb.append(isNegation ? "negated)" : "notNegated)");		
+		sb.append(firstClause.toString(field));		
+		if (isNegation)
+			sb.append( ", not");		
+		sb.append(")");
 		sb.append(ToStringUtils.boost(getBoost()));
 		return sb.toString();
 	}

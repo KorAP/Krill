@@ -283,7 +283,7 @@ public class TestUnorderedDistanceIndex{
 		        getClass().getResource("/a00/" + i + ".json.gz").getFile(), true
 	            );
 		};
-		ki.commit();	    	
+		ki.commit();
 		
 		SpanQuery sq = new SpanDistanceQuery(
         		new SpanTermQuery(new Term("tokens","s:in")),

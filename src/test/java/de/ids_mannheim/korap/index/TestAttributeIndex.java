@@ -233,6 +233,4 @@ public class TestAttributeIndex {
 		assertEquals(1,kr.getMatch(0).getStartPos());
 		assertEquals(5,kr.getMatch(0).getEndPos());		
 	}
-	
-	
 }

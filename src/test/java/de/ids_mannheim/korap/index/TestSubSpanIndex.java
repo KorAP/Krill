@@ -54,7 +54,7 @@ public class TestSubSpanIndex {
 		kr = ki.search(ssq, (short) 10);
 		
 		assertEquals(34, kr.getMatch(0).getStartPos());
-        assertEquals(35, kr.getMatch(0).getEndPos());
+        assertEquals(36, kr.getMatch(0).getEndPos());
         assertEquals(85, kr.getMatch(1).getStartPos());
         assertEquals(87, kr.getMatch(1).getEndPos());
 	}
