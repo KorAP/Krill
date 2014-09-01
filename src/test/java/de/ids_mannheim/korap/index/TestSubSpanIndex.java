@@ -12,7 +12,7 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
-import de.ids_mannheim.korap.query.SubspanQuery;
+import de.ids_mannheim.korap.query.SpanSubspanQuery;
 
 
 public class TestSubSpanIndex {
@@ -36,7 +36,7 @@ public class TestSubSpanIndex {
 				new DistanceConstraint(5, 5, true, false), 
 				true);
 		
-		SubspanQuery ssq = new SubspanQuery(sdq, 0, 2, true);		
+		SpanSubspanQuery ssq = new SpanSubspanQuery(sdq, 0, 2, true);		
 		kr = ki.search(ssq, (short) 10);
 		
 		assertEquals(27,kr.getTotalResults());
@@ -50,7 +50,7 @@ public class TestSubSpanIndex {
 					+km.getSnippetBrackets());
 		}*/
 		
-		ssq = new SubspanQuery(sdq, -2, 2, true);		
+		ssq = new SpanSubspanQuery(sdq, -2, 2, true);		
 		kr = ki.search(ssq, (short) 10);
 		
 		assertEquals(34, kr.getMatch(0).getStartPos());

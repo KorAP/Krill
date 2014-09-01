@@ -19,11 +19,11 @@ import de.ids_mannheim.korap.query.spans.SubSpans;
  * 
  * 	@author margaretha
  * */
-public class SubspanQuery extends SimpleSpanQuery{
+public class SpanSubspanQuery extends SimpleSpanQuery{
 	
 	private int startOffset, length;
 			
-	public SubspanQuery(SpanQuery firstClause, int startOffset, int length, 
+	public SpanSubspanQuery(SpanQuery firstClause, int startOffset, int length, 
 			boolean collectPayloads) {
 		super(firstClause, collectPayloads);
 		this.startOffset = startOffset;
@@ -32,7 +32,7 @@ public class SubspanQuery extends SimpleSpanQuery{
 
 	@Override
 	public SimpleSpanQuery clone() {
-		SubspanQuery sq = new SubspanQuery(
+		SpanSubspanQuery sq = new SpanSubspanQuery(
 				this.getFirstClause(), 
 				this.startOffset,
 				this.length, 

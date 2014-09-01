@@ -115,11 +115,13 @@ public class TestSpanExpansionIndex {
 		
 		SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 0, 2, -1, true);		
 		kr = ki.search(seq, (short) 10);
-		
+
+		/*
 		for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 					+km.getSnippetBrackets());
 		}
+		*/
 	}
 	
 }

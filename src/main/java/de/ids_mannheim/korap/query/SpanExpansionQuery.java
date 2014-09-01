@@ -10,7 +10,8 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.spans.ExpandedExclusionSpans;
+// Temporary:
+// import de.ids_mannheim.korap.query.spans.ExpandedExclusionSpans;
 import de.ids_mannheim.korap.query.spans.ExpandedSpans;
 
 /** Query to make a span longer by stretching out the start or the end 
@@ -95,9 +96,12 @@ public class SpanExpansionQuery extends SimpleSpanQuery{
 	@Override
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {		 
+	    /*
+	      Temporary:
 		if (isExclusion)
 			return new ExpandedExclusionSpans(this, context, acceptDocs, termContexts);		
 		else
+	    */
 			return new ExpandedSpans(this, context, acceptDocs, termContexts);
 	}
 

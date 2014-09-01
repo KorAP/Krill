@@ -8,13 +8,13 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.SubspanQuery;
+import de.ids_mannheim.korap.query.SpanSubspanQuery;
 
 public class SubSpans extends SimpleSpans{
 
 	private int startOffset, length;
 	
-	public SubSpans(SubspanQuery subspanQuery,
+	public SubSpans(SpanSubspanQuery subspanQuery,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(subspanQuery, context, acceptDocs, termContexts);
