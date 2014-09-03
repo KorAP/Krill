@@ -1,3 +1,6 @@
+0.40 2014-09-03
+        - [feature] Skeleton for standalone REST service (diewald)
+
 0.33 2014-09-01
         - [feature] SpanSubspanQuery (margaretha)
         - [feature] SpanExpansionQuery (margaretha)

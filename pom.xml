@@ -11,7 +11,7 @@
 -->
   <groupId>KorAP-modules</groupId>
   <artifactId>KorAP-lucene-index</artifactId>
-  <version>0.33</version>
+  <version>0.40</version>
   <packaging>jar</packaging>
 
   <name>KorAP-lucene-index</name>
@@ -28,11 +28,30 @@
       <email>diewald@ids-mannheim.de</email>
       <url>http://nils-diewald.de</url>
     </developer>
+
+    <developer>
+      <name>Eliza Margaretha</name>
+      <email>margaretha@ids-mannheim.de</email>
+    </developer>
+
   </developers>
 
   <properties>
+    <jersey.version>2.4.1</jersey.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.glassfish.jersey</groupId>
+        <artifactId>jersey-bom</artifactId>
+        <version>${jersey.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
 
@@ -57,6 +76,7 @@
     </dependency>
 
     <!-- solr dependency -->
+    <!--
     <dependency>
       <artifactId>solr-core</artifactId>
       <groupId>org.apache.solr</groupId>
@@ -70,7 +90,7 @@
       <groupId>org.apache.solr</groupId>
       <version>4.3.1</version>
     </dependency>
-
+    -->
     
     <!-- Lucene core dependency -->
     <dependency>
@@ -110,20 +130,31 @@
     </dependency>
 
     <!-- servlet dependency -->
+    <!--
     <dependency>
       <artifactId>servlet-api</artifactId>
       <groupId>javax.servlet</groupId>
       <version>2.5</version>
     </dependency>
-    
-    <!-- among others Base4 support -->
-    <!--
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.4</version>
-    </dependency>
     -->
+
+    <!-- Jersey -->
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-grizzly2-http</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-freemarker</artifactId>
+      <version>1.13-b01</version>
+    </dependency>
+
+    <!-- JSON support -->
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-moxy</artifactId>
+    </dependency>
 
     <!-- Jackson -->
     <!-- see https://github.com/FasterXML/jackson-core -->
@@ -151,7 +182,8 @@
     <plugins>
       <plugin>
 	<artifactId>maven-compiler-plugin</artifactId>
-	<version>2.3.2</version>
+	<version>2.5.1</version>
+	<inherited>true</inherited>
 	<configuration>
 	  <source>1.7</source>
 	  <target>1.7</target>
@@ -219,6 +251,23 @@
 	  </excludes>
         </configuration>
       </plugin> 
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>de.ids_mannheim.korap.KorapNode</mainClass>
+        </configuration>
+      </plugin>
+
     </plugins>
 
     <resources>
