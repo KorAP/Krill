@@ -1,3 +1,7 @@
+0.33 2014-09-01
+        - [feature] SpanSubspanQuery (margaretha)
+        - [feature] SpanExpansionQuery (margaretha)
+
 0.32 2014-08-01
         - [bugfix] Fix for repetition candidates (margaretha)
  	- [bugfix] Some fixes for negative segments (diewald)
