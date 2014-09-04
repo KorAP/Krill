@@ -2,13 +2,26 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-<!--
-  <parent>
-    <groupId>KorAP-modules</groupId>
-    <artifactId>KorAP-core-modules</artifactId>
-    <version>LATEST</version>
-  </parent>
--->
+  <!--
+      ** Indexer
+      install the indexer and the performancetests
+      $ mvn clean compile assembly:single
+      Then run e.g.
+      $ java -jar target/KorAP-lucene-index-???-jar-with-dependencies.jar src/main/resources/korap.conf /data/hdd/lucene-new/WPD/
+
+      ** Server
+      Start the server with
+      $mvn clean compile exec:java
+  -->
+
+  <!--
+      <parent>
+      <groupId>KorAP-modules</groupId>
+      <artifactId>KorAP-core-modules</artifactId>
+      <version>LATEST</version>
+      </parent>
+  -->
+
   <groupId>KorAP-modules</groupId>
   <artifactId>KorAP-lucene-index</artifactId>
   <version>0.40</version>
@@ -189,13 +202,6 @@
 	  <target>1.7</target>
 	</configuration>
       </plugin>
-
-      <!--
-	  install the indexer and the performancetests
-	  $ mvn clean compile assembly:single
-	  Then run e.g.
-	  $ java -jar target/KorAP-lucene-index-0.30.2-jar-with-dependencies.jar src/main/resources/korap.conf /data/hdd/lucene-new/WPD/
-      -->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

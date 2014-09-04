@@ -606,6 +606,7 @@ public class KorapIndex {
 	     * are of interest.
 	     */
 	    StringBuilder regex = new StringBuilder();
+	    // TODO: Make these static
 	    Pattern harmlessFoundry = Pattern.compile("^[-a-zA-Z0-9_]+$");
 	    Pattern harmlessLayer   = Pattern.compile("^[-a-zA-Z0-9_:]+$");
 	    Iterator<String> iter;
