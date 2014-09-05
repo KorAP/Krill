@@ -6,10 +6,10 @@ import java.io.*;
 
 import java.net.URL;
 
-import java.nio.ByteBuffer;
 import java.util.zip.GZIPInputStream;
 import java.util.regex.Pattern;
 import java.io.FileInputStream;
+import java.nio.ByteBuffer;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.DocIdSet;
@@ -77,6 +77,7 @@ import de.ids_mannheim.korap.index.SpanInfo;
 import de.ids_mannheim.korap.index.SearchContext;
 import de.ids_mannheim.korap.index.MatchIdentifier;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.index.MatchCollector;
 import de.ids_mannheim.korap.util.QueryException;
 
 import org.slf4j.Logger;
@@ -134,12 +135,11 @@ public class KorapIndex {
     private ObjectMapper mapper = new ObjectMapper();
     private String version;
 
-
+    private byte[] pl = new byte[4];
     private static ByteBuffer bb       = ByteBuffer.allocate(4),
 	                      bbOffset = ByteBuffer.allocate(8),
 	                      bbTerm   = ByteBuffer.allocate(16);
-
-    private byte[] pl = new byte[4];
+    
 
     private Set<String> fieldsToLoad;
 
@@ -166,15 +166,18 @@ public class KorapIndex {
 	};
     };
 
+    // Create a new in-memory index
     public KorapIndex () throws IOException {
         this((Directory) new RAMDirectory());
     };
 
-
+    // Connect to index in file system
     public KorapIndex (String index) throws IOException {
 	this(FSDirectory.open(new File( index )));
     };
 
+
+    // Connect to index in file system
     public KorapIndex (Directory directory) throws IOException {
 	this.directory = directory;
 
@@ -206,16 +209,21 @@ public class KorapIndex {
 	this.config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
     };
 
+
+    // Get system version
     public String getVersion () {
 	return this.version;
     };
 
+
+    // Close connection to index
     public void close () throws IOException {
 	this.closeReader();
 	this.closeWriter();
     };
 
 
+    // Get index reader object
     public IndexReader reader () {
 	if (!readerOpen)
 	    this.openReader();
@@ -223,6 +231,8 @@ public class KorapIndex {
 	return this.reader;
     };
 
+
+    // Get index searcher object
     public IndexSearcher searcher () {
 	if (this.searcher == null) {
 	    this.searcher = new IndexSearcher(this.reader());
@@ -231,17 +241,32 @@ public class KorapIndex {
     };
 
 
-    /**
-     * Close index writer
-     */
+    // Close index writer
     public void closeWriter () throws IOException {
 	if (this.writer != null)
 	    this.writer.close();
     };
 
-    /**
-     * Close index reader
-     */
+
+    // Open index reader
+    public void openReader () {
+	try {
+
+	    // open reader
+	    this.reader = DirectoryReader.open(this.directory);
+	    readerOpen = true;
+	    if (this.searcher != null)
+		this.searcher = new IndexSearcher(reader);
+	}
+
+	// Failed to open reader
+	catch (IOException e) {
+	    log.warn( e.getLocalizedMessage() );
+	};
+    };
+
+
+    // Close index reader
     public void closeReader () throws IOException {
 	if (readerOpen) {
 	    this.reader.close();
@@ -250,26 +275,12 @@ public class KorapIndex {
     };
 
 
-    public void openReader () {
-	try {
-	    this.reader = DirectoryReader.open(this.directory);
-	    readerOpen = true;
-	    if (this.searcher != null) {
-		this.searcher = new IndexSearcher(reader);
-	    };
-	}
-
-	catch (IOException e) {
-	    log.warn( e.getLocalizedMessage() );
-	};
-    };
-
-
+    // Add document to index as FieldDocument
     public FieldDocument addDoc (FieldDocument fd) throws IOException {
 	
+	// Open writer if not already opened
 	if (this.writer == null)
 	    this.writer = new IndexWriter(this.directory, this.config);
-
 
 	// Add document to writer
 	this.writer.addDocument( fd.doc );
@@ -280,39 +291,58 @@ public class KorapIndex {
 	return fd;
     };
 
-    // Add with file!
+
+    // Add document to index as JSON object
     public FieldDocument addDoc (String json) throws IOException {
 	FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
 	return this.addDoc(fd);
     };
 
+
+    // Add document to index as JSON file
     public FieldDocument addDoc (File json) throws IOException {
-      FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
-      return this.addDoc(fd);
+	FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
+	return this.addDoc(fd);
     };
 
+
+    // Add document to index as JSON file
     public FieldDocument addDocFile(String json) throws IOException {
-      return this.addDocFile(json, false);
+	return this.addDocFile(json, false);
     };
 
+
+    // Add document to index as JSON file (possibly gzipped)
     public FieldDocument addDocFile(String json, boolean gzip) {
-      try {
-	if (gzip) {
-	  FieldDocument fd = this.mapper.readValue(new GZIPInputStream(new FileInputStream(json)), FieldDocument.class);
-	  return this.addDoc(fd);
+	try {
+	    if (gzip) {
+
+		// Create json field document
+		FieldDocument fd = this.mapper.readValue(
+		    new GZIPInputStream(new FileInputStream(json)),
+		    FieldDocument.class
+		);
+		return this.addDoc(fd);
+	    };
+	    return this.addDoc(json);
+	}
+
+	// Fail to add json object
+	catch (IOException e) {
+	    log.error("File json not found");
 	};
-	return this.addDoc(json);
-      }
-      catch (IOException e) {
-	log.error("File json not found");
-      };
-      return (FieldDocument) null;
+	return (FieldDocument) null;
     };
 
+
+    // Commit changes to the index
     public void commit () throws IOException {
+
+	// No writer opened
 	if (this.writer == null)
 	    return;
 
+	// There is something to commit
 	if (commitCounter > 0) {
 	    this.writer.commit();
 	    commitCounter = 0;
@@ -958,7 +988,7 @@ public class KorapIndex {
         );
     };
 
-    // THis should probably be deprecated
+    // This should probably be deprecated
     @Deprecated
     public KorapResult search (SpanQuery query,
 			       int startIndex,
@@ -1121,77 +1151,8 @@ public class KorapIndex {
 			spans.end()
 		    ); // new KorapMatch();
 
-		    if (spans.isPayloadAvailable()) {
-
-			// TODO: Here are offsets and highlight offsets!
-			// <> payloads have 12 bytes (iii) or 8!?
-			// highlightoffsets have 11 bytes (iis)!
-
-			try {
-			    ByteBuffer bb = ByteBuffer.allocate(10);
-			    for (byte[] b : spans.getPayload()) {
-
-				if (DEBUG)
-				    log.trace("Found a payload!!! with length {}", b.length);
-
-				// Todo element searches!
-
-				// Highlights!
-				if (b.length == 9) {
-				    bb.put(b);
-				    bb.rewind();
-
-				    int start = bb.getInt();
-				    int end = bb.getInt() -1;
-				    byte number = bb.get();
-
-				    if (DEBUG)
-					log.trace("Have a payload: {}-{}",
-						  start,
-						  end);
-				    match.addHighlight(start, end, number);
-				}
-
-				// Element payload for match!
-				// This MAY BE the correct match
-				else if (b.length == 8) {
-				    bb.put(b);
-				    bb.rewind();
-
-				    if (match.potentialStartPosChar == -1) {
-					match.potentialStartPosChar = bb.getInt(0);
-				    }
-				    else {
-					if (bb.getInt(0) < match.potentialStartPosChar)
-					match.potentialStartPosChar = bb.getInt(0);
-				    };
-
-				    if (bb.getInt(4) > match.potentialEndPosChar)
-					match.potentialEndPosChar = bb.getInt(4);
-
-				    if (DEBUG)
-					log.trace("Element payload from {} to {}",
-						  match.potentialStartPosChar,
-						  match.potentialEndPosChar);
-				}
-
-				else if (b.length == 4) {
-				    bb.put(b);
-				    bb.rewind();
-				    log.debug("Unknown[4]: {}", bb.getInt());
-				};
-
-				bb.clear();
-			    };
-			}
-
-			catch (Exception e) {
-			    log.error(e.getMessage());
-			}
-
-			// match.payload(spans.getPayload());
-		    };
-
+		    if (spans.isPayloadAvailable())
+			match.addPayload(spans.getPayload());
 
 		    match.internalDocID = docID;
 		    match.populateDocument(doc, field, fieldsToLoadLocal);
@@ -1259,5 +1220,86 @@ public class KorapIndex {
 	};
 
 	return kr;
+    };
+
+
+    // Collect matches
+    public String collect (KorapCollection collection,
+			   KorapSearch ks,
+			   MatchCollector mc) {
+	if (DEBUG)
+	    log.trace("Start collecting matches");
+
+	// Init term context
+	this.termContexts = new HashMap<Term, TermContext>();
+
+	// Get span query
+	SpanQuery query = ks.getQuery();
+
+	// Get the field of textual data and annotations
+	String field = query.getField();
+
+	// TODO: Get document information from Cache!
+	// See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
+	long t1 = System.nanoTime();
+
+	// Only load ID
+	HashSet<String> fieldsToLoadLocal = new HashSet<>();
+	fieldsToLoadLocal.add("ID");
+
+	try {
+
+	    // Rewrite query (for regex and wildcard queries)
+	    for (Query rewrittenQuery = query.rewrite(this.reader());
+                 rewrittenQuery != (Query) query;
+                 rewrittenQuery = query.rewrite(this.reader())) {
+		query = (SpanQuery) rewrittenQuery;
+	    };
+
+	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+
+		int oldLocalDocID = -1;
+
+		// Use OpenBitSet;
+		Bits bitset = collection.bits(atomic);
+
+		// PositionsToOffset pto = new PositionsToOffset(atomic, field);
+
+		Spans spans = query.getSpans(atomic, (Bits) bitset, termContexts);
+
+		IndexReader lreader = atomic.reader();
+
+		while (spans.next()) {
+		    int localDocID = spans.doc();
+		    // int docID = atomic.docBase + localDocID;
+		    Document doc = lreader.document(localDocID, fieldsToLoadLocal);
+
+		    // Do not load all of this, in case the doc is the same!
+		    KorapMatch match = new KorapMatch();
+		    match.setDocID(doc.get("ID"));
+		    match.setStartPos(spans.start());
+		    match.setEndPos(spans.end());
+		    // MatchIdentifier possibly needs more
+
+		    // Add payload information to match
+		    if (spans.isPayloadAvailable())
+			match.addPayload(spans.getPayload());
+
+		    if (DEBUG)
+			log.trace("I've got a match in {}", match.getDocID());
+		    
+		    // Add match to the collector
+		    mc.add(match);
+		};
+	    };
+
+	    mc.setBenchmarkHitCounter(System.nanoTime(), t1);
+	}
+	catch (IOException e) {
+	    mc.setError("There was an IO error");
+	    log.warn( e.getLocalizedMessage() );
+	};
+	
+	return mc.toJSON(); 
     };
 };

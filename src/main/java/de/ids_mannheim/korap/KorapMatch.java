@@ -203,6 +203,75 @@ public class KorapMatch extends KorapDocument {
 	};
     };
 
+    // TODO: Here are offsets and highlight offsets!
+    // <> payloads have 12 bytes (iii) or 8!?
+    // highlightoffsets have 11 bytes (iis)!
+    public void addPayload (Collection<byte[]> payload) {
+	try {
+	    ByteBuffer bb = ByteBuffer.allocate(10);
+	    for (byte[] b : payload) {
+
+		if (DEBUG)
+		    log.trace("Found a payload with length {}", b.length);
+
+		// Todo element searches!
+
+		// Highlights!
+		if (b.length == 9) {
+		    bb.put(b);
+		    bb.rewind();
+
+		    int start   = bb.getInt();
+		    int end     = bb.getInt() -1;
+		    byte number = bb.get();
+
+		    if (DEBUG)
+			log.trace("Have a payload: {}-{}", start, end);
+
+		    this.addHighlight(start, end, number);
+		}
+
+		// Element payload for match!
+		// This MAY BE the correct match
+		else if (b.length == 8) {
+		    bb.put(b);
+		    bb.rewind();
+
+		    if (this.potentialStartPosChar == -1) {
+			this.potentialStartPosChar = bb.getInt(0);
+		    }
+		    else {
+			if (bb.getInt(0) < this.potentialStartPosChar)
+			    this.potentialStartPosChar = bb.getInt(0);
+		    };
+		    
+		    if (bb.getInt(4) > this.potentialEndPosChar)
+			this.potentialEndPosChar = bb.getInt(4);
+
+		    if (DEBUG)
+			log.trace(
+			    "Element payload from {} to {}",
+			    this.potentialStartPosChar,
+			    this.potentialEndPosChar
+			);
+		}
+
+		else if (b.length == 4) {
+		    bb.put(b);
+		    bb.rewind();
+		    log.warn("Unknown[4]: {}", bb.getInt());
+		};
+	
+		// Clear bytebuffer
+		bb.clear();
+	    };
+	}
+
+	catch (Exception e) {
+	    log.error(e.getMessage());
+	}
+    };
+
 
     /**
      * Insert a highlight for the snippet view by means of positional

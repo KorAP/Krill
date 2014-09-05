@@ -1,3 +1,6 @@
+0.41 2014-09-05
+        - [feature] Early implementation of match collector (diewald)
+
 0.40 2014-09-03
         - [feature] Skeleton for standalone REST service (diewald)
 
