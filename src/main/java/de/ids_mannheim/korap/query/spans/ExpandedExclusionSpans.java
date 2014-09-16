@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 	
 	private int min, max;
 	private int direction;
+	private byte classNumber;
 	private List<CandidateSpan> candidateSpans;
 	private boolean hasMoreNotClause;
 	private Spans notClause;
@@ -45,6 +47,7 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 		this.min = spanExpansionQuery.getMin();
 		this.max = spanExpansionQuery.getMax();
 		this.direction = spanExpansionQuery.getDirection();
+		this.classNumber = spanExpansionQuery.getClassNumber();
 		
 		this.notClause = secondSpans;
 		this.hasMoreNotClause = notClause.next();		
@@ -167,17 +170,19 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 			throws IOException {
 		int counter;
 		int start, end;
-				
+		CandidateSpan cs;
 		if (direction < 0 ) { // left
 			counter = maxPos;
 			while (counter >= min){
-				start = firstSpans.start() - counter;
-				if (start > -1 ){
-					
-				end = firstSpans.end();
-				//System.out.println(start+","+end);
-				candidateSpans.add(new CandidateSpan(start, end, firstSpans.doc(), 
-						firstSpans.cost(), firstSpans.getPayload()));
+				start = Math.max(0,firstSpans.start() - counter);
+				if (start > -1 ){					
+					end = firstSpans.end();
+					//System.out.println(start+","+end);
+					cs = new CandidateSpan(start, end, firstSpans.doc(),
+							firstSpans.cost(), 
+							calculatePayload(start,firstSpans.start())
+					);
+					candidateSpans.add(cs);
 				}
 				counter --;
 			}
@@ -188,13 +193,39 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 				start = firstSpans.start();
 				end = firstSpans.end() + counter;
 				//System.out.println(start+","+end);
-				candidateSpans.add(new CandidateSpan(start, end, firstSpans.doc(), 
-						firstSpans.cost(), firstSpans.getPayload()));
+				
+				cs = new CandidateSpan(start, end, firstSpans.doc(), 
+						firstSpans.cost(), 
+						calculatePayload(firstSpans.end(), end)
+				);				
+				candidateSpans.add(cs);
 				counter++;
 			}			
 		}
 	}
 	
+	private ArrayList<byte[]> calculatePayload(int start, int end)
+			throws IOException{
+		
+		ArrayList<byte[]> payload = new ArrayList<byte[]>();
+									
+		if (firstSpans.isPayloadAvailable()){				
+			payload.addAll(firstSpans.getPayload());
+		}
+		if (classNumber > 0 ){	
+			System.out.println("Extension offsets "+start+","+end);
+			payload.add(calculateExtensionOffsets(start, end));
+		}
+		return payload;
+	}
+	
+	private byte[] calculateExtensionOffsets(int start, int end) {
+		ByteBuffer buffer = ByteBuffer.allocate(9);
+		buffer.put(classNumber);
+		buffer.putInt(start);					
+		buffer.putInt(end);					
+		return buffer.array();
+	}
 	
 	@Override
 	public boolean skipTo(int target) throws IOException {
