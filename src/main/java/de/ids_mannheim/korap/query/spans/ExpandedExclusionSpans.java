@@ -13,6 +13,11 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 
+/** Spans expanded with min m tokens and max n tokens, and throughout all 
+ * 	the expansions do not contain the notClause. 
+ * 
+ * 	@author margaretha
+ * */
 public class ExpandedExclusionSpans extends SimpleSpans{
 	
 	private int min, max;
@@ -57,7 +62,8 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 
 	private boolean advance() throws IOException {
 		while (hasMoreSpans || candidateSpans.size() > 0){
-			if (candidateSpans.size() > 0){				
+			if (candidateSpans.size() > 0){
+				// set a candidate span as a match
 				CandidateSpan cs = candidateSpans.get(0);
 				matchDocNumber = cs.getDoc();
 				matchStartPosition = cs.getStart();
@@ -77,85 +83,84 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 	
 	private void findMatches() throws IOException {
 		while (hasMoreNotClause &&	notClause.doc() <= firstSpans.doc()){
-			
 			if (notClause.doc() == firstSpans.doc()){ 
-				
 				if (direction < 0 ){ // left
-					int counter = max;
-					int maxPos = max;
-					CandidateSpan lastNotClause = null;
-					while (hasMoreNotClause && 
-							notClause.start() < firstSpans.start()){
-						
-						// between max and firstspan.start()
-						if (notClause.start() >= firstSpans.start() - counter){
-							maxPos = firstSpans.start() - notClause.start() -1;
-							lastNotClause = new CandidateSpan(notClause);
-							counter--;
-						} 
-						if (!notClause.next()) hasMoreNotClause = false;
-					}									
-					
-					// if a notClause is between max and firstspan.start, 
-					// then maxPos = last NotClause pos -1
-					generateCandidates(min, maxPos, direction);
-					
-					if (lastNotClause != null)
-						while ((hasMoreSpans = firstSpans.next())
-								// the next notClause is not in between max and firstspan.start()
-								&& notClause.start() > firstSpans.start()
-								// the last notClause is in between max and firstspan.start()
-								&& lastNotClause.getStart() < firstSpans.start()								
-								&& lastNotClause.getStart() >= firstSpans.start() - max
-							){
-														
-							maxPos = firstSpans.start() - lastNotClause.getStart() -1;
-							generateCandidates(min, maxPos, direction);
-						}
-					else hasMoreSpans = firstSpans.next();
-				}
-				
-				else { // right
-					
-					int expansionEnd = firstSpans.end() + max;
-					int maxPos = max;
-					boolean isFound = false;
-					
-					CandidateSpan firstNotClause = null;
-					//System.out.println("main start:"+firstSpans.start());
-					while (hasMoreNotClause && notClause.start() < expansionEnd){
-						// between firstspan.end() and expansionEnd
-						if (!isFound && notClause.start() >= firstSpans.start()){							
-							maxPos = notClause.start() - firstSpans.start() -1;
-							firstNotClause = new CandidateSpan(notClause);
-							isFound = true;
-						}						
-						if (!notClause.next()) hasMoreNotClause = false;
-					}
-					// if a notClause is between firstSpan.end and max
-					// then maxPos = the first notClause pos -1 
-					generateCandidates(min, maxPos, direction);
-					
-					if (firstNotClause !=null){
-						while ((hasMoreSpans = firstSpans.next()) 
-								// in between
-								&& firstNotClause.getStart() < firstSpans.end() + max
-								&& firstNotClause.getStart() >= firstSpans.start())								
-							{
-							//System.out.println("first start:"+firstNotClause.getStart()+", main start:"+firstSpans.start());
-							maxPos = firstNotClause.getStart() - firstSpans.start() -1;
-							generateCandidates(min, maxPos, direction);
-						} 
-					}
-					else hasMoreSpans = firstSpans.next();
-				}
-				
-				
+					expandLeft();
+				} // right
+				else { 	expandRight(); }
 				break;
 			}
-			
 			else if (!notClause.next()) hasMoreNotClause = false;
 		}
+	}
+	
+	private void expandLeft() throws IOException{
+		//int counter = max;
+		int maxPos = max;
+		CandidateSpan lastNotClause = null;
+		while (hasMoreNotClause && 
+				notClause.start() < firstSpans.start()){
+			
+			// between max and firstspan.start()
+			if (notClause.start() >= firstSpans.start() - maxPos){
+				maxPos = firstSpans.start() - notClause.start() -1;
+				lastNotClause = new CandidateSpan(notClause);
+				//counter--;
+			} 
+			if (!notClause.next()) hasMoreNotClause = false;
+		}									
+		
+		// if a notClause is between max and firstspan.start, 
+		// then maxPos = last NotClause pos -1
+		generateCandidates(min, maxPos, direction);
+		
+		if (lastNotClause != null)
+			while ((hasMoreSpans = firstSpans.next())
+					// the next notClause is not in between max and firstspan.start()
+					&& notClause.start() > firstSpans.start()
+					// the last notClause is in between max and firstspan.start()
+					&& lastNotClause.getStart() < firstSpans.start()								
+					&& lastNotClause.getStart() >= firstSpans.start() - max
+				){
+											
+				maxPos = firstSpans.start() - lastNotClause.getStart() -1;
+				generateCandidates(min, maxPos, direction);
+			}
+		else hasMoreSpans = firstSpans.next();
+	}
+	
+	private void expandRight() throws IOException{
+		int expansionEnd = firstSpans.end() + max;
+		int maxPos = max;
+		boolean isFound = false;
+		
+		CandidateSpan firstNotClause = null;
+		//System.out.println("main start:"+firstSpans.start());
+		while (hasMoreNotClause && notClause.start() < expansionEnd){
+			// between firstspan.end() and expansionEnd
+			if (!isFound && notClause.start() >= firstSpans.end()){							
+				maxPos = notClause.start() - firstSpans.end() -1;
+				firstNotClause = new CandidateSpan(notClause);
+				isFound = true;
+			}						
+			if (!notClause.next()) hasMoreNotClause = false;
+		}
+		// if a notClause is between firstSpan.end and max
+		// then maxPos = the first notClause pos -1 
+		generateCandidates(min, maxPos, direction);
+		
+		if (firstNotClause !=null){
+			while ((hasMoreSpans = firstSpans.next()) 
+					// in between
+					&& firstNotClause.getStart() < firstSpans.end() + max
+					&& firstNotClause.getStart() >= firstSpans.end())								
+				{
+				//System.out.println("first start:"+firstNotClause.getStart()+", main start:"+firstSpans.start());
+				maxPos = firstNotClause.getStart() - firstSpans.end() -1;
+				generateCandidates(min, maxPos, direction);
+			} 
+		}
+		else hasMoreSpans = firstSpans.next();
 	}
 	
 	private void generateCandidates(int minPos, int maxPos, int direction) 
