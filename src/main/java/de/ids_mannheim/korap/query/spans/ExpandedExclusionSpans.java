@@ -28,6 +28,8 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 	private boolean hasMoreNotClause;
 	private Spans notClause;
 	
+	private long matchCost;
+	
 	public ExpandedExclusionSpans(SpanExpansionQuery spanExpansionQuery,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
@@ -72,6 +74,7 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 				matchStartPosition = cs.getStart();
 				matchEndPosition = cs.getEnd();
 				matchPayload = cs.getPayloads();
+				matchCost = cs.getCost() + notClause.cost();
 				candidateSpans.remove(0);
 				return true;
 			}
@@ -213,7 +216,7 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 			payload.addAll(firstSpans.getPayload());
 		}
 		if (classNumber > 0 ){	
-		    // System.out.println("Extension offsets "+start+","+end);
+			//System.out.println("Extension offsets "+start+","+end);
 			payload.add(calculateExtensionOffsets(start, end));
 		}
 		return payload;
@@ -241,7 +244,6 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 
 	@Override
 	public long cost() {
-		// TODO Auto-generated method stub
-		return 0;
+		return matchCost;
 	}
 }

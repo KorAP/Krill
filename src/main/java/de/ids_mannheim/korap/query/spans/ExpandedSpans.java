@@ -13,7 +13,7 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 
-/**
+/** Spans expanded with min m tokens and max n tokens.
  * @author margaretha
  * */
 public class ExpandedSpans extends SimpleSpans{
@@ -45,16 +45,13 @@ public class ExpandedSpans extends SimpleSpans{
 	}
 
 	private boolean advance() throws IOException {		
-		while (hasMoreSpans || candidateSpans.size() > 0) {
+		while (candidateSpans.size() > 0 || (hasMoreSpans = firstSpans.next())) {
 			if (candidateSpans.size() > 0 ){
 				setMatch(candidateSpans.get(0));
 				candidateSpans.remove(0);								
 				return true;
 			}
-			else {
-				hasMoreSpans = firstSpans.next();
-				setCandidateList();
-			}
+			else { setCandidateList(); }
 		}		
 		return false;
 	}
@@ -101,12 +98,10 @@ public class ExpandedSpans extends SimpleSpans{
 			throws IOException{
 		
 		ArrayList<byte[]> payload = new ArrayList<byte[]>();
-		
-		if (classNumber > 0 ){					
-			if (firstSpans.isPayloadAvailable()){				
-				payload.addAll(firstSpans.getPayload());
-			}
-			
+		if (firstSpans.isPayloadAvailable()){				
+			payload.addAll(firstSpans.getPayload());
+		}
+		if (classNumber > 0 ){	
 			//System.out.println("Extension offsets "+start+","+end);
 			payload.add(calculateExtensionOffsets(start, end));
 		}

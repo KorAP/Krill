@@ -38,7 +38,7 @@ public class TestSpanExpansionIndex {
 		SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 2, -1, true);		
 		kr = ki.search(seq, (short) 10);
 		
-		assertEquals(72,kr.getTotalResults());
+		assertEquals(69,kr.getTotalResults());
 		assertEquals(5, kr.getMatch(0).getStartPos());
         assertEquals(8, kr.getMatch(0).getEndPos());
         assertEquals(6, kr.getMatch(1).getStartPos());
@@ -136,6 +136,7 @@ public class TestSpanExpansionIndex {
 	}
 	
 	/** Left expansion with exclusion
+	 * 	No expansion
 	 * */
 	@Test
 	public void testCase4() throws IOException {
@@ -163,4 +164,115 @@ public class TestSpanExpansionIndex {
 		
 	}
 	
+	/** Expansion over start and end documents
+	 * 	start => cut to 0
+	 * 	TODO: end => to be handled in rendering process
+	 * @throws IOException 
+	 * */
+	@Test
+	public void testCase5() throws IOException{
+		KorapIndex ki = new KorapIndex();
+		ki.addDoc(createFieldDoc0());
+		ki.commit();
+		
+		SpanTermQuery stq = new SpanTermQuery(new Term("base","s:e")	);
+		// left expansion precedes 0
+		SpanExpansionQuery seq = new SpanExpansionQuery(stq,2,2, -1, true);		
+		kr = ki.search(seq, (short) 10);
+		
+		assertEquals(4,kr.getTotalResults());
+		assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(2, kr.getMatch(0).getEndPos());
+        
+        //right expansion exceeds end position
+        seq = new SpanExpansionQuery(stq,3,3,0, true);		
+		kr = ki.search(seq, (short) 10);
+        		
+		assertEquals(4,kr.getTotalResults());
+		assertEquals(7, kr.getMatch(2).getStartPos());
+        assertEquals(11, kr.getMatch(2).getEndPos());
+        assertEquals(8, kr.getMatch(3).getStartPos());
+        assertEquals(12, kr.getMatch(3).getEndPos());        
+        		
+		/*for (KorapMatch km : kr.getMatches()){
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+					//+km.getSnippetBrackets()
+					);
+		}*/
+	}	
+	
+	/** Expansion exclusion : multiple documents
+	 * @throws IOException 
+	 * */
+	@Test
+	public void testCase6() throws IOException{
+		KorapIndex ki = new KorapIndex();
+		ki.addDoc(createFieldDoc0()); // same doc
+		ki.addDoc(createFieldDoc1()); // only not clause
+		ki.addDoc(createFieldDoc2()); // only main clause
+		ki.commit();
+		
+		SpanTermQuery stq = new SpanTermQuery(new Term("base","s:e"));
+		SpanTermQuery notQuery = new SpanTermQuery(new Term("base","s:d"));
+		
+		SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 
+				2, 3, 0, true);		
+		kr = ki.search(seq, (short) 20);
+		
+		// notClause.doc() > firstSpans.doc()
+		assertEquals(7, kr.getMatch(0).getStartPos());
+        assertEquals(10, kr.getMatch(0).getEndPos());	
+        assertEquals(7, kr.getMatch(1).getStartPos());
+        assertEquals(11, kr.getMatch(1).getEndPos());
+        // !hasMoreNotClause
+        assertEquals(2, kr.getMatch(4).getLocalDocID());
+        assertEquals(1, kr.getMatch(4).getStartPos());
+        assertEquals(4, kr.getMatch(4).getEndPos());		
+	}
+	
+	private FieldDocument createFieldDoc0(){
+    	FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-0");
+        fd.addTV("base",
+            "ceccecdeec",             
+            "[(0-1)s:c|_0#0-1]" +
+            "[(1-2)s:e|_1#1-2]" +             
+            "[(2-3)s:c|_2#2-3]" +
+            "[(3-4)s:c|s:d|_3#3-4]" + 
+            "[(4-5)s:e|_4#4-5]" +             
+            "[(5-6)s:c|_5#5-6]" +
+            "[(6-7)s:d|_6#6-7]" +
+            "[(7-8)s:e|_7#7-8]" + 
+            "[(8-9)s:e|_8#8-9]" + 
+            "[(9-10)s:c|_9#9-10]");
+        return fd;
+    }
+	
+	private FieldDocument createFieldDoc1() {
+    	FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base",
+            "bbccdd",             
+            "[(0-1)s:b|s:c|_1#0-1]" +
+            "[(1-2)s:b|_2#1-2]" +             
+            "[(2-3)s:c|_3#2-3]" +
+            "[(3-4)s:c|_4#3-4]" + 
+            "[(4-5)s:d|_5#4-5]" +             
+            "[(5-6)s:d|_6#5-6]");
+        return fd;
+	}
+	
+	private FieldDocument createFieldDoc2() {
+    	FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base",
+            "text",             
+            "[(0-1)s:b|s:c|_1#0-1]" +
+            "[(1-2)s:e|_2#1-2]" +             
+            "[(2-3)s:c|_3#2-3]" +
+            "[(3-4)s:c|_4#3-4]" + 
+            "[(4-5)s:e|_5#4-5]" +             
+            "[(5-6)s:a|_6#5-6]");
+        return fd;
+	}
 }
