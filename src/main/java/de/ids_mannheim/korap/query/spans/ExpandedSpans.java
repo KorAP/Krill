@@ -109,10 +109,10 @@ public class ExpandedSpans extends SimpleSpans{
 	}
 	
 	private byte[] calculateExtensionOffsets(int start, int end) {
-		ByteBuffer buffer = ByteBuffer.allocate(9);
+		ByteBuffer buffer = ByteBuffer.allocate(9);		
+		buffer.putInt(start);
+		buffer.putInt(end);
 		buffer.put(classNumber);
-		buffer.putInt(start);					
-		buffer.putInt(end);					
 		return buffer.array();
 	}
 

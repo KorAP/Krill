@@ -224,9 +224,9 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 	
 	private byte[] calculateExtensionOffsets(int start, int end) {
 		ByteBuffer buffer = ByteBuffer.allocate(9);
-		buffer.put(classNumber);
 		buffer.putInt(start);					
-		buffer.putInt(end);					
+		buffer.putInt(end);	
+		buffer.put(classNumber);
 		return buffer.array();
 	}
 	
