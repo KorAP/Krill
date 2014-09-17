@@ -53,6 +53,10 @@ public class SpanExpansionQuery extends SimpleSpanQuery{
 	public SpanExpansionQuery(SpanQuery firstClause, int min, int max, int direction, 
 			boolean collectPayloads) {
 		super(firstClause, collectPayloads);
+		if (max < min){
+			throw new IllegalArgumentException("The max position has to be " +
+					"bigger than or the same as min position.");
+		}
 		this.min = min;
 		this.max = max;
 		this.direction = direction;
@@ -71,6 +75,10 @@ public class SpanExpansionQuery extends SimpleSpanQuery{
 	public SpanExpansionQuery(SpanQuery firstClause, SpanQuery notClause, int min, 
 			int max, int direction, boolean collectPayloads) {
 		super(firstClause, notClause, collectPayloads);
+		if (max < min){
+			throw new IllegalArgumentException("The max position has to be " +
+					"bigger than or the same as min position.");
+		}
 		this.min = min;
 		this.max = max;
 		this.direction = direction;
