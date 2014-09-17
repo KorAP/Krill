@@ -1,3 +1,6 @@
+0.42 2014-09-17
+        - [cleanup] Extracted private classes from KorapMatch (diewald)
+
 0.41 2014-09-17
         - [feature] getStartPos(classNr) and getEndPos(classNr)
           in KorapMatch (diewald)

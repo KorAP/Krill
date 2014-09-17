@@ -2,7 +2,6 @@ package de.ids_mannheim.korap;
 import java.util.*;
 import java.io.*;
 
-import java.lang.StringBuffer;
 import java.nio.ByteBuffer;
 
 import com.fasterxml.jackson.annotation.*;
@@ -15,9 +14,11 @@ import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.SearchContext;
 import de.ids_mannheim.korap.document.KorapPrimaryData;
 
-import static de.ids_mannheim.korap.util.KorapHTML.*;
-import de.ids_mannheim.korap.index.MatchIdentifier;
-import de.ids_mannheim.korap.index.PosIdentifier;
+import de.ids_mannheim.korap.match.HighlightCombinator;
+import de.ids_mannheim.korap.match.HighlightCombinatorElement;
+import de.ids_mannheim.korap.match.Relation;
+import de.ids_mannheim.korap.match.MatchIdentifier;
+import de.ids_mannheim.korap.match.PosIdentifier;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 
 import org.slf4j.Logger;
@@ -75,9 +76,9 @@ public class KorapMatch extends KorapDocument {
     @JsonIgnore
     public int localDocID = -1;
 
-    HashMap<Integer, String>   annotationNumber = new HashMap<>(16);
-    HashMap<Integer, Relation> relationNumber   = new HashMap<>(16);
-    HashMap<Integer, Integer>  identifierNumber = new HashMap<>(16);
+    private HashMap<Integer, String>   annotationNumber = new HashMap<>(16);
+    private HashMap<Integer, Relation> relationNumber   = new HashMap<>(16);
+    private HashMap<Integer, Integer>  identifierNumber = new HashMap<>(16);
 
     // -1 is match highlight
     int annotationNumberCounter = 256;
@@ -191,18 +192,6 @@ public class KorapMatch extends KorapDocument {
     };
 
     
-    /**
-     * Private class of relations.
-     */   
-    private class Relation {
-	public int ref;
-	public String annotation;
-	public Relation (String annotation, int ref) {
-	    this.annotation = annotation;
-	    this.ref = ref;
-	};
-    };
-
     // TODO: Here are offsets and highlight offsets!
     // <> payloads have 12 bytes (iii) or 8!?
     // highlightoffsets have 11 bytes (iis)!
@@ -925,311 +914,7 @@ public class KorapMatch extends KorapDocument {
 	};
     };
 
-    /*
-      Private class for elements with highlighting information
-     */
-    private class HighlightCombinatorElement {
 
-	// Type 0: Textual data
-	// Type 1: Opening
-	// Type 2: Closing
-	private byte type;
-
-	private int number = 0;
-
-	private String characters;
-	private boolean terminal = true;
-
-	// Constructor for highlighting elements
-	public HighlightCombinatorElement (byte type, int number) {
-	    this.type = type;
-	    this.number = number;
-	};
-
-	// Constructor for highlighting elements,
-	// that may not be terminal, i.e. they were closed and will
-	// be reopened for overlapping issues.
-	public HighlightCombinatorElement (byte type, int number, boolean terminal) {
-	    this.type     = type;
-	    this.number   = number;
-	    this.terminal = terminal;
-	};
-
-	// Constructor for textual data
-	public HighlightCombinatorElement (String characters) {
-	    this.type = (byte) 0;
-	    this.characters = characters;
-	};
-
-	// Return html fragment for this combinator element
-	public String toHTML (KorapMatch match, FixedBitSet level, byte[] levelCache) {	    
-	    // Opening
-	    if (this.type == 1) {
-		StringBuilder sb = new StringBuilder();
-		if (this.number == -1) {
-		    sb.append("<span class=\"match\">");
-		}
-
-		else if (this.number < -1) {
-		    sb.append("<span xml:id=\"")
-		      .append(match.getPosID(
-                          identifierNumber.get(this.number)))
-		      .append("\">");
-		}
-
-		else if (this.number >= 256) {
-		    sb.append("<span ");
-		    if (this.number < 2048) {
-			sb.append("title=\"")
-			  .append(annotationNumber.get(this.number))
-			  .append('"');
-		    }
-		    else {
-			Relation rel = relationNumber.get(this.number);
-			sb.append("xlink:title=\"")
-			  .append(rel.annotation)
-			  .append('"');
-			sb.append(" xlink:type=\"simple\"");
-			sb.append(" xlink:href=\"#");
-			sb.append(match.getPosID(rel.ref));
-			sb.append('"');
-		    };
-		    sb.append('>');
-		}
-		else {
-		    // Get the first free level slot
-		    byte pos;
-		    if (levelCache[this.number] != '\0') {
-			pos = levelCache[this.number];
-		    }
-		    else {
-			pos = (byte) level.nextSetBit(0);
-			level.clear(pos);
-			levelCache[this.number] = pos;
-		    };
-		    sb.append("<em class=\"class-")
-                      .append(this.number)
-		      .append(" level-")
-                      .append(pos)
-                      .append("\">");
-		};
-		return sb.toString();
-	    }
-	    // Closing
-	    else if (this.type == 2) {
-		if (this.number <= -1 || this.number >= 256)
-		    return "</span>";
-
-		if (this.terminal)
-		    level.set((int) levelCache[this.number]);
-		return "</em>";
-	    };
-
-	    // HTML encode primary data
-	    return encodeHTML(this.characters);
-	};
-
-	// Return bracket fragment for this combinator element
-	public String toBrackets () {
-	    if (this.type == 1) {
-		StringBuilder sb = new StringBuilder();
-
-		// Match
-		if (this.number == -1) {
-		    sb.append("[");
-		}
-
-		// Identifier
-		else if (this.number < -1) {
-		    sb.append("{#");
-		    sb.append(identifierNumber.get(this.number));
-		    sb.append(':');
-		}
-
-		// Highlight, Relation, Span
-		else {
-		    sb.append("{");
-		    if (this.number >= 256) {
-			if (this.number < 2048)
-			    sb.append(annotationNumber.get(this.number));
-			else {
-			    Relation rel = relationNumber.get(this.number);
-			    sb.append(rel.annotation);
-			    sb.append('>').append(rel.ref);
-			};
-			sb.append(':');
-		    }
-		    else if (this.number != 0)
-			sb.append(this.number).append(':');
-		};
-		return sb.toString();
-	    }
-	    else if (this.type == 2) {
-		if (this.number == -1)
-		    return "]";
-		return "}";
-	    };
-	    return this.characters;
-	};
-    };
-
-    /*
-      Private class for combining highlighting elements
-     */
-    private class HighlightCombinator {
-	private LinkedList<HighlightCombinatorElement> combine;
-	private LinkedList<Integer> balanceStack = new LinkedList<>();
-	private ArrayList<Integer> tempStack = new ArrayList<>(32);
-
-	// Empty constructor
-	public HighlightCombinator () {
-	    this.combine = new LinkedList<>();
-	};
-
-	// Return the combination stack
-	public LinkedList<HighlightCombinatorElement> stack () {
-	    return this.combine;
-	};
-
-	// get the first element (without removing)
-	public HighlightCombinatorElement getFirst () {
-	    return this.combine.getFirst();
-	};
-
-	// get the last element (without removing)
-	public HighlightCombinatorElement getLast () {
-	    return this.combine.getLast();
-	};
-
-	// get an element by index (without removing)
-	public HighlightCombinatorElement get (int index) {
-	    return this.combine.get(index);
-	};
-
-	// Get the size of te combinator stack
-	public short size () {
-	    return (short) this.combine.size();
-	};
-
-	// Add primary data to the stack
-	public void addString (String characters) {
-	    this.combine.add(new HighlightCombinatorElement(characters));
-	};
-
-	// Add opening highlight combinator to the stack
-	public void addOpen (int number) {
-	    this.combine.add(new HighlightCombinatorElement((byte) 1, number));
-	    this.balanceStack.add(number);
-	};
-
-	// Add closing highlight combinator to the stack
-	public void addClose (int number) {
-	    HighlightCombinatorElement lastComb;
-	    this.tempStack.clear();
-
-	    // Shouldn't happen
-	    if (this.balanceStack.size() == 0) {
-		if (DEBUG)
-		    log.trace("The balance stack is empty");
-		return;
-	    };
-
-	    if (DEBUG) {
-		StringBuilder sb = new StringBuilder(
-		    "Stack for checking with class "
-	        );
-		sb.append(number).append(" is ");
-		for (int s : this.balanceStack) {
-		    sb.append('[').append(s).append(']');
-		};
-		log.trace(sb.toString());
-	    };
-
-	    // class number of the last element
-	    int eold = this.balanceStack.removeLast();
-
-	    // the closing element is not balanced
-	    while (eold != number) {
-
-		// Retrieve last combinator on stack
-		lastComb = this.combine.peekLast();
-
-		if (DEBUG)
-		    log.trace("Closing element is unbalanced - {} " +
-			      "!= {} with lastComb {}|{}|{}",
-			      eold,
-			      number,
-			      lastComb.type,
-			      lastComb.number,
-			      lastComb.characters);
-
-		// combinator is opening and the number is not equal to the last
-		// element on the balanceStack
-		if (lastComb.type == 1 && lastComb.number == eold) {
-
-		    // Remove the last element - it's empty and uninteresting!
-		    this.combine.removeLast();
-		}
-
-		// combinator is either closing (??) or another opener
-		else {
-
-		    if (DEBUG)
-			log.trace("close element a) {}", eold);
-
-		    // Add a closer for the old element (this has following elements)
-		    this.combine.add(new HighlightCombinatorElement((byte) 2, eold, false));
-		};
-
-		// add this element number temporarily on the stack
-		tempStack.add(eold);
-
-		// Check next element
-		eold = this.balanceStack.removeLast();
-	    };
-
-	    // Get last combinator on the stack
-	    lastComb = this.combine.peekLast();
-
-	    if (DEBUG) {
-		log.trace("LastComb: " + lastComb.type + '|' + lastComb.number + '|' + lastComb.characters + " for " + number);
-		log.trace("Stack for checking 2: {}|{}|{}|{}", lastComb.type, lastComb.number, lastComb.characters, number);
-	    };
-
-	    if (lastComb.type == 1 && lastComb.number == number) {
-		while (lastComb.type == 1 && lastComb.number == number) {
-		    // Remove the damn thing - It's empty and uninteresting!
-		    this.combine.removeLast();
-		    lastComb = this.combine.peekLast();
-		};
-	    }
-	    else {
-		if (DEBUG)
-		    log.trace("close element b) {}", number);
-
-		// Add a closer
-		this.combine.add(new HighlightCombinatorElement((byte) 2, number));
-	    };
-
-
-	    // Fetch everything from the tempstack and reopen it
-	    for (int e : tempStack) {
-		if (DEBUG)
-		    log.trace("Reopen element {}", e);
-		combine.add(new HighlightCombinatorElement((byte) 1, e));
-		balanceStack.add(e);
-	    };
-	};
-
-	// Get all combined elements as a string
-	public String toString () {
-	    StringBuilder sb = new StringBuilder();
-	    for (HighlightCombinatorElement e : combine) {
-		sb.append(e.toString()).append("\n");
-	    };
-	    return sb.toString();
-	};
-    };
 
     private void _processHighlightSnippet (String clean,
 					   ArrayList<int[]> stack) {
@@ -1237,8 +922,7 @@ public class KorapMatch extends KorapDocument {
 	if (DEBUG)
 	    log.trace("--- Process Highlight snippet");
 
-	int pos = 0,
-	    oldPos = 0;
+	int pos = 0, oldPos = 0;
 
 	this.snippetStack = new HighlightCombinator();
 
@@ -1288,12 +972,15 @@ public class KorapMatch extends KorapDocument {
 
 	StringBuilder sb = new StringBuilder();
 
+	// Snippet stack sizes
 	short start = (short) 0;
 	short end = this.snippetStack.size();
+
 	FixedBitSet level = new FixedBitSet(16);
 	level.set(0, 15);
 	byte[] levelCache = new byte[16];
 
+	// Get the first elem
 	HighlightCombinatorElement elem = this.snippetStack.getFirst();
 
 	// Create context
@@ -1350,7 +1037,7 @@ public class KorapMatch extends KorapDocument {
 	    sb.append("... ");
 
 	for (HighlightCombinatorElement hce : this.snippetStack.stack()) {
-	    sb.append(hce.toBrackets());
+	    sb.append(hce.toBrackets(this));
 	};
 
 	if (endMore)
@@ -1699,5 +1386,28 @@ public class KorapMatch extends KorapDocument {
 	for (int delete : removeDuplicate) {
 	    this.span.remove(delete);
 	};
+    };
+
+
+    /*
+     * Get identifier based on class number
+     */
+    public int getClassID (int nr) {
+	return this.identifierNumber.get(nr);
+    };
+
+    /*
+     * Get annotation based on id
+     */
+    public String getAnnotationID (int nr) {
+	return this.annotationNumber.get(nr);
+    };
+
+
+    /*
+     * Get relation based on id
+     */
+    public Relation getRelationID (int nr) {
+	return this.relationNumber.get(nr);
     };
 };

@@ -75,7 +75,6 @@ import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.TermInfo;
 import de.ids_mannheim.korap.index.SpanInfo;
 import de.ids_mannheim.korap.index.SearchContext;
-import de.ids_mannheim.korap.index.MatchIdentifier;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.index.MatchCollector;
 import de.ids_mannheim.korap.util.QueryException;

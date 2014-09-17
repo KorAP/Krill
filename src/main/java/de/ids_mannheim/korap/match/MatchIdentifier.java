@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.index;
+package de.ids_mannheim.korap.match;
 import java.util.*;
 import java.util.regex.*;
 import de.ids_mannheim.korap.index.DocIdentifier;

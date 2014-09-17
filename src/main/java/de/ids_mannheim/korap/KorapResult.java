@@ -46,9 +46,7 @@ public class KorapResult {
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     // Empty result
-    public KorapResult() {
-    }
-
+    public KorapResult() {}
 
     public KorapResult(String query,
                        int startIndex,
