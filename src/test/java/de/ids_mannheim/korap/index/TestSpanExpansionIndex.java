@@ -34,6 +34,7 @@ public class TestSpanExpansionIndex {
 	public void testCase1() throws IOException {
 		
 		SpanTermQuery stq = new SpanTermQuery(new Term("tokens","s:Kaiser")	);
+		// left
 		SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 2, -1, true);		
 		kr = ki.search(seq, (short) 10);
 		
@@ -45,6 +46,7 @@ public class TestSpanExpansionIndex {
         assertEquals(7, kr.getMatch(2).getStartPos());
         assertEquals(8, kr.getMatch(2).getEndPos());
         
+        // right
         seq = new SpanExpansionQuery(stq, 3, 4, 0, true);
         kr = ki.search(seq, (short) 10);
         
@@ -56,12 +58,6 @@ public class TestSpanExpansionIndex {
         assertEquals(19, kr.getMatch(2).getEndPos());
         assertEquals(15, kr.getMatch(3).getStartPos());
         assertEquals(20, kr.getMatch(3).getEndPos());
-        
-		/*for (KorapMatch km : kr.getMatches()){
-			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
-					+km.getSnippetBrackets());
-		}	
-		*/
 	}
 	
 	/** Classnumber
@@ -159,12 +155,11 @@ public class TestSpanExpansionIndex {
         assertEquals(9, kr.getMatch(5).getEndPos());	
         assertEquals(8, kr.getMatch(6).getStartPos());	// expansion 8,10
         assertEquals(11, kr.getMatch(6).getEndPos());	 
-		
-		
-		for (KorapMatch km : kr.getMatches()){
+				
+	/*	for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 					+km.getSnippetBrackets());
-		}
+		}*/
 		
 	}
 	
