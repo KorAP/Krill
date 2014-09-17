@@ -438,6 +438,26 @@ public class KorapMatch extends KorapDocument {
 
 
     /**
+     * Get the positional start offset of the class.
+     *
+     * @param number Class number of the highlight.
+     */
+    @JsonIgnore
+    public int getStartPos (int number) {
+	if (number > 256 || this.highlight == null)
+	    return -1;
+
+	// Iterate over highlights to find matching class
+	for (Highlight h : this.highlight) {
+	    if (h.number == number)
+		return h.start;
+	};
+
+	return -1;
+    };
+
+
+    /**
      * Set the positional start offset of the match.
      *
      * @param pos The positional offset.
@@ -452,8 +472,30 @@ public class KorapMatch extends KorapDocument {
      * Get the positional end offset of the match.
      */
     @JsonIgnore
-    public int getEndPos() {
+    public int getEndPos () {
 	return this.endPos;
+    };
+
+
+    /**
+     * Get the positional end offset of the class.
+     *
+     * @param number Class number of the highlight.
+     */
+    @JsonIgnore
+    public int getEndPos (int number) {
+	if (number > 256 || this.highlight == null)
+	    return -1;
+
+	// Iterate over highlights to find matching class
+	for (Highlight h : this.highlight) {
+
+	    // Get the number (incremented by 1)
+	    if (h.number == number)
+		return h.end + 1;
+	};
+
+	return -1;
     };
 
 

@@ -48,24 +48,44 @@ public class TestHighlight { // extends LuceneTestCase {
 	KorapQuery kq = new KorapQuery("tokens");
 	KorapResult kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).toQuery());
 	KorapMatch km = kr.getMatch(0);
+	assertEquals(km.getStartPos(), 1);
+	assertEquals(km.getEndPos(),   2);
+	assertEquals(km.getStartPos(1), 1);
+	assertEquals(km.getEndPos(1),   2);
 	assertEquals("<span class=\"context-left\">a</span><span class=\"match\"><em class=\"class-1 level-0\">b</em></span><span class=\"context-right\">c</span>", km.getSnippetHTML());
 
 	kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).append(kq._(2, kq.seg("s:c"))).toQuery());
 	km = kr.getMatch(0);
+	assertEquals(km.getStartPos(), 1);
+	assertEquals(km.getEndPos(),   3);
+	assertEquals(km.getStartPos(1), 1);
+	assertEquals(km.getEndPos(1),   2);
+	assertEquals(km.getStartPos(2), 2);
+	assertEquals(km.getEndPos(2),   3);
 	assertEquals("<span class=\"context-left\">a</span><span class=\"match\"><em class=\"class-1 level-0\">b</em><em class=\"class-2 level-0\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
 
-
-	kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).append(kq._(2, kq.seg("s:c"))).toQuery());
-	km = kr.getMatch(0);
-	assertEquals("<span class=\"context-left\">a</span><span class=\"match\"><em class=\"class-1 level-0\">b</em><em class=\"class-2 level-0\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
 
 	kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seq(kq.seg("s:a")).append(kq.seg("s:b")))).append(kq._(2, kq.seg("s:c"))).toQuery());
 	km = kr.getMatch(0);
+	assertEquals(km.getStartPos(), 0);
+	assertEquals(km.getEndPos(),   3);
+	assertEquals(km.getStartPos(1), 0);
+	assertEquals(km.getEndPos(1),   2);
+	assertEquals(km.getStartPos(2), 2);
+	assertEquals(km.getEndPos(2),   3);
 	assertEquals("<span class=\"context-left\"></span><span class=\"match\"><em class=\"class-1 level-0\">ab</em><em class=\"class-2 level-0\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
 
 
 	kr = ki.search((SpanQuery) kq._(3, kq.seq(kq._(1, kq.seq(kq.seg("s:a")).append(kq.seg("s:b")))).append(kq._(2, kq.seg("s:c")))).toQuery());
 	km = kr.getMatch(0);
+	assertEquals(km.getStartPos(), 0);
+	assertEquals(km.getEndPos(),   3);
+	assertEquals(km.getStartPos(1), 0);
+	assertEquals(km.getEndPos(1),   2);
+	assertEquals(km.getStartPos(2), 2);
+	assertEquals(km.getEndPos(2),   3);
+	assertEquals(km.getStartPos(3), 0);
+	assertEquals(km.getEndPos(3),   3);
 	assertEquals("<span class=\"context-left\"></span><span class=\"match\"><em class=\"class-3 level-0\"><em class=\"class-1 level-1\">ab</em><em class=\"class-2 level-1\">c</em></em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
     };
 

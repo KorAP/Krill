@@ -1,4 +1,8 @@
-0.41 2014-09-05
+0.41 2014-09-17
+        - [feature] getStartPos(classNr) and getEndPos(classNr)
+          in KorapMatch (diewald)
+        - [bugfix] SpanExpansionQuery with fixed Constructor
+	  and Exclusion handling (margaretha)
         - [feature] Early implementation of match collector (diewald)
 
 0.40 2014-09-03
