@@ -11,7 +11,7 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
 // Temporary:
-// import de.ids_mannheim.korap.query.spans.ExpandedExclusionSpans;
+import de.ids_mannheim.korap.query.spans.ExpandedExclusionSpans;
 import de.ids_mannheim.korap.query.spans.ExpandedSpans;
 
 /** Query to make a span longer by stretching out the start or the end 
@@ -76,14 +76,20 @@ public class SpanExpansionQuery extends SimpleSpanQuery{
 		this.direction = direction;
 		this.isExclusion = true;
 	}
-		
+	
+	public SpanExpansionQuery(SpanQuery firstClause, SpanQuery notClause, int min, 
+			int max, int direction, byte classNumber, boolean collectPayloads) {
+		this(firstClause, notClause, min, max, direction, collectPayloads);
+		this.classNumber = classNumber;
+	}
+	
 	
 	@Override
 	public SimpleSpanQuery clone() {
 		SpanExpansionQuery sq = null;
 		if (isExclusion){
-			sq = new SpanExpansionQuery(firstClause, secondClause, min, max, 
-					direction, collectPayloads);
+			sq = new SpanExpansionQuery(firstClause, secondClause, min, max, direction, 
+					classNumber, collectPayloads);
 		}
 		else{
 			sq = new SpanExpansionQuery(firstClause, min, max, direction, classNumber,
@@ -96,12 +102,12 @@ public class SpanExpansionQuery extends SimpleSpanQuery{
 	@Override
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {		 
-	    /*
-	      Temporary:
+	    
+//	      Temporary:
 		if (isExclusion)
 			return new ExpandedExclusionSpans(this, context, acceptDocs, termContexts);		
 		else
-	    */
+	    
 			return new ExpandedSpans(this, context, acceptDocs, termContexts);
 	}
 
