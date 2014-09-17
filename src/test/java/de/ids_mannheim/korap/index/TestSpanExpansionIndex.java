@@ -72,14 +72,17 @@ public class TestSpanExpansionIndex {
 		sq = new SpanExpansionQuery(stq, 0, 2, -1, classNumber, true);		
 		kr = ki.search(sq, (short) 10);
 		
-		assertEquals(5, kr.getMatch(0).getStartPos());	// expansion 5,7
+		assertEquals(5, kr.getMatch(0).getStartPos());
         assertEquals(8, kr.getMatch(0).getEndPos());	
-        assertEquals(6, kr.getMatch(1).getStartPos());	// expansion 6,9
-        assertEquals(8, kr.getMatch(1).getEndPos());        
-        assertEquals(7, kr.getMatch(2).getStartPos()); 	// expansion 7,7
-        assertEquals(8, kr.getMatch(2).getEndPos());	
-        assertEquals(13, kr.getMatch(3).getStartPos());	// expansion 13,15
-        assertEquals(16, kr.getMatch(3).getEndPos());	 
+        assertEquals(5, kr.getMatch(0).getStartPos(1));	// expansion 5,7
+        assertEquals(7, kr.getMatch(0).getEndPos(1));        
+    	// expansion offsets
+        assertEquals(6, kr.getMatch(1).getStartPos(1));
+        assertEquals(7, kr.getMatch(1).getEndPos(1));
+        assertEquals(7, kr.getMatch(2).getStartPos(1));
+        assertEquals(7, kr.getMatch(2).getEndPos(1));	
+        assertEquals(13, kr.getMatch(3).getStartPos(1));
+        assertEquals(15, kr.getMatch(3).getEndPos(1));	 
 		
 		/*for (KorapMatch km : kr.getMatches()){		
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
@@ -94,11 +97,17 @@ public class TestSpanExpansionIndex {
 		assertEquals(1, kr.getMatch(0).getStartPos());
         assertEquals(3, kr.getMatch(0).getEndPos());
         assertEquals(1, kr.getMatch(1).getStartPos());
-        assertEquals(4, kr.getMatch(1).getEndPos());        
-        assertEquals(6, kr.getMatch(2).getStartPos()); 	// expansion 8,9
-        assertEquals(9, kr.getMatch(2).getEndPos());	
-        assertEquals(6, kr.getMatch(3).getStartPos());	// expansion 8,10
-        assertEquals(10, kr.getMatch(3).getEndPos());	 
+        assertEquals(4, kr.getMatch(1).getEndPos());    
+        
+        assertEquals(6, kr.getMatch(2).getStartPos());
+        assertEquals(9, kr.getMatch(2).getEndPos());
+        assertEquals(8, kr.getMatch(2).getStartPos(1)); // expansion 8,9
+        assertEquals(9, kr.getMatch(2).getEndPos(1));	
+        
+        assertEquals(6, kr.getMatch(3).getStartPos());
+        assertEquals(10, kr.getMatch(3).getEndPos());
+        assertEquals(8, kr.getMatch(3).getStartPos(1));	// expansion 8,10
+        assertEquals(10, kr.getMatch(3).getEndPos(1));	 
         
         
 		/*for (KorapMatch km : kr.getMatches()){		
@@ -120,14 +129,20 @@ public class TestSpanExpansionIndex {
 				classNumber, true);		
 		kr = ki.search(seq, (short) 20);
 		
-		assertEquals(13, kr.getMatch(11).getStartPos());	// expansion 14,17
-        assertEquals(17, kr.getMatch(11).getEndPos());	 
+		assertEquals(13, kr.getMatch(11).getStartPos());
+        assertEquals(17, kr.getMatch(11).getEndPos());        
+        assertEquals(14, kr.getMatch(11).getStartPos(1));	// expansion 14,17
+        assertEquals(17, kr.getMatch(11).getEndPos(1));
+        
 		assertEquals(18, kr.getMatch(12).getStartPos());	// expansion 19,21
         assertEquals(21, kr.getMatch(12).getEndPos());
         assertEquals(18, kr.getMatch(13).getStartPos());	// expansion 19,22
-        assertEquals(22, kr.getMatch(13).getEndPos());        
-        assertEquals(20, kr.getMatch(14).getStartPos()); 	// expansion 21,23
-        assertEquals(23, kr.getMatch(14).getEndPos());	
+        assertEquals(22, kr.getMatch(13).getEndPos());
+                
+        assertEquals(20, kr.getMatch(14).getStartPos());
+        assertEquals(23, kr.getMatch(14).getEndPos());
+        assertEquals(21, kr.getMatch(14).getStartPos(1)); 	// expansion 21,23
+        assertEquals(23, kr.getMatch(14).getEndPos(1));	
         		
 		/*for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
@@ -148,14 +163,23 @@ public class TestSpanExpansionIndex {
 				classNumber, true);		
 		kr = ki.search(seq, (short) 10);
 
-		assertEquals(7, kr.getMatch(3).getStartPos());	// expansion 7,7
+		assertEquals(7, kr.getMatch(3).getStartPos());
         assertEquals(8, kr.getMatch(3).getEndPos());
+        assertEquals(7, kr.getMatch(3).getStartPos(1));	// expansion 7,7
+        assertEquals(7, kr.getMatch(3).getEndPos(1));
+        
         assertEquals(7, kr.getMatch(4).getStartPos());	// expansion 7,8
-        assertEquals(9, kr.getMatch(4).getEndPos());        
-        assertEquals(8, kr.getMatch(5).getStartPos()); 	// expansion 8,8 // no expansion // no need???
-        assertEquals(9, kr.getMatch(5).getEndPos());	
-        assertEquals(8, kr.getMatch(6).getStartPos());	// expansion 8,10
-        assertEquals(11, kr.getMatch(6).getEndPos());	 
+        assertEquals(9, kr.getMatch(4).getEndPos());  
+        
+        assertEquals(8, kr.getMatch(5).getStartPos());
+        assertEquals(9, kr.getMatch(5).getEndPos());        
+        assertEquals(8, kr.getMatch(5).getStartPos(1)); 	// expansion 8,8 // no expansion // no need???
+        assertEquals(8, kr.getMatch(5).getEndPos(1));	
+        
+        assertEquals(8, kr.getMatch(6).getStartPos());
+        assertEquals(11, kr.getMatch(6).getEndPos());
+        assertEquals(8, kr.getMatch(6).getStartPos(1));	// expansion 8,10
+        assertEquals(10, kr.getMatch(6).getEndPos(1));	 
 				
 	/*	for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
