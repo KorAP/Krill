@@ -37,8 +37,6 @@ public class KorapNode {
      */
     private static String path = new String("/home/ndiewald/Repositories/korap/KorAP-modules/KorAP-lucene-index/sandbox/index");
 
-
-
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
      * @return Grizzly HTTP server.

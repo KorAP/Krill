@@ -528,11 +528,19 @@ public class KorapMatch extends KorapDocument {
 	if (this.localDocID == -1)
 	    return null;
 
-	MatchIdentifier id = new MatchIdentifier();
+	MatchIdentifier id = this.getMatchIdentifier();
 
 	// Get prefix string corpus/doc
 	id.setCorpusID(this.getCorpusID());
 	id.setDocID(this.getDocID());
+
+	return (this.identifier = id.toString());
+    };
+
+    @JsonIgnore
+    public MatchIdentifier getMatchIdentifier () {
+	MatchIdentifier id = new MatchIdentifier();
+
 	id.setStartPos(startPos);
 	id.setEndPos(endPos);
 
@@ -547,7 +555,7 @@ public class KorapMatch extends KorapDocument {
 	    };
 	};
 
-	return (this.identifier = id.toString());
+	return id;
     };
 
 

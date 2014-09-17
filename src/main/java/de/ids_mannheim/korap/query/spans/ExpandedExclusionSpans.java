@@ -213,7 +213,7 @@ public class ExpandedExclusionSpans extends SimpleSpans{
 			payload.addAll(firstSpans.getPayload());
 		}
 		if (classNumber > 0 ){	
-			System.out.println("Extension offsets "+start+","+end);
+		    // System.out.println("Extension offsets "+start+","+end);
 			payload.add(calculateExtensionOffsets(start, end));
 		}
 		return payload;

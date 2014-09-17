@@ -1224,9 +1224,9 @@ public class KorapIndex {
 
 
     // Collect matches
-    public String collect (KorapCollection collection,
-			   KorapSearch ks,
-			   MatchCollector mc) {
+    public MatchCollector collect (KorapCollection collection,
+				   KorapSearch ks,
+				   MatchCollector mc) {
 	if (DEBUG)
 	    log.trace("Start collecting matches");
 
@@ -1247,6 +1247,8 @@ public class KorapIndex {
 	HashSet<String> fieldsToLoadLocal = new HashSet<>();
 	fieldsToLoadLocal.add("ID");
 
+	// List<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(10);
+
 	try {
 
 	    // Rewrite query (for regex and wildcard queries)
@@ -1256,8 +1258,12 @@ public class KorapIndex {
 		query = (SpanQuery) rewrittenQuery;
 	    };
 
+	    int matchcount = 0;
+	    int uniqueDocID = -1;
+
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
 
+		int previousDocID = -1;
 		int oldLocalDocID = -1;
 
 		// Use OpenBitSet;
@@ -1271,25 +1277,48 @@ public class KorapIndex {
 
 		while (spans.next()) {
 		    int localDocID = spans.doc();
-		    // int docID = atomic.docBase + localDocID;
-		    Document doc = lreader.document(localDocID, fieldsToLoadLocal);
 
-		    // Do not load all of this, in case the doc is the same!
+		    // New match
+		    // MatchIdentifier possibly needs more
+		    /*
 		    KorapMatch match = new KorapMatch();
-		    match.setDocID(doc.get("ID"));
 		    match.setStartPos(spans.start());
 		    match.setEndPos(spans.end());
-		    // MatchIdentifier possibly needs more
 
 		    // Add payload information to match
 		    if (spans.isPayloadAvailable())
 			match.addPayload(spans.getPayload());
+		    */
 
-		    if (DEBUG)
-			log.trace("I've got a match in {}", match.getDocID());
-		    
-		    // Add match to the collector
-		    mc.add(match);
+		    if (previousDocID != localDocID) {
+			if (matchcount > 0) {
+			    mc.add(uniqueDocID, matchcount);
+			    matchcount = 0;
+			};
+
+			// Read document id from index
+			/*
+			uniqueDocID = lreader.document(localDocID, fieldsToLoadLocal).get("ID");
+			*/
+			uniqueDocID = localDocID;
+			previousDocID = localDocID;
+		    }
+		    else {
+			matchcount++;
+			// atomicMatches.add(match);
+		    };
+		};
+
+		/*
+		if (!atomicMatches.isEmpty()) {
+		    // Add matches to the collector
+		    mc.add(uniqueDocID, atomicMatches);
+		    atomicMatches.clear();
+		};
+		*/
+		if (matchcount > 0) {
+		    mc.add(uniqueDocID, matchcount);
+		    matchcount = 0;
 		};
 	    };
 
@@ -1299,7 +1328,8 @@ public class KorapIndex {
 	    mc.setError("There was an IO error");
 	    log.warn( e.getLocalizedMessage() );
 	};
-	
-	return mc.toJSON(); 
+
+	mc.commit();
+	return mc; 
     };
 };

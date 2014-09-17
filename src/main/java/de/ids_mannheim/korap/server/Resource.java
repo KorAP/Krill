@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+import com.mchange.v2.c3p0.*;
+
 /**
  * Root resource (exposed at root path)
  *

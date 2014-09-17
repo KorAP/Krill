@@ -79,14 +79,35 @@ public class MatchIdentifier extends DocIdentifier {
 	};
 	sb.append(this.docID);
 
-	sb.append("-p");
-	sb.append(this.startPos).append('-').append(this.endPos);
+	sb.append('-');
+	sb.append(this.getPositionString());	
+	return sb.toString();
+    };
+
+    /*
+    public String getPositionBytes () {
+	ByteBuffer b = new ByteBuffer(8);
+	b.putInt(this.startPos);
+	b.putInt(this.endPos);
+
+	// Get Position information
+	for (int[] i : this.pos) {
+	    b.putInt(i[2]).putInt(i[0]).putInt(i[1]);
+	};
+    };
+    */
+
+    public String getPositionString () {
+	StringBuilder sb = new StringBuilder();
+	sb.append('p').append(this.startPos).append('-').append(this.endPos);
 
 	// Get Position information
 	for (int[] i : this.pos) {
 	    sb.append('(').append(i[2]).append(')');
 	    sb.append(i[0]).append('-').append(i[1]);
 	};
+
+	return sb.toString();
 
 	/*
 	if (this.processed) {
@@ -103,7 +124,5 @@ public class MatchIdentifier extends DocIdentifier {
 	    };
 	};
 	*/
-	
-	return sb.toString();
     };
 };
