@@ -13,24 +13,23 @@ import org.slf4j.LoggerFactory;
 */
 public class HighlightCombinator {
 
-    // Logger
+    // Logger (use the KorapMatch class)
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-
     private LinkedList<HighlightCombinatorElement> combine;
-    private LinkedList<Integer> balanceStack = new LinkedList<>();
-    private ArrayList<Integer> tempStack = new ArrayList<>(32);
+    private Stack<Integer> balanceStack = new Stack<>();
+    private Stack<Integer> tempStack    = new Stack<>();
 
     // Empty constructor
     public HighlightCombinator () {
 	this.combine = new LinkedList<>();
     };
 
-    // Return the combination stack
-    public LinkedList<HighlightCombinatorElement> stack () {
+    // Return the combination list
+    public LinkedList<HighlightCombinatorElement> list () {
 	return this.combine;
     };
 
@@ -49,7 +48,7 @@ public class HighlightCombinator {
 	return this.combine.get(index);
     };
 
-    // Get the size of te combinator stack
+    // Get the size of the combinator stack
     public short size () {
 	return (short) this.combine.size();
     };
@@ -62,16 +61,18 @@ public class HighlightCombinator {
     // Add opening highlight combinator to the stack
     public void addOpen (int number) {
 	this.combine.add(new HighlightCombinatorElement((byte) 1, number));
-	this.balanceStack.add(number);
+	this.balanceStack.push(number);
     };
 
     // Add closing highlight combinator to the stack
     public void addClose (int number) {
 	HighlightCombinatorElement lastComb;
+
+	// Clean up temporary stack
 	this.tempStack.clear();
 
-	// Shouldn't happen
-	if (this.balanceStack.size() == 0) {
+	// Check if there is an opening tag at least
+	if (this.balanceStack.empty()) {
 	    if (DEBUG)
 		log.trace("The balance stack is empty");
 	    return;
@@ -88,9 +89,10 @@ public class HighlightCombinator {
 	};
 
 	// class number of the last element
-	int eold = this.balanceStack.removeLast();
+	// It's already ensured the stack is not empty
+	int eold = this.balanceStack.pop();
 
-	// the closing element is not balanced
+	// the closing element is not balanced, i.e. the last element differs
 	while (eold != number) {
 
 	    // Retrieve last combinator on stack
@@ -124,10 +126,10 @@ public class HighlightCombinator {
 	    };
 
 	    // add this element number temporarily on the stack
-	    tempStack.add(eold);
+	    tempStack.push(eold);
 
 	    // Check next element
-	    eold = this.balanceStack.removeLast();
+	    eold = this.balanceStack.pop();
 	};
 
 	// Get last combinator on the stack
@@ -168,7 +170,7 @@ public class HighlightCombinator {
 	    if (DEBUG)
 		log.trace("Reopen element {}", e);
 	    combine.add(new HighlightCombinatorElement((byte) 1, e));
-	    balanceStack.add(e);
+	    balanceStack.push(e);
 	};
     };
 

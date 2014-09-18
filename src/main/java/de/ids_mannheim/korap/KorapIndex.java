@@ -881,6 +881,7 @@ public class KorapIndex {
     };
 
 
+    @Deprecated
     public HashMap getTermRelation (String field) throws Exception {
 	return this.getTermRelation(new KorapCollection(this), field);
     };
@@ -889,6 +890,7 @@ public class KorapIndex {
     /**
      * Analyze how terms relate
      */
+    @Deprecated
     public HashMap getTermRelation (KorapCollection kc, String field) throws Exception {
 	HashMap<String,Long> map = new HashMap<>(100);
 	long docNumber = 0, checkNumber = 0;

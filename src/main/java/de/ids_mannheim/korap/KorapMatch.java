@@ -90,7 +90,7 @@ public class KorapMatch extends KorapDocument {
 	           snippetBrackets,
 	           identifier;
 
-    private HighlightCombinator snippetStack;
+    private HighlightCombinator snippetArray;
 
     public boolean startMore = true,
 	           endMore = true;
@@ -924,7 +924,7 @@ public class KorapMatch extends KorapDocument {
 
 	int pos = 0, oldPos = 0;
 
-	this.snippetStack = new HighlightCombinator();
+	this.snippetArray = new HighlightCombinator();
 
 	for (int[] element : stack) {
 	    pos = element[3] != 0 ? element[0] : element[1];
@@ -935,21 +935,21 @@ public class KorapMatch extends KorapDocument {
 		pos = clean.length() - 1;
 	      };
 
-		snippetStack.addString(clean.substring(oldPos, pos));
+		snippetArray.addString(clean.substring(oldPos, pos));
 
 		oldPos = pos;
 	    };
 
 	    if (element[3] != 0) {
-		snippetStack.addOpen(element[2]);
+		snippetArray.addOpen(element[2]);
 	    }
 	    else {
-		snippetStack.addClose(element[2]);
+		snippetArray.addClose(element[2]);
 	    };
 	};
 
 	if (clean.length() > pos) {
-	    snippetStack.addString(clean.substring(pos));
+	    snippetArray.addString(clean.substring(pos));
 	};
     };
 
@@ -974,42 +974,52 @@ public class KorapMatch extends KorapDocument {
 
 	// Snippet stack sizes
 	short start = (short) 0;
-	short end = this.snippetStack.size();
+	short end = this.snippetArray.size();
+	end--;
 
+	// Set levels for highlights 
 	FixedBitSet level = new FixedBitSet(16);
 	level.set(0, 15);
 	byte[] levelCache = new byte[16];
 
-	// Get the first elem
-	HighlightCombinatorElement elem = this.snippetStack.getFirst();
+	// First element of sorted array
+	HighlightCombinatorElement elem = this.snippetArray.getFirst();
 
 	// Create context
 	sb.append("<span class=\"context-left\">");
-	if (startMore)
+	if (this.startMore)
 	    sb.append("<span class=\"more\"></span>");
 
+	// First element is textual
 	if (elem.type == 0) {
 	    sb.append(elem.toHTML(this, level, levelCache));
+	    // Move start position
 	    start++;
 	};
 	sb.append("</span>");
 
-	elem = this.snippetStack.getLast();
+	// Last element of sorted array
+	elem = this.snippetArray.getLast();
 
 	StringBuilder rightContext = new StringBuilder();
 
-	// Create context, if trhere is any
+	// Create right context, if there is any
 	rightContext.append("<span class=\"context-right\">");
+
+	// Last element is textual
 	if (elem != null && elem.type == 0) {
 	    rightContext.append(elem.toHTML(this, level, levelCache));
+
+	    // decrement end
 	    end--;
 	};
-	if (endMore)
+	if (this.endMore)
 	    rightContext.append("<span class=\"more\"></span>");
 	rightContext.append("</span>");
 
-	for (short i = start; i < end; i++) {
-	    sb.append(this.snippetStack.get(i).toHTML(this, level,levelCache));
+	// Iterate through all remaining elements
+	for (short i = start; i <= end; i++) {
+	    sb.append(this.snippetArray.get(i).toHTML(this, level,levelCache));
 	};
 
 	sb.append(rightContext);
@@ -1033,14 +1043,14 @@ public class KorapMatch extends KorapDocument {
 
 	StringBuilder sb = new StringBuilder();
 
-	if (startMore)
+	if (this.startMore)
 	    sb.append("... ");
 
-	for (HighlightCombinatorElement hce : this.snippetStack.stack()) {
+	for (HighlightCombinatorElement hce : this.snippetArray.list()) {
 	    sb.append(hce.toBrackets(this));
 	};
 
-	if (endMore)
+	if (this.endMore)
 	    sb.append(" ...");
 
 	return (this.snippetBrackets = sb.toString());
