@@ -879,9 +879,7 @@ public class TestWithinIndex {
 
 	kr = ki.search(sq, (short) 15);
 	assertEquals("totalResults", 0, kr.totalResults());
-
     };
-
 
     //!! Offset is 1 token tooo long
 

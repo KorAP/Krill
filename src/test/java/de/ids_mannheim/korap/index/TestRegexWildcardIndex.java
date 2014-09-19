@@ -242,4 +242,44 @@ public class TestRegexWildcardIndex {
 	assertEquals("[affe afffe] baum ...", kr.getMatch(0).getSnippetBrackets());
     };
 
+
+    @Test
+    public void indexRegexWithinRewrite () throws IOException {
+	KorapIndex ki = new KorapIndex();
+
+	// abcabcabac
+	FieldDocument fd = new FieldDocument();
+	fd.addTV("base",
+		 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
+		 "[(0-4)s:affe|_0#0-4|-:t$<i>10]" +
+		 "[(5-10)s:afffe|_1#5-10]" +
+		 "[(11-15)s:baum|_2#11-15]" +
+		 "[(16-26)s:baumgarten|_3#16-26]" +
+		 "[(27-38)s:steingarten|_4#27-38]" +
+		 "[(39-44)s:franz|_5#39-44]" +
+		 "[(45-49)s:hans|_6#45-49]" +
+		 "[(50-54)s:haus|_7#50-54]" +
+		 "[(55-59)s:efeu|_8#55-59]" +
+		 "[(60-64)s:effe|_9#60-64]");
+	ki.addDoc(fd);
+
+	ki.commit();
+
+	KorapQuery kq = new KorapQuery("base");
+	SpanQuery sq = kq.contains(
+				   kq.seq(
+					  kq.re("s:a.*e")
+					  ).append(
+						   kq.re("s:af*e")
+						   ),
+				   kq.seg("s:affe")).toQuery();
+	assertEquals("spanContain(spanNext(SpanMultiTermQueryWrapper(base:/s:a.*e/), SpanMultiTermQueryWrapper(base:/s:af*e/)), base:s:affe)", sq.toString());
+	KorapSearch ks = new KorapSearch(sq);
+	ks.context.left.setToken(true).setLength(1);
+	ks.context.right.setToken(true).setLength(1);
+
+	KorapResult kr = ki.search(ks);
+	assertEquals(1, kr.getTotalResults());
+	assertEquals("[affe afffe] baum ...", kr.getMatch(0).getSnippetBrackets());
+    };
 };

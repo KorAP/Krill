@@ -1,5 +1,6 @@
-0.42 2014-09-17
+0.42 2014-09-19
         - [cleanup] Extracted private classes from KorapMatch (diewald)
+	- [bugfix] Fix query rewrite in contains-queries (diewald)
 
 0.41 2014-09-17
         - [feature] getStartPos(classNr) and getEndPos(classNr)
