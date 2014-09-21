@@ -164,27 +164,27 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
     /*
      * Rewrite query in case it includes regular expressions or wildcards
      */
-
     @Override
     public Query rewrite (IndexReader reader) throws IOException {
 	SpanWithinQuery clone = null;
 
+	// Does the embedded query needs a rewrite?
 	SpanQuery query = (SpanQuery) embedded.rewrite(reader);
-
 	if (query != embedded) {
 	    if (clone == null)
 		clone = this.clone();
 	    clone.embedded = query;
 	};
 
+	// Does the wrap query needs a rewrite?
 	query = (SpanQuery) wrap.rewrite(reader);
-
 	if (query != wrap) {
 	    if (clone == null)
 		clone = this.clone();
 	    clone.wrap = query;
 	};
 
+	// There is a clone and it is important
 	if (clone != null)
 	    return clone;
 

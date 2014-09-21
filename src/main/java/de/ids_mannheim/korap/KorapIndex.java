@@ -294,6 +294,13 @@ public class KorapIndex {
 	return fd;
     };
 
+    // Add document to index as JSON object with a unique ID
+    public FieldDocument addDoc (int uid, String json) throws IOException {
+	FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
+	fd.setUID(uid);
+	return this.addDoc(fd);
+    };
+
 
     // Add document to index as JSON object
     public FieldDocument addDoc (String json) throws IOException {
@@ -353,6 +360,10 @@ public class KorapIndex {
 	};
     };
 
+    // Return the number of unstaged texts
+    public int getUnstaged () {
+	return this.commitCounter;
+    };
 
     // Get autoCommit valiue
     public int autoCommit () {

@@ -20,8 +20,8 @@ import org.apache.lucene.index.FieldInfo.IndexOptions;
 import java.util.*;
 
 /*
-Todo: Store primary data at base/cons field.
-All other Termvectors should have no stored field!
+  Todo: Store primary data at base/cons field.
+  All other Termvectors should have no stored field!
 */
 
 /**
@@ -231,6 +231,12 @@ last_modified timestamp or KorapDate
     public void setID (String ID) {
 	super.setID(ID);
 	this.addString("ID", ID);
+    };
+
+    @Override
+    public void setUID (int ID) {
+	super.setUID(ID);
+	this.addInt("UID", ID);
     };
 
     @Override

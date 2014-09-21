@@ -177,6 +177,17 @@
       <version>1.13-b01</version>
     </dependency>
 
+    <!-- Multipart support for Jersey -->
+    <!--
+	See
+	http://www.mkyong.com/webservices/jax-rs/file-upload-example-in-jersey/
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-multipart</artifactId>
+      <version>1.13</version>
+    </dependency>
+    -->
+
     <!-- JSON support -->
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>

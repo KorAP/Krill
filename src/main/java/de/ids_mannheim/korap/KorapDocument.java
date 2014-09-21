@@ -21,7 +21,7 @@ public abstract class KorapDocument {
     private KorapPrimaryData primaryData;
 
     @JsonIgnore
-    public int internalDocID, localDocID;
+    public int internalDocID, localDocID, UID;
 
     private String author, textClass, corpusID,
 	           pubPlace, ID, title, subTitle,
@@ -104,6 +104,15 @@ public abstract class KorapDocument {
 
     public void setID (String ID) {
 	this.ID = ID;
+    };
+
+    public void setUID (int UID) {
+	this.UID = UID;
+    };
+
+    @JsonProperty("UID")
+    public int getUID () {
+	return this.UID;
     };
 
     @JsonProperty("ID")

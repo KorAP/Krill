@@ -32,10 +32,13 @@ public class KorapNode {
     private static KorapIndex index;
 
     /*
-      Todo: Use korap.config for paths to
-            indexDirectory
+      Todo: Use korap.config for paths to indexDirectory
      */
-    private static String path = new String("/home/ndiewald/Repositories/korap/KorAP-modules/KorAP-lucene-index/sandbox/index");
+    private static String path =
+	new String("/home/ndiewald/Repositories/korap/KorAP-modules/KorAP-lucene-index/sandbox/index");
+
+    private static String name = "tanja";
+
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
@@ -51,7 +54,24 @@ public class KorapNode {
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
-    }
+    };
+
+
+    public static HttpServer startServer(String nodeName, String indexPath) {
+
+        // create a resource config that scans for JAX-RS resources and providers
+        // in de.ids_mannheim.korap.server package
+        final ResourceConfig rc =
+	    new ResourceConfig().packages("de.ids_mannheim.korap.server");
+
+	name = nodeName;
+	path = indexPath;
+
+        // create and start a new instance of grizzly http server
+        // exposing the Jersey application at BASE_URI
+        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+    };
+
 
     /**
      * Main method.
@@ -66,30 +86,36 @@ public class KorapNode {
         server.stop();
     };
 
+    public static String getName () {
+	return name;
+    };
+
+    // Get Index
     public static KorapIndex getIndex () {
 	if (index != null)
 	    return index;
 
     	try {
-	    File file = new File(path);
+	    if (path == null) {
+		// Temporary index
+		index = new KorapIndex();
+	    }
 
-	    log.info("Loading index from {}", path);
-	    if (!file.exists()) {
-		log.error("Index not found at {}", path);
-		return null;
+	    else {
+		File file = new File(path);
+
+		log.info("Loading index from {}", path);
+		if (!file.exists()) {
+		    log.error("Index not found at {}", path);
+		    return null;
+		};
+
+		System.out.println("Loading index from " + path);
+
+		// Real index
+		index = new KorapIndex(new MMapDirectory(file));
 	    };
-
-	    System.out.println("Loading index from " + path);
-
-	    index = new KorapIndex(new MMapDirectory(file));
 	    return index;
-	    /*
-	    // Temporarily!
-	    static String path = new String();
-
-	    this.index = new KorapIndex(new MMapDirectory(f));
-	    return this.index;
-	    */
 	}
 	catch (IOException e) {
 	    log.error("Index not loadable at {}: {}", path, e.getMessage());
