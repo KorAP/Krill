@@ -236,12 +236,12 @@ last_modified timestamp or KorapDate
     @Override
     public void setUID (int ID) {
 	super.setUID(ID);
-	this.addInt("UID", ID);
+	this.addString("UID", new Integer(ID).toString());
     };
 
     @Override
     public void setLayerInfo (String layerInfo) {
-	System.err.println(layerInfo);
+	// System.err.println(layerInfo);
 	super.setLayerInfo(layerInfo);
 	this.addStored("layerInfo", layerInfo);
     };

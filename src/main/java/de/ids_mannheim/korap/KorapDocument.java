@@ -106,18 +106,24 @@ public abstract class KorapDocument {
 	this.ID = ID;
     };
 
+    @JsonProperty("ID")
+    public String getID () {
+	return this.ID;
+    };
+
     public void setUID (int UID) {
 	this.UID = UID;
     };
 
+    public void setUID (String UID) {
+	if (UID != null)
+	    this.UID = Integer.parseInt(UID);
+    };
+
+
     @JsonProperty("UID")
     public int getUID () {
 	return this.UID;
-    };
-
-    @JsonProperty("ID")
-    public String getID () {
-	return this.ID;
     };
 
     public void setTitle (String title) {

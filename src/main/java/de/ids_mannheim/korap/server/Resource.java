@@ -23,6 +23,7 @@ import javax.ws.rs.WebApplicationException;
 import de.ids_mannheim.korap.KorapNode;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.server.KorapResponse;
@@ -77,7 +78,7 @@ public class Resource {
      * http://stackoverflow.com/questions/19765582/how-to-make-jersey-use-gzip-compression-for-the-response-message-body
     */
     @PUT
-    @Path("/{textID}")
+    @Path("/index/{textID}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public String add (@PathParam("textID") Integer uid,
@@ -124,6 +125,7 @@ public class Resource {
      * Commit data changes to the index
      */
     @POST
+    @Path("/index")
     @Produces(MediaType.APPLICATION_JSON)
     public String commit () {
 
@@ -135,21 +137,57 @@ public class Resource {
 	    version = index.getVersion();
 
 	// There are documents to commit
-	if (index.getUnstaged() != 0) {
-	    try {
-		index.commit();
-	    }
-	    catch (IOException e) {
-		// Set HTTP to ???
-		return kresp.setErrstr(e.getMessage()).toJSON();
-	    };
-
+	try {
+	    index.commit();
+	}
+	catch (IOException e) {
 	    // Set HTTP to ???
-	    return kresp.setMsg("Unstaged data was committed").toJSON();
+	    return kresp.setErrstr(e.getMessage()).toJSON();
 	};
 
 	// Set HTTP to ???
-	return kresp.setMsg("No unstaged data available").toJSON();
+	return kresp.setMsg("Unstaged data was committed").toJSON();
+    };
+
+    /**
+     * Find matches in the lucene index and return them as results.
+     *
+     * @param text_id
+     */
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String find (String json, @Context UriInfo uri) {
+
+	// Get index
+	KorapIndex index = KorapNode.getIndex();
+
+	// Search index
+        if (index != null) {
+	    KorapSearch ks = new KorapSearch(json);
+
+	    // Get query parameters
+	    MultivaluedMap<String,String> qp = uri.getQueryParameters();
+
+	    // Build Collection based on a list of uids
+	    KorapCollection kc = new KorapCollection(
+	      qp.get("uid").toArray(new String[0])
+            );
+
+	    // TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
+
+	    // Override old collection
+	    ks.setCollection(kc);
+
+	    // Only return the first match per text
+	    ks.setItemsPerResource(1);
+
+            return ks.run(index).toJSON();
+	};
+	// Response with error message
+        KorapResult kr = new KorapResult();
+        kr.setError("Index not found");
+        return kr.toJSON();
     };
 
 

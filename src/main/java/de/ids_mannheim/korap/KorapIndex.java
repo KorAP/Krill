@@ -187,6 +187,7 @@ public class KorapIndex {
 	fieldsToLoad = new HashSet<String>(16);
 	fieldsToLoad.add("author");
 	fieldsToLoad.add("ID");
+	fieldsToLoad.add("UID");
 	fieldsToLoad.add("title");
 	fieldsToLoad.add("subTitle");
 	fieldsToLoad.add("textClass");
@@ -230,6 +231,7 @@ public class KorapIndex {
     public IndexReader reader () {
 	if (!readerOpen)
 	    this.openReader();
+	// Todo: Maybe use DirectoryReader.openIfChanged(DirectoryReader)
 
 	return this.reader;
     };
@@ -277,19 +279,32 @@ public class KorapIndex {
 	};
     };
 
+    /*
+     * Some of these addDoc methods will probably be DEPRECATED,
+     * as they were added while the API changed slowly.
+     */
+
 
     // Add document to index as FieldDocument
-    public FieldDocument addDoc (FieldDocument fd) throws IOException {
-	
-	// Open writer if not already opened
-	if (this.writer == null)
-	    this.writer = new IndexWriter(this.directory, this.config);
+    public FieldDocument addDoc (FieldDocument fd) {
 
-	// Add document to writer
-	this.writer.addDocument( fd.doc );
-	if (++commitCounter > autoCommit) {
-	    this.commit();
-	    commitCounter = 0;
+	try {
+	
+	    // Open writer if not already opened
+	    if (this.writer == null)
+		this.writer = new IndexWriter(this.directory, this.config);
+
+	    // Add document to writer
+	    this.writer.addDocument( fd.doc );
+	    if (++commitCounter > autoCommit) {
+		this.commit();
+		commitCounter = 0;
+	    };
+	}
+
+	// Failed to add document
+	catch (IOException e) {
+	    log.error("File json not found");
 	};
 	return fd;
     };
@@ -310,31 +325,35 @@ public class KorapIndex {
 
 
     // Add document to index as JSON file
-    public FieldDocument addDoc (File json) throws IOException {
-	FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
-	return this.addDoc(fd);
+    public FieldDocument addDoc (File json) {
+	try {
+	    FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
+	    return this.addDoc(fd);
+	}
+	catch (IOException e) {
+	    log.error("File json not parseable");	    
+	};
+	return (FieldDocument) null;
     };
 
 
     // Add document to index as JSON file
-    public FieldDocument addDocFile(String json) throws IOException {
+    public FieldDocument addDocFile(String json) {
 	return this.addDocFile(json, false);
     };
 
-
-    // Add document to index as JSON file (possibly gzipped)
-    public FieldDocument addDocFile(String json, boolean gzip) {
+    private FieldDocument _addDocfromFile (String json, boolean gzip) {
 	try {
 	    if (gzip) {
 
 		// Create json field document
 		FieldDocument fd = this.mapper.readValue(
-		    new GZIPInputStream(new FileInputStream(json)),
+		  new GZIPInputStream(new FileInputStream(json)),
 		    FieldDocument.class
 		);
-		return this.addDoc(fd);
+		return fd;
 	    };
-	    return this.addDoc(json);
+	    return this.mapper.readValue(json, FieldDocument.class);
 	}
 
 	// Fail to add json object
@@ -344,6 +363,20 @@ public class KorapIndex {
 	return (FieldDocument) null;
     };
 
+    // Add document to index as JSON file (possibly gzipped)
+    public FieldDocument addDocFile(String json, boolean gzip) {
+	return this.addDoc(this._addDocfromFile(json, gzip));
+    };
+
+    // Add document to index as JSON file (possibly gzipped)
+    public FieldDocument addDocFile(int uid, String json, boolean gzip) {
+	FieldDocument fd = this._addDocfromFile(json, gzip);
+	if (fd != null) {
+	    fd.setUID(uid);
+	    return this.addDoc(fd);
+	};
+	return fd;
+    };
 
     // Commit changes to the index
     public void commit () throws IOException {
@@ -1065,20 +1098,22 @@ public class KorapIndex {
 	HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
 	fieldsToLoadLocal.add(field);
 
-	int i = 0;
-	long t1 = 0, t2 = 0;
-	int startIndex = kr.getStartIndex();
-	int count = kr.getItemsPerPage();
-	int hits = kr.itemsPerPage() + startIndex;
-	int limit = ks.getLimit();
-	boolean cutoff = ks.doCutOff();
+	int i                  = 0;
+	long t1                = 0,
+	     t2                = 0;
+	int startIndex         = kr.getStartIndex();
+	int count              = kr.getItemsPerPage();
+	int hits               = kr.itemsPerPage() + startIndex;
+	int limit              = ks.getLimit();
+	boolean cutoff         = ks.doCutOff();
 	short itemsPerResource = ks.getItemsPerResource();
 
-
+	// Check if there is work to do at all
 	if (limit > 0) {
 	    if (hits > limit)
 		hits = limit;
 
+	    // Nah - nothing to do! \o/
 	    if (limit < startIndex)
 		return kr;
 	};
@@ -1100,7 +1135,10 @@ public class KorapIndex {
 
 		int oldLocalDocID = -1;
 
-		// Use OpenBitSet;
+		/*
+		 * Todo: There may be a way to now early if the bitset is emty
+		 * by using OpenBitSet - but this may not be as fast as I think.
+		 */
 		Bits bitset = collection.bits(atomic);
 
 		PositionsToOffset pto = new PositionsToOffset(atomic, field);
@@ -1261,7 +1299,7 @@ public class KorapIndex {
 
 	// Only load ID
 	HashSet<String> fieldsToLoadLocal = new HashSet<>();
-	fieldsToLoadLocal.add("ID");
+	fieldsToLoadLocal.add("UID");
 
 	// List<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(10);
 
@@ -1275,6 +1313,7 @@ public class KorapIndex {
 	    };
 
 	    int matchcount = 0;
+	    String uniqueDocIDString;;
 	    int uniqueDocID = -1;
 
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
@@ -1313,10 +1352,12 @@ public class KorapIndex {
 			};
 
 			// Read document id from index
-			/*
-			uniqueDocID = lreader.document(localDocID, fieldsToLoadLocal).get("ID");
-			*/
-			uniqueDocID = localDocID;
+			uniqueDocIDString =
+			    lreader.document(localDocID, fieldsToLoadLocal).get("UID");
+
+			if (uniqueDocIDString != null)
+			    uniqueDocID = Integer.parseInt(uniqueDocIDString);
+
 			previousDocID = localDocID;
 		    }
 		    else {

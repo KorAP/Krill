@@ -225,6 +225,8 @@ public class KorapFilter {
     };
 
     public BooleanFilter or (String type, String ... terms) {
+	if (DEBUG)
+	    log.debug("Got some terms here");
 	BooleanFilter bf = new BooleanFilter();
 	bf.or(type, terms);
 	return bf;

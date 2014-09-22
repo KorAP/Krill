@@ -7,6 +7,12 @@ import de.ids_mannheim.korap.KorapFilter;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.filter.BooleanFilter;
+
+
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanOrQuery;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 
 import static org.junit.Assert.*;
@@ -82,7 +88,7 @@ public class TestKorapCollection {
 	// System.err.println(kr.toJSON());
     };
 
-    @Ignore
+    @Test
     public void filterExampleAtomic () throws IOException {
 	
 	// That's exactly the same test class, but with multiple atomic indices
@@ -201,6 +207,45 @@ public class TestKorapCollection {
 
 	assertEquals(87, kr.totalResults());
 	// System.out.println(kr.toJSON());
+    };
+
+
+    @Test
+    public void uidCollection () throws IOException {
+	
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	int uid = 1;
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
+	    FieldDocument fd = ki.addDocFile(
+		uid++,
+	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+		true
+	    );
+	};
+	ki.commit();
+
+	assertEquals("Documents", 7, ki.numberOf("documents"));
+	assertEquals("Sentences", 281, ki.numberOf("sentences"));
+
+	SpanQuery sq = new SpanTermQuery(new Term("tokens", "s:der"));
+	KorapResult kr = ki.search(sq, (short) 10);
+        assertEquals(86,kr.getTotalResults());
+
+	// Create Virtual collections:
+	KorapCollection kc = new KorapCollection(new String[]{"2", "3", "4"});
+	kc.setIndex(ki);
+	assertEquals("Documents", 3, kc.numberOf("documents"));
+
+	kr = kc.search(sq);
+        assertEquals(39,kr.getTotalResults());
     };
 };
 

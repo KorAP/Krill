@@ -50,6 +50,9 @@ public class KorapCollection {
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapCollection.class);
 
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
     // user?
     public KorapCollection (KorapIndex ki) {
 	this.index = ki;
@@ -63,7 +66,9 @@ public class KorapCollection {
 	try {
 	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
 	    if (json.has("collections")) {
-		log.trace("Add meta collection");
+		if (DEBUG)
+		    log.trace("Add meta collection");
+
 		for (JsonNode collection : json.get("collections")) {
 		    this.fromJSON(collection);
 		};
@@ -78,15 +83,31 @@ public class KorapCollection {
 	this.filter = new ArrayList<FilterOperation>(5);
     };
 
+    // Create a collection based on UIDs
+    public KorapCollection (String ... uids) {
+	this.filter = new ArrayList<FilterOperation>(5);
+	BooleanFilter filter = new BooleanFilter();
+	if (DEBUG)
+	    log.debug("UID based collection: {},{}", uids[0], uids[1]);
+	filter.or("UID", uids);
+	if (DEBUG)
+	    log.debug("UID based filter: {}", filter.toString());
+	this.filter(filter);
+    };
+
+
     public void fromJSON(JsonNode json) throws QueryException {
 	String type = json.get("@type").asText();
 
 	if (type.equals("korap:meta-filter")) {
-	    log.trace("Add Filter");
+	    if (DEBUG)
+		log.trace("Add Filter");
 	    this.filter(new KorapFilter(json.get("@value")));
 	}
+
 	else if (type.equals("korap:meta-extend")) {
-	    log.trace("Add Extend");
+	    if (DEBUG)
+		log.trace("Add Extend");
 	    this.extend(new KorapFilter(json.get("@value")));
 	};
     };
@@ -101,7 +122,8 @@ public class KorapCollection {
 
     // The checks asre not necessary
     public KorapCollection filter (BooleanFilter filter) {
-	log.trace("Added filter: {}", filter.toString());
+	if (DEBUG)
+	    log.trace("Added filter: {}", filter.toString());
 	if (filter == null) {
 	    log.warn("No filter is given");
 	    return this;
@@ -111,7 +133,7 @@ public class KorapCollection {
 	    log.warn("Filter can't be wrapped");
 	    return this;
 	};
-	FilterOperation fo = new FilterOperation(f,false);
+	FilterOperation fo = new FilterOperation(f, false);
 	if (fo == null) {
 	    log.warn("Filter operation invalid");
 	    return this;
@@ -127,7 +149,8 @@ public class KorapCollection {
 
 
     public KorapCollection extend (BooleanFilter filter) {
-	log.trace("Added extension: {}", filter.toString());
+	if (DEBUG)
+	    log.trace("Added extension: {}", filter.toString());
 	this.filter.add(
 	    new FilterOperation(
 		(Filter) new QueryWrapperFilter(filter.toQuery()),
@@ -160,7 +183,10 @@ public class KorapCollection {
 	return sb.toString();
     };
 
-    // DEPRECATED BUT USED IN TEST CASES
+    /**
+     * Search in the virtual collection. This is just used for
+     * testing purposes and not recommended for serious usage. 
+     */
     public KorapResult search (SpanQuery query) {
 	return this.index.search(this, query, 0, (short) 20, true, (short) 5, true, (short) 5);
     };
@@ -180,7 +206,8 @@ public class KorapCollection {
 	    ArrayList<FilterOperation> filters = (ArrayList<FilterOperation>) this.filter.clone();
 
 	    FilterOperation kcInit = filters.remove(0);
-	    log.trace("FILTER: {}", kcInit);
+	    if (DEBUG)
+		log.trace("FILTER: {}", kcInit);
 
 	    // Init vector
 	    DocIdSet docids = kcInit.filter.getDocIdSet(atomic, null);
@@ -188,17 +215,18 @@ public class KorapCollection {
 	    DocIdSetIterator filterIter = docids.iterator();
 
 	    if (filterIter != null) {
-		log.trace("InitFilter has effect");
-		// System.err.println("Init has an effect");
+		if (DEBUG)
+		    log.trace("InitFilter has effect");
 		bitset.or(filterIter);
 		noDoc = false;
 	    };
 
 	    if (!noDoc) {
 		for (FilterOperation kc : filters) {
-		    log.trace("FILTER: {}", kc);
+		    if (DEBUG)
+			log.trace("FILTER: {}", kc);
 
-		    // BUG!!!
+		    // TODO: BUG!!!!!!!!!!
 		    docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null : bitset);
 		    filterIter = docids.iterator();
 
@@ -217,7 +245,6 @@ public class KorapCollection {
 		    };
 		    if (kc.isExtension()) {
 			// System.err.println("Term found!");
-			// log.trace("Extend filter");
 			// System.err.println("Old Card:" + bitset.cardinality());
 			bitset.or(filterIter);
 			// System.err.println("New Card:" + bitset.cardinality());
@@ -260,6 +287,7 @@ public class KorapCollection {
     };
 
     // This is only for testing purposes!
+    @Deprecated
     public HashMap getTermRelation(String field) throws Exception {
 	if (this.index == null) {
 	    HashMap<String,Long> map = new HashMap<>(1);
@@ -270,6 +298,7 @@ public class KorapCollection {
 	return this.index.getTermRelation(this, field);
     };
 
+    @Deprecated
     public String getTermRelationJSON(String field) throws IOException {
 	ObjectMapper mapper = new ObjectMapper();
 	StringWriter sw = new StringWriter();

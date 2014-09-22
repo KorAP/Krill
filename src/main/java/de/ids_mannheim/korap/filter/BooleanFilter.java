@@ -40,6 +40,9 @@ public class BooleanFilter {
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapFilter.class);
 
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
     private BooleanQuery bool;
     private String error;
 
@@ -49,6 +52,10 @@ public class BooleanFilter {
 
     public BooleanFilter or (String type, String ... terms) {
 	for (String term : terms) {
+
+	    if (DEBUG)
+		log.trace("Filter: OR {}={}", type, term);
+
 	    bool.add(
 	        new TermQuery(new Term(type, term)),
 		BooleanClause.Occur.SHOULD

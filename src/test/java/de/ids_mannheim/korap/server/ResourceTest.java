@@ -71,7 +71,7 @@ public class ResourceTest {
 	    }) {
 
 	    String json = StringfromFile(getClass().getResource("/wiki/" + i + ".json").getFile());
-	    KorapResponse kresp = target.path("/" + i).
+	    KorapResponse kresp = target.path("/index/" + i).
 		request("application/json").
 		put(Entity.json(json), KorapResponse.class);
 
@@ -84,7 +84,7 @@ public class ResourceTest {
 	    assertEquals(kresp.getVersion(), "0.42");
 	};
 
-	KorapResponse kresp = target.path("/").
+	KorapResponse kresp = target.path("/index").
 	    request("application/json").
 	    post(Entity.text(""), KorapResponse.class);
 	assertEquals(kresp.getNode(), "milena");

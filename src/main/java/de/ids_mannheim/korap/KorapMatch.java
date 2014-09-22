@@ -351,6 +351,8 @@ public class KorapMatch extends KorapDocument {
 	    this.setCorpusID(doc.get("corpusID"));
 	if (fields.contains("ID"))
 	    this.setDocID(doc.get("ID"));
+	if (fields.contains("UID"))
+	    this.setUID(doc.get("UID"));
 	if (fields.contains("author"))
 	    this.setAuthor(doc.get("author"));
 	if (fields.contains("textClass"))
