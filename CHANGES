@@ -1,3 +1,8 @@
+0.43 2014-09-23
+        - [cleanup] Made a lot of stuff rely on KorapResponse (diewald)
+	- [bugfix] Small but ancient collection bug fixed (diewald)
+	- [feature] Collect first matches of documents based on UIDs (diewald)
+
 0.42 2014-09-19
         - [cleanup] Extracted private classes from KorapMatch (diewald)
 	- [bugfix] Fix query rewrite in contains-queries (diewald)

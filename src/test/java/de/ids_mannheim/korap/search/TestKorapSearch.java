@@ -363,6 +363,49 @@ public class TestKorapSearch {
 	assertEquals((short) 1, kr.getItemsPerResource());
     };
 
+    @Test
+    public void searchJSONitemsPerResourceServer () throws IOException {
+
+	/*
+	 * This test is a server-only implementation of
+	 * TestResource#testCollection
+	 */
+
+
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	int uid = 1;
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
+	    ki.addDocFile(
+	        uid++,
+		getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+		true
+            );
+	};
+	ki.commit();
+
+	String json = getString(getClass().getResource("/queries/bsp-uid-example.jsonld").getFile());
+
+	KorapSearch ks = new KorapSearch(json);
+	ks.setItemsPerResource(1);
+	KorapCollection kc = new KorapCollection();
+	kc.filterUIDs(new String[]{"1", "4"});
+	kc.setIndex(ki);
+	ks.setCollection(kc);
+
+	KorapResult kr = ks.run(ki);
+
+	assertEquals(2, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(25, kr.getItemsPerPage());
+    };
     
 
     @Test

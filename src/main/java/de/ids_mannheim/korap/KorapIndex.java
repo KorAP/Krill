@@ -1079,9 +1079,10 @@ public class KorapIndex {
 
 	this.termContexts = new HashMap<Term, TermContext>();
 
+	// Get the spanquery from the KorapSearch object
 	SpanQuery query = ks.getQuery();
 
-	// Get the field of textual data and annotations
+	// Get the field of textual data and annotations ("tokens")
 	String field = query.getField();
 
 	// Todo: Make kr subclassing ks - so ks has a method for a new KorapResult!
@@ -1092,35 +1093,36 @@ public class KorapIndex {
 	    ks.getContext()
 	);
 
+	// Set version info to result
 	if (this.getVersion() != null)
 	    kr.setVersion(this.getVersion());
 
+	// The following fields should be lifted for matches
 	HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
 	fieldsToLoadLocal.add(field);
 
-	int i                  = 0;
-	long t1                = 0,
-	     t2                = 0;
-	int startIndex         = kr.getStartIndex();
-	int count              = kr.getItemsPerPage();
-	int hits               = kr.itemsPerPage() + startIndex;
-	int limit              = ks.getLimit();
-	boolean cutoff         = ks.doCutOff();
-	short itemsPerResource = ks.getItemsPerResource();
+	// Some initializations ...
+	int i                       = 0,
+  	    startIndex              = kr.getStartIndex(),
+	    count                   = kr.getItemsPerPage(),
+	    hits                    = kr.itemsPerPage() + startIndex,
+	    limit                   = ks.getLimit(),
+	    itemsPerResourceCounter = 0;
+	boolean cutoff              = ks.doCutOff();
+	short itemsPerResource      = ks.getItemsPerResource();
 
 	// Check if there is work to do at all
 	if (limit > 0) {
 	    if (hits > limit)
 		hits = limit;
 
-	    // Nah - nothing to do! \o/
+	    // Nah - nothing to do! Let's go shopping!
 	    if (limit < startIndex)
 		return kr;
 	};
 
+	// Collect matches from atomic readers
 	ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.itemsPerPage());
-
-	int itemsPerResourceCounter = 0;
 
 	try {
 
@@ -1130,6 +1132,9 @@ public class KorapIndex {
                  rewrittenQuery = query.rewrite(this.reader())) {
 		query = (SpanQuery) rewrittenQuery;
 	    };
+
+	    // See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
+	    long t1 = System.nanoTime();
 
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
 
@@ -1150,16 +1155,13 @@ public class KorapIndex {
 
 		// TODO: Get document information from Cache!
 
-		// See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
-		t1 = System.nanoTime();
-
-		for (; i < hits; i++) {
+		for (; i < hits;i++) {
 
 		    if (DEBUG)
 			log.trace("Match Nr {}/{}", i, count);
 
 		    // There are no more spans to find
-		    if (spans.next() != true)
+		    if (!spans.next())
 			break;
 
 		    int localDocID = spans.doc();
@@ -1218,12 +1220,6 @@ public class KorapIndex {
 		    atomicMatches.add(match);
 		};
 
-		// Benchmark till now
-		if (kr.getBenchmarkSearchResults() == null) {
-		    t2 = System.nanoTime();
-		    kr.setBenchmarkSearchResults(t1, t2);
-		};
-
 		// Can be disabled TEMPORARILY
 		while (!cutoff && spans.next()) {
 		    if (limit > 0 && i >= limit)
@@ -1232,17 +1228,23 @@ public class KorapIndex {
 		    // Count hits per resource
 		    if (itemsPerResource > 0) {
 			int localDocID = spans.doc();
+
+			if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+			    break;
 			
 			// IDS are identical
 			if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
-			    if (itemsPerResourceCounter++ >= itemsPerResource)
+			    if (localDocID == -1)
+				break;
+
+			    if (itemsPerResourceCounter++ >= itemsPerResource) {
 				if (spans.skipTo(localDocID + 1) != true) {
 				    break;
-				}
-				else {
-				    itemsPerResourceCounter = 1;
-				    localDocID = spans.doc();
 				};
+				itemsPerResourceCounter = 1;
+				localDocID = spans.doc();
+				// continue;
+			    };
 			}
 
 			// Reset counter
@@ -1251,17 +1253,12 @@ public class KorapIndex {
 
 			oldLocalDocID = localDocID;
 		    };
-
 		    i++;
 		};
 		atomicMatches.clear();
 	    };
 
-	    t1 = System.nanoTime();
-	    kr.setBenchmarkHitCounter(t2, t1);
-	    if (kr.getBenchmarkSearchResults() == null) {
-		kr.setBenchmarkSearchResults(t2, t1);
-	    };
+	    kr.setBenchmark(t1, System.nanoTime());
 
 	    if (itemsPerResource > 0)
 		kr.setItemsPerResource(itemsPerResource);
@@ -1269,7 +1266,7 @@ public class KorapIndex {
 	    kr.setTotalResults(cutoff ? -1 : i);
 	}
 	catch (IOException e) {
-	    kr.setError("There was an IO error");
+	    kr.setError(600, e.getLocalizedMessage());
 	    log.warn( e.getLocalizedMessage() );
 	};
 
@@ -1379,11 +1376,11 @@ public class KorapIndex {
 		};
 	    };
 
-	    mc.setBenchmarkHitCounter(System.nanoTime(), t1);
+	    mc.setBenchmark(t1, System.nanoTime());
 	}
 	catch (IOException e) {
-	    mc.setError("There was an IO error");
-	    log.warn( e.getLocalizedMessage() );
+	    mc.setError(600, e.getLocalizedMessage());
+	    log.warn(e.getLocalizedMessage());
 	};
 
 	mc.commit();

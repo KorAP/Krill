@@ -1,4 +1,5 @@
 package de.ids_mannheim.korap.server;
+
 import java.util.*;
 import java.io.*;
 
@@ -15,11 +16,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 */
 
 @JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class KorapResponse {
     ObjectMapper mapper = new ObjectMapper();
 
     private String errstr, msg, version, node;
-    private int err, unstaged = 0;
+    private int err, unstaged;
+    private int totalResults = 0;
+    private String benchmark;
 
     public KorapResponse (String node, String version) {
 	this.setNode(node);
@@ -27,6 +31,11 @@ public class KorapResponse {
     };
 
     public KorapResponse () {};
+
+    @JsonIgnore
+    public KorapResponse setError (int code, String msg) {
+	return this.setErrstr(msg).setErr(code);
+    };
 
     public KorapResponse setErrstr (String msg) {
 	this.errstr = msg;
@@ -81,6 +90,39 @@ public class KorapResponse {
 	this.unstaged = unstaged;
 	return this;
     };
+
+    public KorapResponse setTotalResults (int i) {
+        this.totalResults = i;
+	return this;
+    };
+
+    public KorapResponse incrTotalResults (int i) {
+        this.totalResults += i;
+	return this;
+    };
+
+
+    public int getTotalResults() {
+        return this.totalResults;
+    };
+
+    @JsonIgnore
+    public KorapResponse setBenchmark (long t1, long t2) {
+        this.benchmark =
+                (t2 - t1) < 100_000_000 ? (((double) (t2 - t1) * 1e-6) + " ms") :
+                        (((double) (t2 - t1) / 1000000000.0) + " s");
+	return this;
+    };
+
+    public KorapResponse setBenchmark (String bm) {
+	this.benchmark = bm;
+	return this;
+    };
+
+    public String getBenchmark () {
+        return this.benchmark;
+    };
+
 
     // Serialize
     public String toJSON () {

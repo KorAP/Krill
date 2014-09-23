@@ -1,12 +1,16 @@
 package de.ids_mannheim.korap;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.SearchContext;
+import de.ids_mannheim.korap.server.KorapResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,16 +20,18 @@ import java.util.List;
 /*
 TODO: Reuse the KorapSearch code for data serialization!
 */
-
-public class KorapResult {
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class KorapResult extends KorapResponse {
     ObjectMapper mapper = new ObjectMapper();
 
+    @JsonIgnore
     public static final short ITEMS_PER_PAGE = 25;
+
     private String query;
 
     private List<KorapMatch> matches;
 
-    private int totalResults = 0;
     private int startIndex = 0;
 
     private SearchContext context;
@@ -37,7 +43,6 @@ public class KorapResult {
             benchmarkHitCounter;
     private String error = null;
     private String warning = null;
-    private String version;
 
     private JsonNode request;
 
@@ -46,7 +51,9 @@ public class KorapResult {
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
     // Empty result
-    public KorapResult() {}
+    public KorapResult() {
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    };
 
     public KorapResult(String query,
                        int startIndex,
@@ -55,7 +62,7 @@ public class KorapResult {
 
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         // mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-        mapper.disable(SerializationFeature.WRITE_NULL_MAP_VALUES);
+        // mapper.disable(SerializationFeature.WRITE_NULL_MAP_VALUES);
 
         this.matches = new ArrayList<>(itemsPerPage);
         this.query = query;
@@ -97,36 +104,10 @@ public class KorapResult {
         return km;
     }
 
-
-    public void setTotalResults(int i) {
-        this.totalResults = i;
-    }
-
-
-    public int getTotalResults() {
-        return this.totalResults;
-    }
-
-
     @Deprecated
     public int totalResults() {
-        return this.totalResults;
+        return this.getTotalResults();
     }
-
-
-    @JsonIgnore
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-
-    @JsonIgnore
-    public String getVersion() {
-        if (this.version == null)
-            return null;
-        return "lucene-backend-" + this.version;
-    }
-
 
     public short getItemsPerPage() {
         return this.itemsPerPage;
@@ -158,7 +139,11 @@ public class KorapResult {
 	    this.warning += "; " + warning;
     };
 
+    public void setWarning (String warning) {
+	this.warning = warning;
+    };
 
+    @JsonIgnore
     public void setRequest(JsonNode request) {
         this.request = request;
     }
@@ -168,25 +153,33 @@ public class KorapResult {
         return this.request;
     }
 
-
+    /*
+    @JsonIgnore
     public void setBenchmarkSearchResults(long t1, long t2) {
         this.benchmarkSearchResults =
                 (t2 - t1) < 100_000_000 ? (((double) (t2 - t1) * 1e-6) + " ms") :
                         (((double) (t2 - t1) / 1000000000.0) + " s");
-    }
+    };
 
+    public void setBenchmarkSearchResults(String bm) {
+	this.benchmarkSearchResults = bm;
+    };
 
     public String getBenchmarkSearchResults() {
         return this.benchmarkSearchResults;
     }
+    */
 
-
+    @JsonIgnore
     public void setBenchmarkHitCounter(long t1, long t2) {
         this.benchmarkHitCounter =
                 (t2 - t1) < 100_000_000 ? (((double) (t2 - t1) * 1e-6) + " ms") :
                         (((double) (t2 - t1) / 1000000000.0) + " s");
-    }
+    };
 
+    public void setBenchmarkHitCounter(String bm) {
+	this.benchmarkHitCounter = bm;
+    };
 
     public String getBenchmarkHitCounter() {
         return this.benchmarkHitCounter;
@@ -196,22 +189,25 @@ public class KorapResult {
 	this.itemsPerResource = value;
     };
 
-    @JsonIgnore
+    public void setItemsPerResource (int value) {
+	this.itemsPerResource = (short) value;
+    };
+
+    // @JsonIgnore
     public short getItemsPerResource () {
 	return this.itemsPerResource;
     };
-
 
     public String getQuery() {
         return this.query;
     }
 
-
+    @JsonIgnore
     public KorapMatch getMatch(int index) {
         return this.matches.get(index);
     }
 
-
+    @JsonIgnore
     public List<KorapMatch> getMatches() {
         return this.matches;
     }
@@ -228,6 +224,7 @@ public class KorapResult {
     }
 
 
+    @JsonIgnore
     public KorapResult setContext(SearchContext context) {
         this.context = context;
         return this;
@@ -250,8 +247,8 @@ public class KorapResult {
 	if (this.itemsPerResource > 0)
 	    json.put("itemsPerResource", this.itemsPerResource);
 
-        if (this.version != null)
-            json.put("version", this.version);
+        if (this.getVersion() != null)
+            json.put("version", this.getVersion());
 
         try {
             return mapper.writeValueAsString(json);
@@ -261,7 +258,5 @@ public class KorapResult {
 
 
         return "{}";
-    }
-
-
+    };
 };

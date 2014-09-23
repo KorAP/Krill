@@ -3,20 +3,15 @@ import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.index.MatchCollector;
 import java.util.*;
 
-public class MatchCollectorDB implements MatchCollector {
+public class MatchCollectorDB extends MatchCollector {
 
     /*
       Todo: In case there are multiple threads searching,
       the list should be synchrinized Collections.synchronizedList()
      */
-
-    private String error;
-    private int doccount = 0;
-    private int matchcount = 0;
-    private int doccollect = 0;
-
     private List matchCollector;
     private int bufferSize;
+    private int doccollect;
 
     private String tableName;
 
@@ -33,31 +28,11 @@ public class MatchCollectorDB implements MatchCollector {
      * Add matches till the bufferSize exceeds - then commit to the database.
      */
     public void add (int uniqueDocID, int matchcount) {
-	this.doccount++;
-	this.matchcount += matchcount;
+	this.incrTotalResultDocs(1);
+	this.incrTotalResults(matchcount);
 	this.matchCollector.add(new int[]{uniqueDocID, matchcount});
 	if (this.doccollect++ > bufferSize)
 	    this.commit();
-    };
-
-    public void setError(String msg) {
-        this.error = msg;
-    };
-
-    public void setBenchmarkHitCounter(long t1, long t2) {
-    };
-
-    public int getMatchCount () {
-	return matchcount;
-    };
-
-    public int getDocumentCount () {
-	return doccount;
-    };
-
-    public String toJSON () {
-	// This may also be a commit!
-	return "{ \"documents\" : " + doccount + ", \"matches\" : " + matchcount + " }";
     };
 
     public void commit () {

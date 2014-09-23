@@ -88,14 +88,10 @@ public class KorapFilter {
 	filter = new BooleanFilter();
     };
 
-
     public KorapFilter (JsonNode json) throws QueryException {
 	filter = this.fromJSON(json, "tokens");
     };
 
-
-    /*
-    */
 	/*
 	String type = json.get("@type").asText();
 	String field = _getField(json);

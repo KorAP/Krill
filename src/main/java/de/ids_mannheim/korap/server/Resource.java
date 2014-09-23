@@ -169,20 +169,26 @@ public class Resource {
 	    // Get query parameters
 	    MultivaluedMap<String,String> qp = uri.getQueryParameters();
 
-	    // Build Collection based on a list of uids
-	    KorapCollection kc = new KorapCollection(
-	      qp.get("uid").toArray(new String[0])
-            );
+	    if (qp.get("uid") != null) {
 
-	    // TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
+		// Build Collection based on a list of uids
+		List<String> uids = qp.get("uid");
+		KorapCollection kc = new KorapCollection();
+		kc.filterUIDs(uids.toArray(new String[uids.size()]));
 
-	    // Override old collection
-	    ks.setCollection(kc);
+		// TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
 
-	    // Only return the first match per text
-	    ks.setItemsPerResource(1);
+		// Override old collection
+		ks.setCollection(kc);
 
-            return ks.run(index).toJSON();
+		// Only return the first match per text
+		ks.setItemsPerResource(1);
+
+		return ks.run(index).toJSON();
+	    };
+	    KorapResult kr = new KorapResult();
+	    kr.setError("No UUIDs given");
+	    return kr.toJSON();
 	};
 	// Response with error message
         KorapResult kr = new KorapResult();

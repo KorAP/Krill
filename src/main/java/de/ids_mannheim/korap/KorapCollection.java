@@ -83,20 +83,7 @@ public class KorapCollection {
 	this.filter = new ArrayList<FilterOperation>(5);
     };
 
-    // Create a collection based on UIDs
-    public KorapCollection (String ... uids) {
-	this.filter = new ArrayList<FilterOperation>(5);
-	BooleanFilter filter = new BooleanFilter();
-	if (DEBUG)
-	    log.debug("UID based collection: {},{}", uids[0], uids[1]);
-	filter.or("UID", uids);
-	if (DEBUG)
-	    log.debug("UID based filter: {}", filter.toString());
-	this.filter(filter);
-    };
-
-
-    public void fromJSON(JsonNode json) throws QueryException {
+    public void fromJSON (JsonNode json) throws QueryException {
 	String type = json.get("@type").asText();
 
 	if (type.equals("korap:meta-filter")) {
@@ -124,10 +111,12 @@ public class KorapCollection {
     public KorapCollection filter (BooleanFilter filter) {
 	if (DEBUG)
 	    log.trace("Added filter: {}", filter.toString());
+
 	if (filter == null) {
 	    log.warn("No filter is given");
 	    return this;
 	};
+
 	Filter f = (Filter) new QueryWrapperFilter(filter.toQuery());
 	if (f == null) {
 	    log.warn("Filter can't be wrapped");
@@ -142,6 +131,16 @@ public class KorapCollection {
 	this.filterCount++;
 	return this;
     };
+
+    // Filter based on UIDs
+    public KorapCollection filterUIDs (String ... uids) {
+	BooleanFilter filter = new BooleanFilter();
+	filter.or("UID", uids);
+	if (DEBUG)
+	    log.debug("UID based filter: {}", filter.toString());
+	return this.filter(filter);
+    };
+
 
     public KorapCollection filter (KorapFilter filter) {
 	return this.filter(filter.toBooleanFilter());

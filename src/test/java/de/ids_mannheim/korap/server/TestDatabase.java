@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-public class DBTest {
+public class TestDatabase {
 
     private Connection conn;
     private Statement stat;
@@ -73,8 +73,8 @@ public class DBTest {
 	mc.add(9,10);
 	mc.add(16,90);
 	mc.commit();
-	assertEquals(mc.getMatchCount(), 109);
-	assertEquals(mc.getDocumentCount(), 4);
+	assertEquals(mc.getTotalResults(), 109);
+	assertEquals(mc.getTotalResultDocs(), 4);
     };
 
     @After
