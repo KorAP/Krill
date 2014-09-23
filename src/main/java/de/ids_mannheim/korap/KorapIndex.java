@@ -1072,7 +1072,7 @@ public class KorapIndex {
 	return this.search(collection, ks);
     };
 
-
+    // To be honest - the collection is already part of the KorapSearch! 
     public KorapResult search (KorapCollection collection, KorapSearch ks) {
 	if (DEBUG)
 	    log.trace("Start search");
@@ -1279,7 +1279,7 @@ public class KorapIndex {
 				   KorapSearch ks,
 				   MatchCollector mc) {
 	if (DEBUG)
-	    log.trace("Start collecting matches");
+	    log.trace("Start collecting");
 
 	// Init term context
 	this.termContexts = new HashMap<Term, TermContext>();
@@ -1294,7 +1294,7 @@ public class KorapIndex {
 	// See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
 	long t1 = System.nanoTime();
 
-	// Only load ID
+	// Only load UID
 	HashSet<String> fieldsToLoadLocal = new HashSet<>();
 	fieldsToLoadLocal.add("UID");
 
@@ -1359,23 +1359,17 @@ public class KorapIndex {
 		    }
 		    else {
 			matchcount++;
-			// atomicMatches.add(match);
 		    };
 		};
 
-		/*
-		if (!atomicMatches.isEmpty()) {
-		    // Add matches to the collector
-		    mc.add(uniqueDocID, atomicMatches);
-		    atomicMatches.clear();
-		};
-		*/
+		// Add count to collector
 		if (matchcount > 0) {
 		    mc.add(uniqueDocID, matchcount);
 		    matchcount = 0;
 		};
 	    };
 
+	    // Benchmark the collector
 	    mc.setBenchmark(t1, System.nanoTime());
 	}
 	catch (IOException e) {

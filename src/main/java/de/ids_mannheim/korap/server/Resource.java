@@ -95,9 +95,8 @@ public class Resource {
 	KorapIndex index = KorapNode.getIndex();
 	KorapResponse kresp = new KorapResponse(KorapNode.getName(), index.getVersion());
 
-	// kresp.setErr();
 	if (index == null)
-	    return kresp.setErrstr("Unable to find index").toJSON();
+	    return kresp.setError(601, "Unable to find index").toJSON();
 
 	String ID = "Unknown";
 	int unstaged = 0;
@@ -133,6 +132,9 @@ public class Resource {
 	KorapIndex index = KorapNode.getIndex();
 	KorapResponse kresp = new KorapResponse(KorapNode.getName(), index.getVersion());
 
+	if (index == null)
+	    return kresp.setError(601, "Unable to find index").toJSON();
+
 	if (version == null)
 	    version = index.getVersion();
 
@@ -149,8 +151,10 @@ public class Resource {
 	return kresp.setMsg("Unstaged data was committed").toJSON();
     };
 
+
+
     /**
-     * Find matches in the lucene index and return them as results.
+     * Find matches in the lucene index based on UIDs and return one match per doc.
      *
      * @param text_id
      */
@@ -187,14 +191,84 @@ public class Resource {
 		return ks.run(index).toJSON();
 	    };
 	    KorapResult kr = new KorapResult();
-	    kr.setError("No UUIDs given");
+	    kr.setNode(KorapNode.getName());
+	    kr.setError(610, "No UUIDs given");
 	    return kr.toJSON();
 	};
-	// Response with error message
-        KorapResult kr = new KorapResult();
-        kr.setError("Index not found");
-        return kr.toJSON();
+
+	return new KorapResponse(
+	    KorapNode.getName(),
+	    index.getVersion()
+        ).setError(601, "Unable to find index").toJSON();
     };
+
+
+    /**
+     * Collect matches and aggregate the UIDs plus matchcount in the database.
+     *
+     * @param text_id
+     */
+    /*
+    @POST
+    @Path("/collect/{resultID}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String find (String json, @Context UriInfo uri) {
+
+	// Get index
+	KorapIndex index = KorapNode.getIndex();
+
+	// No index found
+	if (index == null)
+  	    return new KorapResponse(
+	        KorapNode.getName(),
+	        index.getVersion()
+            ).setError(601, "Unable to find index").toJSON();
+
+	// Get the database
+	// Create a database based matchcollector
+
+
+	// TODO: Only search in self documents (REPLICATION FTW!)
+
+	MatchCollector result = index.collect(KorapCollection, KorapSearch, MatchCollector);
+
+
+		// Build Collection based on a list of uids
+		List<String> uids = qp.get("uid");
+		KorapCollection kc = new KorapCollection();
+		kc.filterUIDs(uids.toArray(new String[uids.size()]));
+
+		// TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
+
+		// Override old collection
+		ks.setCollection(kc);
+
+		// Only return the first match per text
+		ks.setItemsPerResource(1);
+
+		return ks.run(index).toJSON();
+	    };
+	    KorapResult kr = new KorapResult();
+	    kr.setNode(KorapNode.getName());
+	    kr.setError(610, "No UUIDs given");
+	    return kr.toJSON();
+	};
+
+	return new KorapResponse(
+	    KorapNode.getName(),
+	    index.getVersion()
+        ).setError(601, "Unable to find index").toJSON();
+    };
+*/
+
+
+
+
+
+    /* These routes are still wip: */
+
+
 
 
     /**
@@ -212,13 +286,16 @@ public class Resource {
 	KorapIndex index = KorapNode.getIndex();
 
 	// Search index
-        if (index != null)
-            return new KorapSearch(json).run(index).toJSON();
+        if (index != null) {
+            KorapResult kr = new KorapSearch(json).run(index);
+	    kr.setNode(KorapNode.getName());
+	    return kr.toJSON();
+	};
 
-	// Response with error message
-        KorapResult kr = new KorapResult();
-        kr.setError("Index not found");
-        return kr.toJSON();
+	return new KorapResponse(
+	    KorapNode.getName(),
+	    index.getVersion()
+        ).setError(601, "Unable to find index").toJSON();
     };
 
     @GET
@@ -279,6 +356,7 @@ public class Resource {
 
 	    // Nothing found
 	    catch (QueryException qe) {
+		// Todo: Make KorapMatch rely on KorapResponse!
                 KorapMatch km = new KorapMatch();
                 km.setError(qe.getMessage());
                 return km.toJSON();

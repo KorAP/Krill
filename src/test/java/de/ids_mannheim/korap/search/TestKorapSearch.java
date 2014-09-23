@@ -168,7 +168,7 @@ public class TestKorapSearch {
 	KorapResult kr = new KorapSearch("{ query").run(ki);
 
 	assertEquals(0, kr.getTotalResults());
-	assertNotNull(kr.getError());
+	assertNotNull(kr.getErr());
     };
 
 
@@ -529,7 +529,7 @@ public class TestKorapSearch {
 	String json = getString(getClass().getResource("/queries/bsp-bug.jsonld").getFile());
 
 	KorapResult kr = new KorapSearch(json).run(ki);
-	assertEquals(kr.getError(), "Operation needs exactly two operands");
+	assertEquals(kr.getErrstr(), "Operation needs exactly two operands");
     };
 
 

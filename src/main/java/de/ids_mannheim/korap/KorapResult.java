@@ -119,6 +119,7 @@ public class KorapResult extends KorapResponse {
         return this.itemsPerPage;
     }
 
+    /*
 
     public String getError() {
         return this.error;
@@ -127,6 +128,8 @@ public class KorapResult extends KorapResponse {
     public void setError(String msg) {
         this.error = msg;
     }
+
+    */
 
     public String getWarning() {
         return this.warning;

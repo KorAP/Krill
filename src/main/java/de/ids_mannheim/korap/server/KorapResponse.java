@@ -34,7 +34,16 @@ public class KorapResponse {
 
     @JsonIgnore
     public KorapResponse setError (int code, String msg) {
-	return this.setErrstr(msg).setErr(code);
+	this.err = code;
+	this.errstr = msg;
+	return this;
+    };
+
+    @JsonIgnore
+    public KorapResponse setError (String msg) {
+	this.err = 699;
+	this.errstr = msg;
+	return this;
     };
 
     public KorapResponse setErrstr (String msg) {
