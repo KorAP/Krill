@@ -1027,12 +1027,11 @@ public class KorapIndex {
      * Search in the index.
      */
     public KorapResult search (SpanQuery query) {
-	return this.search(new KorapCollection(this), new KorapSearch(query));
+	return this.search(new KorapSearch(query));
     };
 
     public KorapResult search (SpanQuery query, short count) {
 	return this.search(
-	    new KorapCollection(this),
 	    new KorapSearch(query).setCount(count)
         );
     };
@@ -1050,12 +1049,7 @@ public class KorapIndex {
 	KorapSearch ks = new KorapSearch(query);
 	ks.setStartIndex(startIndex).setCount(count);
 	ks.setContext(new SearchContext(leftTokenContext, leftContext, rightTokenContext, rightContext));	
-	return this.search(new KorapCollection(this), ks);
-    };
-
-    public KorapResult search (KorapSearch ks) {
-	// TODO: This might leak
-	return this.search(new KorapCollection(this), ks);
+	return this.search(ks);
     };
 
     @Deprecated
@@ -1068,16 +1062,27 @@ public class KorapIndex {
 			       boolean rightTokenContext,
 			       short rightContext) {
 	KorapSearch ks = new KorapSearch(query);
-	ks.setContext(new SearchContext(leftTokenContext, leftContext, rightTokenContext, rightContext));	
-	return this.search(collection, ks);
+	ks.setContext(
+            new SearchContext(
+                leftTokenContext,
+		leftContext,
+		rightTokenContext,
+		rightContext
+            )
+        );
+	ks.setCollection(collection);
+	return this.search(ks);
     };
 
     // To be honest - the collection is already part of the KorapSearch! 
-    public KorapResult search (KorapCollection collection, KorapSearch ks) {
+    public KorapResult search (KorapSearch ks) {
 	if (DEBUG)
 	    log.trace("Start search");
 
 	this.termContexts = new HashMap<Term, TermContext>();
+
+	KorapCollection collection = ks.getCollection();
+	collection.setIndex(this);
 
 	// Get the spanquery from the KorapSearch object
 	SpanQuery query = ks.getQuery();
@@ -1275,11 +1280,12 @@ public class KorapIndex {
 
 
     // Collect matches
-    public MatchCollector collect (KorapCollection collection,
-				   KorapSearch ks,
-				   MatchCollector mc) {
+    public MatchCollector collect (KorapSearch ks, MatchCollector mc) {
 	if (DEBUG)
 	    log.trace("Start collecting");
+
+	KorapCollection collection = ks.getCollection();
+	collection.setIndex(this);
 
 	// Init term context
 	this.termContexts = new HashMap<Term, TermContext>();
@@ -1377,7 +1383,7 @@ public class KorapIndex {
 	    log.warn(e.getLocalizedMessage());
 	};
 
-	mc.commit();
+	mc.close();
 	return mc; 
     };
 };

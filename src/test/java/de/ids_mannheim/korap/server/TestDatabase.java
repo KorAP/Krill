@@ -10,9 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
 
-/*
-  bitbucket.org/xerial/sqlite-jdbc
-*/
+import com.mchange.v2.c3p0.*;
 
 import org.junit.After;
 import org.junit.Before;
@@ -64,6 +62,64 @@ public class TestDatabase {
 
 	rs.close();
     };
+
+    @Test
+    public void TestDatabasePool () throws Exception {
+	ComboPooledDataSource cpds = new ComboPooledDataSource();
+	// Connect to a temporary file instead of a in-memory file
+	cpds.setDriverClass("org.sqlite.JDBC");
+	cpds.setJdbcUrl("jdbc:sqlite:");
+	// cpds.setUser(xxx);
+	// cpds.setPassword(xxx);
+	cpds.setMaxStatements(100);
+	// cpds.autoCommitOnClose(true);
+	// cpds.aquireRetryDelay(100);
+
+	// This is part of the match collector
+	this.conn = cpds.getConnection();
+	this.stat = conn.createStatement();
+	stat.executeUpdate(
+            "CREATE TABLE IF NOT EXISTS result_a (text_id INTEGER, match_count INTEGER);"
+	);
+	conn.setAutoCommit(false);
+	PreparedStatement prep = this.conn.prepareStatement(
+	  "INSERT INTO result_a VALUES (?, ?);"
+        );
+	prep.setInt(1, 5);
+	prep.setInt(2, 8000);
+	prep.addBatch();
+	prep.executeBatch();
+
+	ResultSet rs = stat.executeQuery("SELECT * FROM result_a;");
+
+	rs.next();
+	
+	assertEquals(rs.getInt("text_id"), 5);
+	assertEquals(rs.getInt("match_count"), 8000);
+
+	rs.close();
+
+	this.conn.close();
+
+
+	MatchCollectorDB mc = new MatchCollectorDB(2000, "result_a");
+	mc.openConnection("sqlite", cpds);
+
+
+	mc.add(9, 5000);
+	mc.add(12, 6785);
+	mc.add(39, 56576);
+
+	mc.close();
+
+	cpds.close();
+
+	/*
+	this.stat = this.conn.createStatement();
+	stat.executeUpdate("CREATE TABLE IF NOT EXISTS result_a (text_id INTEGER, match_count INTEGER);");
+	*/
+    };
+
 
     @Test
     public void TestMatchCollectorDB () throws Exception {

@@ -289,7 +289,7 @@ public class KorapSearch {
 	};
 
 	this.getCollection().setIndex(ki);
-	KorapResult kr = ki.search(this.getCollection(), this);
+	KorapResult kr = ki.search(this);
 	kr.setRequest(this.request);
 	if (this.warning != null)
 	    kr.addWarning(this.warning);

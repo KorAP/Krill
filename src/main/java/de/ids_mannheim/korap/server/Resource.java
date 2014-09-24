@@ -208,12 +208,11 @@ public class Resource {
      *
      * @param text_id
      */
-    /*
     @POST
     @Path("/collect/{resultID}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String find (String json, @Context UriInfo uri) {
+    public String collect (String json, @Context UriInfo uri) {
 
 	// Get index
 	KorapIndex index = KorapNode.getIndex();
@@ -225,14 +224,17 @@ public class Resource {
 	        index.getVersion()
             ).setError(601, "Unable to find index").toJSON();
 
+
+	return "";
+
 	// Get the database
 	// Create a database based matchcollector
 
 
 	// TODO: Only search in self documents (REPLICATION FTW!)
 
-	MatchCollector result = index.collect(KorapCollection, KorapSearch, MatchCollector);
-
+	//MatchCollector result = index.collect(KorapCollection, KorapSearch, MatchCollector);
+	/*
 
 		// Build Collection based on a list of uids
 		List<String> uids = qp.get("uid");
@@ -259,8 +261,8 @@ public class Resource {
 	    KorapNode.getName(),
 	    index.getVersion()
         ).setError(601, "Unable to find index").toJSON();
-    };
 */
+    };
 
 
 
