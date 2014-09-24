@@ -1,5 +1,8 @@
 package de.ids_mannheim.korap;
 
+import java.util.*;
+import java.io.*;
+
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -7,13 +10,13 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URI;
+import java.beans.PropertyVetoException;
 
 import de.ids_mannheim.korap.KorapIndex;
 import org.apache.lucene.store.MMapDirectory;
 
+import com.mchange.v2.c3p0.*;
 
 /**
  * Standalone REST-Service for the Lucene Search Backend.
@@ -23,35 +26,58 @@ import org.apache.lucene.store.MMapDirectory;
 public class KorapNode {
 
     // Base URI the Grizzly HTTP server will listen on
-    public static final String BASE_URI = "http://localhost:8080/";
+    public static String BASE_URI = "http://localhost:8080/";
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
 
     // Index
     private static KorapIndex index;
+    private static ComboPooledDataSource cpds;
+    private static String path;
+    private static String name = "unknown";
 
-    /*
-      Todo: Use korap.config for paths to indexDirectory
-     */
-    private static String path =
-	new String("/home/ndiewald/Repositories/korap/KorAP-modules/KorAP-lucene-index/sandbox/index");
+    private static String dbUser, dbPwd;
 
-    private static String name = "tanja";
-
+    private static String dbClass = "org.sqlite.JDBC";
+    private static String dbURL   = "jdbc:sqlite:";
 
     /*
      * Todo: Add shutdown hook,
+     * Then also close cdps.close();
      * see: https://10.0.10.12/trac/korap/browser/KorAP-modules/KorAP-REST/src/main/java/de/ids_mannheim/korap/web/Application.java
      * https://10.0.10.12/trac/korap/browser/KorAP-modules/KorAP-REST/src/main/java/de/ids_mannheim/korap/web/ShutdownHook.java
      */
-
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
      * @return Grizzly HTTP server.
      */
     public static HttpServer startServer() {
+
+	// Load configuration
+	try {
+	    InputStream file = new FileInputStream(
+	      KorapNode.class.getClassLoader().getResource("server.properties").getFile()
+            );
+	    Properties prop = new Properties();
+	    prop.load(file);
+
+	    // Node properties
+	    path     = prop.getProperty("lucene.indexDir", path);
+	    name     = prop.getProperty("lucene.node.name", name);
+	    BASE_URI = prop.getProperty("lucene.node.baseURI", BASE_URI);
+
+	    // Database properties
+	    dbUser  = prop.getProperty("lucene.db.user",    dbUser);
+	    dbPwd   = prop.getProperty("lucene.db.pwd",     dbPwd);
+	    dbClass = prop.getProperty("lucene.db.class",   dbClass);
+	    dbURL   = prop.getProperty("lucene.db.jdbcURL", dbURL);
+
+	}
+	catch (IOException e) {
+	    log.error(e.getLocalizedMessage());
+	};
 
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
@@ -96,6 +122,32 @@ public class KorapNode {
     public static String getName () {
 	return name;
     };
+
+    public static String getListener () {
+	return BASE_URI;
+    };
+
+    public static ComboPooledDataSource getDBPool () {
+	if (cpds != null)
+	    return cpds;
+
+	try {
+	    cpds = new ComboPooledDataSource();
+	    cpds.setDriverClass(dbClass);
+	    cpds.setJdbcUrl(dbURL);
+	    if (dbUser != null)
+		cpds.setUser(dbUser);
+	    if (dbPwd != null)
+		cpds.setPassword(dbPwd);
+	    cpds.setMaxStatements(100);
+	    return cpds;
+	}
+	catch (PropertyVetoException e) {
+	    log.error(e.getLocalizedMessage());
+	};
+	return null;
+    };
+
 
     // Get Index
     public static KorapIndex getIndex () {

@@ -29,6 +29,8 @@ import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.server.KorapResponse;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.index.MatchCollector;
+import de.ids_mannheim.korap.index.collector.MatchCollectorDB;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -36,7 +38,10 @@ import java.util.regex.Matcher;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import com.mchange.v2.c3p0.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.sql.SQLException;
 
 /*
   http://www.vogella.com/tutorials/REST/article.html
@@ -56,6 +61,8 @@ public class Resource {
     static Pattern p = Pattern.compile("\\s*(?i:false|null)\\s*");
     private String version;
 
+    // Logger
+    private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
 
     private static boolean isNull (String value) {
 	if (value == null)
@@ -67,6 +74,17 @@ public class Resource {
 
 	return false;
     };
+
+    @GET
+    @Path("/info")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String info () {
+	KorapIndex index = KorapNode.getIndex();
+	KorapResponse kresp = new KorapResponse(KorapNode.getName(), index.getVersion());
+	kresp.setListener(KorapNode.getListener());
+	return kresp.setMsg("Up and running!").toJSON();
+    };
+    
 
     /**
      * Add new documents to the index
@@ -208,11 +226,13 @@ public class Resource {
      *
      * @param text_id
      */
-    @POST
+    @PUT
     @Path("/collect/{resultID}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String collect (String json, @Context UriInfo uri) {
+    public String collect (String json,
+			   @PathParam("resultID") String resultID,
+			   @Context UriInfo uri) {
 
 	// Get index
 	KorapIndex index = KorapNode.getIndex();
@@ -224,44 +244,27 @@ public class Resource {
 	        index.getVersion()
             ).setError(601, "Unable to find index").toJSON();
 
-
-	return "";
-
 	// Get the database
-	// Create a database based matchcollector
+	try {
+	    MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_" + resultID);
+	    mc.setDBPool("mysql", KorapNode.getDBPool());
 
+	    // TODO: Only search in self documents (REPLICATION FTW!)
 
-	// TODO: Only search in self documents (REPLICATION FTW!)
+	    KorapSearch ks = new KorapSearch(json);
+	    MatchCollector result = index.collect(ks, mc);
 
-	//MatchCollector result = index.collect(KorapCollection, KorapSearch, MatchCollector);
-	/*
-
-		// Build Collection based on a list of uids
-		List<String> uids = qp.get("uid");
-		KorapCollection kc = new KorapCollection();
-		kc.filterUIDs(uids.toArray(new String[uids.size()]));
-
-		// TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
-
-		// Override old collection
-		ks.setCollection(kc);
-
-		// Only return the first match per text
-		ks.setItemsPerResource(1);
-
-		return ks.run(index).toJSON();
-	    };
-	    KorapResult kr = new KorapResult();
-	    kr.setNode(KorapNode.getName());
-	    kr.setError(610, "No UUIDs given");
-	    return kr.toJSON();
+	    result.setNode(KorapNode.getName());
+	    return result.toJSON();
+	}
+	catch (SQLException e) {
+	    log.error(e.getLocalizedMessage());
 	};
 
 	return new KorapResponse(
 	    KorapNode.getName(),
 	    index.getVersion()
-        ).setError(601, "Unable to find index").toJSON();
-*/
+        ).setError("Unable to connect to database").toJSON();
     };
 
 

@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class KorapResponse {
     ObjectMapper mapper = new ObjectMapper();
 
-    private String errstr, msg, version, node;
+    private String errstr, msg, version, node, listener;
     private int err, unstaged;
-    private int totalResults = 0;
+    private int totalResults;
     private String benchmark;
 
     public KorapResponse (String node, String version) {
@@ -132,6 +132,14 @@ public class KorapResponse {
         return this.benchmark;
     };
 
+    public KorapResponse setListener (String listener) {
+	this.listener = listener;
+	return this;
+    };
+
+    public String getListener () {
+	return this.listener;
+    }
 
     // Serialize
     public String toJSON () {
