@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * @author Nils Diewald
  *
- * A VCollection of methods to deal with Bytes and Byte arrays.
+ * A collection of methods to deal with Bytes and Byte arrays.
  */
 public class KorapByte {
 

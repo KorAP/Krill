@@ -154,7 +154,7 @@ public class KorapIndex {
 
     {
 	Properties prop = new Properties();
-	URL file = getClass().getClassLoader().getResource("index.properties");
+	URL file = getClass().getResource("/index.properties");
 
 	if (file != null) {
 	    String f = file.getFile();
