@@ -85,8 +85,17 @@ public class KorapQuery {
 		throw new QueryException("Boundary definition is not valid");
 	    };
 
-	    min = json.get("min").asInt(defaultMin);
-	    max = json.get("max").asInt(defaultMax);
+	    // Set min boundary
+	    if (json.has("min"))
+		this.min = json.get("min").asInt(defaultMin);
+	    else
+		this.min = defaultMin;
+
+	    // Set max boundary
+	    if (json.has("max"))
+		this.max = json.get("max").asInt(defaultMax);
+	    else
+		this.max = defaultMax;
 
 	    if (DEBUG)
 		log.trace("Found korap:boundary with {}:{}");
@@ -136,14 +145,17 @@ public class KorapQuery {
 	    if (DEBUG)
 		log.trace("Found {} group", operation);
 
+	    if (!json.has("operands"))
+		throw new QueryException("Operation needs operand list");
+
 	    // Get all operands
 	    JsonNode operands = json.get("operands");
 
+	    if (!operands.isArray())
+		throw new QueryException("Operation needs operand list");
+
 	    if (DEBUG)
 		log.trace("Operands are {}", operands);
-
-	    if (!json.has("operands") || !operands.isArray())
-		throw new QueryException("Operation needs operand list");
 
 	    switch (operation) {
 
@@ -278,15 +290,17 @@ public class KorapQuery {
 			        "Text based distances are not supported yet"
                             );
 
-			int min, max;
+			int min = 0, max = 100;
 			if (constraint.has("boundary")) {
-			    Boundary b = new Boundary(constraint.get("boundary"), 1,1);
+			    Boundary b = new Boundary(constraint.get("boundary"), 0,100);
 			    min = b.min;
 			    max = b.max;
 			}
 			else {
-			    min = constraint.get("min").asInt(1);
-			    max = constraint.get("max").asInt(1);
+			    if (constraint.has("min"))
+				min = constraint.get("min").asInt(0);
+			    if (constraint.has("max"))
+				max = constraint.get("max").asInt(100);
 			};
 
 			sseqqw.withConstraint(min, max, unit);

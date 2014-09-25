@@ -274,6 +274,18 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "spanNext(spanOr([tokens:s:der, spanNext(tokens:s:der, spanRepetition(tokens:cnx/p:A{1,2}))]), tokens:tt/p:NN)");
     };
 
+
+    @Test
+    public void queryJSONboundaryBug () {
+	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp-boundary.jsonld").getFile());
+
+	// Tal []{1,} Wald
+	assertEquals(sqwi.toQuery().toString(), "spanDistance(tokens:s:Tal, tokens:s:Wald, [(w[2:100], ordered, notExcluded)])");
+    };
+
+
+
+
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();
 	try {
