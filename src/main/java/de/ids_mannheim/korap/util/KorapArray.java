@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * @author Nils Diewald
  *
- * A collection of Array specific utilities for the Korap project.
+ * A VCollection of Array specific utilities for the Korap project.
  */
 public class KorapArray {
 

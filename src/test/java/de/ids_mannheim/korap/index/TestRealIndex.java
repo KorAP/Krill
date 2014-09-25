@@ -47,7 +47,7 @@ public class TestRealIndex {
 	// Construct filter generator
 	KorapFilter kf = new KorapFilter();
 
-	// The virtual collection consists of all documents that have
+	// The virtual VCollection consists of all documents that have
 	// the textClasses "reisen" and "freizeit"
 	//	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
 

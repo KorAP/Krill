@@ -1013,9 +1013,9 @@ public class WithinSpans extends Spans {
      * this method may not be called at all for performance reasons. An ordered
      * SpanQuery does not lazy load, so if you have payloads in your index and
      * you do not want ordered SpanNearQuerys to collect payloads, you can
-     * disable collection with a constructor option.<br>
+     * disable VCollection with a constructor option.<br>
      * <br>
-     * Note that the return type is a collection, thus the ordering should not be relied upon.
+     * Note that the return type is a VCollection, thus the ordering should not be relied upon.
      * <br/>
      * @lucene.experimental
      *

@@ -1,7 +1,5 @@
 package de.ids_mannheim.korap.query.spans;
 
-import de.ids_mannheim.korap.query.spans.KorapSpan;
-
 import java.util.Collection;
 
 public class KorapLongSpan extends KorapSpan {
