@@ -189,8 +189,9 @@ public class PositionsToOffset {
 
 		    Term term = new Term(field, sb.toString());
 		    sb.setLength(1);
-
-		    if (termsEnum.seekExact(term.bytes(), true)) {
+		    
+		    // Set the position in the iterator to the term that is seeked
+		    if (termsEnum.seekExact(term.bytes())) {
 			
 			if (DEBUG)
 			    log.trace("Search for {} in doc {} with pos {}",

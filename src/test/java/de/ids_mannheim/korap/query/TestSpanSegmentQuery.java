@@ -34,10 +34,10 @@ public class TestSpanSegmentQuery {
 	assertEquals("spanSegment(field:a, field:b)", ssquery.toQuery().toString());
 
 	ssquery.without("c");
-	assertEquals("spanNot(spanSegment(field:a, field:b), field:c)", ssquery.toQuery().toString());
+	assertEquals("spanNot(spanSegment(field:a, field:b), field:c, 0, 0)", ssquery.toQuery().toString());
 
 	ssquery.without("d");
-	assertEquals("spanNot(spanSegment(field:a, field:b), spanOr([field:c, field:d]))", ssquery.toQuery().toString());
+	assertEquals("spanNot(spanSegment(field:a, field:b), spanOr([field:c, field:d]), 0, 0)", ssquery.toQuery().toString());
     };
 
 
@@ -62,11 +62,11 @@ public class TestSpanSegmentQuery {
 
 	ssquery.without(new SpanRegexQueryWrapper("field", "x.?y"));
 
-	assertEquals("spanNot(spanSegment(spanSegment(spanSegment(spanSegment(field:a, SpanMultiTermQueryWrapper(field:/a.*b/)), field:c), field:d), field:e), SpanMultiTermQueryWrapper(field:/x.?y/))", ssquery.toQuery().toString());
+	assertEquals("spanNot(spanSegment(spanSegment(spanSegment(spanSegment(field:a, SpanMultiTermQueryWrapper(field:/a.*b/)), field:c), field:d), field:e), SpanMultiTermQueryWrapper(field:/x.?y/), 0, 0)", ssquery.toQuery().toString());
 
 	ssquery.without(new SpanRegexQueryWrapper("field", "z{5,9}"));
 
-	assertEquals("spanNot(spanSegment(spanSegment(spanSegment(spanSegment(field:a, SpanMultiTermQueryWrapper(field:/a.*b/)), field:c), field:d), field:e), spanOr([SpanMultiTermQueryWrapper(field:/x.?y/), SpanMultiTermQueryWrapper(field:/z{5,9}/)]))", ssquery.toQuery().toString());
+	assertEquals("spanNot(spanSegment(spanSegment(spanSegment(spanSegment(field:a, SpanMultiTermQueryWrapper(field:/a.*b/)), field:c), field:d), field:e), spanOr([SpanMultiTermQueryWrapper(field:/x.?y/), SpanMultiTermQueryWrapper(field:/z{5,9}/)]), 0, 0)", ssquery.toQuery().toString());
 
     };
 

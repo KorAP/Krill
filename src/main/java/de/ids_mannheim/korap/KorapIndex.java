@@ -423,8 +423,8 @@ public class KorapIndex {
 	    // Todo: Maybe reuse a termsEnum!
 	    final TermsEnum termsEnum = terms.iterator(null);
 
-	    // Set the positioon in the iterator to the term that is seeked
-	    if (termsEnum.seekExact(term.bytes(), true)) {
+	    // Set the position in the iterator to the term that is seeked
+	    if (termsEnum.seekExact(term.bytes())) {
 
 		// Start an iterator to fetch all payloads of the term
 		DocsAndPositionsEnum docs = termsEnum.docsAndPositions(
@@ -1213,7 +1213,7 @@ public class KorapIndex {
 		    ); // new KorapMatch();
 
 		    if (spans.isPayloadAvailable())
-			match.addPayload(spans.getPayload());
+			match.addPayload((List<byte[]>) spans.getPayload());
 
 		    match.internalDocID = docID;
 		    match.populateDocument(doc, field, fieldsToLoadLocal);

@@ -101,30 +101,13 @@
       <artifactId>c3p0</artifactId>
       <version>0.9.1.2</version>
     </dependency>
-
-    <!-- solr dependency -->
-    <!--
-    <dependency>
-      <artifactId>solr-core</artifactId>
-      <groupId>org.apache.solr</groupId>
-      <version>4.3.1</version>
-      <type>jar</type>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <artifactId>solr-test-framework</artifactId>
-      <groupId>org.apache.solr</groupId>
-      <version>4.3.1</version>
-    </dependency>
-    -->
     
     <!-- Lucene core dependency -->
     <dependency>
       <artifactId>lucene-core</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
-      <version>4.3.1</version>
+      <version>4.5.1</version>
     </dependency>
 
     <!-- Lucene queryparser dependency -->
@@ -132,7 +115,7 @@
       <artifactId>lucene-queryparser</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
-      <version>4.3.1</version>
+      <version>4.5.1</version>
     </dependency>
 
     <!-- Lucene analyzers dependency -->
@@ -156,15 +139,6 @@
       <version>1.0</version>
     </dependency>
 
-    <!-- servlet dependency -->
-    <!--
-    <dependency>
-      <artifactId>servlet-api</artifactId>
-      <groupId>javax.servlet</groupId>
-      <version>2.5</version>
-    </dependency>
-    -->
-
     <!-- Jersey -->
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
@@ -176,17 +150,6 @@
       <artifactId>jersey-freemarker</artifactId>
       <version>1.13-b01</version>
     </dependency>
-
-    <!-- Multipart support for Jersey -->
-    <!--
-	See
-	http://www.mkyong.com/webservices/jax-rs/file-upload-example-in-jersey/
-    <dependency>
-      <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-multipart</artifactId>
-      <version>1.13</version>
-    </dependency>
-    -->
 
     <!-- JSON support -->
     <dependency>
@@ -200,17 +163,17 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.2.2</version>
+      <version>2.4.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>2.2.2</version>
+      <version>2.4.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.2.2</version>
+      <version>2.4.0</version>
     </dependency>
   </dependencies>
 
@@ -232,25 +195,19 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2-beta-5</version>
-        <configuration>
-	  <!--
-              <finalName>KorapTools</finalName>
-	      -->
-	    
+        <configuration>	    
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
               <mainClass>de.ids_mannheim.korap.KorapIndexer</mainClass>
             </manifest>
           </archive>
-        
           <appendAssemblyId>false</appendAssemblyId>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
         </configuration>
         <executions>
-	  
           <execution>
             <id>KorapIndexer</id>
             <phase>package</phase>
@@ -268,7 +225,7 @@
           </execution>
 	</executions>
       </plugin>
-      
+ 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -298,7 +255,6 @@
           <mainClass>de.ids_mannheim.korap.KorapNode</mainClass>
         </configuration>
       </plugin>
-
     </plugins>
 
     <resources>

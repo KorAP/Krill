@@ -195,9 +195,14 @@ public class KorapMatch extends KorapDocument {
     // TODO: Here are offsets and highlight offsets!
     // <> payloads have 12 bytes (iii) or 8!?
     // highlightoffsets have 11 bytes (iis)!
-    public void addPayload (Collection<byte[]> payload) {
+    public void addPayload (List<byte[]> payload) {
+
+	// Reverse to make embedding of highlights correct
+	Collections.reverse(payload);
 	try {
 	    ByteBuffer bb = ByteBuffer.allocate(10);
+
+	    // TODO: REVERSE ITERATOR!
 	    for (byte[] b : payload) {
 
 		if (DEBUG)

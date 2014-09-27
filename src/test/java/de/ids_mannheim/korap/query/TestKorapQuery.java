@@ -145,7 +145,7 @@ public class TestKorapQuery {
     public void KorapShrinkQuery3 () {
 	KorapQuery kq = new KorapQuery("field");
 	SpanQuery sq = kq.shrink(1, kq._(1, kq.seq(kq.tag("np"), kq._(kq.seg("test").without("no"))))).toQuery();
-	assertEquals("shrink(1: {1: spanNext(<field:np />, {0: spanNot(field:test, field:no)})})", sq.toString());
+	assertEquals("shrink(1: {1: spanNext(<field:np />, {0: spanNot(field:test, field:no, 0, 0)})})", sq.toString());
     };
 
     @Test

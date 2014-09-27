@@ -188,15 +188,17 @@ public class KorapResult extends KorapResponse {
         return this.benchmarkHitCounter;
     }
 
+    @JsonIgnore
     public void setItemsPerResource (short value) {
 	this.itemsPerResource = value;
     };
 
+    @JsonIgnore
     public void setItemsPerResource (int value) {
 	this.itemsPerResource = (short) value;
     };
 
-    // @JsonIgnore
+    @JsonIgnore
     public short getItemsPerResource () {
 	return this.itemsPerResource;
     };
@@ -210,7 +212,7 @@ public class KorapResult extends KorapResponse {
         return this.matches.get(index);
     }
 
-    @JsonIgnore
+    // @JsonIgnore
     public List<KorapMatch> getMatches() {
         return this.matches;
     }

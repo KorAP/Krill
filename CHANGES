@@ -1,7 +1,12 @@
-0.43 2014-09-25
+0.44 2014-09-27
         - [feature] Match collector using database for distributed search (diewald)
 	- [bugfix] Unified boundary handling and prevent nullpointer
 	  exceptions on parsing (diewald)
+	- [bugfix] Ordering of payloads reversed to make nesting highlights
+	  nest correctly (diewald)
+   	- [performance] Updated Lucene dependency from 4.3.1 to 4.5.1 (diewald)
+   	- [performance] Updated Jackson dependency from 2.2.2 to 2.4.0 (diewald)
+	- [bugfix] Return matches correctly with JSON (diewald)
 
 0.43 2014-09-23
         - [cleanup] Made a lot of stuff rely on KorapResponse (diewald)

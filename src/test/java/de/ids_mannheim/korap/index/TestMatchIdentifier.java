@@ -102,7 +102,7 @@ public class TestMatchIdentifier {
 	KorapMatch km = kr.match(0);
 
 	assertEquals("SnippetBrackets (0)", "... bcabca[{2:b{a}}]c", km.snippetBrackets());
-	assertEquals("ID (0)", "match-c1!d1-p7-9(0)8-8(2)7-8", km.getID());
+	assertEquals("ID (0)", "match-c1!d1-p7-9(2)7-8(0)8-8", km.getID());
     };
 
     @Test

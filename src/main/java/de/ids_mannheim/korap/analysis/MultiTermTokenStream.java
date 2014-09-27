@@ -38,6 +38,12 @@ public class MultiTermTokenStream extends TokenStream {
     private PositionIncrementAttribute posIncrAttr;
     private PayloadAttribute payloadAttr;
 
+
+    /*
+      TODO: Update to new Tokeanstream API
+      http://www.hankcs.com/program/java/lucene-4-6-1-java-lang-illegalstateexception-tokenstream-contract-violation.html
+     */
+
     private static final Pattern pattern = Pattern.compile("\\[(?:\\([0-9]+-[0-9]+\\))?([^\\]]+?)\\]");
 
     // This advices the java compiler to ignore all loggings
