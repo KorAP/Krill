@@ -18,15 +18,15 @@ public class MatchCollectorDB extends MatchCollector {
     private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
 
     /*
-      Todo: In case there are multiple threads searching,
-      the list should be synchrinized Collections.synchronizedList()
+     * Todo: In case there are multiple threads searching,
+     * the list should be synchrinized Collections.synchronizedList()
      */
     private String databaseType;
     private List matchCollector;
     private int bufferSize, docCollect;
     private String resultID;
 
-    //    private Connection connection;
+    // private Connection connection;
     private DataSource pool;
     private Connection connection;
     private PreparedStatement prepared;
@@ -64,22 +64,27 @@ public class MatchCollectorDB extends MatchCollector {
     };
 
     @JsonIgnore
+    public void setDBPool (String type, DataSource ds, Connection conn) throws SQLException {
+	this.setDatabaseType(type);
+	this.connection = conn;
+	this.pool = ds;
+    };
+
+
+    @JsonIgnore
     public void setDBPool (String type, DataSource ds) throws SQLException {
 	this.setDatabaseType(type);
 	this.pool = ds;
-
-	// Create prepared statement for multiple requests
-
-	/*
-	this.prepared = this.conn.prepareStatement(
-	  "INSERT INTO people VALUES (?, ?);"
-        );
-
-	Only prepare if commit > buffersize!
-Difference between mariadb and sqlite!
-	*/
-
     };
+    /*
+      Create prepared statement for multiple requests
+      this.prepared = this.conn.prepareStatement(
+      "INSERT INTO people VALUES (?, ?);"
+      );
+      Only prepare if commit > buffersize!
+      Difference between mariadb and sqlite!
+    */
+
     
     /* TODO: Ensure the commit was successful! */
     public void commit () {	
@@ -87,23 +92,20 @@ Difference between mariadb and sqlite!
 	    return;
 
 	try {
-	    // This should be heavily optimized! It's aweful!
 	    /*
+	     * This should be heavily optimized! It's aweful!
 	     * ARGHHHHHHH!
 	     */
 
-	    if (this.connection == null)
+	    if (this.connection.isClosed())
 		this.connection = this.pool.getConnection();
 
-	    // TODO: Create a BEGIN ... COMMIT Transaction
-	    // connection.setAutoCommit(true);
-
 	    StringBuilder sb = new StringBuilder();
-	    sb.append("INSERT INTO ");
-	    sb.append(this.resultID);
-	    sb.append(" (text_id, match_count) ");
+	    sb.append("INSERT INTO ")
+		.append(this.resultID)
+		.append(" (text_id, match_count) ");
 
-	    // SQLite insertion idiom
+	    // SQLite batch insertion idiom
 	    if (this.getDatabaseType().equals("sqlite")) {
 		for (int i = 1; i < this.docCollect; i++) {
 		    sb.append("SELECT ?, ? UNION ");
@@ -114,7 +116,7 @@ Difference between mariadb and sqlite!
 		    sb.append("SELECT ?, ?");
 	    }
 
-	    // MySQL insertion idiom
+	    // MySQL batch insertion idiom
 	    else if (this.getDatabaseType().equals("mysql")) {
 		sb.append(" VALUES ");
 		for (int i = 1; i < this.docCollect; i++) {
@@ -122,52 +124,59 @@ Difference between mariadb and sqlite!
 		};
 		sb.append("(?,?)");
 	    }
+
+	    // Unknown idiom
 	    else {
 		log.error("Unsupported Database type");
 		return;
 	    };
 
-	    // System.err.println(sb.toString());
-
-	    PreparedStatement prep = connection.prepareStatement(sb.toString());
+	    // Prepare statement based on the string
+	    PreparedStatement prep = this.connection.prepareStatement(sb.toString());
 
 	    int i = 1;
 	    ListIterator li = this.matchCollector.listIterator(); 
 	    while (li.hasNext()) {
 		int[] v = (int[]) li.next();
-		// System.err.println("Has " + i + ":" + v[0]);
 		prep.setInt(i++, v[0]);
-		// System.err.println("Has " + i + ":" + v[1]);
 		prep.setInt(i++, v[1]);
-		// System.err.println("-");
 	    };
-
-	    // System.err.println(sb.toString());
 
 	    prep.addBatch();
 	    prep.executeBatch();
-	    // connection.setAutoCommit(false);
-	    //	    connection.close();
-	    this.matchCollector.clear();
-	    this.docCollect = 0;
+	    this.connection.commit();
 	}
+
+	// An SQL error occured ...
 	catch (SQLException e) {
-	    this.matchCollector.clear();
-	    this.docCollect = 0;
-	    System.err.println("Error: " + e.getLocalizedMessage());
 	    log.error(e.getLocalizedMessage());
 	};
+
+	this.matchCollector.clear();
+	this.docCollect = 0;
 	return;
     };
 
+    /*
+     * Close collector and connection
+     */
     public void close () {
 	this.commit();
-	/*
 	try {
 	    this.connection.close();
 	}
-	catch (SQLException e) {
-	};
-	*/
+       	catch (SQLException e) {
+	    log.warn(e.getLocalizedMessage());
+	}
+    };
+
+    /*
+     * Close collector and probably connection
+     */
+    public void close (boolean close) {
+	if (close)
+	    this.close();
+	else
+	    this.commit();
     };
 };

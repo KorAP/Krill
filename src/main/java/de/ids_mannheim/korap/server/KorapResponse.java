@@ -23,6 +23,7 @@ public class KorapResponse {
     private String errstr, msg, version, node, listener;
     private int err, unstaged;
     private int totalResults;
+    private long totalTexts;
     private String benchmark;
 
     public KorapResponse (String node, String version) {
@@ -99,6 +100,17 @@ public class KorapResponse {
 	this.unstaged = unstaged;
 	return this;
     };
+
+    public KorapResponse setTotalTexts (long i) {
+        this.totalTexts = i;
+	return this;
+    };
+
+    public long getTotalTexts() {
+        return this.totalTexts;
+    };
+
+
 
     public KorapResponse setTotalResults (int i) {
         this.totalResults = i;

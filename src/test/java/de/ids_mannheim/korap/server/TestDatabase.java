@@ -16,7 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Ignore;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class TestDatabase {
 
@@ -69,16 +69,17 @@ public class TestDatabase {
      * temporary dbs - should be improved
      */
 
-    @Ignore
+    @Test
     public void TestDatabasePool () throws Exception {
 	ComboPooledDataSource cpds = new ComboPooledDataSource();
 	// Connect to a temporary file instead of a in-memory file
 	cpds.setDriverClass("org.sqlite.JDBC");
-	cpds.setJdbcUrl("jdbc:sqlite:hui");
+	cpds.setJdbcUrl("jdbc:sqlite:");
 	cpds.setMaxStatements(100);
 
 	// This is part of the match collector
 	this.conn = cpds.getConnection();
+	conn.setAutoCommit(false);
 	this.stat = conn.createStatement();
 	stat.executeUpdate(
             "CREATE TABLE IF NOT EXISTS result_a (text_id INTEGER, match_count INTEGER);"
@@ -93,49 +94,57 @@ public class TestDatabase {
 	prep.executeBatch();
 
 	ResultSet rs = stat.executeQuery("SELECT * FROM result_a;");
-
 	rs.next();
-	
 	assertEquals(rs.getInt("text_id"), 5);
 	assertEquals(rs.getInt("match_count"), 8000);
-
 	rs.close();
 
-	// this.conn.close();
-
 	MatchCollectorDB mc = new MatchCollectorDB(2000, "result_a");
-	mc.setDBPool("sqlite", cpds);
+	mc.setDBPool("sqlite", cpds, this.conn);
 
 	mc.add(9, 5000);
 	mc.add(12, 6785);
 	mc.add(39, 56576);
 
-	mc.close();
+	mc.close(false);
 
-	/*
-	this.stat = this.conn.createStatement();
-	stat.executeUpdate("CREATE TABLE IF NOT EXISTS result_a (text_id INTEGER, match_count INTEGER);");
-	*/
+	rs = stat.executeQuery("SELECT * FROM result_a;");
+	assertTrue(rs.next());
+	assertEquals(rs.getInt("text_id"), 5);
+	assertEquals(rs.getInt("match_count"), 8000);
+	rs.next();
+	assertEquals(rs.getInt("text_id"), 9);
+	assertEquals(rs.getInt("match_count"), 5000);
+	rs.next();
+	assertEquals(rs.getInt("text_id"), 12);
+	assertEquals(rs.getInt("match_count"), 6785);
+	rs.next();
+	assertEquals(rs.getInt("text_id"), 39);
+	assertEquals(rs.getInt("match_count"), 56576);
+	
+	rs.close();
     };
 
-    @Ignore
-    public void TestDatabasePoolConnector () throws Exception {
+    @Test
+    public void TestDatabasePoolCollector () throws Exception {
 	ComboPooledDataSource cpds = new ComboPooledDataSource();
 	// Connect to a temporary file instead of a in-memory file
 	cpds.setDriverClass("org.sqlite.JDBC");
-	cpds.setJdbcUrl("jdbc:sqlite:hui");
+	cpds.setJdbcUrl("jdbc:sqlite:");
 	cpds.setMaxStatements(100);
 
 	// This is part of the match collector
 	conn = cpds.getConnection();
-	stat = conn.createStatement();
-	// conn.setAutoCommit(true);
+	conn.setAutoCommit(false);
+	Statement stat = conn.createStatement();
 	stat.executeUpdate(
-            "CREATE TABLE matchXYZ (text_id INTEGER, match_count INTEGER);"
+            "CREATE TABLE IF NOT EXISTS matchXYZ (text_id INTEGER, match_count INTEGER);"
 	);
+	conn.commit();
+	stat.close();
 
 	MatchCollectorDB mc = new MatchCollectorDB(3, "matchXYZ");
-	mc.setDBPool("sqlite", cpds);
+	mc.setDBPool("sqlite", cpds, conn);
 
 	mc.add(9, 5000);
 	mc.add(12, 6785);
@@ -148,14 +157,41 @@ public class TestDatabase {
 	// Second commit
 
 	mc.add(94, 456);
-	mc.close();
+	mc.close(false);
 	// Final commit
 
 	// conn = cpds.getConnection();
 	stat = conn.createStatement();
 	ResultSet rs = stat.executeQuery("SELECT count('*') AS num FROM matchXYZ;");
-	rs.next();
+
 	assertEquals(7, rs.getInt("num"));
+
+	rs = stat.executeQuery("SELECT text_id, match_count FROM matchXYZ;");
+	assertTrue(rs.next());
+
+	assertEquals(rs.getInt("text_id"), 9);
+	assertEquals(rs.getInt("match_count"), 5000);
+	assertTrue(rs.next());
+	assertEquals(rs.getInt("text_id"), 12);
+	assertEquals(rs.getInt("match_count"), 6785);
+	assertTrue(rs.next());
+	assertEquals(rs.getInt("text_id"), 39);
+	assertEquals(rs.getInt("match_count"), 56576);
+	assertTrue(rs.next());
+	assertEquals(rs.getInt("text_id"), 45);
+	assertEquals(rs.getInt("match_count"), 5000);
+	assertTrue(rs.next());
+	assertEquals(rs.getInt("text_id"), 67);
+	assertEquals(rs.getInt("match_count"), 6785);
+	assertTrue(rs.next());
+	assertEquals(rs.getInt("text_id"), 81);
+	assertEquals(rs.getInt("match_count"), 56576);
+	assertTrue(rs.next());
+	assertEquals(rs.getInt("text_id"), 94);
+	assertEquals(rs.getInt("match_count"), 456);
+	assertFalse(rs.next());
+
+	stat.close();
     };
 
     @Test

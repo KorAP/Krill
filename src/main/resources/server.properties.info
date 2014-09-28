@@ -1,0 +1,11 @@
+# Lucene Backend properties
+lucene.properties   = true
+lucene.indexDir     = [PATH TO INDEX DIRECTORY]
+lucene.node.name    = [UNIQUE NODE NAME]
+lucene.node.baseURI = [LISTEN-URL INCLUDING PORT]
+
+# Lucene Database properties
+lucene.db.class     = org.mariadb.jdbc.Driver 
+lucene.db.URL       = jdbc:mysql://[DB_IP]:[DB_PORT]/[DB_NAME]
+lucene.db.pwd       = [DB_PWD]
+lucene.db.user      = [DB_USER]

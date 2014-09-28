@@ -484,12 +484,9 @@ public class KorapIndex {
 	    };
 
 	    long docCount = 0;
-	    // System.err.println("CHECK");
 	    int i = 1;
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
-		// System.err.println("READER" + i + "a-" + docCount);
 		docCount += collection.bits(atomic).cardinality();
-		// System.err.println("READER" + i + "b-" + docCount);
 		i++;
 	    };
 	    return docCount;
@@ -497,7 +494,6 @@ public class KorapIndex {
     
 	// Create search term
 	Term term = new Term(field, "-:" + type);
-	// System.err.println(">> Search for -:" + type + " in " + field);
 
 	long occurrences = 0;
 	try {

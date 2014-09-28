@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.sql.Connection;
 
 /*
   http://www.vogella.com/tutorials/REST/article.html
@@ -76,13 +77,22 @@ public class Resource {
     };
 
     @GET
-    @Path("/info")
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
 	KorapIndex index = KorapNode.getIndex();
 	KorapResponse kresp = new KorapResponse(KorapNode.getName(), index.getVersion());
 	kresp.setListener(KorapNode.getListener());
-	return kresp.setMsg("Up and running!").toJSON();
+	long texts = -1;
+	try {
+	    texts = index.numberOf("documents");
+	}
+	catch (IOException e) {
+	    log.error(e.getLocalizedMessage());
+	};
+
+	return kresp.setTotalTexts(texts)
+	    .setMsg("Up and running!")
+	    .toJSON();
     };
     
 
@@ -247,7 +257,8 @@ public class Resource {
 	// Get the database
 	try {
 	    MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_" + resultID);
-	    mc.setDBPool("mysql", KorapNode.getDBPool());
+	    Connection conn = KorapNode.getDBPool().getConnection();
+	    mc.setDBPool("mysql", KorapNode.getDBPool(), conn);
 
 	    // TODO: Only search in self documents (REPLICATION FTW!)
 
