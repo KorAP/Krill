@@ -184,7 +184,7 @@ public class TestKorapCollection {
 	};
 	ki.commit();
 
-	ki.addDocFile(getClass().getResource("/wiki/AUG-55286.json.gz").getFile(), true);
+	ki.addDocFile(getClass().getResource("/wiki/00012-fakemeta.json.gz").getFile(), true);
 
 	ki.commit();
 
@@ -193,17 +193,10 @@ public class TestKorapCollection {
 	// Create Virtual collections:
 	KorapCollection kc = new KorapCollection(ki);
 	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
-	assertEquals("Documents", 6, kc.numberOf("documents"));
-	assertEquals("Tokens", 2089, kc.numberOf("tokens"));
-	assertEquals("Sentences", 234, kc.numberOf("sentences"));
-	assertEquals("Paragraphs", 141, kc.numberOf("paragraphs"));
-
-	kc.filter( kf.and("corpusID", "A00") );
-
-	assertEquals("Documents", 1, kc.numberOf("documents"));
-	assertEquals("Tokens", 411, kc.numberOf("tokens"));
-	assertEquals("Sentences", 40, kc.numberOf("sentences"));
-	assertEquals("Paragraphs", 2, kc.numberOf("paragraphs"));
+	assertEquals("Documents", 5, kc.numberOf("documents"));
+	assertEquals("Tokens", 1678, kc.numberOf("tokens"));
+	assertEquals("Sentences", 194, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 139, kc.numberOf("paragraphs"));
 
 	// Create a query
 	KorapQuery kq = new KorapQuery("tokens");
@@ -211,8 +204,14 @@ public class TestKorapCollection {
 
 	KorapResult kr = kc.search(query);
 
-	assertEquals(87, kr.totalResults());
-	// System.out.println(kr.toJSON());
+	assertEquals(369, kr.totalResults());
+
+	kc.filter( kf.and("corpusID", "QQQ") );
+
+	assertEquals("Documents", 0, kc.numberOf("documents"));
+	assertEquals("Tokens", 0, kc.numberOf("tokens"));
+	assertEquals("Sentences", 0, kc.numberOf("sentences"));
+	assertEquals("Paragraphs", 0, kc.numberOf("paragraphs"));
     };
 
 

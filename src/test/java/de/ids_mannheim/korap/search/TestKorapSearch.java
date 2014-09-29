@@ -74,7 +74,13 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -102,7 +108,13 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -126,7 +138,21 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02035-substring", "02439", "05663-unbalanced", "07452-deep"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439",
+				      "00012-fakemeta",
+				      "00030-fakemeta",
+				      /*
+				      "02035-substring",
+				      "05663-unbalanced",
+				      "07452-deep"
+				      */
+	    }) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -138,12 +164,19 @@ public class TestKorapSearch {
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
 
-	assertEquals(2, kr.getTotalResults());
+	assertEquals(1, kr.getTotalResults());
+
+	ks = new KorapSearch(json);
+	// Ignore the collection part of the query!
+	ks.setCollection(new KorapCollection());
+	kr = ks.run(ki);
+
+	assertEquals(5, kr.getTotalResults());
 
 	json = getString(getClass().getResource("/queries/metaquery5.jsonld").getFile());
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
-	assertEquals(2, kr.getTotalResults());
+	assertEquals(1, kr.getTotalResults());
 
 	json = getString(getClass().getResource("/queries/metaquery6.jsonld").getFile());
 	ks = new KorapSearch(json);
@@ -158,7 +191,14 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"
+	    }) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -179,7 +219,13 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -200,7 +246,13 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -222,7 +274,13 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -257,7 +315,13 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -293,7 +357,13 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -414,7 +484,13 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -519,7 +595,13 @@ public class TestKorapSearch {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -533,13 +615,22 @@ public class TestKorapSearch {
     };
 
 
+    /*
+      This test will crash soon - it's just here for nostalgic reasons!
+     */
     @Test
     public void getFoundryDistribution () throws Exception {
 
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -553,9 +644,9 @@ public class TestKorapSearch {
     	HashMap map = kc.getTermRelation("foundries");
 	assertEquals((long) 7, map.get("-docs"));
 	assertEquals((long) 7, map.get("treetagger"));
-	assertEquals((long) 6, map.get("connexor/syntax"));
-	assertEquals((long) 6, map.get("#__connexor/syntax:###:treetagger"));
-	assertEquals((long) 7, map.get("#__connexor:###:treetagger"));
+	assertEquals((long) 6, map.get("opennlp/morpho"));
+	assertEquals((long) 6, map.get("#__opennlp/morpho:###:treetagger"));
+	assertEquals((long) 7, map.get("#__opennlp:###:treetagger"));
     };
 
     @Test

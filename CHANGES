@@ -1,3 +1,6 @@
+0.44.1 2014-09-29
+        - [cleanup] Prepare test suite for publication (diewald)
+
 0.44 2014-09-28
         - [feature] Match collector using database for distributed search (diewald)
 	- [bugfix] Unified boundary handling and prevent nullpointer

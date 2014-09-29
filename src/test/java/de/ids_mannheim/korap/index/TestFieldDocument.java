@@ -162,11 +162,16 @@ public class TestFieldDocument {
 	KorapIndex ki = new KorapIndex();
 
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    FieldDocument fd = ki.addDocFile(
 	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
-	    // System.err.println(fd.getLayerInfo());
 	};
 	ki.commit();
 
@@ -176,28 +181,7 @@ public class TestFieldDocument {
 	KorapResult kr;
 
 	// Start creating query
-	/*
-	ks = new KorapSearch(kq.tag("xip/c:NPA"));
-	ks.setCount(1);
-	ks.setCutOff(true);
-
-	assertEquals(("A bzw. [a] ist der erste Buchstabe des lateinischen ...", ks.run(ki).getMatch(0).getSnippetBrackets());
-	*/
-
 	// within(<xip/const:NPA>, {1: {2: [cnx/p=A & mate/m=number:sg]}[opennlp/p=NN & tt/p=NN]})
-
-	/**
-	ks = new KorapSearch(kq.within(
-              kq.tag("xip/c:NPA"),
-              kq._(1,
-                kq.seq(
-	          kq._(2, kq.seg("cnx/p:A").with("mate/m:number:sg"))
-                ).append(
-		  kq.seg("opennlp/p:NN").with("tt/p:NN")
-	        )
-	      )
-            ));
-	**/
 
 	ks = new KorapSearch(kq.within(
               kq.tag("xip/c:NPA"),
@@ -216,11 +200,8 @@ public class TestFieldDocument {
 	ks.context.left.setCharacter(true).setLength(6);
 	ks.context.right.setToken(true).setLength(6);
 
-	// System.err.println(ks.run(ki).getMatch(0).toJSON());
-
+	// BUG!
 	assertEquals("... e des [{1:lateinischen Alphabets}] und ein Vokal. Der Buchstabe A ...", ks.run(ki).getMatch(0).getSnippetBrackets());
-
-	// assertEquals("... e des [{1:lateinischen {2:Alphabets}}] und ein Vokal. Der Buchstabe A ...", ks.run(ki).getMatch(0).getSnippetBrackets());
 
 	
 	/*
@@ -289,7 +270,13 @@ public class TestFieldDocument {
 	KorapIndex ki = new KorapIndex();
 
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    FieldDocument fd = ki.addDocFile(
 	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );

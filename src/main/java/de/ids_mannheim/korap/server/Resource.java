@@ -44,13 +44,11 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import java.sql.Connection;
 
-/*
-  http://www.vogella.com/tutorials/REST/article.html
-  Write a simple server response class!
-*/
 
 /**
  * Root resource (exposed at root path)
+ * The responses only represent JSON responses, although HTML responses
+ * may be handy.
  *
  * @author Nils Diewald
  *
@@ -59,12 +57,17 @@ import java.sql.Connection;
 @Path("/")
 public class Resource {
 
-    static Pattern p = Pattern.compile("\\s*(?i:false|null)\\s*");
     private String version;
 
-    // Logger
+    // Initiate Logger
     private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
 
+    // Slightly based on String::BooleanSimple
+    static Pattern p = Pattern.compile(
+        "\\s*(?i:false|no|inactive|disabled|off|n|neg(?:ative)?|not|null|undef)\\s*"
+    );
+
+    // Check if a string is meant to represent null
     private static boolean isNull (String value) {
 	if (value == null)
 	    return true;
@@ -76,6 +79,10 @@ public class Resource {
 	return false;
     };
 
+
+    /**
+     * Return information on the node, like name etc.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
@@ -84,6 +91,7 @@ public class Resource {
 	kresp.setListener(KorapNode.getListener());
 	long texts = -1;
 	try {
+	    // Try to receive the number of documents
 	    texts = index.numberOf("documents");
 	}
 	catch (IOException e) {

@@ -112,26 +112,37 @@ public class KorapNode {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
+	// WADL available at BASE_URI + application.wadl
+
         final HttpServer server = startServer();
         System.out.println("KorapNode started\nHit enter to stop it...");
-	// WADL available at BASE_URI + application.wadl
         System.in.read();
         server.stop();
     };
 
+
+    // What's the servers name?
     public static String getName () {
 	return name;
     };
 
+
+    // What is the server listening on?
     public static String getListener () {
 	return BASE_URI;
     };
 
+
+    // Get database pool
     public static ComboPooledDataSource getDBPool () {
+
+	// Pool already initiated
 	if (cpds != null)
 	    return cpds;
 
 	try {
+
+	    // Parameters are defined in the property file
 	    cpds = new ComboPooledDataSource();
 	    cpds.setDriverClass(dbClass);
 	    cpds.setJdbcUrl(dbURL);
@@ -149,16 +160,19 @@ public class KorapNode {
     };
 
 
-    // Get Index
+    // Get Lucene Index
     public static KorapIndex getIndex () {
+
+	// Index already instantiated
 	if (index != null)
 	    return index;
 
     	try {
-	    if (path == null) {
+
+	    // Get a temporary index
+	    if (path == null)
 		// Temporary index
 		index = new KorapIndex();
-	    }
 
 	    else {
 		File file = new File(path);
@@ -169,9 +183,7 @@ public class KorapNode {
 		    return null;
 		};
 
-		System.out.println("Loading index from " + path);
-
-		// Real index
+		// Set real index
 		index = new KorapIndex(new MMapDirectory(file));
 	    };
 	    return index;
