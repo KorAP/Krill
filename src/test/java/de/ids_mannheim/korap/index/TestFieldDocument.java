@@ -181,13 +181,13 @@ public class TestFieldDocument {
 	KorapResult kr;
 
 	// Start creating query
-	// within(<xip/const:NPA>, {1: {2: [cnx/p=A & mate/m=number:sg]}[opennlp/p=NN & tt/p=NN]})
+	// within(<s>, {1: {2: [mate/p=ADJA & mate/m=number:sg]}[opennlp/p=NN & tt/p=NN]})
 
 	ks = new KorapSearch(kq.within(
-              kq.tag("xip/c:NPA"),
+              kq.tag("s"),
               kq._(1,
                 kq.seq(
-	          kq.seg("cnx/p:A")
+	          kq.seg("mate/p:ADJA")
                 ).append(
 		  kq.seg("opennlp/p:NN")
 	        )
@@ -200,67 +200,7 @@ public class TestFieldDocument {
 	ks.context.left.setCharacter(true).setLength(6);
 	ks.context.right.setToken(true).setLength(6);
 
-	// BUG!
-	assertEquals("... e des [{1:lateinischen Alphabets}] und ein Vokal. Der Buchstabe A ...", ks.run(ki).getMatch(0).getSnippetBrackets());
-
-	
-	/*
-
-	kr = ki.search(query, 0, (short) 1, true, (short) 2, false, (short) 5);
-	assertEquals("... Buchstabe des [{1:{2:lateinischen} Alphabets}] und  ...", kr.match(0).getSnippetBrackets());
-
-	SpanQuery query;
-
-	kr = ki.search(query, 0, (short) 50, true, (short) 2, false, (short) 5);
-
-//	System.err.println(kr.toJSON());
-//	System.out.println(query.toString());
-//	System.out.println(kr.match(37));	
-	
-	assertEquals(38, kr.totalResults());
-	assertEquals(50, kr.itemsPerPage());
-	assertEquals("... Buchstabe des [{1:{2:lateinischen} Alphabets}] und  ...", kr.match(0).getSnippetBrackets());
-	assertEquals("... Texten eine [{1:{2:durchschnittliche} Häufigkeit}] von  ...", kr.match(1).getSnippetBrackets());
-	assertEquals("... damit der [{1:{2:sechsthäufigste} Buchstabe}] in d ...", kr.match(2).getSnippetBrackets());
-	assertEquals("... A der [{1:{2:einzige} Buchstabe}] im D ...", kr.match(3).getSnippetBrackets());
-	assertEquals("... für den [offenen vorderen {1:{2:ungerundeten} Vokal}] a: A ...", kr.match(4).getSnippetBrackets());
-
-	query = kq.seg("tt/l:Norwegen").toQuery();
-	kr = ki.search(query, 0, (short) 5, true, (short) 2, false, (short) 5);
-
-	assertEquals(3, kr.totalResults());
-	assertEquals("... Lofoten in [Norwegen], unt ...", kr.match(0).getSnippetBrackets());
-	assertEquals("WPD_AAA.00002", kr.match(0).getDocID());
-	assertEquals("... es in [Norwegen] noch ...", kr.match(1).getSnippetBrackets());
-	assertEquals("WPD_AAA.00002", kr.match(1).getDocID());
-	assertEquals("... Orte in [Norwegen]: Å i ...", kr.match(2).getSnippetBrackets());
-	assertEquals("WPD_AAA.00005", kr.match(2).getDocID());
-	*/
-	/*
-	System.err.println(ki.getMatchInfo(kr.match(2).getID(), "tokens", "xip", "l", true, false).getSnippetHTML());
-	*/
-
-	/*
-	query = kq.seg("tt/l:Vokal").without("mate/m:number:sg").toQuery();
-	kr = ki.search(query, 0, (short) 5, true, (short) 2, false, (short) 5);
-	assertEquals(1, kr.totalResults());
-	assertEquals("... reich an [Vokalen] war, ...", kr.match(0).getSnippetBrackets());
-
-	assertNotNull(kr.toJSON());
-	*/
-
-	/*
-	System.err.println(ki.getMatchInfo(
-	    "match-WPD!WPD_AAA.00004-p200-206",
-	    "tokens",
-	    "xip",
-	    "c",
-	    true,
-	    false,
-	    true
-        ).toJSON());
-*/
-	//	ki.getMatch();
+	assertEquals("... okal. [Der Buchstabe A hat in {1:deutschen Texten} eine durchschnittliche Häufigkeit von 6,51 %.] Er ist damit der sechsthäufigste Buchstabe ...", ks.run(ki).getMatch(0).getSnippetBrackets());
     };
 
     @Test
