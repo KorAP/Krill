@@ -115,9 +115,31 @@ public class KorapNode {
 	// WADL available at BASE_URI + application.wadl
 
         final HttpServer server = startServer();
-        System.out.println("KorapNode started\nHit enter to stop it...");
-        System.in.read();
-        server.stop();
+
+	// Establish shutdown hook
+	Runtime.getRuntime().addShutdownHook(
+            new Thread(
+	        new Runnable() {
+		    @Override
+		    public void run() {
+			log.info("Stup Server");
+			// staaahp!
+			server.stop();
+		    }
+		},
+		"shutdownHook"
+	    )
+	);
+
+	// Start server
+	try {
+	    server.start();
+	    log.info("You may kill me gently with Ctrl+C");
+	    Thread.currentThread().join();
+	}
+	catch (Exception e) {
+	    log.error("Unable to start server: {}", e.getLocalizedMessage());
+	};
     };
 
 
