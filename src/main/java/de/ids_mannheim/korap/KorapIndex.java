@@ -476,18 +476,29 @@ public class KorapIndex {
      */
     public long numberOf (KorapCollection collection,
 			  String field,
-			  String type) throws IOException {
+			  String type) {
 	// Short cut for documents
 	if (type.equals("documents")) {
 	    if (collection.getCount() <= 0) {
-		return (long) this.reader().numDocs();
+		try {
+		    return (long) this.reader().numDocs();
+		}
+		catch (Exception e) {
+		    log.warn(e.getLocalizedMessage());
+		};
+		return (long) 0;
 	    };
 
 	    long docCount = 0;
 	    int i = 1;
-	    for (AtomicReaderContext atomic : this.reader().leaves()) {
-		docCount += collection.bits(atomic).cardinality();
-		i++;
+	    try {
+		for (AtomicReaderContext atomic : this.reader().leaves()) {
+		    docCount += collection.bits(atomic).cardinality();
+		    i++;
+		};
+	    }
+	    catch (IOException e) {
+		log.warn(e.getLocalizedMessage());
 	    };
 	    return docCount;
 	};
@@ -508,14 +519,14 @@ public class KorapIndex {
 	}
 
 	// Something went wrong
-	catch (IOException e) {
+	catch (Exception e) {
 	    log.warn( e.getLocalizedMessage() );
 	};
 
 	return occurrences;
     };
 
-    public long numberOf (String field, String type) throws IOException {
+    public long numberOf (String field, String type) {
 	return this.numberOf(new KorapCollection(this), field, type);
     };
 
@@ -528,7 +539,7 @@ public class KorapIndex {
      *
      * @see #numberOf(String, String)
      */
-    public long numberOf (String type) throws IOException {
+    public long numberOf (String type) {
 	return this.numberOf("tokens", type);
     };
 

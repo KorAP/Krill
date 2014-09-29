@@ -25,6 +25,11 @@ public class TestKorapIndex {
     public void indexExample () throws IOException {
 	KorapIndex ki = new KorapIndex();
 
+	assertEquals(0, ki.numberOf("base", "documents"));
+	assertEquals(0, ki.numberOf("base", "tokens"));
+	assertEquals(0, ki.numberOf("base", "sentences"));
+	assertEquals(0, ki.numberOf("base", "paragraphs"));
+
 	FieldDocument fd = new FieldDocument();
 
 	fd.addString("name", "Peter");

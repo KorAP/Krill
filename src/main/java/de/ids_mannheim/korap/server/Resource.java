@@ -90,15 +90,8 @@ public class Resource {
 	KorapResponse kresp = new KorapResponse(KorapNode.getName(), index.getVersion());
 	kresp.setListener(KorapNode.getListener());
 	long texts = -1;
-	try {
-	    // Try to receive the number of documents
-	    texts = index.numberOf("documents");
-	}
-	catch (IOException e) {
-	    log.error(e.getLocalizedMessage());
-	};
 
-	return kresp.setTotalTexts(texts)
+	return kresp.setTotalTexts(index.numberOf("documents"))
 	    .setMsg("Up and running!")
 	    .toJSON();
     };
