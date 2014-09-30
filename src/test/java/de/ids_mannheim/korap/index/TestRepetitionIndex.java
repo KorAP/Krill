@@ -211,36 +211,37 @@ public class TestRepetitionIndex {
 	@Test
 	public void testCase5() throws IOException {
 		ki = new KorapIndex();
-		for (String i : new String[] {"AAA-12402"}) {
-		    ki.addDocFile(
-		        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
-	            );
-		};
+	    ki.addDocFile(
+	        getClass().getResource("/wiki/00001.json.gz").getFile(), true
+        );
 		ki.commit();
 		
 		SpanQuery sq0, sq1, sq2;
-		sq0 = new SpanTermQuery(new Term("tokens", "s:Mann"));
-		sq1 = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","cnx/p:A")),2,3, true);
+		sq0 = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
+		sq1 = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","tt/p:ADJA")),2,3, true);
         sq2 = new SpanNextQuery(sq1,sq0);        
         kr = ki.search(sq2, (short) 10);
         
         assertEquals(2,kr.getTotalResults());
-        assertEquals(672, kr.getMatch(0).getStartPos());
-        assertEquals(676, kr.getMatch(0).getEndPos());
-        assertEquals(673, kr.getMatch(1).getStartPos());
-        assertEquals(676, kr.getMatch(1).getEndPos());
-        
+        assertEquals(73, kr.getMatch(0).getStartPos());
+        assertEquals(77, kr.getMatch(0).getEndPos());
+        assertEquals(74, kr.getMatch(1).getStartPos());
+        assertEquals(77, kr.getMatch(1).getEndPos());
+       /* for (KorapMatch km : kr.getMatches()){
+        	System.out.println(km.getSnippetBrackets());
+        	System.out.println(km.getStartPos() +","+km.getEndPos());
+        }*/
         
         sq2 = new SpanNextQuery(
-        		new SpanTermQuery(new Term("tokens", "s:scheinbar")),
+        		new SpanTermQuery(new Term("tokens", "s:offenen")),
         		sq2);
         kr = ki.search(sq2, (short) 10);
         
         assertEquals(1,kr.getTotalResults());
-        assertEquals(672, kr.getMatch(0).getStartPos());
-        assertEquals(676, kr.getMatch(0).getEndPos());
-        
-      /*  for (KorapMatch km : kr.getMatches()){
+        assertEquals(73, kr.getMatch(0).getStartPos());
+        assertEquals(77, kr.getMatch(0).getEndPos());
+        /*
+        for (KorapMatch km : kr.getMatches()){
         	System.out.println(km.getSnippetBrackets());
         	System.out.println(km.getStartPos() +","+km.getEndPos());
         }*/
