@@ -273,41 +273,11 @@ public class TestUnorderedDistanceIndex{
 	    assertEquals(0, kr.getMatch(2).getStartPos());
 	    assertEquals(4, kr.getMatch(2).getEndPos());
 	}
-	
-	@Test
-	public void testCase8() throws IOException{
-		//System.out.println("testcase 8");
-		ki = new KorapIndex();
-		for (String i : new String[] {"AUG-53507", "SEP-62389", "NOV-74813"}) {
-		    ki.addDocFile(
-		        getClass().getResource("/a00/" + i + ".json.gz").getFile(), true
-	            );
-		};
-		ki.commit();
-		
-		SpanQuery sq = new SpanDistanceQuery(
-        		new SpanTermQuery(new Term("tokens","s:in")),
-        		new SpanTermQuery(new Term("tokens","s:horrendem")),
-        		new DistanceConstraint(0, 2, false, false),        		
-        		true
-        );   
-		kr = ki.search(sq, (short) 10);
-		
-		assertEquals(3, kr.totalResults());
-		assertEquals(170, kr.getMatch(0).startPos);
-	    assertEquals(172, kr.getMatch(0).endPos);
-	    //System.out.println(kr.getMatch(0).getSnippetBrackets());
-	    //System.out.println(kr.getMatch(0).toJSON());
-	    assertEquals(174, kr.getMatch(1).startPos);
-	    assertEquals(176, kr.getMatch(1).endPos);
-	    assertEquals(71, kr.getMatch(2).startPos);
-	    assertEquals(73, kr.getMatch(2).endPos);	    
-	}
-	
+
 	/** Multiple NextSpans in the same first span position
 	 * */
 	@Test
-	public void testCase9() throws IOException{
+	public void testCase8() throws IOException{
 		ki = new KorapIndex();
 	    ki.addDoc(createFieldDoc1()); 
 	    ki.commit();
