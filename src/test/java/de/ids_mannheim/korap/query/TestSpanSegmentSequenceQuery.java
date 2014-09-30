@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.query;
+
 import java.util.*;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;

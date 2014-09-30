@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.analysis;
+
 import java.util.*;
 import de.ids_mannheim.korap.analysis.MultiTermToken;
 import java.io.IOException;

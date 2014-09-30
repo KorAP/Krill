@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.search;
+
 import java.util.*;
 import java.io.IOException;
 

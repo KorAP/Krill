@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.cache;
+
 import java.util.Collections;
 
 import net.sf.jsr107cache.Cache;

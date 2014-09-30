@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.filter;
+
 import java.io.*;
 
 import de.ids_mannheim.korap.KorapIndex;

@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.util;
+
 import java.util.*;
 import static de.ids_mannheim.korap.util.KorapArray.*;
 

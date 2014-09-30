@@ -1,8 +1,6 @@
 package de.ids_mannheim.korap.match;
 import java.util.*;
 import java.util.regex.*;
-import de.ids_mannheim.korap.index.DocIdentifier;
-
 
 public class MatchIdentifier extends DocIdentifier {
     private int startPos, endPos = -1;

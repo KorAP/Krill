@@ -1,3 +1,5 @@
+package de.ids_mannheim.korap.query;
+
 import java.util.*;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.KorapQuery;

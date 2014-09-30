@@ -1,6 +1,5 @@
 package de.ids_mannheim.korap.match;
 import java.util.*;
-import de.ids_mannheim.korap.index.DocIdentifier;
 
 public class PosIdentifier extends DocIdentifier {
     private int pos;
