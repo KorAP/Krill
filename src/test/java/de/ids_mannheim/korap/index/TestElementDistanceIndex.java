@@ -1,8 +1,12 @@
 package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -12,11 +16,15 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
+import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
 public class TestElementDistanceIndex {
@@ -182,6 +190,44 @@ public class TestElementDistanceIndex {
         assertEquals(3, kr.match(1).startPos);
         assertEquals(5, kr.match(1).endPos);
         
-    }	
+    }
+	
+	/** Test query from json */
+	@Test
+	public void testCase5() throws IOException{
+		//System.out.println("testCase4");
+		ki = new KorapIndex();
+		ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),true);       
+        ki.commit();
+        
+        InputStream is = getClass().getResourceAsStream("/queries/cosmas1.json");        
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+        StringBuilder sb = new StringBuilder();
+        String json;
+        while((json = bufferedReader.readLine()) != null){
+            sb.append(json);
+        }                
+        json = sb.toString();
+        
+        SpanQueryWrapperInterface sqwi;
+        try {    	    
+    	    sqwi = new KorapQuery("tokens").fromJSON(json);
+    	}
+    	catch (QueryException e) {
+    	    fail(e.getMessage());
+    	    sqwi = new KorapQuery("tokens").seg("???");
+    	};        
+    	
+        
+        SpanQuery sq;
+        sq = sqwi.toQuery();
+        kr = ki.search(sq, (short) 10);
+    	
+        for (KorapMatch km : kr.getMatches()){		
+        	System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+        			+km.getSnippetBrackets());
+        }
+    }
+	
 		
 }
