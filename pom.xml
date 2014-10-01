@@ -232,10 +232,8 @@
         <version>2.16</version>
         <configuration>
           <excludes>
-            <exclude>**/TestRealIndex.java</exclude>
             <exclude>**/benchmark/*</exclude>
             <exclude>**/TestWPDIndex.java</exclude>
-	    <exclude>**/TestKorapSolr.java</exclude>
 	  </excludes>
         </configuration>
       </plugin> 
