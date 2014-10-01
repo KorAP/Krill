@@ -223,6 +223,12 @@ public class TestElementDistanceIndex {
         sq = sqwi.toQuery();
         kr = ki.search(sq, (short) 10);
     	
+        assertEquals(3, kr.getTotalResults());
+        assertEquals(14, kr.getMatch(0).startPos);
+        assertEquals(19, kr.getMatch(0).endPos);
+        assertEquals(30, kr.getMatch(1).startPos);
+        assertEquals(33, kr.getMatch(1).endPos);
+        
       /*  for (KorapMatch km : kr.getMatches()){		
         	System.out.println(km.getStartPos() +","+km.getEndPos()+" "
         			+km.getSnippetBrackets());
