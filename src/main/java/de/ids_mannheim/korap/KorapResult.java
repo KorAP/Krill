@@ -146,32 +146,13 @@ public class KorapResult extends KorapResponse {
 	this.warning = warning;
     };
 
-    @JsonIgnore
     public void setRequest(JsonNode request) {
         this.request = request;
-    }
-
+    };
 
     public JsonNode getRequest() {
         return this.request;
-    }
-
-    /*
-    @JsonIgnore
-    public void setBenchmarkSearchResults(long t1, long t2) {
-        this.benchmarkSearchResults =
-                (t2 - t1) < 100_000_000 ? (((double) (t2 - t1) * 1e-6) + " ms") :
-                        (((double) (t2 - t1) / 1000000000.0) + " s");
     };
-
-    public void setBenchmarkSearchResults(String bm) {
-	this.benchmarkSearchResults = bm;
-    };
-
-    public String getBenchmarkSearchResults() {
-        return this.benchmarkSearchResults;
-    }
-    */
 
     @JsonIgnore
     public void setBenchmarkHitCounter(long t1, long t2) {

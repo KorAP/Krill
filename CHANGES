@@ -1,3 +1,6 @@
+0.45 2014-10-01
+        - [bugfix] Correctly respond request in JSON results (diewald)
+
 0.44.1 2014-09-29
         - [cleanup] Prepare test suite for publication (diewald)
 

@@ -115,7 +115,6 @@ public class KorapSearch {
 	};
     };
 
-
     // Maybe accept queryWrapperStuff
     public KorapSearch (SpanQueryWrapperInterface sqwi) {
 	this.query = sqwi.toQuery();
@@ -272,6 +271,7 @@ public class KorapSearch {
 	if (this.query == null) {
 	    KorapResult kr = new KorapResult();
 	    kr.setRequest(this.request);
+
 	    if (this.error != null)
 		kr.setError(this.error);
 	    else
