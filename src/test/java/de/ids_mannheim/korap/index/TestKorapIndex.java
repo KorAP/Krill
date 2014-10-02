@@ -78,4 +78,29 @@ public class TestKorapIndex {
 	// KorapQuery kq = new KorapQuery("text");
 	// ki.search();
     };
+
+    @Test
+    public void indexAlteration () throws IOException {
+	KorapIndex ki = new KorapIndex();
+
+	assertEquals(0, ki.numberOf("base", "documents"));
+
+	FieldDocument fd = new FieldDocument();
+	fd.addString("name", "Peter");
+	ki.addDoc(fd);
+
+	assertEquals(0, ki.numberOf("base", "documents"));
+
+	fd = new FieldDocument();
+	fd.addString("name", "Michael");
+	ki.addDoc(fd);
+
+	assertEquals(0, ki.numberOf("base", "documents"));
+
+	ki.commit();
+
+	assertEquals(2, ki.numberOf("base", "documents"));
+
+	// hasDeletions, hasPendingMerges
+    };
 };

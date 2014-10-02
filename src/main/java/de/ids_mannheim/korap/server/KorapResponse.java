@@ -10,10 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-/*
-  Todo: Ignore unstaged information as this may be incorrect in
-  Multithreading environment.
-*/
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -21,7 +17,8 @@ public class KorapResponse {
     ObjectMapper mapper = new ObjectMapper();
 
     private String errstr, msg, version, node, listener;
-    private int err, unstaged;
+    private int err;
+    private boolean unstaged;
     private int totalResults;
     private long totalTexts;
     private String benchmark;
@@ -92,11 +89,11 @@ public class KorapResponse {
 	return this;
     };
 
-    public int getUnstaged () {
+    public boolean getUnstaged () {
 	return this.unstaged;
     };
 
-    public KorapResponse setUnstaged (int unstaged) {
+    public KorapResponse setUnstaged (boolean unstaged) {
 	this.unstaged = unstaged;
 	return this;
     };

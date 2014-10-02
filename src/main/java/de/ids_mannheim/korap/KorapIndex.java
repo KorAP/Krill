@@ -99,6 +99,9 @@ import org.slf4j.LoggerFactory;
   http://invertedindex.blogspot.co.il/2009/04/lucene-dociduid-mapping-and-payload.html
   see korap/search.java -> retrieveTokens
 
+  Todo: Support document removal!
+  Todo: Support document update! // it's now part of IndexWriter
+
   Support a callback for interrupts (to stop the searching)!
 
   Support multiple indices.
@@ -133,6 +136,9 @@ public class KorapIndex {
     private IndexWriterConfig config;
     private IndexSearcher searcher;
     private boolean readerOpen = false;
+    // The commit counter is only there for
+    // counting unstaged changes per thread (for bulk insertions)
+    // It does not represent real unstaged documents.
     private int commitCounter = 0;
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
@@ -379,23 +385,36 @@ public class KorapIndex {
     };
 
     // Commit changes to the index
-    public void commit () throws IOException {
-
-	// No writer opened
-	if (this.writer == null)
-	    return;
+    public void commit (boolean force) throws IOException {
 
 	// There is something to commit
-	if (commitCounter > 0) {
-	    this.writer.commit();
-	    commitCounter = 0;
-	    this.closeReader();
+	if (commitCounter > 0 || !force) {
+	    this.commit();
 	};
     };
 
+    public void commit () throws IOException {
+
+	// Open writer if not already opened
+	if (this.writer == null)
+	    this.writer = new IndexWriter(this.directory, this.config);
+
+	// Force commit
+	this.writer.commit();
+	commitCounter = 0;
+	this.closeReader();
+    };
+
     // Return the number of unstaged texts
-    public int getUnstaged () {
-	return this.commitCounter;
+    public boolean getUnstaged () throws IOException {
+	if (commitCounter > 0)
+	    return true;
+
+	// Open writer if not already opened
+	if (this.writer == null)
+	    this.writer = new IndexWriter(this.directory, this.config);
+	
+	return this.writer.hasUncommittedChanges();
     };
 
     // Get autoCommit valiue

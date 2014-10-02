@@ -104,6 +104,7 @@ public class Resource {
      */
     /*
      * Support GZip:
+     * oR MAYBE IT'S ALREADY SUPPORTED ....
      * http://stackoverflow.com/questions/19765582/how-to-make-jersey-use-gzip-compression-for-the-response-message-body
     */
     @PUT
@@ -128,7 +129,7 @@ public class Resource {
 	    return kresp.setError(601, "Unable to find index").toJSON();
 
 	String ID = "Unknown";
-	int unstaged = 0;
+	boolean unstaged = false;
 	try {
 	    FieldDocument fd = index.addDoc(uid, json);
 	    ID = fd.getID();

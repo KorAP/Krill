@@ -64,7 +64,6 @@ public class TestResource {
 
     @Test
     public void testResource() throws IOException {
-	int unstaged = 1;
 	for (String i : new String[] {"00001",
 				      "00002",
 				      "00003",
@@ -81,7 +80,7 @@ public class TestResource {
 
 	    assertEquals(kresp.getNode(), "milena");
 	    assertEquals(kresp.getErr(), 0);
-	    assertEquals(kresp.getUnstaged(), unstaged++);
+	    assertEquals(kresp.getUnstaged(), true);
 	};
 
 	KorapResponse kresp = target.path("/index").
