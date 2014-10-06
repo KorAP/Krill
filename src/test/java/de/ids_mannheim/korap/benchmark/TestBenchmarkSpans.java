@@ -13,7 +13,7 @@ import de.ids_mannheim.korap.KorapQuery;
 import org.apache.lucene.store.MMapDirectory;
 import de.ids_mannheim.korap.filter.BooleanFilter;
 import org.apache.lucene.search.spans.SpanQuery;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 
 import static org.junit.Assert.*;
@@ -366,8 +366,8 @@ public class TestBenchmarkSpans {
 	return contentBuilder.toString();
     };
 
-    public static SpanQueryWrapperInterface jsonQuery (String jsonFile) {
-	SpanQueryWrapperInterface sqwi;
+    public static SpanQueryWrapper jsonQuery (String jsonFile) {
+	SpanQueryWrapper sqwi;
 	
 	try {
 	    String json = getString(jsonFile);

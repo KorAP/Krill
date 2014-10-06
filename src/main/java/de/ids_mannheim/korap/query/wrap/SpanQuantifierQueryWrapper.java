@@ -5,12 +5,12 @@ import java.util.*;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import org.apache.lucene.search.spans.SpanQuery;
 
 // This might be irrelevant now with repetition!
 
-public class SpanQuantifierQueryWrapper implements SpanQueryWrapperInterface {
+public class SpanQuantifierQueryWrapper extends SpanQueryWrapper {
     private String field;
 
     public SpanQuantifierQueryWrapper (String field) {
@@ -21,18 +21,9 @@ public class SpanQuantifierQueryWrapper implements SpanQueryWrapperInterface {
 	return (SpanQuery) null;
     };
 
-    public boolean isOptional () {
-	return false;
-    };
-
     public boolean isNull () {
 	return false;
     };
-
-    public boolean isNegative () {
-	return false;
-    };
-
 
     /*
 

@@ -102,7 +102,7 @@ public class KorapQuery {
 	};
     };
 
-    public SpanQueryWrapperInterface fromJSON (String jsonString) throws QueryException {
+    public SpanQueryWrapper fromJSON (String jsonString) throws QueryException {
 	JsonNode json;
 	try {
 	    json = this.json.readValue(jsonString, JsonNode.class);
@@ -122,7 +122,7 @@ public class KorapQuery {
     // TODO: Use the shortcuts implemented in this class instead of the wrapper constructors
     // TODO: Check for isArray()
     // TODO: Rename this span context!
-    public SpanQueryWrapperInterface fromJSON (JsonNode json) throws QueryException {
+    public SpanQueryWrapper fromJSON (JsonNode json) throws QueryException {
 
 	int number = 0;
 
@@ -374,6 +374,7 @@ public class KorapQuery {
 		if (min > max)
 		    max = max;
 
+		// This may be an empty repetitor
 		return new SpanRepetitionQueryWrapper(
 		    this.fromJSON(operands.get(0)), min, max
 		);
@@ -420,8 +421,9 @@ public class KorapQuery {
 	    );
 
 	case "korap:token":
+
 	    if (!json.has("wrap"))
-		throw new QueryException("Empty Tokens are not supported yet");
+		return new SpanEmptyTokenWrapper();
 
 	    return this._segFromJSON(json.get("wrap"));
 
@@ -436,7 +438,7 @@ public class KorapQuery {
 
 
 
-    private SpanQueryWrapperInterface _segFromJSON (JsonNode json) throws QueryException {
+    private SpanQueryWrapper _segFromJSON (JsonNode json) throws QueryException {
 	String type = json.get("@type").asText();
 
 	if (DEBUG)
@@ -477,7 +479,7 @@ public class KorapQuery {
 	    case "relation:and":
 
 		for (JsonNode operand : json.get("operands")) {
-		    SpanQueryWrapperInterface part = this._segFromJSON(operand);
+		    SpanQueryWrapper part = this._segFromJSON(operand);
 		    if (part instanceof SpanAlterQueryWrapper) {
 			ssegqw.with((SpanAlterQueryWrapper) part);			
 		    }
@@ -506,7 +508,7 @@ public class KorapQuery {
 
 
 
-    private SpanQueryWrapperInterface _termFromJSON (JsonNode json) throws QueryException {
+    private SpanQueryWrapper _termFromJSON (JsonNode json) throws QueryException {
 	if (!json.has("key") || json.get("key").asText().length() < 1)
 	    throw new QueryException("Terms and spans have to provide key attributes");
 	    
@@ -681,9 +683,9 @@ public class KorapQuery {
      * Create a segment alternation query object.
      * @param terms[] An array of alternative terms.
      */
-    public SpanAlterQueryWrapper or (SpanQueryWrapperInterface ... terms) {
+    public SpanAlterQueryWrapper or (SpanQueryWrapper ... terms) {
 	SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
-	for (SpanQueryWrapperInterface t : terms) {
+	for (SpanQueryWrapper t : terms) {
 	    ssaq.or(t);
 	};
 	return ssaq;
@@ -711,9 +713,9 @@ public class KorapQuery {
      * Create a sequence of segments query object.
      * @param terms[] An array of segment defining terms.
      */
-    public SpanSequenceQueryWrapper seq (SpanQueryWrapperInterface ... terms) {
+    public SpanSequenceQueryWrapper seq (SpanQueryWrapper ... terms) {
 	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper(this.field);
-	for (SpanQueryWrapperInterface t : terms) {
+	for (SpanQueryWrapper t : terms) {
 	    sssq.append(t);
 	};
 	return sssq;
@@ -732,8 +734,8 @@ public class KorapQuery {
     public SpanSequenceQueryWrapper seq (Object ... terms) {
 	SpanSequenceQueryWrapper ssq = new SpanSequenceQueryWrapper(this.field);
 	for (Object t : terms) {
-	    if (t instanceof SpanQueryWrapperInterface) {
-		ssq.append((SpanQueryWrapperInterface) t);
+	    if (t instanceof SpanQueryWrapper) {
+		ssq.append((SpanQueryWrapper) t);
 	    }
 	    else if (t instanceof SpanRegexQueryWrapper) {
 		ssq.append((SpanRegexQueryWrapper) t);
@@ -756,79 +758,78 @@ public class KorapQuery {
      * @param embedded A SpanQuery that is wrapped in the element.
      */
     @Deprecated
-    public SpanWithinQueryWrapper within (SpanQueryWrapperInterface element,
-					  SpanQueryWrapperInterface embedded) {
+    public SpanWithinQueryWrapper within (SpanQueryWrapper element,
+					  SpanQueryWrapper embedded) {
 	return new SpanWithinQueryWrapper(element, embedded);
     };
 
-    public SpanWithinQueryWrapper contains (SpanQueryWrapperInterface element,
-					  SpanQueryWrapperInterface embedded) {
+    public SpanWithinQueryWrapper contains (SpanQueryWrapper element,
+					  SpanQueryWrapper embedded) {
 	return new SpanWithinQueryWrapper(element, embedded, WITHIN);
     };
 
-    public SpanWithinQueryWrapper startswith (SpanQueryWrapperInterface element,
-					      SpanQueryWrapperInterface embedded) {
+    public SpanWithinQueryWrapper startswith (SpanQueryWrapper element,
+					      SpanQueryWrapper embedded) {
 	return new SpanWithinQueryWrapper(element, embedded, STARTSWITH);
     };
 
-    public SpanWithinQueryWrapper endswith (SpanQueryWrapperInterface element,
-					    SpanQueryWrapperInterface embedded) {
+    public SpanWithinQueryWrapper endswith (SpanQueryWrapper element,
+					    SpanQueryWrapper embedded) {
 	return new SpanWithinQueryWrapper(element, embedded, ENDSWITH);
     };
 
-    public SpanWithinQueryWrapper overlaps (SpanQueryWrapperInterface element,
-					    SpanQueryWrapperInterface embedded) {
+    public SpanWithinQueryWrapper overlaps (SpanQueryWrapper element,
+					    SpanQueryWrapper embedded) {
 	return new SpanWithinQueryWrapper(element, embedded, OVERLAP);
     }; 
 
-    public SpanWithinQueryWrapper matches (SpanQueryWrapperInterface element,
-					   SpanQueryWrapperInterface embedded) {
+    public SpanWithinQueryWrapper matches (SpanQueryWrapper element,
+					   SpanQueryWrapper embedded) {
 	return new SpanWithinQueryWrapper(element, embedded, MATCH);
     }; 
 
     // Class
-    public SpanClassQueryWrapper _ (byte number, SpanQueryWrapperInterface element) {
+    public SpanClassQueryWrapper _ (byte number, SpanQueryWrapper element) {
 	return new SpanClassQueryWrapper(element, number);
     };
 
-    public SpanClassQueryWrapper _ (int number, SpanQueryWrapperInterface element) {
+    public SpanClassQueryWrapper _ (int number, SpanQueryWrapper element) {
 	return new SpanClassQueryWrapper(element, number);
     };
 
-    public SpanClassQueryWrapper _ (short number, SpanQueryWrapperInterface element) {
+    public SpanClassQueryWrapper _ (short number, SpanQueryWrapper element) {
 	return new SpanClassQueryWrapper(element, number);
     };
 
-    public SpanClassQueryWrapper _ (SpanQueryWrapperInterface element) {
+    public SpanClassQueryWrapper _ (SpanQueryWrapper element) {
 	return new SpanClassQueryWrapper(element);
     };
 
     // MatchModify
-    public SpanMatchModifyQueryWrapper shrink (byte number, SpanQueryWrapperInterface element) {
+    public SpanMatchModifyQueryWrapper shrink (byte number, SpanQueryWrapper element) {
 	return new SpanMatchModifyQueryWrapper(element, number);
     };
 
-    public SpanMatchModifyQueryWrapper shrink (int number, SpanQueryWrapperInterface element) {
+    public SpanMatchModifyQueryWrapper shrink (int number, SpanQueryWrapper element) {
 	return new SpanMatchModifyQueryWrapper(element, number);
     };
 
-    public SpanMatchModifyQueryWrapper shrink (short number, SpanQueryWrapperInterface element) {
+    public SpanMatchModifyQueryWrapper shrink (short number, SpanQueryWrapper element) {
 	return new SpanMatchModifyQueryWrapper(element, number);
     };
 
-    public SpanMatchModifyQueryWrapper shrink (SpanQueryWrapperInterface element) {
+    public SpanMatchModifyQueryWrapper shrink (SpanQueryWrapper element) {
 	return new SpanMatchModifyQueryWrapper(element);
     };
 
     // Repetition
-    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapperInterface element, int exact) {
+    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapper element, int exact) {
 	return new SpanRepetitionQueryWrapper(element, exact);
     };
 
-    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapperInterface element, int min, int max) {
+    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapper element, int min, int max) {
 	return new SpanRepetitionQueryWrapper(element, min, max);
     };
-
 
     // split
 };

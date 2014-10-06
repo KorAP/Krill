@@ -3,7 +3,7 @@ package de.ids_mannheim.korap;
 import java.io.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
@@ -54,7 +54,7 @@ public class KorapSearch {
 	    // "query" value
 	    if (this.request.has("query")) {
 		try {
-		    SpanQueryWrapperInterface queryIface = new KorapQuery("tokens").fromJSON(this.request.get("query"));
+		    SpanQueryWrapper queryIface = new KorapQuery("tokens").fromJSON(this.request.get("query"));
 		    
 		    this.query = queryIface.toQuery();
 		    if (queryIface.isOptional())
@@ -116,7 +116,7 @@ public class KorapSearch {
     };
 
     // Maybe accept queryWrapperStuff
-    public KorapSearch (SpanQueryWrapperInterface sqwi) {
+    public KorapSearch (SpanQueryWrapper sqwi) {
 	this.query = sqwi.toQuery();
     };
 
@@ -150,7 +150,7 @@ public class KorapSearch {
 	return this.request;
     };
 
-    public KorapSearch setQuery (SpanQueryWrapperInterface sqwi) {
+    public KorapSearch setQuery (SpanQueryWrapper sqwi) {
 	this.query = sqwi.toQuery();
 	return this;
     };

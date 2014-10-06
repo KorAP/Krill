@@ -8,6 +8,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanNotQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
@@ -21,12 +22,10 @@ import de.ids_mannheim.korap.query.SpanSegmentQuery;
  * regular expressions and alternatives. These elements can also be excluded.
  */
 
-public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
+public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
     public ArrayList<SpanQuery> inclusive;
     public ArrayList<SpanQuery> exclusive;
     private String field;
-    private boolean isNull = true;
-    private boolean isNegative = false;
 
     /**
      * Constructor.
@@ -218,10 +217,6 @@ public class SpanSegmentQueryWrapper implements SpanQueryWrapperInterface {
 
     public boolean isOptional () {
 	return false;
-    };
-
-    public boolean isNull () {
-	return this.isNull;
     };
 
     public boolean isNegative () {

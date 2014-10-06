@@ -5,8 +5,10 @@ import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
+import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
@@ -15,7 +17,6 @@ import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +27,11 @@ TODO: Make isNegative work!
 
 
 /**
+ * Deserialize complexe sequence queries to Lucene SpanQueries.
+ *
  * @author Nils Diewald
  */
-public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
+public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
     private String field;
     private ArrayList<SpanQuery> segments;
     private ArrayList<DistanceConstraint> constraints;
@@ -37,15 +40,13 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
     private final static Logger log = LoggerFactory.getLogger(SpanSequenceQueryWrapper.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     
     private boolean
 	isInOrder = true,
-	isNull = true,
 	isOptional = true,
 	lastIsOptional = false,
-	firstIsOptional = false,
-	isNegative = false;
+	firstIsOptional = false;
 
     public SpanSequenceQueryWrapper (String field) {
 	this.field = field;
@@ -70,7 +71,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	this.isNull = false;
     };
 
-    public SpanSequenceQueryWrapper (String field, SpanQueryWrapperInterface sswq) {
+    public SpanSequenceQueryWrapper (String field, SpanQueryWrapper sswq) {
 	this(field);
 
 	if (!sswq.isNull()) {
@@ -141,6 +142,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 
 	    SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, query);
 	    SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(field, query);
+
 	    // Remove last element of the list and prepend it
 	    ssqw.prepend(this.segments.remove(this.segments.size() - 1));
 	    saqw.or(ssqw);
@@ -164,8 +166,15 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	return this;
     };
 
-    public SpanSequenceQueryWrapper append (SpanQueryWrapperInterface ssq) {
+    public SpanSequenceQueryWrapper append (SpanQueryWrapper ssq) {
+
+	if (DEBUG)
+	    log.trace("Try to append query {}", ssq.toString());
+
 	if (!ssq.isNull()) {
+
+	    if (DEBUG)
+		log.trace("THe query {} is not null", ssq.toString());
 
 	    if (ssq.isNegative())
 		this.isNegative = true;
@@ -173,13 +182,14 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	    SpanQuery appendQuery = ssq.toQuery();
 	    if (!ssq.isOptional()) {
 		if (DEBUG)
-		    log.trace("Append non-opt query to non-opt query " +
+		    log.trace("Append non-opt query to non-opt query {}",
 			      appendQuery.toString());
 		return this.append(appendQuery);
 	    };
 	    
 	    // Situation is ab? or a?b?
 	    if (this.segments.size() != 0) {
+
 		// Remove last element of the list and prepend it
 		SpanQuery lastQuery = this.segments.remove(this.segments.size() - 1);
 		SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, lastQuery);
@@ -191,12 +201,12 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 		    saqw.or(appendQuery);
 		    // last stays optional
 		    if (DEBUG)
-			log.trace("Append opt query to opt query " +
+			log.trace("Append opt query to opt query {}",
 				  appendQuery.toString());
 
 		}
 		else if (DEBUG) {
-		    log.trace("Append opt query to non-opt query " +
+		    log.trace("Append opt query to non-opt query {}",
 			      appendQuery.toString());
 		};
 
@@ -209,7 +219,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 		this.segments.add(appendQuery);
 
 		if (DEBUG)
-		    log.trace("Append opt query " +
+		    log.trace("Append opt query {}",
 			      appendQuery.toString());
 
 		// Update boundary optionality
@@ -265,7 +275,7 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	return this;
     };
 
-    public SpanSequenceQueryWrapper prepend (SpanQueryWrapperInterface ssq) {
+    public SpanSequenceQueryWrapper prepend (SpanQueryWrapper ssq) {
 	if (!ssq.isNull()) {
 
 	    if (ssq.isNegative())
@@ -435,17 +445,5 @@ public class SpanSequenceQueryWrapper implements SpanQueryWrapperInterface {
 	if (this.constraints.size() <= 0)
 	    return false;
 	return true;
-    };
-
-    public boolean isOptional () {
-	return this.isOptional;
-    };
-
-    public boolean isNull () {
-	return this.isNull;
-    };
-
-    public boolean isNegative () {
-	return this.isNegative;
     };
 };

@@ -5,6 +5,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.util.automaton.RegExp;
 import org.apache.lucene.index.Term;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
 import java.util.*;
 
@@ -12,7 +13,7 @@ import java.util.*;
   TODO: Don't allow queries like ".*?"!!!
 */
 
-public class SpanRegexQueryWrapper {
+public class SpanRegexQueryWrapper extends SpanQueryWrapper {
     private SpanQuery query;
 
     public SpanRegexQueryWrapper (String field, String re) {
@@ -43,15 +44,7 @@ public class SpanRegexQueryWrapper {
 	return this.query;
     };
 
-    public boolean isOptional () {
-	return false;
-    };
-
     public boolean isNull () {
-	return false;
-    };
-
-    public boolean isNegative () {
 	return false;
     };
 };

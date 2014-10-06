@@ -23,7 +23,7 @@ import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
@@ -209,7 +209,7 @@ public class TestElementDistanceIndex {
         }                
         json = sb.toString();
         
-        SpanQueryWrapperInterface sqwi;
+        SpanQueryWrapper sqwi;
         try {    	    
     	    sqwi = new KorapQuery("tokens").fromJSON(json);
     	}

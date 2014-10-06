@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.query.wrap;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
@@ -12,13 +12,10 @@ import org.apache.lucene.index.Term;
 
 import java.util.*;
 
-public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
+public class SpanAlterQueryWrapper extends SpanQueryWrapper {
     private String field;
     private SpanQuery query;
     private List<SpanQuery> alternatives;
-    private boolean isNull = true;
-    private boolean isOptional = false;
-    private boolean isNegative = false;
 
     public SpanAlterQueryWrapper (String field) {
 	this.field = field;
@@ -50,7 +47,7 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
 	return this;
     };
 
-    public SpanAlterQueryWrapper or (SpanQueryWrapperInterface term) {
+    public SpanAlterQueryWrapper or (SpanQueryWrapper term) {
 	if (term.isNull())
 	    return this;
 
@@ -93,17 +90,5 @@ public class SpanAlterQueryWrapper implements SpanQueryWrapperInterface {
 	    soquery.addClause( clause.next() );
 	};
 	return (SpanQuery) soquery;
-    };
-
-    public boolean isOptional () {
-	return this.isOptional;
-    };
-
-    public boolean isNull () {
-	return this.isNull;
-    };
-
-    public boolean isNegative () {
-	return this.isNegative;
     };
 };

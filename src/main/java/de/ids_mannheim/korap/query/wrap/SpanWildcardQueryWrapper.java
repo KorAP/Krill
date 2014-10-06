@@ -3,11 +3,12 @@ package de.ids_mannheim.korap.query.wrap;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import org.apache.lucene.index.Term;
 
 import java.util.*;
 
-public class SpanWildcardQueryWrapper {
+public class SpanWildcardQueryWrapper extends SpanQueryWrapper {
     private SpanQuery query;
 
     public SpanWildcardQueryWrapper (String field, String wc) {
@@ -29,15 +30,7 @@ public class SpanWildcardQueryWrapper {
 	return this.query;
     };
 
-    public boolean isOptional () {
-	return false;
-    };
-
     public boolean isNull () {
-	return false;
-    };
-
-    public boolean isNegative () {
 	return false;
     };
 };

@@ -4,7 +4,7 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
 import java.util.*;
 
@@ -51,13 +51,12 @@ import org.apache.lucene.search.spans.SpanQuery;
 */
 
 
-public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
-    private SpanQueryWrapperInterface element;
-    private SpanQueryWrapperInterface wrap;
+public class SpanWithinQueryWrapper extends SpanQueryWrapper {
+    private SpanQueryWrapper element;
+    private SpanQueryWrapper wrap;
     private byte flag;
-    private boolean isNull = true;
 
-    public SpanWithinQueryWrapper (SpanQueryWrapperInterface element, SpanQueryWrapperInterface wrap) {
+    public SpanWithinQueryWrapper (SpanQueryWrapper element, SpanQueryWrapper wrap) {
 	this.element = element;
 	this.wrap = wrap;
 
@@ -68,7 +67,7 @@ public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
 	    this.isNull = false;
     };
 
-    public SpanWithinQueryWrapper (SpanQueryWrapperInterface element, SpanQueryWrapperInterface wrap, byte flag) {
+    public SpanWithinQueryWrapper (SpanQueryWrapper element, SpanQueryWrapper wrap, byte flag) {
 	this.element = element;
 	this.wrap = wrap;
 	this.flag = flag;
@@ -86,14 +85,6 @@ public class SpanWithinQueryWrapper implements SpanQueryWrapperInterface {
 	// TODO: if (wrap.isNegative())
 
 	return new SpanWithinQuery(this.element.toQuery(), this.wrap.toQuery(), this.flag);
-    };
-
-    public boolean isOptional () {
-	return false;
-    };
-
-    public boolean isNull () {
-	return this.isNull;
     };
 
     public boolean isNegative () {

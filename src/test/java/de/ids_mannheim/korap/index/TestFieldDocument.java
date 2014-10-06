@@ -28,7 +28,7 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
 
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapperInterface;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -223,7 +223,7 @@ public class TestFieldDocument {
 	};
 	ki.commit();
 
-	SpanQueryWrapperInterface sqwi = jsonQuery(getClass().getResource("/queries/bsp18.jsonld").getFile());
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp18.jsonld").getFile());
 
 	KorapResult kr = ki.search(sqwi.toQuery(), 0, (short) 5, true, (short) 2, false, (short) 5);
 
@@ -246,8 +246,8 @@ public class TestFieldDocument {
 	return contentBuilder.toString();
     };
 
-    public static SpanQueryWrapperInterface jsonQuery (String jsonFile) {
-	SpanQueryWrapperInterface sqwi;
+    public static SpanQueryWrapper jsonQuery (String jsonFile) {
+	SpanQueryWrapper sqwi;
 	
 	try {
 	    String json = getString(jsonFile);
