@@ -118,12 +118,12 @@ public class ElementSpans extends SimpleSpans {
 			// Copy some payloads like start character and end character
 	    	//payloadBuffer.put(payload.bytes, payload.offset, 8);
 			
-			cs.setEnd(readEndPostion(payload));
+			cs.setEnd(PayloadReader.readInteger(payload,8));
 			
 			if (isElementRef ){
 				// Copy rest of payloads after the end position and elementref
 				//payloadBuffer.put(payload.bytes, payload.offset + 14, payload.length - 14);				
-				cs.setElementRef(readElementRef(payload));
+				cs.setElementRef(PayloadReader.readShort(payload,12));
 			}
 			else{
 				// Copy rest of payloads after the end position
@@ -134,7 +134,7 @@ public class ElementSpans extends SimpleSpans {
 			//byte[] offsetCharacters = new byte[8];
 			//System.arraycopy(payloadBuffer.array(), 0, offsetCharacters, 0, 8);
 			
-			cs.setPayloads(Collections.singletonList(readOffset(payload)));
+			cs.setPayloads(Collections.singletonList(PayloadReader.readOffset(payload)));
 	    }
 	    else {	
 			cs.setEnd(cs.getStart());
@@ -143,31 +143,6 @@ public class ElementSpans extends SimpleSpans {
     	}
 	}
 	
-	
-	/**	Get the offset bytes from the payload.
-	 * */
-	private byte[] readOffset(BytesRef payload){
-		byte[] b = new byte[8];
-		System.arraycopy(payload.bytes, payload.offset, b, 0, 8);
-		return b;
-	}
-	
-	/**	Get the end position bytes from the payload and cast it to int. 
-	 * */
-	private int readEndPostion(BytesRef payload) {
-		byte[] b = new byte[4];
-		System.arraycopy(payload.bytes, payload.offset + 8, b, 0, 4);
-		return ByteBuffer.wrap(b).getInt();		
-	}
-	
-	/**	Get the elementRef bytes from the payload and cast it into short.
-	 * */
-	private short readElementRef(BytesRef payload) {
-    	byte[] b = new byte[2];
-    	System.arraycopy(payload.bytes, payload.offset + 12, b, 0, 2);
-    	return ByteBuffer.wrap(b).getShort();
-	}
-
 	@Override
 	public boolean skipTo(int target) throws IOException {
 		if (hasMoreSpans && (firstSpans.doc() < target)){

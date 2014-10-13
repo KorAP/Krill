@@ -1,3 +1,15 @@
+package de.ids_mannheim.korap.index;
+
+import java.io.IOException;
+
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanTermQuery;
+import org.junit.Test;
+
+import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.SpanRelationQuery;
+
     /*
 
 within(x,y)
@@ -36,3 +48,42 @@ xip/morph_pos:VERB & mpt/morph_msd:Sg & mpt/morph_msd:Dat & #1 >[func=”SUBJ”
 
 
      */
+
+public class TestRelationIndex {
+	private KorapIndex ki;
+	private KorapResult kr;
+
+	public TestRelationIndex() throws IOException {
+		ki = new KorapIndex();
+	}
+	
+	private FieldDocument createFieldDoc0(){
+    	FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-0");
+        fd.addTV("base",
+            "text",             
+            "[(0-1)s:c|_1#0-1|>:xip/syntax-dep_rel$<i>7<s>1]" +
+            "[(1-2)s:e|_2#1-2|<:xip/syntax-dep_rel$<i>10<s>1|>:xip/syntax-dep_rel$<i>5<s>1]" +             
+            "[(2-3)s:c|_3#2-3]" +
+            "[(3-4)s:c|s:b|_4#3-4|<:xip/syntax-dep_rel$<i>10<s>1]" + 
+            "[(4-5)s:e|s:d|_5#4-5|<:xip/syntax-dep_rel$<i>2<s>1]" +
+            "[(5-6)s:c|_6#5-6]" +
+            "[(6-7)s:d|_7#6-7|<:xip/syntax-dep_rel$<i>1<s>1]" +
+            "[(7-8)s:e|_8#7-8]" + 
+            "[(8-9)s:e|s:b|_9#8-9]" + 
+            "[(9-10)s:d|_10#9-10|>:xip/syntax-dep_rel$<i>2<s>2|>:xip/syntax-dep_rel$<i>1<s>1]");
+        return fd;
+    }
+	
+	/** Test token-token relation
+	 * */
+	@Test
+	public void testCase1() throws IOException {
+		ki.addDoc(createFieldDoc0());
+		ki.commit();
+		
+		SpanRelationQuery sq = new SpanRelationQuery(
+				new SpanTermQuery(new Term("base",">:xip/syntax-dep_rel")),true);
+		ki.search(sq,(short) 10);
+	}
+}
