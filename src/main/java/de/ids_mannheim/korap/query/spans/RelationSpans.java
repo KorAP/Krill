@@ -1,7 +1,6 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Map;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
@@ -19,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanRelationQuery;
-import de.ids_mannheim.korap.query.spans.ElementSpans.CandidateElementSpans;
 
 /**	Enumeration of spans denoting relations between two tokens/elements. The start and end of 
  * 	a RelationSpan always denote the start and end of the source token/element.
@@ -28,7 +25,7 @@ import de.ids_mannheim.korap.query.spans.ElementSpans.CandidateElementSpans;
  * 	1. Token to token relation (1 int & 1 short, length: 6) 
  * 	2. Token to span (2 int & 1 short, length: 10)
  * 	3. Span to token (int, byte, int, short, length: 11)
- * 	4. Span to Span (3 int & 1 short, length: 13) 
+ * 	4. Span to Span (3 int & 1 short, length: 14) 
  * 	
  * 	Every integer value denotes the start/end position of the start/target of a relation, 
  * 	in this format:	(sourceEndPos?, startTargetPos, endTargetPos?). The end position of a token is 
@@ -63,6 +60,11 @@ public class RelationSpans extends SimpleSpans{
 
 	@Override
 	public boolean next() throws IOException {
+		isStartEnumeration=false;
+		return advance();
+	}
+	
+	private boolean advance() throws IOException{
 		while(hasMoreSpans || !candidateList.isEmpty()){
 			if (!candidateList.isEmpty()){
 				CandidateRelationSpan cs = candidateList.get(0);
@@ -110,7 +112,7 @@ public class RelationSpans extends SimpleSpans{
 			case 6: // Token to token
 				i = PayloadReader.readInteger(payloadBytesRef,0);
 				cs.setTargetStart(i);
-				cs.setTargetEnd(i);
+				cs.setTargetEnd(i+1);
 				break;
 	
 			case 10: // Token to span
@@ -122,10 +124,10 @@ public class RelationSpans extends SimpleSpans{
 				cs.setEnd(PayloadReader.readInteger(payloadBytesRef,0));
 				i = PayloadReader.readInteger(payloadBytesRef,5);
 				cs.setTargetStart(i);
-				cs.setTargetEnd(i);
+				cs.setTargetEnd(i+1);
 				break;
 			
-			case 13: // Span to span
+			case 14: // Span to span
 				cs.setEnd(PayloadReader.readInteger(payloadBytesRef,0));
 				cs.setTargetStart(PayloadReader.readInteger(payloadBytesRef,4));
 				cs.setTargetEnd(PayloadReader.readInteger(payloadBytesRef,8));
@@ -136,15 +138,22 @@ public class RelationSpans extends SimpleSpans{
 	}
 
 	@Override
-	public boolean skipTo(int arg0) throws IOException {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean skipTo(int target) throws IOException {
+		if (hasMoreSpans && (firstSpans.doc() < target)){
+  			if (!firstSpans.skipTo(target)){
+  				candidateList.clear();
+  				return false;
+  			}
+  		}		
+		setCandidateList();
+		matchPayload.clear();
+		isStartEnumeration=false;
+		return advance();	
 	}
 	
 	@Override
 	public long cost() {
-		// TODO Auto-generated method stub
-		return 0;
+		return firstSpans.cost();
 	}
 
 	public short getRelationId() {
@@ -179,12 +188,6 @@ public class RelationSpans extends SimpleSpans{
 		public CandidateRelationSpan(Spans span) throws IOException{
 			super(span);
 		}
-		
-		/*public CandidateRelationSpan(Spans span, int targetStart, int targetEnd) throws IOException{
-			super(span);
-			setTargetStart(targetStart);
-			setTargetEnd(targetEnd);
-		}*/
 
 		@Override
 		public int compareTo(CandidateSpan o) {
