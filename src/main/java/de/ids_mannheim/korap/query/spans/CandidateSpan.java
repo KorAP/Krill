@@ -107,11 +107,11 @@ public class CandidateSpan implements Comparable<CandidateSpan>{
 		this.childSpan = childSpan;
 	}
 
-	public short getElementRef() {
+	public short getSpanId() {
 		return elementRef;
 	}
 
-	public void setElementRef(short elementRef) {
+	public void setSpanId(short elementRef) {
 		this.elementRef = elementRef;
 	}
 

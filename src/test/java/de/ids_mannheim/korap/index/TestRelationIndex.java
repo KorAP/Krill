@@ -9,8 +9,11 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
+import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 
     /*
 
@@ -83,20 +86,64 @@ public class TestRelationIndex {
         fd.addTV("base",
             "text",             
             "[(0-1)s:c|_1#0-1|>:xip/syntax-dep_rel$<i>3<i>6<i>9<s>2|>:xip/syntax-dep_rel$<i>6<i>9<s>1]" +
+            		"r@:func=subj$<s>2]" +
             "[(1-2)s:e|_2#1-2]" +             
             "[(2-3)s:c|_3#2-3]" +
             "[(3-4)s:c|s:b|_4#3-4]" + 
             "[(4-5)s:e|s:d|_5#4-5]" +
             "[(5-6)s:c|_6#5-6]" +
             "[(6-7)s:d|_7#6-7|<:xip/syntax-dep_rel$<i>9<b>0<i>0<s>1|>:xip/syntax-dep_rel$<i>9<b>0<i>9<s>3|" +
-            	"<:xip/syntax-dep_rel$<i>9<i>1<i>3<s>2]" +
+            	"<:xip/syntax-dep_rel$<i>9<i>1<i>3<s>2|" +
+            	"r@:func=obj$<s>2]" +
             "[(7-8)s:e|_8#7-8]" + 
             "[(8-9)s:e|s:b|_9#8-9]" + 
             "[(9-10)s:d|_10#9-10|<:xip/syntax-dep_rel$<i>6<i>9<s>2]");
         return fd;
     }
 	
+	private FieldDocument createFieldDoc2(){
+    	FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base",
+            "Ich kaufe die Blümen für meine Mutter.",             
+            "[(0-3)s:Ich|_0#0-3|pos:NN|<>:s#0-38$<i>7<s>-1|<>:np#0-3$<i>1<s>-1|" +
+            	">:child-of$<i>0<i>7<s>1|" +            		
+            	"<:dep$<i>1<s>2|" +
+            	"r@:func=sbj$<s>1]" +
+            	
+            "[(1-2)s:kaufe|_1#4-9|pos:V|<>:vp#4-38$<i>7<s>-1|" +
+            	">:child-of$<i>7<i>0<i>7<s>1|>:child-of$<i>1<i>7<s>2|" +
+            	">:dep$<i>0<s>3|>:dep$<i>3<s>4]" +
+            	
+            "[(2-3)s:die|_2#10-13|pos:ART|<>:np#10-20$<i>4<s>-1|<>:np#10-38$<i>7<s>-1|" +
+            	">:child-of$<i>4<i>2<i>7<s>1|>:child-of$<i>2<i>4<s>2|>:child-of$<i>7<i>1<i>7<s>2|" +
+            	"<:dep$<i>3<s>3|r@:func=obj$<s>1" +
+            	"]" +
+            
+            "[(3-4)s:Blümen|_3#14-20|pos:NN|" +
+            	">:child-of$<i>2<i>4<s>1|" +
+            	"<:dep$<i>1<s>2|>:dep$<i>2<s>3|>:dep$<i>4<s>4|" +
+            	"r@:func=head$<s>2]" +
+            	
+            "[(4-5)s:für|_4#21-24|pos:PREP|<>:pp#21-38$<i>7<s>-1|" +
+            	">:child-of$<i>4<i>7<s>1|>:child-of$<i>7<i>2<i>7<s>2|" +
+            	"<:dep$<i>3<s>1|>:dep$<i>5<s>2" +
+            	"]" +
+            
+            "[(5-6)s:meine|_5#25-30|pos:ART|<>:np#25-38$<i>7<s>-1|" +
+            	">:child-of$<i>5<i>7<s>1|>:child-of$<i>7<i>4<i>7<s>2|" +
+            	"<:dep$<i>7<s>3" +
+            	"]" +
+            "[(6-7)s:Mutter.|_6#31-38|pos:NN|" +
+            	">:child-of$<i>5<i>7<s>1|" +
+            	">:dep$<i>5<s>2|<:dep$<i>4<s>3|" +
+            	"r@:func=head$<s>3]");
+        
+        return fd;
+    }
 	
+	/** Relations: token to token, token to span, span to span
+	 * */
 	@Test
 	public void testCase1() throws IOException {
 		ki.addDoc(createFieldDoc0());
@@ -134,6 +181,8 @@ public class TestRelationIndex {
 		
 	}
 	
+	/** Relation span to token
+	 * */
 	@Test
 	public void testCase2() throws IOException {
 		ki.addDoc(createFieldDoc0());
@@ -166,4 +215,77 @@ public class TestRelationIndex {
 		assertEquals(9,kr.getMatch(6).getStartPos());
 		assertEquals(10,kr.getMatch(6).getEndPos());
 	}
+	
+	/** Relations with attributes
+	 * */
+	@Test
+	public void testCase3() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+		
+		// child-of relations
+		SpanRelationQuery srq = new SpanRelationQuery(
+				new SpanTermQuery(new Term("base",">:child-of")),true);
+		kr = ki.search(srq,(short) 20);
+		
+		assertEquals(12, kr.getTotalResults());
+		
+		// child-of with attr func=sbj
+		SpanWithAttributeQuery wq = 
+			new SpanWithAttributeQuery(srq, 
+				new SpanAttributeQuery( 
+					new SpanTermQuery(new Term("base", "r@:func=sbj")),
+					true), 
+				true
+		);
+		
+		kr = ki.search(wq,(short) 10);		
+		assertEquals(1, kr.getTotalResults());
+		assertEquals(0,kr.getMatch(0).getStartPos()); // token
+		assertEquals(1,kr.getMatch(0).getEndPos());
+		
+		// child-of with attr func-obj
+		wq = new SpanWithAttributeQuery(srq, 
+				new SpanAttributeQuery( 
+					new SpanTermQuery( new Term("base", "r@:func=obj")),
+					true), 
+				true
+		);
+		
+		kr = ki.search(wq,(short) 10);
+		
+		assertEquals(1, kr.getTotalResults());
+		assertEquals(2,kr.getMatch(0).getStartPos()); // element
+		assertEquals(4,kr.getMatch(0).getEndPos());
+			
+		// target of a dependency relation		
+		srq = new SpanRelationQuery(
+				new SpanTermQuery(new Term("base","<:dep")),true);
+		kr = ki.search(srq,(short) 10);
+		
+		assertEquals(6, kr.getTotalResults());
+		
+		// target of a dependency relation, which is also a head
+		wq = new SpanWithAttributeQuery(srq, 
+					new SpanAttributeQuery( 
+						new SpanTermQuery( new Term("base", "r@:func=head")),
+						true), 
+					true
+			);
+		
+		kr = ki.search(wq,(short) 20);
+		
+		assertEquals(2, kr.getTotalResults());
+		assertEquals(3,kr.getMatch(0).getStartPos());
+		assertEquals(4,kr.getMatch(0).getEndPos());
+		assertEquals(6,kr.getMatch(1).getStartPos());
+		assertEquals(7,kr.getMatch(1).getEndPos());
+		
+		/*for (KorapMatch km : kr.getMatches()){		
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+    			+km.getSnippetBrackets());
+		}	*/	
+	}
+	
+	
 }

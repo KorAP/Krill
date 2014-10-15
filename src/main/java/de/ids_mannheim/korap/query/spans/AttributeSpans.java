@@ -33,7 +33,7 @@ public class AttributeSpans extends SimpleSpans{
 	
 	private List<CandidateAttributeSpan> candidateList;
 	private int currentDoc, currentPosition;
-	private short elementRef;
+	private short spanId;
 	private boolean isFinish;
 	
 	protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
@@ -71,7 +71,7 @@ public class AttributeSpans extends SimpleSpans{
 				this.matchDocNumber = cs.getDoc();
 				this.matchStartPosition = cs.getStart();
 				this.matchEndPosition = cs.getEnd();
-				this.setElementRef(cs.getElementRef());
+				this.setSpanId(cs.getSpanId());
 				candidateList.remove(0);
 				return true;
 			}
@@ -98,10 +98,9 @@ public class AttributeSpans extends SimpleSpans{
 		while (hasMoreSpans &&	firstSpans.doc() == currentDoc && 
 				firstSpans.start() == currentPosition){
 			
-			short elementRef = retrieveElementRef(firstSpans); 
-			if (DEBUG)
-                            logger.info("ElementRef: "+elementRef);
-			candidateList.add(new CandidateAttributeSpan(firstSpans,elementRef));
+			short spanId = retrieveSpanId(firstSpans);			
+            //logger.info("ElementRef: "+elementRef);
+			candidateList.add(new CandidateAttributeSpan(firstSpans,spanId));
 			hasMoreSpans = firstSpans.next();
 		}
 		
@@ -111,7 +110,7 @@ public class AttributeSpans extends SimpleSpans{
 	
 	/**	Get the elementRef from payload
 	 * */
-	private short retrieveElementRef(Spans firstSpans) throws IOException {		
+	private short retrieveSpanId(Spans firstSpans) throws IOException {		
 		List<byte[]> payload = (List<byte[]>) firstSpans.getPayload();
 		long s = System.nanoTime();
 		ByteBuffer wrapper = ByteBuffer.wrap(payload.get(0));
@@ -122,12 +121,12 @@ public class AttributeSpans extends SimpleSpans{
 		return num;				
 	}
 	
-	public short getElementRef(){
-		return this.elementRef;
+	public short getSpanId(){
+		return this.spanId;
 	}
 
-	public void setElementRef(short elementRef) {
-		this.elementRef = elementRef;
+	public void setSpanId(short spanId) {
+		this.spanId = spanId;
 	}
 
 	public boolean isFinish() {
@@ -162,27 +161,27 @@ public class AttributeSpans extends SimpleSpans{
 	class CandidateAttributeSpan extends CandidateSpan 
 			implements Comparable<CandidateSpan>{
 
-		private short elementRef;
+		private short spanId;
 		
-		public CandidateAttributeSpan(Spans span, short elementRef) 
+		public CandidateAttributeSpan(Spans span, short spanId) 
 				throws IOException {
 			super(span);
-			setElementRef(elementRef);
+			setSpanId(spanId);
 		}
 		
-		public void setElementRef(short elementRef) {
-			this.elementRef = elementRef;
+		public void setSpanId(short spanId) {
+			this.spanId = spanId;
 		}
-		public short getElementRef() {
-			return elementRef;
+		public short getSpanId() {
+			return spanId;
 		}
 
 		@Override
 		public int compareTo(CandidateSpan o) {
 			CandidateAttributeSpan cs = (CandidateAttributeSpan) o;
-			if (this.elementRef == cs.elementRef)
+			if (this.spanId == cs.spanId)
 				return 0;
-			else if (this.elementRef > cs.elementRef )
+			else if (this.spanId > cs.spanId )
 				return 1;
 			return -1;			
 		}		

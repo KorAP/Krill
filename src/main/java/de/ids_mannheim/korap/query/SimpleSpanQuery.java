@@ -17,7 +17,7 @@ public abstract class SimpleSpanQuery extends SpanQuery
 		implements Cloneable{		
 	
 	protected SpanQuery firstClause, secondClause;
-	protected List<SpanQuery> clauseList;
+	protected List<SpanQuery> clauseList=null;
 	private String field;
 	protected boolean collectPayloads;
     	

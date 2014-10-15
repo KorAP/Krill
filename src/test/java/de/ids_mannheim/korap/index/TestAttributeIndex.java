@@ -14,9 +14,9 @@ import org.junit.Test;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
-import de.ids_mannheim.korap.query.SpanElementAttributeQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 
 public class TestAttributeIndex {
 	
@@ -92,7 +92,7 @@ public class TestAttributeIndex {
 		List<SpanQuery> sql = new ArrayList<>();
 		sql.add(saq);
 		
-		SpanQuery sq = new SpanElementAttributeQuery(
+		SpanQuery sq = new SpanWithAttributeQuery(
 				new SpanElementQuery("base", "div"),
 				sql, true);
 		
@@ -125,7 +125,7 @@ public class TestAttributeIndex {
 				new SpanTermQuery(new Term("base","@:class=title")),true)
 		);
 		
-		SpanQuery sq = new SpanElementAttributeQuery(
+		SpanQuery sq = new SpanWithAttributeQuery(
 				new SpanElementQuery("base", "div"),
 				sql, true);
 		
@@ -146,7 +146,7 @@ public class TestAttributeIndex {
 				new SpanTermQuery(new Term("base","@:class=book")),true,true)
 		);
 		
-		sq = new SpanElementAttributeQuery(
+		sq = new SpanWithAttributeQuery(
 				new SpanElementQuery("base", "div"),
 				sql, true);
 		
@@ -164,7 +164,7 @@ public class TestAttributeIndex {
 				new SpanTermQuery(new Term("base","@:class=title")),true,true)
 		);
 		
-		sq = new SpanElementAttributeQuery(
+		sq = new SpanWithAttributeQuery(
 				new SpanElementQuery("base", "div"),
 				sql, true);
 		
@@ -188,7 +188,7 @@ public class TestAttributeIndex {
 		sql.add(new SpanAttributeQuery(
 				new SpanTermQuery(new Term("base","@:class=book")),true,true)
 		);
-		SpanQuery sq = new SpanElementAttributeQuery(
+		SpanQuery sq = new SpanWithAttributeQuery(
 				new SpanElementQuery("base", "div"),
 				sql, true);
 		
@@ -218,7 +218,7 @@ public class TestAttributeIndex {
 		List<SpanQuery> sql = new ArrayList<>();
 		sql.add(saq);
 		
-		SpanElementAttributeQuery sq = new SpanElementAttributeQuery(
+		SpanWithAttributeQuery sq = new SpanWithAttributeQuery(
 				new SpanElementQuery("base", "div"),
 				sql, true);
 		

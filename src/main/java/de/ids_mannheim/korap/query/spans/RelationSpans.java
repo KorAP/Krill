@@ -38,9 +38,9 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
  * 
  * 	@author margaretha
  * */
-public class RelationSpans extends SimpleSpans{
+public class RelationSpans extends WithIdSpans{
 
-	short relationId;
+	//short relationId;
 	int targetStart, targetEnd;
 	int currentDoc, currentPosition;
 	
@@ -71,7 +71,8 @@ public class RelationSpans extends SimpleSpans{
 				this.matchDocNumber = cs.getDoc();
 				this.matchStartPosition = cs.getStart();
 				this.matchEndPosition = cs.getEnd();
-				this.matchPayload = cs.getPayloads();				
+				this.matchPayload = cs.getPayloads();	
+				this.spanId = cs.getSpanId(); // relation id
 				candidateList.remove(0);
 				return true;
 			}
@@ -96,7 +97,7 @@ public class RelationSpans extends SimpleSpans{
 		Collections.sort(candidateList);
 		
 		/*for (CandidateRelationSpan cs:candidateList){
-		System.out.println(cs.getStart()+","+cs.getEnd() //+" <size:" +payload.get(0).length 
+			System.out.println(cs.getStart()+","+cs.getEnd() //+" <size:" +payload.get(0).length 
 				+" target "+cs.getTargetStart()+","+cs.getTargetEnd() +" id:"+cs.getRelationId());
 		}*/
 	}
@@ -112,7 +113,7 @@ public class RelationSpans extends SimpleSpans{
 			case 6: // Token to token
 				i = PayloadReader.readInteger(payloadBytesRef,0);
 				cs.setTargetStart(i);
-				cs.setTargetEnd(i+1);
+				cs.setTargetEnd(i);
 				break;
 	
 			case 10: // Token to span
@@ -124,7 +125,7 @@ public class RelationSpans extends SimpleSpans{
 				cs.setEnd(PayloadReader.readInteger(payloadBytesRef,0));
 				i = PayloadReader.readInteger(payloadBytesRef,5);
 				cs.setTargetStart(i);
-				cs.setTargetEnd(i+1);
+				cs.setTargetEnd(i);
 				break;
 			
 			case 14: // Span to span
@@ -134,7 +135,7 @@ public class RelationSpans extends SimpleSpans{
 				break;
 		}
 		
-		cs.setRelationId(PayloadReader.readShort(payloadBytesRef, length-2));
+		cs.setSpanId(PayloadReader.readShort(payloadBytesRef, length-2)); //relation id
 	}
 
 	@Override
@@ -155,14 +156,14 @@ public class RelationSpans extends SimpleSpans{
 	public long cost() {
 		return firstSpans.cost();
 	}
-
+/*
 	public short getRelationId() {
 		return relationId;
 	}
 
 	public void setRelationId(short relationId) {
 		this.relationId = relationId;
-	}
+	}*/
 
 	public int getTargetStart() {
 		return targetStart;
@@ -183,7 +184,7 @@ public class RelationSpans extends SimpleSpans{
 	
 	class CandidateRelationSpan extends CandidateSpan implements Comparable<CandidateSpan>{
 		
-		private int targetStart, targetEnd, relationId;
+		private int targetStart, targetEnd;
 		
 		public CandidateRelationSpan(Spans span) throws IOException{
 			super(span);
@@ -225,14 +226,6 @@ public class RelationSpans extends SimpleSpans{
 
 		public void setTargetStart(int targetStart) {
 			this.targetStart = targetStart;
-		}
-
-		public int getRelationId() {
-			return relationId;
-		}
-
-		public void setRelationId(int relationId) {
-			this.relationId = relationId;
 		}
 	}
 	

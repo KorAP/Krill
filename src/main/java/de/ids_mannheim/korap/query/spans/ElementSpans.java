@@ -24,14 +24,12 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
  *
  * Use copyFrom instead of clone
  */
-public class ElementSpans extends SimpleSpans {
+public class ElementSpans extends WithIdSpans {
 
 	private List<CandidateElementSpans> candidateList;
 	private int currentDoc, currentPosition;
-	private short elementRef;
-	private TermSpans termSpans;
-	
-	public boolean isElementRef = false; // A dummy flag
+	//private short elementRef;
+	private TermSpans termSpans;	
 	
 	protected Logger logger = LoggerFactory.getLogger(ElementSpans.class);
 
@@ -68,7 +66,8 @@ public class ElementSpans extends SimpleSpans {
 				this.matchStartPosition = cs.getStart();
 				this.matchEndPosition = cs.getEnd();
 				this.matchPayload = cs.getPayloads();				
-				this.setElementRef(cs.getElementRef());				
+				//this.setElementRef(cs.getSpanId());				
+				this.setSpanId(cs.getSpanId());
 				candidateList.remove(0);
 				return true;
 			}
@@ -90,7 +89,8 @@ public class ElementSpans extends SimpleSpans {
 		while (hasMoreSpans &&	termSpans.doc() == currentDoc && 
 				termSpans.start() == currentPosition){
 			CandidateElementSpans cs = new CandidateElementSpans(termSpans,
-					elementRef);
+					spanId);
+					//elementRef);
 			readPayload(cs);
 			candidateList.add(cs);
 			hasMoreSpans = termSpans.next();
@@ -120,15 +120,15 @@ public class ElementSpans extends SimpleSpans {
 			
 			cs.setEnd(PayloadReader.readInteger(payload,8));
 			
-			if (isElementRef ){
+			if (hasSpanId){
 				// Copy rest of payloads after the end position and elementref
 				//payloadBuffer.put(payload.bytes, payload.offset + 14, payload.length - 14);				
-				cs.setElementRef(PayloadReader.readShort(payload,12));
+				cs.setSpanId(PayloadReader.readShort(payload,12));
 			}
 			else{
 				// Copy rest of payloads after the end position
 				//payloadBuffer.put(payload.bytes, payload.offset + 12, payload.length - 12);
-				cs.setElementRef((short) -1);
+				cs.setSpanId((short) -1);
 			}
 			
 			//byte[] offsetCharacters = new byte[8];
@@ -138,7 +138,7 @@ public class ElementSpans extends SimpleSpans {
 	    }
 	    else {	
 			cs.setEnd(cs.getStart());
-			cs.setElementRef((short) -1);
+			cs.setSpanId((short) -1);
 			cs.setPayloads(null);
     	}
 	}
@@ -162,13 +162,13 @@ public class ElementSpans extends SimpleSpans {
 		return termSpans.cost();
 	}
 	
-	public short getElementRef() {
-		return elementRef;
-	}
-
-	public void setElementRef(short elementRef) {
-		this.elementRef = elementRef;
-	}
+//	public short getElementRef() {
+//		return elementRef;
+//	}
+//
+//	public void setElementRef(short elementRef) {
+//		this.elementRef = elementRef;
+//	}
 	
 	/** Match candidate for element spans.
 	 * */	
@@ -179,13 +179,13 @@ public class ElementSpans extends SimpleSpans {
 		public CandidateElementSpans(Spans span, short elementRef) 
 				throws IOException {
 			super(span);
-			setElementRef(elementRef);
+			setSpanId(elementRef);
 		}
 		
-		public void setElementRef(short elementRef) {
+		public void setSpanId(short elementRef) {
 			this.elementRef = elementRef;
 		}
-		public short getElementRef() {
+		public short getSpanId() {
 			return elementRef;
 		}	
 	}

@@ -62,7 +62,7 @@ public class SpanElementAttributeQuery extends SimpleSpanQuery{
 	@Override
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
-		return new ElementAttributeSpans(this, context, acceptDocs, termContexts);
+		return null; //new ElementAttributeSpans(this, context, acceptDocs, termContexts);
 	}
 
 	@Override
