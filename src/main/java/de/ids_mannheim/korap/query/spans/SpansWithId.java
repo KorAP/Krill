@@ -11,18 +11,18 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
 
-public abstract class WithIdSpans extends SimpleSpans{
+public abstract class SpansWithId extends SimpleSpans{
 
 	protected short spanId;
 	protected boolean hasSpanId = false; // A dummy flag
 	
-	public WithIdSpans(SpanElementQuery spanElementQuery,
+	public SpansWithId(SpanElementQuery spanElementQuery,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(spanElementQuery, context, acceptDocs, termContexts);
 	}
 	
-	public WithIdSpans(SpanRelationQuery spanRelationQuery,
+	public SpansWithId(SpanRelationQuery spanRelationQuery,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(spanRelationQuery, context, acceptDocs, termContexts);

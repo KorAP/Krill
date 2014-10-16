@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 
-/** Span enumeration of elements that have some attribute and/or do <em>not</em> 
- * 	have some attributes. This class handles <em>and</em> operation on attributes.
+/** Span enumeration of element or relation spans having and/or <em>not</em> 
+ * 	having some attributes. This class handles <em>and</em> operation on attributes.
  * 
  * 	Use SpanOrQuery to perform <em>or</em> operation on attributes, i.e. choose 
  * 	between two elements with some attribute constraints. Note that the attribute 
@@ -25,19 +25,19 @@ import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
  *
  * 	@author margaretha
  * */
-public class ElementAttributeSpans extends SimpleSpans{
+public class SpansWithAttribute extends SimpleSpans{
 	
-	private WithIdSpans withAttributeSpans;
+	private SpansWithId withAttributeSpans;
 	private List<AttributeSpans> attributeList;
 	private List<AttributeSpans> notAttributeList;
 	
-	protected Logger logger = LoggerFactory.getLogger(ElementAttributeSpans.class);
+	protected Logger logger = LoggerFactory.getLogger(SpansWithAttribute.class);
 
         // This advices the java compiler to ignore all loggings
         public static final boolean DEBUG = false;	
 
-	public ElementAttributeSpans(SpanWithAttributeQuery spanWithAttributeQuery,
-			WithIdSpans withIdSpans,
+	public SpansWithAttribute(SpanWithAttributeQuery spanWithAttributeQuery,
+			SpansWithId withIdSpans,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(spanWithAttributeQuery, context, acceptDocs, termContexts);		
@@ -224,7 +224,7 @@ public class ElementAttributeSpans extends SimpleSpans{
 	/** Advance the element or attribute spans to be in the same doc 
 	 * 	and start position.
 	 * */
-	private boolean ensureSamePosition(WithIdSpans spans,
+	private boolean ensureSamePosition(SpansWithId spans,
 			AttributeSpans attributes) throws IOException {
 		
 		while (hasMoreSpans && ensureSameDoc(spans, attributes)){

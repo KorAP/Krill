@@ -38,7 +38,7 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
  * 
  * 	@author margaretha
  * */
-public class RelationSpans extends WithIdSpans{
+public class RelationSpans extends SpansWithId{
 
 	//short relationId;
 	int targetStart, targetEnd;

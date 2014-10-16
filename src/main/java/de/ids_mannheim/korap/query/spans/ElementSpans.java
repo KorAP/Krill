@@ -24,7 +24,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
  *
  * Use copyFrom instead of clone
  */
-public class ElementSpans extends WithIdSpans {
+public class ElementSpans extends SpansWithId {
 
 	private List<CandidateElementSpans> candidateList;
 	private int currentDoc, currentPosition;

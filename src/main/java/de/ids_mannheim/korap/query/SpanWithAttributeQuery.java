@@ -12,7 +12,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.spans.ElementAttributeSpans;
+import de.ids_mannheim.korap.query.spans.SpansWithAttribute;
 import de.ids_mannheim.korap.query.spans.ElementSpans;
 import de.ids_mannheim.korap.query.spans.RelationSpans;
 
@@ -100,11 +100,11 @@ public class SpanWithAttributeQuery extends SimpleSpanQuery{
 		Spans spans = this.getFirstClause().getSpans(context, acceptDocs, termContexts);
 		
 		if (type.equals("spanElementWithAttribute")){			
-			return new ElementAttributeSpans(this, (ElementSpans) spans, 
+			return new SpansWithAttribute(this, (ElementSpans) spans, 
 					context, acceptDocs, termContexts);
 		}
 		
-		return new ElementAttributeSpans(this, (RelationSpans) spans,
+		return new SpansWithAttribute(this, (RelationSpans) spans,
 				context, acceptDocs, termContexts);
 	}
 
