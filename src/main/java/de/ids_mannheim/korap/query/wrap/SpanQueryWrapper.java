@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query.wrap;
 
 import org.apache.lucene.search.spans.SpanQuery;
+import de.ids_mannheim.korap.util.QueryException;
 
 // TODO: Add warning and error
 
@@ -11,14 +12,19 @@ import org.apache.lucene.search.spans.SpanQuery;
  * @author Nils Diewald
  */
 public class SpanQueryWrapper {
-    protected boolean isNull = true,
-	              isOptional = false,
-	              isNegative = false;
     protected int min = 1,
 	          max = 1;
 
+    protected byte number = (byte) 0;
+    protected boolean hasClass = false;
+
+    protected boolean isNull = true,
+	              isOptional = false,
+ 	              isNegative = false,
+	              isEmpty = false;
+
     // Serialize query to Lucene SpanQuery
-    public SpanQuery toQuery () {
+    public SpanQuery toQuery () throws QueryException {
 	return (SpanQuery) null;
     };
 
@@ -42,15 +48,95 @@ public class SpanQueryWrapper {
 	return this.isNegative;
     };
 
+    // The subquery should match everything, like in
+    // "the []"
+    public boolean isEmpty () {
+	return this.isEmpty;
+    };
+
+    // Check, if the query may be an anchor
+    // in a SpanSequenceQueryWrapper
+    public boolean maybeAnchor () {
+	if (this.isNegative())
+	    return false;
+
+	if (this.isOptional())
+	    return false;
+
+	if (this.isEmpty())
+	    return false;
+
+	return true;
+    };
+
+    public boolean maybeExtension () {
+	return !this.maybeAnchor();
+    };
+
     // Repetition queries may be more specific regarding repetition
-    // This is a minimum repetition value
-    public int min () {
+    // Get minimum repetition value
+    public int getMin () {
 	return this.min;
     };
 
     // Repetition queries may be more specific regarding repetition
-    // This is a maximum repetition value
-    public int max () {
+    // Get maximum repetition value
+    public int getMax () {
 	return this.max;
+    };
+
+    // Set minimum repetition value
+    public SpanQueryWrapper setMin (int min) {
+	this.min = min;
+	return this;
+    };
+
+    // Set maximum repetition value
+    public SpanQueryWrapper setMax (int max) {
+	this.max = max;
+	return this;
+    };
+
+
+    // Empty tokens may have class information
+    public boolean hasClass () {
+	return this.hasClass;
+    };
+
+    public SpanQueryWrapper hasClass (boolean value) {
+	this.hasClass = value;
+	return this;
+    };
+
+    // Get class number
+    public byte getClassNumber () {
+	return this.number;
+    };
+
+    // Set class number
+    public SpanQueryWrapper setClassNumber (byte number) {
+	this.hasClass = true;
+	this.number = number;
+	return this;
+    };
+
+    // Set class number
+    public SpanQueryWrapper setClassNumber (short number) {
+	return this.setClassNumber((byte) number);
+    };
+
+    // Set class number
+    public SpanQueryWrapper setClassNumber (int number) {
+	return this.setClassNumber((byte) number);
+    };
+
+    public String toString () {
+	String string = "" +
+	    (this.isNull() ? "isNull" : "notNull") +
+	    "-" +
+	    (this.isEmpty() ? "isEmpty" : "notEmpty") +
+	    "-" +
+	    (this.isOptional() ? "isOptional" : "notOptional");
+	return string;
     };
 };

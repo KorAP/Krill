@@ -194,7 +194,7 @@ public class TestElementDistanceIndex {
 	
 	/** Test query from json */
 	@Test
-	public void testCase5() throws IOException{
+	public void testCase5() throws Exception{
 		//System.out.println("testCase4");
 		ki = new KorapIndex();
 		ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),true);       

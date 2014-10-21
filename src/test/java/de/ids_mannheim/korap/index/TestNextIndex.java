@@ -327,7 +327,7 @@ public class TestNextIndex {
 	}
 
 	@Test
-	public void indexExample7Distances () throws IOException{
+	public void indexExample7Distances () throws Exception{
 		KorapIndex ki = new KorapIndex();
 		ki.addDoc(createFieldDoc1());		
 		ki.addDoc(createFieldDoc2());		
@@ -347,7 +347,7 @@ public class TestNextIndex {
 	};
 
 	@Test
-	public void indexExample8Distances () throws IOException{
+	public void indexExample8Distances () throws Exception{
 		KorapIndex ki = new KorapIndex();
 		ki.addDoc(createFieldDoc1());		
 		ki.addDoc(createFieldDoc2());		

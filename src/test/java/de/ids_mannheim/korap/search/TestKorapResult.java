@@ -12,6 +12,8 @@ import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.index.FieldDocument;
 
+import de.ids_mannheim.korap.util.QueryException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -27,7 +29,7 @@ import org.junit.runners.JUnit4;
 public class TestKorapResult {
 
     @Test
-    public void checkJSONResult () throws IOException  {
+    public void checkJSONResult () throws Exception  {
 	KorapIndex ki = new KorapIndex();
 	FieldDocument fd = new FieldDocument();
 	fd.addString("ID", "doc-1");
@@ -93,7 +95,7 @@ public class TestKorapResult {
     };
 
     @Test
-    public void checkJSONResultForJSONInput () throws IOException  {
+    public void checkJSONResultForJSONInput () throws Exception  {
 	KorapIndex ki = new KorapIndex();
 	FieldDocument fd = new FieldDocument();
 	fd.addString("ID", "doc-1");

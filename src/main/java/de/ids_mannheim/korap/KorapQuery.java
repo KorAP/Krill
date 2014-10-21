@@ -329,9 +329,14 @@ public class KorapQuery {
 
 		    if (number > MAX_CLASS_NUM)
 			throw new QueryException("Class numbers limited to " + MAX_CLASS_NUM);
-		    return new SpanClassQueryWrapper(
-		      this.fromJSON(operands.get(0)), number
-                    );
+
+		    SpanQueryWrapper sqw = this.fromJSON(operands.get(0));
+
+		    // Problematic
+		    if (sqw.maybeExtension())
+			return sqw.setClassNumber(number);
+
+		    return new SpanClassQueryWrapper(sqw, number);
 		};
 
 		throw new QueryException("Class group expects class attribute");
@@ -340,6 +345,7 @@ public class KorapQuery {
 
 		int min = 0;
 		int max = 100;
+
 		if (json.has("boundary")) {
 		    Boundary b = new Boundary(json.get("boundary"), 0, 100);
 		    min = b.min;
@@ -374,10 +380,12 @@ public class KorapQuery {
 		if (min > max)
 		    max = max;
 
-		// This may be an empty repetitor
-		return new SpanRepetitionQueryWrapper(
-		    this.fromJSON(operands.get(0)), min, max
-		);
+		SpanQueryWrapper sqw = this.fromJSON(operands.get(0));
+
+		if (sqw.maybeExtension())
+		    return sqw.setMin(min).setMax(max);
+
+		return new SpanRepetitionQueryWrapper(sqw, min, max);
 	    };
 
 	    throw new QueryException("Unknown group operation");
@@ -422,8 +430,9 @@ public class KorapQuery {
 
 	case "korap:token":
 
+	    // The token is empty and should be treated like []
 	    if (!json.has("wrap"))
-		return new SpanEmptyTokenWrapper();
+		return new SpanRepetitionQueryWrapper();
 
 	    return this._segFromJSON(json.get("wrap"));
 

@@ -9,10 +9,13 @@ import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
+
+import de.ids_mannheim.korap.util.QueryException;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -22,7 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
-TODO: Make isNegative work!
+  TODO:
+  Make isNegative work!
+  Make isEmpty work!
 */
 
 
@@ -30,311 +35,162 @@ TODO: Make isNegative work!
  * Deserialize complexe sequence queries to Lucene SpanQueries.
  *
  * @author Nils Diewald
+ * @version 0.02
  */
 public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
     private String field;
-    private ArrayList<SpanQuery> segments;
+    private ArrayList<SpanQueryWrapper> segments;
     private ArrayList<DistanceConstraint> constraints;
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(SpanSequenceQueryWrapper.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
-    
-    private boolean
-	isInOrder = true,
-	isOptional = true,
-	lastIsOptional = false,
-	firstIsOptional = false;
+    public static final boolean DEBUG = false;
 
+    private boolean isInOrder = true;
+
+    /**
+     * Empty constructor.
+     */
     public SpanSequenceQueryWrapper (String field) {
 	this.field = field;
-	this.segments = new ArrayList<SpanQuery>(2);
+	this.segments = new ArrayList<SpanQueryWrapper>(2);
     };
 
+
+    /**
+     * Constructor accepting term sequences.
+     */
     public SpanSequenceQueryWrapper (String field, String ... terms) {
 	this(field);
 	for (int i = 0; i < terms.length; i++) {
-	    this.segments.add((SpanQuery) new SpanTermQuery(new Term(field, terms[i])));
-	    this.isOptional = false;
+	    this.segments.add(
+                new SpanSimpleQueryWrapper(
+                    new SpanTermQuery(new Term(field, terms[i]))
+                )
+            );
 	};
 	this.isNull = false;
     };
 
+
+    /**
+     * Constructor accepting SpanQuery sequences.
+     */
     public SpanSequenceQueryWrapper (String field, SpanQuery sq) {
 	this(field);
-	if (DEBUG)
-	    log.trace("New spanquery sequence " + sq.toString());
-	this.segments.add((SpanQuery) sq);
-	this.isOptional = false;
+	this.segments.add(new SpanSimpleQueryWrapper(sq));
 	this.isNull = false;
     };
 
+
+    /**
+     * Constructor accepting SpanQueryWrapper sequences.
+     * These wrappers may be optional, negative or empty.
+     */
     public SpanSequenceQueryWrapper (String field, SpanQueryWrapper sswq) {
 	this(field);
 
-	if (!sswq.isNull()) {
+	// Ignore null queries
+	if (sswq.isNull())
+	    return;
 
-	    if (sswq.isNegative())
-		this.isNegative = true;
-	    
-	    this.segments.add((SpanQuery) sswq.toQuery());
-	    this.isNull = false;
-	    if (sswq.isOptional()) {
-		if (DEBUG)
-		    log.trace("New optional query sequence " +
-			      sswq.toQuery().toString());
-		this.isOptional = true;
-		this.lastIsOptional = true;
-		this.firstIsOptional = true;
+	if (DEBUG && !sswq.isEmpty) {
+	    try {
+		log.trace("New span sequence {}", sswq.toQuery().toString());
 	    }
-	    else {
-		this.isOptional = false;
-		if (DEBUG)
-		    log.trace("New non-optional query sequence " +
-			      sswq.toQuery().toString());
+	    catch (QueryException qe) {
+		log.trace("Unable to serialize query {}", qe.getMessage());
 	    };
 	};
+
+	this.segments.add(sswq);
+	this.isNull = false;
     };
 
-    public SpanSequenceQueryWrapper (String field, SpanRegexQueryWrapper re) {
-	this(field);
-	if (!re.isNull()) {
-	    this.segments.add((SpanQuery) re.toQuery());
-	    this.isNull = false;
-	    this.isOptional = false;
-	};
-    };
 
-    public SpanSequenceQueryWrapper (String field, SpanWildcardQueryWrapper wc) {
-	this(field);
-	if (!wc.isNull()) {
-	    this.segments.add((SpanQuery) wc.toQuery());
-	    this.isOptional = false;
-	    this.isNull = false;
-	};
-    };
-
-    public SpanQuery get (int index) {
-	return this.segments.get(index);
-    };
-
-    public void set (int index, SpanQuery sq) {
-	this.segments.set(index, sq);
-    };
-
+    /**
+     * Append a term to the sequence.
+     */
     public SpanSequenceQueryWrapper append (String term) {
 	return this.append(
-	    (SpanQuery) new SpanTermQuery(new Term(field, term))
+	    new SpanSimpleQueryWrapper(
+                new SpanTermQuery(new Term(field, term))
+	    )
         );
     };
-    
+
+
+    /**
+     * Append a SpanQuery to the sequence.
+     */
     public SpanSequenceQueryWrapper append (SpanQuery query) {
-	this.isNull     = false;
-	this.isOptional = false;
-
-	// Check if there has to be alternation magic in action
-	if (this.lastIsOptional) {
-	    if (DEBUG)
-		log.trace("Append non-opt query to opt query " +
-			  query.toString());
-
-	    SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, query);
-	    SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(field, query);
-
-	    // Remove last element of the list and prepend it
-	    ssqw.prepend(this.segments.remove(this.segments.size() - 1));
-	    saqw.or(ssqw);
-
-	    // Update boundary optionality
-	    if (this.firstIsOptional && this.segments.size() == 0)
-		this.firstIsOptional = false;
-	    
-	    this.lastIsOptional = false;
-
-	    this.segments.add((SpanQuery) saqw.toQuery());
-	}
-	else {
-	    if (DEBUG)
-		log.trace("Append non-opt query to non-opt query " +
-			  query.toString());
-
-	    this.segments.add(query);
-	};
-	
-	return this;
+	return this.append(new SpanSimpleQueryWrapper(query));
     };
 
+
+    /**
+     * Append a SpanQueryWrapper to the sequence.
+     */
     public SpanSequenceQueryWrapper append (SpanQueryWrapper ssq) {
+	if (ssq.isNull())
+	    return this;
 
-	if (DEBUG)
-	    log.trace("Try to append query {}", ssq.toString());
+	this.isNull = false;
+	this.segments.add(ssq);
 
-	if (!ssq.isNull()) {
-
-	    if (DEBUG)
-		log.trace("THe query {} is not null", ssq.toString());
-
-	    if (ssq.isNegative())
-		this.isNegative = true;
-	    
-	    SpanQuery appendQuery = ssq.toQuery();
-	    if (!ssq.isOptional()) {
-		if (DEBUG)
-		    log.trace("Append non-opt query to non-opt query {}",
-			      appendQuery.toString());
-		return this.append(appendQuery);
-	    };
-	    
-	    // Situation is ab? or a?b?
-	    if (this.segments.size() != 0) {
-
-		// Remove last element of the list and prepend it
-		SpanQuery lastQuery = this.segments.remove(this.segments.size() - 1);
-		SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, lastQuery);
-		SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(field, appendQuery);
-		ssqw.prepend(lastQuery);
-
-		// Situation is a?b?
-		if (this.lastIsOptional) {
-		    saqw.or(appendQuery);
-		    // last stays optional
-		    if (DEBUG)
-			log.trace("Append opt query to opt query {}",
-				  appendQuery.toString());
-
-		}
-		else if (DEBUG) {
-		    log.trace("Append opt query to non-opt query {}",
-			      appendQuery.toString());
-		};
-
-		saqw.or(ssqw);
-		this.segments.add((SpanQuery) saqw.toQuery());
-	    }
-	    
-	    // Situation is b?
-	    else {
-		this.segments.add(appendQuery);
-
-		if (DEBUG)
-		    log.trace("Append opt query {}",
-			      appendQuery.toString());
-
-		// Update boundary optionality
-		this.firstIsOptional = true;
-		this.isOptional      = true;
-		this.lastIsOptional  = true;
-	    };
-	    this.isNull = false;
-	};
 	return this;
     };
 
-    public SpanSequenceQueryWrapper append (SpanRegexQueryWrapper srqw) {
-	if (!srqw.isNull()) {
-	    return this.append((SpanQuery) srqw.toQuery());
-	};
-	return this;
-    };
-    
-    public SpanSequenceQueryWrapper append (SpanWildcardQueryWrapper swqw) {
-	if (!swqw.isNull()) {
-	    return this.append((SpanQuery) swqw.toQuery());
-	};
-	return this;
-    };
-
+    /**
+     * Prepend a term to the sequence.
+     */
     public SpanSequenceQueryWrapper prepend (String term) {
-	return this.prepend(new SpanTermQuery(new Term(field, term)));
+	return this.prepend(
+            new SpanSimpleQueryWrapper(
+	        new SpanTermQuery(new Term(field, term))
+	    )
+        );
     };
 
+
+    /**
+     * Prepend a SpanQuery to the sequence.
+     */
     public SpanSequenceQueryWrapper prepend (SpanQuery query) {
-	this.isNull     = false;
-	this.isOptional = false;
-	
-	// Check if there has to be alternation magic in action
-	if (this.firstIsOptional) {
-	    SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, query);
-	    SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(field, query);
-	    // Remove last element of the list and prepend it
-	    ssqw.append(this.segments.remove(0));
-	    saqw.or(ssqw);
-
-	    // Update boundary optionality
-	    if (this.lastIsOptional && this.segments.size() == 0)
-		this.lastIsOptional = false;
-	    this.firstIsOptional = false;
-
-	    this.segments.add(0, (SpanQuery) saqw.toQuery());
-	}
-	else {
-	    this.segments.add(0,query);
-	};
-	return this;
+	return this.prepend(
+            new SpanSimpleQueryWrapper(query)
+        );
     };
 
+    /**
+     * Prepend a SpanQueryWrapper to the sequence.
+     */
     public SpanSequenceQueryWrapper prepend (SpanQueryWrapper ssq) {
-	if (!ssq.isNull()) {
+	if (ssq.isNull())
+	    return this;
 
-	    if (ssq.isNegative())
-		this.isNegative = true;
-	    
-	    SpanQuery prependQuery = ssq.toQuery();
-	    if (!ssq.isOptional()) {
-		return this.prepend(prependQuery);
-	    };
-	    
-	    // Situation is b?a or b?a?
-	    if (this.segments.size() != 0) {
-		// Remove first element of the list and append it
-		SpanQuery firstQuery = this.segments.remove(0);
-		SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(field, firstQuery);
-		SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(field, prependQuery);
-		ssqw.append(firstQuery);
+	this.isNull = false;
+	this.segments.add(0, ssq);
 
-		// Situation is b?a?
-		if (this.firstIsOptional)
-		    saqw.or(prependQuery);
-		// first stays optional
-
-		saqw.or(ssqw);
-		this.segments.add(0, (SpanQuery) saqw.toQuery());
-	    }
-	    
-	    // Situation is b?
-	    else {
-		this.segments.add(prependQuery);
-
-		// Update boundary optionality
-		this.firstIsOptional = true;
-		this.isOptional      = true;
-		this.lastIsOptional  = true;
-	    };
-	    this.isNull = false;
-	};
 	return this;
     };
 
-    public SpanSequenceQueryWrapper prepend (SpanRegexQueryWrapper re) {
-	if (!re.isNull()) {
-	    return this.prepend(re.toQuery());
-	};
-	return this;
-    };
 
-    public SpanSequenceQueryWrapper prepend (SpanWildcardQueryWrapper swqw) {
-	if (!swqw.isNull()) {
-	    return this.prepend(swqw.toQuery());
-	};
-	return this;
-    };
-
+    /**
+     * Add a sequence constraint to the sequence for tokens,
+     * aka distance constraints.
+     */
     public SpanSequenceQueryWrapper withConstraint (int min, int max) {
 	return this.withConstraint(min, max, false);
     };
 
+
+    /**
+     * Add a sequence constraint to the sequence for tokens,
+     * aka distance constraints (with exclusion).
+     */
     public SpanSequenceQueryWrapper withConstraint (int min, int max, boolean exclusion) {
 	if (this.constraints == null)
 	    this.constraints = new ArrayList<DistanceConstraint>(1);
@@ -342,10 +198,20 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 	return this;
     };
 
+
+    /**
+     * Add a sequence constraint to the sequence for various units,
+     * aka distance constraints.
+     */
     public SpanSequenceQueryWrapper withConstraint (int min, int max, String unit) {
 	return this.withConstraint(min, max, unit, false);
     };
+
     
+    /**
+     * Add a sequence constraint to the sequence for various units,
+     * aka distance constraints (with exclusion).
+     */
     public SpanSequenceQueryWrapper withConstraint (int min,
 						    int max,
 						    String unit,
@@ -362,13 +228,63 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 	return this;
     };
 
-    
-    public SpanQuery toQuery () {
-	if (this.segments.size() == 0 || this.isNull) {
+    /**
+     * Respect the order of distances.
+     */
+    public void setInOrder (boolean isInOrder) {
+	this.isInOrder = isInOrder;
+    };
+
+    /**
+     * Check if the order is relevant.
+     */
+    public boolean isInOrder () {
+	return this.isInOrder;
+    };
+
+    /**
+     * Check if there are constraints defined for the sequence.
+     */
+    public boolean hasConstraints () {
+	if (this.constraints == null)
+	    return false;
+	if (this.constraints.size() <= 0)
+	    return false;
+	return true;
+    };
+
+
+    /**
+     * Serialize Query to Lucene SpanQueries
+     */
+    public SpanQuery toQuery () throws QueryException {
+
+	int size = this.segments.size();
+
+	// Nothing to do
+	if (size == 0 || this.isNull)
 	    return (SpanQuery) null;
+
+	if (size == 1) {
+	    if (this.segments.get(0).maybeAnchor())
+		return (SpanQuery) this.segments.get(0).toQuery();
+
+	    if (this.segments.get(0).isEmpty())
+		throw new QueryException("Sequence is not allowed to be empty");
+	    if (this.segments.get(0).isOptional())
+		throw new QueryException("Sequence is not allowed to be optional");
+	    if (this.segments.get(0).isNegative())
+		throw new QueryException("Sequence is not allowed to be negative");
 	};
 
-	SpanQuery query = this.segments.get(0);
+	if (!_solveProblematicSequence(size)) {
+	    if (this.segments.get(0).isNegative())
+		throw new QueryException("Sequence contains unresolvable "+
+					 "empty, optional, or negative segments");
+	};
+
+	// Create the initial query
+	SpanQuery query = this.segments.get(0).toQuery();
 
 	// NextQueries:
 	if (this.constraints == null || this.constraints.size() == 0 ||
@@ -378,7 +294,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 	    for (int i = 1; i < this.segments.size(); i++) {
 		query = new SpanNextQuery(
 	            query,
-		    this.segments.get(i) // Todo: Maybe payloads are not necessary
+		    this.segments.get(i).toQuery()
 		);
 	    };
 	    return (SpanQuery) query;
@@ -393,9 +309,9 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 		for (int i = 1; i < this.segments.size(); i++) {
 		    SpanDistanceQuery sdquery = new SpanDistanceQuery(
 			    query,
-				this.segments.get(i),
-				constraint,
-				true
+			    this.segments.get(i).toQuery(),
+			    constraint,
+			    true
 		    );
 		    query = (SpanQuery) sdquery;
 		};
@@ -405,8 +321,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 	    else {
 		for (int i = 1; i < this.segments.size(); i++) {
 		    SpanDistanceQuery sdquery = new SpanDistanceQuery(
-	                query,
-			this.segments.get(i),
+			query,
+			this.segments.get(i).toQuery(),
 			constraint,
 			true
 		    );
@@ -421,29 +337,206 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 	for (int i = 1; i < this.segments.size(); i++) {
 	    query = new SpanMultipleDistanceQuery(
 	        query,
-		this.segments.get(i),
+		this.segments.get(i).toQuery(),
 		this.constraints,
 		isInOrder,
 		true
 	    );
 	};
-
 	return (SpanQuery) query;
     };
 
-    public void setInOrder (boolean isInOrder) {
-	this.isInOrder = isInOrder;
+    /*
+      While there is a segment isNegative() or isOptional() or isEmpty() do
+      - look for an anchor next to it
+      - merge the problematic segment with the anchor
+      - go on
+    */
+    private boolean _solveProblematicSequence (int size) throws QueryException {
+
+	// Check if there is a problematic segment
+	SpanQueryWrapper underScrutiny;
+	boolean noRemainingProblem = true;
+	int i = 0;
+
+	if (DEBUG)
+	    log.trace("Try to solve a query of {} segments", size);
+
+	for (; i < size;) {
+	    underScrutiny = this.segments.get(i);
+
+	    // Check if there is a problem!
+	    if (!underScrutiny.maybeAnchor()) {
+
+		if (DEBUG)
+		    log.trace("segment {} is problematic", i);
+
+		// [problem][anchor]
+		if (i < (size-1) && this.segments.get(i+1).maybeAnchor()) {
+
+		    // Insert the solution
+		    this.segments.set(
+		        i+1,
+		        _merge(this.segments.get(i+1), underScrutiny, false)
+		    );
+
+		    // Remove the problem
+		    this.segments.remove(i);
+		    size--;
+
+		    if (DEBUG)
+			log.trace("Remove segment {} - now size {}", i, size);
+		}
+
+		// [anchor][problem]
+		else if (i >= 1 && this.segments.get(i-1).maybeAnchor()) {
+		    // Insert the solution
+		    this.segments.set(
+		        i-1,
+		        _merge(this.segments.get(i-1), underScrutiny, true)
+		    );
+
+		    // Remove the problem
+		    this.segments.remove(i);
+		    size--;
+
+		    if (DEBUG)
+			log.trace("Remove segment {} - now size {}", i, size);
+		}
+		else {
+		    noRemainingProblem = false;
+		    i++;
+		};
+	    }
+	    else {
+		i++;
+	    };
+	};
+
+	// There is still a remaining problem
+	if (!noRemainingProblem) {
+
+	    // The size has changed - retry!
+	    if (size != this.segments.size())
+		return _solveProblematicSequence(this.segments.size());
+	    else
+		return true;
+	};
+
+	return false;
     };
 
-    public boolean isInOrder () {
-	return this.isInOrder;
-    };
 
-    public boolean hasConstraints () {
-	if (this.constraints == null)
-	    return false;
-	if (this.constraints.size() <= 0)
-	    return false;
-	return true;
+    // Todo: Deal with negative and optional!
+    // [base=der][base!=Baum]?
+    public SpanQueryWrapper _merge (
+        SpanQueryWrapper anchor,
+	SpanQueryWrapper problem,
+	boolean mergeLeft) throws QueryException {
+
+	// Extend to the right - merge to the left
+	int direction = 1;
+	if (!mergeLeft)
+	    direction = -1;
+
+	if (DEBUG)
+	    log.trace("Will merge two spans to {}", mergeLeft ? "left" : "right");
+	    
+	// Make empty extension to anchor
+	if (problem.isEmpty()) {
+	    SpanQuery query;
+
+	    if (DEBUG)
+		log.trace("Problem is empty");
+
+	    if (problem.hasClass) {
+
+		if (DEBUG)
+		    log.trace("Problem has class {}", problem.getClassNumber());
+
+		query = new SpanExpansionQuery(
+		    anchor.toQuery(),
+		    problem.getMin(),
+		    problem.getMax(),
+		    direction,
+		    problem.getClassNumber(),
+		    true
+		);
+	    }
+	    else {
+
+		if (DEBUG)
+		    log.trace("Problem has no class");
+
+		query = new SpanExpansionQuery(
+		    anchor.toQuery(),
+		    problem.getMin(),
+		    problem.getMax(),
+		    direction,
+		    true
+		);
+	    };
+	    return new SpanSimpleQueryWrapper(query);
+	}
+
+	// make negative extension to anchor
+	else if (problem.isNegative()) {
+
+	    if (DEBUG)
+		log.trace("Problem is negative");
+
+	    SpanQuery query;
+	    if (problem.hasClass) {
+
+		if (DEBUG)
+		    log.trace("Problem has class {}", problem.getClassNumber());
+
+		query = new SpanExpansionQuery(
+		    anchor.toQuery(),
+		    problem.toQuery(),
+		    problem.getMin(),
+		    problem.getMax(),
+		    direction,
+		    problem.getClassNumber(),
+		    true
+		);
+	    }
+	    else {
+		if (DEBUG)
+		    log.trace("Problem has no class");
+
+		query = new SpanExpansionQuery(
+		    anchor.toQuery(),
+		    problem.toQuery(),
+		    problem.getMin(),
+		    problem.getMax(),
+		    direction,
+		    true
+		);
+	    };
+	    return new SpanSimpleQueryWrapper(query);
+	};
+
+	if (DEBUG)
+	    log.trace("Problem is optional");
+
+	// [base=der][base=baum]?
+
+	// [base=der]
+	SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(this.field, anchor);
+
+	// [base=der]
+	SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(this.field, anchor);
+
+	// [base=der][base=baum]
+	if (mergeLeft)
+	    ssqw.append(new SpanSimpleQueryWrapper(problem.toQuery()));
+	// [base=baum][base=der]
+	else
+	    ssqw.prepend(new SpanSimpleQueryWrapper(problem.toQuery()));
+	
+	saqw.or(ssqw);
+
+	return (SpanQueryWrapper) saqw;
     };
 };

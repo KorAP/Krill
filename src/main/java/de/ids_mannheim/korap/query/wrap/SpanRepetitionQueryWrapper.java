@@ -4,14 +4,30 @@ import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.util.QueryException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+// DEAL WITH NEGATIVITY
 
 public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subquery;
 
+    // Logger
+    private final static Logger log = LoggerFactory.getLogger(SpanSequenceQueryWrapper.class);
+
+    public SpanRepetitionQueryWrapper () {
+	this.isEmpty = true;
+	this.isNull = false;
+    };
+
     // This is for exact enumbered repetition, like in a{3}
     public SpanRepetitionQueryWrapper (SpanQueryWrapper subquery, int exact) {
-	this.subquery = subquery;
+	if (!subquery.isEmpty())
+	    this.subquery = subquery;
+	else
+	    this.isEmpty = true;
 
 	if (exact < 1 || this.subquery.isNull()) {
 	    this.isNull = true;
@@ -28,7 +44,10 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
     // This is for a range of repetitions, like in a{2,3}, a{,4}, a{3,}, a+, a*, a?
     public SpanRepetitionQueryWrapper (SpanQueryWrapper subquery, int min, int max) {
 
-	this.subquery = subquery;
+	if (!subquery.isEmpty())
+	    this.subquery = subquery;
+	else
+	    this.isEmpty = true;
 
 	// Subquery may be an empty token
 	if (this.subquery.isNull()) {
@@ -52,11 +71,16 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
 
 
     // Serialize to Lucene SpanQuery
-    public SpanQuery toQuery () {
+    public SpanQuery toQuery () throws QueryException {
 
 	// The query is null
 	if (this.isNull)
 	    return (SpanQuery) null;
+
+	if (this.isEmpty) {
+	    log.error("You can't queryize an empty query");
+	    return (SpanQuery) null;
+	};
 
 	// The query is not a repetition query at all, but may be optional
 	if (this.min == 1 && this.max == 1)
@@ -72,6 +96,8 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
     };
 
     public boolean isNegative () {
+	if (this.subquery == null)
+	    return false;
 	return this.subquery.isNegative();
     };
 };

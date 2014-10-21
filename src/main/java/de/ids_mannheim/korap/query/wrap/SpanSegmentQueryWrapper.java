@@ -13,9 +13,11 @@ import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 
+import de.ids_mannheim.korap.util.QueryException;
+
+
 /**
  * @author Nils Diewald
- * @version 0.01
  *
  * Creates a query object for segments, i.e. terms in a term vector
  * sharing the same position. A SpanSegment can include simple string terms,
@@ -23,8 +25,8 @@ import de.ids_mannheim.korap.query.SpanSegmentQuery;
  */
 
 public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
-    public ArrayList<SpanQuery> inclusive;
-    public ArrayList<SpanQuery> exclusive;
+    public ArrayList<SpanQueryWrapper> inclusive;
+    public ArrayList<SpanQueryWrapper> exclusive;
     private String field;
 
     /**
@@ -34,8 +36,8 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
      */
     public SpanSegmentQueryWrapper (String field) {
 	this.field = field;
-	this.inclusive = new ArrayList<SpanQuery>();
-	this.exclusive = new ArrayList<SpanQuery>();
+	this.inclusive = new ArrayList<SpanQueryWrapper>();
+	this.exclusive = new ArrayList<SpanQueryWrapper>();
     };
 
     /**
@@ -47,14 +49,14 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
     public SpanSegmentQueryWrapper (String field, String ... terms) {
 	this(field);
 	for (int i = 0; i < terms.length; i++) {
-	    this.inclusive.add((SpanQuery) new SpanTermQuery(new Term(field, terms[i])));
+	    this.inclusive.add(new SpanSimpleQueryWrapper(field, terms[i]));
 	    this.isNull = false;
 	};
     };
 
     public SpanSegmentQueryWrapper (String field, SpanRegexQueryWrapper re) {
 	this(field);
-	this.inclusive.add((SpanQuery) re.toQuery());
+	this.inclusive.add(re);
 	this.isNull = false;
     };
 
@@ -63,7 +65,7 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 	if (!alter.isNull()) {
 	    if (alter.isNegative())
 		this.isNegative = true;
-	    this.inclusive.add((SpanQuery) alter.toQuery());
+	    this.inclusive.add(alter);
 	    this.isNull = false;
 	};
     };
@@ -72,33 +74,35 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 	this(field);
 
 	if (!ssq.isNull()) {
-	    Iterator<SpanQuery> clause = ssq.inclusive.iterator();
+	    Iterator<SpanQueryWrapper> clause = ssq.inclusive.iterator();
 	    while (clause.hasNext()) {
-		this.inclusive.add( (SpanQuery) clause.next().clone() );
+		this.inclusive.add( (SpanQueryWrapper) clause.next() ); 
+		// .clone()
 	    };
 
 	    clause = ssq.exclusive.iterator();
 	    while (clause.hasNext()) {
-		this.exclusive.add( (SpanQuery) clause.next().clone() );
+		this.exclusive.add( (SpanQueryWrapper) clause.next() );  
+		// .clone()
 	    };
 	    this.isNull = false;
 	};
     };
 
     public SpanSegmentQueryWrapper with (String term) {
-	this.inclusive.add(new SpanTermQuery(new Term(field, term)));
+	this.inclusive.add(new SpanSimpleQueryWrapper(field, term));
 	this.isNull = false;
 	return this;
     };
 
-    public SpanSegmentQueryWrapper with (SpanRegexQueryWrapper re) {
-	this.inclusive.add((SpanQuery) re.toQuery());
+    public SpanSegmentQueryWrapper with (SpanQueryWrapper re) {
+	this.inclusive.add((SpanQueryWrapper) re);
 	this.isNull = false;
 	return this;
     };
 
     public SpanSegmentQueryWrapper with (SpanWildcardQueryWrapper wc) {
-	this.inclusive.add((SpanQuery) wc.toQuery());
+	this.inclusive.add((SpanQueryWrapper) wc);
 	this.isNull = false;
 	return this;
     };
@@ -107,7 +111,7 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 	if (!alter.isNull()) {
 	    if (alter.isNegative())
 		this.isNegative = true;
-	    this.inclusive.add((SpanQuery) alter.toQuery());
+	    this.inclusive.add(alter);
 	    this.isNull = false;
 	};
 	return this;
@@ -116,10 +120,10 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
     // Identical to without
     public SpanSegmentQueryWrapper with (SpanSegmentQueryWrapper seg) {
 	if (!seg.isNull()) {
-	    for (SpanQuery sq : seg.inclusive) {
+	    for (SpanQueryWrapper sq : seg.inclusive) {
 		this.inclusive.add(sq);
 	    };
-	    for (SpanQuery sq : seg.exclusive) {
+	    for (SpanQueryWrapper sq : seg.exclusive) {
 		this.exclusive.add(sq);
 	    };
 	    this.isNull = false;
@@ -128,19 +132,21 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
     };
 
     public SpanSegmentQueryWrapper without (String term) {
-	this.exclusive.add(new SpanTermQuery(new Term(field, term)));
+	this.exclusive.add(new SpanSimpleQueryWrapper(field, term));
 	this.isNull = false;
 	return this;
     };
 
+    // TODO: THESE MAYBE NOT NECESSARY:
+
     public SpanSegmentQueryWrapper without (SpanRegexQueryWrapper re) {
-	this.exclusive.add((SpanQuery) re.toQuery());
+	this.exclusive.add(re);
 	this.isNull = false;
 	return this;
     };
 
     public SpanSegmentQueryWrapper without (SpanWildcardQueryWrapper wc) {
-	this.exclusive.add((SpanQuery) wc.toQuery());
+	this.exclusive.add(wc);
 	this.isNull = false;
 	return this;
     };
@@ -148,10 +154,10 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
     public SpanSegmentQueryWrapper without (SpanAlterQueryWrapper alter) {
 	if (!alter.isNull()) {
 	    if (alter.isNegative()) {
-		this.inclusive.add((SpanQuery) alter.toQuery());
+		this.inclusive.add(alter);
 	    }
 	    else {
-		this.exclusive.add((SpanQuery) alter.toQuery());
+		this.exclusive.add(alter);
 	    };
 	    this.isNull = false;
 	};
@@ -166,7 +172,7 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 	return this;
     };
 
-    public SpanQuery toQuery () {
+    public SpanQuery toQuery () throws QueryException {
 	if (this.isNull || (this.inclusive.size() + this.exclusive.size() == 0)) {
 	    return (SpanQuery) null;
 	}
@@ -188,25 +194,25 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 	return (SpanQuery) null;
     };
 
-    private SpanQuery _listToQuery (ArrayList<SpanQuery> list) {
-	SpanQuery query = list.get(0);
+    private SpanQuery _listToQuery (ArrayList<SpanQueryWrapper> list) throws QueryException {
+	SpanQuery query = list.get(0).toQuery();
 
 	for (int i = 1; i < list.size(); i++) {
-	    query = new SpanSegmentQuery(query, list.get(i));
+	    query = new SpanSegmentQuery(query, list.get(i).toQuery());
 	};
 
 	return (SpanQuery) query;
     };
 
-    private SpanQuery _listToOrQuery (ArrayList<SpanQuery> list) {
+    private SpanQuery _listToOrQuery (ArrayList<SpanQueryWrapper> list) throws QueryException {
 	if (list.size() == 1) {
-	    return (SpanQuery) list.get(0);
+	    return (SpanQuery) list.get(0).toQuery();
 	};
 
-	Iterator<SpanQuery> clause = list.iterator();
-	SpanOrQuery soquery = new SpanOrQuery( clause.next() );
+	Iterator<SpanQueryWrapper> clause = list.iterator();
+	SpanOrQuery soquery = new SpanOrQuery( clause.next().toQuery() );
 	while (clause.hasNext()) {
-	    soquery.addClause( clause.next() );
+	    soquery.addClause( clause.next().toQuery() );
 	};
 	return (SpanQuery) soquery;
     };

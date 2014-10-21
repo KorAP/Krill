@@ -5,6 +5,8 @@ import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 
+import de.ids_mannheim.korap.util.QueryException;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -12,9 +14,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestSpanAlterQuery {
+public class TestSpanAlterQuery  {
     @Test
-    public void spanAlterQuery () {
+    public void spanAlterQuery () throws QueryException {
 
 	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
 	ssaquery.or("b");
@@ -22,7 +24,7 @@ public class TestSpanAlterQuery {
     };
 
     @Test
-    public void spanAlterQuery2 () {
+    public void spanAlterQuery2 () throws QueryException {
 
 	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
 	ssaquery.or("b").or("c");
@@ -30,7 +32,7 @@ public class TestSpanAlterQuery {
     };
 
     @Test
-    public void spanAlterQuery3 () {
+    public void spanAlterQuery3 () throws QueryException {
 	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
 	ssaquery.or("b").or("c").or("d");
 	assertEquals("spanOr([field:b, field:c, field:d])", ssaquery.toQuery().toString());
@@ -38,7 +40,7 @@ public class TestSpanAlterQuery {
 
 
     @Test
-    public void spanAlterQuery4 () {
+    public void spanAlterQuery4 () throws QueryException {
 	SpanSegmentQueryWrapper segquery = new SpanSegmentQueryWrapper("field", "a", "b", "c");
 	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
 	ssaquery.or("d").or(segquery).or("e");
@@ -46,7 +48,7 @@ public class TestSpanAlterQuery {
     };
 
     @Test
-    public void spanAlterQuery5 () {
+    public void spanAlterQuery5 () throws QueryException {
 	SpanRegexQueryWrapper srequery = new SpanRegexQueryWrapper("field", "a[bc]d.?e");
 	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
 	ssaquery.or("f").or(srequery).or("g");

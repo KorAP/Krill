@@ -1,3 +1,8 @@
+0.46 2014-10-21
+        - [feature] Support for relation queries (margaretha)
+	- [feature] Wrapping of extension queries
+	  (not completely tested yet; diewald)
+
 0.45 2014-10-06
         - [bugfix] Correctly respond request in JSON results (diewald)
         - [cleanup] Made SpanQueryWrapper an abstract class instead

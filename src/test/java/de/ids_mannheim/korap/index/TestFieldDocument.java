@@ -93,7 +93,7 @@ public class TestFieldDocument {
     };
 
     @Test
-    public void indexExample2 () throws IOException {
+    public void indexExample2 () throws Exception {
 
 	String json = new String(
 "{" +
@@ -204,7 +204,7 @@ public class TestFieldDocument {
     };
 
     @Test
-    public void queryJSONBsp18 () throws IOException {
+    public void queryJSONBsp18 () throws Exception {
 
 	// Construct index
 	KorapIndex ki = new KorapIndex();

@@ -26,7 +26,7 @@ import org.junit.runners.JUnit4;
 public class TestKorapCollection {
 
     @Test
-    public void filterExample () throws IOException {
+    public void filterExample () throws Exception {
 	
 	// Construct index
 	KorapIndex ki = new KorapIndex();
@@ -90,7 +90,7 @@ public class TestKorapCollection {
     };
 
     @Test
-    public void filterExampleAtomic () throws IOException {
+    public void filterExampleAtomic () throws Exception {
 	
 	// That's exactly the same test class, but with multiple atomic indices
 
@@ -168,7 +168,7 @@ public class TestKorapCollection {
 
 
     @Test
-    public void filterExample2 () throws IOException {
+    public void filterExample2 () throws Exception {
 	
 	// Construct index
 	KorapIndex ki = new KorapIndex();

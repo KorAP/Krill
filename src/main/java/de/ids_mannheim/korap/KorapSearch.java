@@ -54,14 +54,19 @@ public class KorapSearch {
 	    // "query" value
 	    if (this.request.has("query")) {
 		try {
-		    SpanQueryWrapper queryIface = new KorapQuery("tokens").fromJSON(this.request.get("query"));
-		    
-		    this.query = queryIface.toQuery();
-		    if (queryIface.isOptional())
-			this.addWarning("Optionality of query is ignored");
-		    if (queryIface.isNegative())
-			this.addWarning("Exclusivity of query is ignored");
+		    SpanQueryWrapper qw = new KorapQuery("tokens").fromJSON(this.request.get("query"));
 
+		    if (qw.isEmpty()) {
+			this.error = "This query matches everywhere";
+		    }
+		    else {
+		    
+			this.query = qw.toQuery();
+			if (qw.isOptional())
+			    this.addWarning("Optionality of query is ignored");
+			if (qw.isNegative())
+			    this.addWarning("Exclusivity of query is ignored");
+		    };
 		}
 		catch (QueryException q) {
 		    this.error = q.getMessage();
@@ -117,7 +122,12 @@ public class KorapSearch {
 
     // Maybe accept queryWrapperStuff
     public KorapSearch (SpanQueryWrapper sqwi) {
-	this.query = sqwi.toQuery();
+	try {
+	    this.query = sqwi.toQuery();
+	}
+	catch (QueryException q) {
+	    this.error = q.getMessage();
+	};
     };
 
     public KorapSearch (SpanQuery sq) {
@@ -151,7 +161,12 @@ public class KorapSearch {
     };
 
     public KorapSearch setQuery (SpanQueryWrapper sqwi) {
-	this.query = sqwi.toQuery();
+	try {
+	    this.query = sqwi.toQuery();
+	}
+	catch (QueryException q) {
+	    this.error = q.getMessage();
+	};
 	return this;
     };
 

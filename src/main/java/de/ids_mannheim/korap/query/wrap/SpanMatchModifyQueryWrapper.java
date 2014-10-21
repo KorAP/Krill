@@ -2,6 +2,8 @@ package de.ids_mannheim.korap.query.wrap;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
+import de.ids_mannheim.korap.util.QueryException;
+
 import de.ids_mannheim.korap.query.SpanMatchModifyClassQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
@@ -32,7 +34,7 @@ public class SpanMatchModifyQueryWrapper extends SpanQueryWrapper {
 	this.number = (byte) 0;
     };
 
-    public SpanQuery toQuery () {
+    public SpanQuery toQuery () throws QueryException {
 	if (this.subquery.isNull())
 	    return (SpanQuery) null;
 	return new SpanMatchModifyClassQuery(this.subquery.toQuery(), this.number);

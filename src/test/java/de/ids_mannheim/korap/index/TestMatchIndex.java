@@ -269,7 +269,7 @@ public class TestMatchIndex {
 
 
     @Test
-    public void indexExample3 () throws IOException {
+    public void indexExample3 () throws Exception {
 	KorapIndex ki = new KorapIndex();
 
 	// abcabcabac

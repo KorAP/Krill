@@ -27,7 +27,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 public class TestRegexWildcardIndex {
 
     @Test
-    public void indexRegex () throws IOException {
+    public void indexRegex () throws Exception {
 	KorapIndex ki = new KorapIndex();
 
 	// abcabcabac
@@ -84,7 +84,7 @@ public class TestRegexWildcardIndex {
     };
 
     @Test
-    public void indexWildcard () throws IOException {
+    public void indexWildcard () throws Exception {
 	KorapIndex ki = new KorapIndex();
 
 	// abcabcabac
@@ -143,7 +143,7 @@ public class TestRegexWildcardIndex {
     };
 
     @Test
-    public void indexRegexCaseInsensitive () throws IOException {
+    public void indexRegexCaseInsensitive () throws Exception {
 	KorapIndex ki = new KorapIndex();
 
 	// abcabcabac
@@ -208,7 +208,7 @@ public class TestRegexWildcardIndex {
     };
 
     @Test
-    public void indexRegexCombined () throws IOException {
+    public void indexRegexCombined () throws Exception {
 	KorapIndex ki = new KorapIndex();
 
 	// abcabcabac
@@ -244,7 +244,7 @@ public class TestRegexWildcardIndex {
 
 
     @Test
-    public void indexRegexWithinRewrite () throws IOException {
+    public void indexRegexWithinRewrite () throws Exception {
 	KorapIndex ki = new KorapIndex();
 
 	// abcabcabac

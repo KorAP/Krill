@@ -30,7 +30,7 @@ public class TestSegmentNegationIndex {
     private Logger log;	
 	
     @Test
-    public void testcaseNegation() throws IOException{
+    public void testcaseNegation() throws Exception {
 	ki = new KorapIndex();
 	ki.addDoc(createFieldDoc0());
 	ki.addDoc(createFieldDoc1());

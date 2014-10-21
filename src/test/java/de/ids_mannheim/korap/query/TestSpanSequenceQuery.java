@@ -3,6 +3,8 @@ package de.ids_mannheim.korap.query;
 import java.util.*;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 
+import de.ids_mannheim.korap.util.QueryException;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -13,7 +15,7 @@ import org.junit.runners.JUnit4;
 public class TestSpanSequenceQuery {
 
     @Test
-    public void spanSequenceQuery () {
+    public void spanSequenceQuery () throws QueryException {
 	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field");
 	assertNull(sssq.toQuery());
 	assertFalse(sssq.hasConstraints());

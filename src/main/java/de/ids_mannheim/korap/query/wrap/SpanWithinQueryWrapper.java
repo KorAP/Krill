@@ -6,12 +6,18 @@ import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
+import de.ids_mannheim.korap.util.QueryException;
+
 import java.util.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
 /*
   Todo:
+
+  contains(token,token) und matches(token, token) -> termGroup
+
+
   - Exclusivity has to be supported
   - In case the wrap is negative,
     the query has to be interpreted as being exclusive!
@@ -78,7 +84,7 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
 	    this.isNull = false;
     };
 
-    public SpanQuery toQuery () {
+    public SpanQuery toQuery () throws QueryException {
 	if (this.isNull)
 	    return (SpanQuery) null;
 	

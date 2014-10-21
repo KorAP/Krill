@@ -4,6 +4,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.util.QueryException;
 
 public class SpanElementQueryWrapper extends SpanQueryWrapper {
     String element;
@@ -14,7 +15,7 @@ public class SpanElementQueryWrapper extends SpanQueryWrapper {
 	this.element = element;
     };
 
-    public SpanQuery toQuery () {
+    public SpanQuery toQuery () throws QueryException {
 	return (SpanQuery) new SpanElementQuery(this.field, this.element);
     };
 

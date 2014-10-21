@@ -3,7 +3,10 @@ package de.ids_mannheim.korap.query.wrap;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+
+import de.ids_mannheim.korap.util.QueryException;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
@@ -15,7 +18,7 @@ import java.util.*;
 public class SpanAlterQueryWrapper extends SpanQueryWrapper {
     private String field;
     private SpanQuery query;
-    private List<SpanQuery> alternatives;
+    private List<SpanQueryWrapper> alternatives;
 
     public SpanAlterQueryWrapper (String field) {
 	this.field = field;
@@ -23,6 +26,14 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
     };
 
     public SpanAlterQueryWrapper (String field, SpanQuery query) {
+	this.field = field;
+	this.alternatives = new ArrayList<>();
+	this.alternatives.add(
+            new SpanSimpleQueryWrapper(query)
+        );
+    };
+
+    public SpanAlterQueryWrapper (String field, SpanQueryWrapper query) {
 	this.field = field;
 	this.alternatives = new ArrayList<>();
 	this.alternatives.add(query);
@@ -33,16 +44,26 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
 	this.alternatives = new ArrayList<>();
 	for (String term : terms) {
 	    this.isNull = false;
-	    this.alternatives.add(new SpanTermQuery(new Term(this.field, term)));
+	    this.alternatives.add(
+	        new SpanSimpleQueryWrapper(
+                    new SpanTermQuery(
+                        new Term(this.field, term)
+		    )
+                )
+            );
 	};
     };
 
     public SpanAlterQueryWrapper or (String term) {
-	return this.or(new SpanTermQuery(new Term(this.field, term)));
+	return this.or(
+          new SpanTermQuery(new Term(this.field, term))
+        );
     };
 
     public SpanAlterQueryWrapper or (SpanQuery query) {
-	this.alternatives.add(query);
+	this.alternatives.add(
+            new SpanSimpleQueryWrapper(query)
+	);
 	this.isNull = false;
 	return this;
     };
@@ -59,35 +80,35 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
 	if (term.isOptional())
 	    this.isOptional = true;
 
-	this.alternatives.add( term.toQuery() );
+	this.alternatives.add( term );
 	this.isNull = false;
 	return this;
     };
 
     public SpanAlterQueryWrapper or (SpanRegexQueryWrapper term) {
-	this.alternatives.add( term.toQuery() );
+	this.alternatives.add( term );
 	this.isNull = false;
 	return this;
     };
 
     public SpanAlterQueryWrapper or (SpanWildcardQueryWrapper wc) {
-	this.alternatives.add( wc.toQuery() );
+	this.alternatives.add( wc );
 	this.isNull = false;
 	return this;
     };
 
-    public SpanQuery toQuery() {
+    public SpanQuery toQuery() throws QueryException {
 	if (this.isNull || this.alternatives.size() == 0)
 	    return (SpanQuery) null;
 	    
 	if (this.alternatives.size() == 1) {
-	    return (SpanQuery) this.alternatives.get(0);
+	    return (SpanQuery) this.alternatives.get(0).toQuery();
 	};
 
-	Iterator<SpanQuery> clause = this.alternatives.iterator();
-	SpanOrQuery soquery = new SpanOrQuery( clause.next() );
+	Iterator<SpanQueryWrapper> clause = this.alternatives.iterator();
+	SpanOrQuery soquery = new SpanOrQuery( clause.next().toQuery() );
 	while (clause.hasNext()) {
-	    soquery.addClause( clause.next() );
+	    soquery.addClause( clause.next().toQuery() );
 	};
 	return (SpanQuery) soquery;
     };

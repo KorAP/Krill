@@ -4,6 +4,8 @@ import java.util.*;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 
+import de.ids_mannheim.korap.util.QueryException;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -13,7 +15,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestSpanWithinQuery {
     @Test
-    public void spanSegmentWithinQuery () {
+    public void spanSegmentWithinQuery () throws QueryException {
 
 	SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper("field", "a", "b", "c");
 	SpanWithinQuery ssequery = new SpanWithinQuery("s", ssquery.toQuery());

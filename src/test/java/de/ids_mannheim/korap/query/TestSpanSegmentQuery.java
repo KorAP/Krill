@@ -5,6 +5,8 @@ import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
 
+import de.ids_mannheim.korap.util.QueryException;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -14,7 +16,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestSpanSegmentQuery {
     @Test
-    public void spanSegmentQuery () {
+    public void spanSegmentQuery () throws QueryException {
 
 	SpanSegmentQueryWrapper ssquery = new SpanSegmentQueryWrapper("field","a");
 	assertEquals("field:a", ssquery.toQuery().toString());
@@ -27,7 +29,7 @@ public class TestSpanSegmentQuery {
     };
 
     @Test
-    public void spanSegmentQueryExclusive () {
+    public void spanSegmentQueryExclusive () throws QueryException {
 
 	SpanSegmentQueryWrapper ssquery = new SpanSegmentQueryWrapper("field","a");
 	assertEquals("field:a", ssquery.toQuery().toString());
@@ -44,7 +46,7 @@ public class TestSpanSegmentQuery {
 
 
     @Test
-    public void spanSegmentRegexQuery () {
+    public void spanSegmentRegexQuery () throws QueryException {
 	SpanSegmentQueryWrapper ssquery = new SpanSegmentQueryWrapper("field");
 	assertNull(ssquery.toQuery());
 	ssquery.with("a");
@@ -73,7 +75,7 @@ public class TestSpanSegmentQuery {
     };
 
     @Test
-    public void spanSegmentAlterQuery () {
+    public void spanSegmentAlterQuery () throws QueryException {
 	SpanSegmentQueryWrapper ssquery = new SpanSegmentQueryWrapper("field");
 	assertNull(ssquery.toQuery());
 
@@ -87,7 +89,7 @@ public class TestSpanSegmentQuery {
 
 
     @Test
-    public void spanSegmentCloneQuery () {
+    public void spanSegmentCloneQuery () throws QueryException {
 	SpanSegmentQueryWrapper ssquery = new SpanSegmentQueryWrapper("field", "a", "b");
 	assertEquals("spanSegment(field:a, field:b)", ssquery.toQuery().toString());
 

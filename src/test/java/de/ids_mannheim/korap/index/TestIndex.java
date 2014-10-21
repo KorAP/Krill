@@ -162,7 +162,7 @@ public class TestIndex { // extends LuceneTestCase {
     };
 
     @Test
-    public void indexLucene () throws IOException {
+    public void indexLucene () throws Exception {
 
 	// Base analyzer for searching and indexing
 	StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);

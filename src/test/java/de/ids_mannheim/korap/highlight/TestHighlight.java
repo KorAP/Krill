@@ -12,6 +12,9 @@ import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.index.FieldDocument;
 
+import de.ids_mannheim.korap.util.QueryException;
+
+
 import static de.ids_mannheim.korap.Test.*;
 
 import static org.junit.Assert.*;
@@ -24,7 +27,7 @@ import org.junit.runners.JUnit4;
 public class TestHighlight { // extends LuceneTestCase {
 
     @Test
-    public void checkHighlights () throws IOException  {
+    public void checkHighlights () throws IOException, QueryException  {
 
 	KorapIndex ki = new KorapIndex();
 	String json = new String(
@@ -93,7 +96,7 @@ public class TestHighlight { // extends LuceneTestCase {
     };
 
     @Test
-    public void checkHighlightsManually () throws IOException  {
+    public void checkHighlightsManually () throws IOException, QueryException  {
 
 	KorapIndex ki = new KorapIndex();
 	String json = new String(
@@ -134,7 +137,7 @@ public class TestHighlight { // extends LuceneTestCase {
 
 
     @Test
-    public void highlightMissingBug () throws IOException  {
+    public void highlightMissingBug () throws IOException, QueryException  {
 	KorapIndex ki = new KorapIndex();
 	FieldDocument fd = new FieldDocument();
 	fd.addString("ID", "doc-1");

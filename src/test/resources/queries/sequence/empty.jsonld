@@ -1,0 +1,17 @@
+{
+   "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+   "collections" : [
+      {
+         "@type" : "korap:meta-filter",
+         "@value" : {
+            "@field" : "korap:field#corpusID",
+            "@type" : "korap:term",
+            "@value" : "WPD"
+         }
+      }
+   ],
+   "meta" : {},
+   "query" : {
+     "@type" : "korap:token"
+   }
+}

@@ -6,6 +6,8 @@ import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 
+import de.ids_mannheim.korap.util.QueryException;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -16,11 +18,11 @@ import org.junit.runners.JUnit4;
 public class TestSpanSegmentSequenceQuery {
 
     @Test
-    public void spanSegmentSequenceQuery () {
+    public void spanSegmentSequenceQuery () throws QueryException {
 	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field");
 
 	assertNull(sssq.toQuery());
-
+ 
 	sssq.append("a").append("b");
 
 	assertEquals("spanNext(field:a, field:b)", sssq.toQuery().toString());
@@ -31,7 +33,7 @@ public class TestSpanSegmentSequenceQuery {
     };
 
     @Test
-    public void spanSegmentSequenceQuery2 () {
+    public void spanSegmentSequenceQuery2 () throws QueryException {
 	SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field", "-c", "-d", "-e");
 	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "a", "b");
 
@@ -42,7 +44,7 @@ public class TestSpanSegmentSequenceQuery {
     };
 
     @Test
-    public void spanSegmentSequenceQuery3 () {
+    public void spanSegmentSequenceQuery3 () throws QueryException {
 	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "a", "b");
 	SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field", "c.?d");
 
@@ -52,7 +54,7 @@ public class TestSpanSegmentSequenceQuery {
     };
 
     @Test
-    public void spanSegmentSequenceQueryPrepend () {
+    public void spanSegmentSequenceQueryPrepend () throws QueryException {
 	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "b", "c");
 
 	sssq.prepend("a");
@@ -61,7 +63,7 @@ public class TestSpanSegmentSequenceQuery {
     };
 
     @Test
-    public void spanSegmentSequenceQueryPrepend2 () {
+    public void spanSegmentSequenceQueryPrepend2 () throws QueryException {
 	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "d", "e");
 	SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field", "-a", "-b", "-c");
 
@@ -71,7 +73,7 @@ public class TestSpanSegmentSequenceQuery {
     };
 
     @Test
-    public void spanSegmentSequenceQueryPrepend3 () {
+    public void spanSegmentSequenceQueryPrepend3 () throws QueryException {
 	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "c", "d");
 	SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field", "a.?b");
 
