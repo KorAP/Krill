@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
 
 /**	Enumeration of spans denoting relations between two tokens/elements. The start and end of 
- * 	a RelationSpan always denote the start and end of the source token/element.
+ * 	a RelationSpan always denote the start and end of the left-side token/element.
  * 
  * 	There are 4 types of relations, which is differentiated by the payload length in bytes.  
  * 	1. Token to token relation (1 int & 1 short, length: 6) 
@@ -41,8 +41,8 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
 public class RelationSpans extends SpansWithId{
 
 	//short relationId;
-	int targetStart, targetEnd;
-	int currentDoc, currentPosition;
+	private int rightStart, rightEnd;
+	private int currentDoc, currentPosition;
 	
 	private TermSpans relationTermSpan;
 	
@@ -71,7 +71,8 @@ public class RelationSpans extends SpansWithId{
 				this.matchDocNumber = cs.getDoc();
 				this.matchStartPosition = cs.getStart();
 				this.matchEndPosition = cs.getEnd();
-				this.matchPayload = cs.getPayloads();	
+				this.setRightStart(cs.getRightStart());
+				this.setRightEnd(cs.getRightEnd());
 				this.spanId = cs.getSpanId(); // relation id
 				candidateList.remove(0);
 				return true;
@@ -112,30 +113,31 @@ public class RelationSpans extends SpansWithId{
 		switch (length) {
 			case 6: // Token to token
 				i = PayloadReader.readInteger(payloadBytesRef,0);
-				cs.setTargetStart(i);
-				cs.setTargetEnd(i);
+				cs.setRightStart(i-1);
+				cs.setRightEnd(i);
 				break;
 	
 			case 10: // Token to span
-				cs.setTargetStart(PayloadReader.readInteger(payloadBytesRef,0));
-				cs.setTargetEnd(PayloadReader.readInteger(payloadBytesRef,4));
+				cs.setRightStart(PayloadReader.readInteger(payloadBytesRef,0));
+				cs.setRightEnd(PayloadReader.readInteger(payloadBytesRef,4));
 				break;
 				
 			case 11: // Span to token
 				cs.setEnd(PayloadReader.readInteger(payloadBytesRef,0));
 				i = PayloadReader.readInteger(payloadBytesRef,5);
-				cs.setTargetStart(i);
-				cs.setTargetEnd(i);
+				cs.setRightStart(i-1);
+				cs.setRightEnd(i);
 				break;
 			
 			case 14: // Span to span
 				cs.setEnd(PayloadReader.readInteger(payloadBytesRef,0));
-				cs.setTargetStart(PayloadReader.readInteger(payloadBytesRef,4));
-				cs.setTargetEnd(PayloadReader.readInteger(payloadBytesRef,8));
+				cs.setRightStart(PayloadReader.readInteger(payloadBytesRef,4));
+				cs.setRightEnd(PayloadReader.readInteger(payloadBytesRef,8));
 				break;
 		}
 		
 		cs.setSpanId(PayloadReader.readShort(payloadBytesRef, length-2)); //relation id
+		// Payload is cleared.
 	}
 
 	@Override
@@ -156,35 +158,27 @@ public class RelationSpans extends SpansWithId{
 	public long cost() {
 		return firstSpans.cost();
 	}
-/*
-	public short getRelationId() {
-		return relationId;
+
+	public int getRightStart() {
+		return rightStart;
 	}
 
-	public void setRelationId(short relationId) {
-		this.relationId = relationId;
-	}*/
-
-	public int getTargetStart() {
-		return targetStart;
+	public void setRightStart(int rightStart) {
+		this.rightStart = rightStart;
 	}
 
-	public void setTargetStart(int targetStart) {
-		this.targetStart = targetStart;
+	public int getRightEnd() {
+		return rightEnd;
 	}
 
-	public int getTargetEnd() {
-		return targetEnd;
-	}
-
-	public void setTargetEnd(int targetEnd) {
-		this.targetEnd = targetEnd;
+	public void setRightEnd(int rightEnd) {
+		this.rightEnd = rightEnd;
 	}
 	
 	
 	class CandidateRelationSpan extends CandidateSpan implements Comparable<CandidateSpan>{
 		
-		private int targetStart, targetEnd;
+		private int rightStart, rightEnd;
 		
 		public CandidateRelationSpan(Spans span) throws IOException{
 			super(span);
@@ -197,14 +191,14 @@ public class RelationSpans extends SpansWithId{
 			
 			CandidateRelationSpan cs = (CandidateRelationSpan) o;			
 			if (sourcePositionComparison == 0){
-				if (this.getTargetStart() == cs.getTargetStart()){
-					if (this.getTargetEnd() == cs.getTargetEnd())
+				if (this.getRightStart() == cs.getRightStart()){
+					if (this.getRightEnd() == cs.getRightEnd())
 						return 0;
-					if (this.getTargetEnd() > cs.getTargetEnd() )
+					if (this.getRightEnd() > cs.getRightEnd() )
 						return 1;
 					else return -1;
 				}
-				else if (this.getTargetStart() < cs.getTargetStart())
+				else if (this.getRightStart() < cs.getRightStart())
 					return -1;
 				else return 1;	
 			}
@@ -212,20 +206,20 @@ public class RelationSpans extends SpansWithId{
 			return sourcePositionComparison;
 		}
 		
-		public int getTargetEnd() {
-			return targetEnd;
+		public int getRightEnd() {
+			return rightEnd;
 		}
 
-		public void setTargetEnd(int targetEnd) {
-			this.targetEnd = targetEnd;
+		public void setRightEnd(int rightEnd) {
+			this.rightEnd = rightEnd;
 		}
 
-		public int getTargetStart() {
-			return targetStart;
+		public int getRightStart() {
+			return rightStart;
 		}
 
-		public void setTargetStart(int targetStart) {
-			this.targetStart = targetStart;
+		public void setRightStart(int rightStart) {
+			this.rightStart = rightStart;
 		}
 	}
 	

@@ -55,11 +55,8 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans{
 	  	while (hasMoreSpans && ensureSameDoc(firstSpans,secondSpans)){
 	  		int matchCase = findMatch();
 				if (matchCase == 0){
-				    if (DEBUG) {
-					log.trace("Match doc#: {}",matchDocNumber);
-					log.trace("Match positions: {}-{}", matchStartPosition, 
-						  matchEndPosition);
-				    };
+					//log.trace("Match doc#: {}",matchDocNumber);
+					//log.trace("Match positions: {}-{}", matchStartPosition,matchEndPosition);
 					doCollectPayloads();
 					return true;
 				} 
@@ -82,19 +79,14 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans{
     
   	/** Collecting available payloads from the current first and second spans */
   	private void doCollectPayloads() throws IOException {
+  		Collection<byte[]> payload;
   		if (collectPayloads){
-		    if (DEBUG)
-  			log.trace("Collect payloads");
   		    if (firstSpans.isPayloadAvailable()) {
-  		    	Collection<byte[]> payload = firstSpans.getPayload();
-			if (DEBUG)
-			    log.trace("Found {} payloads in firstSpans", payload.size());
+  		    	 payload = firstSpans.getPayload();
   		    	matchPayload.addAll(payload);
   		    }
   		    if (secondSpans.isPayloadAvailable()) {
-  		    	Collection<byte[]> payload = secondSpans.getPayload();
-			if (DEBUG)
-			    log.trace("Found {} payloads in secondSpans", payload.size());
+  		    	payload = secondSpans.getPayload();
   		    	matchPayload.addAll(payload);
   		    }
   		}

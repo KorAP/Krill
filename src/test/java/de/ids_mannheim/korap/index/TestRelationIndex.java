@@ -12,7 +12,10 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
+import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
+import de.ids_mannheim.korap.query.SpanRelationWithVariableQuery;
+import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 
     /*
@@ -107,31 +110,36 @@ public class TestRelationIndex {
         fd.addTV("base",
             "Ich kaufe die Blümen für meine Mutter.",             
             "[(0-3)s:Ich|_0#0-3|pos:NN|<>:s#0-38$<i>7<s>-1|<>:np#0-3$<i>1<s>-1|" +
-            	">:child-of$<i>0<i>7<s>1|" +            		
+            	">:child-of$<i>0<i>7<s>1|>:child-of$<i>0<i>1<s>6|" +
+            	"<:child-of$<i>1<b>0<i>1<s>3|<:child-of$<i>7<i>0<i>1<s>4|<:child-of$<i>7<i>1<i>7<s>5|" +
             	"<:dep$<i>1<s>2|" +
             	"r@:func=sbj$<s>1]" +
             	
             "[(1-2)s:kaufe|_1#4-9|pos:V|<>:vp#4-38$<i>7<s>-1|" +
             	">:child-of$<i>7<i>0<i>7<s>1|>:child-of$<i>1<i>7<s>2|" +
+            	"<:child-of$<i>7<b>0<i>1<s>5|<:child-of$<i>7<i>3<i>7<s>6|" +
             	">:dep$<i>0<s>3|>:dep$<i>3<s>4]" +
             	
-            "[(2-3)s:die|_2#10-13|pos:ART|<>:np#10-20$<i>4<s>-1|<>:np#10-38$<i>7<s>-1|" +
+            "[(2-3)s:die|_2#10-13|pos:ART|tt:DET|<>:np#10-20$<i>4<s>-1|<>:np#10-38$<i>7<s>-1|" +
             	">:child-of$<i>4<i>2<i>7<s>1|>:child-of$<i>2<i>4<s>2|>:child-of$<i>7<i>1<i>7<s>2|" +
+            	"<:child-of$<i>4<b>0<i>3<s>3|<:child-of$<i>4<b>0<i>4<s>4|<:child-of$<i>7<i>2<i>4<s>5|<:child-of$<i>7<i>4<i>7<s>6|" +
             	"<:dep$<i>3<s>3|r@:func=obj$<s>1" +
             	"]" +
             
             "[(3-4)s:Blümen|_3#14-20|pos:NN|" +
-            	">:child-of$<i>2<i>4<s>1|" +
+            	">:child-of$<i>2<i>4<s>1|" +            	
             	"<:dep$<i>1<s>2|>:dep$<i>2<s>3|>:dep$<i>4<s>4|" +
             	"r@:func=head$<s>2]" +
             	
             "[(4-5)s:für|_4#21-24|pos:PREP|<>:pp#21-38$<i>7<s>-1|" +
             	">:child-of$<i>4<i>7<s>1|>:child-of$<i>7<i>2<i>7<s>2|" +
-            	"<:dep$<i>3<s>1|>:dep$<i>5<s>2" +
+            	"<:child-of$<i>7<b>0<i>5<s>4|<:child-of$<i>7<i>5<i>7<s>5|" +
+            	"<:dep$<i>3<s>1|>:dep$<i>5<s>3" +
             	"]" +
             
             "[(5-6)s:meine|_5#25-30|pos:ART|<>:np#25-38$<i>7<s>-1|" +
             	">:child-of$<i>5<i>7<s>1|>:child-of$<i>7<i>4<i>7<s>2|" +
+            	"<:child-of$<i>7<b>0<i>6<s>4|<:child-of$<i>7<b>0<i>7<s>5|" +
             	"<:dep$<i>7<s>3" +
             	"]" +
             "[(6-7)s:Mutter.|_6#31-38|pos:NN|" +
@@ -228,7 +236,7 @@ public class TestRelationIndex {
 				new SpanTermQuery(new Term("base",">:child-of")),true);
 		kr = ki.search(srq,(short) 20);
 		
-		assertEquals(12, kr.getTotalResults());
+		assertEquals(13, kr.getTotalResults());
 		
 		// child-of with attr func=sbj
 		SpanWithAttributeQuery wq = 
@@ -287,5 +295,179 @@ public class TestRelationIndex {
 		}	*/	
 	}
 	
+	/** Relation with variable
+	 * 	match right, return left
+	 * 	sort by right, then sort by left
+	 * @throws IOException 
+	 * */
+	@Test
+	public void testCase4() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+		
+		//return all children of np
+		SpanRelationWithVariableQuery rv = new SpanRelationWithVariableQuery(
+				new SpanRelationQuery(
+						new SpanTermQuery(new Term("base",">:child-of")),true
+				), 
+				new SpanElementQuery("base","np"), 
+				true, true); 
+				
+		kr = ki.search(rv,(short) 10);
+		/*for (KorapMatch km : kr.getMatches()){		
+		System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+			+km.getSnippetBrackets());
+		}	*/
+		assertEquals(7, kr.getTotalResults());
+		assertEquals(0,kr.getMatch(0).getStartPos());
+		assertEquals(1,kr.getMatch(0).getEndPos());
+		assertEquals(2,kr.getMatch(1).getStartPos());
+		assertEquals(3,kr.getMatch(1).getEndPos());
+		assertEquals(2,kr.getMatch(2).getStartPos());
+		assertEquals(4,kr.getMatch(2).getEndPos());
+		assertEquals(3,kr.getMatch(3).getStartPos());
+		assertEquals(4,kr.getMatch(3).getEndPos());
+		assertEquals(4,kr.getMatch(4).getStartPos());
+		assertEquals(7,kr.getMatch(4).getEndPos());
+		assertEquals(5,kr.getMatch(5).getStartPos());
+		assertEquals(6,kr.getMatch(5).getEndPos());
+		assertEquals(6,kr.getMatch(6).getStartPos());
+		assertEquals(7,kr.getMatch(6).getEndPos());		
+		// sorting left problem (solved)
+		
+		//return all children of np that are articles
+		SpanSegmentQuery rv2 = new SpanSegmentQuery(rv, new SpanTermQuery(new Term("base","pos:ART")));		
+		kr = ki.search(rv2,(short) 10);
+				
+		assertEquals(2, kr.getTotalResults());
+		assertEquals(2,kr.getMatch(0).getStartPos());
+		assertEquals(3,kr.getMatch(0).getEndPos());
+		assertEquals(5,kr.getMatch(1).getStartPos());
+		assertEquals(6,kr.getMatch(1).getEndPos());
+		
+	}
 	
+	/** Using the opposite relation
+	 * 	match left, return right
+	 * 	sort by left, then sort by right
+	 * */
+	@Test
+	public void testCase5() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+		
+		SpanRelationQuery spanRelationQuery =new SpanRelationQuery(
+				new SpanTermQuery(new Term("base","<:child-of")),true
+		);
+		
+		//return all children of np
+		SpanRelationWithVariableQuery rv =new SpanRelationWithVariableQuery(
+				spanRelationQuery, 
+				new SpanElementQuery("base","np"), 
+				false, true);
+		kr = ki.search(rv,(short) 10);
+		
+		for (KorapMatch km : kr.getMatches()){
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+				+km.getSnippetBrackets());
+			}
+		
+		assertEquals(7, kr.getTotalResults());
+		assertEquals(0,kr.getMatch(0).getStartPos());
+		assertEquals(1,kr.getMatch(0).getEndPos());
+		assertEquals(2,kr.getMatch(1).getStartPos());
+		assertEquals(3,kr.getMatch(1).getEndPos());
+		assertEquals(2,kr.getMatch(2).getStartPos());
+		assertEquals(4,kr.getMatch(2).getEndPos());
+		assertEquals(3,kr.getMatch(3).getStartPos());
+		assertEquals(4,kr.getMatch(3).getEndPos());
+		assertEquals(4,kr.getMatch(4).getStartPos());
+		assertEquals(7,kr.getMatch(4).getEndPos());
+		assertEquals(5,kr.getMatch(5).getStartPos());
+		assertEquals(6,kr.getMatch(5).getEndPos());
+		assertEquals(6,kr.getMatch(6).getStartPos());
+		assertEquals(7,kr.getMatch(6).getEndPos());	
+	}
+	
+	/** Match right, return left
+	 * 	sort by right, then sort by left
+	 * */
+	@Test
+	public void testCase6() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+		
+		SpanRelationQuery spanRelationQuery =new SpanRelationQuery(
+				new SpanTermQuery(new Term("base","<:child-of")),true
+		);
+		
+		//return all parents of np
+		SpanRelationWithVariableQuery rv =new SpanRelationWithVariableQuery(
+				spanRelationQuery, 
+				new SpanElementQuery("base","np"), 
+				true, true);
+		kr = ki.search(rv,(short) 10);
+		
+		for (KorapMatch km : kr.getMatches()){
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+				+km.getSnippetBrackets());
+			}
+		assertEquals(4, kr.getTotalResults());
+		assertEquals(0,kr.getMatch(0).getStartPos());
+		assertEquals(7,kr.getMatch(0).getEndPos());
+		assertEquals(1,kr.getMatch(1).getStartPos());
+		assertEquals(7,kr.getMatch(1).getEndPos());
+		assertEquals(2,kr.getMatch(2).getStartPos());
+		assertEquals(7,kr.getMatch(2).getEndPos());
+		assertEquals(4,kr.getMatch(3).getStartPos());
+		assertEquals(7,kr.getMatch(3).getEndPos());
+		// id problem same like testcase5
+	}
+	
+	/** Match left, return right
+	 * 	sort by left, then sort by right
+	 * */
+	@Test
+	public void testCase7() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+		
+		//return all parents of np
+		SpanRelationWithVariableQuery rv =new SpanRelationWithVariableQuery(
+				new SpanRelationQuery(
+						new SpanTermQuery(new Term("base",">:child-of")),true
+				), 
+				new SpanElementQuery("base","np"), 
+				false, true);
+		kr = ki.search(rv,(short) 10);
+		for (KorapMatch km : kr.getMatches()){
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+				+km.getSnippetBrackets());
+			}
+		assertEquals(4, kr.getTotalResults());
+		assertEquals(0,kr.getMatch(0).getStartPos());
+		assertEquals(7,kr.getMatch(0).getEndPos());
+		assertEquals(1,kr.getMatch(1).getStartPos());
+		assertEquals(7,kr.getMatch(1).getEndPos());
+		assertEquals(2,kr.getMatch(2).getStartPos());
+		assertEquals(7,kr.getMatch(2).getEndPos());
+		assertEquals(4,kr.getMatch(3).getStartPos());
+		assertEquals(7,kr.getMatch(3).getEndPos());
+		// id problem
+		
+		// return all children of relation targets/ right side		
+		SpanRelationWithVariableQuery rv3 = new SpanRelationWithVariableQuery(				
+				new SpanRelationQuery(
+						new SpanTermQuery(new Term("base",">:child-of")),true
+				),
+				rv, true, true);
+				
+		kr = ki.search(rv3,(short) 10);
+		
+		/*for (KorapMatch km : kr.getMatches()){		
+		System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+			+km.getSnippetBrackets());
+		}*/		
+
+	}
 }

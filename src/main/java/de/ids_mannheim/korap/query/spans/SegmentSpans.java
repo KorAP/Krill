@@ -30,7 +30,6 @@ public class SegmentSpans extends NonPartialOverlappingSpans {
   	 * */
     @Override
 	protected int findMatch() {
-		
 		if (firstSpans.start() == secondSpans.start() &&
 			firstSpans.end() == secondSpans.end() ){
 			matchDocNumber = firstSpans.doc();
@@ -38,7 +37,8 @@ public class SegmentSpans extends NonPartialOverlappingSpans {
 			matchEndPosition = firstSpans.end();			
 			return 0;
 		}
-		else if (firstSpans.end() < secondSpans.end())
+		else if (firstSpans.start() < secondSpans.start() || 
+				firstSpans.end() < secondSpans.end())
 			return -1;
 		
 		return 1;

@@ -18,6 +18,12 @@ public class SpanRelationQuery extends SimpleSpanQuery {
 	public SpanRelationQuery(SpanQuery firstClause, boolean collectPayloads) {
 		super(firstClause, collectPayloads);
 	}
+	
+	// for spanRelationWithVariable
+	public SpanRelationQuery(SpanRelationQuery spanRelationQuery,
+			SpanQuery secondClause, boolean collectPayloads) {
+		super(spanRelationQuery, secondClause, collectPayloads);
+	}
 
 	@Override
 	public SimpleSpanQuery clone() {

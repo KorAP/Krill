@@ -52,9 +52,9 @@ public abstract class DistanceSpans extends SimpleSpans{
 	 * */
 	protected abstract boolean advance() throws IOException; 
 
-	/** Find the same doc shared by element, firstspan and secondspan.
+/*	*//** Find the same doc shared by element, firstspan and secondspan.
 	 *  @return true iff such a doc is found.
-	 * */
+	 * *//*
 	protected boolean findSameDoc(Spans x, 
 			Spans y, Spans e) throws IOException{
 		
@@ -68,7 +68,7 @@ public abstract class DistanceSpans extends SimpleSpans{
 			};
 		}		
   		return false;
-	}
+	}*/
 	
 	public CandidateSpan getMatchFirstSpan() {
 		return matchFirstSpan;
