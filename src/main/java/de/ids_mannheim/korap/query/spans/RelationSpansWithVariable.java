@@ -109,15 +109,15 @@ public class RelationSpansWithVariable extends SimpleSpans{
 		while (hasMoreSecondSpans && i < temp.size()){
 			r = temp.get(i);
 			if (matchRight){
-				System.out.println(i+" "+r.getStart()+","+r.getEnd()+" "+
-						r.getRightStart()+","+r.getRightEnd()+
-						" "+secondSpans.start()+","+secondSpans.end());
+				//System.out.println(i+" "+r.getStart()+","+r.getEnd()+" "+
+				//		r.getRightStart()+","+r.getRightEnd()+
+				//		" "+secondSpans.start()+","+secondSpans.end());
 				i = matchRelation(i, r,r.getRightStart(), r.getRightEnd());
 			}
 			else{
-				System.out.println(i+" "+r.getStart()+","+r.getEnd()+" "+
-						r.getRightStart()+","+r.getRightEnd()+" "
-						+secondSpans.start()+","+secondSpans.end());
+				//System.out.println(i+" "+r.getStart()+","+r.getEnd()+" "+
+				//		r.getRightStart()+","+r.getRightEnd()+" "
+				//		+secondSpans.start()+","+secondSpans.end());
 				i = matchRelation(i, r,r.getStart(), r.getEnd());
 			}			
 		}

@@ -367,10 +367,10 @@ public class TestRelationIndex {
 				false, true);
 		kr = ki.search(rv,(short) 10);
 		
-		for (KorapMatch km : kr.getMatches()){
+		/*for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets());
-			}
+			}*/
 		
 		assertEquals(7, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
@@ -408,10 +408,10 @@ public class TestRelationIndex {
 				true, true);
 		kr = ki.search(rv,(short) 10);
 		
-		for (KorapMatch km : kr.getMatches()){
+		/*for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets());
-			}
+			}*/
 		assertEquals(4, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
 		assertEquals(7,kr.getMatch(0).getEndPos());
@@ -440,10 +440,10 @@ public class TestRelationIndex {
 				new SpanElementQuery("base","np"), 
 				false, true);
 		kr = ki.search(rv,(short) 10);
-		for (KorapMatch km : kr.getMatches()){
+		/*for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets());
-			}
+			}*/
 		assertEquals(4, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
 		assertEquals(7,kr.getMatch(0).getEndPos());
