@@ -28,6 +28,10 @@ import org.slf4j.LoggerFactory;
   TODO:
   Make isNegative work!
   Make isEmpty work!
+  Make isExtendedToTheRight work!
+
+  Probably the problemsolving should be done on attribute check
+  not on toQuery().
 */
 
 

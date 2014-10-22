@@ -21,7 +21,8 @@ public class SpanQueryWrapper {
     protected boolean isNull = true,
 	              isOptional = false,
  	              isNegative = false,
-	              isEmpty = false;
+ 	              isEmpty = false,
+	              isExtendedToTheRight;
 
     // Serialize query to Lucene SpanQuery
     public SpanQuery toQuery () throws QueryException {
@@ -39,6 +40,8 @@ public class SpanQueryWrapper {
     // like in
     // "the [pos=ADJ]{0} tree"
     public boolean isNull () {
+	if (this.getMin() == 0 && this.getMax() == 0)
+	    return true;
 	return this.isNull;
     };
 
@@ -53,6 +56,15 @@ public class SpanQueryWrapper {
     public boolean isEmpty () {
 	return this.isEmpty;
     };
+
+    // The subquery may exceed the right text offset due to an empty extension
+    // [base=tree][]{3,4}
+    // This makes it necessary to check the last position of the span
+    // for match testing
+    public boolean isExtendedToTheRight () {
+	return this.isExtendedToTheRight;
+    };
+
 
     // Check, if the query may be an anchor
     // in a SpanSequenceQueryWrapper
@@ -69,6 +81,7 @@ public class SpanQueryWrapper {
 	return true;
     };
 
+    // Oposite to maybeAnchor - means "it is complicated"
     public boolean maybeExtension () {
 	return !this.maybeAnchor();
     };

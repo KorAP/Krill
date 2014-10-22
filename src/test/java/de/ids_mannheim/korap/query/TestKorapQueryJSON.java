@@ -336,6 +336,13 @@ public class TestKorapQueryJSON {
     };
 
     @Test
+    public void queryJSONseqEmptyStartRepetition2 () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/empty-first-repetition-2.jsonld").getFile());
+	// []{0,0}[tt/p=NN]
+	assertEquals(sqwi.toQuery().toString(), "tokens:tt/p:NN");
+    };
+
+    @Test
     public void queryJSONseqEmptyMiddle () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/empty-middle.jsonld").getFile());
 	// der[][tt/p=NN]
@@ -398,6 +405,78 @@ public class TestKorapQueryJSON {
 	// Ist gleichbedeutend mit
 	// {1:[]{3,8}}[tt/p=NN]{2:[]}{2,7}
 	assertEquals(sqwi.toQuery().toString(), "spanExpansion(spanExpansion(tokens:tt/p:NN, []{3, 8}, left, class:1), []{2, 7}, right, class:2)");
+    };
+
+    @Test
+    public void queryJSONseqNegative () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/negative.jsonld").getFile());
+
+	// [tt/p!=NN]
+	assertTrue(sqwi.isNegative());
+    };
+
+    @Test
+    public void queryJSONseqNegativeStart () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/negative-first.jsonld").getFile());
+
+	// [tt/p!=NN][tt/p=NN]
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{1, 1}, left)");
+    };
+
+    @Test
+    public void queryJSONseqNegativeEnd () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/negative-last.jsonld").getFile());
+
+	// [tt/p=NN][tt/p!=NN]
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{1, 1}, right)");
+    };
+
+    @Test
+    public void queryJSONseqNegativeStartRepetition () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/negative-first-repetition.jsonld").getFile());
+
+	// [tt/p!=NN]{4,5}[tt/p=NN]
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{4, 5}, left)");
+    };
+
+    @Test
+    public void queryJSONseqNegativeStartRepetition2 () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/negative-first-repetition-2.jsonld").getFile());
+
+	// [tt/p!=NN]{0,5}[tt/p=NN]
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{0, 5}, left)");
+    };
+
+    @Test
+    public void queryJSONseqNegativeStartRepetition3 () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/negative-first-repetition-3.jsonld").getFile());
+
+	// [tt/p!=NN]{0,0}[tt/p=NN]
+	assertEquals(sqwi.toQuery().toString(), "tokens:tt/p:NN");
+    };
+
+    @Test
+    public void queryJSONseqNegativeEndClass () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/negative-last-class.jsonld").getFile());
+
+	// [tt/p=NN]{2:[tt/p!=NN]}
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{1, 1}, right, class:2)");
+    };
+
+    @Test
+    public void queryJSONseqNegativeEndRepetitionClass () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/negative-last-class-repetition.jsonld").getFile());
+
+	// [tt/p=NN]{2:[tt/p!=NN]{4,5}}
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{4, 5}, right, class:2)");
+    };
+
+    @Test
+    public void queryJSONseqNegativeEndRepetitionClass2 () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/negative-last-class-repetition-2.jsonld").getFile());
+
+	// [tt/p=NN]{2:[tt/p!=NN]}{4,5}
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{4, 5}, right, class:2)");
     };
 
     public static String getString (String path) {
