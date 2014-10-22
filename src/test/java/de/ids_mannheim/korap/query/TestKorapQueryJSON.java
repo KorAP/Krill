@@ -265,7 +265,6 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanEndsWith(<tokens:s />, {1: tokens:mate/p:V}))");
     };
 
-
     @Test
     public void queryJSONrepetition () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp-repetition.jsonld").getFile());
@@ -282,6 +281,10 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "spanDistance(tokens:s:Tal, tokens:s:Wald, [(w[2:100], ordered, notExcluded)])");
     };
 
+
+    /*
+      Check extensions
+     */
 
     @Test
     public void queryJSONseqEmpty () throws QueryException {
@@ -351,6 +354,50 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/empty-middle-repetition.jsonld").getFile());
 	// der[]{4,8}[tt/p=NN]
 	assertEquals(sqwi.toQuery().toString(), "spanNext(tokens:s:der, spanExpansion(tokens:tt/p:NN, []{4, 8}, left))");
+    };
+
+    @Test
+    public void queryJSONseqEmptySurround () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/empty-surround.jsonld").getFile());
+	// [][tt/p=NN][]
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(spanExpansion(tokens:tt/p:NN, []{1, 1}, left), []{1, 1}, right)");
+    };
+
+    @Test
+    public void queryJSONseqEmptySurroundClass () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/empty-surround-class.jsonld").getFile());
+	// [][tt/p=NN]{2:[]}
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(spanExpansion(tokens:tt/p:NN, []{1, 1}, left), []{1, 1}, right, class:2)");
+    };
+
+    @Test
+    public void queryJSONseqEmptySurroundClass2 () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/empty-surround-class-2.jsonld").getFile());
+	// {3:[]}[tt/p=NN]{2:[]}
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(spanExpansion(tokens:tt/p:NN, []{1, 1}, left, class:3), []{1, 1}, right, class:2)");
+    };
+
+    @Test
+    public void queryJSONseqEmptySurroundRepetition () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/empty-surround-repetition.jsonld").getFile());
+	// [][tt/p=NN][]{2,7}
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(spanExpansion(tokens:tt/p:NN, []{1, 1}, left), []{2, 7}, right)");
+    };
+
+    @Test
+    public void queryJSONseqEmptySurroundRepetition2 () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/empty-surround-repetition-2.jsonld").getFile());
+	// []{3,5}[tt/p=NN][]{2,7}
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(spanExpansion(tokens:tt/p:NN, []{3, 5}, left), []{2, 7}, right)");
+    };
+
+    @Test
+    public void queryJSONseqEmptySurroundRepetitionClass () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/sequence/empty-surround-repetition-class.jsonld").getFile());
+	// {1:[]}{3,8}[tt/p=NN]{2:[]{2,7}}
+	// Ist gleichbedeutend mit
+	// {1:[]{3,8}}[tt/p=NN]{2:[]}{2,7}
+	assertEquals(sqwi.toQuery().toString(), "spanExpansion(spanExpansion(tokens:tt/p:NN, []{3, 8}, left, class:1), []{2, 7}, right, class:2)");
     };
 
     public static String getString (String path) {
