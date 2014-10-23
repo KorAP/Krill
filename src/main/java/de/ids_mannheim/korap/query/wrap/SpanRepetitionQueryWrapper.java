@@ -63,7 +63,6 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
 	    min = 1;
 	    if (max == 0)
 		this.isNull = true;
-	    System.err.println("++++++++++++++++++++++++++++++");
 	};
 
 	this.min = min;

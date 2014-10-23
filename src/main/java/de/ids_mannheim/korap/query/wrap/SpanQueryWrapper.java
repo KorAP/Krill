@@ -18,11 +18,11 @@ public class SpanQueryWrapper {
     protected byte number = (byte) 0;
     protected boolean hasClass = false;
 
-    protected boolean isNull = true,
+    protected boolean isNull     = true,
 	              isOptional = false,
  	              isNegative = false,
- 	              isEmpty = false,
-	              isExtendedToTheRight;
+ 	              isEmpty    = false,
+	              isExtendedToTheRight = false;
 
     // Serialize query to Lucene SpanQuery
     public SpanQuery toQuery () throws QueryException {

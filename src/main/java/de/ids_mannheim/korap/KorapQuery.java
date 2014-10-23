@@ -382,9 +382,8 @@ public class KorapQuery {
 
 		SpanQueryWrapper sqw = this.fromJSON(operands.get(0));
 
-		if (sqw.maybeExtension()) {
+		if (sqw.maybeExtension())
 		    return sqw.setMin(min).setMax(max);
-		};
 
 		return new SpanRepetitionQueryWrapper(sqw, min, max);
 	    };
