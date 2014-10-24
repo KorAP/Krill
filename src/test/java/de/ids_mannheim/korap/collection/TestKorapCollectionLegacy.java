@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.filter;
+package de.ids_mannheim.korap.collection;
 
 import java.io.*;
 
@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestKorapCollection {
+public class TestKorapCollectionLegacy {
 
     @Test
     public void filterExample () throws Exception {

@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.filter;
+package de.ids_mannheim.korap.collection;
 
 import java.util.*;
 import java.io.*;

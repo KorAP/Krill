@@ -2,26 +2,19 @@ package de.ids_mannheim.korap;
 
 import java.util.*;
 import java.io.IOException;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.NumericRangeFilter;
-import org.apache.lucene.search.Filter;
 
-import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapFilter;
-
+import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.filter.BooleanFilter;
 import de.ids_mannheim.korap.filter.FilterOperation;
+
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.FilteredQuery;
+import org.apache.lucene.search.*;
+
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.util.FixedBitSet;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.search.DocIdSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -60,17 +53,24 @@ public class KorapCollection {
     };
 
     public KorapCollection (String jsonString) {
-	this.filter = new ArrayList<FilterOperation>(5);
 	ObjectMapper mapper = new ObjectMapper();
+	this.filter = new ArrayList<FilterOperation>(5);
 
 	try {
 	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
-	    if (json.has("collections")) {
+
+	    if (json.has("collection")) {
+		this.fromJSON(json.get("collection"));
+	    }
+	    
+	    // Legacy collection serialization
+	    // This will be removed!
+	    else if (json.has("collections")) {
 		if (DEBUG)
-		    log.trace("Add meta collection");
+		    log.warn("Using DEPRECATED collection!");
 
 		for (JsonNode collection : json.get("collections")) {
-		    this.fromJSON(collection);
+		    this.fromJSONLegacy(collection);
 		};
 	    };
 	}
@@ -84,18 +84,26 @@ public class KorapCollection {
     };
 
     public void fromJSON (JsonNode json) throws QueryException {
+	this.filter(new KorapFilter(json));
+    };
+
+    public void fromJSONLegacy (JsonNode json) throws QueryException {
 	String type = json.get("@type").asText();
 
+	KorapFilter kf = new KorapFilter();
+	kf.setBooleanFilter(
+            kf.fromJSONLegacy(json.get("@value"), "tokens")
+	);
 	if (type.equals("korap:meta-filter")) {
 	    if (DEBUG)
-		log.trace("Add Filter");
-	    this.filter(new KorapFilter(json.get("@value")));
+		log.trace("Add Filter LEGACY");
+	    this.filter(kf);
 	}
 
 	else if (type.equals("korap:meta-extend")) {
 	    if (DEBUG)
-		log.trace("Add Extend");
-	    this.extend(new KorapFilter(json.get("@value")));
+		log.trace("Add Extend LEGACY");
+	    this.extend(kf);
 	};
     };
 
@@ -143,7 +151,7 @@ public class KorapCollection {
 
 
     public KorapCollection filter (KorapFilter filter) {
-	return this.filter(filter.toBooleanFilter());
+	return this.filter(filter.getBooleanFilter());
     };
 
 
@@ -161,7 +169,7 @@ public class KorapCollection {
     };
 
     public KorapCollection extend (KorapFilter filter) {
-	return this.extend(filter.toBooleanFilter());
+	return this.extend(filter.getBooleanFilter());
     };
 
     
@@ -187,7 +195,14 @@ public class KorapCollection {
      * testing purposes and not recommended for serious usage. 
      */
     public KorapResult search (SpanQuery query) {
-	return this.index.search(this, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+	return this.index.search(
+            this,
+	    query,
+	    0,
+	    (short) 20,
+	    true, (short) 5,
+	    true, (short) 5
+	);
     };
 
     public FixedBitSet bits (AtomicReaderContext atomic) throws IOException  {

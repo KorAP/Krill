@@ -11,7 +11,7 @@
       "key" : "pubDate",
       "type" : "type:date",
       "value" : "1990",
-      "match" : "match:gt"
+      "match" : "match:geq"
     }, {
       "@type" : "korap:doc",
       "key" : "pubDate",

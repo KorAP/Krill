@@ -1,9 +1,11 @@
-package de.ids_mannheim.korap.filter;
+package de.ids_mannheim.korap.collection;
 
 import java.util.*;
 import java.io.*;
 
 import de.ids_mannheim.korap.KorapCollection;
+
+import static de.ids_mannheim.korap.TestSimple.*;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -12,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestKorapCollectionJSON {
+public class TestKorapCollectionJSONLegacy {
 
     @Test
     public void metaQuery1 () {
@@ -58,23 +60,4 @@ public class TestKorapCollectionJSON {
 	assertEquals(1,kc.getCount());
 	assertEquals("filter with QueryWrapperFilter(+corpusID:WPD)",kc.getFilter(0).toString());
     };
-
-
-
-    public static String getString (String path) {
-	StringBuilder contentBuilder = new StringBuilder();
-	try {
-	    BufferedReader in = new BufferedReader(new FileReader(path));
-	    String str;
-	    while ((str = in.readLine()) != null) {
-		contentBuilder.append(str);
-	    };
-	    in.close();
-	}
-	catch (IOException e) {
-	    fail(e.getMessage());
-	}
-	return contentBuilder.toString();
-    };
-
 };

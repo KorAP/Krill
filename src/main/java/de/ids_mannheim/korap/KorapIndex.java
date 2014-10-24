@@ -1,84 +1,38 @@
 package de.ids_mannheim.korap;
 
+// Java classes
 import java.util.*;
-
-import java.io.*;
-
-import java.net.URL;
-
 import java.util.zip.GZIPInputStream;
 import java.util.regex.Pattern;
-import java.io.FileInputStream;
+import java.io.*;
+import java.net.URL;
 import java.nio.ByteBuffer;
 
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.QueryWrapperFilter;
-
-import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
-
+// Lucene classes
+import org.apache.lucene.search.*;
+import org.apache.lucene.search.spans.*;
 import org.apache.lucene.document.Document;
-
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.DocsAndPositionsEnum;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermContext;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
-
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
-
+import org.apache.lucene.index.*;
+import org.apache.lucene.index.IndexWriterConfig.OpenMode;
+import org.apache.lucene.store.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+import org.apache.lucene.util.*;
+import org.apache.lucene.util.automaton.*;
 
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.DocIdSetIterator;
-
-import org.apache.lucene.util.Version;
-import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.OpenBitSet;
-import org.apache.lucene.util.FixedBitSet;
-
-// Automata
-import org.apache.lucene.util.automaton.Automaton;
-import org.apache.lucene.util.automaton.RegExp;
-import org.apache.lucene.util.automaton.CompiledAutomaton;
-
+// JSON helper class
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapMatch;
-import de.ids_mannheim.korap.KorapCollection;
-import de.ids_mannheim.korap.KorapSearch;
-import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.index.PositionsToOffset;
-import de.ids_mannheim.korap.index.TermInfo;
-import de.ids_mannheim.korap.index.SpanInfo;
-import de.ids_mannheim.korap.index.SearchContext;
+// KorAP classes
+import de.ids_mannheim.korap.*;
+import de.ids_mannheim.korap.index.*;
 import de.ids_mannheim.korap.query.SpanElementQuery;
-import de.ids_mannheim.korap.index.MatchCollector;
 import de.ids_mannheim.korap.util.QueryException;
 
+// Log4j Logger classes
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,7 +79,6 @@ public class KorapIndex {
     // Last line of defense for simple DOS attacks!
     private int maxTermRelations = 100;
     private int autoCommit = 500;
-
 
     private Directory directory;
 

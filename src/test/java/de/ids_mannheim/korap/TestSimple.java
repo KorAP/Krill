@@ -1,28 +1,21 @@
 package de.ids_mannheim.korap;
 
 import java.util.*;
-import java.io.IOException;
+import java.io.*;
 
-import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
-import de.ids_mannheim.korap.analysis.MultiTermToken;
+import static org.junit.Assert.*;
+
+import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.analysis.*;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.util.QueryException;
+
 import static de.ids_mannheim.korap.util.KorapByte.*;
 
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermContext;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.AtomicReaderContext;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.IntField;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
-
+import org.apache.lucene.index.*;
+import org.apache.lucene.document.*;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.SpanQuery;
-
 import org.apache.lucene.util.Bits;
 
 /**
@@ -32,6 +25,7 @@ import org.apache.lucene.util.Bits;
  */
 public class TestSimple {
 
+    // Add document
     public static void addDoc(IndexWriter w, Map<String, String> m) throws IOException {
 	Document doc = new Document();
 
@@ -60,7 +54,7 @@ public class TestSimple {
 	w.addDocument(doc);
     };
 
-
+    // Get Term Vector
     public static MultiTermTokenStream getTermVector (String stream) {
 	MultiTermTokenStream ts = new MultiTermTokenStream();
 
@@ -89,7 +83,42 @@ public class TestSimple {
 	return ts;
     };
 
-    public static List<String> getSpanInfo (IndexReader reader, SpanQuery query) throws IOException {
+    // Get query wrapper based on json file
+    public static SpanQueryWrapper getJSONQuery (String jsonFile) {
+	SpanQueryWrapper sqwi;
+	
+	try {
+	    String json = getString(jsonFile);
+	    sqwi = new KorapQuery("tokens").fromJSON(json);
+	}
+	catch (QueryException e) {
+	    fail(e.getMessage());
+	    sqwi = new KorapQuery("tokens").seg("???");
+	};
+	return sqwi;
+    };
+
+
+    // Get string
+    public static String getString (String path) {
+	StringBuilder contentBuilder = new StringBuilder();
+	try {
+	    BufferedReader in = new BufferedReader(new FileReader(path));
+	    String str;
+	    while ((str = in.readLine()) != null) {
+		contentBuilder.append(str);
+	    };
+	    in.close();
+	} catch (IOException e) {
+	    fail(e.getMessage());
+	}
+	return contentBuilder.toString();
+    };
+
+
+    // getSpan Info
+    public static List<String> getSpanInfo (IndexReader reader, SpanQuery query)
+	throws IOException {
 	Map<Term, TermContext> termContexts = new HashMap<>();
 	List<String> spanArray = new ArrayList<>();
 

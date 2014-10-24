@@ -92,6 +92,55 @@ public class KorapFilter {
 	filter = this.fromJSON(json, "tokens");
     };
 
+    protected BooleanFilter fromJSON (JsonNode json, String field) throws QueryException {
+	String type = json.get("@type").asText();
+
+	// Single filter
+	if (type.equals("korap:doc")) {
+
+	    String key     = "tokens";
+	    String valtype = "type:string";
+	    String match   = "match:eq";
+
+	    if (json.has("key"))
+		key = json.get("key").asText();
+
+	    if (json.has("type"))
+		valtype = json.get("type").asText();
+
+	    // Filter based on date
+	    if (valtype.equals("type:date")) {
+		String date = json.get("value").asText();
+		if (json.has("match"))
+		    match = json.get("match").asText();
+
+		switch (match) {
+		case "match:eq":
+		    filter.date(date);
+		case "match:geq":
+		    filter.since(date);
+		case "match:leq":
+		    filter.till(date);
+		};
+		/*
+		  No good reason for gt or lt
+		*/
+		return filter;
+	    };
+	}
+
+	// nested group
+	else if (type.equals("korap:docGroup")) {
+	}
+
+	// UNknown type
+	else {
+	    throw new QueryException(613, "Collection query type has to be doc or docGroup");
+	};
+
+	return new BooleanFilter();
+    };
+
 	/*
 	String type = json.get("@type").asText();
 	String field = _getField(json);
@@ -108,7 +157,7 @@ public class KorapFilter {
 	*/
     //    };
     
-    private BooleanFilter fromJSON (JsonNode json, String field) throws QueryException {
+    protected BooleanFilter fromJSONLegacy (JsonNode json, String field) throws QueryException {
 	BooleanFilter filter = new BooleanFilter();
 	
 	String type = json.get("@type").asText();
@@ -117,7 +166,7 @@ public class KorapFilter {
 	    log.trace("@type: " + type);
 
 	if (json.has("@field"))
-	    field = _getField(json);
+	    field = _getFieldLegacy(json);
 
 	if (type.equals("korap:term")) {
 	    if (field != null && json.has("@value"))
@@ -137,40 +186,40 @@ public class KorapFilter {
 	    
 	    switch (json.get("relation").asText())  {
 	    case "between":
-		date = _getDate(json, 0);
-		till = _getDate(json, 1);
+		date = _getDateLegacy(json, 0);
+		till = _getDateLegacy(json, 1);
 		if (date != null && till != null)
 		    filter.between(date, till);
 		break;
 
 	    case "until":
-		date = _getDate(json, 0);
+		date = _getDateLegacy(json, 0);
 		if (date != null)
 		    filter.till(date);
 		break;
 
 	    case "since":
-		date = _getDate(json, 0);
+		date = _getDateLegacy(json, 0);
 		if (date != null)
 		    filter.since(date);
 		break;
 
 	    case "equals":
-		date = _getDate(json, 0);
+		date = _getDateLegacy(json, 0);
 		if (date != null)
 		    filter.date(date);
 		break;
 
 	    case "and":
 		for (JsonNode operand : json.get("operands")) {
-		    group.and(this.fromJSON(operand, field));
+		    group.and(this.fromJSONLegacy(operand, field));
 		};
 		filter.and(group);
 		break;
 
 	    case "or":
 		for (JsonNode operand : json.get("operands")) {
-		    group.or(this.fromJSON(operand, field));
+		    group.or(this.fromJSONLegacy(operand, field));
 		};
 		filter.and(group);
 		break;
@@ -188,7 +237,7 @@ public class KorapFilter {
     };
     
 
-    private static String  _getField (JsonNode json)  {
+    private static String  _getFieldLegacy (JsonNode json)  {
 	if (!json.has("@field"))
 	    return (String) null;
 
@@ -196,7 +245,7 @@ public class KorapFilter {
 	return field.replaceFirst("korap:field#", "");
     };
 
-    private static String _getDate (JsonNode json, int index) {
+    private static String _getDateLegacy (JsonNode json, int index) {
 	if (!json.has("operands"))
 	    return (String) null;
 
@@ -268,8 +317,12 @@ public class KorapFilter {
 	return new RegexFilter(regex);
     };
 
-    public BooleanFilter toBooleanFilter()  {
+    public BooleanFilter getBooleanFilter()  {
 	return this.filter;
+    };
+
+    public void setBooleanFilter (BooleanFilter bf) {
+	this.filter = bf;
     };
 
     public Query toQuery () {

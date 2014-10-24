@@ -82,7 +82,7 @@ public class KorapQuery {
 
 	    if (!json.has("@type") ||
 		!json.get("@type").asText().equals("korap:boundary")) {
-		throw new QueryException("Boundary definition is not valid");
+		throw new QueryException(612, "Boundary definition is not valid");
 	    };
 
 	    // Set min boundary
@@ -108,7 +108,8 @@ public class KorapQuery {
 	    json = this.json.readValue(jsonString, JsonNode.class);
 	}
 	catch (IOException e) {
-	    throw new QueryException(e.getMessage());
+	    String msg = e.getMessage();
+	    throw new QueryException(611, msg.split("\n")[0]);
 	};
 
 	if (!json.has("@type") && json.has("query"))
@@ -127,7 +128,7 @@ public class KorapQuery {
 	int number = 0;
 
 	if (!json.has("@type")) {
-	    throw new QueryException("JSON-LD group has no @type attribute");
+	    throw new QueryException(612, "JSON-LD group has no @type attribute");
 	};
 
 	String type = json.get("@type").asText();
@@ -138,7 +139,7 @@ public class KorapQuery {
 	    SpanClassQueryWrapper classWrapper;
 
 	    if (!json.has("operation"))
-		throw new QueryException("Group expects operation");
+		throw new QueryException(612, "Group expects operation");
 
 	    String operation = json.get("operation").asText();
 
@@ -146,13 +147,13 @@ public class KorapQuery {
 		log.trace("Found {} group", operation);
 
 	    if (!json.has("operands"))
-		throw new QueryException("Operation needs operand list");
+		throw new QueryException(612, "Operation needs operand list");
 
 	    // Get all operands
 	    JsonNode operands = json.get("operands");
 
 	    if (!operands.isArray())
-		throw new QueryException("Operation needs operand list");
+		throw new QueryException(612, "Operation needs operand list");
 
 	    if (DEBUG)
 		log.trace("Operands are {}", operands);
@@ -170,7 +171,7 @@ public class KorapQuery {
 	    case "operation:position":
 
 		if (operands.size() != 2)
-		    throw new QueryException("Operation needs exactly two operands");
+		    throw new QueryException(612, "Position needs exactly two operands");
 
 		// TODO: Check for operands
 
@@ -206,13 +207,14 @@ public class KorapQuery {
 		    flag = REAL_OVERLAP;
 		    break;
 		default:
-		    throw new QueryException("Frame type unknown");
+		    throw new QueryException(613, "Frame type unknown");
 		};
 
 		// Check for exclusion modificator
 		Boolean exclude;
 		if (json.has("exclude") && json.get("exclude").asBoolean())
 		    throw new QueryException(
+			613,
 		        "Exclusion is currently not supported in position operations"
 		    );
 
@@ -226,16 +228,16 @@ public class KorapQuery {
 	    case "operation:submatch":
 
 		if (operands.size() != 1)
-		    throw new QueryException("Operation needs exactly two operands");
+		    throw new QueryException(612, "Operation needs exactly two operands");
 
 		if (json.has("classRef")) {
 		    if (json.has("classRefOp"))
-			throw new QueryException("Class reference operators not supported yet");
+			throw new QueryException(613, "Class reference operators not supported yet");
 
 		    number = json.get("classRef").get(0).asInt();
 		}
 		else if (json.has("spanRef")) {
-		    throw new QueryException("Span references not supported yet");
+		    throw new QueryException(613, "Span references not supported yet");
 		};
 
 		return new SpanMatchModifyQueryWrapper(
@@ -246,31 +248,39 @@ public class KorapQuery {
 
 		if (operands.size() < 2)
 		    throw new QueryException(
-		        "SpanSequenceQuery needs at least two operands"
+		        612,
+			"SpanSequenceQuery needs at least two operands"
 		    );
 
 		SpanSequenceQueryWrapper sseqqw = this.seq();
-		for (JsonNode operand : operands) {
-		    sseqqw.append(this.fromJSON(operand));
-		};
 
 		// Say if the operand order is important
 		if (json.has("inOrder"))
 		    sseqqw.setInOrder(json.get("inOrder").asBoolean());
 
 		// Introduce distance constraints
+		// ATTENTION: Distances have to be set before segments are added
 		if (json.has("distances")) {
 
 		    // TODO
 		    if (json.has("exclude") && json.get("exclude").asBoolean())
 			throw new QueryException(
-			    "Excluding distance constraints are not supported yet"
+			    613, "Excluding distance constraints are not supported yet"
 			);
+
+		    if (!json.get("distances").isArray()) {
+			throw new QueryException(
+			    612,
+			    "Distance Constraints have " +
+			    "to be defined as arrays"
+			);
+		    };
 
 		    // TEMPORARY: Workaround for group distances
 		    JsonNode firstDistance = json.get("distances").get(0);
+
 		    if (!firstDistance.has("@type"))
-			throw new QueryException("Distances need a defined @type");
+			throw new QueryException(612, "Distances need a defined @type");
 
 		    JsonNode distances;
 		    if (firstDistance.get("@type").asText().equals("korap:group"))
@@ -278,7 +288,7 @@ public class KorapQuery {
 		    else if (firstDistance.get("@type").asText().equals("korap:distance"))
 			distances = json.get("distances");
 		    else
-			throw new QueryException("No valid distances defined");
+			throw new QueryException(612, "No valid distances defined");
 
 		    for (JsonNode constraint : distances) {
 			String unit = "w";
@@ -287,6 +297,7 @@ public class KorapQuery {
 
 			if (unit.equals("t"))
 			    throw new QueryException(
+				613,
 			        "Text based distances are not supported yet"
                             );
 
@@ -303,8 +314,17 @@ public class KorapQuery {
 				max = constraint.get("max").asInt(100);
 			};
 
+			// Sanitize boundary
+			if (max < min)
+			    max = min;
+
 			sseqqw.withConstraint(min, max, unit);
 		    };
+		};
+
+		// Add segments to sequence
+		for (JsonNode operand : operands) {
+		    sseqqw.append(this.fromJSON(operand));
 		};
 
 		// inOrder was set without a distance constraint
@@ -319,6 +339,7 @@ public class KorapQuery {
 		if (json.has("class")) {
 		    if (operands.size() != 1)
 			throw new QueryException(
+			    612,
 			    "Class group expects exactly one operand in list"
 			);
 
@@ -327,8 +348,11 @@ public class KorapQuery {
 
 		    number = json.get("class").asInt(0);
 
-		    if (number > MAX_CLASS_NUM)
-			throw new QueryException("Class numbers limited to " + MAX_CLASS_NUM);
+		    if (number > MAX_CLASS_NUM) {
+			throw new QueryException(
+			    612, "Class numbers limited to " + MAX_CLASS_NUM
+                        );
+		    };
 
 		    SpanQueryWrapper sqw = this.fromJSON(operands.get(0));
 
@@ -339,7 +363,7 @@ public class KorapQuery {
 		    return new SpanClassQueryWrapper(sqw, number);
 		};
 
-		throw new QueryException("Class group expects class attribute");
+		throw new QueryException(612, "Class group expects class attribute");
 
 	    case "operation:repetition":
 
@@ -388,37 +412,43 @@ public class KorapQuery {
 		return new SpanRepetitionQueryWrapper(sqw, min, max);
 	    };
 
-	    throw new QueryException("Unknown group operation");
+	    throw new QueryException(613, "Unknown group operation");
 
 	case "korap:reference":
 	    if (json.has("operation") &&
 		!json.get("operation").asText().equals("operation:focus"))
-		throw new QueryException("Reference operation " +
+		throw new QueryException(613, "Reference operation " +
 					 json.get("operation").asText() +
 					 " not supported yet");
 
 	    operands = json.get("operands");
 
 	    if (operands.size() == 0) {
-		throw new QueryException("Focus with peripheral references is not supported yet");
+		throw new QueryException(
+		    613, "Focus with peripheral references is not supported yet"
+                );
 	    };
 
 	    if (operands.size() != 1)
-		throw new QueryException("Operation needs exactly two operands");
+		throw new QueryException(612, "Operation needs exactly two operands");
 
 
 	    if (json.has("classRef")) {
-		if (json.has("classRefOp"))
-		    throw new QueryException("Class reference operators not supported yet");
+		if (json.has("classRefOp")) {
+		    throw new QueryException(
+		        613,
+			"Class reference operators not supported yet"
+		    );
+		};
 
 		number = json.get("classRef").get(0).asInt();
 
 		if (number > MAX_CLASS_NUM)
-		    throw new QueryException("Class numbers limited to " + MAX_CLASS_NUM);
+		    throw new QueryException(613, "Class numbers limited to " + MAX_CLASS_NUM);
 
 	    }
 	    else if (json.has("spanRef")) {
-		throw new QueryException("Span references not supported yet");
+		throw new QueryException(613, "Span references not supported yet");
 	    };
 
 	    if (DEBUG)
@@ -438,11 +468,11 @@ public class KorapQuery {
 
 	case "korap:span":
 	    if (!json.has("key"))
-		throw new QueryException("A span needs at least a key definition");
+		throw new QueryException(612, "A span needs at least a key definition");
 
 	    return this._termFromJSON(json);
 	};
-	throw new QueryException("Unknown serialized query type: " + type);
+	throw new QueryException(613, "Unknown serialized query type");
     };
 
 
@@ -472,17 +502,17 @@ public class KorapQuery {
 		return this._termFromJSON(json);
 	    };
 
-	    throw new QueryException("Match relation unknown");
+	    throw new QueryException(613, "Match relation unknown");
 
 	case "korap:termGroup":
 
 	    if (!json.has("operands"))
-		throw new QueryException("TermGroup expects operands");
+		throw new QueryException(612, "termGroup expects operands");
 
 	    SpanSegmentQueryWrapper ssegqw = this.seg();
 
 	    if (!json.has("relation"))
-		throw new QueryException("termGroup expects a relation");
+		throw new QueryException(612, "termGroup expects a relation");
 
 	    switch (json.get("relation").asText()) {
 	    case "relation:and":
@@ -499,7 +529,9 @@ public class KorapQuery {
 			ssegqw.with((SpanSegmentQueryWrapper) part);
 		    }
 		    else {
-			throw new QueryException("Object not supported in segment queries");
+			throw new QueryException(
+			    613, "Object not supported in segment queries"
+                        );
 		    };
 		};
 		return ssegqw;
@@ -512,14 +544,14 @@ public class KorapQuery {
 		return ssaq;
 	    };
 	};
-	throw new QueryException("Unknown token type");    
+	throw new QueryException(613, "Unknown token type");    
     };
 
 
 
     private SpanQueryWrapper _termFromJSON (JsonNode json) throws QueryException {
 	if (!json.has("key") || json.get("key").asText().length() < 1)
-	    throw new QueryException("Terms and spans have to provide key attributes");
+	    throw new QueryException(612, "Terms and spans have to provide key attributes");
 	    
 	Boolean isTerm = json.get("@type").asText().equals("korap:term") ? true : false;
 	Boolean isCaseInsensitive = false;
@@ -588,7 +620,7 @@ public class KorapQuery {
 	    return this.seg(value.toString());
 
 	if (json.has("attr"))
-	    throw new QueryException("Attributes not yet supported in spans");
+	    throw new QueryException(613, "Attributes not yet supported in spans");
 
 	return this.tag(value.toString());
     };
@@ -839,6 +871,4 @@ public class KorapQuery {
     public SpanRepetitionQueryWrapper repeat (SpanQueryWrapper element, int min, int max) {
 	return new SpanRepetitionQueryWrapper(element, min, max);
     };
-
-    // split
 };

@@ -79,8 +79,10 @@ public class KorapSearch {
 	    if (this.request.has("warning"))
 		this.addWarning(this.request.get("warning").asText());
 	    
-	    // "meta" virtual collections
-	    if (this.request.has("collections"))
+	    // virtual collections
+	    if (this.request.has("collections") ||
+		// Legacy collections
+		this.request.has("collections"))
 		this.setCollection(new KorapCollection(jsonString));
 
 	    if (this.error == null) {
