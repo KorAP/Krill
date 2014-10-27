@@ -123,8 +123,8 @@ public class BooleanFilter {
 	return this;
     };
 
-    public BooleanFilter since (String date) {
-	int since = new KorapDate(date).floor();
+    public BooleanFilter since (String dateStr) {
+	int since = new KorapDate(dateStr).floor();
 
 	if (since == 0 || since == KorapDate.BEGINNING)
 	    return this;
@@ -144,9 +144,9 @@ public class BooleanFilter {
     };
 
 
-    public BooleanFilter till (String date) {
+    public BooleanFilter till (String dateStr) {
 	try {
-	    int till =  new KorapDate(date).ceil();
+	    int till =  new KorapDate(dateStr).ceil();
 	    if (till == 0 || till == KorapDate.END)
 		return this;
 
@@ -200,8 +200,8 @@ public class BooleanFilter {
     };
 
 
-    public BooleanFilter date (String date) {
-	KorapDate dateDF = new KorapDate(date);
+    public BooleanFilter date (String dateStr) {
+	KorapDate dateDF = new KorapDate(dateStr);
 
 	if (dateDF.year() == 0)
 	    return this;

@@ -5,7 +5,7 @@
   "announcements" : [ ],
   "collection" : {
     "@type" : "korap:docGroup",
-    "operation" : "operation:and",
+    "operation" : "operation:or",
     "operands" : [ {
       "@type" : "korap:doc",
       "key" : "pubDate",
@@ -14,10 +14,10 @@
       "match" : "match:geq"
     }, {
       "@type" : "korap:doc",
-      "key" : "pubDate",
-      "type" : "type:date",
-      "value" : "2006-10",
-      "match" : "match:leq"
+      "key" : "title",
+      "type" : "type:string",
+      "value" : "Mannheim",
+      "match" : "match:eq"
     } ]
   }
 }

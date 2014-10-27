@@ -22,7 +22,28 @@ public class TestKorapCollectionJSON {
     public void collection1 () {
 	String metaQuery = _getJSONString("collection_1.jsonld");
 	KorapCollection kc = new KorapCollection(metaQuery);
-	System.err.println(kc.toString());
+	assertEquals(kc.toString(), "filter with QueryWrapperFilter(+pubDate:20000101); ");
+    };
+
+    @Test
+    public void collection2 () {
+	String metaQuery = _getJSONString("collection_2.jsonld");
+	KorapCollection kc = new KorapCollection(metaQuery);
+	assertEquals(kc.toString(), "filter with QueryWrapperFilter(+(+pubDate:[19900000 TO 99999999] +pubDate:[0 TO 20061099])); ");
+    };
+
+    @Test
+    public void collection3 () {
+	String metaQuery = _getJSONString("collection_3.jsonld");
+	KorapCollection kc = new KorapCollection(metaQuery);
+	assertEquals(kc.toString(), "");
+    };
+
+    @Test
+    public void collection5 () {
+	String metaQuery = _getJSONString("collection_5.jsonld");
+	KorapCollection kc = new KorapCollection(metaQuery);
+	assertEquals(kc.toString(), "filter with QueryWrapperFilter(+(pubDate:[19900000 TO 99999999] title:Mannheim)); ");
     };
 
     private String _getJSONString (String file) {

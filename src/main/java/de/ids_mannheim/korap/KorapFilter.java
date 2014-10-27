@@ -3,6 +3,7 @@ package de.ids_mannheim.korap;
 import de.ids_mannheim.korap.filter.BooleanFilter;
 import de.ids_mannheim.korap.filter.RegexFilter;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.KorapDate;
 
 import org.apache.lucene.search.Query;
 
@@ -93,6 +94,7 @@ public class KorapFilter {
     };
 
     protected BooleanFilter fromJSON (JsonNode json, String field) throws QueryException {
+	BooleanFilter bfilter = new BooleanFilter();
 	String type = json.get("@type").asText();
 
 	// Single filter
@@ -110,29 +112,59 @@ public class KorapFilter {
 
 	    // Filter based on date
 	    if (valtype.equals("type:date")) {
-		String date = json.get("value").asText();
+		String dateStr = json.get("value").asText();
 		if (json.has("match"))
 		    match = json.get("match").asText();
-
 
 		// TODO: This isn't stable yet
 		switch (match) {
 		case "match:eq":
-		    filter.date(date);
+		    bfilter.date(dateStr);
+		    break;
 		case "match:geq":
-		    filter.since(date);
+		    bfilter.since(dateStr);
+		    break;
 		case "match:leq":
-		    filter.till(date);
+		    bfilter.till(dateStr);
+		    break;
 		};
 		/*
 		  No good reason for gt or lt
 		*/
-		return filter;
+		return bfilter;
+	    }
+	    else if (valtype.equals("type:string")) {
+		if (json.has("match"))
+		    match = json.get("match").asText();
+
+		if (match.equals("match:eq")) {
+		    bfilter.and(key, json.get("value").asText());
+		};
+		return bfilter;
 	    };
 	}
 
 	// nested group
 	else if (type.equals("korap:docGroup")) {
+	    String operation = "operation:and";
+	    if (json.has("operation"))
+		operation = json.get("operation").asText();
+
+	    BooleanFilter group = new BooleanFilter();
+
+	    for (JsonNode operand : json.get("operands")) {
+		if (operation.equals("operation:and")) {
+		    group.and(this.fromJSON(operand, field));
+		}
+		else if (operation.equals("operation:or")) {
+		    group.or(this.fromJSON(operand, field));
+		}
+		else {
+		    throw new QueryException(613, "Unknown docGroup operation");
+		};
+	    };
+	    bfilter.and(group);
+	    return bfilter;
 	}
 
 	// UNknown type
@@ -160,7 +192,7 @@ public class KorapFilter {
     //    };
     
     protected BooleanFilter fromJSONLegacy (JsonNode json, String field) throws QueryException {
-	BooleanFilter filter = new BooleanFilter();
+	BooleanFilter bfilter = new BooleanFilter();
 	
 	String type = json.get("@type").asText();
 
@@ -172,14 +204,14 @@ public class KorapFilter {
 
 	if (type.equals("korap:term")) {
 	    if (field != null && json.has("@value"))
-		filter.and(field, json.get("@value").asText());
-	    return filter;
+		bfilter.and(field, json.get("@value").asText());
+	    return bfilter;
 	}
 	else if (type.equals("korap:group")) {
 	    if (!json.has("relation") || !json.has("operands"))
-		return filter;
+		return bfilter;
 
-	    String date, till;
+	    String dateStr, till;
 
 	    if (DEBUG)
 		log.trace("relation: " + json.get("relation").asText());
@@ -188,42 +220,42 @@ public class KorapFilter {
 	    
 	    switch (json.get("relation").asText())  {
 	    case "between":
-		date = _getDateLegacy(json, 0);
+		dateStr = _getDateLegacy(json, 0);
 		till = _getDateLegacy(json, 1);
-		if (date != null && till != null)
-		    filter.between(date, till);
+		if (dateStr != null && till != null)
+		    bfilter.between(dateStr, till);
 		break;
 
 	    case "until":
-		date = _getDateLegacy(json, 0);
-		if (date != null)
-		    filter.till(date);
+		dateStr = _getDateLegacy(json, 0);
+		if (dateStr != null)
+		    bfilter.till(dateStr);
 		break;
 
 	    case "since":
-		date = _getDateLegacy(json, 0);
-		if (date != null)
-		    filter.since(date);
+		dateStr = _getDateLegacy(json, 0);
+		if (dateStr != null)
+		    bfilter.since(dateStr);
 		break;
 
 	    case "equals":
-		date = _getDateLegacy(json, 0);
-		if (date != null)
-		    filter.date(date);
+		dateStr = _getDateLegacy(json, 0);
+		if (dateStr != null)
+		    bfilter.date(dateStr);
 		break;
 
 	    case "and":
 		for (JsonNode operand : json.get("operands")) {
 		    group.and(this.fromJSONLegacy(operand, field));
 		};
-		filter.and(group);
+		bfilter.and(group);
 		break;
 
 	    case "or":
 		for (JsonNode operand : json.get("operands")) {
 		    group.or(this.fromJSONLegacy(operand, field));
 		};
-		filter.and(group);
+		bfilter.and(group);
 		break;
 
 	    default:
@@ -235,7 +267,7 @@ public class KorapFilter {
 	else {
 	    throw new QueryException(type + " is not a supported group");
 	};
-	return filter;
+	return bfilter;
     };
     
 
