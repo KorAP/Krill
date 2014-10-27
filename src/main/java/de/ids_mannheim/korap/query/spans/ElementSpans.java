@@ -111,7 +111,9 @@ public class ElementSpans extends SpansWithId {
 	 * 	@author margaretha
 	 * */
 	private void readPayload(CandidateElementSpans cs) throws IOException {   	
-	    BytesRef payload = termSpans.getPostings().getPayload();
+		List<byte[]> payloadList = (List<byte[]>) termSpans.getPayload();
+		BytesRef payload = new BytesRef(payloadList.get(0));
+	    		//.getPostings().getPayload();
 	    //ByteBuffer payloadBuffer = ByteBuffer.allocate(128);
 	    
 	    if (payload != null) {

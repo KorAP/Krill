@@ -9,28 +9,52 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.RelationSpansWithVariable;
 
-/**	This query returns the tokens/elements of the left-side of a relation
- * 	whose right-side tokens/elements' positions match the spans of another
- * 	spanquery. 
+/** This query match one side of a relation (either left or right) to certain 
+ * 	elements or terms, and return the other side of the relation.	
  * 
+ * 	@author margaretha
  * */
 public class SpanRelationWithVariableQuery extends SpanRelationQuery{
-
-	private String rootElementStr = "s";
-	private SpanElementQuery root;
+	
+	private static String elementStr = "s"; // default element interval type
+	
+	private SpanElementQuery elementQuery;
 	private boolean matchRight;  // if false, match left
 	
 	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
-			SpanQuery secondClause, // span to match
+			SpanElementQuery secondClause, // match span
+			boolean matchRight,
+			boolean collectPayloads) {
+		this(spanRelationQuery, secondClause, elementStr, matchRight, collectPayloads);		
+	}
+	
+	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
+			SpanTermWithIdQuery secondClause, // match token
+			boolean matchRight,
+			boolean collectPayloads) {
+		this(spanRelationQuery, secondClause, elementStr, matchRight, collectPayloads);		
+	}
+	
+	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
+			SpanRelationQuery secondClause, // match span
+			boolean matchRight,
+			boolean collectPayloads) {
+		this(spanRelationQuery, secondClause, elementStr, matchRight, collectPayloads);		
+	}
+	
+	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
+			SpanQuery secondClause, // match span
+			String elementStr,
 			boolean matchRight,
 			boolean collectPayloads) {
 		super(spanRelationQuery, secondClause, collectPayloads);
 		this.matchRight = matchRight;
-		root = new SpanElementQuery(spanRelationQuery.getField(), rootElementStr);
-	}	
+		elementQuery = new SpanElementQuery(spanRelationQuery.getField(), elementStr);		
+	}
 	
 	@Override
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
@@ -40,14 +64,31 @@ public class SpanRelationWithVariableQuery extends SpanRelationQuery{
 	
 	@Override
 	public SimpleSpanQuery clone() {
-		// TODO Auto-generated method stub
-		return null;
+		SpanRelationWithVariableQuery sq = new SpanRelationWithVariableQuery(
+				(SpanRelationQuery) this.firstClause, 
+				this.secondClause,
+				this.elementQuery.getElementStr(),
+				this.matchRight, 
+				this.collectPayloads
+		);		
+		return sq;
 	}
 
 	@Override
 	public String toString(String field) {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder sb = new StringBuilder();		
+		sb.append("spanRelationWithVariable(");
+		sb.append(firstClause.toString(field));
+		sb.append(",");
+		sb.append(secondClause.toString(field));
+		sb.append(",");
+		sb.append( matchRight ? "matchRight, " : "matchLeft, " );
+		sb.append(",");
+		sb.append("element:");
+		sb.append(elementQuery.getElementStr());
+		sb.append(")");
+		sb.append(ToStringUtils.boost(getBoost()));
+		return sb.toString();
 	}
 
 	public boolean isMatchRight() {
@@ -58,12 +99,11 @@ public class SpanRelationWithVariableQuery extends SpanRelationQuery{
 		this.matchRight = matchRight;
 	}
 
-	public SpanElementQuery getRoot() {
-		return root;
+	public SpanElementQuery getElementQuery() {
+		return elementQuery;
 	}
 
-	public void setRoot(SpanElementQuery root) {
-		this.root = root;
+	public void setElementQuery(SpanElementQuery root) {
+		this.elementQuery = root;
 	}
-
 }

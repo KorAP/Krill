@@ -10,7 +10,11 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
+import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
 
+/** Base class for span enumeration with spanid property.
+ * 	@author margaretha
+ * */
 public abstract class SpansWithId extends SimpleSpans{
 
 	protected short spanId;
@@ -26,6 +30,12 @@ public abstract class SpansWithId extends SimpleSpans{
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(spanRelationQuery, context, acceptDocs, termContexts);
+	}
+	
+	public SpansWithId(SpanTermWithIdQuery spanTermWithIdQuery,
+			AtomicReaderContext context, Bits acceptDocs,
+			Map<Term, TermContext> termContexts) throws IOException {
+		super(spanTermWithIdQuery, context, acceptDocs, termContexts);
 	}
 
 	public short getSpanId() {

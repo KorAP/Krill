@@ -13,6 +13,14 @@ import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.RelationSpans;
 
+/** Querying span representing a relation between tokens, elements, 
+ * 	or a-token-and-an-element. This class provides two types of query:
+ * 	1. querying any relations
+ * 	2. querying relations matching certain type of sources/targets, 
+ * 	   that are the left or the right sides of the relations. 
+ *  
+ *  @author margaretha
+ * */
 public class SpanRelationQuery extends SimpleSpanQuery {
 
 	public SpanRelationQuery(SpanQuery firstClause, boolean collectPayloads) {

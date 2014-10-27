@@ -16,6 +16,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
 import de.ids_mannheim.korap.query.SpanRelationWithVariableQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
+import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 
     /*
@@ -70,16 +71,16 @@ public class TestRelationIndex {
         fd.addString("ID", "doc-0");
         fd.addTV("base",
             "text",             
-            "[(0-1)s:c|_1#0-1|>:xip/syntax-dep_rel$<i>6<s>1]" +
-            "[(1-2)s:e|_2#1-2|<:xip/syntax-dep_rel$<i>9<s>1|>:xip/syntax-dep_rel$<i>4<s>1]" +             
+            "[(0-1)s:c$<s>1|_1#0-1|>:xip/syntax-dep_rel$<i>6<s>1<s>1<s>1]" +
+            "[(1-2)s:e$<s>1|_2#1-2|<:xip/syntax-dep_rel$<i>9<s>1<s>1<s>1|>:xip/syntax-dep_rel$<i>4<s>1<s>1<s>1]" +             
             "[(2-3)s:c|_3#2-3]" +
-            "[(3-4)s:c|s:b|_4#3-4|<:xip/syntax-dep_rel$<i>9<s>1]" + 
-            "[(4-5)s:e|s:d|_5#4-5|<:xip/syntax-dep_rel$<i>1<s>1]" +
+            "[(3-4)s:c$<s>1|s:b$<s>2|_4#3-4|<:xip/syntax-dep_rel$<i>9<s>1<s>1<s>1]" + 
+            "[(4-5)s:e$<s>1|s:d$<s>2|_5#4-5|<:xip/syntax-dep_rel$<i>1<s>1<s>1<s>1]" +
             "[(5-6)s:c|_6#5-6]" +
-            "[(6-7)s:d|_7#6-7|<:xip/syntax-dep_rel$<i>1<s>1]" +
+            "[(6-7)s:d$<s>1|_7#6-7|<:xip/syntax-dep_rel$<i>1<s>1<s>1<s>1]" +
             "[(7-8)s:e|_8#7-8]" + 
             "[(8-9)s:e|s:b|_9#8-9]" + 
-            "[(9-10)s:d|_10#9-10|>:xip/syntax-dep_rel$<i>1<s>2|>:xip/syntax-dep_rel$<i>3<s>1]");
+            "[(9-10)s:d$<s>1|_10#9-10|>:xip/syntax-dep_rel$<i>1<s>2<s>1<s>1|>:xip/syntax-dep_rel$<i>3<s>1<s>1<s>1]");
         return fd;
     }
 	
@@ -88,19 +89,23 @@ public class TestRelationIndex {
         fd.addString("ID", "doc-1");
         fd.addTV("base",
             "text",             
-            "[(0-1)s:c|_1#0-1|>:xip/syntax-dep_rel$<i>3<i>6<i>9<s>2|>:xip/syntax-dep_rel$<i>6<i>9<s>1]" +
+            "[(0-1)s:c$<s>2|<>:p$#0-3$<i>3<s>1|_1#0-1|" +
+            		">:xip/syntax-dep_rel$<i>3<i>6<i>9<s>2<s>1<s>1|" +
+            		">:xip/syntax-dep_rel$<i>6<i>9<s>1<s>2<s>1|" +
             		"r@:func=subj$<s>2]" +
-            "[(1-2)s:e|_2#1-2]" +             
+            "[(1-2)s:e|_2#1-2|<>:p#1-3$<i>3<s>1]" +             
             "[(2-3)s:c|_3#2-3]" +
             "[(3-4)s:c|s:b|_4#3-4]" + 
             "[(4-5)s:e|s:d|_5#4-5]" +
             "[(5-6)s:c|_6#5-6]" +
-            "[(6-7)s:d|_7#6-7|<:xip/syntax-dep_rel$<i>9<b>0<i>0<s>1|>:xip/syntax-dep_rel$<i>9<b>0<i>9<s>3|" +
-            	"<:xip/syntax-dep_rel$<i>9<i>1<i>3<s>2|" +
+            "[(6-7)s:d$<s>2|<>:p$#6-9$<i>9<s>1|_7#6-7|" +
+            	"<:xip/syntax-dep_rel$<i>9<b>0<i>1<s>1<s>1<s>2|" +
+            	">:xip/syntax-dep_rel$<i>9<b>0<i>9<s>3<s>1<s>1|" +
+            	"<:xip/syntax-dep_rel$<i>9<i>1<i>3<s>2<s>1<s>1|" +
             	"r@:func=obj$<s>2]" +
             "[(7-8)s:e|_8#7-8]" + 
             "[(8-9)s:e|s:b|_9#8-9]" + 
-            "[(9-10)s:d|_10#9-10|<:xip/syntax-dep_rel$<i>6<i>9<s>2]");
+            "[(9-10)s:d$<s>1|_10#9-10|<:xip/syntax-dep_rel$<i>6<i>9<s>2<s>1<s>1]");
         return fd;
     }
 	
@@ -109,42 +114,62 @@ public class TestRelationIndex {
         fd.addString("ID", "doc-2");
         fd.addTV("base",
             "Ich kaufe die Blümen für meine Mutter.",             
-            "[(0-3)s:Ich|_0#0-3|pos:NN|<>:s#0-38$<i>7<s>-1|<>:np#0-3$<i>1<s>-1|" +
-            	">:child-of$<i>0<i>7<s>1|>:child-of$<i>0<i>1<s>6|" +
-            	"<:child-of$<i>1<b>0<i>1<s>3|<:child-of$<i>7<i>0<i>1<s>4|<:child-of$<i>7<i>1<i>7<s>5|" +
-            	"<:dep$<i>1<s>2|" +
+            "[(0-3)s:Ich|_1#0-3|pos:NN$<s>1|<>:s#0-38$<i>7<s>2|<>:np#0-3$<i>1<s>3|" +
+            	">:child-of$<i>0<i>7<s>1<s>3<s>2|" +
+            	">:child-of$<i>0<i>1<s>6<s>1<s>3|" +
+            	"<:child-of$<i>1<b>0<i>1<s>3<s>3<s>1|" +
+            	"<:child-of$<i>7<i>0<i>1<s>4<s>2<s>3|" +
+            	"<:child-of$<i>7<i>1<i>7<s>5<s>2<s>2|" +
+            	"<:dep$<i>2<s>2<s>1<s>1|" +
             	"r@:func=sbj$<s>1]" +
             	
-            "[(1-2)s:kaufe|_1#4-9|pos:V|<>:vp#4-38$<i>7<s>-1|" +
-            	">:child-of$<i>7<i>0<i>7<s>1|>:child-of$<i>1<i>7<s>2|" +
-            	"<:child-of$<i>7<b>0<i>1<s>5|<:child-of$<i>7<i>3<i>7<s>6|" +
-            	">:dep$<i>0<s>3|>:dep$<i>3<s>4]" +
+            "[(1-2)s:kaufe|_2#4-9|pos:V$<s>1|<>:vp#4-38$<i>7<s>2|" +
+            	">:child-of$<i>7<i>0<i>7<s>1<s>2<s>2|" +
+            	">:child-of$<i>1<i>7<s>2<s>1<s>2|" +
+            	"<:child-of$<i>7<b>0<i>2<s>5<s>2<s>1|" +
+            	"<:child-of$<i>7<i>2<i>7<s>6<s>2<s>4|" +
+            	">:dep$<i>1<s>3<s>1<s>1|" +
+            	">:dep$<i>4<s>4<s>1<s>1]" +
             	
-            "[(2-3)s:die|_2#10-13|pos:ART|tt:DET|<>:np#10-20$<i>4<s>-1|<>:np#10-38$<i>7<s>-1|" +
-            	">:child-of$<i>4<i>2<i>7<s>1|>:child-of$<i>2<i>4<s>2|>:child-of$<i>7<i>1<i>7<s>2|" +
-            	"<:child-of$<i>4<b>0<i>3<s>3|<:child-of$<i>4<b>0<i>4<s>4|<:child-of$<i>7<i>2<i>4<s>5|<:child-of$<i>7<i>4<i>7<s>6|" +
-            	"<:dep$<i>3<s>3|r@:func=obj$<s>1" +
+            "[(2-3)s:die|_3#10-13|pos:ART$<s>1|tt:DET$<s>2|<>:np#10-20$<i>4<s>3|<>:np#10-38$<i>7<s>4|" +
+            	">:child-of$<i>4<i>2<i>7<s>1<s>3<s>4|" +
+            	">:child-of$<i>2<i>4<s>2<s>1<s>3|" +
+            	">:child-of$<i>7<i>1<i>7<s>2<s>4<s>2|" +
+            	"<:child-of$<i>4<b>0<i>3<s>3<s>3<s>1|" +
+            	"<:child-of$<i>4<b>0<i>4<s>4<s>3<s>1|" +
+            	"<:child-of$<i>7<i>2<i>4<s>5<s>4<s>3|" +
+            	"<:child-of$<i>7<i>4<i>7<s>6<s>4<s>2|" +
+            	"<:dep$<i>4<s>3<s>1<s>1|" +
+            	"r@:func=obj$<s>1" +
             	"]" +
             
-            "[(3-4)s:Blümen|_3#14-20|pos:NN|" +
-            	">:child-of$<i>2<i>4<s>1|" +            	
-            	"<:dep$<i>1<s>2|>:dep$<i>2<s>3|>:dep$<i>4<s>4|" +
+            "[(3-4)s:Blümen|_4#14-20|pos:NN$<s>1|" +
+            	">:child-of$<i>2<i>4<s>1<s>1<s>3|" +            	
+            	"<:dep$<i>2<s>2<s>1<s>2|" +
+            	">:dep$<i>3<s>3<s>1<s>1|" +
+            	">:dep$<i>5<s>4<s>1<s>1|" +
             	"r@:func=head$<s>2]" +
             	
-            "[(4-5)s:für|_4#21-24|pos:PREP|<>:pp#21-38$<i>7<s>-1|" +
-            	">:child-of$<i>4<i>7<s>1|>:child-of$<i>7<i>2<i>7<s>2|" +
-            	"<:child-of$<i>7<b>0<i>5<s>4|<:child-of$<i>7<i>5<i>7<s>5|" +
-            	"<:dep$<i>3<s>1|>:dep$<i>5<s>3" +
+            "[(4-5)s:für|_5#21-24|pos:PREP$<s>1|<>:pp#21-38$<i>7<s>2|" +
+            	">:child-of$<i>4<i>7<s>1<s>1<s>2|" +
+            	">:child-of$<i>7<i>2<i>7<s>2<s>2<s>4|" +
+            	"<:child-of$<i>7<b>0<i>5<s>4<s>2<s>1|" +
+            	"<:child-of$<i>7<i>5<i>7<s>5<s>2<s>2|" +
+            	"<:dep$<i>4<s>1<s>1<s>1|" +
+            	">:dep$<i>7<s>3<s>1<s>1" +
             	"]" +
             
-            "[(5-6)s:meine|_5#25-30|pos:ART|<>:np#25-38$<i>7<s>-1|" +
-            	">:child-of$<i>5<i>7<s>1|>:child-of$<i>7<i>4<i>7<s>2|" +
-            	"<:child-of$<i>7<b>0<i>6<s>4|<:child-of$<i>7<b>0<i>7<s>5|" +
-            	"<:dep$<i>7<s>3" +
+            "[(5-6)s:meine|_6#25-30|pos:ART$<s>1|<>:np#25-38$<i>7<s>2|" +
+            	">:child-of$<i>5<i>7<s>1<s>1<s>2|" +
+            	">:child-of$<i>7<i>4<i>7<s>2<s>2<s>2|" +
+            	"<:child-of$<i>7<b>0<i>6<s>4<s>2<s>1|" +
+            	"<:child-of$<i>7<b>0<i>7<s>5<s>2<s>1|" +
+            	"<:dep$<i>7<s>3<s>1<s>1" +
             	"]" +
-            "[(6-7)s:Mutter.|_6#31-38|pos:NN|" +
-            	">:child-of$<i>5<i>7<s>1|" +
-            	">:dep$<i>5<s>2|<:dep$<i>4<s>3|" +
+            "[(6-7)s:Mutter.|_7#31-38|pos:NN$<s>1|" +
+            	">:child-of$<i>5<i>7<s>1<s>1<s>2|" +
+            	">:dep$<i>6<s>2<s>1<s>1|" +
+            	"<:dep$<i>5<s>3<s>1<s>1|" +
             	"r@:func=head$<s>3]");
         
         return fd;
@@ -234,10 +259,10 @@ public class TestRelationIndex {
 		// child-of relations
 		SpanRelationQuery srq = new SpanRelationQuery(
 				new SpanTermQuery(new Term("base",">:child-of")),true);
-		kr = ki.search(srq,(short) 20);
+		/*kr = ki.search(srq,(short) 20);
 		
 		assertEquals(13, kr.getTotalResults());
-		
+		*/
 		// child-of with attr func=sbj
 		SpanWithAttributeQuery wq = 
 			new SpanWithAttributeQuery(srq, 
@@ -421,7 +446,7 @@ public class TestRelationIndex {
 		assertEquals(7,kr.getMatch(2).getEndPos());
 		assertEquals(4,kr.getMatch(3).getStartPos());
 		assertEquals(7,kr.getMatch(3).getEndPos());
-		// id problem same like testcase5
+		// id problem same like testcase7 (solved)
 	}
 	
 	/** Match left, return right
@@ -453,7 +478,7 @@ public class TestRelationIndex {
 		assertEquals(7,kr.getMatch(2).getEndPos());
 		assertEquals(4,kr.getMatch(3).getStartPos());
 		assertEquals(7,kr.getMatch(3).getEndPos());
-		// id problem
+		// id problem (solved)
 		
 		// return all children of relation targets/ right side		
 		SpanRelationWithVariableQuery rv3 = new SpanRelationWithVariableQuery(				
@@ -469,5 +494,89 @@ public class TestRelationIndex {
 			+km.getSnippetBrackets());
 		}*/		
 
+	}
+	
+	/** Relations whose source/target do not embed 
+	 * 	its counterparts.
+	 * */	
+	@Test
+	public void testCase8() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+		
+		// match right
+		
+		//return source of dep relations to pos:NN
+		SpanRelationWithVariableQuery rv =new SpanRelationWithVariableQuery(
+				new SpanRelationQuery(
+						new SpanTermQuery(new Term("base",">:dep")),true
+				), 
+				new SpanTermWithIdQuery(new Term("base","pos:NN"), true), 
+				true, true);
+		kr = ki.search(rv,(short) 10);
+		assertEquals(3, kr.getTotalResults());
+		assertEquals(1,kr.getMatch(0).getStartPos());
+		assertEquals(2,kr.getMatch(0).getEndPos());
+		assertEquals(1,kr.getMatch(1).getStartPos());
+		assertEquals(2,kr.getMatch(1).getEndPos());
+		assertEquals(4,kr.getMatch(2).getStartPos());
+		assertEquals(5,kr.getMatch(2).getEndPos());
+		
+		//return target of dep relations from pos:NN
+		rv =new SpanRelationWithVariableQuery(
+				new SpanRelationQuery(
+						new SpanTermQuery(new Term("base","<:dep")),true
+				), 
+				new SpanTermWithIdQuery(new Term("base","pos:NN"),true), 
+				true, true);
+		kr = ki.search(rv,(short) 10);
+		assertEquals(3, kr.getTotalResults());
+		assertEquals(2,kr.getMatch(0).getStartPos());
+		assertEquals(3,kr.getMatch(0).getEndPos());
+		assertEquals(4,kr.getMatch(1).getStartPos());
+		assertEquals(5,kr.getMatch(1).getEndPos());
+		assertEquals(5,kr.getMatch(2).getStartPos());
+		assertEquals(6,kr.getMatch(2).getEndPos());
+
+		// matchleft
+		
+		//return target of dep relations from pos:NN
+		rv =new SpanRelationWithVariableQuery(
+				new SpanRelationQuery(
+						new SpanTermQuery(new Term("base",">:dep")),true
+				), 
+				new SpanTermWithIdQuery(new Term("base","pos:NN"),true), 
+				false, true);
+		kr = ki.search(rv,(short) 10);
+			
+		assertEquals(3, kr.getTotalResults());
+		assertEquals(2,kr.getMatch(0).getStartPos());
+		assertEquals(3,kr.getMatch(0).getEndPos());
+		assertEquals(4,kr.getMatch(1).getStartPos());
+		assertEquals(5,kr.getMatch(1).getEndPos());
+		assertEquals(5,kr.getMatch(2).getStartPos());
+		assertEquals(6,kr.getMatch(2).getEndPos());
+		
+		//return source of dep relations to pos:NN		
+		rv =new SpanRelationWithVariableQuery(
+				new SpanRelationQuery(
+						new SpanTermQuery(new Term("base","<:dep")),true
+				), 
+				new SpanTermWithIdQuery(new Term("base","pos:NN"),true), 
+				false, true);
+		kr = ki.search(rv,(short) 10);
+		
+		/*for (KorapMatch km : kr.getMatches()){		
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+				+km.getSnippetBrackets());
+			}*/
+		
+		assertEquals(3, kr.getTotalResults());
+		assertEquals(1,kr.getMatch(0).getStartPos());
+		assertEquals(2,kr.getMatch(0).getEndPos());
+		assertEquals(1,kr.getMatch(1).getStartPos());
+		assertEquals(2,kr.getMatch(1).getEndPos());
+		assertEquals(4,kr.getMatch(2).getStartPos());
+		assertEquals(5,kr.getMatch(2).getEndPos());
 	}
 }

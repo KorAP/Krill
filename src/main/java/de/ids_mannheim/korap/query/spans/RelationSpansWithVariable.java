@@ -14,30 +14,42 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanRelationWithVariableQuery;
 
 /** This span enumeration returns the right side of relation spans 
- * 	whose left side token/element positions matching the second spans. 
+ * 	whose left side token/element positions matching the second spans, 
+ * 	or vice versa.
+ * 	
+ * 	Relations within a certain interval, e.g element-based or token-
+ * 	distance-based, are sorted to resolve reference within that interval.
+ * 	Resolution is limited only within an interval. 
  * 
  * 	@author margaretha
  * */
-public class RelationSpansWithVariable extends SimpleSpans{
+public class RelationSpansWithVariable extends SpansWithId{
 	
 	private RelationSpans relationSpans;
+	private SpansWithId matcheeSpans;
 	private ElementSpans element;
 	private List<CandidateRelationSpan> candidateRelations;
 	
 	private boolean matchRight;
-	private boolean hasMoreSecondSpans;
+	private boolean hasMoreMatchees;
+	
+	private short leftId, rightId;
 	
 	public RelationSpansWithVariable(SpanRelationWithVariableQuery query,	
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(query, context, acceptDocs, termContexts);		
-		element = (ElementSpans) query.getRoot().getSpans(context, acceptDocs, 
+		element = (ElementSpans) query.getElementQuery().getSpans(context, acceptDocs, 
 				termContexts);
 		relationSpans = (RelationSpans) firstSpans;
-		hasMoreSecondSpans = secondSpans.next();
-  		hasMoreSpans = element.next() && relationSpans.next() && hasMoreSecondSpans;
-		candidateRelations = new ArrayList<CandidateRelationSpan>();
+		matcheeSpans = (SpansWithId) secondSpans;
 		
+		// hack
+		matcheeSpans.hasSpanId = true;
+		
+		hasMoreMatchees = matcheeSpans.next();
+  		hasMoreSpans = element.next() && relationSpans.next() && hasMoreMatchees;
+		candidateRelations = new ArrayList<CandidateRelationSpan>();
 		matchRight = query.isMatchRight();
 	}
 
@@ -60,7 +72,10 @@ public class RelationSpansWithVariable extends SimpleSpans{
 				else{
 					matchStartPosition = relationSpan.getRightStart();
 					matchEndPosition = relationSpan.getRightEnd();
-				}				
+				}
+				setLeftId(relationSpans.getLeftId());
+				setRightId(relationSpan.getRightId());
+				setSpanId(relationSpan.getSpanId());
 				candidateRelations.remove(0);
 				return true;
 			}
@@ -70,7 +85,7 @@ public class RelationSpansWithVariable extends SimpleSpans{
 	}
 
 	private void setCandidateList() throws IOException {
-		while (hasMoreSpans && findSameDoc(element, relationSpans, secondSpans) ){
+		while (hasMoreSpans && findSameDoc(element, relationSpans, matcheeSpans) ){
 			// if the relation is within a sentence
 			if (relationSpans.start() >= element.start() && 
 					relationSpans.end() <= element.end()){
@@ -106,50 +121,57 @@ public class RelationSpansWithVariable extends SimpleSpans{
 		// do the matching for each relation
 		int i=0;
 		CandidateRelationSpan r;
-		while (hasMoreSecondSpans && i < temp.size()){
+		while (hasMoreMatchees && i < temp.size()){
 			r = temp.get(i);
 			if (matchRight){
-				//System.out.println(i+" "+r.getStart()+","+r.getEnd()+" "+
-				//		r.getRightStart()+","+r.getRightEnd()+
-				//		" "+secondSpans.start()+","+secondSpans.end());
+				/*System.out.println(r.getStart()+","+r.getEnd()+" "+
+						r.getRightStart()+","+r.getRightEnd()+
+						" #"+r.getRightId()+
+						" "+matcheeSpans.start()+","+matcheeSpans.end()+
+						" #"+matcheeSpans.getSpanId()
+				);*/
 				i = matchRelation(i, r,r.getRightStart(), r.getRightEnd());
 			}
 			else{
-				//System.out.println(i+" "+r.getStart()+","+r.getEnd()+" "+
-				//		r.getRightStart()+","+r.getRightEnd()+" "
-				//		+secondSpans.start()+","+secondSpans.end());
+				/*System.out.println(r.getStart()+","+r.getEnd()+" "+
+						r.getRightStart()+","+r.getRightEnd()+" "
+						+matcheeSpans.start()+","+matcheeSpans.end());*/
 				i = matchRelation(i, r,r.getStart(), r.getEnd());
 			}			
 		}
 		
-		hasMoreSpans &= hasMoreSecondSpans;
+		hasMoreSpans &= hasMoreMatchees;
 	}
 	
 	private int matchRelation(int i, CandidateRelationSpan r, int startPos, int endPos) throws IOException {
-		if(startPos == secondSpans.start() ){
-			if 	(endPos == secondSpans.end()){		
-				if (matchRight) r.sortRight = false;
-				else r.sortRight = true;
-				
-				candidateRelations.add(r);
+		if(startPos == matcheeSpans.start() ){
+			if 	(endPos == matcheeSpans.end()){		
+				if (matchRight && r.getRightId() == matcheeSpans.getSpanId()){
+					r.sortRight = false;
+					candidateRelations.add(r);
+				}
+				else if (!matchRight && r.getLeftId() == matcheeSpans.getSpanId()) {
+					r.sortRight = true;
+					candidateRelations.add(r);
+				}
 				i++;
 			}
-			else if (endPos <= secondSpans.end()){
+			else if (endPos <= matcheeSpans.end()){
 				i++;
 			}
-			else { hasMoreSecondSpans = secondSpans.next(); }
+			else { hasMoreMatchees = matcheeSpans.next(); }
 		}
-		else if (startPos < secondSpans.start()){
+		else if (startPos < matcheeSpans.start()){
 			i++;
 		}				
-		else { hasMoreSecondSpans = secondSpans.next(); }	
+		else { hasMoreMatchees = matcheeSpans.next(); }	
 		return i;
 	}
 
 	@Override
 	public boolean skipTo(int target) throws IOException {
-		if (hasMoreSpans && (firstSpans.doc() < target)){
-  			if (!firstSpans.skipTo(target)){
+		if (hasMoreSpans && (relationSpans.doc() < target)){
+  			if (!relationSpans.skipTo(target)){
   				candidateRelations.clear();
   				return false;
   			}
@@ -166,16 +188,36 @@ public class RelationSpansWithVariable extends SimpleSpans{
 		return 0;
 	}
 	
+	public short getLeftId() {
+		return leftId;
+	}
+
+	public void setLeftId(short leftId) {
+		this.leftId = leftId;
+	}
+
+	public short getRightId() {
+		return rightId;
+	}
+
+	public void setRightId(short rightId) {
+		this.rightId = rightId;
+	}
+
 	class CandidateRelationSpan extends CandidateSpan implements Comparable<CandidateSpan>{
 		
 		private int rightStart, rightEnd; 
+		private short leftId, rightId;
 		private boolean sortRight;
+		
 		public CandidateRelationSpan(RelationSpans span, boolean sortRight) 
 				throws IOException {
 			super(span);
 			this.rightStart = span.getRightStart();
 			this.rightEnd = span.getRightEnd();
 			this.sortRight = sortRight;
+			this.leftId = span.getLeftId();
+			this.rightId = span.getRightId();
 		}
 		
 		@Override
@@ -218,6 +260,22 @@ public class RelationSpansWithVariable extends SimpleSpans{
 
 		public void setRightEnd(int rightEnd) {
 			this.rightEnd = rightEnd;
+		}
+
+		public short getLeftId() {
+			return leftId;
+		}
+
+		public void setLeftId(short leftId) {
+			this.leftId = leftId;
+		}
+
+		public short getRightId() {
+			return rightId;
+		}
+
+		public void setRightId(short rightId) {
+			this.rightId = rightId;
 		}	
 	}
 }
