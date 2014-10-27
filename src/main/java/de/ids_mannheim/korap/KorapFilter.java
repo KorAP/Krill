@@ -114,6 +114,8 @@ public class KorapFilter {
 		if (json.has("match"))
 		    match = json.get("match").asText();
 
+
+		// TODO: This isn't stable yet
 		switch (match) {
 		case "match:eq":
 		    filter.date(date);

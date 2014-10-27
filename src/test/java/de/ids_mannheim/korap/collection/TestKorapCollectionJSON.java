@@ -22,6 +22,7 @@ public class TestKorapCollectionJSON {
     public void collection1 () {
 	String metaQuery = _getJSONString("collection_1.jsonld");
 	KorapCollection kc = new KorapCollection(metaQuery);
+	System.err.println(kc.toString());
     };
 
     private String _getJSONString (String file) {

@@ -83,10 +83,15 @@ public class KorapCollection {
 	this.filter = new ArrayList<FilterOperation>(5);
     };
 
+
     public void fromJSON (JsonNode json) throws QueryException {
 	this.filter(new KorapFilter(json));
     };
 
+
+    /**
+     * Legacy API for collection filters.
+     */
     public void fromJSONLegacy (JsonNode json) throws QueryException {
 	String type = json.get("@type").asText();
 
