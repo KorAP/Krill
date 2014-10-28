@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
@@ -18,42 +17,39 @@ import de.ids_mannheim.korap.query.spans.RelationSpansWithVariable;
  * 
  * 	@author margaretha
  * */
-public class SpanRelationWithVariableQuery extends SpanRelationQuery{
+public class SpanRelationWithVariableQuery extends SpanWithIdQuery{
 	
 	private static String elementStr = "s"; // default element interval type
 	
 	private SpanElementQuery elementQuery;
 	private boolean matchRight;  // if false, match left
+	private int window;
 	
 	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
-			SpanElementQuery secondClause, // match span
+			SpanWithIdQuery secondClause, // match tokenWithIdQuery, ElementQuery, RelationQuery
 			boolean matchRight,
 			boolean collectPayloads) {
 		this(spanRelationQuery, secondClause, elementStr, matchRight, collectPayloads);		
 	}
 	
 	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
-			SpanTermWithIdQuery secondClause, // match token
-			boolean matchRight,
-			boolean collectPayloads) {
-		this(spanRelationQuery, secondClause, elementStr, matchRight, collectPayloads);		
-	}
-	
-	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
-			SpanRelationQuery secondClause, // match span
-			boolean matchRight,
-			boolean collectPayloads) {
-		this(spanRelationQuery, secondClause, elementStr, matchRight, collectPayloads);		
-	}
-	
-	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
-			SpanQuery secondClause, // match span
+			SpanWithIdQuery secondClause, 
 			String elementStr,
 			boolean matchRight,
 			boolean collectPayloads) {
 		super(spanRelationQuery, secondClause, collectPayloads);
 		this.matchRight = matchRight;
 		elementQuery = new SpanElementQuery(spanRelationQuery.getField(), elementStr);		
+	}
+	
+	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
+			SpanWithIdQuery secondClause, // match tokenWithIdQuery, ElementQuery, RelationQuery
+			int window,
+			boolean matchRight,
+			boolean collectPayloads) {
+		super(spanRelationQuery, secondClause, collectPayloads);
+		this.matchRight = matchRight;
+		this.window = window;
 	}
 	
 	@Override
@@ -66,7 +62,7 @@ public class SpanRelationWithVariableQuery extends SpanRelationQuery{
 	public SimpleSpanQuery clone() {
 		SpanRelationWithVariableQuery sq = new SpanRelationWithVariableQuery(
 				(SpanRelationQuery) this.firstClause, 
-				this.secondClause,
+				(SpanWithIdQuery) this.secondClause,
 				this.elementQuery.getElementStr(),
 				this.matchRight, 
 				this.collectPayloads
@@ -84,8 +80,14 @@ public class SpanRelationWithVariableQuery extends SpanRelationQuery{
 		sb.append(",");
 		sb.append( matchRight ? "matchRight, " : "matchLeft, " );
 		sb.append(",");
-		sb.append("element:");
-		sb.append(elementQuery.getElementStr());
+		if (elementQuery != null){
+			sb.append("element:");
+			sb.append(elementQuery.getElementStr());
+		}
+		else {
+			sb.append("window:");
+			sb.append(this.window);
+		}
 		sb.append(")");
 		sb.append(ToStringUtils.boost(getBoost()));
 		return sb.toString();
@@ -105,5 +107,13 @@ public class SpanRelationWithVariableQuery extends SpanRelationQuery{
 
 	public void setElementQuery(SpanElementQuery root) {
 		this.elementQuery = root;
+	}
+
+	public int getWindow() {
+		return window;
+	}
+
+	public void setWindow(int window) {
+		this.window = window;
 	}
 }

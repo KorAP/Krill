@@ -17,9 +17,9 @@ import de.ids_mannheim.korap.query.SpanRelationWithVariableQuery;
  * 	whose left side token/element positions matching the second spans, 
  * 	or vice versa.
  * 	
- * 	Relations within a certain interval, e.g element-based or token-
- * 	distance-based, are sorted to resolve reference within that interval.
- * 	Resolution is limited only within an interval. 
+ * 	Relations within a certain window, e.g element-based or token-
+ * 	distance-based, are sorted to resolve reference within that window.
+ * 	Resolution is limited only within an window. 
  * 
  * 	@author margaretha
  * */
@@ -34,21 +34,29 @@ public class RelationSpansWithVariable extends SpansWithId{
 	private boolean hasMoreMatchees;
 	
 	private short leftId, rightId;
+	private int window;
 	
 	public RelationSpansWithVariable(SpanRelationWithVariableQuery query,	
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
-		super(query, context, acceptDocs, termContexts);		
-		element = (ElementSpans) query.getElementQuery().getSpans(context, acceptDocs, 
-				termContexts);
+		super(query, context, acceptDocs, termContexts);
+		if (query.getElementQuery() != null){
+			element = (ElementSpans) query.getElementQuery().getSpans(context, acceptDocs, 
+					termContexts);
+		}
+		else{
+			window = query.getWindow();
+		}
 		relationSpans = (RelationSpans) firstSpans;
-		matcheeSpans = (SpansWithId) secondSpans;
-		
+		matcheeSpans = (SpansWithId) secondSpans;		
 		// hack
 		matcheeSpans.hasSpanId = true;
 		
 		hasMoreMatchees = matcheeSpans.next();
-  		hasMoreSpans = element.next() && relationSpans.next() && hasMoreMatchees;
+  		hasMoreSpans = relationSpans.next() && hasMoreMatchees;
+  		if (element != null){
+  			hasMoreSpans &= element.next();
+  		}
 		candidateRelations = new ArrayList<CandidateRelationSpan>();
 		matchRight = query.isMatchRight();
 	}
@@ -79,9 +87,32 @@ public class RelationSpansWithVariable extends SpansWithId{
 				candidateRelations.remove(0);
 				return true;
 			}
-			else {	setCandidateList(); }
+			else if (element != null){
+				setCandidateList();
+			}
+			else {	setCandidateListWithWindow(); }
 		}		
 		return false;
+	}
+
+	/** A window starts at the same token position as a relation span, 
+	 * 	and ends at the start + window length.
+	 * */
+	private void setCandidateListWithWindow() throws IOException {
+		if (hasMoreSpans && ensureSameDoc(relationSpans, matcheeSpans) ){
+			int windowEnd = relationSpans.start() + window;
+			if (relationSpans.end() > windowEnd){
+				throw new IllegalArgumentException("The window length "+window
+					+" is too small. The relation span ("+relationSpans.start()+
+					","+relationSpans.end()+") is longer than " +"the window " +
+					"length.");
+			}
+			else {
+				collectRelations(relationSpans.doc(), windowEnd);
+				// sort results
+				Collections.sort(candidateRelations);
+			}
+		}
 	}
 
 	private void setCandidateList() throws IOException {
@@ -89,7 +120,7 @@ public class RelationSpansWithVariable extends SpansWithId{
 			// if the relation is within a sentence
 			if (relationSpans.start() >= element.start() && 
 					relationSpans.end() <= element.end()){
-				collectRelations();
+				collectRelations(element.doc(),element.end());
 				// sort results
 				Collections.sort(candidateRelations);
 			}			
@@ -104,14 +135,14 @@ public class RelationSpansWithVariable extends SpansWithId{
 
 	/** Collect all relations within an element whose left side matching the secondspans.
 	 * */
-	private void collectRelations() throws IOException {			
+	private void collectRelations(int currentDoc, int windowEnd) throws IOException {			
 		List<CandidateRelationSpan> temp = new ArrayList<CandidateRelationSpan>();
 		boolean sortRight = false;
 		if (matchRight) sortRight = true;
 		// collect all relations within an element	
 		while (hasMoreSpans &&
-				relationSpans.doc() == element.doc() &&
-				relationSpans.end() <= element.end()){
+				relationSpans.doc() == currentDoc &&
+				relationSpans.end() <= windowEnd){
 			temp.add(new CandidateRelationSpan(relationSpans,sortRight));
 			hasMoreSpans = relationSpans.next();
 		}

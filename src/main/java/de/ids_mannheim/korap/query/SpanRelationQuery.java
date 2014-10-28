@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  *  
  *  @author margaretha
  * */
-public class SpanRelationQuery extends SimpleSpanQuery {
+public class SpanRelationQuery extends SpanWithIdQuery {
 
 	public SpanRelationQuery(SpanQuery firstClause, boolean collectPayloads) {
 		super(firstClause, collectPayloads);

@@ -579,4 +579,38 @@ public class TestRelationIndex {
 		assertEquals(4,kr.getMatch(2).getStartPos());
 		assertEquals(5,kr.getMatch(2).getEndPos());
 	}
+	
+	/** Window
+	 * */
+	@Test
+	public void testCase9() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+				
+		SpanRelationWithVariableQuery rv = new SpanRelationWithVariableQuery(
+				new SpanRelationQuery(
+						new SpanTermQuery(new Term("base",">:child-of")),true
+				), 
+				new SpanElementQuery("base","np"), 
+				6, true, true); 
+				
+		kr = ki.search(rv,(short) 10);
+		assertEquals(7, kr.getTotalResults());
+		
+		rv =new SpanRelationWithVariableQuery(
+				new SpanRelationQuery(
+						new SpanTermQuery(new Term("base","<:dep")),true
+				), 
+				new SpanTermWithIdQuery(new Term("base","pos:NN"),true), 
+				3, false, true);
+		kr = ki.search(rv,(short) 10);
+		assertEquals(3, kr.getTotalResults());
+		
+		/*for (KorapMatch km : kr.getMatches()){
+			System.out.println(km.getStartPos() +","+km.getEndPos()
+				//+" "+km.getSnippetBrackets()
+				);
+		}*/
+	}
 }
+

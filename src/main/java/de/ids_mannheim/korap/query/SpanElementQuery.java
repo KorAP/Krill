@@ -19,7 +19,7 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  */
 
 /** Matches spans wrapped by an element. */
-public class SpanElementQuery extends SimpleSpanQuery {
+public class SpanElementQuery extends SpanWithIdQuery {
 	//private SpanTermQuery termQuery;
     private static Term elementTerm;
     private String elementStr;

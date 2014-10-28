@@ -18,7 +18,7 @@ import de.ids_mannheim.korap.query.spans.TermSpansWithId;
  * 	
  * 	@author margaretha
  * */
-public class SpanTermWithIdQuery extends SimpleSpanQuery{
+public class SpanTermWithIdQuery extends SpanWithIdQuery{
 
 	public SpanTermWithIdQuery(Term term, boolean collectPayloads) {
 		super(new SpanTermQuery(term), collectPayloads);		
