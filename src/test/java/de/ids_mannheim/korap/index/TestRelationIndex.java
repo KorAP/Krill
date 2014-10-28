@@ -259,10 +259,10 @@ public class TestRelationIndex {
 		// child-of relations
 		SpanRelationQuery srq = new SpanRelationQuery(
 				new SpanTermQuery(new Term("base",">:child-of")),true);
-		/*kr = ki.search(srq,(short) 20);
+		kr = ki.search(srq,(short) 20);
 		
 		assertEquals(13, kr.getTotalResults());
-		*/
+		
 		// child-of with attr func=sbj
 		SpanWithAttributeQuery wq = 
 			new SpanWithAttributeQuery(srq, 
@@ -276,6 +276,23 @@ public class TestRelationIndex {
 		assertEquals(1, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos()); // token
 		assertEquals(1,kr.getMatch(0).getEndPos());
+		
+		// child-of without attr func=sbj
+		wq = 
+			new SpanWithAttributeQuery(srq, 
+				new SpanAttributeQuery( 
+					new SpanTermQuery(new Term("base", "r@:func=sbj")),
+					true, true), 
+				true
+		);
+		kr = ki.search(wq,(short) 20);
+		assertEquals(12, kr.getTotalResults());
+		
+		/*for (KorapMatch km : kr.getMatches()){		
+			System.out.println(km.getStartPos() +","+km.getEndPos()
+			//	+" "+km.getSnippetBrackets()
+			);
+		}*/		
 		
 		// child-of with attr func-obj
 		wq = new SpanWithAttributeQuery(srq, 
@@ -314,10 +331,7 @@ public class TestRelationIndex {
 		assertEquals(6,kr.getMatch(1).getStartPos());
 		assertEquals(7,kr.getMatch(1).getEndPos());
 		
-		/*for (KorapMatch km : kr.getMatches()){		
-			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
-    			+km.getSnippetBrackets());
-		}	*/	
+		
 	}
 	
 	/** Relation with variable

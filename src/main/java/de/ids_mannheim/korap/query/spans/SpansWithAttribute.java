@@ -87,19 +87,21 @@ public class SpansWithAttribute extends SimpleSpans{
 	private boolean advance() throws IOException {
 		
 		while (hasMoreSpans && computeElementPosition()){			
-		 	    logger.info("element: " + withAttributeSpans.start() + ","+ withAttributeSpans.end() +
-					" ref:"+withAttributeSpans.getSpanId());
+		 	    //logger.info("element: " + withAttributeSpans.start() + ","+ withAttributeSpans.end() +
+				//	" ref:"+withAttributeSpans.getSpanId());
 			
 			if (checkElementRef() && checkNotElementRef()){			
 				this.matchDocNumber = withAttributeSpans.doc();
 				this.matchStartPosition = withAttributeSpans.start();
 				this.matchEndPosition = withAttributeSpans.end();
 				this.matchPayload = withAttributeSpans.getPayload();
-				hasMoreSpans = attributeList.get(0).next();
 				
-			    logger.info("MATCH "+matchDocNumber);
+				if (attributeList.size() > 0)
+					hasMoreSpans = attributeList.get(0).next();
 				
-				hasMoreSpans = withAttributeSpans.next();		
+			    //logger.info("MATCH "+matchDocNumber);
+				
+				hasMoreSpans &= withAttributeSpans.next();		
 				return true;
 			}
 		}
