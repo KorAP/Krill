@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -51,8 +52,9 @@ public class TermSpansWithId extends SpansWithId{
 	
 	private void readPayload() throws IOException{
 		List<byte[]> payload = (List<byte[]>) firstSpans.getPayload();
-		BytesRef payloadBytesRef = new BytesRef(payload.get(0));
-		setSpanId(PayloadReader.readShort(payloadBytesRef, 0)); //term id
+		ByteBuffer bb = ByteBuffer.allocate(payload.get(0).length);
+		bb.put(payload.get(0));
+		setSpanId(bb.getShort(0)); //term id
 	}
 	
 

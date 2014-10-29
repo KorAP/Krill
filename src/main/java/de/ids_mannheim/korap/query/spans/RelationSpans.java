@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +13,6 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.BytesRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,39 +110,39 @@ public class RelationSpans extends SpansWithId{
 	private void readPayload(CandidateRelationSpan cs) {
 		List<byte[]> payload = (List<byte[]>) cs.getPayloads();
 		int length = payload.get(0).length;
-		BytesRef payloadBytesRef = new BytesRef(payload.get(0));
+		ByteBuffer bb = ByteBuffer.allocate(length);
+		bb.put(payload.get(0));
 		
-		int i;
-		
+		int i;		
 		switch (length) {
-			case 10: // Token to token
-				i = PayloadReader.readInteger(payloadBytesRef,0);
+			case 10: // Token to token				
+				i = bb.getInt(0);
 				cs.setRightStart(i-1);
 				cs.setRightEnd(i);
 				break;
 	
 			case 14: // Token to span
-				cs.setRightStart(PayloadReader.readInteger(payloadBytesRef,0));
-				cs.setRightEnd(PayloadReader.readInteger(payloadBytesRef,4));
+				cs.setRightStart(bb.getInt(0));
+				cs.setRightEnd(bb.getInt(4));
 				break;
 				
 			case 15: // Span to token
-				cs.setEnd(PayloadReader.readInteger(payloadBytesRef,0));
-				i = PayloadReader.readInteger(payloadBytesRef,5);
+				cs.setEnd(bb.getInt(0));
+				i = bb.getInt(5);
 				cs.setRightStart(i-1);
 				cs.setRightEnd(i);
 				break;
 			
 			case 18: // Span to span
-				cs.setEnd(PayloadReader.readInteger(payloadBytesRef,0));
-				cs.setRightStart(PayloadReader.readInteger(payloadBytesRef,4));
-				cs.setRightEnd(PayloadReader.readInteger(payloadBytesRef,8));
+				cs.setEnd(bb.getInt(0));
+				cs.setRightStart(bb.getInt(4));
+				cs.setRightEnd(bb.getInt(8));
 				break;
 		}		
 		
-		cs.setRightId(PayloadReader.readShort(payloadBytesRef, length-2)); //right id
-		cs.setLeftId(PayloadReader.readShort(payloadBytesRef, length-4)); //left id
-		cs.setSpanId(PayloadReader.readShort(payloadBytesRef, length-6)); //relation id
+		cs.setRightId(bb.getShort(length-2)); //right id
+		cs.setLeftId(bb.getShort(length-4)); //left id
+		cs.setSpanId(bb.getShort(length-6)); //relation id
 		// Payload is cleared.		
 	}
 

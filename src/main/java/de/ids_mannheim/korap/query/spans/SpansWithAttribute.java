@@ -33,9 +33,6 @@ public class SpansWithAttribute extends SimpleSpans{
 	
 	protected Logger logger = LoggerFactory.getLogger(SpansWithAttribute.class);
 
-        // This advices the java compiler to ignore all loggings
-        public static final boolean DEBUG = false;	
-
 	public SpansWithAttribute(SpanWithAttributeQuery spanWithAttributeQuery,
 			SpansWithId withIdSpans,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -115,8 +112,7 @@ public class SpansWithAttribute extends SimpleSpans{
 		
 		for (AttributeSpans attribute: attributeList){			
 			if (withAttributeSpans.getSpanId() != attribute.getSpanId()){
-			        if (DEBUG)
-				    logger.info("attribute ref doesn't match");
+//				    logger.info("attribute ref doesn't match");
 				if (withAttributeSpans.getSpanId() < attribute.getSpanId())
 					hasMoreSpans = attribute.next();
 				else {
@@ -137,8 +133,7 @@ public class SpansWithAttribute extends SimpleSpans{
 			if (!notAttribute.isFinish() && 
 					withAttributeSpans.start() == notAttribute.start() &&
 					withAttributeSpans.getSpanId() == notAttribute.getSpanId()){
-			        if (DEBUG)
-				    logger.info("not attribute ref exists");
+//				    logger.info("not attribute ref exists");
 				hasMoreSpans = withAttributeSpans.next();	
 				return false;
 			}
@@ -154,17 +149,14 @@ public class SpansWithAttribute extends SimpleSpans{
 		while (hasMoreSpans){
 			
 			if (withAttributeSpans.getSpanId() < 1){ // the element does not have an attribute
-				withAttributeSpans.hasSpanId = true; // dummy setting enabling reading elementRef
 				hasMoreSpans = withAttributeSpans.next();
-				if (DEBUG)
-				    logger.info("skip");
+//			    logger.info("skip");
 				continue;
 			}
 			
 			if (checkAttributeListPosition() && 
 					checkNotAttributeListPosition()){
-			        if (DEBUG)
-				    logger.info("element is found: "+ withAttributeSpans.start());
+//				    logger.info("element is found: "+ withAttributeSpans.start());
 				return true;
 			}			
 		}		
@@ -181,8 +173,7 @@ public class SpansWithAttribute extends SimpleSpans{
 		
 		for (AttributeSpans a : notAttributeList){
 			// advance the doc# of not AttributeSpans
-		        if (DEBUG)
-			    logger.info("a "+a.start());
+			// logger.info("a "+a.start());
 			while (!a.isFinish() &&	 a.doc() <= withAttributeSpans.doc()){
 				
 				if (a.doc() == withAttributeSpans.doc() &&
@@ -206,8 +197,7 @@ public class SpansWithAttribute extends SimpleSpans{
 		
 		for (AttributeSpans a : attributeList){
 			if(!ensureSamePosition(withAttributeSpans, a)) return false;
-			        if (DEBUG)
-				    logger.info("pos:" + withAttributeSpans.start());
+			//	    logger.info("pos:" + withAttributeSpans.start());
 				if (isFirst){ 
 					isFirst = false;
 					currentPosition = withAttributeSpans.start();
@@ -218,8 +208,7 @@ public class SpansWithAttribute extends SimpleSpans{
 				
 			}				 
 		}
-		if (DEBUG)
-		    logger.info("same pos: "+isSame+ ", pos "+withAttributeSpans.start());
+		//    logger.info("same pos: "+isSame+ ", pos "+withAttributeSpans.start());
 		return isSame;
 	}
 	

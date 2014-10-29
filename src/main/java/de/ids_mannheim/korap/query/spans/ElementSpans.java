@@ -111,32 +111,25 @@ public class ElementSpans extends SpansWithId {
 	 * 	@author margaretha
 	 * */
 	private void readPayload(CandidateElementSpans cs) throws IOException {   	
-		List<byte[]> payloadList = (List<byte[]>) termSpans.getPayload();
-		BytesRef payload = new BytesRef(payloadList.get(0));
-	    		//.getPostings().getPayload();
-	    //ByteBuffer payloadBuffer = ByteBuffer.allocate(128);
-	    
-	    if (payload != null) {
-			// Copy some payloads like start character and end character
-	    	//payloadBuffer.put(payload.bytes, payload.offset, 8);
+		List<byte[]> payload = (List<byte[]>) termSpans.getPayload();
+		int length = payload.get(0).length;
+		ByteBuffer bb = ByteBuffer.allocate(length);
+		bb.put(payload.get(0));
+		
+	    if (!payload.isEmpty()) {
+			// set element end position from payload
+			cs.setEnd(bb.getInt(8));
 			
-			cs.setEnd(PayloadReader.readInteger(payload,8));
-			
-			if (hasSpanId){
-				// Copy rest of payloads after the end position and elementref
-				//payloadBuffer.put(payload.bytes, payload.offset + 14, payload.length - 14);				
-				cs.setSpanId(PayloadReader.readShort(payload,12));
+			if (hasSpanId){ // copy element id
+				cs.setSpanId(bb.getShort(12));
 			}
-			else{
-				// Copy rest of payloads after the end position
-				//payloadBuffer.put(payload.bytes, payload.offset + 12, payload.length - 12);
+			else{ // set element id -1
 				cs.setSpanId((short) -1);
 			}
-			
-			//byte[] offsetCharacters = new byte[8];
-			//System.arraycopy(payloadBuffer.array(), 0, offsetCharacters, 0, 8);
-			
-			cs.setPayloads(Collections.singletonList(PayloadReader.readOffset(payload)));
+			// Copy the start and end character offsets
+			byte[] b = new byte[8];
+			System.arraycopy(bb.array(), 0, b, 0, 8);
+			cs.setPayloads(Collections.singletonList(b));
 	    }
 	    else {	
 			cs.setEnd(cs.getStart());
