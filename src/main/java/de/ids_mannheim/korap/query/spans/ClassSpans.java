@@ -1,23 +1,20 @@
 package de.ids_mannheim.korap.query.spans;
 
-import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.search.spans.SpanQuery;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.util.ArrayUtil;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-
-import java.io.IOException;
-
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.ByteBuffer;
 
 /**
  * @author diewald

@@ -22,10 +22,7 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans{
 	
 	private Logger log = LoggerFactory.getLogger(NonPartialOverlappingSpans.class);
 
-        // This advices the java compiler to ignore all loggings
-        public static final boolean DEBUG = false;
-	
-	public NonPartialOverlappingSpans(SimpleSpanQuery simpleSpanQuery,
+  	public NonPartialOverlappingSpans(SimpleSpanQuery simpleSpanQuery,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term,TermContext> termContexts) throws IOException {	    	  
 		super(simpleSpanQuery, context, acceptDocs, termContexts);

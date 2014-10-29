@@ -10,7 +10,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.BytesRef;
 
 import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
 

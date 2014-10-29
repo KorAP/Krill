@@ -6,7 +6,6 @@ import java.util.Map;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

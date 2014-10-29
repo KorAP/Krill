@@ -3,17 +3,14 @@ package de.ids_mannheim.korap.query.spans;
 import java.io.IOException;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.hamcrest.core.IsInstanceOf;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
 /**	Span enumeration of matches whose two sub-spans have exactly the same 

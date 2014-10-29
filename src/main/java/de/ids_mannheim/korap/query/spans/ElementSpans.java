@@ -13,7 +13,6 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.BytesRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,14 +155,6 @@ public class ElementSpans extends SpansWithId {
 	public long cost() {
 		return termSpans.cost();
 	}
-	
-//	public short getElementRef() {
-//		return elementRef;
-//	}
-//
-//	public void setElementRef(short elementRef) {
-//		this.elementRef = elementRef;
-//	}
 	
 	/** Match candidate for element spans.
 	 * */	
