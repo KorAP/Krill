@@ -33,8 +33,8 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans{
 		if (firstSpanList.isEmpty() && secondSpanList.isEmpty()){
 			if (hasMoreFirstSpans && hasMoreSecondSpans &&
 					ensureSameDoc(firstSpans, secondSpans)){			
-				firstSpanList.add(new CandidateSpan(firstSpans));
-				secondSpanList.add(new CandidateSpan(secondSpans));
+				firstSpanList.add(new CandidateSpans(firstSpans));
+				secondSpanList.add(new CandidateSpans(secondSpans));
 				currentDocNum = firstSpans.doc();
 				hasMoreFirstSpans = firstSpans.next();
 				hasMoreSecondSpans = secondSpans.next();				
@@ -46,27 +46,27 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans{
 		}
 		else if (firstSpanList.isEmpty() && hasMoreFirstSpans && 
 				firstSpans.doc() == currentDocNum){
-			firstSpanList.add(new CandidateSpan(firstSpans));
+			firstSpanList.add(new CandidateSpans(firstSpans));
 			hasMoreFirstSpans = firstSpans.next();
 		}
 		else if (secondSpanList.isEmpty() && hasMoreSecondSpans && 
 				secondSpans.doc() == currentDocNum){
-			secondSpanList.add(new CandidateSpan(secondSpans));
+			secondSpanList.add(new CandidateSpans(secondSpans));
 			hasMoreSecondSpans = secondSpans.next();
 		}
 		return true;
 	}
 	
 	@Override
-	protected boolean setCandidateList(List<CandidateSpan> 
+	protected boolean setCandidateList(List<CandidateSpans> 
 			candidateList, Spans candidate, boolean hasMoreCandidates,
-			List<CandidateSpan> targetList) throws IOException {
+			List<CandidateSpans> targetList) throws IOException {
 		
 		if (!targetList.isEmpty()){
-			CandidateSpan target = targetList.get(0);
+			CandidateSpans target = targetList.get(0);
 			while (hasMoreCandidates && candidate.doc() == target.getDoc()
 					&& isWithinMaxDistance(target,candidate)){
-				candidateList.add(new CandidateSpan(candidate));
+				candidateList.add(new CandidateSpans(candidate));
 				hasMoreCandidates = candidate.next();
 			}
 		}
@@ -77,7 +77,7 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans{
 	 *  @return true iff the target and candidate spans are within the maximum
 	 *  distance
 	 * */
-	protected boolean isWithinMaxDistance(CandidateSpan target, Spans candidate) {
+	protected boolean isWithinMaxDistance(CandidateSpans target, Spans candidate) {
 		// left candidate
 		if (candidate.end() < target.getStart() && 
 				candidate.end() + maxDistance <= target.getStart()){
@@ -92,12 +92,12 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans{
 	}
 	
 	@Override	
-	protected List<CandidateSpan> findMatches(CandidateSpan target, List<CandidateSpan> 
+	protected List<CandidateSpans> findMatches(CandidateSpans target, List<CandidateSpans> 
 			candidateList) {
 		
-		List<CandidateSpan> matches = new ArrayList<>();		
+		List<CandidateSpans> matches = new ArrayList<>();		
 		int actualDistance;
-		for (CandidateSpan cs : candidateList){
+		for (CandidateSpans cs : candidateList){
 			if (minDistance == 0 &&
 					//intersection
 					target.getStart() < cs.getEnd() &&
@@ -119,7 +119,7 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans{
 	}
 
 	@Override
-	protected void updateList(List<CandidateSpan> candidateList) {
+	protected void updateList(List<CandidateSpans> candidateList) {
 		candidateList.remove(0);		
 	}
 

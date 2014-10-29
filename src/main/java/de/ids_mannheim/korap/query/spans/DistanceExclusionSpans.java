@@ -15,7 +15,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 
  * 	@author margaretha
  * */
-public class DistanceExclusionSpan extends DistanceSpans{
+public class DistanceExclusionSpans extends DistanceSpans{
 	
 	private int minDistance, maxDistance;
 	private boolean isOrdered;
@@ -24,7 +24,7 @@ public class DistanceExclusionSpan extends DistanceSpans{
         // This advices the java compiler to ignore all loggings
         public static final boolean DEBUG = false;
 
-	public DistanceExclusionSpan(SpanDistanceQuery query,
+	public DistanceExclusionSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts, boolean isOrdered) 
 			throws IOException {
@@ -106,7 +106,7 @@ public class DistanceExclusionSpan extends DistanceSpans{
   		if (collectPayloads && firstSpans.isPayloadAvailable())
 	    	matchPayload.addAll(firstSpans.getPayload());
   		
-  		setMatchFirstSpan(new CandidateSpan(firstSpans));
+  		setMatchFirstSpan(new CandidateSpans(firstSpans));
   		//setMatchSecondSpan(new CandidateSpan(secondSpans));
   		
 		if (DEBUG)

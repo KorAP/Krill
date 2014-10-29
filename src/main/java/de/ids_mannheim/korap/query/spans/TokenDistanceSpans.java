@@ -48,8 +48,8 @@ public class TokenDistanceSpans extends OrderedDistanceSpans{
 	 * 	from the candidate list prepared for the previous second spans. 
 	 * */
 	private void copyPossibleCandidates(){
-		List<CandidateSpan> temp = new ArrayList<>();
-		for (CandidateSpan cs : candidateList){
+		List<CandidateSpans> temp = new ArrayList<>();
+		for (CandidateSpans cs : candidateList){
 			if (cs.getEnd()+maxDistance > secondSpans.start())
 				temp.add(cs);
 		}
@@ -64,7 +64,7 @@ public class TokenDistanceSpans extends OrderedDistanceSpans{
 				firstSpans.start() < secondSpans.end()){
 			
 			if (firstSpans.end()+maxDistance > secondSpans.start())
-				candidateList.add(new CandidateSpan(firstSpans));
+				candidateList.add(new CandidateSpans(firstSpans));
 			
 			hasMoreFirstSpans = firstSpans.next();
 		}
@@ -72,7 +72,7 @@ public class TokenDistanceSpans extends OrderedDistanceSpans{
 	
 	@Override
 	protected boolean findMatch() throws IOException {
-		CandidateSpan candidateSpan = candidateList.get(candidateListIndex);		
+		CandidateSpans candidateSpan = candidateList.get(candidateListIndex);		
 		if (minDistance == 0 &&
 				// intersection
 				candidateSpan.getStart() < secondSpans.end() && 
@@ -95,7 +95,7 @@ public class TokenDistanceSpans extends OrderedDistanceSpans{
 	
 	@Override
 	public long cost() {
-		CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
+		CandidateSpans candidateSpan = candidateList.get(candidateListIndex);
 		return candidateSpan.getCost() + secondSpans.cost();
 	}
 

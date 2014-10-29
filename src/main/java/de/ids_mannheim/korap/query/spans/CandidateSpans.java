@@ -9,16 +9,16 @@ import org.apache.lucene.search.spans.Spans;
 /** A span kept as a candidate for matching with another Span
  * 	@author margaretha
  * */
-public class CandidateSpan implements Comparable<CandidateSpan>{	
+public class CandidateSpans implements Comparable<CandidateSpans>{	
 	private int doc,start,end;
 	private long cost;
 	private Collection<byte[]> payloads = new ArrayList<>();
 	private int position;
-	private CandidateSpan childSpan; // used for multiple distance with unordered constraint 
+	private CandidateSpans childSpan; // used for multiple distance with unordered constraint 
 	private short elementRef;
 	
 	
-	public CandidateSpan(Spans span) throws IOException {
+	public CandidateSpans(Spans span) throws IOException {
 		this.doc = span.doc();
 		this.start = span.start();
 		this.end = span.end();
@@ -36,12 +36,12 @@ public class CandidateSpan implements Comparable<CandidateSpan>{
 		}		*/
 	}	
 	
-	public CandidateSpan(Spans span, int position) throws IOException {
+	public CandidateSpans(Spans span, int position) throws IOException {
 		this(span);
 		this.position = position;		
 	}
 	
-	public CandidateSpan(int start, int end, int doc, long cost,
+	public CandidateSpans(int start, int end, int doc, long cost,
 			Collection<byte[]> payloads) {
 		this.start = start;
 		this.end = end;
@@ -99,11 +99,11 @@ public class CandidateSpan implements Comparable<CandidateSpan>{
 		this.position = position;
 	}
 
-	public CandidateSpan getChildSpan() {
+	public CandidateSpans getChildSpan() {
 		return childSpan;
 	}
 
-	public void setChildSpan(CandidateSpan childSpan) {
+	public void setChildSpan(CandidateSpans childSpan) {
 		this.childSpan = childSpan;
 	}
 
@@ -116,7 +116,7 @@ public class CandidateSpan implements Comparable<CandidateSpan>{
 	}
 
 	@Override
-	public int compareTo(CandidateSpan o) {
+	public int compareTo(CandidateSpans o) {
 		if (this.doc == o.doc){
 			if (this.getStart() == o.getStart()){
 				if (this.getEnd() == o.getEnd())

@@ -11,10 +11,10 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.SpanRelationWithVariableQuery;
+import de.ids_mannheim.korap.query.SpanRelationPartQuery;
 
-/** This span enumeration returns the right side of relation spans 
- * 	whose left side token/element positions matching the second spans, 
+/** This span enumeration returns the right part of relation spans 
+ * 	whose left part token/element positions matching the second spans, 
  * 	or vice versa.
  * 	
  * 	Relations within a certain window, e.g element-based or token-
@@ -23,7 +23,7 @@ import de.ids_mannheim.korap.query.SpanRelationWithVariableQuery;
  * 
  * 	@author margaretha
  * */
-public class RelationSpansWithVariable extends SpansWithId{
+public class RelationPartSpans extends SpansWithId{
 	
 	private RelationSpans relationSpans;
 	private SpansWithId matcheeSpans;
@@ -36,7 +36,7 @@ public class RelationSpansWithVariable extends SpansWithId{
 	private short leftId, rightId;
 	private int window;
 	
-	public RelationSpansWithVariable(SpanRelationWithVariableQuery query,	
+	public RelationPartSpans(SpanRelationPartQuery query,	
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
 		super(query, context, acceptDocs, termContexts);
@@ -235,7 +235,7 @@ public class RelationSpansWithVariable extends SpansWithId{
 		this.rightId = rightId;
 	}
 
-	class CandidateRelationSpan extends CandidateSpan implements Comparable<CandidateSpan>{
+	class CandidateRelationSpan extends CandidateSpans implements Comparable<CandidateSpans>{
 		
 		private int rightStart, rightEnd; 
 		private short leftId, rightId;
@@ -252,7 +252,7 @@ public class RelationSpansWithVariable extends SpansWithId{
 		}
 		
 		@Override
-		public int compareTo(CandidateSpan o) {
+		public int compareTo(CandidateSpans o) {
 			CandidateRelationSpan cs = (CandidateRelationSpan) o;
 			if (sortRight)
 				return sortByRight(cs);

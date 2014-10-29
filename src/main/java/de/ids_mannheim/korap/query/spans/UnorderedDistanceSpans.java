@@ -24,8 +24,8 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 
 	protected int minDistance, maxDistance;
 	protected boolean hasMoreFirstSpans, hasMoreSecondSpans;
-	protected List<CandidateSpan> firstSpanList, secondSpanList;	
-	protected List<CandidateSpan> matchList;
+	protected List<CandidateSpans> firstSpanList, secondSpanList;	
+	protected List<CandidateSpans> matchList;
 	private long matchCost;
 	private int matchListSpanNum; 	
 	protected int currentDocNum;
@@ -40,9 +40,9 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 		minDistance = query.getMinDistance();
 		maxDistance =  query.getMaxDistance();
 		
-		firstSpanList = new ArrayList<CandidateSpan>();
-		secondSpanList = new ArrayList<CandidateSpan>();
-		matchList = new ArrayList<CandidateSpan>();
+		firstSpanList = new ArrayList<CandidateSpans>();
+		secondSpanList = new ArrayList<CandidateSpans>();
+		matchList = new ArrayList<CandidateSpans>();
 		
 		hasMoreFirstSpans = firstSpans.next();
 		hasMoreSecondSpans = secondSpans.next();
@@ -90,7 +90,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 //			System.out.println(cs.getStart() +" "+ cs.getEnd());
 //		}
 		
-		CandidateSpan currentFirstSpan, currentSecondSpan;
+		CandidateSpans currentFirstSpan, currentSecondSpan;
 		if (!firstSpanList.isEmpty() && !secondSpanList.isEmpty()){
 			
 			currentFirstSpan = firstSpanList.get(0)	;
@@ -140,7 +140,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 		}
 	}
 	
-	private boolean isLastCandidateSmaller(CandidateSpan currentFirstSpan, CandidateSpan 
+	private boolean isLastCandidateSmaller(CandidateSpans currentFirstSpan, CandidateSpans 
 			currentSecondSpan){
 		if (currentFirstSpan.getEnd() == currentSecondSpan.getEnd() ){
 			int secondEnd = secondSpanList.get(secondSpanList.size()-1).getEnd();
@@ -151,29 +151,29 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 		return false;
 	}
 	
-	protected abstract void updateList(List<CandidateSpan> candidateList);
+	protected abstract void updateList(List<CandidateSpans> candidateList);
 	
 	/** Set the candidate list for the first element in the target list.
 	 * @return true iff the spans enumeration still has a next element 
 	 * to be a candidate
 	 */
-	protected abstract boolean setCandidateList(List<CandidateSpan> 
+	protected abstract boolean setCandidateList(List<CandidateSpans> 
 			candidateList, Spans candidate, boolean hasMoreCandidates,
-			List<CandidateSpan> targetList) throws IOException;
+			List<CandidateSpans> targetList) throws IOException;
 	
 	/** Search all matches between the target span and its candidates in the candidate 
 	 * 	list.
 	 * 	@return the matches in a list 
 	 * */
-	protected abstract List<CandidateSpan> findMatches(CandidateSpan target, 
-			List<CandidateSpan> candidateList);
+	protected abstract List<CandidateSpans> findMatches(CandidateSpans target, 
+			List<CandidateSpans> candidateList);
 	
 	/** Compute match properties and create a candidate span match 
 	 * 	to be added to the match list.
 	 * 	@return a candidate span match 
 	 * */
-	protected CandidateSpan createMatchCandidate(CandidateSpan target,
-			CandidateSpan cs, boolean isDistanceZero) {
+	protected CandidateSpans createMatchCandidate(CandidateSpans target,
+			CandidateSpans cs, boolean isDistanceZero) {
 		
 		int start = Math.min(target.getStart(), cs.getStart());
 		int end = Math.max(target.getEnd(),cs.getEnd());
@@ -190,7 +190,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 			}
 		}
 		
-		CandidateSpan match = new CandidateSpan(start,end,doc,cost,payloads);
+		CandidateSpans match = new CandidateSpans(start,end,doc,cost,payloads);
 		match.setChildSpan(cs);
 		return match;
 	}
@@ -198,7 +198,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans{
 	/** Assign the first candidate span in the match list as the current span match.
 	 * */
 	private void setMatchProperties() {
-		CandidateSpan cs = matchList.get(0);
+		CandidateSpans cs = matchList.get(0);
 		matchDocNumber = cs.getDoc();
 		matchStartPosition = cs.getStart();
 		matchEndPosition = cs.getEnd();

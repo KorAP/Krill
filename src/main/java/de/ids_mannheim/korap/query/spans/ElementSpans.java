@@ -174,7 +174,7 @@ public class ElementSpans extends SpansWithId {
 	
 	/** Match candidate for element spans.
 	 * */	
-	class CandidateElementSpans extends CandidateSpan {
+	class CandidateElementSpans extends CandidateSpans {
 		
 		private short elementRef;
 		

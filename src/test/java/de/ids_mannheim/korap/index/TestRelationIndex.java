@@ -14,7 +14,7 @@ import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
-import de.ids_mannheim.korap.query.SpanRelationWithVariableQuery;
+import de.ids_mannheim.korap.query.SpanRelationPartQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
@@ -345,7 +345,7 @@ public class TestRelationIndex {
 		ki.commit();
 		
 		//return all children of np
-		SpanRelationWithVariableQuery rv = new SpanRelationWithVariableQuery(
+		SpanRelationPartQuery rv = new SpanRelationPartQuery(
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base",">:child-of")),true
 				), 
@@ -400,7 +400,7 @@ public class TestRelationIndex {
 		);
 		
 		//return all children of np
-		SpanRelationWithVariableQuery rv =new SpanRelationWithVariableQuery(
+		SpanRelationPartQuery rv =new SpanRelationPartQuery(
 				spanRelationQuery, 
 				new SpanElementQuery("base","np"), 
 				false, true);
@@ -441,7 +441,7 @@ public class TestRelationIndex {
 		);
 		
 		//return all parents of np
-		SpanRelationWithVariableQuery rv =new SpanRelationWithVariableQuery(
+		SpanRelationPartQuery rv =new SpanRelationPartQuery(
 				spanRelationQuery, 
 				new SpanElementQuery("base","np"), 
 				true, true);
@@ -472,7 +472,7 @@ public class TestRelationIndex {
 		ki.commit();
 		
 		//return all parents of np
-		SpanRelationWithVariableQuery rv =new SpanRelationWithVariableQuery(
+		SpanRelationPartQuery rv =new SpanRelationPartQuery(
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base",">:child-of")),true
 				), 
@@ -495,7 +495,7 @@ public class TestRelationIndex {
 		// id problem (solved)
 		
 		// return all children of relation targets/ right side		
-		SpanRelationWithVariableQuery rv3 = new SpanRelationWithVariableQuery(				
+		SpanRelationPartQuery rv3 = new SpanRelationPartQuery(				
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base",">:child-of")),true
 				),
@@ -521,7 +521,7 @@ public class TestRelationIndex {
 		// match right
 		
 		//return source of dep relations to pos:NN
-		SpanRelationWithVariableQuery rv =new SpanRelationWithVariableQuery(
+		SpanRelationPartQuery rv =new SpanRelationPartQuery(
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base",">:dep")),true
 				), 
@@ -537,7 +537,7 @@ public class TestRelationIndex {
 		assertEquals(5,kr.getMatch(2).getEndPos());
 		
 		//return target of dep relations from pos:NN
-		rv =new SpanRelationWithVariableQuery(
+		rv =new SpanRelationPartQuery(
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base","<:dep")),true
 				), 
@@ -555,7 +555,7 @@ public class TestRelationIndex {
 		// matchleft
 		
 		//return target of dep relations from pos:NN
-		rv =new SpanRelationWithVariableQuery(
+		rv =new SpanRelationPartQuery(
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base",">:dep")),true
 				), 
@@ -572,7 +572,7 @@ public class TestRelationIndex {
 		assertEquals(6,kr.getMatch(2).getEndPos());
 		
 		//return source of dep relations to pos:NN		
-		rv =new SpanRelationWithVariableQuery(
+		rv =new SpanRelationPartQuery(
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base","<:dep")),true
 				), 
@@ -601,7 +601,7 @@ public class TestRelationIndex {
 		ki.addDoc(createFieldDoc2());
 		ki.commit();
 				
-		SpanRelationWithVariableQuery rv = new SpanRelationWithVariableQuery(
+		SpanRelationPartQuery rv = new SpanRelationPartQuery(
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base",">:child-of")),true
 				), 
@@ -611,7 +611,7 @@ public class TestRelationIndex {
 		kr = ki.search(rv,(short) 10);
 		assertEquals(7, kr.getTotalResults());
 		
-		rv =new SpanRelationWithVariableQuery(
+		rv =new SpanRelationPartQuery(
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base","<:dep")),true
 				), 

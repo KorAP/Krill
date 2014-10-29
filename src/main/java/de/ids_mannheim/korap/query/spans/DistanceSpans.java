@@ -22,7 +22,7 @@ import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
  * */
 public abstract class DistanceSpans extends SimpleSpans{	
 
-	protected CandidateSpan matchFirstSpan,matchSecondSpan;	
+	protected CandidateSpans matchFirstSpan,matchSecondSpan;	
 	protected Logger log = LoggerFactory.getLogger(DistanceSpans.class);
 	protected boolean exclusion; // because MultipleDistanceQuery doesn't have this property
     
@@ -70,19 +70,19 @@ public abstract class DistanceSpans extends SimpleSpans{
   		return false;
 	}*/
 	
-	public CandidateSpan getMatchFirstSpan() {
+	public CandidateSpans getMatchFirstSpan() {
 		return matchFirstSpan;
 	}
 
-	public void setMatchFirstSpan(CandidateSpan matchFirstSpan) {
+	public void setMatchFirstSpan(CandidateSpans matchFirstSpan) {
 		this.matchFirstSpan = matchFirstSpan;
 	}
 
-	public CandidateSpan getMatchSecondSpan() {
+	public CandidateSpans getMatchSecondSpan() {
 		return matchSecondSpan;
 	}
 
-	public void setMatchSecondSpan(CandidateSpan matchSecondSpan) {
+	public void setMatchSecondSpan(CandidateSpans matchSecondSpan) {
 		this.matchSecondSpan = matchSecondSpan;
 	}
 

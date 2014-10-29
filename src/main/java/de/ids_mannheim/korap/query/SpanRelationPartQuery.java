@@ -10,14 +10,14 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
-import de.ids_mannheim.korap.query.spans.RelationSpansWithVariable;
+import de.ids_mannheim.korap.query.spans.RelationPartSpans;
 
-/** This query match one side of a relation (either left or right) to certain 
- * 	elements or terms, and return the other side of the relation.	
+/** This query match one part of a relation (either left or right) to certain 
+ * 	elements or terms, and return the other part of the relation.	
  * 
  * 	@author margaretha
  * */
-public class SpanRelationWithVariableQuery extends SpanWithIdQuery{
+public class SpanRelationPartQuery extends SpanWithIdQuery{
 	
 	private static String elementStr = "s"; // default element interval type
 	
@@ -25,14 +25,14 @@ public class SpanRelationWithVariableQuery extends SpanWithIdQuery{
 	private boolean matchRight;  // if false, match left
 	private int window;
 	
-	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
+	public SpanRelationPartQuery(SpanRelationQuery spanRelationQuery,
 			SpanWithIdQuery secondClause, // match tokenWithIdQuery, ElementQuery, RelationQuery
 			boolean matchRight,
 			boolean collectPayloads) {
 		this(spanRelationQuery, secondClause, elementStr, matchRight, collectPayloads);		
 	}
 	
-	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
+	public SpanRelationPartQuery(SpanRelationQuery spanRelationQuery,
 			SpanWithIdQuery secondClause, 
 			String elementStr,
 			boolean matchRight,
@@ -42,7 +42,7 @@ public class SpanRelationWithVariableQuery extends SpanWithIdQuery{
 		elementQuery = new SpanElementQuery(spanRelationQuery.getField(), elementStr);		
 	}
 	
-	public SpanRelationWithVariableQuery(SpanRelationQuery spanRelationQuery,
+	public SpanRelationPartQuery(SpanRelationQuery spanRelationQuery,
 			SpanWithIdQuery secondClause, // match tokenWithIdQuery, ElementQuery, RelationQuery
 			int window,
 			boolean matchRight,
@@ -55,12 +55,12 @@ public class SpanRelationWithVariableQuery extends SpanWithIdQuery{
 	@Override
 	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
-			return new RelationSpansWithVariable(this, context, acceptDocs, termContexts);
+			return new RelationPartSpans(this, context, acceptDocs, termContexts);
 	}
 	
 	@Override
 	public SimpleSpanQuery clone() {
-		SpanRelationWithVariableQuery sq = new SpanRelationWithVariableQuery(
+		SpanRelationPartQuery sq = new SpanRelationPartQuery(
 				(SpanRelationQuery) this.firstClause, 
 				(SpanWithIdQuery) this.secondClause,
 				this.elementQuery.getElementStr(),

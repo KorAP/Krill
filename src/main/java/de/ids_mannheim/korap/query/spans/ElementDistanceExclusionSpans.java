@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * 
  * 	@author margaretha
  * */
-public class ElementDistanceExclusionSpan extends DistanceSpans{
+public class ElementDistanceExclusionSpans extends DistanceSpans{
 
 	private Spans elements;
 	private boolean hasMoreElements;
@@ -30,7 +30,7 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 	private boolean isOrdered;
 	private boolean hasMoreSecondSpans;
 		
-	protected List<CandidateSpan> candidateList, targetList;	
+	protected List<CandidateSpans> candidateList, targetList;	
 	private int currentDocNum;
 	
 	private int minDistance, maxDistance;
@@ -38,7 +38,7 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 
         public static final boolean DEBUG = false;
 
-	public ElementDistanceExclusionSpan(SpanDistanceQuery query,
+	public ElementDistanceExclusionSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts, boolean isOrdered) 
 			throws IOException {
@@ -52,8 +52,8 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
   		
   		elementPosition=0;
   		this.isOrdered = isOrdered;
-  		candidateList = new ArrayList<CandidateSpan>();
-  		targetList = new ArrayList<CandidateSpan>();
+  		candidateList = new ArrayList<CandidateSpans>();
+  		targetList = new ArrayList<CandidateSpans>();
   		currentDocNum = firstSpans.doc();
   		
   		minDistance = query.getMinDistance();
@@ -73,7 +73,7 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 	}
 	
 	private boolean isTargetValid() throws IOException{
-		CandidateSpan target = targetList.get(0);
+		CandidateSpans target = targetList.get(0);
 		targetList.remove(0);			
 		firstSpanPostion = target.getPosition();
 		filterCandidateList(firstSpanPostion);
@@ -107,7 +107,7 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 	private boolean isFirstSpanValid() throws IOException{
 		if (candidateList.isEmpty()){
 			if (isFirstSpanInElement()){		
-				setMatchProperties(new CandidateSpan(firstSpans,elementPosition));
+				setMatchProperties(new CandidateSpans(firstSpans,elementPosition));
 				hasMoreSpans = firstSpans.next();
 				return true;
 			}
@@ -137,7 +137,7 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 		if (!isOrdered) collectLeftCandidates();
 		
 		if (isFirstSpanInElement()){
-			CandidateSpan target = new CandidateSpan(firstSpans,elementPosition);
+			CandidateSpans target = new CandidateSpans(firstSpans,elementPosition);
 			hasMoreSpans = firstSpans.next();
 			// Checking the secondspans in the left side
 			if (!isOrdered && isWithinDistance()) return false;
@@ -161,14 +161,14 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 			if (hasMoreSpans && firstSpans.start() < secondSpans.start() &&
 					firstSpans.doc() == currentDocNum){
 				if (advanceElementTo(firstSpans)){
-					targetList.add(new CandidateSpan(firstSpans, elementPosition));
+					targetList.add(new CandidateSpans(firstSpans, elementPosition));
 				}
 				hasMoreSpans = firstSpans.next();
 				continue;
 			}
 			
 			if (advanceElementTo(secondSpans)){
-				candidateList.add(new CandidateSpan(secondSpans,elementPosition));
+				candidateList.add(new CandidateSpans(secondSpans,elementPosition));
 			}
 			hasMoreSecondSpans = secondSpans.next();
 		}		
@@ -178,7 +178,7 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 		while(hasMoreSecondSpans && secondSpans.doc() == firstSpans.doc() &&
 				secondSpans.start() < firstSpans.end()){
 			if (advanceElementTo(secondSpans)){
-				candidateList.add(new CandidateSpan(secondSpans,elementPosition));
+				candidateList.add(new CandidateSpans(secondSpans,elementPosition));
 				filterCandidateList(elementPosition);
 			}
 			hasMoreSecondSpans = secondSpans.next();
@@ -187,7 +187,7 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 	
 	private boolean isWithinDistance(){
 		int actualDistance; 
-		for (CandidateSpan cs: candidateList){
+		for (CandidateSpans cs: candidateList){
 			actualDistance = cs.getPosition() - firstSpanPostion;
 			if (!isOrdered) actualDistance = Math.abs(actualDistance);
 			
@@ -208,8 +208,8 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 	
 	private void filterCandidateList(int position){
 		
-		Iterator<CandidateSpan> i = candidateList.iterator();
-		CandidateSpan cs;
+		Iterator<CandidateSpans> i = candidateList.iterator();
+		CandidateSpans cs;
 		while(i.hasNext()){
 			cs = i.next();
 			if (cs.getPosition() == position || 
@@ -220,7 +220,7 @@ public class ElementDistanceExclusionSpan extends DistanceSpans{
 		}		
 	}	
 	
-	private void setMatchProperties(CandidateSpan match) throws IOException{
+	private void setMatchProperties(CandidateSpans match) throws IOException{
 		matchDocNumber = match.getDoc();
 		matchStartPosition = match.getStart();
 		matchEndPosition = match.getEnd();

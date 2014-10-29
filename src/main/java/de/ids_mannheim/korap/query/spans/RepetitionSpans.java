@@ -25,7 +25,7 @@ public class RepetitionSpans extends SimpleSpans{
 	
 	private int min,max;
 	private long matchCost;
-	private List<CandidateSpan> matchList;
+	private List<CandidateSpans> matchList;
 	private Logger log = LoggerFactory.getLogger(RepetitionSpans.class);
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -38,7 +38,7 @@ public class RepetitionSpans extends SimpleSpans{
 		super(query, context, acceptDocs, termContexts);
 		this.min = query.getMin();
 		this.max = query.getMax();
-		matchList = new ArrayList<CandidateSpan>();
+		matchList = new ArrayList<CandidateSpans>();
 		hasMoreSpans = firstSpans.next();
 	}
 
@@ -62,7 +62,7 @@ public class RepetitionSpans extends SimpleSpans{
 			matchPayload.clear();
 			matchCost = 0;
 			
-			List<CandidateSpan> adjacentSpans = collectAdjacentSpans();
+			List<CandidateSpans> adjacentSpans = collectAdjacentSpans();
 			setMatchList(adjacentSpans);
 		}	
 		return false;
@@ -71,14 +71,14 @@ public class RepetitionSpans extends SimpleSpans{
 	/** Collect all adjacent spans occurring in a sequence.
 	 * 	@return a list of the adjacent spans 
 	 * */
-	private List<CandidateSpan> collectAdjacentSpans() throws IOException {
+	private List<CandidateSpans> collectAdjacentSpans() throws IOException {
 		
-		CandidateSpan startSpan = new CandidateSpan(firstSpans);
+		CandidateSpans startSpan = new CandidateSpans(firstSpans);
 		
-		List<CandidateSpan> adjacentSpans = new ArrayList<CandidateSpan>();
+		List<CandidateSpans> adjacentSpans = new ArrayList<CandidateSpans>();
 		adjacentSpans.add(startSpan);
 		
-		CandidateSpan prevSpan = startSpan;
+		CandidateSpans prevSpan = startSpan;
 		
 		while ((hasMoreSpans = firstSpans.next()) &&
 			startSpan.getDoc() == firstSpans.doc() ){
@@ -87,7 +87,7 @@ public class RepetitionSpans extends SimpleSpans{
 				break;
 			}
 			else {
-				prevSpan = new CandidateSpan(firstSpans);
+				prevSpan = new CandidateSpans(firstSpans);
 				adjacentSpans.add(prevSpan);
 			}
 		}		
@@ -97,8 +97,8 @@ public class RepetitionSpans extends SimpleSpans{
 	/** Generate all possible repetition candidate spans from the adjacent spans 
 	 * 	and add them to the match list. 
 	 * */
-	private void setMatchList(List<CandidateSpan> adjacentSpans){
-		CandidateSpan startSpan, endSpan, matchSpan;
+	private void setMatchList(List<CandidateSpans> adjacentSpans){
+		CandidateSpans startSpan, endSpan, matchSpan;
 		for (int i=min; i<max+1; i++){
 			//System.out.println("num: "+i);			
 			int j=0; 
@@ -110,7 +110,7 @@ public class RepetitionSpans extends SimpleSpans{
 				}
 				else {
 					endSpan = adjacentSpans.get(endIndex);														
-					matchSpan = new CandidateSpan(
+					matchSpan = new CandidateSpans(
 							startSpan.getStart(), 
 							endSpan.getEnd(), 
 							startSpan.getDoc(), 
@@ -132,7 +132,7 @@ public class RepetitionSpans extends SimpleSpans{
 	/** Add all the payloads of a candidate span
 	 * */
 	private Collection<byte[]> computeMatchPayload(
-			List<CandidateSpan> adjacentSpans, int start, int end) {
+			List<CandidateSpans> adjacentSpans, int start, int end) {
 		Collection<byte[]> payload = new ArrayList<byte[]>();
 		for (int i=start; i<= end; i++){
 			payload.addAll(adjacentSpans.get(i).getPayloads());
@@ -142,7 +142,7 @@ public class RepetitionSpans extends SimpleSpans{
 
 	/** Add all the cost of a candidate span
 	 * */
-	private long computeMatchCost(List<CandidateSpan> adjacentSpans, 
+	private long computeMatchCost(List<CandidateSpans> adjacentSpans, 
 			int start, int end){		
 		long matchCost = 0;
 		for (int i=start; i<= end; i++){
@@ -154,7 +154,7 @@ public class RepetitionSpans extends SimpleSpans{
 	
 	/** Setting match properties from the candidate span
 	 * */	
-	private void setMatchProperties(CandidateSpan candidateSpan) 
+	private void setMatchProperties(CandidateSpans candidateSpan) 
 			throws IOException {
 	    matchDocNumber = candidateSpan.getDoc();
 	    matchStartPosition = candidateSpan.getStart();

@@ -47,7 +47,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
 
 	@Override
 	protected boolean findMatch() throws IOException {
-		CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
+		CandidateSpans candidateSpan = candidateList.get(candidateListIndex);
 		int actualDistance = secondSpanPostion - candidateSpan.getPosition();
 		
 		// In the same element
@@ -91,7 +91,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
 				firstSpans.start() < secondSpans.end()){
 			
 			if (advanceElementTo(firstSpans)){
-				candidateList.add(new CandidateSpan(firstSpans,elementPosition));				
+				candidateList.add(new CandidateSpans(firstSpans,elementPosition));				
 				filterCandidateList(elementPosition);
 			}
 			hasMoreFirstSpans = firstSpans.next();
@@ -124,8 +124,8 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
 	 * */
 	private void filterCandidateList(int position){
 		
-		Iterator<CandidateSpan> i = candidateList.iterator();
-		CandidateSpan cs;
+		Iterator<CandidateSpans> i = candidateList.iterator();
+		CandidateSpans cs;
 		while(i.hasNext()){
 			cs = i.next();
 			if (cs.getPosition() == position || 
@@ -150,7 +150,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
 	
 	@Override
 	public long cost() {
-		CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
+		CandidateSpans candidateSpan = candidateList.get(candidateListIndex);
 		return elements.cost() + candidateSpan.getCost() + secondSpans.cost();
 	}
 }

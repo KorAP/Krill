@@ -11,8 +11,8 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
-import de.ids_mannheim.korap.query.spans.DistanceExclusionSpan;
-import de.ids_mannheim.korap.query.spans.ElementDistanceExclusionSpan;
+import de.ids_mannheim.korap.query.spans.DistanceExclusionSpans;
+import de.ids_mannheim.korap.query.spans.ElementDistanceExclusionSpans;
 import de.ids_mannheim.korap.query.spans.ElementDistanceSpans;
 import de.ids_mannheim.korap.query.spans.TokenDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedElementDistanceSpans;
@@ -102,7 +102,7 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 		
 		if (this.elementQuery != null) {
 			if (isExclusion()){
-				return new ElementDistanceExclusionSpan(this, context, acceptDocs, 
+				return new ElementDistanceExclusionSpans(this, context, acceptDocs, 
 						termContexts, isOrdered);
 			}			
 			else if (isOrdered){
@@ -114,7 +114,7 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 			
 		}
 		else if (isExclusion()){
-			return new DistanceExclusionSpan(this, context, acceptDocs, 
+			return new DistanceExclusionSpans(this, context, acceptDocs, 
 					termContexts, isOrdered);
 		}
 		else if (isOrdered) {
