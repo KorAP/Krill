@@ -31,6 +31,4 @@ public abstract class SpansWithId extends SimpleSpans{
 	public void setSpanId(short spanId) {
 		this.spanId = spanId;
 	}
-		
-	
 }

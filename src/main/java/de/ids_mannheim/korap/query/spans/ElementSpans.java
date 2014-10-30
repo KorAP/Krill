@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.query.spans;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,14 +28,10 @@ public class ElementSpans extends SpansWithId {
 
 	private List<CandidateElementSpans> candidateList;
 	private int currentDoc, currentPosition;
-	//private short elementRef;
 	private TermSpans termSpans;	
 	
-	protected Logger logger = LoggerFactory.getLogger(ElementSpans.class);
+	private Logger logger = LoggerFactory.getLogger(ElementSpans.class);
 
-        // This advices the java compiler to ignore all loggings
-        public static final boolean DEBUG = false;
-	
 	public ElementSpans(SpanElementQuery spanElementQuery,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
@@ -71,8 +68,7 @@ public class ElementSpans extends SpansWithId {
 				return true;
 			}
 			else{
-			        if (DEBUG)
-				     logger.info("Setting candidate list");
+			    //logger.info("Setting candidate list");
 				setCandidateList();				
 				currentDoc = termSpans.doc();
 				currentPosition = termSpans.start();
@@ -126,8 +122,8 @@ public class ElementSpans extends SpansWithId {
 				cs.setSpanId((short) -1);
 			}
 			// Copy the start and end character offsets
-			byte[] b = new byte[8];
-			System.arraycopy(bb.array(), 0, b, 0, 8);
+			byte[] b = new byte[8];			
+			b = Arrays.copyOfRange(bb.array(), 0, 8);
 			cs.setPayloads(Collections.singletonList(b));
 	    }
 	    else {	

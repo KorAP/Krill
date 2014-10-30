@@ -39,12 +39,12 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
  * 
  * 	@author margaretha
  * */
-public class RelationSpans extends SpansWithId{
+public class RelationSpans extends RelationBaseSpans{
 
 	//short relationId;
-	private int rightStart, rightEnd;
+//	private int rightStart, rightEnd;
 	private int currentDoc, currentPosition;
-	private short leftId, rightId;
+//	private short leftId, rightId;
 	
 	private TermSpans relationTermSpan;
 	
@@ -181,27 +181,21 @@ public class RelationSpans extends SpansWithId{
 		this.rightEnd = rightEnd;
 	}
 
-
-
-	public short getLeftId() {
-		return leftId;
-	}
-
-	public void setLeftId(short leftId) {
-		this.leftId = leftId;
-	}
-
-
-
-	public short getRightId() {
-		return rightId;
-	}
-
-	public void setRightId(short rightId) {
-		this.rightId = rightId;
-	}
-
-
+//	public short getLeftId() {
+//		return leftId;
+//	}
+//
+//	public void setLeftId(short leftId) {
+//		this.leftId = leftId;
+//	}
+//
+//	public short getRightId() {
+//		return rightId;
+//	}
+//
+//	public void setRightId(short rightId) {
+//		this.rightId = rightId;
+//	}
 
 	class CandidateRelationSpan extends CandidateSpans implements Comparable<CandidateSpans>{
 		

@@ -23,17 +23,18 @@ import de.ids_mannheim.korap.query.SpanRelationPartQuery;
  * 
  * 	@author margaretha
  * */
-public class RelationPartSpans extends SpansWithId{
+public class RelationPartSpans extends RelationBaseSpans{
 	
-	private RelationSpans relationSpans;
+	private RelationBaseSpans relationSpans;
 	private SpansWithId matcheeSpans;
 	private ElementSpans element;
 	private List<CandidateRelationSpan> candidateRelations;
 	
 	private boolean matchRight;
+	private boolean inverse;
 	private boolean hasMoreMatchees;
 	
-	private short leftId, rightId;
+//	private short leftId, rightId;
 	private int window;
 	
 	public RelationPartSpans(SpanRelationPartQuery query,	
@@ -47,7 +48,7 @@ public class RelationPartSpans extends SpansWithId{
 		else{
 			window = query.getWindow();
 		}
-		relationSpans = (RelationSpans) firstSpans;
+		relationSpans = (RelationBaseSpans) firstSpans;
 		matcheeSpans = (SpansWithId) secondSpans;		
 		// hack
 		matcheeSpans.hasSpanId = true;
@@ -59,6 +60,7 @@ public class RelationPartSpans extends SpansWithId{
   		}
 		candidateRelations = new ArrayList<CandidateRelationSpan>();
 		matchRight = query.isMatchRight();
+		inverse = query.isInverseRelation();
 	}
 
 	@Override
@@ -73,13 +75,17 @@ public class RelationPartSpans extends SpansWithId{
 			if (candidateRelations.size() > 0){
 				CandidateRelationSpan relationSpan = candidateRelations.get(0);				
 				matchDocNumber = relationSpan.getDoc();
-				if (matchRight){
+				if (!inverse){
 					matchStartPosition = relationSpan.getStart();
 					matchEndPosition = relationSpan.getEnd();
+					setRightStart(relationSpan.getRightStart());
+					setRightEnd(relationSpan.getRightEnd());
 				}					
-				else{
+				else{ // maybe a bit confusing -- inverse relation
 					matchStartPosition = relationSpan.getRightStart();
 					matchEndPosition = relationSpan.getRightEnd();
+					setRightStart(relationSpan.getStart());
+					setRightEnd(relationSpan.getEnd());
 				}
 				setLeftId(relationSpans.getLeftId());
 				setRightId(relationSpan.getRightId());
@@ -177,11 +183,11 @@ public class RelationPartSpans extends SpansWithId{
 	private int matchRelation(int i, CandidateRelationSpan r, int startPos, int endPos) throws IOException {
 		if(startPos == matcheeSpans.start() ){
 			if 	(endPos == matcheeSpans.end()){		
-				if (matchRight && r.getRightId() == matcheeSpans.getSpanId()){
+				if (!inverse && r.getRightId() == matcheeSpans.getSpanId()){
 					r.sortRight = false;
 					candidateRelations.add(r);
 				}
-				else if (!matchRight && r.getLeftId() == matcheeSpans.getSpanId()) {
+				else if (inverse && r.getLeftId() == matcheeSpans.getSpanId()) {
 					r.sortRight = true;
 					candidateRelations.add(r);
 				}
@@ -219,7 +225,7 @@ public class RelationPartSpans extends SpansWithId{
 		return 0;
 	}
 	
-	public short getLeftId() {
+	/*public short getLeftId() {
 		return leftId;
 	}
 
@@ -233,7 +239,7 @@ public class RelationPartSpans extends SpansWithId{
 
 	public void setRightId(short rightId) {
 		this.rightId = rightId;
-	}
+	}*/
 
 	class CandidateRelationSpan extends CandidateSpans implements Comparable<CandidateSpans>{
 		
@@ -241,7 +247,7 @@ public class RelationPartSpans extends SpansWithId{
 		private short leftId, rightId;
 		private boolean sortRight;
 		
-		public CandidateRelationSpan(RelationSpans span, boolean sortRight) 
+		public CandidateRelationSpan(RelationBaseSpans span, boolean sortRight) 
 				throws IOException {
 			super(span);
 			this.rightStart = span.getRightStart();

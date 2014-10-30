@@ -350,13 +350,10 @@ public class TestRelationIndex {
 						new SpanTermQuery(new Term("base",">:child-of")),true
 				), 
 				new SpanElementQuery("base","np"), 
-				true, true); 
+				true, false, true); 
 				
 		kr = ki.search(rv,(short) 10);
-		/*for (KorapMatch km : kr.getMatches()){		
-		System.out.println(km.getStartPos() +","+km.getEndPos()+" "
-			+km.getSnippetBrackets());
-		}	*/
+		
 		assertEquals(7, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
 		assertEquals(1,kr.getMatch(0).getEndPos());
@@ -384,6 +381,23 @@ public class TestRelationIndex {
 		assertEquals(5,kr.getMatch(1).getStartPos());
 		assertEquals(6,kr.getMatch(1).getEndPos());
 		
+		// return all nps whose children are articles
+		SpanRelationPartQuery rv3 = 
+			new SpanRelationPartQuery(rv, 
+				new SpanTermWithIdQuery(new Term("base","pos:ART"), true), 
+				false, true, true); 
+		kr = ki.search(rv3,(short) 10);
+		
+		/*for (KorapMatch km : kr.getMatches()){		
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+				+km.getSnippetBrackets()
+					);
+		}	*/
+		assertEquals(2, kr.getTotalResults());
+		assertEquals(2,kr.getMatch(0).getStartPos());
+		assertEquals(4,kr.getMatch(0).getEndPos());
+		assertEquals(5,kr.getMatch(1).getStartPos());
+		assertEquals(7,kr.getMatch(1).getEndPos());
 	}
 	
 	/** Using the opposite relation
@@ -403,7 +417,7 @@ public class TestRelationIndex {
 		SpanRelationPartQuery rv =new SpanRelationPartQuery(
 				spanRelationQuery, 
 				new SpanElementQuery("base","np"), 
-				false, true);
+				false, true, true);
 		kr = ki.search(rv,(short) 10);
 		
 		/*for (KorapMatch km : kr.getMatches()){
@@ -444,7 +458,7 @@ public class TestRelationIndex {
 		SpanRelationPartQuery rv =new SpanRelationPartQuery(
 				spanRelationQuery, 
 				new SpanElementQuery("base","np"), 
-				true, true);
+				true, false, true);
 		kr = ki.search(rv,(short) 10);
 		
 		/*for (KorapMatch km : kr.getMatches()){
@@ -477,7 +491,7 @@ public class TestRelationIndex {
 						new SpanTermQuery(new Term("base",">:child-of")),true
 				), 
 				new SpanElementQuery("base","np"), 
-				false, true);
+				false, true, true);
 		kr = ki.search(rv,(short) 10);
 		/*for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
@@ -499,7 +513,7 @@ public class TestRelationIndex {
 				new SpanRelationQuery(
 						new SpanTermQuery(new Term("base",">:child-of")),true
 				),
-				rv, true, true);
+				rv, true, false, true);
 				
 		kr = ki.search(rv3,(short) 10);
 		
@@ -526,7 +540,7 @@ public class TestRelationIndex {
 						new SpanTermQuery(new Term("base",">:dep")),true
 				), 
 				new SpanTermWithIdQuery(new Term("base","pos:NN"), true), 
-				true, true);
+				true, false, true);
 		kr = ki.search(rv,(short) 10);
 		assertEquals(3, kr.getTotalResults());
 		assertEquals(1,kr.getMatch(0).getStartPos());
@@ -542,7 +556,7 @@ public class TestRelationIndex {
 						new SpanTermQuery(new Term("base","<:dep")),true
 				), 
 				new SpanTermWithIdQuery(new Term("base","pos:NN"),true), 
-				true, true);
+				true, false, true);
 		kr = ki.search(rv,(short) 10);
 		assertEquals(3, kr.getTotalResults());
 		assertEquals(2,kr.getMatch(0).getStartPos());
@@ -560,7 +574,7 @@ public class TestRelationIndex {
 						new SpanTermQuery(new Term("base",">:dep")),true
 				), 
 				new SpanTermWithIdQuery(new Term("base","pos:NN"),true), 
-				false, true);
+				false, true, true);
 		kr = ki.search(rv,(short) 10);
 			
 		assertEquals(3, kr.getTotalResults());
@@ -577,7 +591,7 @@ public class TestRelationIndex {
 						new SpanTermQuery(new Term("base","<:dep")),true
 				), 
 				new SpanTermWithIdQuery(new Term("base","pos:NN"),true), 
-				false, true);
+				false, true, true);
 		kr = ki.search(rv,(short) 10);
 		
 		/*for (KorapMatch km : kr.getMatches()){		
@@ -606,7 +620,7 @@ public class TestRelationIndex {
 						new SpanTermQuery(new Term("base",">:child-of")),true
 				), 
 				new SpanElementQuery("base","np"), 
-				6, true, true); 
+				6, true, false, true); 
 				
 		kr = ki.search(rv,(short) 10);
 		assertEquals(7, kr.getTotalResults());
@@ -616,7 +630,7 @@ public class TestRelationIndex {
 						new SpanTermQuery(new Term("base","<:dep")),true
 				), 
 				new SpanTermWithIdQuery(new Term("base","pos:NN"),true), 
-				3, false, true);
+				3, false, true, true);
 		kr = ki.search(rv,(short) 10);
 		assertEquals(3, kr.getTotalResults());
 		

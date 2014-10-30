@@ -17,28 +17,32 @@ import de.ids_mannheim.korap.query.spans.RelationPartSpans;
  * 
  * 	@author margaretha
  * */
-public class SpanRelationPartQuery extends SpanWithIdQuery{
+public class SpanRelationPartQuery extends SpanRelationQuery{
 	
 	private static String elementStr = "s"; // default element interval type
 	
 	private SpanElementQuery elementQuery;
 	private boolean matchRight;  // if false, match left
-	private int window;
+	private boolean inverseRelation;  // if false, sort result by the left
+	private int window;	
 	
 	public SpanRelationPartQuery(SpanRelationQuery spanRelationQuery,
 			SpanWithIdQuery secondClause, // match tokenWithIdQuery, ElementQuery, RelationQuery
 			boolean matchRight,
+			boolean returnRight,
 			boolean collectPayloads) {
-		this(spanRelationQuery, secondClause, elementStr, matchRight, collectPayloads);		
+		this(spanRelationQuery, secondClause, elementStr, matchRight, returnRight, collectPayloads);		
 	}
 	
 	public SpanRelationPartQuery(SpanRelationQuery spanRelationQuery,
 			SpanWithIdQuery secondClause, 
 			String elementStr,
 			boolean matchRight,
+			boolean inverseRelation,
 			boolean collectPayloads) {
 		super(spanRelationQuery, secondClause, collectPayloads);
 		this.matchRight = matchRight;
+		this.inverseRelation = inverseRelation;
 		elementQuery = new SpanElementQuery(spanRelationQuery.getField(), elementStr);		
 	}
 	
@@ -46,9 +50,11 @@ public class SpanRelationPartQuery extends SpanWithIdQuery{
 			SpanWithIdQuery secondClause, // match tokenWithIdQuery, ElementQuery, RelationQuery
 			int window,
 			boolean matchRight,
+			boolean inverseRelation,
 			boolean collectPayloads) {
 		super(spanRelationQuery, secondClause, collectPayloads);
 		this.matchRight = matchRight;
+		this.inverseRelation = inverseRelation;
 		this.window = window;
 	}
 	
@@ -65,6 +71,7 @@ public class SpanRelationPartQuery extends SpanWithIdQuery{
 				(SpanWithIdQuery) this.secondClause,
 				this.elementQuery.getElementStr(),
 				this.matchRight, 
+				this.inverseRelation,
 				this.collectPayloads
 		);		
 		return sq;
@@ -99,6 +106,14 @@ public class SpanRelationPartQuery extends SpanWithIdQuery{
 
 	public void setMatchRight(boolean matchRight) {
 		this.matchRight = matchRight;
+	}
+
+	public boolean isInverseRelation() {
+		return inverseRelation;
+	}
+
+	public void setInverseRelation(boolean inverseRelation) {
+		this.inverseRelation = inverseRelation;
 	}
 
 	public SpanElementQuery getElementQuery() {

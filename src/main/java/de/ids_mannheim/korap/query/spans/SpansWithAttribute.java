@@ -25,7 +25,7 @@ import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
  *
  * 	@author margaretha
  * */
-public class SpansWithAttribute extends SimpleSpans{
+public class SpansWithAttribute extends SpansWithId{
 	
 	private SpansWithId withAttributeSpans;
 	private List<AttributeSpans> attributeList;
@@ -83,15 +83,16 @@ public class SpansWithAttribute extends SimpleSpans{
 	 * */
 	private boolean advance() throws IOException {
 		
-		while (hasMoreSpans && computeElementPosition()){			
+		while (hasMoreSpans && searchSpanPosition()){			
 		 	    //logger.info("element: " + withAttributeSpans.start() + ","+ withAttributeSpans.end() +
 				//	" ref:"+withAttributeSpans.getSpanId());
 			
-			if (checkElementRef() && checkNotElementRef()){			
+			if (checkSpanId() && checkNotSpanId()){			
 				this.matchDocNumber = withAttributeSpans.doc();
 				this.matchStartPosition = withAttributeSpans.start();
 				this.matchEndPosition = withAttributeSpans.end();
 				this.matchPayload = withAttributeSpans.getPayload();
+				this.spanId = withAttributeSpans.getSpanId();
 				
 				if (attributeList.size() > 0)
 					hasMoreSpans = attributeList.get(0).next();
@@ -108,7 +109,7 @@ public class SpansWithAttribute extends SimpleSpans{
 	/** Ensuring all the attribute spans having the same elementRef with 
 	 * 	the actual element's elementRef.
 	 * */
-	private boolean checkElementRef() throws IOException{
+	private boolean checkSpanId() throws IOException{
 		
 		for (AttributeSpans attribute: attributeList){			
 			if (withAttributeSpans.getSpanId() != attribute.getSpanId()){
@@ -128,7 +129,7 @@ public class SpansWithAttribute extends SimpleSpans{
 	/** Ensuring elements do not contain the not attributes. In other words, 
 	 * 	the elementRef is not the same as the not attribute's elementRefs. 
 	 * */
-	private boolean checkNotElementRef() throws IOException{
+	private boolean checkNotSpanId() throws IOException{
 		for (AttributeSpans notAttribute: notAttributeList){
 			if (!notAttribute.isFinish() && 
 					withAttributeSpans.start() == notAttribute.start() &&
@@ -144,7 +145,7 @@ public class SpansWithAttribute extends SimpleSpans{
 	/**	Search for a possible element having the same doc and start position as
 	 * 	the attributes.
 	 * */
-	private boolean computeElementPosition() throws IOException {		
+	private boolean searchSpanPosition() throws IOException {		
 
 		while (hasMoreSpans){
 			
