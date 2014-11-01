@@ -106,7 +106,7 @@ public class KorapDate {
 
 	if (sb.length() < 8) {
 	    sb.append("00");
-	    if (sb.length() < 6) {
+	    if (sb.length() < 8) {
 		sb.append("00");
 	    };
 	};

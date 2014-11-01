@@ -476,6 +476,63 @@ public class TestKorapSearch {
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(25, kr.getItemsPerPage());
     };
+
+    @Test
+    public void searchJSONnewJSON () throws IOException {
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	FieldDocument fd = ki.addDocFile(
+            1,getClass().getResource("/goe/AGA-03828.json.gz").getFile(), true
+	);
+	ki.commit();
+
+	assertEquals(fd.getUID(), 1);
+	assertEquals(fd.getTextSigle(),   "GOE_AGA.03828");
+	assertEquals(fd.getDocSigle(),    "GOE_AGA");
+	assertEquals(fd.getCorpusSigle(), "GOE");
+	assertEquals(fd.getTitle()  ,     "Autobiographische Einzelheiten");
+	assertNull(fd.getSubTitle());
+	assertEquals(fd.getTextType(),    "Autobiographie");
+	assertNull(fd.getTextTypeArt());
+	assertNull(fd.getTextTypeRef());
+	assertNull(fd.getTextColumn());
+	assertNull(fd.getTextDomain());
+	assertEquals(fd.getPages(),       "529-547");
+	assertEquals(fd.getLicense(),     "QAO-NC");
+	assertEquals(fd.getCreationDate().toString(), "18200000");
+	assertEquals(fd.getPubDate().toString(),      "19820000");
+	assertEquals(fd.getAuthor(),      "Goethe, Johann Wolfgang von");
+	assertNull(fd.getTextClass());
+	assertEquals(fd.getLanguage(),    "de");
+	assertEquals(fd.getPubPlace(),    "München");
+	assertEquals(fd.getCorpusTitle(), "Goethes Werke");
+	assertEquals(fd.getReference(),   "Goethe, Johann Wolfgang von: Autobiographische Einzelheiten, (Geschrieben bis 1832), In: Goethe, Johann Wolfgang von: Goethes Werke, Bd. 10, Autobiographische Schriften II, Hrsg.: Trunz, Erich. München: Verlag C. H. Beck, 1982, S. 529-547");
+	assertEquals(fd.getPublisher(),   "Verlag C. H. Beck");
+	assertEquals(fd.getCollEditor(),  "Trunz, Erich");
+	assertEquals(fd.getCollEditor(),  "Trunz, Erich");
+	assertNull(fd.getEditor());
+	assertNull(fd.getFileEditionStatement());
+	assertNull(fd.getBiblEditionStatement());
+	assertNull(fd.getCollTitle());
+	assertNull(fd.getCollSubTitle());
+	assertNull(fd.getCollAuthor());
+	assertNull(fd.getCorpusSubTitle());
+	assertNull(fd.getKeywords());
+
+	assertEquals(fd.getTokenSource(), "opennlp#tokens");
+	assertEquals(fd.getFoundries(), "base base/paragraphs base/sentences corenlp corenlp/constituency corenlp/morpho corenlp/namedentities corenlp/sentences glemm glemm/morpho mate mate/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho treetagger/sentences");
+	assertEquals(fd.getLayerInfos(),  "base/s=spans corenlp/c=spans corenlp/ne=tokens corenlp/p=tokens corenlp/s=spans glemm/l=tokens mate/l=tokens mate/m=tokens mate/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens tt/s=spans");
+
+	KorapSearch ks = new KorapSearch(
+	    new KorapQuery("tokens").seg("mate/m:case:nom").with("mate/m:number:pl")
+        );
+	KorapResult kr = ks.run(ki);
+
+	assertEquals(148, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(25, kr.getItemsPerPage());
+    };
     
 
     @Test

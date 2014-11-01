@@ -8,6 +8,7 @@ import de.ids_mannheim.korap.util.KorapDate;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.StringField;
@@ -58,31 +59,6 @@ public class FieldDocument extends KorapDocument {
     }
 
     // see http://www.cowtowncoder.com/blog/archives/2011/07/entry_457.html
-
-    /*
-    @JsonCreator
-    public FieldDocument(Map<String,Object> props) {
-      this.id = (String) props.get("id");
-      this.title = (String) props.get("title");
-    };
-
-    public FieldDocument (String json) {
-
-	
-	my $primary = ->{primary}
-	corpus_id, pub_date, id, text_class (Array), author (Array), title, sub_title, pub_place
-
-	foreach (->{fields}) {
-	    foreach (data) {
-		foreach () {
-		}
-	    }
-	};
-created timestamp
-last_modified timestamp or KorapDate
-	
-    };
-*/
 
     public void addInt (String key, int value) {
 	doc.add(new IntField(key, value, Field.Store.YES));
@@ -143,12 +119,55 @@ last_modified timestamp or KorapDate
 	return new MultiTermTokenStream();
     };
 
+    /**
+     * Deserialize token stream data.
+     */
+    public void setData (Map<String,Object> node) {
+	this.setPrimaryData((String) node.get("text"));
+
+	String fieldName = (String) node.get("name");
+	MultiTermTokenStream mtts = this.newMultiTermTokenStream();
+
+	// Iterate over all tokens in stream
+	for (ArrayList<String> token : (ArrayList<ArrayList<String>>) node.get("stream")) {
+
+	    // Initialize MultiTermToken
+	    MultiTermToken mtt = new MultiTermToken(token.remove(0));
+
+	    // Add rest of the list
+	    for (String term : token)
+		mtt.add(term);
+
+	    // Add MultiTermToken to stream
+	    mtts.addMultiTermToken(mtt);
+	};
+
+	// Add tokenstream to fielddocument
+	this.addTV(fieldName, this.getPrimaryData(), mtts);
+
+	// Get foundry info
+	if (node.containsKey("foundries"))
+	    this.setFoundries((String) node.get("foundries"));
+
+	// Get layer info
+	if (node.containsKey("layerInfos"))
+	    this.setLayerInfos((String) node.get("layerInfos"));
+
+	// Get tokenSource info
+	if (node.containsKey("tokenSource"))
+	    this.setTokenSource((String) node.get("tokenSource"));
+    };
+
+    /**
+     * Deserialize token stream data (LEGACY).
+     */
     public void setFields (ArrayList<Map<String,Object>> fields) {
 
 	Map<String,Object> primary = fields.remove(0);
 	this.setPrimaryData((String) primary.get("primaryData"));
 
 	for (Map<String,Object> field : fields) {
+
 	    String fieldName = (String) field.get("name");
 	    MultiTermTokenStream mtts = this.newMultiTermTokenStream();
 
@@ -186,7 +205,7 @@ last_modified timestamp or KorapDate
     @Override
     public void setTextClass (String textClass) {
 	super.setTextClass(textClass);
-	this.addText("textClass", textClass);
+	this.addKeyword("textClass", textClass);
     };
 
     @Override
@@ -221,12 +240,22 @@ last_modified timestamp or KorapDate
 	return date;
     };
 
+    @JsonProperty("creationDate")
+    @Override
+    public KorapDate setCreationDate (String creationDate) {
+	KorapDate date = super.setCreationDate(creationDate);
+	this.addInt("creationDate", date.toString());
+	return date;
+    };
+
+    // No longer supported
     @Override
     public void setCorpusID (String corpusID) {
 	super.setCorpusID(corpusID);
 	this.addString("corpusID", corpusID);
     };
 
+    // No longer supported
     @Override
     public void setID (String ID) {
 	super.setID(ID);
@@ -239,10 +268,160 @@ last_modified timestamp or KorapDate
 	this.addString("UID", new Integer(ID).toString());
     };
 
+    // No longer supported
     @Override
     public void setLayerInfo (String layerInfo) {
-	// System.err.println(layerInfo);
 	super.setLayerInfo(layerInfo);
 	this.addStored("layerInfo", layerInfo);
+    };
+
+    @Override
+    public void setTextSigle (String textSigle) {
+	super.setTextSigle(textSigle);
+	this.addString("textSigle", textSigle);
+    };
+
+    @Override
+    public void setDocSigle (String docSigle) {
+	super.setDocSigle(docSigle);
+	this.addString("docSigle", docSigle);
+    };
+
+    @Override
+    public void setCorpusSigle (String corpusSigle) {
+	super.setCorpusSigle(corpusSigle);
+	this.addString("corpusSigle", corpusSigle);
+    };
+
+    @Override
+    public void setPublisher (String publisher) {
+	super.setPublisher(publisher);
+	this.addStored("publisher", publisher);
+    };
+
+    @Override
+    public void setEditor (String editor) {
+	super.setEditor(editor);
+	this.addStored("editor", editor);
+    };
+
+    @Override
+    public void setTextType (String textType) {
+	super.setTextType(textType);
+	this.addString("textType", textType);
+    };
+
+    @Override
+    public void setTextTypeArt (String textTypeArt) {
+	super.setTextTypeArt(textTypeArt);
+	this.addString("textTypeArt", textTypeArt);
+    };
+
+    @Override
+    public void setTextTypeRef (String textTypeRef) {
+	super.setTextTypeRef(textTypeRef);
+	this.addString("textTypeRef", textTypeRef);
+    };
+
+    @Override
+    public void setTextColumn (String textColumn) {
+	super.setTextColumn(textColumn);
+	this.addStored("textColumn", textColumn);
+    };
+
+    @Override
+    public void setTextDomain (String textDomain) {
+	super.setTextDomain(textDomain);
+	this.addString("textDomain", textDomain);
+    };
+
+    @Override
+    public void setLicense (String license) {
+	super.setLicense(license);
+	this.addString("license", license);
+    };
+
+    @Override
+    public void setPages (String pages) {
+	super.setPages(pages);
+	this.addStored("pages", pages);
+    };
+
+    @Override
+    public void setFileEditionStatement (String fileEditionStatement) {
+	super.setFileEditionStatement(fileEditionStatement);
+	this.addStored("fileEditionStatement", fileEditionStatement);
+    };
+
+    @Override
+    public void setBiblEditionStatement (String biblEditionStatement) {
+	super.setBiblEditionStatement(biblEditionStatement);
+	this.addStored("biblEditionStatement", biblEditionStatement);
+    };
+
+    @Override
+    public void setReference (String reference) {
+	super.setReference(reference);
+	this.addStored("reference", reference);
+    };
+
+    @Override
+    public void setLanguage (String language) {
+	super.setLanguage(language);
+	this.addString("language", language);
+    };
+
+    @Override
+    public void setCollTitle (String collTitle) {
+	super.setCollTitle(collTitle);
+	this.addText("collTitle", collTitle);
+    };
+
+    @Override
+    public void setCollSubTitle (String collSubTitle) {
+	super.setCollSubTitle(collSubTitle);
+	this.addText("collSubTitle", collSubTitle);
+    };
+
+    @Override
+    public void setCollAuthor (String collAuthor) {
+	super.setCollAuthor(collAuthor);
+	this.addText("collAuthor", collAuthor);
+    };
+
+    @Override
+    public void setCollEditor (String collEditor) {
+	super.setCollEditor(collEditor);
+	this.addText("collEditor", collEditor);
+    };
+
+    @Override
+    public void setCorpusTitle (String corpusTitle) {
+	super.setCorpusTitle(corpusTitle);
+	this.addText("corpusTitle", corpusTitle);
+    };
+
+    @Override
+    public void setCorpusSubTitle (String corpusSubTitle) {
+	super.setCorpusSubTitle(corpusSubTitle);
+	this.addText("corpusSubTitle", corpusSubTitle);
+    };
+
+    @Override
+    public void setKeywords (String keywords) {
+	super.setKeywords(keywords);
+	this.addKeyword("keywords", keywords);
+    };
+
+    @Override
+    public void setTokenSource (String tokenSource) {
+	super.setTokenSource(tokenSource);
+	this.addStored("tokenSource", tokenSource);
+    };
+
+    @Override
+    public void setFoundries (String foundries) {
+	super.setFoundries(foundries);
+	this.addKeyword("foundries", foundries);
     };
 };

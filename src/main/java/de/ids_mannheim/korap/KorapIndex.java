@@ -310,6 +310,7 @@ public class KorapIndex {
 		  new GZIPInputStream(new FileInputStream(json)),
 		    FieldDocument.class
 		);
+
 		return fd;
 	    };
 	    return this.mapper.readValue(json, FieldDocument.class);

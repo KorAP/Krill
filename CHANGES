@@ -1,3 +1,6 @@
+0.47 2014-11-01
+        - [feature] Support new index format with more metadata (diewald)
+
 0.46 2014-10-21
         - [feature] Support for relation queries (margaretha)
 	- [feature] Wrapping of extension queries

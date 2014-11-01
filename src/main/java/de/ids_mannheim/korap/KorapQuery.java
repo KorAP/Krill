@@ -43,9 +43,6 @@ public class KorapQuery {
     private String field;
     private ObjectMapper json;
 
-    // The default foundry for lemmata and pos
-    private String defaultFoundry = "mate/";
-
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapQuery.class);
 
@@ -568,7 +565,7 @@ public class KorapQuery {
 	if (json.has("foundry") && json.get("foundry").asText().length() > 0)
 	    value.append(json.get("foundry").asText()).append('/');
 
-	// value.append(defaultFoundry).append('/');
+	// No default foundry defined
 
 	if (json.has("layer") && json.get("layer").asText().length() > 0) {
 	    String layer = json.get("layer").asText();
@@ -589,11 +586,6 @@ public class KorapQuery {
 
 	    if (isCaseInsensitive && isTerm && layer.equals("s"))
 		layer = "i";
-
-
-	    // TEMPORARY
-	    if (value.length() == 0 && (layer.equals("l") || layer.equals("p")))
-		value.append(defaultFoundry);
 
 	    value.append(layer).append(':');
 	};

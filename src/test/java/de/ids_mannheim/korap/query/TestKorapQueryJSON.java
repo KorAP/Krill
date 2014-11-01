@@ -18,8 +18,6 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestKorapQueryJSON {
 
-    private String defaultFoundry = "mate/";
-
     @Test
     public void queryJSONBsp1 () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp1.jsonld").getFile());
@@ -37,7 +35,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp1b.jsonld").getFile());
 
 	// [base=foo]|([base=foo][base=bar]) meta author=Goethe&year=1815
-	assertEquals(sqwi.toQuery().toString(), "spanOr([tokens:"+defaultFoundry+"l:foo, spanNext(tokens:"+defaultFoundry+"l:foo, tokens:"+defaultFoundry+"l:bar)])");
+	assertEquals(sqwi.toQuery().toString(), "spanOr([tokens:mate/l:foo, spanNext(tokens:mate/l:foo, tokens:mate/l:bar)])");
     };
 
 
@@ -46,7 +44,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp2.jsonld").getFile());
 
 	// ([base=foo]|[base=bar])[base=foobar]
-	assertEquals(sqwi.toQuery().toString(), "spanNext(spanOr([tokens:"+defaultFoundry+"l:foo, tokens:"+defaultFoundry+"l:bar]), tokens:"+defaultFoundry+"l:foobar)");
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanOr([tokens:mate/l:foo, tokens:mate/l:bar]), tokens:mate/l:foobar)");
     };
 
     @Test
@@ -54,7 +52,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp3.jsonld").getFile());
 
 	// shrink({[base=Mann]})
-	assertEquals(sqwi.toQuery().toString(), "shrink(0: {0: tokens:"+defaultFoundry+"l:Mann})");
+	assertEquals(sqwi.toQuery().toString(), "shrink(0: {0: tokens:mate/l:Mann})");
     };
 
     @Test
@@ -62,7 +60,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp4.jsonld").getFile());
 
 	// shrink({[base=foo]}[orth=bar])
-	assertEquals(sqwi.toQuery().toString(), "shrink(0: spanNext({0: tokens:"+defaultFoundry+"l:foo}, tokens:s:bar))");
+	assertEquals(sqwi.toQuery().toString(), "shrink(0: spanNext({0: tokens:mate/l:foo}, tokens:s:bar))");
     };
 
     @Test
@@ -70,7 +68,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp5.jsonld").getFile());
 
 	// shrink(1:[base=Der]{1:[base=Mann]}) 
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanNext(tokens:"+defaultFoundry+"l:Der, {1: tokens:"+defaultFoundry+"l:Mann}))");
+	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanNext(tokens:mate/l:Der, {1: tokens:mate/l:Mann}))");
     };
 
     @Test
@@ -78,7 +76,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp6.jsonld").getFile());
 
 	// [base=katze]
-	assertEquals(sqwi.toQuery().toString(), "tokens:"+defaultFoundry+"l:Katze");
+	assertEquals(sqwi.toQuery().toString(), "tokens:mate/l:Katze");
     };
 
     @Test
@@ -95,7 +93,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp9.jsonld").getFile());
 
 	// [base=Katze&orth=Katzen]
-	assertEquals(sqwi.toQuery().toString(), "spanSegment(tokens:"+defaultFoundry+"l:Katze, tokens:s:Katzen)");
+	assertEquals(sqwi.toQuery().toString(), "spanSegment(tokens:mate/l:Katze, tokens:s:Katzen)");
     };
 
     @Test
@@ -112,7 +110,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp10.jsonld").getFile());
 
 	// [base=Katze][orth=und][orth=Hunde]
-	assertEquals(sqwi.toQuery().toString(), "spanNext(spanNext(tokens:"+defaultFoundry+"l:Katze, tokens:s:und), tokens:s:Hunde)");
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanNext(tokens:mate/l:Katze, tokens:s:und), tokens:s:Hunde)");
     };
 
     @Test
@@ -134,14 +132,14 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp12.jsonld").getFile());
 
 	// contains(<np>,[base=Mann])
-	assertEquals(sqwi.toQuery().toString(), "spanContain(<tokens:np />, tokens:"+defaultFoundry+"l:Mann)");
+	assertEquals(sqwi.toQuery().toString(), "spanContain(<tokens:np />, tokens:mate/l:Mann)");
     };
 
     @Test
     public void queryJSONBsp13 () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp13.jsonld").getFile());
 
-	assertEquals(sqwi.toQuery().toString(), "spanStartsWith(<tokens:np />, tokens:mate/p:Det)");
+	assertEquals(sqwi.toQuery().toString(), "spanStartsWith(<tokens:np />, tokens:p:Det)");
     };
 
     @Test
@@ -173,7 +171,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp16.jsonld").getFile());
 
 	// [(base=bar|base=foo)&orth=foobar]
-	assertEquals(sqwi.toQuery().toString(), "spanSegment(spanOr([tokens:"+defaultFoundry+"l:bar, tokens:"+defaultFoundry+"l:foo]), tokens:s:foobar)");
+	assertEquals(sqwi.toQuery().toString(), "spanSegment(spanOr([tokens:mate/l:bar, tokens:mate/l:foo]), tokens:s:foobar)");
     };
 
     @Test
@@ -181,7 +179,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp17.jsonld").getFile());
 
 	// within(<np>,[base=Mann])
-	assertEquals(sqwi.toQuery().toString(), "spanContain(<tokens:np />, tokens:"+defaultFoundry+"l:Mann)");
+	assertEquals(sqwi.toQuery().toString(), "spanContain(<tokens:np />, tokens:mate/l:Mann)");
     };
 
     @Test
@@ -261,8 +259,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/cosmas20.json").getFile());
 
 	//     "MORPH(V) #IN(R) #ELEM(S)"
-	// TODO: Uses defaultfoundry!
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanEndsWith(<tokens:s />, {1: tokens:mate/p:V}))");
+	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanEndsWith(<tokens:s />, {1: tokens:p:V}))");
     };
 
     @Test

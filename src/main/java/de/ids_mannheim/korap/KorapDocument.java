@@ -21,14 +21,62 @@ public abstract class KorapDocument {
     private KorapPrimaryData primaryData;
 
     @JsonIgnore
-    public int internalDocID, localDocID, UID;
+    public int
+	internalDocID,
+	localDocID,
+	UID;
 
-    private String author, textClass, corpusID,
-	           pubPlace, ID, title, subTitle,
-	           foundries, tokenization,
-	           layerInfo, field;
+    private KorapDate
+	pubDate,
+    // newly added
+	creationDate
+	;
 
-    private KorapDate pubDate;
+
+    private String
+    // No longer supported
+	ID,
+	corpusID,
+	field,
+	layerInfo,
+	tokenization,
+
+    // Still supported
+	foundries,
+	title,
+	subTitle,
+	author,
+	textClass,
+	pubPlace,
+
+    // newly added
+	textSigle,
+	docSigle,
+	corpusSigle,
+	publisher,
+	editor,
+	textType,
+	textTypeArt,
+	textTypeRef,
+	textColumn,
+	textDomain,
+	license,
+	pages,
+	fileEditionStatement,
+	biblEditionStatement,
+	reference,
+	language,
+	collTitle,
+	collSubTitle,
+	collAuthor,
+	collEditor,
+	corpusTitle,
+	corpusSubTitle,
+	keywords,
+	tokenSource,
+	layerInfos
+	;
+
 
     /**
      * Set the publication date of the document the match occurs in.
@@ -38,10 +86,22 @@ public abstract class KorapDocument {
      * @see KorapDate#Constructor(String)
      */
     public KorapDate setPubDate (String date) {
-	//	ObjectMapper mapper = new ObjectMapper();
 	this.pubDate = new KorapDate(date);
 	return this.pubDate;
     };
+
+    /**
+     * Set the creation date of the document the match occurs in.
+     *
+     * @param date The date as a KorapDate compatible string representation.
+     * @return A KorapDate object for chaining.
+     * @see KorapDate#Constructor(String)
+     */
+    public KorapDate setCreationDate (String date) {
+	this.creationDate = new KorapDate(date);
+	return this.creationDate;
+    };
+
 
     /**
      * Set the publication date of the document the match occurs in.
@@ -54,6 +114,19 @@ public abstract class KorapDocument {
 	return (this.pubDate = date);
     };
 
+
+    /**
+     * Set the creation date of the document the match occurs in.
+     *
+     * @param date The date as a KorapDate object.
+     * @return A KorapDate object for chaining.
+     * @see KorapDate
+     */
+    public KorapDate setCreationDate (KorapDate date) {
+	return (this.creationDate = date);
+    };
+
+
     /**
      * Get the publication date of the document the match occurs in as a KorapDate object.
      */
@@ -62,10 +135,26 @@ public abstract class KorapDocument {
 	return this.pubDate;
     };
 
+
+    /**
+     * Get the creation date of the document the match occurs in as a KorapDate object.
+     */
+    @JsonIgnore
+    public KorapDate getCreationDate () {
+	return this.creationDate;
+    };
+
     @JsonProperty("pubDate")
     public String getPubDateString () {
 	if (this.pubDate != null)
 	    return this.pubDate.toDisplay();
+	return null;
+    };
+
+    @JsonProperty("creationDate")
+    public String getCreationDateString () {
+	if (this.creationDate != null)
+	    return this.creationDate.toDisplay();
 	return null;
     };
 
@@ -93,19 +182,23 @@ public abstract class KorapDocument {
 	return this.pubPlace;
     };
 
+    // No longer supported
     public void setCorpusID (String corpusID) {
 	this.corpusID = corpusID;
     };
 
+    // No longer supported
     @JsonProperty("corpusID")
     public String getCorpusID () {
 	return this.corpusID;
     };
 
+    // No longer supported
     public void setID (String ID) {
 	this.ID = ID;
     };
 
+    // No longer supported
     @JsonProperty("ID")
     public String getID () {
 	return this.ID;
@@ -178,27 +271,237 @@ public abstract class KorapDocument {
 	return this.foundries;
     };
 
+    // No longer supported
     public void setTokenization (String tokenization) {
 	this.tokenization = tokenization;
     };
 
+    // No longer supported
     public String getTokenization () {
 	return this.tokenization;
     };
 
+    // No longer supported
     public void setLayerInfo (String layerInfo) {
 	this.layerInfo = layerInfo;
     };
 
+    // No longer supported
     public String getLayerInfo () {
 	return this.layerInfo;
     };
 
+    public void setLayerInfos (String layerInfos) {
+	this.layerInfos = layerInfos;
+    };
+
+    public String getLayerInfos () {
+	return this.layerInfos;
+    };
+
+    // No longer necessary
     public void setField (String field) {
 	this.field = field;
     };
 
+    // No longer necessary
     public String getField () {
 	return this.field;
+    };
+
+    // This is the new text id
+    public String getTextSigle () {
+	return this.textSigle;
+    };
+
+    // This is the new text id
+    public void setTextSigle (String textSigle) {
+	this.textSigle = textSigle;
+    };
+
+    // This is the new corpus id
+    public String getCorpusSigle () {
+	return this.corpusSigle;
+    };
+
+    // This is the new corpus id
+    public void setCorpusSigle (String corpusSigle) {
+	this.corpusSigle = corpusSigle;
+    };
+
+    public String getDocSigle () {
+	return this.docSigle;
+    };
+
+    public void setDocSigle (String docSigle) {
+	this.docSigle = docSigle;
+    };
+
+    public String getPublisher () {
+	return this.publisher;
+    };
+
+    public void setPublisher (String publisher) {
+	this.publisher = publisher;
+    };
+
+    public String getEditor () {
+	return this.editor;
+    };
+
+    public void setEditor (String editor) {
+	this.editor = editor;
+    };
+
+    public String getTextType () {
+	return this.textType;
+    };
+
+    public void setTextType (String textType) {
+	this.textType = textType;
+    };
+
+    public String getTextTypeArt () {
+	return this.textTypeArt;
+    };
+
+    public void setTextTypeArt (String textTypeArt) {
+	this.textTypeArt = textTypeArt;
+    };
+
+    public String getTextTypeRef () {
+	return this.textTypeRef;
+    };
+
+    public void setTextTypeRef (String textTypeRef) {
+	this.textTypeRef = textTypeRef;
+    };
+
+    public String getTextColumn () {
+	return this.textColumn;
+    };
+
+    public void setTextColumn (String textColumn) {
+	this.textColumn = textColumn;
+    };
+
+    public String getTextDomain () {
+	return this.textDomain;
+    };
+
+    public void setTextDomain (String textDomain) {
+	this.textDomain = textDomain;
+    };
+
+    public String getLicense () {
+	return this.license;
+    };
+
+    public void setLicense (String license) {
+	this.license = license;
+    };
+
+    public String getPages () {
+	return this.pages;
+    };
+
+    public void setPages (String pages) {
+	this.pages = pages;
+    };
+
+    public String getFileEditionStatement () {
+	return this.fileEditionStatement;
+    };
+
+    public void setFileEditionStatement (String fileEditionStatement) {
+	this.fileEditionStatement = fileEditionStatement;
+    };
+
+    public String getBiblEditionStatement () {
+	return this.biblEditionStatement;
+    };
+
+    public void setBiblEditionStatement (String biblEditionStatement) {
+	this.biblEditionStatement = biblEditionStatement;
+    };
+
+    public String getReference () {
+	return this.reference;
+    };
+
+    public void setReference (String reference) {
+	this.reference = reference;
+    };
+
+    public String getLanguage () {
+	return this.language;
+    };
+
+    public void setLanguage (String language) {
+	this.language = language;
+    };
+
+    public String getCollTitle () {
+	return this.collTitle;
+    };
+
+    public void setCollTitle (String collTitle) {
+	this.collTitle = collTitle;
+    };
+
+    public String getCollSubTitle () {
+	return this.collSubTitle;
+    };
+
+    public void setCollSubTitle (String collSubTitle) {
+	this.collSubTitle = collSubTitle;
+    };
+
+    public String getCollAuthor () {
+	return this.collAuthor;
+    };
+
+    public void setCollAuthor (String collAuthor) {
+	this.collAuthor = collAuthor;
+    };
+
+    public String getCollEditor () {
+	return this.collEditor;
+    };
+
+    public void setCollEditor (String collEditor) {
+	this.collEditor = collEditor;
+    };
+
+    public String getCorpusTitle () {
+	return this.corpusTitle;
+    };
+
+    public void setCorpusTitle (String corpusTitle) {
+	this.corpusTitle = corpusTitle;
+    };
+
+    public String getCorpusSubTitle () {
+	return this.corpusSubTitle;
+    };
+
+    public void setCorpusSubTitle (String corpusSubTitle) {
+	this.corpusSubTitle = corpusSubTitle;
+    };
+
+    public String getKeywords () {
+	return this.keywords;
+    };
+
+    public void setKeywords (String keywords) {
+	this.keywords = keywords;
+    };
+
+    public String getTokenSource () {
+	return this.tokenSource;
+    };
+
+    public void setTokenSource (String tokenSource) {
+	this.tokenSource = tokenSource;
     };
 };
