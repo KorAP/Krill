@@ -506,23 +506,27 @@ public class TestKorapSearch {
 	assertNull(fd.getTextClass());
 	assertEquals(fd.getLanguage(),    "de");
 	assertEquals(fd.getPubPlace(),    "München");
-	assertEquals(fd.getCorpusTitle(), "Goethes Werke");
 	assertEquals(fd.getReference(),   "Goethe, Johann Wolfgang von: Autobiographische Einzelheiten, (Geschrieben bis 1832), In: Goethe, Johann Wolfgang von: Goethes Werke, Bd. 10, Autobiographische Schriften II, Hrsg.: Trunz, Erich. München: Verlag C. H. Beck, 1982, S. 529-547");
 	assertEquals(fd.getPublisher(),   "Verlag C. H. Beck");
-	assertEquals(fd.getCollEditor(),  "Trunz, Erich");
-	assertEquals(fd.getCollEditor(),  "Trunz, Erich");
 	assertNull(fd.getEditor());
 	assertNull(fd.getFileEditionStatement());
 	assertNull(fd.getBiblEditionStatement());
-	assertNull(fd.getCollTitle());
-	assertNull(fd.getCollSubTitle());
-	assertNull(fd.getCollAuthor());
-	assertNull(fd.getCorpusSubTitle());
 	assertNull(fd.getKeywords());
 
 	assertEquals(fd.getTokenSource(), "opennlp#tokens");
 	assertEquals(fd.getFoundries(), "base base/paragraphs base/sentences corenlp corenlp/constituency corenlp/morpho corenlp/namedentities corenlp/sentences glemm glemm/morpho mate mate/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho treetagger/sentences");
 	assertEquals(fd.getLayerInfos(),  "base/s=spans corenlp/c=spans corenlp/ne=tokens corenlp/p=tokens corenlp/s=spans glemm/l=tokens mate/l=tokens mate/m=tokens mate/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens tt/s=spans");
+
+
+	assertEquals(fd.getCorpusTitle(), "Goethes Werke");
+	assertNull(fd.getCorpusSubTitle());
+	assertEquals(fd.getCorpusAuthor(),  "Goethe, Johann Wolfgang von");
+	assertEquals(fd.getCorpusEditor(),  "Trunz, Erich");
+
+	assertEquals(fd.getDocTitle(), "Goethe: Autobiographische Schriften II, (1817-1825, 1832)");
+	assertNull(fd.getDocSubTitle());
+	assertNull(fd.getDocEditor());
+	assertNull(fd.getDocAuthor());
 
 	KorapSearch ks = new KorapSearch(
 	    new KorapQuery("tokens").seg("mate/m:case:nom").with("mate/m:number:pl")
@@ -533,7 +537,71 @@ public class TestKorapSearch {
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(25, kr.getItemsPerPage());
     };
-    
+
+    @Test
+    public void searchJSONnewJSON2 () throws IOException {
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	FieldDocument fd = ki.addDocFile(
+            1,getClass().getResource("/bzk/D59-00089.json.gz").getFile(), true
+	);
+	ki.commit();
+
+	assertEquals(fd.getUID(), 1);
+	assertEquals(fd.getTextSigle(),   "BZK_D59.00089");
+	assertEquals(fd.getDocSigle(),    "BZK_D59");
+	assertEquals(fd.getCorpusSigle(), "BZK");
+	assertEquals(fd.getTitle()  ,     "Saragat-Partei zerfällt");
+	assertEquals(fd.getPubDate().toString(),      "19590219");
+
+	assertNull(fd.getSubTitle());
+	assertNull(fd.getAuthor());
+	assertNull(fd.getEditor());
+	assertEquals(fd.getPubPlace(),    "Berlin");
+	assertNull(fd.getPublisher());
+	assertEquals(fd.getTextType(),    "Zeitung: Tageszeitung");
+	assertNull(fd.getTextTypeArt());
+	assertEquals(fd.getTextTypeRef(), "Tageszeitung");
+	assertEquals(fd.getTextDomain(),  "Politik");
+	assertEquals(fd.getCreationDate().toString(), "19590219");
+	assertEquals(fd.getLicense(),     "ACA-NC-LC");
+	assertEquals(fd.getTextColumn(),  "POLITIK");
+	assertNull(fd.getPages());
+	assertEquals(fd.getTextClass(), "politik ausland");
+	assertNull(fd.getFileEditionStatement());
+	assertNull(fd.getBiblEditionStatement());
+
+	assertEquals(fd.getLanguage(),    "de");
+	assertEquals(fd.getReference(),   "Neues Deutschland, [Tageszeitung], 19.02.1959, Jg. 14, Berliner Ausgabe, S. 7. - Sachgebiet: Politik, Originalressort: POLITIK; Saragat-Partei zerfällt");
+	assertNull(fd.getPublisher());
+	assertNull(fd.getKeywords());
+
+	assertEquals(fd.getTokenSource(), "opennlp#tokens");
+
+	assertEquals(fd.getFoundries(), "base base/paragraphs base/sentences corenlp corenlp/constituency corenlp/morpho corenlp/namedentities corenlp/sentences glemm glemm/morpho mate mate/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho treetagger/sentences");
+
+	assertEquals(fd.getLayerInfos(),  "base/s=spans corenlp/c=spans corenlp/ne=tokens corenlp/p=tokens corenlp/s=spans glemm/l=tokens mate/l=tokens mate/m=tokens mate/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens tt/s=spans");
+
+	assertEquals(fd.getCorpusTitle(), "Bonner Zeitungskorpus");
+	assertNull(fd.getCorpusSubTitle());
+	assertNull(fd.getCorpusAuthor());
+	assertNull(fd.getCorpusEditor());
+
+	assertEquals(fd.getDocTitle(), "Neues Deutschland");
+	assertEquals(fd.getDocSubTitle(), "Organ des Zentralkomitees der Sozialistischen Einheitspartei Deutschlands");
+	assertNull(fd.getDocEditor());
+	assertNull(fd.getDocAuthor());
+
+	KorapSearch ks = new KorapSearch(
+	    new KorapQuery("tokens").seg("mate/m:case:nom").with("mate/m:number:sg")
+        );
+	KorapResult kr = ks.run(ki);
+
+	assertEquals(6, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(25, kr.getItemsPerPage());
+    };
 
     @Test
     public void searchJSONCollection () throws IOException {

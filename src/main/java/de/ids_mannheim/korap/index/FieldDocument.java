@@ -372,27 +372,27 @@ public class FieldDocument extends KorapDocument {
     };
 
     @Override
-    public void setCollTitle (String collTitle) {
-	super.setCollTitle(collTitle);
-	this.addText("collTitle", collTitle);
+    public void setDocTitle (String docTitle) {
+	super.setDocTitle(docTitle);
+	this.addText("docTitle", docTitle);
     };
 
     @Override
-    public void setCollSubTitle (String collSubTitle) {
-	super.setCollSubTitle(collSubTitle);
-	this.addText("collSubTitle", collSubTitle);
+    public void setDocSubTitle (String docSubTitle) {
+	super.setDocSubTitle(docSubTitle);
+	this.addText("docSubTitle", docSubTitle);
     };
 
     @Override
-    public void setCollAuthor (String collAuthor) {
-	super.setCollAuthor(collAuthor);
-	this.addText("collAuthor", collAuthor);
+    public void setDocAuthor (String docAuthor) {
+	super.setDocAuthor(docAuthor);
+	this.addText("docAuthor", docAuthor);
     };
 
     @Override
-    public void setCollEditor (String collEditor) {
-	super.setCollEditor(collEditor);
-	this.addText("collEditor", collEditor);
+    public void setDocEditor (String docEditor) {
+	super.setDocEditor(docEditor);
+	this.addStored("docEditor", docEditor);
     };
 
     @Override
@@ -405,6 +405,18 @@ public class FieldDocument extends KorapDocument {
     public void setCorpusSubTitle (String corpusSubTitle) {
 	super.setCorpusSubTitle(corpusSubTitle);
 	this.addText("corpusSubTitle", corpusSubTitle);
+    };
+
+    @Override
+    public void setCorpusAuthor (String corpusAuthor) {
+	super.setCorpusAuthor(corpusAuthor);
+	this.addText("corpusAuthor", corpusAuthor);
+    };
+
+    @Override
+    public void setCorpusEditor (String corpusEditor) {
+	super.setCorpusEditor(corpusEditor);
+	this.addStored("corpusEditor", corpusEditor);
     };
 
     @Override

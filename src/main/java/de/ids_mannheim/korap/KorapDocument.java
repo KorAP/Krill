@@ -66,12 +66,14 @@ public abstract class KorapDocument {
 	biblEditionStatement,
 	reference,
 	language,
-	collTitle,
-	collSubTitle,
-	collAuthor,
-	collEditor,
 	corpusTitle,
 	corpusSubTitle,
+	corpusAuthor,
+	corpusEditor,
+	docTitle,
+	docSubTitle,
+	docAuthor,
+	docEditor,
 	keywords,
 	tokenSource,
 	layerInfos
@@ -441,38 +443,6 @@ public abstract class KorapDocument {
 	this.language = language;
     };
 
-    public String getCollTitle () {
-	return this.collTitle;
-    };
-
-    public void setCollTitle (String collTitle) {
-	this.collTitle = collTitle;
-    };
-
-    public String getCollSubTitle () {
-	return this.collSubTitle;
-    };
-
-    public void setCollSubTitle (String collSubTitle) {
-	this.collSubTitle = collSubTitle;
-    };
-
-    public String getCollAuthor () {
-	return this.collAuthor;
-    };
-
-    public void setCollAuthor (String collAuthor) {
-	this.collAuthor = collAuthor;
-    };
-
-    public String getCollEditor () {
-	return this.collEditor;
-    };
-
-    public void setCollEditor (String collEditor) {
-	this.collEditor = collEditor;
-    };
-
     public String getCorpusTitle () {
 	return this.corpusTitle;
     };
@@ -487,6 +457,54 @@ public abstract class KorapDocument {
 
     public void setCorpusSubTitle (String corpusSubTitle) {
 	this.corpusSubTitle = corpusSubTitle;
+    };
+
+    public String getCorpusAuthor () {
+	return this.corpusAuthor;
+    };
+
+    public void setCorpusAuthor (String corpusAuthor) {
+	this.corpusAuthor = corpusAuthor;
+    };
+
+    public String getCorpusEditor () {
+	return this.corpusEditor;
+    };
+
+    public void setCorpusEditor (String corpusEditor) {
+	this.corpusEditor = corpusEditor;
+    };
+
+    public String getDocTitle () {
+	return this.docTitle;
+    };
+
+    public void setDocTitle (String docTitle) {
+	this.docTitle = docTitle;
+    };
+
+    public String getDocSubTitle () {
+	return this.docSubTitle;
+    };
+
+    public void setDocSubTitle (String docSubTitle) {
+	this.docSubTitle = docSubTitle;
+    };
+
+    public String getDocAuthor () {
+	return this.docAuthor;
+    };
+
+    public void setDocAuthor (String docAuthor) {
+	this.docAuthor = docAuthor;
+    };
+
+    public String getDocEditor () {
+	return this.docEditor;
+    };
+
+    public void setDocEditor (String docEditor) {
+	this.docEditor = docEditor;
     };
 
     public String getKeywords () {
