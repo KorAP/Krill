@@ -276,6 +276,12 @@ public class FieldDocument extends KorapDocument {
     };
 
     @Override
+    public void setLayerInfos (String layerInfos) {
+	super.setLayerInfos(layerInfos);
+	this.addStored("layerInfos", layerInfos);
+    };
+
+    @Override
     public void setTextSigle (String textSigle) {
 	super.setTextSigle(textSigle);
 	this.addString("textSigle", textSigle);

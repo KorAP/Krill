@@ -515,7 +515,7 @@ public class TestKorapSearch {
 
 	assertEquals(fd.getTokenSource(), "opennlp#tokens");
 	assertEquals(fd.getFoundries(), "base base/paragraphs base/sentences corenlp corenlp/constituency corenlp/morpho corenlp/namedentities corenlp/sentences glemm glemm/morpho mate mate/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho treetagger/sentences");
-	assertEquals(fd.getLayerInfos(),  "base/s=spans corenlp/c=spans corenlp/ne=tokens corenlp/p=tokens corenlp/s=spans glemm/l=tokens mate/l=tokens mate/m=tokens mate/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens tt/s=spans");
+	assertEquals(fd.getLayerInfos(), "base/s=spans corenlp/c=spans corenlp/ne=tokens corenlp/p=tokens corenlp/s=spans glemm/l=tokens mate/l=tokens mate/m=tokens mate/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens tt/s=spans");
 
 
 	assertEquals(fd.getCorpusTitle(), "Goethes Werke");
