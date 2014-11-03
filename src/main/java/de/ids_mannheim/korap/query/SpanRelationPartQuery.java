@@ -29,9 +29,9 @@ public class SpanRelationPartQuery extends SpanRelationQuery{
 	public SpanRelationPartQuery(SpanRelationQuery spanRelationQuery,
 			SpanWithIdQuery secondClause, // match tokenWithIdQuery, ElementQuery, RelationQuery
 			boolean matchRight,
-			boolean returnRight,
+			boolean inverseRelation,
 			boolean collectPayloads) {
-		this(spanRelationQuery, secondClause, elementStr, matchRight, returnRight, collectPayloads);		
+		this(spanRelationQuery, secondClause, elementStr, matchRight, inverseRelation, collectPayloads);		
 	}
 	
 	public SpanRelationPartQuery(SpanRelationQuery spanRelationQuery,

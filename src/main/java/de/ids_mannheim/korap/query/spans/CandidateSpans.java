@@ -15,7 +15,7 @@ public class CandidateSpans implements Comparable<CandidateSpans>{
 	private Collection<byte[]> payloads = new ArrayList<>();
 	private int position;
 	private CandidateSpans childSpan; // used for multiple distance with unordered constraint 
-	private short elementRef;
+	protected short spanId;
 	
 	
 	public CandidateSpans(Spans span) throws IOException {
@@ -108,11 +108,11 @@ public class CandidateSpans implements Comparable<CandidateSpans>{
 	}
 
 	public short getSpanId() {
-		return elementRef;
+		return spanId;
 	}
 
 	public void setSpanId(short elementRef) {
-		this.elementRef = elementRef;
+		this.spanId = elementRef;
 	}
 
 	@Override

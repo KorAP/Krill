@@ -73,23 +73,7 @@ public class RelationPartSpans extends RelationBaseSpans{
 	protected boolean advance() throws IOException {
 		while (candidateRelations.size() > 0 || hasMoreSpans){
 			if (candidateRelations.size() > 0){
-				CandidateRelationSpan relationSpan = candidateRelations.get(0);				
-				matchDocNumber = relationSpan.getDoc();
-				if (!inverse){
-					matchStartPosition = relationSpan.getStart();
-					matchEndPosition = relationSpan.getEnd();
-					setRightStart(relationSpan.getRightStart());
-					setRightEnd(relationSpan.getRightEnd());
-				}					
-				else{ // maybe a bit confusing -- inverse relation
-					matchStartPosition = relationSpan.getRightStart();
-					matchEndPosition = relationSpan.getRightEnd();
-					setRightStart(relationSpan.getStart());
-					setRightEnd(relationSpan.getEnd());
-				}
-				setLeftId(relationSpans.getLeftId());
-				setRightId(relationSpan.getRightId());
-				setSpanId(relationSpan.getSpanId());
+				setMatchSpan(candidateRelations.get(0));
 				candidateRelations.remove(0);
 				return true;
 			}
@@ -100,7 +84,27 @@ public class RelationPartSpans extends RelationBaseSpans{
 		}		
 		return false;
 	}
-
+	
+	private void setMatchSpan(CandidateRelationSpan relationSpan) {
+		matchDocNumber = relationSpan.getDoc();
+		if (!inverse){
+			matchStartPosition = relationSpan.getStart();
+			matchEndPosition = relationSpan.getEnd();
+			setRightStart(relationSpan.getRightStart());
+			setRightEnd(relationSpan.getRightEnd());
+		}					
+		else{ // maybe a bit confusing -- inverse relation
+			matchStartPosition = relationSpan.getRightStart();
+			matchEndPosition = relationSpan.getRightEnd();
+			setRightStart(relationSpan.getStart());
+			setRightEnd(relationSpan.getEnd());
+		}
+		
+		setLeftId(relationSpan.getLeftId());
+		setRightId(relationSpan.getRightId());
+		setSpanId(relationSpan.getSpanId());
+	}
+	
 	/** A window starts at the same token position as a relation span, 
 	 * 	and ends at the start + window length.
 	 * */
@@ -172,7 +176,8 @@ public class RelationPartSpans extends RelationBaseSpans{
 			else{
 				/*System.out.println(r.getStart()+","+r.getEnd()+" "+
 						r.getRightStart()+","+r.getRightEnd()+" "
-						+matcheeSpans.start()+","+matcheeSpans.end());*/
+						+matcheeSpans.start()+","+matcheeSpans.end()+
+						" #"+matcheeSpans.getSpanId());*/
 				i = matchRelation(i, r,r.getStart(), r.getEnd());
 			}			
 		}
@@ -180,14 +185,26 @@ public class RelationPartSpans extends RelationBaseSpans{
 		hasMoreSpans &= hasMoreMatchees;
 	}
 	
-	private int matchRelation(int i, CandidateRelationSpan r, int startPos, int endPos) throws IOException {
+	private int matchRelation(int i, CandidateRelationSpan r, int startPos, 
+			int endPos) throws IOException {
+		
 		if(startPos == matcheeSpans.start() ){
-			if 	(endPos == matcheeSpans.end()){		
-				if (!inverse && r.getRightId() == matcheeSpans.getSpanId()){
+			if 	(endPos == matcheeSpans.end()){
+				
+				int id;
+				if ( matcheeSpans instanceof RelationPartSpans){
+					if (matchRight) {
+						id = ((RelationPartSpans) matcheeSpans).getRightId();
+					}
+					else { id = ((RelationPartSpans) matcheeSpans).getLeftId(); }				
+				}
+				else { id = matcheeSpans.getSpanId(); }
+				
+				if (!inverse && r.getRightId() == id){
 					r.sortRight = false;
 					candidateRelations.add(r);
 				}
-				else if (inverse && r.getLeftId() == matcheeSpans.getSpanId()) {
+				else if (inverse && r.getLeftId() == id) {
 					r.sortRight = true;
 					candidateRelations.add(r);
 				}
@@ -224,28 +241,13 @@ public class RelationPartSpans extends RelationBaseSpans{
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	/*public short getLeftId() {
-		return leftId;
-	}
-
-	public void setLeftId(short leftId) {
-		this.leftId = leftId;
-	}
-
-	public short getRightId() {
-		return rightId;
-	}
-
-	public void setRightId(short rightId) {
-		this.rightId = rightId;
-	}*/
 
 	class CandidateRelationSpan extends CandidateSpans implements Comparable<CandidateSpans>{
 		
 		private int rightStart, rightEnd; 
 		private short leftId, rightId;
 		private boolean sortRight;
+		
 		
 		public CandidateRelationSpan(RelationBaseSpans span, boolean sortRight) 
 				throws IOException {
@@ -255,6 +257,7 @@ public class RelationPartSpans extends RelationBaseSpans{
 			this.sortRight = sortRight;
 			this.leftId = span.getLeftId();
 			this.rightId = span.getRightId();
+			this.spanId = span.getSpanId();
 		}
 		
 		@Override
