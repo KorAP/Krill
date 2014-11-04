@@ -1,5 +1,7 @@
 0.47 2014-11-01
         - [feature] Support new index format with more metadata (diewald)
+	- [bugfix] #142 Fixed class spans for skipTo() skips (margaretha)
+	- [feature] Added attribute support to relations (margaretha)
 
 0.46 2014-10-21
         - [feature] Support for relation queries (margaretha)
