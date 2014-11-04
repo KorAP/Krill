@@ -1,0 +1,91 @@
+{
+   "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+   "announcements" : [
+      "Deprecated 2014-09-22: 'frame' only to be supported until 3 months from deprecation date. Position frames are now expressed through 'frames'."
+   ],
+   "collection" : {},
+   "collections" : [
+      {
+         "@type" : "korap:meta-filter",
+         "@value" : {
+            "@field" : "korap:field#corpusID",
+            "@type" : "korap:term",
+            "@value" : "WPD"
+         }
+      }
+   ],
+   "errors" : [],
+   "meta" : {},
+   "query" : {
+      "@type" : "korap:group",
+      "frame" : "frame:contains",
+      "frames" : [
+         "frames:contains"
+      ],
+      "operands" : [
+         {
+            "@type" : "korap:span",
+            "key" : "s"
+         },
+         {
+            "@type" : "korap:group",
+            "operands" : [
+               {
+                  "@type" : "korap:group",
+                  "operands" : [
+                     {
+                        "@type" : "korap:token",
+                        "wrap" : {
+                           "@type" : "korap:term",
+                           "caseInsensitive" : true,
+                           "key" : "es",
+                           "layer" : "orth",
+                           "match" : "match:eq"
+                        }
+                     },
+                     {
+                        "@type" : "korap:token",
+                        "wrap" : {
+                           "@type" : "korap:term",
+                           "key" : "wird",
+                           "layer" : "orth",
+                           "match" : "match:eq"
+                        }
+                     }
+                  ],
+                  "operation" : "operation:sequence"
+               },
+               {
+                  "@type" : "korap:group",
+                  "operands" : [
+                     {
+                        "@type" : "korap:token",
+                        "wrap" : {
+                           "@type" : "korap:term",
+                           "caseInsensitive" : true,
+                           "key" : "wird",
+                           "layer" : "orth",
+                           "match" : "match:eq"
+                        }
+                     },
+                     {
+                        "@type" : "korap:token",
+                        "wrap" : {
+                           "@type" : "korap:term",
+                           "key" : "es",
+                           "layer" : "orth",
+                           "match" : "match:eq"
+                        }
+                     }
+                  ],
+                  "operation" : "operation:sequence"
+               }
+            ],
+            "operation" : "operation:or"
+         }
+      ],
+      "operation" : "operation:position"
+   },
+   "warnings" : []
+}
+  

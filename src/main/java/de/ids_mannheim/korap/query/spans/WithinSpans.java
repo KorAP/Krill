@@ -1,34 +1,21 @@
 package de.ids_mannheim.korap.query.spans;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.Map;
+
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.util.ArrayUtil;
-import org.apache.lucene.util.Bits;
-import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.DocIdSetIterator;
-
-import java.nio.ByteBuffer;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-
-import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.spans.KorapLongSpan;
-
+import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.io.*;
+import de.ids_mannheim.korap.query.SpanWithinQuery;
 
 /*
   TODO: Use the flag in KorapQuery!

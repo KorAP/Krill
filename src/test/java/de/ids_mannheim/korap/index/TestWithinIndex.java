@@ -8,18 +8,22 @@ import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.Bits;
 
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -1068,5 +1072,59 @@ public class TestWithinIndex {
 		 "[(11-12)s:j|i:j|_7#11-12]");
 	ki.addDoc(fd);
     };
+    
+	/**
+	 * @throws IOException */
+	@Test
+	public void queryJSONpoly2() throws QueryException, IOException {
+	
+		String jsonPath = getClass().getResource("/queries/poly2.json").getFile();
+		String jsonPQuery = readFile(jsonPath);		
+		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJSON(
+				jsonPQuery
+		);
+		
+		SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
+//		System.out.println(sq.toString());
+		
+		KorapIndex ki = new KorapIndex();
+	    ki.addDocFile(
+	        getClass().getResource("/wiki/DDD-08370.json.gz").getFile(),true);
+	    ki.addDocFile(
+		        getClass().getResource("/wiki/PPP-02924.json.gz").getFile(),true);
+		ki.commit();
+		KorapResult kr = ki.search(sq, (short) 10);
+//		for (KorapMatch km : kr.getMatches()){		
+//			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+//				+km.getSnippetBrackets());
+//		}		
+	
+		assertEquals(2, kr.getTotalResults());
+		assertEquals(0, kr.getMatch(0).getLocalDocID());
+		assertEquals(76, kr.getMatch(0).getStartPos());
+		assertEquals(93, kr.getMatch(0).getEndPos());
+		assertEquals(1, kr.getMatch(0).getLocalDocID());
+		assertEquals(237, kr.getMatch(1).getStartPos());
+		assertEquals(252, kr.getMatch(1).getEndPos());
+		
+		
+		
+	}
+	
+	
+	private String readFile(String path) {
+		StringBuilder sb = new StringBuilder();
+		try {
+		    BufferedReader in = new BufferedReader(new FileReader(path));
+		    String str;
+		    while ((str = in.readLine()) != null) {
+		    	sb.append(str);
+		    };
+		    in.close();
+		} catch (IOException e) {
+		    fail(e.getMessage());
+		}
+		return sb.toString();
+	}
     
 };

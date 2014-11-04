@@ -196,8 +196,7 @@ public class TestKorapQueryJSON {
 	// within(<np>,[base=Mann])
 	assertEquals(sqwi.toQuery().toString(), "{0: spanNext(tokens:tt/p:ADJA, tokens:mate/p:NN)}");
     };
-
-
+    
     @Test
     public void queryJSONcosmas3 () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/cosmas3.json").getFile());
