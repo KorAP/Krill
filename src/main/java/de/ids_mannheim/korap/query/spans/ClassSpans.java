@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 public class ClassSpans extends Spans {
     private List<byte[]> highlightedPayload;
-    private Collection<byte[]> payload;
     private final Spans spans;
     private byte number;
     private SpanQuery highlight;
@@ -73,7 +72,15 @@ public class ClassSpans extends Spans {
 	    log.trace("Forward next");
 
 	if (spans.next()) {
-	    hasmorespans = true;
+		addClassPayload();
+	    return true;
+	};
+	hasmorespans = false;
+	return false;
+    };
+    
+    private void addClassPayload() throws IOException {
+    	hasmorespans = true;
 
 	    highlightedPayload.clear();
 
@@ -94,6 +101,7 @@ public class ClassSpans extends Spans {
 	    //private
 	    bb.clear();
 	    bb.putInt(spans.start()).putInt(spans.end()).put(number);
+	   // System.out.println(number+":"+spans.start()+","+spans.end());
 	    /*
 	    if (DEBUG)
 		log.trace("Results in {} with {}", bb.toString(), bb.array());
@@ -107,18 +115,17 @@ public class ClassSpans extends Spans {
 	    };
 	    */
 		
-	    return true;
-	};
-	hasmorespans = false;
-	return false;
-    };
+	}
 
     // inherit javadocs
     @Override
     public boolean skipTo(int target) throws IOException {
 	highlightedPayload.clear();
-	if (hasmorespans && spans.doc() < target)
-	    return spans.skipTo(target);
+	if (hasmorespans && spans.doc() < target &&
+			spans.skipTo(target)){
+		addClassPayload();
+	    return true;
+	}
 	return false;
     };
 

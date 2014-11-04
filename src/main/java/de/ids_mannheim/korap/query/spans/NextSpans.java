@@ -61,12 +61,10 @@ public class NextSpans extends SimpleSpans {
 			    matchStartPosition = firstSpans.start();
 			    matchEndPosition = matchList.get(0).getEnd();
 			    if (collectPayloads)
-			    	matchPayload.addAll( matchList.get(0).getPayloads() );
-			    if (DEBUG) {
-				log.trace("Match doc#: {}",matchDocNumber);
-				log.trace("Match positions: {}-{}", matchStartPosition,
-					  matchEndPosition);
-			    };
+			    	matchPayload.addAll( matchList.get(0).getPayloads() );	
+			    //System.out.println(this.toString());
+				/*System.out.println("Match positions "+ matchStartPosition+","+
+				  matchEndPosition);*/
 			    matchList.remove(0);
 			    return true;
 			}

@@ -1,0 +1,82 @@
+{
+   "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+   "announcements" : [
+      "Deprecated 2014-10-07: 'class' only to be supported until 3 months from deprecation date. Classes are now defined using the 'classOut' attribute.",
+      "Deprecated 2014-10-07: 'class' only to be supported until 3 months from deprecation date. Classes are now defined using the 'classOut' attribute."
+   ],
+   "collection" : {},
+   "collections" : [
+      {
+         "@type" : "korap:meta-filter",
+         "@value" : {
+            "@field" : "korap:field#corpusID",
+            "@type" : "korap:term",
+            "@value" : "WPD"
+         }
+      }
+   ],
+   "errors" : [],
+   "meta" : {},
+   "query" : {
+      "@type" : "korap:group",
+      "operands" : [
+         {
+            "@type" : "korap:group",
+            "class" : 1,
+            "classOut" : 1,
+            "operands" : [
+               {
+                  "@type" : "korap:token",
+                  "wrap" : {
+                     "@type" : "korap:term",
+                     "foundry" : "tt",
+                     "key" : "VVPP",
+                     "layer" : "p",
+                     "match" : "match:eq"
+                  }
+               }
+            ],
+            "operation" : "operation:class"
+         },
+         {
+            "@type" : "korap:group",
+            "class" : 2,
+            "classOut" : 2,
+            "operands" : [
+               {
+                  "@type" : "korap:group",
+                  "operands" : [
+                     {
+                        "@type" : "korap:token",
+                        "wrap" : {
+                           "@type" : "korap:term",
+                           "foundry" : "tt",
+                           "key" : "APPR",
+                           "layer" : "pos",
+                           "match" : "match:eq"
+                        }
+                     },
+                     {
+                        "@type" : "korap:token",
+                        "wrap" : {
+                           "@type" : "korap:term",
+                           "foundry" : "mate",
+                           "key" : "case",
+                           "layer" : "m",
+                           "match" : "match:eq",
+                           "value" : "acc"
+                        }
+                     }
+                  ],
+                  "operation" : "operation:sequence"
+               }
+            ],
+            "operation" : "operation:class"
+         }
+      ],
+      "operation" : "operation:sequence"
+   },
+   "warnings" : []
+}
+  
+
