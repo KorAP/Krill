@@ -24,21 +24,21 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
 public class SpanMatchModifyClassQuery extends SpanClassQuery {
     private boolean divide = false;
 
-    public SpanMatchModifyClassQuery (SpanQuery highlight, byte number, boolean divide) {
-	super(highlight, number);
+    public SpanMatchModifyClassQuery (SpanQuery operand, byte number, boolean divide) {
+	super(operand, number);
 	this.divide = divide;
     };
 
-    public SpanMatchModifyClassQuery (SpanQuery highlight, boolean divide) {
-	this(highlight, (byte) 0, divide);
+    public SpanMatchModifyClassQuery (SpanQuery operand, boolean divide) {
+	this(operand, (byte) 1, divide);
     };
 
-    public SpanMatchModifyClassQuery (SpanQuery highlight, byte number) {
-	this(highlight, number, false);
+    public SpanMatchModifyClassQuery (SpanQuery operand, byte number) {
+	this(operand, number, false);
     };
 
-    public SpanMatchModifyClassQuery (SpanQuery highlight) {
-	this(highlight, (byte) 0, false);
+    public SpanMatchModifyClassQuery (SpanQuery operand) {
+	this(operand, (byte) 1, false);
     };
 
     @Override
@@ -50,8 +50,9 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
 	else {
 	    buffer.append("shrink(");
 	};
-	buffer.append((int) this.number).append(": ");
-        buffer.append(this.highlight.toString());
+	short classNr = (short) this.number;
+	buffer.append(classNr & 0xFF).append(": ");
+        buffer.append(this.operand.toString());
 	buffer.append(')');
 
 	buffer.append(ToStringUtils.boost(getBoost()));
@@ -60,18 +61,18 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
 
     @Override
     public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs, Map<Term,TermContext> termContexts) throws IOException {
-	return (Spans) new MatchModifyClassSpans(this.highlight, context, acceptDocs, termContexts, number, divide);
+	return (Spans) new MatchModifyClassSpans(this.operand, context, acceptDocs, termContexts, number, divide);
     };
 
     @Override
     public Query rewrite (IndexReader reader) throws IOException {
 	SpanMatchModifyClassQuery clone = null;
-	SpanQuery query = (SpanQuery) this.highlight.rewrite(reader);
+	SpanQuery query = (SpanQuery) this.operand.rewrite(reader);
 
-	if (query != this.highlight) {
+	if (query != this.operand) {
 	    if (clone == null)
 		clone = this.clone();
-	    clone.highlight = query;
+	    clone.operand = query;
 	};
 
 	if (clone != null)
@@ -83,7 +84,7 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
     @Override
     public SpanMatchModifyClassQuery clone() {
 	SpanMatchModifyClassQuery spanMatchQuery = new SpanMatchModifyClassQuery(
-	    (SpanQuery) this.highlight.clone(),
+	    (SpanQuery) this.operand.clone(),
 	    this.number,
 	    this.divide
         );
@@ -100,7 +101,7 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
 	
 	final SpanMatchModifyClassQuery spanMatchModifyClassQuery = (SpanMatchModifyClassQuery) o;
 	
-	if (!highlight.equals(spanMatchModifyClassQuery.highlight)) return false;
+	if (!this.operand.equals(spanMatchModifyClassQuery.operand)) return false;
 	if (this.number != spanMatchModifyClassQuery.number) return false;
 	if (this.divide != spanMatchModifyClassQuery.divide) return false;
 	return getBoost() == spanMatchModifyClassQuery.getBoost();
@@ -111,7 +112,7 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
     @Override
     public int hashCode() {
 	int result = 1;
-	result = highlight.hashCode();
+	result = operand.hashCode();
 	result += number + 33_333;
 	result += divide ? 1 : 0;
 	result ^= (result << 15) | (result >>> 18);

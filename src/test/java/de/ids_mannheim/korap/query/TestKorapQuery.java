@@ -113,21 +113,21 @@ public class TestKorapQuery {
     public void KorapClassQuery2 () throws QueryException {
 	KorapQuery kq = new KorapQuery("field");
 	SpanQuery sq = kq._(kq.seg("base:test")).toQuery();
-	assertEquals("{0: field:base:test}", sq.toString());
+	assertEquals("{1: field:base:test}", sq.toString());
     };
 
     @Test
     public void KorapClassQuery3 () throws QueryException {
 	KorapQuery kq = new KorapQuery("field");
 	SpanQuery sq = kq.seq(kq.seg("tree"), kq.contains(kq.tag("s"), kq._(kq.tag("np"))), kq.re("hey.*")).toQuery();
-	assertEquals("spanNext(spanNext(field:tree, spanContain(<field:s />, {0: <field:np />})), SpanMultiTermQueryWrapper(field:/hey.*/))", sq.toString());
+	assertEquals("spanNext(spanNext(field:tree, spanContain(<field:s />, {1: <field:np />})), SpanMultiTermQueryWrapper(field:/hey.*/))", sq.toString());
     };
 
     @Test
     public void KorapShrinkQuery () throws QueryException {
 	KorapQuery kq = new KorapQuery("field");
 	SpanQuery sq = kq.shrink(kq.tag("np")).toQuery();
-	assertEquals("shrink(0: <field:np />)", sq.toString());
+	assertEquals("shrink(1: <field:np />)", sq.toString());
     };
 
     @Test
@@ -148,7 +148,7 @@ public class TestKorapQuery {
     public void KorapShrinkQuery3 () throws QueryException {
 	KorapQuery kq = new KorapQuery("field");
 	SpanQuery sq = kq.shrink(1, kq._(1, kq.seq(kq.tag("np"), kq._(kq.seg("test").without("no"))))).toQuery();
-	assertEquals("shrink(1: {1: spanNext(<field:np />, {0: spanNot(field:test, field:no, 0, 0)})})", sq.toString());
+	assertEquals("shrink(1: {1: spanNext(<field:np />, {1: spanNot(field:test, field:no, 0, 0)})})", sq.toString());
     };
 
     @Test

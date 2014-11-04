@@ -58,7 +58,7 @@ public class KorapQuery {
 	STARTSWITH   = SpanWithinQuery.STARTSWITH,
 	MATCH        = SpanWithinQuery.MATCH;
 
-    private static final int MAX_CLASS_NUM = 127;
+    private static final int MAX_CLASS_NUM = 255; // 127;
 
     /**
      * Constructs a new base object for query generation.
@@ -282,7 +282,13 @@ public class KorapQuery {
 		    JsonNode distances;
 		    if (firstDistance.get("@type").asText().equals("korap:group"))
 			distances = firstDistance.get("operands");
+
+		    // Support korap distances
 		    else if (firstDistance.get("@type").asText().equals("korap:distance"))
+			distances = json.get("distances");
+
+		    // Support cosmas distances
+		    else if (firstDistance.get("@type").asText().equals("cosmas:distance"))
 			distances = json.get("distances");
 		    else
 			throw new QueryException(612, "No valid distances defined");
@@ -292,11 +298,15 @@ public class KorapQuery {
 			if (constraint.has("key"))
 			    unit = constraint.get("key").asText();
 
+			/*
 			if (unit.equals("t"))
 			    throw new QueryException(
 				613,
 			        "Text based distances are not supported yet"
                             );
+			*/
+
+
 
 			int min = 0, max = 100;
 			if (constraint.has("boundary")) {
@@ -309,6 +319,20 @@ public class KorapQuery {
 				min = constraint.get("min").asInt(0);
 			    if (constraint.has("max"))
 				max = constraint.get("max").asInt(100);
+			};
+
+			// Add foundry and layer to the unit for new indices
+			if (constraint.has("foundry") &&
+			    constraint.has("layer") &&
+			    constraint.get("foundry").asText().length() > 0 &&
+			    constraint.get("layer").asText().length() > 0) {
+
+			    StringBuilder value = new StringBuilder();
+			    value.append(constraint.get("foundry").asText());
+			    value.append('/');
+			    value.append(constraint.get("layer").asText());
+			    value.append(':').append(unit);
+			    unit = value.toString();
 			};
 
 			// Sanitize boundary

@@ -37,7 +37,7 @@ public class MatchModifyClassSpans extends Spans {
     private final Logger log = LoggerFactory.getLogger(MatchModifyClassSpans.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private int start = -1, end;
     private int tempStart = 0, tempEnd = 0;
@@ -53,7 +53,7 @@ public class MatchModifyClassSpans extends Spans {
 	this.number    = number;
 	this.divide    = divide;
 	this.wrapQuery = wrapQuery;
-	this.bb        = ByteBuffer.allocate(9);
+	this.bb        = ByteBuffer.allocate(20);
 	this.wrappedPayload = new ArrayList<byte[]>(6);
     };
 
@@ -114,7 +114,7 @@ public class MatchModifyClassSpans extends Spans {
 		    if (payload.length == 9 && bb.get() == this.number) {
 			bb.rewind();
 			tempStart = bb.getInt();
-			tempEnd = bb.getInt();
+			tempEnd   = bb.getInt();
 
 			if (DEBUG)
 			    log.trace("Found matching class {}-{}", tempStart, tempEnd);

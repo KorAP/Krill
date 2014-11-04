@@ -103,7 +103,7 @@
   "query": {
     "@type": "korap:group", 
     "operation": "operation:submatch", 
-    "classRef": [0],
+    "classRef": [1],
     "operands": [
       {
         "@type": "korap:group", 
@@ -112,7 +112,7 @@
           {
             "@type": "korap:group", 
 	    "operation":"operation:class",
-            "class": 0, 
+            "class": 1, 
             "operands": [
               {
                 "@type": "korap:token", 

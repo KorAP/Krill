@@ -3,6 +3,8 @@ package de.ids_mannheim.korap.search;
 import java.util.*;
 import java.io.*;
 
+import static de.ids_mannheim.korap.TestSimple.*;
+
 import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapQuery;
@@ -604,6 +606,42 @@ public class TestKorapSearch {
     };
 
     @Test
+    public void searchJSONcosmasBoundaryBug () throws IOException {
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	FieldDocument fd = ki.addDocFile(
+            1,getClass().getResource("/bzk/D59-00089.json.gz").getFile(), true
+	);
+	ki.commit();
+
+	String json = getString(
+	    getClass().getResource("/queries/bugs/cosmas_boundary.jsonld").getFile()
+        );
+
+	KorapQuery kq = new KorapQuery("tokens");
+
+	// Check with 129
+	KorapSearch ks = new KorapSearch(
+	    kq.shrink(1,kq.contains(kq.tag("base/s:s"), kq._(1, kq.seg("s:Leben"))))
+	);
+
+	KorapResult kr = ks.run(ki);
+	System.err.println(kr.getMatch(0).getSnippetBrackets());
+
+	/*
+
+	ks = new KorapSearch(json);
+
+	kr = ks.run(ki);
+	System.err.println(kr.toJSON());
+	assertEquals(276, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	assertEquals(10, kr.getItemsPerPage());
+	*/
+    };
+
+    @Test
     public void searchJSONCollection () throws IOException {
 
 	// Construct index
@@ -622,7 +660,9 @@ public class TestKorapSearch {
 	};
 	ki.commit();
 
-	String json = getString(getClass().getResource("/queries/metaquery8-nocollection.jsonld").getFile());
+	String json = getString(
+            getClass().getResource("/queries/metaquery8-nocollection.jsonld").getFile()
+        );
 	
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
@@ -909,8 +949,6 @@ public class TestKorapSearch {
 	assertEquals((long) 1, map.get("#__music:###:singing"));
 	assertEquals(11, map.size());
     };
-
-
 
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();

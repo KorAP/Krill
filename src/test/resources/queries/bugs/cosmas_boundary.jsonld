@@ -1,0 +1,69 @@
+{
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query":{
+    "@type" : "korap:reference",
+    "classRef" : [
+      129
+    ],
+    "operands" : [
+      {
+        "@type" : "korap:group",
+        "distances" : [
+          {
+            "@type" : "cosmas:distance",
+            "boundary" : {
+              "@type" : "korap:boundary",
+              "max" : 1,
+              "min" : 0
+            },
+	    "foundry" : "base",
+	    "layer" : "s",
+            "key" : "s",
+
+            "max" : 1,
+            "min" : 0
+          }
+        ],
+        "inOrder" : false,
+        "operands" : [
+          {
+            "@type" : "korap:group",
+            "class" : 129,
+            "classOut" : 129,
+            "operands" : [
+              {
+                "@type" : "korap:token",
+                "wrap" : {
+                  "@type" : "korap:term",
+                  "key" : "Namen",
+                  "layer" : "orth",
+                  "match" : "match:eq"
+                }
+              }
+            ],
+            "operation" : "operation:class"
+          },
+          {
+            "@type" : "korap:group",
+            "class" : 129,
+            "classOut" : 129,
+            "operands" : [
+              {
+                "@type" : "korap:token",
+                "wrap" : {
+                  "@type" : "korap:term",
+                  "key" : "Leben",
+                  "layer" : "orth",
+                  "match" : "match:eq"
+                }
+              }
+            ],
+            "operation" : "operation:class"
+          }
+        ],
+        "operation" : "operation:sequence"
+      }
+    ],
+    "operation" : "operation:focus"
+  }
+}

@@ -31,7 +31,7 @@ public class SpanMatchModifyQueryWrapper extends SpanQueryWrapper {
 
     public SpanMatchModifyQueryWrapper (SpanQueryWrapper subquery) {
 	this.subquery = subquery;
-	this.number = (byte) 0;
+	this.number = (byte) 1;
     };
 
     public SpanQuery toQuery () throws QueryException {

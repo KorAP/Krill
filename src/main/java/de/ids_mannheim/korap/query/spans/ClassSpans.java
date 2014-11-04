@@ -24,7 +24,7 @@ public class ClassSpans extends Spans {
     private List<byte[]> highlightedPayload;
     private final Spans spans;
     private byte number;
-    private SpanQuery highlight;
+    private SpanQuery operand;
     private Boolean hasmorespans = false;
 
     private ByteBuffer bb = ByteBuffer.allocate(9);
@@ -33,14 +33,14 @@ public class ClassSpans extends Spans {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    public ClassSpans (SpanQuery highlight,
+    public ClassSpans (SpanQuery operand,
 		       AtomicReaderContext context,
 		       Bits acceptDocs,
 		       Map<Term,TermContext> termContexts,
 		       byte number) throws IOException {
-	spans = highlight.getSpans(context, acceptDocs, termContexts);
+	spans = operand.getSpans(context, acceptDocs, termContexts);
 	this.number = number;
-	this.highlight = highlight;
+	this.operand = operand;
 	this.highlightedPayload = new ArrayList<byte[]>(6);
     };
 
@@ -131,7 +131,7 @@ public class ClassSpans extends Spans {
 
     @Override
     public String toString() {
-	return getClass().getName() + "(" + this.highlight.toString() + ")@" +
+	return getClass().getName() + "(" + this.operand.toString() + ")@" +
 	    (doc() + ":" + start() + "-" + end());
     };
 

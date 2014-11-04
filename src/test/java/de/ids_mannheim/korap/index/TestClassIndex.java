@@ -97,18 +97,18 @@ public class TestClassIndex {
 	assertEquals("totalResults", 3, kr.totalResults());
 	assertEquals("StartPos (0)", 1, kr.match(0).startPos);
 	assertEquals("EndPos (0)", 2, kr.match(0).endPos);
-	assertEquals("snippetBrackets (0)", "a[{b}]cabcab ...", kr.match(0).snippetBrackets());
+	assertEquals("snippetBrackets (0)", "a[{1:b}]cabcab ...", kr.match(0).snippetBrackets());
 	assertEquals("snippetHTML (0)", "<span class=\"context-left\">a</span><span class=\"match\">" +
-			"<em class=\"class-0 level-0\">b</em></span><span class=\"context-right\">cabcab<span " +
+			"<em class=\"class-1 level-0\">b</em></span><span class=\"context-right\">cabcab<span " +
 			"class=\"more\"></span></span>", kr.match(0).snippetHTML());
 
 	assertEquals("StartPos (1)", 4, kr.match(1).startPos);
 	assertEquals("EndPos (1)", 5, kr.match(1).endPos);
-	assertEquals("snippetBrackets (1)", "abca[{b}]cabac", kr.match(1).snippetBrackets());
+	assertEquals("snippetBrackets (1)", "abca[{1:b}]cabac", kr.match(1).snippetBrackets());
 	
 	assertEquals("StartPos (2)", 7, kr.match(2).startPos);
 	assertEquals("EndPos (2)", 8, kr.match(2).endPos);
-	assertEquals("snippetBrackets (2)", "... bcabca[{b}]ac", kr.match(2).snippetBrackets());
+	assertEquals("snippetBrackets (2)", "... bcabca[{1:b}]ac", kr.match(2).snippetBrackets());
 
 
 	sq = new SpanNextQuery(
@@ -167,20 +167,20 @@ public class TestClassIndex {
 	// System.err.println(kr.toJSON());
 
 	assertEquals("totalResults", 1, kr.totalResults());
-	assertEquals("SnippetBrackets (0)", "abcabc[a{2:b{a}}]c", kr.match(0).snippetBrackets());
-	assertEquals("SnippetHTML (0)", "<span class=\"context-left\">abcabc</span><span class=\"match\">a<em class=\"class-2 level-0\">b<em class=\"class-0 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
+	assertEquals("SnippetBrackets (0)", "abcabc[a{2:b{1:a}}]c", kr.match(0).snippetBrackets());
+	assertEquals("SnippetHTML (0)", "<span class=\"context-left\">abcabc</span><span class=\"match\">a<em class=\"class-2 level-0\">b<em class=\"class-1 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
 
 	// Offset tokens
 	kr = ki.search(sq, 0, (short) 10, true, (short) 2, true, (short) 2);
 	assertEquals("totalResults", 1, kr.totalResults());
-	assertEquals("SnippetBrackets (0)", "... bc[a{2:b{a}}]c", kr.match(0).snippetBrackets());
-	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"><span class=\"more\"></span>bc</span><span class=\"match\">a<em class=\"class-2 level-0\">b<em class=\"class-0 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
+	assertEquals("SnippetBrackets (0)", "... bc[a{2:b{1:a}}]c", kr.match(0).snippetBrackets());
+	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"><span class=\"more\"></span>bc</span><span class=\"match\">a<em class=\"class-2 level-0\">b<em class=\"class-1 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
 
 	// Offset Characters
 	kr = ki.search(sq, 0, (short) 10, false, (short) 2, false, (short) 2);
 	assertEquals("totalResults", 1, kr.totalResults());
-	assertEquals("SnippetBrackets (0)", "... bc[a{2:b{a}}]c", kr.match(0).snippetBrackets());
-	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"><span class=\"more\"></span>bc</span><span class=\"match\">a<em class=\"class-2 level-0\">b<em class=\"class-0 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
+	assertEquals("SnippetBrackets (0)", "... bc[a{2:b{1:a}}]c", kr.match(0).snippetBrackets());
+	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"><span class=\"more\"></span>bc</span><span class=\"match\">a<em class=\"class-2 level-0\">b<em class=\"class-1 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
 
 
 	// System.err.println(kr.toJSON());

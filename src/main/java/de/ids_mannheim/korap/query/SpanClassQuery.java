@@ -24,22 +24,18 @@ import de.ids_mannheim.korap.query.spans.ClassSpans;
 public class SpanClassQuery extends SpanQuery {
     public String field;
     protected byte number;
-    protected SpanQuery highlight;
+    protected SpanQuery operand;
 
-    public SpanClassQuery (SpanQuery highlight, byte number) {
-	this.field = highlight.getField();
-	this.highlight = highlight;
-	if (number <= 15) {
-	    this.number = number;
-	} else{
-	    this.number = (byte) 0;
-	};
+    public SpanClassQuery (SpanQuery operand, byte number) {
+	this.field = operand.getField();
+	this.operand = operand;
+	this.number = number;
     };
 
-    public SpanClassQuery (SpanQuery highlight) {
-	this.field = highlight.getField();
-	this.highlight = highlight;
-	this.number = (byte) 0;
+    public SpanClassQuery (SpanQuery operand) {
+	this.field = operand.getField();
+	this.operand = operand;
+	this.number = (byte) 1;
     };
 
     public byte number () {
@@ -51,14 +47,15 @@ public class SpanClassQuery extends SpanQuery {
 
     @Override
     public void extractTerms (Set<Term> terms) {
-	this.highlight.extractTerms(terms);
+	this.operand.extractTerms(terms);
     };
 
     @Override
     public String toString (String field) {
 	StringBuffer buffer = new StringBuffer("{");
-	buffer.append((int) this.number).append(": ");
-        buffer.append(this.highlight.toString()).append('}');
+	short classNr = (short) this.number;
+	buffer.append(classNr & 0xFF).append(": ");
+        buffer.append(this.operand.toString()).append('}');
 	buffer.append(ToStringUtils.boost(getBoost()));
 	return buffer.toString();
     };
@@ -68,7 +65,7 @@ public class SpanClassQuery extends SpanQuery {
 			   Bits acceptDocs,
 			   Map<Term,TermContext> termContexts) throws IOException {
 	return (Spans) new ClassSpans(
-	    this.highlight,
+	    this.operand,
 	    context,
 	    acceptDocs,
 	    termContexts,
@@ -79,12 +76,12 @@ public class SpanClassQuery extends SpanQuery {
     @Override
     public Query rewrite (IndexReader reader) throws IOException {
 	SpanClassQuery clone = null;
-	SpanQuery query = (SpanQuery) this.highlight.rewrite(reader);
+	SpanQuery query = (SpanQuery) this.operand.rewrite(reader);
 
-	if (query != this.highlight) {
+	if (query != this.operand) {
 	    if (clone == null)
 		clone = this.clone();
-	    clone.highlight = query;
+	    clone.operand = query;
 	};
 
 	if (clone != null)
@@ -96,7 +93,7 @@ public class SpanClassQuery extends SpanQuery {
     @Override
     public SpanClassQuery clone() {
 	SpanClassQuery spanClassQuery = new SpanClassQuery(
-	    (SpanQuery) this.highlight.clone(),
+	    (SpanQuery) this.operand.clone(),
 	    this.number
         );
 	spanClassQuery.setBoost(getBoost());
@@ -112,7 +109,7 @@ public class SpanClassQuery extends SpanQuery {
 	
 	final SpanClassQuery spanClassQuery = (SpanClassQuery) o;
 	
-	if (!highlight.equals(spanClassQuery.highlight)) return false;
+	if (!this.operand.equals(spanClassQuery.operand)) return false;
 
 	if (this.number != spanClassQuery.number) return false;
 
@@ -124,7 +121,7 @@ public class SpanClassQuery extends SpanQuery {
     @Override
     public int hashCode() {
 	int result = 1;
-	result = highlight.hashCode();
+	result = operand.hashCode();
 	result += (int) number;
 	result ^= (result << 15) | (result >>> 18);
 	result += Float.floatToRawIntBits(getBoost());
