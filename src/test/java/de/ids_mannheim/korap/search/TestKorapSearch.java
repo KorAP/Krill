@@ -621,24 +621,53 @@ public class TestKorapSearch {
 
 	KorapQuery kq = new KorapQuery("tokens");
 
-	// Check with 129
 	KorapSearch ks = new KorapSearch(
 	    kq.shrink(1,kq.contains(kq.tag("base/s:s"), kq._(1, kq.seg("s:Leben"))))
 	);
 
 	KorapResult kr = ks.run(ki);
-	System.err.println(kr.getMatch(0).getSnippetBrackets());
+	assertEquals(
+            kr.getQuery(),
+	    "shrink(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}))"
+        );
+	assertEquals(
+            kr.getMatch(0).getSnippetBrackets(),
+            "... Initiative\" eine neue politische Gruppierung ins " +
+	    "[Leben] gerufen hatten. Pressemeldungen zufolge haben sich ..."
+        );
 
-	/*
-
-	ks = new KorapSearch(json);
+	// Try with high class
+	ks = new KorapSearch(
+	    kq.shrink(129, kq.contains(kq.tag("base/s:s"), kq._(129, kq.seg("s:Leben"))))
+	);
 
 	kr = ks.run(ki);
-	System.err.println(kr.toJSON());
-	assertEquals(276, kr.getTotalResults());
+	assertEquals(
+            kr.getQuery(),
+	    "shrink(129: spanContain(<tokens:base/s:s />, {129: tokens:s:Leben}))"
+        );
+	assertEquals(
+            kr.getMatch(0).getSnippetBrackets(),
+            "... Initiative\" eine neue politische Gruppierung ins " +
+	    "[Leben] gerufen hatten. Pressemeldungen zufolge haben sich ..."
+        );
+
+	ks = new KorapSearch(json);
+	kr = ks.run(ki);
+	assertEquals(
+            kr.getQuery(),
+	    "shrink(129: spanElementDistance({129: tokens:s:Namen}, " +
+	    "{129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]))"
+        );
+	assertEquals(
+	    kr.getMatch(0).getSnippetBrackets(),
+	    "... ihren Austritt erklärt und unter dem [Namen \"Einheitsbewegung " +
+	    "der sozialistischen Initiative\" eine neue politische Gruppierung " +
+	    "ins Leben] gerufen hatten. Pressemeldungen zufolge haben sich ..."
+        );
+
+	assertEquals(1, kr.getTotalResults());
 	assertEquals(0, kr.getStartIndex());
-	assertEquals(10, kr.getItemsPerPage());
-	*/
     };
 
     @Test

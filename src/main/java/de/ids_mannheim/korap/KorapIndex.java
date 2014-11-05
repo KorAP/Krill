@@ -1198,9 +1198,14 @@ public class KorapIndex {
 		    match.internalDocID = docID;
 		    match.populateDocument(doc, field, fieldsToLoadLocal);
 		    
-		    if (DEBUG)
-			log.trace("I've got a match in {} of {}",
-				  match.getDocID(), count);
+		    if (DEBUG) {
+			if (match.getDocID() != null)
+			    log.trace("I've got a match in {} of {}",
+				      match.getDocID(), count);
+			else
+			    log.trace("I've got a match in {} of {}",
+				      match.getUID(), count);
+		    };
 
 		    atomicMatches.add(match);
 		};

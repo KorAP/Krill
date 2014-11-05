@@ -3,6 +3,7 @@
 	- [bugfix] #142 Fixed class spans for skipTo() skips (margaretha)
 	- [feature] Added attribute support to relations (margaretha)
 	- [bugfix] Make classes and shrink default to 1 instead of 0 (diewald)
+	- [bugfix] shrink now removes all non-classes payloads (diewald)
 
 0.46 2014-10-21
         - [feature] Support for relation queries (margaretha)
