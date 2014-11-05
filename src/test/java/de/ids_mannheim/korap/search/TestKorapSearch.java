@@ -633,10 +633,10 @@ public class TestKorapSearch {
 	assertEquals(
             kr.getMatch(0).getSnippetBrackets(),
             "... Initiative\" eine neue politische Gruppierung ins " +
-	    "[Leben] gerufen hatten. Pressemeldungen zufolge haben sich ..."
+	    "[{1:Leben}] gerufen hatten. Pressemeldungen zufolge haben sich ..."
         );
 
-	// Try with high class
+	// Try with high class - don't highlight
 	ks = new KorapSearch(
 	    kq.shrink(129, kq.contains(kq.tag("base/s:s"), kq._(129, kq.seg("s:Leben"))))
 	);

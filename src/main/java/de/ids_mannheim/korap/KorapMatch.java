@@ -197,6 +197,9 @@ public class KorapMatch extends KorapDocument {
     // highlightoffsets have 11 bytes (iis)!
     public void addPayload (List<byte[]> payload) {
 
+	if (DEBUG)
+	    log.trace("Add payloads to match");
+
 	// Reverse to make embedding of highlights correct
 	Collections.reverse(payload);
 	try {
@@ -216,13 +219,24 @@ public class KorapMatch extends KorapDocument {
 		    bb.rewind();
 
 		    int start   = bb.getInt();
-		    int end     = bb.getInt() -1;
+		    int end     = bb.getInt();
 		    byte number = bb.get();
 
 		    if (DEBUG)
-			log.trace("Have a payload: {}-{}", start, end);
+			log.trace(
+			    "Have a highlight of class {} in {}-{} inside of {}-{}",
+			    number,
+			    start,
+			    end,
+			    this.getStartPos(),
+			    this.getEndPos()
+			);
 
-		    this.addHighlight(start, end, number);
+		    // Ignore classes out of match range and set by the system
+		    if ((number & 0xFF) <= 128 &&
+			start >= this.getStartPos() &&
+			end <= this.getEndPos())
+			this.addHighlight(start, end - 1, number);
 		}
 
 		// Element payload for match!
@@ -248,12 +262,6 @@ public class KorapMatch extends KorapDocument {
 			    this.potentialStartPosChar,
 			    this.potentialEndPosChar
 			);
-		}
-
-		else if (b.length == 4) {
-		    bb.put(b);
-		    bb.rewind();
-		    log.warn("Unknown[4]: {}", bb.getInt());
 		};
 	
 		// Clear bytebuffer

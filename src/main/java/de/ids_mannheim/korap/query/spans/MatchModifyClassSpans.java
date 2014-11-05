@@ -53,7 +53,7 @@ public class MatchModifyClassSpans extends Spans {
 	this.number    = number;
 	this.divide    = divide;
 	this.wrapQuery = wrapQuery;
-	this.bb        = ByteBuffer.allocate(20);
+	this.bb        = ByteBuffer.allocate(9);
 	this.wrappedPayload = new ArrayList<byte[]>(6);
     };
 
@@ -105,54 +105,41 @@ public class MatchModifyClassSpans extends Spans {
 
 		// Iterate over all payloads and find the maximum span per class
 		for (byte[] payload : spans.getPayload()) {
-		    bb.clear();
-		    bb.put(payload);
-		    bb.position(8);
+
+		    // No class payload
+		    if (payload.length != 9) {
+			if (DEBUG)
+			    log.trace("Ignore old payload {}", payload);
+			continue;
+		    };
 
 		    // Todo: Implement Divide
 		    // Found class payload of structure <i>start<i>end<b>class
-		    if (payload.length == 9) {
+		    // and classes are matches!
+		    if (payload[8] == this.number) {
+			bb.clear(); 
+			bb.put(payload); 
+			bb.rewind();
+			tempStart = bb.getInt();
+			tempEnd   = bb.getInt();
 
-			// and classes are matches!
-			if (bb.get() == this.number) {
-			    bb.rewind();
-			    tempStart = bb.getInt();
-			    tempEnd   = bb.getInt();
+			if (DEBUG)
+			    log.trace("Found matching class {}-{}", tempStart, tempEnd);
 
-			    if (DEBUG)
-				log.trace("Found matching class {}-{}", tempStart, tempEnd);
-
-			    // Set start position 
-			    if (start == -1)
-				start = tempStart;
-			    else if (tempStart < start)
-				start = tempStart;
-			    
-			    // Set end position
-			    if (tempEnd > end)
-				end = tempEnd;
-			}
-
-			// Definately keep class information
-			else {
-			    wrappedPayload.add(payload);
-			};
-		    }
-
-		    // No class payload
-		    else {
-
-			// Keep as we won't shrink
-			if (start == -1) {
-			    if (DEBUG)
-				log.trace("Remember old payload {}", payload);
-			    wrappedPayload.add(payload);
-			}
-			else if (DEBUG) {
-			    if (DEBUG)
-				log.trace("Ignore old payload {}", payload);
-			};
+			// Set start position 
+			if (start == -1)
+			    start = tempStart;
+			else if (tempStart < start)
+			    start = tempStart;
+			
+			// Set end position
+			if (tempEnd > end)
+			    end = tempEnd;
 		    };
+
+		    // Definately keep class information
+		    // Even if it is already used for shrinking
+		    wrappedPayload.add(payload);
 		};
 	    };
 
@@ -167,16 +154,6 @@ public class MatchModifyClassSpans extends Spans {
 		    start,
 		    end
 		);
-
-	    // Only keep class information
-	    // This may change later on ...
-	    for (int i = wrappedPayload.size() - 1; i >= 0; i--) {
-		if (wrappedPayload.get(i).length != 9) {
-		    if (DEBUG)
-			log.trace("Forget old payload {}", wrappedPayload.get(i));
-		    wrappedPayload.remove(i);
-		};
-	    };
 
 	    return true;
 	};

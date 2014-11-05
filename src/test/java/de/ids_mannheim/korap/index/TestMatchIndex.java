@@ -87,7 +87,7 @@ public class TestMatchIndex {
 	assertEquals("totalResults", 1, kr.totalResults());
 	assertEquals("StartPos (0)", 8, kr.match(0).startPos);
 	assertEquals("EndPos (0)", 9, kr.match(0).endPos);
-	assertEquals("SnippetBrackets (0)", "... cabcab[a]c", kr.match(0).snippetBrackets());
+	assertEquals("SnippetBrackets (0)", "... cabcab[{1:a}]c", kr.match(0).snippetBrackets());
 	sq = new SpanMatchModifyClassQuery(
             new SpanNextQuery(
 	        new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 2),
@@ -100,20 +100,20 @@ public class TestMatchIndex {
 	assertEquals("totalResults", 3, kr.totalResults());
 	assertEquals("StartPos (0)", 1, kr.match(0).startPos);
 	assertEquals("EndPos (0)", 2, kr.match(0).endPos);
-	assertEquals("SnippetBrackets (0)", "a[b]cabcab ...", kr.match(0).snippetBrackets());
+	assertEquals("SnippetBrackets (0)", "a[{3:b}]cabcab ...", kr.match(0).snippetBrackets());
 	
 
-	assertEquals("<span class=\"context-left\">a</span><span class=\"match\">b</span><span class=\"context-right\">cabcab<span class=\"more\"></span></span>", kr.match(0).snippetHTML());
+	assertEquals("<span class=\"context-left\">a</span><span class=\"match\"><em class=\"class-3 level-0\">b</em></span><span class=\"context-right\">cabcab<span class=\"more\"></span></span>", kr.match(0).snippetHTML());
 
 	assertEquals("StartPos (1)", 4, kr.match(1).startPos);
 	assertEquals("EndPos (1)", 5, kr.match(1).endPos);
-	assertEquals("SnippetBrackets (1)", "abca[b]cabac", kr.match(1).snippetBrackets());
+	assertEquals("SnippetBrackets (1)", "abca[{3:b}]cabac", kr.match(1).snippetBrackets());
 
-	assertEquals("<span class=\"context-left\">abca</span><span class=\"match\">b</span><span class=\"context-right\">cabac</span>", kr.match(1).snippetHTML());
+	assertEquals("<span class=\"context-left\">abca</span><span class=\"match\"><em class=\"class-3 level-0\">b</em></span><span class=\"context-right\">cabac</span>", kr.match(1).snippetHTML());
 
 	assertEquals("StartPos (2)", 7, kr.match(2).startPos);
 	assertEquals("EndPos (2)", 8, kr.match(2).endPos);
-	assertEquals("SnippetBrackets (2)", "... bcabca[b]ac", kr.match(2).snippetBrackets());
+	assertEquals("SnippetBrackets (2)", "... bcabca[{3:b}]ac", kr.match(2).snippetBrackets());
 
 
 
@@ -133,23 +133,23 @@ public class TestMatchIndex {
 	// System.err.println(kr.toJSON());
 
 	assertEquals("totalResults", 1, kr.totalResults());
-	assertEquals("SnippetBrackets (0)", "... bcabca[b{1:a}]c", kr.match(0).snippetBrackets());
+	assertEquals("SnippetBrackets (0)", "... bcabca[{2:b{1:a}}]c", kr.match(0).snippetBrackets());
 
-	assertEquals("SnippetHTML (0) 1", "<span class=\"context-left\"><span class=\"more\"></span>bcabca</span><span class=\"match\">b<em class=\"class-1 level-0\">a</em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
+	assertEquals("SnippetHTML (0) 1", "<span class=\"context-left\"><span class=\"more\"></span>bcabca</span><span class=\"match\"><em class=\"class-2 level-0\">b<em class=\"class-1 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.match(0).snippetHTML());
 
 	// Offset tokens
 	kr = ki.search(sq, 0, (short) 10, true, (short) 2, true, (short) 2);
 	assertEquals("totalResults", 1, kr.totalResults());
-	assertEquals("SnippetBrackets (0)", "... ca[b{1:a}]c", kr.match(0).snippetBrackets());
+	assertEquals("SnippetBrackets (0)", "... ca[{2:b{1:a}}]c", kr.match(0).snippetBrackets());
 
 
 
 	// Offset Characters
 	kr = ki.search(sq, 0, (short) 10, false, (short) 1, false, (short) 0);
 	assertEquals("totalResults", 1, kr.totalResults());
-	assertEquals("SnippetBrackets (0)", "... a[b{1:a}] ...", kr.match(0).snippetBrackets());
+	assertEquals("SnippetBrackets (0)", "... a[{2:b{1:a}}] ...", kr.match(0).snippetBrackets());
 
-	assertEquals("SnippetHTML (0) 2", "<span class=\"context-left\"><span class=\"more\"></span>a</span><span class=\"match\">b<em class=\"class-1 level-0\">a</em></span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.match(0).snippetHTML());
+	assertEquals("SnippetHTML (0) 2", "<span class=\"context-left\"><span class=\"more\"></span>a</span><span class=\"match\"><em class=\"class-2 level-0\">b<em class=\"class-1 level-1\">a</em></em></span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.match(0).snippetHTML());
 
 	sq = new SpanMatchModifyClassQuery(
             new SpanClassQuery(
@@ -165,10 +165,10 @@ public class TestMatchIndex {
 	assertEquals("totalResults", 2, kr.totalResults());
 	assertEquals("StartPos (0)", 1, kr.match(0).startPos);
 	assertEquals("EndPos (0)", 3, kr.match(0).endPos);
-	assertEquals("SnippetBrackets (0)", "a[{1:b}{2:c}]abcaba ...", kr.match(0).snippetBrackets());
+	assertEquals("SnippetBrackets (0)", "a[{3:{1:b}{2:c}}]abcaba ...", kr.match(0).snippetBrackets());
 	assertEquals("StartPos (1)", 4, kr.match(1).startPos);
 	assertEquals("EndPos (1)", 6, kr.match(1).endPos);
-	assertEquals("SnippetBrackets (1)", "abca[{1:b}{2:c}]abac", kr.match(1).snippetBrackets());
+	assertEquals("SnippetBrackets (1)", "abca[{3:{1:b}{2:c}}]abac", kr.match(1).snippetBrackets());
 
 	assertEquals("Document count", 1, ki.numberOf("base", "documents"));
 	assertEquals("Token count", 10, ki.numberOf("base", "t"));
@@ -202,10 +202,10 @@ public class TestMatchIndex {
 	assertEquals("totalResults", 2, kr.totalResults());
 	assertEquals("StartPos (0)", 1, kr.match(0).startPos);
 	assertEquals("EndPos (0)", 3, kr.match(0).endPos);
-	assertEquals("SnippetBrackets (0)", "a[bc]abcaba ...", kr.match(0).snippetBrackets());
+	assertEquals("SnippetBrackets (0)", "a[{1:bc}]abcaba ...", kr.match(0).snippetBrackets());
 	assertEquals("StartPos (1)", 4, kr.match(1).startPos);
 	assertEquals("EndPos (1)", 6, kr.match(1).endPos);
-	assertEquals("SnippetBrackets (1)", "abca[bc]abac", kr.match(1).snippetBrackets());
+	assertEquals("SnippetBrackets (1)", "abca[{1:bc}]abac", kr.match(1).snippetBrackets());
 
 	assertEquals(1, ki.numberOf("base", "documents"));
 	assertEquals(10, ki.numberOf("base", "t"));
@@ -344,7 +344,7 @@ public class TestMatchIndex {
 	KorapMatch km = kr.match(0);
 	assertEquals("StartPos (0)", 1, km.startPos);
 	assertEquals("EndPos (0)", 2, km.endPos);
-	assertEquals("SnippetBrackets (0)", "a[b]cabcab ...", km.getSnippetBrackets());
+	assertEquals("SnippetBrackets (0)", "a[{3:b}]cabcab ...", km.getSnippetBrackets());
 
 	sq = new SpanMatchModifyClassQuery(
 	    new SpanMatchModifyClassQuery(
@@ -360,7 +360,7 @@ public class TestMatchIndex {
 	km = kr.match(0);
 	assertEquals("StartPos (0)", 0, km.startPos);
 	assertEquals("EndPos (0)", 1, km.endPos);
-	assertEquals("SnippetBrackets (0)", "[a]bcabca ...", km.getSnippetBrackets());
+	assertEquals("SnippetBrackets (0)", "[{2:a}]bcabca ...", km.getSnippetBrackets());
 
 
 	// TODO: Check ID
