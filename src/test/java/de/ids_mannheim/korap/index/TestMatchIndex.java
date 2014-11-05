@@ -18,6 +18,8 @@ import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.SpanMatchModifyClassQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
@@ -364,5 +366,52 @@ public class TestMatchIndex {
 
 
 	// TODO: Check ID
+    };
+
+
+    @Test
+    public void indexExampleShrinkWithSpan () throws IOException {
+	KorapIndex ki = new KorapIndex();
+
+	// abcabcabac
+	FieldDocument fd = new FieldDocument();
+	fd.addTV("base",
+		 "abcabcabac",
+		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
+		 "[(1-2)s:b|i:b|_1#1-2|<>:s#1-5$<i>5]" +
+		 "[(2-3)s:c|i:c|_2#2-3|<>:s#2-7$<i>7]" +
+		 "[(3-4)s:a|i:a|_3#3-4]" +
+		 "[(4-5)s:b|i:b|_4#4-5]" +
+		 "[(5-6)s:c|i:c|_5#5-6]" +
+		 "[(6-7)s:a|i:a|_6#6-7]" +
+		 "[(7-8)s:b|i:b|_7#7-8]" +
+		 "[(8-9)s:a|i:a|_8#8-9]" +
+		 "[(9-10)s:c|i:c|_9#9-10]");
+	ki.addDoc(fd);
+
+	ki.commit();
+
+	SpanQuery sq;
+	KorapResult kr;
+
+	sq = new SpanWithinQuery(
+	    new SpanClassQuery(new SpanElementQuery("base", "s"), (byte) 2),
+            new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
+        );
+
+	kr = ki.search(sq, (short) 10);
+	assertEquals(kr.getQuery(), "spanContain({2: <base:s />}, {3: base:s:b})");
+	assertEquals(kr.getMatch(0).getSnippetBrackets(), "a[{2:{3:b}cab}]cabac");
+
+	sq = new SpanMatchModifyClassQuery(
+            new SpanWithinQuery(
+	        new SpanClassQuery(new SpanElementQuery("base", "s"), (byte) 2),
+                new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
+            ), (byte) 3
+        );
+
+	kr = ki.search(sq, (short) 10);
+	assertEquals(kr.getQuery(), "shrink(3: spanContain({2: <base:s />}, {3: base:s:b}))");
+	assertEquals(kr.getMatch(0).getSnippetBrackets(), "a[{3:b}]cabcab ...");
     };
 };
