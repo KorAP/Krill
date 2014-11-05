@@ -1,0 +1,74 @@
+{
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query": {
+    "@type" : "korap:group",
+    "class" : 4,
+    "classOut" : 4,
+    "operands" : [
+      {
+        "@type" : "korap:group",
+        "operands" : [
+          {
+            "@type" : "korap:group",
+            "class" : 1,
+            "classOut" : 1,
+            "operands" : [
+              {
+                "@type" : "korap:group",
+                "operands" : [
+                  {
+                    "@type" : "korap:group",
+                    "class" : 2,
+                    "classOut" : 2,
+                    "operands" : [
+                      {
+                        "@type" : "korap:token",
+                        "wrap" : {
+                          "@type" : "korap:term",
+                          "key" : "ins",
+                          "layer" : "orth",
+                          "match" : "match:eq"
+                        }
+                      }
+                    ],
+                    "operation" : "operation:class"
+                  },
+                  {
+                    "@type" : "korap:group",
+                    "class" : 3,
+                    "classOut" : 3,
+                    "operands" : [
+                      {
+                        "@type" : "korap:token",
+                        "wrap" : {
+                          "@type" : "korap:term",
+                          "key" : "Leben",
+                          "layer" : "orth",
+                          "match" : "match:eq"
+                        }
+                      }
+                    ],
+                    "operation" : "operation:class"
+                  }
+                ],
+                "operation" : "operation:sequence"
+              }
+            ],
+            "operation" : "operation:class"
+          },
+          {
+            "@type" : "korap:token",
+            "wrap" : {
+              "@type" : "korap:term",
+              "key" : "gerufen",
+              "layer" : "orth",
+              "match" : "match:eq"
+            }
+          }
+        ],
+        "operation" : "operation:sequence"
+      }
+    ],
+    "operation" : "operation:class"
+  }
+}

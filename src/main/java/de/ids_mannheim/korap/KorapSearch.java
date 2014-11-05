@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap;
 
 import java.io.*;
+import java.util.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
@@ -36,6 +37,8 @@ public class KorapSearch {
     private KorapIndex index;
     private String error;
     private String warning;
+
+    private HashSet<String> fields;
 
     private JsonNode request;
 
@@ -269,6 +272,12 @@ public class KorapSearch {
 	return this.itemsPerResource;
     };
 
+    // Get map of fields to lift
+    public HashSet<String> getFields () {
+	if (this.fields != null)
+	    return this.fields;
+	return (HashSet<String>) null;
+    };
 
     public KorapSearch setCollection (KorapCollection kc) {
 	this.collection = kc;
