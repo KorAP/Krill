@@ -76,6 +76,8 @@ public class HighlightCombinatorElement {
 		};
 		sb.append('>');
 	    }
+
+	    // Highlight - < 256
 	    else {
 		// Get the first free level slot
 		byte pos;

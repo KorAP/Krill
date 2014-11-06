@@ -1056,19 +1056,4 @@ public class TestKorapSearch {
 	assertEquals((long) 1, map.get("#__music:###:singing"));
 	assertEquals(11, map.size());
     };
-
-    public static String getString (String path) {
-	StringBuilder contentBuilder = new StringBuilder();
-	try {
-	    BufferedReader in = new BufferedReader(new FileReader(path));
-	    String str;
-	    while ((str = in.readLine()) != null) {
-		contentBuilder.append(str);
-	    };
-	    in.close();
-	} catch (IOException e) {
-	    fail(e.getMessage());
-	}
-	return contentBuilder.toString();
-    };
 };

@@ -1001,9 +1001,9 @@ public class KorapMatch extends KorapDocument {
 	end--;
 
 	// Set levels for highlights 
-	FixedBitSet level = new FixedBitSet(16);
-	level.set(0, 15);
-	byte[] levelCache = new byte[16];
+	FixedBitSet level = new FixedBitSet(255);
+	level.set(0, 255);
+	byte[] levelCache = new byte[255];
 
 	// First element of sorted array
 	HighlightCombinatorElement elem = this.snippetArray.getFirst();
