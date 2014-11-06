@@ -49,6 +49,8 @@ public class KorapQuery {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
+    private String warning;
+
     public static final byte
 	OVERLAP      = SpanWithinQuery.OVERLAP,
 	REAL_OVERLAP = SpanWithinQuery.REAL_OVERLAP,
@@ -356,8 +358,21 @@ public class KorapQuery {
 		return sseqqw;
 
 	    case "operation:class":
+		number = 0;
 
-		if (json.has("class")) {
+		
+		if (json.has("classOut")) {
+		    number = json.get("classOut").asInt(0);
+		}
+		// Legacy classes
+		else if (json.has("class")) {
+		    number = json.get("class").asInt(0);
+		};
+
+		if (json.has("classRefCheck"))
+		    this.addWarning("classRefCheck is not yet supported. Results may not be correct");
+
+		if (number > 0) {
 		    if (operands.size() != 1)
 			throw new QueryException(
 			    612,
@@ -569,7 +584,6 @@ public class KorapQuery {
     };
 
 
-
     private SpanQueryWrapper _termFromJSON (JsonNode json) throws QueryException {
 	if (!json.has("key") || json.get("key").asText().length() < 1)
 	    throw new QueryException(612, "Terms and spans have to provide key attributes");
@@ -639,6 +653,27 @@ public class KorapQuery {
 	    throw new QueryException(613, "Attributes not yet supported in spans");
 
 	return this.tag(value.toString());
+    };
+
+    public boolean hasWarning () {
+	if (this.warning != null)
+	    return true;
+	return true;
+    };
+
+    public String getWarning () {
+        return this.warning;
+    };
+
+    public void addWarning (String warning) {
+	if (this.warning == null)
+	    this.warning = warning;
+	else
+	    this.warning += "; " + warning;
+    };
+
+    public void setWarning (String warning) {
+	this.warning = warning;
     };
 
 

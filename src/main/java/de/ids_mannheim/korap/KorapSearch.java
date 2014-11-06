@@ -57,18 +57,22 @@ public class KorapSearch {
 	    // "query" value
 	    if (this.request.has("query")) {
 		try {
-		    SpanQueryWrapper qw = new KorapQuery("tokens").fromJSON(this.request.get("query"));
+		    KorapQuery kq = new KorapQuery("tokens");
+		    SpanQueryWrapper qw = kq.fromJSON(this.request.get("query"));
 
 		    if (qw.isEmpty()) {
 			this.error = "This query matches everywhere";
 		    }
 		    else {
-		    
 			this.query = qw.toQuery();
 			if (qw.isOptional())
 			    this.addWarning("Optionality of query is ignored");
 			if (qw.isNegative())
 			    this.addWarning("Exclusivity of query is ignored");
+
+			// Set query deserialization warning
+			if (kq.hasWarning())
+			    this.addWarning(kq.getWarning());
 		    };
 		}
 		catch (QueryException q) {
@@ -79,6 +83,7 @@ public class KorapSearch {
 		this.error = "No query defined";
 	    };
 
+	    // Report warning coming from the request
 	    if (this.request.has("warning"))
 		this.addWarning(this.request.get("warning").asText());
 	    
