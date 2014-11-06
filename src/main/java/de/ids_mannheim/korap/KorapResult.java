@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.SearchContext;
@@ -77,7 +78,10 @@ public class KorapResult extends KorapResponse {
     }
 
 
-    public KorapMatch addMatch(PositionsToOffset pto, int localDocID, int startPos, int endPos) {
+    public KorapMatch addMatch (PositionsToOffset pto,
+				int localDocID,
+				int startPos,
+				int endPos) {
         KorapMatch km = new KorapMatch(pto, localDocID, startPos, endPos);
 
         // Temporary - should use the same interface like results
@@ -102,7 +106,7 @@ public class KorapResult extends KorapResponse {
 
         this.add(km);
         return km;
-    }
+    };
 
     @Deprecated
     public int totalResults() {
@@ -167,7 +171,7 @@ public class KorapResult extends KorapResponse {
 
     public String getBenchmarkHitCounter() {
         return this.benchmarkHitCounter;
-    }
+    };
 
     @JsonIgnore
     public void setItemsPerResource (short value) {
@@ -184,30 +188,28 @@ public class KorapResult extends KorapResponse {
 	return this.itemsPerResource;
     };
 
-    public String getQuery() {
+    public String getQuery () {
         return this.query;
-    }
+    };
 
     @JsonIgnore
-    public KorapMatch getMatch(int index) {
+    public KorapMatch getMatch (int index) {
         return this.matches.get(index);
-    }
+    };
 
-    // @JsonIgnore
+    @JsonIgnore
     public List<KorapMatch> getMatches() {
         return this.matches;
-    }
-
+    };
 
     @Deprecated
-    public KorapMatch match(int index) {
+    public KorapMatch match (int index) {
         return this.matches.get(index);
-    }
+    };
 
-
-    public int getStartIndex() {
+    public int getStartIndex () {
         return startIndex;
-    }
+    };
 
 
     @JsonIgnore
@@ -224,7 +226,7 @@ public class KorapResult extends KorapResponse {
 
 
     // Identical to KorapMatch!
-    public String toJSON() {
+    public String toJSON () {
         ObjectNode json = (ObjectNode) mapper.valueToTree(this);
 
 	if (this.context != null)
@@ -236,13 +238,42 @@ public class KorapResult extends KorapResponse {
         if (this.getVersion() != null)
             json.put("version", this.getVersion());
 
+	// Add matches
+	json.putPOJO("matches", this.getMatches());
+
         try {
             return mapper.writeValueAsString(json);
-        } catch (Exception e) {
-            log.warn(e.getLocalizedMessage());
         }
-
+	catch (Exception e) {
+            log.warn(e.getLocalizedMessage());
+        };
 
         return "{}";
     };
+
+
+    // For Collocation Analysis API
+    public String toTokenListJSON () {
+        ObjectNode json = (ObjectNode) mapper.valueToTree(this);
+
+        if (this.getVersion() != null)
+            json.put("version", this.getVersion());
+
+	ArrayNode array = json.putArray("matches");
+	
+	// Add matches as token lists
+	for (KorapMatch km : this.getMatches()) {
+	    array.add(km.toTokenList());
+	};
+
+        try {
+            return mapper.writeValueAsString(json);
+        }
+	catch (Exception e) {
+            log.warn(e.getLocalizedMessage());
+        };
+
+        return "{}";
+    };
+
 };

@@ -116,11 +116,14 @@ public class KorapMatch extends KorapDocument {
      * @see #snippetBrackets()
      * @see PositionsToOffset
      */
-    public KorapMatch (PositionsToOffset pto, int localDocID, int startPos, int endPos) {
+    public KorapMatch (PositionsToOffset pto,
+		       int localDocID,
+		       int startPos,
+		       int endPos) {
 	this.positionsToOffset = pto;
-	this.localDocID     = localDocID;
-	this.startPos       = startPos;
-	this.endPos         = endPos;
+	this.localDocID = localDocID;
+	this.startPos   = startPos;
+	this.endPos     = endPos;
     };
 
     
@@ -386,6 +389,11 @@ public class KorapMatch extends KorapDocument {
 	    this.setTokenization(doc.get("tokenization"));
 	if (fields.contains("layerInfo"))
 	    this.setLayerInfo(doc.get("layerInfo"));
+
+	// New fields
+	if (fields.contains("textSigle"))
+	    this.setTextSigle(doc.get("textSigle"));
+
     };
 
 
@@ -1357,7 +1365,7 @@ public class KorapMatch extends KorapDocument {
 
     // Identical to KorapResult!
     public String toJSON () {
-	ObjectNode json =  (ObjectNode) mapper.valueToTree(this);
+	ObjectNode json = (ObjectNode) mapper.valueToTree(this);
 
 	// Match was no match
 	if (json.size() == 0)
@@ -1377,6 +1385,36 @@ public class KorapMatch extends KorapDocument {
 	};
 
 	return "{}";
+    };
+
+    // Return match as token list
+    public ObjectNode toTokenList () {
+	ObjectNode json = mapper.createObjectNode();
+
+	if (this.getDocID() != null)
+	    json.put("textSigle", this.getDocID());
+	else if (this.getTextSigle() != null)
+	    json.put("textSigle", this.getTextSigle());
+
+	ArrayNode tokens = json.putArray("tokens");
+
+	// Get pto object
+	PositionsToOffset pto = this.positionsToOffset;
+
+	// Add for position retrieval
+	for (int i = this.getStartPos(); i < this.getEndPos(); i++) {
+	    pto.add(this.localDocID, i);
+	};
+
+	// Retrieve positions
+	for (int i = this.getStartPos(); i < this.getEndPos(); i++) {
+	    ArrayNode token = tokens.addArray();
+	    for (int offset : pto.span(this.localDocID, i)) {
+		token.add(offset);
+	    };
+	};
+
+	return json;
     };
 
 

@@ -19,6 +19,9 @@ import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.nio.ByteBuffer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -670,8 +673,6 @@ public class TestKorapSearch {
 	assertEquals(0, kr.getStartIndex());
     };
 
-
-
     @Test
     public void searchJSONmultipleClassesBug () throws IOException {
 	// Construct index
@@ -707,7 +708,44 @@ public class TestKorapSearch {
 	assertEquals(0, kr.getStartIndex());
     };
 
+    @Test
+    public void searchJSONmultipleClassesBugTokenList () throws IOException {
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	ki.addDocFile(
+            1,getClass().getResource("/goe/AGA-03828.json.gz").getFile(), true
+	);
+	ki.addDocFile(
+            2,getClass().getResource("/bzk/D59-00089.json.gz").getFile(), true
+	);
 
+	ki.commit();
+
+	String json = getString(
+	    getClass().getResource("/queries/bugs/multiple_classes.jsonld").getFile()
+        );
+	
+	KorapSearch ks = new KorapSearch(json);
+	KorapResult kr = ks.run(ki);
+
+	ObjectMapper mapper = new ObjectMapper();
+	JsonNode res = mapper.readTree(kr.toTokenListJSON());
+
+	assertEquals(1, res.at("/totalResults").asInt());
+	assertEquals("{4: spanNext({1: spanNext({2: tokens:s:ins}, " +
+		     "{3: tokens:s:Leben})}, tokens:s:gerufen)}", res.at("/query").asText());
+	assertEquals(0, res.at("/startIndex").asInt());
+	assertEquals(25, res.at("/itemsPerPage").asInt());
+
+	assertEquals("BZK_D59.00089", res.at("/matches/0/textSigle").asText());
+	assertEquals(328, res.at("/matches/0/tokens/0/0").asInt());
+	assertEquals(331, res.at("/matches/0/tokens/0/1").asInt());
+	assertEquals(332, res.at("/matches/0/tokens/1/0").asInt());
+	assertEquals(337, res.at("/matches/0/tokens/1/1").asInt());
+	assertEquals(338, res.at("/matches/0/tokens/2/0").asInt());
+	assertEquals(345, res.at("/matches/0/tokens/2/1").asInt());
+    };
 
 
     @Test

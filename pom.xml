@@ -24,7 +24,7 @@
 
   <groupId>KorAP-modules</groupId>
   <artifactId>KorAP-lucene-index</artifactId>
-  <version>0.47</version>
+  <version>0.48</version>
   <packaging>jar</packaging>
 
   <name>KorAP-lucene-index</name>

@@ -1,4 +1,7 @@
-0.47 2014-11-01
+0.48 2014-11-06
+        - [feature] Retrieval of token lists (diewald)
+
+0.47 2014-11-05
         - [feature] Support new index format with more metadata (diewald)
 	- [bugfix] #142 Fixed class spans for skipTo() skips (margaretha)
 	- [feature] Added attribute support to relations (margaretha)

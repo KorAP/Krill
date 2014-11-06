@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * KorapIndex implements a simple API for searching in and writing to a
  * Lucene index and equesting several information but the index's nature.
  *
- * @author ndiewald
+ * @author Nils Diewald
  */
 public class KorapIndex {
 
@@ -146,6 +146,7 @@ public class KorapIndex {
 	fieldsToLoad = new HashSet<String>(16);
 	fieldsToLoad.add("author");
 	fieldsToLoad.add("ID");
+	fieldsToLoad.add("textSigle");
 	fieldsToLoad.add("UID");
 	fieldsToLoad.add("title");
 	fieldsToLoad.add("subTitle");
@@ -1126,7 +1127,7 @@ public class KorapIndex {
 		int oldLocalDocID = -1;
 
 		/*
-		 * Todo: There may be a way to now early if the bitset is emty
+		 * Todo: There may be a way to know early if the bitset is emty
 		 * by using OpenBitSet - but this may not be as fast as I think.
 		 */
 		Bits bitset = collection.bits(atomic);

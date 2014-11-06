@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 /**
  * @author Nils Diewald
  *
- * KoraSearch implements an object for all search relevant parameters.
+ * KorapSearch implements an object for all search relevant parameters.
  */
 public class KorapSearch {
     private int startIndex = 0, limit = 0;

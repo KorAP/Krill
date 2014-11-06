@@ -163,6 +163,63 @@ public class TestKorapResult {
     };
 
 
+    @Test
+    public void checkJSONTokenResult () throws Exception  {
+	KorapIndex ki = new KorapIndex();
+	FieldDocument fd = new FieldDocument();
+	fd.addString("ID", "doc-1");
+	fd.addString("UID", "1");
+	fd.addTV("base",
+		 "abab",
+		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" +
+		 "[(1-2)s:b|i:b|_1#1-2]" +
+		 "[(2-3)s:a|i:c|_2#2-3]" +
+		 "[(3-4)s:b|i:a|_3#3-4]");
+	ki.addDoc(fd);
+	fd = new FieldDocument();
+	fd.addString("ID", "doc-2");
+	fd.addString("UID", "2");
+	fd.addTV("base",
+		 "aba",
+		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>3]" +
+		 "[(1-2)s:b|i:b|_1#1-2]" +
+		 "[(2-3)s:a|i:c|_2#2-3]");
+	ki.addDoc(fd);
+
+	// Commit!
+	ki.commit();
+
+	KorapQuery kq = new KorapQuery("base");
+	SpanQuery q = (SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).toQuery();
+	KorapResult kr = ki.search(q);
+
+	assertEquals(3, kr.getTotalResults());
+	ObjectMapper mapper = new ObjectMapper();
+	JsonNode res = mapper.readTree(kr.toTokenListJSON());
+	assertEquals(3, res.at("/totalResults").asInt());
+	assertEquals("spanNext(base:s:a, base:s:b)", res.at("/query").asText());
+	assertEquals(0, res.at("/startIndex").asInt());
+	assertEquals(25, res.at("/itemsPerPage").asInt());
+
+	assertEquals("doc-1", res.at("/matches/0/textSigle").asText());
+	assertEquals(0, res.at("/matches/0/tokens/0/0").asInt());
+	assertEquals(1, res.at("/matches/0/tokens/0/1").asInt());
+	assertEquals(1, res.at("/matches/0/tokens/1/0").asInt());
+	assertEquals(2, res.at("/matches/0/tokens/1/1").asInt());
+
+	assertEquals("doc-1", res.at("/matches/1/textSigle").asText());
+	assertEquals(2, res.at("/matches/1/tokens/0/0").asInt());
+	assertEquals(3, res.at("/matches/1/tokens/0/1").asInt());
+	assertEquals(3, res.at("/matches/1/tokens/1/0").asInt());
+	assertEquals(4, res.at("/matches/1/tokens/1/1").asInt());
+
+	assertEquals("doc-2", res.at("/matches/2/textSigle").asText());
+	assertEquals(0, res.at("/matches/2/tokens/0/0").asInt());
+	assertEquals(1, res.at("/matches/2/tokens/0/1").asInt());
+	assertEquals(1, res.at("/matches/2/tokens/1/0").asInt());
+	assertEquals(2, res.at("/matches/2/tokens/1/1").asInt());
+    };
+
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();
 	try {
