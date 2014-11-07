@@ -5,6 +5,8 @@
   	  SpanSequenceQueryWrapper (diewald)
 	- [bugfix] Sequences with [problem][problem][anchor] can now
 	  be deserialized (diewald)
+	- [bugfix] Queries with regular expressions in spanNext() are now
+	  correctly rewritten (diewald)
 
 0.47 2014-11-05
         - [feature] Support new index format with more metadata (diewald)

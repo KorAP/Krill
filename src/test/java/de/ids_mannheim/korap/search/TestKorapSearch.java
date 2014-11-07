@@ -755,37 +755,46 @@ public class TestKorapSearch {
 	ki.addDocFile(
             1,getClass().getResource("/bzk/D59-00089.json.gz").getFile(), true
 	);
-	ki.addDocFile(
-            2,getClass().getResource("/bzk/D59-00089.json.gz").getFile(), true
-	);
-
 	ki.commit();
 
+	// [tt/p="A.*"]{0,3}[tt/p="N.*"]
 	String json = getString(
 	    getClass().getResource("/queries/bugs/multiterm_rewrite.jsonld").getFile()
         );
 	
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
-	assertEquals(kr.getQuery(),"");
-
-
-	/*
-
 	assertEquals(
             kr.getQuery(),
-	    "{4: spanNext({1: spanNext({2: tokens:s:ins}, {3: tokens:s:Leben})}, tokens:s:gerufen)}"
-        );
-	assertEquals(
-	    kr.getMatch(0).getSnippetBrackets(),
-	    "... sozialistischen Initiative\" eine neue politische Gruppierung " +
-	    "[{4:{1:{2:ins} {3:Leben}} gerufen}] hatten. " +
-	    "Pressemeldungen zufolge haben sich in ..."
+	    "spanOr([SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/), " +
+	    "spanNext(spanRepetition(SpanMultiTermQueryWrapper(tokens:/tt/p:A.*/){1,3}), " +
+	    "SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/))])"
         );
 
-	assertEquals(2, kr.getTotalResults());
+	assertEquals(58, kr.getTotalResults());
 	assertEquals(0, kr.getStartIndex());
-	*/
+
+	assertEquals(
+	    kr.getMatch(0).getSnippetBrackets(),
+	    "[Saragat-Partei] zerfällt Rom (ADN) die von dem"
+        );
+	assertEquals(
+	    kr.getMatch(1).getSnippetBrackets(),
+	    "[Saragat-Partei] zerfällt Rom (ADN) die von dem"
+        );
+	assertEquals(
+	    kr.getMatch(2).getSnippetBrackets(),
+	    "Saragat-Partei zerfällt [Rom] (ADN) die von dem Rechtssozialisten Saragat"
+        );
+	assertEquals(
+	    kr.getMatch(3).getSnippetBrackets(),
+	    "Saragat-Partei zerfällt Rom ([ADN]) die von dem Rechtssozialisten Saragat geführte"
+        );
+
+	assertEquals(
+	    kr.getMatch(23).getSnippetBrackets(),
+	    "dem Namen \"Einheitsbewegung der sozialistischen Initiative\" [eine neue politische Gruppierung] ins Leben gerufen hatten. Pressemeldungen zufolge"
+        );
     };
 
 
