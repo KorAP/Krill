@@ -224,6 +224,7 @@ public class TestSpanSequenceQueryJSON {
 	assertEquals("spanExpansion(spanExpansion(tokens:tt/p:NN, !tokens:tt/p:DET{1, 1}, right), !tokens:tt/p:ADJ{1, 1}, right)", sqwi.toQuery().toString());
     };
 
+
     @Test
     public void queryJSONseqNegativeEndSequence2 () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQueryFile("negative-last-sequence-2.jsonld");
@@ -233,6 +234,13 @@ public class TestSpanSequenceQueryJSON {
 	assertEquals("spanExpansion(spanExpansion(tokens:tt/p:ADJ, !tokens:tt/p:DET{1, 1}, left), !tokens:tt/p:NN{1, 1}, left)", sqwi.toQuery().toString());
     };
 
+    @Test
+    public void queryJSONseqMultipleDistances () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQueryFile("multiple-distances.jsonld");
+	// er []{,10} kann []{1,10} sagte 
+
+	assertEquals("spanDistance(tokens:s:er, spanDistance(tokens:s:kann, tokens:s:sagte, [(w[2:11], ordered, notExcluded)]), [(w[1:11], ordered, notExcluded)])", sqwi.toQuery().toString());
+    };
 
 
     // get query wrapper based on json file

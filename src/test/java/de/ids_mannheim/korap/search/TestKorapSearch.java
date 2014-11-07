@@ -747,6 +747,48 @@ public class TestKorapSearch {
 	assertEquals(345, res.at("/matches/0/tokens/2/1").asInt());
     };
 
+    @Test
+    public void searchJSONmultitermRewriteBug () throws IOException {
+	// Construct index
+	KorapIndex ki = new KorapIndex();
+	// Indexing test files
+	ki.addDocFile(
+            1,getClass().getResource("/bzk/D59-00089.json.gz").getFile(), true
+	);
+	ki.addDocFile(
+            2,getClass().getResource("/bzk/D59-00089.json.gz").getFile(), true
+	);
+
+	ki.commit();
+
+	String json = getString(
+	    getClass().getResource("/queries/bugs/multiterm_rewrite.jsonld").getFile()
+        );
+	
+	KorapSearch ks = new KorapSearch(json);
+	KorapResult kr = ks.run(ki);
+	assertEquals(kr.getQuery(),"");
+
+
+	/*
+
+	assertEquals(
+            kr.getQuery(),
+	    "{4: spanNext({1: spanNext({2: tokens:s:ins}, {3: tokens:s:Leben})}, tokens:s:gerufen)}"
+        );
+	assertEquals(
+	    kr.getMatch(0).getSnippetBrackets(),
+	    "... sozialistischen Initiative\" eine neue politische Gruppierung " +
+	    "[{4:{1:{2:ins} {3:Leben}} gerufen}] hatten. " +
+	    "Pressemeldungen zufolge haben sich in ..."
+        );
+
+	assertEquals(2, kr.getTotalResults());
+	assertEquals(0, kr.getStartIndex());
+	*/
+    };
+
+
 
     @Test
     public void searchJSONCollection () throws IOException {

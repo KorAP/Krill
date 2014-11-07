@@ -1,0 +1,65 @@
+{
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "warnings":[
+    "This is a warning coming from the serialization"
+  ],
+  "query": {
+    "@type" : "korap:reference",
+    "classRef" : [
+      130
+    ],
+    "operands" : [
+      {
+        "@type" : "korap:group",
+        "class" : 131,
+        "classIn" : [
+          129,
+          130
+        ],
+        "classOut" : 131,
+        "classRefCheck" : "classRefCheck:includes",
+        "operands" : [
+          {
+            "@type" : "korap:group",
+            "frame" : "frame:contains",
+            "frames" : [],
+            "operands" : [
+              {
+                "@type" : "korap:group",
+                "class" : 129,
+                "classOut" : 129,
+                "operands" : [
+                  {
+                    "@type" : "korap:span",
+                    "key" : "s"
+                  }
+                ],
+                "operation" : "operation:class"
+              },
+              {
+                "@type" : "korap:group",
+                "class" : 130,
+                "classOut" : 130,
+                "operands" : [
+                  {
+                    "@type" : "korap:token",
+                    "wrap" : {
+                      "@type" : "korap:term",
+                      "key" : "wegen",
+                      "layer" : "orth",
+                      "match" : "match:eq"
+                    }
+                  }
+                ],
+                "operation" : "operation:class"
+              }
+            ],
+            "operation" : "operation:position"
+          }
+        ],
+        "operation" : "operation:class"
+      }
+    ],
+    "operation" : "operation:focus"
+  }
+}

@@ -97,7 +97,7 @@ public class KorapQuery {
 		this.max = defaultMax;
 
 	    if (DEBUG)
-		log.trace("Found korap:boundary with {}:{}");
+		log.trace("Found korap:boundary with {}:{}", min, max);
 	};
     };
 
@@ -245,11 +245,10 @@ public class KorapQuery {
 
 	    case "operation:sequence":
 
-		if (operands.size() < 2)
-		    throw new QueryException(
-		        612,
-			"SpanSequenceQuery needs at least two operands"
-		    );
+		if (operands.size() == 1) {
+		    this.addWarning("Sequences with less than two operands are ignored");
+		    return this.fromJSON(operands.get(0));
+		};
 
 		SpanSequenceQueryWrapper sseqqw = this.seq();
 
@@ -292,6 +291,7 @@ public class KorapQuery {
 		    // Support cosmas distances
 		    else if (firstDistance.get("@type").asText().equals("cosmas:distance"))
 			distances = json.get("distances");
+
 		    else
 			throw new QueryException(612, "No valid distances defined");
 
@@ -307,8 +307,6 @@ public class KorapQuery {
 			        "Text based distances are not supported yet"
                             );
 			*/
-
-
 
 			int min = 0, max = 100;
 			if (constraint.has("boundary")) {
@@ -341,6 +339,9 @@ public class KorapQuery {
 			if (max < min)
 			    max = min;
 
+			if (DEBUG)
+			    log.trace("Add distance constraint of '{}': {}-{}", unit, min, max);
+
 			sseqqw.withConstraint(min, max, unit);
 		    };
 		};
@@ -350,7 +351,7 @@ public class KorapQuery {
 		    sseqqw.append(this.fromJSON(operand));
 		};
 
-		// inOrder was set without a distance constraint
+		// inOrder was set to false without a distance constraint
 		if (!sseqqw.isInOrder() && !sseqqw.hasConstraints()) {
 		    sseqqw.withConstraint(1,1,"w");
 		};
@@ -358,9 +359,8 @@ public class KorapQuery {
 		return sseqqw;
 
 	    case "operation:class":
-		number = 0;
+		number = 1;
 
-		
 		if (json.has("classOut")) {
 		    number = json.get("classOut").asInt(0);
 		}
@@ -370,7 +370,12 @@ public class KorapQuery {
 		};
 
 		if (json.has("classRefCheck"))
-		    this.addWarning("classRefCheck is not yet supported. Results may not be correct");
+		    this.addWarning("classRefCheck is not yet supported - " +
+				    "results may not be correct");
+
+		if (json.has("classRefOp"))
+		    this.addWarning("classRefOp is not yet supported - " +
+				    "results may not be correct");
 
 		if (number > 0) {
 		    if (operands.size() != 1)
@@ -380,9 +385,7 @@ public class KorapQuery {
 			);
 
 		    if (DEBUG)
-			log.trace("Found Class definition for {}", json.get("class").asInt(0));
-
-		    number = json.get("class").asInt(0);
+			log.trace("Found Class definition for {}", number);
 
 		    if (number > MAX_CLASS_NUM) {
 			throw new QueryException(
@@ -446,6 +449,9 @@ public class KorapQuery {
 		    return sqw.setMin(min).setMax(max);
 
 		return new SpanRepetitionQueryWrapper(sqw, min, max);
+
+	    case "operation:relation":
+		throw new QueryException(613, "Relations are not yet supported");
 	    };
 
 	    throw new QueryException(613, "Unknown group operation");
@@ -650,7 +656,8 @@ public class KorapQuery {
 	    return this.seg(value.toString());
 
 	if (json.has("attr"))
-	    throw new QueryException(613, "Attributes not yet supported in spans");
+	    this.addWarning("Attributes are not yet supported - " +
+			    "results may not be correct");
 
 	return this.tag(value.toString());
     };

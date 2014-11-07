@@ -137,7 +137,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 	// Embed a sequence
 	if (ssq instanceof SpanSequenceQueryWrapper) {
 
+	    if (DEBUG)
+		log.trace("Add SpanSequenceQueryWrapper to sequence");
+
 	    // There are no constraints - just next spans
+	    // Flatten!
 	    SpanSequenceQueryWrapper ssqw = (SpanSequenceQueryWrapper) ssq;
 	    if (!this.hasConstraints() &&
 		!ssqw.hasConstraints() &&
@@ -145,6 +149,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 		for (int i = 0; i < ssqw.segments.size(); i++) {
 		    this.append(ssqw.segments.get(i));
 		};
+	    }
+
+	    // No flattening
+	    else {
+		this.segments.add(ssq);
 	    };
 	}
 
@@ -187,6 +196,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 	if (ssq instanceof SpanSequenceQueryWrapper) {
 
 	    // There are no constraints - just next spans
+	    // Flatten!
 	    SpanSequenceQueryWrapper ssqw = (SpanSequenceQueryWrapper) ssq;
 	    if (!this.hasConstraints() &&
 		!ssqw.hasConstraints() &&
@@ -194,6 +204,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 		for (int i = ssqw.segments.size() - 1; i >= 0; i--) {
 		    this.prepend(ssqw.segments.get(i));
 		};
+	    }
+
+	    // No flattening
+	    else {
+		this.segments.add(0, ssq);
 	    };
 	}
 
@@ -453,6 +468,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
 		// [problem][anchor]
 		if (i < (size-1) && this.segments.get(i+1).maybeAnchor()) {
+		    if (DEBUG)
+			log.trace("Situation is [problem][anchor]");
 
 		    // Insert the solution
 		    try {
@@ -471,10 +488,16 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
 		    if (DEBUG)
 			log.trace("Remove segment {} - now size {}", i, size);
+
+		    // Restart checking
+		    i = 0;
 		}
 
 		// [anchor][problem]
 		else if (i >= 1 && this.segments.get(i-1).maybeAnchor()) {
+		    if (DEBUG)
+			log.trace("Situation is [anchor][problem]");
+
 		    // Insert the solution
 		    try {
 			this.segments.set(
@@ -492,13 +515,21 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
 		    if (DEBUG)
 			log.trace("Remove segment {} - now size {}", i, size);
+
+		    // Restart checking
+		    i = 0;
 		}
+		// [problem][problem]
 		else {
+		    if (DEBUG)
+			log.trace("Situation is [problem][problem]");
 		    noRemainingProblem = false;
 		    i++;
 		};
 	    }
 	    else {
+		if (DEBUG)
+		    log.trace("segment {} can be an anchor", i);
 		i++;
 	    };
 	};

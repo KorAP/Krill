@@ -1,6 +1,10 @@
-0.48 2014-11-06
+0.48 2014-11-07
         - [feature] Retrieval of token lists (diewald)
 	- [bugfix] Classes can now be highlighted to 127.
+	- [bugfix] Sequences with distances won't be flattened in
+  	  SpanSequenceQueryWrapper (diewald)
+	- [bugfix] Sequences with [problem][problem][anchor] can now
+	  be deserialized (diewald)
 
 0.47 2014-11-05
         - [feature] Support new index format with more metadata (diewald)

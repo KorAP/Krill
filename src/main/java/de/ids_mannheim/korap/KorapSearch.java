@@ -83,9 +83,16 @@ public class KorapSearch {
 		this.error = "No query defined";
 	    };
 
-	    // Report warning coming from the request
+	    // Legacy code: Report warning coming from the request
 	    if (this.request.has("warning"))
 		this.addWarning(this.request.get("warning").asText());
+	    if (this.request.has("warnings")) {
+		JsonNode warnings = this.request.get("warnings");
+		for (JsonNode node : warnings)
+		    this.addWarning(node.asText());
+	    };
+	    // end of legacy code
+
 	    
 	    // virtual collections
 	    if (this.request.has("collections") ||

@@ -1,5 +1,7 @@
 package de.ids_mannheim.korap;
 
+// Todo: ADD WORD COUNT AS A METADATA FIELD!
+
 // Java classes
 import java.util.*;
 import java.util.zip.GZIPInputStream;
