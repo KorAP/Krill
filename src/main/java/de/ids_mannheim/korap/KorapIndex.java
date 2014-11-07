@@ -103,10 +103,6 @@ public class KorapIndex {
     private static ByteBuffer bb       = ByteBuffer.allocate(4),
 	                      bbOffset = ByteBuffer.allocate(8),
 	                      bbTerm   = ByteBuffer.allocate(16);
-    
-
-    private Set<String> fieldsToLoad;
-
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapIndex.class);
 
@@ -145,24 +141,10 @@ public class KorapIndex {
     public KorapIndex (Directory directory) throws IOException {
 	this.directory = directory;
 
-	fieldsToLoad = new HashSet<String>(16);
-	fieldsToLoad.add("author");
-	fieldsToLoad.add("ID");
-	fieldsToLoad.add("textSigle");
-	fieldsToLoad.add("UID");
-	fieldsToLoad.add("title");
-	fieldsToLoad.add("subTitle");
-	fieldsToLoad.add("textClass");
-	fieldsToLoad.add("pubPlace");
-	fieldsToLoad.add("pubDate");
-	fieldsToLoad.add("corpusID");
-	fieldsToLoad.add("foundries");
-	fieldsToLoad.add("layerInfo");
-	fieldsToLoad.add("tokenization");
-
 	// Base analyzer for searching and indexing
 	// StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
 
+	// TODO: Why is this here?
 	Map<String,Analyzer> analyzerPerField = new HashMap<String,Analyzer>();
 	analyzerPerField.put("textClass", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
 	analyzerPerField.put("foundries", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
@@ -767,20 +749,22 @@ public class KorapIndex {
 		// We've found the correct document! Hurray!
 		if (DEBUG)
 		    log.trace("We've found a matching document");
-		HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
-		fieldsToLoadLocal.add(field);
+
+		HashSet<String> fields = (HashSet<String>)
+		    new KorapSearch().getFields().clone();
+		fields.add(field);
 
 		// Get terms from the document
 		Terms docTerms = atomic.reader().getTermVector(localDocID, field);
 
 		// Load the necessary fields of the document
-		Document doc = atomic.reader().document(localDocID, fieldsToLoadLocal);
+		Document doc = atomic.reader().document(localDocID, fields);
 
 		// Put some more information to the match
 		PositionsToOffset pto = new PositionsToOffset(atomic, field);
 		match.setPositionsToOffset(pto);
 		match.setLocalDocID(localDocID);
-		match.populateDocument(doc, field, fieldsToLoadLocal);
+		match.populateDocument(doc, field, fields);
 		if (DEBUG)
 		    log.trace("The document has the id '{}'", match.getDocID());
 
@@ -1086,8 +1070,8 @@ public class KorapIndex {
 	    kr.setVersion(this.getVersion());
 
 	// The following fields should be lifted for matches
-	HashSet<String> fieldsToLoadLocal = new HashSet<>(fieldsToLoad);
-	fieldsToLoadLocal.add(field);
+	HashSet<String> fields = (HashSet<String>) ks.getFields().clone();
+	fields.add(field);
 
 	// Some initializations ...
 	int i                       = 0,
@@ -1183,11 +1167,8 @@ public class KorapIndex {
 
 		    int docID = atomic.docBase + localDocID;
 
-		    // Document doc = lreader.document(docID, fieldsToLoadLocal);
-
-
 		    // Do not load all of this, in case the doc is the same!
-		    Document doc = lreader.document(localDocID, fieldsToLoadLocal);
+		    Document doc = lreader.document(localDocID, fields);
 		    KorapMatch match = kr.addMatch(
 		        pto,
 			localDocID,
@@ -1199,7 +1180,7 @@ public class KorapIndex {
 			match.addPayload((List<byte[]>) spans.getPayload());
 
 		    match.internalDocID = docID;
-		    match.populateDocument(doc, field, fieldsToLoadLocal);
+		    match.populateDocument(doc, field, fields);
 		    
 		    if (DEBUG) {
 			if (match.getDocID() != null)
@@ -1289,8 +1270,8 @@ public class KorapIndex {
 	long t1 = System.nanoTime();
 
 	// Only load UID
-	HashSet<String> fieldsToLoadLocal = new HashSet<>();
-	fieldsToLoadLocal.add("UID");
+	HashSet<String> fields = new HashSet<>(1);
+	fields.add("UID");
 
 	// List<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(10);
 
@@ -1344,7 +1325,7 @@ public class KorapIndex {
 
 			// Read document id from index
 			uniqueDocIDString =
-			    lreader.document(localDocID, fieldsToLoadLocal).get("UID");
+			    lreader.document(localDocID, fields).get("UID");
 
 			if (uniqueDocIDString != null)
 			    uniqueDocID = Integer.parseInt(uniqueDocIDString);

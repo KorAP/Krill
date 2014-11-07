@@ -83,9 +83,29 @@ public class KorapCollection {
 	this.filter = new ArrayList<FilterOperation>(5);
     };
 
+    public void fromJSON (String jsonString) throws QueryException {
+	ObjectMapper mapper = new ObjectMapper();
+	try {
+	    this.fromJSON((JsonNode) mapper.readValue(jsonString, JsonNode.class));
+	}
+	catch (Exception e) {
+	    this.error = e.getMessage();
+	};
+    };
 
     public void fromJSON (JsonNode json) throws QueryException {
 	this.filter(new KorapFilter(json));
+    };
+
+
+    public void fromJSONLegacy (String jsonString) throws QueryException {
+	ObjectMapper mapper = new ObjectMapper();
+	try {
+	    this.fromJSONLegacy((JsonNode) mapper.readValue(jsonString, JsonNode.class));
+	}
+	catch (Exception e) {
+	    this.error = e.getMessage();
+	};
     };
 
 

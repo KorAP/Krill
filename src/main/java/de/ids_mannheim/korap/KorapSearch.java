@@ -47,6 +47,25 @@ public class KorapSearch {
 
     {
 	context  = new SearchContext();
+
+	// Lift legacy fields per default
+	fields = new HashSet<String>(16);
+	for (String field : new String[]{
+		"ID",
+		"UID",
+		"textSigle",
+		"corpusID",
+		"author",
+		"title",
+		"subTitle",
+		"textClass",
+		"pubPlace",
+		"pubDate",
+		"foundries",
+		"layerInfo",
+		"tokenization"}) {
+	    fields.add(field);
+	};
     };
 
     public KorapSearch (String jsonString) {
@@ -127,6 +146,22 @@ public class KorapSearch {
 		    // Defined resource count
 		    if (meta.has("itemsPerResource"))
 			this.setItemsPerResource(meta.get("itemsPerResource").asInt());
+
+		    // Only lift a limited amount of fields from the metadata
+		    if (meta.has("fields")) {
+
+			// Remove legacy default fields
+			this.fields.clear();
+
+			// Add fields
+			if (meta.get("fields").isArray()) {
+			    for (JsonNode field : (JsonNode) meta.get("fields")) {
+				this.addField(field.asText());
+			    };
+			}
+			else
+			    this.addField(meta.get("fields").asText());
+		    };
 		};
 	    };
 	}
@@ -284,11 +319,15 @@ public class KorapSearch {
 	return this.itemsPerResource;
     };
 
-    // Get map of fields to lift
+    // Add field to set of fields
+    public KorapSearch addField (String field) {
+	this.fields.add(field);
+	return this;
+    };
+
+    // Get set of fields
     public HashSet<String> getFields () {
-	if (this.fields != null)
-	    return this.fields;
-	return (HashSet<String>) null;
+	return this.fields;
     };
 
     public KorapSearch setCollection (KorapCollection kc) {
