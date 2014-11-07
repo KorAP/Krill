@@ -285,6 +285,14 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "shrink(129: spanElementDistance({129: tokens:s:Namen}, {129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]))");
     };
 
+    @Test
+    public void queryJSONfoundryForOrthBug () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bugs/foundry_for_orth.jsonld").getFile());
+
+	// opennlp/orth:Baum
+	assertEquals(sqwi.toQuery().toString(), "tokens:s:Baum");
+    };
+
 
 
     public static String getString (String path) {

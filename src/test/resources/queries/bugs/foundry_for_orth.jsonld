@@ -1,0 +1,13 @@
+{
+  "@context":"http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+  "query":{
+    "@type" : "korap:token",
+    "wrap" : {
+      "@type" : "korap:term",
+      "foundry" : "opennlp",
+      "key" : "Baum",
+      "layer" : "orth",
+      "match" : "match:eq"
+    }
+  }
+}

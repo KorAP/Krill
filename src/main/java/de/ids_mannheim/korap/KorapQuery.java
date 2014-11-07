@@ -631,6 +631,10 @@ public class KorapQuery {
 	    if (isCaseInsensitive && isTerm && layer.equals("s"))
 		layer = "i";
 
+	    // Ignore foundry for orth layer
+	    if (layer.equals("s"))
+		value.setLength(0);
+
 	    value.append(layer).append(':');
 	};
 
