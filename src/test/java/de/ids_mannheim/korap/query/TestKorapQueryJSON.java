@@ -294,6 +294,19 @@ public class TestKorapQueryJSON {
     };
 
 
+    @Test
+    public void queryJSONunderspecifiedTokenBug () {
+	// ((MORPH(APPR) ODER MORPH(APPRART)) /+w1 Urlaub
+	try {
+	    String json = getString(getClass().getResource("/queries/bugs/underspecified_token.jsonld").getFile());
+	    new KorapQuery("tokens").fromJSON(json);
+	}
+	catch (QueryException e) {
+	    assertEquals(612, e.getErrorCode());
+	};
+    };
+
+
 
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();

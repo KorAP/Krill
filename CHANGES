@@ -10,6 +10,8 @@
 	- [bugfix] Ignore foundry for orth layer (diewald)
 	- [feature] Support fields in meta (diewald)
 	- [sigh] Support more legacy APIs (diewald)
+	- [bugfix] Check for the existence of @type in JSON-LD groups
+	  to avoid NullPointer (diewald)
 
 0.47 2014-11-05
         - [feature] Support new index format with more metadata (diewald)

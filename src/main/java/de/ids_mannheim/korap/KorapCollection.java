@@ -25,12 +25,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 // TODO: Make a cache for the bits!!! DELETE IT IN CASE OF AN EXTENSION OR A FILTER!
-// Todo: Maybe use radomaccessfilterstrategy
+// Todo: Maybe use randomaccessfilterstrategy
 // TODO: Maybe a constantScoreQuery can make things faster?
 
-// accepts as first parameter the index
 // THIS MAY CHANGE for stuff like combining virtual collections
-// See http://mail-archives.apache.org/mod_mbox/lucene-java-user/200805.mbox/%3C17080852.post@talk.nabble.com%3E
+// See http://mail-archives.apache.org/mod_mbox/lucene-java-user/
+//     200805.mbox/%3C17080852.post@talk.nabble.com%3E
 
 public class KorapCollection {
     private KorapIndex index;
@@ -46,12 +46,16 @@ public class KorapCollection {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    // user?
     public KorapCollection (KorapIndex ki) {
 	this.index = ki;
 	this.filter = new ArrayList<FilterOperation>(5);
     };
 
+    /**
+     * Construct a new KorapCollection by passing a JSON query.
+     * This supports collections with key "collection" and
+     * legacy collections with the key "collections".
+     */
     public KorapCollection (String jsonString) {
 	ObjectMapper mapper = new ObjectMapper();
 	this.filter = new ArrayList<FilterOperation>(5);
@@ -79,9 +83,11 @@ public class KorapCollection {
 	};
     };
 
+
     public KorapCollection () {
 	this.filter = new ArrayList<FilterOperation>(5);
     };
+
 
     public void fromJSON (String jsonString) throws QueryException {
 	ObjectMapper mapper = new ObjectMapper();
@@ -93,11 +99,15 @@ public class KorapCollection {
 	};
     };
 
+
     public void fromJSON (JsonNode json) throws QueryException {
 	this.filter(new KorapFilter(json));
     };
 
 
+    /**
+     * Legacy API for collection filters.
+     */
     public void fromJSONLegacy (String jsonString) throws QueryException {
 	ObjectMapper mapper = new ObjectMapper();
 	try {

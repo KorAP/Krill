@@ -436,7 +436,8 @@ public class KorapIndex {
 			  String field,
 			  String type) {
 	// Short cut for documents
-	if (type.equals("documents")) {
+	// This will be only "texts" in the future
+	if (type.equals("documents") || type.equals("base/texts")) {
 	    if (collection.getCount() <= 0) {
 		try {
 		    return (long) this.reader().numDocs();
@@ -462,6 +463,7 @@ public class KorapIndex {
 	};
     
 	// Create search term
+	// This may be prefixed by foundries
 	Term term = new Term(field, "-:" + type);
 
 	long occurrences = 0;

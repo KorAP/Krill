@@ -79,10 +79,11 @@ public class KorapQuery {
 
 	public Boundary (JsonNode json, int defaultMin, int defaultMax) throws QueryException {
 
-	    if (!json.has("@type") ||
-		!json.get("@type").asText().equals("korap:boundary")) {
+	    if (!json.has("@type"))
+		throw new QueryException(612, "JSON-LD group has no @type attribute");
+
+	    if (!json.get("@type").asText().equals("korap:boundary"))
 		throw new QueryException(612, "Boundary definition is not valid");
-	    };
 
 	    // Set min boundary
 	    if (json.has("min"))
@@ -126,9 +127,8 @@ public class KorapQuery {
 
 	int number = 0;
 
-	if (!json.has("@type")) {
+	if (!json.has("@type"))
 	    throw new QueryException(612, "JSON-LD group has no @type attribute");
-	};
 
 	String type = json.get("@type").asText();
 
@@ -278,7 +278,7 @@ public class KorapQuery {
 		    JsonNode firstDistance = json.get("distances").get(0);
 
 		    if (!firstDistance.has("@type"))
-			throw new QueryException(612, "Distances need a defined @type");
+			throw new QueryException(612, "JSON-LD group has no @type attribute");
 
 		    JsonNode distances;
 		    if (firstDistance.get("@type").asText().equals("korap:group"))
@@ -520,6 +520,10 @@ public class KorapQuery {
 
 
     private SpanQueryWrapper _segFromJSON (JsonNode json) throws QueryException {
+
+	if (!json.has("@type"))
+	    throw new QueryException(612, "JSON-LD group has no @type attribute");
+
 	String type = json.get("@type").asText();
 
 	if (DEBUG)
@@ -594,6 +598,9 @@ public class KorapQuery {
 	if (!json.has("key") || json.get("key").asText().length() < 1)
 	    throw new QueryException(612, "Terms and spans have to provide key attributes");
 	    
+	if (!json.has("@type"))
+	    throw new QueryException(612, "JSON-LD group has no @type attribute");
+
 	Boolean isTerm = json.get("@type").asText().equals("korap:term") ? true : false;
 	Boolean isCaseInsensitive = false;
 
