@@ -307,6 +307,13 @@ public class TestKorapQueryJSON {
     };
 
 
+    @Test
+    public void queryJSONrepetitionGroupRewriteBug () throws QueryException {
+	// ([cnx/p="A"][]){2}
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bugs/repetition_group_rewrite.jsonld").getFile());
+
+	assertEquals(sqwi.toQuery().toString(), "spanRepetition(spanExpansion(SpanMultiTermQueryWrapper(tokens:/cnx/p:A/), []{1, 1}, right){2,2})");
+    };
 
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();

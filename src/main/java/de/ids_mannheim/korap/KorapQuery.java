@@ -812,6 +812,11 @@ public class KorapQuery {
 	return ssq;
     };
 
+    // Create an empty segment
+    public SpanRepetitionQueryWrapper empty () {
+	return new SpanRepetitionQueryWrapper();
+    };
+
     // SpanSegmentAlterQueries
     /**
      * Create a segment alternation query object.

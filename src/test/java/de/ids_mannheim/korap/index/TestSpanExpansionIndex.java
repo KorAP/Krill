@@ -1,11 +1,15 @@
 package de.ids_mannheim.korap.index;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
+import org.apache.lucene.util.automaton.RegExp;
+import org.apache.lucene.search.RegexpQuery;
+
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
@@ -13,6 +17,7 @@ import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
+import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
 public class TestSpanExpansionIndex {
 
@@ -248,6 +253,38 @@ public class TestSpanExpansionIndex {
         assertEquals(1, kr.getMatch(4).getStartPos());
         assertEquals(4, kr.getMatch(4).getEndPos());		
 	}
+
+
+    /** 
+     * Query rewrite bug
+     * @throws IOException 
+     * */
+    @Test
+    public void testQueryRewriteBug() throws IOException {
+	KorapIndex ki = new KorapIndex();
+	ki.addDoc(createFieldDoc0()); // same doc
+	ki.addDoc(createFieldDoc1()); // only not clause
+	ki.addDoc(createFieldDoc2()); // only main clause
+	ki.commit();
+
+	// See /queries/bugs/repetition_group_rewrite
+	// spanRepetition(spanExpansion(
+	//     SpanMultiTermQueryWrapper(tokens:/cnx/p:A/), []{1, 1}, right){2,2}
+        // )
+	RegexpQuery requery = new RegexpQuery(new Term("base", "s:[ac]"), RegExp.ALL);
+	SpanMultiTermQueryWrapper<RegexpQuery> query =
+	    new SpanMultiTermQueryWrapper<RegexpQuery>( requery );
+	SpanExpansionQuery seq  = new SpanExpansionQuery(query, 1, 1, 1, true);		
+	SpanRepetitionQuery rep = new SpanRepetitionQuery(seq, 2, 2, true);
+	
+	try {
+	    ki.search(rep, (short) 20);
+	}
+	catch (Exception e) {
+	    fail(e.getMessage());
+	};
+    };
+
 	
 	private FieldDocument createFieldDoc0(){
     	FieldDocument fd = new FieldDocument();
