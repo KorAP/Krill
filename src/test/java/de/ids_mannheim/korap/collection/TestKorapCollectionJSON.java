@@ -46,6 +46,15 @@ public class TestKorapCollectionJSON {
 	assertEquals(kc.toString(), "filter with QueryWrapperFilter(+(pubDate:[19900000 TO 99999999] title:Mannheim)); ");
     };
 
+
+    @Ignore
+    public void noCollection () {
+	String metaQuery = _getJSONString("no_collection.jsonld");
+	// TODO!!!
+	// Use KorapSearch and test
+    };
+
+
     private String _getJSONString (String file) {
 	return getString(getClass().getResource(path + file).getFile());
     };

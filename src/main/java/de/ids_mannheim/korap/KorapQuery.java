@@ -173,7 +173,7 @@ public class KorapQuery {
 		    throw new QueryException(612, "Position needs exactly two operands");
 
 		// TODO: Check for operands
-
+		// TODO: LEGACY and not future proof
 		String frame = json.has("frame") ?
 		    json.get("frame").asText() :
 		    "frame:contains";
@@ -281,33 +281,34 @@ public class KorapQuery {
 			throw new QueryException(612, "JSON-LD group has no @type attribute");
 
 		    JsonNode distances;
-		    if (firstDistance.get("@type").asText().equals("korap:group"))
+		    if (firstDistance.get("@type").asText().equals("korap:group")) {
+			if (!firstDistance.has("operands") ||
+			    !firstDistance.get("operands").isArray())
+			    throw new QueryException(612, "Groups need operands");
+
 			distances = firstDistance.get("operands");
+		    }
 
 		    // Support korap distances
-		    else if (firstDistance.get("@type").asText().equals("korap:distance"))
-			distances = json.get("distances");
-
 		    // Support cosmas distances
-		    else if (firstDistance.get("@type").asText().equals("cosmas:distance"))
+		    else if (
+			     firstDistance.get("@type").asText().equals("korap:distance")
+			     ||
+			     firstDistance.get("@type").asText().equals("cosmas:distance")) {
+
 			distances = json.get("distances");
+		    }
 
 		    else
 			throw new QueryException(612, "No valid distances defined");
 
+		    // Add all distance constraint to query
 		    for (JsonNode constraint : distances) {
 			String unit = "w";
 			if (constraint.has("key"))
 			    unit = constraint.get("key").asText();
 
-			/*
-			if (unit.equals("t"))
-			    throw new QueryException(
-				613,
-			        "Text based distances are not supported yet"
-                            );
-			*/
-
+			// There is a maximum of 100 fix
 			int min = 0, max = 100;
 			if (constraint.has("boundary")) {
 			    Boundary b = new Boundary(constraint.get("boundary"), 0,100);
@@ -406,6 +407,13 @@ public class KorapQuery {
 
 	    case "operation:repetition":
 
+		if (operands.size() != 1)
+		    throw new QueryException(
+		        612,
+			"Class group expects exactly one operand in list"
+		    );
+
+
 		int min = 0;
 		int max = 100;
 
@@ -463,17 +471,21 @@ public class KorapQuery {
 					 json.get("operation").asText() +
 					 " not supported yet");
 
+	    if (!json.has("operands"))
+		throw new QueryException(
+		    613, "Peripheral references are not supported yet"
+                );
+
 	    operands = json.get("operands");
 
-	    if (operands.size() == 0) {
-		throw new QueryException(
-		    613, "Focus with peripheral references is not supported yet"
-                );
-	    };
+	    if (!operands.isArray())
+		throw new QueryException(612, "Operation needs operand list");
+
+	    if (operands.size() == 0)
+		throw new QueryException(612, "Operation needs operand list");
 
 	    if (operands.size() != 1)
 		throw new QueryException(612, "Operation needs exactly two operands");
-
 
 	    if (json.has("classRef")) {
 		if (json.has("classRefOp")) {
@@ -486,8 +498,10 @@ public class KorapQuery {
 		number = json.get("classRef").get(0).asInt();
 
 		if (number > MAX_CLASS_NUM)
-		    throw new QueryException(613, "Class numbers limited to " + MAX_CLASS_NUM);
-
+		    throw new QueryException(
+                        613,
+			"Class numbers limited to " + MAX_CLASS_NUM
+                    );
 	    }
 	    else if (json.has("spanRef")) {
 		throw new QueryException(613, "Span references not supported yet");
@@ -553,17 +567,20 @@ public class KorapQuery {
 	case "korap:termGroup":
 
 	    if (!json.has("operands"))
-		throw new QueryException(612, "termGroup expects operands");
+		throw new QueryException(612, "Term group expects operands");
+
+	    // Get operands
+	    JsonNode operands = json.get("operands");
 
 	    SpanSegmentQueryWrapper ssegqw = this.seg();
 
 	    if (!json.has("relation"))
-		throw new QueryException(612, "termGroup expects a relation");
+		throw new QueryException(612, "Term group expects a relation");
 
 	    switch (json.get("relation").asText()) {
 	    case "relation:and":
 
-		for (JsonNode operand : json.get("operands")) {
+		for (JsonNode operand : operands) {
 		    SpanQueryWrapper part = this._segFromJSON(operand);
 		    if (part instanceof SpanAlterQueryWrapper) {
 			ssegqw.with((SpanAlterQueryWrapper) part);			
@@ -583,8 +600,9 @@ public class KorapQuery {
 		return ssegqw;
 
 	    case "relation:or":
+
 		SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
-		for (JsonNode operand : json.get("operands")) {
+		for (JsonNode operand : operands) {
 		    ssaq.or(this._segFromJSON(operand));
 		};
 		return ssaq;
@@ -635,8 +653,14 @@ public class KorapQuery {
 		break;
 	    };
 
-	    if (isCaseInsensitive && isTerm && layer.equals("s"))
-		layer = "i";
+	    if (isCaseInsensitive && isTerm) {
+		if (layer.equals("s")) {
+		    layer = "i";
+		}
+		else {
+		    this.addWarning("Layer does not support case insensitivity");
+		};
+	    };
 
 	    // Ignore foundry for orth layer
 	    if (layer.equals("s"))

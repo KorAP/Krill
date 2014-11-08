@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 
 /*
 
+  TODO: Validate document import!
+
   TODO: DON'T STORE THE TEXT IN THE TOKENS FIELD!
         It has only to be lifted for match views!!!
 

@@ -26,56 +26,6 @@ import org.slf4j.LoggerFactory;
  * KorapFilter implements a simple API for creating meta queries
  * constituing Virtual Collections.
  */
-
-/*
-Suche XYZ in allen Documenten in den Foundries "Treetagger" und "MATE", die entweder den Texttyp "sports" oder den Texttyp "news" haben, bis höchsten 2009 publiziert wurden und deren Autor auf den regulären Ausdruck "Peter .+?" matcht.
-
-textClass
-ID
-title
-subTitle
-author
-corpusID
-pubDate
-pubPlace
-
-Query: (corpusID=BRZ13 | corpusID=WPD) & textClass=wissenschaft
-
-{
-    "@type": "korap:filter",
-    "filter": {
-        "@type": "korap:docGroup",
-        "relation": "relation:and",
-        "operands": [
-            {
-                "@type": "korap:docGroup",
-                "relation": "relation:or",
-                "operands": [
-                    {
-                        "@type": "korap:doc",
-                        "key": "corpusID",
-                        "value": "BRZ13",
-                        "match": "match:eq"
-                    },
-                    {
-                        "@type": "korap:doc",
-                        "key": "corpusID",
-                        "value": "WPD",
-                        "match": "match:eq"
-                    }
-                ]
-            },
-            {
-                "@type": "korap:doc",
-                "key": "textClass",
-                "value": "wissenschaft",
-                "match": "match:eq"
-            }
-        ]
-    }
-}
-*/
-
 public class KorapFilter {
     private BooleanFilter filter;
 
@@ -95,6 +45,13 @@ public class KorapFilter {
 
     protected BooleanFilter fromJSON (JsonNode json, String field) throws QueryException {
 	BooleanFilter bfilter = new BooleanFilter();
+
+	/*
+	  TODO: THIS UNFORTUNATELY BREAKS TESTS
+	if (!json.has("@type"))
+	    throw new QueryException(612, "JSON-LD group has no @type attribute");
+	*/
+
 	String type = json.get("@type").asText();
 
 	// Single filter
@@ -112,6 +69,10 @@ public class KorapFilter {
 
 	    // Filter based on date
 	    if (valtype.equals("type:date")) {
+
+		if (!json.has("value"))
+		    throw new QueryException(612, "Dates require value fields");
+
 		String dateStr = json.get("value").asText();
 		if (json.has("match"))
 		    match = json.get("match").asText();
@@ -146,6 +107,9 @@ public class KorapFilter {
 
 	// nested group
 	else if (type.equals("korap:docGroup")) {
+	    if (!json.has("operands") || !json.get("operands").isArray())
+		throw new QueryException(612, "Groups need operands");
+
 	    String operation = "operation:and";
 	    if (json.has("operation"))
 		operation = json.get("operation").asText();
@@ -160,7 +124,7 @@ public class KorapFilter {
 		    group.or(this.fromJSON(operand, field));
 		}
 		else {
-		    throw new QueryException(613, "Unknown docGroup operation");
+		    throw new QueryException(613, "Unknown document group operation");
 		};
 	    };
 	    bfilter.and(group);
@@ -193,6 +157,9 @@ public class KorapFilter {
     
     protected BooleanFilter fromJSONLegacy (JsonNode json, String field) throws QueryException {
 	BooleanFilter bfilter = new BooleanFilter();
+
+	if (!json.has("@type"))
+	    throw new QueryException(612, "JSON-LD group has no @type attribute");
 	
 	String type = json.get("@type").asText();
 
@@ -208,13 +175,22 @@ public class KorapFilter {
 	    return bfilter;
 	}
 	else if (type.equals("korap:group")) {
-	    if (!json.has("relation") || !json.has("operands"))
-		return bfilter;
+	    if (!json.has("relation"))
+		throw new QueryException(612, "Group needs relation");
+
+	    if (!json.has("operands"))
+		throw new QueryException(612, "Group needs operand list");
+
+		//return bfilter;
 
 	    String dateStr, till;
+	    JsonNode operands = json.get("operands");
+
+	    if (!operands.isArray())
+		throw new QueryException(612, "Group needs operand list");
 
 	    if (DEBUG)
-		log.trace("relation: " + json.get("relation").asText());
+		log.trace("relation found {}",  json.get("relation").asText());
 
 	    BooleanFilter group = new BooleanFilter();
 	    
@@ -245,31 +221,34 @@ public class KorapFilter {
 		break;
 
 	    case "and":
-		for (JsonNode operand : json.get("operands")) {
+		if (operands.size() < 1)
+		    throw new QueryException(612, "Operation needs at least two operands");
+
+		for (JsonNode operand : operands) {
 		    group.and(this.fromJSONLegacy(operand, field));
 		};
 		bfilter.and(group);
 		break;
 
 	    case "or":
-		for (JsonNode operand : json.get("operands")) {
+		if (operands.size() < 1)
+		    throw new QueryException(612, "Operation needs at least two operands");
+
+		for (JsonNode operand : operands) {
 		    group.or(this.fromJSONLegacy(operand, field));
 		};
 		bfilter.and(group);
 		break;
 
 	    default:
-		throw new QueryException(
-		    json.get("relation").asText() + " is not a supported relation"
-	        );
+		throw new QueryException(613, "Relation is not supported");
 	    };
 	}
 	else {
-	    throw new QueryException(type + " is not a supported group");
+	    throw new QueryException(613, "Filter type is not a supported group");
 	};
 	return bfilter;
     };
-    
 
     private static String  _getFieldLegacy (JsonNode json)  {
 	if (!json.has("@field"))
@@ -287,6 +266,10 @@ public class KorapFilter {
 	    return (String) null;
 
 	JsonNode date = json.get("operands").get(index);
+
+	if (!date.has("@type"))
+	    return (String) null;
+
 	if (!date.get("@type").asText().equals("korap:date"))
 	    return (String) null;
 

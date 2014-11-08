@@ -114,7 +114,7 @@ public class KorapSearch {
 
 	    
 	    // virtual collections
-	    if (this.request.has("collections") ||
+	    if (this.request.has("collection") ||
 		// Legacy collections
 		this.request.has("collections"))
 		this.setCollection(new KorapCollection(jsonString));

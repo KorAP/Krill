@@ -123,6 +123,12 @@ public class KorapCollection {
      * Legacy API for collection filters.
      */
     public void fromJSONLegacy (JsonNode json) throws QueryException {
+	if (!json.has("@type"))
+	    throw new QueryException(612, "JSON-LD group has no @type attribute");
+
+	if (!json.has("@value"))
+	    throw new QueryException(612, "Legacy filter need @value fields");
+
 	String type = json.get("@type").asText();
 
 	KorapFilter kf = new KorapFilter();

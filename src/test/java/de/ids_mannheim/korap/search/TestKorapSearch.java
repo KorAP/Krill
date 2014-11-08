@@ -763,6 +763,7 @@ public class TestKorapSearch {
         );
 	
 	KorapSearch ks = new KorapSearch(json);
+
 	KorapResult kr = ks.run(ki);
 	assertEquals(
             kr.getQuery(),

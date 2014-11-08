@@ -12,6 +12,8 @@
 	- [sigh] Support more legacy APIs (diewald)
 	- [bugfix] Check for the existence of @type in JSON-LD groups
 	  to avoid NullPointer (diewald)
+	- [cleanup] Validated query and collection input - limited
+	  to a "don't break anyting" policy (diewald)
 
 0.47 2014-11-05
         - [feature] Support new index format with more metadata (diewald)
