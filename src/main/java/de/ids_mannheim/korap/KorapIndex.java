@@ -212,6 +212,7 @@ public class KorapIndex {
 
 	// Failed to open reader
 	catch (IOException e) {
+		//e.printStackTrace();
 	    log.warn( e.getLocalizedMessage() );
 	};
     };
@@ -1103,8 +1104,8 @@ public class KorapIndex {
 	try {
 
 	    // Rewrite query (for regex and wildcard queries)
-	    for (Query rewrittenQuery = query.rewrite(this.reader());
-                 rewrittenQuery != (Query) query;
+	    for ( Query rewrittenQuery = query.rewrite(this.reader());
+                 !rewrittenQuery.equals(query);
                  rewrittenQuery = query.rewrite(this.reader())) {
 		query = (SpanQuery) rewrittenQuery;
 	    };

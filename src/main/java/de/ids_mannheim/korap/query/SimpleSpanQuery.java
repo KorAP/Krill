@@ -164,6 +164,47 @@ public abstract class SimpleSpanQuery extends SpanQuery
 		return clone;
 	}
 	
+    /** Used in rewriting query
+     * */
+	@Override
+    public boolean equals (Object o) {
+		if (this == o) return true;
+		if (getClass() != o.getClass()) return false;
+		
+		final SimpleSpanQuery q = (SimpleSpanQuery) o;
+		if (collectPayloads != q.collectPayloads) return false;
+		if (!firstClause.equals(q.firstClause)) return false;
+		if (secondClause != null && 
+				!secondClause.equals(q.secondClause)){ 
+			return false;
+		}
+		else if (clauseList != null){
+			for (int i=0; i < clauseList.size(); i++){
+				SpanQuery query = (SpanQuery) clauseList.get(i);
+				if (!query.equals(q.getClauseList().get(i))) {
+					return false;
+				}
+			}
+		}
+	
+		return true;
+    };
+    
+    public int hashCode() {
+    	int hc = firstClause.hashCode();    	
+    	if (secondClause != null){
+    		hc += secondClause.hashCode();
+    	}    		
+    	else if (clauseList != null){
+    		for (int i=0; i < clauseList.size(); i++){
+				hc += clauseList.get(i).hashCode();
+			}
+    	}
+    	hc ^= (hc << 31) | (hc >>> 3);
+    	hc += Float.floatToRawIntBits(getBoost());
+    	return hc;
+    };
+	
 	public abstract SimpleSpanQuery clone();	
 	
 }
