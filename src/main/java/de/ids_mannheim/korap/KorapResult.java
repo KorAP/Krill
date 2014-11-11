@@ -47,6 +47,8 @@ public class KorapResult extends KorapResponse {
 
     private JsonNode request;
 
+    private boolean timeExceeded = false;
+
     // Logger
     // This is KorapMatch instead of KorapResult!
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
@@ -186,6 +188,14 @@ public class KorapResult extends KorapResponse {
     @JsonIgnore
     public short getItemsPerResource () {
 	return this.itemsPerResource;
+    };
+
+    public void setTimeExceeded (boolean timeout) {
+	this.timeExceeded = timeout;
+    };
+
+    public boolean getTimeExceeded () {
+	return this.timeExceeded;
     };
 
     public String getQuery () {

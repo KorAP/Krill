@@ -27,7 +27,8 @@ import com.fasterxml.jackson.databind.JsonNode;
  * KorapSearch implements an object for all search relevant parameters.
  */
 public class KorapSearch {
-    private int startIndex = 0, limit = 0;
+    private int startIndex = 0,
+	        limit = 0;
     private short count = 25,
 	          countMax = 50;
     private boolean cutOff = false;
@@ -35,8 +36,10 @@ public class KorapSearch {
     private SpanQuery query;
     private KorapCollection collection;
     private KorapIndex index;
-    private String error;
-    private String warning;
+    private String error, warning;
+
+    // Timeout search after milliseconds
+    private long timeout = (long) 120_000;
 
     private HashSet<String> fields;
 
@@ -44,6 +47,9 @@ public class KorapSearch {
 
     public SearchContext context;
     private String spanContext;
+
+    private long timeoutStart = Long.MIN_VALUE;
+
 
     {
 	context  = new SearchContext();
@@ -144,6 +150,10 @@ public class KorapSearch {
 			this.context.fromJSON(meta.get("context"));
 
 		    // Defined resource count
+		    if (meta.has("timeout"))
+			this.setTimeOut(meta.get("timeout").asLong());
+
+		    // Defined resource count
 		    if (meta.has("itemsPerResource"))
 			this.setItemsPerResource(meta.get("itemsPerResource").asInt());
 
@@ -188,6 +198,14 @@ public class KorapSearch {
 
     // Empty constructor
     public KorapSearch () { };
+
+    public long getTimeOut () {
+	return this.timeout;
+    };
+
+    public void setTimeOut (long timeout) {
+	this.timeout = timeout;
+    };
 
     public String getError () {
 	return this.error;

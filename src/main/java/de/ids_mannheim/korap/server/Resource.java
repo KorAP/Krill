@@ -129,11 +129,9 @@ public class Resource {
 	    return kresp.setError(601, "Unable to find index").toJSON();
 
 	String ID = "Unknown";
-	boolean unstaged = false;
 	try {
 	    FieldDocument fd = index.addDoc(uid, json);
 	    ID = fd.getID();
-	    unstaged = index.getUnstaged();
 	}
 	// Set HTTP to ???
 	catch (IOException e) {
@@ -144,7 +142,6 @@ public class Resource {
 	// Set HTTP to 200
 	return kresp.
 	    setMsg("Text \"" + ID + "\" was added successfully")
-	    .setUnstaged(unstaged)
 	    .toJSON();
     };
 
@@ -178,7 +175,7 @@ public class Resource {
 	};
 
 	// Set HTTP to ???
-	return kresp.setMsg("Unstaged data was committed").toJSON();
+	return kresp.toJSON();
     };
 
 

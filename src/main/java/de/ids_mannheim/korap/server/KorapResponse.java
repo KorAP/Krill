@@ -18,7 +18,6 @@ public class KorapResponse {
 
     private String errstr, msg, version, node, listener;
     private int err;
-    private boolean unstaged;
     private int totalResults;
     private long totalTexts;
     private String benchmark;
@@ -89,15 +88,6 @@ public class KorapResponse {
 	return this;
     };
 
-    public boolean getUnstaged () {
-	return this.unstaged;
-    };
-
-    public KorapResponse setUnstaged (boolean unstaged) {
-	this.unstaged = unstaged;
-	return this;
-    };
-
     public KorapResponse setTotalTexts (long i) {
         this.totalTexts = i;
 	return this;
@@ -106,8 +96,6 @@ public class KorapResponse {
     public long getTotalTexts() {
         return this.totalTexts;
     };
-
-
 
     public KorapResponse setTotalResults (int i) {
         this.totalResults = i;

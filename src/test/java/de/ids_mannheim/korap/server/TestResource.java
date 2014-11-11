@@ -80,14 +80,12 @@ public class TestResource {
 
 	    assertEquals(kresp.getNode(), "milena");
 	    assertEquals(kresp.getErr(), 0);
-	    assertEquals(kresp.getUnstaged(), true);
 	};
 
 	KorapResponse kresp = target.path("/index").
 	    request("application/json").
 	    post(Entity.text(""), KorapResponse.class);
 	assertEquals(kresp.getNode(), "milena");
-	assertEquals(kresp.getMsg(), "Unstaged data was committed");	
     };
 
     @Test

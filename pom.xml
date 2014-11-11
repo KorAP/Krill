@@ -7,7 +7,7 @@
       install the indexer and the performancetests
       $ mvn clean compile assembly:single
       Then run e.g.
-      $ java -jar target/KorAP-lucene-index-???-jar-with-dependencies.jar src/main/resources/korap.conf /data/hdd/lucene-new/WPD/
+      $ java -jar target/KorAP-lucene-index-X.XX.jar src/main/resources/korap.conf /data/hdd/lucene-new/WPD/
 
       ** Server
       Start the server with
@@ -234,6 +234,7 @@
           <excludes>
             <exclude>**/benchmark/*</exclude>
             <exclude>**/TestWPDIndex.java</exclude>
+            <exclude>**/TestRealIndex.java</exclude>
 	  </excludes>
         </configuration>
       </plugin> 

@@ -347,18 +347,6 @@ public class KorapIndex {
 	this.closeReader();
     };
 
-    // Return the number of unstaged texts
-    public boolean getUnstaged () throws IOException {
-	if (commitCounter > 0)
-	    return true;
-
-	// Open writer if not already opened
-	if (this.writer == null)
-	    this.writer = new IndexWriter(this.directory, this.config);
-	
-	return this.writer.hasUncommittedChanges();
-    };
-
     // Get autoCommit valiue
     public int autoCommit () {
 	return this.autoCommit;
@@ -1046,7 +1034,10 @@ public class KorapIndex {
 	return this.search(ks);
     };
 
-    // To be honest - the collection is already part of the KorapSearch! 
+
+    /**
+     * Search the endpoint.
+     */
     public KorapResult search (KorapSearch ks) {
 	if (DEBUG)
 	    log.trace("Start search");
@@ -1101,6 +1092,14 @@ public class KorapIndex {
 	// Collect matches from atomic readers
 	ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.itemsPerPage());
 
+	// Start time out thread
+	TimeOutThread tthread = new TimeOutThread();
+	tthread.start();
+	long timeout = ks.getTimeOut();
+
+	// See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
+	long t1 = System.nanoTime();
+
 	try {
 
 	    // Rewrite query (for regex and wildcard queries)
@@ -1110,9 +1109,7 @@ public class KorapIndex {
 		query = (SpanQuery) rewrittenQuery;
 	    };
 
-	    // See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
-	    long t1 = System.nanoTime();
-
+	    // Todo: run this in a separated thread
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
 
 		int oldLocalDocID = -1;
@@ -1130,8 +1127,7 @@ public class KorapIndex {
 
 		IndexReader lreader = atomic.reader();
 
-		// TODO: Get document information from Cache!
-
+		// TODO: Get document information from Cache! Fieldcache?
 		for (; i < hits;i++) {
 
 		    if (DEBUG)
@@ -1140,6 +1136,12 @@ public class KorapIndex {
 		    // There are no more spans to find
 		    if (!spans.next())
 			break;
+
+		    // Timeout!
+		    if (tthread.getTime() > timeout) {
+			kr.setTimeExceeded(true);
+			break;
+		    };
 
 		    int localDocID = spans.doc();
 
@@ -1204,6 +1206,12 @@ public class KorapIndex {
 		    if (limit > 0 && i >= limit)
 			break;
 
+		    // Timeout!
+		    if (tthread.getTime() > timeout) {
+			kr.setTimeExceeded(true);
+			break;
+		    };
+
 		    // Count hits per resource
 		    if (itemsPerResource > 0) {
 			int localDocID = spans.doc();
@@ -1237,8 +1245,6 @@ public class KorapIndex {
 		atomicMatches.clear();
 	    };
 
-	    kr.setBenchmark(t1, System.nanoTime());
-
 	    if (itemsPerResource > 0)
 		kr.setItemsPerResource(itemsPerResource);
 
@@ -1248,6 +1254,12 @@ public class KorapIndex {
 	    kr.setError(600, e.getLocalizedMessage());
 	    log.warn( e.getLocalizedMessage() );
 	};
+
+	// Stop timer thread
+	tthread.stopTimer();
+
+	// Calculate time
+	kr.setBenchmark(t1, System.nanoTime());
 
 	return kr;
     };
@@ -1274,7 +1286,7 @@ public class KorapIndex {
 	// See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
 	long t1 = System.nanoTime();
 
-	// Only load UID
+	// Only load UIDs
 	HashSet<String> fields = new HashSet<>(1);
 	fields.add("UID");
 
@@ -1293,6 +1305,7 @@ public class KorapIndex {
 	    String uniqueDocIDString;;
 	    int uniqueDocID = -1;
 
+	    // start thread:
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
 
 		int previousDocID = -1;
@@ -1348,6 +1361,7 @@ public class KorapIndex {
 		    matchcount = 0;
 		};
 	    };
+	    // end thread
 
 	    // Benchmark the collector
 	    mc.setBenchmark(t1, System.nanoTime());
