@@ -324,6 +324,15 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "spanRepetition(spanExpansion(SpanMultiTermQueryWrapper(tokens:/cnx/p:A/), []{1, 1}, right){2,2})");
     };
 
+    @Test
+    public void queryJSONoverlapsFrameWorkaround () throws QueryException {
+	// overlaps(<s>,[tt/p=CARD][tt/p="N.*"])
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bugs/overlaps_frame_workaround.jsonld").getFile());
+
+	assertEquals(sqwi.toQuery().toString(), "spanOverlap(<tokens:s />, spanNext(tokens:tt/p:CARD, SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/)))");
+    };
+
+
     public static String getString (String path) {
 	StringBuilder contentBuilder = new StringBuilder();
 	try {

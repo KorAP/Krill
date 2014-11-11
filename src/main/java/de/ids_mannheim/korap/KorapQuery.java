@@ -205,6 +205,16 @@ public class KorapQuery {
 		case "frame:strictlyOverlaps":
 		    flag = REAL_OVERLAP;
 		    break;
+		case "":
+		    // Temporary workaround for wrongly set overlaps
+		    if (json.has("frames")) {
+			frame = json.get("frames").get(0).asText();
+			if (frame.equals("frames:overlapsLeft") ||
+			    frame.equals("frames:overlapsRight")) {
+			    flag = OVERLAP;
+			    break;
+			};
+		    };
 		default:
 		    throw new QueryException(613, "Frame type unknown");
 		};

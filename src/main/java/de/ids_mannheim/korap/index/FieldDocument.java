@@ -332,7 +332,7 @@ public class FieldDocument extends KorapDocument {
     @Override
     public void setTextColumn (String textColumn) {
 	super.setTextColumn(textColumn);
-	this.addStored("textColumn", textColumn);
+	this.addString("textColumn", textColumn);
     };
 
     @Override
