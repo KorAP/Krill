@@ -663,7 +663,7 @@ public class KorapQuery {
 	    };
 
 	    // Ignore foundry for orth layer
-	    if (layer.equals("s"))
+	    if (layer.equals("s") || layer.equals("i"))
 		value.setLength(0);
 
 	    value.append(layer).append(':');

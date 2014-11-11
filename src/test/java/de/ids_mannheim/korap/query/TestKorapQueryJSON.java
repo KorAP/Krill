@@ -293,6 +293,15 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "tokens:s:Baum");
     };
 
+    @Test
+    public void queryJSONfoundryForOrthBug2 () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bugs/foundry_for_orth_2.jsonld").getFile());
+
+	// baum/i
+	assertEquals(sqwi.toQuery().toString(), "tokens:i:baum");
+    };
+
+
 
     @Test
     public void queryJSONunderspecifiedTokenBug () {
