@@ -1103,11 +1103,15 @@ public class KorapIndex {
 	try {
 
 	    // Rewrite query (for regex and wildcard queries)
+	    // Revise!
+	    // Based on core/src/java/org/apache/lucene/search/IndexSearcher.java
+	    // and highlighter/src/java/org/apache/lucene/search/postingshighlight/PostingsHighlighter.java
 	    for ( Query rewrittenQuery = query.rewrite(this.reader());
                  !rewrittenQuery.equals(query);
                  rewrittenQuery = query.rewrite(this.reader())) {
 		query = (SpanQuery) rewrittenQuery;
 	    };
+	    
 
 	    // Todo: run this in a separated thread
 	    for (AtomicReaderContext atomic : this.reader().leaves()) {
