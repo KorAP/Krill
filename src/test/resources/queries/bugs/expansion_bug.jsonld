@@ -1,0 +1,62 @@
+{
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+  "query" : {
+    "@type" : "korap:group",
+    "operands" : [
+      {
+        "@type" : "korap:token",
+        "wrap" : {
+          "@type" : "korap:term",
+          "foundry" : "opennlp",
+          "key" : "der",
+          "layer" : "orth",
+          "match" : "match:eq"
+        }
+      },
+      {
+        "@type" : "korap:token",
+        "wrap" : {
+          "@type" : "korap:term",
+          "foundry" : "opennlp",
+          "key" : "alte",
+          "layer" : "orth",
+          "match" : "match:eq"
+        }
+      },
+      {
+        "@type" : "korap:token",
+        "wrap" : {
+          "@type" : "korap:term",
+          "foundry" : "opennlp",
+          "key" : "Digraph",
+          "layer" : "orth",
+          "match" : "match:eq"
+        }
+      },
+      {
+        "@type" : "korap:token",
+        "wrap" : {
+          "@type" : "korap:term",
+          "foundry" : "opennlp",
+          "key" : "Aa",
+          "layer" : "orth",
+          "match" : "match:eq"
+        }
+      },
+      {
+        "@type" : "korap:token",
+        "wrap" : {
+          "@type" : "korap:term",
+          "foundry" : "opennlp",
+          "key" : "durch",
+          "layer" : "orth",
+          "match" : "match:eq"
+        }
+      },
+      {
+        "@type" : "korap:token"
+      }
+    ],
+    "operation" : "operation:sequence"
+  }
+}
