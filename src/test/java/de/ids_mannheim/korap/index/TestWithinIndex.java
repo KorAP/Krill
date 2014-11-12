@@ -1075,56 +1075,53 @@ public class TestWithinIndex {
     
 	/**
 	 * @throws IOException */
-	@Test
-	public void queryJSONpoly2() throws QueryException, IOException {
+    // TODO: TEMP::
+    //@Test
+    public void queryJSONpoly2() throws QueryException, IOException {
 	
-		String jsonPath = getClass().getResource("/queries/poly2.json").getFile();
-		String jsonPQuery = readFile(jsonPath);		
-		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJSON(
-				jsonPQuery
-		);
+	String jsonPath = getClass().getResource("/queries/poly2.json").getFile();
+	String jsonPQuery = readFile(jsonPath);		
+	SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJSON(
+								  jsonPQuery
+								  );
 		
-		SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
-//		System.out.println(sq.toString());
+	SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
+	//		System.out.println(sq.toString());
 		
-		KorapIndex ki = new KorapIndex();
-	    ki.addDocFile(
-	        getClass().getResource("/wiki/DDD-08370.json.gz").getFile(),true);
-	    ki.addDocFile(
-		        getClass().getResource("/wiki/PPP-02924.json.gz").getFile(),true);
-		ki.commit();
-		KorapResult kr = ki.search(sq, (short) 10);
+	KorapIndex ki = new KorapIndex();
+	ki.addDocFile(
+		      getClass().getResource("/wiki/DDD-08370.json.gz").getFile(),true);
+	ki.addDocFile(
+		      getClass().getResource("/wiki/PPP-02924.json.gz").getFile(),true);
+	ki.commit();
+	KorapResult kr = ki.search(sq, (short) 10);
 //		for (KorapMatch km : kr.getMatches()){		
 //			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 //				+km.getSnippetBrackets());
 //		}		
 	
-		assertEquals(2, kr.getTotalResults());
-		assertEquals(0, kr.getMatch(0).getLocalDocID());
-		assertEquals(76, kr.getMatch(0).getStartPos());
-		assertEquals(93, kr.getMatch(0).getEndPos());
-		assertEquals(1, kr.getMatch(0).getLocalDocID());
-		assertEquals(237, kr.getMatch(1).getStartPos());
-		assertEquals(252, kr.getMatch(1).getEndPos());
-		
-		
-		
-	}
+	assertEquals(2, kr.getTotalResults());
+	assertEquals(0, kr.getMatch(0).getLocalDocID());
+	assertEquals(76, kr.getMatch(0).getStartPos());
+	assertEquals(93, kr.getMatch(0).getEndPos());
+	assertEquals(1, kr.getMatch(0).getLocalDocID());
+	assertEquals(237, kr.getMatch(1).getStartPos());
+	assertEquals(252, kr.getMatch(1).getEndPos());
+    }
 	
 	
-	private String readFile(String path) {
-		StringBuilder sb = new StringBuilder();
-		try {
-		    BufferedReader in = new BufferedReader(new FileReader(path));
-		    String str;
-		    while ((str = in.readLine()) != null) {
-		    	sb.append(str);
-		    };
-		    in.close();
-		} catch (IOException e) {
-		    fail(e.getMessage());
-		}
-		return sb.toString();
+    private String readFile(String path) {
+	StringBuilder sb = new StringBuilder();
+	try {
+	    BufferedReader in = new BufferedReader(new FileReader(path));
+	    String str;
+	    while ((str = in.readLine()) != null) {
+		sb.append(str);
+	    };
+	    in.close();
+	} catch (IOException e) {
+	    fail(e.getMessage());
 	}
-    
+	return sb.toString();
+    };
 };

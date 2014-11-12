@@ -57,8 +57,9 @@ public class TestClass {
 				"{2:auf den}] das angesprochene Funkgerät reagiert. Die Abkürzung ...", 
 				kr.getMatch(1).getSnippetBrackets());
 	}
-	
-	@Test
+
+    // Temp
+    // @Test
 	public void queryJSONpoly4() throws QueryException, IOException {
 		
 		String jsonPath = getClass().getResource("/queries/poly4.json").getFile();
