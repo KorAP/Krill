@@ -58,8 +58,7 @@ public class TestClass {
 				kr.getMatch(1).getSnippetBrackets());
 	}
 
-    // Temp
-    // @Test
+    @Test
 	public void queryJSONpoly4() throws QueryException, IOException {
 		
 		String jsonPath = getClass().getResource("/queries/poly4.json").getFile();
@@ -68,24 +67,27 @@ public class TestClass {
 				jsonQuery
 		);
 		SpanQuery sq = sqwi.toQuery();
+		/*
 		System.out.println(sq.toString());
-		
+		*/
+
 		ki = new KorapIndex();
 	    ki.addDocFile(
 	    	getClass().getResource("/wiki/SSS-09803.json.gz").getFile(),true);
 	    
 	    ki.commit();
 		kr = ki.search(sq, (short) 10);
-		
-		assertEquals(827, kr.getTotalResults());
-		assertEquals(3, kr.getMatch(0).getStartPos());
-		assertEquals(5, kr.getMatch(0).getEndPos());
-		
+		/*		
 		for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 					+km.getSnippetBrackets()
 			);
 		}
+		assertEquals(827, kr.getTotalResults());
+		assertEquals(3, kr.getMatch(0).getStartPos());
+		assertEquals(5, kr.getMatch(0).getEndPos());
+		*/
+		fail("Tests have to be updated");
 	}
 	
 	

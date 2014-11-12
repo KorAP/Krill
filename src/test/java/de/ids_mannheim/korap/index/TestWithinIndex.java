@@ -1075,8 +1075,7 @@ public class TestWithinIndex {
     
 	/**
 	 * @throws IOException */
-    // TODO: TEMP::
-    //@Test
+    @Test
     public void queryJSONpoly2() throws QueryException, IOException {
 	
 	String jsonPath = getClass().getResource("/queries/poly2.json").getFile();

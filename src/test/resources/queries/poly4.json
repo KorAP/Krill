@@ -49,8 +49,8 @@
                         "@type" : "korap:token",
                         "wrap" : {
                            "@type" : "korap:term",
-                           "foundry" : "cnx",
-                           "key" : "N",
+                           "foundry" : "tt",
+                           "key" : "NN",
                            "layer" : "p",
                            "match" : "match:eq"
                         }
