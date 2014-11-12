@@ -958,7 +958,10 @@ public class TestKorapSearch {
         );
 
 	KorapResult kr = new KorapSearch(json).run(ki);
-	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist [der alte Digraph Aa durch Å] ersetzt worden, in Eigennamen und Ortsnamen ...", kr.getMatch(0).getSnippetBrackets());
+	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
+		     "[der alte Digraph Aa durch Å] ersetzt worden, " +
+		     "in Eigennamen und Ortsnamen ...",
+		     kr.getMatch(0).getSnippetBrackets());
 	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
 	assertEquals(1, kr.getTotalResults());
 
@@ -969,7 +972,10 @@ public class TestKorapSearch {
         );
 
 	kr = new KorapSearch(json).run(ki);
-	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist [der alte Digraph Aa durch Å] ersetzt worden, in Eigennamen und Ortsnamen ...", kr.getMatch(0).getSnippetBrackets());
+	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
+		     "[der alte Digraph Aa durch Å] ersetzt worden, " +
+		     "in Eigennamen und Ortsnamen ...",
+		     kr.getMatch(0).getSnippetBrackets());
 	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
 	assertEquals(1, kr.getTotalResults());
 
@@ -990,7 +996,10 @@ public class TestKorapSearch {
         );
 
 	kr = new KorapSearch(json).run(ki);
-	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist [der alte Digraph Aa durch Å] ersetzt worden, in Eigennamen und Ortsnamen ...", kr.getMatch(0).getSnippetBrackets());
+	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
+		     "[der alte Digraph Aa durch Å] ersetzt worden, " +
+		     "in Eigennamen und Ortsnamen ...",
+		     kr.getMatch(0).getSnippetBrackets());
 	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
 	assertEquals(1, kr.getTotalResults());
 
@@ -1000,11 +1009,17 @@ public class TestKorapSearch {
         );
 
 	kr = new KorapSearch(json).run(ki);
-	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist [der alte Digraph Aa durch Å] ersetzt worden, in Eigennamen und Ortsnamen ...", kr.getMatch(0).getSnippetBrackets());
+
+	if (kr.getTotalResults() != 1)
+	    fail("Expansion fails");
+
+	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
+		     "[der alte Digraph Aa durch Å] ersetzt worden, " +
+		     "in Eigennamen und Ortsnamen ...",
+		     kr.getMatch(0).getSnippetBrackets());
 	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
 	assertEquals(1, kr.getTotalResults());
     };
-
 
 
     /*
