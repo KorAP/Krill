@@ -7,9 +7,11 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapSearch;
@@ -55,6 +57,36 @@ public class TestClass {
 				"{2:auf den}] das angesprochene Funkgerät reagiert. Die Abkürzung ...", 
 				kr.getMatch(1).getSnippetBrackets());
 	}
+	
+	@Test
+	public void queryJSONpoly4() throws QueryException, IOException {
+		
+		String jsonPath = getClass().getResource("/queries/poly4.json").getFile();
+		String jsonQuery = readFile(jsonPath);
+		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJSON(
+				jsonQuery
+		);
+		SpanQuery sq = sqwi.toQuery();
+		System.out.println(sq.toString());
+		
+		ki = new KorapIndex();
+	    ki.addDocFile(
+	    	getClass().getResource("/wiki/SSS-09803.json.gz").getFile(),true);
+	    
+	    ki.commit();
+		kr = ki.search(sq, (short) 10);
+		
+		assertEquals(827, kr.getTotalResults());
+		assertEquals(3, kr.getMatch(0).getStartPos());
+		assertEquals(5, kr.getMatch(0).getEndPos());
+		
+		for (KorapMatch km : kr.getMatches()){
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+					+km.getSnippetBrackets()
+			);
+		}
+	}
+	
 	
 	private String readFile(String path) {
 		StringBuilder sb = new StringBuilder();

@@ -56,6 +56,7 @@ public class AttributeSpans extends SimpleSpans{
 	@Override
 	public boolean next() throws IOException {		
 		isStartEnumeration=false;
+		matchPayload.clear();
 		return advance();
 	}
 

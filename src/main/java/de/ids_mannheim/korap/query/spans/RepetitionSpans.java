@@ -45,6 +45,7 @@ public class RepetitionSpans extends SimpleSpans{
 	@Override
 	public boolean next() throws IOException {
 		isStartEnumeration = false;
+		matchPayload.clear();
 		return advance();
 	}
 
@@ -58,8 +59,7 @@ public class RepetitionSpans extends SimpleSpans{
 				setMatchProperties(matchList.get(0));
 				matchList.remove(0);
 				return true;
-			}
-			matchPayload.clear();
+			}			
 			matchCost = 0;
 			
 			List<CandidateSpans> adjacentSpans = collectAdjacentSpans();
@@ -86,7 +86,7 @@ public class RepetitionSpans extends SimpleSpans{
 			if (firstSpans.start() > prevSpan.getEnd()){
 				break;
 			}
-			else {
+			else if (firstSpans.start() == prevSpan.getEnd()){
 				prevSpan = new CandidateSpans(firstSpans);
 				adjacentSpans.add(prevSpan);
 			}
@@ -105,8 +105,14 @@ public class RepetitionSpans extends SimpleSpans{
 			int endIndex;
 			while ((endIndex = j+i-1) < adjacentSpans.size()){
 				startSpan = adjacentSpans.get(j);
-				if (i == 1){
-					matchList.add(startSpan);
+				if (i == 1){					
+					try {
+						matchSpan = startSpan.clone();
+						matchSpan.setPayloads(computeMatchPayload(adjacentSpans, 0, endIndex-1));
+						matchList.add(matchSpan);		
+					} catch (CloneNotSupportedException e) {
+						e.printStackTrace();
+					}
 				}
 				else {
 					endSpan = adjacentSpans.get(endIndex);														
@@ -114,8 +120,8 @@ public class RepetitionSpans extends SimpleSpans{
 							startSpan.getStart(), 
 							endSpan.getEnd(), 
 							startSpan.getDoc(), 
-							computeMatchCost(adjacentSpans, i, endIndex), 
-							computeMatchPayload(adjacentSpans, i, endIndex));
+							computeMatchCost(adjacentSpans, 0, endIndex), 
+							computeMatchPayload(adjacentSpans, 0, endIndex));
 					
 					//System.out.println("c:"+matchSpan.getCost() +" p:"+ matchSpan.getPayloads().size());
 					//System.out.println(startSpan.getStart() +","+endSpan.getEnd());
@@ -146,6 +152,7 @@ public class RepetitionSpans extends SimpleSpans{
 			int start, int end){		
 		long matchCost = 0;
 		for (int i=start; i<= end; i++){
+			CandidateSpans c = adjacentSpans.get(i);
 			matchCost += adjacentSpans.get(i).getCost();
 		}		
 		return matchCost;

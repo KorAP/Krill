@@ -1,0 +1,85 @@
+{
+   "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+   "collection" : {},
+   "collections" : [
+      {
+         "@type" : "korap:meta-filter",
+         "@value" : {
+            "@field" : "korap:field#corpusID",
+            "@type" : "korap:term",
+            "@value" : "WPD"
+         }
+      }
+   ],
+   "errors" : [],
+   "messages" : [
+      [
+         303,
+         "Deprecated 2014-07-24: 'min' and 'max' to be supported until 3 months from deprecation date."
+      ],
+      [
+         303,
+         "Deprecated 2014-10-07: 'class' only to be supported until 3 months from deprecation date. Classes are now defined using the 'classOut' attribute."
+      ],
+      [
+         303,
+         "Deprecated 2014-07-24: 'min' and 'max' to be supported until 3 months from deprecation date."
+      ]
+   ],
+   "meta" : {},
+   "query" : {
+      "@type" : "korap:group",
+      "boundary" : {
+         "@type" : "korap:boundary",
+         "max" : 3,
+         "min" : 1
+      },
+      "max" : 3,
+      "min" : 1,
+      "operands" : [
+         {
+            "@type" : "korap:group",
+            "operands" : [
+               {
+                  "@type" : "korap:group",
+                  "class" : 1,
+                  "classOut" : 1,
+                  "operands" : [
+                     {
+                        "@type" : "korap:token",
+                        "wrap" : {
+                           "@type" : "korap:term",
+                           "foundry" : "cnx",
+                           "key" : "N",
+                           "layer" : "p",
+                           "match" : "match:eq"
+                        }
+                     }
+                  ],
+                  "operation" : "operation:class"
+               },
+               {
+                  "@type" : "korap:group",
+                  "boundary" : {
+                     "@type" : "korap:boundary",
+                     "max" : 5,
+                     "min" : 1
+                  },
+                  "max" : 5,
+                  "min" : 1,
+                  "operands" : [
+                     {
+                        "@type" : "korap:token"
+                     }
+                  ],
+                  "operation" : "operation:repetition"
+               }
+            ],
+            "operation" : "operation:sequence"
+         }
+      ],
+      "operation" : "operation:repetition"
+   },
+   "warnings" : []
+}
+  

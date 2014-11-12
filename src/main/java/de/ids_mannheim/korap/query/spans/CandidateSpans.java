@@ -9,7 +9,7 @@ import org.apache.lucene.search.spans.Spans;
 /** A span kept as a candidate for matching with another Span
  * 	@author margaretha
  * */
-public class CandidateSpans implements Comparable<CandidateSpans>{	
+public class CandidateSpans implements Comparable<CandidateSpans>, Cloneable{	
 	private int doc,start,end;
 	private long cost;
 	private Collection<byte[]> payloads = new ArrayList<>();
@@ -35,6 +35,17 @@ public class CandidateSpans implements Comparable<CandidateSpans>{
 			this.elementRef = s.getElementRef();
 		}		*/
 	}	
+	
+	@Override
+	protected CandidateSpans clone() throws CloneNotSupportedException {
+		return new CandidateSpans(
+				this.start,
+				this.end,
+				this.doc,
+				this.cost,
+				this.payloads
+		);		
+	}
 	
 	public CandidateSpans(Spans span, int position) throws IOException {
 		this(span);
