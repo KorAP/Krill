@@ -67,9 +67,9 @@ public class TestClass {
 				jsonQuery
 		);
 		SpanQuery sq = sqwi.toQuery();
-		/*
+		
 		System.out.println(sq.toString());
-		*/
+		
 
 		ki = new KorapIndex();
 	    ki.addDocFile(
@@ -77,17 +77,17 @@ public class TestClass {
 	    
 	    ki.commit();
 		kr = ki.search(sq, (short) 10);
-		/*		
+				
 		for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 					+km.getSnippetBrackets()
 			);
 		}
-		assertEquals(827, kr.getTotalResults());
+		assertEquals(495, kr.getTotalResults());
 		assertEquals(3, kr.getMatch(0).getStartPos());
 		assertEquals(5, kr.getMatch(0).getEndPos());
-		*/
-		fail("Tests have to be updated");
+		
+		//fail("Tests have to be updated");
 	}
 	
 	
