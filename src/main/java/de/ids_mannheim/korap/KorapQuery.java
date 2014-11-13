@@ -18,18 +18,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
+  Todo: All queries with a final right expansion
+  der alte []
+  should be wrapped in a contains(<base/s=t>) to ensure
+  they are not outside the text.
+
   TODO: Create Pre-filter while preparing a Query.
   The pre-filter will contain a boolena query with all
   necessary terms, supporting boolean OR, ignoring
   negation terms (and negation subqueries), like
   [base=Der]([base=alte]|[base=junge])[base=Mann & p!=ADJA]![base=war | base=lag]
   Search for all documents containing "s:Der" and ("s:alte" or "s:junge") and "s:Mann"
-
-  TODO: korap:reference doesn't work as expected:
-  - Check with
-    - focus(2:{1:[orth=der]{3:{2:[orth=Baum]}}})
-    - focus(3:startswith(<s>,{3:[tt/p=ART]{1:{2:[tt/p=ADJA]{3,4}}[tt/p=NN]}}))
-    - focus(3:endswith(<s>,{3:[tt/p=ART]{1:{2:[tt/p=ADJA]{3,4}}[tt/p=NN]}}))
 
 */
 

@@ -1,7 +1,5 @@
 package de.ids_mannheim.korap.query;
 
-//package de.ids_mannheim.korap.highlight;
-
 import java.util.*;
 import java.io.IOException;
 
@@ -17,7 +15,6 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.util.QueryException;
 
 import static de.ids_mannheim.korap.TestSimple.*;
-//import static de.ids_mannheim.korap.Test.*;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
