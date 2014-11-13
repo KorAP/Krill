@@ -943,82 +943,84 @@ public class TestKorapSearch {
      */
     @Test
     public void searchJSONexpansionBug () throws IOException {
-	// Construct index
-	KorapIndex ki = new KorapIndex();
-	// Indexing test files
-	ki.addDocFile(
-	  getClass().getResource("/wiki/00002.json.gz").getFile(), true
-	);
-	ki.commit();
-
-	// Expansion bug
-	// der alte Digraph Aa durch Å
-	String json = getString(
-            getClass().getResource("/queries/bugs/expansion_bug_2.jsonld").getFile()
-        );
-
-	KorapResult kr = new KorapSearch(json).run(ki);
-	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
-		     "[der alte Digraph Aa durch Å] ersetzt worden, " +
-		     "in Eigennamen und Ortsnamen ...",
-		     kr.getMatch(0).getSnippetBrackets());
-	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-	assertEquals(1, kr.getTotalResults());
-
-	// der alte Digraph Aa durch []
-	// Works with one document
-	json = getString(
-            getClass().getResource("/queries/bugs/expansion_bug.jsonld").getFile()
-        );
-
-	kr = new KorapSearch(json).run(ki);
-	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
-		     "[der alte Digraph Aa durch Å] ersetzt worden, " +
-		     "in Eigennamen und Ortsnamen ...",
-		     kr.getMatch(0).getSnippetBrackets());
-	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-	assertEquals(1, kr.getTotalResults());
-
-	// Now try with one file ahead
-	ki = new KorapIndex();
-	for (String i : new String[] {"00001",
-				      "00002"}) {
-	    ki.addDocFile(
-	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
-            );
-	};
-	ki.commit();
-
-	// Expansion bug
-	// der alte Digraph Aa durch Å
-	json = getString(
-            getClass().getResource("/queries/bugs/expansion_bug_2.jsonld").getFile()
-        );
-
-	kr = new KorapSearch(json).run(ki);
-	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
-		     "[der alte Digraph Aa durch Å] ersetzt worden, " +
-		     "in Eigennamen und Ortsnamen ...",
-		     kr.getMatch(0).getSnippetBrackets());
-	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-	assertEquals(1, kr.getTotalResults());
-
-	// der alte Digraph Aa durch []
-	json = getString(
-            getClass().getResource("/queries/bugs/expansion_bug.jsonld").getFile()
-        );
-
-	kr = new KorapSearch(json).run(ki);
-
-	if (kr.getTotalResults() != 1)
-	    fail("Expansion fails");
-
-	assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
-		     "[der alte Digraph Aa durch Å] ersetzt worden, " +
-		     "in Eigennamen und Ortsnamen ...",
-		     kr.getMatch(0).getSnippetBrackets());
-	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-	assertEquals(1, kr.getTotalResults());
+		// Construct index
+		KorapIndex ki = new KorapIndex();
+		// Indexing test files
+		ki.addDocFile(
+		  getClass().getResource("/wiki/00002.json.gz").getFile(), true
+		);
+		ki.commit();
+	
+		// Expansion bug
+		// der alte Digraph Aa durch Å
+		String json = getString(
+	            getClass().getResource("/queries/bugs/expansion_bug_2.jsonld").getFile()
+	        );
+	
+		KorapResult kr = new KorapSearch(json).run(ki);				
+		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
+			     "[der alte Digraph Aa durch Å] ersetzt worden, " +
+			     "in Eigennamen und Ortsnamen ...",
+			     kr.getMatch(0).getSnippetBrackets());
+		assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
+		assertEquals(1, kr.getTotalResults());
+	
+		// der alte Digraph Aa durch []
+		// Works with one document
+		json = getString(
+	            getClass().getResource("/queries/bugs/expansion_bug.jsonld").getFile()
+	        );
+	
+		kr = new KorapSearch(json).run(ki);
+		
+		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
+			     "[der alte Digraph Aa durch Å] ersetzt worden, " +
+			     "in Eigennamen und Ortsnamen ...",
+			     kr.getMatch(0).getSnippetBrackets());
+		assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
+		assertEquals(1, kr.getTotalResults());
+	
+		// Now try with one file ahead
+		ki = new KorapIndex();
+		for (String i : new String[] {"00001",
+					      "00002"}) {
+		    ki.addDocFile(
+		      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+	            );
+		};
+		ki.commit();
+	
+		// Expansion bug
+		// der alte Digraph Aa durch Å
+		json = getString(
+	            getClass().getResource("/queries/bugs/expansion_bug_2.jsonld").getFile()
+	        );
+	
+		kr = new KorapSearch(json).run(ki);
+		
+		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
+			     "[der alte Digraph Aa durch Å] ersetzt worden, " +
+			     "in Eigennamen und Ortsnamen ...",
+			     kr.getMatch(0).getSnippetBrackets());
+		assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
+		assertEquals(1, kr.getTotalResults());
+	
+		// der alte Digraph Aa durch []
+		json = getString(
+	            getClass().getResource("/queries/bugs/expansion_bug.jsonld").getFile()
+	        );
+	
+		kr = new KorapSearch(json).run(ki);
+		System.out.println(kr.getQuery());
+//		if (kr.getTotalResults() != 1)
+//		    fail("Expansion fails");
+	
+		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
+			     "[der alte Digraph Aa durch Å] ersetzt worden, " +
+			     "in Eigennamen und Ortsnamen ...",
+			     kr.getMatch(0).getSnippetBrackets());
+		assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
+		assertEquals(1, kr.getTotalResults());
     };
 
 

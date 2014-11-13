@@ -2,9 +2,12 @@ package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.util.automaton.RegExp;
@@ -14,10 +17,13 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSpanExpansionIndex {
 
@@ -253,6 +259,37 @@ public class TestSpanExpansionIndex {
         assertEquals(1, kr.getMatch(4).getStartPos());
         assertEquals(4, kr.getMatch(4).getEndPos());		
 	}
+	
+	/** Skip to
+	 * */
+	@Test
+	public void testCase7() throws IOException, QueryException{
+		KorapIndex ki = new KorapIndex();
+		ki.addDocFile(
+		    	getClass().getResource("/wiki/00001.json.gz").getFile(),true);		
+		ki.addDocFile(
+		    	getClass().getResource("/wiki/00002.json.gz").getFile(),true);
+		ki.commit();
+		
+		String jsonPath = getClass().getResource("/queries/poly3.json").getFile();
+		String jsonQuery = readFile(jsonPath);
+		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJSON(
+				jsonQuery
+		);
+		
+		SpanQuery sq = sqwi.toQuery();
+		//System.out.println(sq.toString());
+		kr = ki.search(sq, (short) 20);
+		
+		assertEquals(205, kr.getMatch(0).getStartPos());
+        assertEquals(208, kr.getMatch(0).getEndPos());
+		
+		/*for (KorapMatch km : kr.getMatches()){
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+					+km.getSnippetBrackets()
+			);
+		}*/
+	}
 
 
     /** 
@@ -261,29 +298,31 @@ public class TestSpanExpansionIndex {
      * */
     @Test
     public void testQueryRewriteBug() throws IOException {
-	KorapIndex ki = new KorapIndex();
-	ki.addDoc(createFieldDoc0()); // same doc
-	ki.addDoc(createFieldDoc1()); // only not clause
-	ki.addDoc(createFieldDoc2()); // only main clause
-	ki.commit();
-
-	// See /queries/bugs/repetition_group_rewrite
-	// spanRepetition(spanExpansion(
-	//     SpanMultiTermQueryWrapper(tokens:/cnx/p:A/), []{1, 1}, right){2,2}
-        // )
-	RegexpQuery requery = new RegexpQuery(new Term("base", "s:[ac]"), RegExp.ALL);
-	SpanMultiTermQueryWrapper<RegexpQuery> query =
-	    new SpanMultiTermQueryWrapper<RegexpQuery>( requery );
-	SpanExpansionQuery seq  = new SpanExpansionQuery(query, 1, 1, 1, true);		
-	SpanRepetitionQuery rep = new SpanRepetitionQuery(seq, 2, 2, true);
+		KorapIndex ki = new KorapIndex();
+		ki.addDoc(createFieldDoc0()); // same doc
+		ki.addDoc(createFieldDoc1()); // only not clause
+		ki.addDoc(createFieldDoc2()); // only main clause
+		ki.commit();
 	
-	try {
-	    ki.search(rep, (short) 20);
-	}
-	catch (Exception e) {
-	    fail(e.getMessage());
-	};
-    };
+		// See /queries/bugs/repetition_group_rewrite
+		// spanRepetition(spanExpansion(
+		//     SpanMultiTermQueryWrapper(tokens:/cnx/p:A/), []{1, 1}, right){2,2}
+	        // )
+		RegexpQuery requery = new RegexpQuery(new Term("base", "s:[ac]"), RegExp.ALL);
+		SpanMultiTermQueryWrapper<RegexpQuery> query =
+		    new SpanMultiTermQueryWrapper<RegexpQuery>( requery );
+		SpanExpansionQuery seq  = new SpanExpansionQuery(query, 1, 1, 1, true);		
+		SpanRepetitionQuery rep = new SpanRepetitionQuery(seq, 2, 2, true);
+		
+		kr = ki.search(rep, (short) 20);
+		assertEquals(3,kr.getTotalResults());
+		
+		/*for (KorapMatch km : kr.getMatches()){
+			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+					+km.getSnippetBrackets()
+			);
+		}*/
+    }
 
 	
 	private FieldDocument createFieldDoc0(){
@@ -309,12 +348,12 @@ public class TestSpanExpansionIndex {
         fd.addString("ID", "doc-1");
         fd.addTV("base",
             "bbccdd",             
-            "[(0-1)s:b|s:c|_1#0-1]" +
-            "[(1-2)s:b|_2#1-2]" +             
-            "[(2-3)s:c|_3#2-3]" +
-            "[(3-4)s:c|_4#3-4]" + 
-            "[(4-5)s:d|_5#4-5]" +             
-            "[(5-6)s:d|_6#5-6]");
+            "[(0-1)s:b|s:c|_0#0-1]" +
+            "[(1-2)s:b|_1#1-2]" +             
+            "[(2-3)s:c|_2#2-3]" +
+            "[(3-4)s:c|_3#3-4]" + 
+            "[(4-5)s:d|_4#4-5]" +             
+            "[(5-6)s:d|_5#5-6]");
         return fd;
 	}
 	
@@ -322,13 +361,28 @@ public class TestSpanExpansionIndex {
     	FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV("base",
-            "text",             
-            "[(0-1)s:b|s:c|_1#0-1]" +
-            "[(1-2)s:e|_2#1-2]" +             
-            "[(2-3)s:c|_3#2-3]" +
-            "[(3-4)s:c|_4#3-4]" + 
-            "[(4-5)s:e|_5#4-5]" +             
-            "[(5-6)s:a|_6#5-6]");
+            "beccea",             
+            "[(0-1)s:b|s:c|_0#0-1]" +
+            "[(1-2)s:e|_1#1-2]" +             
+            "[(2-3)s:c|_2#2-3]" +
+            "[(3-4)s:c|_3#3-4]" + 
+            "[(4-5)s:e|_4#4-5]" +             
+            "[(5-6)s:a|_5#5-6]");
         return fd;
+	}
+	
+	private String readFile(String path) {
+		StringBuilder sb = new StringBuilder();
+		try {
+		    BufferedReader in = new BufferedReader(new FileReader(path));
+		    String str;
+		    while ((str = in.readLine()) != null) {
+		    	sb.append(str);
+		    };
+		    in.close();
+		} catch (IOException e) {
+		    fail(e.getMessage());
+		}
+		return sb.toString();
 	}
 }

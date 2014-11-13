@@ -41,11 +41,13 @@ public class ExpandedSpans extends SimpleSpans{
 	public boolean next() throws IOException {
 		matchPayload.clear();
 		isStartEnumeration = false;
+		if (candidateSpans.size() == 0 && hasMoreSpans)
+			hasMoreSpans = firstSpans.next();
 		return advance();
 	}
 
 	private boolean advance() throws IOException {		
-		while (candidateSpans.size() > 0 || (hasMoreSpans = firstSpans.next())) {
+		while (candidateSpans.size() > 0 || hasMoreSpans) {
 			if (candidateSpans.size() > 0 ){
 				setMatch(candidateSpans.get(0));
 				candidateSpans.remove(0);								
