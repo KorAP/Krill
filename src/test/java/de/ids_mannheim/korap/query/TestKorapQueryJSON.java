@@ -301,8 +301,6 @@ public class TestKorapQueryJSON {
 	assertEquals(sqwi.toQuery().toString(), "tokens:i:baum");
     };
 
-
-
     @Test
     public void queryJSONunderspecifiedTokenBug () {
 	// ((MORPH(APPR) ODER MORPH(APPRART)) /+w1 Urlaub
@@ -313,6 +311,12 @@ public class TestKorapQueryJSON {
 	catch (QueryException e) {
 	    assertEquals(612, e.getErrorCode());
 	};
+    };
+
+    @Test
+    public void queryJSONspecialLayerBug () throws QueryException {
+	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bugs/special_layer.jsonld").getFile());
+	assertEquals(sqwi.toQuery().toString(), "spanNext(spanNext(spanNext(tokens:s:Baum, tokens:cnx/p:CC), tokens:tt/l:Baum), <tokens:xip/c:MC />)");
     };
 
 

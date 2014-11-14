@@ -660,6 +660,10 @@ public class KorapQuery {
 	    case "orth":
 		layer = "s";
 		break;
+
+	    case "const":
+		layer = "c";
+		break;
 	    };
 
 	    if (isCaseInsensitive && isTerm) {
