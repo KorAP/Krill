@@ -1011,7 +1011,7 @@ public class TestKorapSearch {
 	        );
 	
 		kr = new KorapSearch(json).run(ki);
-		System.out.println(kr.getQuery());
+		// System.out.println(kr.getQuery());
 //		if (kr.getTotalResults() != 1)
 //		    fail("Expansion fails");
 	

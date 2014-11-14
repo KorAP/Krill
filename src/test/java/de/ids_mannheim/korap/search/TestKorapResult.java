@@ -95,6 +95,35 @@ public class TestKorapResult {
     };
 
     @Test
+    public void checkJSONResultWarningBug () throws Exception  {
+	KorapIndex ki = new KorapIndex();
+	FieldDocument fd = new FieldDocument();
+	fd.addString("ID", "doc-1");
+	fd.addString("UID", "1");
+	fd.addTV("tokens",
+		 "abab",
+		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" +
+		 "[(1-2)s:b|i:b|_1#1-2]" +
+		 "[(2-3)s:a|i:c|_2#2-3]" +
+		 "[(3-4)s:b|i:a|_3#3-4]");
+	ki.addDoc(fd);
+	ki.commit();
+
+	String json = getString(getClass().getResource("/queries/bugs/optionality_warning.jsonld").getFile());
+	KorapSearch ks = new KorapSearch(json);
+
+	KorapResult kr = ks.run(ki);
+	assertEquals(2, kr.getTotalResults());
+
+	ObjectMapper mapper = new ObjectMapper();
+	JsonNode res = mapper.readTree(kr.toJSON());
+
+	assertEquals("Optionality of query is ignored", res.at("/warning").asText());
+
+    };
+
+
+    @Test
     public void checkJSONResultForJSONInput () throws Exception  {
 	KorapIndex ki = new KorapIndex();
 	FieldDocument fd = new FieldDocument();

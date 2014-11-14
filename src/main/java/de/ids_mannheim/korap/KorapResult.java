@@ -141,9 +141,11 @@ public class KorapResult extends KorapResponse {
         return this.warning;
     }
 
-    public void addWarning (String warning) {
+    public void addWarning (String msg) {
+	if (msg == null)
+	    return;
 	if (this.warning == null)
-	    this.warning = warning;
+	    this.warning = msg;
 	else
 	    this.warning += "; " + warning;
     };

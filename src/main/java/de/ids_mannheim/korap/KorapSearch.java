@@ -109,12 +109,13 @@ public class KorapSearch {
 	    };
 
 	    // Legacy code: Report warning coming from the request
-	    if (this.request.has("warning"))
+	    if (this.request.has("warning") && this.request.get("warning").asText().length() > 0)
 		this.addWarning(this.request.get("warning").asText());
 	    if (this.request.has("warnings")) {
 		JsonNode warnings = this.request.get("warnings");
 		for (JsonNode node : warnings)
-		    this.addWarning(node.asText());
+		    if (node.asText().length() > 0)
+			this.addWarning(node.asText());
 	    };
 	    // end of legacy code
 
@@ -215,11 +216,14 @@ public class KorapSearch {
 	return this.warning;
     };
 
-    public void addWarning (String warning) {
+    public void addWarning (String msg) {
+	if (msg == null)
+	    return;
+
 	if (this.warning == null)
-	    this.warning = warning;
+	    this.warning = msg;
 	else
-	    this.warning += "; " + warning;
+	    this.warning += "; " + msg;
     };
 
     public SpanQuery getQuery () {

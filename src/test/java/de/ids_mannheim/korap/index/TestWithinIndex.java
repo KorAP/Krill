@@ -1093,19 +1093,25 @@ public class TestWithinIndex {
 	ki.addDocFile(
 		      getClass().getResource("/wiki/PPP-02924.json.gz").getFile(),true);
 	ki.commit();
-	KorapResult kr = ki.search(sq, (short) 10);
+	try {
+	    KorapResult kr = ki.search(sq, (short) 10);
+	    assertEquals(2, kr.getTotalResults());
+	    assertEquals(0, kr.getMatch(0).getLocalDocID());
+	    assertEquals(76, kr.getMatch(0).getStartPos());
+	    assertEquals(93, kr.getMatch(0).getEndPos());
+	    assertEquals(1, kr.getMatch(0).getLocalDocID());
+	    assertEquals(237, kr.getMatch(1).getStartPos());
+	    assertEquals(252, kr.getMatch(1).getEndPos());
+	}
+
+	catch (Exception e) {
+	    fail("Nullpointer (known)");
+	};
 //		for (KorapMatch km : kr.getMatches()){		
 //			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 //				+km.getSnippetBrackets());
 //		}		
 	
-	assertEquals(2, kr.getTotalResults());
-	assertEquals(0, kr.getMatch(0).getLocalDocID());
-	assertEquals(76, kr.getMatch(0).getStartPos());
-	assertEquals(93, kr.getMatch(0).getEndPos());
-	assertEquals(1, kr.getMatch(0).getLocalDocID());
-	assertEquals(237, kr.getMatch(1).getStartPos());
-	assertEquals(252, kr.getMatch(1).getEndPos());
     }
 	
 	
