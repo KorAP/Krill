@@ -415,31 +415,6 @@ public class KorapMatch extends KorapDocument {
 	super.setID(id);
     };
 
-
-    /**
-     * Set version of the index
-     */
-    @JsonIgnore
-    public String getVersion () {
-	if (this.version == null)
-	    return null;
-	StringBuilder sb = new StringBuilder("lucene-backend-");
-	return sb.append(this.version).toString();
-    };
-
-
-    /**
-     * Set version number.
-     *
-     * @param version The version number of the index as
-     *                a string representation.
-     */
-    @JsonIgnore
-    public void setVersion (String version) {
-	this.version = version;
-    };
-
-
     /**
      * Get the positional start offset of the match.
      */

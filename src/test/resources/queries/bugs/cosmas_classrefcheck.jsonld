@@ -1,7 +1,7 @@
 {
   "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
   "warnings":[
-    "This is a warning coming from the serialization"
+      ["This is a warning coming from the serialization"]
   ],
   "query": {
     "@type" : "korap:reference",

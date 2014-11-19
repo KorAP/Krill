@@ -26,7 +26,7 @@ import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.server.KorapResponse;
+import de.ids_mannheim.korap.response.KorapResponse;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.index.MatchCollector;
@@ -87,13 +87,21 @@ public class Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
 	KorapIndex index = KorapNode.getIndex();
-	KorapResponse kresp = new KorapResponse(KorapNode.getName(), index.getVersion());
+	KorapResponse kresp = new KorapResponse();
+	kresp.setNode(KorapNode.getName());
+	kresp.setName(index.getName());
+	kresp.setVersion(index.getVersion());
+
 	kresp.setListener(KorapNode.getListener());
 	long texts = -1;
-
-	return kresp.setTotalTexts(index.numberOf("documents"))
-	    .setMsg("Up and running!")
-	    .toJSON();
+	/*
+	kresp.addMessage(
+	    "Number of documents in the index",
+	    String.parseLong(index.numberOf("documents"))
+	);
+	*/
+	kresp.addMessage(680, "Server is up and running!");
+	return kresp.toJSON();
     };
     
 
@@ -123,10 +131,17 @@ public class Resource {
 
 	// Get index
 	KorapIndex index = KorapNode.getIndex();
-	KorapResponse kresp = new KorapResponse(KorapNode.getName(), index.getVersion());
 
-	if (index == null)
-	    return kresp.setError(601, "Unable to find index").toJSON();
+	KorapResponse kresp = new KorapResponse();
+	kresp.setNode(KorapNode.getName());
+
+	if (index == null) {
+	    kresp.addError(601, "Unable to find index");
+	    return kresp.toJSON();
+	};
+
+	kresp.setVersion(index.getVersion());
+	kresp.setName(index.getName());
 
 	String ID = "Unknown";
 	try {
@@ -134,15 +149,15 @@ public class Resource {
 	    ID = fd.getID();
 	}
 	// Set HTTP to ???
+	// TODO: This may be a field error!
 	catch (IOException e) {
-	    
-	    return kresp.setErrstr(e.getLocalizedMessage()).toJSON();
+	    kresp.addError(602, "Unable to add document to index");
+	    return kresp.toJSON();
 	};
 
 	// Set HTTP to 200
-	return kresp.
-	    setMsg("Text \"" + ID + "\" was added successfully")
-	    .toJSON();
+	kresp.addMessage(681, "Document was added successfully", ID);
+	return kresp.toJSON();
     };
 
 
@@ -157,13 +172,16 @@ public class Resource {
 
 	// Get index
 	KorapIndex index = KorapNode.getIndex();
-	KorapResponse kresp = new KorapResponse(KorapNode.getName(), index.getVersion());
+	KorapResponse kresp = new KorapResponse();
+	kresp.setNode(KorapNode.getName());
 
-	if (index == null)
-	    return kresp.setError(601, "Unable to find index").toJSON();
+	if (index == null) {
+	    kresp.addError(601, "Unable to find index");
+	    return kresp.toJSON();
+	};
 
-	if (version == null)
-	    version = index.getVersion();
+	kresp.setVersion(index.getVersion());
+	kresp.setName(index.getName());
 
 	// There are documents to commit
 	try {
@@ -171,7 +189,8 @@ public class Resource {
 	}
 	catch (IOException e) {
 	    // Set HTTP to ???
-	    return kresp.setErrstr(e.getMessage()).toJSON();
+	    kresp.addError(603, "Unable to commit staged data to index");
+	    return kresp.toJSON();
 	};
 
 	// Set HTTP to ???
@@ -219,14 +238,18 @@ public class Resource {
 	    };
 	    KorapResult kr = new KorapResult();
 	    kr.setNode(KorapNode.getName());
-	    kr.setError(610, "No UUIDs given");
+	    kr.addError(610, "Missing request parameters", "No unique IDs were given");
 	    return kr.toJSON();
 	};
 
-	return new KorapResponse(
-	    KorapNode.getName(),
-	    index.getVersion()
-        ).setError(601, "Unable to find index").toJSON();
+	KorapResponse kresp = new KorapResponse();
+	kresp.setNode(KorapNode.getName());
+	kresp.setName(index.getName());
+	kresp.setVersion(index.getVersion());
+
+	kresp.addError(601, "Unable to find index");
+	
+	return kresp.toJSON();
     };
 
 
@@ -247,11 +270,12 @@ public class Resource {
 	KorapIndex index = KorapNode.getIndex();
 
 	// No index found
-	if (index == null)
-  	    return new KorapResponse(
-	        KorapNode.getName(),
-	        index.getVersion()
-            ).setError(601, "Unable to find index").toJSON();
+	if (index == null) {
+	    KorapResponse kresp = new KorapResponse();
+	    kresp.setNode(KorapNode.getName());
+	    kresp.addError(601, "Unable to find index");
+  	    return kresp.toJSON();
+	};
 
 	// Get the database
 	try {
@@ -271,10 +295,13 @@ public class Resource {
 	    log.error(e.getLocalizedMessage());
 	};
 
-	return new KorapResponse(
-	    KorapNode.getName(),
-	    index.getVersion()
-        ).setError("Unable to connect to database").toJSON();
+	KorapResponse kresp = new KorapResponse();
+	kresp.setNode(KorapNode.getName());
+	kresp.setName(index.getName());
+	kresp.setVersion(index.getVersion());
+
+	kresp.addError(604, "Unable to connect to database");
+	return kresp.toJSON();
     };
 
 
@@ -307,10 +334,13 @@ public class Resource {
 	    return kr.toJSON();
 	};
 
-	return new KorapResponse(
-	    KorapNode.getName(),
-	    index.getVersion()
-        ).setError(601, "Unable to find index").toJSON();
+	KorapResponse kresp = new KorapResponse();
+	kresp.setNode(KorapNode.getName());
+	kresp.setName(index.getName());
+	kresp.setVersion(index.getVersion());
+
+	kresp.addError(601, "Unable to find index");
+	return kresp.toJSON();
     };
 
     @GET
@@ -373,14 +403,14 @@ public class Resource {
 	    catch (QueryException qe) {
 		// Todo: Make KorapMatch rely on KorapResponse!
                 KorapMatch km = new KorapMatch();
-                km.setError(qe.getMessage());
+                km.addError(qe.getErrorCode(), qe.getMessage());
                 return km.toJSON();
             }
 	};
 
 	// Response with error message
         KorapMatch km = new KorapMatch();
-        km.setError("Index not found");
+        km.addError(601, "Unable to find index");
         return km.toJSON();
     };
 

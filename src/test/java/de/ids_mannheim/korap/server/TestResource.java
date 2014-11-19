@@ -24,7 +24,7 @@ import java.io.FileInputStream;
 
 import de.ids_mannheim.korap.KorapNode;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.server.KorapResponse;
+import de.ids_mannheim.korap.response.KorapResponse;
 import static de.ids_mannheim.korap.util.KorapString.*;
 
 public class TestResource {
@@ -64,6 +64,8 @@ public class TestResource {
 
     @Test
     public void testResource() throws IOException {
+	KorapResponse kresp;
+
 	for (String i : new String[] {"00001",
 				      "00002",
 				      "00003",
@@ -74,18 +76,23 @@ public class TestResource {
 	    }) {
 
 	    String json = StringfromFile(getClass().getResource("/wiki/" + i + ".json").getFile());
-	    KorapResponse kresp = target.path("/index/" + i).
+	    kresp = target.path("/index/" + i).
 		request("application/json").
 		put(Entity.json(json), KorapResponse.class);
 
 	    assertEquals(kresp.getNode(), "milena");
-	    assertEquals(kresp.getErr(), 0);
+	    assertFalse(kresp.hasErrors());
+	    assertFalse(kresp.hasWarnings());
+	    assertFalse(kresp.hasMessages());
 	};
 
-	KorapResponse kresp = target.path("/index").
+	kresp = target.path("/index").
 	    request("application/json").
 	    post(Entity.text(""), KorapResponse.class);
 	assertEquals(kresp.getNode(), "milena");
+	assertFalse(kresp.hasErrors());
+	assertFalse(kresp.hasWarnings());
+	assertFalse(kresp.hasMessages());
     };
 
     @Test
@@ -101,9 +108,14 @@ public class TestResource {
 	    queryParam("uid", "4").
 	    request("application/json").
 	    post(Entity.json(json), KorapResponse.class);
-
+	 /*
 	 assertEquals(2, kresp.getTotalResults());
-	 assertEquals(0, kresp.getErr());
+	 */
+	 fail("totalResults should be implemented in KorapResponse" +
+	      " or KorapResult should be used here");
+	 assertFalse(kresp.hasErrors());
+	 assertFalse(kresp.hasWarnings());
+	 assertFalse(kresp.hasMessages());
     };
 
     public static String getString (String path) {

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.SearchContext;
-import de.ids_mannheim.korap.server.KorapResponse;
+import de.ids_mannheim.korap.response.KorapResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +21,7 @@ import java.util.List;
 /*
 TODO: Reuse the KorapSearch code for data serialization!
 */
+
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KorapResult extends KorapResponse {
@@ -28,6 +29,9 @@ public class KorapResult extends KorapResponse {
 
     @JsonIgnore
     public static final short ITEMS_PER_PAGE = 25;
+
+    private int totalResults;
+    private long totalTexts;
 
     private String query;
 
@@ -43,7 +47,6 @@ public class KorapResult extends KorapResponse {
     private String benchmarkSearchResults,
             benchmarkHitCounter;
     private String error = null;
-    private String warning = null;
 
     private JsonNode request;
 
@@ -70,15 +73,15 @@ public class KorapResult extends KorapResponse {
         this.matches = new ArrayList<>(itemsPerPage);
         this.query = query;
         this.startIndex = startIndex;
-        this.itemsPerPage = (itemsPerPage > 50 || itemsPerPage < 1) ? ITEMS_PER_PAGE : itemsPerPage;
+        this.itemsPerPage = (itemsPerPage > 50 || itemsPerPage < 1) ?
+	    ITEMS_PER_PAGE : itemsPerPage;
         this.context = context;
-    }
+    };
 
 
-    public void add(KorapMatch km) {
+    public void add (KorapMatch km) {
         this.matches.add(km);
-    }
-
+    };
 
     public KorapMatch addMatch (PositionsToOffset pto,
 				int localDocID,
@@ -89,23 +92,6 @@ public class KorapResult extends KorapResponse {
         // Temporary - should use the same interface like results
         // in the future:
         km.setContext(this.context);
-
-        // Add pos for context
-        // That's not really a good position for it,
-        // to be honest ...
-        // But maybe it will make the offset
-        // information in the match be obsolete!
-
-        // TODO:
-    /*
-    if (km.leftTokenContext) {
-	    pto.add(localDocID, startPos - this.leftContextOffset);
-	};
-	if (km.rightTokenContext) {
-	    pto.add(localDocID, endPos + this.rightContextOffset - 1);
-	};
-	*/
-
         this.add(km);
         return km;
     };
@@ -113,45 +99,15 @@ public class KorapResult extends KorapResponse {
     @Deprecated
     public int totalResults() {
         return this.getTotalResults();
-    }
+    };
 
     public short getItemsPerPage() {
         return this.itemsPerPage;
-    }
-
+    };
 
     @Deprecated
     public short itemsPerPage() {
         return this.itemsPerPage;
-    }
-
-    /*
-
-    public String getError() {
-        return this.error;
-    }
-
-    public void setError(String msg) {
-        this.error = msg;
-    }
-
-    */
-
-    public String getWarning() {
-        return this.warning;
-    }
-
-    public void addWarning (String msg) {
-	if (msg == null)
-	    return;
-	if (this.warning == null)
-	    this.warning = msg;
-	else
-	    this.warning += "; " + warning;
-    };
-
-    public void setWarning (String warning) {
-	this.warning = warning;
     };
 
     public void setRequest(JsonNode request) {
@@ -162,6 +118,7 @@ public class KorapResult extends KorapResponse {
         return this.request;
     };
 
+    /*
     @JsonIgnore
     public void setBenchmarkHitCounter(long t1, long t2) {
         this.benchmarkHitCounter =
@@ -175,6 +132,33 @@ public class KorapResult extends KorapResponse {
 
     public String getBenchmarkHitCounter() {
         return this.benchmarkHitCounter;
+    };
+
+    */
+
+    // Make this working in a KorapResult class
+    // that is independent from search and collection
+    public KorapResult setTotalTexts (long i) {
+        this.totalTexts = i;
+	return this;
+    };
+
+    public long getTotalTexts() {
+        return this.totalTexts;
+    };
+
+    public KorapResult setTotalResults (int i) {
+        this.totalResults = i;
+	return this;
+    };
+
+    public KorapResult incrTotalResults (int i) {
+        this.totalResults += i;
+	return this;
+    };
+
+    public int getTotalResults() {
+        return this.totalResults;
     };
 
     @JsonIgnore
@@ -193,6 +177,8 @@ public class KorapResult extends KorapResponse {
     };
 
     public void setTimeExceeded (boolean timeout) {
+	if (timeout)
+	    this.addWarning(682, "Search time exceeded");
 	this.timeExceeded = timeout;
     };
 
@@ -236,40 +222,47 @@ public class KorapResult extends KorapResponse {
         return this.context;
     }
 
-
-    // Identical to KorapMatch!
-    public String toJSON () {
-        ObjectNode json = (ObjectNode) mapper.valueToTree(this);
+    public JsonNode toJSONnode () {
+	ObjectNode json = (ObjectNode) mapper.valueToTree(super.toJSONnode());
 
 	if (this.context != null)
 	    json.put("context", this.getContext().toJSON());
 
 	if (this.itemsPerResource > 0)
-	    json.put("itemsPerResource", this.itemsPerResource);
+	    json.put("itemsPerResource",
+		     this.itemsPerResource);
 
-        if (this.getVersion() != null)
-            json.put("version", this.getVersion());
+	json.put("itemsPerPage",
+		 this.itemsPerPage);
+
+	// TODO: If test
+	if (this.request != null)
+	    json.put("request", this.request);
+
+	// TODO: If test
+	if (this.request != null)
+	    json.put("request", this.request);
+	if (this.query != null)
+	    json.put("query", this.query);
+
+	json.put("startIndex", this.startIndex);
+
+	json.put("totalResults", this.getTotalResults());
+
+	if (this.timeExceeded)
+	    json.put("timeExceeded", this.timeExceeded);
 
 	// Add matches
-	json.putPOJO("matches", this.getMatches());
+	if (this.matches != null)
+	    json.putPOJO("matches", this.getMatches());
 
-        try {
-            return mapper.writeValueAsString(json);
-        }
-	catch (Exception e) {
-            log.warn(e.getLocalizedMessage());
-        };
-
-        return "{}";
+	return json;
     };
 
 
     // For Collocation Analysis API
     public String toTokenListJSON () {
         ObjectNode json = (ObjectNode) mapper.valueToTree(this);
-
-        if (this.getVersion() != null)
-            json.put("version", this.getVersion());
 
 	ArrayNode array = json.putArray("matches");
 	

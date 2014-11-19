@@ -213,7 +213,7 @@ public class TestKorapSearch {
 	KorapResult kr = new KorapSearch("{ query").run(ki);
 
 	assertEquals(0, kr.getTotalResults());
-	assertNotNull(kr.getErr());
+	assertEquals(kr.getError(0).getMessage(), "Unable to parse JSON");
     };
 
 
@@ -763,8 +763,25 @@ public class TestKorapSearch {
         );
 	
 	KorapSearch ks = new KorapSearch(json);
+	KorapCollection kc = ks.getCollection();
+
+	// No index was set
+	assertEquals(-1, kc.numberOf("documents"));
+	kc.setIndex(ki);
+
+	// Index was set but vc restricted to WPD
+	assertEquals(0, kc.numberOf("documents"));
+
+	kc.extend(
+	    new KorapFilter().or("corpusSigle", "BZK")
+        );
+	/*
+	System.err.println(ks.getCollection().toString());
+	*/
+	assertEquals("Known issue: ", 1, kc.numberOf("documents"));
 
 	KorapResult kr = ks.run(ki);
+
 	assertEquals(
             kr.getQuery(),
 	    "spanOr([SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/), " +
@@ -935,7 +952,9 @@ public class TestKorapSearch {
 	String json = getString(getClass().getResource("/queries/bsp-bug.jsonld").getFile());
 
 	KorapResult kr = new KorapSearch(json).run(ki);
-	assertEquals(kr.getErrstr(), "Operation needs exactly two operands");
+
+	assertEquals(kr.getError(0).getMessage(),
+		     "Number of operands is not acceptable");
     };
 
     /**
@@ -1010,11 +1029,7 @@ public class TestKorapSearch {
 	            getClass().getResource("/queries/bugs/expansion_bug.jsonld").getFile()
 	        );
 	
-		kr = new KorapSearch(json).run(ki);
-		// System.out.println(kr.getQuery());
-//		if (kr.getTotalResults() != 1)
-//		    fail("Expansion fails");
-	
+		kr = new KorapSearch(json).run(ki);	
 		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
 			     "[der alte Digraph Aa durch Å] ersetzt worden, " +
 			     "in Eigennamen und Ortsnamen ...",

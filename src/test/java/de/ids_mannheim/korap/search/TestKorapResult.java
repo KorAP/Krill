@@ -118,7 +118,10 @@ public class TestKorapResult {
 	ObjectMapper mapper = new ObjectMapper();
 	JsonNode res = mapper.readTree(kr.toJSON());
 
-	assertEquals("Optionality of query is ignored", res.at("/warning").asText());
+	// Old:
+	// assertEquals("Optionality of query is ignored", res.at("/warning").asText());
+	assertEquals("Optionality of query is ignored",
+		     res.at("/warnings/0/1").asText());
 
     };
 
@@ -148,7 +151,6 @@ public class TestKorapResult {
 
 	// Commit!
 	ki.commit();
-
 
 	String json = getString(getClass().getResource("/queries/bsp-result-check.jsonld").getFile());
 	KorapSearch ks = new KorapSearch(json);

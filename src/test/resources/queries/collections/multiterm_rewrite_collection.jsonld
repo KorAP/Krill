@@ -5,6 +5,7 @@
   "announcements":[
     "Deprecated 2014-07-24: 'min' and 'max' to be supported until 3 months from deprecation date."
   ],
+  "collection":{},
   "meta":{
     "startPage":1,
     "context":"paragraph"

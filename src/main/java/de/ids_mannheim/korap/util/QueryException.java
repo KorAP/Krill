@@ -18,8 +18,7 @@ public class QueryException extends Exception {
 
   public QueryException(Throwable cause) {
       super(cause);
-  };
-  
+  };  
   
   public QueryException(int code, String message) {	  
 	  super(message);

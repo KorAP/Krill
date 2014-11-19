@@ -15,7 +15,6 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.util.QueryException;
 
 import static de.ids_mannheim.korap.TestSimple.*;
-//import static de.ids_mannheim.korap.Test.*;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -52,18 +51,20 @@ public class TestHighlight { // extends LuceneTestCase {
 
 
 	KorapQuery kq = new KorapQuery("tokens");
-	KorapResult kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).toQuery());
+	KorapResult kr = ki.search(
+	    (SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).toQuery()
+        );
 	KorapMatch km = kr.getMatch(0);
-	assertEquals(km.getStartPos(), 1);
-	assertEquals(km.getEndPos(),   2);
+	assertEquals(km.getStartPos(),  1);
+	assertEquals(km.getEndPos(),    2);
 	assertEquals(km.getStartPos(1), 1);
 	assertEquals(km.getEndPos(1),   2);
 	assertEquals("<span class=\"context-left\">a</span><span class=\"match\"><em class=\"class-1 level-0\">b</em></span><span class=\"context-right\">c</span>", km.getSnippetHTML());
 
 	kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).append(kq._(2, kq.seg("s:c"))).toQuery());
 	km = kr.getMatch(0);
-	assertEquals(km.getStartPos(), 1);
-	assertEquals(km.getEndPos(),   3);
+	assertEquals(km.getStartPos(),  1);
+	assertEquals(km.getEndPos(),    3);
 	assertEquals(km.getStartPos(1), 1);
 	assertEquals(km.getEndPos(1),   2);
 	assertEquals(km.getStartPos(2), 2);
@@ -328,6 +329,9 @@ public class TestHighlight { // extends LuceneTestCase {
 
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
-	assertEquals(kr.getErrstr(),"Class numbers limited to 255");
+	assertEquals(709, kr.getError(0).getCode());
+	assertEquals("Valid class numbers exceeded", kr.getError(0).getMessage());
+
+	assertEquals(kr.getError(0).getMessage(),"Valid class numbers exceeded");
     };
 };

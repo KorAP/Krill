@@ -13,11 +13,19 @@ import java.nio.charset.StandardCharsets;
  */
 public class KorapString {
 
-    public static String StringfromFile(String path, Charset encoding) throws IOException {
+    /**
+     * Get String from file
+     */
+    public static String StringfromFile (String path, Charset encoding)
+	throws IOException {
 	byte[] encoded = Files.readAllBytes(Paths.get(path));
 	return new String(encoded, encoding);
     };
 
+
+    /**
+     * Get String from file
+     */
     public static String StringfromFile (String path) throws IOException {
 	return StringfromFile(path, StandardCharsets.UTF_8);
     };

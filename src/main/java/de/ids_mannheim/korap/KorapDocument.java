@@ -5,6 +5,7 @@ import java.util.*;
 import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.document.KorapPrimaryData;
 import de.ids_mannheim.korap.index.FieldDocument;
+import de.ids_mannheim.korap.response.KorapResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.*;
@@ -14,10 +15,10 @@ import com.fasterxml.jackson.annotation.*;
 /**
  * Abstract class representing a document in the KorAP index.
  *
- * @author ndiewald
+ * @author Nils Diewald
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class KorapDocument {
+public abstract class KorapDocument extends KorapResponse {
     private KorapPrimaryData primaryData;
 
     @JsonIgnore

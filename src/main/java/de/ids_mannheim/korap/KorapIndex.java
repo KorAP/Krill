@@ -99,7 +99,7 @@ public class KorapIndex {
     private int commitCounter = 0;
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
-    private String version;
+    private String version, name;
 
     private byte[] pl = new byte[4];
     private static ByteBuffer bb       = ByteBuffer.allocate(4),
@@ -120,7 +120,8 @@ public class KorapIndex {
 	    try {
 		InputStream fr = new FileInputStream(f);
 		prop.load(fr);
-		this.version = prop.getProperty("lucene.index.version");
+		this.version = prop.getProperty("lucene.version");
+		this.name = prop.getProperty("lucene.name");
 	    }
 	    catch (FileNotFoundException e) {
 		log.warn(e.getLocalizedMessage());
@@ -163,6 +164,11 @@ public class KorapIndex {
     // Get system version
     public String getVersion () {
 	return this.version;
+    };
+
+    // Get system name
+    public String getName () {
+	return this.name;
     };
 
 
@@ -622,6 +628,9 @@ public class KorapIndex {
 
 	if (this.getVersion() != null)
 	    match.setVersion(this.getVersion());
+
+	if (this.getName() != null)
+	    match.setName(this.getName());
 
 	if (match.getStartPos() == -1)
 	    return match;
@@ -1255,7 +1264,11 @@ public class KorapIndex {
 	    kr.setTotalResults(cutoff ? -1 : i);
 	}
 	catch (IOException e) {
-	    kr.setError(600, e.getLocalizedMessage());
+	    kr.addError(
+	        600,
+		"Unable to read index",
+		e.getLocalizedMessage()
+	    );
 	    log.warn( e.getLocalizedMessage() );
 	};
 
@@ -1371,7 +1384,11 @@ public class KorapIndex {
 	    mc.setBenchmark(t1, System.nanoTime());
 	}
 	catch (IOException e) {
-	    mc.setError(600, e.getLocalizedMessage());
+	    mc.addError(
+	        600,
+	        "Unable to read index",
+	        e.getLocalizedMessage()
+            );
 	    log.warn(e.getLocalizedMessage());
 	};
 

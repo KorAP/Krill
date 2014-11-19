@@ -309,7 +309,7 @@ public class TestKorapQueryJSON {
 	    new KorapQuery("tokens").fromJSON(json);
 	}
 	catch (QueryException e) {
-	    assertEquals(612, e.getErrorCode());
+	    assertEquals(701, e.getErrorCode());
 	};
     };
 

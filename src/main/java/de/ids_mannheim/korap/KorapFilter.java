@@ -46,11 +46,9 @@ public class KorapFilter {
     protected BooleanFilter fromJSON (JsonNode json, String field) throws QueryException {
 	BooleanFilter bfilter = new BooleanFilter();
 
-	/*
-	  TODO: THIS UNFORTUNATELY BREAKS TESTS
+	// TODO: THIS UNFORTUNATELY BREAKS TESTS
 	if (!json.has("@type"))
-	    throw new QueryException(612, "JSON-LD group has no @type attribute");
-	*/
+	    throw new QueryException(701, "JSON-LD group has no @type attribute");
 
 	String type = json.get("@type").asText();
 

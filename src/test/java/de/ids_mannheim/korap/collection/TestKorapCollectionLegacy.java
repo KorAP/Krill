@@ -10,7 +10,6 @@ import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.filter.BooleanFilter;
 
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -31,7 +30,13 @@ public class TestKorapCollectionLegacy {
 	// Construct index
 	KorapIndex ki = new KorapIndex();
 	// Indexing test files
-	for (String i : new String[] {"00001", "00002", "00003", "00004", "00005", "00006", "02439"}) {
+	for (String i : new String[] {"00001",
+				      "00002",
+				      "00003",
+				      "00004",
+				      "00005",
+				      "00006",
+				      "02439"}) {
 	    ki.addDocFile(
 	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
             );
@@ -48,7 +53,10 @@ public class TestKorapCollectionLegacy {
 	// The virtual collection consists of all documents that have
 	// the textClass "reisen" and "freizeit"
 
-	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
+	kc.filter(
+            kf.and("textClass", "reisen")
+	      .and("textClass", "freizeit-unterhaltung")
+	);
 
 	assertEquals("Documents", 5, kc.numberOf("documents"));
 	assertEquals("Tokens", 1678, kc.numberOf("tokens"));

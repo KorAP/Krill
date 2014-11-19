@@ -10,6 +10,7 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.index.SearchContext;
+import de.ids_mannheim.korap.response.Notifications;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  *
  * KorapSearch implements an object for all search relevant parameters.
  */
-public class KorapSearch {
+public class KorapSearch extends Notifications {
     private int startIndex = 0,
 	        limit = 0;
     private short count = 25,
@@ -36,7 +37,7 @@ public class KorapSearch {
     private SpanQuery query;
     private KorapCollection collection;
     private KorapIndex index;
-    private String error, warning;
+    //    private String error, warning;
 
     // Timeout search after milliseconds
     private long timeout = (long) 120_000;
@@ -49,7 +50,6 @@ public class KorapSearch {
     private String spanContext;
 
     private long timeoutStart = Long.MIN_VALUE;
-
 
     {
 	context  = new SearchContext();
@@ -76,8 +76,10 @@ public class KorapSearch {
 
     public KorapSearch (String jsonString) {
 	ObjectMapper mapper = new ObjectMapper();
+
 	try {
-	    this.request = mapper.readValue(jsonString, JsonNode.class);
+	    // Todo - use correct method!
+	    this.request = mapper.readTree(jsonString);
 	    
 	    // "query" value
 	    if (this.request.has("query")) {
@@ -86,39 +88,49 @@ public class KorapSearch {
 		    SpanQueryWrapper qw = kq.fromJSON(this.request.get("query"));
 
 		    if (qw.isEmpty()) {
-			this.error = "This query matches everywhere";
+
+			// Unable to process result
+			this.addError(780, "This query matches everywhere");
 		    }
 		    else {
 			this.query = qw.toQuery();
 			if (qw.isOptional())
-			    this.addWarning("Optionality of query is ignored");
+			    this.addWarning(781, "Optionality of query is ignored");
 			if (qw.isNegative())
-			    this.addWarning("Exclusivity of query is ignored");
+			    this.addWarning(782, "Exclusivity of query is ignored");
 
-			// Set query deserialization warning
-			if (kq.hasWarning())
-			    this.addWarning(kq.getWarning());
 		    };
+		    // Copy notifications from query
+		    this.copyNotificationsFrom(kq);
+		    kq.clearNotifications();
 		}
 		catch (QueryException q) {
-		    this.error = q.getMessage();
+		    this.addError(q.getErrorCode(), q.getMessage());
 		};
 	    }
 	    else {
-		this.error = "No query defined";
+		this.addError(700, "No query given");
 	    };
 
-	    // Legacy code: Report warning coming from the request
-	    if (this.request.has("warning") && this.request.get("warning").asText().length() > 0)
-		this.addWarning(this.request.get("warning").asText());
+	    // <legacycode>
+	    if (this.request.has("warning") &&
+		this.request.get("warning").asText().length() > 0)
+		this.addWarning(
+		    799,
+		    this.request.get("warning").asText()
+		);
+	    // </legacycode>
+	    // <legacycode>
 	    if (this.request.has("warnings")) {
 		JsonNode warnings = this.request.get("warnings");
 		for (JsonNode node : warnings)
 		    if (node.asText().length() > 0)
-			this.addWarning(node.asText());
+			this.addWarning(799, node.asText());
 	    };
-	    // end of legacy code
+	    // </legacycode>
 
+	    // Copy notifications from request
+	    this.copyNotificationsFrom(this.request);
 	    
 	    // virtual collections
 	    if (this.request.has("collection") ||
@@ -126,7 +138,7 @@ public class KorapSearch {
 		this.request.has("collections"))
 		this.setCollection(new KorapCollection(jsonString));
 
-	    if (this.error == null) {
+	    if (!this.hasErrors()) {
 		if (this.request.has("meta")) {
 		    JsonNode meta = this.request.get("meta");
 
@@ -179,7 +191,7 @@ public class KorapSearch {
 
 	// Unable to parse JSON
 	catch (IOException e) {
-	    this.error = e.getMessage();
+	    this.addError(621, "Unable to parse JSON");
 	};
     };
 
@@ -189,7 +201,7 @@ public class KorapSearch {
 	    this.query = sqwi.toQuery();
 	}
 	catch (QueryException q) {
-	    this.error = q.getMessage();
+	    this.addError(q.getErrorCode(), q.getMessage());
 	};
     };
 
@@ -208,24 +220,6 @@ public class KorapSearch {
 	this.timeout = timeout;
     };
 
-    public String getError () {
-	return this.error;
-    };
-
-    public String getWarning () {
-	return this.warning;
-    };
-
-    public void addWarning (String msg) {
-	if (msg == null)
-	    return;
-
-	if (this.warning == null)
-	    this.warning = msg;
-	else
-	    this.warning += "; " + msg;
-    };
-
     public SpanQuery getQuery () {
 	return this.query;
     };
@@ -235,11 +229,12 @@ public class KorapSearch {
     };
 
     public KorapSearch setQuery (SpanQueryWrapper sqwi) {
+	// this.copyNotifications(sqwi);
 	try {
 	    this.query = sqwi.toQuery();
 	}
 	catch (QueryException q) {
-	    this.error = q.getMessage();
+	    this.addError(q.getErrorCode(), q.getMessage());
 	};
 	return this;
     };
@@ -354,8 +349,10 @@ public class KorapSearch {
 
     public KorapSearch setCollection (KorapCollection kc) {
 	this.collection = kc;
-	if (kc.getError() != null)
-	    this.error = kc.getError();
+
+	// Copy messages from the collection
+	this.copyNotificationsFrom(kc);
+	kc.clearNotifications();
 	return this;
     };
 
@@ -371,27 +368,27 @@ public class KorapSearch {
 	    KorapResult kr = new KorapResult();
 	    kr.setRequest(this.request);
 
-	    if (this.error != null)
-		kr.setError(this.error);
+	    if (this.hasErrors())
+		kr.copyNotificationsFrom(this);
 	    else
-		kr.setError(this.getClass() + " expects a query");
+		kr.addError(700, "No query given");
 	    return kr;
 	};
 
-	if (this.error != null) {
+	if (this.hasErrors()) {
 	    KorapResult kr = new KorapResult();
+
+	    // TODO: dev mode
 	    kr.setRequest(this.request);
-	    kr.setError(this.error);
-	    if (this.warning != null)
-		kr.addWarning(this.warning);
+	    kr.copyNotificationsFrom(this);
 	    return kr;
 	};
 
 	this.getCollection().setIndex(ki);
 	KorapResult kr = ki.search(this);
 	kr.setRequest(this.request);
-	if (this.warning != null)
-	    kr.addWarning(this.warning);
+	kr.copyNotificationsFrom(this);
+	this.clearNotifications();
 	return kr;
     };
 };

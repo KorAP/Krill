@@ -46,6 +46,13 @@ public class TestKorapCollectionJSON {
 	assertEquals(kc.toString(), "filter with QueryWrapperFilter(+(pubDate:[19900000 TO 99999999] title:Mannheim)); ");
     };
 
+    @Test
+    public void nocollectiontypegiven () {
+	String metaQuery = _getJSONString("multiterm_rewrite_collection.jsonld");
+	KorapCollection kc = new KorapCollection(metaQuery);
+	assertEquals(701, kc.getError(0).getCode());
+    };
+
 
     @Ignore
     public void noCollection () {

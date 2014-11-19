@@ -57,10 +57,11 @@ public class TestTemporaryQueryLimitations {
 	assertEquals(kr.getQuery(),"shrink(130: {131: spanContain({129: <tokens:s />}, {130: tokens:s:wegen})})");
 	assertEquals(kr.totalResults(),0);
 	assertEquals(kr.getStartIndex(),0);
-	assertEquals(
-	    kr.getWarning(),
-	    "classRefCheck is not yet supported - results may not be correct; " +
-	    "This is a warning coming from the serialization");
 
+	assertEquals("This is a warning coming from the serialization",
+		     kr.getWarning(1).getMessage());
+	assertEquals("Class reference checks are currently not supported" +
+		     " - results may not be correct",
+		     kr.getWarning(0).getMessage());
     };
 };

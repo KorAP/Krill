@@ -8,6 +8,7 @@ import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.filter.BooleanFilter;
 import de.ids_mannheim.korap.filter.FilterOperation;
+import de.ids_mannheim.korap.response.Notifications;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.*;
@@ -24,19 +25,29 @@ import java.io.StringWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * That's a pretty ugly API to
+ * create virtual collections.
+ * It works - so I got that going for
+ * me, which is nice.
+ *
+ * @author Nils Diewald
+ */
+
+
 // TODO: Make a cache for the bits!!! DELETE IT IN CASE OF AN EXTENSION OR A FILTER!
-// Todo: Maybe use randomaccessfilterstrategy
+// TODO: Maybe use randomaccessfilterstrategy
 // TODO: Maybe a constantScoreQuery can make things faster?
 
 // THIS MAY CHANGE for stuff like combining virtual collections
 // See http://mail-archives.apache.org/mod_mbox/lucene-java-user/
 //     200805.mbox/%3C17080852.post@talk.nabble.com%3E
 
-public class KorapCollection {
+public class KorapCollection extends Notifications {
     private KorapIndex index;
     private KorapDate created;
     private String id;
-    private String error;
+    //    private String error;
     private ArrayList<FilterOperation> filter;
     private int filterCount = 0;
     
@@ -61,7 +72,7 @@ public class KorapCollection {
 	this.filter = new ArrayList<FilterOperation>(5);
 
 	try {
-	    JsonNode json = mapper.readValue(jsonString, JsonNode.class);
+	    JsonNode json = mapper.readTree(jsonString);
 
 	    if (json.has("collection")) {
 		this.fromJSON(json.get("collection"));
@@ -70,16 +81,25 @@ public class KorapCollection {
 	    // Legacy collection serialization
 	    // This will be removed!
 	    else if (json.has("collections")) {
-		if (DEBUG)
-		    log.warn("Using DEPRECATED collection!");
-
+		this.addMessage(
+		    850,
+		    "Collections are deprecated in favour of a single collection"
+                );
 		for (JsonNode collection : json.get("collections")) {
 		    this.fromJSONLegacy(collection);
 		};
 	    };
 	}
-	catch (Exception e) {
-	    this.error = e.getMessage();
+	catch (QueryException qe) {
+	    this.addError(qe.getErrorCode(),qe.getMessage());
+	}
+	catch (IOException e) {
+	    this.addError(
+	        621,
+		"Unable to parse JSON",
+		"KorapCollection",
+		e.getLocalizedMessage()
+	    );
 	};
     };
 
@@ -92,10 +112,10 @@ public class KorapCollection {
     public void fromJSON (String jsonString) throws QueryException {
 	ObjectMapper mapper = new ObjectMapper();
 	try {
-	    this.fromJSON((JsonNode) mapper.readValue(jsonString, JsonNode.class));
+	    this.fromJSON((JsonNode) mapper.readTree(jsonString));
 	}
 	catch (Exception e) {
-	    this.error = e.getMessage();
+	    this.addError(621, "Unable to parse JSON", "KorapCollection");
 	};
     };
 
@@ -114,7 +134,7 @@ public class KorapCollection {
 	    this.fromJSONLegacy((JsonNode) mapper.readValue(jsonString, JsonNode.class));
 	}
 	catch (Exception e) {
-	    this.error = e.getMessage();
+	    this.addError(621, "Unable to parse JSON", "KorapCollection");
 	};
     };
 
@@ -124,10 +144,10 @@ public class KorapCollection {
      */
     public void fromJSONLegacy (JsonNode json) throws QueryException {
 	if (!json.has("@type"))
-	    throw new QueryException(612, "JSON-LD group has no @type attribute");
+	    throw new QueryException(701, "JSON-LD group has no @type attribute");
 
 	if (!json.has("@value"))
-	    throw new QueryException(612, "Legacy filter need @value fields");
+	    throw new QueryException(851, "Legacy filter need @value fields");
 
 	String type = json.get("@type").asText();
 
@@ -162,18 +182,18 @@ public class KorapCollection {
 	    log.trace("Added filter: {}", filter.toString());
 
 	if (filter == null) {
-	    log.warn("No filter is given");
+	    this.addWarning(830, "Filter was empty");
 	    return this;
 	};
 
 	Filter f = (Filter) new QueryWrapperFilter(filter.toQuery());
 	if (f == null) {
-	    log.warn("Filter can't be wrapped");
+	    this.addWarning(831, "Filter is not wrappable");
 	    return this;
 	};
 	FilterOperation fo = new FilterOperation(f, false);
 	if (fo == null) {
-	    log.warn("Filter operation invalid");
+	    this.addWarning(832, "Filter operation is invalid");
 	    return this;
 	};
 	this.filter.add(fo);
@@ -329,14 +349,14 @@ public class KorapCollection {
 
     public long numberOf (String foundry, String type) throws IOException {
 	if (this.index == null)
-	    return (long) 0;
+	    return (long) -1;
 
 	return this.index.numberOf(this, foundry, type);
     };
 
     public long numberOf (String type) throws IOException {
 	if (this.index == null)
-	    return (long) 0;
+	    return (long) -1;
 
 	return this.index.numberOf(this, "tokens", type);
     };
@@ -409,9 +429,5 @@ public class KorapCollection {
 
 	sw.append("}");
 	return sw.getBuffer().toString();
-    };
-    
-    public String getError () {
-	return this.error;
     };
 };
