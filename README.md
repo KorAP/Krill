@@ -4,6 +4,30 @@ KorAP Lucene Index
 KorAP is available at
 https://korap.ids-mannheim.de/
 
+Prerequisites
+-------------
+
+Installation/Starting
+---------------------
+
+To run the test suite, type
+
+  $ mvn test
+
+To start the server, type
+
+  $ mvn compile exec:java
+
+To compile the indexer, type
+
+  $ mvn compile assembly:single
+
+To run the indexer, type
+
+  $ java -jar target/KorAP-lucene-index-X.XX.jar
+    src/main/resources/korap.conf
+    src/test/resources/examples/
+
 Limitations
 -----------
 
