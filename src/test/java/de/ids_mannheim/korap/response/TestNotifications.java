@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.util;
+package de.ids_mannheim.korap.response;
 
 import java.io.*;
 

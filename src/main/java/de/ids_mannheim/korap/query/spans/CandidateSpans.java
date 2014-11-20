@@ -14,7 +14,7 @@ public class CandidateSpans implements Comparable<CandidateSpans>, Cloneable{
 	private long cost;
 	private Collection<byte[]> payloads = new ArrayList<>();
 	private int position;
-	private CandidateSpans childSpan; // used for multiple distance with unordered constraint 
+	private CandidateSpans childSpan; // used for example for multiple distance with unordered constraint 
 	protected short spanId;
 	
 	
@@ -25,15 +25,6 @@ public class CandidateSpans implements Comparable<CandidateSpans>, Cloneable{
 		this.cost = span.cost();
 		if (span.isPayloadAvailable())
 			setPayloads(span.getPayload());
-		
-		/*if (span instanceof ElementSpans ){
-			ElementSpans s = (ElementSpans) span;
-			this.elementRef = s.getElementRef();
-		}
-		else if (span instanceof AttributeSpans){
-			AttributeSpans s = (AttributeSpans) span;
-			this.elementRef = s.getElementRef();
-		}		*/
 	}	
 	
 	@Override

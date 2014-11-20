@@ -14,6 +14,7 @@ import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanNextQuery;
 
 public class TestDistanceExclusionIndex {
 
@@ -28,7 +29,7 @@ public class TestDistanceExclusionIndex {
         ki.addDoc(createFieldDoc0()); 
         ki.commit();
         SpanQuery sq;
-        // ---- Distance 0 to 1
+        //ordered distance 0 to 1
         sq = createQuery("s:c","s:e",0,1,true);                
         kr = ki.search(sq, (short) 10);        
         assertEquals(3, kr.getTotalResults());	    
@@ -116,8 +117,35 @@ public class TestDistanceExclusionIndex {
         assertEquals(1, kr.getTotalResults());
         assertEquals(9, kr.match(0).getStartPos());
 	    assertEquals(10, kr.match(0).getEndPos());
+    }
+	
+	// Add skipTo test	
+	@Test
+	public void testCase6() throws IOException{
+		ki = new KorapIndex();
+		ki.addDoc(createFieldDoc1());
+		ki.addDoc(createFieldDoc2());
+        ki.commit();
         
-/*      System.out.print(kr.getTotalResults()+"\n");
+        SpanQuery sq;
+        //ordered distance 0 to 1
+        sq = createQuery("s:d","s:b",0,1,true);
+        kr = ki.search(sq, (short) 10);
+        assertEquals(4, kr.getTotalResults());
+        
+		SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+		kr = ki.search(stq, (short) 10);
+		assertEquals(6, kr.getTotalResults());
+		
+		SpanNextQuery snq = new SpanNextQuery(stq,sq);		
+        kr = ki.search(snq, (short) 10);
+        assertEquals(2, kr.getTotalResults());
+        assertEquals(3, kr.match(0).getStartPos());
+	    assertEquals(5, kr.match(0).getEndPos());
+	    assertEquals(8, kr.match(1).getStartPos());
+	    assertEquals(10, kr.match(1).getEndPos());
+	    
+        /*System.out.print(kr.getTotalResults()+"\n");
 		for (int i=0; i< kr.getTotalResults(); i++){
 			System.out.println(
 				kr.match(i).getLocalDocID()+" "+
@@ -125,7 +153,7 @@ public class TestDistanceExclusionIndex {
 				kr.match(i).endPos
 		    );
 		}*/
-    }
+	}
 	
     private SpanQuery createQuery(String x, String y, int min, int max, boolean isOrdered){
     	SpanDistanceQuery sq = new SpanDistanceQuery(

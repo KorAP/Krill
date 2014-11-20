@@ -35,12 +35,10 @@ public class AttributeSpans extends SimpleSpans{
 	private int currentDoc, currentPosition;
 	private short spanId;
 	private boolean isFinish;
+	private int elementEnd;
 	
 	protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
 
-        // This advices the java compiler to ignore all loggings
-        public static final boolean DEBUG = false;
-	
 	public AttributeSpans(SpanAttributeQuery simpleSpanQuery,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts) throws IOException {
@@ -73,12 +71,12 @@ public class AttributeSpans extends SimpleSpans{
 				this.matchStartPosition = cs.getStart();
 				this.matchEndPosition = cs.getEnd();
 				this.setSpanId(cs.getSpanId());
+				this.setElementEnd(cs.getElementEnd());
 				candidateList.remove(0);
 				return true;
 			}
 			else{
-			        if (DEBUG)
-				    logger.info("Setting candidate list");
+			    //logger.info("Setting candidate list");
 				setCandidateList();
 //				for (CandidateAttributeSpan cs: candidateList){
 //					logger.info("cs ref "+cs.getElementRef());
@@ -99,9 +97,7 @@ public class AttributeSpans extends SimpleSpans{
 		while (hasMoreSpans &&	firstSpans.doc() == currentDoc && 
 				firstSpans.start() == currentPosition){
 			
-			short spanId = retrieveSpanId(firstSpans);			
-            //logger.info("ElementRef: "+elementRef);
-			candidateList.add(new CandidateAttributeSpan(firstSpans,spanId));
+			candidateList.add(createCandidateSpan(firstSpans));
 			hasMoreSpans = firstSpans.next();
 		}
 		
@@ -109,17 +105,16 @@ public class AttributeSpans extends SimpleSpans{
 		Collections.reverse(candidateList);
 	}
 	
-	/**	Get the elementRef from payload
-	 * */
-	private short retrieveSpanId(Spans firstSpans) throws IOException {		
+	private CandidateAttributeSpan createCandidateSpan(Spans firstSpans) throws IOException {
 		List<byte[]> payload = (List<byte[]>) firstSpans.getPayload();
-		long s = System.nanoTime();
 		ByteBuffer wrapper = ByteBuffer.wrap(payload.get(0));
-		short num = wrapper.getShort();
-		long e = System.nanoTime();
-		if (DEBUG)
-                    logger.info("Bytebuffer runtime "+ (e-s));
-		return num;				
+		
+		short spanId = wrapper.getShort(0);		
+		int elementEnd = -1;
+		if (payload.get(0).length == 6){
+			elementEnd = wrapper.getInt(2);
+		}		
+		return new CandidateAttributeSpan(firstSpans,spanId, elementEnd);
 	}
 	
 	public short getSpanId(){
@@ -128,6 +123,14 @@ public class AttributeSpans extends SimpleSpans{
 
 	public void setSpanId(short spanId) {
 		this.spanId = spanId;
+	}
+
+	public int getElementEnd() {
+		return elementEnd;
+	}
+
+	public void setElementEnd(int elementEnd) {
+		this.elementEnd = elementEnd;
 	}
 
 	public boolean isFinish() {
@@ -163,11 +166,13 @@ public class AttributeSpans extends SimpleSpans{
 			implements Comparable<CandidateSpans>{
 
 		private short spanId;
+		private int elementEnd;
 		
-		public CandidateAttributeSpan(Spans span, short spanId) 
+		public CandidateAttributeSpan(Spans span, short spanId, int elementEnd) 
 				throws IOException {
 			super(span);
 			setSpanId(spanId);
+			setElementEnd(elementEnd);
 		}
 		
 		public void setSpanId(short spanId) {
@@ -175,6 +180,14 @@ public class AttributeSpans extends SimpleSpans{
 		}
 		public short getSpanId() {
 			return spanId;
+		}
+
+		public int getElementEnd() {
+			return elementEnd;
+		}
+
+		public void setElementEnd(int elementEnd) {
+			this.elementEnd = elementEnd;
 		}
 
 		@Override

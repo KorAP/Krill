@@ -1,4 +1,5 @@
-package de.ids_mannheim.korap.util;
+package de.ids_mannheim.korap.response;
+
 import de.ids_mannheim.korap.response.Messages;
 
 import static org.junit.Assert.*;

@@ -21,9 +21,6 @@ public class DistanceExclusionSpans extends DistanceSpans{
 	private boolean isOrdered;
 	private boolean hasMoreSecondSpans;
 
-        // This advices the java compiler to ignore all loggings
-        public static final boolean DEBUG = false;
-
 	public DistanceExclusionSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
 			Map<Term, TermContext> termContexts, boolean isOrdered) 
@@ -59,7 +56,7 @@ public class DistanceExclusionSpans extends DistanceSpans{
 		
 		// skip the secondSpan to the right side of the firstspan
 		while (hasMoreSecondSpans && secondSpans.doc() == firstSpans.doc() &&
-				firstSpans.start() >= secondSpans.end()){		
+				firstSpans.start() >= secondSpans.end()){
 
 			// the firstspan is within maxDistance
 			if (!isOrdered && calculateActualDistance() <= maxDistance){
@@ -70,6 +67,11 @@ public class DistanceExclusionSpans extends DistanceSpans{
 		}		
 	}
 	
+	/** Calculate the distance / difference between a firstspan and 
+	 * 	a secondspan positions.
+	 * 	
+	 * @return distance
+	 * */
 	private int calculateActualDistance(){
 		// right secondSpan
 		if (firstSpans.end() <= secondSpans.start())
@@ -78,6 +80,13 @@ public class DistanceExclusionSpans extends DistanceSpans{
 		return firstSpans.start() - secondSpans.end() +1; 
 	}
 	
+	/** Check the distance between the current first span and second span 
+	 * 	against the min and max distance constraints.
+	 * 	
+	 * 	@return true if the distance between the first and the second spans
+	 * 			 are smaller as the minimum distance or bigger than the max
+	 * 			 distance.   
+	 * */
 	private boolean findMatch() throws IOException {
 		if (!hasMoreSecondSpans || secondSpans.doc() > firstSpans.doc()){
 			setMatchProperties();
@@ -98,6 +107,9 @@ public class DistanceExclusionSpans extends DistanceSpans{
 		return false;
 	}
 	
+	/** Set the current firstspan as the match
+	 * 
+	 * */
 	private void setMatchProperties() throws IOException{
 		matchDocNumber = firstSpans.doc();
 		matchStartPosition = firstSpans.start();
@@ -107,13 +119,11 @@ public class DistanceExclusionSpans extends DistanceSpans{
 	    	matchPayload.addAll(firstSpans.getPayload());
   		
   		setMatchFirstSpan(new CandidateSpans(firstSpans));
-  		//setMatchSecondSpan(new CandidateSpan(secondSpans));
   		
-		if (DEBUG)
-		    log.trace("doc# {}, start {}, end {}",
-			      matchDocNumber,
-			      matchStartPosition,
-			      matchEndPosition);		
+//	    log.trace("doc# {}, start {}, end {}",
+//		      matchDocNumber,
+//		      matchStartPosition,
+//		      matchEndPosition);		
 	}
 
 	@Override
