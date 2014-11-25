@@ -9,23 +9,41 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.ids_mannheim.korap.response.Notifications;
 
+/**
+ * Base class for objects meant to be responded by the server.
+ *
+ * <p>
+ * <blockquote><pre>
+ *   KorapResponse km = new KorapResponse();
+ *   System.out.println(
+ *     km.toJSON()
+ *   );
+ * </pre></blockquote>
+ *
+ * @author Nils Diewald
+ * @see de.ids_mannheim.korap.response.Notifications
+ */
 public class KorapResponse extends Notifications {
     ObjectMapper mapper = new ObjectMapper();
 
-    private String
-	version,
-	name,
-	node,
-	listener;
+    // TODO: Add timeout!!!
+
+    private String version, name, node, listener;
     private String benchmark;
+    private boolean timeExceeded = false;
 
-    // add timeout!!!
-    // remove totalResults, totalTexts
 
+    /**
+     * Construct a new KorapResponse object.
+     *
+     * @return The new KorapResponse object
+     */
     public KorapResponse () {};
 
     /**
-     * Get version of the index
+     * Get string representation of the backend's version.
+     *
+     * @return String representation of the backend's version
      */
     @JsonIgnore
     public String getVersion () {
@@ -35,18 +53,22 @@ public class KorapResponse extends Notifications {
     };
 
     /**
-     * Set version number.
+     * Set the string representation of the backend's version.
      *
-     * @param version The version number of the index as
-     *                a string representation.
+     * @param version The string representation of the backend's version
+     * @return KorapResponse object for chaining
      */
     @JsonIgnore
-    public void setVersion (String version) {
+    public KorapResponse setVersion (String version) {
 	this.version = version;
+	return this;
     };
 
     /**
-     * Get name the index
+     * Get string representation of the backend's name.
+     * All nodes in a cluster should have the same backend name.
+     *
+     * @return String representation of the backend's name
      */
     @JsonIgnore
     public String getName () {
@@ -56,26 +78,56 @@ public class KorapResponse extends Notifications {
     };
 
     /**
-     * Set name.
+     * Set the string representation of the backend's name.
+     * All nodes in a cluster should have the same backend name.
      *
-     * @param name The name of the index as
-     *             a string representation.
+     * @param version The string representation of the backend's name
+     * @return KorapResponse object for chaining
      */
     @JsonIgnore
-    public void setName (String name) {
+    public KorapResponse setName (String name) {
 	this.name = name;
+	return this;
     };
 
+    /**
+     * Get string representation of the node's name.
+     * Each node in a cluster has a unique name.
+     *
+     * @return String representation of the node's name
+     */
     @JsonIgnore
     public String getNode () {
 	return this.node;
     };
 
+    /**
+     * Set the string representation of the node's name.
+     * Each node in a cluster has a unique name.
+     *
+     * @param version The string representation of the node's name
+     * @return KorapResponse object for chaining
+     */
     @JsonIgnore
     public KorapResponse setNode (String name) {
 	this.node = name;
 	return this;
     };
+
+
+    @JsonIgnore
+    public void setTimeExceeded (boolean timeout) {
+	if (timeout)
+	    this.addWarning(682, "Search time exceeded");
+	this.timeExceeded = timeout;
+    };
+
+
+    @JsonIgnore
+    public boolean getTimeExceeded () {
+	return this.timeExceeded;
+    };
+
 
     @JsonIgnore
     public KorapResponse setBenchmark (long t1, long t2) {
@@ -129,6 +181,9 @@ public class KorapResponse extends Notifications {
         else if (this.getVersion() != null) {
 	    sb.append(this.getVersion());
 	};
+
+	if (this.timeExceeded)
+	    json.put("timeExceeded", true);
 
 	if (sb.length() > 0)
 	    json.put("version", sb.toString());

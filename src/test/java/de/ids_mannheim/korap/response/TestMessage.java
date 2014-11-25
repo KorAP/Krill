@@ -1,5 +1,6 @@
 package de.ids_mannheim.korap.response;
 
+import de.ids_mannheim.korap.response.Message;
 import de.ids_mannheim.korap.response.Messages;
 
 import static org.junit.Assert.*;
@@ -35,5 +36,18 @@ public class TestMessage {
 	assertEquals("[[612,\"Foo\"],[613,\"Bar\",\"Instanz\"]]", km.toJSON());
 	km.add(614,"Test");
 	assertEquals("[[612,\"Foo\"],[613,\"Bar\",\"Instanz\"],[614,\"Test\"]]", km.toJSON());
+    };
+
+    @Test
+    public void CheckIterability () {
+	Messages km = new Messages();
+	km.add(612,"Foo");
+	km.add(613,"Bar", "Instanz");
+	km.add(614,"Test");
+	String test = "";
+	for (Message msg : km)
+	    test += msg.getCode();
+
+	assertEquals(test, "612613614");
     };
 };

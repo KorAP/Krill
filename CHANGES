@@ -1,5 +1,7 @@
-0.49.1 2014-11-16
-        - Major refactoring for new response messages (diewald)
+0.49.1 2014-11-25
+        - [cleanup] Major refactoring for new response messages (diewald)
+	- [cleanup] Removed deprecated error messaging (diewald)
+	- [documentation] Improved documentation for notifications (diewald)
 
 0.49 2014-11-14
         - This is a major version (prepared for the Evaluation Meeting)

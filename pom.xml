@@ -14,14 +14,6 @@
       $mvn clean compile exec:java
   -->
 
-  <!--
-      <parent>
-      <groupId>KorAP-modules</groupId>
-      <artifactId>KorAP-core-modules</artifactId>
-      <version>LATEST</version>
-      </parent>
-  -->
-
   <groupId>KorAP-modules</groupId>
   <artifactId>KorAP-lucene-index</artifactId>
   <version>0.49.1</version>
@@ -41,12 +33,10 @@
       <email>diewald@ids-mannheim.de</email>
       <url>http://nils-diewald.de</url>
     </developer>
-
     <developer>
       <name>Eliza Margaretha</name>
       <email>margaretha@ids-mannheim.de</email>
     </developer>
-
   </developers>
 
   <properties>
@@ -151,13 +141,13 @@
       <version>1.13-b01</version>
     </dependency>
 
-    <!-- JSON support -->
+    <!-- JSON support in Jersey -->
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-moxy</artifactId>
     </dependency>
 
-    <!-- Jackson -->
+    <!-- JSON support using Jackson -->
     <!-- see https://github.com/FasterXML/jackson-core -->
     <!-- https://github.com/FasterXML/jackson-databind -->
     <dependency>
@@ -238,6 +228,26 @@
 	  </excludes>
         </configuration>
       </plugin> 
+
+      <!-- Formatter plugin for Eclipse based coding conventions -->
+      <!--
+	  http://maven-java-formatter-plugin.googlecode.com/svn/site/0.4/usage.html
+	  Call: mvn java-formatter:format
+      -->
+      <plugin>
+        <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
+        <artifactId>maven-java-formatter-plugin</artifactId>
+        <version>0.4</version>
+	<!--
+	<executions>
+          <execution>
+            <goals>
+              <goal>format</goal>
+            </goals>
+          </execution>
+        </executions>
+	-->
+      </plugin>
 
       <plugin>
         <groupId>org.codehaus.mojo</groupId>

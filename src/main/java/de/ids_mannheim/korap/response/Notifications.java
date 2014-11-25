@@ -13,12 +13,31 @@ import de.ids_mannheim.korap.response.Messages;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
- * Unified notification class for KorAP related errors,
+ * A unified notification class for KorAP related errors,
  * warnings and messages.
  *
+ * <p>
+ * The object contains lists of errors, warnings and messages
+ * and new warnings, errors or messages are appended to these lists.
+ *
+ * <p>
+ * <blockquote><pre>
+ *   Notifications n = new Notifications();
+ *   n.addWarning(456, "Something went wrong");
+ *   if (n.hasWarnings()) {
+ *     for (Message msg : n.getWarnings())
+ *       System.err.out(msg.getCode() + ": " + msg.getMessage());
+ *   };
+ *   System.err.println(n.toJSON());
+ * </pre></blockquote>
+ *
  * @author Nils Diewald
+ * @see de.ids_mannheim.korap.response.Messages
  */
-
+/*
+ * This will be inherited most of the time as Java does not support roles
+ * and I have no idea how to do this more elegantly.
+ */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Notifications {
@@ -31,50 +50,70 @@ public class Notifications {
 	             messages;
 
     /**
-     * Add a new warning.
+     * Appends a new warning.
      *
-     * @param code Integer code representation of the warning
-     * @param msg String representation of the warning
+     * @param code  Integer code representation of the warning
+     * @param msg   String representation of the warning
+     * @param terms Optional strings of additional information
+     * @return Notification object for chaining
      */
-    public void addWarning (int code, String msg, String ... terms) {
+    public Notifications addWarning (int code, String msg, String ... terms) {
 	if (this.warnings == null)
 	    this.warnings = new Messages();
 	this.warnings.add(code, msg, terms);
+	return this;
     };
 
-    public void addWarning (JsonNode msg) {
+    /**
+     * Appends a new warning.
+     *
+     * @param node  <code>JsonNode</code> representing a warning message
+     * @return Notification object for chaining
+     */
+    public Notifications addWarning (JsonNode node) {
 	if (this.warnings == null)
 	    this.warnings = new Messages();
 
 	try {
-	    this.warnings.add(msg);
+	    this.warnings.add(node);
 	}
 	catch (QueryException qe) {
 	    this.warnings.add(qe.getErrorCode(), qe.getMessage());
 	};
+
+	return this;
     };
 
     /**
-     * Add new warnings.
+     * Appends new warnings.
      *
-     * @param msgs Array representation of the warning
+     * @param msgs  <code>Messages</code> representing multiple warnings
+     * @return Notification object for chaining
      */
-    public void addWarnings (Messages msgs) {
+    public Notifications addWarnings (Messages msgs) {
 	if (this.warnings == null)
 	    this.warnings = msgs;
 	else
 	    this.warnings.add(msgs);
+	return this;
     };
 
 
     /**
-     * Get all warnings.
+     * Return all warnings.
+     *
+     * @return The <code>Messages</code> object representing all warnings
      */
     public Messages getWarnings () {
 	return this.warnings;
     };
 
-
+    /**
+     * Return a specific warning based on an index.
+     *
+     * @param index The index of the warning in the list of warnings.
+     * @return The message in case it exists, otherwise <code>null</code>
+     */
     public Message getWarning (int index) {
 	if (this.warnings != null)
 	    return this.warnings.get(index);
@@ -84,6 +123,8 @@ public class Notifications {
 
     /**
      * Check for warnings.
+     *
+     * @return <tt>true</tt> in case there are warnings, otherwise <tt>false</tt>
      */
     public boolean hasWarnings () {
 	if (this.warnings == null || this.warnings.size() == 0)
@@ -92,18 +133,27 @@ public class Notifications {
     };
 
     /**
-     * Add a new error.
+     * Appends a new error.
      *
-     * @param code Integer code representation of the error
-     * @param msg String representation of the error
+     * @param code  Integer code representation of the error
+     * @param msg   String representation of the error
+     * @param terms Optional strings of additional information
+     * @return Notification object for chaining
      */
-    public void addError (int code, String msg, String ... terms) {
+    public Notifications addError (int code, String msg, String ... terms) {
 	if (this.errors == null)
 	    this.errors = new Messages();
 	this.errors.add(code, msg, terms);
+	return this;
     };
 
-    public void addError (JsonNode msg) {
+    /**
+     * Appends a new error.
+     *
+     * @param node  <code>JsonNode</code> representing an error message
+     * @return Notification object for chaining
+     */
+    public Notifications addError (JsonNode msg) {
 	if (this.errors == null)
 	    this.errors = new Messages();
 	try {
@@ -112,37 +162,54 @@ public class Notifications {
 	catch (QueryException qe) {
 	    this.errors.add(qe.getErrorCode(), qe.getMessage());
 	};
+
+	return this;
     };
 
 
     /**
-     * Add new warnings.
+     * Appends new errors.
      *
-     * @param msgs Array representation of the warning
+     * @param msgs  <code>Messages</code> representing multiple errors
+     * @return Notification object for chaining
      */
-    public void addErrors (Messages msgs) {
+    public Notifications addErrors (Messages msgs) {
 	if (this.errors == null)
 	    this.errors = msgs;
 	else
 	    this.errors.add(msgs);
+	return this;
     };
 
 
+
     /**
-     * Get all errors.
+     * Return all errors.
+     *
+     * @return The <code>Messages</code> object representing all errors
      */
     public Messages getErrors () {
 	return this.errors;
     };
 
+
+    /**
+     * Return a specific error based on an index.
+     *
+     * @param index The index of the error in the list of errors.
+     * @return The message in case it exists, otherwise <code>null</code>
+     */
     public Message getError (int index) {
 	if (this.errors != null)
 	    return this.errors.get(index);
 	return (Message) null;
     };
 
+
     /**
      * Check for errors.
+     *
+     * @return <tt>true</tt> in case there are errors, otherwise <tt>false</tt>
      */
     public boolean hasErrors () {
 	if (this.errors == null || this.errors.size() == 0)
@@ -152,18 +219,27 @@ public class Notifications {
 
 
     /**
-     * Add a new message.
+     * Appends a new message.
      *
-     * @param code Integer code representation of the message
-     * @param msg String representation of the message
+     * @param code  Integer code representation of the message
+     * @param msg   String representation of the message
+     * @param terms Optional strings of additional information
+     * @return Notification object for chaining
      */
-    public void addMessage (int code, String msg, String ... terms) {
+    public Notifications addMessage (int code, String msg, String ... terms) {
 	if (this.messages == null)
 	    this.messages = new Messages();
 	this.messages.add(code, msg, terms);
+	return this;
     };
 
-    public void addMessage (JsonNode msg) {
+    /**
+     * Appends a new message.
+     *
+     * @param node  <code>JsonNode</code> representing a message
+     * @return Notification object for chaining
+     */
+    public Notifications addMessage (JsonNode msg) {
 	if (this.messages == null)
 	    this.messages = new Messages();
 	try {
@@ -172,28 +248,40 @@ public class Notifications {
 	catch (QueryException qe) {
 	    this.messages.add(qe.getErrorCode(), qe.getMessage());
 	};
+	return this;
     };
 
+
     /**
-     * Add new warnings.
+     * Appends new messages.
      *
-     * @param msgs Array representation of the warning
+     * @param msgs  <code>Messages</code> representing multiple messages
+     * @return Notification object for chaining
      */
-    public void addMessages (Messages msgs) {
+    public Notifications addMessages (Messages msgs) {
 	if (this.messages == null)
 	    this.messages = msgs;
 	else
 	    this.messages.add(msgs);
+	return this;
     };
 
 
     /**
-     * Get all messages.
+     * Return all messages.
+     *
+     * @return The <code>Messages</code> object representing all messages
      */
     public Messages getMessages () {
 	return this.messages;
     };
 
+    /**
+     * Return a specific message based on an index.
+     *
+     * @param index The index of the message in the list of messages.
+     * @return The message in case it exists, otherwise <code>null</code>
+     */
     public Message getMessage (int index) {
 	if (this.messages != null)
 	    return this.messages.get(index);
@@ -203,6 +291,8 @@ public class Notifications {
 
     /**
      * Check for messages.
+     *
+     * @return <tt>true</tt> in case there are messages, otherwise <tt>false</tt>
      */
     public boolean hasMessages () {
 	if (this.messages == null || this.messages.size() == 0)
@@ -212,9 +302,12 @@ public class Notifications {
 
 
     /**
-     * Copy notifications
+     * Copy notifications from one notification object.
+     *
+     * @param notes Notification object to copy notifications from.
+     * @return Notification object for chaining
      */
-    public void copyNotificationsFrom (Notifications notes) {
+    public Notifications copyNotificationsFrom (Notifications notes) {
 	try {
 	    if (notes.hasErrors())
 		this.addErrors((Messages) notes.getErrors().clone());
@@ -225,14 +318,17 @@ public class Notifications {
 	}
 	catch (CloneNotSupportedException cnse) {
 	};
-	return;
+	return this;
     };
 
 
     /**
-     * Copy notifications from JsonNode
+     * Copy notifications from a JsonNode object.
+     *
+     * @param request Notifications containing JsonNode.
+     * @return Notification object for chaining
      */
-    public void copyNotificationsFrom (JsonNode request) {
+    public Notifications copyNotificationsFrom (JsonNode request) {
 
 	// Add warnings from JSON
 	if (request.has("warnings") &&
@@ -259,11 +355,15 @@ public class Notifications {
 		for (JsonNode msg : msgs)
 		    this.addError(msg);
 	};
+
+	return this;
     };
 
 
     /**
-     * Serialize response to JSON node.
+     * Serialize Notifications as a JsonNode.
+     *
+     * @return JsonNode representation of all warnings, errors, and messages
      */
     public JsonNode toJSONnode () {
 	ObjectNode json =  mapper.createObjectNode();
@@ -280,7 +380,21 @@ public class Notifications {
     };
 
     /**
-     * Serialize response to JSON string.
+     * Serialize Notifications as a JSON string.
+     * <p>
+     * <blockquote><pre>
+     * {
+     *   "errors": [
+     *     [123, "You are not allowed to serialize these messages"],
+     *     [124, "Your request was invalid"]
+     *   ],
+     *   "messages" : [
+     *     [125, "Class is deprecated", "Notifications"]
+     *   ]
+     * }
+     * </pre></blockquote>
+     *
+     * @return String representation of all warnings, errors, and messages
      */
     public String toJSON () {
 	String msg = "";
@@ -291,6 +405,7 @@ public class Notifications {
 	    return mapper.writeValueAsString(node);
 	}
 	catch (Exception e) {
+	    // Bad in case the message contains quotes!
 	    msg = ", \"" + e.getLocalizedMessage() + "\"";
 	};
 
@@ -303,60 +418,16 @@ public class Notifications {
 
     /**
      * Clear all notifications.
+     *
+     * @return Notification object for chaining
      */
-    public void clearNotifications () {
+    public Notifications clearNotifications () {
 	if (this.warnings != null)
 	    this.warnings.clear();
 	if (this.messages != null)
 	    this.messages.clear();
 	if (this.errors != null)
 	    this.errors.clear();
-    };
-
-
-    // Remove:
-    @Deprecated
-    public void addError (String msg) {
-	System.err.println("DEPRECATED " + msg);
-    };
-
-    @Deprecated
-    public void addWarning (String msg) {
-	System.err.println("DEPRECATED " + msg);
-    };
-
-    @Deprecated
-    public void addMessage (String msg) {
-	System.err.println("DEPRECATED " + msg);
-    };
-
-    @Deprecated
-    public void setError (String msg) {
-	System.err.println("DEPRECATED " + msg);
-    };
-
-    @Deprecated
-    public void setWarning (String msg) {
-	System.err.println("DEPRECATED " + msg);
-    };
-
-    @Deprecated
-    public void setMessage (String msg) {
-	System.err.println("DEPRECATED " + msg);
-    };
-
-    @Deprecated
-    public void setError (int code, String msg) {
-	System.err.println("DEPRECATED " + msg);
-    };
-
-    @Deprecated
-    public void setWarning (int code, String msg) {
-	System.err.println("DEPRECATED " + msg);
-    };
-
-    @Deprecated
-    public void setMessage (int code, String msg) {
-	System.err.println("DEPRECATED " + msg);
+	return this;
     };
 };

@@ -50,7 +50,6 @@ public class KorapResult extends KorapResponse {
 
     private JsonNode request;
 
-    private boolean timeExceeded = false;
 
     // Logger
     // This is KorapMatch instead of KorapResult!
@@ -176,16 +175,6 @@ public class KorapResult extends KorapResponse {
 	return this.itemsPerResource;
     };
 
-    public void setTimeExceeded (boolean timeout) {
-	if (timeout)
-	    this.addWarning(682, "Search time exceeded");
-	this.timeExceeded = timeout;
-    };
-
-    public boolean getTimeExceeded () {
-	return this.timeExceeded;
-    };
-
     public String getQuery () {
         return this.query;
     };
@@ -248,9 +237,6 @@ public class KorapResult extends KorapResponse {
 	json.put("startIndex", this.startIndex);
 
 	json.put("totalResults", this.getTotalResults());
-
-	if (this.timeExceeded)
-	    json.put("timeExceeded", this.timeExceeded);
 
 	// Add matches
 	if (this.matches != null)
