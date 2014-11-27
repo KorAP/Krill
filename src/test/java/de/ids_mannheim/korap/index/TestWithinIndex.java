@@ -791,21 +791,21 @@ public class TestWithinIndex {
 	kr = ki.search(sq, 0, (short) 15, true, (short) 1, true, (short) 1);
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 
-	assertEquals("... schrie: [\"{3:Das war ich}!\"] und ...",kr.getMatch(0).snippetBrackets());
-	assertEquals("<span class=\"context-left\"><span class=\"more\"></span>schrie: </span><span class=\"match\">&quot;<em class=\"class-3 level-0\">Das war ich</em>!&quot;</span><span class=\"context-right\"> und<span class=\"more\"></span></span>",kr.getMatch(0).snippetHTML());
+	assertEquals("... schrie: [\"{3:Das war ich}!\"] und ...",kr.getMatch(0).getSnippetBrackets());
+	assertEquals("<span class=\"context-left\"><span class=\"more\"></span>schrie: </span><span class=\"match\">&quot;<em class=\"class-3 level-0\">Das war ich</em>!&quot;</span><span class=\"context-right\"> und<span class=\"more\"></span></span>",kr.getMatch(0).getSnippetHTML());
 
 
 	kr = ki.search(sq, 0, (short) 15, true, (short) 0, true, (short) 0);
-	assertEquals("... [\"{3:Das war ich}!\"] ...",kr.getMatch(0).snippetBrackets());
+	assertEquals("... [\"{3:Das war ich}!\"] ...",kr.getMatch(0).getSnippetBrackets());
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 
 
 	kr = ki.search(sq, 0, (short) 15, true, (short) 6, true, (short) 6);
-	assertEquals("Er schrie: [\"{3:Das war ich}!\"] und ging.",kr.getMatch(0).snippetBrackets());
+	assertEquals("Er schrie: [\"{3:Das war ich}!\"] und ging.",kr.getMatch(0).getSnippetBrackets());
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 
 	kr = ki.search(sq, 0, (short) 15, true, (short) 2, true, (short) 2);
-	assertEquals("Er schrie: [\"{3:Das war ich}!\"] und ging ...",kr.getMatch(0).snippetBrackets());
+	assertEquals("Er schrie: [\"{3:Das war ich}!\"] und ging ...",kr.getMatch(0).getSnippetBrackets());
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 
 
@@ -818,7 +818,7 @@ public class TestWithinIndex {
         ), (byte) 1);
 
 	kr = ki.search(sq, (short) 15);
-	assertEquals("Er schrie: [\"{1:{2:Das} war ich}!\"] und ging.",kr.getMatch(0).snippetBrackets());
+	assertEquals("Er schrie: [\"{1:{2:Das} war ich}!\"] und ging.",kr.getMatch(0).getSnippetBrackets());
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 
 	sq = new SpanClassQuery(
@@ -830,7 +830,7 @@ public class TestWithinIndex {
         ), (byte) 1);
 
 	kr = ki.search(sq, (short) 15);
-	assertEquals("Er schrie: [\"{1:Das {2:war} ich}!\"] und ging.",kr.getMatch(0).snippetBrackets());
+	assertEquals("Er schrie: [\"{1:Das {2:war} ich}!\"] und ging.",kr.getMatch(0).getSnippetBrackets());
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 
 	sq = new SpanClassQuery(
@@ -842,7 +842,7 @@ public class TestWithinIndex {
         ), (byte) 1);
 
 	kr = ki.search(sq, (short) 15);
-	assertEquals("Er schrie: [\"{1:Das war {2:ich}}!\"] und ging.",kr.getMatch(0).snippetBrackets());
+	assertEquals("Er schrie: [\"{1:Das war {2:ich}}!\"] und ging.",kr.getMatch(0).getSnippetBrackets());
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 
 	sq = new SpanClassQuery(

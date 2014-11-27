@@ -61,7 +61,7 @@ public class KorapMatch extends KorapDocument {
     @JsonIgnore
     public SearchContext context;
 
-    // Should be deprecated, but used wildly in tests!
+    // Public, while used wildly in tests!
     @JsonIgnore
     public int startPos, endPos = -1;
 
@@ -951,10 +951,6 @@ public class KorapMatch extends KorapDocument {
 	};
     };
 
-    @Deprecated
-    public String snippetHTML () {
-	return this.getSnippetHTML();
-    };
 
     @JsonProperty("snippet")
     public String getSnippetHTML () {
@@ -1023,11 +1019,6 @@ public class KorapMatch extends KorapDocument {
 	sb.append(rightContext);
 
 	return (this.snippetHTML = sb.toString());
-    };
-
-    @Deprecated
-    public String snippetBrackets () {
-	return this.getSnippetBrackets();
     };
     
     @JsonIgnore

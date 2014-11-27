@@ -2,6 +2,7 @@
         - [cleanup] Major refactoring for new response messages (diewald)
 	- [cleanup] Removed deprecated error messaging (diewald)
         - [cleanup] Removed long-term deprecated methods in KorapResult (diewald)
+        - [cleanup] Removed long-term deprecated methods in KorapMatch (diewald)
 	- [cleanup] Renamed toJSON->toJsonString (diewald)
 	- [cleanup] Renamed toJSONnode->toJsonNode (diewald)
 	- [cleanup] Renamed fromJSON->fromJson (diewald)
