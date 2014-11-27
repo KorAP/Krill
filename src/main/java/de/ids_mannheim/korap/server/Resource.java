@@ -101,7 +101,7 @@ public class Resource {
 	);
 	*/
 	kresp.addMessage(680, "Server is up and running!");
-	return kresp.toJSON();
+	return kresp.toJsonString();
     };
     
 
@@ -137,7 +137,7 @@ public class Resource {
 
 	if (index == null) {
 	    kresp.addError(601, "Unable to find index");
-	    return kresp.toJSON();
+	    return kresp.toJsonString();
 	};
 
 	kresp.setVersion(index.getVersion());
@@ -152,12 +152,12 @@ public class Resource {
 	// TODO: This may be a field error!
 	catch (IOException e) {
 	    kresp.addError(602, "Unable to add document to index");
-	    return kresp.toJSON();
+	    return kresp.toJsonString();
 	};
 
 	// Set HTTP to 200
 	kresp.addMessage(681, "Document was added successfully", ID);
-	return kresp.toJSON();
+	return kresp.toJsonString();
     };
 
 
@@ -177,7 +177,7 @@ public class Resource {
 
 	if (index == null) {
 	    kresp.addError(601, "Unable to find index");
-	    return kresp.toJSON();
+	    return kresp.toJsonString();
 	};
 
 	kresp.setVersion(index.getVersion());
@@ -190,11 +190,11 @@ public class Resource {
 	catch (IOException e) {
 	    // Set HTTP to ???
 	    kresp.addError(603, "Unable to commit staged data to index");
-	    return kresp.toJSON();
+	    return kresp.toJsonString();
 	};
 
 	// Set HTTP to ???
-	return kresp.toJSON();
+	return kresp.toJsonString();
     };
 
 
@@ -234,12 +234,12 @@ public class Resource {
 		// Only return the first match per text
 		ks.setItemsPerResource(1);
 
-		return ks.run(index).toJSON();
+		return ks.run(index).toJsonString();
 	    };
 	    KorapResult kr = new KorapResult();
 	    kr.setNode(KorapNode.getName());
 	    kr.addError(610, "Missing request parameters", "No unique IDs were given");
-	    return kr.toJSON();
+	    return kr.toJsonString();
 	};
 
 	KorapResponse kresp = new KorapResponse();
@@ -249,7 +249,7 @@ public class Resource {
 
 	kresp.addError(601, "Unable to find index");
 	
-	return kresp.toJSON();
+	return kresp.toJsonString();
     };
 
 
@@ -274,7 +274,7 @@ public class Resource {
 	    KorapResponse kresp = new KorapResponse();
 	    kresp.setNode(KorapNode.getName());
 	    kresp.addError(601, "Unable to find index");
-  	    return kresp.toJSON();
+  	    return kresp.toJsonString();
 	};
 
 	// Get the database
@@ -289,7 +289,7 @@ public class Resource {
 	    MatchCollector result = index.collect(ks, mc);
 
 	    result.setNode(KorapNode.getName());
-	    return result.toJSON();
+	    return result.toJsonString();
 	}
 	catch (SQLException e) {
 	    log.error(e.getLocalizedMessage());
@@ -301,7 +301,7 @@ public class Resource {
 	kresp.setVersion(index.getVersion());
 
 	kresp.addError(604, "Unable to connect to database");
-	return kresp.toJSON();
+	return kresp.toJsonString();
     };
 
 
@@ -331,7 +331,7 @@ public class Resource {
         if (index != null) {
             KorapResult kr = new KorapSearch(json).run(index);
 	    kr.setNode(KorapNode.getName());
-	    return kr.toJSON();
+	    return kr.toJsonString();
 	};
 
 	KorapResponse kresp = new KorapResponse();
@@ -340,7 +340,7 @@ public class Resource {
 	kresp.setVersion(index.getVersion());
 
 	kresp.addError(601, "Unable to find index");
-	return kresp.toJSON();
+	return kresp.toJsonString();
     };
 
     @GET
@@ -396,7 +396,7 @@ public class Resource {
 		    includeSpans,
 		    includeHighlights,
 		    extendToSentence
-		).toJSON();
+		).toJsonString();
             }
 
 	    // Nothing found
@@ -404,14 +404,14 @@ public class Resource {
 		// Todo: Make KorapMatch rely on KorapResponse!
                 KorapMatch km = new KorapMatch();
                 km.addError(qe.getErrorCode(), qe.getMessage());
-                return km.toJSON();
+                return km.toJsonString();
             }
 	};
 
 	// Response with error message
         KorapMatch km = new KorapMatch();
         km.addError(601, "Unable to find index");
-        return km.toJSON();
+        return km.toJsonString();
     };
 
     /*

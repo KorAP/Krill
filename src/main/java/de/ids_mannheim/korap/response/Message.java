@@ -136,7 +136,7 @@ public class Message implements Cloneable {
      *
      * @return JsonNode representation of the message
      */
-    public JsonNode toJSONnode () {
+    public JsonNode toJsonNode () {
 	ArrayNode message = mapper.createArrayNode();
 
 	if (this.code != 0)
@@ -159,10 +159,10 @@ public class Message implements Cloneable {
      *
      * @return String representation of the message
      */
-    public String toJSON () {
+    public String toJsonString () {
 	String msg = "";
 	try {
-	    return mapper.writeValueAsString(this.toJSONnode());
+	    return mapper.writeValueAsString(this.toJsonNode());
 	}
 	catch (Exception e) {
 	    // Bad in case the message contains quotes!

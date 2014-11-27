@@ -99,7 +99,7 @@ public class TestAttributeIndex {
 		
 		kr = ki.search(sq, (short) 10);
 		
-		assertEquals(4, kr.getTotalResults());
+		assertEquals((long) 4, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
 		assertEquals(2,kr.getMatch(0).getEndPos());
 		assertEquals(0,kr.getMatch(1).getStartPos());
@@ -132,7 +132,7 @@ public class TestAttributeIndex {
 		
 		kr = ki.search(sq, (short) 10);
 				
-		assertEquals(4, kr.getTotalResults());
+		assertEquals((long) 4, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
 		assertEquals(3,kr.getMatch(0).getEndPos());
 		assertEquals(1,kr.getMatch(1).getStartPos());
@@ -154,7 +154,7 @@ public class TestAttributeIndex {
 		
 		kr = ki.search(sq, (short) 10);
 		
-		assertEquals(2, kr.getTotalResults());
+		assertEquals((long) 2, kr.getTotalResults());
 		assertEquals(1,kr.getMatch(0).getStartPos());
 		assertEquals(2,kr.getMatch(0).getEndPos());
 		assertEquals(6,kr.getMatch(1).getStartPos());
@@ -172,7 +172,7 @@ public class TestAttributeIndex {
 				sql, true);
 		
 		kr = ki.search(sq, (short) 10);
-		assertEquals(1, kr.getTotalResults());
+		assertEquals((long) 1, kr.getTotalResults());
 		assertEquals(5,kr.getMatch(0).getStartPos());
 		assertEquals(6,kr.getMatch(0).getEndPos());
 	}	
@@ -197,7 +197,7 @@ public class TestAttributeIndex {
 		
 		kr = ki.search(sq, (short) 10);
 		
-		assertEquals(3, kr.getTotalResults());
+		assertEquals((long) 3, kr.getTotalResults());
 		assertEquals(1,kr.getMatch(0).getStartPos());
 		assertEquals(2,kr.getMatch(0).getEndPos());
 		assertEquals(5,kr.getMatch(1).getStartPos());
@@ -226,7 +226,7 @@ public class TestAttributeIndex {
 				sql, true);
 		
 		kr = ki.search(sq, (short) 10);
-		assertEquals(6,kr.getTotalResults());
+		assertEquals((long) 6,kr.getTotalResults());
 		
 		SpanNextQuery snq = new SpanNextQuery(
 				new SpanTermQuery(new Term("base", "s:e"))
@@ -234,7 +234,7 @@ public class TestAttributeIndex {
 		
 		kr = ki.search(snq, (short) 10);
 		
-		assertEquals(1,kr.getTotalResults());
+		assertEquals((long) 1,kr.getTotalResults());
 		assertEquals(2,kr.getMatch(0).getLocalDocID());
 		assertEquals(1,kr.getMatch(0).getStartPos());
 		assertEquals(5,kr.getMatch(0).getEndPos());		
@@ -254,7 +254,7 @@ public class TestAttributeIndex {
 				new SpanTermQuery(new Term("base","@:class=book")), 
 				true);
 		kr = ki.search(saq, (short) 10);
-		assertEquals(3, kr.getTotalResults());
+		assertEquals((long) 3, kr.getTotalResults());
 		
 		/*for (int i=0; i< kr.getTotalResults(); i++){
 			System.out.println(

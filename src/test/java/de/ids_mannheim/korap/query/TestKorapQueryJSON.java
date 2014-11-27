@@ -184,7 +184,7 @@ public class TestKorapQueryJSON {
 
     @Test
     public void queryJSONDemo () throws QueryException {
-	SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJSON("{ \"query\" : { \"@type\" : \"korap:token\", \"wrap\" : { \"@type\" : \"korap:term\", \"foundry\" : \"base\", \"layer\" : \"p\", \"key\" : \"foo\", \"match\" : \"match:eq\" }}}");
+	SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson("{ \"query\" : { \"@type\" : \"korap:token\", \"wrap\" : { \"@type\" : \"korap:term\", \"foundry\" : \"base\", \"layer\" : \"p\", \"key\" : \"foo\", \"match\" : \"match:eq\" }}}");
 
 	assertEquals(sqwi.toQuery().toString(), "tokens:base/p:foo");
     };
@@ -306,7 +306,7 @@ public class TestKorapQueryJSON {
 	// ((MORPH(APPR) ODER MORPH(APPRART)) /+w1 Urlaub
 	try {
 	    String json = getString(getClass().getResource("/queries/bugs/underspecified_token.jsonld").getFile());
-	    new KorapQuery("tokens").fromJSON(json);
+	    new KorapQuery("tokens").fromJson(json);
 	}
 	catch (QueryException e) {
 	    assertEquals(701, e.getErrorCode());
@@ -357,7 +357,7 @@ public class TestKorapQueryJSON {
 	
 	try {
 	    String json = getString(jsonFile);
-	    sqwi = new KorapQuery("tokens").fromJSON(json);
+	    sqwi = new KorapQuery("tokens").fromJson(json);
 	}
 	catch (QueryException e) {
 	    fail(e.getMessage());

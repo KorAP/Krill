@@ -210,7 +210,7 @@ public class TestSpanExpansionIndex {
 		SpanExpansionQuery seq = new SpanExpansionQuery(stq,2,2, -1, true);		
 		kr = ki.search(seq, (short) 10);
 		
-		assertEquals(4,kr.getTotalResults());
+		assertEquals((long) 4,kr.getTotalResults());
 		assertEquals(0, kr.getMatch(0).getStartPos());
         assertEquals(2, kr.getMatch(0).getEndPos());
         
@@ -218,7 +218,7 @@ public class TestSpanExpansionIndex {
         seq = new SpanExpansionQuery(stq,3,3,0, true);		
 		kr = ki.search(seq, (short) 10);
         		
-		assertEquals(4,kr.getTotalResults());
+		assertEquals((long) 4,kr.getTotalResults());
 		assertEquals(7, kr.getMatch(2).getStartPos());
         assertEquals(11, kr.getMatch(2).getEndPos());
         assertEquals(8, kr.getMatch(3).getStartPos());
@@ -273,7 +273,7 @@ public class TestSpanExpansionIndex {
 		
 		String jsonPath = getClass().getResource("/queries/poly3.json").getFile();
 		String jsonQuery = readFile(jsonPath);
-		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJSON(
+		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson(
 				jsonQuery
 		);
 		
@@ -315,7 +315,7 @@ public class TestSpanExpansionIndex {
 		SpanRepetitionQuery rep = new SpanRepetitionQuery(seq, 2, 2, true);
 		
 		kr = ki.search(rep, (short) 20);
-		assertEquals(3,kr.getTotalResults());
+		assertEquals((long) 3,kr.getTotalResults());
 		
 		/*for (KorapMatch km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "

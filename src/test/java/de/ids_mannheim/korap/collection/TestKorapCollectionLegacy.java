@@ -83,7 +83,7 @@ public class TestKorapCollectionLegacy {
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
 	KorapResult kr = kc.search(query);
-	assertEquals(70, kr.totalResults());
+	assertEquals(kr.getTotalResults(), 70);
 
 	kc.extend( kf.and("textClass", "uninteresting") );
 	assertEquals("Documents", 1, kc.numberOf("documents"));
@@ -160,7 +160,7 @@ public class TestKorapCollectionLegacy {
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
 	KorapResult kr = kc.search(query);
-	assertEquals(70, kr.totalResults());
+	assertEquals(kr.getTotalResults(), 70);
 
 	kc.extend( kf.and("textClass", "uninteresting") );
 	assertEquals("Documents", 1, kc.numberOf("documents"));
@@ -214,7 +214,7 @@ public class TestKorapCollectionLegacy {
 
 	KorapResult kr = kc.search(query);
 
-	assertEquals(369, kr.totalResults());
+	assertEquals(kr.getTotalResults(), 369);
 
 	kc.filter( kf.and("corpusID", "QQQ") );
 
@@ -267,6 +267,6 @@ public class TestKorapCollectionLegacy {
 	assertEquals("Tokens",   1229, kc.numberOf("tokens"));
 
 	kr = kc.search(sq);
-        assertEquals(39,kr.getTotalResults());
+        assertEquals((long) 39, kr.getTotalResults());
     };
 };

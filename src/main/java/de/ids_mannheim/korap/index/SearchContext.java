@@ -106,7 +106,7 @@ public class SearchContext {
 	    return this.setLength((short) value);
 	};
 
-	public void fromJSON (JsonNode json) {
+	public void fromJson (JsonNode json) {
 	    String type = json.get(0).asText();
 	    if (type.equals("token")) {
 		this.setToken(true);
@@ -119,20 +119,20 @@ public class SearchContext {
     };
 
 
-    public void fromJSON (JsonNode context) {
+    public void fromJson (JsonNode context) {
 	if (context.isContainerNode()) {
 	    if (context.has("left"))
-		this.left.fromJSON(context.get("left"));
+		this.left.fromJson(context.get("left"));
 	    
 	    if (context.has("right"))
-		this.right.fromJSON(context.get("right"));
+		this.right.fromJson(context.get("right"));
 	}
 	else if (context.isValueNode()) {
 	    this.setSpanContext(context.asText());
 	};
     };
 
-    public JsonNode toJSON () {
+    public JsonNode toJsonNode () {
 
 	if (this.isSpanDefined())
 	    return new TextNode(this.spanContext);

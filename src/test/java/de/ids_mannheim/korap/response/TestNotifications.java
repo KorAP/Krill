@@ -22,7 +22,7 @@ public class TestNotifications {
     @Test
     public void testNotification () {
 	Notifications notes = new Notifications();
-	assertEquals("{}", notes.toJSON());
+	assertEquals("{}", notes.toJsonString());
     };
 
     @Test
@@ -36,7 +36,7 @@ public class TestNotifications {
 	notes.addWarning(614, "Bar", "Spiel");
 
 	assertEquals("{\"warnings\":[[613,\"Foo\"],[614,\"Bar\"," +
-		     "\"Spiel\"]]}", notes.toJSON());
+		     "\"Spiel\"]]}", notes.toJsonString());
 
 	assertTrue(notes.hasWarnings());
 	assertFalse(notes.hasMessages());
@@ -48,7 +48,7 @@ public class TestNotifications {
 	assertFalse(notes.hasMessages());
 	assertTrue(notes.hasErrors());
 
-	JsonNode noteJson = mapper.readTree(notes.toJSON());
+	JsonNode noteJson = mapper.readTree(notes.toJsonString());
 
 	// {"warnings":[[613,"Foo"],[614,"Bar","Spiel"]],"errors":[[412,"Test"]]}
 	assertEquals(613, noteJson.at("/warnings/0/0").asInt());
@@ -65,7 +65,7 @@ public class TestNotifications {
 	assertTrue(notes.hasMessages());
 	assertTrue(notes.hasErrors());
 
-	noteJson = mapper.readTree(notes.toJSON());
+	noteJson = mapper.readTree(notes.toJsonString());
 
 	// {"warnings":[[613,"Foo"],[614,"Bar","Spiel"]],
 	// "errors":[[412,"Test"]]}
@@ -85,7 +85,7 @@ public class TestNotifications {
 
 	Messages msgs = notes.getWarnings();
 	assertEquals("[[613,\"Foo\"],[614,\"Bar\",\"Spiel\"]]",
-		     msgs.toJSON());
+		     msgs.toJsonString());
     };
 
 
@@ -115,7 +115,7 @@ public class TestNotifications {
 	assertTrue(notes1.hasMessages());
 	assertTrue(notes1.hasErrors());
 
-	JsonNode noteJson = mapper.readTree(notes1.toJSON());
+	JsonNode noteJson = mapper.readTree(notes1.toJsonString());
 	assertEquals(1, noteJson.at("/warnings/0/0").asInt());
 	assertEquals("Foo", noteJson.at("/warnings/0/1").asText());
 	assertEquals(2, noteJson.at("/warnings/1/0").asInt());
@@ -152,7 +152,7 @@ public class TestNotifications {
 	assertTrue(notes1.hasMessages());
 	assertTrue(notes1.hasErrors());
 
-	noteJson = mapper.readTree(notes1.toJSON());
+	noteJson = mapper.readTree(notes1.toJsonString());
 
 	assertEquals(1, noteJson.at("/warnings/0/0").asInt());
 	assertEquals("Foo", noteJson.at("/warnings/0/1").asText());
@@ -179,7 +179,7 @@ public class TestNotifications {
 	assertTrue(notes1.hasMessages());
 	assertTrue(notes1.hasErrors());
 
-	noteJson = mapper.readTree(notes1.toJSON());
+	noteJson = mapper.readTree(notes1.toJsonString());
 
 	assertEquals(1, noteJson.at("/warnings/0/0").asInt());
 	assertEquals("Foo", noteJson.at("/warnings/0/1").asText());

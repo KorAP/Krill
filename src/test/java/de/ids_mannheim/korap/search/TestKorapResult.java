@@ -57,10 +57,10 @@ public class TestKorapResult {
 	KorapQuery kq = new KorapQuery("base");
 	SpanQuery q = (SpanQuery) kq.or(kq._(1, kq.seg("s:a"))).or(kq._(2, kq.seg("s:b"))).toQuery();
 	KorapResult kr = ki.search(q);
-	assertEquals(7, kr.getTotalResults());
+	assertEquals((long) 7, kr.getTotalResults());
 
 	ObjectMapper mapper = new ObjectMapper();
-	JsonNode res = mapper.readTree(kr.toJSON());
+	JsonNode res = mapper.readTree(kr.toJsonString());
 	assertEquals(7, res.at("/totalResults").asInt());
 	assertEquals("spanOr([{1: base:s:a}, {2: base:s:b}])", res.at("/query").asText());
 	assertEquals(0, res.at("/startIndex").asInt());
@@ -113,10 +113,10 @@ public class TestKorapResult {
 	KorapSearch ks = new KorapSearch(json);
 
 	KorapResult kr = ks.run(ki);
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 
 	ObjectMapper mapper = new ObjectMapper();
-	JsonNode res = mapper.readTree(kr.toJSON());
+	JsonNode res = mapper.readTree(kr.toJsonString());
 
 	// Old:
 	// assertEquals("Optionality of query is ignored", res.at("/warning").asText());
@@ -155,10 +155,10 @@ public class TestKorapResult {
 	String json = getString(getClass().getResource("/queries/bsp-result-check.jsonld").getFile());
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
-	assertEquals(7, kr.getTotalResults());
+	assertEquals((long) 7, kr.getTotalResults());
 
 	ObjectMapper mapper = new ObjectMapper();
-	JsonNode res = mapper.readTree(kr.toJSON());
+	JsonNode res = mapper.readTree(kr.toJsonString());
 
 	assertEquals(7, res.at("/totalResults").asInt());
 	assertEquals("spanOr([tokens:s:a, tokens:s:b])", res.at("/query").asText());
@@ -224,9 +224,9 @@ public class TestKorapResult {
 	SpanQuery q = (SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).toQuery();
 	KorapResult kr = ki.search(q);
 
-	assertEquals(3, kr.getTotalResults());
+	assertEquals((long) 3, kr.getTotalResults());
 	ObjectMapper mapper = new ObjectMapper();
-	JsonNode res = mapper.readTree(kr.toTokenListJSON());
+	JsonNode res = mapper.readTree(kr.toTokenListJsonString());
 	assertEquals(3, res.at("/totalResults").asInt());
 	assertEquals("spanNext(base:s:a, base:s:b)", res.at("/query").asText());
 	assertEquals(0, res.at("/startIndex").asInt());

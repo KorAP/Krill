@@ -30,7 +30,7 @@ public class TestClass {
 		
 		String jsonPath = getClass().getResource("/queries/poly1.json").getFile();
 		String jsonQuery = readFile(jsonPath);
-		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJSON(
+		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson(
 				jsonQuery
 		);
 		
@@ -63,7 +63,7 @@ public class TestClass {
 		
 		String jsonPath = getClass().getResource("/queries/poly4.json").getFile();
 		String jsonQuery = readFile(jsonPath);
-		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJSON(
+		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson(
 				jsonQuery
 		);
 		SpanQuery sq = sqwi.toQuery();
@@ -85,7 +85,7 @@ public class TestClass {
 			);
 		}
 		*/
-		assertEquals(495, kr.getTotalResults());
+		assertEquals((long) 495, kr.getTotalResults());
 		assertEquals(3, kr.getMatch(0).getStartPos());
 		assertEquals(5, kr.getMatch(0).getEndPos());
 		

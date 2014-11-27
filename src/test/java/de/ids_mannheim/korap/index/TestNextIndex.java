@@ -71,13 +71,13 @@ public class TestNextIndex {
 
 	kr = ki.search(sq, (short) 10);
 	
-	assertEquals("totalResults", 3, kr.totalResults());
-	assertEquals("StartPos (0)", 0, kr.match(0).startPos);
-	assertEquals("EndPos (0)", 2, kr.match(0).endPos);
-	assertEquals("StartPos (1)", 3, kr.match(1).startPos);
-	assertEquals("EndPos (1)", 5, kr.match(1).endPos);
-	assertEquals("StartPos (2)", 6, kr.match(2).startPos);
-	assertEquals("EndPos (2)", 8, kr.match(2).endPos);
+	assertEquals("totalResults", kr.getTotalResults(), 3);
+	assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
+	assertEquals("EndPos (0)", 2, kr.getMatch(0).endPos);
+	assertEquals("StartPos (1)", 3, kr.getMatch(1).startPos);
+	assertEquals("EndPos (1)", 5, kr.getMatch(1).endPos);
+	assertEquals("StartPos (2)", 6, kr.getMatch(2).startPos);
+	assertEquals("EndPos (2)", 8, kr.getMatch(2).endPos);
 	
 	sq = new SpanNextQuery(
             new SpanTermQuery(new Term("base", "s:b")),
@@ -86,11 +86,11 @@ public class TestNextIndex {
 
 	kr = ki.search(sq, (short) 10);
 	
-	assertEquals("totalResults", 2, kr.totalResults());
-	assertEquals("StartPos (0)", 1, kr.match(0).startPos);
-	assertEquals("EndPos (0)", 3, kr.match(0).endPos);
-	assertEquals("StartPos (1)", 4, kr.match(1).startPos);
-	assertEquals("EndPos (1)", 6, kr.match(1).endPos);
+	assertEquals("totalResults", kr.getTotalResults(), 2);
+	assertEquals("StartPos (0)", 1, kr.getMatch(0).startPos);
+	assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
+	assertEquals("StartPos (1)", 4, kr.getMatch(1).startPos);
+	assertEquals("EndPos (1)", 6, kr.getMatch(1).endPos);
 
 	assertEquals(1, ki.numberOf("base", "documents"));
 	assertEquals(10, ki.numberOf("base", "t"));
@@ -106,11 +106,11 @@ public class TestNextIndex {
 
 	kr = ki.search(sq, (short) 2);
 	
-	assertEquals("totalResults", 2, kr.totalResults());
-	assertEquals("StartPos (0)", 0, kr.match(0).startPos);
-	assertEquals("EndPos (0)", 3, kr.match(0).endPos);
-	assertEquals("StartPos (1)", 3, kr.match(1).startPos);
-	assertEquals("EndPos (1)", 6, kr.match(1).endPos);
+	assertEquals("totalResults", kr.getTotalResults(), 2);
+	assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
+	assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
+	assertEquals("StartPos (1)", 3, kr.getMatch(1).startPos);
+	assertEquals("EndPos (1)", 6, kr.getMatch(1).endPos);
 
 	assertEquals(1, ki.numberOf("base", "documents"));
 	assertEquals(10, ki.numberOf("base", "t"));
@@ -148,7 +148,7 @@ public class TestNextIndex {
 	);
 	
 	kr = ki.search(sq, (short) 10);
-	assertEquals("ab[cabca]bac", kr.match(1).getSnippetBrackets());
+	assertEquals("ab[cabca]bac", kr.getMatch(1).getSnippetBrackets());
 
     };
 
@@ -183,7 +183,7 @@ public class TestNextIndex {
 	);
 	
 	kr = ki.search(sq, (short) 10);
-	assertEquals("abc[abcab]ac", kr.match(0).getSnippetBrackets());
+	assertEquals("abc[abcab]ac", kr.getMatch(0).getSnippetBrackets());
     };
 
     @Test
@@ -237,9 +237,9 @@ public class TestNextIndex {
 	);
 	
 	kr = ki.search(sq, (short) 10);
-	assertEquals(2, kr.totalResults());
-	assertEquals("abc[abcab]ac", kr.match(0).getSnippetBrackets());
-	assertEquals("xbz[xbzxb]xz", kr.match(1).getSnippetBrackets());
+	assertEquals("TotalResults", kr.getTotalResults(), 2);
+	assertEquals("abc[abcab]ac", kr.getMatch(0).getSnippetBrackets());
+	assertEquals("xbz[xbzxb]xz", kr.getMatch(1).getSnippetBrackets());
 
 	sq = new SpanNextQuery(
 	       new SpanTermQuery(new Term("base", "s:c")),
@@ -247,8 +247,8 @@ public class TestNextIndex {
 	);
 	
 	kr = ki.search(sq, (short) 10);
-	assertEquals(1, kr.totalResults());
-	assertEquals("ab[cabca]bac", kr.match(0).getSnippetBrackets());
+	assertEquals(kr.getTotalResults(), 1);
+	assertEquals("ab[cabca]bac", kr.getMatch(0).getSnippetBrackets());
 
 	sq = new SpanNextQuery(
 	       new SpanTermQuery(new Term("base", "s:z")),
@@ -256,8 +256,8 @@ public class TestNextIndex {
 	);
 	
 	kr = ki.search(sq, (short) 10);
-	assertEquals(1, kr.totalResults());
-	assertEquals("xb[zxbzx]bxz", kr.match(0).getSnippetBrackets());
+	assertEquals(kr.getTotalResults(), 1);
+	assertEquals("xb[zxbzx]bxz", kr.getMatch(0).getSnippetBrackets());
     };
     
     /**
@@ -279,15 +279,15 @@ public class TestNextIndex {
 				);
 		KorapResult kr = ki.search(sq, (short) 10);			
 				
-		assertEquals("totalResults", 2, kr.totalResults());
+		assertEquals("totalResults", kr.getTotalResults(), 2);
 		// Match #0
-		assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
-		assertEquals("StartPos", 4, kr.match(0).startPos);
-		assertEquals("EndPos", 6, kr.match(0).endPos);
+		assertEquals("doc-number", 0, kr.getMatch(0).getLocalDocID());
+		assertEquals("StartPos", 4, kr.getMatch(0).startPos);
+		assertEquals("EndPos", 6, kr.getMatch(0).endPos);
 		// Match #1
-		assertEquals("doc-number", 0, kr.match(1).getLocalDocID());
-		assertEquals("StartPos", 1, kr.match(1).startPos);
-		assertEquals("EndPos", 3, kr.match(1).endPos);
+		assertEquals("doc-number", 0, kr.getMatch(1).getLocalDocID());
+		assertEquals("StartPos", 1, kr.getMatch(1).startPos);
+		assertEquals("EndPos", 3, kr.getMatch(1).endPos);
 		
 		sq = new SpanNextQuery(
 				new SpanTermQuery(new Term("base","s:b")),
@@ -295,10 +295,10 @@ public class TestNextIndex {
 			);
 		kr = ki.search(sq, (short) 10);
 		
-		assertEquals("totalResults", 1, kr.totalResults());
-		assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
-		assertEquals("StartPos", 2, kr.match(0).startPos);
-		assertEquals("EndPos", 4, kr.match(0).endPos);
+		assertEquals("totalResults", kr.getTotalResults(), 1);
+		assertEquals("doc-number", 0, kr.getMatch(0).getLocalDocID());
+		assertEquals("StartPos", 2, kr.getMatch(0).startPos);
+		assertEquals("EndPos", 4, kr.getMatch(0).endPos);
 	}
 	
 	/** Skip to NextSpan */
@@ -319,10 +319,10 @@ public class TestNextIndex {
 			);
 		
 		KorapResult kr = ki.search(sq, (short) 10);			
-		assertEquals("totalResults", 1, kr.totalResults());
-		assertEquals("doc-number", 2, kr.match(0).getLocalDocID());
-		assertEquals("StartPos", 0, kr.match(0).startPos);
-		assertEquals("EndPos", 3, kr.match(0).endPos);	
+		assertEquals("totalResults", kr.getTotalResults(), 1);
+		assertEquals("doc-number", 2, kr.getMatch(0).getLocalDocID());
+		assertEquals("StartPos", 0, kr.getMatch(0).startPos);
+		assertEquals("EndPos", 3, kr.getMatch(0).endPos);	
 		
 	}
 
@@ -340,10 +340,10 @@ public class TestNextIndex {
 		
 		KorapResult kr = ki.search(sq.toQuery(), (short) 10);			
 
-		assertEquals("totalResults", 3, kr.totalResults());
-		assertEquals("doc-number", "match-doc-0-p2-5", kr.match(0).getID());
-		assertEquals("doc-number", "match-doc-2-p2-4", kr.match(1).getID());
-		assertEquals("doc-number", "match-doc-3-p2-5", kr.match(2).getID());
+		assertEquals("totalResults", kr.getTotalResults(), 3);
+		assertEquals("doc-number", "match-doc-0-p2-5", kr.getMatch(0).getID());
+		assertEquals("doc-number", "match-doc-2-p2-4", kr.getMatch(1).getID());
+		assertEquals("doc-number", "match-doc-3-p2-5", kr.getMatch(2).getID());
 	};
 
 	@Test
@@ -360,10 +360,10 @@ public class TestNextIndex {
 		
 		KorapResult kr = ki.search(sq.toQuery(), (short) 10);			
 
-		assertEquals("totalResults", 3, kr.totalResults());
-		assertEquals("doc-number", "match-doc-0-p3-6", kr.match(0).getID());
-		assertEquals("doc-number", "match-doc-1-p1-3", kr.match(1).getID());
-		assertEquals("doc-number", "match-doc-3-p3-6", kr.match(2).getID());
+		assertEquals("totalResults", kr.getTotalResults(), 3);
+		assertEquals("doc-number", "match-doc-0-p3-6", kr.getMatch(0).getID());
+		assertEquals("doc-number", "match-doc-1-p1-3", kr.getMatch(1).getID());
+		assertEquals("doc-number", "match-doc-3-p3-6", kr.getMatch(2).getID());
 	};
 
 	@Test
@@ -381,14 +381,10 @@ public class TestNextIndex {
 		
 		KorapResult kr = ki.search(sq, (short) 10);
 		
-		assertEquals(0, kr.match(0).getStartPos());
-		assertEquals(2, kr.match(0).getEndPos());
-		assertEquals(3, kr.match(1).getStartPos());
-		assertEquals(5, kr.match(1).getEndPos());
-		
-//		for (KorapMatch m : kr.getMatches()){
-//			System.out.println(m.getStartPos() +" "+ m.getEndPos());
-//		}
+		assertEquals(0, kr.getMatch(0).getStartPos());
+		assertEquals(2, kr.getMatch(0).getEndPos());
+		assertEquals(3, kr.getMatch(1).getStartPos());
+		assertEquals(5, kr.getMatch(1).getEndPos());
 	}
 	
 	

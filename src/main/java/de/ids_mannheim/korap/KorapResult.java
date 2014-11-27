@@ -30,23 +30,18 @@ public class KorapResult extends KorapResponse {
     @JsonIgnore
     public static final short ITEMS_PER_PAGE = 25;
 
-    private int totalResults;
-    private long totalTexts;
+    private int startIndex = 0;
+    private long totalTexts, totalResults;
 
     private String query;
 
     private List<KorapMatch> matches;
 
-    private int startIndex = 0;
 
     private SearchContext context;
 
-    private short itemsPerPage = ITEMS_PER_PAGE;
-    private short itemsPerResource = 0;
-
-    private String benchmarkSearchResults,
-            benchmarkHitCounter;
-    private String error = null;
+    private short itemsPerPage = ITEMS_PER_PAGE,
+	          itemsPerResource = 0;
 
     private JsonNode request;
 
@@ -95,17 +90,7 @@ public class KorapResult extends KorapResponse {
         return km;
     };
 
-    @Deprecated
-    public int totalResults() {
-        return this.getTotalResults();
-    };
-
     public short getItemsPerPage() {
-        return this.itemsPerPage;
-    };
-
-    @Deprecated
-    public short itemsPerPage() {
         return this.itemsPerPage;
     };
 
@@ -117,24 +102,6 @@ public class KorapResult extends KorapResponse {
         return this.request;
     };
 
-    /*
-    @JsonIgnore
-    public void setBenchmarkHitCounter(long t1, long t2) {
-        this.benchmarkHitCounter =
-                (t2 - t1) < 100_000_000 ? (((double) (t2 - t1) * 1e-6) + " ms") :
-                        (((double) (t2 - t1) / 1000000000.0) + " s");
-    };
-
-    public void setBenchmarkHitCounter(String bm) {
-	this.benchmarkHitCounter = bm;
-    };
-
-    public String getBenchmarkHitCounter() {
-        return this.benchmarkHitCounter;
-    };
-
-    */
-
     // Make this working in a KorapResult class
     // that is independent from search and collection
     public KorapResult setTotalTexts (long i) {
@@ -142,11 +109,17 @@ public class KorapResult extends KorapResponse {
 	return this;
     };
 
+    public KorapResult incrTotalTexts (int i) {
+        this.totalTexts += i;
+	return this;
+    };
+
     public long getTotalTexts() {
         return this.totalTexts;
     };
 
-    public KorapResult setTotalResults (int i) {
+
+    public KorapResult setTotalResults (long i) {
         this.totalResults = i;
 	return this;
     };
@@ -156,7 +129,7 @@ public class KorapResult extends KorapResponse {
 	return this;
     };
 
-    public int getTotalResults() {
+    public long getTotalResults() {
         return this.totalResults;
     };
 
@@ -189,15 +162,9 @@ public class KorapResult extends KorapResponse {
         return this.matches;
     };
 
-    @Deprecated
-    public KorapMatch match (int index) {
-        return this.matches.get(index);
-    };
-
     public int getStartIndex () {
         return startIndex;
     };
-
 
     @JsonIgnore
     public KorapResult setContext(SearchContext context) {
@@ -211,11 +178,12 @@ public class KorapResult extends KorapResponse {
         return this.context;
     }
 
-    public JsonNode toJSONnode () {
-	ObjectNode json = (ObjectNode) mapper.valueToTree(super.toJSONnode());
+
+    public JsonNode toJsonNode () {
+	ObjectNode json = (ObjectNode) mapper.valueToTree(super.toJsonNode());
 
 	if (this.context != null)
-	    json.put("context", this.getContext().toJSON());
+	    json.put("context", this.getContext().toJsonNode());
 
 	if (this.itemsPerResource > 0)
 	    json.put("itemsPerResource",
@@ -247,7 +215,7 @@ public class KorapResult extends KorapResponse {
 
 
     // For Collocation Analysis API
-    public String toTokenListJSON () {
+    public String toTokenListJsonString () {
         ObjectNode json = (ObjectNode) mapper.valueToTree(this);
 
 	ArrayNode array = json.putArray("matches");

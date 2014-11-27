@@ -92,14 +92,16 @@ public class TestMatchIdentifier {
 	ki.commit();
 
 	KorapQuery kq = new KorapQuery("tokens");
-	KorapSearch ks = new KorapSearch(kq._(2,kq.seq(kq.seg("s:b")).append(kq._(kq.seg("s:a")))));
+	KorapSearch ks = new KorapSearch(
+	    kq._(2,kq.seq(kq.seg("s:b")).append(kq._(kq.seg("s:a"))))
+        );
 	KorapResult kr = ki.search(ks);
 
-	assertEquals("totalResults", 1, kr.totalResults());
-	assertEquals("StartPos (0)", 7, kr.match(0).startPos);
-	assertEquals("EndPos (0)", 9, kr.match(0).endPos);
+	assertEquals("totalResults", kr.getTotalResults(),    1);
+	assertEquals("StartPos (0)", kr.getMatch(0).startPos, 7);
+	assertEquals("EndPos (0)",   kr.getMatch(0).endPos,   9);
 
-	KorapMatch km = kr.match(0);
+	KorapMatch km = kr.getMatch(0);
 
 	assertEquals("SnippetBrackets (0)", "... bcabca[{2:b{1:a}}]c", km.snippetBrackets());
 	assertEquals("ID (0)", "match-c1!d1-p7-9(2)7-8(1)8-8", km.getID());

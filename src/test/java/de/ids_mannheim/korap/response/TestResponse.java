@@ -23,7 +23,7 @@ public class TestResponse {
     @Test
     public void testResponse () throws IOException {
 	KorapResponse resp = new KorapResponse();
-	assertEquals("{}", resp.toJSON());
+	assertEquals("{}", resp.toJsonString());
 	resp.setVersion("0.24");
 	resp.setNode("Tanja");
 	assertEquals("0.24",resp.getVersion());
@@ -33,18 +33,18 @@ public class TestResponse {
 	assertFalse(resp.hasMessages());
 	assertFalse(resp.hasErrors());
 
-	JsonNode respJson = mapper.readTree(resp.toJSON());
+	JsonNode respJson = mapper.readTree(resp.toJsonString());
 	assertEquals("0.24", respJson.at("/version").asText());
 	assertEquals("Tanja", respJson.at("/node").asText());
 
 	resp.setName("Index");
-	respJson = mapper.readTree(resp.toJSON());
+	respJson = mapper.readTree(resp.toJsonString());
 	assertEquals("Index-0.24", respJson.at("/version").asText());
 	assertEquals("Tanja", respJson.at("/node").asText());
 
 	resp.setBenchmark("took a while");
 	resp.setListener("localhost:3000");
-	respJson = mapper.readTree(resp.toJSON());
+	respJson = mapper.readTree(resp.toJsonString());
 	assertEquals("localhost:3000", respJson.at("/listener").asText());
 	assertEquals("took a while", respJson.at("/benchmark").asText());
     };
@@ -52,7 +52,7 @@ public class TestResponse {
     @Test
     public void testResponseNotifications () throws IOException {
 	KorapResponse resp = new KorapResponse();
-	assertEquals("{}", resp.toJSON());
+	assertEquals("{}", resp.toJsonString());
 	resp.setVersion("0.24");
 	resp.setNode("Tanja");
 	assertEquals("0.24",resp.getVersion());
@@ -62,7 +62,7 @@ public class TestResponse {
 	assertFalse(resp.hasMessages());
 	assertFalse(resp.hasErrors());
 
-	JsonNode respJson = mapper.readTree(resp.toJSON());
+	JsonNode respJson = mapper.readTree(resp.toJsonString());
 	assertEquals("0.24", respJson.at("/version").asText());
 	assertEquals("Tanja", respJson.at("/node").asText());
 
@@ -72,7 +72,7 @@ public class TestResponse {
 
 	resp.addError(4, "Fehler 4");
 
-	respJson = mapper.readTree(resp.toJSON());
+	respJson = mapper.readTree(resp.toJsonString());
 	assertEquals("0.24", respJson.at("/version").asText());
 	assertEquals("Tanja", respJson.at("/node").asText());
 

@@ -43,7 +43,6 @@ public class TestSegmentIndex {
 	/** Multiple matches in one document. */
 	@Test
 	public void testCase1() throws IOException {
-//		log.trace("Testcase1");
 		sq = new SpanSegmentQuery(
 				new SpanTermQuery(new Term("base","s:b")),
 				new SpanTermQuery(new Term("base","s:c"))
@@ -52,11 +51,11 @@ public class TestSegmentIndex {
 		kr = ki.search(sq, (short) 10);
 		ki.close();
 		
-		assertEquals("totalResults", 3, kr.totalResults());
-		assertEquals("StartPos (0)", 1, kr.match(0).startPos);
-		assertEquals("EndPos (0)", 2, kr.match(0).endPos);
-		assertEquals("StartPos (1)", 4, kr.match(1).startPos);
-		assertEquals("EndPos (1)", 5, kr.match(1).endPos);		
+		assertEquals("totalResults", kr.getTotalResults(), 3);
+		assertEquals("StartPos (0)", 1, kr.getMatch(0).startPos);
+		assertEquals("EndPos (0)", 2, kr.getMatch(0).endPos);
+		assertEquals("StartPos (1)", 4, kr.getMatch(1).startPos);
+		assertEquals("EndPos (1)", 5, kr.getMatch(1).endPos);		
 	}
 	
 	/** Matches in multiple documents.
@@ -73,15 +72,15 @@ public class TestSegmentIndex {
 		kr = ki.search(sq, (short) 10);
 		ki.close();
 				
-		assertEquals("totalResults", 3, kr.totalResults());
+		assertEquals("totalResults", kr.getTotalResults(), 3);
 		// Match #0
-		assertEquals("doc-number", 1, kr.match(0).getLocalDocID());
-		assertEquals("StartPos", 1, kr.match(0).startPos);
-		assertEquals("EndPos", 2, kr.match(0).endPos);
+		assertEquals("doc-number", 1, kr.getMatch(0).getLocalDocID());
+		assertEquals("StartPos", 1, kr.getMatch(0).startPos);
+		assertEquals("EndPos", 2, kr.getMatch(0).endPos);
 		// Match #2
-		assertEquals("doc-number", 2, kr.match(2).getLocalDocID());
-		assertEquals("StartPos", 2, kr.match(2).startPos);
-		assertEquals("EndPos", 3, kr.match(2).endPos);		
+		assertEquals("doc-number", 2, kr.getMatch(2).getLocalDocID());
+		assertEquals("StartPos", 2, kr.getMatch(2).startPos);
+		assertEquals("EndPos", 3, kr.getMatch(2).endPos);		
 	}
 	
 	
@@ -97,10 +96,10 @@ public class TestSegmentIndex {
 		kr = ki.search(sq, (short) 10);
 		ki.close();
 		
-		assertEquals("totalResults", 1, kr.totalResults());
-		assertEquals("doc-number", 2, kr.match(0).getLocalDocID());
-		assertEquals("StartPos (0)", 1, kr.match(0).startPos);
-		assertEquals("EndPos (0)", 2, kr.match(0).endPos);		
+		assertEquals("totalResults", kr.getTotalResults(), 1);
+		assertEquals("doc-number", 2, kr.getMatch(0).getLocalDocID());
+		assertEquals("StartPos (0)", 1, kr.getMatch(0).startPos);
+		assertEquals("EndPos (0)", 2, kr.getMatch(0).endPos);		
 	}
 	
 	/** Matching a SpanElementQuery and a SpanNextQuery 
@@ -128,15 +127,15 @@ public class TestSegmentIndex {
 		kr = ki.search(sq, (short) 10);
 		ki.close();
 		
-		assertEquals("totalResults", 2, kr.totalResults());
+		assertEquals("totalResults", kr.getTotalResults(), 2);
 		// Match #0
-		assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
-		assertEquals("StartPos", 3, kr.match(0).startPos);
-		assertEquals("EndPos", 5, kr.match(0).endPos);
+		assertEquals("doc-number", 0, kr.getMatch(0).getLocalDocID());
+		assertEquals("StartPos", 3, kr.getMatch(0).startPos);
+		assertEquals("EndPos", 5, kr.getMatch(0).endPos);
 		// Match #1
-		assertEquals("doc-number", 0, kr.match(1).getLocalDocID());
-		assertEquals("StartPos", 1, kr.match(1).startPos);
-		assertEquals("EndPos", 3, kr.match(1).endPos);				
+		assertEquals("doc-number", 0, kr.getMatch(1).getLocalDocID());
+		assertEquals("StartPos", 1, kr.getMatch(1).startPos);
+		assertEquals("EndPos", 3, kr.getMatch(1).endPos);				
 	}
 	
 	/** Matching SpanElementQueries */
@@ -151,11 +150,11 @@ public class TestSegmentIndex {
 		kr = ki.search(sq, (short) 10);
 		ki.close();			
 		
-		assertEquals("totalResults", 1, kr.totalResults());
+		assertEquals("totalResults", kr.getTotalResults(), 1);
 		// Match #0
-		assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
-		assertEquals("StartPos", 3, kr.match(0).startPos);
-		assertEquals("EndPos", 5, kr.match(0).endPos);				
+		assertEquals("doc-number", 0, kr.getMatch(0).getLocalDocID());
+		assertEquals("StartPos", 3, kr.getMatch(0).startPos);
+		assertEquals("EndPos", 5, kr.getMatch(0).endPos);				
 	}
 		
 	/** Skip to SegmentSpan */
@@ -174,15 +173,15 @@ public class TestSegmentIndex {
 		kr = ki.search(sq, (short) 10);
 		ki.close();
 		
-		assertEquals("totalResults", 2, kr.totalResults());				
+		assertEquals("totalResults", kr.getTotalResults(), 2);				
 		// Match #0
-		assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
-		assertEquals("StartPos (0)", 4, kr.match(0).startPos);
-		assertEquals("EndPos (0)", 6, kr.match(0).endPos);
+		assertEquals("doc-number", 0, kr.getMatch(0).getLocalDocID());
+		assertEquals("StartPos (0)", 4, kr.getMatch(0).startPos);
+		assertEquals("EndPos (0)", 6, kr.getMatch(0).endPos);
 		// Match #1 in the other atomic index
-		assertEquals("doc-number", 0, kr.match(1).getLocalDocID());
-		assertEquals("StartPos (0)", 0, kr.match(1).startPos);
-		assertEquals("EndPos (0)", 2, kr.match(1).endPos);
+		assertEquals("doc-number", 0, kr.getMatch(1).getLocalDocID());
+		assertEquals("StartPos (0)", 0, kr.getMatch(1).startPos);
+		assertEquals("EndPos (0)", 2, kr.getMatch(1).endPos);
 	}
 
     

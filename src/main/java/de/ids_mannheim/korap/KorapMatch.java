@@ -1339,7 +1339,7 @@ public class KorapMatch extends KorapDocument {
     
 
     // Identical to KorapResult!
-    public String toJSON () {
+    public String toJsonString () {
 	ObjectNode json = (ObjectNode) mapper.valueToTree(this);
 
 	// Match was no match
@@ -1347,7 +1347,7 @@ public class KorapMatch extends KorapDocument {
 	    return "{}";
 
 	if (this.context != null)
-	    json.put("context", this.getContext().toJSON());
+	    json.put("context", this.getContext().toJsonNode());
 
 	if (this.version != null)
 	    json.put("version", this.getVersion());

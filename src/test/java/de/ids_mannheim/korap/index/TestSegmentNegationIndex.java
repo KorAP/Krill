@@ -43,16 +43,16 @@ public class TestSegmentNegationIndex {
 
 	kr = ki.search(sqw.toQuery(), (short) 10);
 		
-	assertEquals("totalResults", 2, kr.totalResults());				
+	assertEquals("totalResults", kr.getTotalResults(), 2);				
 	// Match #0
-	assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
-	assertEquals("StartPos (0)", 4, kr.match(0).startPos);
-	assertEquals("EndPos (0)", 6, kr.match(0).endPos);
+	assertEquals("doc-number", 0, kr.getMatch(0).getLocalDocID());
+	assertEquals("StartPos (0)", 4, kr.getMatch(0).startPos);
+	assertEquals("EndPos (0)", 6, kr.getMatch(0).endPos);
 
 	// Match #1 in the other atomic index
-	assertEquals("doc-number", 3, kr.match(1).getLocalDocID());
-	assertEquals("StartPos (0)", 0, kr.match(1).startPos);
-	assertEquals("EndPos (0)", 2, kr.match(1).endPos);
+	assertEquals("doc-number", 3, kr.getMatch(1).getLocalDocID());
+	assertEquals("StartPos (0)", 0, kr.getMatch(1).startPos);
+	assertEquals("EndPos (0)", 2, kr.getMatch(1).endPos);
 		
 	ssqw = new SpanSegmentQueryWrapper("base","s:b");
 	ssqw.without("s:c");
@@ -60,21 +60,21 @@ public class TestSegmentNegationIndex {
 
 	kr = ki.search(sqw.toQuery(), (short) 10);
 
-	assertEquals("doc-number", 0, kr.match(0).getLocalDocID());
-	assertEquals("StartPos (0)", 2, kr.match(0).startPos);
-	assertEquals("EndPos (0)", 4, kr.match(0).endPos);
+	assertEquals("doc-number", 0, kr.getMatch(0).getLocalDocID());
+	assertEquals("StartPos (0)", 2, kr.getMatch(0).startPos);
+	assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
 
-	assertEquals("doc-number", 1, kr.match(1).getLocalDocID());
-	assertEquals("StartPos (1)", 1, kr.match(1).startPos);
-	assertEquals("EndPos (1)", 3, kr.match(1).endPos);
+	assertEquals("doc-number", 1, kr.getMatch(1).getLocalDocID());
+	assertEquals("StartPos (1)", 1, kr.getMatch(1).startPos);
+	assertEquals("EndPos (1)", 3, kr.getMatch(1).endPos);
 
-	assertEquals("doc-number", 1, kr.match(2).getLocalDocID());
-	assertEquals("StartPos (2)", 2, kr.match(2).startPos);
-	assertEquals("EndPos (2)", 4, kr.match(2).endPos);
+	assertEquals("doc-number", 1, kr.getMatch(2).getLocalDocID());
+	assertEquals("StartPos (2)", 2, kr.getMatch(2).startPos);
+	assertEquals("EndPos (2)", 4, kr.getMatch(2).endPos);
 
-	assertEquals("doc-number", 2, kr.match(3).getLocalDocID());
-	assertEquals("StartPos (3)", 1, kr.match(3).startPos);
-	assertEquals("EndPos (3)", 3, kr.match(3).endPos);
+	assertEquals("doc-number", 2, kr.getMatch(3).getLocalDocID());
+	assertEquals("StartPos (3)", 1, kr.getMatch(3).startPos);
+	assertEquals("EndPos (3)", 3, kr.getMatch(3).endPos);
     }
     
     private FieldDocument createFieldDoc0(){

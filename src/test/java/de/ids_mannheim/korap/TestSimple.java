@@ -89,7 +89,7 @@ public class TestSimple {
 	
 	try {
 	    String json = getString(jsonFile);
-	    sqwi = new KorapQuery("tokens").fromJSON(json);
+	    sqwi = new KorapQuery("tokens").fromJson(json);
 	}
 	catch (QueryException e) {
 	    fail(e.getMessage());

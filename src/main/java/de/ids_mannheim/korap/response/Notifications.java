@@ -28,7 +28,7 @@ import de.ids_mannheim.korap.util.QueryException;
  *     for (Message msg : n.getWarnings())
  *       System.err.out(msg.getCode() + ": " + msg.getMessage());
  *   };
- *   System.err.println(n.toJSON());
+ *   System.err.println(n.toJsonString());
  * </pre></blockquote>
  *
  * @author Nils Diewald
@@ -361,20 +361,36 @@ public class Notifications {
 
 
     /**
+     * Clear all notifications.
+     *
+     * @return Notification object for chaining
+     */
+    public Notifications clearNotifications () {
+	if (this.warnings != null)
+	    this.warnings.clear();
+	if (this.messages != null)
+	    this.messages.clear();
+	if (this.errors != null)
+	    this.errors.clear();
+	return this;
+    };
+
+
+    /**
      * Serialize Notifications as a JsonNode.
      *
      * @return JsonNode representation of all warnings, errors, and messages
      */
-    public JsonNode toJSONnode () {
+    public JsonNode toJsonNode () {
 	ObjectNode json =  mapper.createObjectNode();
 
 	// Add messages
 	if (this.hasWarnings())
-	    json.put("warnings", this.getWarnings().toJSONnode());
+	    json.put("warnings", this.getWarnings().toJsonNode());
 	if (this.hasErrors())
-	    json.put("errors", this.getErrors().toJSONnode());
+	    json.put("errors", this.getErrors().toJsonNode());
 	if (this.hasMessages())
-	    json.put("messages", this.getMessages().toJSONnode());
+	    json.put("messages", this.getMessages().toJsonNode());
 
 	return (JsonNode) json;
     };
@@ -396,10 +412,10 @@ public class Notifications {
      *
      * @return String representation of all warnings, errors, and messages
      */
-    public String toJSON () {
+    public String toJsonString () {
 	String msg = "";
 	try {
-	    JsonNode node = this.toJSONnode();
+	    JsonNode node = this.toJsonNode();
 	    if (node == null)
 		return "{}";
 	    return mapper.writeValueAsString(node);
@@ -414,20 +430,5 @@ public class Notifications {
 	    "[620, " +
 	    "\"Unable to generate JSON\"" + msg + "]" +
 	    "]}";
-    };
-
-    /**
-     * Clear all notifications.
-     *
-     * @return Notification object for chaining
-     */
-    public Notifications clearNotifications () {
-	if (this.warnings != null)
-	    this.warnings.clear();
-	if (this.messages != null)
-	    this.messages.clear();
-	if (this.errors != null)
-	    this.errors.clear();
-	return this;
     };
 };

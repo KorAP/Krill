@@ -57,27 +57,27 @@ public class TestRegexWildcardIndex {
 	ks.context.right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("affe [afffe] baum ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:baum.*").toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... afffe [baum] baumgarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:.....?garten").toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... baumgarten [steingarten] franz ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:ha.s").toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... franz [hans] haus ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... hans [haus] efeu ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:.*ff.*").toQuery()));
-	assertEquals(3, kr.getTotalResults());
+	assertEquals((long) 3, kr.getTotalResults());
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("affe [afffe] baum ...", kr.getMatch(1).getSnippetBrackets());
 	assertEquals("... efeu [effe]", kr.getMatch(2).getSnippetBrackets());
@@ -114,30 +114,30 @@ public class TestRegexWildcardIndex {
 	ks.context.right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("affe [afffe] baum ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").wc("s:baum.*").toQuery()));
-	assertEquals(0, kr.getTotalResults());
+	assertEquals((long) 0, kr.getTotalResults());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").wc("s:baum*").toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... afffe [baum] baumgarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").wc("s:*garten").toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... baumgarten [steingarten] franz ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").wc("s:ha?s").toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... franz [hans] haus ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... hans [haus] efeu ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").wc("s:?ff?").toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... efeu [effe]", kr.getMatch(1).getSnippetBrackets());
     };
@@ -173,35 +173,35 @@ public class TestRegexWildcardIndex {
 	ks.context.right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("AfFe [aFfFE] Baum ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:Af.*e").toQuery()));
-	assertEquals(1, kr.getTotalResults());
+	assertEquals((long) 1, kr.getTotalResults());
 	assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:baum.*", true).toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... aFfFE [Baum] Baumgarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... Baum [Baumgarten] SteinGarten ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:.*garten", true).toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... Baum [Baumgarten] SteinGarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... Baumgarten [SteinGarten] franZ ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:.*garten", false).toQuery()));
-	assertEquals(1, kr.getTotalResults());
+	assertEquals((long) 1, kr.getTotalResults());
 	assertEquals("... Baum [Baumgarten] SteinGarten ...", kr.getMatch(0).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:ha.s", true).toQuery()));
-	assertEquals(2, kr.getTotalResults());
+	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... franZ [HaNs] Haus ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... HaNs [Haus] Efeu ...", kr.getMatch(1).getSnippetBrackets());
 
 	kr = ki.search(ks.setQuery(new KorapQuery("base").re("s:.*f*e", true).toQuery()));
-	assertEquals(3, kr.getTotalResults());
+	assertEquals((long) 3, kr.getTotalResults());
 	assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("AfFe [aFfFE] Baum ...", kr.getMatch(1).getSnippetBrackets());
 	assertEquals("... Efeu [effe]", kr.getMatch(2).getSnippetBrackets());
@@ -238,7 +238,7 @@ public class TestRegexWildcardIndex {
 	ks.context.right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
-	assertEquals(1, kr.getTotalResults());
+	assertEquals((long) 1, kr.getTotalResults());
 	assertEquals("[affe afffe] baum ...", kr.getMatch(0).getSnippetBrackets());
     };
 
@@ -279,7 +279,7 @@ public class TestRegexWildcardIndex {
 	ks.context.right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
-	assertEquals(1, kr.getTotalResults());
+	assertEquals((long) 1, kr.getTotalResults());
 	assertEquals("[affe afffe] baum ...", kr.getMatch(0).getSnippetBrackets());
     };
 };

@@ -103,27 +103,27 @@ public class TestDistanceIndex {
         sq = createQuery("s:b","s:c",0,1,true);                
         kr = ki.search(sq, (short) 10);
 //        System.out.println(sq);
-        assertEquals(2, kr.totalResults());
-        assertEquals(0, kr.match(0).startPos);
-        assertEquals(1, kr.match(0).endPos);
-        assertEquals(1, kr.match(1).startPos);
-        assertEquals(3, kr.match(1).endPos);
+        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(0, kr.getMatch(0).startPos);
+        assertEquals(1, kr.getMatch(0).endPos);
+        assertEquals(1, kr.getMatch(1).startPos);
+        assertEquals(3, kr.getMatch(1).endPos);
         
         // ---- Distance 2 to 2
         sq = createQuery("s:b","s:c",2,2,true);                
         kr = ki.search(sq, (short) 10);
         
-        assertEquals(2, kr.totalResults());
-        assertEquals(0, kr.match(0).startPos);
-        assertEquals(3, kr.match(0).endPos);
-        assertEquals(1, kr.match(1).startPos);
-        assertEquals(4, kr.match(1).endPos);
+        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(0, kr.getMatch(0).startPos);
+        assertEquals(3, kr.getMatch(0).endPos);
+        assertEquals(1, kr.getMatch(1).startPos);
+        assertEquals(4, kr.getMatch(1).endPos);
         
         // ---- Distance 2 to 3
         sq = createQuery("s:b","s:c",2,3,true);                
         kr = ki.search(sq, (short) 10);
         
-        assertEquals(3, kr.totalResults());
+        assertEquals(kr.getTotalResults(), 3);
         
         ki.close();
     }
@@ -144,7 +144,7 @@ public class TestDistanceIndex {
 	    SpanQuery sq = createQuery("s:c","s:d",1,3,true);                
 	    kr = ki.search(sq, (short) 10);
 	        	    
-	    assertEquals(4, kr.getTotalResults());
+	    assertEquals((long) 4, kr.getTotalResults());
 	    assertEquals(2, kr.getMatch(0).startPos);
 	    assertEquals(5, kr.getMatch(0).endPos);
 	    assertEquals(3, kr.getMatch(2).startPos);
@@ -157,7 +157,7 @@ public class TestDistanceIndex {
 	    // Candidate list is empty, but there are secondspans in the other doc
 	    sq = createQuery("s:c","s:d",3,3,true);                
 	    kr = ki.search(sq, (short) 10);
-	    assertEquals(2, kr.getTotalResults());
+	    assertEquals((long) 2, kr.getTotalResults());
 	    
 	    ki.close();
     }
@@ -178,7 +178,7 @@ public class TestDistanceIndex {
         sq = createQuery("s:c","s:d",3,3,true);    
         kr = ki.search(sq, (short) 10);
         
-        assertEquals(2, kr.totalResults());
+        assertEquals(kr.getTotalResults(), 2);
     }
     
     /** - Firstspan.next() is in the other doc, but there is
@@ -199,7 +199,7 @@ public class TestDistanceIndex {
         SpanQuery sq = createQuery("s:b","s:c",1,2,true);                
         kr = ki.search(sq, (short) 10);
         
-        assertEquals(3, kr.totalResults());
+        assertEquals(kr.getTotalResults(), 3);
         assertEquals(0, kr.getMatch(0).startPos);
 	    assertEquals(3, kr.getMatch(0).endPos);
 	    assertEquals(1, kr.getMatch(1).startPos);
@@ -220,7 +220,7 @@ public class TestDistanceIndex {
 	    SpanQuery sq = createElementQuery("x","y",0,0,true);                
 	    kr = ki.search(sq, (short) 10);
     	
-	    assertEquals(4, kr.totalResults());
+	    assertEquals(kr.getTotalResults(), 4);
 	    assertEquals(2, kr.getMatch(0).startPos);
 	    assertEquals(7, kr.getMatch(0).endPos);
 	    assertEquals(3, kr.getMatch(1).startPos);
@@ -232,7 +232,7 @@ public class TestDistanceIndex {
 	    sq = createElementQuery("y","x",1,1,true);                
 	    kr = ki.search(sq, (short) 10);
 	    
-	    assertEquals(1, kr.totalResults());
+	    assertEquals(kr.getTotalResults(), 1);
 	    assertEquals(5, kr.getMatch(0).startPos);
 	    assertEquals(10, kr.getMatch(0).endPos);
 	    
@@ -240,7 +240,7 @@ public class TestDistanceIndex {
 	    sq = createElementQuery("y","x",1,2,true);                
 	    kr = ki.search(sq, (short) 10);
 	    
-	    assertEquals(2, kr.totalResults());	    
+	    assertEquals(kr.getTotalResults(), 2);	    
 	    assertEquals(4, kr.getMatch(0).startPos);
 	    assertEquals(9, kr.getMatch(0).endPos);
 	    assertEquals(5, kr.getMatch(1).startPos);
@@ -250,7 +250,7 @@ public class TestDistanceIndex {
 	    sq = createElementQuery("x","x",1,2,true);
 	    kr = ki.search(sq, (short) 10);
 	    
-	    assertEquals(2, kr.totalResults());
+	    assertEquals(kr.getTotalResults(), 2);
     }
     
     /** Skip to */    
@@ -264,7 +264,7 @@ public class TestDistanceIndex {
 	    SpanQuery firstClause = createQuery("s:d", "s:e", 3, 4,true);
 	    kr = ki.search(firstClause, (short) 10); 
 	    
-	    assertEquals(3, kr.totalResults());
+	    assertEquals(kr.getTotalResults(), 3);
 	    assertEquals(0, kr.getMatch(0).getLocalDocID());
 	    assertEquals(2, kr.getMatch(0).startPos);
 	    assertEquals(6, kr.getMatch(0).endPos);
@@ -281,7 +281,7 @@ public class TestDistanceIndex {
 		);	    
 	    kr = ki.search(sq, (short) 10);
 	    
-	    assertEquals(1, kr.totalResults());
+	    assertEquals(kr.getTotalResults(), 1);
 	    assertEquals(4, kr.getMatch(0).startPos);
 	    assertEquals(9, kr.getMatch(0).endPos);	    
     }
@@ -296,7 +296,7 @@ public class TestDistanceIndex {
 	    SpanQuery sq = createQuery("s:c", "s:c", 1, 2,true);
 	    kr = ki.search(sq, (short) 10); 
     
-	    assertEquals(3, kr.totalResults());
+	    assertEquals(kr.getTotalResults(), 3);
         assertEquals(0, kr.getMatch(0).startPos);
 	    assertEquals(3, kr.getMatch(0).endPos);
 	    assertEquals(2, kr.getMatch(1).startPos);
@@ -311,13 +311,13 @@ public class TestDistanceIndex {
 	    sq = createQuery("s:e", "s:e", 1, 1,true);
 	    kr = ki.search(sq, (short) 10);
 	    
-	    assertEquals(1, kr.totalResults());
+	    assertEquals(kr.getTotalResults(), 1);
 	    
 	    // without order
 	    sq = createQuery("s:e", "s:e", 1, 1,false);
 	    kr = ki.search(sq, (short) 10);
 	    
-	    assertEquals(2, kr.totalResults());
+	    assertEquals(kr.getTotalResults(), 2);
     }    
     
 }

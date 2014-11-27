@@ -118,11 +118,11 @@ public class TestElementDistanceIndex {
         sq = createQuery("s", "s:b", "s:c", 0, 2,true);        
         kr = ki.search(sq, (short) 10);
         
-        assertEquals(4, kr.totalResults());
-        assertEquals(0, kr.match(0).startPos);
-        assertEquals(1, kr.match(0).endPos);
-        assertEquals(0, kr.match(1).startPos);
-        assertEquals(3, kr.match(1).endPos);         
+        assertEquals(kr.getTotalResults(), 4);
+        assertEquals(0, kr.getMatch(0).startPos);
+        assertEquals(1, kr.getMatch(0).endPos);
+        assertEquals(0, kr.getMatch(1).startPos);
+        assertEquals(3, kr.getMatch(1).endPos);         
 	}
 	
 	/** Ensure terms and elements are in the same doc
@@ -140,10 +140,10 @@ public class TestElementDistanceIndex {
         sq = createQuery("p", "s:b", "s:d", 1, 1,true);
         kr = ki.search(sq, (short) 10);
         
-        assertEquals(1, kr.totalResults());
-        assertEquals(2, kr.match(0).getLocalDocID());
-        assertEquals(2, kr.match(0).startPos);
-        assertEquals(4, kr.match(0).endPos);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(2, kr.getMatch(0).getLocalDocID());
+        assertEquals(2, kr.getMatch(0).startPos);
+        assertEquals(4, kr.getMatch(0).endPos);
         
 	}	
 	
@@ -165,10 +165,10 @@ public class TestElementDistanceIndex {
         
         kr = ki.search(sq, (short) 10);
         
-        assertEquals(1, kr.totalResults());
-        assertEquals(2, kr.match(0).getLocalDocID());
-        assertEquals(2, kr.match(0).startPos);
-        assertEquals(5, kr.match(0).endPos);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(2, kr.getMatch(0).getLocalDocID());
+        assertEquals(2, kr.getMatch(0).startPos);
+        assertEquals(5, kr.getMatch(0).endPos);
         
 	}
 	
@@ -184,11 +184,11 @@ public class TestElementDistanceIndex {
         sq = createQuery("s", "s:b", "s:b", 1, 2,true);
         kr = ki.search(sq, (short) 10);
     		
-        assertEquals(2, kr.totalResults());
-        assertEquals(0, kr.match(0).startPos);
-        assertEquals(4, kr.match(0).endPos);
-        assertEquals(3, kr.match(1).startPos);
-        assertEquals(5, kr.match(1).endPos);
+        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(0, kr.getMatch(0).startPos);
+        assertEquals(4, kr.getMatch(0).endPos);
+        assertEquals(3, kr.getMatch(1).startPos);
+        assertEquals(5, kr.getMatch(1).endPos);
         
     }
 	
@@ -211,7 +211,7 @@ public class TestElementDistanceIndex {
         
         SpanQueryWrapper sqwi;
         try {    	    
-    	    sqwi = new KorapQuery("tokens").fromJSON(json);
+    	    sqwi = new KorapQuery("tokens").fromJson(json);
     	}
     	catch (QueryException e) {
     	    fail(e.getMessage());
@@ -223,7 +223,7 @@ public class TestElementDistanceIndex {
         sq = sqwi.toQuery();
         kr = ki.search(sq, (short) 10);
     	
-        assertEquals(3, kr.getTotalResults());
+        assertEquals((long) 3, kr.getTotalResults());
         assertEquals(14, kr.getMatch(0).startPos);
         assertEquals(19, kr.getMatch(0).endPos);
         assertEquals(30, kr.getMatch(1).startPos);

@@ -1082,7 +1082,7 @@ public class KorapIndex {
 	int i                       = 0,
   	    startIndex              = kr.getStartIndex(),
 	    count                   = kr.getItemsPerPage(),
-	    hits                    = kr.itemsPerPage() + startIndex,
+	    hits                    = kr.getItemsPerPage() + startIndex,
 	    limit                   = ks.getLimit(),
 	    itemsPerResourceCounter = 0;
 	boolean cutoff              = ks.doCutOff();
@@ -1099,7 +1099,7 @@ public class KorapIndex {
 	};
 
 	// Collect matches from atomic readers
-	ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.itemsPerPage());
+	ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.getItemsPerPage());
 
 	// Start time out thread
 	TimeOutThread tthread = new TimeOutThread();
@@ -1261,7 +1261,7 @@ public class KorapIndex {
 	    if (itemsPerResource > 0)
 		kr.setItemsPerResource(itemsPerResource);
 
-	    kr.setTotalResults(cutoff ? -1 : i);
+	    kr.setTotalResults(cutoff ? (long) -1 : (long) i);
 	}
 	catch (IOException e) {
 	    kr.addError(

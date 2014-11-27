@@ -51,12 +51,12 @@ public class TestMetaFields {
 	
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
-	assertEquals(17, kr.getTotalResults());
+	assertEquals((long) 17, kr.getTotalResults());
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(9, kr.getItemsPerPage());
 
 	ObjectMapper mapper = new ObjectMapper();
-	JsonNode res = mapper.readTree(kr.toJSON());
+	JsonNode res = mapper.readTree(kr.toJsonString());
 	assertEquals(0, res.at("/matches/0/UID").asInt());
 	assertEquals("WPD", res.at("/matches/0/corpusID").asText());
 	assertEquals("", res.at("/matches/0/docID").asText());
@@ -77,12 +77,12 @@ public class TestMetaFields {
         );
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
-	assertEquals(17, kr.getTotalResults());
+	assertEquals((long) 17, kr.getTotalResults());
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(2, kr.getItemsPerPage());
 	
 	mapper = new ObjectMapper();
-	res = mapper.readTree(kr.toJSON());
+	res = mapper.readTree(kr.toJsonString());
 	assertEquals(0, res.at("/matches/0/UID").asInt());
 	assertEquals("", res.at("/matches/0/corpusID").asText());
 	assertEquals("Ruru,Jens.Ol,Aglarech", res.at("/matches/0/author").asText());

@@ -39,7 +39,7 @@ public class TestRealIndex {
 	ks = new KorapSearch(kq.within(kq.tag("base/s:s"), kq.seq(kq.re("s:.*")).append(kq._(kq.re("s:.*")))).toQuery());
 	ks.setTimeOut(10000);
 	kr = ks.run(ki);
-	System.err.println(kr.toJSON());
+	System.err.println(kr.toJsonString());
 	assertEquals(8, kr.getTotalResults());
     };
 }

@@ -85,7 +85,7 @@ public class KorapSearch extends Notifications {
 	    if (this.request.has("query")) {
 		try {
 		    KorapQuery kq = new KorapQuery("tokens");
-		    SpanQueryWrapper qw = kq.fromJSON(this.request.get("query"));
+		    SpanQueryWrapper qw = kq.fromJson(this.request.get("query"));
 
 		    if (qw.isEmpty()) {
 
@@ -160,7 +160,7 @@ public class KorapSearch extends Notifications {
 
 		    // Defined contexts
 		    if (meta.has("context"))
-			this.context.fromJSON(meta.get("context"));
+			this.context.fromJson(meta.get("context"));
 
 		    // Defined resource count
 		    if (meta.has("timeout"))

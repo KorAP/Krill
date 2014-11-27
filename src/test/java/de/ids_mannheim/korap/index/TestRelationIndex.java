@@ -187,7 +187,7 @@ public class TestRelationIndex {
 				new SpanTermQuery(new Term("base",">:xip/syntax-dep_rel")),true);
 		kr = ki.search(sq,(short) 10);
 		
-		assertEquals(7, kr.getTotalResults());
+		assertEquals((long) 7, kr.getTotalResults());
 		// token to token
 		assertEquals(0,kr.getMatch(0).getLocalDocID());
 		assertEquals(0,kr.getMatch(0).getStartPos());
@@ -226,7 +226,7 @@ public class TestRelationIndex {
 				new SpanTermQuery(new Term("base","<:xip/syntax-dep_rel")),true);
 		kr = ki.search(sq,(short) 10);
 		
-		assertEquals(7, kr.getTotalResults());
+		assertEquals((long) 7, kr.getTotalResults());
 		// token to token
 		assertEquals(0,kr.getMatch(0).getLocalDocID());
 		assertEquals(1,kr.getMatch(0).getStartPos());
@@ -261,7 +261,7 @@ public class TestRelationIndex {
 				new SpanTermQuery(new Term("base",">:child-of")),true);
 		kr = ki.search(srq,(short) 20);
 		
-		assertEquals(13, kr.getTotalResults());
+		assertEquals((long) 13, kr.getTotalResults());
 		
 		// child-of with attr func=sbj
 		SpanWithAttributeQuery wq = 
@@ -273,7 +273,7 @@ public class TestRelationIndex {
 		);
 		
 		kr = ki.search(wq,(short) 10);		
-		assertEquals(1, kr.getTotalResults());
+		assertEquals((long) 1, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos()); // token
 		assertEquals(1,kr.getMatch(0).getEndPos());
 		
@@ -286,7 +286,7 @@ public class TestRelationIndex {
 				true
 		);
 		kr = ki.search(wq,(short) 20);
-		assertEquals(12, kr.getTotalResults());
+		assertEquals((long) 12, kr.getTotalResults());
 		
 		/*for (KorapMatch km : kr.getMatches()){		
 			System.out.println(km.getStartPos() +","+km.getEndPos()
@@ -304,7 +304,7 @@ public class TestRelationIndex {
 		
 		kr = ki.search(wq,(short) 10);
 		
-		assertEquals(1, kr.getTotalResults());
+		assertEquals((long) 1, kr.getTotalResults());
 		assertEquals(2,kr.getMatch(0).getStartPos()); // element
 		assertEquals(4,kr.getMatch(0).getEndPos());
 			
@@ -313,7 +313,7 @@ public class TestRelationIndex {
 				new SpanTermQuery(new Term("base","<:dep")),true);
 		kr = ki.search(srq,(short) 10);
 		
-		assertEquals(6, kr.getTotalResults());
+		assertEquals((long) 6, kr.getTotalResults());
 		
 		// target of a dependency relation, which is also a head
 		wq = new SpanWithAttributeQuery(srq, 
@@ -325,7 +325,7 @@ public class TestRelationIndex {
 		
 		kr = ki.search(wq,(short) 20);
 		
-		assertEquals(2, kr.getTotalResults());
+		assertEquals((long) 2, kr.getTotalResults());
 		assertEquals(3,kr.getMatch(0).getStartPos());
 		assertEquals(4,kr.getMatch(0).getEndPos());
 		assertEquals(6,kr.getMatch(1).getStartPos());
@@ -354,7 +354,7 @@ public class TestRelationIndex {
 				
 		kr = ki.search(rv,(short) 10);
 		
-		assertEquals(7, kr.getTotalResults());
+		assertEquals((long) 7, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
 		assertEquals(1,kr.getMatch(0).getEndPos());
 		assertEquals(2,kr.getMatch(1).getStartPos());
@@ -375,7 +375,7 @@ public class TestRelationIndex {
 		SpanSegmentQuery rv2 = new SpanSegmentQuery(rv, new SpanTermQuery(new Term("base","pos:ART")));		
 		kr = ki.search(rv2,(short) 10);
 				
-		assertEquals(2, kr.getTotalResults());
+		assertEquals((long) 2, kr.getTotalResults());
 		assertEquals(2,kr.getMatch(0).getStartPos());
 		assertEquals(3,kr.getMatch(0).getEndPos());
 		assertEquals(5,kr.getMatch(1).getStartPos());
@@ -393,7 +393,7 @@ public class TestRelationIndex {
 				+km.getSnippetBrackets()
 					);
 		}	*/
-		assertEquals(2, kr.getTotalResults());
+		assertEquals((long) 2, kr.getTotalResults());
 		assertEquals(2,kr.getMatch(0).getStartPos());
 		assertEquals(4,kr.getMatch(0).getEndPos());
 		assertEquals(5,kr.getMatch(1).getStartPos());
@@ -425,7 +425,7 @@ public class TestRelationIndex {
 				+km.getSnippetBrackets());
 			}*/
 		
-		assertEquals(7, kr.getTotalResults());
+		assertEquals((long) 7, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
 		assertEquals(1,kr.getMatch(0).getEndPos());
 		assertEquals(2,kr.getMatch(1).getStartPos());
@@ -465,7 +465,7 @@ public class TestRelationIndex {
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets());
 			}*/
-		assertEquals(4, kr.getTotalResults());
+		assertEquals((long) 4, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
 		assertEquals(7,kr.getMatch(0).getEndPos());
 		assertEquals(1,kr.getMatch(1).getStartPos());
@@ -497,7 +497,7 @@ public class TestRelationIndex {
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets());
 			}*/
-		assertEquals(4, kr.getTotalResults());
+		assertEquals((long) 4, kr.getTotalResults());
 		assertEquals(0,kr.getMatch(0).getStartPos());
 		assertEquals(7,kr.getMatch(0).getEndPos());
 		assertEquals(1,kr.getMatch(1).getStartPos());
@@ -521,7 +521,7 @@ public class TestRelationIndex {
 		System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 			+km.getSnippetBrackets());
 		}*/		
-		assertEquals(8, kr.getTotalResults());
+		assertEquals((long) 8, kr.getTotalResults());
 	}
 	
 	/** Relations whose source/target do not embed 
@@ -542,7 +542,7 @@ public class TestRelationIndex {
 				new SpanTermWithIdQuery(new Term("base","pos:NN"), true), 
 				true, false, true);
 		kr = ki.search(rv,(short) 10);
-		assertEquals(3, kr.getTotalResults());
+		assertEquals((long) 3, kr.getTotalResults());
 		assertEquals(1,kr.getMatch(0).getStartPos());
 		assertEquals(2,kr.getMatch(0).getEndPos());
 		assertEquals(1,kr.getMatch(1).getStartPos());
@@ -558,7 +558,7 @@ public class TestRelationIndex {
 				new SpanTermWithIdQuery(new Term("base","pos:NN"),true), 
 				true, false, true);
 		kr = ki.search(rv,(short) 10);
-		assertEquals(3, kr.getTotalResults());
+		assertEquals((long) 3, kr.getTotalResults());
 		assertEquals(2,kr.getMatch(0).getStartPos());
 		assertEquals(3,kr.getMatch(0).getEndPos());
 		assertEquals(4,kr.getMatch(1).getStartPos());
@@ -577,7 +577,7 @@ public class TestRelationIndex {
 				false, true, true);
 		kr = ki.search(rv,(short) 10);
 			
-		assertEquals(3, kr.getTotalResults());
+		assertEquals((long) 3, kr.getTotalResults());
 		assertEquals(2,kr.getMatch(0).getStartPos());
 		assertEquals(3,kr.getMatch(0).getEndPos());
 		assertEquals(4,kr.getMatch(1).getStartPos());
@@ -599,7 +599,7 @@ public class TestRelationIndex {
 				+km.getSnippetBrackets());
 			}*/
 		
-		assertEquals(3, kr.getTotalResults());
+		assertEquals((long) 3, kr.getTotalResults());
 		assertEquals(1,kr.getMatch(0).getStartPos());
 		assertEquals(2,kr.getMatch(0).getEndPos());
 		assertEquals(1,kr.getMatch(1).getStartPos());
@@ -623,7 +623,7 @@ public class TestRelationIndex {
 				6, true, false, true); 
 				
 		kr = ki.search(rv,(short) 10);
-		assertEquals(7, kr.getTotalResults());
+		assertEquals((long) 7, kr.getTotalResults());
 		
 		rv =new SpanRelationPartQuery(
 				new SpanRelationQuery(
@@ -639,7 +639,7 @@ public class TestRelationIndex {
 				);
 		}*/
 		
-		assertEquals(3, kr.getTotalResults());
+		assertEquals((long) 3, kr.getTotalResults());
 		assertEquals(1,kr.getMatch(0).getStartPos());
 		assertEquals(2,kr.getMatch(0).getEndPos());
 		assertEquals(1,kr.getMatch(1).getStartPos());

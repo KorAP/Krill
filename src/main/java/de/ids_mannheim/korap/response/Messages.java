@@ -228,10 +228,10 @@ public class Messages implements Cloneable, Iterable<Message> {
      *
      * @return JsonNode representation of all messages
      */
-    public JsonNode toJSONnode () {
+    public JsonNode toJsonNode () {
 	ArrayNode messageArray = mapper.createArrayNode();
 	for (Message msg : this.messages)
-	    messageArray.add(msg.toJSONnode());
+	    messageArray.add(msg.toJsonNode());
 	return (JsonNode) messageArray;
     };
 
@@ -248,10 +248,10 @@ public class Messages implements Cloneable, Iterable<Message> {
      *
      * @return String representation of all messages
      */
-    public String toJSON () {
+    public String toJsonString () {
 	String msg = "";
 	try {
-	    return mapper.writeValueAsString(this.toJSONnode());
+	    return mapper.writeValueAsString(this.toJsonNode());
 	}
 	catch (Exception e) {
 	    // Bad in case the message contains quotes!

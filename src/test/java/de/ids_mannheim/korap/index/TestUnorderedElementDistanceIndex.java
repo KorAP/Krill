@@ -116,7 +116,7 @@ public class TestUnorderedElementDistanceIndex {
         sq = createQuery("s", "s:b", "s:c", 0, 1,false);        
         kr = ki.search(sq, (short) 10);
 		
-        assertEquals(5,kr.getTotalResults());
+        assertEquals((long) 5,kr.getTotalResults());
         assertEquals(0, kr.getMatch(0).startPos);
         assertEquals(1, kr.getMatch(0).endPos);
         assertEquals(0, kr.getMatch(1).startPos);
@@ -147,7 +147,7 @@ public class TestUnorderedElementDistanceIndex {
         sq = createQuery("p", "s:b", "s:e", 0, 2,false);        
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(3,kr.getTotalResults());
+        assertEquals((long) 3,kr.getTotalResults());
         assertEquals(2,kr.getMatch(0).getLocalDocID());
         assertEquals(3, kr.getMatch(0).startPos);
         assertEquals(5, kr.getMatch(0).endPos);
@@ -170,7 +170,7 @@ public class TestUnorderedElementDistanceIndex {
         sq = createQuery("s", "s:c", "s:e", 1, 2,false);        
         kr = ki.search(sq, (short) 10);
 	
-        assertEquals(4,kr.getTotalResults());
+        assertEquals((long) 4,kr.getTotalResults());
         assertEquals(1, kr.getMatch(0).startPos);
         assertEquals(6, kr.getMatch(0).endPos);
         assertEquals(1, kr.getMatch(1).startPos);
@@ -201,7 +201,7 @@ public class TestUnorderedElementDistanceIndex {
         
         kr = ki.search(sq, (short) 10);
         
-        assertEquals(4,kr.getTotalResults());
+        assertEquals((long) 4,kr.getTotalResults());
         assertEquals(0, kr.getMatch(0).startPos);
         assertEquals(3, kr.getMatch(0).endPos);
         assertEquals(1, kr.getMatch(1).startPos);
@@ -224,13 +224,13 @@ public class TestUnorderedElementDistanceIndex {
         SpanQuery sq, edq;
         edq = createQuery("s", "s:b", "s:c", 0, 2,false);
         kr = ki.search(edq, (short) 10);
-        assertEquals(6, kr.getTotalResults());
+        assertEquals((long) 6, kr.getTotalResults());
 
         sq = new SpanNextQuery( 
         		new SpanTermQuery(new Term("base", "s:b"))
         		,edq);
         kr = ki.search(sq, (short) 10);
-        assertEquals(2, kr.getTotalResults());
+        assertEquals((long) 2, kr.getTotalResults());
         assertEquals(1, kr.getMatch(0).getStartPos());
         assertEquals(4, kr.getMatch(0).getEndPos());
         assertEquals(2, kr.getMatch(1).getStartPos());

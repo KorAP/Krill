@@ -52,7 +52,7 @@ public class TestBenchmarkSpans {
 	t2 = System.nanoTime();
 
 	// assertEquals("TotalResults", 30751, kr.getTotalResults());
-	assertEquals("TotalResults",  4803739, kr.getTotalResults());
+	assertEquals("TotalResults",  kr.getTotalResults(), 4803739);
 
 	// System.err.println(kr.toJSON());
 
@@ -105,7 +105,7 @@ public class TestBenchmarkSpans {
 	double length = 0;
 	for (int i = 1; i <= rounds; i++) {
 	    kr = new KorapSearch(json).run(ki);
-	    length += kr.toJSON().length();
+	    length += kr.toJsonString().length();
 	};
 	t2 = System.nanoTime();
 
@@ -152,7 +152,7 @@ public class TestBenchmarkSpans {
 
 	// System.err.println(kr.getMatch(0).toJSON());
 
-	assertEquals("TotalResults1", 4116282, kr.getTotalResults());
+	assertEquals("TotalResults1", kr.getTotalResults(), 4116282);
 	assertEquals("TotalResults2", kr.getTotalResults(), ki.numberOf("sentences"));
 
 	double seconds = (double)(t2-t1) / 1000000000.0;
@@ -227,7 +227,7 @@ public class TestBenchmarkSpans {
 
 	/** HERE IS A BUG! */
 
-	System.err.println(kr.toJSON());
+	System.err.println(kr.toJsonString());
 
 
 
@@ -337,7 +337,7 @@ public class TestBenchmarkSpans {
 	};
 	t2 = System.nanoTime();
 
-	assertEquals("TotalResults", 70229, kr.getTotalResults());
+	assertEquals("TotalResults", kr.getTotalResults(), 70229);
 
 	// System.err.println(kr.toJSON());
 
@@ -371,7 +371,7 @@ public class TestBenchmarkSpans {
 	
 	try {
 	    String json = getString(jsonFile);
-	    sqwi = new KorapQuery("tokens").fromJSON(json);
+	    sqwi = new KorapQuery("tokens").fromJson(json);
 	}
 	catch (QueryException e) {
 	    fail(e.getMessage());

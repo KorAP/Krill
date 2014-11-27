@@ -96,9 +96,9 @@ public class TestElementDistanceExclusionIndex {
         SpanQuery sq;
         sq = createQuery("s","s:d","s:c",0,0,false,true);                
         kr = ki.search(sq, (short) 10);
-        assertEquals(1, kr.totalResults());
-        assertEquals(6, kr.match(0).startPos);
-        assertEquals(7, kr.match(0).endPos);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(6, kr.getMatch(0).startPos);
+        assertEquals(7, kr.getMatch(0).endPos);
     }
     
     /** There is another firstspan within max distance
@@ -114,15 +114,15 @@ public class TestElementDistanceExclusionIndex {
 	    sq = createQuery("s","s:c","s:d",0,0,false,true);                
 	    kr = ki.search(sq, (short) 10);
 	    
-	    assertEquals(4, kr.totalResults());
-	    assertEquals(0, kr.match(0).startPos);
-        assertEquals(1, kr.match(0).endPos);
-        assertEquals(2, kr.match(1).startPos);
-        assertEquals(3, kr.match(1).endPos);
-        assertEquals(3, kr.match(2).startPos);
-        assertEquals(4, kr.match(2).endPos);
-        assertEquals(8, kr.match(3).startPos);
-        assertEquals(9, kr.match(3).endPos);
+	    assertEquals(kr.getTotalResults(), 4);
+	    assertEquals(0, kr.getMatch(0).startPos);
+        assertEquals(1, kr.getMatch(0).endPos);
+        assertEquals(2, kr.getMatch(1).startPos);
+        assertEquals(3, kr.getMatch(1).endPos);
+        assertEquals(3, kr.getMatch(2).startPos);
+        assertEquals(4, kr.getMatch(2).endPos);
+        assertEquals(8, kr.getMatch(3).startPos);
+        assertEquals(9, kr.getMatch(3).endPos);
     }
     
     /** Distance 0-1, ordered, unordered
@@ -136,18 +136,18 @@ public class TestElementDistanceExclusionIndex {
         // unordered
         sq = createQuery("s","s:c","s:e",0,1,false,true);                
         kr = ki.search(sq, (short) 10);
-        assertEquals(1, kr.totalResults());
-        assertEquals(5, kr.match(0).startPos);
-        assertEquals(6, kr.match(0).endPos);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(5, kr.getMatch(0).startPos);
+        assertEquals(6, kr.getMatch(0).endPos);
         
         //ordered 
         sq = createQuery("s","s:c","s:e",0,1,true,true);                
         kr = ki.search(sq, (short) 10);
-        assertEquals(3, kr.totalResults());
-        assertEquals(2, kr.match(0).startPos);
-        assertEquals(3, kr.match(0).endPos);
-        assertEquals(3, kr.match(1).startPos);
-        assertEquals(4, kr.match(1).endPos);
+        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(2, kr.getMatch(0).startPos);
+        assertEquals(3, kr.getMatch(0).endPos);
+        assertEquals(3, kr.getMatch(1).startPos);
+        assertEquals(4, kr.getMatch(1).endPos);
     }
     
 	/** Multiple documents, ordered
@@ -164,14 +164,14 @@ public class TestElementDistanceExclusionIndex {
         sq = createQuery("s","s:d","s:e",1,1,true,true);                
         kr = ki.search(sq, (short) 10);
         
-        assertEquals(3, kr.totalResults());
-	    assertEquals(4, kr.match(0).startPos);
-        assertEquals(5, kr.match(0).endPos);
-        assertEquals(1, kr.match(1).getLocalDocID());
-        assertEquals(2, kr.match(1).startPos);
-        assertEquals(3, kr.match(1).endPos);
-        assertEquals(8, kr.match(2).startPos);
-        assertEquals(9, kr.match(2).endPos);
+        assertEquals(kr.getTotalResults(), 3);
+	    assertEquals(4, kr.getMatch(0).startPos);
+        assertEquals(5, kr.getMatch(0).endPos);
+        assertEquals(1, kr.getMatch(1).getLocalDocID());
+        assertEquals(2, kr.getMatch(1).startPos);
+        assertEquals(3, kr.getMatch(1).endPos);
+        assertEquals(8, kr.getMatch(2).startPos);
+        assertEquals(9, kr.getMatch(2).endPos);
 	}
     
 	/** Skip to
@@ -188,19 +188,19 @@ public class TestElementDistanceExclusionIndex {
         SpanQuery sq = createQuery("s","s:c","s:d",1,1,false,true);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(3, kr.totalResults());        
-        assertEquals(3, kr.match(2).getLocalDocID());
-        assertEquals(3, kr.match(2).startPos);
-        assertEquals(4, kr.match(2).endPos);
+        assertEquals(kr.getTotalResults(), 3);        
+        assertEquals(3, kr.getMatch(2).getLocalDocID());
+        assertEquals(3, kr.getMatch(2).startPos);
+        assertEquals(4, kr.getMatch(2).endPos);
         
         sq = new SpanNextQuery(
         		createQuery("s","s:c","s:d",1,1,false,true), 
         		new SpanTermQuery(new Term("base", "s:a")));
         
         kr = ki.search(sq, (short) 10);
-        assertEquals(1, kr.totalResults());
-        assertEquals(3, kr.match(0).getLocalDocID());
-        assertEquals(3, kr.match(0).startPos);
-        assertEquals(5, kr.match(0).endPos);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(3, kr.getMatch(0).getLocalDocID());
+        assertEquals(3, kr.getMatch(0).startPos);
+        assertEquals(5, kr.getMatch(0).endPos);
 	}
 }

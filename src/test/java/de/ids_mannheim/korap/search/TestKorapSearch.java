@@ -103,7 +103,7 @@ public class TestKorapSearch {
 	ks.context.left.setLength(1);
 	ks.context.right.setLength(1);
 	KorapResult kr = ks.run(ki);
-	assertEquals(6, kr.totalResults());
+	assertEquals(kr.getTotalResults(), 6);
 	assertEquals(kr.getMatch(0).getSnippetBrackets(), "... dem [Buchstaben] A ...");
     };
 
@@ -131,7 +131,7 @@ public class TestKorapSearch {
 	KorapSearch ks = new KorapSearch(json);
 	
 	KorapResult kr = ks.run(ki);
-	assertEquals(66, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 66);
 	assertEquals(5, kr.getItemsPerPage());
 	assertEquals(5, kr.getStartIndex());
 	assertEquals("... a: A ist [der klangreichste] der V ...", kr.getMatch(0).getSnippetBrackets());
@@ -169,24 +169,24 @@ public class TestKorapSearch {
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
 
-	assertEquals(1, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 1);
 
 	ks = new KorapSearch(json);
 	// Ignore the collection part of the query!
 	ks.setCollection(new KorapCollection());
 	kr = ks.run(ki);
 
-	assertEquals(5, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 5);
 
 	json = getString(getClass().getResource("/queries/metaquery5.jsonld").getFile());
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
-	assertEquals(1, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 1);
 
 	json = getString(getClass().getResource("/queries/metaquery6.jsonld").getFile());
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
-	assertEquals(1, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 1);
     };
 
 
@@ -212,7 +212,7 @@ public class TestKorapSearch {
 
 	KorapResult kr = new KorapSearch("{ query").run(ki);
 
-	assertEquals(0, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 0);
 	assertEquals(kr.getError(0).getMessage(), "Unable to parse JSON");
     };
 
@@ -241,7 +241,7 @@ public class TestKorapSearch {
 
 	KorapResult kr = new KorapSearch(json).run(ki);
 	assertEquals(0, kr.getStartIndex());
-	assertEquals(0, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 0);
 	assertEquals(25, kr.getItemsPerPage());
     };
 
@@ -269,7 +269,7 @@ public class TestKorapSearch {
 	KorapResult kr = new KorapSearch(json).run(ki);
 	assertEquals(50, kr.getItemsPerPage());
 	assertEquals(49950, kr.getStartIndex());
-	assertEquals(0, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 0);
     };
 
 
@@ -296,13 +296,13 @@ public class TestKorapSearch {
 
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
-	assertEquals(10, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 10);
 	assertEquals("A bzw. a ist der erste Buchstabe des lateinischen [Alphabets] und ein Vokal. Der Buchstabe A hat in deutschen Texten eine durchschnittliche Häufigkeit  ...", kr.getMatch(0).getSnippetBrackets());
 
 	ks.setCount(5);
 	ks.setStartPage(2);
 	kr = ks.run(ki);
-	assertEquals(10, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 10);
 	assertEquals(5, kr.getStartIndex());
 	assertEquals(5, kr.getItemsPerPage());
 
@@ -310,7 +310,7 @@ public class TestKorapSearch {
 	json = getString(getClass().getResource("/queries/bsp-context-2.jsonld").getFile());
 
 	kr = new KorapSearch(json).run(ki);
-	assertEquals(-1, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), -1);
 	assertEquals("... lls seit den Griechen beibehalten worden. 3. Bedeutungen in der Biologie steht A für das Nukleosid Adenosin steht A die Base Adenin steht A für die Aminosäure Alanin in der Informatik steht a für den dezimalen [Wert] 97 sowohl im ASCII- als auch im Unicode-Zeichensatz steht A für den dezimalen Wert 65 sowohl im ASCII- als auch im Unicode-Zeichensatz als Kfz-Kennzeichen steht A in Deutschland für Augsburg. in Österreich auf ...", kr.getMatch(0).getSnippetBrackets());
     };
 
@@ -337,7 +337,7 @@ public class TestKorapSearch {
 
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
-	assertEquals(10, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 10);
 	assertEquals(5, kr.getStartIndex());
 	assertEquals(5, kr.getItemsPerPage());
 
@@ -345,7 +345,7 @@ public class TestKorapSearch {
 	ks = ks = new KorapSearch(json);
 
 	kr = ks.run(ki);
-	assertEquals(-1, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), -1);
 	assertEquals(2, kr.getStartIndex());
 	assertEquals(2, kr.getItemsPerPage());
 
@@ -379,7 +379,7 @@ public class TestKorapSearch {
 
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
-	assertEquals(10, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 10);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(20, kr.getItemsPerPage());
 
@@ -399,7 +399,7 @@ public class TestKorapSearch {
 	assertEquals("WPD_AAA.00002", kr.getMatch(1).getDocID());
 	assertEquals("WPD_AAA.00004", kr.getMatch(2).getDocID());
 
-	assertEquals(3, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 3);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(20, kr.getItemsPerPage());
 
@@ -409,15 +409,13 @@ public class TestKorapSearch {
 
 	kr = ks.run(ki);
 
-	//	System.err.println(kr.toJSON());
-
 	assertEquals("WPD_AAA.00001", kr.getMatch(0).getDocID());
 	assertEquals("WPD_AAA.00001", kr.getMatch(1).getDocID());
 	assertEquals("WPD_AAA.00002", kr.getMatch(2).getDocID());
 	assertEquals("WPD_AAA.00002", kr.getMatch(3).getDocID());
 	assertEquals("WPD_AAA.00004", kr.getMatch(4).getDocID());
 
-	assertEquals(5, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 5);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(20, kr.getItemsPerPage());
 
@@ -431,7 +429,7 @@ public class TestKorapSearch {
 	
 	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
 
-	assertEquals(3, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 3);
 	assertEquals(1, kr.getStartIndex());
 	assertEquals(1, kr.getItemsPerPage());
 
@@ -477,7 +475,7 @@ public class TestKorapSearch {
 
 	KorapResult kr = ks.run(ki);
 
-	assertEquals(2, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 2);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(25, kr.getItemsPerPage());
     };
@@ -538,7 +536,7 @@ public class TestKorapSearch {
         );
 	KorapResult kr = ks.run(ki);
 
-	assertEquals(148, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 148);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(25, kr.getItemsPerPage());
     };
@@ -603,7 +601,7 @@ public class TestKorapSearch {
         );
 	KorapResult kr = ks.run(ki);
 
-	assertEquals(6, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 6);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(25, kr.getItemsPerPage());
     };
@@ -669,7 +667,7 @@ public class TestKorapSearch {
 	    "ins Leben] gerufen hatten. Pressemeldungen zufolge haben sich ..."
         );
 
-	assertEquals(1, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 1);
 	assertEquals(0, kr.getStartIndex());
     };
 
@@ -704,7 +702,7 @@ public class TestKorapSearch {
 	    "Pressemeldungen zufolge haben sich in ..."
         );
 
-	assertEquals(2, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 2);
 	assertEquals(0, kr.getStartIndex());
     };
 
@@ -730,7 +728,7 @@ public class TestKorapSearch {
 	KorapResult kr = ks.run(ki);
 
 	ObjectMapper mapper = new ObjectMapper();
-	JsonNode res = mapper.readTree(kr.toTokenListJSON());
+	JsonNode res = mapper.readTree(kr.toTokenListJsonString());
 
 	assertEquals(1, res.at("/totalResults").asInt());
 	assertEquals("{4: spanNext({1: spanNext({2: tokens:s:ins}, " +
@@ -789,7 +787,7 @@ public class TestKorapSearch {
 	    "SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/))])"
         );
 
-	assertEquals(58, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 58);
 	assertEquals(0, kr.getStartIndex());
 
 	assertEquals(
@@ -842,7 +840,7 @@ public class TestKorapSearch {
 	
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
-	assertEquals(276, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 276);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(10, kr.getItemsPerPage());
 
@@ -851,7 +849,7 @@ public class TestKorapSearch {
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
 
-	assertEquals(147, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 147);
 	assertEquals("WPD_AAA.00001", kr.getMatch(0).getDocID());
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(10, kr.getItemsPerPage());
@@ -861,7 +859,7 @@ public class TestKorapSearch {
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
 
-	assertEquals(28, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 28);
 	assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(10, kr.getItemsPerPage());
@@ -871,7 +869,7 @@ public class TestKorapSearch {
 	ks = new KorapSearch(json);
 	kr = ks.run(ki);
 
-	assertEquals(0, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 0);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(10, kr.getItemsPerPage());
 
@@ -882,7 +880,7 @@ public class TestKorapSearch {
 
 	assertEquals("filter with QueryWrapperFilter(+(ID:WPD_AAA.00003 (+tokens:s:die +tokens:s:Schriftzeichen)))", ks.getCollection().getFilter(1).toString());
 
-	assertEquals(119, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 119);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(10, kr.getItemsPerPage());
     };
@@ -911,10 +909,10 @@ public class TestKorapSearch {
 
 	KorapResult kr = ks.run(ki);
 	assertEquals(kr.getMatch(1).getSnippetBrackets(), "... dezimalen [Wert] 65 sowohl ...");
-	assertEquals(3, kr.getTotalResults());
+	assertEquals(kr.getTotalResults(), 3);
 	assertEquals(0, kr.getStartIndex());
 	assertEquals(25, kr.getItemsPerPage());
-	assertFalse(kr.getContext().toJSON().toString().equals("\"s\""));
+	assertFalse(kr.getContext().toJsonNode().toString().equals("\"s\""));
 
 	json = getString(getClass().getResource("/queries/bsp-context-sentence.jsonld").getFile());
 
@@ -926,7 +924,7 @@ public class TestKorapSearch {
 	assertEquals(kr.getMatch(2).getSnippetBrackets(),
 		     "In einem Zahlensystem mit einer Basis größer als 10 steht A oder a häufig für den dezimalen [Wert] 10, siehe auch Hexadezimalsystem.");
 
-	assertEquals(kr.getContext().toJSON().toString(), "\"s\"");
+	assertEquals(kr.getContext().toJsonNode().toString(), "\"s\"");
     };
 
 
@@ -982,7 +980,7 @@ public class TestKorapSearch {
 			     "in Eigennamen und Ortsnamen ...",
 			     kr.getMatch(0).getSnippetBrackets());
 		assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-		assertEquals(1, kr.getTotalResults());
+		assertEquals(kr.getTotalResults(), 1);
 	
 		// der alte Digraph Aa durch []
 		// Works with one document
@@ -997,7 +995,7 @@ public class TestKorapSearch {
 			     "in Eigennamen und Ortsnamen ...",
 			     kr.getMatch(0).getSnippetBrackets());
 		assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-		assertEquals(1, kr.getTotalResults());
+		assertEquals(kr.getTotalResults(), 1);
 	
 		// Now try with one file ahead
 		ki = new KorapIndex();
@@ -1022,7 +1020,7 @@ public class TestKorapSearch {
 			     "in Eigennamen und Ortsnamen ...",
 			     kr.getMatch(0).getSnippetBrackets());
 		assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-		assertEquals(1, kr.getTotalResults());
+		assertEquals(kr.getTotalResults(), 1);
 	
 		// der alte Digraph Aa durch []
 		json = getString(
@@ -1035,7 +1033,7 @@ public class TestKorapSearch {
 			     "in Eigennamen und Ortsnamen ...",
 			     kr.getMatch(0).getSnippetBrackets());
 		assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-		assertEquals(1, kr.getTotalResults());
+		assertEquals(kr.getTotalResults(), 1);
     };
 
 

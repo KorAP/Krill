@@ -78,21 +78,21 @@ public class TestElementIndex {
 
 	KorapResult kr = ki.search(sq, (short) 10);
 
-	assertEquals("totalResults", 6, kr.totalResults());
+	assertEquals("totalResults", kr.getTotalResults(), 6);
 
-	assertEquals("StartPos (0)", 0, kr.match(0).startPos);
-	assertEquals("EndPos (0)", 12, kr.match(0).endPos);
-	assertEquals("StartPos (1)", 1, kr.match(1).startPos);
-	assertEquals("EndPos (1)", 9, kr.match(1).endPos);
-	assertEquals("StartPos (2)", 2, kr.match(2).startPos);
-	assertEquals("EndPos (2)", 6, kr.match(2).endPos);
+	assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
+	assertEquals("EndPos (0)", 12, kr.getMatch(0).endPos);
+	assertEquals("StartPos (1)", 1, kr.getMatch(1).startPos);
+	assertEquals("EndPos (1)", 9, kr.getMatch(1).endPos);
+	assertEquals("StartPos (2)", 2, kr.getMatch(2).startPos);
+	assertEquals("EndPos (2)", 6, kr.getMatch(2).endPos);
 
-	assertEquals("StartPos (0)", 0, kr.match(3).startPos);
-	assertEquals("EndPos (0)", 12, kr.match(3).endPos);
-	assertEquals("StartPos (1)", 1, kr.match(4).startPos);
-	assertEquals("EndPos (1)", 9, kr.match(4).endPos);
-	assertEquals("StartPos (2)", 2, kr.match(5).startPos);
-	assertEquals("EndPos (2)", 6, kr.match(5).endPos);
+	assertEquals("StartPos (0)", 0, kr.getMatch(3).startPos);
+	assertEquals("EndPos (0)", 12, kr.getMatch(3).endPos);
+	assertEquals("StartPos (1)", 1, kr.getMatch(4).startPos);
+	assertEquals("EndPos (1)", 9, kr.getMatch(4).endPos);
+	assertEquals("StartPos (2)", 2, kr.getMatch(5).startPos);
+	assertEquals("EndPos (2)", 6, kr.getMatch(5).endPos);
 
 	// System.err.println(kr.toJSON());
     };
@@ -126,13 +126,13 @@ public class TestElementIndex {
 
 	KorapResult kr = ki.search(sq, (short) 10);
 
-	assertEquals("totalResults", 3, kr.totalResults());
-	assertEquals("StartPos (0)", 0, kr.match(0).startPos);
-	assertEquals("EndPos (0)", 3, kr.match(0).endPos);
-	assertEquals("StartPos (1)", 0, kr.match(1).startPos);
-	assertEquals("EndPos (1)", 6, kr.match(1).endPos);
-	assertEquals("StartPos (2)", 0, kr.match(2).startPos);
-	assertEquals("EndPos (2)", 9, kr.match(2).endPos);
+	assertEquals("totalResults", kr.getTotalResults(), 3);
+	assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
+	assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
+	assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
+	assertEquals("EndPos (1)", 6, kr.getMatch(1).endPos);
+	assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
+	assertEquals("EndPos (2)", 9, kr.getMatch(2).endPos);
     };
 
     @Test
@@ -228,35 +228,35 @@ public class TestElementIndex {
 
 	// System.err.println(kr.toJSON());
 
-	assertEquals("totalResults", 12, kr.totalResults());
+	assertEquals("totalResults", kr.getTotalResults(), 12);
 
-	assertEquals("StartPos (0)", 0, kr.match(0).startPos);
-	assertEquals("EndPos (0)", 0, kr.match(0).endPos);
-	assertEquals("StartPos (1)", 0, kr.match(1).startPos);
-	assertEquals("EndPos (1)", 0, kr.match(1).endPos);
-	assertEquals("StartPos (2)", 0, kr.match(2).startPos);
-	assertEquals("EndPos (2)", 0, kr.match(2).endPos);
+	assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
+	assertEquals("EndPos (0)", 0, kr.getMatch(0).endPos);
+	assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
+	assertEquals("EndPos (1)", 0, kr.getMatch(1).endPos);
+	assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
+	assertEquals("EndPos (2)", 0, kr.getMatch(2).endPos);
 
-	assertEquals("StartPos (3)", 0, kr.match(3).startPos);
-	assertEquals("EndPos (3)", 12, kr.match(3).endPos);
-	assertEquals("StartPos (4)", 1, kr.match(4).startPos);
-	assertEquals("EndPos (4)", 9, kr.match(4).endPos);
-	assertEquals("StartPos (5)", 2, kr.match(5).startPos);
-	assertEquals("EndPos (5)", 6, kr.match(5).endPos);
+	assertEquals("StartPos (3)", 0, kr.getMatch(3).startPos);
+	assertEquals("EndPos (3)", 12, kr.getMatch(3).endPos);
+	assertEquals("StartPos (4)", 1, kr.getMatch(4).startPos);
+	assertEquals("EndPos (4)", 9, kr.getMatch(4).endPos);
+	assertEquals("StartPos (5)", 2, kr.getMatch(5).startPos);
+	assertEquals("EndPos (5)", 6, kr.getMatch(5).endPos);
 
-	assertEquals("StartPos (6)", 0, kr.match(6).startPos);
-	assertEquals("EndPos (6)", 12, kr.match(6).endPos);
-	assertEquals("StartPos (7)", 1, kr.match(7).startPos);
-	assertEquals("EndPos (7)", 9, kr.match(7).endPos);
-	assertEquals("StartPos (8)", 2, kr.match(8).startPos);
-	assertEquals("EndPos (8)", 6, kr.match(8).endPos);
+	assertEquals("StartPos (6)", 0, kr.getMatch(6).startPos);
+	assertEquals("EndPos (6)", 12, kr.getMatch(6).endPos);
+	assertEquals("StartPos (7)", 1, kr.getMatch(7).startPos);
+	assertEquals("EndPos (7)", 9, kr.getMatch(7).endPos);
+	assertEquals("StartPos (8)", 2, kr.getMatch(8).startPos);
+	assertEquals("EndPos (8)", 6, kr.getMatch(8).endPos);
 
-	assertEquals("StartPos (9)", 0, kr.match(9).startPos);
-	assertEquals("EndPos (9)", 3, kr.match(9).endPos);
-	assertEquals("StartPos (10)", 0, kr.match(10).startPos);
-	assertEquals("EndPos (10)", 6, kr.match(10).endPos);
-	assertEquals("StartPos (11)", 0, kr.match(11).startPos);
-	assertEquals("EndPos (11)", 9, kr.match(11).endPos);
+	assertEquals("StartPos (9)", 0, kr.getMatch(9).startPos);
+	assertEquals("EndPos (9)", 3, kr.getMatch(9).endPos);
+	assertEquals("StartPos (10)", 0, kr.getMatch(10).startPos);
+	assertEquals("EndPos (10)", 6, kr.getMatch(10).endPos);
+	assertEquals("StartPos (11)", 0, kr.getMatch(11).startPos);
+	assertEquals("EndPos (11)", 9, kr.getMatch(11).endPos);
     };
 
 
@@ -288,8 +288,8 @@ public class TestElementIndex {
 
 	KorapResult kr = ki.search(sq, 0, (short) 15, false, (short) 3, false, (short) 3);
 	
-	assertEquals("... ccc[222222]fff ...", kr.match(0).getSnippetBrackets());
-	assertEquals("... fff[333333]iii ...", kr.match(1).getSnippetBrackets());
+	assertEquals("... ccc[222222]fff ...", kr.getMatch(0).getSnippetBrackets());
+	assertEquals("... fff[333333]iii ...", kr.getMatch(1).getSnippetBrackets());
     };
 
 
@@ -321,9 +321,9 @@ public class TestElementIndex {
 
 	KorapResult kr = ki.search(sq, 0, (short) 15, false, (short) 3, false, (short) 3);
 
-	assertEquals("[111111]ccc ...", kr.match(0).getSnippetBrackets());
-	assertEquals("... ccc[222222]fff ...", kr.match(1).getSnippetBrackets());
-	assertEquals("... fff[333333]iii ...", kr.match(2).getSnippetBrackets());
+	assertEquals("[111111]ccc ...", kr.getMatch(0).getSnippetBrackets());
+	assertEquals("... ccc[222222]fff ...", kr.getMatch(1).getSnippetBrackets());
+	assertEquals("... fff[333333]iii ...", kr.getMatch(2).getSnippetBrackets());
     };
 
 
@@ -408,6 +408,6 @@ public class TestElementIndex {
 	// System.err.println(kr.toJSON());
 	
 	assertEquals(5, ki.numberOf("documents"));
-	assertEquals("totalResults", 7, kr.totalResults());
+	assertEquals("totalResults", kr.getTotalResults(), 7);
     };
 };

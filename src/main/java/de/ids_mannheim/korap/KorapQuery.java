@@ -100,7 +100,7 @@ public class KorapQuery extends Notifications {
 	};
     };
 
-    public SpanQueryWrapper fromJSON (String jsonString) throws QueryException {
+    public SpanQueryWrapper fromJson (String jsonString) throws QueryException {
 	JsonNode json;
 	try {
 	    json = this.json.readValue(jsonString, JsonNode.class);
@@ -114,7 +114,7 @@ public class KorapQuery extends Notifications {
 	if (!json.has("@type") && json.has("query"))
 	    json = json.get("query");
 
-	return this.fromJSON(json);
+	return this.fromJson(json);
     };
 
     // http://fasterxml.github.io/jackson-databind/javadoc/2.2.0/com/fasterxml/jackson/databind/JsonNode.html
@@ -122,7 +122,7 @@ public class KorapQuery extends Notifications {
     // TODO: Use the shortcuts implemented in this class instead of the wrapper constructors
     // TODO: Check for isArray()
     // TODO: Rename this span context!
-    public SpanQueryWrapper fromJSON (JsonNode json) throws QueryException {
+    public SpanQueryWrapper fromJson (JsonNode json) throws QueryException {
 
 	int number = 0;
 
@@ -161,7 +161,7 @@ public class KorapQuery extends Notifications {
 	    case "operation:or":
 		SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
 		for (JsonNode operand : operands) {
-		    ssaq.or(this.fromJSON(operand));
+		    ssaq.or(this.fromJson(operand));
 		};
 		return ssaq;
 
@@ -226,8 +226,8 @@ public class KorapQuery extends Notifications {
 		    );
 
 		return new SpanWithinQueryWrapper(
-		    this.fromJSON(operands.get(0)),
-		    this.fromJSON(operands.get(1)),
+		    this.fromJson(operands.get(0)),
+		    this.fromJson(operands.get(1)),
 		    flag
 		);
 
@@ -254,14 +254,14 @@ public class KorapQuery extends Notifications {
 		};
 
 		return new SpanMatchModifyQueryWrapper(
-		    this.fromJSON(operands.get(0)), number
+		    this.fromJson(operands.get(0)), number
                 );
 
 	    case "operation:sequence":
 
 		// Sequence with only one operand
 		if (operands.size() == 1)
-		    return this.fromJSON(operands.get(0));
+		    return this.fromJson(operands.get(0));
 
 		SpanSequenceQueryWrapper sseqqw = this.seq();
 
@@ -364,7 +364,7 @@ public class KorapQuery extends Notifications {
 
 		// Add segments to sequence
 		for (JsonNode operand : operands) {
-		    sseqqw.append(this.fromJSON(operand));
+		    sseqqw.append(this.fromJson(operand));
 		};
 
 		// inOrder was set to false without a distance constraint
@@ -413,7 +413,7 @@ public class KorapQuery extends Notifications {
                         );
 		    };
 
-		    SpanQueryWrapper sqw = this.fromJSON(operands.get(0));
+		    SpanQueryWrapper sqw = this.fromJson(operands.get(0));
 
 		    // Problematic
 		    if (sqw.maybeExtension())
@@ -469,7 +469,7 @@ public class KorapQuery extends Notifications {
 		if (min > max)
 		    max = max;
 
-		SpanQueryWrapper sqw = this.fromJSON(operands.get(0));
+		SpanQueryWrapper sqw = this.fromJson(operands.get(0));
 
 		if (sqw.maybeExtension())
 		    return sqw.setMin(min).setMax(max);
@@ -530,7 +530,7 @@ public class KorapQuery extends Notifications {
 		log.trace("Wrap class reference {}", number);
 
 	    return new SpanMatchModifyQueryWrapper(
-	        this.fromJSON(operands.get(0)), number
+	        this.fromJson(operands.get(0)), number
 	    );
 
 	case "korap:token":
@@ -539,17 +539,17 @@ public class KorapQuery extends Notifications {
 	    if (!json.has("wrap"))
 		return new SpanRepetitionQueryWrapper();
 
-	    return this._segFromJSON(json.get("wrap"));
+	    return this._segFromJson(json.get("wrap"));
 
 	case "korap:span":
-	    return this._termFromJSON(json);
+	    return this._termFromJson(json);
 	};
 	throw new QueryException(713, "Query type is not supported");
     };
 
 
 
-    private SpanQueryWrapper _segFromJSON (JsonNode json) throws QueryException {
+    private SpanQueryWrapper _segFromJson (JsonNode json) throws QueryException {
 
 	if (!json.has("@type"))
 	    throw new QueryException(701, "JSON-LD group has no @type attribute");
@@ -571,11 +571,11 @@ public class KorapQuery extends Notifications {
 		if (DEBUG)
 		    log.trace("Term is negated");
 		SpanSegmentQueryWrapper ssqw =
-		    (SpanSegmentQueryWrapper) this._termFromJSON(json);
+		    (SpanSegmentQueryWrapper) this._termFromJson(json);
 		ssqw.makeNegative();
 		return this.seg().without(ssqw);
 	    case "match:eq":
-		return this._termFromJSON(json);
+		return this._termFromJson(json);
 	    };
 
 	    throw new QueryException(741, "Match relation unknown");
@@ -597,7 +597,7 @@ public class KorapQuery extends Notifications {
 	    case "relation:and":
 
 		for (JsonNode operand : operands) {
-		    SpanQueryWrapper part = this._segFromJSON(operand);
+		    SpanQueryWrapper part = this._segFromJson(operand);
 		    if (part instanceof SpanAlterQueryWrapper) {
 			ssegqw.with((SpanAlterQueryWrapper) part);			
 		    }
@@ -619,7 +619,7 @@ public class KorapQuery extends Notifications {
 
 		SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
 		for (JsonNode operand : operands) {
-		    ssaq.or(this._segFromJSON(operand));
+		    ssaq.or(this._segFromJson(operand));
 		};
 		return ssaq;
 	    };
@@ -628,7 +628,7 @@ public class KorapQuery extends Notifications {
     };
 
 
-    private SpanQueryWrapper _termFromJSON (JsonNode json) throws QueryException {
+    private SpanQueryWrapper _termFromJson (JsonNode json) throws QueryException {
 	if (!json.has("key") || json.get("key").asText().length() < 1)
 	    throw new QueryException(740, "Key definition is missing in term or span");
 	    

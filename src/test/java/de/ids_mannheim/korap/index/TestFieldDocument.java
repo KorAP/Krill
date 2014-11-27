@@ -151,7 +151,6 @@ public class TestFieldDocument {
 	assertEquals(km.getPubDate().toDisplay(),"2013-06-17");
 
 	assertEquals(km.getSnippetBrackets(),"a[{3:b}]c");
-	//	System.err.println(kr.toJSON());
     };
 
 
@@ -251,7 +250,7 @@ public class TestFieldDocument {
 	
 	try {
 	    String json = getString(jsonFile);
-	    sqwi = new KorapQuery("tokens").fromJSON(json);
+	    sqwi = new KorapQuery("tokens").fromJson(json);
 	}
 	catch (QueryException e) {
 	    fail(e.getMessage());
