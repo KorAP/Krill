@@ -14,17 +14,17 @@ import org.apache.lucene.util.ToStringUtils;
 import de.ids_mannheim.korap.query.spans.AttributeSpans;
 
 /**
- * SpanAttributeQuery retrieves attribute spans, that are tokens annotated with
- * prefix @, for example {@literal @}:class=header. SpanAttributeQueries are
- * commonly used to search for elements or relations having some specific
- * attribute(s).
+ * SpanAttributeQuery retrieves {@link AttributeSpans}, that are tokens
+ * annotated with prefix @, for example {@literal @}:class=header.
+ * SpanAttributeQueries are commonly used to search for elements or relations
+ * having some specific attribute(s).
  * 
  * Example: <br/>
  * <br/>
  * 
  * <pre>
  * SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(new Term(
- *         &quot;base&quot;, &quot;@:class=title&quot;)), true);
+ *         &quot;tokens&quot;, &quot;@:class=title&quot;)), true);
  * </pre>
  * 
  * Negation enables searching for elements <em>without</em> some attribute(s).
@@ -32,7 +32,7 @@ import de.ids_mannheim.korap.query.spans.AttributeSpans;
  * 
  * <pre>
  * SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(new Term(
- *         &quot;base&quot;, &quot;@:class=title&quot;)), true, true);
+ *         &quot;token&quot;, &quot;@:class=title&quot;)), true, true);
  * </pre>
  * 
  * @author margaretha
