@@ -1,10 +1,49 @@
 package de.ids_mannheim.korap.query;
 
 /**
- * Specify distance constraints in SpanDistanceQueries or
- * SpanMultipleDistanceQueries
+ * DistanceConstraint specifies the constraints used in
+ * {@link SpanDistanceQueries} or {@link SpanMultipleDistanceQueries}. The
+ * constraints comprise the distance unit, the minimum and maximum distance, the
+ * order and the co-occurence of the compared spans.
  * 
+ * Distance constraint examples:
  * 
+ * <ol>
+ * <li>Two terms x and y are separated by minimum two and maximum three other
+ * words. The order of x and y does not matter.
+ * 
+ * <pre>
+ * DistanceConstraint dc = new DistanceConstraint(2, 3, false, false);
+ * </pre>
+ * 
+ * </li>
+ * <li>Two terms x and y are separated by minimum two and maximum three other
+ * words. X must precede y.
+ * 
+ * <pre>
+ * DistanceConstraint dc = new DistanceConstraint(2, 3, true, false);
+ * </pre>
+ * 
+ * </li>
+ * <li>
+ * Term x do not occur with term y in minimum two and maximum three other words.
+ * X must precede y.
+ * 
+ * <pre>
+ * DistanceConstraint dc = new DistanceConstraint(2, 3, true, true);
+ * </pre>
+ * 
+ * </li>
+ * <li>Two terms x and y separated by minimum one and maximum two
+ * <em>sentences</em>. X must precede y.
+ * 
+ * <pre>
+ * SpanElementQuery e = new SpanElementQuery(&quot;tokens&quot;, &quot;s&quot;);
+ * DistanceConstraint dc = new DistanceConstraint(e, 2, 3, true, false);
+ * </pre>
+ * 
+ * </li>
+ * </ol>
  * 
  * @author margaretha
  * */
