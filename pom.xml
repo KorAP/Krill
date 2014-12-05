@@ -4,19 +4,26 @@
 
   <!--
       ** Indexer
-      install the indexer and the performancetests
+      # install the indexer
       $ mvn clean compile assembly:single
-      Then run e.g.
-      $ java -jar target/KorAP-lucene-index-X.XX.jar src/main/resources/korap.conf /data/hdd/lucene-new/WPD/
+      # Then run e.g.
+      $ java -jar target/KorAP-lucene-index-X.XX.jar
+             src/main/resources/korap.conf
+             /data/hdd/lucene-new/WPD/
 
       ** Server
-      Start the server with
-      $mvn clean compile exec:java
+      # Start the server with
+      $ mvn clean compile exec:java
+
+      ** Formatter
+      # Format the code with
+      $ mvn java-formatter:format
+
   -->
 
   <groupId>KorAP-modules</groupId>
   <artifactId>KorAP-lucene-index</artifactId>
-  <version>0.49.1</version>
+  <version>0.49.2</version>
   <packaging>jar</packaging>
 
   <name>KorAP-lucene-index</name>
@@ -238,10 +245,9 @@
         </configuration>
       </plugin> 
 
-      <!-- Formatter plugin for Eclipse based coding conventions -->
       <!--
+	  Formatter plugin for Eclipse based coding conventions
 	  http://maven-java-formatter-plugin.googlecode.com/svn/site/0.4/usage.html
-	  Call: mvn java-formatter:format
       -->
       <plugin>
         <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
@@ -254,15 +260,6 @@
 	  <compilerCompliance>1.7</compilerCompliance>
 	  <compilerTargetPlatform>1.7</compilerTargetPlatform>
 	</configuration>
-	<!--
-	<executions>
-          <execution>
-            <goals>
-              <goal>format</goal>
-            </goals>
-          </execution>
-        </executions>
-	-->
       </plugin>
 
       <plugin>

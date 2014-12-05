@@ -4,8 +4,13 @@ KorAP Lucene Index
 KorAP is available at
 https://korap.ids-mannheim.de/
 
+Description
+-----------
+...
+
 Prerequisites
 -------------
+...
 
 Installation/Starting
 ---------------------
@@ -54,11 +59,16 @@ The maximum value for repetitions is 100.
 
 The maximum value for distance units is 100.
 
-Copyright
----------
+Contribution
+------------
 
-Copyright 2014, IDS Mannheim, Germany
-Authors: Nils Diewald, Eliza Margaretha and contributors.
+
+Before contribution, please reformat your code according to the korap
+style guideline, provided by means of an Eclipse style sheet
+(korap-style.xml). You can either reformat using Eclipse or using Maven
+with the command
+
+  $ mvn java-formatter:format
 
 Citation
 --------
@@ -70,8 +80,16 @@ Further References
 
 Named entities annotated in the test data by CoreNLP was done using
 models based on:
-Manaal Faruqui and Sebastian Padó (2010):
-Training and Evaluating a German Named Entity
-Recognizer with Semantic Generalization,
-Proceedings of KONVENS 2010,
-Saarbrücken, Germany
+
+  Manaal Faruqui and Sebastian Padó (2010):
+  Training and Evaluating a German Named Entity
+  Recognizer with Semantic Generalization,
+  Proceedings of KONVENS 2010,
+  Saarbrücken, Germany
+
+Copyright and License
+---------------------
+
+Copyright 2014, IDS Mannheim, Germany
+
+Authors: Nils Diewald, Eliza Margaretha, and contributors.
