@@ -33,6 +33,12 @@ To run the indexer, type
     src/main/resources/korap.conf
     src/test/resources/examples/
 
+Development
+-----------
+
+For changes of the current version, please consult the
+Changes file.
+
 Limitations
 -----------
 
