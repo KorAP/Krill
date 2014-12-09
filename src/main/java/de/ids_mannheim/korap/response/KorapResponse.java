@@ -7,7 +7,10 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import de.ids_mannheim.korap.response.Notifications;
+import de.ids_mannheim.korap.response.serialize.KorapResponseDeserializer;
 
 /**
  * Base class for objects meant to be responded by the server.
@@ -23,13 +26,13 @@ import de.ids_mannheim.korap.response.Notifications;
  * @author Nils Diewald
  * @see de.ids_mannheim.korap.response.Notifications
  */
+@JsonDeserialize(using = KorapResponseDeserializer.class)
 public class KorapResponse extends Notifications {
     ObjectMapper mapper = new ObjectMapper();
 
     private String version, name, node, listener;
     private String benchmark;
     private boolean timeExceeded = false;
-
 
     /**
      * Construct a new KorapResponse object.
@@ -47,8 +50,8 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public KorapResponse setVersion (String version) {
-	this.version = version;
-	return this;
+        this.version = version;
+        return this;
     };
 
 
@@ -59,7 +62,7 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public String getVersion () {
-	return this.version;
+        return this.version;
     };
 
 
@@ -72,8 +75,8 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public KorapResponse setName (String name) {
-	this.name = name;
-	return this;
+        this.name = name;
+        return this;
     };
 
 
@@ -85,7 +88,7 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public String getName () {
-	return this.name;
+        return this.name;
     };
 
 
@@ -98,8 +101,8 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public KorapResponse setNode (String name) {
-	this.node = name;
-	return this;
+        this.node = name;
+        return this;
     };
 
 
@@ -111,9 +114,9 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public String getNode () {
-	return this.node;
+        return this.node;
     };
-
+    
 
     /**
      * Set to <tt>true</tt> if time is exceeded
@@ -128,10 +131,10 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public KorapResponse setTimeExceeded (boolean timeout) {
-	if (timeout)
-	    this.addWarning(682, "Response time exceeded");
-	this.timeExceeded = timeout;
-	return this;
+        if (timeout)
+            this.addWarning(682, "Response time exceeded");
+        this.timeExceeded = timeout;
+        return this;
     };
 
 
@@ -142,8 +145,8 @@ public class KorapResponse extends Notifications {
      *         otherwise <tt>false</tt>
      */
     @JsonIgnore
-    public boolean getTimeExceeded () {
-	return this.timeExceeded;
+    public boolean hasTimeExceeded () {
+        return this.timeExceeded;
     };
 
 
@@ -157,14 +160,14 @@ public class KorapResponse extends Notifications {
     @JsonIgnore
     public KorapResponse setBenchmark (long ts1, long ts2) {
         this.benchmark =
-	    (ts2 - ts1) < 100_000_000 ?
-	    // Store as miliseconds
-	    (((double) (ts2 - ts1) * 1e-6) + " ms") :
-	    // Store as seconds
-	    (((double) (ts2 - ts1) / 1000000000.0) + " s");
-	return this;
+            (ts2 - ts1) < 100_000_000 ?
+            // Store as miliseconds
+            (((double) (ts2 - ts1) * 1e-6) + " ms") :
+            // Store as seconds
+            (((double) (ts2 - ts1) / 1000000000.0) + " s");
+        return this;
     };
-
+    
 
     /**
      * Set the benchmark as a string representation.
@@ -175,8 +178,8 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public KorapResponse setBenchmark (String bm) {
-	this.benchmark = bm;
-	return this;
+        this.benchmark = bm;
+        return this;
     };
 
 
@@ -190,7 +193,7 @@ public class KorapResponse extends Notifications {
     public String getBenchmark () {
         return this.benchmark;
     };
-
+    
 
     /**
      * Set the listener URI as a String. This is probably the localhost
@@ -206,10 +209,10 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public KorapResponse setListener (String listener) {
-	this.listener = listener;
-	return this;
+        this.listener = listener;
+        return this;
     };
-
+    
 
     /**
      * Get the listener URI as a string.
@@ -218,7 +221,7 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public String getListener () {
-	return this.listener;
+        return this.listener;
     };
 
 
@@ -230,27 +233,27 @@ public class KorapResponse extends Notifications {
     @Override
     public JsonNode toJsonNode () {
 
-	// Get notifications json response
-	ObjectNode json = (ObjectNode) super.toJsonNode();
+        // Get notifications json response
+        ObjectNode json = (ObjectNode) super.toJsonNode();
 
-	StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
         if (this.getName() != null) {
-	    sb.append(this.getName());
+            sb.append(this.getName());
+            
+            if (this.getVersion() != null)
+                sb.append("-");
+        };
 
-	    if (this.getVersion() != null)
-		sb.append("-");
-	};
+        // No name but version is given
+        if (this.getVersion() != null)
+            sb.append(this.getVersion());
 
-	// No name but version is given
-	if (this.getVersion() != null)
-	    sb.append(this.getVersion());
-
-	if (sb.length() > 0)
-	    json.put("version", sb.toString());
-
-	if (this.timeExceeded)
-	    json.put("timeExceeded", true);
-
+        if (sb.length() > 0)
+            json.put("version", sb.toString());
+        
+        if (this.timeExceeded)
+            json.put("timeExceeded", true);
+        
         if (this.getNode() != null)
             json.put("node", this.getNode());
 
@@ -260,7 +263,7 @@ public class KorapResponse extends Notifications {
         if (this.getBenchmark() != null)
             json.put("benchmark", this.getBenchmark());
 
-	return (JsonNode) json;
+        return (JsonNode) json;
     };
 
     /**
@@ -286,19 +289,19 @@ public class KorapResponse extends Notifications {
      * @return String representation of the response
      */
     public String toJsonString () {
-	String msg = "";
-	try {
-	    return mapper.writeValueAsString(this.toJsonNode());
-	}
-	catch (Exception e) {
-	    // Bad in case the message contains quotes!
-	    msg = ", \"" + e.getLocalizedMessage() + "\"";
-	};
+        String msg = "";
+        try {
+            return mapper.writeValueAsString(this.toJsonNode());
+        }
+        catch (Exception e) {
+            // Bad in case the message contains quotes!
+            msg = ", \"" + e.getLocalizedMessage() + "\"";
+        };
 
-	return
-	    "{\"errors\":["+
-	    "[620, " +
-	    "\"Unable to generate JSON\"" + msg + "]" +
-	    "]}";
+        return
+            "{\"errors\":["+
+            "[620, " +
+            "\"Unable to generate JSON\"" + msg + "]" +
+            "]}";
     };
 };

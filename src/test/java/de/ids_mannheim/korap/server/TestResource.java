@@ -64,73 +64,73 @@ public class TestResource {
 
     @Test
     public void testResource() throws IOException {
-	KorapResponse kresp;
+        KorapResponse kresp;
 
-	for (String i : new String[] {"00001",
-				      "00002",
-				      "00003",
-				      "00004",
-				      "00005",
-				      "00006",
-				      "02439"
-	    }) {
+        for (String i : new String[] {"00001",
+                                      "00002",
+                                      "00003",
+                                      "00004",
+                                      "00005",
+                                      "00006",
+                                      "02439"
+            }) {
 
-	    String json = StringfromFile(getClass().getResource("/wiki/" + i + ".json").getFile());
-	    kresp = target.path("/index/" + i).
-		request("application/json").
-		put(Entity.json(json), KorapResponse.class);
+            String json = StringfromFile(getClass().getResource("/wiki/" + i + ".json").getFile());
+            kresp = target.path("/index/" + i).
+                request("application/json").
+                put(Entity.json(json), KorapResponse.class);
 
-	    assertEquals(kresp.getNode(), "milena");
-	    assertFalse(kresp.hasErrors());
-	    assertFalse(kresp.hasWarnings());
-	    assertFalse(kresp.hasMessages());
-	};
+            assertEquals(kresp.getNode(), "milena");
+            assertFalse(kresp.hasErrors());
+            assertFalse(kresp.hasWarnings());
+            assertFalse(kresp.hasMessages());
+        };
 
-	kresp = target.path("/index").
-	    request("application/json").
-	    post(Entity.text(""), KorapResponse.class);
-	assertEquals(kresp.getNode(), "milena");
-	assertFalse(kresp.hasErrors());
-	assertFalse(kresp.hasWarnings());
-	assertFalse(kresp.hasMessages());
+        kresp = target.path("/index").
+            request("application/json").
+            post(Entity.text(""), KorapResponse.class);
+        assertEquals(kresp.getNode(), "milena");
+        assertFalse(kresp.hasErrors());
+        assertFalse(kresp.hasWarnings());
+        assertFalse(kresp.hasMessages());
     };
 
     @Test
     public void testCollection() throws IOException {
 
-	String json = getString(
-	    getClass().getResource("/queries/bsp-uid-example.jsonld").getFile()
+        String json = getString(
+            getClass().getResource("/queries/bsp-uid-example.jsonld").getFile()
         );
 
-	 KorapResponse kresp
-	    = target.path("/").
-	    queryParam("uid", "1").
-	    queryParam("uid", "4").
-	    request("application/json").
-	    post(Entity.json(json), KorapResponse.class);
-	 /*
-	 assertEquals(2, kresp.getTotalResults());
-	 */
-	 fail("totalResults should be implemented in KorapResponse" +
-	      " or KorapResult should be used here");
-	 assertFalse(kresp.hasErrors());
-	 assertFalse(kresp.hasWarnings());
-	 assertFalse(kresp.hasMessages());
+        KorapResponse kresp
+            = target.path("/").
+            queryParam("uid", "1").
+            queryParam("uid", "4").
+            request("application/json").
+            post(Entity.json(json), KorapResponse.class);
+        /*
+          assertEquals(2, kresp.getTotalResults());
+        */
+        fail("totalResults should be implemented in KorapResponse" +
+             " or KorapResult should be used here");
+        assertFalse(kresp.hasErrors());
+        assertFalse(kresp.hasWarnings());
+        assertFalse(kresp.hasMessages());
     };
 
     public static String getString (String path) {
-	StringBuilder contentBuilder = new StringBuilder();
-	try {
-	    BufferedReader in = new BufferedReader(new FileReader(path));
-	    String str;
-	    while ((str = in.readLine()) != null) {
-		contentBuilder.append(str);
-	    };
-	    in.close();
-	} catch (IOException e) {
-	    fail(e.getMessage());
-	}
-	return contentBuilder.toString();
+        StringBuilder contentBuilder = new StringBuilder();
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(path));
+            String str;
+            while ((str = in.readLine()) != null) {
+                contentBuilder.append(str);
+            };
+            in.close();
+        }
+        catch (IOException e) {
+            fail(e.getMessage());
+        };
+        return contentBuilder.toString();
     };
-
 };
