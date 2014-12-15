@@ -25,9 +25,9 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
  * unit, the order of the spans (ordered or unordered), co-occurrence (i.e. the
  * spans should co-occur or not), minimum and maximum distance. <br/>
  * <br/>
- * The distance unit can be word (token), sentence or paragraph. The resulting
- * spans typically stretch from the starting position of a former span to the
- * end position of the latter span. <br/>
+ * The distance unit can be a word (token), a sentence or a paragraph. The
+ * resulting spans typically stretch from the starting position of a former span
+ * to the end position of the latter span. <br/>
  * <br/>
  * Query examples:
  * 
@@ -109,7 +109,14 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
      * of the two specified spanqueries and based-on the given distance
      * constraints.
      * 
-     * */
+     * @param firstClause a span query
+     * @param secondClause a span query
+     * @param constraint a DistanceConstraint containing all the constraints
+     *        required for the distance query
+     * @param collectPayloads a boolean flag representing the value
+     *        <code>true</code> if payloads are to be collected, otherwise
+     *        <code>false</code>.
+     */
     public SpanDistanceQuery(SpanQuery firstClause, SpanQuery secondClause,
             DistanceConstraint constraint, boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
@@ -197,43 +204,43 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
     }
 
     /**
-     * Returns the minimum distance constraint
+     * Returns the minimum distance constraint.
      * 
-     * @return minimum distance constraint
+     * @return the minimum distance constraint
      */
     public int getMinDistance() {
         return minDistance;
     }
 
     /**
-     * Sets the minimum distance constraint
+     * Sets the minimum distance constraint.
      * 
-     * @param minDistance
+     * @param minDistance the minimum distance constraint
      */
     public void setMinDistance(int minDistance) {
         this.minDistance = minDistance;
     }
 
     /**
-     * Returns the maximum distance constraint
+     * Returns the maximum distance.
      * 
-     * @return maximum distance constraint
+     * @return the maximum distance constraint
      */
     public int getMaxDistance() {
         return maxDistance;
     }
 
     /**
-     * Sets a maximum distance constraint
+     * Sets a maximum distance.
      * 
-     * @param maxDistance
+     * @param maxDistance the maximum distance
      */
     public void setMaxDistance(int maxDistance) {
         this.maxDistance = maxDistance;
     }
 
     /**
-     * Returns the element query used as the distance unit
+     * Returns the element query used as the distance unit.
      * 
      * @return the element distance unit
      */
@@ -242,9 +249,9 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
     }
 
     /**
-     * Sets the specified element query used for the distance unit
+     * Sets the specified element query used as the distance unit.
      * 
-     * @param elementQuery
+     * @param elementQuery the SpanElementQuery used as the distance unit
      */
     public void setElementQuery(SpanElementQuery elementQuery) {
         this.elementQuery = elementQuery;
@@ -252,15 +259,21 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 
     /**
      * Tells weather the second sub-span should co-occur or not.
-     * */
+     * 
+     * @return a boolean with <code>true</code> if the second sub-span should
+     *         <em>not</em> co-occur, <code>false</code> otherwise.
+     */
     public boolean isExclusion() {
         return exclusion;
     }
 
     /**
-     * Sets true if the second sub-span should <em>not</em> co-occur.
+     * Sets <code>true</code> if the second sub-span should <em>not</em>
+     * co-occur, <code>false</code> otherwise.
      * 
-     * @param exclusion
+     * @param exclusion a boolean with value <code>true</code> if the second
+     *        sub-span should <em>not</em> co-occur, <code>false</code>
+     *        otherwise.
      */
     public void setExclusion(boolean exclusion) {
         this.exclusion = exclusion;

@@ -11,25 +11,24 @@ import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
-import org.apache.lucene.search.spans.TermSpans;
 
 /**
  * Span enumeration of attributes which are term spans with special payload
- * assignment referring to another span (e.g. element/relation span) to which an
- * attribute span belongs.
- * 
- * The class is basically a wrapper of Lucene {@link TermSpans} with additional
- * functionality regarding element/relation reference. Element/relation id is
- * annotated ascendingly starting from the left side.
- * 
+ * assignments referring to another span (e.g. element/relation span) to which
+ * an attribute span belongs. The class is basically a wrapper of Lucene
+ * {@link TermSpans} with additional functionality regarding element/relation
+ * reference. Element/relation id is annotated ascendingly starting from the
+ * left side. <br/>
+ * <br/>
  * The enumeration is ordered firstly by the start position of the attribute and
  * secondly by the element/relation id descendingly. This order helps to match
- * element and attributes faster. 
+ * element and attributes faster.
  * 
  * @author margaretha
  * */
