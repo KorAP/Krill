@@ -21,7 +21,7 @@ public class ExpandedSpans extends SimpleSpans{
 	private int min, max;
 	private byte classNumber;
 	private int direction;	
-	private List<CandidateSpans> candidateSpans;
+	private List<CandidateSpan> candidateSpans;
 	private long matchCost;
 	
 	public ExpandedSpans(SpanExpansionQuery spanExpansionQuery,
@@ -33,7 +33,7 @@ public class ExpandedSpans extends SimpleSpans{
 		this.direction = spanExpansionQuery.getDirection();
 		this.classNumber = spanExpansionQuery.getClassNumber();
 		
-		candidateSpans = new ArrayList<CandidateSpans>();		
+		candidateSpans = new ArrayList<CandidateSpan>();		
 		hasMoreSpans = true;		
 	}
 
@@ -59,14 +59,14 @@ public class ExpandedSpans extends SimpleSpans{
 	}
 	
 	private void setCandidateList() throws IOException {
-		CandidateSpans cs;
+		CandidateSpan cs;
 		int counter, start, end;
 		
 		if (direction < 0 ){
 			counter = max;
 			while (counter >= min ){
 				start =  Math.max(0,firstSpans.start() - counter);			
-				cs = new CandidateSpans(
+				cs = new CandidateSpan(
 						start, 
 						firstSpans.end(), 
 						firstSpans.doc(), 
@@ -83,7 +83,7 @@ public class ExpandedSpans extends SimpleSpans{
 			while (counter <= max){
 				// TODO: How do I know if the end is already too far (over the end of the doc)? 
 				end = firstSpans.end() + counter;
-				cs = new CandidateSpans(
+				cs = new CandidateSpan(
 						firstSpans.start(), 
 						end, 
 						firstSpans.doc(), 
@@ -118,7 +118,7 @@ public class ExpandedSpans extends SimpleSpans{
 		return buffer.array();
 	}
 
-	private void setMatch(CandidateSpans candidateSpan) {
+	private void setMatch(CandidateSpan candidateSpan) {
 		matchDocNumber = candidateSpan.getDoc();
 		matchStartPosition = candidateSpan.getStart();
 		matchEndPosition = candidateSpan.getEnd();			

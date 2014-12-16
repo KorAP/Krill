@@ -24,8 +24,8 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
  * */
 public class NextSpans extends SimpleSpans {	
 	
-	private List<CandidateSpans> matchList;
-	private List<CandidateSpans> candidateList;
+	private List<CandidateSpan> matchList;
+	private List<CandidateSpan> candidateList;
 	private int candidateListDocNum;
 	private boolean hasMoreFirstSpan;
 	
@@ -93,8 +93,8 @@ public class NextSpans extends SimpleSpans {
 	}
 	
 	private void searchCandidates() throws IOException {
-		Iterator<CandidateSpans> i = candidateList.iterator();
-		CandidateSpans cs;
+		Iterator<CandidateSpan> i = candidateList.iterator();
+		CandidateSpan cs;
 		while(i.hasNext()){
 			cs = i.next();
 			if (cs.getStart() == firstSpans.end()){
@@ -115,14 +115,14 @@ public class NextSpans extends SimpleSpans {
 				break;
 			}
 			if (secondSpans.start() == firstSpans.end()){
-				candidateList.add(new CandidateSpans(secondSpans));
-				addMatch(new CandidateSpans(secondSpans));
+				candidateList.add(new CandidateSpan(secondSpans));
+				addMatch(new CandidateSpan(secondSpans));
 			}
 			hasMoreSpans = secondSpans.next();
 		}
 	}
 	
-	private void addMatch(CandidateSpans cs) throws IOException{
+	private void addMatch(CandidateSpan cs) throws IOException{
 		
 		int start = firstSpans.start();
 		long cost = firstSpans.cost() + cs.getCost();
@@ -135,7 +135,7 @@ public class NextSpans extends SimpleSpans {
 				payloads.addAll(cs.getPayloads());
 		}	
 		
-		matchList.add(new CandidateSpans(start,cs.getEnd(),candidateListDocNum,cost,
+		matchList.add(new CandidateSpan(start,cs.getEnd(),candidateListDocNum,cost,
 				payloads));
 	}
 

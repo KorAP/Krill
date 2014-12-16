@@ -91,11 +91,11 @@ public class MultipleDistanceSpans extends DistanceSpans{
 	 * */	
 	protected boolean findMatch() throws IOException {
 		 		
-		CandidateSpans xf = x.getMatchFirstSpan();
-		CandidateSpans xs = x.getMatchSecondSpan();
+		CandidateSpan xf = x.getMatchFirstSpan();
+		CandidateSpan xs = x.getMatchSecondSpan();
 		
-		CandidateSpans yf = y.getMatchFirstSpan();
-		CandidateSpans ys = y.getMatchSecondSpan();
+		CandidateSpan yf = y.getMatchFirstSpan();
+		CandidateSpan ys = y.getMatchSecondSpan();
 		
 		if (x.isExclusion() || y.isExclusion()){			
 			if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()){

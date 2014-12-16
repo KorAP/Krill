@@ -197,7 +197,7 @@ public class RelationSpans extends RelationBaseSpans{
 //		this.rightId = rightId;
 //	}
 
-	class CandidateRelationSpan extends CandidateSpans implements Comparable<CandidateSpans>{
+	class CandidateRelationSpan extends CandidateSpan implements Comparable<CandidateSpan>{
 		
 		private int rightStart, rightEnd;
 		private short leftId, rightId;
@@ -207,7 +207,7 @@ public class RelationSpans extends RelationBaseSpans{
 		}
 
 		@Override
-		public int compareTo(CandidateSpans o) {
+		public int compareTo(CandidateSpan o) {
 
 			int sourcePositionComparison = super.compareTo(o);
 			

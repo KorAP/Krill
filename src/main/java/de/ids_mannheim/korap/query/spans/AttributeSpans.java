@@ -226,8 +226,8 @@ public class AttributeSpans extends SimpleSpans {
      * attributes with smaller spanIds come first on the list.
      * 
      * */
-    class CandidateAttributeSpan extends CandidateSpans implements
-            Comparable<CandidateSpans> {
+    class CandidateAttributeSpan extends CandidateSpan implements
+            Comparable<CandidateSpan> {
 
         private short spanId;
         private int elementEnd;
@@ -268,7 +268,7 @@ public class AttributeSpans extends SimpleSpans {
         }
 
         @Override
-        public int compareTo(CandidateSpans o) {
+        public int compareTo(CandidateSpan o) {
             CandidateAttributeSpan cs = (CandidateAttributeSpan) o;
             if (this.spanId == cs.spanId)
                 return 0;

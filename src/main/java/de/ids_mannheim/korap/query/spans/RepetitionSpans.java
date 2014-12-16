@@ -25,7 +25,7 @@ public class RepetitionSpans extends SimpleSpans{
 	
 	private int min,max;
 	private long matchCost;
-	private List<CandidateSpans> matchList;
+	private List<CandidateSpan> matchList;
 	private Logger log = LoggerFactory.getLogger(RepetitionSpans.class);
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -38,7 +38,7 @@ public class RepetitionSpans extends SimpleSpans{
 		super(query, context, acceptDocs, termContexts);
 		this.min = query.getMin();
 		this.max = query.getMax();
-		matchList = new ArrayList<CandidateSpans>();
+		matchList = new ArrayList<CandidateSpan>();
 		hasMoreSpans = firstSpans.next();
 	}
 
@@ -62,7 +62,7 @@ public class RepetitionSpans extends SimpleSpans{
 			}			
 			matchCost = 0;
 			
-			List<CandidateSpans> adjacentSpans = collectAdjacentSpans();
+			List<CandidateSpan> adjacentSpans = collectAdjacentSpans();
 			setMatchList(adjacentSpans);
 		}	
 		return false;
@@ -71,14 +71,14 @@ public class RepetitionSpans extends SimpleSpans{
 	/** Collect all adjacent spans occurring in a sequence.
 	 * 	@return a list of the adjacent spans 
 	 * */
-	private List<CandidateSpans> collectAdjacentSpans() throws IOException {
+	private List<CandidateSpan> collectAdjacentSpans() throws IOException {
 		
-		CandidateSpans startSpan = new CandidateSpans(firstSpans);
+		CandidateSpan startSpan = new CandidateSpan(firstSpans);
 		
-		List<CandidateSpans> adjacentSpans = new ArrayList<CandidateSpans>();
+		List<CandidateSpan> adjacentSpans = new ArrayList<CandidateSpan>();
 		adjacentSpans.add(startSpan);
 		
-		CandidateSpans prevSpan = startSpan;
+		CandidateSpan prevSpan = startSpan;
 		
 		while ((hasMoreSpans = firstSpans.next()) &&
 			startSpan.getDoc() == firstSpans.doc() ){
@@ -87,7 +87,7 @@ public class RepetitionSpans extends SimpleSpans{
 				break;
 			}
 			else if (firstSpans.start() == prevSpan.getEnd()){
-				prevSpan = new CandidateSpans(firstSpans);
+				prevSpan = new CandidateSpan(firstSpans);
 				adjacentSpans.add(prevSpan);
 			}
 		}		
@@ -97,8 +97,8 @@ public class RepetitionSpans extends SimpleSpans{
 	/** Generate all possible repetition candidate spans from the adjacent spans 
 	 * 	and add them to the match list. 
 	 * */
-	private void setMatchList(List<CandidateSpans> adjacentSpans){
-		CandidateSpans startSpan, endSpan, matchSpan;
+	private void setMatchList(List<CandidateSpan> adjacentSpans){
+		CandidateSpan startSpan, endSpan, matchSpan;
 		for (int i=min; i<max+1; i++){
 			//System.out.println("num: "+i);			
 			int j=0; 
@@ -116,7 +116,7 @@ public class RepetitionSpans extends SimpleSpans{
 				}
 				else {
 					endSpan = adjacentSpans.get(endIndex);														
-					matchSpan = new CandidateSpans(
+					matchSpan = new CandidateSpan(
 							startSpan.getStart(), 
 							endSpan.getEnd(), 
 							startSpan.getDoc(), 
@@ -138,7 +138,7 @@ public class RepetitionSpans extends SimpleSpans{
 	/** Add all the payloads of a candidate span
 	 * */
 	private Collection<byte[]> computeMatchPayload(
-			List<CandidateSpans> adjacentSpans, int start, int end) {
+			List<CandidateSpan> adjacentSpans, int start, int end) {
 		Collection<byte[]> payload = new ArrayList<byte[]>();
 		for (int i=start; i<= end; i++){
 			payload.addAll(adjacentSpans.get(i).getPayloads());
@@ -148,11 +148,11 @@ public class RepetitionSpans extends SimpleSpans{
 
 	/** Add all the cost of a candidate span
 	 * */
-	private long computeMatchCost(List<CandidateSpans> adjacentSpans, 
+	private long computeMatchCost(List<CandidateSpan> adjacentSpans, 
 			int start, int end){		
 		long matchCost = 0;
 		for (int i=start; i<= end; i++){
-			CandidateSpans c = adjacentSpans.get(i);
+			CandidateSpan c = adjacentSpans.get(i);
 			matchCost += adjacentSpans.get(i).getCost();
 		}		
 		return matchCost;
@@ -161,7 +161,7 @@ public class RepetitionSpans extends SimpleSpans{
 	
 	/** Setting match properties from the candidate span
 	 * */	
-	private void setMatchProperties(CandidateSpans candidateSpan) 
+	private void setMatchProperties(CandidateSpan candidateSpan) 
 			throws IOException {
 	    matchDocNumber = candidateSpan.getDoc();
 	    matchStartPosition = candidateSpan.getStart();

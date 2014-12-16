@@ -29,7 +29,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	
 	// contains all previous elements whose position is greater than the last 
 	// target span
-	private List<CandidateSpans> elementList;
+	private List<CandidateSpan> elementList;
 	
 	public UnorderedElementDistanceSpans(SpanDistanceQuery query,
 			AtomicReaderContext context, Bits acceptDocs,
@@ -39,7 +39,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	  			getSpans(context, acceptDocs, termContexts);	  		
   		hasMoreElements = elements.next();  		
   		elementPosition=0;  		
-  		elementList = new ArrayList<CandidateSpans>();  		
+  		elementList = new ArrayList<CandidateSpan>();  		
 	}
 	
 	@Override
@@ -74,13 +74,13 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 		return true;
 	}
 	
-	private boolean addSpan(Spans span, List<CandidateSpans> list, boolean hasMoreSpan) 
+	private boolean addSpan(Spans span, List<CandidateSpan> list, boolean hasMoreSpan) 
 			throws IOException {
 		int position;
 		while (hasMoreSpan && span.doc() == currentDocNum){
 			position = findElementPosition(span);
 			if (position != -1){
-				list.add(new CandidateSpans(span,position));
+				list.add(new CandidateSpan(span,position));
 				hasMoreSpan = span.next();
 				return hasMoreSpan;
 			}
@@ -100,7 +100,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 		if (!elementList.isEmpty() && 
 				span.end() <= elementList.get(elementList.size()-1).getEnd()){
 			
-			for (CandidateSpans e : elementList)
+			for (CandidateSpan e : elementList)
 				if (e.getEnd() >= span.end() && e.getStart() <= span.start()){
 					return e.getPosition();
 				}
@@ -124,7 +124,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 					span.end() <= elements.end()){
 				return true;
 			}
-			elementList.add(new CandidateSpans(elements,elementPosition));
+			elementList.add(new CandidateSpan(elements,elementPosition));
 			hasMoreElements = elements.next();
 			elementPosition++;			
 		}
@@ -133,18 +133,18 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	}
 
 	@Override
-	protected boolean setCandidateList(List<CandidateSpans> 
+	protected boolean setCandidateList(List<CandidateSpan> 
 			candidateList, Spans candidate, boolean hasMoreCandidates,
-			List<CandidateSpans> targetList) throws IOException {
+			List<CandidateSpan> targetList) throws IOException {
 		 
 		if (!targetList.isEmpty()){			
-			CandidateSpans cs;
-			CandidateSpans target = targetList.get(0);
+			CandidateSpan cs;
+			CandidateSpan target = targetList.get(0);
 			int position;
 			while (hasMoreCandidates && candidate.doc() == target.getDoc()){
 				position = findElementPosition(candidate); 
 				if (position != -1){
-					cs = new CandidateSpans(candidate,position);
+					cs = new CandidateSpan(candidate,position);
 					
 					if (isWithinMaxDistance(target, cs)){
 						candidateList.add(cs);						
@@ -162,7 +162,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	 *  @return true iff the target and candidate spans are within the maximum
 	 *  distance
 	 * */
-	protected boolean isWithinMaxDistance(CandidateSpans target, CandidateSpans candidate) {
+	protected boolean isWithinMaxDistance(CandidateSpan target, CandidateSpan candidate) {
 		int candidatePos = candidate.getPosition();
 		int targetPos = target.getPosition();
 		
@@ -180,15 +180,15 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	}
 	
 	@Override
-	protected List<CandidateSpans> findMatches(CandidateSpans target, List<CandidateSpans> 
+	protected List<CandidateSpan> findMatches(CandidateSpan target, List<CandidateSpan> 
 			candidateList) {
 		
-		List<CandidateSpans> matches = new ArrayList<>();
+		List<CandidateSpan> matches = new ArrayList<>();
 		
 		int actualDistance;
 		int targetPos = target.getPosition();		
 		
-		for (CandidateSpans cs : candidateList){						
+		for (CandidateSpan cs : candidateList){						
 			actualDistance = Math.abs( targetPos - cs.getPosition() );
 			
 			if (minDistance == 0 && actualDistance == 0){
@@ -203,7 +203,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	}
 
 	@Override
-	protected void updateList(List<CandidateSpans> candidateList) {
+	protected void updateList(List<CandidateSpan> candidateList) {
 		updateElementList(candidateList.get(0).getPosition());
 		candidateList.remove(0);
 	}
@@ -213,8 +213,8 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans{
 	 * 	span.
 	 * */
 	private void updateElementList(int position){
-		Iterator<CandidateSpans> i = elementList.iterator();
-		CandidateSpans e;
+		Iterator<CandidateSpan> i = elementList.iterator();
+		CandidateSpan e;
 		while(i.hasNext()){
 			e = i.next();			
 			if (e.getPosition() <= position) {

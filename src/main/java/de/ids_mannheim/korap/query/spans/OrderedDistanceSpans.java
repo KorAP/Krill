@@ -22,7 +22,7 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
 	protected boolean hasMoreFirstSpans;	
 	protected int minDistance,maxDistance;
 	
-	protected List<CandidateSpans> candidateList;
+	protected List<CandidateSpan> candidateList;
 	protected int candidateListIndex;
 	protected int candidateListDocNum;
 	
@@ -84,11 +84,11 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
 	
 	/** Define the properties of a span match.
 	 * */
-	protected void setMatchProperties(CandidateSpans candidateSpan, 
+	protected void setMatchProperties(CandidateSpan candidateSpan, 
 			boolean isDistanceZero) throws IOException{
 		
 		setMatchFirstSpan(candidateSpan);
-		setMatchSecondSpan(new CandidateSpans(secondSpans));
+		setMatchSecondSpan(new CandidateSpan(secondSpans));
 		
 		if (isDistanceZero){
 			matchStartPosition = Math.min(candidateSpan.getStart(), secondSpans.start());

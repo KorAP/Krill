@@ -242,7 +242,7 @@ public class RelationPartSpans extends RelationBaseSpans{
 		return 0;
 	}
 
-	class CandidateRelationSpan extends CandidateSpans implements Comparable<CandidateSpans>{
+	class CandidateRelationSpan extends CandidateSpan implements Comparable<CandidateSpan>{
 		
 		private int rightStart, rightEnd; 
 		private short leftId, rightId;
@@ -261,7 +261,7 @@ public class RelationPartSpans extends RelationBaseSpans{
 		}
 		
 		@Override
-		public int compareTo(CandidateSpans o) {
+		public int compareTo(CandidateSpan o) {
 			CandidateRelationSpan cs = (CandidateRelationSpan) o;
 			if (sortRight)
 				return sortByRight(cs);
