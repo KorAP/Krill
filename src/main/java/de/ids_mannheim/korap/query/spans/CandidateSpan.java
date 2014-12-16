@@ -9,16 +9,16 @@ import org.apache.lucene.search.spans.Spans;
 /** A span kept as a candidate for matching with another Span
  * 	@author margaretha
  * */
-public class CandidateSpans implements Comparable<CandidateSpans>, Cloneable{	
+public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable{	
 	private int doc,start,end;
 	private long cost;
 	private Collection<byte[]> payloads = new ArrayList<>();
 	private int position;
-	private CandidateSpans childSpan; // used for example for multiple distance with unordered constraint 
+	private CandidateSpan childSpan; // used for example for multiple distance with unordered constraint 
 	protected short spanId;
 	
 	
-	public CandidateSpans(Spans span) throws IOException {
+	public CandidateSpan(Spans span) throws IOException {
 		this.doc = span.doc();
 		this.start = span.start();
 		this.end = span.end();
@@ -28,8 +28,8 @@ public class CandidateSpans implements Comparable<CandidateSpans>, Cloneable{
 	}	
 	
 	@Override
-	protected CandidateSpans clone() throws CloneNotSupportedException {
-		return new CandidateSpans(
+	protected CandidateSpan clone() throws CloneNotSupportedException {
+		return new CandidateSpan(
 				this.start,
 				this.end,
 				this.doc,
@@ -38,12 +38,12 @@ public class CandidateSpans implements Comparable<CandidateSpans>, Cloneable{
 		);		
 	}
 	
-	public CandidateSpans(Spans span, int position) throws IOException {
+	public CandidateSpan(Spans span, int position) throws IOException {
 		this(span);
 		this.position = position;		
 	}
 	
-	public CandidateSpans(int start, int end, int doc, long cost,
+	public CandidateSpan(int start, int end, int doc, long cost,
 			Collection<byte[]> payloads) {
 		this.start = start;
 		this.end = end;
@@ -101,11 +101,11 @@ public class CandidateSpans implements Comparable<CandidateSpans>, Cloneable{
 		this.position = position;
 	}
 
-	public CandidateSpans getChildSpan() {
+	public CandidateSpan getChildSpan() {
 		return childSpan;
 	}
 
-	public void setChildSpan(CandidateSpans childSpan) {
+	public void setChildSpan(CandidateSpan childSpan) {
 		this.childSpan = childSpan;
 	}
 
@@ -118,7 +118,7 @@ public class CandidateSpans implements Comparable<CandidateSpans>, Cloneable{
 	}
 
 	@Override
-	public int compareTo(CandidateSpans o) {
+	public int compareTo(CandidateSpan o) {
 		if (this.doc == o.doc){
 			if (this.getStart() == o.getStart()){
 				if (this.getEnd() == o.getEnd())
