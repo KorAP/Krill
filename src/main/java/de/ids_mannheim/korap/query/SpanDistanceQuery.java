@@ -184,7 +184,7 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
         if (this.elementQuery != null) {
             if (isExclusion()) {
                 return new ElementDistanceExclusionSpans(this, context,
-                        acceptDocs, termContexts, isOrdered);
+                        acceptDocs, termContexts);
             } else if (isOrdered) {
                 return new ElementDistanceSpans(this, context, acceptDocs,
                         termContexts);
@@ -194,7 +194,7 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 
         } else if (isExclusion()) {
             return new DistanceExclusionSpans(this, context, acceptDocs,
-                    termContexts, isOrdered);
+                    termContexts);
         } else if (isOrdered) {
             return new TokenDistanceSpans(this, context, acceptDocs,
                     termContexts);
@@ -277,6 +277,26 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
      */
     public void setExclusion(boolean exclusion) {
         this.exclusion = exclusion;
+    }
+
+    /**
+     * Tells whether the spans must occur in order or not.
+     * 
+     * @return <code>true</code> if the spans must occur in order,
+     *         <code>false</code> otherwise.
+     */
+    public boolean isOrdered() {
+        return isOrdered;
+    }
+
+    /**
+     * Sets whether the spans must occur in order or not.
+     * 
+     * @param isOrdered <code>true</code> if the spans must occur in order,
+     *        <code>false</code> otherwise.
+     */
+    public void setOrder(boolean isOrdered) {
+        this.isOrdered = isOrdered;
     }
 
 }
