@@ -30,13 +30,17 @@ import de.ids_mannheim.korap.query.SpanAttributeQuery;
  * secondly by the element/relation id descendingly. This order helps to match
  * element and attributes faster.
  * 
+ * AttributeSpans contain information about the elements they belongs to, thus
+ * querying them alone is sufficient to get
+ * "any element having a specific attribute".
+ * 
  * @author margaretha
  * */
 public class AttributeSpans extends SimpleSpans {
 
     private List<CandidateAttributeSpan> candidateList;
     private int currentDoc, currentPosition;
-    private short spanId;
+    private short referentId;
     private boolean isFinish;
     private int elementEnd;
 
@@ -86,7 +90,7 @@ public class AttributeSpans extends SimpleSpans {
                 this.matchDocNumber = cs.getDoc();
                 this.matchStartPosition = cs.getStart();
                 this.matchEndPosition = cs.getEnd();
-                this.setSpanId(cs.getSpanId());
+                this.setReferentId(cs.getSpanId());
                 this.setElementEnd(cs.getElementEnd());
                 candidateList.remove(0);
                 return true;
@@ -145,19 +149,19 @@ public class AttributeSpans extends SimpleSpans {
      * 
      * @return a span id, for instance a relation id or an element id
      */
-    public short getSpanId() {
-        return this.spanId;
+    public short getReferentId() {
+        return this.referentId;
     }
 
     /**
      * Sets the span id to which an attribute span belongs, for instance a
      * relation id or an element id.
      * 
-     * @param spanId the span id to which an attribute span belongs, for
+     * @param refId the span id to which an attribute span belongs, for
      *        instance a relation id or an element id.
      */
-    public void setSpanId(short spanId) {
-        this.spanId = spanId;
+    public void setReferentId(short refId) {
+        this.referentId = refId;
     }
 
     /**

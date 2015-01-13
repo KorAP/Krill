@@ -16,244 +16,293 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 
-/** Span enumeration of element or relation spans having and/or <em>not</em> 
- * 	having some attributes. This class handles <em>and</em> operation on attributes.
+/**
+ * Span enumeration of element or relation spans (referent spans) having and/or
+ * <em>not</em> having some attributes. This class only handles <em>and</em>
+ * operation on attributes.
  * 
- * 	Use SpanOrQuery to perform <em>or</em> operation on attributes, i.e. choose 
- * 	between two elements with some attribute constraints. Note that the attribute 
- * 	constraints have to be in Conjunctive Normal Form (CNF). 
- *
- * 	@author margaretha
+ * Use SpanOrQuery to perform <em>or</em> operation on attributes, i.e. choose
+ * between two elements with some attribute constraints. Note that the attribute
+ * constraints have to be formulated in Conjunctive Normal Form (CNF).
+ * 
+ * @author margaretha
  * */
-public class SpansWithAttribute extends SpansWithId{
-	
-	private SpansWithId withAttributeSpans;
-	private List<AttributeSpans> attributeList;
-	private List<AttributeSpans> notAttributeList;
-	
-	protected Logger logger = LoggerFactory.getLogger(SpansWithAttribute.class);
+public class SpansWithAttribute extends SpansWithId {
 
-	public SpansWithAttribute(SpanWithAttributeQuery spanWithAttributeQuery,
-			SpansWithId withIdSpans,
-			AtomicReaderContext context, Bits acceptDocs,
-			Map<Term, TermContext> termContexts) throws IOException {
-		super(spanWithAttributeQuery, context, acceptDocs, termContexts);		
-		withAttributeSpans = withIdSpans;
-		withAttributeSpans.hasSpanId = true; // dummy setting enabling reading elementRef
-		hasMoreSpans = withAttributeSpans.next();
-		
-		attributeList = new ArrayList<AttributeSpans>();
-		notAttributeList = new ArrayList<AttributeSpans>();		
-		
-		List<SpanQuery> sqs = spanWithAttributeQuery.getClauseList();
-		if (sqs != null){
-			for (SpanQuery sq: sqs){
-				addAttributes(sq, context, acceptDocs, termContexts);
-			}
-		}
-		else {
-			addAttributes(spanWithAttributeQuery.getSecondClause(), 
-					context, acceptDocs, termContexts);
-		}
-	}
-	
-	private void addAttributes(SpanQuery sq, AtomicReaderContext context, Bits acceptDocs,
-			Map<Term, TermContext> termContexts) throws IOException {
-		AttributeSpans as = (AttributeSpans) sq.getSpans(context, acceptDocs, termContexts);
-		if (((SpanAttributeQuery) sq).isNegation()){
-			notAttributeList.add(as);
-			as.next();
-		}
-		else {
-			attributeList.add(as);
-			hasMoreSpans &= as.next();
-		}	
-	}
+    private SpansWithId referentSpans;
+    private List<AttributeSpans> attributeList;
+    private List<AttributeSpans> notAttributeList;
 
-	@Override
-	public boolean next() throws IOException {
-		isStartEnumeration=false;
-		return advance();
-	}
-	
-	/** Search for the next match by first identify a possible 
-	 * 	element position, and then ensuring that the element contains
-	 * 	all the attributes and <em>do not</em> contain any of the 
-	 *  not attributes.
-	 * */
-	private boolean advance() throws IOException {
-		
-		while (hasMoreSpans && searchSpanPosition()){			
-		 	    //logger.info("element: " + withAttributeSpans.start() + ","+ withAttributeSpans.end() +
-				//	" ref:"+withAttributeSpans.getSpanId());
-			
-			if (checkSpanId() && checkNotSpanId()){			
-				this.matchDocNumber = withAttributeSpans.doc();
-				this.matchStartPosition = withAttributeSpans.start();
-				this.matchEndPosition = withAttributeSpans.end();
-				this.matchPayload = withAttributeSpans.getPayload();
-				this.spanId = withAttributeSpans.getSpanId();
-				
-				if (attributeList.size() > 0)
-					hasMoreSpans = attributeList.get(0).next();
-				
-			    //logger.info("MATCH "+matchDocNumber);
-				
-				hasMoreSpans &= withAttributeSpans.next();		
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/** Ensuring all the attribute spans having the same elementRef with 
-	 * 	the actual element's elementRef.
-	 * */
-	private boolean checkSpanId() throws IOException{
-		
-		for (AttributeSpans attribute: attributeList){			
-			if (withAttributeSpans.getSpanId() != attribute.getSpanId()){
-//				    logger.info("attribute ref doesn't match");
-				if (withAttributeSpans.getSpanId() < attribute.getSpanId())
-					hasMoreSpans = attribute.next();
-				else {
-					hasMoreSpans = withAttributeSpans.next();				
-				}
-				
-				return false;
-			}
-		}		
-		return true;
-	}
-	
-	/** Ensuring elements do not contain the not attributes. In other words, 
-	 * 	the elementRef is not the same as the not attribute's elementRefs. 
-	 * */
-	private boolean checkNotSpanId() throws IOException{
-		for (AttributeSpans notAttribute: notAttributeList){
-			if (!notAttribute.isFinish() && 
-					withAttributeSpans.start() == notAttribute.start() &&
-					withAttributeSpans.getSpanId() == notAttribute.getSpanId()){
-//				    logger.info("not attribute ref exists");
-				hasMoreSpans = withAttributeSpans.next();	
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	/**	Search for a possible element having the same doc and start position as
-	 * 	the attributes.
-	 * */
-	private boolean searchSpanPosition() throws IOException {		
+    protected Logger logger = LoggerFactory.getLogger(SpansWithAttribute.class);
 
-		while (hasMoreSpans){
-			
-			if (withAttributeSpans.getSpanId() < 1){ // the element does not have an attribute
-				hasMoreSpans = withAttributeSpans.next();
-//			    logger.info("skip");
-				continue;
-			}
-			
-			if (checkAttributeListPosition() && 
-					checkNotAttributeListPosition()){
-//				    logger.info("element is found: "+ withAttributeSpans.start());
-				return true;
-			}			
-		}		
-		
-		return false;
-	}
-	
-	/**	Advancing the not attributes to be in the same or greater doc# than 
-	 * 	element doc#. If a not attribute is in the same doc, advance it to
-	 * 	be in the same or greater start position than the element.
-	 * 
-	 * */
-	private boolean checkNotAttributeListPosition() throws IOException{
-		
-		for (AttributeSpans a : notAttributeList){
-			// advance the doc# of not AttributeSpans
-			// logger.info("a "+a.start());
-			while (!a.isFinish() &&	 a.doc() <= withAttributeSpans.doc()){
-				
-				if (a.doc() == withAttributeSpans.doc() &&
-						a.start() >= withAttributeSpans.start())
-					break;
-				
-				if (!a.next()) a.setFinish(true);
-			}
-		}
-		
-		return true;
-	}
-	
-	/** Advancing the attributes to be in the same doc and start position 
-	 * 	as the element.
-	 * */
-	private boolean checkAttributeListPosition() throws IOException{
-		int currentPosition = withAttributeSpans.start();
-		boolean isSame = true;
-		boolean isFirst = true;
-		
-		for (AttributeSpans a : attributeList){
-			if(!ensureSamePosition(withAttributeSpans, a)) return false;
-			//	    logger.info("pos:" + withAttributeSpans.start());
-				if (isFirst){ 
-					isFirst = false;
-					currentPosition = withAttributeSpans.start();
-				}
-				else if (currentPosition != withAttributeSpans.start()){					
-					currentPosition = withAttributeSpans.start();
-					isSame = false;
-				
-			}				 
-		}
-		//    logger.info("same pos: "+isSame+ ", pos "+withAttributeSpans.start());
-		return isSame;
-	}
-	
-	/** Advance the element or attribute spans to be in the same doc 
-	 * 	and start position.
-	 * */
-	private boolean ensureSamePosition(SpansWithId spans,
-			AttributeSpans attributes) throws IOException {
-		
-		while (hasMoreSpans && ensureSameDoc(spans, attributes)){
-			if (attributes.start() == spans.start())
-				return true;
-			else if (attributes.start() > spans.start()) 
-				hasMoreSpans = spans.next();
-			else 
-				hasMoreSpans= attributes.next();
-		}
-		
-		return false;
-	}
+    /**
+     * Creates a SpansWithAttribute from the given
+     * {@link SpanWithAttributeQuery} and {@link SpansWithId}, such as
+     * elementSpans and relationSpans.
+     * 
+     * @param spanWithAttributeQuery a spanWithAttributeQuery
+     * @param spansWithId a SpansWithId
+     * @param context
+     * @param acceptDocs
+     * @param termContexts
+     * @throws IOException
+     */
+    public SpansWithAttribute(SpanWithAttributeQuery spanWithAttributeQuery,
+            SpansWithId spansWithId, AtomicReaderContext context,
+            Bits acceptDocs, Map<Term, TermContext> termContexts)
+            throws IOException {
+        super(spanWithAttributeQuery, context, acceptDocs, termContexts);
+        referentSpans = spansWithId;
+        referentSpans.hasSpanId = true; // dummy setting enabling reading elementRef
+        hasMoreSpans = referentSpans.next();
 
-	@Override
-	public boolean skipTo(int target) throws IOException {
-		if (hasMoreSpans && (withAttributeSpans.doc() < target)){
-  			if (!withAttributeSpans.skipTo(target)){
-  				return false;
-  			}
-  		}		
-		isStartEnumeration=false;
-		return advance();
-	}
+        attributeList = new ArrayList<AttributeSpans>();
+        notAttributeList = new ArrayList<AttributeSpans>();
 
-	@Override
-	public long cost() {
-		
-		long cost = 0;
-		for (AttributeSpans as: attributeList){
-			cost += as.cost();
-		}
-		for (AttributeSpans as: notAttributeList){
-			cost += as.cost();
-		}
-		return withAttributeSpans.cost() + cost;
-	}
+        List<SpanQuery> sqs = spanWithAttributeQuery.getClauseList();
+        if (sqs != null) {
+            for (SpanQuery sq : sqs) {
+                addAttributes((SpanAttributeQuery) sq, context, acceptDocs,
+                        termContexts);
+            }
+        } else {
+            addAttributes(
+                    (SpanAttributeQuery) spanWithAttributeQuery
+                            .getSecondClause(),
+                    context, acceptDocs, termContexts);
+        }
+    }
 
+    /**
+     * Adds the given {@link SpanAttributeQuery} to the attributeList or
+     * notAttributeList depending on the query, whether it is a negation or not.
+     * 
+     * @param sq a SpanAttributeQuery
+     * @param context
+     * @param acceptDocs
+     * @param termContexts
+     * @throws IOException
+     */
+    private void addAttributes(SpanAttributeQuery sq,
+            AtomicReaderContext context, Bits acceptDocs,
+            Map<Term, TermContext> termContexts) throws IOException {
+        AttributeSpans as = (AttributeSpans) sq.getSpans(context, acceptDocs,
+                termContexts);
+        if (sq.isNegation()) {
+            notAttributeList.add(as);
+            as.next();
+        } else {
+            attributeList.add(as);
+            hasMoreSpans &= as.next();
+        }
+    }
+
+    @Override
+    public boolean next() throws IOException {
+        isStartEnumeration = false;
+        return advance();
+    }
+
+    /**
+     * Searches for the next match by first identify a possible element
+     * position, and then ensuring that the element contains all the attributes
+     * and <em>do not</em> contain any of the not attributes.
+     * 
+     * @return <code>true</code> if the a match is found, <code>false</code>
+     *         otherwise.
+     * @throws IOException
+     */
+    private boolean advance() throws IOException {
+
+        while (hasMoreSpans && searchSpanPosition()) {
+            //logger.info("element: " + withAttributeSpans.start() + ","+ withAttributeSpans.end() +
+            //	" ref:"+withAttributeSpans.getSpanId());
+
+            if (checkReferentId() && checkNotReferentId()) {
+                this.matchDocNumber = referentSpans.doc();
+                this.matchStartPosition = referentSpans.start();
+                this.matchEndPosition = referentSpans.end();
+                this.matchPayload = referentSpans.getPayload();
+                this.spanId = referentSpans.getSpanId();
+
+                if (attributeList.size() > 0)
+                    hasMoreSpans = attributeList.get(0).next();
+
+                hasMoreSpans &= referentSpans.next();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Searches for a possible referentSpan having the same document number and
+     * start position as the attributes', and the position is different from the
+     * <em>not attributes'</em> positions.
+     * 
+     * @return <code>true</code> if the referentSpan position is valid,
+     *         <code>false</code> otherwise.
+     * @throws IOException
+     */
+    private boolean searchSpanPosition() throws IOException {
+        while (hasMoreSpans) {
+            if (referentSpans.getSpanId() < 1) { // the element does not have an attribute
+                hasMoreSpans = referentSpans.next();
+                continue;
+            }
+            if (checkAttributeListPosition()) {
+                advanceNotAttributes();
+                //				    logger.info("element is found: "+ withAttributeSpans.start());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Advances the attributes to be in the same document and start position as
+     * the referentSpan.
+     * 
+     * @return <code>true</code> if the attributes are in the same document and
+     *         start position as the referentSpan.
+     * @throws IOException
+     */
+    private boolean checkAttributeListPosition() throws IOException {
+        int currentPosition = referentSpans.start();
+        boolean isSame = true;
+        boolean isFirst = true;
+
+        for (AttributeSpans a : attributeList) {
+            if (!ensureSamePosition(referentSpans, a))
+                return false;
+            //	    logger.info("pos:" + withAttributeSpans.start());
+            if (isFirst) {
+                isFirst = false;
+                currentPosition = referentSpans.start();
+            } else if (currentPosition != referentSpans.start()) {
+                currentPosition = referentSpans.start();
+                isSame = false;
+
+            }
+        }
+        //    logger.info("same pos: "+isSame+ ", pos "+withAttributeSpans.start());
+        return isSame;
+    }
+
+    /**
+     * Advances the element or attribute spans to be in the same document and
+     * start position.
+     * */
+    private boolean ensureSamePosition(SpansWithId spans,
+            AttributeSpans attributes) throws IOException {
+
+        while (hasMoreSpans && ensureSameDoc(spans, attributes)) {
+            if (attributes.start() == spans.start())
+                return true;
+            else if (attributes.start() > spans.start())
+                hasMoreSpans = spans.next();
+            else
+                hasMoreSpans = attributes.next();
+        }
+
+        return false;
+    }
+
+    /**
+     * Advances the <em>not-attributes</em> to be in the same or greater
+     * document number than referentSpans' document number. If a
+     * <em>not-attribute</em> is in the same document, it is advanced to be in
+     * the same as or greater start position than the current referentSpan.
+     * 
+     * @throws IOException
+     */
+    private void advanceNotAttributes() throws IOException {
+
+        for (AttributeSpans a : notAttributeList) {
+            // advance the doc# of not AttributeSpans
+            // logger.info("a "+a.start());
+            while (!a.isFinish() && a.doc() <= referentSpans.doc()) {
+
+                if (a.doc() == referentSpans.doc()
+                        && a.start() >= referentSpans.start())
+                    break;
+
+                if (!a.next())
+                    a.setFinish(true);
+            }
+        }
+        //return true;
+    }
+
+    /**
+     * Ensures that the referent id of each attributeSpans in the attributeList
+     * is the same as the spanId of the actual referentSpans.
+     * 
+     * @return <code>true</code> if the spanId of the current referentSpans is
+     *         the same as all the referentId of all the attributeSpans in the
+     *         attributeList, <code>false</code> otherwise.
+     * @throws IOException
+     */
+    private boolean checkReferentId() throws IOException {
+        for (AttributeSpans attribute : attributeList) {
+            if (referentSpans.getSpanId() != attribute.getReferentId()) {
+                if (referentSpans.getSpanId() < attribute.getReferentId())
+                    hasMoreSpans = attribute.next();
+                else {
+                    hasMoreSpans = referentSpans.next();
+                }
+
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Ensures that the referentSpans do <em>not</em> contain the
+     * <em>not attributes</em> (with negation). In other words, the spanId must
+     * not the same as the <em>not attribute</em>'s referentId.
+     * 
+     * @return <code>true</code> if the referentSpan does not have the same
+     *         spanId as the referentIds of all the not attributes,
+     *         <code>false</code> otherwise.
+     * @throws IOException
+     */
+    private boolean checkNotReferentId() throws IOException {
+        for (AttributeSpans notAttribute : notAttributeList) {
+            if (!notAttribute.isFinish()
+                    && referentSpans.start() == notAttribute.start()
+                    && referentSpans.getSpanId() == notAttribute
+                            .getReferentId()) {
+                hasMoreSpans = referentSpans.next();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean skipTo(int target) throws IOException {
+        if (hasMoreSpans && (referentSpans.doc() < target)) {
+            if (!referentSpans.skipTo(target)) {
+                return false;
+            }
+        }
+        isStartEnumeration = false;
+        return advance();
+    }
+
+    @Override
+    public long cost() {
+
+        long cost = 0;
+        for (AttributeSpans as : attributeList) {
+            cost += as.cost();
+        }
+        for (AttributeSpans as : notAttributeList) {
+            cost += as.cost();
+        }
+        return referentSpans.cost() + cost;
+    }
 
 }

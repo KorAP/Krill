@@ -13,9 +13,40 @@ import org.apache.lucene.util.ToStringUtils;
 import de.ids_mannheim.korap.query.spans.RelationPartSpans;
 
 /**
- * This query match a part of a relation (either left or right) to certain
+ * This query matches a part of a relation (either left or right) to certain
  * elements or terms. If inversed, the start and end positions of the right part
- * of the relation are set as positions of the match.
+ * of the relation are set as the positions of the match.
+ * 
+ * Examples:
+ * <ul>
+ * <li>retrieve all dependency relations "<:xip/syntax-dep_rel" whose sources
+ * (right side) are noun phrases. This query matches the right side of the
+ * relations to NP.
+ * 
+ * <pre>
+ * SpanRelationQuery sq = new SpanRelationQuery(new SpanTermQuery(new Term(
+ *         &quot;tokens&quot;, &quot;&lt;:xip/syntax-dep_rel&quot;)), true);
+ * 
+ * SpanRelationPartQuery rv = new SpanRelationPartQuery(sq, new SpanElementQuery(
+ *         &quot;tokens&quot;, &quot;np&quot;), true, false, true);
+ * </pre>
+ * 
+ * </li>
+ * 
+ * <li>returns all the children of NP using "<:child-of" relations where the
+ * left side is the parent and then right side is the child. This query matches
+ * the left side to NP and requires inverse on the relations, because the it
+ * asks for the children which are on the right side of the relations.</li>
+ * 
+ * <pre>
+ * SpanRelationQuery sq = new SpanRelationQuery(new SpanTermQuery(new Term(
+ *         &quot;tokens&quot;, &quot;&lt;:child-of&quot;)), true);
+ * 
+ * SpanRelationPartQuery rv = new SpanRelationPartQuery(sq, new SpanElementQuery(
+ *         &quot;base&quot;, &quot;np&quot;), false, true, true);
+ * </pre>
+ * 
+ * </ul>
  * 
  * @author margaretha
  * */
