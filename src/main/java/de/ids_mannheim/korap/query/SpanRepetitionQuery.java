@@ -13,68 +13,119 @@ import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.RepetitionSpans;
 
-/** SpanRepetitionQuery means that the given query can appears 
- * 	multiple times specified by the minimum and the maximum number 
- * 	of repetitions parameters.
+/**
+ * SpanRepetitionQuery means that the given SpanQuery must appears multiple
+ * times in a sequence. The number of repetition depends on the minimum and the
+ * maximum number parameters. <br />
+ * <br />
+ * 
+ * In the example below, SpanRepetitionQuery retrieves {@link RepetitionSpans}
+ * consisting of the TermSpans "tt:p/ADJ" that must appear at least once or
+ * consecutively two times. What appears after the RepetitionSpans is not
+ * considered, so it is possible that it is another "tt:p/ADJ". <br />
+ * <br />
+ * 
+ * <pre>
+ * SpanRepetitionQuery sq = new SpanRepetitionQuery(new SpanTermQuery(new Term(
+ *         &quot;tokens&quot;, &quot;tt:p/ADJ&quot;)), 1, 2, true);
+ * </pre>
+ * 
+ * For instance, "a large black leather jacket" contains the following matches.
+ * 
+ * <pre>
+ *  [large]
+ *  [large black]
+ *  [black]
+ *  [black leather]
+ *  [leather]
+ * </pre>
  * 
  * @author margaretha
  * */
-public class SpanRepetitionQuery extends SimpleSpanQuery{
-	
-	private int min, max;
-	
-	public SpanRepetitionQuery(SpanQuery sq, int min, int max,
-			boolean collectPayloads) {
-		super(sq, collectPayloads);
-		this.min = min;
-		this.max = max;
-	}
+public class SpanRepetitionQuery extends SimpleSpanQuery {
 
-	@Override
-	public SimpleSpanQuery clone() {
-		SpanRepetitionQuery sq = new SpanRepetitionQuery(
-				(SpanQuery) this.firstClause.clone(), 
-				this.min, 
-				this.max, 
-				this.collectPayloads);
-		sq.setBoost(getBoost());
-		return sq;
-	}
+    private int min, max;
 
-	@Override
-	public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
-			Map<Term, TermContext> termContexts) throws IOException {
-		return new RepetitionSpans(this, context, acceptDocs, termContexts);
-	}
+    /**
+     * Constructs a SpanRepetitionQuery for the given {@link SpanQuery}.
+     * 
+     * @param sq a SpanQuery
+     * @param min the minimum number of the required repetition
+     * @param max the maximum number of the required repetition
+     * @param collectPayloads a boolean flag representing the value
+     *        <code>true</code> if payloads are to be collected, otherwise
+     *        <code>false</code>.
+     */
+    public SpanRepetitionQuery(SpanQuery sq, int min, int max,
+            boolean collectPayloads) {
+        super(sq, collectPayloads);
+        this.min = min;
+        this.max = max;
+    }
 
-	@Override
-	public String toString(String field) {
-		StringBuilder sb = new StringBuilder();		
-		sb.append("spanRepetition(");
-		sb.append(firstClause.toString(field));
-		sb.append("{");
-		sb.append(min);
-		sb.append(",");
-		sb.append(max);
-		sb.append("})");
-		sb.append(ToStringUtils.boost(getBoost()));
-		return sb.toString();
-	}
+    @Override
+    public SimpleSpanQuery clone() {
+        SpanRepetitionQuery sq = new SpanRepetitionQuery(
+                (SpanQuery) this.firstClause.clone(), this.min, this.max,
+                this.collectPayloads);
+        sq.setBoost(getBoost());
+        return sq;
+    }
 
-	public int getMin() {
-		return min;
-	}
+    @Override
+    public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
+            Map<Term, TermContext> termContexts) throws IOException {
+        return new RepetitionSpans(this, context, acceptDocs, termContexts);
+    }
 
-	public void setMin(int min) {
-		this.min = min;
-	}
+    @Override
+    public String toString(String field) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("spanRepetition(");
+        sb.append(firstClause.toString(field));
+        sb.append("{");
+        sb.append(min);
+        sb.append(",");
+        sb.append(max);
+        sb.append("})");
+        sb.append(ToStringUtils.boost(getBoost()));
+        return sb.toString();
+    }
 
-	public int getMax() {
-		return max;
-	}
+    /**
+     * Returns the minimum number of required repetitions.
+     * 
+     * @return the minimum number of required repetitions
+     */
+    public int getMin() {
+        return min;
+    }
 
-	public void setMax(int max) {
-		this.max = max;
-	}
-	
+    /**
+     * Sets the minimum number of required repetitions.
+     * 
+     * @param min the minimum number of required repetitions
+     */
+    public void setMin(int min) {
+        this.min = min;
+    }
+
+    /**
+     * Returns the maximum number of required repetitions.
+     * 
+     * @return the maximum number of required repetitions
+     */
+    public int getMax() {
+        return max;
+    }
+
+    /**
+     * Sets the maximum number of required repetitions.
+     * 
+     * @param max the maximum number of required repetitions
+     */
+    public void setMax(int max) {
+        this.max = max;
+    }
+
 }

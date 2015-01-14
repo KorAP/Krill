@@ -35,7 +35,7 @@ public class NextSpans extends SimpleSpans {
     /**
      * Constructs NextSpans for the given {@link SpanNextQuery}.
      * 
-     * @param spanNextQuery
+     * @param spanNextQuery a SpanNextQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
@@ -75,11 +75,6 @@ public class NextSpans extends SimpleSpans {
                 matchEndPosition = matchList.get(0).getEnd();
                 if (collectPayloads)
                     matchPayload.addAll(matchList.get(0).getPayloads());
-                //System.out.println(this.toString());
-                /*
-                 * System.out.println("Match positions "+
-                 * matchStartPosition+","+ matchEndPosition);
-                 */
                 matchList.remove(0);
                 return true;
             }
@@ -115,8 +110,9 @@ public class NextSpans extends SimpleSpans {
     }
 
     /**
-     * Finds all candidates whose start position is the same as the firstspan's
-     * end position.
+     * Removes all second span candidates whose start position is not the same
+     * as the firstspan's end position, otherwise creates a match and add it to
+     * the matchlist.
      * 
      * @throws IOException
      */
@@ -128,13 +124,17 @@ public class NextSpans extends SimpleSpans {
             if (cs.getStart() == firstSpans.end()) {
                 addMatch(cs);
             } else {
-                //System.out.println(cs.getStart() + " " +firstSpans.end());
                 i.remove();
             }
         }
     }
 
     /**
+     * Finds all secondspans whose start position is the same as the end
+     * position of the firstspans, until the secondspans' start position is
+     * bigger than the firstspans' end position. Adds those secondspans to the
+     * candidateList and creates matches.
+     * 
      * @throws IOException
      */
     private void searchMatches() throws IOException {
@@ -151,6 +151,14 @@ public class NextSpans extends SimpleSpans {
         }
     }
 
+    /**
+     * Creates a match from the given CandidateSpan representing a secondspan
+     * state whose start position is identical to the end position of the
+     * current firstspan, and adds it to the matchlist.
+     * 
+     * @param cs a CandidateSpan
+     * @throws IOException
+     */
     private void addMatch(CandidateSpan cs) throws IOException {
 
         int start = firstSpans.start();

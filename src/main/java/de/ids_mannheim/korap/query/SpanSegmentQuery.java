@@ -18,17 +18,16 @@ import de.ids_mannheim.korap.query.spans.SegmentSpans;
  * positions, for instance:
  * 
  * <pre>
- * sq = new SpanSegmentQuery(
-            new SpanTermQuery(new Term("tokens","s:Hund")),
-            new SpanTermQuery(new Term("tokens","tt/p:NN"))
-       );
+ * sq = new SpanSegmentQuery(new SpanTermQuery(new Term(&quot;tokens&quot;, &quot;s:Hund&quot;)),
+ *         new SpanTermQuery(new Term(&quot;tokens&quot;, &quot;tt/p:NN&quot;)));
  * </pre>
+ * 
  * @author margaretha
  * */
 public class SpanSegmentQuery extends SimpleSpanQuery {
 
     /**
-     * Creates a SpanSegmentQuery from the two given SpanQueries, by default
+     * Constructs a SpanSegmentQuery from the two given SpanQueries, by default
      * payloads are to be collected.
      * 
      * @param firstClause a {@link SpanQuery}
@@ -39,6 +38,8 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
     }
 
     /**
+     * Constructs a SpanSegmentQuery from the two given SpanQueries.
+     * 
      * @param firstClause a {@link SpanQuery}
      * @param secondClause a {@link SpanQuery}
      * @param collectPayloads a boolean flag representing the value
