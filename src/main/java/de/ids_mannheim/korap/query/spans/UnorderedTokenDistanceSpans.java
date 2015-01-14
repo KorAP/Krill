@@ -23,8 +23,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
 
     /**
-     * Constructs an UnorderedTokenDistanceSpans for the given
-     * SpanDistanceQuery.
+     * Constructs UnorderedTokenDistanceSpans for the given SpanDistanceQuery.
      * 
      * @param query a SpanDistanceQuery
      * @param context

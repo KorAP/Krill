@@ -33,8 +33,8 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
     protected int currentDocNum;
 
     /**
-     * Constructs an UnorderedDistanceSpans for the given
-     * {@link SpanDistanceQuery}.
+     * Constructs UnorderedDistanceSpans for the given {@link SpanDistanceQuery}
+     * .
      * 
      * @param query a SpanDistanceQuery
      * @param context

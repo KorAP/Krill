@@ -20,7 +20,20 @@ import de.ids_mannheim.korap.query.spans.TermSpansWithId;
 /**
  * Enumeration of spans (e.g. element or relation spans) having some specific
  * attribute(s) or <em>not</em> having some attribute(s). It is necessary that
- * the spans have ids to be able to identify to which span an attribute belongs.
+ * the spans have ids to be able to identify to which span an attribute belongs. <br />
+ * <br />
+ * 
+ * In the example below, the SpanWithAttributeQuery retrieves
+ * <code>&lt;div&gt;</code> elements having attributes
+ * <code>@:class=header</code>.
+ * 
+ * <pre>
+ * SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(new Term(
+ *         &quot;tokens&quot;, &quot;@:class=header&quot;)), true);
+ * SpanWithAttributeQuery sq = new SpanWithAttributeQuery(new SpanElementQuery(
+ *         &quot;tokens&quot;, &quot;div&quot;), saq, true);
+ * </pre>
+ * 
  * 
  * @author margaretha
  */
@@ -68,7 +81,9 @@ public class SpanWithAttributeQuery extends SpanWithIdQuery {
         return type;
     }
 
-    /** Sets the type of the query based of the class of the firstClause / first span.
+    /**
+     * Sets the type of the query based of the class of the firstClause / first
+     * span.
      * 
      */
     public void setType() {

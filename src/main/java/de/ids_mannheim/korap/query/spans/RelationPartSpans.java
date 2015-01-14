@@ -37,7 +37,7 @@ public class RelationPartSpans extends RelationBaseSpans {
     private int window; // number of tokens as the window
 
     /**
-     * Creates a RelationPartSpans from the specified
+     * Constructs RelationPartSpans from the specified
      * {@link SpanRelationPartQuery}.
      * 
      * @param query a SpanRelationPartQuery

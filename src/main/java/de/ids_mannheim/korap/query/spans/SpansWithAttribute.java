@@ -36,7 +36,7 @@ public class SpansWithAttribute extends SpansWithId {
     protected Logger logger = LoggerFactory.getLogger(SpansWithAttribute.class);
 
     /**
-     * Creates a SpansWithAttribute from the given
+     * Constructs SpansWithAttribute from the given
      * {@link SpanWithAttributeQuery} and {@link SpansWithId}, such as
      * elementSpans and relationSpans.
      * 

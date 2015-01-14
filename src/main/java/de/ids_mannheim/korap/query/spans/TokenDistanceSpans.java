@@ -22,7 +22,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 public class TokenDistanceSpans extends OrderedDistanceSpans {
 
     /**
-     * Constructs a TokenDistanceSpans from the given query.
+     * Constructs TokenDistanceSpans from the given query.
      * 
      * @param query a SpanDistanceQuery
      * @param context

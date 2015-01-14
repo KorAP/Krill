@@ -27,7 +27,7 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
     protected int candidateListDocNum;
 
     /**
-     * Constructs an OrderedDistanceSpans based on the given SpanDistanceQuery.
+     * Constructs OrderedDistanceSpans based on the given SpanDistanceQuery.
      * 
      * @param query a SpanDistanceQuery
      * @param context

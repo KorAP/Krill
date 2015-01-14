@@ -27,7 +27,7 @@ public abstract class RelationBaseSpans extends SpansWithId {
     protected int rightStart, rightEnd;
 
     /**
-     * Create a RelationBaseSpans based on the given SpanWithIdQuery.
+     * Constructs RelationBaseSpans based on the given SpanWithIdQuery.
      * 
      * @param spanWithIdQuery a SpanWithIdQuery, for instance a
      *        {@link SpanElementQuery} or {@link SpanRelationQuery}.

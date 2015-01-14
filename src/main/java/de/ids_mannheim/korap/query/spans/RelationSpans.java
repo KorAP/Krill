@@ -54,7 +54,7 @@ public class RelationSpans extends RelationBaseSpans {
     private List<CandidateRelationSpan> candidateList;
 
     /**
-     * Creates a RelationSpans from the given {@link SpanRelationQuery}.
+     * Constructs RelationSpans from the given {@link SpanRelationQuery}.
      * 
      * @param relationSpanQuery a SpanRelationQuery
      * @param context

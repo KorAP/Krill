@@ -10,13 +10,21 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
+import de.ids_mannheim.korap.query.spans.SpansWithId;
 import de.ids_mannheim.korap.query.spans.TermSpansWithId;
 
 /**
- * SpanTermWithIdQuery wraps the normal SpanTermQuery and retrieves TermSpans
- * with a spanid. It is used in other spanqueries requiring spans with id as
- * their child spans, for example span relation with variable query (
+ * SpanTermWithIdQuery wraps a SpanTermQuery retrieving TermSpans and add a
+ * spanid to the TermSpans. It is used in other spanqueries requiring spans with
+ * id as their child spans, for example in span relation with variable query (
  * {@link SpanRelationPartQuery}).
+ * 
+ * <pre>
+ * SpanTermWithIdQuery sq = new SpanTermWithIdQuery(new Term("base","tt:p/NN"),true)
+ * </pre>
+ * 
+ * In this example, the SpanTermWithIdQuery retrieves {@link SpansWithId} for
+ * the Term "tt:p/NN".
  * 
  * @author margaretha
  * */

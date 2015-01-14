@@ -34,7 +34,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
     private List<CandidateSpan> elementList;
 
     /**
-     * Constructs an UnorderedElementDistanceSpans for the given
+     * Constructs UnorderedElementDistanceSpans for the given
      * {@link SpanDistanceQuery}.
      * 
      * @param query a SpanDistanceQuery
