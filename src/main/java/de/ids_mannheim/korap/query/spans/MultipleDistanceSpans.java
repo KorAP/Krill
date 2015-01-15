@@ -149,6 +149,8 @@ public class MultipleDistanceSpans extends DistanceSpans {
     }
 
     /**
+     * Sets the properties of the given span as the current match properties.
+     * 
      * @param span a DistanceSpan
      * @param exclusion <code>true</code> if the spans must <em>not</em> occur
      *        together, <code>false</code> otherwise.
