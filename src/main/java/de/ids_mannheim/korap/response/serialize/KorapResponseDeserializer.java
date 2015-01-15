@@ -4,15 +4,30 @@ import java.util.*;
 import java.io.*;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.DeserializationContext;
 
 import de.ids_mannheim.korap.response.KorapResponse;
 
+/**
+ * JSON Deserialization class for Jackson, used by KorapResponse.
+ * No direct usage intended.
+ *
+ * @author Nils Diewald
+ * @see de.ids_mannheim.korap.KorapResponse
+ */
 public class KorapResponseDeserializer extends JsonDeserializer<KorapResponse> {
- 
+
+    /**
+     * Deserialization of JSON format.
+     *
+     * @param parser A parser instance for consuming JSON.
+     * @param ctxt A deserialization context.
+     * @return The deserialized KorapResponse object.
+     */ 
+
     @Override
     public KorapResponse deserialize (JsonParser parser, DeserializationContext ctxt)
         throws IOException, JsonProcessingException {
@@ -27,7 +42,7 @@ public class KorapResponseDeserializer extends JsonDeserializer<KorapResponse> {
             // Is combined name and version
             if (found > 0 && (found + 1 < fullVersion.length())) {
                 kresp.setName(fullVersion.substring(0, found))
-                     .setVersion(fullVersion.substring(found + 1));
+                    .setVersion(fullVersion.substring(found + 1));
             }
             // Is only version number
             else {
@@ -36,9 +51,8 @@ public class KorapResponseDeserializer extends JsonDeserializer<KorapResponse> {
         };
 
         // Deserialize timeout information
-        if (node.has("timeExceeded") && node.get("timeExceeded").asBoolean()) {
+        if (node.has("timeExceeded") && node.get("timeExceeded").asBoolean())
             kresp.setTimeExceeded(true);
-        };
 
         // Deserialize benchmark information
         if (node.has("benchmark"))

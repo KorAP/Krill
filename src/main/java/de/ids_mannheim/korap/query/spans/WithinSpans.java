@@ -25,7 +25,7 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
 /**
  * Compare two spans and check how they relate positionally.
  *
- * @author Nils Diewald
+ * @author diewald
  */
 public class WithinSpans extends Spans {
 

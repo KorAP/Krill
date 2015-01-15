@@ -34,35 +34,37 @@ public class Messages implements Cloneable, Iterable<Message> {
 
     // Private class for iterator implementation
     private class MessageIterator implements Iterator<Message> {
-	int index;
+        int index;
 
-	// Constructor
+        // Constructor
         public MessageIterator () {
             this.index = 0;
         };
 
         @Override
-	public boolean hasNext () {
+        public boolean hasNext () {
             return this.index < messages.size();
         };
 
         @Override
-	public Message next () {
+        public Message next () {
             return messages.get(this.index++);
         };
 
         @Override
         public void remove () {
-	    messages.remove(this.index);
+            messages.remove(this.index);
         };
     };
+
 
     /**
      * Construct a new Messages object.
      */
     public Messages () {
-	this.messages = new ArrayList<Message>(3);
+        this.messages = new ArrayList<Message>(3);
     };
+
 
     /**
      * Get the iterator object.
@@ -73,6 +75,7 @@ public class Messages implements Cloneable, Iterable<Message> {
         return new MessageIterator();
     };
 
+
     /**
      * Append a new message.
      *
@@ -82,15 +85,16 @@ public class Messages implements Cloneable, Iterable<Message> {
      * @return New Message object
      */
     public Message add (int code,
-			String message,
-			String ... terms) {
-	Message newMsg = new Message(code, message);
-	messages.add(newMsg);
-	if (terms != null)
-	    for (String t : terms)
-		newMsg.addParameter(t);
-	return newMsg;
+                        String message,
+                        String ... terms) {
+        Message newMsg = new Message(code, message);
+        messages.add(newMsg);
+        if (terms != null)
+            for (String t : terms)
+                newMsg.addParameter(t);
+        return newMsg;
     };
+
 
     /**
      * Append an existing message.
@@ -99,14 +103,14 @@ public class Messages implements Cloneable, Iterable<Message> {
      * @return Cloned Message object
      */
     public Message add (Message msg) {
-	try {
-	    Message msgClone = (Message) msg.clone();
-	    messages.add(msgClone);
-	    return msgClone;
-	}
-	catch (CloneNotSupportedException e) {
-	};
-	return (Message) null;
+        try {
+            Message msgClone = (Message) msg.clone();
+            messages.add(msgClone);
+            return msgClone;
+        }
+        catch (CloneNotSupportedException e) {
+        };
+        return (Message) null;
     };
 
     /**
@@ -117,34 +121,34 @@ public class Messages implements Cloneable, Iterable<Message> {
      * @throws QueryException if notification is not well formed (Error 750)
      */
     public Message add (JsonNode msg) throws QueryException {
-	if (!msg.isArray() || !msg.has(0))
-	    throw new QueryException(
-	        750, "Passed notifications are not well formed"
-	    );
+        if (!msg.isArray() || !msg.has(0))
+            throw new QueryException(
+                750, "Passed notifications are not well formed"
+            );
 
-	// Valid message
-	Message newMsg = new Message();
-	short i = 1;
-	if (msg.get(0).isNumber()) {
-	    newMsg.setCode(msg.get(0).asInt());
-	    if (!msg.has(1))
-		throw new QueryException(
-	            750, "Passed notifications are not well formed"
-	        );
-	    newMsg.setMessage(msg.get(1).asText());
-	    i++;
-	}
-	else {
-	    newMsg.setMessage(msg.get(0).asText());
-	};
+        // Valid message
+        Message newMsg = new Message();
+        short i = 1;
+        if (msg.get(0).isNumber()) {
+            newMsg.setCode(msg.get(0).asInt());
+            if (!msg.has(1))
+                throw new QueryException(
+                    750, "Passed notifications are not well formed"
+	            );
+            newMsg.setMessage(msg.get(1).asText());
+            i++;
+        }
+        else {
+            newMsg.setMessage(msg.get(0).asText());
+        };
 
-	// Add parameters
-	while (msg.has(i))
-	    newMsg.addParameter(msg.get(i++).asText());
-
-	// Add messages to list
-	this.add(newMsg);
-	return newMsg;
+        // Add parameters
+        while (msg.has(i))
+            newMsg.addParameter(msg.get(i++).asText());
+        
+        // Add messages to list
+        this.add(newMsg);
+        return newMsg;
     };
 
 
@@ -155,14 +159,15 @@ public class Messages implements Cloneable, Iterable<Message> {
      * @return Messages object for chaining.
      */
     public Messages add (Messages msgs) {
-	try {
-	    for (Message msg : msgs.getMessages())
-		this.add((Message) msg.clone());
-	}
-	catch (CloneNotSupportedException e) {
-	};
-	return this;
+        try {
+            for (Message msg : msgs.getMessages())
+                this.add((Message) msg.clone());
+        }
+        catch (CloneNotSupportedException e) {
+        };
+        return this;
     };
+
 
     /**
      * Clear all messages.
@@ -170,9 +175,10 @@ public class Messages implements Cloneable, Iterable<Message> {
      * @return Messages object for chaining
      */
     public Messages clear () {
-	this.messages.clear();
-	return this;
+        this.messages.clear();
+        return this;
     };
+
 
     /**
      * Get the number of the messages.
@@ -180,7 +186,7 @@ public class Messages implements Cloneable, Iterable<Message> {
      * @param Integer representing the number of messages in the list.
      */
     public int size () {
-	return this.messages.size();
+        return this.messages.size();
     };
 
 
@@ -192,10 +198,11 @@ public class Messages implements Cloneable, Iterable<Message> {
      */
     @JsonIgnore
     public Message get (int index) {
-	if (index >= this.size())
-	    return (Message) null;
-	return this.messages.get(index);
+        if (index >= this.size())
+            return (Message) null;
+        return this.messages.get(index);
     };
+
 
     /**
      * Return all messages.
@@ -204,7 +211,7 @@ public class Messages implements Cloneable, Iterable<Message> {
      */
     @JsonIgnore
     public List<Message> getMessages () {
-	return this.messages;
+        return this.messages;
     };
 
 
@@ -215,13 +222,14 @@ public class Messages implements Cloneable, Iterable<Message> {
      * @throws CloneNotSupportedException if messages can't be cloned
      */
     public Object clone () throws CloneNotSupportedException {
-	Messages clone = new Messages();
-	for (Message m : this.messages) {
-	    clone.add((Message) m.clone());
-	};
+        Messages clone = new Messages();
+        for (Message m : this.messages) {
+            clone.add((Message) m.clone());
+        };
 
-	return clone;
+        return clone;
     };
+
 
     /**
      * Serialize Messages as a JsonNode.
@@ -229,10 +237,10 @@ public class Messages implements Cloneable, Iterable<Message> {
      * @return JsonNode representation of all messages
      */
     public JsonNode toJsonNode () {
-	ArrayNode messageArray = mapper.createArrayNode();
-	for (Message msg : this.messages)
-	    messageArray.add(msg.toJsonNode());
-	return (JsonNode) messageArray;
+        ArrayNode messageArray = mapper.createArrayNode();
+        for (Message msg : this.messages)
+            messageArray.add(msg.toJsonNode());
+        return (JsonNode) messageArray;
     };
 
 
@@ -249,17 +257,17 @@ public class Messages implements Cloneable, Iterable<Message> {
      * @return String representation of all messages
      */
     public String toJsonString () {
-	String msg = "";
-	try {
-	    return mapper.writeValueAsString(this.toJsonNode());
-	}
-	catch (Exception e) {
-	    // Bad in case the message contains quotes!
-	    msg = ", \"" + e.getLocalizedMessage() + "\"";
-	};
+        String msg = "";
+        try {
+            return mapper.writeValueAsString(this.toJsonNode());
+        }
+        catch (Exception e) {
+            // Bad in case the message contains quotes!
+            msg = ", \"" + e.getLocalizedMessage() + "\"";
+        };
 
-	return
-	    "[620, " +
-	    "\"Unable to generate JSON\"" + msg + "]";
+        return
+            "[620, " +
+            "\"Unable to generate JSON\"" + msg + "]";
     };
 };

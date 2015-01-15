@@ -22,7 +22,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
  * paragraphs.
  * 
  * @author margaretha
- * @author Nils Diewald
+ * @author diewald
  */
 public class ElementSpans extends SpansWithId {
 

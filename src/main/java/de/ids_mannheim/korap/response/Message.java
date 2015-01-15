@@ -29,6 +29,7 @@ public class Message implements Cloneable {
     private int code = 0;
     private LinkedList<String> parameters;
 
+
     /**
      * Construct a new message object.
      *
@@ -37,8 +38,8 @@ public class Message implements Cloneable {
      * @return The new message object
      */
     public Message (int code, String msg) {
-	this.code = code;
-	this.msg  = msg;
+        this.code = code;
+        this.msg  = msg;
     };
 
     /**
@@ -48,17 +49,6 @@ public class Message implements Cloneable {
      */
     public Message () {};
 
-    /**
-     * Set the string representation of the message.
-     *
-     * @param msg String representation of the message
-     * @return Message object for chaining
-     */
-    @JsonIgnore
-    public Message setMessage (String msg) {
-	this.msg = msg;
-	return this;
-    };
 
     /**
      * Return the string representation of the message.
@@ -67,8 +57,34 @@ public class Message implements Cloneable {
      */
     @JsonIgnore
     public String getMessage () {
-	return this.msg;
+        return this.msg;
     };
+
+
+    /**
+     * Set the string representation of the message.
+     *
+     * @param msg String representation of the message
+     * @return Message object for chaining
+     */
+    @JsonIgnore
+    public Message setMessage (String msg) {
+        this.msg = msg;
+        return this;
+    };
+
+
+    /**
+     * Return the integer code representation of the message.
+     *
+     * @return Integer code representation of the message
+     */
+    @JsonIgnore
+    public int getCode () {
+        return this.code;
+    };
+
+
 
     /**
      * Set the integer representation of the message.
@@ -78,18 +94,8 @@ public class Message implements Cloneable {
      */
     @JsonIgnore
     public Message setCode (int code) {
-	this.code = code;
-	return this;
-    };
-
-    /**
-     * Return the integer code representation of the message.
-     *
-     * @return Integer code representation of the message
-     */
-    @JsonIgnore
-    public int getCode () {
-	return this.code;
+        this.code = code;
+        return this;
     };
 
 
@@ -99,11 +105,12 @@ public class Message implements Cloneable {
      * @return Message object for chaining
      */
     public Message addParameter (String param) {
-	if (this.parameters == null)
-	    this.parameters = new LinkedList<String>();
-	this.parameters.add(param);
-	return this;
+        if (this.parameters == null)
+            this.parameters = new LinkedList<String>();
+        this.parameters.add(param);
+        return this;
     };
+
 
     /**
      * Create a clone of the Message.
@@ -112,23 +119,23 @@ public class Message implements Cloneable {
      * @throws CloneNotSupportedException if message can't be cloned
      */
     public Object clone () throws CloneNotSupportedException {
-	Message clone = new Message();
+        Message clone = new Message();
 
-	// Copy message string
-	if (this.msg != null)
-	    clone.msg = this.msg;
+        // Copy message string
+        if (this.msg != null)
+            clone.msg = this.msg;
 
-	// Copy message code
-	clone.code = this.code;
+        // Copy message code
+        clone.code = this.code;
+        
+        // Copy parameters
+        if (this.parameters != null) {
+            for (String p : this.parameters) {
+                clone.addParameter(p);
+            };
+        };
 
-	// Copy parameters
-	if (this.parameters != null) {
-	    for (String p : this.parameters) {
-		clone.addParameter(p);
-	    };
-	};
-
-	return clone;
+        return clone;
     };
 
     /**
@@ -137,16 +144,16 @@ public class Message implements Cloneable {
      * @return JsonNode representation of the message
      */
     public JsonNode toJsonNode () {
-	ArrayNode message = mapper.createArrayNode();
+        ArrayNode message = mapper.createArrayNode();
 
-	if (this.code != 0)
-	    message.add(this.getCode());
-
-	message.add(this.getMessage());
-	if (parameters != null)
-	    for (String p : parameters)
-		message.add(p);
-	return (JsonNode) message;
+        if (this.code != 0)
+            message.add(this.getCode());
+        
+        message.add(this.getMessage());
+        if (parameters != null)
+            for (String p : parameters)
+                message.add(p);
+        return (JsonNode) message;
     };
 
 
@@ -160,16 +167,16 @@ public class Message implements Cloneable {
      * @return String representation of the message
      */
     public String toJsonString () {
-	String msg = "";
-	try {
-	    return mapper.writeValueAsString(this.toJsonNode());
-	}
-	catch (Exception e) {
-	    // Bad in case the message contains quotes!
-	    msg = ", \"" + e.getLocalizedMessage() + "\"";
-	};
-	return
-	    "[620, " +
-	    "\"Unable to generate JSON\"" + msg + "]";
+        String msg = "";
+        try {
+            return mapper.writeValueAsString(this.toJsonNode());
+        }
+        catch (Exception e) {
+            // Bad in case the message contains quotes!
+            msg = ", \"" + e.getLocalizedMessage() + "\"";
+        };
+        return
+            "[620, " +
+            "\"Unable to generate JSON\"" + msg + "]";
     };
 };

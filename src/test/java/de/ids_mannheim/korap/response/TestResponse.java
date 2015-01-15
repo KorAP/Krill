@@ -131,18 +131,25 @@ public class TestResponse {
         assertTrue(kresp.hasTimeExceeded());
         assertTrue(kresp.hasWarnings());
 
-
         jsonResponse = "{\"warnings\":[[123,\"This is a warning\"]," +
             "[124,\"This is a second warning\"]],"+
-            "\"error\":[[125,\"This is a single error\"]], "+
+            "\"errors\":[[125,\"This is a single error\"]], "+
             " \"node\":\"tanja\", \"version\":\"seaweed-0.49\", " +
             " \"benchmark\":\"40.5s\",  \"listener\":\"10.0.10.14:678\"," +
             "\"timeExceeded\":true }";
         kresp = mapper.readValue(jsonResponse, KorapResponse.class);
-
-        /*
-{,"version":"seaweed-0.49","timeExceeded":true,"node":"tanja","listener":"10.0.10.14:678","benchmark":"40.5s"}
-        */
-        // System.err.println(kresp.toJsonString());
+        assertTrue(kresp.hasWarnings());
+        assertTrue(kresp.hasErrors());
+        assertFalse(kresp.hasMessages());
+        assertEquals(kresp.getError(0).getMessage(), "This is a single error");
+        assertEquals(kresp.getWarning(0).getMessage(), "Response time exceeded");
+        assertEquals(kresp.getWarning(1).getMessage(), "This is a warning");
+        assertEquals(kresp.getWarning(2).getMessage(), "This is a second warning");
+        assertEquals("0.49", kresp.getVersion());
+        assertEquals("seaweed", kresp.getName());
+        assertEquals("40.5s", kresp.getBenchmark());
+        assertEquals("10.0.10.14:678", kresp.getListener());
+        assertEquals("tanja", kresp.getNode());
+        assertTrue(kresp.hasTimeExceeded());
     };
 };

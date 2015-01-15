@@ -1,11 +1,5 @@
 package de.ids_mannheim.korap.query;
 
-// Based on SpanNearQuery
-
-/*
- * Todo: Make one Spanarray and switch between the results of A and B.
- */
-
 import java.io.IOException;
 import java.util.Map;
 
@@ -22,6 +16,11 @@ import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.NextSpans;
 
+/*
+ * Based on SpanNearQuery
+ * Todo: Make one Spanarray and switch between the results of A and B.
+ */
+
 /**
  * SpanNextQuery matches two spans which are directly next to each other. It is
  * identical to a phrase query with exactly two clauses.
@@ -37,7 +36,8 @@ import de.ids_mannheim.korap.query.spans.NextSpans;
  *      new SpanTermQuery(new Term(&quot;tokens&quot;, &quot;s:off&quot;)));
  * </pre>
  * 
- * @author diewald, margaretha
+ * @author diewald
+ * @author margaretha
  * 
  */
 public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {

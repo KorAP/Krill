@@ -58,8 +58,8 @@ public class KorapCollection extends Notifications {
     public static final boolean DEBUG = false;
 
     public KorapCollection (KorapIndex ki) {
-	this.index = ki;
-	this.filter = new ArrayList<FilterOperation>(5);
+        this.index = ki;
+        this.filter = new ArrayList<FilterOperation>(5);
     };
 
     /**
@@ -68,60 +68,60 @@ public class KorapCollection extends Notifications {
      * legacy collections with the key "collections".
      */
     public KorapCollection (String jsonString) {
-	ObjectMapper mapper = new ObjectMapper();
-	this.filter = new ArrayList<FilterOperation>(5);
+        ObjectMapper mapper = new ObjectMapper();
+        this.filter = new ArrayList<FilterOperation>(5);
 
-	try {
-	    JsonNode json = mapper.readTree(jsonString);
+        try {
+            JsonNode json = mapper.readTree(jsonString);
 
-	    if (json.has("collection")) {
-		this.fromJSON(json.get("collection"));
-	    }
+            if (json.has("collection")) {
+                this.fromJSON(json.get("collection"));
+            }
 	    
-	    // Legacy collection serialization
-	    // This will be removed!
-	    else if (json.has("collections")) {
-		this.addMessage(
-		    850,
-		    "Collections are deprecated in favour of a single collection"
+            // Legacy collection serialization
+            // This will be removed!
+            else if (json.has("collections")) {
+                this.addMessage(
+                    850,
+                    "Collections are deprecated in favour of a single collection"
                 );
-		for (JsonNode collection : json.get("collections")) {
-		    this.fromJSONLegacy(collection);
-		};
-	    };
-	}
-	catch (QueryException qe) {
-	    this.addError(qe.getErrorCode(),qe.getMessage());
-	}
-	catch (IOException e) {
-	    this.addError(
-	        621,
-		"Unable to parse JSON",
-		"KorapCollection",
-		e.getLocalizedMessage()
-	    );
-	};
+                for (JsonNode collection : json.get("collections")) {
+                    this.fromJSONLegacy(collection);
+                };
+            };
+        }
+        catch (QueryException qe) {
+            this.addError(qe.getErrorCode(),qe.getMessage());
+        }
+        catch (IOException e) {
+            this.addError(
+                621,
+                "Unable to parse JSON",
+                "KorapCollection",
+                e.getLocalizedMessage()
+            );
+        };
     };
 
 
     public KorapCollection () {
-	this.filter = new ArrayList<FilterOperation>(5);
+        this.filter = new ArrayList<FilterOperation>(5);
     };
 
 
     public void fromJSON (String jsonString) throws QueryException {
-	ObjectMapper mapper = new ObjectMapper();
-	try {
-	    this.fromJSON((JsonNode) mapper.readTree(jsonString));
-	}
-	catch (Exception e) {
-	    this.addError(621, "Unable to parse JSON", "KorapCollection");
-	};
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            this.fromJSON((JsonNode) mapper.readTree(jsonString));
+        }
+        catch (Exception e) {
+            this.addError(621, "Unable to parse JSON", "KorapCollection");
+        };
     };
 
 
     public void fromJSON (JsonNode json) throws QueryException {
-	this.filter(new KorapFilter(json));
+        this.filter(new KorapFilter(json));
     };
 
 
@@ -129,13 +129,13 @@ public class KorapCollection extends Notifications {
      * Legacy API for collection filters.
      */
     public void fromJSONLegacy (String jsonString) throws QueryException {
-	ObjectMapper mapper = new ObjectMapper();
-	try {
-	    this.fromJSONLegacy((JsonNode) mapper.readValue(jsonString, JsonNode.class));
-	}
-	catch (Exception e) {
-	    this.addError(621, "Unable to parse JSON", "KorapCollection");
-	};
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            this.fromJSONLegacy((JsonNode) mapper.readValue(jsonString, JsonNode.class));
+        }
+        catch (Exception e) {
+            this.addError(621, "Unable to parse JSON", "KorapCollection");
+        };
     };
 
 
@@ -143,112 +143,110 @@ public class KorapCollection extends Notifications {
      * Legacy API for collection filters.
      */
     public void fromJSONLegacy (JsonNode json) throws QueryException {
-	if (!json.has("@type"))
-	    throw new QueryException(701, "JSON-LD group has no @type attribute");
+        if (!json.has("@type"))
+            throw new QueryException(701, "JSON-LD group has no @type attribute");
 
-	if (!json.has("@value"))
-	    throw new QueryException(851, "Legacy filter need @value fields");
+        if (!json.has("@value"))
+            throw new QueryException(851, "Legacy filter need @value fields");
 
-	String type = json.get("@type").asText();
+        String type = json.get("@type").asText();
 
-	KorapFilter kf = new KorapFilter();
-	kf.setBooleanFilter(
-            kf.fromJSONLegacy(json.get("@value"), "tokens")
-	);
-	if (type.equals("korap:meta-filter")) {
-	    if (DEBUG)
-		log.trace("Add Filter LEGACY");
-	    this.filter(kf);
-	}
+        KorapFilter kf = new KorapFilter();
+        kf.setBooleanFilter(kf.fromJSONLegacy(json.get("@value"), "tokens"));
+        if (type.equals("korap:meta-filter")) {
+            if (DEBUG)
+                log.trace("Add Filter LEGACY");
+            this.filter(kf);
+        }
 
-	else if (type.equals("korap:meta-extend")) {
-	    if (DEBUG)
-		log.trace("Add Extend LEGACY");
-	    this.extend(kf);
-	};
+        else if (type.equals("korap:meta-extend")) {
+            if (DEBUG)
+                log.trace("Add Extend LEGACY");
+            this.extend(kf);
+        };
     };
 
     public int getCount() {
-	return this.filterCount;
+        return this.filterCount;
     };
 
     public void setIndex (KorapIndex ki) {
-	this.index = ki;
+        this.index = ki;
     };
 
     // The checks asre not necessary
     public KorapCollection filter (BooleanFilter filter) {
-	if (DEBUG)
-	    log.trace("Added filter: {}", filter.toString());
+        if (DEBUG)
+            log.trace("Added filter: {}", filter.toString());
+        
+        if (filter == null) {
+            this.addWarning(830, "Filter was empty");
+            return this;
+        };
 
-	if (filter == null) {
-	    this.addWarning(830, "Filter was empty");
-	    return this;
-	};
-
-	Filter f = (Filter) new QueryWrapperFilter(filter.toQuery());
-	if (f == null) {
-	    this.addWarning(831, "Filter is not wrappable");
-	    return this;
-	};
-	FilterOperation fo = new FilterOperation(f, false);
-	if (fo == null) {
-	    this.addWarning(832, "Filter operation is invalid");
-	    return this;
-	};
-	this.filter.add(fo);
-	this.filterCount++;
-	return this;
+        Filter f = (Filter) new QueryWrapperFilter(filter.toQuery());
+        if (f == null) {
+            this.addWarning(831, "Filter is not wrappable");
+            return this;
+        };
+        FilterOperation fo = new FilterOperation(f, false);
+        if (fo == null) {
+            this.addWarning(832, "Filter operation is invalid");
+            return this;
+        };
+        this.filter.add(fo);
+        this.filterCount++;
+        return this;
     };
 
     // Filter based on UIDs
     public KorapCollection filterUIDs (String ... uids) {
-	BooleanFilter filter = new BooleanFilter();
-	filter.or("UID", uids);
-	if (DEBUG)
-	    log.debug("UID based filter: {}", filter.toString());
-	return this.filter(filter);
+        BooleanFilter filter = new BooleanFilter();
+        filter.or("UID", uids);
+        if (DEBUG)
+            log.debug("UID based filter: {}", filter.toString());
+        return this.filter(filter);
     };
 
 
     public KorapCollection filter (KorapFilter filter) {
-	return this.filter(filter.getBooleanFilter());
+        return this.filter(filter.getBooleanFilter());
     };
 
 
     public KorapCollection extend (BooleanFilter filter) {
-	if (DEBUG)
-	    log.trace("Added extension: {}", filter.toString());
-	this.filter.add(
-	    new FilterOperation(
-		(Filter) new QueryWrapperFilter(filter.toQuery()),
+        if (DEBUG)
+            log.trace("Added extension: {}", filter.toString());
+        this.filter.add(
+            new FilterOperation(
+                (Filter) new QueryWrapperFilter(filter.toQuery()),
                 true
             )
         );
-	this.filterCount++;
-	return this;
+        this.filterCount++;
+        return this;
     };
 
     public KorapCollection extend (KorapFilter filter) {
-	return this.extend(filter.getBooleanFilter());
+        return this.extend(filter.getBooleanFilter());
     };
 
     
     public ArrayList<FilterOperation> getFilters () {
-	return this.filter;
+        return this.filter;
     };
 
     public FilterOperation getFilter (int i) {
-	return this.filter.get(i);
+        return this.filter.get(i);
     };
 
 
     public String toString () {
-	StringBuilder sb = new StringBuilder();
-	for (FilterOperation fo : this.filter) {
-	    sb.append(fo.toString()).append("; ");
-	};
-	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        for (FilterOperation fo : this.filter) {
+            sb.append(fo.toString()).append("; ");
+        };
+        return sb.toString();
     };
 
     /**
@@ -256,178 +254,174 @@ public class KorapCollection extends Notifications {
      * testing purposes and not recommended for serious usage. 
      */
     public KorapResult search (SpanQuery query) {
-	return this.index.search(
+        return this.index.search(
             this,
-	    query,
-	    0,
-	    (short) 20,
-	    true, (short) 5,
-	    true, (short) 5
-	);
+            query,
+            0,
+            (short) 20,
+            true, (short) 5,
+            true, (short) 5
+        );
     };
 
     public FixedBitSet bits (AtomicReaderContext atomic) throws IOException  {
+        /*
+          Use Bits.MatchAllBits(int len)
+        */
+        boolean noDoc = true;
+        FixedBitSet bitset;
 
-	/*
-	  Use Bits.MatchAllBits(int len)
-	*/
+        if (this.filterCount > 0) {
+            bitset = new FixedBitSet(atomic.reader().maxDoc());
 
-	boolean noDoc = true;
-	FixedBitSet bitset;
+            ArrayList<FilterOperation> filters = (ArrayList<FilterOperation>) this.filter.clone();
 
-	if (this.filterCount > 0) {
-	    bitset = new FixedBitSet(atomic.reader().maxDoc());
+            FilterOperation kcInit = filters.remove(0);
+            if (DEBUG)
+                log.trace("FILTER: {}", kcInit);
 
-	    ArrayList<FilterOperation> filters = (ArrayList<FilterOperation>) this.filter.clone();
+            // Init vector
+            DocIdSet docids = kcInit.filter.getDocIdSet(atomic, null);
 
-	    FilterOperation kcInit = filters.remove(0);
-	    if (DEBUG)
-		log.trace("FILTER: {}", kcInit);
+            DocIdSetIterator filterIter = docids.iterator();
 
-	    // Init vector
-	    DocIdSet docids = kcInit.filter.getDocIdSet(atomic, null);
+            if (filterIter != null) {
+                if (DEBUG)
+                    log.trace("InitFilter has effect");
+                bitset.or(filterIter);
+                noDoc = false;
+            };
 
-	    DocIdSetIterator filterIter = docids.iterator();
+            if (!noDoc) {
+                for (FilterOperation kc : filters) {
+                    if (DEBUG)
+                        log.trace("FILTER: {}", kc);
 
-	    if (filterIter != null) {
-		if (DEBUG)
-		    log.trace("InitFilter has effect");
-		bitset.or(filterIter);
-		noDoc = false;
-	    };
+                    // TODO: BUG!!!!!!!!!!
+                    docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null : bitset);
+                    filterIter = docids.iterator();
 
-	    if (!noDoc) {
-		for (FilterOperation kc : filters) {
-		    if (DEBUG)
-			log.trace("FILTER: {}", kc);
+                    if (filterIter == null) {
+                        // There must be a better way ...
+                        if (kc.isFilter()) {
+                            // TODO: Check if this is really correct!
+                            // Maybe here is the bug
+                            bitset.clear(0, bitset.length());
+                            noDoc = true;
+                        }
+                        else {
+                            // System.err.println("No term found");
+                        };
+                        continue;
+                    };
+                    if (kc.isExtension()) {
+                        // System.err.println("Term found!");
+                        // System.err.println("Old Card:" + bitset.cardinality());
+                        bitset.or(filterIter);
+                        // System.err.println("New Card:" + bitset.cardinality());
+                    }
+                    else {
+                        bitset.and(filterIter);
+                    };
+                };
 
-		    // TODO: BUG!!!!!!!!!!
-		    docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null : bitset);
-		    filterIter = docids.iterator();
+                if (!noDoc) {
+                    FixedBitSet livedocs = (FixedBitSet) atomic.reader().getLiveDocs();
+                    if (livedocs != null) {
+                        bitset.and(livedocs);
+                    };
+                };
+            }
+            else {
+                return bitset;
+            };
+        }
+        else {
+            bitset = (FixedBitSet) atomic.reader().getLiveDocs();
+        };
 
-		    if (filterIter == null) {
-			// There must be a better way ...
-			if (kc.isFilter()) {
-			    // TODO: Check if this is really correct!
-			    // Maybe here is the bug
-			    bitset.clear(0, bitset.length());
-			    noDoc = true;
-			}
-			else {
-			    // System.err.println("No term found");
-			};
-			continue;
-		    };
-		    if (kc.isExtension()) {
-			// System.err.println("Term found!");
-			// System.err.println("Old Card:" + bitset.cardinality());
-			bitset.or(filterIter);
-			// System.err.println("New Card:" + bitset.cardinality());
-		    }
-		    else {
-			bitset.and(filterIter);
-		    };
-		};
-
-		if (!noDoc) {
-		    FixedBitSet livedocs = (FixedBitSet) atomic.reader().getLiveDocs();
-		    if (livedocs != null) {
-			bitset.and(livedocs);
-		    };
-		};
-	    }
-	    else {
-		return bitset;
-	    };
-	}
-	else {
-	    bitset = (FixedBitSet) atomic.reader().getLiveDocs();
-	};
-
-	return bitset;
+        return bitset;
     };
 
     public long numberOf (String foundry, String type) throws IOException {
-	if (this.index == null)
-	    return (long) -1;
+        if (this.index == null)
+            return (long) -1;
 
-	return this.index.numberOf(this, foundry, type);
+        return this.index.numberOf(this, foundry, type);
     };
 
     public long numberOf (String type) throws IOException {
-	if (this.index == null)
-	    return (long) -1;
-
-	return this.index.numberOf(this, "tokens", type);
+        if (this.index == null)
+            return (long) -1;
+        
+        return this.index.numberOf(this, "tokens", type);
     };
 
     // This is only for testing purposes!
     @Deprecated
     public HashMap getTermRelation(String field) throws Exception {
-	if (this.index == null) {
-	    HashMap<String,Long> map = new HashMap<>(1);
-	    map.put("-docs", (long) 0);
-	    return map;
-	};
+        if (this.index == null) {
+            HashMap<String,Long> map = new HashMap<>(1);
+            map.put("-docs", (long) 0);
+            return map;
+        };
 
-	return this.index.getTermRelation(this, field);
+        return this.index.getTermRelation(this, field);
     };
 
     @Deprecated
     public String getTermRelationJSON(String field) throws IOException {
-	ObjectMapper mapper = new ObjectMapper();
-	StringWriter sw = new StringWriter();
-	sw.append("{\"field\":");
-	mapper.writeValue(sw,field);
-	sw.append(",");
+        ObjectMapper mapper = new ObjectMapper();
+        StringWriter sw = new StringWriter();
+        sw.append("{\"field\":");
+        mapper.writeValue(sw,field);
+        sw.append(",");
 
-	try {
-	    HashMap<String, Long> map = this.getTermRelation(field);
+        try {
+            HashMap<String, Long> map = this.getTermRelation(field);
 
-	    sw.append("\"documents\":");
-	    mapper.writeValue(sw,map.remove("-docs"));
-	    sw.append(",");
+            sw.append("\"documents\":");
+            mapper.writeValue(sw,map.remove("-docs"));
+            sw.append(",");
 
-	    String[] keys = map.keySet().toArray(new String[map.size()]);
+            String[] keys = map.keySet().toArray(new String[map.size()]);
 
-	    HashMap<String,Integer> setHash = new HashMap<>(20);
-	    ArrayList<HashMap<String,Long>> set = new ArrayList<>(20);
-	    ArrayList<Long[]> overlap = new ArrayList<>(100);
+            HashMap<String,Integer> setHash = new HashMap<>(20);
+            ArrayList<HashMap<String,Long>> set = new ArrayList<>(20);
+            ArrayList<Long[]> overlap = new ArrayList<>(100);
 	    
-	    int count = 0;
-	    for (String key : keys) {
-		if (!key.startsWith("#__")) {
-		    HashMap<String,Long> simpleMap = new HashMap<>();
-		    simpleMap.put(key, map.remove(key));
-		    set.add(simpleMap);
-		    setHash.put(key, count++);
-		};
-	    };
+            int count = 0;
+            for (String key : keys) {
+                if (!key.startsWith("#__")) {
+                    HashMap<String,Long> simpleMap = new HashMap<>();
+                    simpleMap.put(key, map.remove(key));
+                    set.add(simpleMap);
+                    setHash.put(key, count++);
+                };
+            };
 
-	    keys = map.keySet().toArray(new String[map.size()]);
-	    for (String key : keys) {
-		String[] comb = key.substring(3).split(":###:");
-		Long[] l = new Long[3];
-		l[0] = (long) setHash.get(comb[0]);
-		l[1] = (long) setHash.get(comb[1]);
-		l[2] = map.remove(key);
-		overlap.add(l);
-	    };
+            keys = map.keySet().toArray(new String[map.size()]);
+            for (String key : keys) {
+                String[] comb = key.substring(3).split(":###:");
+                Long[] l = new Long[3];
+                l[0] = (long) setHash.get(comb[0]);
+                l[1] = (long) setHash.get(comb[1]);
+                l[2] = map.remove(key);
+                overlap.add(l);
+            };
 
-	    
-	    sw.append("\"sets\":");
-	    mapper.writeValue(sw, (Object) set);
-	    sw.append(",\"overlaps\":");
-	    mapper.writeValue(sw, (Object) overlap);
-	    sw.append(",\"error\":null");
+            sw.append("\"sets\":");
+            mapper.writeValue(sw, (Object) set);
+            sw.append(",\"overlaps\":");
+            mapper.writeValue(sw, (Object) overlap);
+            sw.append(",\"error\":null");
+        }
+        catch (Exception e) {
+            sw.append("\"error\":");
+            mapper.writeValue(sw,e.getMessage());
+        };
 
-	}
-	catch (Exception e) {
-	    sw.append("\"error\":");
-	    mapper.writeValue(sw,e.getMessage());
-	};
-
-	sw.append("}");
-	return sw.getBuffer().toString();
+        sw.append("}");
+        return sw.getBuffer().toString();
     };
 };

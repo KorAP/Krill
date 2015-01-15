@@ -41,7 +41,7 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  * 
  * </ul>
  * 
- * @author Nils Diewald
+ * @author diewald
  * @author margaretha
  */
 public class SpanElementQuery extends SpanWithIdQuery {

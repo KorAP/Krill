@@ -25,6 +25,7 @@ import de.ids_mannheim.korap.response.serialize.KorapResponseDeserializer;
  *
  * @author Nils Diewald
  * @see de.ids_mannheim.korap.response.Notifications
+ * @see de.ids_mannheim.korap.response.serialize.KorapResponseDeserializer
  */
 @JsonDeserialize(using = KorapResponseDeserializer.class)
 public class KorapResponse extends Notifications {
@@ -34,12 +35,24 @@ public class KorapResponse extends Notifications {
     private String benchmark;
     private boolean timeExceeded = false;
 
+
     /**
      * Construct a new KorapResponse object.
      *
      * @return The new KorapResponse object
      */
     public KorapResponse () {};
+
+
+    /**
+     * Get string representation of the backend's version.
+     *
+     * @return String representation of the backend's version
+     */
+    @JsonIgnore
+    public String getVersion () {
+        return this.version;
+    };
 
 
     /**
@@ -56,13 +69,14 @@ public class KorapResponse extends Notifications {
 
 
     /**
-     * Get string representation of the backend's version.
+     * Get string representation of the backend's name.
+     * All nodes in a cluster should have the same backend name.
      *
-     * @return String representation of the backend's version
+     * @return String representation of the backend's name
      */
     @JsonIgnore
-    public String getVersion () {
-        return this.version;
+    public String getName () {
+        return this.name;
     };
 
 
@@ -81,14 +95,14 @@ public class KorapResponse extends Notifications {
 
 
     /**
-     * Get string representation of the backend's name.
-     * All nodes in a cluster should have the same backend name.
+     * Get string representation of the node's name.
+     * Each node in a cluster has a unique name.
      *
-     * @return String representation of the backend's name
+     * @return String representation of the node's name
      */
     @JsonIgnore
-    public String getName () {
-        return this.name;
+    public String getNode () {
+        return this.node;
     };
 
 
@@ -107,14 +121,14 @@ public class KorapResponse extends Notifications {
 
 
     /**
-     * Get string representation of the node's name.
-     * Each node in a cluster has a unique name.
+     * Check if the response time was exceeded.
      *
-     * @return String representation of the node's name
+     * @return <tt>true</tt> in case the response had a timeout,
+     *         otherwise <tt>false</tt>
      */
     @JsonIgnore
-    public String getNode () {
-        return this.node;
+    public boolean hasTimeExceeded () {
+        return this.timeExceeded;
     };
     
 
@@ -139,16 +153,16 @@ public class KorapResponse extends Notifications {
 
 
     /**
-     * Check if the response time was exceeded.
+     * Get the benchmark time as a string.
      *
-     * @return <tt>true</tt> in case the response had a timeout,
-     *         otherwise <tt>false</tt>
+     * @return String representation of the benchmark
+     *         (including trailing time unit)
      */
     @JsonIgnore
-    public boolean hasTimeExceeded () {
-        return this.timeExceeded;
+    public String getBenchmark () {
+        return this.benchmark;
     };
-
+    
 
     /**
      * Set the benchmark as timestamp differences.
@@ -181,19 +195,18 @@ public class KorapResponse extends Notifications {
         this.benchmark = bm;
         return this;
     };
-
+    
 
     /**
-     * Get the benchmark time as a string.
+     * Get the listener URI as a string.
      *
-     * @return String representation of the benchmark
-     *         (including trailing time unit)
+     * @return The listener URI as a string representation
      */
     @JsonIgnore
-    public String getBenchmark () {
-        return this.benchmark;
+    public String getListener () {
+        return this.listener;
     };
-    
+
 
     /**
      * Set the listener URI as a String. This is probably the localhost
@@ -211,17 +224,6 @@ public class KorapResponse extends Notifications {
     public KorapResponse setListener (String listener) {
         this.listener = listener;
         return this;
-    };
-    
-
-    /**
-     * Get the listener URI as a string.
-     *
-     * @return The listener URI as a string representation
-     */
-    @JsonIgnore
-    public String getListener () {
-        return this.listener;
     };
 
 
@@ -265,6 +267,7 @@ public class KorapResponse extends Notifications {
 
         return (JsonNode) json;
     };
+
 
     /**
      * Serialize response as a JSON string.
