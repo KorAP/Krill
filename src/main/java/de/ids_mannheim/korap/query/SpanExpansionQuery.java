@@ -18,7 +18,10 @@ import de.ids_mannheim.korap.query.spans.ExpandedSpans;
  * SpanExpansionQuery makes a span longer by stretching out the start or the end
  * position of the span. The constraints of the expansion, such as how large the
  * expansion should be (min and max position) and the direction of the expansion
- * with respect to the original span, are specified in ExpansionConstraint.
+ * with respect to the original span, are specified in ExpansionConstraint. The
+ * direction is designated with the sign of a number, namely a negative number
+ * signifies the left direction, and a positive number (including 0) signifies
+ * the right direction.
  * 
  * <pre>
  * SpanTermQuery stq = new SpanTermQuery(new Term(&quot;tokens&quot;, &quot;s:lightning&quot;));
@@ -50,7 +53,26 @@ import de.ids_mannheim.korap.query.spans.ExpandedSpans;
  * 
  * <pre>
  * 	[orth=the][orth!=lightning]         "the" must not be followed by "lightning" 
- * 	[pos!=ADJ]{1,2}[orth=lightning]	    one or two adjectives cannot precedes "lightning"
+ * 	[pos!=ADJ]{1,2}[orth=jacket]	    one or two adjectives cannot precedes "jacket"
+ * </pre>
+ * 
+ * The SpanExpansionQuery for the latter Poliqarp query with left direction from
+ * "jacket" example is:
+ * 
+ * <pre>
+ * SpanTermQuery notQuery = new SpanTermQuery(new Term(&quot;tokens&quot;, &quot;tt:p:/ADJ&quot;));
+ * SpanTermQuery stq = new SpanTermQuery(new Term(&quot;tokens&quot;, &quot;s:jacket&quot;));
+ * SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 1, 2, -1, true);
+ * </pre>
+ * 
+ * Matches and non matches example:
+ * 
+ * <pre>
+ * [a jacket]                         match
+ * [such a jacket]                    non match, where such is an ADJ
+ * [leather jacket]                   non match
+ * [black leather jacket]             non match
+ * [large black leather jacket]       non match
  * </pre>
  * 
  * The positions of the expansion parts can be stored in payloads by using a

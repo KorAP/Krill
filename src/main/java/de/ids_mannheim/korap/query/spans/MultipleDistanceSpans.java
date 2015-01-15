@@ -8,151 +8,177 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
-/**	Span enumeration of matches whose two sub-spans have exactly the same 
- * 	first and second sub-sub-spans. This class basically filters the span 
- * 	matches of its child spans.
+/**
+ * Span enumeration of matches whose two sub-spans have exactly the same first
+ * and second sub-sub-spans. To obtain these matches, the span matches of the
+ * child spans are filtered.
  * 
- * 	This accommodates distance constraint with exclusion.
- * 	Case 1: return the match from another non-exclusion constraint.
- * 	Case 2: return only the first-span when all constraints are exclusions.
- * 	Case 3:	spans are not in the same doc 
- * 	 
- *	@author margaretha
+ * MultipleDistanceSpans accommodates distance constraint with exclusion. <br />
+ * <br />
+ * 
+ * This class deals with the following cases:
+ * <ol>
+ * <li>return the match from another non-exclusion constraint.</li>
+ * <li>return only the first-span when all constraints are exclusions.</li>
+ * <li>spans are not in the same doc</li>
+ * </ol>
+ * 
+ * @author margaretha
  * */
-public class MultipleDistanceSpans extends DistanceSpans{
+public class MultipleDistanceSpans extends DistanceSpans {
 
-    private final static Logger log = LoggerFactory.getLogger(MultipleDistanceSpans.class);
-    // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    private DistanceSpans x, y;
+    private boolean isOrdered;
 
-	private DistanceSpans x,y;
-	private boolean isOrdered;
-	
-	public MultipleDistanceSpans(SpanMultipleDistanceQuery query,
-			AtomicReaderContext context, Bits acceptDocs,
-			Map<Term, TermContext> termContexts, Spans firstSpans, 
-			Spans secondSpans, boolean isOrdered, boolean exclusion) 
-			throws IOException {
-		super(query, context, acceptDocs, termContexts);
-		this.isOrdered = isOrdered;
-		this.exclusion = exclusion;		
-		x = (DistanceSpans) firstSpans;
-		y = (DistanceSpans) secondSpans;		
-		hasMoreSpans = x.next() && y.next();		
-	}
+    /**
+     * Constructs MultipleDistanceSpans for the two given Spans with the given
+     * {@link SpanMultipleDistanceQuery}.
+     * 
+     * @param query a SpanMultipleDistanceQuery
+     * @param context
+     * @param acceptDocs
+     * @param termContexts
+     * @param firstSpans the firstspans
+     * @param secondSpans the secondspans
+     * @param isOrdered <code>true</code> if the spans must occur in order,
+     *        <code>false</code> otherwise.
+     * @param exclusion <code>true</code> if the secondspans must <em>not</em>
+     *        occur together with the firstspans.
+     * @throws IOException
+     */
+    public MultipleDistanceSpans(SpanMultipleDistanceQuery query,
+            AtomicReaderContext context, Bits acceptDocs,
+            Map<Term, TermContext> termContexts, Spans firstSpans,
+            Spans secondSpans, boolean isOrdered, boolean exclusion)
+            throws IOException {
+        super(query, context, acceptDocs, termContexts);
+        this.isOrdered = isOrdered;
+        this.exclusion = exclusion;
+        x = (DistanceSpans) firstSpans;
+        y = (DistanceSpans) secondSpans;
+        hasMoreSpans = x.next() && y.next();
+    }
 
-	@Override
-	public boolean next() throws IOException {
-		isStartEnumeration=false;
-  		matchPayload.clear();
-		return advance();		
-	}
-	
-	/** Find the next match.
-	 * */
-	protected boolean advance() throws IOException {		
-		while (hasMoreSpans && ensureSameDoc(x, y)){ 
-			if (findMatch()){
-				moveForward();
-				return true;
-			}
-			moveForward();
-		}		
-		return false;
-	}
-	
-	/** Find the next match of one of the sub/child-span.
-	 * */
-	private void moveForward() throws IOException{
-		if (isOrdered){
-			if (x.end() < y.end() || 
-					(x.end() == y.end() && x.start() < y.start()) )
-				hasMoreSpans = x.next();			 
-			else hasMoreSpans = y.next();
-		}
-		// The matches of unordered distance spans are ordered by the 
-		// start position
-		else {
-			if (x.start() < y.start() || 
-					(x.start() == y.start() && x.end() < y.end()) )
-				hasMoreSpans = x.next();			 
-			else hasMoreSpans = y.next();
-		}
-	}
-	
-	/** Check if the sub-spans of x and y having exactly the same position.  
-	 * 	This is basically an AND operation.
-	 * 	@return true iff the sub-spans are identical.
-	 * */	
-	protected boolean findMatch() throws IOException {
-		 		
-		CandidateSpan xf = x.getMatchFirstSpan();
-		CandidateSpan xs = x.getMatchSecondSpan();
-		
-		CandidateSpan yf = y.getMatchFirstSpan();
-		CandidateSpan ys = y.getMatchSecondSpan();
-		
-		if (x.isExclusion() || y.isExclusion()){			
-			if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()){
-				// case 2
-				if (x.isExclusion() && y.isExclusion()){
-					// set x or y doesnt matter
-					setMatchProperties(x,true);
-				}
-				// case 1
-				else if (x.isExclusion()){  
-					// set y, the usual match
-					setMatchProperties(y,true);
-				}
-				// case 1
-				else { setMatchProperties(x,true); }
-				return true;
-			}
-		}
-		else if (xf.getStart() == yf.getStart() &&
-				xf.getEnd() == yf.getEnd() &&
-				xs.getStart() == ys.getStart() &&
-				xs.getEnd() == ys.getEnd()){
-			setMatchProperties(x,false);			
-			return true;
-		}		
-		return false;
-	}
-	
+    @Override
+    public boolean next() throws IOException {
+        isStartEnumeration = false;
+        matchPayload.clear();
+        return advance();
+    }
 
-	private void setMatchProperties(DistanceSpans span, boolean exclusion) {
-		matchStartPosition = span.start();
-		matchEndPosition = span.end();
-		matchDocNumber = span.doc();
-		matchPayload = span.matchPayload;	
-		
-		setMatchFirstSpan(span.getMatchFirstSpan());
-		if (!exclusion) setMatchSecondSpan(span.getMatchSecondSpan());
-		if (DEBUG)
-		    log.trace("doc# {}, start {}, end {}",matchDocNumber,
-			      matchStartPosition,matchEndPosition);	
-	}
+    /**
+     * Finds the next match.
+     * */
+    protected boolean advance() throws IOException {
+        while (hasMoreSpans && ensureSameDoc(x, y)) {
+            if (findMatch()) {
+                moveForward();
+                return true;
+            }
+            moveForward();
+        }
+        return false;
+    }
 
-	@Override
-	public boolean skipTo(int target) throws IOException {
-		if (hasMoreSpans && (y.doc() < target)){
-  			if (!y.skipTo(target)){  				
-  				return false;
-  			}
-  		}
-		matchPayload.clear();
-		isStartEnumeration=false;
-		return advance();
-	}
+    /**
+     * Finds the next match of one of the sub/child-span.
+     * 
+     * @throws IOException
+     */
+    private void moveForward() throws IOException {
+        if (isOrdered) {
+            if (x.end() < y.end()
+                    || (x.end() == y.end() && x.start() < y.start()))
+                hasMoreSpans = x.next();
+            else
+                hasMoreSpans = y.next();
+        }
+        // The matches of unordered distance spans are ordered by the 
+        // start position
+        else {
+            if (x.start() < y.start()
+                    || (x.start() == y.start() && x.end() < y.end()))
+                hasMoreSpans = x.next();
+            else
+                hasMoreSpans = y.next();
+        }
+    }
 
-	@Override
-	public long cost() {		
-		return x.cost() + y.cost();
-	}
+    /**
+     * Checks if the sub-spans of x and y having exactly the same position. This
+     * is basically an AND operation.
+     * 
+     * @return true iff the sub-spans are identical.
+     * @throws IOException
+     */
+    protected boolean findMatch() throws IOException {
+
+        CandidateSpan xf = x.getMatchFirstSpan();
+        CandidateSpan xs = x.getMatchSecondSpan();
+
+        CandidateSpan yf = y.getMatchFirstSpan();
+        CandidateSpan ys = y.getMatchSecondSpan();
+
+        if (x.isExclusion() || y.isExclusion()) {
+            if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()) {
+                // case 2
+                if (x.isExclusion() && y.isExclusion()) {
+                    // set x or y doesnt matter
+                    setMatchProperties(x, true);
+                }
+                // case 1
+                else if (x.isExclusion()) {
+                    // set y, the usual match
+                    setMatchProperties(y, true);
+                }
+                // case 1
+                else {
+                    setMatchProperties(x, true);
+                }
+                return true;
+            }
+        } else if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()
+                && xs.getStart() == ys.getStart() && xs.getEnd() == ys.getEnd()) {
+            setMatchProperties(x, false);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param span a DistanceSpan
+     * @param exclusion <code>true</code> if the spans must <em>not</em> occur
+     *        together, <code>false</code> otherwise.
+     */
+    private void setMatchProperties(DistanceSpans span, boolean exclusion) {
+        matchStartPosition = span.start();
+        matchEndPosition = span.end();
+        matchDocNumber = span.doc();
+        matchPayload = span.matchPayload;
+
+        setMatchFirstSpan(span.getMatchFirstSpan());
+        if (!exclusion)
+            setMatchSecondSpan(span.getMatchSecondSpan());
+    }
+
+    @Override
+    public boolean skipTo(int target) throws IOException {
+        if (hasMoreSpans && (y.doc() < target)) {
+            if (!y.skipTo(target)) {
+                return false;
+            }
+        }
+        matchPayload.clear();
+        isStartEnumeration = false;
+        return advance();
+    }
+
+    @Override
+    public long cost() {
+        return x.cost() + y.cost();
+    }
 
 }
