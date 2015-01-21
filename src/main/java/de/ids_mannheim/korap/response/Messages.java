@@ -20,9 +20,9 @@ import java.util.*;
  *   m.add(614, "This is a new message");
  * </pre></blockquote>
  *
- * @author Nils Diewald
- * @see de.ids_mannheim.korap.response.Notifications
- * @see de.ids_mannheim.korap.response.Message
+ * @author diewald
+ * @see Notifications
+ * @see Message
  */
 public class Messages implements Cloneable, Iterable<Message> {
 

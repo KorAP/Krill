@@ -1,7 +1,5 @@
 package de.ids_mannheim.korap;
 
-// Todo: ADD WORD COUNT AS A METADATA FIELD!
-
 // Java classes
 import java.util.*;
 import java.util.zip.GZIPInputStream;
@@ -39,18 +37,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
-
+  TODO: Add word count as a meta data field!
   TODO: Validate document import!
-
   TODO: DON'T STORE THE TEXT IN THE TOKENS FIELD!
         It has only to be lifted for match views!!!
-
   TODO: Support layer for specific foundries (IMPORTANT)
-  TODO: Implement timeout!!!
-    - https://lucene.apache.org/core/2_9_4/api/all/org/apache/lucene/search/TimeLimitingCollector.html
-    - https://lucene.apache.org/core/2_9_4/api/all/org/apache/lucene/search/TimeLimitingCollector.html
-    - http://stackoverflow.com/questions/19557476/timing-out-a-query-in-solr
-
   TODO: Use FieldCache!
   TODO: Reuse the indexreader everywhere - it should be threadsafe!
 
@@ -72,10 +63,22 @@ import org.slf4j.LoggerFactory;
 */
 
 /**
- * KorapIndex implements a simple API for searching in and writing to a
- * Lucene index and equesting several information but the index's nature.
  *
- * @author Nils Diewald
+ * KorapIndex implements a simple API for searching in and writing to a
+ * Lucene index and requesting several information about the index' nature.
+ * <br />
+ *
+ * <pre>
+ *   KorapIndex ki = new KorapIndex(
+ *       new MMapDirectory(new File("/myindex"))
+ *   );
+ * </pre>
+ *
+ * Properties can be stored in a properies file called 'index.properties'.
+ * Relevant properties are <code>lucene.version</code> and
+ * <code>lucene.name</code>.
+ *
+ * @author diewald
  */
 public class KorapIndex {
 
@@ -93,6 +96,7 @@ public class KorapIndex {
     private IndexWriterConfig config;
     private IndexSearcher searcher;
     private boolean readerOpen = false;
+
     // The commit counter is only there for
     // counting unstaged changes per thread (for bulk insertions)
     // It does not represent real unstaged documents.
@@ -102,9 +106,11 @@ public class KorapIndex {
     private String version, name;
 
     private byte[] pl = new byte[4];
-    private static ByteBuffer bb       = ByteBuffer.allocate(4),
-	                      bbOffset = ByteBuffer.allocate(8),
-	                      bbTerm   = ByteBuffer.allocate(16);
+    private static ByteBuffer
+        bb       = ByteBuffer.allocate(4),
+        bbOffset = ByteBuffer.allocate(8),
+        bbTerm   = ByteBuffer.allocate(16);
+
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapIndex.class);
 
@@ -112,124 +118,154 @@ public class KorapIndex {
     public static final boolean DEBUG = false;
 
     {
-	Properties prop = new Properties();
-	URL file = getClass().getClassLoader().getResource("index.properties");
+        Properties prop = new Properties();
+        URL file = getClass().getClassLoader().getResource("index.properties");
 
-	if (file != null) {
-	    String f = file.getFile();
-	    try {
-		InputStream fr = new FileInputStream(f);
-		prop.load(fr);
-		this.version = prop.getProperty("lucene.version");
-		this.name = prop.getProperty("lucene.name");
-	    }
-	    catch (FileNotFoundException e) {
-		log.warn(e.getLocalizedMessage());
-	    };
-	};
+        // File found
+        if (file != null) {
+            String f = file.getFile();
+            // Read property file
+            try {
+                InputStream fr = new FileInputStream(f);
+                prop.load(fr);
+                this.version = prop.getProperty("lucene.version");
+                this.name    = prop.getProperty("lucene.name");
+            }
+
+            // Unable to read property file
+            catch (FileNotFoundException e) {
+                log.warn(e.getLocalizedMessage());
+            };
+        };
     };
 
-    // Create a new in-memory index
+
+    /**
+     * Constructs a new KorapIndex in-memory.
+     *
+     * @throws IOException
+     */
     public KorapIndex () throws IOException {
         this((Directory) new RAMDirectory());
     };
 
-    // Connect to index in file system
+
+    /**
+     * Constructs a new KorapIndex bound to a persistant index.
+     *
+     * @param index Path to an {@link FSDirectory} index
+     * @throws IOException
+     */
     public KorapIndex (String index) throws IOException {
-	this(FSDirectory.open(new File( index )));
+        this(FSDirectory.open(new File( index )));
     };
 
 
-    // Connect to index in file system
+    /**
+     * Constructs a new KorapIndex bound to a persistant index.
+     *
+     * @param directory A {@link Directory} pointing to an index
+     * @throws IOException
+     */
     public KorapIndex (Directory directory) throws IOException {
-	this.directory = directory;
+        this.directory = directory;
 
-	// Base analyzer for searching and indexing
-	// StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
-
-	// TODO: Why is this here?
-	Map<String,Analyzer> analyzerPerField = new HashMap<String,Analyzer>();
-	analyzerPerField.put("textClass", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
-	analyzerPerField.put("foundries", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
-	PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(
+        // TODO: Shouldn't be here
+        // Add analyzers
+        Map<String,Analyzer> analyzerPerField = new HashMap<String,Analyzer>();
+        analyzerPerField.put("textClass", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
+        analyzerPerField.put("foundries", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
+        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(
             new StandardAnalyzer(Version.LUCENE_CURRENT),
             analyzerPerField
         );
 
-	// Create configuration with base analyzer
-	this.config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
+        // Create configuration with base analyzer
+        this.config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
     };
 
 
-    // Get system version
+    /**
+     * Get the version number of the index.
+     *
+     * @return A string containing the version number.
+     */    
     public String getVersion () {
-	return this.version;
+        return this.version;
     };
 
-    // Get system name
+
+    /**
+     * Get the name of the index.
+     *
+     * @return A string containing the name of the index.
+     */ 
     public String getName () {
-	return this.name;
+        return this.name;
     };
 
 
-    // Close connection to index
+    /**
+     * Close the connections of the index reader and the writer.
+     * @throws IOException
+     */ 
     public void close () throws IOException {
-	this.closeReader();
-	this.closeWriter();
+        this.closeReader();
+        this.closeWriter();
     };
 
 
     // Get index reader object
     public IndexReader reader () {
-	if (!readerOpen)
-	    this.openReader();
-	// Todo: Maybe use DirectoryReader.openIfChanged(DirectoryReader)
-
-	return this.reader;
+        if (!readerOpen)
+            this.openReader();
+        // Todo: Maybe use DirectoryReader.openIfChanged(DirectoryReader)
+        
+        return this.reader;
     };
-
+    
 
     // Get index searcher object
     public IndexSearcher searcher () {
-	if (this.searcher == null) {
-	    this.searcher = new IndexSearcher(this.reader());
-	};
-	return this.searcher;
+        if (this.searcher == null) {
+            this.searcher = new IndexSearcher(this.reader());
+        };
+        return this.searcher;
     };
 
 
     // Close index writer
     public void closeWriter () throws IOException {
-	if (this.writer != null)
-	    this.writer.close();
+        if (this.writer != null)
+            this.writer.close();
     };
 
 
     // Open index reader
     public void openReader () {
-	try {
+        try {
 
-	    // open reader
-	    this.reader = DirectoryReader.open(this.directory);
-	    readerOpen = true;
-	    if (this.searcher != null)
-		this.searcher = new IndexSearcher(reader);
-	}
+            // open reader
+            this.reader = DirectoryReader.open(this.directory);
+            readerOpen = true;
+            if (this.searcher != null)
+                this.searcher = new IndexSearcher(reader);
+        }
 
-	// Failed to open reader
-	catch (IOException e) {
-		//e.printStackTrace();
-	    log.warn( e.getLocalizedMessage() );
-	};
+        // Failed to open reader
+        catch (IOException e) {
+            //e.printStackTrace();
+            log.warn( e.getLocalizedMessage() );
+        };
     };
 
 
     // Close index reader
     public void closeReader () throws IOException {
-	if (readerOpen) {
-	    this.reader.close();
-	    readerOpen = false;
-	};
+        if (readerOpen) {
+            this.reader.close();
+            readerOpen = false;
+        };
     };
 
     /*
@@ -237,374 +273,410 @@ public class KorapIndex {
      * as they were added while the API changed slowly.
      */
 
-
     // Add document to index as FieldDocument
     public FieldDocument addDoc (FieldDocument fd) {
+        try {
+            // Open writer if not already opened
+            if (this.writer == null)
+                this.writer = new IndexWriter(this.directory, this.config);
 
-	try {
-	
-	    // Open writer if not already opened
-	    if (this.writer == null)
-		this.writer = new IndexWriter(this.directory, this.config);
+            // Add document to writer
+            this.writer.addDocument( fd.doc );
+            if (++commitCounter > autoCommit) {
+                this.commit();
+                commitCounter = 0;
+            };
+        }
 
-	    // Add document to writer
-	    this.writer.addDocument( fd.doc );
-	    if (++commitCounter > autoCommit) {
-		this.commit();
-		commitCounter = 0;
-	    };
-	}
-
-	// Failed to add document
-	catch (IOException e) {
-	    log.error("File json not found");
-	};
-	return fd;
+        // Failed to add document
+        catch (IOException e) {
+            log.error("File json not found");
+        };
+        return fd;
     };
 
     // Add document to index as JSON object with a unique ID
     public FieldDocument addDoc (int uid, String json) throws IOException {
-	FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
-	fd.setUID(uid);
-	return this.addDoc(fd);
+        FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
+        fd.setUID(uid);
+        return this.addDoc(fd);
     };
 
 
     // Add document to index as JSON object
     public FieldDocument addDoc (String json) throws IOException {
-	FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
-	return this.addDoc(fd);
+        FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
+        return this.addDoc(fd);
     };
 
 
     // Add document to index as JSON file
     public FieldDocument addDoc (File json) {
-	try {
-	    FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
-	    return this.addDoc(fd);
-	}
-	catch (IOException e) {
-	    log.error("File json not parseable");	    
-	};
-	return (FieldDocument) null;
+        try {
+            FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
+            return this.addDoc(fd);
+        }
+        catch (IOException e) {
+            log.error("File json not parseable");	    
+        };
+        return (FieldDocument) null;
     };
 
 
     // Add document to index as JSON file
     public FieldDocument addDocFile(String json) {
-	return this.addDocFile(json, false);
+        return this.addDocFile(json, false);
     };
+
 
     private FieldDocument _addDocfromFile (String json, boolean gzip) {
-	try {
-	    if (gzip) {
+        try {
+            if (gzip) {
 
-		// Create json field document
-		FieldDocument fd = this.mapper.readValue(
-		  new GZIPInputStream(new FileInputStream(json)),
-		    FieldDocument.class
-		);
+                // Create json field document
+                FieldDocument fd = this.mapper.readValue(
+                    new GZIPInputStream(new FileInputStream(json)),
+                    FieldDocument.class
+                );
+                return fd;
+            };
+            return this.mapper.readValue(json, FieldDocument.class);
+        }
 
-		return fd;
-	    };
-	    return this.mapper.readValue(json, FieldDocument.class);
-	}
-
-	// Fail to add json object
-	catch (IOException e) {
-	    log.error("File json not found");
-	};
-	return (FieldDocument) null;
+        // Fail to add json object
+        catch (IOException e) {
+            log.error("File json not found");
+        };
+        return (FieldDocument) null;
     };
 
+    
     // Add document to index as JSON file (possibly gzipped)
     public FieldDocument addDocFile(String json, boolean gzip) {
-	return this.addDoc(this._addDocfromFile(json, gzip));
+        return this.addDoc(this._addDocfromFile(json, gzip));
     };
+
 
     // Add document to index as JSON file (possibly gzipped)
     public FieldDocument addDocFile(int uid, String json, boolean gzip) {
-	FieldDocument fd = this._addDocfromFile(json, gzip);
-	if (fd != null) {
-	    fd.setUID(uid);
-	    return this.addDoc(fd);
-	};
-	return fd;
+        FieldDocument fd = this._addDocfromFile(json, gzip);
+        if (fd != null) {
+            fd.setUID(uid);
+            return this.addDoc(fd);
+        };
+        return fd;
     };
+
 
     // Commit changes to the index
     public void commit (boolean force) throws IOException {
-
-	// There is something to commit
-	if (commitCounter > 0 || !force) {
-	    this.commit();
-	};
+        // There is something to commit
+        if (commitCounter > 0 || !force)
+            this.commit();
     };
 
+
+    // Commit changes to the index
     public void commit () throws IOException {
+        // Open writer if not already opened
+        if (this.writer == null)
+            this.writer = new IndexWriter(this.directory, this.config);
 
-	// Open writer if not already opened
-	if (this.writer == null)
-	    this.writer = new IndexWriter(this.directory, this.config);
-
-	// Force commit
-	this.writer.commit();
-	commitCounter = 0;
-	this.closeReader();
+        // Force commit
+        this.writer.commit();
+        commitCounter = 0;
+        this.closeReader();
     };
+
 
     // Get autoCommit valiue
     public int autoCommit () {
-	return this.autoCommit;
+        return this.autoCommit;
     };
 
 
     // Set autoCommit value
     public void autoCommit (int number) {
-	this.autoCommit = number;
+        this.autoCommit = number;
     };
 
 
     // Search for meta information in term vectors
     private long numberOfAtomic (Bits docvec,
-				 AtomicReaderContext atomic,
-				 Term term) throws IOException {
+                                 AtomicReaderContext atomic,
+                                 Term term) throws IOException {
+        // This reimplements docsAndPositionsEnum with payloads
+        final Terms terms = atomic.reader().fields().terms(term.field());
 
-	// This reimplements docsAndPositionsEnum with payloads
-	final Terms terms = atomic.reader().fields().terms(term.field());
+        // No terms were found
+        if (terms != null) {
+            // Todo: Maybe reuse a termsEnum!
+            final TermsEnum termsEnum = terms.iterator(null);
 
-	// No terms were found
-	if (terms != null) {
-	    // Todo: Maybe reuse a termsEnum!
-	    final TermsEnum termsEnum = terms.iterator(null);
+            // Set the position in the iterator to the term that is seeked
+            if (termsEnum.seekExact(term.bytes())) {
 
-	    // Set the position in the iterator to the term that is seeked
-	    if (termsEnum.seekExact(term.bytes())) {
+                // Start an iterator to fetch all payloads of the term
+                DocsAndPositionsEnum docs = termsEnum.docsAndPositions(
+                    docvec,
+                    null,
+                    DocsAndPositionsEnum.FLAG_PAYLOADS
+                );
 
-		// Start an iterator to fetch all payloads of the term
-		DocsAndPositionsEnum docs = termsEnum.docsAndPositions(
-		    docvec,
-		    null,
-		    DocsAndPositionsEnum.FLAG_PAYLOADS
-		);
+                // Iterator is empty
+                // TODO: Maybe this is an error ...
+                if (docs.docID() == DocsAndPositionsEnum.NO_MORE_DOCS) {
+                    return 0;
+                };
 
-		// Iterator is empty
-		// TODO: Maybe this is an error ...
-		if (docs.docID() == DocsAndPositionsEnum.NO_MORE_DOCS) {
-		    return 0;
-		};
+                // Init some variables for data copying
+                long occurrences = 0;
+                BytesRef payload;
 
-		// Init some variables for data copying
-		long occurrences = 0;
-		BytesRef payload;
+                // Init nextDoc()
+                while (docs.nextDoc() != DocsAndPositionsEnum.NO_MORE_DOCS) {
 
-		// Init nextDoc()
-		while (docs.nextDoc() != DocsAndPositionsEnum.NO_MORE_DOCS) {
+                    // Initialize (go to first term)
+                    docs.nextPosition();
 
-		    // Initialize (go to first term)
-		    docs.nextPosition();
+                    // Copy payload with the offset of the BytesRef
+                    payload = docs.getPayload();
+                    System.arraycopy(payload.bytes, payload.offset, pl, 0, 4);
 
-		    // Copy payload with the offset of the BytesRef
-		    payload = docs.getPayload();
-		    System.arraycopy(payload.bytes, payload.offset, pl, 0, 4);
+                    // Add payload as integer
+                    occurrences += bb.wrap(pl).getInt();
+                };
 
-		    // Add payload as integer
-		    occurrences += bb.wrap(pl).getInt();
-		};
+                // Return the sum of all occurrences
+                return occurrences;
+            };
+        };
 
-		// Return the sum of all occurrences
-		return occurrences;
-	    };
-	};
-
-	// Nothing found
-	return 0;
+        // Nothing found
+        return 0;
     };
 
 
     /**
      * Search for the number of occurrences of different types,
-     * e.g. "documents", "sentences" etc.
+     * e.g. <i>documents</i>, <i>sentences</i> etc.
      *
-     * @param field The field containing the textual data and the annotations.
-     * @param type The type of meta information, e.g. "documents" or "sentences".
+     * @param collection The scope of the numbering by means of a
+     *        {@link KorapCollection}
+     * @param field The field containing the textual data and the
+     *        annotations as a string.
+     * @param type The type of meta information,
+     *        e.g. <i>documents</i> or <i>sentences</i> as a string.
+     * @return The number of the occurrences.
      */
     public long numberOf (KorapCollection collection,
-			  String field,
-			  String type) {
-	// Short cut for documents
-	// This will be only "texts" in the future
-	if (type.equals("documents") || type.equals("base/texts")) {
-	    if (collection.getCount() <= 0) {
-		try {
-		    return (long) this.reader().numDocs();
-		}
-		catch (Exception e) {
-		    log.warn(e.getLocalizedMessage());
-		};
-		return (long) 0;
-	    };
+                          String field,
+                          String type) {
+        // Short cut for documents
+        // This will be only "texts" in the future
+        if (type.equals("documents") || type.equals("base/texts")) {
+            if (collection.getCount() <= 0) {
+                try {
+                    return (long) this.reader().numDocs();
+                }
+                catch (Exception e) {
+                    log.warn(e.getLocalizedMessage());
+                };
+                return (long) 0;
+            };
 
-	    long docCount = 0;
-	    int i = 1;
-	    try {
-		for (AtomicReaderContext atomic : this.reader().leaves()) {
-		    docCount += collection.bits(atomic).cardinality();
-		    i++;
-		};
-	    }
-	    catch (IOException e) {
-		log.warn(e.getLocalizedMessage());
-	    };
-	    return docCount;
-	};
+            long docCount = 0;
+            int i = 1;
+            try {
+                for (AtomicReaderContext atomic : this.reader().leaves()) {
+                    docCount += collection.bits(atomic).cardinality();
+                    i++;
+                };
+            }
+            catch (IOException e) {
+                log.warn(e.getLocalizedMessage());
+            };
+            return docCount;
+        };
     
-	// Create search term
-	// This may be prefixed by foundries
-	Term term = new Term(field, "-:" + type);
+        // Create search term
+        // This may be prefixed by foundries
+        Term term = new Term(field, "-:" + type);
 
-	long occurrences = 0;
-	try {
-	    // Iterate over all atomic readers and collect occurrences
-	    for (AtomicReaderContext atomic : this.reader().leaves()) {
-		occurrences += this.numberOfAtomic(
-		   collection.bits(atomic),
-		    atomic,
-		    term
-		);
-	    };
-	}
+        long occurrences = 0;
+        try {
+            // Iterate over all atomic readers and collect occurrences
+            for (AtomicReaderContext atomic : this.reader().leaves()) {
+                occurrences += this.numberOfAtomic(
+                    collection.bits(atomic),
+                    atomic,
+                    term
+                );
+            };
+        }
 
-	// Something went wrong
-	catch (Exception e) {
-	    log.warn( e.getLocalizedMessage() );
-	};
+        // Something went wrong
+        catch (Exception e) {
+            log.warn( e.getLocalizedMessage() );
+        };
 
-	return occurrences;
+        return occurrences;
     };
+
+
 
     public long numberOf (String field, String type) {
-	return this.numberOf(new KorapCollection(this), field, type);
+        return this.numberOf(new KorapCollection(this), field, type);
     };
 
 
     /**
      * Search for the number of occurrences of different types,
-     * e.g. "documents", "sentences" etc., in the base foundry.
+     * e.g. <i>documents<i>, <i>sentences</i> etc., in the
+     * <i>base</i> foundry.
      *
-     * @param type The type of meta information, e.g. "documents" or "sentences".
-     *
-     * @see #numberOf(String, String)
+     * @param type The type of meta information,
+     *        e.g. <i>documents</i> or <i>sentences</i> as a string.
+     * @return The number of the occurrences.
      */
     public long numberOf (String type) {
-	return this.numberOf("tokens", type);
+        return this.numberOf("tokens", type);
     };
 
 
     /**
      * Search for the number of occurrences of different types,
-     * e.g. "documents", "sentences" etc., in a specific set of documents.
+     * e.g. <i>documents</i>, <i>sentences</i> etc.
      *
-     * @param docvec The document vector for filtering the search space.
-     * @param field The field containing the textual data and the annotations.
-     * @param type The type of meta information, e.g. "documents" or "sentences".
-     *
-     * @see #numberOf(String, String)
+     * @param docvec The scope of the numbering by means of a
+     *        {@link Bits} vector
+     * @param field The field containing the textual data and the
+     *        annotations as a string.
+     * @param type The type of meta information,
+     *        e.g. <i>documents</i> or <i>sentences</i> as a string.
+     * @return The number of the occurrences.
+     * @throws IOException
      */
     public long numberOf (Bits docvec, String field, String type) throws IOException {
-
-	// Shortcut for documents
-	if (type.equals("documents")) {
-	    OpenBitSet os = (OpenBitSet) docvec;
-	    return os.cardinality();
-	};
+        // Shortcut for documents
+        if (type.equals("documents")) {
+            OpenBitSet os = (OpenBitSet) docvec;
+            return os.cardinality();
+        };
     
-	Term term = new Term(field, "-:" + type);
+        Term term = new Term(field, "-:" + type);
 
-	int occurrences = 0;
-	try {
-	    for (AtomicReaderContext atomic : this.reader().leaves()) {
-		occurrences += this.numberOfAtomic(docvec, atomic, term);
-	    };
-	}
-	catch (IOException e) {
-	    log.warn( e.getLocalizedMessage() );
-	};
-
-	return occurrences;
+        int occurrences = 0;
+        try {
+            for (AtomicReaderContext atomic : this.reader().leaves()) {
+                occurrences += this.numberOfAtomic(docvec, atomic, term);
+            };
+        }
+        catch (IOException e) {
+            log.warn( e.getLocalizedMessage() );
+        };
+        
+        return occurrences;
     };
+
 
     @Deprecated
     public long countDocuments () throws IOException {
-	log.warn("countDocuments() is DEPRECATED in favor of numberOf(\"documents\")!");
-	return this.numberOf("documents");
+        log.warn("countDocuments() is DEPRECATED in favor of numberOf(\"documents\")!");
+        return this.numberOf("documents");
     };
 
 
     @Deprecated
     public long countAllTokens () throws IOException {
-	log.warn("countAllTokens() is DEPRECATED in favor of numberOf(\"tokens\")!");
-	return this.numberOf("tokens");
+        log.warn("countAllTokens() is DEPRECATED in favor of numberOf(\"tokens\")!");
+        return this.numberOf("tokens");
     };
 
 
     public String getMatchIDWithContext (String id) {
-	/*
-	  No includeHighlights
-	 */
-
-	return "";
+        /* No includeHighlights */
+        return "";
     };
 
 
     public KorapMatch getMatch (String id) throws QueryException {
-	return this.getMatchInfo(
+        return this.getMatchInfo(
             id,       // MatchID
-	    "tokens", // field
-	    false,    // info
-	    (ArrayList) null,     // foundry
-	    (ArrayList) null,     // layer
-	    false,    // includeSpans
-	    true,     // includeHighlights
-	    false     // extendToSentence
-	);
+            "tokens", // field
+            false,    // info
+            (ArrayList) null,     // foundry
+            (ArrayList) null,     // layer
+            false,    // includeSpans
+            true,     // includeHighlights
+            false     // extendToSentence
+        );
     };
+
 
     // There is a good chance that some of these methods will die ...
     public KorapMatch getMatchInfo (String id,
-				    String field,
-				    String foundry,
-				    String layer,
-				    boolean includeSpans,
-				    boolean includeHighlights) throws QueryException {
-	return this.getMatchInfo(id, field, true, foundry, layer, includeSpans, includeHighlights, false);
+                                    String field,
+                                    String foundry,
+                                    String layer,
+                                    boolean includeSpans,
+                                    boolean includeHighlights) throws QueryException {
+        return this.getMatchInfo(
+            id,
+            field,
+            true,
+            foundry,
+            layer,
+            includeSpans,
+            includeHighlights,
+            false
+        );
+    };
+
+
+    public KorapMatch getMatchInfo (String id,
+                                    String field,
+                                    String foundry,
+                                    String layer,
+                                    boolean includeSpans,
+                                    boolean includeHighlights,
+                                    boolean extendToSentence) throws QueryException {
+        return this.getMatchInfo(
+            id,
+            field,
+            true,
+            foundry,
+            layer,
+            includeSpans,
+            includeHighlights,
+            extendToSentence
+        );
     };
 
     public KorapMatch getMatchInfo (String id,
-				    String field,
-				    String foundry,
-				    String layer,
-				    boolean includeSpans,
-				    boolean includeHighlights,
-				    boolean extendToSentence) throws QueryException {
-	return this.getMatchInfo(id, field, true, foundry, layer, includeSpans, includeHighlights, extendToSentence);
-    };
-
-    public KorapMatch getMatchInfo (String id,
-				    String field,
-				    boolean info,
-				    String foundry,
-				    String layer,
-				    boolean includeSpans,
-				    boolean includeHighlights,
-				    boolean extendToSentence) throws QueryException {
+                                    String field,
+                                    boolean info,
+                                    String foundry,
+                                    String layer,
+                                    boolean includeSpans,
+                                    boolean includeHighlights,
+                                    boolean extendToSentence) throws QueryException {
     	ArrayList<String> foundryList = new ArrayList<>(1);
-	if (foundry != null)
-	    foundryList.add(foundry);
-	ArrayList<String> layerList = new ArrayList<>(1);
-	if (layer != null)
-	    layerList.add(layer);
-	return this.getMatchInfo(id, field, info, foundryList, layerList, includeSpans, includeHighlights, extendToSentence);
+        if (foundry != null)
+            foundryList.add(foundry);
+        ArrayList<String> layerList = new ArrayList<>(1);
+        if (layer != null)
+            layerList.add(layer);
+        return this.getMatchInfo(
+            id,
+            field,
+            info,
+            foundryList,
+            layerList,
+            includeSpans,
+            includeHighlights,
+            extendToSentence
+        );
     };
 
 
@@ -616,287 +688,288 @@ public class KorapIndex {
       per position in the match.
     */
     public KorapMatch getMatchInfo (String idString,
-				    String field,
-				    boolean info,
-				    List<String> foundry,
-				    List<String> layer,
-				    boolean includeSpans,
-				    boolean includeHighlights,
-				    boolean extendToSentence) throws QueryException {
+                                    String field,
+                                    boolean info,
+                                    List<String> foundry,
+                                    List<String> layer,
+                                    boolean includeSpans,
+                                    boolean includeHighlights,
+                                    boolean extendToSentence) throws QueryException {
 
-	KorapMatch match = new KorapMatch(idString, includeHighlights);
+        KorapMatch match = new KorapMatch(idString, includeHighlights);
 
-	if (this.getVersion() != null)
-	    match.setVersion(this.getVersion());
+        if (this.getVersion() != null)
+            match.setVersion(this.getVersion());
 
-	if (this.getName() != null)
-	    match.setName(this.getName());
+        if (this.getName() != null)
+            match.setName(this.getName());
 
-	if (match.getStartPos() == -1)
-	    return match;
+        if (match.getStartPos() == -1)
+            return match;
 
-	// Create a filter based on the corpusID and the docID
-	BooleanQuery bool = new BooleanQuery();
-	bool.add(new TermQuery(new Term("ID",       match.getDocID())),    BooleanClause.Occur.MUST);
-	bool.add(new TermQuery(new Term("corpusID", match.getCorpusID())), BooleanClause.Occur.MUST);
-	Filter filter = (Filter) new QueryWrapperFilter(bool);
-
-	CompiledAutomaton fst = null;
-
-	if (info) {
-	    /* Create an automaton for prefixed terms of interest.
-	     * You can define the necessary foundry, the necessary layer,
-	     * in case the foundry is given, and if span annotations
-	     * are of interest.
-	     */
-	    StringBuilder regex = new StringBuilder();
-	    // TODO: Make these static
-	    Pattern harmlessFoundry = Pattern.compile("^[-a-zA-Z0-9_]+$");
-	    Pattern harmlessLayer   = Pattern.compile("^[-a-zA-Z0-9_:]+$");
-	    Iterator<String> iter;
-	    int i = 0;
+        // Create a filter based on the corpusID and the docID
+        BooleanQuery bool = new BooleanQuery();
+        bool.add(new TermQuery(new Term("ID",       match.getDocID())),    BooleanClause.Occur.MUST);
+        bool.add(new TermQuery(new Term("corpusID", match.getCorpusID())), BooleanClause.Occur.MUST);
+        Filter filter = (Filter) new QueryWrapperFilter(bool);
+        
+        CompiledAutomaton fst = null;
+        
+        if (info) {
+            /* Create an automaton for prefixed terms of interest.
+             * You can define the necessary foundry, the necessary layer,
+             * in case the foundry is given, and if span annotations
+             * are of interest.
+             */
+            StringBuilder regex = new StringBuilder();
+            // TODO: Make these static
+            Pattern harmlessFoundry = Pattern.compile("^[-a-zA-Z0-9_]+$");
+            Pattern harmlessLayer   = Pattern.compile("^[-a-zA-Z0-9_:]+$");
+            Iterator<String> iter;
+            int i = 0;
 	    
-	    if (includeSpans)
-		regex.append("((\">\"|\"<\"\">\")\":\")?");
+            if (includeSpans)
+                regex.append("((\">\"|\"<\"\">\")\":\")?");
+            
+            // There is a foundry given
+            if (foundry != null && foundry.size() > 0) {
 
-	    // There is a foundry given
-	    if (foundry != null && foundry.size() > 0) {
+                // Filter out bad foundries
+                for (i = foundry.size() - 1; i >= 0 ; i--) {
+                    if (!harmlessFoundry.matcher(foundry.get(i)).matches()) {
+                        throw new QueryException("Invalid foundry requested: '" + foundry.get(i) + "'");
+                        // foundry.remove(i);
+                    };
+                };
 
-		// Filter out bad foundries
-		for (i = foundry.size() - 1; i >= 0 ; i--) {
-		    if (!harmlessFoundry.matcher(foundry.get(i)).matches()) {
-			throw new QueryException("Invalid foundry requested: '" + foundry.get(i) + "'");
-			// foundry.remove(i);
-		    };
-		};
+                // Build regex for multiple foundries
+                if (foundry.size() > 0) {
+                    regex.append("(");
+                    iter = foundry.iterator();
+                    while (iter.hasNext()) {
+                        regex.append(iter.next()).append("|");
+                    };
+                    regex.replace(regex.length() - 1, regex.length(), ")");
+                    regex.append("\"/\"");
 
-		// Build regex for multiple foundries
-		if (foundry.size() > 0) {
-		    regex.append("(");
-		    iter = foundry.iterator();
-		    while (iter.hasNext()) {
-			regex.append(iter.next()).append("|");
-		    };
-		    regex.replace(regex.length() - 1, regex.length(), ")");
-		    regex.append("\"/\"");
+                    // There is a filter given
+                    if (layer != null && layer.size() > 0) {
 
-		    // There is a filter given
-		    if (layer != null && layer.size() > 0) {
+                        // Filter out bad layers
+                        for (i = layer.size() - 1; i >= 0 ; i--) {
+                            if (!harmlessLayer.matcher(layer.get(i)).matches()) {
+                                throw new QueryException("Invalid layer requested: " + layer.get(i));
+                                // layer.remove(i);
+                            };
+                        };
 
-			// Filter out bad layers
-			for (i = layer.size() - 1; i >= 0 ; i--) {
-			    if (!harmlessLayer.matcher(layer.get(i)).matches()) {
-				throw new QueryException("Invalid layer requested: " + layer.get(i));
-				// layer.remove(i);
-			    };
-			};
+                        // Build regex for multiple layers
+                        if (layer.size() > 0) {
+                            regex.append("(");
+                            iter = layer.iterator();
+                            while (iter.hasNext()) {
+                                regex.append(iter.next()).append("|");
+                            };
+                            regex.replace(regex.length() - 1, regex.length(), ")");
+                            regex.append("\":\"");
+                        };
+                    };
+                };
+            }
+            else if (includeSpans) {
+                // No foundries - but spans
+                regex.append("([^-is]|[-is][^:])");
+            }
+            else {
+                // No foundries - no spans
+                regex.append("([^-is<>]|[-is>][^:]|<[^:>])");
+            };
+            regex.append("(.){1,}|_[0-9]+");
+            
+            if (DEBUG)
+                log.trace("The final regexString is {}", regex.toString());
+            RegExp regexObj = new RegExp(regex.toString(), RegExp.COMPLEMENT);
+            fst = new CompiledAutomaton(regexObj.toAutomaton());
+            if (DEBUG)
+                log.trace("The final regexObj is {}", regexObj.toString());
+        };
 
-			// Build regex for multiple layers
-			if (layer.size() > 0) {
-			    regex.append("(");
-			    iter = layer.iterator();
-			    while (iter.hasNext()) {
-				regex.append(iter.next()).append("|");
-			    };
-			    regex.replace(regex.length() - 1, regex.length(), ")");
-			    regex.append("\":\"");
-			};
-		    };
-		};
-	    }
-	    else if (includeSpans) {
-		// No foundries - but spans
-		regex.append("([^-is]|[-is][^:])");
-	    }
-	    else {
-		// No foundries - no spans
-		regex.append("([^-is<>]|[-is>][^:]|<[^:>])");
-	    };
-	    regex.append("(.){1,}|_[0-9]+");
+        try {
+            // Iterate over all atomic indices and find the matching document
+            for (AtomicReaderContext atomic : this.reader().leaves()) {
 
-	    if (DEBUG)
-		log.trace("The final regexString is {}", regex.toString());
-	    RegExp regexObj = new RegExp(regex.toString(), RegExp.COMPLEMENT);
-	    fst = new CompiledAutomaton(regexObj.toAutomaton());
-	    if (DEBUG)
-		log.trace("The final regexObj is {}", regexObj.toString());
-	};
+                // Retrieve the single document of interest
+                DocIdSet filterSet = filter.getDocIdSet(
+                    atomic,
+                    atomic.reader().getLiveDocs()
+                );
 
+                // Create a bitset for the correct document
+                Bits bitset = filterSet.bits();
 
-	try {
-	    // Iterate over all atomic indices and find the matching document
-	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+                DocIdSetIterator filterIterator = filterSet.iterator();
 
-		// Retrieve the single document of interest
-		DocIdSet filterSet = filter.getDocIdSet(
-		    atomic,
-		    atomic.reader().getLiveDocs()
-		);
+                // No document found
+                if (filterIterator == null)
+                    continue;
 
-		// Create a bitset for the correct document
-		Bits bitset = filterSet.bits();
+                // Go to the matching doc - and remember its ID
+                int localDocID = filterIterator.nextDoc();
 
-		DocIdSetIterator filterIterator = filterSet.iterator();
+                if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+                    continue;
 
-		// No document found
-		if (filterIterator == null)
-		    continue;
+                // We've found the correct document! Hurray!
+                if (DEBUG)
+                    log.trace("We've found a matching document");
 
-		// Go to the matching doc - and remember its ID
-		int localDocID = filterIterator.nextDoc();
+                HashSet<String> fields = (HashSet<String>)
+                    new KorapSearch().getFields().clone();
+                fields.add(field);
 
-		if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
-		    continue;
+                // Get terms from the document
+                Terms docTerms = atomic.reader().getTermVector(localDocID, field);
 
-		// We've found the correct document! Hurray!
-		if (DEBUG)
-		    log.trace("We've found a matching document");
+                // Load the necessary fields of the document
+                Document doc = atomic.reader().document(localDocID, fields);
 
-		HashSet<String> fields = (HashSet<String>)
-		    new KorapSearch().getFields().clone();
-		fields.add(field);
+                // Put some more information to the match
+                PositionsToOffset pto = new PositionsToOffset(atomic, field);
+                match.setPositionsToOffset(pto);
+                match.setLocalDocID(localDocID);
+                match.populateDocument(doc, field, fields);
+                if (DEBUG)
+                    log.trace("The document has the id '{}'", match.getDocID());
 
-		// Get terms from the document
-		Terms docTerms = atomic.reader().getTermVector(localDocID, field);
+                SearchContext context = match.getContext();
 
-		// Load the necessary fields of the document
-		Document doc = atomic.reader().document(localDocID, fields);
+                // Search for minimal surrounding sentences
+                if (extendToSentence) {
+                    int [] spanContext = match.expandContextToSpan("s");
+                    match.setStartPos(spanContext[0]);
+                    match.setEndPos(spanContext[1]);
+                    match.startMore = false;
+                    match.endMore = false;
+                }
+                else {
+                    if (DEBUG)
+                        log.trace("Don't expand context");
+                };
+                
+                context.left.setToken(true).setLength(0);
+                context.right.setToken(true).setLength(0);
 
-		// Put some more information to the match
-		PositionsToOffset pto = new PositionsToOffset(atomic, field);
-		match.setPositionsToOffset(pto);
-		match.setLocalDocID(localDocID);
-		match.populateDocument(doc, field, fields);
-		if (DEBUG)
-		    log.trace("The document has the id '{}'", match.getDocID());
+                if (!info)
+                    break;
 
-		SearchContext context = match.getContext();
+                // Limit the terms to all the terms of interest
+                TermsEnum termsEnum = docTerms.intersect(fst, null);
 
-		// Search for minimal surrounding sentences
-		if (extendToSentence) {
-		    int [] spanContext = match.expandContextToSpan("s");
-		    match.setStartPos(spanContext[0]);
-		    match.setEndPos(spanContext[1]);
-		    match.startMore = false;
-		    match.endMore = false;
-		}
-		else {
-		    if (DEBUG)
-			log.trace("Don't expand context");
-		};
-		
-		context.left.setToken(true).setLength(0);
-		context.right.setToken(true).setLength(0);
+                DocsAndPositionsEnum docs = null;
 
-		if (!info)
-		    break;
+                // List of terms to populate
+                SpanInfo termList = new SpanInfo(pto, localDocID);
+        
+                // Iterate over all terms in the document
+                while (termsEnum.next() != null) {
+                    
+                    // Get the positions and payloads of the term in the document
+                    // The bitvector may look different (don't know why)
+                    // and so the local ID may differ.
+                    // That's why the requesting bitset is null.
+                    docs = termsEnum.docsAndPositions(
+                        null,
+                        docs,
+                        DocsAndPositionsEnum.FLAG_PAYLOADS
+                    );
 
-		// Limit the terms to all the terms of interest
-		TermsEnum termsEnum = docTerms.intersect(fst, null);
+                    // Init document iterator
+                    docs.nextDoc();
 
-		DocsAndPositionsEnum docs = null;
+                    // Should never happen ... but hell.
+                    if (docs.docID() == DocIdSetIterator.NO_MORE_DOCS)
+                        continue;
 
-		// List of terms to populate
-		SpanInfo termList = new SpanInfo(pto, localDocID);
+                    // How often does this term occur in the document?
+                    int termOccurrences = docs.freq();
+                    
+                    // String representation of the term
+                    String termString = termsEnum.term().utf8ToString();
 
-		// Iterate over all terms in the document
-		while (termsEnum.next() != null) {
+                    // Iterate over all occurrences
+                    for (int i = 0; i < termOccurrences; i++) {
 
-		    // Get the positions and payloads of the term in the document
-		    // The bitvector may look different (don't know why)
-		    // and so the local ID may differ.
-		    // That's why the requesting bitset is null.
-		    docs = termsEnum.docsAndPositions(
-		        null,
-			docs,
-			DocsAndPositionsEnum.FLAG_PAYLOADS
-		    );
+                        // Init positions and get the current
+                        int pos = docs.nextPosition();
 
-		    // Init document iterator
-		    docs.nextDoc();
+                        // Check, if the position of the term is in the area of interest
+                        if (pos >= match.getStartPos() && pos < match.getEndPos()) {
 
-		    // Should never happen ... but hell.
-		    if (docs.docID() == DocIdSetIterator.NO_MORE_DOCS)
-			continue;
+                            if (DEBUG)
+                                log.trace(
+                                    ">> {}: {}-{}-{}",
+                                    termString, 
+                                    docs.freq(),
+                                    pos,
+                                    docs.getPayload()
+                                );
 
-		    // How often does this term occur in the document?
-		    int termOccurrences = docs.freq();
+                            BytesRef payload = docs.getPayload();
 
-		    // String representation of the term
-		    String termString = termsEnum.term().utf8ToString();
+                            // Copy the payload
+                            bbTerm.clear();
+                            if (payload != null) {
+                                bbTerm.put(
+                                    payload.bytes,
+                                    payload.offset,
+                                    payload.length
+                                );
+                            };
+                            TermInfo ti = new TermInfo(termString, pos, bbTerm).analyze();
+                            if (ti.getEndPos() < match.getEndPos()) {
+                                if (DEBUG)
+                                    log.trace("Add {}", ti.toString());
+                                termList.add(ti);
+                            };
+                        };
+                    };
+                };
 
-		    // Iterate over all occurrences
-		    for (int i = 0; i < termOccurrences; i++) {
+                // Add annotations based on the retrieved infos
+                for (TermInfo t : termList.getTerms()) {
+                    if (DEBUG)
+                        log.trace(
+                            "Add term {}/{}:{} to {}({})-{}({})",
+                            t.getFoundry(),
+                            t.getLayer(),
+                            t.getValue(),
+                            t.getStartChar(),
+                            t.getStartPos(),
+                            t.getEndChar(),
+                            t.getEndPos()
+                        );
 
-			// Init positions and get the current
-			int pos = docs.nextPosition();
+                    if (t.getType() == "term" || t.getType() == "span")
+                        match.addAnnotation(t.getStartPos(), t.getEndPos(), t.getAnnotation());
+                    else if (t.getType() == "relSrc")
+                        match.addRelation(t.getStartPos(), t.getEndPos(), t.getAnnotation());
+                };
+                
+                break;
+            };
+        }
+        catch (IOException e) {
+            log.warn(e.getLocalizedMessage());
+            match.setError(e.getLocalizedMessage());
+        };
 
-			// Check, if the position of the term is in the area of interest
-			if (pos >= match.getStartPos() && pos < match.getEndPos()) {
-
-			    if (DEBUG)
-				log.trace(
-					  ">> {}: {}-{}-{}",
-					  termString, 
-					  docs.freq(),
-					  pos,
-					  docs.getPayload()
-					  );
-
-			    BytesRef payload = docs.getPayload();
-
-			    // Copy the payload
-			    bbTerm.clear();
-			    if (payload != null) {
-				bbTerm.put(
-				    payload.bytes,
-				    payload.offset,
-				    payload.length
-				);
-			    };
-			    TermInfo ti = new TermInfo(termString, pos, bbTerm).analyze();
-			    if (ti.getEndPos() < match.getEndPos()) {
-				if (DEBUG)
-				    log.trace("Add {}", ti.toString());
-				termList.add(ti);
-			    };
-			};
-		    };
-		};
-
-		// Add annotations based on the retrieved infos
-		for (TermInfo t : termList.getTerms()) {
-		    if (DEBUG)
-			log.trace("Add term {}/{}:{} to {}({})-{}({})",
-			      t.getFoundry(),
-			      t.getLayer(),
-			      t.getValue(),
-			      t.getStartChar(),
-			      t.getStartPos(),
-			      t.getEndChar(),
-			      t.getEndPos());
-
-		    if (t.getType() == "term" || t.getType() == "span")
-			match.addAnnotation(t.getStartPos(), t.getEndPos(), t.getAnnotation());
-		    else if (t.getType() == "relSrc")
-			match.addRelation(t.getStartPos(), t.getEndPos(), t.getAnnotation());
-		};
-
-		break;
-	    };
-	}
-	catch (IOException e) {
-	    log.warn(e.getLocalizedMessage());
-	    match.setError(e.getLocalizedMessage());
-	};
-
-	return match;
+        return match;
     };
 
 
     @Deprecated
     public HashMap getTermRelation (String field) throws Exception {
-	return this.getTermRelation(new KorapCollection(this), field);
+        return this.getTermRelation(new KorapCollection(this), field);
     };
 
 
@@ -905,90 +978,86 @@ public class KorapIndex {
      */
     @Deprecated
     public HashMap getTermRelation (KorapCollection kc, String field) throws Exception {
-	HashMap<String,Long> map = new HashMap<>(100);
-	long docNumber = 0, checkNumber = 0;
+        HashMap<String,Long> map = new HashMap<>(100);
+        long docNumber = 0, checkNumber = 0;
+        
+        try {
+            if (kc.getCount() <= 0) {
+                checkNumber = (long) this.reader().numDocs();
+            };
 
-	try {
-	    if (kc.getCount() <= 0) {
-		checkNumber = (long) this.reader().numDocs();
-	    };
+            for (AtomicReaderContext atomic : this.reader().leaves()) {
+                HashMap<String,FixedBitSet> termVector = new HashMap<>(20);
+        
+                FixedBitSet docvec = kc.bits(atomic);
+                if (docvec != null) {
+                    docNumber += docvec.cardinality();		    
+                };
 
-	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+                Terms terms = atomic.reader().fields().terms(field);
 
-		HashMap<String,FixedBitSet> termVector = new HashMap<>(20);
-
-		FixedBitSet docvec = kc.bits(atomic);
-		if (docvec != null) {
-		    docNumber += docvec.cardinality();		    
-		};
-
-		Terms terms = atomic.reader().fields().terms(field);
-
-		if (terms == null) {
-		    continue;
-		};
+                if (terms == null) {
+                    continue;
+                };
 		
-		int docLength = atomic.reader().maxDoc();
-		FixedBitSet bitset = new FixedBitSet(docLength);
+                int docLength = atomic.reader().maxDoc();
+                FixedBitSet bitset = new FixedBitSet(docLength);
 
-		// Iterate over all tokens in this field
-		TermsEnum termsEnum = terms.iterator(null);
+                // Iterate over all tokens in this field
+                TermsEnum termsEnum = terms.iterator(null);
 
-		while (termsEnum.next() != null) {
+                while (termsEnum.next() != null) {
+                    
+                    String termString = termsEnum.term().utf8ToString();
 
-		    String termString = termsEnum.term().utf8ToString();
-
-		    bitset.clear(0,docLength);
+                    bitset.clear(0,docLength);
 	    
-		    // Get frequency
-		    bitset.or((DocIdSetIterator) termsEnum.docs((Bits) docvec, null));
+                    // Get frequency
+                    bitset.or((DocIdSetIterator) termsEnum.docs((Bits) docvec, null));
+            
+                    long value = 0;
+                    if (map.containsKey(termString))
+                        value = map.get(termString);
 
-		    long value = 0;
-		    if (map.containsKey(termString))
-			value = map.get(termString);
+                    map.put(termString, value + bitset.cardinality());
+                    
+                    termVector.put(termString, bitset.clone());
+                };
+                
+                int keySize = termVector.size();
+                String[] keys = termVector.keySet().toArray(new String[keySize]);
+                java.util.Arrays.sort(keys);
 
-		    map.put(termString, value + bitset.cardinality());
+                if (keySize > maxTermRelations) {
+                    throw new Exception(
+                        "termRelations are limited to " + maxTermRelations + " sets" +
+                        " (requested were at least " + keySize + " sets)"
+                    );
+                };
+                
+                for (int i = 0; i < keySize; i++) {
+                    for (int j = i+1; j < keySize; j++) {
+                        FixedBitSet comby = termVector.get(keys[i]).clone();
+                        comby.and(termVector.get(keys[j]));
 
-		    termVector.put(termString, bitset.clone());
-		};
-
-		int keySize = termVector.size();
-		String[] keys = termVector.keySet().toArray(new String[keySize]);
-		java.util.Arrays.sort(keys);
-
-
-		if (keySize > maxTermRelations) {
-		    throw new Exception(
-		      "termRelations are limited to " + maxTermRelations + " sets" +
-		      " (requested were at least " + keySize + " sets)"
-		    );
-		};
-		
-		for (int i = 0; i < keySize; i++) {
-		    for (int j = i+1; j < keySize; j++) {
-			FixedBitSet comby = termVector.get(keys[i]).clone();
-			comby.and(termVector.get(keys[j]));
-
-			StringBuilder sb = new StringBuilder();
-			sb.append("#__").append(keys[i]).append(":###:").append(keys[j]);
-			String combString = sb.toString();
-
-			long cap = (long) comby.cardinality();
-			if (map.containsKey(combString)) {
-			    cap += map.get(combString);
-			};
-			map.put(combString, cap);
-		    };
-		};
-	    };
-
-	    map.put("-docs", checkNumber != 0 ? checkNumber : docNumber);
-
-	}
-	catch (IOException e) {
-	    log.warn(e.getMessage());	    
-	};
-	return map;
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("#__").append(keys[i]).append(":###:").append(keys[j]);
+                        String combString = sb.toString();
+                        
+                        long cap = (long) comby.cardinality();
+                        if (map.containsKey(combString)) {
+                            cap += map.get(combString);
+                        };
+                        map.put(combString, cap);
+                    };
+                };
+            };
+            map.put("-docs", checkNumber != 0 ? checkNumber : docNumber);
+        }
+        catch (IOException e) {
+            log.warn(e.getMessage());	    
+        };
+        return map;
     };
 
     
@@ -996,51 +1065,60 @@ public class KorapIndex {
      * Search in the index.
      */
     public KorapResult search (SpanQuery query) {
-	return this.search(new KorapSearch(query));
+        return this.search(new KorapSearch(query));
     };
 
+
     public KorapResult search (SpanQuery query, short count) {
-	return this.search(
-	    new KorapSearch(query).setCount(count)
+        return this.search(
+            new KorapSearch(query).setCount(count)
         );
     };
 
-    // This should probably be deprecated
+
     @Deprecated
     public KorapResult search (SpanQuery query,
-			       int startIndex,
-			       short count,
-			       boolean leftTokenContext,
-			       short leftContext,
-			       boolean rightTokenContext,
-			       short rightContext) {
+                               int startIndex,
+                               short count,
+                               boolean leftTokenContext,
+                               short leftContext,
+                               boolean rightTokenContext,
+                               short rightContext) {
 
-	KorapSearch ks = new KorapSearch(query);
-	ks.setStartIndex(startIndex).setCount(count);
-	ks.setContext(new SearchContext(leftTokenContext, leftContext, rightTokenContext, rightContext));	
-	return this.search(ks);
+        KorapSearch ks = new KorapSearch(query);
+        ks.setStartIndex(startIndex).setCount(count);
+        ks.setContext(
+            new SearchContext(
+                leftTokenContext,
+                leftContext,
+                rightTokenContext,
+                rightContext
+            )
+        );	
+        return this.search(ks);
     };
+
 
     @Deprecated
     public KorapResult search (KorapCollection collection,
-			       SpanQuery query,
-			       int startIndex,
-			       short count,
-			       boolean leftTokenContext,
-			       short leftContext,
-			       boolean rightTokenContext,
-			       short rightContext) {
-	KorapSearch ks = new KorapSearch(query);
-	ks.setContext(
+                               SpanQuery query,
+                               int startIndex,
+                               short count,
+                               boolean leftTokenContext,
+                               short leftContext,
+                               boolean rightTokenContext,
+                               short rightContext) {
+        KorapSearch ks = new KorapSearch(query);
+        ks.setContext(
             new SearchContext(
                 leftTokenContext,
-		leftContext,
-		rightTokenContext,
-		rightContext
+                leftContext,
+                rightTokenContext,
+                rightContext
             )
         );
-	ks.setCollection(collection);
-	return this.search(ks);
+        ks.setCollection(collection);
+        return this.search(ks);
     };
 
 
@@ -1048,351 +1126,348 @@ public class KorapIndex {
      * Search the endpoint.
      */
     public KorapResult search (KorapSearch ks) {
-	if (DEBUG)
-	    log.trace("Start search");
+        if (DEBUG)
+            log.trace("Start search");
 
-	this.termContexts = new HashMap<Term, TermContext>();
+        this.termContexts = new HashMap<Term, TermContext>();
 
-	KorapCollection collection = ks.getCollection();
-	collection.setIndex(this);
+        KorapCollection collection = ks.getCollection();
+        collection.setIndex(this);
 
-	// Get the spanquery from the KorapSearch object
-	SpanQuery query = ks.getQuery();
+        // Get the spanquery from the KorapSearch object
+        SpanQuery query = ks.getQuery();
 
-	// Get the field of textual data and annotations ("tokens")
-	String field = query.getField();
+        // Get the field of textual data and annotations ("tokens")
+        String field = query.getField();
 
-	// Todo: Make kr subclassing ks - so ks has a method for a new KorapResult!
-	KorapResult kr = new KorapResult(
-	    query.toString(),
-	    ks.getStartIndex(),
-	    ks.getCount(),
-	    ks.getContext()
-	);
+        // Todo: Make kr subclassing ks - so ks has a method for a new KorapResult!
+        KorapResult kr = new KorapResult(
+            query.toString(),
+            ks.getStartIndex(),
+            ks.getCount(),
+            ks.getContext()
+        );
 
-	// Set version info to result
-	if (this.getVersion() != null)
-	    kr.setVersion(this.getVersion());
+        // Set version info to result
+        if (this.getVersion() != null)
+            kr.setVersion(this.getVersion());
 
-	// The following fields should be lifted for matches
-	HashSet<String> fields = (HashSet<String>) ks.getFields().clone();
-	fields.add(field);
+        // The following fields should be lifted for matches
+        HashSet<String> fields = (HashSet<String>) ks.getFields().clone();
+        fields.add(field);
 
-	// Some initializations ...
-	int i                       = 0,
-  	    startIndex              = kr.getStartIndex(),
-	    count                   = kr.getItemsPerPage(),
-	    hits                    = kr.getItemsPerPage() + startIndex,
-	    limit                   = ks.getLimit(),
-	    itemsPerResourceCounter = 0;
-	boolean cutoff              = ks.doCutOff();
-	short itemsPerResource      = ks.getItemsPerResource();
+        // Some initializations ...
+        int i                       = 0,
+            startIndex              = kr.getStartIndex(),
+            count                   = kr.getItemsPerPage(),
+            hits                    = kr.getItemsPerPage() + startIndex,
+            limit                   = ks.getLimit(),
+            itemsPerResourceCounter = 0;
+        boolean cutoff              = ks.doCutOff();
+        short itemsPerResource      = ks.getItemsPerResource();
 
-	// Check if there is work to do at all
-	if (limit > 0) {
-	    if (hits > limit)
-		hits = limit;
+        // Check if there is work to do at all
+        if (limit > 0) {
+            if (hits > limit)
+                hits = limit;
 
-	    // Nah - nothing to do! Let's go shopping!
-	    if (limit < startIndex)
-		return kr;
-	};
+            // Nah - nothing to do! Let's go shopping!
+            if (limit < startIndex)
+                return kr;
+        };
 
-	// Collect matches from atomic readers
-	ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.getItemsPerPage());
+        // Collect matches from atomic readers
+        ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.getItemsPerPage());
+        
+        // Start time out thread
+        TimeOutThread tthread = new TimeOutThread();
+        tthread.start();
+        long timeout = ks.getTimeOut();
 
-	// Start time out thread
-	TimeOutThread tthread = new TimeOutThread();
-	tthread.start();
-	long timeout = ks.getTimeOut();
+        // See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
+        long t1 = System.nanoTime();
 
-	// See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
-	long t1 = System.nanoTime();
-
-	try {
-
-	    // Rewrite query (for regex and wildcard queries)
-	    // Revise!
-	    // Based on core/src/java/org/apache/lucene/search/IndexSearcher.java
-	    // and highlighter/src/java/org/apache/lucene/search/postingshighlight/PostingsHighlighter.java
-	    for ( Query rewrittenQuery = query.rewrite(this.reader());
-                 !rewrittenQuery.equals(query);
-                 rewrittenQuery = query.rewrite(this.reader())) {
-		query = (SpanQuery) rewrittenQuery;
-	    };
+        try {
+            // Rewrite query (for regex and wildcard queries)
+            // Revise!
+            // Based on core/src/java/org/apache/lucene/search/IndexSearcher.java
+            // and highlighter/src/java/org/apache/lucene/search/postingshighlight/PostingsHighlighter.java
+            for ( Query rewrittenQuery = query.rewrite(this.reader());
+                  !rewrittenQuery.equals(query);
+                  rewrittenQuery = query.rewrite(this.reader())) {
+                query = (SpanQuery) rewrittenQuery;
+            };
 	    
 
-	    // Todo: run this in a separated thread
-	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+            // Todo: run this in a separated thread
+            for (AtomicReaderContext atomic : this.reader().leaves()) {
 
-		int oldLocalDocID = -1;
+                int oldLocalDocID = -1;
 
-		/*
-		 * Todo: There may be a way to know early if the bitset is emty
-		 * by using OpenBitSet - but this may not be as fast as I think.
-		 */
-		Bits bitset = collection.bits(atomic);
+                /*
+                 * Todo: There may be a way to know early if the bitset is emty
+                 * by using OpenBitSet - but this may not be as fast as I think.
+                 */
+                Bits bitset = collection.bits(atomic);
 
-		PositionsToOffset pto = new PositionsToOffset(atomic, field);
+                PositionsToOffset pto = new PositionsToOffset(atomic, field);
 
-		// Spans spans = NearSpansOrdered();
-		Spans spans = query.getSpans(atomic, (Bits) bitset, termContexts);
+                // Spans spans = NearSpansOrdered();
+                Spans spans = query.getSpans(atomic, (Bits) bitset, termContexts);
 
-		IndexReader lreader = atomic.reader();
+                IndexReader lreader = atomic.reader();
+                
+                // TODO: Get document information from Cache! Fieldcache?
+                for (; i < hits;i++) {
 
-		// TODO: Get document information from Cache! Fieldcache?
-		for (; i < hits;i++) {
+                    if (DEBUG)
+                        log.trace("Match Nr {}/{}", i, count);
+                    
+                    // There are no more spans to find
+                    if (!spans.next())
+                        break;
 
-		    if (DEBUG)
-			log.trace("Match Nr {}/{}", i, count);
+                    // Timeout!
+                    if (tthread.getTime() > timeout) {
+                        kr.setTimeExceeded(true);
+                        break;
+                    };
+                    
+                    int localDocID = spans.doc();
 
-		    // There are no more spans to find
-		    if (!spans.next())
-			break;
+                    // Count hits per resource
+                    if (itemsPerResource > 0) {
 
-		    // Timeout!
-		    if (tthread.getTime() > timeout) {
-			kr.setTimeExceeded(true);
-			break;
-		    };
+                        // IDS are identical
+                        if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
+                            if (itemsPerResourceCounter++ >= itemsPerResource) {
+                                if (spans.skipTo(localDocID + 1) != true) {
+                                    break;
+                                }
+                                else {
+                                    itemsPerResourceCounter = 1;
+                                    localDocID = spans.doc();
+                                };
+                            };
+                        }
+                        
+                        // Reset counter
+                        else
+                            itemsPerResourceCounter = 0;
+                        
+                        oldLocalDocID = localDocID;
+                    };
 
-		    int localDocID = spans.doc();
+                    // The next matches are not yet part of the result
+                    if (startIndex > i)
+                        continue;
 
-		    // Count hits per resource
-		    if (itemsPerResource > 0) {
+                    int docID = atomic.docBase + localDocID;
+                    
+                    // Do not load all of this, in case the doc is the same!
+                    Document doc = lreader.document(localDocID, fields);
+                    KorapMatch match = kr.addMatch(
+                        pto,
+                        localDocID,
+                        spans.start(),
+                        spans.end()
+                    );
 
-			// IDS are identical
-			if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
-			    if (itemsPerResourceCounter++ >= itemsPerResource) {
-				if (spans.skipTo(localDocID + 1) != true) {
-				    break;
-				}
-				else {
-				    itemsPerResourceCounter = 1;
-				    localDocID = spans.doc();
-				};
-			    };
-			}
+                    if (spans.isPayloadAvailable())
+                        match.addPayload((List<byte[]>) spans.getPayload());
 
-			// Reset counter
-			else
-			    itemsPerResourceCounter = 0;
-
-			oldLocalDocID = localDocID;
-		    };
-
-		    // The next matches are not yet part of the result
-		    if (startIndex > i)
-			continue;
-
-		    int docID = atomic.docBase + localDocID;
-
-		    // Do not load all of this, in case the doc is the same!
-		    Document doc = lreader.document(localDocID, fields);
-		    KorapMatch match = kr.addMatch(
-		        pto,
-			localDocID,
-			spans.start(),
-			spans.end()
-		    ); // new KorapMatch();
-
-		    if (spans.isPayloadAvailable())
-			match.addPayload((List<byte[]>) spans.getPayload());
-
-		    match.internalDocID = docID;
-		    match.populateDocument(doc, field, fields);
+                    match.internalDocID = docID;
+                    match.populateDocument(doc, field, fields);
 		    
-		    if (DEBUG) {
-			if (match.getDocID() != null)
-			    log.trace("I've got a match in {} of {}",
-				      match.getDocID(), count);
-			else
-			    log.trace("I've got a match in {} of {}",
-				      match.getUID(), count);
-		    };
+                    if (DEBUG) {
+                        if (match.getDocID() != null)
+                            log.trace("I've got a match in {} of {}",
+                                      match.getDocID(), count);
+                        else
+                            log.trace("I've got a match in {} of {}",
+                                      match.getUID(), count);
+                    };
+                    
+                    atomicMatches.add(match);
+                };
 
-		    atomicMatches.add(match);
-		};
+                // Can be disabled TEMPORARILY
+                while (!cutoff && spans.next()) {
+                    if (limit > 0 && i >= limit)
+                        break;
+                    
+                    // Timeout!
+                    if (tthread.getTime() > timeout) {
+                        kr.setTimeExceeded(true);
+                        break;
+                    };
 
-		// Can be disabled TEMPORARILY
-		while (!cutoff && spans.next()) {
-		    if (limit > 0 && i >= limit)
-			break;
+                    // Count hits per resource
+                    if (itemsPerResource > 0) {
+                        int localDocID = spans.doc();
 
-		    // Timeout!
-		    if (tthread.getTime() > timeout) {
-			kr.setTimeExceeded(true);
-			break;
-		    };
-
-		    // Count hits per resource
-		    if (itemsPerResource > 0) {
-			int localDocID = spans.doc();
-
-			if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
-			    break;
+                        if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+                            break;
 			
-			// IDS are identical
-			if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
-			    if (localDocID == -1)
-				break;
+                        // IDS are identical
+                        if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
+                            if (localDocID == -1)
+                                break;
 
-			    if (itemsPerResourceCounter++ >= itemsPerResource) {
-				if (spans.skipTo(localDocID + 1) != true) {
-				    break;
-				};
-				itemsPerResourceCounter = 1;
-				localDocID = spans.doc();
-				// continue;
-			    };
-			}
+                            if (itemsPerResourceCounter++ >= itemsPerResource) {
+                                if (spans.skipTo(localDocID + 1) != true) {
+                                    break;
+                                };
+                                itemsPerResourceCounter = 1;
+                                localDocID = spans.doc();
+                            };
+                        }
 
-			// Reset counter
-			else
-			    itemsPerResourceCounter = 0;
+                        // Reset counter
+                        else
+                            itemsPerResourceCounter = 0;
 
-			oldLocalDocID = localDocID;
-		    };
-		    i++;
-		};
-		atomicMatches.clear();
-	    };
+                        oldLocalDocID = localDocID;
+                    };
+                    i++;
+                };
+                atomicMatches.clear();
+            };
 
-	    if (itemsPerResource > 0)
-		kr.setItemsPerResource(itemsPerResource);
+            if (itemsPerResource > 0)
+                kr.setItemsPerResource(itemsPerResource);
 
-	    kr.setTotalResults(cutoff ? (long) -1 : (long) i);
-	}
-	catch (IOException e) {
-	    kr.addError(
-	        600,
-		"Unable to read index",
-		e.getLocalizedMessage()
-	    );
-	    log.warn( e.getLocalizedMessage() );
-	};
+            kr.setTotalResults(cutoff ? (long) -1 : (long) i);
+        }
+        catch (IOException e) {
+            kr.addError(
+                600,
+                "Unable to read index",
+                e.getLocalizedMessage()
+            );
+            log.warn( e.getLocalizedMessage() );
+        };
 
-	// Stop timer thread
-	tthread.stopTimer();
+        // Stop timer thread
+        tthread.stopTimer();
 
-	// Calculate time
-	kr.setBenchmark(t1, System.nanoTime());
+        // Calculate time
+        kr.setBenchmark(t1, System.nanoTime());
 
-	return kr;
+        return kr;
     };
 
 
     // Collect matches
     public MatchCollector collect (KorapSearch ks, MatchCollector mc) {
-	if (DEBUG)
-	    log.trace("Start collecting");
+        if (DEBUG)
+            log.trace("Start collecting");
 
-	KorapCollection collection = ks.getCollection();
-	collection.setIndex(this);
+        KorapCollection collection = ks.getCollection();
+        collection.setIndex(this);
 
-	// Init term context
-	this.termContexts = new HashMap<Term, TermContext>();
+        // Init term context
+        this.termContexts = new HashMap<Term, TermContext>();
 
-	// Get span query
-	SpanQuery query = ks.getQuery();
+        // Get span query
+        SpanQuery query = ks.getQuery();
 
-	// Get the field of textual data and annotations
-	String field = query.getField();
+        // Get the field of textual data and annotations
+        String field = query.getField();
 
-	// TODO: Get document information from Cache!
-	// See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
-	long t1 = System.nanoTime();
+        // TODO: Get document information from Cache!
+        // See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
+        long t1 = System.nanoTime();
 
-	// Only load UIDs
-	HashSet<String> fields = new HashSet<>(1);
-	fields.add("UID");
+        // Only load UIDs
+        HashSet<String> fields = new HashSet<>(1);
+        fields.add("UID");
 
-	// List<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(10);
+        // List<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(10);
+        try {
 
-	try {
-
-	    // Rewrite query (for regex and wildcard queries)
-	    for (Query rewrittenQuery = query.rewrite(this.reader());
+            // Rewrite query (for regex and wildcard queries)
+            for (Query rewrittenQuery = query.rewrite(this.reader());
                  rewrittenQuery != (Query) query;
                  rewrittenQuery = query.rewrite(this.reader())) {
-		query = (SpanQuery) rewrittenQuery;
-	    };
+                query = (SpanQuery) rewrittenQuery;
+            };
 
-	    int matchcount = 0;
-	    String uniqueDocIDString;;
-	    int uniqueDocID = -1;
+            int matchcount = 0;
+            String uniqueDocIDString;;
+            int uniqueDocID = -1;
 
-	    // start thread:
-	    for (AtomicReaderContext atomic : this.reader().leaves()) {
+            // start thread:
+            for (AtomicReaderContext atomic : this.reader().leaves()) {
 
-		int previousDocID = -1;
-		int oldLocalDocID = -1;
+                int previousDocID = -1;
+                int oldLocalDocID = -1;
 
-		// Use OpenBitSet;
-		Bits bitset = collection.bits(atomic);
+                // Use OpenBitSet;
+                Bits bitset = collection.bits(atomic);
 
-		// PositionsToOffset pto = new PositionsToOffset(atomic, field);
+                // PositionsToOffset pto = new PositionsToOffset(atomic, field);
+                
+                Spans spans = query.getSpans(atomic, (Bits) bitset, termContexts);
 
-		Spans spans = query.getSpans(atomic, (Bits) bitset, termContexts);
+                IndexReader lreader = atomic.reader();
 
-		IndexReader lreader = atomic.reader();
+                while (spans.next()) {
+                    int localDocID = spans.doc();
 
-		while (spans.next()) {
-		    int localDocID = spans.doc();
+                    // New match
+                    // MatchIdentifier possibly needs more
+                    /*
+                      KorapMatch match = new KorapMatch();
+                      match.setStartPos(spans.start());
+                      match.setEndPos(spans.end());
+                      
+                      // Add payload information to match
+                      if (spans.isPayloadAvailable())
+                      match.addPayload(spans.getPayload());
+                    */
 
-		    // New match
-		    // MatchIdentifier possibly needs more
-		    /*
-		    KorapMatch match = new KorapMatch();
-		    match.setStartPos(spans.start());
-		    match.setEndPos(spans.end());
+                    if (previousDocID != localDocID) {
+                        if (matchcount > 0) {
+                            mc.add(uniqueDocID, matchcount);
+                            matchcount = 0;
+                        };
 
-		    // Add payload information to match
-		    if (spans.isPayloadAvailable())
-			match.addPayload(spans.getPayload());
-		    */
+                        // Read document id from index
+                        uniqueDocIDString =
+                            lreader.document(localDocID, fields).get("UID");
 
-		    if (previousDocID != localDocID) {
-			if (matchcount > 0) {
-			    mc.add(uniqueDocID, matchcount);
-			    matchcount = 0;
-			};
+                        if (uniqueDocIDString != null)
+                            uniqueDocID = Integer.parseInt(uniqueDocIDString);
+                        
+                        previousDocID = localDocID;
+                    }
+                    else {
+                        matchcount++;
+                    };
+                };
 
-			// Read document id from index
-			uniqueDocIDString =
-			    lreader.document(localDocID, fields).get("UID");
+                // Add count to collector
+                if (matchcount > 0) {
+                    mc.add(uniqueDocID, matchcount);
+                    matchcount = 0;
+                };
+            };
+            // end thread
 
-			if (uniqueDocIDString != null)
-			    uniqueDocID = Integer.parseInt(uniqueDocIDString);
-
-			previousDocID = localDocID;
-		    }
-		    else {
-			matchcount++;
-		    };
-		};
-
-		// Add count to collector
-		if (matchcount > 0) {
-		    mc.add(uniqueDocID, matchcount);
-		    matchcount = 0;
-		};
-	    };
-	    // end thread
-
-	    // Benchmark the collector
-	    mc.setBenchmark(t1, System.nanoTime());
-	}
-	catch (IOException e) {
-	    mc.addError(
-	        600,
-	        "Unable to read index",
-	        e.getLocalizedMessage()
+            // Benchmark the collector
+            mc.setBenchmark(t1, System.nanoTime());
+        }
+        catch (IOException e) {
+            mc.addError(
+                600,
+                "Unable to read index",
+                e.getLocalizedMessage()
             );
-	    log.warn(e.getLocalizedMessage());
-	};
+            log.warn(e.getLocalizedMessage());
+        };
 
-	mc.close();
-	return mc; 
+        mc.close();
+        return mc; 
     };
 };

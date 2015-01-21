@@ -26,11 +26,14 @@ import java.util.*;
 */
 
 /**
- * @author Nils Diewald
+ * FieldDocument represents a simple API to create documents
+ * for storing with KorapIndex. <i>Field</i> in the name resembles
+ * the meaning of Lucene index fields.
  *
- * FieldDocument implements a simple API to create documents for storing with KorapIndex.
+ * @author diewald
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+// @JsonDeserialize(using = FieldDocumentDeserializer.class)
 public class FieldDocument extends KorapDocument {
     ObjectMapper mapper = new ObjectMapper();
 

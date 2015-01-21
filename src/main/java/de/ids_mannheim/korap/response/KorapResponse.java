@@ -4,13 +4,12 @@ import java.util.*;
 import java.io.*;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import de.ids_mannheim.korap.response.Notifications;
-import de.ids_mannheim.korap.response.serialize.KorapResponseDeserializer;
 
 /**
  * Base class for objects meant to be responded by the server.
@@ -23,11 +22,11 @@ import de.ids_mannheim.korap.response.serialize.KorapResponseDeserializer;
  *   );
  * </pre></blockquote>
  *
- * @author Nils Diewald
- * @see de.ids_mannheim.korap.response.Notifications
- * @see de.ids_mannheim.korap.response.serialize.KorapResponseDeserializer
+ * @author diewald
+ * @see Notifications
  */
-@JsonDeserialize(using = KorapResponseDeserializer.class)
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class KorapResponse extends Notifications {
     ObjectMapper mapper = new ObjectMapper();
 
@@ -35,11 +34,8 @@ public class KorapResponse extends Notifications {
     private String benchmark;
     private boolean timeExceeded = false;
 
-
     /**
      * Construct a new KorapResponse object.
-     *
-     * @return The new KorapResponse object
      */
     public KorapResponse () {};
 
@@ -49,7 +45,6 @@ public class KorapResponse extends Notifications {
      *
      * @return String representation of the backend's version
      */
-    @JsonIgnore
     public String getVersion () {
         return this.version;
     };
@@ -61,9 +56,18 @@ public class KorapResponse extends Notifications {
      * @param version The string representation of the backend's version
      * @return KorapResponse object for chaining
      */
-    @JsonIgnore
-    public KorapResponse setVersion (String version) {
-        this.version = version;
+    public KorapResponse setVersion (String fullVersion) {
+        int found = fullVersion.lastIndexOf('-');
+
+        // Is combined name and version
+        if (found > 0 && (found + 1 < fullVersion.length())) {
+            this.setName(fullVersion.substring(0, found));
+            this.version = fullVersion.substring(found + 1);
+        }
+        // Is only version number
+        else {
+            this.version = fullVersion;
+        };
         return this;
     };
 
@@ -74,7 +78,6 @@ public class KorapResponse extends Notifications {
      *
      * @return String representation of the backend's name
      */
-    @JsonIgnore
     public String getName () {
         return this.name;
     };
@@ -84,10 +87,9 @@ public class KorapResponse extends Notifications {
      * Set the string representation of the backend's name.
      * All nodes in a cluster should have the same backend name.
      *
-     * @param version The string representation of the backend's name
+     * @param name The string representation of the backend's name
      * @return KorapResponse object for chaining
      */
-    @JsonIgnore
     public KorapResponse setName (String name) {
         this.name = name;
         return this;
@@ -100,7 +102,6 @@ public class KorapResponse extends Notifications {
      *
      * @return String representation of the node's name
      */
-    @JsonIgnore
     public String getNode () {
         return this.node;
     };
@@ -113,7 +114,6 @@ public class KorapResponse extends Notifications {
      * @param version The string representation of the node's name
      * @return KorapResponse object for chaining
      */
-    @JsonIgnore
     public KorapResponse setNode (String name) {
         this.node = name;
         return this;
@@ -139,11 +139,10 @@ public class KorapResponse extends Notifications {
      * <p>
      * Will add a warning (682) to the output.
      *
-     * @param timeout Either <tt>true</tt> or <tt>false</tt>, in case the response
-     *        timed out
+     * @param timeout Either <tt>true</tt> or <tt>false</tt>,
+     * in case the response timed out
      * @return KorapResponse object for chaining
      */
-    @JsonIgnore
     public KorapResponse setTimeExceeded (boolean timeout) {
         if (timeout)
             this.addWarning(682, "Response time exceeded");
@@ -158,7 +157,6 @@ public class KorapResponse extends Notifications {
      * @return String representation of the benchmark
      *         (including trailing time unit)
      */
-    @JsonIgnore
     public String getBenchmark () {
         return this.benchmark;
     };
@@ -190,7 +188,6 @@ public class KorapResponse extends Notifications {
      *           (including trailing time unit)
      * @return KorapResponse for chaining
      */
-    @JsonIgnore
     public KorapResponse setBenchmark (String bm) {
         this.benchmark = bm;
         return this;
@@ -202,7 +199,6 @@ public class KorapResponse extends Notifications {
      *
      * @return The listener URI as a string representation
      */
-    @JsonIgnore
     public String getListener () {
         return this.listener;
     };
@@ -220,7 +216,6 @@ public class KorapResponse extends Notifications {
      * @param listener String representation of the listener URI
      * @return KorapResponse object for chaining
      */
-    @JsonIgnore
     public KorapResponse setListener (String listener) {
         this.listener = listener;
         return this;
@@ -228,9 +223,9 @@ public class KorapResponse extends Notifications {
 
 
     /**
-     * Serialize response as a JsonNode.
+     * Serialize response as a {@link JsonNode}.
      *
-     * @return JsonNode representation of the response
+     * @return {@link JsonNode} representation of the response
      */
     @Override
     public JsonNode toJsonNode () {

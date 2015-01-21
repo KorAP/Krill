@@ -21,13 +21,13 @@ import com.mchange.v2.c3p0.*;
 /**
  * Standalone REST-Service for the Lucene Search Backend.
  *
- * @author Nils Diewald
+ * @author diewald
  */
 public class KorapNode {
 
     // Base URI the Grizzly HTTP server will listen on
     public static String BASE_URI = "http://localhost:8080/";
-
+    
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
 
@@ -41,7 +41,7 @@ public class KorapNode {
 
     private static String dbClass = "org.sqlite.JDBC";
     private static String dbURL   = "jdbc:sqlite:";
-
+    
     /*
      * Todo: Add shutdown hook,
      * Then also close cdps.close();
@@ -55,50 +55,51 @@ public class KorapNode {
      */
     public static HttpServer startServer() {
 
-	// Load configuration
-	try {
-	    InputStream file = new FileInputStream(
-	      KorapNode.class.getClassLoader().getResource("server.properties").getFile()
+        // Load configuration
+        try {
+            InputStream file = new FileInputStream(
+                KorapNode.class.getClassLoader()
+                .getResource("server.properties")
+                .getFile()
             );
-	    Properties prop = new Properties();
-	    prop.load(file);
+            Properties prop = new Properties();
+            prop.load(file);
 
-	    // Node properties
-	    path     = prop.getProperty("lucene.indexDir", path);
-	    name     = prop.getProperty("lucene.node.name", name);
-	    BASE_URI = prop.getProperty("lucene.node.baseURI", BASE_URI);
+            // Node properties
+            path     = prop.getProperty("lucene.indexDir", path);
+            name     = prop.getProperty("lucene.node.name", name);
+            BASE_URI = prop.getProperty("lucene.node.baseURI", BASE_URI);
 
-	    // Database properties
-	    dbUser  = prop.getProperty("lucene.db.user",    dbUser);
-	    dbPwd   = prop.getProperty("lucene.db.pwd",     dbPwd);
-	    dbClass = prop.getProperty("lucene.db.class",   dbClass);
-	    dbURL   = prop.getProperty("lucene.db.jdbcURL", dbURL);
+            // Database properties
+            dbUser  = prop.getProperty("lucene.db.user",    dbUser);
+            dbPwd   = prop.getProperty("lucene.db.pwd",     dbPwd);
+            dbClass = prop.getProperty("lucene.db.class",   dbClass);
+            dbURL   = prop.getProperty("lucene.db.jdbcURL", dbURL);
 
-	}
-	catch (IOException e) {
-	    log.error(e.getLocalizedMessage());
-	};
+        }
+        catch (IOException e) {
+            log.error(e.getLocalizedMessage());
+        };
 
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
         final ResourceConfig rc =
-	    new ResourceConfig().packages("de.ids_mannheim.korap.server");
+            new ResourceConfig().packages("de.ids_mannheim.korap.server");
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
     };
 
-
     public static HttpServer startServer(String nodeName, String indexPath) {
 
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
         final ResourceConfig rc =
-	    new ResourceConfig().packages("de.ids_mannheim.korap.server");
+            new ResourceConfig().packages("de.ids_mannheim.korap.server");
 
-	name = nodeName;
-	path = indexPath;
+        name = nodeName;
+        path = indexPath;
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
@@ -112,107 +113,106 @@ public class KorapNode {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-	// WADL available at BASE_URI + application.wadl
+        // WADL available at BASE_URI + application.wadl
 
         final HttpServer server = startServer();
 
-	// Establish shutdown hook
-	Runtime.getRuntime().addShutdownHook(
+        // Establish shutdown hook
+        Runtime.getRuntime().addShutdownHook(
             new Thread(
-	        new Runnable() {
-		    @Override
-		    public void run() {
-			log.info("Stup Server");
-			// staaahp!
-			server.stop();
-		    }
-		},
-		"shutdownHook"
-	    )
-	);
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        log.info("Stup Server");
+                        // staaahp!
+                        server.stop();
+                    }
+                },
+                "shutdownHook"
+            )
+        );
 
-	// Start server
-	try {
-	    server.start();
-	    log.info("You may kill me gently with Ctrl+C");
-	    Thread.currentThread().join();
-	}
-	catch (Exception e) {
-	    log.error("Unable to start server: {}", e.getLocalizedMessage());
-	};
+        // Start server
+        try {
+            server.start();
+            log.info("You may kill me gently with Ctrl+C");
+            Thread.currentThread().join();
+        }
+        catch (Exception e) {
+            log.error("Unable to start server: {}", e.getLocalizedMessage());
+        };
     };
-
 
     // What's the servers name?
     public static String getName () {
-	return name;
+        return name;
     };
 
 
     // What is the server listening on?
     public static String getListener () {
-	return BASE_URI;
+        return BASE_URI;
     };
 
 
     // Get database pool
     public static ComboPooledDataSource getDBPool () {
 
-	// Pool already initiated
-	if (cpds != null)
-	    return cpds;
+        // Pool already initiated
+        if (cpds != null)
+            return cpds;
+        
+        try {
 
-	try {
-
-	    // Parameters are defined in the property file
-	    cpds = new ComboPooledDataSource();
-	    cpds.setDriverClass(dbClass);
-	    cpds.setJdbcUrl(dbURL);
-	    if (dbUser != null)
-		cpds.setUser(dbUser);
-	    if (dbPwd != null)
-		cpds.setPassword(dbPwd);
-	    cpds.setMaxStatements(100);
-	    return cpds;
-	}
-	catch (PropertyVetoException e) {
-	    log.error(e.getLocalizedMessage());
-	};
-	return null;
+            // Parameters are defined in the property file
+            cpds = new ComboPooledDataSource();
+            cpds.setDriverClass(dbClass);
+            cpds.setJdbcUrl(dbURL);
+            if (dbUser != null)
+                cpds.setUser(dbUser);
+            if (dbPwd != null)
+                cpds.setPassword(dbPwd);
+            cpds.setMaxStatements(100);
+            return cpds;
+        }
+        catch (PropertyVetoException e) {
+            log.error(e.getLocalizedMessage());
+        };
+        return null;
     };
 
 
     // Get Lucene Index
     public static KorapIndex getIndex () {
 
-	// Index already instantiated
-	if (index != null)
-	    return index;
-
+        // Index already instantiated
+        if (index != null)
+            return index;
+        
     	try {
 
-	    // Get a temporary index
-	    if (path == null)
-		// Temporary index
-		index = new KorapIndex();
+            // Get a temporary index
+            if (path == null)
+                // Temporary index
+                index = new KorapIndex();
 
-	    else {
-		File file = new File(path);
+            else {
+                File file = new File(path);
 
-		log.info("Loading index from {}", path);
-		if (!file.exists()) {
-		    log.error("Index not found at {}", path);
-		    return null;
-		};
+                log.info("Loading index from {}", path);
+                if (!file.exists()) {
+                    log.error("Index not found at {}", path);
+                    return null;
+                };
 
-		// Set real index
-		index = new KorapIndex(new MMapDirectory(file));
-	    };
-	    return index;
-	}
-	catch (IOException e) {
-	    log.error("Index not loadable at {}: {}", path, e.getMessage());
-	};
-	return null;
+                // Set real index
+                index = new KorapIndex(new MMapDirectory(file));
+            };
+            return index;
+        }
+        catch (IOException e) {
+            log.error("Index not loadable at {}: {}", path, e.getMessage());
+        };
+        return null;
     };
 };

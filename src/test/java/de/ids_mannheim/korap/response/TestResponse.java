@@ -86,6 +86,7 @@ public class TestResponse {
     public void testResponseDeserialzation () throws IOException {
         String jsonResponse = "{\"version\":\"0.38\"}";
         KorapResponse kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+
         assertEquals("0.38", kresp.getVersion());
         assertNull(kresp.getName());
         assertEquals(jsonResponse, kresp.toJsonString());
@@ -142,9 +143,11 @@ public class TestResponse {
         assertTrue(kresp.hasErrors());
         assertFalse(kresp.hasMessages());
         assertEquals(kresp.getError(0).getMessage(), "This is a single error");
-        assertEquals(kresp.getWarning(0).getMessage(), "Response time exceeded");
-        assertEquals(kresp.getWarning(1).getMessage(), "This is a warning");
-        assertEquals(kresp.getWarning(2).getMessage(), "This is a second warning");
+
+        // THIS MAY BREAK!
+        assertEquals(kresp.getWarning(0).getMessage(), "This is a warning");
+        assertEquals(kresp.getWarning(1).getMessage(), "This is a second warning");
+        assertEquals(kresp.getWarning(2).getMessage(), "Response time exceeded");
         assertEquals("0.49", kresp.getVersion());
         assertEquals("seaweed", kresp.getName());
         assertEquals("40.5s", kresp.getBenchmark());

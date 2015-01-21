@@ -40,7 +40,6 @@ public abstract class KorapDocument extends KorapResponse {
         // newly added
         creationDate;
 
-
     private String
 
         // No longer supported
@@ -76,10 +75,9 @@ public abstract class KorapDocument extends KorapResponse {
 
     /**
      * Get the publication date of the document
-     * as a KorapDate object.
+     * as a {@link KorapDate} object.
      *
-     * @return A KorapDate object for chaining.
-     * @see KorapDate
+     * @return A {@link KorapDate} object for chaining.
      */
     @JsonIgnore
     public KorapDate getPubDate () {
@@ -91,8 +89,7 @@ public abstract class KorapDocument extends KorapResponse {
      * Get the publication date of the document
      * as a string.
      *
-     * @return A string containing the KorapDate.
-     * @see KorapDate
+     * @return A string containing the {@link KorapDate}.
      */    
     @JsonProperty("pubDate")
     public String getPubDateString () {
@@ -105,9 +102,9 @@ public abstract class KorapDocument extends KorapResponse {
     /**
      * Set the publication date of the document.
      *
-     * @param date The date as a KorapDate compatible string representation.
-     * @return A KorapDate object for chaining.
-     * @see KorapDate#Constructor(String)
+     * @param date The date as a {@link KorapDate}
+     * compatible string representation.
+     * @return A {@link KorapDate} object for chaining.
      */
     public KorapDate setPubDate (String date) {
         this.pubDate = new KorapDate(date);
@@ -118,9 +115,8 @@ public abstract class KorapDocument extends KorapResponse {
     /**
      * Set the publication date of the document.
      *
-     * @param date The date as a KorapDate object.
-     * @return A KorapDate object for chaining.
-     * @see KorapDate
+     * @param date The date as a {@link KorapDate} object.
+     * @return A {@link KorapDate} object for chaining.
      */
     public KorapDate setPubDate (KorapDate date) {
         return (this.pubDate = date);
@@ -129,10 +125,9 @@ public abstract class KorapDocument extends KorapResponse {
 
     /**
      * Get the creation date of the document
-     * as a KorapDate object.
+     * as a {@link KorapDate} object.
      *
-     * @return A KorapDate object for chaining.
-     * @see KorapDate
+     * @return A {@link KorapDate} object for chaining.
      */
     @JsonIgnore
     public KorapDate getCreationDate () {
@@ -144,8 +139,7 @@ public abstract class KorapDocument extends KorapResponse {
      * Get the creation date of the document
      * as a string.
      *
-     * @return A string containing the KorapDate.
-     * @see KorapDate
+     * @return A string containing the {@link KorapDate}.
      */
     @JsonProperty("creationDate")
     public String getCreationDateString () {
@@ -158,9 +152,9 @@ public abstract class KorapDocument extends KorapResponse {
     /**
      * Set the creation date of the document.
      *
-     * @param date The date as a KorapDate compatible string representation.
-     * @return A KorapDate object for chaining.
-     * @see KorapDate#Constructor(String)
+     * @param date The date as a {@link KorapDate}
+     * compatible string representation.
+     * @return A {@link KorapDate} object for chaining.
      */
     public KorapDate setCreationDate (String date) {
         this.creationDate = new KorapDate(date);
@@ -171,9 +165,8 @@ public abstract class KorapDocument extends KorapResponse {
     /**
      * Set the creation date of the document.
      *
-     * @param date The date as a KorapDate object.
-     * @return A KorapDate object for chaining.
-     * @see KorapDate
+     * @param date The date as a {@link KorapDate} object.
+     * @return A {@link KorapDate} object for chaining.
      */
     public KorapDate setCreationDate (KorapDate date) {
         return (this.creationDate = date);

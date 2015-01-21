@@ -63,11 +63,25 @@ public class Notifications {
     /**
      * Return all warnings.
      *
-     * @return The <code>Messages</code> object representing all warnings
+     * @return {@link Messages} representing all warnings
      */
     public Messages getWarnings () {
         return this.warnings;
     };
+
+
+    /**
+     * Set warnings by means of a {@link JsonNode}.
+     *
+     * @param msgs JSON array of warnings.
+     * @return Notifications object for chaining.
+     */
+    public Notifications setWarnings (JsonNode msgs) {
+        for (JsonNode msg : msgs)
+            this.addWarning(msg);
+        return this;
+    };
+
 
 
     /**
@@ -98,11 +112,10 @@ public class Notifications {
         return this;
     };
 
-    
     /**
      * Appends a new warning.
      *
-     * @param node  <code>JsonNode</code> representing a warning message
+     * @param node  {@link JsonNode} representing a warning message
      * @return Notification object for chaining
      */
     public Notifications addWarning (JsonNode node) {
@@ -123,7 +136,7 @@ public class Notifications {
     /**
      * Appends new warnings.
      *
-     * @param msgs  <code>Messages</code> representing multiple warnings
+     * @param msgs  {@link Messages} representing multiple warnings
      * @return Notification object for chaining
      */
     public Notifications addWarnings (Messages msgs) {
@@ -138,10 +151,23 @@ public class Notifications {
     /**
      * Return all errors.
      *
-     * @return The <code>Messages</code> object representing all errors
+     * @return The {@link Messages} object representing all errors
      */
     public Messages getErrors () {
         return this.errors;
+    };
+
+
+    /**
+     * Set errors by means of a {@link JsonNode}.
+     *
+     * @param msgs JSON array of errors.
+     * @return Notifications object for chaining.
+     */
+    public Notifications setErrors (JsonNode msgs) {
+        for (JsonNode msg : msgs)
+            this.addError(msg);
+        return this;
     };
 
 
@@ -189,7 +215,7 @@ public class Notifications {
     /**
      * Appends a new error.
      *
-     * @param node  <code>JsonNode</code> representing an error message
+     * @param node  {@link JsonNode} representing an error message
      * @return Notification object for chaining
      */
     public Notifications addError (JsonNode msg) {
@@ -209,7 +235,7 @@ public class Notifications {
     /**
      * Appends new errors.
      *
-     * @param msgs  <code>Messages</code> representing multiple errors
+     * @param msgs  {@link Messages} representing multiple errors
      * @return Notification object for chaining
      */
     public Notifications addErrors (Messages msgs) {
@@ -224,11 +250,25 @@ public class Notifications {
     /**
      * Return all messages.
      *
-     * @return The <code>Messages</code> object representing all messages
+     * @return {@link Messages} representing all messages
      */
     public Messages getMessages () {
         return this.messages;
     };
+
+
+    /**
+     * Set messages by means of a {@link JsonNode}.
+     *
+     * @param msgs JSON array of messages.
+     * @return Notifications object for chaining.
+     */
+    public Notifications setMessages (JsonNode msgs) {
+        for (JsonNode msg : msgs)
+            this.addMessage(msg);
+        return this;
+    };
+
 
     /**
      * Return a specific message based on an index.
@@ -274,7 +314,7 @@ public class Notifications {
     /**
      * Appends a new message.
      *
-     * @param node  <code>JsonNode</code> representing a message
+     * @param node  {@link JsonNode} representing a message
      * @return Notification object for chaining
      */
     public Notifications addMessage (JsonNode msg) {
@@ -293,7 +333,7 @@ public class Notifications {
     /**
      * Appends new messages.
      *
-     * @param msgs  <code>Messages</code> representing multiple messages
+     * @param msgs  {@link Messages} representing multiple messages
      * @return Notification object for chaining
      */
     public Notifications addMessages (Messages msgs) {
@@ -306,7 +346,7 @@ public class Notifications {
 
 
     /**
-     * Copy notifications from one notification object.
+     * Copy notifications from another notification object.
      *
      * @param notes Notification object to copy notifications from.
      * @return Notification object for chaining
@@ -327,9 +367,9 @@ public class Notifications {
 
 
     /**
-     * Copy notifications from a JsonNode object.
+     * Copy notifications from a {@link JsonNode} object.
      *
-     * @param request Notifications containing JsonNode.
+     * @param request Notifications containing {@lin JsonNode}.
      * @return Notification object for chaining
      */
     public Notifications copyNotificationsFrom (JsonNode request) {
