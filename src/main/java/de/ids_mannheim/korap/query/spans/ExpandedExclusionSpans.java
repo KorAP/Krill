@@ -25,6 +25,10 @@ import de.ids_mannheim.korap.query.SpanExpansionQuery;
  * span, and a positive number (including 0) signifies the expansion to the
  * <em>right</em> of the original span.
  * 
+ * The expansion offsets, namely the start and end position of an expansion
+ * part, can be stored in payloads. A class number is assigned to the offsets
+ * grouping them altogether.
+ * 
  * @author margaretha
  * */
 public class ExpandedExclusionSpans extends SimpleSpans {
@@ -249,8 +253,8 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 //System.out.println(start+","+end);
 
                 cs = new CandidateSpan(start, end, firstSpans.doc(),
-                        firstSpans.cost(), createPayloads(firstSpans.end(),
-                                end));
+                        firstSpans.cost(),
+                        createPayloads(firstSpans.end(), end));
                 candidateSpans.add(cs);
                 counter++;
             }

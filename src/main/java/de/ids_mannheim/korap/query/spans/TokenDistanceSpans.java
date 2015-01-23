@@ -15,7 +15,9 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 /**
  * Enumeration of token-based distance span matches consisting of two child
  * spans having an actual distance in the range of the minimum and maximum
- * distance parameters specified in the corresponding query.
+ * distance parameters specified in the corresponding query. A TokenDistanceSpan
+ * starts from the minimum start positions of its child spans and ends at the
+ * maximum end positions of the child spans.
  * 
  * @author margaretha
  * */

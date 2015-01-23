@@ -10,25 +10,26 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
+import de.ids_mannheim.korap.query.spans.ElementSpans;
 import de.ids_mannheim.korap.query.spans.SubSpans;
 
 /**
  * This query extracts a subspan from another span. The subspan starts from a
  * startOffset until startOffset + length. A positive startOffset is counted
- * from the start of the span, while a negative startOffset is counted from the
- * end of the span. <br />
+ * from the start of the span, while a negative startOffset is calculated from
+ * the end of the span. <br />
  * <br />
  * SpanSubspanQuery takes a SpanQuery as its input and creates subspans from the
  * resulting spans of the SpanQuery. For instance:
  * 
  * <pre>
- * SpanTermQuery stq = new SpanTermQuery(new Term("tokens","s:Hund"))
- * SpanSubspanQuery ssq = new SpanSubspanQuery(stq, 0, 2, true);
+ * SpanElementQuery seq = new SpanElementQuery(new SpanElementQuery(&quot;tokens&quot;, &quot;s&quot;);
+ * SpanSubspanQuery ssq = new SpanSubspanQuery(seq, 0, 2, true);
  * </pre>
  * 
- * In this example, the SpanSubspanQuery creates subspans "Hu" from all the
- * occurrences of TermSpans "Hund", that starts from index 0 to 2. It also
- * collects all payloads from the TermSpans for the SubSpans.
+ * In this example, the SpanSubspanQuery creates subspans, that are the first
+ * two tokens of all sentences. It also collects all payloads from the
+ * {@link ElementSpans} for the SubSpans.
  * 
  * @author margaretha
  * */

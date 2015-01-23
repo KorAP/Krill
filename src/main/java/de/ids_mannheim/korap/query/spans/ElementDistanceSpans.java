@@ -20,7 +20,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * spans' occurrences which are not in a sentence or a paragraph (with respect
  * to the element distance type currently used), are ignored.
  * 
- * Note: elements cannot overlap to each other.
+ * Note: elements cannot overlap with each other.
  * 
  * @author margaretha
  * */

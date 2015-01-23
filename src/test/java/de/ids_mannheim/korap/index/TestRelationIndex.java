@@ -28,7 +28,7 @@ rel("SUBJ", query1, query2)
 
 1. return all words that are subjects of (that are linked by the “SUBJ” relation to) the string “beginnt”
 xip/syntax-dep_rel:beginnt >[func=”SUBJ”] xip/syntax-dep_rel:.*
--> rel("SUBJ", highlight(query1), new TermQuery("s:beginnt"))
+-> rel("SUBJ", highlight(query1), new TermQuery("s:beginnt")) 
 
 
 SUBJ ist modelliert mit offset für den gesamten Bereich

@@ -55,9 +55,11 @@ public class SubSpans extends SimpleSpans {
      */
     private boolean advance() throws IOException {
         while (hasMoreSpans) {
-            setMatch();
+            if (findMatch()) {
+                hasMoreSpans = firstSpans.next();
+                return true;
+            }
             hasMoreSpans = firstSpans.next();
-            return true;
         }
         return false;
     }
@@ -67,15 +69,28 @@ public class SubSpans extends SimpleSpans {
      * 
      * @throws IOException
      */
-    public void setMatch() throws IOException {
-        if (this.startOffset < 0)
+    public boolean findMatch() throws IOException {
+        if (this.startOffset < 0) {
             matchStartPosition = firstSpans.end() + startOffset;
-        else
+            if (matchStartPosition < firstSpans.start()) {
+                matchStartPosition = firstSpans.start();
+            }
+        }
+        else {
             matchStartPosition = firstSpans.start() + startOffset;
+            if (matchStartPosition >= firstSpans.end()) {
+                return false;
+            }
+        }
 
         matchEndPosition = matchStartPosition + this.length;
+        if (matchEndPosition > firstSpans.end()) {
+            matchEndPosition = firstSpans.end();
+        }
+
         matchPayload = firstSpans.getPayload();
         matchDocNumber = firstSpans.doc();
+        return true;
     }
 
     @Override

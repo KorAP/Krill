@@ -18,6 +18,10 @@ import de.ids_mannheim.korap.query.SpanExpansionQuery;
  * <code>n</code> token positions to either left or right direction from the
  * original spans. See examples in {@link SpanExpansionQuery}.
  * 
+ * The expansion offsets, namely the start and end position of an expansion
+ * part, can be stored in payloads. A class number is assigned to the offsets
+ * grouping them altogether.
+ * 
  * @author margaretha
  * */
 public class ExpandedSpans extends SimpleSpans {

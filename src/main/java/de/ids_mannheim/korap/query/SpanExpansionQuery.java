@@ -75,8 +75,8 @@ import de.ids_mannheim.korap.query.spans.ExpandedSpans;
  * [large black leather jacket]       non match
  * </pre>
  * 
- * The positions of the expansion parts can be stored in payloads by using a
- * class number (optional).
+ * The positions of the expansion parts can be optionally stored in payloads
+ * together with a class number.
  * 
  * @author margaretha
  * */
