@@ -108,11 +108,8 @@ public class TestResource {
             queryParam("uid", "4").
             request("application/json").
             post(Entity.json(json), KorapResponse.class);
-        /*
-          assertEquals(2, kresp.getTotalResults());
-        */
-        fail("totalResults should be implemented in KorapResponse" +
-             " or KorapResult should be used here");
+
+        assertEquals(2, kresp.getTotalResults());
         assertFalse(kresp.hasErrors());
         assertFalse(kresp.hasWarnings());
         assertFalse(kresp.hasMessages());

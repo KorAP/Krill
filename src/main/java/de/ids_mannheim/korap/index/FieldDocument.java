@@ -129,6 +129,7 @@ public class FieldDocument extends KorapDocument {
         this.setPrimaryData((String) node.get("text"));
 
         String fieldName = (String) node.get("name");
+
         MultiTermTokenStream mtts = this.newMultiTermTokenStream();
 
         // Iterate over all tokens in stream
@@ -138,8 +139,9 @@ public class FieldDocument extends KorapDocument {
             MultiTermToken mtt = new MultiTermToken(token.remove(0));
 
             // Add rest of the list
-            for (String term : token)
+            for (String term : token) {
                 mtt.add(term);
+            };
 
             // Add MultiTermToken to stream
             mtts.addMultiTermToken(mtt);
@@ -164,7 +166,7 @@ public class FieldDocument extends KorapDocument {
     /**
      * Deserialize token stream data (LEGACY).
      */
-    public void setFields (ArrayList<Map<String,Object>> fields) {
+    public void setFields (ArrayList<Map<String, Object>> fields) {
         
         Map<String,Object> primary = fields.remove(0);
         this.setPrimaryData((String) primary.get("primaryData"));

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * It works - so I got that going for
  * me, which is nice.
  *
- * @author Nils Diewald
+ * @author diewald
  */
 
 
@@ -292,48 +292,40 @@ public class KorapCollection extends Notifications {
                 noDoc = false;
             };
 
+            for (FilterOperation kc : filters) {
+                if (DEBUG)
+                    log.trace("FILTER: {}", kc);
+
+                // TODO: BUG???
+                docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null : bitset);
+                filterIter = docids.iterator();
+
+                if (filterIter == null) {
+                    // There must be a better way ...
+                    if (kc.isFilter()) {
+                        // TODO: Check if this is really correct!
+                        // Maybe here is the bug
+                        bitset.clear(0, bitset.length());
+                        noDoc = true;
+                    };
+                    continue;
+                };
+                if (kc.isExtension()) {
+                    // System.err.println("Term found!");
+                    // System.err.println("Old Card:" + bitset.cardinality());
+                    bitset.or(filterIter);
+                    // System.err.println("New Card:" + bitset.cardinality());
+                }
+                else {
+                    bitset.and(filterIter);
+                };
+            };
+
             if (!noDoc) {
-                for (FilterOperation kc : filters) {
-                    if (DEBUG)
-                        log.trace("FILTER: {}", kc);
-
-                    // TODO: BUG!!!!!!!!!!
-                    docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null : bitset);
-                    filterIter = docids.iterator();
-
-                    if (filterIter == null) {
-                        // There must be a better way ...
-                        if (kc.isFilter()) {
-                            // TODO: Check if this is really correct!
-                            // Maybe here is the bug
-                            bitset.clear(0, bitset.length());
-                            noDoc = true;
-                        }
-                        else {
-                            // System.err.println("No term found");
-                        };
-                        continue;
-                    };
-                    if (kc.isExtension()) {
-                        // System.err.println("Term found!");
-                        // System.err.println("Old Card:" + bitset.cardinality());
-                        bitset.or(filterIter);
-                        // System.err.println("New Card:" + bitset.cardinality());
-                    }
-                    else {
-                        bitset.and(filterIter);
-                    };
+                FixedBitSet livedocs = (FixedBitSet) atomic.reader().getLiveDocs();
+                if (livedocs != null) {
+                    bitset.and(livedocs);
                 };
-
-                if (!noDoc) {
-                    FixedBitSet livedocs = (FixedBitSet) atomic.reader().getLiveDocs();
-                    if (livedocs != null) {
-                        bitset.and(livedocs);
-                    };
-                };
-            }
-            else {
-                return bitset;
             };
         }
         else {
@@ -353,7 +345,7 @@ public class KorapCollection extends Notifications {
     public long numberOf (String type) throws IOException {
         if (this.index == null)
             return (long) -1;
-        
+
         return this.index.numberOf(this, "tokens", type);
     };
 

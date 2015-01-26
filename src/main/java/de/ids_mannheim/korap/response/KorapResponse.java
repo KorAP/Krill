@@ -31,6 +31,9 @@ public class KorapResponse extends Notifications {
     ObjectMapper mapper = new ObjectMapper();
 
     private String version, name, node, listener;
+    private long
+        totalTexts   = -2, // Not set
+        totalResults = -2; // Not set
     private String benchmark;
     private boolean timeExceeded = false;
 
@@ -223,6 +226,92 @@ public class KorapResponse extends Notifications {
 
 
     /**
+     * Get the total number of results.
+     *
+     * @return The total number of results.
+     */
+    public long getTotalResults () {
+        if (this.totalResults == -2)
+            return (long) 0;
+        return this.totalResults;
+    };
+
+
+    /**
+     * Set the total number of results.
+     *
+     * @param results The total number of results.
+     * @return {link KorapResponse} object for chaining.
+     */
+    public KorapResponse setTotalResults (long results) {
+        this.totalResults = results;
+        return this;
+    };
+
+
+    /**
+     * Increment the total number of results by a certain value.
+     *
+     * @param incr The number of results the total number should
+     *        be incremented by.
+     * @return {@link KorapResponse} object for chaining.
+     */
+    public KorapResponse incrTotalResults (int incr) {
+        if (this.totalResults < 0)
+            this.totalResults = incr;
+        else
+            this.totalResults += incr;
+        return this;
+    };
+
+
+    /**
+     * Get the total number of texts the total number of
+     * results occur in.
+     *
+     * @return The total number of texts the total number of
+     *         results occur in.
+     */
+    public long getTotalTexts () {
+        if (this.totalTexts == -2)
+            return (long) 0;
+        return this.totalTexts;
+    };
+
+
+    /**
+     * Set the total number of texts the total number of
+     * results occur in.
+     *
+     * @param texts The total number of texts the total
+     *        number of results occur in.
+     * @return {@link KorapResponse} object for chaining.
+     */
+    public KorapResponse setTotalTexts (long texts) {
+        this.totalTexts = texts;
+        return this;
+    };
+
+
+    /**
+     * Increment the total number of texts the total number
+     * of results occur in by a certain value.
+     *
+     * @param incr The number of texts the total number of
+     *        results occur in should be incremented by.
+     *        (I don't care that this isn't English!)
+     * @return {@link KorapResponse} object for chaining.
+     */
+    public KorapResponse incrTotalTexts (int i) {
+        if (this.totalTexts < 0)
+            this.totalTexts = i;
+        else
+            this.totalTexts += i;
+        return this;
+    };
+
+
+    /**
      * Serialize response as a {@link JsonNode}.
      *
      * @return {@link JsonNode} representation of the response
@@ -259,6 +348,14 @@ public class KorapResponse extends Notifications {
 
         if (this.getBenchmark() != null)
             json.put("benchmark", this.getBenchmark());
+
+        // totalTexts is set
+        if (this.totalTexts != -2)
+            json.put("totalTexts", this.totalTexts);
+        
+        // totalResults is set
+        if (this.totalResults != -2)
+            json.put("totalResults", this.totalResults);
 
         return (JsonNode) json;
     };

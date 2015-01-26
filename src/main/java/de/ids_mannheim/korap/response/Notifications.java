@@ -74,7 +74,7 @@ public class Notifications {
      * Set warnings by means of a {@link JsonNode}.
      *
      * @param msgs JSON array of warnings.
-     * @return Notifications object for chaining.
+     * @return {@link Notifications} object for chaining.
      */
     public Notifications setWarnings (JsonNode msgs) {
         for (JsonNode msg : msgs)

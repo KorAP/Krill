@@ -19,42 +19,56 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
-TODO: Reuse the KorapSearch code for data serialization!
+  TODO: Reuse the KorapSearch code for data serialization!
 */
-
+/**
+ * Response class for search results.
+ *
+ * @author diewald
+ * @see KorapResponse
+ */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KorapResult extends KorapResponse {
     ObjectMapper mapper = new ObjectMapper();
 
     @JsonIgnore
-    public static final short ITEMS_PER_PAGE = 25;
+    public static final short ITEMS_PER_PAGE     = 25;
+    public static final short ITEMS_PER_PAGE_MAX = 100;
 
     private int startIndex = 0;
-    private long totalTexts, totalResults;
-
     private String query;
 
     private List<KorapMatch> matches;
 
-
     private SearchContext context;
 
     private short itemsPerPage = ITEMS_PER_PAGE,
-	          itemsPerResource = 0;
+              itemsPerResource = 0;
 
     private JsonNode request;
-
 
     // Logger
     // This is KorapMatch instead of KorapResult!
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
 
-    // Empty result
+
+    /**
+     * Construct a new KorapResult object.
+     */
     public KorapResult() {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
     };
 
+
+    /**
+     * Construct a new KorapResult object.
+     *
+     * @param query Query representation as a string.
+     * @param startIndex Offset position in match array.
+     * @param itemsPerPage Number of matches per page.
+     * @param context Requested {@link SearchContext}
+     */
     public KorapResult(String query,
                        int startIndex,
                        short itemsPerPage,
@@ -67,71 +81,66 @@ public class KorapResult extends KorapResponse {
         this.matches = new ArrayList<>(itemsPerPage);
         this.query = query;
         this.startIndex = startIndex;
-        this.itemsPerPage = (itemsPerPage > 50 || itemsPerPage < 1) ?
-	    ITEMS_PER_PAGE : itemsPerPage;
+        this.itemsPerPage =
+            (itemsPerPage > ITEMS_PER_PAGE_MAX || itemsPerPage < 1) ?
+            ITEMS_PER_PAGE : itemsPerPage;
         this.context = context;
     };
 
 
+    /**
+     * Add a new match to the result set.
+     *
+     * @param match A {@link KorapMatch} to add.
+     */
     public void add (KorapMatch km) {
         this.matches.add(km);
     };
 
-    public KorapMatch addMatch (PositionsToOffset pto,
-				int localDocID,
-				int startPos,
-				int endPos) {
-        KorapMatch km = new KorapMatch(pto, localDocID, startPos, endPos);
 
-        // Temporary - should use the same interface like results
-        // in the future:
-        km.setContext(this.context);
-        this.add(km);
-        return km;
-    };
-
-    public short getItemsPerPage() {
+    /**
+     * Get number of items shown per page.
+     *
+     * @return Number of items shown per page.
+     */
+    public short getItemsPerPage () {
         return this.itemsPerPage;
     };
 
-    public void setRequest(JsonNode request) {
-        this.request = request;
+
+    /**
+     * Set number of items shown per page.
+     *
+     * @param count Number of items shown per page.
+     * @return {@link KorapResult} object for chaining.
+     */
+    public KorapResult setItemsPerPage (short count) {
+        this.itemsPerPage = count;
+        return this;
     };
 
-    public JsonNode getRequest() {
+
+    /**
+     * Get serialized query as a {@link JsonNode}.
+     *
+     * @return {@link JsonNode} representation of the query object.
+     */
+    public JsonNode getRequest () {
         return this.request;
     };
 
-    // Make this working in a KorapResult class
-    // that is independent from search and collection
-    public KorapResult setTotalTexts (long i) {
-        this.totalTexts = i;
-	return this;
+
+    /**
+     * Set serialized query as a {@link JsonNode}.
+     *
+     * @param request {@link JsonNode} representation of the query object.
+     * @return {@link KorapResult} object for chaining.
+     */    
+    public KorapResult setRequest (JsonNode request) {
+        this.request = request;
+        return this;
     };
 
-    public KorapResult incrTotalTexts (int i) {
-        this.totalTexts += i;
-	return this;
-    };
-
-    public long getTotalTexts() {
-        return this.totalTexts;
-    };
-
-
-    public KorapResult setTotalResults (long i) {
-        this.totalResults = i;
-	return this;
-    };
-
-    public KorapResult incrTotalResults (int i) {
-        this.totalResults += i;
-	return this;
-    };
-
-    public long getTotalResults() {
-        return this.totalResults;
-    };
 
     @JsonIgnore
     public void setItemsPerResource (short value) {

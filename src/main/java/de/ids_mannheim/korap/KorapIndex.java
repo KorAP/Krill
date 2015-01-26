@@ -1266,12 +1266,18 @@ public class KorapIndex {
                     
                     // Do not load all of this, in case the doc is the same!
                     Document doc = lreader.document(localDocID, fields);
-                    KorapMatch match = kr.addMatch(
+
+                    // Create new KorapMatch
+                    KorapMatch match = new KorapMatch(
                         pto,
                         localDocID,
                         spans.start(),
                         spans.end()
                     );
+                    match.setContext(kr.getContext());
+
+                    // Add match to KorapResult
+                    kr.add(match);
 
                     if (spans.isPayloadAvailable())
                         match.addPayload((List<byte[]>) spans.getPayload());
