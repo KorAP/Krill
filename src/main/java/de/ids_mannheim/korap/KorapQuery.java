@@ -251,7 +251,7 @@ public class KorapQuery extends Notifications {
 			762,
 		        "Span references are currently not supported"
                     );
-		};
+		}; 
 
 		return new SpanMatchModifyQueryWrapper(
 		    this.fromJson(operands.get(0)), number
@@ -521,9 +521,17 @@ public class KorapQuery extends Notifications {
 	    }
 	    else if (json.has("spanRef")) {
 	        JsonNode spanRef = json.get("spanRef");
+	        int length=0;
+	        if (!spanRef.isArray() || spanRef.size() == 0)
+	            throw new QueryException(714, "Span reference needs a start position and a length parameters.");
+	        	        
+	        if (!spanRef.get(1).isMissingNode()){
+	            length = spanRef.get(1).asInt();
+	        }
+	            
             return new SpanSubspanQueryWrapper(
                     fromJson(operands.get(0)), spanRef.get(0).asInt(),
-                    spanRef.get(1).asInt());
+                    length); 
 //		throw new QueryException(
 //		    762,
 //		    "Span references are currently not supported"

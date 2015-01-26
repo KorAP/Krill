@@ -11,8 +11,10 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanSubspanQuery;
 
 /**
- * Enumeration of SubSpans, which are parts of another Spans. The SubSpans are
- * specified with a start offset relative to the original span and a length.
+ * Enumeration of SubSpans, which are parts of another Spans. The
+ * SubSpans are specified with a start offset relative to the original
+ * span and a length. If the length is unspecified or 0, the end
+ * position of the subspans is the same as that of the original spans.
  * 
  * @author margaretha
  * 
@@ -22,18 +24,19 @@ public class SubSpans extends SimpleSpans {
     private int startOffset, length;
 
     /**
-     * Constructs SubSpans for the given {@link SpanSubspanQuery} specifiying
-     * the start offset and the length of the subspans.
+     * Constructs SubSpans for the given {@link SpanSubspanQuery}
+     * specifiying the start offset and the length of the subspans.
      * 
-     * @param subspanQuery a SpanSubspanQuery
+     * @param subspanQuery
+     *            a SpanSubspanQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public SubSpans(SpanSubspanQuery subspanQuery, AtomicReaderContext context,
-            Bits acceptDocs, Map<Term, TermContext> termContexts)
-            throws IOException {
+    public SubSpans (SpanSubspanQuery subspanQuery,
+            AtomicReaderContext context, Bits acceptDocs,
+            Map<Term, TermContext> termContexts) throws IOException {
         super(subspanQuery, context, acceptDocs, termContexts);
         this.startOffset = subspanQuery.getStartOffset();
         this.length = subspanQuery.getLength();
@@ -49,8 +52,8 @@ public class SubSpans extends SimpleSpans {
     /**
      * Advances the SubSpans to the next match.
      * 
-     * @return <code>true</code> if a match is found, <code>false</code>
-     *         otherwise.
+     * @return <code>true</code> if a match is found,
+     *         <code>false</code> otherwise.
      * @throws IOException
      */
     private boolean advance() throws IOException {
@@ -83,11 +86,15 @@ public class SubSpans extends SimpleSpans {
             }
         }
 
-        matchEndPosition = matchStartPosition + this.length;
-        if (matchEndPosition > firstSpans.end()) {
+        if (this.length > 0) {
+            matchEndPosition = matchStartPosition + this.length;
+            if (matchEndPosition > firstSpans.end()) {
+                matchEndPosition = firstSpans.end();
+            }
+        }
+        else {
             matchEndPosition = firstSpans.end();
         }
-
         matchPayload = firstSpans.getPayload();
         matchDocNumber = firstSpans.doc();
         return true;

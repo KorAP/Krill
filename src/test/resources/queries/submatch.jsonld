@@ -11,15 +11,35 @@
    ],
    "collection":null,
    "query":{
-      "@type":"korap:reference",
-      "operation":"operation:focus",
-      "operands":[
+      "@type" : "korap:reference",
+      "operands" : [
          {
-            "@type":"korap:span",
-            "key":"s"
+            "@type" : "korap:group",
+            "frame" : "frame:contains",
+            "frames" : [
+               "frames:contains"
+            ],
+            "operands" : [
+               {
+                  "@type" : "korap:span",
+                  "key" : "s"
+               },
+               {
+                  "@type" : "korap:token",
+                  "wrap" : {
+                     "@type" : "korap:term",
+                     "foundry" : "tt",
+                     "key" : "Haus",
+                     "layer" : "lemma",
+                     "match" : "match:eq"
+                  }
+               }
+            ],
+            "operation" : "operation:position"
          }
       ],
-      "spanRef":[
+      "operation" : "operation:focus",
+      "spanRef" : [
          1,
          4
       ]
