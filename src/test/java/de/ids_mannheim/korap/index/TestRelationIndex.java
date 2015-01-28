@@ -328,6 +328,9 @@ public class TestRelationIndex {
 		
 	}
 	
+	/** Match left return left
+	 *  Match right return right
+	 * */
 	@Test
     public void testCase10() throws IOException {
         ki.addDoc(createFieldDoc2());
