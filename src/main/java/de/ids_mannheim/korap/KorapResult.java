@@ -24,6 +24,8 @@ import java.util.List;
 /**
  * Response class for search results.
  *
+ * TODO: Synopsis
+ *
  * @author diewald
  * @see KorapResponse
  */
@@ -43,8 +45,9 @@ public class KorapResult extends KorapResponse {
 
     private SearchContext context;
 
-    private short itemsPerPage = ITEMS_PER_PAGE,
-              itemsPerResource = 0;
+    private short
+        itemsPerPage     = ITEMS_PER_PAGE,
+        itemsPerResource = 0;
 
     private JsonNode request;
 
@@ -99,7 +102,7 @@ public class KorapResult extends KorapResponse {
 
 
     /**
-     * Get number of items shown per page.
+     * Get the number of items (documents) shown per page.
      *
      * @return Number of items shown per page.
      */
@@ -109,7 +112,7 @@ public class KorapResult extends KorapResponse {
 
 
     /**
-     * Set number of items shown per page.
+     * Set the number of items (documents) shown per page.
      *
      * @param count Number of items shown per page.
      * @return {@link KorapResult} object for chaining.
@@ -142,106 +145,168 @@ public class KorapResult extends KorapResponse {
     };
 
 
-    @JsonIgnore
-    public void setItemsPerResource (short value) {
-	this.itemsPerResource = value;
-    };
-
-    @JsonIgnore
-    public void setItemsPerResource (int value) {
-	this.itemsPerResource = (short) value;
-    };
-
-    @JsonIgnore
+    /**
+     * Get the number of items shown per resource (document).
+     * Defaults to <tt>0</tt>, which is infinite.
+     *
+     * @return The number of items shown per resource.
+     */
     public short getItemsPerResource () {
-	return this.itemsPerResource;
+        return this.itemsPerResource;
     };
 
+
+    /**
+     * Set the number of items (matches) shown per resource (text).
+     * Defaults to <tt>0</tt>, which is infinite.
+     *
+     * @param value The number of items shown per resource.
+     * @return {@link KorapResult} object for chaining.
+     */
+    public KorapResult setItemsPerResource (short value) {
+        this.itemsPerResource = value;
+        return this;
+    };
+
+
+    /**
+     * Set the number of items (matches) shown per resource (document).
+     * Defaults to <tt>0</tt>, which is infinite.
+     *
+     * @param value The number of items shown per resource.
+     * @return {@link KorapResult} object for chaining.
+     */
+    public KorapResult setItemsPerResource (int value) {
+        this.itemsPerResource = (short) value;
+        return this;
+    };
+
+
+    /**
+     * Get the string representation of the search query.
+     *
+     * @return The string representation of the search query.
+     */
     public String getQuery () {
         return this.query;
     };
 
+
+    /**
+     * Get a certain {@link KorapMatch} by index.
+     *
+     * @param index The numerical index of the match,
+     *        starts with <tt>0</tt>.
+     * @return The {@link KorapMatch} object.
+     */
     @JsonIgnore
     public KorapMatch getMatch (int index) {
         return this.matches.get(index);
     };
 
-    @JsonIgnore
+
+    /**
+     * Get the list of {@link KorapMatch} matches.
+     *
+     * @return The list of {@link KorapMatch} objects.
+     */
     public List<KorapMatch> getMatches() {
         return this.matches;
     };
 
+
+    /**
+     * Get the number of the first match in the result set
+     * (<i>aka</i> the offset). Starts with <tt>0</tt>.
+     *
+     * @return The index number of the first match in the result set.
+     */
     public int getStartIndex () {
         return startIndex;
     };
 
-    @JsonIgnore
-    public KorapResult setContext(SearchContext context) {
+
+    /**
+     * Get the context parameters of the search by means of a
+     * {@link SearchContext} object.
+     *
+     * @return The {@link SearchContext} object.
+     */
+    public SearchContext getContext () {
+        return this.context;
+    };
+
+
+    /**
+     * Set the context parameters of the search by means of a
+     * {@link SearchContext} object.
+     *
+     * @param context The {@link SearchContext} object providing
+     *        search context parameters.
+     * @return {@link KorapResult} object for chaining.
+     */
+    public KorapResult setContext (SearchContext context) {
         this.context = context;
         return this;
-    }
+    };
 
 
-    @JsonIgnore
-    public SearchContext getContext() {
-        return this.context;
-    }
-
-
+    /**
+     * Serialize the result set as a {@link JsonNode}.
+     *
+     * @return {@link JsonNode} representation of the search results.
+     */
     public JsonNode toJsonNode () {
-	ObjectNode json = (ObjectNode) mapper.valueToTree(super.toJsonNode());
+        ObjectNode json = (ObjectNode) mapper.valueToTree(super.toJsonNode());
 
-	if (this.context != null)
-	    json.put("context", this.getContext().toJsonNode());
+        // Relevant context setting
+        if (this.context != null)
+            json.put("context", this.getContext().toJsonNode());
 
-	if (this.itemsPerResource > 0)
-	    json.put("itemsPerResource",
-		     this.itemsPerResource);
 
-	json.put("itemsPerPage",
-		 this.itemsPerPage);
+        // ItemsPerPage
+        json.put("itemsPerPage", this.itemsPerPage);
 
-	// TODO: If test
-	if (this.request != null)
-	    json.put("request", this.request);
+        // Relevant itemsPerResource setting
+        if (this.itemsPerResource > 0)
+            json.put("itemsPerResource", this.itemsPerResource);
 
-	// TODO: If test
-	if (this.request != null)
-	    json.put("request", this.request);
-	if (this.query != null)
-	    json.put("query", this.query);
+        json.put("startIndex", this.startIndex);
 
-	json.put("startIndex", this.startIndex);
+        // Add matches
+        if (this.matches != null)
+            json.putPOJO("matches", this.getMatches());
 
-	json.put("totalResults", this.getTotalResults());
 
-	// Add matches
-	if (this.matches != null)
-	    json.putPOJO("matches", this.getMatches());
+        // TODO: <test>
+        if (this.request != null)
+            json.put("request", this.request);
+        if (this.query != null)
+            json.put("query", this.query);
+        // </test>
 
-	return json;
+        return json;
     };
 
 
     // For Collocation Analysis API
+    @Deprecated
     public String toTokenListJsonString () {
         ObjectNode json = (ObjectNode) mapper.valueToTree(this);
-
-	ArrayNode array = json.putArray("matches");
+        
+        ArrayNode array = json.putArray("matches");
 	
-	// Add matches as token lists
-	for (KorapMatch km : this.getMatches()) {
-	    array.add(km.toTokenList());
-	};
+        // Add matches as token lists
+        for (KorapMatch km : this.getMatches())
+            array.add(km.toTokenList());
 
         try {
             return mapper.writeValueAsString(json);
         }
-	catch (Exception e) {
+        catch (Exception e) {
             log.warn(e.getLocalizedMessage());
         };
-
+        
         return "{}";
     };
-
 };

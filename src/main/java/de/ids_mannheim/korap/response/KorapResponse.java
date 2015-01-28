@@ -32,8 +32,8 @@ public class KorapResponse extends Notifications {
 
     private String version, name, node, listener;
     private long
-        totalTexts   = -2, // Not set
-        totalResults = -2; // Not set
+        totalResources = -2, // Not set
+        totalResults   = -2; // Not set
     private String benchmark;
     private boolean timeExceeded = false;
 
@@ -266,47 +266,47 @@ public class KorapResponse extends Notifications {
 
 
     /**
-     * Get the total number of texts the total number of
+     * Get the total number of resources the total number of
      * results occur in.
      *
-     * @return The total number of texts the total number of
+     * @return The total number of resources the total number of
      *         results occur in.
      */
-    public long getTotalTexts () {
-        if (this.totalTexts == -2)
+    public long getTotalResources () {
+        if (this.totalResources == -2)
             return (long) 0;
-        return this.totalTexts;
+        return this.totalResources;
     };
 
 
     /**
-     * Set the total number of texts the total number of
+     * Set the total number of resources the total number of
      * results occur in.
      *
-     * @param texts The total number of texts the total
+     * @param resources The total number of resources the total
      *        number of results occur in.
      * @return {@link KorapResponse} object for chaining.
      */
-    public KorapResponse setTotalTexts (long texts) {
-        this.totalTexts = texts;
+    public KorapResponse setTotalResources (long resources) {
+        this.totalResources = resources;
         return this;
     };
 
 
     /**
-     * Increment the total number of texts the total number
+     * Increment the total number of resources the total number
      * of results occur in by a certain value.
      *
-     * @param incr The number of texts the total number of
+     * @param incr The number of resources the total number of
      *        results occur in should be incremented by.
      *        (I don't care that this isn't English!)
      * @return {@link KorapResponse} object for chaining.
      */
-    public KorapResponse incrTotalTexts (int i) {
-        if (this.totalTexts < 0)
-            this.totalTexts = i;
+    public KorapResponse incrTotalResources (int i) {
+        if (this.totalResources < 0)
+            this.totalResources = i;
         else
-            this.totalTexts += i;
+            this.totalResources += i;
         return this;
     };
 
@@ -350,8 +350,8 @@ public class KorapResponse extends Notifications {
             json.put("benchmark", this.getBenchmark());
 
         // totalTexts is set
-        if (this.totalTexts != -2)
-            json.put("totalTexts", this.totalTexts);
+        if (this.totalResources != -2)
+            json.put("totalResources", this.totalResources);
         
         // totalResults is set
         if (this.totalResults != -2)

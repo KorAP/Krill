@@ -193,214 +193,200 @@ public class KorapSearch extends Notifications {
                             for (JsonNode field : (JsonNode) meta.get("fields")) {
                                 this.addField(field.asText());
                             };
-			}
-			else
-			    this.addField(meta.get("fields").asText());
-		    };
-		};
-	    };
-	}
+                        }
+                        else
+                            this.addField(meta.get("fields").asText());
+                    };
+                };
+            };
+        }
 
-	// Unable to parse JSON
-	catch (IOException e) {
-	    this.addError(621, "Unable to parse JSON");
-	};
+        // Unable to parse JSON
+        catch (IOException e) {
+            this.addError(621, "Unable to parse JSON");
+        };
     };
 
     // Maybe accept queryWrapperStuff
     public KorapSearch (SpanQueryWrapper sqwi) {
-	try {
-	    this.query = sqwi.toQuery();
-	}
-	catch (QueryException q) {
-	    this.addError(q.getErrorCode(), q.getMessage());
-	};
+        try {
+            this.query = sqwi.toQuery();
+        }
+        catch (QueryException q) {
+            this.addError(q.getErrorCode(), q.getMessage());
+        };
     };
-
+    
     public KorapSearch (SpanQuery sq) {
-	this.query = sq;
+        this.query = sq;
     };
 
     // Empty constructor
     public KorapSearch () { };
 
     public long getTimeOut () {
-	return this.timeout;
+        return this.timeout;
     };
 
     public void setTimeOut (long timeout) {
-	this.timeout = timeout;
+        this.timeout = timeout;
     };
 
     public SpanQuery getQuery () {
-	return this.query;
+        return this.query;
     };
 
     public JsonNode getRequest () {
-	return this.request;
+        return this.request;
     };
 
     public KorapSearch setQuery (SpanQueryWrapper sqwi) {
-	// this.copyNotifications(sqwi);
-	try {
-	    this.query = sqwi.toQuery();
-	}
-	catch (QueryException q) {
-	    this.addError(q.getErrorCode(), q.getMessage());
-	};
-	return this;
+        // this.copyNotifications(sqwi);
+        try {
+            this.query = sqwi.toQuery();
+        }
+        catch (QueryException q) {
+            this.addError(q.getErrorCode(), q.getMessage());
+        };
+        return this;
     };
 
     public KorapSearch setQuery (SpanQuery sq) {
-	this.query = sq;
-	return this;
+        this.query = sq;
+        return this;
     };
 
     public SearchContext getContext () {
-	return this.context;
+        return this.context;
     };
 
     public KorapSearch setContext (SearchContext context) {
-	this.context = context;
-	return this;
+        this.context = context;
+        return this;
     };
 
     public int getStartIndex () {
-	return this.startIndex;
+        return this.startIndex;
     };
-
+    
     public KorapSearch setStartIndex (int value) {
-	if (value >= 0) {
-	    this.startIndex = value;
-	}
-	else {
-	    this.startIndex = 0;
-	};
-
-	return this;
+        this.startIndex = (value >= 0) ? value : 0;
+        return this;
     };
 
     public KorapSearch setStartPage (int value) {
-	if (value >= 0) {
-	    this.setStartIndex((value * this.getCount()) - this.getCount());
-	}
-	else {
-	    this.startIndex = 0;
-	};
-
-	return this;
+        if (value >= 0)
+            this.setStartIndex((value * this.getCount()) - this.getCount());
+        else
+            this.startIndex = 0;
+        return this;
     };
 
     public short getCount () {
-	return this.count;
+        return this.count;
     };
 
     public short getCountMax () {
-	return this.countMax;
+        return this.countMax;
     };
 
     public int getLimit () {
-	return this.limit;
+        return this.limit;
     };
 
     public KorapSearch setLimit (int limit) {
-	if (limit > 0)
-	    this.limit = limit;
-	return this;
+        if (limit > 0)
+            this.limit = limit;
+        return this;
     };
 
     public boolean doCutOff () {
-	return this.cutOff;
+        return this.cutOff;
     };
 
     public KorapSearch setCutOff (boolean cutOff) {
-	this.cutOff = cutOff;
-	return this;
+        this.cutOff = cutOff;
+        return this;
     };
 
     public KorapSearch setCount (int value) {
-	// Todo: Maybe update startIndex with known startPage!
-	this.setCount((short) value);
-	return this;
+        // Todo: Maybe update startIndex with known startPage!
+        this.setCount((short) value);
+        return this;
     };
 
     public KorapSearch setCount (short value) {
-	if (value > 0) {
-	    if (value <= this.countMax)
-		this.count = value;
-	    else
-		this.count = this.countMax;
-	};
-	return this;
+        if (value > 0)
+            this.count = (value <= this.countMax) ? value : this.countMax;
+        return this;
     };
 
     public KorapSearch setItemsPerResource (short value) {
-	if (value >= 0)
-	    this.itemsPerResource = value;
-	return this;
+        if (value >= 0)
+            this.itemsPerResource = value;
+        return this;
     };
 
     public KorapSearch setItemsPerResource (int value) {
-	return this.setItemsPerResource((short) value);
+        return this.setItemsPerResource((short) value);
     };
 
     public short getItemsPerResource () {
-	return this.itemsPerResource;
+        return this.itemsPerResource;
     };
 
     // Add field to set of fields
     public KorapSearch addField (String field) {
-	this.fields.add(field);
-	return this;
+        this.fields.add(field);
+        return this;
     };
 
     // Get set of fields
     public HashSet<String> getFields () {
-	return this.fields;
+        return this.fields;
     };
 
     public KorapSearch setCollection (KorapCollection kc) {
-	this.collection = kc;
-
-	// Copy messages from the collection
-	this.copyNotificationsFrom(kc);
-	kc.clearNotifications();
-	return this;
+        this.collection = kc;
+        
+        // Copy messages from the collection
+        this.copyNotificationsFrom(kc);
+        kc.clearNotifications();
+        return this;
     };
 
     public KorapCollection getCollection () {
-	if (this.collection == null)
-	    this.collection = new KorapCollection();
-
-	return this.collection;
+        if (this.collection == null)
+            this.collection = new KorapCollection();
+        return this.collection;
     };
 
     public KorapResult run (KorapIndex ki) {
-	if (this.query == null) {
-	    KorapResult kr = new KorapResult();
-	    kr.setRequest(this.request);
+        if (this.query == null) {
+            KorapResult kr = new KorapResult();
+            kr.setRequest(this.request);
 
-	    if (this.hasErrors())
-		kr.copyNotificationsFrom(this);
-	    else
-		kr.addError(700, "No query given");
-	    return kr;
-	};
+            if (this.hasErrors())
+                kr.copyNotificationsFrom(this);
+            else
+                kr.addError(700, "No query given");
+            return kr;
+        };
 
-	if (this.hasErrors()) {
-	    KorapResult kr = new KorapResult();
+        if (this.hasErrors()) {
+            KorapResult kr = new KorapResult();
 
-	    // TODO: dev mode
-	    kr.setRequest(this.request);
-	    kr.copyNotificationsFrom(this);
-	    return kr;
-	};
+            // TODO: dev mode
+            kr.setRequest(this.request);
+            kr.copyNotificationsFrom(this);
+            return kr;
+        };
 
-	this.getCollection().setIndex(ki);
-	KorapResult kr = ki.search(this);
-	kr.setRequest(this.request);
-	kr.copyNotificationsFrom(this);
-	this.clearNotifications();
-	return kr;
+        this.getCollection().setIndex(ki);
+        KorapResult kr = ki.search(this);
+        kr.setRequest(this.request);
+        kr.copyNotificationsFrom(this);
+        this.clearNotifications();
+        return kr;
     };
 };

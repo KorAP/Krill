@@ -421,9 +421,10 @@ public class Notifications {
 
 
     /**
-     * Serialize Notifications as a JsonNode.
+     * Serialize Notifications as a {@link JsonNode}.
      *
-     * @return JsonNode representation of all warnings, errors, and messages
+     * @return {@link JsonNode} representation of all warnings,
+     *         errors, and messages.
      */
     public JsonNode toJsonNode () {
         ObjectNode json =  mapper.createObjectNode();
