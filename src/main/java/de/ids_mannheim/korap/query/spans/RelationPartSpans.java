@@ -254,12 +254,19 @@ public class RelationPartSpans extends RelationBaseSpans {
                     id = matcheeSpans.getSpanId();
                 }
 
-                if (!inverse && r.getRightId() == id) {
-                    r.sortRight = false;
-                    candidateRelations.add(r);
-                } else if (inverse && r.getLeftId() == id) {
-                    r.sortRight = true;
-                    candidateRelations.add(r);
+                //if (!inverse && r.getRightId() == id) {
+                if (!inverse){
+                    if (matchRight && r.getRightId() == id ||
+                            !matchRight && r.getLeftId() == id){
+                        r.sortRight = false;
+                        candidateRelations.add(r);
+                    }                
+                } else if (inverse) {// && r.getLeftId() == id) {
+                    if (matchRight && r.getRightId() == id ||
+                            !matchRight && r.getLeftId() == id){
+                        r.sortRight = true;
+                        candidateRelations.add(r);
+                    }
                 }
                 i++;
             } else if (endPos <= matcheeSpans.end()) {

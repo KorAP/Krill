@@ -288,12 +288,6 @@ public class TestRelationIndex {
 		kr = ki.search(wq,(short) 20);
 		assertEquals((long) 12, kr.getTotalResults());
 		
-		/*for (KorapMatch km : kr.getMatches()){		
-			System.out.println(km.getStartPos() +","+km.getEndPos()
-			//	+" "+km.getSnippetBrackets()
-			);
-		}*/		
-		
 		// child-of with attr func-obj
 		wq = new SpanWithAttributeQuery(srq, 
 				new SpanAttributeQuery( 
@@ -333,6 +327,67 @@ public class TestRelationIndex {
 		
 		
 	}
+	
+	@Test
+    public void testCase10() throws IOException {
+        ki.addDoc(createFieldDoc2());
+        ki.commit();
+        
+        // return all children that are NP
+        SpanRelationPartQuery rv = new SpanRelationPartQuery(
+                new SpanRelationQuery(
+                        new SpanTermQuery(new Term("base",">:child-of")),true
+                ), 
+                new SpanElementQuery("base","np"), 
+                false, false, true); 
+                
+        kr = ki.search(rv,(short) 10);
+        
+        assertEquals(4, kr.getTotalResults());
+        assertEquals(0,kr.getMatch(0).getStartPos());
+        assertEquals(1,kr.getMatch(0).getEndPos());
+        assertEquals(2,kr.getMatch(1).getStartPos());
+        assertEquals(4,kr.getMatch(1).getEndPos());
+        assertEquals(2,kr.getMatch(2).getStartPos());
+        assertEquals(7,kr.getMatch(2).getEndPos());
+        assertEquals(5,kr.getMatch(3).getStartPos());
+        assertEquals(7,kr.getMatch(3).getEndPos());
+        
+        // return all parents that are NP
+        rv = new SpanRelationPartQuery(
+                new SpanRelationQuery(
+                        new SpanTermQuery(new Term("base",">:child-of")),true
+                ), 
+                new SpanElementQuery("base","np"), 
+                true, true, true); 
+                
+        kr = ki.search(rv,(short) 10);
+
+        assertEquals(7, kr.getTotalResults());
+        assertEquals(0,kr.getMatch(0).getStartPos());
+        assertEquals(1,kr.getMatch(0).getEndPos());
+        assertEquals(2,kr.getMatch(1).getStartPos());
+        assertEquals(4,kr.getMatch(1).getEndPos());
+        assertEquals(2,kr.getMatch(2).getStartPos());
+        assertEquals(4,kr.getMatch(2).getEndPos());
+        assertEquals(2,kr.getMatch(3).getStartPos());
+        assertEquals(7,kr.getMatch(3).getEndPos());
+        assertEquals(2,kr.getMatch(4).getStartPos());
+        assertEquals(7,kr.getMatch(4).getEndPos());
+        assertEquals(5,kr.getMatch(5).getStartPos());
+        assertEquals(7,kr.getMatch(5).getEndPos());
+        assertEquals(5,kr.getMatch(6).getStartPos());
+        assertEquals(7,kr.getMatch(6).getEndPos());     
+        
+//       for (KorapMatch km : kr.getMatches()){        
+//            System.out.println(km.getStartPos() +","+km.getEndPos()
+//                    //  +" "+km.getSnippetBrackets()
+//            );
+//       }  
+    
+
+   }
+	
 	
 	/** Relation with variable
 	 * 	match right, return left
