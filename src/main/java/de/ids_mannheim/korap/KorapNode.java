@@ -84,7 +84,7 @@ public class KorapNode {
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
         final ResourceConfig rc =
-            new ResourceConfig().packages("de.ids_mannheim.korap.server");
+            new ResourceConfig().packages("de.ids_mannheim.korap.node");
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
@@ -96,7 +96,7 @@ public class KorapNode {
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
         final ResourceConfig rc =
-            new ResourceConfig().packages("de.ids_mannheim.korap.server");
+            new ResourceConfig().packages("de.ids_mannheim.korap.node");
 
         name = nodeName;
         path = indexPath;

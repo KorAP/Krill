@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.server;
+package de.ids_mannheim.korap.node;
 
 import java.io.*;
 

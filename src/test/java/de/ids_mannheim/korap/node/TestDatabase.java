@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.server;
+package de.ids_mannheim.korap.node;
 
 import de.ids_mannheim.korap.index.MatchCollector;
 import de.ids_mannheim.korap.index.collector.MatchCollectorDB;

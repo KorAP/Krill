@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.server;
+package de.ids_mannheim.korap.node;
 
 /*
   http://harryjoy.com/2012/09/08/simple-rest-client-in-java/
