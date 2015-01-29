@@ -1,22 +1,31 @@
 package de.ids_mannheim.korap;
 
-import de.ids_mannheim.korap.query.wrap.*;
-import de.ids_mannheim.korap.response.Notifications;
-import de.ids_mannheim.korap.util.QueryException;
+import java.io.IOException;
 
-import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.automaton.RegExp;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
-
-import de.ids_mannheim.korap.query.SpanWithinQuery;
-
-import java.util.*;
-import java.io.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.ids_mannheim.korap.query.SpanWithinQuery;
+import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanAttributeQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanElementQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanMatchModifyQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSubspanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
+import de.ids_mannheim.korap.response.Notifications;
+import de.ids_mannheim.korap.util.QueryException;
 
 /*
   Todo: All queries with a final right expansion
@@ -835,6 +844,10 @@ public class KorapQuery extends Notifications {
             case "const":
                 layer = "c";
                 break;
+
+                case "cat":
+                    layer = "c";
+                    break;
             };
 
             if (isCaseInsensitive && isTerm) {
@@ -881,16 +894,52 @@ public class KorapQuery extends Notifications {
         if (isTerm)
             return this.seg(value.toString());
 
-        // Attributes currently not supported
-        if (json.has("attr"))
-            this.addWarning(
-              768,
-              "Attributes are currently not supported - results may not be correct"
-            );
+        if (json.has("attr")) {
 
+            this.addWarning(
+                    768,
+                    "Attributes are currently not supported - results may not be correct");
+
+            // SpanQueryWrapper attrQueryWrapper =
+            // handleAttr(json.get("attr"));
+            // if (attrQueryWrapper != null) {
+            // return seg SpanElementWithAttributeQueryWrapper
+            // }
+        }
         return this.tag(value.toString());
     };
 
+    private SpanQueryWrapper handleAttr(JsonNode attrNode)
+            throws QueryException {
+
+        if (!attrNode.has("@type")) {
+            throw new QueryException(701,
+                    "JSON-LD group has no @type attribute");
+        }
+
+        if (attrNode.get("@type").asText().equals("korap:term")) {
+            if (attrNode.has("tokenarity") || attrNode.has("arity")) {
+                this.addWarning(
+                        768,
+                        "This kind of attributes are currently not supported - results may not be correct");
+            }
+            if (attrNode.has("root")) {
+                String rootValue = attrNode.get("root").asText();
+                if (rootValue.equals("true") || rootValue.equals("false")) {
+                    return new SpanAttributeQueryWrapper(
+                            new SpanSimpleQueryWrapper("tokens", "@root"),
+                            Boolean.valueOf(rootValue));
+                }
+                // wrong root value
+            }
+        }
+        // else if termnode
+        else {
+            this.addWarning(715, "Attribute type is not supported");
+        }
+
+        return null;
+    }
 
     /**
      * Create a query object based on a regular expression.
