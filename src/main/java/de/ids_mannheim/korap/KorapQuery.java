@@ -233,7 +233,6 @@ public class KorapQuery extends Notifications {
 
                 number = json.get("classRef").get(0).asInt();
 
-
                 if (number > MAX_CLASS_NUM)
                     throw new QueryException(
                         709,
@@ -244,7 +243,8 @@ public class KorapQuery extends Notifications {
             // Reference based on spans
             else if (json.has("spanRef")) {
                 JsonNode spanRef = json.get("spanRef");
-                int length=0;
+                int length = 0;
+                int startOffset = 0;
                 if (!spanRef.isArray() || spanRef.size() == 0) {
                     throw new QueryException(
                         714,
@@ -252,14 +252,17 @@ public class KorapQuery extends Notifications {
                         " and a length parameter"
                     );
                 };
-	        	        
-                if (!spanRef.get(1).isMissingNode())
-                    length = spanRef.get(1).asInt();
+                
+                if (spanRef.size() > 1)
+                    length = spanRef.get(1).asInt(0);
 	            
+                startOffset = spanRef.get(0).asInt(0);
+
+                if (DEBUG) log.trace("Wrap span reference {},{}", startOffset, length);
+
                 return new SpanSubspanQueryWrapper(
-                    fromJson(operands.get(0)), spanRef.get(0).asInt(),
-                    length
-                ); 
+                    this.fromJson(operands.get(0)), startOffset, length
+                );
             };
 
             if (DEBUG) log.trace("Wrap class reference {}", number);
@@ -273,6 +276,7 @@ public class KorapQuery extends Notifications {
             if (!json.has("wrap"))
                 return new SpanRepetitionQueryWrapper();
 
+            // Get wrapped token
             return this._segFromJson(json.get("wrap"));
 
         case "korap:span":
@@ -282,6 +286,7 @@ public class KorapQuery extends Notifications {
         // Unknown query type
         throw new QueryException(713, "Query type is not supported");
     };
+
 
     // Deserialize korap:group
     private SpanQueryWrapper _groupFromJson (JsonNode json) throws QueryException {
@@ -347,6 +352,7 @@ public class KorapQuery extends Notifications {
         };
         return ssaq;
     };
+
 
     // Deserialize operation:position
     private SpanQueryWrapper _operationPositionFromJson (JsonNode json, JsonNode operands)
@@ -438,6 +444,7 @@ public class KorapQuery extends Notifications {
         );
     };
 
+
     // Deserialize operation:repetition
     private SpanQueryWrapper _operationRepetitionFromJson (JsonNode json, JsonNode operands)
         throws QueryException {
@@ -445,8 +452,7 @@ public class KorapQuery extends Notifications {
         if (operands.size() != 1)
             throw new QueryException(705, "Number of operands is not acceptable");
 
-        int min = 0;
-        int max = 100;
+        int min = 0, max = 100;
 
         if (json.has("boundary")) {
             Boundary b = new Boundary(json.get("boundary"), 0, 100);
@@ -504,6 +510,7 @@ public class KorapQuery extends Notifications {
         if (operands.size() != 1)
             throw new QueryException(705, "Number of operands is not acceptable");
 
+        // Use class reference
         if (json.has("classRef")) {
             if (json.has("classRefOp")) {
                 throw new QueryException(
@@ -514,6 +521,8 @@ public class KorapQuery extends Notifications {
 
             number = json.get("classRef").get(0).asInt();
         }
+
+        // Use span reference
         else if (json.has("spanRef")) {
             throw new QueryException(
                 762,
@@ -599,6 +608,7 @@ public class KorapQuery extends Notifications {
     // Deserialize operation:sequence
     private SpanQueryWrapper _operationSequenceFromJson (JsonNode json, JsonNode operands)
         throws QueryException {
+
         // Sequence with only one operand
         if (operands.size() == 1)
             return this.fromJson(operands.get(0));
@@ -710,14 +720,14 @@ public class KorapQuery extends Notifications {
 
         // inOrder was set to false without a distance constraint
         if (!sseqqw.isInOrder() && !sseqqw.hasConstraints()) {
-            sseqqw.withConstraint(1,1,"w");
+            sseqqw.withConstraint(1, 1, "w");
         };
 
         return sseqqw;
     };
 
 
-    // Segment
+    // Deserialize korap:token
     private SpanQueryWrapper _segFromJson (JsonNode json) throws QueryException {
         if (!json.has("@type"))
             throw new QueryException(701, "JSON-LD group has no @type attribute");
@@ -727,6 +737,7 @@ public class KorapQuery extends Notifications {
         if (DEBUG)
             log.trace("Wrap new token definition by {}", type);
 
+        // Branch on type
         switch (type) {
         case "korap:term":
             String match = "match:eq";
@@ -734,13 +745,18 @@ public class KorapQuery extends Notifications {
                 match = json.get("match").asText();
             
             switch (match) {
+
             case "match:ne":
                 if (DEBUG)
                     log.trace("Term is negated");
+
                 SpanSegmentQueryWrapper ssqw =
                     (SpanSegmentQueryWrapper) this._termFromJson(json);
+
                 ssqw.makeNegative();
+
                 return this.seg().without(ssqw);
+
             case "match:eq":
                 return this._termFromJson(json);
             };
@@ -796,13 +812,23 @@ public class KorapQuery extends Notifications {
     };
 
 
-    private SpanQueryWrapper _termFromJson (JsonNode json) throws QueryException {
+    // Deserialize korap:term
+    private SpanQueryWrapper _termFromJson (JsonNode json)
+        throws QueryException {
 
-        if (!json.has("key") || json.get("key").asText().length() < 1)
-            throw new QueryException(740, "Key definition is missing in term or span");
+        if (!json.has("key") || json.get("key").asText().length() < 1) {
+            throw new QueryException(
+                740,
+                "Key definition is missing in term or span"
+            );
+        };
 	    
-        if (!json.has("@type"))
-            throw new QueryException(701, "JSON-LD group has no @type attribute");
+        if (!json.has("@type")) {
+            throw new QueryException(
+                701,
+                "JSON-LD group has no @type attribute"
+            );
+        };
 
         Boolean isTerm = json.get("@type").asText().equals("korap:term") ? true : false;
         Boolean isCaseInsensitive = false;
@@ -845,15 +871,16 @@ public class KorapQuery extends Notifications {
                 layer = "c";
                 break;
 
-                case "cat":
-                    layer = "c";
-                    break;
+                /*
+                  case "cat":
+                  layer = "c";
+                  break;
+                */
             };
 
             if (isCaseInsensitive && isTerm) {
-                if (layer.equals("s")) {
+                if (layer.equals("s"))
                     layer = "i";
-                }
                 else {
                     this.addWarning(
                         767,
@@ -879,13 +906,18 @@ public class KorapQuery extends Notifications {
 
         // Regular expression or wildcard
         if (isTerm && json.has("type")) {
+
+            // Branch on type
             switch (json.get("type").asText()) {
             case "type:regex":
                 return this.seg(this.re(value.toString(), isCaseInsensitive));
+
             case "type:wildcard":
                 return this.seq(this.wc(value.toString(), isCaseInsensitive));
+
             case "type:string":
                 break;
+
             default:
                 this.addWarning(746, "Term type is not supported - treated as a string");
             };
@@ -895,40 +927,48 @@ public class KorapQuery extends Notifications {
             return this.seg(value.toString());
 
         if (json.has("attr")) {
-
             this.addWarning(
-                    768,
-                    "Attributes are currently not supported - results may not be correct");
+                768,
+                "Attributes are currently not supported - results may not be correct"
+            );
 
             // SpanQueryWrapper attrQueryWrapper =
-            // handleAttr(json.get("attr"));
+            // _attrFromJson(json.get("attr"));
             // if (attrQueryWrapper != null) {
             // return seg SpanElementWithAttributeQueryWrapper
             // }
-        }
+        };
+
         return this.tag(value.toString());
     };
 
-    private SpanQueryWrapper handleAttr(JsonNode attrNode)
-            throws QueryException {
+
+    private SpanQueryWrapper _attrFromJson (JsonNode attrNode)
+        throws QueryException {
 
         if (!attrNode.has("@type")) {
-            throw new QueryException(701,
-                    "JSON-LD group has no @type attribute");
-        }
+            throw new QueryException(
+                701,
+                "JSON-LD group has no @type attribute"
+            );
+        };
 
         if (attrNode.get("@type").asText().equals("korap:term")) {
             if (attrNode.has("tokenarity") || attrNode.has("arity")) {
                 this.addWarning(
-                        768,
-                        "This kind of attributes are currently not supported - results may not be correct");
-            }
+                    770,
+                    "Arity attributes are currently not supported" +
+                    " - results may not be correct"
+                );
+            };
+
             if (attrNode.has("root")) {
                 String rootValue = attrNode.get("root").asText();
                 if (rootValue.equals("true") || rootValue.equals("false")) {
                     return new SpanAttributeQueryWrapper(
-                            new SpanSimpleQueryWrapper("tokens", "@root"),
-                            Boolean.valueOf(rootValue));
+                        new SpanSimpleQueryWrapper("tokens", "@root"),
+                        Boolean.valueOf(rootValue)
+                    );
                 }
                 // wrong root value
             }
@@ -940,6 +980,7 @@ public class KorapQuery extends Notifications {
 
         return null;
     }
+
 
     /**
      * Create a query object based on a regular expression.

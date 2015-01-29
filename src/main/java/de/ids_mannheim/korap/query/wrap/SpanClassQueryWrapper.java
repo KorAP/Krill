@@ -34,16 +34,20 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
     };
 
     public SpanQuery toQuery () throws QueryException {
-	if (this.subquery.isNull())
-	    return (SpanQuery) null;
+        if (this.subquery.isNull())
+            return (SpanQuery) null;
 
-	// TODO: If this.subquery.isNegative(), it may be an Expansion!
-	// SpanExpansionQuery(x, y.negative, min, max. direction???, classNumber, true)
+        SpanQuery sq = (SpanQuery) this.subquery.toQuery();
+
+        if (sq == null) return (SpanQuery) null;
+
+        // TODO: If this.subquery.isNegative(), it may be an Expansion!
+        // SpanExpansionQuery(x, y.negative, min, max. direction???, classNumber, true)
 	
-	if (this.number == (byte) 0) {
-	    return new SpanClassQuery((SpanQuery) this.subquery.toQuery());
-	};
-	return new SpanClassQuery((SpanQuery) this.subquery.toQuery(), (byte) this.number);
+        if (this.number == (byte) 0) {
+            return new SpanClassQuery(sq);
+        };
+        return new SpanClassQuery(sq, (byte) this.number);
     };
 
     public boolean isOptional () {

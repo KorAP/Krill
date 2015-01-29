@@ -1,7 +1,7 @@
 0.49.3 2014-01-29
         - [documentation] Improved documentation for API classes (diewald)
 	- [documentation] Improved documentation for various queries (margaretha)
-	- [feature] Added deserialization of SpanSubSpanQueries (margaretha)
+	- [feature] Added deserialization of SpanSubSpanQueries (margaretha,diewald)
 	- [bugfix] Null filters are now correctly extended (diewald)
 	- [cleanup] Refactoring of KorapResult, KorapResponse, KorapQuery,
 	  deprecated operation:or in favor of operation:junction (diewald)

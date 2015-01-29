@@ -1,0 +1,73 @@
+{
+  "@context":"http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+  "collection":null,
+  "query" : {
+    "@type" : "korap:reference",
+    "classRef" : [
+      129
+    ],
+    "operands" : [
+      {
+        "@type" : "korap:group",
+        "distances" : [
+          {
+            "@type" : "cosmas:distance",
+            "boundary" : {
+              "@type" : "korap:boundary",
+              "max" : 0,
+              "min" : 0
+            },
+            "key" : "s",
+            "max" : 0,
+            "min" : 0
+          }
+        ],
+        "inOrder" : true,
+        "operands" : [
+          {
+            "@type" : "korap:group",
+            "class" : 129,
+            "classOut" : 129,
+            "operands" : [
+              {
+                "@type" : "korap:token",
+                "wrap" : {
+                  "@type" : "korap:term",
+                  "foundry" : "opennlp",
+                  "key" : "der",
+                  "layer" : "orth",
+                  "match" : "match:eq"
+                }
+              }
+            ],
+            "operation" : "operation:class"
+          },
+          {
+            "@type" : "korap:group",
+            "class" : 129,
+            "classOut" : 129,
+            "operands" : [
+              {
+                "@type" : "korap:reference",
+                "operands" : [
+                  {
+                    "@type" : "korap:span",
+                    "key" : "s"
+                  }
+                ],
+                "operation" : "operation:focus",
+                "spanRef" : [
+                  0,
+                  1
+                ]
+              }
+            ],
+            "operation" : "operation:class"
+          }
+        ],
+        "operation" : "operation:sequence"
+      }
+    ],
+    "operation" : "operation:focus"
+  }
+}

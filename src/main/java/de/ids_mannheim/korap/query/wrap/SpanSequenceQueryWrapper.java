@@ -31,11 +31,12 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
     private ArrayList<DistanceConstraint> constraints;
 
     private final String limitationError =
-	"Distance constraints not supported with " +
-	"empty or negative operands";
+        "Distance constraints not supported with " +
+        "empty or negative operands";
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(SpanSequenceQueryWrapper.class);
+    private final static Logger log =
+        LoggerFactory.getLogger(SpanSequenceQueryWrapper.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -45,12 +46,13 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
     // The sequence is problem solved
     private boolean isSolved = false;
 
+
     /**
      * Empty constructor.
      */
     public SpanSequenceQueryWrapper (String field) {
-	this.field = field;
-	this.segments = new ArrayList<SpanQueryWrapper>(2);
+        this.field = field;
+        this.segments = new ArrayList<SpanQueryWrapper>(2);
     };
 
 
@@ -58,15 +60,15 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      * Constructor accepting term sequences.
      */
     public SpanSequenceQueryWrapper (String field, String ... terms) {
-	this(field);
-	for (int i = 0; i < terms.length; i++) {
-	    this.segments.add(
+        this(field);
+        for (int i = 0; i < terms.length; i++) {
+            this.segments.add(
                 new SpanSimpleQueryWrapper(
                     new SpanTermQuery(new Term(field, terms[i]))
                 )
             );
-	};
-	this.isNull = false;
+        };
+        this.isNull = false;
     };
 
 
@@ -74,9 +76,9 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      * Constructor accepting SpanQuery sequences.
      */
     public SpanSequenceQueryWrapper (String field, SpanQuery sq) {
-	this(field);
-	this.segments.add(new SpanSimpleQueryWrapper(sq));
-	this.isNull = false;
+        this(field);
+        this.segments.add(new SpanSimpleQueryWrapper(sq));
+        this.isNull = false;
     };
 
 
@@ -85,26 +87,26 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      * These wrappers may be optional, negative or empty.
      */
     public SpanSequenceQueryWrapper (String field, SpanQueryWrapper sswq) {
-	this(field);
+        this(field);
 
-	// Ignore null queries
-	if (sswq.isNull())
-	    return;
+        // Ignore null queries
+        if (sswq.isNull())
+            return;
 
-	if (DEBUG && !sswq.isEmpty) {
-	    try {
-		log.trace("New span sequence {}", sswq.toQuery().toString());
-	    }
-	    catch (QueryException qe) {
-		log.trace("Unable to serialize query {}", qe.getMessage());
-	    };
-	};
-	/*
-	System.err.println("Is negative: ");
-	System.err.println(sswq.isNegative());
-	*/
-	this.segments.add(sswq);
-	this.isNull = false;
+        if (DEBUG && !sswq.isEmpty) {
+            try {
+                log.trace("New span sequence {}", sswq.toQuery().toString());
+            }
+            catch (QueryException qe) {
+                log.trace("Unable to serialize query {}", qe.getMessage());
+            };
+        };
+        /*
+          System.err.println("Is negative: ");
+          System.err.println(sswq.isNegative());
+        */
+        this.segments.add(sswq);
+        this.isNull = false;
     };
 
 
@@ -318,125 +320,149 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      * Serialize Query to Lucene SpanQueries
      */
     public SpanQuery toQuery () throws QueryException {
+        int size = this.segments.size();
 
-	int size = this.segments.size();
+        // Nothing to do
+        if (size == 0 || this.isNull())
+            return (SpanQuery) null;
 
-	// Nothing to do
-	if (size == 0 || this.isNull())
-	    return (SpanQuery) null;
+        // No real sequence - only one element
+        if (size == 1) {
 
-	// No real sequence - only one element
-	if (size == 1) {
+            // But the element may be expanded
+            if (this.segments.get(0).isExtended() &&
+                (this.hasConstraints() || !this.isInOrder())) {
+                throw new QueryException(613, limitationError);
+            };
 
-	    // But the element may be expanded
-	    if (this.segments.get(0).isExtended() &&
-		(this.hasConstraints() || !this.isInOrder())) {
-		throw new QueryException(613, limitationError);
-	    };
+            // Unproblematic single query
+            if (this.segments.get(0).maybeAnchor())
+                return (SpanQuery) this.segments.get(0).toQuery();
 
-	    // Unproblematic single query
-	    if (this.segments.get(0).maybeAnchor())
-		return (SpanQuery) this.segments.get(0).toQuery();
+            if (this.segments.get(0).isEmpty())
+                throw new QueryException(613, "Sequence is not allowed to be empty");
 
-	    if (this.segments.get(0).isEmpty())
-		throw new QueryException(613, "Sequence is not allowed to be empty");
-	    if (this.segments.get(0).isOptional())
-		throw new QueryException(613, "Sequence is not allowed to be optional");
-	    if (this.segments.get(0).isNegative())
-		throw new QueryException(613, "Sequence is not allowed to be negative");
-	};
+            if (this.segments.get(0).isOptional())
+                throw new QueryException(613, "Sequence is not allowed to be optional");
 
-	if (!this.isSolved) {
-	    if (!_solveProblematicSequence()) {
-		if (this.segments.get(0).maybeExtension())
-		    throw new QueryException(
-			613,
-		        "Sequence contains unresolvable "+
-			"empty, optional, or negative segments"
-		    );
-	    };
-	};
+            if (this.segments.get(0).isNegative())
+                throw new QueryException(613, "Sequence is not allowed to be negative");
+        };
 
-	// The element may be expanded
-	if (this.segments.size() == 1 &&
-	    this.segments.get(0).isExtended() &&
-	    (this.hasConstraints() || !this.isInOrder())) {
-	    throw new QueryException(613, limitationError);
-	};
+        if (!this.isSolved) {
+            if (!_solveProblematicSequence()) {
+                if (this.segments.get(0).maybeExtension()) {
+                    throw new QueryException(
+                        613,
+                        "Sequence contains unresolvable " +
+                        "empty, optional, or negative segments"
+                    );
+                };
+            };
+        };
 
-	// Create the initial query
-	SpanQuery query = this.segments.get(0).toQuery();
+        // The element may be expanded
+        if (this.segments.size() == 1 &&
+            this.segments.get(0).isExtended() &&
+            (this.hasConstraints() || !this.isInOrder())) {
+            throw new QueryException(613, limitationError);
+        };
 
-	// NextQueries:
-	if (!this.hasConstraints() && this.isInOrder()) {
-	    for (int i = 1; i < this.segments.size(); i++) {
-		query = new SpanNextQuery(
-	            query,
-		    this.segments.get(i).toQuery()
-		);
-	    };
-	    return (SpanQuery) query;
-	};
+        // Create the initial query
+        SpanQuery query = null;// = this.segments.get(0).toQuery();
+        int i = 0;
+        while (query == null && i < this.segments.size()) {
+            query = this.segments.get(i).toQuery();
+            i++;
+        };
 
-	// DistanceQueries
-	if (this.constraints.size() == 1) {
-	    DistanceConstraint constraint = this.constraints.get(0);
+        if (query == null)
+            return (SpanQuery) null;
 
-	    // Create spanElementDistance query
-	    if (!constraint.getUnit().equals("w")) {
-		for (int i = 1; i < this.segments.size(); i++) {
+        // NextQueries:
+        if (!this.hasConstraints() && this.isInOrder()) {
+            for (; i < this.segments.size(); i++) {
 
-		    // No support for extended spans in constraints
-		    if (this.segments.get(i).isExtended())
-			throw new QueryException(613, limitationError);
+                SpanQuery second = this.segments.get(i).toQuery();
+                if (second == null)
+                    continue;
 
-		    SpanDistanceQuery sdquery = new SpanDistanceQuery(
-			    query,
-			    this.segments.get(i).toQuery(),
-			    constraint,
-			    true
-		    );
-		    query = (SpanQuery) sdquery;
-		};
-	    }
+                query = new SpanNextQuery(
+                    query,
+                    second
+                );
+            };
+            return (SpanQuery) query;
+        };
+        
+        // DistanceQueries
+        if (this.constraints.size() == 1) {
+            DistanceConstraint constraint = this.constraints.get(0);
 
-	    // Create spanDistance query
-	    else {
-		for (int i = 1; i < this.segments.size(); i++) {
+            // Create spanElementDistance query
+            if (!constraint.getUnit().equals("w")) {
+                for (i = 1; i < this.segments.size(); i++) {
 
-		    // No support for extended spans in constraints
-		    if (this.segments.get(i).isExtended())
-			throw new QueryException(613, limitationError);
+                    // No support for extended spans in constraints
+                    if (this.segments.get(i).isExtended())
+                        throw new QueryException(613, limitationError);
 
-		    SpanDistanceQuery sdquery = new SpanDistanceQuery(
-			query,
-			this.segments.get(i).toQuery(),
-			constraint,
-			true
-		    );
-		    query = (SpanQuery) sdquery;
-		};
-	    };
+                    SpanQuery sq = (SpanQuery) this.segments.get(i).toQuery();
+                    if (sq == null) continue;
 
-	    return (SpanQuery) query;
-	};
+                    SpanDistanceQuery sdquery = new SpanDistanceQuery(
+                        query,
+                        sq,
+                        constraint,
+                        true
+                    );
+                    query = (SpanQuery) sdquery;
+                };
+            }
 
-	// MultipleDistanceQueries
-	for (int i = 1; i < this.segments.size(); i++) {
+            // Create spanDistance query
+            else {
+                for (i = 1; i < this.segments.size(); i++) {
 
-	    // No support for extended spans in constraints
-	    if (this.segments.get(i).isExtended())
-		throw new QueryException(613, limitationError);
+                    // No support for extended spans in constraints
+                    if (this.segments.get(i).isExtended())
+                        throw new QueryException(613, limitationError);
 
-	    query = new SpanMultipleDistanceQuery(
-	        query,
-		this.segments.get(i).toQuery(),
-		this.constraints,
-		isInOrder,
-		true
-	    );
-	};
-	return (SpanQuery) query;
+                    SpanQuery sq = (SpanQuery) this.segments.get(i).toQuery();
+                    if (sq == null) continue;
+                    
+                    SpanDistanceQuery sdquery = new SpanDistanceQuery(
+                        query,
+                        sq,
+                        constraint,
+                        true
+                    );
+                    query = (SpanQuery) sdquery;
+                };
+            };
+
+            return (SpanQuery) query;
+        };
+
+        // MultipleDistanceQueries
+        for (i = 1; i < this.segments.size(); i++) {
+
+            // No support for extended spans in constraints
+            if (this.segments.get(i).isExtended())
+                throw new QueryException(613, limitationError);
+
+            SpanQuery sq = (SpanQuery) this.segments.get(i).toQuery();
+            if (sq == null) continue;
+
+            query = new SpanMultipleDistanceQuery(
+                query,
+                sq,
+                this.constraints,
+                isInOrder,
+                true
+	        );
+        };
+        return (SpanQuery) query;
     };
 
     /*
