@@ -13,23 +13,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
-  TODO:
-  Make isNegative work!
-  Make isEmpty work!
-  Make isExtendedToTheRight work!
+  TODO: Make isNegative work!
+  TODO: Make isEmpty work!
+  TODO: Make isExtendedToTheRight work!
+  TODO: Evaluate if spanNext(spanNext(a,b),spanNext(c,d)) is faster
+        than spanNext(spanNext(spanNext(a,b),c),d)
+  TODO: Improve support for SpanElementQueryWrapper in constraints!
 */
 
 /**
- * Deserialize complexe sequence queries to Lucene SpanQueries.
+ * Deserialize complexe sequence queries to SpanQueries.
+ * This will try to make queries work, that by simple nesting won't
+ * (like queries with empty sequences), and will optimize queries 
+ * if possible.
  *
- * @author Nils Diewald
- * @version 0.03
+ * Todo: Synopsis
+ *
+ * @author diewald
  */
 public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
     private String field;
     private ArrayList<SpanQueryWrapper> segments;
     private ArrayList<DistanceConstraint> constraints;
 
+    private QueryException constraintException = null;
+    
     private final String limitationError =
         "Distance constraints not supported with " +
         "empty or negative operands";
@@ -48,7 +56,10 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
 
     /**
-     * Empty constructor.
+     * Constructs a new object for sequence deserialization.
+     *
+     * @param field The fields the nested SpanQueries should
+     *        search in.
      */
     public SpanSequenceQueryWrapper (String field) {
         this.field = field;
@@ -57,7 +68,19 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
 
     /**
-     * Constructor accepting term sequences.
+     * Constructs a new object for sequence deserialization
+     * by passing a sequence of terms.
+     *
+     * <blockquote><pre>
+     *   SpanSequenceQueryWrapper ssqw =
+     *     new SpanSequenceQueryWrapper("tokens", "der", "Baum");
+     *   System.out.println(ssqw.toQuery());
+     *   // spanNext(tokens:der, tokens:Baum)
+     * </pre></blockquote>
+     *
+     * @param field The fields the nested SpanQueries should
+     *        search in.
+     * @param terms[] Arbitrary list of terms to search for.
      */
     public SpanSequenceQueryWrapper (String field, String ... terms) {
         this(field);
@@ -68,23 +91,30 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                 )
             );
         };
+        // Query can't be null anymore
         this.isNull = false;
     };
 
 
     /**
-     * Constructor accepting SpanQuery sequences.
+     * Constructs a new object for sequence deserialization
+     * by passing a single {@link SpanQuery} object.
+     *
+     * @param query Initial {@link SpanQuery} to search for.
      */
-    public SpanSequenceQueryWrapper (String field, SpanQuery sq) {
-        this(field);
-        this.segments.add(new SpanSimpleQueryWrapper(sq));
+    public SpanSequenceQueryWrapper (SpanQuery query) {
+        this(query.getField());
+        this.segments.add(new SpanSimpleQueryWrapper(query));
         this.isNull = false;
     };
 
 
     /**
-     * Constructor accepting SpanQueryWrapper sequences.
-     * These wrappers may be optional, negative or empty.
+     * Constructs a new object for sequence deserialization
+     * by passing a single {@link SpanQueryWrapper} object.
+     * These wrapper queries may be optional, negative, or empty.
+     *
+     * @param query Initial {@link SpanQueryWrapper} to search for.
      */
     public SpanSequenceQueryWrapper (String field, SpanQueryWrapper sswq) {
         this(field);
@@ -93,233 +123,465 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         if (sswq.isNull())
             return;
 
-        if (DEBUG && !sswq.isEmpty) {
-            try {
-                log.trace("New span sequence {}", sswq.toQuery().toString());
+        // Some debugging on initiating new sequences
+        if (DEBUG) {
+            if (!sswq.isEmpty()) {
+                try {
+                    log.trace("New span sequence {}", sswq.toQuery().toString());
+                }
+                catch (QueryException qe) {
+                    log.trace("Unable to serialize query {}", qe.getMessage());
+                };
             }
-            catch (QueryException qe) {
-                log.trace("Unable to serialize query {}", qe.getMessage());
+            else {
+                log.trace("New span sequence, that's initially empty");
             };
         };
-        /*
-          System.err.println("Is negative: ");
-          System.err.println(sswq.isNegative());
-        */
+
         this.segments.add(sswq);
         this.isNull = false;
     };
 
 
+
     /**
-     * Append a term to the sequence.
+     * Append a new term to the sequence.
+     *
+     * <blockquote><pre>
+     *   SpanSequenceQueryWrapper ssqw =
+     *     new SpanSequenceQueryWrapper("tokens");
+     *   ssqw.append("der").append("Baum");
+     *   System.out.println(ssqw.toQuery());
+     *   // spanNext(tokens:der, tokens:Baum)
+     * </pre></blockquote>
+     *
+     * @param term A new string to search for.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
      */
     public SpanSequenceQueryWrapper append (String term) {
-	return this.append(new SpanTermQuery(new Term(field, term)));
+        return this.append(new SpanTermQuery(new Term(field, term)));
     };
 
 
     /**
-     * Append a SpanQuery to the sequence.
+     * Append a new {@link SpanQuery} object to the sequence.
+     *
+     * @param query A new {@link SpanQuery} to search for.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
      */
     public SpanSequenceQueryWrapper append (SpanQuery query) {
-	return this.append(new SpanSimpleQueryWrapper(query));
+        return this.append(new SpanSimpleQueryWrapper(query));
     };
 
 
     /**
-     * Append a SpanQueryWrapper to the sequence.
+     * Append a new {@link SpanQueryWrapper} object to the sequence.
+     *
+     * @param query A new {@link SpanQueryWrapper} to search for.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
      */
     public SpanSequenceQueryWrapper append (SpanQueryWrapper ssq) {
-	if (ssq.isNull())
-	    return this;
 
-	this.isSolved = false;
-	this.isNull = false;
+        // The wrapper is null - ignore this in the sequence
+        if (ssq.isNull())
+            return this;
 
-	// Embed a sequence
-	if (ssq instanceof SpanSequenceQueryWrapper) {
+        // As the spanQueryWrapper is not null,
+        // the sequence can't be null as well
+        this.isNull = false;
 
-	    if (DEBUG)
-		log.trace("Add SpanSequenceQueryWrapper to sequence");
+        // The sequence may be problematic
+        this.isSolved = false;
 
-	    // There are no constraints - just next spans
-	    // Flatten!
-	    SpanSequenceQueryWrapper ssqw = (SpanSequenceQueryWrapper) ssq;
-	    if (!this.hasConstraints() &&
-		!ssqw.hasConstraints() &&
-		this.isInOrder() == ssqw.isInOrder()) {
-		for (int i = 0; i < ssqw.segments.size(); i++) {
-		    this.append(ssqw.segments.get(i));
-		};
-	    }
+        // Embed a nested sequence
+        if (ssq instanceof SpanSequenceQueryWrapper) {
 
-	    // No flattening
-	    else {
-		this.segments.add(ssq);
-	    };
-	}
+            if (DEBUG)
+                log.trace("Add SpanSequenceQueryWrapper to sequence");
 
-	// Only one segment
-	else {
-	    this.segments.add(ssq);
-	};
+            // Some casting
+            SpanSequenceQueryWrapper ssqw = (SpanSequenceQueryWrapper) ssq;
 
-	return this;
+            // There are no constraints and the order is equal - Flatten!
+            if (!this.hasConstraints() && !ssqw.hasConstraints() &&
+                this.isInOrder() == ssqw.isInOrder()) {
+                for (int i = 0; i < ssqw.segments.size(); i++) {
+                    this.append(ssqw.segments.get(i));
+                };
+            }
+
+            // Unable to flatten ... :-(
+            else {
+                this.segments.add(ssq);
+            };
+        }
+
+        // This is not a sequence
+        else {
+            this.segments.add(ssq);
+        };
+
+        return this;
     };
 
 
     /**
-     * Prepend a term to the sequence.
+     * Prepend a new term to the sequence.
+     *
+     * <blockquote><pre>
+     *   SpanSequenceQueryWrapper ssqw =
+     *     new SpanSequenceQueryWrapper("tokens", "Baum");
+     *   ssqw.prepend("der");
+     *   System.out.println(ssqw.toQuery());
+     *   // spanNext(tokens:der, tokens:Baum)
+     * </pre></blockquote>
+     *
+     * @param term A new string to search for.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
      */
     public SpanSequenceQueryWrapper prepend (String term) {
-	return this.prepend(new SpanTermQuery(new Term(field, term)));
+        return this.prepend(new SpanTermQuery(new Term(field, term)));
     };
 
 
     /**
-     * Prepend a SpanQuery to the sequence.
+     * Prepend a new {@link SpanQuery} object to the sequence.
+     *
+     * @param query A new {@link SpanQuery} to search for.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
      */
     public SpanSequenceQueryWrapper prepend (SpanQuery query) {
-	return this.prepend(new SpanSimpleQueryWrapper(query));
+        return this.prepend(new SpanSimpleQueryWrapper(query));
     };
 
 
     /**
-     * Prepend a SpanQueryWrapper to the sequence.
+     * Prepend a new {@link SpanQueryWrapper} object to the sequence.
+     *
+     * @param query A new {@link SpanQueryWrapper} to search for.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
      */
     public SpanSequenceQueryWrapper prepend (SpanQueryWrapper ssq) {
-	if (ssq.isNull())
-	    return this;
 
-	this.isSolved = false;
-	this.isNull = false;
+        // The wrapper is null - ignore this in the sequence
+        if (ssq.isNull())
+            return this;
 
-	// Embed a sequence
-	if (ssq instanceof SpanSequenceQueryWrapper) {
+        // As the spanQueryWrapper is not null,
+        // the sequence can't be null as well
+        this.isNull = false;
 
-	    // There are no constraints - just next spans
-	    // Flatten!
-	    SpanSequenceQueryWrapper ssqw = (SpanSequenceQueryWrapper) ssq;
-	    if (!this.hasConstraints() &&
-		!ssqw.hasConstraints() &&
-		this.isInOrder() == ssqw.isInOrder()) {
-		for (int i = ssqw.segments.size() - 1; i >= 0; i--) {
-		    this.prepend(ssqw.segments.get(i));
-		};
-	    }
+        // The sequence may be problematic
+        this.isSolved = false;
 
-	    // No flattening
-	    else {
-		this.segments.add(0, ssq);
-	    };
-	}
+        // Embed a nested sequence
+        if (ssq instanceof SpanSequenceQueryWrapper) {
 
-	// Only one segment
-	else {
-	    this.segments.add(0, ssq);
-	};
+            // There are no constraints and the order is equal - Flatten!
+            SpanSequenceQueryWrapper ssqw = (SpanSequenceQueryWrapper) ssq;
+            if (!this.hasConstraints() &&
+                !ssqw.hasConstraints() &&
+                this.isInOrder() == ssqw.isInOrder()) {
+                for (int i = ssqw.segments.size() - 1; i >= 0; i--) {
+                    this.prepend(ssqw.segments.get(i));
+                };
+            }
 
-	return this;
+            // Unable to flatten ... :-(
+            else {
+                this.segments.add(0, ssq);
+            };
+        }
+
+        // This is not a sequence
+        else {
+            this.segments.add(0, ssq);
+        };
+
+        return this;
     };
 
 
     /**
-     * Add a sequence constraint to the sequence for tokens,
-     * aka distance constraints.
+     * Add a token based sequence constraint (aka distance constraint)
+     * to the sequence.
+     *
+     * Multiple constraints are supported.
+     *
+     * A minimum value of zero means, there may be an overlap,
+     * a minimum value of 1 means, there is no token between the spans.
+     * It's weird - we know and dislike that. That's why we have to say:
+     *
+     * <strong>Warning!</strong> Sequence constraints are experimental and
+     * may (hopefully) change in future versions!
+     *
+     * @param min The minimum number of tokens between the elements
+     *        of the sequence.
+     * @param max The minimum number of tokens between the elements
+     *        of the sequence.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
+     * @see DistanceConstraint
      */
     public SpanSequenceQueryWrapper withConstraint (int min, int max) {
-	return this.withConstraint(min, max, false);
+        return this.withConstraint(min, max, false);
     };
 
 
     /**
-     * Add a sequence constraint to the sequence for tokens,
-     * aka distance constraints (with exclusion).
+     * Add a token based sequence constraint (aka distance constraint)
+     * to the sequence with an exclusion constraint, meaning
+     * the constraint is fine in case the operands are <em>not</em>
+     * within the distance.
+     *
+     * Multiple constraints are supported.
+     *
+     * A minimum value of zero means, there may be an overlap,
+     * a minimum value of 1 means, there is no token between the spans.
+     * It's weird - we know and dislike that. That's why we have to say:
+     *
+     * <strong>Warning!</strong> Sequence constraints are experimental and
+     * may (hopefully) change in future versions!
+     *
+     * @param min The minimum number of tokens between the elements
+     *        of the sequence.
+     * @param max The minimum number of tokens between the elements
+     *        of the sequence.
+     * @param exclusion Boolean value indicating, the distance constraint
+     *        has to fail.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
+     * @see DistanceConstraint
      */
     public SpanSequenceQueryWrapper withConstraint (int min, int max, boolean exclusion) {
-	if (this.constraints == null)
-	    this.constraints = new ArrayList<DistanceConstraint>(1);
-	this.constraints.add(new DistanceConstraint(min, max, isInOrder, exclusion));
-	return this;
+        if (this.constraints == null)
+            this.constraints = new ArrayList<DistanceConstraint>(1);
+        this.constraints.add(new DistanceConstraint(min, max, this.isInOrder, exclusion));
+        return this;
     };
 
 
     /**
-     * Add a sequence constraint to the sequence for various units,
-     * aka distance constraints.
+     * Add a sequence constraint (aka distance constraint)
+     * to the sequence based on a certain unit.
+     * The unit has to be a valid {@link SpanElementQuery} term
+     * or <tt>w</tt> for tokens.
+     *
+     * Multiple constraints are supported.
+     *
+     * A minimum value of zero means, there may be an overlap,
+     * a minimum value of 1 means, there is no token between the spans.
+     * It's weird - we know and dislike that. That's why we have to say:
+     *
+     * <strong>Warning!</strong> Sequence constraints are experimental and
+     * may (hopefully) change in future versions!
+     *
+     * @param min The minimum number of tokens between the elements
+     *        of the sequence.
+     * @param max The minimum number of tokens between the elements
+     *        of the sequence.
+     * @param unit Unit for distance - will be evaluated to a {@link SpanElementQuery}.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
+     * @see DistanceConstraint
      */
     public SpanSequenceQueryWrapper withConstraint (int min, int max, String unit) {
-	return this.withConstraint(min, max, unit, false);
+        return this.withConstraint(min, max, unit, false);
     };
 
     
+
     /**
-     * Add a sequence constraint to the sequence for various units,
-     * aka distance constraints (with exclusion).
+     * Add a sequence constraint (aka distance constraint)
+     * to the sequence based on a certain unit and with an
+     * exclusion constraint, meaning the constraint is fine
+     * in case the operands are <em>not</em> within the distance.
+     * The unit has to be a valid {@link SpanElementQuery} term
+     * or <tt>w</tt> for tokens.
+     *
+     * Multiple constraints are supported.
+     *
+     * A minimum value of zero means, there may be an overlap,
+     * a minimum value of 1 means, there is no token between the spans.
+     * It's weird - we know and dislike that. That's why we have to say:
+     *
+     * <strong>Warning!</strong> Sequence constraints are experimental and
+     * may (hopefully) change in future versions!
+     *
+     * @param min The minimum number of tokens between the elements
+     *        of the sequence.
+     * @param max The minimum number of tokens between the elements
+     *        of the sequence.
+     * @param unit Unit for distance - will be evaluated to a {@link SpanElementQuery}.
+     * @param exclusion Boolean value indicating, the distance constraint
+     *        has to fail.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
+     * @see DistanceConstraint
      */
-    public SpanSequenceQueryWrapper withConstraint (int min,
-						    int max,
-						    String unit,
-						    boolean exclusion) {
-	if (this.constraints == null)
-	    this.constraints = new ArrayList<DistanceConstraint>(1);
+    public SpanSequenceQueryWrapper withConstraint
+        (int min, int max, String unit, boolean exclusion) {
 
-	// Word unit
-	if (unit.equals("w"))
-	    this.constraints.add(new DistanceConstraint(min, max, isInOrder, exclusion));
+        // Word unit
+        if (unit.equals("w")) {
+            if (this.constraints == null)
+                this.constraints = new ArrayList<DistanceConstraint>(1);
+            this.constraints.add(new DistanceConstraint(min, max, isInOrder, exclusion));
+            return this;
+        };
 
-	// Element unit (sentence or paragraph)
-	else
-	    this.constraints.add(
-		 new DistanceConstraint(
-                     new SpanElementQuery(this.field, unit), min, max, isInOrder, exclusion)
-	    );
-	return this;
+        // Element unit (sentence or paragraph)
+        return this.withConstraint(
+            min, max, new SpanElementQueryWrapper(this.field, unit), exclusion
+        );
     };
 
 
     /**
-     * Respect the order of distances.
+     * Add a sequence constraint (aka distance constraint)
+     * to the sequence based on a certain unit and with an
+     * exclusion constraint, meaning the constraint is fine
+     * in case the operands are <em>not</em> within the distance.
+     *
+     * Multiple constraints are supported.
+     *
+     * A minimum value of zero means, there may be an overlap,
+     * a minimum value of 1 means, there is no token between the spans.
+     * It's weird - we know and dislike that. That's why we have to say:
+     *
+     * <strong>Warning!</strong> Sequence constraints are experimental and
+     * may (hopefully) change in future versions!
+     *
+     * @param min The minimum number of tokens between the elements
+     *        of the sequence.
+     * @param max The minimum number of tokens between the elements
+     *        of the sequence.
+     * @param unit A {@link SpanElementQueryWrapper} as the unit for distance.
+     * @param exclusion Boolean value indicating, the distance constraint
+     *        has to fail.
+     * @return The {@link SpanSequenceQueryWrapper} object for chaining.
+     * @see DistanceConstraint
      */
-    public void setInOrder (boolean isInOrder) {
-	this.isInOrder = isInOrder;
+    public SpanSequenceQueryWrapper withConstraint
+        (int min, int max, SpanElementQueryWrapper unit, boolean exclusion) {
+        if (this.constraints == null)
+            this.constraints = new ArrayList<DistanceConstraint>(1);
+
+        // Element unit (sentence or paragraph)
+        // Todo: This should possibly be evaluated to a query later on!
+        try {
+            this.constraints.add(
+                new DistanceConstraint(
+                    (SpanElementQuery) unit.toQuery(),
+                    min,
+                    max,
+                    isInOrder,
+                    exclusion
+                )
+            );
+        }
+        catch (QueryException qe) {
+            this.constraintException = qe;
+        };
+        return this;
     };
 
 
     /**
-     * Check if the order is relevant.
+     * Check if the sequence has to be in order.
+     *
+     * @return <tt>true</tt> in case the sequence
+     *         has to be in order and <tt>false</tt>
+     *         in case the order is not relevant.
      */
     public boolean isInOrder () {
-	return this.isInOrder;
+        return this.isInOrder;
     };
 
 
     /**
-     * Check if there are constraints defined for the sequence.
+     * Set the boolean value indicating if the sequence
+     * has to be in order.
+     *
+     * @param order <tt>true</tt> in case the sequence
+     *        has to be in order and <tt>false</tt>
+     *        in case the order is not relevant.
+     */
+    public void setInOrder (boolean order) {
+        this.isInOrder = order;
+    };
+
+
+    /**
+     * Check if the sequence has constraints.
+     *
+     * @return <tt>true</tt> in case the sequence
+     *         has any constraints and <tt>false</tt>
+     *         in case it is a simple next query.
      */
     public boolean hasConstraints () {
-	if (this.constraints == null)
-	    return false;
-	if (this.constraints.size() <= 0)
-	    return false;
+        if (this.constraints == null)
+            return false;
 
-	// The constraint is in fact a next query
-	if (this.constraints.size() == 1) {
-	    DistanceConstraint dc = this.constraints.get(0);
-	    if (dc.getUnit().equals("w") &&
-		dc.getMinDistance() == 1 &&
-		dc.getMaxDistance() == 1) {
-		return false;
-	    };
-	};
+        if (this.constraints.size() <= 0)
+            return false;
+        
+        // The constraint is in fact a next query,
+        // that will be optimized away later on
+        if (this.constraints.size() == 1) {
+            DistanceConstraint dc = this.constraints.get(0);
+            if (dc.getUnit().equals("w") &&
+                dc.getMinDistance() == 1 &&
+                dc.getMaxDistance() == 1) {
+                return false;
+            };
+        };
 
-	return true;
+        return true;
     };
 
+
+    public boolean isEmpty () {
+        if (this.segments.size() == 1)
+            return this.segments.get(0).isEmpty();
+
+        if (!this.isSolved)
+            _solveProblematicSequence();
+        return super.isEmpty();
+    };
+
+
+    public boolean isOptional () {
+        if (this.segments.size() == 1)
+            return this.segments.get(0).isOptional();
+        if (!this.isSolved)
+            _solveProblematicSequence();
+        return super.isOptional();
+    };
+
+    public boolean isNegative () {
+        if (this.segments.size() == 1)
+            return this.segments.get(0).isNegative();
+        if (!this.isSolved)
+            _solveProblematicSequence();
+        return super.isNegative();
+    };
+
+    public boolean isExtendedToTheRight () {
+        if (!this.isSolved)
+            _solveProblematicSequence();
+        return this.isExtendedToTheRight;
+    };
+
+
     /**
-     * Serialize Query to Lucene SpanQueries
+     * Serialize the wrapped sequence to a {@link SpanQuery} object.
+     *
+     * @return A {@link SpanQuery} object.
+     * @throws QueryException
      */
     public SpanQuery toQuery () throws QueryException {
+
+        // There was a serialization failure not yet reported
+        if (this.constraintException != null)
+            throw constraintException;
+
         int size = this.segments.size();
 
         // Nothing to do
@@ -340,13 +602,19 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                 return (SpanQuery) this.segments.get(0).toQuery();
 
             if (this.segments.get(0).isEmpty())
-                throw new QueryException(613, "Sequence is not allowed to be empty");
+                throw new QueryException(
+                    613, "Sequence is not allowed to be empty"
+                );
 
             if (this.segments.get(0).isOptional())
-                throw new QueryException(613, "Sequence is not allowed to be optional");
+                throw new QueryException(
+                    613, "Sequence is not allowed to be optional"
+                );
 
             if (this.segments.get(0).isNegative())
-                throw new QueryException(613, "Sequence is not allowed to be negative");
+                throw new QueryException(
+                    613, "Sequence is not allowed to be negative"
+                );
         };
 
         if (!this.isSolved) {
@@ -465,259 +733,202 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         return (SpanQuery) query;
     };
 
+
+
     /*
+      Check if there are problematic segments in the sequence
+      (either negative, optional or empty) and deal with them
+      (make optional segments to or-queries and negative and empty
+      segments to extensions).
+      This has to be done as long as there are problematic segments
+      In the queries.
+
       While there is a segment isNegative() or isOptional() or isEmpty() do
       - look for an anchor next to it
       - merge the problematic segment with the anchor
       - go on
     */
     private boolean _solveProblematicSequence () {
+        int size = this.segments.size();
+        // Check if there is a problematic segment
+        SpanQueryWrapper underScrutiny;
+        boolean noRemainingProblem = true;
+        int i = 0;
 
-	int size = this.segments.size();
+        if (DEBUG)
+            log.trace("Try to solve a query of {} segments", size);
 
-	// Check if there is a problematic segment
-	SpanQueryWrapper underScrutiny;
-	boolean noRemainingProblem = true;
-	int i = 0;
+        // Iterate over all segments
+        for (; i < size;) {
+            underScrutiny = this.segments.get(i);
 
-	if (DEBUG)
-	    log.trace("Try to solve a query of {} segments", size);
+            // Check if there is a problem with the current segment
+            if (!underScrutiny.maybeAnchor()) {
 
-	for (; i < size;) {
-	    underScrutiny = this.segments.get(i);
+                if (DEBUG)
+                    log.trace("segment {} is problematic", i);
 
-	    // Check if there is a problem!
-	    if (!underScrutiny.maybeAnchor()) {
+                // [problem][anchor]
+                if (i < (size-1) && this.segments.get(i+1).maybeAnchor()) {
+                    if (DEBUG)
+                        log.trace("Situation is [problem][anchor]");
 
-		if (DEBUG)
-		    log.trace("segment {} is problematic", i);
+                    // Insert the solution
+                    try {
+                        this.segments.set(
+                          i+1,
+                          _merge(this.segments.get(i+1), underScrutiny, false)
+                        );
+                    }
 
-		// [problem][anchor]
-		if (i < (size-1) && this.segments.get(i+1).maybeAnchor()) {
-		    if (DEBUG)
-			log.trace("Situation is [problem][anchor]");
+                    // An error occurred while solving the problem
+                    catch (QueryException e) {
+                        return false;
+                    };
 
-		    // Insert the solution
-		    try {
-	 	        this.segments.set(
-		            i+1,
-		            _merge(this.segments.get(i+1), underScrutiny, false)
-		        );
-		    }
-		    catch (QueryException e) {
-			return false;
-		    };
+                    // Remove the problem
+                    this.segments.remove(i);
+                    size--;
 
-		    // Remove the problem
-		    this.segments.remove(i);
-		    size--;
+                    if (DEBUG)
+                        log.trace("Remove segment {} - now size {}", i, size);
 
-		    if (DEBUG)
-			log.trace("Remove segment {} - now size {}", i, size);
+                    // Restart checking
+                    i = 0;
+                }
 
-		    // Restart checking
-		    i = 0;
-		}
+                // [anchor][problem]
+                else if (i >= 1 && this.segments.get(i-1).maybeAnchor()) {
+                    if (DEBUG)
+                        log.trace("Situation is [anchor][problem]");
 
-		// [anchor][problem]
-		else if (i >= 1 && this.segments.get(i-1).maybeAnchor()) {
-		    if (DEBUG)
-			log.trace("Situation is [anchor][problem]");
+                    // Insert the solution
+                    try {
+                        this.segments.set(
+                            i-1,
+                            _merge(this.segments.get(i-1), underScrutiny, true)
+                        );
+                    }
+                    catch (QueryException e) {
+                        return false;
+                    };
 
-		    // Insert the solution
-		    try {
-			this.segments.set(
-			    i-1,
-			    _merge(this.segments.get(i-1), underScrutiny, true)
-			);
-		    }
-		    catch (QueryException e) {
-			return false;
-		    };
+                    // Remove the problem
+                    this.segments.remove(i);
+                    size--;
 
-		    // Remove the problem
-		    this.segments.remove(i);
-		    size--;
+                    if (DEBUG)
+                        log.trace("Remove segment {} - now size {}", i, size);
 
-		    if (DEBUG)
-			log.trace("Remove segment {} - now size {}", i, size);
+                    // Restart checking
+                    i = 0;
+                }
+                // [problem][problem]
+                else {
+                    if (DEBUG)
+                        log.trace("Situation is [problem][problem]");
+                    noRemainingProblem = false;
+                    i++;
+                };
+            }
+            else {
+                if (DEBUG)
+                    log.trace("segment {} can be an anchor", i);
+                i++;
+            };
+        };
 
-		    // Restart checking
-		    i = 0;
-		}
-		// [problem][problem]
-		else {
-		    if (DEBUG)
-			log.trace("Situation is [problem][problem]");
-		    noRemainingProblem = false;
-		    i++;
-		};
-	    }
-	    else {
-		if (DEBUG)
-		    log.trace("segment {} can be an anchor", i);
-		i++;
-	    };
-	};
+        // There is still a remaining problem
+        if (!noRemainingProblem) {
 
-	// There is still a remaining problem
-	if (!noRemainingProblem) {
+            // The size has changed - retry!
+            if (size != this.segments.size())
+                return _solveProblematicSequence();
 
-	    // The size has changed - retry!
-	    if (size != this.segments.size())
-		return _solveProblematicSequence();
+            this.isSolved = true;
+            return true;
+        };
 
-	    this.isSolved = true;
-	    return true;
-	};
-
-	this.isSolved = true;
-	return false;
+        this.isSolved = true;
+        return false;
     };
 
 
     // Todo: Deal with negative and optional!
     // [base=der][base!=Baum]?
-    private SpanQueryWrapper _merge (
-        SpanQueryWrapper anchor,
-	SpanQueryWrapper problem,
-	boolean mergeLeft) throws QueryException {
+    private SpanQueryWrapper _merge (SpanQueryWrapper anchor,
+                                     SpanQueryWrapper problem,
+                                     boolean mergeLeft) throws QueryException {
 
-	// Extend to the right - merge to the left
-	int direction = 1;
-	if (!mergeLeft)
-	    direction = -1;
+        // Extend to the right - merge to the left
+        int direction = mergeLeft ? 1 : -1;
 
-	if (DEBUG)
-	    log.trace("Will merge two spans to {}", mergeLeft ? "left" : "right");
+        if (DEBUG)
+            log.trace("Will merge two spans to {}",
+                      mergeLeft ? "left" : "right");
 	    
-	// Make empty extension to anchor
-	if (problem.isEmpty()) {
-	    SpanQuery query;
+        // Make empty extension to anchor
+        if (problem.isEmpty()) {
+            SpanQuery query;
 
-	    if (DEBUG)
-		log.trace("Problem is empty");
+            if (DEBUG)
+                log.trace("Problem is empty with class {}",
+                          problem.getClassNumber());
 
-	    if (problem.hasClass) {
+            query = new SpanExpansionQuery(
+                anchor.toQuery(),
+                problem.getMin(),
+                problem.getMax(),
+                direction,
+                problem.hasClass() ? problem.getClassNumber() : (byte) 0,
+                true
+            );
+            return new SpanSimpleQueryWrapper(query).isExtended(true);
+        }
 
-		if (DEBUG)
-		    log.trace("Problem has class {}", problem.getClassNumber());
+        // make negative extension to anchor
+        else if (problem.isNegative()) {
 
-		query = new SpanExpansionQuery(
-		    anchor.toQuery(),
-		    problem.getMin(),
-		    problem.getMax(),
-		    direction,
-		    problem.getClassNumber(),
-		    true
-		);
-	    }
-	    else {
+            SpanQuery query;
 
-		if (DEBUG)
-		    log.trace("Problem has no class");
+            if (DEBUG)
+                log.trace("Problem is negative with class {}",
+                          problem.getClassNumber());
 
-		query = new SpanExpansionQuery(
-		    anchor.toQuery(),
-		    problem.getMin(),
-		    problem.getMax(),
-		    direction,
-		    true
-		);
-	    };
-	    return new SpanSimpleQueryWrapper(query).isExtended(true);
-	}
+            query = new SpanExpansionQuery(
+                anchor.toQuery(),
+                problem.toQuery(),
+                problem.getMin(),
+                problem.getMax(),
+                direction,
+                problem.hasClass() ? problem.getClassNumber() : (byte) 0,
+                true
+            );
+            return new SpanSimpleQueryWrapper(query).isExtended(true);
+        };
 
-	// make negative extension to anchor
-	else if (problem.isNegative()) {
+        if (DEBUG)
+            log.trace("Problem is optional");
 
-	    if (DEBUG)
-		log.trace("Problem is negative");
+        // [base=der][base=baum]?
 
-	    SpanQuery query;
-	    if (problem.hasClass) {
+        // [base=der]
+        SpanAlterQueryWrapper saqw =
+            new SpanAlterQueryWrapper(this.field, anchor);
 
-		if (DEBUG)
-		    log.trace("Problem has class {}", problem.getClassNumber());
+        // [base=der]
+        SpanSequenceQueryWrapper ssqw =
+            new SpanSequenceQueryWrapper(this.field, anchor);
 
-		query = new SpanExpansionQuery(
-		    anchor.toQuery(),
-		    problem.toQuery(),
-		    problem.getMin(),
-		    problem.getMax(),
-		    direction,
-		    problem.getClassNumber(),
-		    true
-		);
-	    }
-	    else {
-		if (DEBUG)
-		    log.trace("Problem has no class");
-
-		query = new SpanExpansionQuery(
-		    anchor.toQuery(),
-		    problem.toQuery(),
-		    problem.getMin(),
-		    problem.getMax(),
-		    direction,
-		    true
-		);
-	    };
-	    return new SpanSimpleQueryWrapper(query).isExtended(true);
-	};
-
-	if (DEBUG)
-	    log.trace("Problem is optional");
-
-	// [base=der][base=baum]?
-
-	// [base=der]
-	SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(this.field, anchor);
-
-	// [base=der]
-	SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(this.field, anchor);
-
-	// [base=der][base=baum]
-	if (mergeLeft)
-	    ssqw.append(new SpanSimpleQueryWrapper(problem.toQuery()));
-	// [base=baum][base=der]
-	else
-	    ssqw.prepend(new SpanSimpleQueryWrapper(problem.toQuery()));
+        // [base=der][base=baum]
+        if (mergeLeft)
+            ssqw.append(new SpanSimpleQueryWrapper(problem.toQuery()));
+        // [base=baum][base=der]
+        else
+            ssqw.prepend(new SpanSimpleQueryWrapper(problem.toQuery()));
 	
-	saqw.or(ssqw);
+        saqw.or(ssqw);
 
-	return (SpanQueryWrapper) saqw;
-    };
-
-    public boolean isEmpty () {
-	if (this.segments.size() == 0)
-	    return this.segments.get(0).isEmpty();
-	if (!this.isSolved)
-	    _solveProblematicSequence();
-	return super.isEmpty();
-    };
-
-
-    public boolean isOptional () {
-	if (this.segments.size() == 0)
-	    return this.segments.get(0).isOptional();
-	if (!this.isSolved)
-	    _solveProblematicSequence();
-	return super.isOptional();
-    };
-
-    public boolean isNegative () {
-	if (this.segments.size() == 0)
-	    return this.segments.get(0).isNegative();
-	if (!this.isSolved)
-	    _solveProblematicSequence();
-	return super.isNegative();
-    };
-
-    public boolean isExtendedToTheRight () {
-	if (!this.isSolved) {
-	    _solveProblematicSequence();
-	};
-	return this.isExtendedToTheRight;
+        return (SpanQueryWrapper) saqw;
     };
 };

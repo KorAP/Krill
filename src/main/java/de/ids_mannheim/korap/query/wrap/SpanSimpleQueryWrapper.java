@@ -8,21 +8,21 @@ public class SpanSimpleQueryWrapper extends SpanQueryWrapper {
     private SpanQuery query;
 
     public SpanSimpleQueryWrapper (String field, String term) {
-	this.isNull = false;
-	this.query = new SpanTermQuery(new Term(field, term));
+        this.isNull = false;
+        this.query = new SpanTermQuery(new Term(field, term));
     };
 
     public SpanSimpleQueryWrapper (SpanQuery query) {
-	this.isNull = false;
-	this.query = query;
+        this.isNull = false;
+        this.query = query;
     };
 
     public SpanQuery toQuery () {
-	return this.query;
+        return this.query;
     };
 
     public SpanSimpleQueryWrapper isExtended (boolean extended) {
-	this.isExtended = true;
-	return this;
+        this.isExtended = true;
+        return this;
     };
 };

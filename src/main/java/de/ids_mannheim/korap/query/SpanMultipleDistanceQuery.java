@@ -122,7 +122,7 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery {
             sb.append(c.getMaxDistance());
             sb.append("], ");
             sb.append(c.isOrdered() ? "ordered, " : "notOrdered, ");
-            sb.append(c.isExclusion() ? "excluded)]" : "notExcluded)");
+            sb.append(c.isExclusion() ? "excluded)" : "notExcluded)");
             if (i < size - 1)
                 sb.append(", ");
         }

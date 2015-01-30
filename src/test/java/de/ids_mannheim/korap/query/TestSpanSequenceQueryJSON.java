@@ -14,6 +14,10 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+/**
+ * @author diewald
+ */
+
 @RunWith(JUnit4.class)
 public class TestSpanSequenceQueryJSON {
 

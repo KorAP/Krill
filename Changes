@@ -1,10 +1,12 @@
-0.49.3 2014-01-29
+0.49.3 2014-01-30
         - [documentation] Improved documentation for API classes (diewald)
 	- [documentation] Improved documentation for various queries (margaretha)
 	- [feature] Added deserialization of SpanSubSpanQueries (margaretha,diewald)
 	- [bugfix] Null filters are now correctly extended (diewald)
 	- [cleanup] Refactoring of KorapResult, KorapResponse, KorapQuery,
 	  deprecated operation:or in favor of operation:junction (diewald)
+	- [bugfix] Empty class segments are now correctly serialized
+	  in sequences (diewald)
 
 0.49.2 2014-12-05
 	- [documentation] Improved documentation for various queries (margaretha)
@@ -223,43 +225,43 @@
 	- Support for distinct Match retrieval (diewald)
 
 0.25.3 2014-01-10
-        - Updated Lucene to 4.3.1.
-	- Eliza Margaretha has joined the team.
+        - Updated Lucene to 4.3.1 (diewald)
+	- Eliza Margaretha has joined the team
 
 0.25.2 2013-12-29
-        - Fixed highlight bug with empty reopened tags.
+        - Fixed highlight bug with empty reopened tags
 
 0.25.1 2013-12-28
-        - Support for pubDate collections.
-	- Changed versioning scheme.
+        - Support for pubDate collections
+	- Changed versioning scheme
 
 0.25 2013-12-20
-        - Support for Wildcard Queries.
-	- Improved support for regular expressions.
-	- Introduced keyword fields that store no positions.
+        - Support for Wildcard Queries
+	- Improved support for regular expressions
+	- Introduced keyword fields that store no positions
 
 0.24_1 2013-12-05
         - This is a pseudo version for demo versions with dirty hacks,
 	  meant to be rolled back!
-	- There is now an ignored broken test in TestKorapCollection!
+	- There is now an ignored broken test in TestKorapCollection
 
 0.24 2013-12-05
-        - Json deserializer finished for virtual collections.
+        - Json deserializer finished for virtual collections
 
 0.23 2013-12-05
-        - Error handling corrected in KorapResult.
-	- Json deserializer finished for queries.
+        - Error handling corrected in KorapResult
+	- Json deserializer finished for queries
 
 0.22 2013-12-04
-        - Introduced KorapSearch.
-	- Json deserializer (started).
+        - Introduced KorapSearch
+	- Json deserializer (started)
 
 0.21 2013-11-28
         - Virtual collections can now be defined,
-	  searched, nested and extended.
+	  searched, nested and extended
 
 0.20 2013-11-18
-        - Unboxing from sandbox.
+        - Unboxing from sandbox repository
 
 0.11 2013-11-14
 	- JSON file importer (plain and gzip)
@@ -267,43 +269,43 @@
 	- [bugfix] Sequence Query
 
 0.10 2013-11-11
-        - Added JSON input to indexer.
+        - Added JSON input to indexer
 
 0.09 2013-11-07
-        - Reconstruction of all wrapper queries using an interface.
-	- Finished KorapQuery (preliminary feature freeze).
+        - Reconstruction of all wrapper queries using an interface
+	- Finished KorapQuery (preliminary feature freeze)
 
 0.08 2013-10-18
-        - Changed methods to attributes in KorapMatch.
-	- Changed SimpleJSON to Jackson.
-	- Fixed Highlighting.
-	- Some Refactoring of result classes.
-	- Introduced KorapDocument.
-	- Introduced KorapHTML utility.
+        - Changed methods to attributes in KorapMatch
+	- Changed SimpleJSON to Jackson
+	- Fixed Highlighting
+	- Some Refactoring of result classes
+	- Introduced KorapDocument
+	- Introduced KorapHTML utility
 
 0.07 2013-10-14
-        - Added position to offset matching.
+        - Added position to offset matching
 
 0.06 2013-10-01
-        - Added SpanElementQuery for working WithinQeries.
-	- Added KorapResult and KorapMatching.
+        - Added SpanElementQuery for working WithinQeries
+	- Added KorapResult and KorapMatching
 
 0.05 2013-09-18
-        - Fixed bug in indexing (MultiTermTokenStream).
-	- Fixed SpanNext.
-	- Added KorapIndex.
-	- First draft for KorapFilter.
+        - Fixed bug in indexing (MultiTermTokenStream)
+	- Fixed SpanNext
+	- Added KorapIndex
+	- First draft for KorapFilter
 
 0.04 2013-09-01
         - Introduced optimized SpanNext class (not working atm),
-	  as SpanNear does not always work with nested synonyms.
+	  as SpanNear does not always work with nested synonyms
 
 0.03 2013-08-28
-        - Added within query (not working atm).
-	- Pushed query part to public repo.
+        - Added within query (not working atm)
+	- Pushed query part to public repo
 
 0.02 2013-08-26
-        - Added sequences.
+        - Added sequences
 
 0.01 2013-08-20
-        - First version as maven build environment.
+        - First version as maven build environment

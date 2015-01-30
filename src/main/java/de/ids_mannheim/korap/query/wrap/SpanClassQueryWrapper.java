@@ -9,28 +9,45 @@ import de.ids_mannheim.korap.util.QueryException;
 import java.util.*;
 
 
+// TODO: If this.subquery.isNegative(), it may be an Expansion!
+// SpanExpansionQuery(x, y.negative, min, max. direction???, classNumber, true)
+
 public class SpanClassQueryWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subquery;
-    private byte number = (byte) 0;
 
     public SpanClassQueryWrapper (SpanQueryWrapper subquery, byte number) {
-	this.subquery = subquery;
-	this.number = number;
+        this.subquery = subquery;
+        this.number   = number;
+        if (number != (byte) 0)
+            this.hasClass = true;
     };
 
     public SpanClassQueryWrapper (SpanQueryWrapper subquery, short number) {
-	this.subquery = subquery;
-	this.number = (byte) number;
+        this(subquery, (byte) number);
     };
 
     public SpanClassQueryWrapper (SpanQueryWrapper subquery, int number) {
-	this.subquery = subquery;
-	this.number = (byte) number;
+        this(subquery, (byte) number);
     };
 
     public SpanClassQueryWrapper (SpanQueryWrapper subquery) {
-	this.subquery = subquery;
-	this.number = (byte) 0;
+        this(subquery, (byte) 0);
+    };
+
+    public boolean isEmpty () {
+        return this.subquery.isEmpty();
+    };
+
+    public boolean isOptional () {
+        return this.subquery.isOptional();
+    };
+
+    public boolean isNull () {
+        return this.subquery.isNull();
+    };
+
+    public boolean isNegative () {
+        return this.subquery.isNegative();
     };
 
     public SpanQuery toQuery () throws QueryException {
@@ -40,25 +57,10 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
         SpanQuery sq = (SpanQuery) this.subquery.toQuery();
 
         if (sq == null) return (SpanQuery) null;
-
-        // TODO: If this.subquery.isNegative(), it may be an Expansion!
-        // SpanExpansionQuery(x, y.negative, min, max. direction???, classNumber, true)
 	
         if (this.number == (byte) 0) {
             return new SpanClassQuery(sq);
         };
         return new SpanClassQuery(sq, (byte) this.number);
-    };
-
-    public boolean isOptional () {
-	return this.subquery.isOptional();
-    };
-
-    public boolean isNull () {
-	return this.subquery.isNull();
-    };
-
-    public boolean isNegative () {
-	return this.subquery.isNegative();
     };
 };
