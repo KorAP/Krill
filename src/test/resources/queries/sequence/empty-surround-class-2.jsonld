@@ -5,7 +5,7 @@
       "operands" : [
 	 {
 	     "@type" : "korap:group",
-	     "class" : 3,
+	     "classOut" : 3,
 	     "operation" : "operation:class",
 	     "operands" : [
 	     	 {
@@ -24,7 +24,7 @@
          },
 	 {
 	     "@type" : "korap:group",
-	     "class" : 2,
+	     "classOut" : 2,
 	     "operation" : "operation:class",
 	     "operands" : [
 	     	 {

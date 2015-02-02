@@ -3,7 +3,7 @@
   "query":{
     "@type":"korap:group",
     "operation" : "operation:class",
-   "class":1,
+   "classOut":1,
     "operands":[
       {
 	"@type":"korap:group",

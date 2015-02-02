@@ -333,9 +333,10 @@ public class KorapQuery extends Notifications {
 
         case "operation:or": // Deprecated in favor of operation:junction
             return this._operationJunctionFromJson(operands);
-
+            /*
         case "operation:submatch": // Deprecated in favor of korap:reference
             return this._operationSubmatchFromJson(json, operands);
+            */
         };
 
         // Unknown
@@ -360,7 +361,7 @@ public class KorapQuery extends Notifications {
         if (operands.size() != 2)
             throw new QueryException(705, "Number of operands is not acceptable");
 
-        String frame = "contains";
+        String frame = "isAround";
         // Temporary workaround for wrongly set overlaps
         if (json.has("frames")) {
             JsonNode frameN = json.get("frames");
@@ -372,6 +373,8 @@ public class KorapQuery extends Notifications {
         }
         // <legacyCode>
         else if (json.has("frame")) {
+            this.addMessage(0, "Frame is deprecated");
+
             JsonNode frameN = json.get("frame");
             if (frameN != null && frameN.isValueNode())
                 frame = frameN.asText().substring(6);
@@ -383,17 +386,17 @@ public class KorapQuery extends Notifications {
         // Byte flag - should cover all 13 cases, i.e. two bytes long
         byte flag = WITHIN;
         switch (frame) {
-        case "contains":
+        case "isAround":
             break;
         case "strictlyContains":
             flag = REAL_WITHIN;
             break;
-        case "within":
+        case "isWithin":
             break;
-        case "startswith":
+        case "startsWith":
             flag = STARTSWITH;
             break;
-        case "endswith":
+        case "endsWith":
             flag = ENDSWITH;
             break;
         case "matches":
@@ -401,6 +404,10 @@ public class KorapQuery extends Notifications {
             break;
         case "overlaps":
             flag = OVERLAP;
+            this.addWarning(
+                769,
+                "Overlap variant currently interpreted as overlap"
+            );
             break;
         case "overlapsLeft":
             // Temporary workaround
@@ -421,6 +428,9 @@ public class KorapQuery extends Notifications {
         case "strictlyOverlaps":
             flag = REAL_OVERLAP;
             break;
+
+            // alignsLeft
+
         default:
             throw new QueryException(706, "Frame type is unknown");
         };
@@ -551,6 +561,7 @@ public class KorapQuery extends Notifications {
         }
         // <legacyCode>
         else if (json.has("class")) {
+            this.addMessage(0, "Class is deprecated");
             number = json.get("class").asInt(0);
         };
         // </legacyCode>

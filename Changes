@@ -4,9 +4,11 @@
 	- [feature] Added deserialization of SpanSubSpanQueries (margaretha,diewald)
 	- [bugfix] Null filters are now correctly extended (diewald)
 	- [cleanup] Refactoring of KorapResult, KorapResponse, KorapQuery,
-	  deprecated operation:or in favor of operation:junction (diewald)
+	  deprecated operation:or in favor of operation:junction,
+	  updating test suite for class and frame attributes (diewald)
 	- [bugfix] Empty class segments are now correctly serialized
 	  in sequences (diewald)
+	- [feature] Started support for position frames (diewald)
 
 0.49.2 2014-12-05
 	- [documentation] Improved documentation for various queries (margaretha)

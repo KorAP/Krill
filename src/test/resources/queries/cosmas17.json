@@ -3,7 +3,7 @@
   "query" : {
     "@type" : "korap:group",
     "operation" : "operation:position",
-    "frame" : "frame:startswith",
+    "frames" : ["frames:startsWith", "frames:matches", "frames:alignsLeft"],
     "operands" : [ {
       "@type" : "korap:span",
       "key" : "s"

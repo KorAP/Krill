@@ -3,7 +3,7 @@
     "query" : {
       "@type" : "korap:group",
       "operation" : "operation:class",
-      "class" : 0,
+      "classOut" : 0,
       "operands" : [ {
         "@type" : "korap:token",
         "wrap" : {

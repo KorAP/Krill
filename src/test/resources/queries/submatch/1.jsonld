@@ -15,9 +15,8 @@
       "operands" : [
          {
             "@type" : "korap:group",
-            "frame" : "frame:contains",
             "frames" : [
-               "frames:contains"
+               "frames:isAround"
             ],
             "operands" : [
                {

@@ -42,7 +42,6 @@
             "operands" : [
                {
                   "@type" : "korap:group",
-                  "class" : 1,
                   "classOut" : 1,
                   "operands" : [
                      {

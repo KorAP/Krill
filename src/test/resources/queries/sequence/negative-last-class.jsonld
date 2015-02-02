@@ -15,7 +15,7 @@
          },
         {
 	  "@type" : "korap:group",
-	  "class" : 2,
+	  "classOut" : 2,
 	  "operation" : "operation:class",
 	  "operands" : [
 	    {

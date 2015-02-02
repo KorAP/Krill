@@ -1154,7 +1154,7 @@ public class TestKorapSearch {
 
         assertEquals(
             kr.getError(0).getMessage(),
-            "Number of operands is not acceptable"
+            "Operation needs operand list"
         );
     };
 

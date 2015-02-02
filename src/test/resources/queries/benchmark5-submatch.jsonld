@@ -13,14 +13,13 @@
 		}
 	    },
 	    {
-		"@type" : "korap:group",
-		"operation" : "operation:submatch",
+		"@type" : "korap:reference",
 		"classRef" : [2],
 		"operands" : [
 		    {
 			"@type" : "korap:group",
 			"operation" : "operation:class",
-			"class" : 1,
+			"classOut" : 1,
 			"operands" : [
 			    {
 				"@type": "korap:group", 
@@ -37,7 +36,7 @@
 				    {
 					"@type" : "korap:group",
 					"operation" : "operation:class",
-					"class" : 2,
+					"classOut" : 2,
 					"operands" : [
 					    {
 						"@type": "korap:token",

@@ -3,7 +3,7 @@
     "query": {
 	"@type": "korap:group", 
 	"operation": "operation:position", 
-	"frame": "frame:contains",
+	"frames": ["frames:isAround"],
 	"operands": [
 	    {
 		"@type": "korap:span",
@@ -14,7 +14,7 @@
 	    {
 		"@type" : "korap:group",
 		"operation" : "operation:class",
-		"class" : 1,
+		"classOut" : 1,
 		"operands" : [
 		    {
 			"@type": "korap:token",

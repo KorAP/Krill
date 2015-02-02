@@ -2,7 +2,7 @@
   "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
     "query": {
         "@type": "korap:group", 
-        "frame": "frame:contains", 
+        "frames": ["frame:isAround"], 
         "operation": "operation:position"
         "operands": [
             {
