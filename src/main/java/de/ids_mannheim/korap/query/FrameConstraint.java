@@ -3,7 +3,52 @@ import de.ids_mannheim.korap.util.QueryException;
 import java.util.*;
 
 /**
- * Class representing a frame constraint as a bit vector.
+ * Class representing a frame constraint, as used by
+ * {@link SpanWithinQuery}.
+ * Multiple constraints are represented as a bit vector,
+ * supporting fast checks if a certain condition is met.
+ * The following distinctive frame conditions are supported:
+ *
+ * <dl>
+ *   <dt>precedes</dt>
+ *   <dd>A precedes B</dd>
+ *
+ *   <dt>precedesDirectly</dt>
+ *   <dd>A precedes B directly</dd>
+ *
+ *   <dt>overlapsLeft</dt>
+ *   <dd>A overlaps B to the left</dd>
+ *
+ *   <dt>alignsLeft</dt>
+ *   <dd>A aligns with B to the left</dd>
+ *
+ *   <dt>startsWith</dt>
+ *   <dd>A starts with B</dd>
+ *
+ *   <dt>matches</dt>
+ *   <dd>A matches B</dd>
+ *
+ *   <dt>isWithin</dt>
+ *   <dd>A is within B</dd>
+ *
+ *   <dt>isAround</dt>
+ *   <dd>A is around B</dd>
+ *
+ *   <dt>endsWith</dt>
+ *   <dd>A ends with B</dd>
+ *
+ *   <dt>alignsRight</dt>
+ *   <dd>A aligns with B to the right</dd>
+ *
+ *   <dt>overlapsRight</dt>
+ *   <dd>A overlaps B to the right</dd>
+ *
+ *   <dt>succeedsDirectly</dt>
+ *   <dd>A succeeds B directly</dd>
+ *
+ *   <dt>succeeds</dt>
+ *   <dd>A succeeds B</dd>
+ * </dl>
  *
  * @author diewald
  */
@@ -149,12 +194,23 @@ public class FrameConstraint {
     // Bitvector representing the frame constraint
     public int vector;
 
+    /**
+     * Constructs a new Frame Constraint.
+     */
     public FrameConstraint () {
         this.vector = 0;
     };
 
-    public FrameConstraint or (String constraint) throws QueryException {
-        int or = FRAME.get(constraint);
+    /**
+     * Add a new valid condition to the Frame Constraint.
+     *
+     * @param condition A string representing a valid condition.
+     *        See the synopsis for valid condition names.
+     * @return The {@link FrameConstraint} for chaining.
+     * @throws QueryException
+     */
+    public FrameConstraint add (String condition) throws QueryException {
+        int or = FRAME.get(condition);
         if (or == 0)
             throw new QueryException(706, "Frame type is unknown");
 
@@ -162,11 +218,27 @@ public class FrameConstraint {
         return this;
     };
 
-    public FrameConstraint or (FrameConstraint constraint) {
+
+    /**
+     * Add new valid conditions to the Frame Constraint.
+     *
+     * @param constraint A Frame constraint representing a set
+     *        of valid conditions.
+     * @return The {@link FrameConstraint} for chaining.
+     */
+    public FrameConstraint add (FrameConstraint constraint) {
         this.vector |= constraint.vector;
         return this;
     };
 
+
+    /**
+     * Invert the condition set of the frame constraint.
+     * All valid conditions become invalid, all invalid
+     * conditions become valid.
+     *
+     * @return The {@link FrameConstraint} for chaining.
+     */
     public FrameConstraint invert () {
         this.vector ^= FRAME_ALL;
         return this;
@@ -174,29 +246,41 @@ public class FrameConstraint {
 
 
     /**
-     * Check for constraint per bit vector.
+     * Check if a condition is valid.
+     *
+     * @param condition A string representing a condition.
+     *        See the synopsis for valid condition names.
+     * @return A boolean value, indicating if a condition is valid or not.
+     * @throws QueryException
      */
-    public boolean check (int check) {
-        return (this.vector & check) != 0;
-    };
+    public boolean check (String condition) throws QueryException {
+        int check = FRAME.get(condition);
 
-
-    /**
-     * Check for constraint per FrameConstraint.
-     */
-    public boolean check (FrameConstraint check) {
-        return (this.vector & check.vector) != 0;
-    };
-
-
-    /**
-     * Check for constraint per string.
-     */
-    public boolean check (String constraint) throws QueryException {
-        int check = FRAME.get(constraint);
         if (check == 0)
             throw new QueryException(706, "Frame type is unknown");
 
         return this.check(check);
+    };
+
+
+    /**
+     * Check if conditions are valid.
+     *
+     * @param conditions An integer bit vector representing a set of conditions.
+     * @return A boolean value, indicating if at least one condition is valid or not.
+     */
+    public boolean check (int conditions) {
+        return (this.vector & conditions) != 0;
+    };
+
+
+    /**
+     * Check if conditions are valid.
+     *
+     * @param conditions A {@link FrameConstraint} representing a set of conditions.
+     * @return A boolean value, indicating if at least one condition is valid or not.
+     */
+    public boolean check (FrameConstraint conditions) {
+        return (this.vector & conditions.vector) != 0;
     };
 };

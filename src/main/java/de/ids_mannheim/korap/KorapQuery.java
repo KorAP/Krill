@@ -10,20 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanAttributeQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanElementQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanMatchModifyQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSubspanQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.*;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -954,6 +941,7 @@ public class KorapQuery extends Notifications {
     };
 
 
+    // Get attributes from a json termgroup
     private SpanQueryWrapper _attrFromJson (JsonNode attrNode)
         throws QueryException {
 
@@ -991,6 +979,13 @@ public class KorapQuery extends Notifications {
 
         return null;
     }
+
+
+
+    /*
+     * Following are builder methods that will probably move
+     * to a separated class in the future
+     */
 
 
     /**

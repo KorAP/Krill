@@ -49,7 +49,7 @@ public class TestFrameConstraint {
         assertEquals(fc.check("succeeds"),         false);
 
         // Some or
-        fc.or("succeeds").or("succeedsDirectly");
+        fc.add("succeeds").add("succeedsDirectly");
         assertEquals(fc.check("precedes"),         false);
         assertEquals(fc.check("precedesDirectly"), false);
         assertEquals(fc.check("overlapsLeft"),     false);
@@ -65,7 +65,7 @@ public class TestFrameConstraint {
         assertEquals(fc.check("succeeds"),         true);
 
         // Moar or
-        fc.or("precedes").or("precedesDirectly");
+        fc.add("precedes").add("precedesDirectly");
         assertEquals(fc.check("precedes"),         true);
         assertEquals(fc.check("precedesDirectly"), true);
         assertEquals(fc.check("overlapsLeft"),     false);
@@ -81,7 +81,7 @@ public class TestFrameConstraint {
         assertEquals(fc.check("succeeds"),         true);
 
         // Moar or
-        fc.or("matches").or("startsWith");
+        fc.add("matches").add("startsWith");
         assertEquals(fc.check("precedes"),         true);
         assertEquals(fc.check("precedesDirectly"), true);
         assertEquals(fc.check("overlapsLeft"),     false);
@@ -112,11 +112,10 @@ public class TestFrameConstraint {
         assertEquals(fc.check("succeedsDirectly"), false);
         assertEquals(fc.check("succeeds"),         false);
 
-
-        fc.or("precedes").
-            or("precedesDirectly").
-            or("startsWith").
-            or("matches");
+        fc.add("precedes").
+            add("precedesDirectly").
+            add("startsWith").
+            add("matches");
         assertEquals(fc.check("precedes"),         true);
         assertEquals(fc.check("precedesDirectly"), true);
         assertEquals(fc.check("overlapsLeft"),     true);
@@ -131,8 +130,8 @@ public class TestFrameConstraint {
         assertEquals(fc.check("succeedsDirectly"), false);
         assertEquals(fc.check("succeeds"),         false);
 
-        fc.or("succeeds").
-            or("succeedsDirectly");
+        fc.add("succeeds").
+            add("succeedsDirectly");
         assertEquals(fc.check("precedes"),         true);
         assertEquals(fc.check("precedesDirectly"), true);
         assertEquals(fc.check("overlapsLeft"),     true);
@@ -152,7 +151,7 @@ public class TestFrameConstraint {
     public void testOrVector () throws QueryException {
         FrameConstraint fc1 = new FrameConstraint();
         // Some or
-        fc1.or("succeeds").or("succeedsDirectly");
+        fc1.add("succeeds").add("succeedsDirectly");
         assertEquals(fc1.check("precedes"),         false);
         assertEquals(fc1.check("precedesDirectly"), false);
         assertEquals(fc1.check("overlapsLeft"),     false);
@@ -168,7 +167,7 @@ public class TestFrameConstraint {
         assertEquals(fc1.check("succeeds"),         true);
 
         FrameConstraint fc2 = new FrameConstraint();
-        fc2.or("precedes").or("precedesDirectly");
+        fc2.add("precedes").add("precedesDirectly");
         assertEquals(fc2.check("precedes"),         true);
         assertEquals(fc2.check("precedesDirectly"), true);
         assertEquals(fc2.check("overlapsLeft"),     false);
@@ -183,7 +182,7 @@ public class TestFrameConstraint {
         assertEquals(fc2.check("succeedsDirectly"), false);
         assertEquals(fc2.check("succeeds"),         false);
 
-        fc1.or(fc2);
+        fc1.add(fc2);
         assertEquals(fc1.check("precedes"),         true);
         assertEquals(fc1.check("precedesDirectly"), true);
         assertEquals(fc1.check("overlapsLeft"),     false);

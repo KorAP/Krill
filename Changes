@@ -1,4 +1,4 @@
-0.49.3 2014-01-30
+0.49.3 2014-02-03
         - [documentation] Improved documentation for API classes (diewald)
 	- [documentation] Improved documentation for various queries (margaretha)
 	- [feature] Added deserialization of SpanSubSpanQueries (margaretha,diewald)
@@ -9,6 +9,8 @@
 	- [bugfix] Empty class segments are now correctly serialized
 	  in sequences (diewald)
 	- [feature] Started support for position frames (diewald)
+	- [bugfix] Fixed #134 Nullpointer exception in WithinSpans
+	  (diewald, margaretha)
 
 0.49.2 2014-12-05
 	- [documentation] Improved documentation for various queries (margaretha)
