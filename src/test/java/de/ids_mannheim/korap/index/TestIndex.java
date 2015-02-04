@@ -78,17 +78,11 @@ public class TestIndex { // extends LuceneTestCase {
 	assertEquals(test.terms.get(0).term, "hunde");
 	assertEquals(test.terms.get(1).term, "pos:n");
 	assertEquals(test.terms.get(2).term, "m:gen:pl");
-	assertEquals(test.terms.get(0).posIncr, 1, 1);
-	assertEquals(test.terms.get(1).posIncr, 0, 1);
-	assertEquals(test.terms.get(2).posIncr, 0, 1);
 
 	test = new MultiTermToken("hunde", "pos:n", "m:gen:pl");
 	assertEquals(test.terms.get(0).term, "hunde");
 	assertEquals(test.terms.get(1).term, "pos:n");
 	assertEquals(test.terms.get(2).term, "m:gen:pl");
-	assertEquals(test.terms.get(0).posIncr, 1, 1);
-	assertEquals(test.terms.get(1).posIncr, 0, 1);
-	assertEquals(test.terms.get(2).posIncr, 0, 1);
     };
 
     private List initIndexer () throws IOException {

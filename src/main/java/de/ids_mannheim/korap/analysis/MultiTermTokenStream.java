@@ -1,7 +1,5 @@
 package de.ids_mannheim.korap.analysis;
 
-import de.ids_mannheim.korap.analysis.MultiTerm;
-import de.ids_mannheim.korap.analysis.MultiTermToken;
 import static de.ids_mannheim.korap.util.KorapByte.*;
 import org.apache.lucene.util.BytesRef;
 
@@ -119,8 +117,7 @@ public class MultiTermTokenStream extends TokenStream {
      */
     public MultiTermTokenStream addMultiTermToken
         (MultiTerm mts, MultiTerm ... moreTerms) {
-        this.addMultiTermToken(new MultiTermToken(mts, moreTerms));
-        return this;
+        return this.addMultiTermToken(new MultiTermToken(mts, moreTerms));
     };
 
 
@@ -134,8 +131,7 @@ public class MultiTermTokenStream extends TokenStream {
      */
     public MultiTermTokenStream addMultiTermToken
         (char prefix, String surface) {
-        this.addMultiTermToken(new MultiTermToken(prefix, surface));
-        return this;
+        return this.addMultiTermToken(new MultiTermToken(prefix, surface));
     };
 
 
@@ -149,8 +145,7 @@ public class MultiTermTokenStream extends TokenStream {
      */
     public MultiTermTokenStream addMultiTermToken
         (String surface, String ... moreTerms) {
-        this.addMultiTermToken(new MultiTermToken(surface, moreTerms));
-        return this;
+        return this.addMultiTermToken(new MultiTermToken(surface, moreTerms));
     };
 
 
@@ -310,6 +305,9 @@ public class MultiTermTokenStream extends TokenStream {
         // Get current token
         MultiTermToken mtt = this.multiTermTokens.get( this.mttIndex );
 
+        // Sort the MultiTermToken
+        mtt.sort();
+
         // Last term reached
         if (mtt.terms.size() == this.mtIndex) {
             this.mtIndex = 0;
@@ -331,7 +329,7 @@ public class MultiTermTokenStream extends TokenStream {
         MultiTerm mt = mtt.terms.get(this.mtIndex);
 
         // Set the relative position to the former term
-        posIncrAttr.setPositionIncrement( mt.posIncr );
+        posIncrAttr.setPositionIncrement( this.mtIndex == 0 ? 1 : 0 );
         charTermAttr.setEmpty();
         charTermAttr.append( mt.term );
 
@@ -368,7 +366,7 @@ public class MultiTermTokenStream extends TokenStream {
             if (payload.length > 0)
                 sb.append('$').append(payload.toString());
             sb.append(']');
-            sb.append(" with increment ").append(mt.posIncr);
+            sb.append(" with increment ").append(this.mtIndex == 0 ? 1 : 0);
             
             log.trace(sb.toString());
         };

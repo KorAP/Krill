@@ -35,11 +35,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author diewald
  */
-public class MultiTerm {
+public class MultiTerm implements Comparable<MultiTerm> {
     public int start, end = 0;
     public String term = null;
-    public Integer posIncr = 1;
-    public boolean storeOffsets = false;
+    private boolean storeOffsets = false;
     public BytesRef payload = null;
 
     private static ByteBuffer bb = ByteBuffer.allocate(8);
@@ -304,6 +303,21 @@ public class MultiTerm {
         };
 
         return sb.toString();
+    };
+
+    @Override
+    public int compareTo (MultiTerm o) {
+        if (this.payload == null || o.payload == null)
+            return 0;
+        if (this.end < o.end)
+            return -1;
+        else if (this.end > o.end)
+            return 1;
+        else if (this.start < o.start)
+            return -1;
+        else if (this.start > o.start)
+            return 1;
+        return 0;
     };
 
 
