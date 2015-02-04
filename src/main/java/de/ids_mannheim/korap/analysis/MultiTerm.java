@@ -5,12 +5,35 @@ import org.apache.lucene.util.BytesRef;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * @author Nils Diewald
- * @version 0.3
+ * A MultiTerm represents a single term (e.g. a word, an annotation, a relation)
+ * that can be part of a MultiTermToken.
  *
- * MultiTerm represents a term in a MultiTermToken.
+ * A MultiTerm consists of a term representation string, optional character offset
+ * information that matches the term to the character stream of the input text,
+ * and an arbitrary payload.
+ *
+ * There is a simple string representation of MultiTerms supported:
+ * The string is the first sequence of characters.
+ * Offsets are written as an appended and dash separated pair of integers.
+ * Payloads are written following a dollar sign.
+ * Payload segments can be typed as being a short (s), an integer (i), or a long (l)
+ * value in leading angular brackets.
+ * All other (untyped) payloads are treated as being UTF-8 characer sequences.
+ *
+ * <blockquote><pre>
+ *   MultiTerm test1 = new MultiTerm("test");
+ *   MultiTerm test2 = new MultiTerm("test#0-4");
+ *   MultiTerm test3 = new MultiTerm("test#0-4$Example");
+ *   MultiTerm test4 = new MultiTerm("test#0-4$&lt;i&gt;1278");
+ * </pre></blockquote>
+ *
+ * <strong>Warning</strong>: Strings that are malformed fail silently!
+ *
+ * @author diewald
  */
 public class MultiTerm {
     public int start, end = 0;
@@ -24,141 +47,71 @@ public class MultiTerm {
 
     private static short i, l;
 
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+    private final Logger log = LoggerFactory.getLogger(MultiTermTokenStream.class);
+
 
     /**
-     * The constructor.
-     *
-     * @param term The term surface.
-              Offsets can be written as an appended and dash separated pair of integers,
-	      payloads can be written following a dollar sign.
-	      payloads can be typed as being a short (s), an integer (i), or a long (l)
-	      in leading angular brackets. All other payloads are treated as being UTF-8
-	      characer sequences.
-	      
-	      Examples:
-	      MultiTerm test = new MultiTerm("test");
-	      MultiTerm test = new MultiTerm("test#0-4");
-	      MultiTerm test = new MultiTerm("test#0-4$Example");
-	      MultiTerm test = new MultiTerm("test#0-4$&lt;i&gt;1278");
-
-	      Strings that are malformed fail silently.
-     */
-    public MultiTerm (String term) {
-	_fromString(term);
-    };
-
-    
-    /**
-     * The constructor with a separated prefix.
-     * new MultiTerm('a', "bcd") is equivalent to
-     * new MultiTerm("a:bcd");
-     *
-     * @param prefix A special prefix for the term.
-     * @param term The term surface.
-     *
-     * @see #MultiTerm(String)
-     */
-    public MultiTerm (char prefix, String term) {
-	StringBuilder sb = new StringBuilder();
-	_fromString(sb.append(prefix).append(':').append(term).toString());
-    };
-    
-    /**
-     * The empty constructor.
+     * Construct a new MultiTerm object.
      */
     public MultiTerm () {
-	this.term = "";
+        this.term = "";
+    };
+
+
+    /**
+     * Construct a new MultiTerm object.
+     *
+     * @param term The term surface (see synopsis).
+     */
+    public MultiTerm (String term) {
+        _fromString(term);
     };
 
     
     /**
-     * Sets the term value.
+     * Construct a new MultiTerm object.
      *
-     * @param term The term as a string
+     * In addition to the normal surface representation,
+     * this supports a prefix notation.
+     * The following expressions are equal:
+     *
+     * <blockquote><pre>
+     *   MultiTerm test1 = new MultiTerm('a', "bcd");
+     *   MultiTerm test2 = new MultiTerm("a:bcd");
+     * </pre></blockquote>
+     *
+     * @param prefix A special prefix for the term.
+     * @param term The term surface (see synopsis).
      */
-    public void setTerm (String term) {
-	this.term = term;
+    public MultiTerm (char prefix, String term) {
+        StringBuilder sb = new StringBuilder();
+        _fromString(sb.append(prefix).append(':').append(term).toString());
     };
 
 
     /**
-     * Returns the term value.
+     * Get the term value of the MultiTerm.
      *
-     * @return The term value.
+     * @return The term as a string.
      */
     public String getTerm () {
-	return this.term;
+        return this.term;
     };
-
+    
     
     /**
-     * Set the payload as a byte value.
+     * Set the term value of the MultiTerm.
      *
-     * @param pl The payload.
+     * @param term The term as a string.
+     * @return The {@link MultIterm} object for chaining.
      */
-    public void setPayload (Byte pl) {
-	this.payload = new BytesRef( ByteBuffer.allocate(1).put(pl).array());
+    public MultiTerm setTerm (String term) {
+        this.term = term;
+        return this;
     };
 
-    
-    /**
-     * Set the payload as a short value.
-     *
-     * @param pl The payload.
-     */
-    public void setPayload (short pl) {
-	this.payload = new BytesRef( ByteBuffer.allocate(2).putShort(pl).array());
-    };
-
-
-    /**
-     * Set the payload as an integer value.
-     *
-     * @param pl The payload.
-     */
-    public void setPayload (int pl) {
-	this.payload = new BytesRef( ByteBuffer.allocate(4).putInt(pl).array());
-    };
-
-    
-    /**
-     * Set the payload as a long value.
-     *
-     * @param pl The payload.
-     */
-    public void setPayload (long pl) {
-	this.payload = new BytesRef( ByteBuffer.allocate(8).putLong(pl).array());
-    };
-
-
-    /**
-     * Set the payload as a string value.
-     *
-     * @param pl The payload.
-     */
-    public void setPayload (String pl) {
-	this.payload = new BytesRef(pl);
-    };
-
-
-    /**
-     * Set the payload as a byte array.
-     *
-     * @param pl The payload.
-     */
-    public void setPayload (byte[] pl) {
-	this.payload = new BytesRef(pl);
-    };
-
-
-    /**
-     * Set the payload as a BytesRef.
-     *
-     * @param pl The payload.
-     */
-    public void setPayload (BytesRef pl) {
-	this.payload = pl;
-    };
 
     /**
      * Get the payload.
@@ -166,17 +119,91 @@ public class MultiTerm {
      * @return The payload as a BytesRef.
      */
     public BytesRef getPayload () {
-	return this.payload;
+        return this.payload;
+    };
+
+    
+    /**
+     * Set the payload as a {@link Byte} value.
+     *
+     * @param pl The payload.
+     * @return The {@link MultiTerm} object for chaining.
+     */
+    public MultiTerm setPayload (Byte pl) {
+        this.payload = new BytesRef( ByteBuffer.allocate(1).put(pl).array());
+        return this;
+    };
+
+    
+    /**
+     * Set the payload as a short value.
+     *
+     * @param pl The payload.
+     * @return The {@link MultiTerm} object for chaining.
+     */
+    public MultiTerm setPayload (short pl) {
+        this.payload = new BytesRef( ByteBuffer.allocate(2).putShort(pl).array());
+        return this;
     };
 
 
     /**
-     * Set the start position of the term.
+     * Set the payload as an integer value.
      *
-     * @param The start position.
+     * @param pl The payload.
+     * @return The {@link MultiTerm} object for chaining.
      */
-    public void setStart (int value) {
-	this.start = value;
+    public MultiTerm setPayload (int pl) {
+        this.payload = new BytesRef( ByteBuffer.allocate(4).putInt(pl).array());
+        return this;
+    };
+
+    
+    /**
+     * Set the payload as a long value.
+     *
+     * @param pl The payload.
+     * @return The {@link MultiTerm} object for chaining.
+     */
+    public MultiTerm setPayload (long pl) {
+        this.payload = new BytesRef( ByteBuffer.allocate(8).putLong(pl).array());
+        return this;
+    };
+
+
+    /**
+     * Set the payload as a string value.
+     *
+     * @param pl The payload.
+     * @return The {@link MultiTerm} object for chaining.
+     */
+    public MultiTerm setPayload (String pl) {
+        this.payload = new BytesRef(pl);
+        return this;
+    };
+
+
+    /**
+     * Set the payload as a byte array.
+     *
+     * @param pl The payload.
+     * @return The {@link MultiTerm} object for chaining.
+     */
+    public MultiTerm setPayload (byte[] pl) {
+        this.payload = new BytesRef(pl);
+        return this;
+    };
+
+
+    /**
+     * Set the payload as a {@link BytesRef} object.
+     *
+     * @param pl The payload.
+     * @return The {@link MultiTerm} object for chaining.
+     */
+    public MultiTerm setPayload (BytesRef pl) {
+        this.payload = pl;
+        return this;
     };
 
 
@@ -186,17 +213,19 @@ public class MultiTerm {
      * @return The start position.
      */
     public int getStart () {
-	return this.start;
+        return this.start;
     };
 
 
     /**
-     * Set the end position of the term.
+     * Set the start position.
      *
-     * @param The end position.
+     * @param start The start position.
+     * @return The {@link MultiTerm} object for chaining.
      */
-    public void setEnd (int value) {
-	this.end = value;
+    public MultiTerm setStart (int start) {
+        this.start = start;
+        return this;
     };
 
 
@@ -206,18 +235,19 @@ public class MultiTerm {
      * @return The end position.
      */
     public int getEnd () {
-	return this.end;
+        return this.end;
     };
 
 
     /**
-     * Set the flag for stored offsets.
+     * Set the end position.
      *
-     * @param value Boolean value indicating that the term
-     *        contains stored offsets.
+     * @param end The end position.
+     * @return The {@link MultiTerm} object for chaining.
      */
-    public void hasStoredOffsets (boolean value) {
-	this.storeOffsets = value;
+    public MultiTerm setEnd (int end) {
+        this.end = end;
+        return this;
     };
 
 
@@ -228,98 +258,25 @@ public class MultiTerm {
      *         contains stored offsets.
      */
     public boolean hasStoredOffsets () {
-	return this.storeOffsets;
-    };
-
-
-    private void _fromString (String term) {
-	String[] termSurface = term.split("\\$", 2);
-
-	// Payload is given
-	if (termSurface.length == 2) {
-	    String payloadStr = termSurface[1];
-
-	    // Payload has a type
-	    if (payloadStr.charAt(0) == '<' && payloadStr.charAt(2) == '>') {
-
-		// Rewind bytebuffer
-		bb.rewind();
-
-		// Split payload at type marker boundaries
-		String[] pls = payloadStr.split("(?=<)|(?<=>)");
-
-		l = 0; // Bytearray length
-
-		try {
-		    for (i = 1; i < pls.length;) {
-
-			// Resize the bytebuffer
-			if ((bb.capacity() - l) < 8) {
-			    bb = ByteBuffer.allocate(bb.capacity() + 8)
-				.put(bb.array());
-			    bb.position(l);
-			};
-
-			switch (pls[i]) {
-			case "<b>": // byte
-			    bb.put(Byte.parseByte(pls[i+1]));
-			    l++;
-			    break;
-			case "<s>": // short
-			    bb.putShort(Short.parseShort(pls[i+1]));
-			    l+=2;
-			    break;
-			case "<i>": // integer
-			    bb.putInt(Integer.parseInt(pls[i+1]));
-			    l+=4;
-			    break;
-			case "<l>": // long
-			    bb.putLong(Long.parseLong(pls[i+1]));
-			    l+=8;
-			    break;
-			};
-			i+=2;
-		    };
-		
-		    byte[] bytes = new byte[l];
-		    System.arraycopy(bb.array(), 0, bytes, 0, l);
-		    this.payload = new BytesRef(bytes);
-		}
-		catch (Exception e) {
-		};
-	    }
-
-	    // Payload is a string
-	    else {
-		this.payload = new BytesRef(payloadStr);
-	    };
-	};
-	
-	// Parse offset information
-	stringOffset = termSurface[0].split("\\#", 2);
-
-	if (stringOffset.length == 2) {
-
-	    // Split start and end position of the offset
-	    String[] offset = stringOffset[1].split("\\-", 2);
-   
-	    // Start and end is given
-	    if (offset.length == 2 && offset[0].length() > 0) {
-		try {
-		    this.start = Integer.parseInt(offset[0]);
-		    this.end   = Integer.parseInt(offset[1]);
-
-		}
-		catch (NumberFormatException e) {
-		};
-	    };
-	};
-	this.term = stringOffset[0];
+        return this.storeOffsets;
     };
 
 
     /**
-     * Represent the MultiTerm as a string.
+     * Set the flag for stored offsets, in case they are relevant.
+     *
+     * @param value Boolean value indicating that the term
+     *        contains stored offsets.
+     * @return The {@link MultiTerm} object for chaining.
+     */
+    public MultiTerm hasStoredOffsets (boolean value) {
+        this.storeOffsets = value;
+        return this;
+    };
+
+
+    /**
+     * Represent the MultiTerm as a string (see synopsis).
      * Offsets are attached following a hash sign,
      * payloads are attached following a dollar sign.
      * All payloads are written as UTF-8 character sequences.
@@ -327,50 +284,144 @@ public class MultiTerm {
      * @see #toStringShort().
      */
     public String toString () {
+        StringBuilder sb = new StringBuilder(this.term);
+        if (this.start != this.end) {
+            sb.append('#')
+                .append(this.start)
+                .append('-')
+                .append(this.end);
+        };
 
-	StringBuilder sb = new StringBuilder(this.term);
+        if (this.payload != null) {
+            sb.append('$');
+            try {
+                sb.append(this.payload.utf8ToString());
+            }
+            catch (AssertionError e) {
+                sb.append("<?>")
+                    .append(this.payload.toString().replace(' ', ','));
+            };
+        };
 
-	if (this.start != this.end) {
-	    sb.append('#')
-	      .append(this.start)
-	      .append('-')
-	      .append(this.end);
-	};
-
-	if (this.payload != null) {
-	    sb.append('$');
-	    try {
-		sb.append(this.payload.utf8ToString());
-	    }
-	    catch (AssertionError e) {
-		sb.append("<?>")
-	          .append(this.payload.toString().replace(' ', ','));
-	    };
-	};
-
-	return sb.toString();
+        return sb.toString();
     };
+
 
     /**
      * Represent the MultiTerm as a string.
      * Payloads are attached following a dollar sign.
      * All payloads are written as UTF-8 character sequences.
      * Offsets are neglected.
+     *
+     * Offsets are ignored.
      * 
      * @see #toString().
      */
     public String toStringShort () {
-	StringBuilder sb = new StringBuilder(this.term);
-	if (this.payload != null) {
-	    sb.append('$');
-	    try {
-		sb.append(this.payload.utf8ToString());
-	    }
-	    catch (AssertionError e) {
-		sb.append("<?>")
-		.append(this.payload.toString().replace(' ', ','));
-	    };
-	};
-	return sb.toString();
+        StringBuilder sb = new StringBuilder(this.term);
+        if (this.payload != null) {
+            sb.append('$');
+            try {
+                sb.append(this.payload.utf8ToString());
+            }
+            catch (AssertionError e) {
+                sb.append("<?>")
+                    .append(this.payload.toString().replace(' ', ','));
+            };
+        };
+        return sb.toString();
+    };
+
+
+    /*
+     * Deserialize MultiTerm from string representation.
+     */
+    private void _fromString (String term) {
+        String[] termSurface = term.split("\\$", 2);
+
+        // Payload is given
+        if (termSurface.length == 2) {
+            String payloadStr = termSurface[1];
+
+            // Payload has a type
+            if (payloadStr.charAt(0) == '<' && payloadStr.charAt(2) == '>') {
+
+                // Rewind bytebuffer
+                bb.rewind();
+
+                // Split payload at type marker boundaries
+                String[] pls = payloadStr.split("(?=<)|(?<=>)");
+
+                l = 0; // Bytearray length
+
+                try {
+                    for (i = 1; i < pls.length;) {
+
+                        // Resize the bytebuffer
+                        if ((bb.capacity() - l) < 8) {
+                            bb = ByteBuffer.allocate(bb.capacity() + 8).
+                                put(bb.array());
+                            bb.position(l);
+                        };
+
+                        switch (pls[i]) {
+                        case "<b>": // byte
+                            bb.put(Byte.parseByte(pls[i+1]));
+                            l++;
+                            break;
+                        case "<s>": // short
+                            bb.putShort(Short.parseShort(pls[i+1]));
+                            l+=2;
+                            break;
+                        case "<i>": // integer
+                            bb.putInt(Integer.parseInt(pls[i+1]));
+                            l+=4;
+                            break;
+                        case "<l>": // long
+                            bb.putLong(Long.parseLong(pls[i+1]));
+                            l+=8;
+                            break;
+                        };
+                        i+=2;
+                    };
+		
+                    byte[] bytes = new byte[l];
+                    System.arraycopy(bb.array(), 0, bytes, 0, l);
+                    this.payload = new BytesRef(bytes);
+                }
+                catch (Exception e) {
+                    if (DEBUG)
+                        log.warn(e.getMessage());
+                };
+            }
+
+            // Payload is a string
+            else {
+                this.payload = new BytesRef(payloadStr);
+            };
+        };
+	
+        // Parse offset information
+        stringOffset = termSurface[0].split("\\#", 2);
+
+        if (stringOffset.length == 2) {
+
+            // Split start and end position of the offset
+            String[] offset = stringOffset[1].split("\\-", 2);
+   
+            // Start and end is given
+            if (offset.length == 2 && offset[0].length() > 0) {
+                try {
+                    this.start = Integer.parseInt(offset[0]);
+                    this.end   = Integer.parseInt(offset[1]);
+                    
+                }
+                catch (NumberFormatException e) {
+                    if (DEBUG)
+                        log.warn("Offset not a number: {}", term);
+                };
+            };
+        };
+        this.term = stringOffset[0];
     };
 };

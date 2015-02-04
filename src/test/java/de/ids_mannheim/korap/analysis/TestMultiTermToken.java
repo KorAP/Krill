@@ -11,7 +11,9 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-
+/**
+ * @author diewald
+ */
 @RunWith(JUnit4.class)
 public class TestMultiTermToken {
 
@@ -22,14 +24,17 @@ public class TestMultiTermToken {
         mtt.add("b:banane");
         assertEquals("[t:test|a:abbruch|b:banane]", mtt.toString());
         mtt.add("c:chaos#21-26");
-        assertEquals("[(21-26)t:test|a:abbruch|b:banane|c:chaos#21-26]",
-                     mtt.toString());
+        assertEquals(
+            "[(21-26)t:test|a:abbruch|b:banane|c:chaos#21-26]",
+            mtt.toString()
+        );
         mtt.add("d:dadaismus#21-28$vergleich");
         assertEquals(
             "[(21-28)t:test|a:abbruch|b:banane|c:chaos#21-26|" +
             "d:dadaismus#21-28$vergleich]",
             mtt.toString()
         );
+        assertEquals(5, mtt.getSize());
     };
 
     @Test
@@ -43,5 +48,6 @@ public class TestMultiTermToken {
                      "c:cannonball#34-45$tatsache]", mtt.toString());
         assertEquals(23, mtt.start);
         assertEquals(45, mtt.end);
+        assertEquals(3, mtt.getSize());
     };
 };

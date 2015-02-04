@@ -5,171 +5,207 @@ import java.util.*;
 
 
 /**
- * @author Nils Diewald
  *
- * MultiTermToken represents a segment in a MultiTermTokenStream.
+ * A MultiTermToken represents a set of {@link MultiTerm MultiTerms}
+ * starting at the same position, i.e. represents a segment
+ * in a {@link MultiTermTokenStream}.
+ *
+ * <blockquote><pre>
+ *  MultiTermToken mtt = new MultiTermToken("t:test", "a:abbruch");
+ *  mtt.add("b:banane");
+ *  System.err.println(mtt.toString());
+ *  // [t:test|a:abbruch|b:banane]
+ * </pre></blockquote>
+ *
+ * @author diewald
  */
 public class MultiTermToken {
     public int start, end = 0;
     public List<MultiTerm> terms;
-
     private static short i = 0;
 
+
     /**
-     * The constructor.
+     * Construct a new MultiTermToken by passing a stream of
+     * {@link MultiTerm MultiTerms}.
      *
-     * @param terms Take at least one MultiTerm object for a token.
+     * @param terms Take at least one {@link MultiTerm} object for a token.
      */
-    public MultiTermToken (MultiTerm term, MultiTerm ... moreTerms) {
-	this.terms = new ArrayList<MultiTerm>(16);
+    public MultiTermToken (MultiTerm terms, MultiTerm ... moreTerms) {
+        this.terms = new ArrayList<MultiTerm>(16);
+        
+        // Start position is not equal to end position
+        if (terms.start != terms.end) {
+            this.start = terms.start;
+            this.end   = terms.end;
+        };
 
-	if (term.start != term.end) {
-	    this.start = term.start;
-	    this.end = term.end;
-	};
+        terms.posIncr = 1;
+        this.terms.add( terms );
 
-	term.posIncr = 1;
-	terms.add( term );
-
-	// Further elements on same position
-	for (i = 0; i < moreTerms.length; i++) {
-	    term = moreTerms[i];
-	    term.posIncr = 0;
-	    terms.add(term);
-	};
+        // Further elements on same position
+        for (i = 0; i < moreTerms.length; i++) {
+            moreTerms[i].posIncr = 0;
+            this.terms.add(moreTerms[i]);
+        };
     };
 
 
     /**
-     * The constructor.
+     * Construct a new MultiTermToken by passing a {@link MultiTerm}
+     * represented as a prefixed string.
      *
-     * @param prefix A term prefix.
-     * @param surface A surface string.
+     * @param prefix The term prefix.
+     * @param surface The term surface.
+     * @see MultiTerm
      */
     public MultiTermToken (char prefix, String surface) {
-	this.terms = new ArrayList<MultiTerm>(16);
+        this.terms = new ArrayList<MultiTerm>(16);
 
-	MultiTerm term = new MultiTerm(prefix, surface);
+        // Create a new MultiTerm
+        MultiTerm term = new MultiTerm(prefix, surface);
 
-	this.setOffset(term.start, term.end);
-
-	// First word element
-	term.posIncr = 1;
-	terms.add( term );
+        this.setOffset(term.start, term.end);
+        
+        // First word element
+        term.posIncr = 1;
+        terms.add( term );
     };
     
 
     /**
-     * The constructor.
+     * Construct a new MultiTermToken by passing a stream of
+     * {@link MultiTerm MultiTerms} represented as strings.
      *
-     * @param prefix At least one term surface string.
+     * @param terms Take at least one {@link MultiTerm} string for a token.
      */
-    public MultiTermToken (String surface, String ... moreTerms) {
-	this.terms = new ArrayList<MultiTerm>(16);
+    public MultiTermToken (String terms, String ... moreTerms) {
+        this.terms = new ArrayList<MultiTerm>(16);
 
-	MultiTerm term = new MultiTerm(surface);
+        MultiTerm term = new MultiTerm(terms);
+        this.setOffset(term.start, term.end);
 
-	this.setOffset(term.start, term.end);
+        // First word element
+        term.posIncr = 1;
+        this.terms.add( term );
 
-	// First word element
-	term.posIncr = 1;
-	terms.add( term );
-
-	// Further elements on same position
-	for (i = 0; i < moreTerms.length; i++) {
-	    term = new MultiTerm( moreTerms[i] );
-	    this.setOffset(term.start, term.end);
-	    term.posIncr = 0;
-	    terms.add(term);
-	};
+        // Further elements on same position
+        for (i = 0; i < moreTerms.length; i++) {
+            term = new MultiTerm( moreTerms[i] );
+            this.setOffset(term.start, term.end);
+            term.posIncr = 0;
+            this.terms.add(term);
+        };
     };
 
     
     /**
-     * Add a new term to the MultiTermToken.
+     * Add a new {@link MultiTerm} to the MultiTermToken.
      *
-     * @param mt A MultiTerm.
+     * @param term A {@link MultiTerm} object.
+     * @return The {@link MultiTermToken} object for chaining.
      */
-    public void add (MultiTerm mt) {
-	mt.posIncr = 0;
-	this.setOffset(mt.start, mt.end);
-	terms.add(mt);
+    public MultiTermToken add (MultiTerm term) {
+        term.posIncr = 0;
+        this.setOffset(term.start, term.end);
+        terms.add(term);
+        return this;
     };
 
 
     /**
-     * Add a new term to the MultiTermToken.
+     * Add a new {@link MultiTerm} to the MultiTermToken.
      *
-     * @param term A surface string.
+     * @param term A MultiTerm represented as a surface string.
+     * @return The {@link MultiTermToken} object for chaining.
      */
-    public void add (String term) {
-	if (term.length() == 0)
-	    return;
-	MultiTerm mt = new MultiTerm(term);
-	this.setOffset(mt.start, mt.end);
-	mt.posIncr = 0;
-	terms.add(mt);
-    };
-
-    /**
-     * Add a new term to the MultiTermToken.
-     *
-     * @param prefix A prefix character for the surface string.
-     * @param term A surface string.
-     */
-    public void add (char prefix, String term) {
-	if (term.length() == 0)
-	    return;
-	MultiTerm mt = new MultiTerm(prefix, term);
-	this.setOffset(mt.start, mt.end);
-	mt.posIncr = 0;
-	terms.add(mt);
+    public MultiTermToken add (String term) {
+        if (term.length() == 0)
+            return this;
+        MultiTerm mt = new MultiTerm(term);
+        this.setOffset(mt.start, mt.end);
+        mt.posIncr = 0;
+        terms.add(mt);
+        return this;
     };
 
 
     /**
-     * Sets the offset information of the MultiTermToken.
+     * Add a new {@link MultiTerm} to the MultiTermToken.
+     *
+     * @param prefix A MultiTerm prefix.
+     * @param term A MultiTerm represented as a surface string.
+     * @return The {@link MultiTermToken} object for chaining.
+     */
+    public MultiTermToken add (char prefix, String term) {
+        if (term.length() == 0)
+            return this;
+        MultiTerm mt = new MultiTerm(prefix, term);
+        this.setOffset(mt.start, mt.end);
+        mt.posIncr = 0;
+        terms.add(mt);
+        return this;
+    };
+
+
+    /**
+     * Set the start and end character offset information
+     * of the MultiTermToken.
      *
      * @param start The character position of the token start.
      * @param end The character position of the token end.
+     * @return The {@link MultiTermToken} object for chaining.
      */
-    public void setOffset (int start, int end) {
-	if (start != end) {
-	    this.start = (this.start == 0 || start < this.start) ? start : this.start;
-	    this.end   = end > this.end ? end : this.end;
-	};
+    public MultiTermToken setOffset (int start, int end) {
+
+        // No value to set - offsets indicating a null string
+        if (start != end) {
+            this.start =
+                (this.start == 0 || start < this.start) ?
+                start : this.start;
+
+            this.end = end > this.end ? end : this.end;
+        };
+
+        return this;
     };
+
+
+    /**
+     * Get the number of {@link MultiTerm MultiTerms}
+     * in the MultiTermToken.
+     *
+     * @return The number of {@link MultiTerm MultiTerms}
+     *         in the MultiTermToken.
+     */
+    public int getSize () {
+        return this.terms.size();
+    };
+
+
 
     /**
      * Serialize the MultiTermToken to a string.
      *
-     * @return A string representation of the token, with leading offset information.
+     * @return A string representation of the MultiTermToken,
+     *         with leading offset information.
      */
     public String toString () {
-	StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
+        sb.append('[');
+        if (this.start != this.end) {
+            sb.append('(')
+                .append(this.start)
+                .append('-')
+                .append(this.end)
+                .append(')');
+        };
 
-	sb.append('[');
-	if (this.start != this.end) {
-	    sb.append('(')
-	      .append(this.start)
-	      .append('-')
-	      .append(this.end)
-	      .append(')');
-	};
-
-	i = 0;
-	for (; i < this.terms.size() - 1; i++) {
-	    sb.append(this.terms.get(i).toString()).append('|');
-	};
-	sb.append(this.terms.get(i).toString()).append(']');
-
-	return sb.toString();
-    };
-
-    /**
-     * Return the number of MultiTerms in the MultiTermToken.
-     */
-    public int size () {
-	return this.terms.size();
+        for (i = 0; i < this.terms.size() - 1; i++) {
+            sb.append(this.terms.get(i).toString()).append('|');
+        };
+        sb.append(this.terms.get(i).toString()).append(']');
+        
+        return sb.toString();
     };
 };

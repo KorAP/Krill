@@ -17,21 +17,21 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
 
 /**
  * SpanElementQuery retrieves {@link ElementSpans} which are special
- * {@link Term Terms} with prefix "<>". Unlike {@link TermSpans} consisting of
- * only one term, ElementSpans may contains more than one term comprising a
+ * {@link Term Terms} with prefix &quot;&lt;&gt;&quot;.
+ * Unlike {@link TermSpans} ElementSpans may span multiple tokens comprising a
  * phrase, a clause, a sentence and so on. <br/>
  * <br/>
  * Examples of {@link ElementSpans} are
  * 
  * <ul>
- * <li>sentences indexed as <>:s
+ * <li>sentences indexed as &lt;&gt;:s
  * 
  * <pre>
  * SpanElementQuery seq = new SpanElementQuery(&quot;tokens&quot;, &quot;s&quot;);
  * </pre>
  * 
  * </li>
- * <li>paragraphs indexed as <>:p
+ * <li>paragraphs indexed as &lt;&gt;:p
  * 
  * <pre>
  * SpanElementQuery seq = new SpanElementQuery(&quot;tokens&quot;, &quot;p&quot;);
@@ -45,7 +45,6 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  * @author margaretha
  */
 public class SpanElementQuery extends SpanWithIdQuery {
-    // private SpanTermQuery termQuery;
     private static Term elementTerm;
     private String elementStr;
 
@@ -57,17 +56,17 @@ public class SpanElementQuery extends SpanWithIdQuery {
      */
     public SpanElementQuery(String field, String term) {
         super(new SpanTermQuery((elementTerm = new Term(field, "<>:" + term))),
-                true);
+              true);
         this.elementStr = term;
-        // this.termQuery = (SpanTermQuery) this.getFirstClause();
-        // this.elementTerm = termQuery.getTerm();
     };
+
 
     @Override
     public Spans getSpans(final AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
         return new ElementSpans(this, context, acceptDocs, termContexts);
     };
+
 
     /**
      * Returns the element name or string, for instance "s" for sentence
@@ -79,6 +78,7 @@ public class SpanElementQuery extends SpanWithIdQuery {
         return elementStr;
     };
 
+
     /**
      * Sets the element name or string, for instance "s" for sentence elements.
      * 
@@ -88,18 +88,23 @@ public class SpanElementQuery extends SpanWithIdQuery {
         this.elementStr = elementStr;
     }
 
+
     @Override
     public SimpleSpanQuery clone() {
-        SpanElementQuery sq = new SpanElementQuery(this.getField(),
-                this.getElementStr());
+        SpanElementQuery sq = new SpanElementQuery(
+            this.getField(),
+            this.getElementStr()
+        );
         sq.setBoost(this.getBoost());
         return sq;
     };
+
 
     @Override
     public void extractTerms(Set<Term> terms) {
         terms.add(elementTerm);
     };
+
 
     @Override
     public String toString(String field) {
@@ -109,6 +114,7 @@ public class SpanElementQuery extends SpanWithIdQuery {
         return buffer.append(" />").toString();
     };
 
+
     @Override
     public int hashCode() {
         final int prime = 37; // Instead of 31
@@ -117,6 +123,7 @@ public class SpanElementQuery extends SpanWithIdQuery {
                 + ((elementStr == null) ? 0 : elementStr.hashCode());
         return result;
     };
+
 
     @Override
     public boolean equals(Object obj) {

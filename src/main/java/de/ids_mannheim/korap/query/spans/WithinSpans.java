@@ -21,13 +21,10 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
 /**
  * SpanWithinQuery is DEPRECATED and will
  * be replaced by SpanPositionQuery in the near future
+ *
+ * TODO: Support exclusivity
+ * TODO: Use the term "queue" and implement it similar to SpanOrQuery
  */
-
-/*
-  TODO: Use the flag in KorapQuery!
-  TODO: Support exclusivity
-  TODO: Use the term queue and implement it similar to SpanOrQuery
-*/
 
 /**
  * Compare two spans and check how they relate positionally.
@@ -68,21 +65,19 @@ public class WithinSpans extends Spans {
 
     /*
       Supported flags are currently:
-      ov  -> 0  | overlap:      A & B != empty
-      rov -> 2  | real overlap: A & B != empty and
-                                ((A | B) != A or
+      ov  -> 0  | overlap:       A & B != empty
+      rov -> 2  | real overlap:  A & B != empty and
+                                 ((A | B) != A or
                                  (A | B) != B)
-      in  -> 4  | within:       A | B = A
-      rin -> 6  | real within:  A | B = A and
-                                A & B != A
-      ew  -> 8  | endswith:     A | B = A and
-                                A.start = B.start
-      sw  -> 10 | startswith:   A | B = A and
-                                A.end = B.end
-      m   -> 12 |               A = B
-
-      This may change in case the system switches to 16bit vector
-     */
+      in  -> 4  | within:        A | B = A
+      rin -> 6  | real within:   A | B = A and
+                                 A & B != A
+      ew  -> 8  | endswith:      A | B = A and
+                                 A.start = B.start
+      sw  -> 10 | startswith:    A | B = A and
+                                 A.end = B.end
+      m   -> 12 |                A = B
+    */
     public static final byte
         OVERLAP      = (byte) 0,
         REAL_OVERLAP = (byte) 2,
@@ -97,9 +92,14 @@ public class WithinSpans extends Spans {
     // Contains the query
     private SpanWithinQuery query;
 
-    // Contains the spans
-    private final Spans embeddedSpans, wrapSpans;
+    // Representing the first operand
+    private final Spans wrapSpans;
 
+    // Representing the second operand
+    private final Spans embeddedSpans;
+
+    // Check flag if the current constellation
+    // was checked yet
     private boolean tryMatch = true;
 
     private LinkedList<KorapLongSpan>
