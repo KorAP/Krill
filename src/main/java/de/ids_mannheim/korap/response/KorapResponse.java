@@ -37,6 +37,7 @@ public class KorapResponse extends Notifications {
     private String benchmark;
     private boolean timeExceeded = false;
 
+
     /**
      * Construct a new KorapResponse object.
      */

@@ -11,7 +11,7 @@ import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapQuery;
 import org.apache.lucene.store.MMapDirectory;
-import de.ids_mannheim.korap.filter.BooleanFilter;
+import de.ids_mannheim.korap.collection.BooleanFilter;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;

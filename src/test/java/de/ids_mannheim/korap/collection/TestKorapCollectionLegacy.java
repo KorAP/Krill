@@ -8,7 +8,7 @@ import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapFilter;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapQuery;
-import de.ids_mannheim.korap.filter.BooleanFilter;
+import de.ids_mannheim.korap.collection.BooleanFilter;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanOrQuery;

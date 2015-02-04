@@ -1,4 +1,5 @@
-package de.ids_mannheim.korap.filter;
+package de.ids_mannheim.korap.collection;
+
 import org.apache.lucene.search.Filter;
 
 public class FilterOperation {

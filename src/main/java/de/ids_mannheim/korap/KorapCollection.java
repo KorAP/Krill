@@ -6,8 +6,8 @@ import java.io.IOException;
 import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.filter.BooleanFilter;
-import de.ids_mannheim.korap.filter.FilterOperation;
+import de.ids_mannheim.korap.collection.BooleanFilter;
+import de.ids_mannheim.korap.collection.FilterOperation;
 import de.ids_mannheim.korap.response.Notifications;
 
 import org.apache.lucene.search.spans.SpanQuery;

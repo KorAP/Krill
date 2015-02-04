@@ -102,10 +102,20 @@ public class WithinSpans extends Spans {
     // was checked yet
     private boolean tryMatch = true;
 
+    // Two buffers for storing candidates
     private LinkedList<KorapLongSpan>
         spanStore1,
         spanStore2;
 
+    /**
+     * Construct a new WithinSpans object.
+     *
+     * @param spanWithinQuery The parental {@link SpanWithinQuery}.
+     * @param context The {@link AtomicReaderContext}.
+     * @param acceptDocs Bit vector representing the documents
+     *        to be searched in.
+     * @param termContexts A map managing {@link TermState}
+     */
     public WithinSpans (SpanWithinQuery spanWithinQuery,
                         AtomicReaderContext context,
                         Bits acceptDocs,

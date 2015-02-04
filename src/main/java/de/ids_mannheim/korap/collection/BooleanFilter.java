@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.filter;
+package de.ids_mannheim.korap.collection;
 
 import java.util.*;
 
@@ -12,7 +12,6 @@ import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.search.NumericRangeQuery;
 
 import de.ids_mannheim.korap.util.KorapDate;
-import de.ids_mannheim.korap.filter.RegexFilter;
 import de.ids_mannheim.korap.KorapFilter;
 
 import de.ids_mannheim.korap.util.QueryException;

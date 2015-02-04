@@ -1,7 +1,7 @@
 package de.ids_mannheim.korap;
 
-import de.ids_mannheim.korap.filter.BooleanFilter;
-import de.ids_mannheim.korap.filter.RegexFilter;
+import de.ids_mannheim.korap.collection.BooleanFilter;
+import de.ids_mannheim.korap.collection.RegexFilter;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.KorapDate;
 
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 */
 
 /**
- * @author Nils Diewald
+ * @author diewald
  *
  * KorapFilter implements a simple API for creating meta queries
  * constituing Virtual Collections.
