@@ -41,30 +41,29 @@ public class TestNextIndex {
 
     @Test
     public void indexExample1 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+        KorapIndex ki = new KorapIndex();
 
-	// abcabcabac
-	FieldDocument fd = new FieldDocument();
-	fd.addTV("base",
-		 "abcabcabac",
-		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|_1#1-2]" +
-		 "[(2-3)s:c|i:c|_2#2-3]" +
-		 "[(3-4)s:a|i:a|_3#3-4]" +
-		 "[(4-5)s:b|i:b|_4#4-5]" +
-		 "[(5-6)s:c|i:c|_5#5-6]" +
-		 "[(6-7)s:a|i:a|_6#6-7]" +
-		 "[(7-8)s:b|i:b|_7#7-8]" +
-		 "[(8-9)s:a|i:a|_8#8-9]" +
-		 "[(9-10)s:c|i:c|_9#9-10]");
-	ki.addDoc(fd);
+        // abcabcabac
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base",
+                 "abcabcabac",
+                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
+                 "[(1-2)s:b|i:b|_1#1-2]" +
+                 "[(2-3)s:c|i:c|_2#2-3]" +
+                 "[(3-4)s:a|i:a|_3#3-4]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:a|i:a|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:a|i:a|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+        ki.commit();
 
-	ki.commit();
+        SpanQuery sq;
+        KorapResult kr;
 
-	SpanQuery sq;
-	KorapResult kr;
-
-	sq = new SpanNextQuery(
+        sq = new SpanNextQuery(
             new SpanTermQuery(new Term("base", "s:a")),
             new SpanTermQuery(new Term("base", "s:b"))
         );
@@ -188,76 +187,74 @@ public class TestNextIndex {
 
     @Test
     public void indexExample4 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+        KorapIndex ki = new KorapIndex();
 
-	// abcabcabac
-	// abc<x>abc<x>a</x>b</x>ac
-	FieldDocument fd = new FieldDocument();
-	fd.addString("ID", "doc-1");
-	fd.addTV("base",
-		 "abcabcabac",
-		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|_1#1-2]" +
-		 "[(2-3)s:c|i:c|_2#2-3]" +
-		 "[(3-4)s:a|i:a|_3#3-4|<>:x#3-7$<i>7]" +
-		 "[(4-5)s:b|i:b|_4#4-5]" +
-		 "[(5-6)s:c|i:c|_5#5-6]" +
-		 "[(6-7)s:a|i:a|_6#6-7]<>:x#6-8$<i>8]" +
-		 "[(7-8)s:b|i:b|_7#7-8]" +
-		 "[(8-9)s:a|i:a|_8#8-9]" +
-		 "[(9-10)s:c|i:c|_9#9-10]");
-	ki.addDoc(fd);
+        // abcabcabac
+        // abc<x>abc<x>a</x>b</x>ac
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base",
+                 "abcabcabac",
+                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
+                 "[(1-2)s:b|i:b|_1#1-2]" +
+                 "[(2-3)s:c|i:c|_2#2-3]" +
+                 "[(3-4)s:a|i:a|_3#3-4|<>:x#3-7$<i>7]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:a|i:a|_6#6-7]<>:x#6-8$<i>8]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:a|i:a|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+        
+        // xbz<x>xbzx</x>bxz
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base",
+                 "xbzxbzxbxz",
+                 "[(0-1)s:x|i:x|_0#0-1|-:t$<i>10]" +
+                 "[(1-2)s:b|i:b|_1#1-2]" +
+                 "[(2-3)s:z|i:z|_2#2-3]" +
+                 "[(3-4)s:x|i:x|_3#3-4|<>:x#3-7$<i>7]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:z|i:z|_5#5-6]" +
+                 "[(6-7)s:x|i:x|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:x|i:x|_8#8-9]" +
+                 "[(9-10)s:z|i:z|_9#9-10]");
+        ki.addDoc(fd);
+        ki.commit();
 
-	// xbz<x>xbzx</x>bxz
-	fd = new FieldDocument();
-	fd.addString("ID", "doc-2");
-	fd.addTV("base",
-		 "xbzxbzxbxz",
-		 "[(0-1)s:x|i:x|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|_1#1-2]" +
-		 "[(2-3)s:z|i:z|_2#2-3]" +
-		 "[(3-4)s:x|i:x|_3#3-4|<>:x#3-7$<i>7]" +
-		 "[(4-5)s:b|i:b|_4#4-5]" +
-		 "[(5-6)s:z|i:z|_5#5-6]" +
-		 "[(6-7)s:x|i:x|_6#6-7]" +
-		 "[(7-8)s:b|i:b|_7#7-8]" +
-		 "[(8-9)s:x|i:x|_8#8-9]" +
-		 "[(9-10)s:z|i:z|_9#9-10]");
-	ki.addDoc(fd);
+        SpanQuery sq;
+        KorapResult kr;
 
-
-	ki.commit();
-
-	SpanQuery sq;
-	KorapResult kr;
-
-	sq = new SpanNextQuery(
-	       new SpanElementQuery("base", "x"),
-	       new SpanTermQuery(new Term("base", "s:b"))
-	);
+        sq = new SpanNextQuery(
+            new SpanElementQuery("base", "x"),
+            new SpanTermQuery(new Term("base", "s:b"))
+        );
 	
-	kr = ki.search(sq, (short) 10);
-	assertEquals("TotalResults", kr.getTotalResults(), 2);
-	assertEquals("abc[abcab]ac", kr.getMatch(0).getSnippetBrackets());
-	assertEquals("xbz[xbzxb]xz", kr.getMatch(1).getSnippetBrackets());
+        kr = ki.search(sq, (short) 10);
+        assertEquals("TotalResults", kr.getTotalResults(), 2);
+        assertEquals("abc[abcab]ac", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("xbz[xbzxb]xz", kr.getMatch(1).getSnippetBrackets());
 
-	sq = new SpanNextQuery(
-	       new SpanTermQuery(new Term("base", "s:c")),
- 	       new SpanElementQuery("base", "x")
-	);
-	
-	kr = ki.search(sq, (short) 10);
-	assertEquals(kr.getTotalResults(), 1);
-	assertEquals("ab[cabca]bac", kr.getMatch(0).getSnippetBrackets());
-
-	sq = new SpanNextQuery(
-	       new SpanTermQuery(new Term("base", "s:z")),
- 	       new SpanElementQuery("base", "x")
-	);
-	
-	kr = ki.search(sq, (short) 10);
-	assertEquals(kr.getTotalResults(), 1);
-	assertEquals("xb[zxbzx]bxz", kr.getMatch(0).getSnippetBrackets());
+        sq = new SpanNextQuery(
+            new SpanTermQuery(new Term("base", "s:c")),
+            new SpanElementQuery("base", "x")
+        );
+        
+        kr = ki.search(sq, (short) 10);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals("ab[cabca]bac", kr.getMatch(0).getSnippetBrackets());
+        
+        sq = new SpanNextQuery(
+            new SpanTermQuery(new Term("base", "s:z")),
+            new SpanElementQuery("base", "x")
+        );
+        
+        kr = ki.search(sq, (short) 10);
+        assertEquals(1, kr.getTotalResults());
+        assertEquals("xb[zxbzx]bxz", kr.getMatch(0).getSnippetBrackets());
     };
     
     /**
