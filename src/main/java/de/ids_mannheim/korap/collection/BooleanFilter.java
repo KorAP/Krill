@@ -200,10 +200,10 @@ public class BooleanFilter {
     public BooleanFilter date (String dateStr) {
 	KorapDate dateDF = new KorapDate(dateStr);
 
-	if (dateDF.year() == 0)
+	if (dateDF.year == 0)
 	    return this;
 
-	if (dateDF.day() == 0 || dateDF.month() == 0) {
+	if (dateDF.day == 0 || dateDF.month == 0) {
 	    int begin = dateDF.floor();
 	    int end = dateDF.ceil();
 

@@ -52,7 +52,7 @@ public class MultiTermTokenStream extends TokenStream {
     private List<MultiTermToken> multiTermTokens;
     private int mttIndex   = 0,
                 mtIndex    = 0;
-    private static short i = 0;
+    private short i = 0;
 
     /**
      * Construct a new MultiTermTokenStream object.

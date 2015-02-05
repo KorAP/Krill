@@ -1,90 +1,76 @@
-KorAP Lucene Index
-==================
+# Seaweeds
 
-KorAP is available at
-https://korap.ids-mannheim.de/
+Search Engine for General Corpus Queries
 
-Description
------------
+## Synopsis
+
+## Description
+
+Seaweeds is a [Lucene](https://lucene.apache.org/) based search
+engine for large corpora, providing support for complex linguistic queries.
+
+## Features
+
+Seaweeds provides ...
+* fulltext search
+  (/Give me all occurrences of the phrase "tree hug"!/)
+* token-based annotation search
+  (/Give me all plural nouns in accusative!/)
+* span-based annotation search
+  (/Give me all nominal phrases!/)
+* support for multiple annotation sources
+  (/Give me all words marked as a noun by TreeTagger and marked as an adjective by CoreNLP!/)
+* support for complex queries ..
+  Example
+* support for conflicting span-based annotations
+  (i.e. overlapping spans)
+* support for multiple query languages by using
+  the [CoralQuery](https://github.com/KorAP/Koral)
+  protocol
+
+
+## Prerequisites
 ...
 
-Prerequisites
--------------
-...
+## Starting
 
-Installation/Starting
----------------------
+  $ git clone https://github.com/korap/Seaweeds
+  $ cd Seaweeds
 
-To run the test suite, type
+To run the test suite, type ...
 
   $ mvn test
 
-To start the server, type
+To start the server, type ...
 
   $ mvn compile exec:java
 
-To compile the indexer, type
+To compile and run the indexer, type ...
 
   $ mvn compile assembly:single
-
-To run the indexer, type
 
   $ java -jar target/KorAP-lucene-index-X.XX.jar
     src/main/resources/korap.conf
     src/test/resources/examples/
 
-Development
------------
+## Development
 
-For changes of the current version, please consult the
-Changes file.
+For recent changes, please consult the Changes file.
 
-Limitations
------------
+## Reference
 
-### Tokenization
+Authors: Nils Diewald, Eliza Margaretha
 
-The Lucene backend is not character but token based.
-In addition to that it only has support for one single tokenization.
-Although it supports multiple annotations on tokenizations, these
-annotations have to match the basic token's character offsets.
+Copyright 2013-2015, IDS Mannheim, Germany
 
-Token annotations that do not match the basic tokenization are
-not indexed. Span annotations, that span a smaller range than one
-basic token, will not be indexed as well.
+Seaweeds is developed as part of the [KorAP](https://korap.ids-mannheim.de/)
+Corpus Analysis Platform
 
-Tokens are only indexed in case they are word tokens, i.e. not
-punctuations. This limitation is necessary to make distance query
-work on word levels.
+To cite this work, please ...
 
-### Repetitions
+## Bundled Software
 
-The maximum value for repetitions is 100.
-
-### Distances
-
-The maximum value for distance units is 100.
-
-Contribution
-------------
-
-
-Before contribution, please reformat your code according to the korap
-style guideline, provided by means of an Eclipse style sheet
-(korap-style.xml). You can either reformat using Eclipse or using Maven
-with the command
-
-  $ mvn java-formatter:format
-
-Citation
---------
-
-???
-
-Further References
-------------------
-
-Named entities annotated in the test data by CoreNLP was done using
+Named entities annotated in the test data by CoreNLP were using
 models based on:
 
   Manaal Faruqui and Sebastian Padó (2010):
@@ -92,10 +78,3 @@ models based on:
   Recognizer with Semantic Generalization,
   Proceedings of KONVENS 2010,
   Saarbrücken, Germany
-
-Copyright and License
----------------------
-
-Copyright 2014, IDS Mannheim, Germany
-
-Authors: Nils Diewald, Eliza Margaretha, and contributors.

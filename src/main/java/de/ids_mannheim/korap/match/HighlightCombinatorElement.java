@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.match;
 import org.apache.lucene.util.FixedBitSet;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.match.Relation;
-import static de.ids_mannheim.korap.util.KorapHTML.*;
+import static de.ids_mannheim.korap.util.KorapString.*;
 import java.util.*;
 import java.io.*;
 
@@ -108,7 +108,7 @@ public class HighlightCombinatorElement {
 	};
 
 	// HTML encode primary data
-	return encodeHTML(this.characters);
+	return escapeHTML(this.characters);
     };
 
     // Return bracket fragment for this combinator element

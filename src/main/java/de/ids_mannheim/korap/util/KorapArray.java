@@ -3,9 +3,10 @@ package de.ids_mannheim.korap.util;
 import java.util.*;
 
 /**
- * @author Nils Diewald
+ * A collection of string array related
+ * utility functions.
  *
- * A collection of Array specific utilities for the Korap project.
+ * @author diewald
  */
 public class KorapArray {
 
@@ -14,19 +15,20 @@ public class KorapArray {
      *
      * @param separator String to separate joined segments
      * @param strings Segments to join
+     * @return The joined string.
      */
     public static String join (String separator, String ... strings) {
-	if (strings.length == 0)
-	    return "";
+        if (strings.length == 0)
+            return "";
 
-	StringBuffer sb = new StringBuffer(strings[0]);
+        StringBuffer sb = new StringBuffer(strings[0]);
 
-	for (int i = 1; i < strings.length; i++) {
-	    sb.append(separator);
-	    sb.append(strings[i]);
-	};
+        for (int i = 1; i < strings.length; i++) {
+            sb.append(separator);
+            sb.append(strings[i]);
+        };
 
-	return sb.toString();
+        return sb.toString();
     };
 
 
@@ -35,18 +37,19 @@ public class KorapArray {
      *
      * @param separator Character to separate joined segments
      * @param strings Segments to join
+     * @return The joined string.
      */
     public static String join (char separator, String ... strings) {
-	if (strings.length == 0)
-	    return "";
+        if (strings.length == 0)
+            return "";
 
-	StringBuffer sb = new StringBuffer(strings[0]);
-
-	for (int i = 1; i < strings.length; i++) {
-	    sb.append(separator);
-	    sb.append(strings[i]);
-	};
-
-	return sb.toString();
+        StringBuffer sb = new StringBuffer(strings[0]);
+        
+        for (int i = 1; i < strings.length; i++) {
+            sb.append(separator);
+            sb.append(strings[i]);
+        };
+        
+        return sb.toString();
     };
 };

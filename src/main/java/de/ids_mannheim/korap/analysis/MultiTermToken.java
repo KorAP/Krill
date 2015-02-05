@@ -20,7 +20,7 @@ import java.util.*;
  */
 public class MultiTermToken {
     public List<MultiTerm> terms;
-    private static short i = 0;
+    private short i = 0;
     private boolean sorted = false;
 
     /**

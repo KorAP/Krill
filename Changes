@@ -1,12 +1,14 @@
 0.49.4 2015-02-04
-        - [documentation] Improved documentation for API classes (diewald)
+        - [documentation] Improved documentation for API classes,
+	  improved test coverage for utility classes (diewald)
    	- [performance] Updated Lucene dependency from 4.5.1 to 4.10.3,
 	  Updated Jackson dependency from 2.4.0 to 2.4.4,
    	  Updated Jersey dependency from 2.4.1 to 2.15 (diewald)
         - [feature] Presorting of element terms in the index for coherent
 	  SpanQuery sorting (diewald)
 	  Warning: This is a breaking change!
-	- [cleanup] Renamed /filter to /collection (diewald)
+	- [cleanup] Renamed /filter to /collection, 
+	  merge KorapHTML and KorapString (diewald)
 
 0.49.3 2015-02-03
         - [documentation] Improved documentation for API classes (diewald)
