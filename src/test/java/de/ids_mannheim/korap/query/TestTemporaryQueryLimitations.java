@@ -54,7 +54,7 @@ public class TestTemporaryQueryLimitations {
 	
 	KorapSearch ks = new KorapSearch(json);
 	KorapResult kr = ks.run(ki);
-	assertEquals(kr.getQuery(),"shrink(130: {131: spanContain({129: <tokens:s />}, {130: tokens:s:wegen})})");
+	assertEquals(kr.getQuery(),"focus(130: {131: spanContain({129: <tokens:s />}, {130: tokens:s:wegen})})");
 	assertEquals(kr.getTotalResults(),0);
 	assertEquals(kr.getStartIndex(),0);
 

@@ -6,7 +6,7 @@ import java.io.*;
 import static org.junit.Assert.*;
 
 import de.ids_mannheim.korap.KorapQuery;
-import de.ids_mannheim.korap.analysis.*;
+import de.ids_mannheim.korap.model.*;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 

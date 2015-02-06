@@ -16,7 +16,7 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
+import de.ids_mannheim.korap.model.MultiTermTokenStream;
 
 @RunWith(JUnit4.class)
 public class TestKorapIndex {

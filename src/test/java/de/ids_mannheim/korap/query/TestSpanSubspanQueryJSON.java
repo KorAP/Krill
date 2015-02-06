@@ -48,7 +48,7 @@ public class TestSpanSubspanQueryJSON {
                 .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
-        assertEquals(sq.toString(), "shrink(129: spanElementDistance({129: tokens:s:der},"+
+        assertEquals(sq.toString(), "focus(129: spanElementDistance({129: tokens:s:der},"+
                      " {129: subspan(<tokens:s />,0,1)}, [(s[0:0], ordered, notExcluded)]))");
     }
 

@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
  * In case the class to focus on is not found in the payloads,
  * the match is ignored.
  *
- * <strong>Warning</strong>: Payloads other than class payloads won't bubble up.
+ * <strong>Warning</strong>: Payloads other than class payloads won't
+ * bubble up currently. That behaviour may change in the future
  *
  * @author diewald
  */

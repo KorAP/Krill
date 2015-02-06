@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.index;
 import java.util.*;
 import java.io.*;
 
-import de.ids_mannheim.korap.analysis.MultiTermToken;
+import de.ids_mannheim.korap.model.MultiTermToken;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;

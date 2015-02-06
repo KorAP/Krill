@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.analysis;
+package de.ids_mannheim.korap.model;
 
 import static de.ids_mannheim.korap.util.KorapArray.*;
 import org.apache.lucene.util.BytesRef;

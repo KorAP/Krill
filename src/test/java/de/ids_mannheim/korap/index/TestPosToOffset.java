@@ -17,7 +17,7 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
+import de.ids_mannheim.korap.model.MultiTermTokenStream;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 
 import org.apache.lucene.index.AtomicReaderContext;

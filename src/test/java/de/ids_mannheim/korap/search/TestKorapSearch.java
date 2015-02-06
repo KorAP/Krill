@@ -725,7 +725,7 @@ public class TestKorapSearch {
 
         KorapQuery kq = new KorapQuery("tokens");
         KorapSearch ks = new KorapSearch(
-            kq.shrink(
+            kq.focus(
                 1,
                 kq.contains(kq.tag("base/s:s"), kq._(1, kq.seg("s:Leben")))
             )
@@ -734,7 +734,7 @@ public class TestKorapSearch {
         KorapResult kr = ks.run(ki);
         assertEquals(
             kr.getQuery(),
-            "shrink(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}))"
+            "focus(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}))"
         );
         assertEquals(
             kr.getMatch(0).getSnippetBrackets(),
@@ -744,7 +744,7 @@ public class TestKorapSearch {
 
         // Try with high class - don't highlight
         ks = new KorapSearch(
-            kq.shrink(
+            kq.focus(
                 129,
                 kq.contains(kq.tag("base/s:s"), kq._(129, kq.seg("s:Leben")))
             )
@@ -753,7 +753,7 @@ public class TestKorapSearch {
         kr = ks.run(ki);
         assertEquals(
             kr.getQuery(),
-            "shrink(129: spanContain(<tokens:base/s:s />, {129: tokens:s:Leben}))"
+            "focus(129: spanContain(<tokens:base/s:s />, {129: tokens:s:Leben}))"
         );
         assertEquals(
             kr.getMatch(0).getSnippetBrackets(),
@@ -765,7 +765,7 @@ public class TestKorapSearch {
         kr = ks.run(ki);
         assertEquals(
             kr.getQuery(),
-            "shrink(129: spanElementDistance({129: tokens:s:Namen}, " +
+            "focus(129: spanElementDistance({129: tokens:s:Namen}, " +
             "{129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]))"
         );
         assertEquals(

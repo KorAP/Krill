@@ -25,7 +25,7 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
+import de.ids_mannheim.korap.model.MultiTermTokenStream;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.index.Term;

@@ -1,8 +1,8 @@
 package de.ids_mannheim.korap.index;
 
 import org.apache.lucene.document.Document;
-import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
-import de.ids_mannheim.korap.analysis.MultiTermToken;
+import de.ids_mannheim.korap.model.MultiTermTokenStream;
+import de.ids_mannheim.korap.model.MultiTermToken;
 import de.ids_mannheim.korap.KorapDocument;
 import de.ids_mannheim.korap.util.KorapDate;
 

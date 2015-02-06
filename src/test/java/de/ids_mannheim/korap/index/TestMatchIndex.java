@@ -23,7 +23,7 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.SpanMatchModifyClassQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
+import de.ids_mannheim.korap.model.MultiTermTokenStream;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
@@ -32,7 +32,7 @@ import org.apache.lucene.index.Term;
 
 // mvn -Dtest=TestWithinIndex#indexExample1 test
 
-// match is shrink and split
+// match is focus and split
 
 @RunWith(JUnit4.class)
 public class TestMatchIndex {
@@ -366,7 +366,7 @@ public class TestMatchIndex {
 
 
     @Test
-    public void indexExampleShrinkWithSpan () throws IOException {
+    public void indexExampleFocusWithSpan () throws IOException {
 	KorapIndex ki = new KorapIndex();
 
 	// abcabcabac
@@ -407,7 +407,7 @@ public class TestMatchIndex {
         );
 
 	kr = ki.search(sq, (short) 10);
-	assertEquals(kr.getQuery(), "shrink(3: spanContain({2: <base:s />}, {3: base:s:b}))");
+	assertEquals(kr.getQuery(), "focus(3: spanContain({2: <base:s />}, {3: base:s:b}))");
 	assertEquals(kr.getMatch(0).getSnippetBrackets(), "a[{3:b}]cabcab ...");
     };
 };

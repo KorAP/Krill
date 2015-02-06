@@ -3,8 +3,8 @@ package de.ids_mannheim.korap;
 import java.util.*;
 import java.io.IOException;
 
-import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
-import de.ids_mannheim.korap.analysis.MultiTermToken;
+import de.ids_mannheim.korap.model.MultiTermTokenStream;
+import de.ids_mannheim.korap.model.MultiTermToken;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.TextField;

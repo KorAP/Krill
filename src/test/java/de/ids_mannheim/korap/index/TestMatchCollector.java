@@ -23,7 +23,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanMatchModifyClassQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.analysis.MultiTermTokenStream;
+import de.ids_mannheim.korap.model.MultiTermTokenStream;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;

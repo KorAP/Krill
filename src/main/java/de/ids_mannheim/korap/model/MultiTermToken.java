@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.analysis;
+package de.ids_mannheim.korap.model;
 
 import java.util.*;
 

@@ -129,36 +129,36 @@ public class TestKorapQuery {
     @Test
     public void KorapShrinkQuery () throws QueryException {
         KorapQuery kq = new KorapQuery("field");
-        SpanQuery sq = kq.shrink(kq.tag("np")).toQuery();
-        assertEquals("shrink(1: <field:np />)", sq.toString());
+        SpanQuery sq = kq.focus(kq.tag("np")).toQuery();
+        assertEquals("focus(1: <field:np />)", sq.toString());
     };
 
     @Test
     public void KorapShrinkQuery1 () throws QueryException {
         KorapQuery kq = new KorapQuery("field");
-        SpanQuery sq = kq.shrink(1, kq.tag("np")).toQuery();
-        assertEquals("shrink(1: <field:np />)", sq.toString());
+        SpanQuery sq = kq.focus(1, kq.tag("np")).toQuery();
+        assertEquals("focus(1: <field:np />)", sq.toString());
     };
 
     @Test
     public void KorapShrinkQuery2 () throws QueryException {
         KorapQuery kq = new KorapQuery("field");
-        SpanQuery sq = kq.shrink(1, kq._(1, kq.tag("np"))).toQuery();
-        assertEquals("shrink(1: {1: <field:np />})", sq.toString());
+        SpanQuery sq = kq.focus(1, kq._(1, kq.tag("np"))).toQuery();
+        assertEquals("focus(1: {1: <field:np />})", sq.toString());
     };
 
     @Test
     public void KorapShrinkQuery3 () throws QueryException {
         KorapQuery kq = new KorapQuery("field");
-        SpanQuery sq = kq.shrink(1, kq._(1, kq.seq(kq.tag("np"), kq._(kq.seg("test").without("no"))))).toQuery();
-        assertEquals("shrink(1: {1: spanNext(<field:np />, {1: spanNot(field:test, field:no, 0, 0)})})", sq.toString());
+        SpanQuery sq = kq.focus(1, kq._(1, kq.seq(kq.tag("np"), kq._(kq.seg("test").without("no"))))).toQuery();
+        assertEquals("focus(1: {1: spanNext(<field:np />, {1: spanNot(field:test, field:no, 0, 0)})})", sq.toString());
     };
 
     @Test
     public void KorapShrinkQuery4 () throws QueryException {
         KorapQuery kq = new KorapQuery("field");
-        SpanQuery sq = kq.seq(kq.seg("try1"), kq.shrink(1, kq._(1, kq.seg("try2"))), kq.seg("try3")).toQuery();
-        assertEquals("spanNext(spanNext(field:try1, shrink(1: {1: field:try2})), field:try3)", sq.toString());
+        SpanQuery sq = kq.seq(kq.seg("try1"), kq.focus(1, kq._(1, kq.seg("try2"))), kq.seg("try3")).toQuery();
+        assertEquals("spanNext(spanNext(field:try1, focus(1: {1: field:try2})), field:try3)", sq.toString());
     };
 
     @Test

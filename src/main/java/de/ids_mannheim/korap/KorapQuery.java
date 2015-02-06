@@ -1303,19 +1303,19 @@ public class KorapQuery extends Notifications {
     };
 
     // MatchModify
-    public SpanMatchModifyQueryWrapper shrink (byte number, SpanQueryWrapper element) {
+    public SpanMatchModifyQueryWrapper focus (byte number, SpanQueryWrapper element) {
         return new SpanMatchModifyQueryWrapper(element, number);
     };
 
-    public SpanMatchModifyQueryWrapper shrink (int number, SpanQueryWrapper element) {
+    public SpanMatchModifyQueryWrapper focus (int number, SpanQueryWrapper element) {
         return new SpanMatchModifyQueryWrapper(element, number);
     };
 
-    public SpanMatchModifyQueryWrapper shrink (short number, SpanQueryWrapper element) {
+    public SpanMatchModifyQueryWrapper focus (short number, SpanQueryWrapper element) {
         return new SpanMatchModifyQueryWrapper(element, number);
     };
 
-    public SpanMatchModifyQueryWrapper shrink (SpanQueryWrapper element) {
+    public SpanMatchModifyQueryWrapper focus (SpanQueryWrapper element) {
         return new SpanMatchModifyQueryWrapper(element);
     };
 

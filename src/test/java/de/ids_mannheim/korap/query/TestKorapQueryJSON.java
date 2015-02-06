@@ -51,24 +51,24 @@ public class TestKorapQueryJSON {
     public void queryJSONBsp3 () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp3.jsonld").getFile());
 
-	// shrink({[base=Mann]})
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: {1: tokens:mate/l:Mann})");
+	// focus({[base=Mann]})
+	assertEquals(sqwi.toQuery().toString(), "focus(1: {1: tokens:mate/l:Mann})");
     };
 
     @Test
     public void queryJSONBsp4 () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp4.jsonld").getFile());
 
-	// shrink({[base=foo]}[orth=bar])
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanNext({1: tokens:mate/l:foo}, tokens:s:bar))");
+	// focus({[base=foo]}[orth=bar])
+	assertEquals(sqwi.toQuery().toString(), "focus(1: spanNext({1: tokens:mate/l:foo}, tokens:s:bar))");
     };
 
     @Test
     public void queryJSONBsp5 () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp5.jsonld").getFile());
 
-	// shrink(1:[base=Der]{1:[base=Mann]}) 
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanNext(tokens:mate/l:Der, {1: tokens:mate/l:Mann}))");
+	// focus(1:[base=Der]{1:[base=Mann]}) 
+	assertEquals(sqwi.toQuery().toString(), "focus(1: spanNext(tokens:mate/l:Der, {1: tokens:mate/l:Mann}))");
     };
 
     @Test
@@ -242,7 +242,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/cosmas16.json").getFile());
 
 	// "$wegen #IN(L) <s>"
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanStartsWith(<tokens:s />, {1: tokens:i:wegen}))");
+	assertEquals(sqwi.toQuery().toString(), "focus(1: spanStartsWith(<tokens:s />, {1: tokens:i:wegen}))");
     };
 
     @Test
@@ -258,7 +258,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/cosmas20.json").getFile());
 
 	//     "MORPH(V) #IN(R) #ELEM(S)"
-	assertEquals(sqwi.toQuery().toString(), "shrink(1: spanEndsWith(<tokens:s />, {1: tokens:p:V}))");
+	assertEquals(sqwi.toQuery().toString(), "focus(1: spanEndsWith(<tokens:s />, {1: tokens:p:V}))");
     };
 
     @Test
@@ -282,7 +282,7 @@ public class TestKorapQueryJSON {
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bugs/cosmas_boundary.jsonld").getFile());
 
 	// Namen /s1 Leben
-	assertEquals(sqwi.toQuery().toString(), "shrink(129: spanElementDistance({129: tokens:s:Namen}, {129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]))");
+	assertEquals(sqwi.toQuery().toString(), "focus(129: spanElementDistance({129: tokens:s:Namen}, {129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]))");
     };
 
     @Test
