@@ -2,8 +2,8 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +20,15 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 /**
  * Enumeration of special spans which length is stored in their payload,
  * representing elements such as phrases, sentences and paragraphs.
+ *
+ * Payloads are 
  * 
  * @author margaretha
  * @author diewald
  */
 public class ElementSpans extends SpansWithId {
     private TermSpans termSpans;
+    private boolean lazyLoaded = false;
 
     /**
      * Constructs ElementSpans for the given {@link SpanElementQuery}.
@@ -44,7 +47,6 @@ public class ElementSpans extends SpansWithId {
         hasMoreSpans = true;
     };
 
-
     @Override
     public boolean next() throws IOException {
         isStartEnumeration = false;
@@ -62,9 +64,34 @@ public class ElementSpans extends SpansWithId {
         // Get payload
         this.matchStartPosition = termSpans.start();
         this.matchDocNumber = termSpans.doc();
+        this.lazyLoaded = false;
+        return true;
+    };
+
+
+    /*
+     * Process payload lazily.
+     * This may have a little impact on queries like
+     * position queries, where spans can be rejected
+     * solely based on their starting and doc position.
+     */
+    private void processPayload () {
+        if (this.lazyLoaded)
+            return;
+
+        // This will prevent failures for IOExceptions
+        this.lazyLoaded = true;
 
         // No need to check if there is a pl - there has to be a payload!
-        this.matchPayload = termSpans.getPayload();
+        try {
+            this.matchPayload = termSpans.getPayload();
+        }
+        catch (IOException e) {
+            this.matchEndPosition = this.matchStartPosition;
+            this.setSpanId((short) -1);
+            this.matchPayload = null;
+            return;
+        };
 
         List<byte[]> payload = (List<byte[]>) this.matchPayload;
 
@@ -85,15 +112,39 @@ public class ElementSpans extends SpansWithId {
             byte[] b = new byte[8];
             b = Arrays.copyOfRange(bb.array(), 0, 8);
             this.matchPayload = Collections.singletonList(b);
+            return;
         }
 
-        // The span is extremely short ... well ...
-        else {
-            this.matchEndPosition = this.matchStartPosition;
-            this.setSpanId((short) -1);
-            this.matchPayload = null;
-        };
-        return true;
+        this.matchEndPosition = this.matchStartPosition;
+        this.setSpanId((short) -1);
+        this.matchPayload = null;
+    };
+
+
+    @Override
+    public int end () {
+        this.processPayload();
+        return this.matchEndPosition;
+    };
+
+  	@Override
+  	public Collection<byte[]> getPayload() {
+        this.processPayload();
+  		return this.matchPayload;
+  	};
+
+
+  	@Override
+  	public boolean isPayloadAvailable() {
+        this.processPayload();
+  		return !this.matchPayload.isEmpty();
+  	};
+
+
+    @Override
+    public short getSpanId () {
+        this.processPayload();
+        return spanId;
     };
 
 
@@ -109,7 +160,6 @@ public class ElementSpans extends SpansWithId {
         this.matchPayload = null;
         return false;
     };
-
 
     @Override
     public long cost() {
