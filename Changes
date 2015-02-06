@@ -9,7 +9,8 @@
 	  Warning: This is a breaking change!
 	- [performance] Payloads in ElementSpans can now be lazily loaded (diewald)
 	- [cleanup] Renamed /filter to /collection, 
-	  merge KorapHTML and KorapString (diewald)
+	  merge KorapHTML and KorapString,
+	  removed KorapSpan, KorapTermSpan and KorapLongSpan (diewald)
 
 0.49.3 2015-02-03
         - [documentation] Improved documentation for API classes (diewald)

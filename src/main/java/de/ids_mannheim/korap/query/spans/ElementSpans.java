@@ -20,8 +20,6 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 /**
  * Enumeration of special spans which length is stored in their payload,
  * representing elements such as phrases, sentences and paragraphs.
- *
- * Payloads are 
  * 
  * @author margaretha
  * @author diewald
@@ -33,10 +31,11 @@ public class ElementSpans extends SpansWithId {
     /**
      * Constructs ElementSpans for the given {@link SpanElementQuery}.
      * 
-     * @param spanElementQuery a SpanElementQuery
-     * @param context
-     * @param acceptDocs
-     * @param termContexts
+     * @param spanElementQuery A {@link SpanElementQuery}.
+     * @param context The {@link AtomicReaderContext}.
+     * @param acceptDocs Bit vector representing the documents
+     *        to be searched in.
+     * @param termContexts A map managing {@link TermState TermStates}.
      * @throws IOException
      */
     public ElementSpans(SpanElementQuery spanElementQuery,

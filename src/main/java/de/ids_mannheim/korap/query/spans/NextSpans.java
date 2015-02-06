@@ -21,7 +21,8 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
  * 
  * The implementation allows multiple matches at the same firstspan position.
  * 
- * @author margaretha, diewald
+ * @author margaretha
+ * @author diewald
  */
 public class NextSpans extends SimpleSpans {
 

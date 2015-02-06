@@ -103,7 +103,7 @@ public class WithinSpans extends Spans {
     private boolean tryMatch = true;
 
     // Two buffers for storing candidates
-    private LinkedList<KorapLongSpan>
+    private LinkedList<WithinSpan>
         spanStore1,
         spanStore2;
 
@@ -114,7 +114,8 @@ public class WithinSpans extends Spans {
      * @param context The {@link AtomicReaderContext}.
      * @param acceptDocs Bit vector representing the documents
      *        to be searched in.
-     * @param termContexts A map managing {@link TermState}
+     * @param termContexts A map managing {@link TermState TermStates}.
+     * @param flag A byte flag indicating the positional condition of the sub spans.
      */
     public WithinSpans (SpanWithinQuery spanWithinQuery,
                         AtomicReaderContext context,
@@ -143,8 +144,8 @@ public class WithinSpans extends Spans {
         this.flag = flag;
 
         // SpanStores for backtracking
-        this.spanStore1 = new LinkedList<KorapLongSpan>();
-        this.spanStore2 = new LinkedList<KorapLongSpan>();
+        this.spanStore1 = new LinkedList<WithinSpan>();
+        this.spanStore2 = new LinkedList<WithinSpan>();
 
         // kept for toString() only.
         this.query = spanWithinQuery;
@@ -215,7 +216,7 @@ public class WithinSpans extends Spans {
                 if (DEBUG)
                     log.trace("In the next embedded branch");
 		
-                KorapLongSpan current = null;
+                WithinSpan current = null;
 
                 // New - fetch until theres a span in the correct doc or bigger
                 while (!this.spanStore2.isEmpty()) {
@@ -342,7 +343,7 @@ public class WithinSpans extends Spans {
             if (!this.spanStore1.isEmpty()) {
                 if (DEBUG) {
                     log.trace("Move everything from SpanStore 1 to SpanStore 2:");
-                    for (KorapLongSpan i : this.spanStore1) {
+                    for (WithinSpan i : this.spanStore1) {
                         log.trace("     | {}", i.toString());
                     };
                 };
@@ -350,13 +351,13 @@ public class WithinSpans extends Spans {
                 // Move everything to spanStore2
                 this.spanStore2.addAll(
                     0,
-                    (LinkedList<KorapLongSpan>) this.spanStore1.clone()
+                    (LinkedList<WithinSpan>) this.spanStore1.clone()
                 );
                 this.spanStore1.clear();
 
                 if (DEBUG) {
                     log.trace("SpanStore 2 now is:");
-                    for (KorapLongSpan i : this.spanStore2) {
+                    for (WithinSpan i : this.spanStore2) {
                         log.trace("     | {}", i.toString());
                     };
                 };
@@ -800,16 +801,16 @@ public class WithinSpans extends Spans {
     };
     
 
-    private KorapLongSpan _currentWrap () {
-        KorapLongSpan _wrap = new KorapLongSpan();
+    private WithinSpan _currentWrap () {
+        WithinSpan _wrap = new WithinSpan();
         _wrap.start = this.wrapStart != -1 ? this.wrapStart : this.wrapSpans.start();
         _wrap.end   = this.wrapEnd   != -1 ? this.wrapEnd   : this.wrapSpans.end();
         _wrap.doc   = this.wrapDoc   != -1 ? this.wrapDoc   : this.wrapSpans.doc();
         return _wrap;
     };
 	    
-    private KorapLongSpan _currentEmbedded () {
-        KorapLongSpan _embedded = new KorapLongSpan();
+    private WithinSpan _currentEmbedded () {
+        WithinSpan _embedded = new WithinSpan();
         _embedded.start = this.embeddedStart != -1 ?
                           this.embeddedStart : this.embeddedSpans.start();
         _embedded.end   = this.embeddedEnd   != -1 ?
@@ -892,7 +893,7 @@ public class WithinSpans extends Spans {
     private void storeEmbedded () throws IOException {
 
         // Create a current copy
-        KorapLongSpan embedded = new KorapLongSpan();
+        WithinSpan embedded = new WithinSpan();
         embedded.start = this.embeddedStart != -1 ?
                          this.embeddedStart : this.embeddedSpans.start();
         embedded.end   = this.embeddedEnd   != -1 ?
@@ -1101,5 +1102,85 @@ public class WithinSpans extends Spans {
     public String toString() {
 	return getClass().getName() + "("+query.toString()+")@"+
 	    (embeddedDoc <= 0?"START":(more?(doc()+":"+start()+"-"+end()):"END"));
+    };
+
+
+    // This was formerly the default candidate span class,
+    // before it was refactored out
+    private class WithinSpan implements Comparable<WithinSpan>, Cloneable  {
+        public int
+            start = -1,
+            end   = -1,
+            doc   = -1;
+
+        public Collection<byte[]> payload;
+
+        public short elementRef = -1;
+    
+        public void clear () {
+            this.start = -1;
+            this.end = -1;
+            this.doc = -1;
+            clearPayload();
+        };
+    
+        @Override
+        public int compareTo (WithinSpan o) {
+            /* optimizable for short numbers to return o.end - this.end */
+            if (this.doc < o.doc) {
+                return -1;
+            }
+            else if (this.doc == o.doc) {
+                if (this.start < o.start) {
+                    return -1;
+                }
+                else if (this.start == o.start) {
+                    if (this.end < o.end)
+                        return -1;
+                };
+            };
+            return 1;
+        };
+
+        public short getElementRef() {
+            return elementRef;
+        }
+
+        public void setElementRef(short elementRef) {
+            this.elementRef = elementRef;
+        };
+    
+        @Override
+        public Object clone() {
+            WithinSpan span = new WithinSpan();
+            span.start = this.start;
+            span.end = this.end;
+            span.doc = this.doc;
+            span.payload.addAll(this.payload);
+            return span;
+        };
+
+        public WithinSpan copyFrom (WithinSpan o) {
+            this.start = o.start;
+            this.end = o.end;
+            this.doc = o.doc;
+            // this.clearPayload();
+            this.payload.addAll(o.payload);
+            return this;
+        };
+        
+        public void clearPayload () {
+            if (this.payload != null)
+                this.payload.clear();
+        };
+
+        public String toString () {
+            StringBuilder sb = new StringBuilder("[");
+            return sb.append(this.start).append('-')
+                .append(this.end)
+                .append('(').append(this.doc).append(')')
+                .append(']')
+                .toString();
+        };
     };
 };
