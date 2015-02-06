@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.node.*;
 
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.index.SearchContext;
-import de.ids_mannheim.korap.document.KorapPrimaryData;
 
 import de.ids_mannheim.korap.match.HighlightCombinator;
 import de.ids_mannheim.korap.match.HighlightCombinatorElement;
@@ -362,7 +361,7 @@ public class KorapMatch extends KorapDocument {
      */
     public void populateDocument (Document doc, String field, HashSet<String> fields) {
 	this.setField(field);
-	this.setPrimaryData( new KorapPrimaryData(doc.get(field)) );
+	this.setPrimaryData( doc.get(field) );
 	if (fields.contains("corpusID"))
 	    this.setCorpusID(doc.get("corpusID"));
 	if (fields.contains("ID"))

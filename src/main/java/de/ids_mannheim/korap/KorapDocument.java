@@ -3,7 +3,6 @@ package de.ids_mannheim.korap;
 import java.util.*;
 
 import de.ids_mannheim.korap.util.KorapDate;
-import de.ids_mannheim.korap.document.KorapPrimaryData;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.KorapResponse;
 
@@ -27,7 +26,7 @@ import com.fasterxml.jackson.annotation.*;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class KorapDocument extends KorapResponse {
-    private KorapPrimaryData primaryData;
+    private String primaryData;
 
     @JsonIgnore
     public int
@@ -315,7 +314,7 @@ public abstract class KorapDocument extends KorapResponse {
     public String getPrimaryData () {
         if (this.primaryData == null)
             return "";
-        return this.primaryData.toString();
+        return this.primaryData;
     };
 
 
@@ -348,25 +347,12 @@ public abstract class KorapDocument extends KorapResponse {
     /**
      * Set the primary data of the document.
      *
-     * @param primary The primary data of the document as a string.
-     */
-    @JsonIgnore
-    public void setPrimaryData (String primary) {
-        this.primaryData = new KorapPrimaryData(primary);
-    };
-    
-
-    /**
-     * Set the primary data of the document.
-     *
      * @param primary The primary data of the document
-     *        as a KorapPrimaryData object.
-     * @see KorapPrimaryData
+     *        as a string.
      */
-    public void setPrimaryData (KorapPrimaryData primary) {
+    public void setPrimaryData (String primary) {
         this.primaryData = primary;
     };
-
 
     /**
      * Get the length of the primary data of the document

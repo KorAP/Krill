@@ -129,7 +129,7 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
 
 
     @Override
-    public int hashCode() {
+    public int hashCode () {
         int result = operand.hashCode();
         result = 31 * result + number;
         result += Float.floatToRawIntBits(getBoost());
