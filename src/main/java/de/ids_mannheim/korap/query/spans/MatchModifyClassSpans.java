@@ -1,5 +1,7 @@
 package de.ids_mannheim.korap.query.spans;
 
+import static de.ids_mannheim.korap.util.KorapByte.*;
+
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.index.AtomicReaderContext;
@@ -17,10 +19,20 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.ByteBuffer;
 
 /**
- * Modify matches to, for example, return only certain class or span ranges.
+ * Spans, that can focus on the span boundaries of classed subqueries.
+ * The boundaries of the classed subquery may exceed the boundaries of the
+ * nested query.
+ *
+ * In case multiple classes are found with the very same number, the span
+ * is maximized to start on the first occurrence from the left and end on
+ * the last occurrence on the right.
+ *
+ * In case the class to focus on is not found in the payloads,
+ * the match is ignored.
+ *
+ * <strong>Warning</strong>: Payloads other than class payloads won't bubble up.
  *
  * @author diewald
  */
@@ -30,8 +42,6 @@ public class MatchModifyClassSpans extends Spans {
     private Collection<byte[]> payload;
     private final Spans spans;
     private byte number;
-    private boolean divide;
-    private ByteBuffer bb;
 
     private SpanQuery wrapQuery;
     private final Logger log = LoggerFactory.getLogger(MatchModifyClassSpans.class);
@@ -39,145 +49,154 @@ public class MatchModifyClassSpans extends Spans {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    private int start = -1, end;
-    private int tempStart = 0, tempEnd = 0;
+    private int start = -1,
+                end;
+    private int tempStart = 0,
+                tempEnd = 0;
 
-    public MatchModifyClassSpans (
-      SpanQuery wrapQuery,
-      AtomicReaderContext context,
-      Bits acceptDocs,
-      Map<Term,TermContext> termContexts,
-      byte number,
-      boolean divide) throws IOException {
-	this.spans     = wrapQuery.getSpans(context, acceptDocs, termContexts);
-	this.number    = number;
-	this.divide    = divide;
-	this.wrapQuery = wrapQuery;
-	this.bb        = ByteBuffer.allocate(9);
-	this.wrappedPayload = new ArrayList<byte[]>(6);
+    /**
+     * Construct a MatchModifyClassSpan for the given {@link SpanQuery}.
+     * 
+     * @param wrapQuery A {@link SpanQuery}.
+     * @param context The {@link AtomicReaderContext}.
+     * @param acceptDocs Bit vector representing the documents
+     *        to be searched in.
+     * @param termContexts A map managing {@link TermState TermStates}.
+     * @param number The class number to focus on.
+     * @throws IOException
+     */
+    public MatchModifyClassSpans (SpanQuery wrapQuery,
+                                  AtomicReaderContext context,
+                                  Bits acceptDocs,
+                                  Map<Term,TermContext> termContexts,
+                                  byte number) throws IOException {
+        this.spans     = wrapQuery.getSpans(context, acceptDocs, termContexts);
+        this.number    = number;
+        this.wrapQuery = wrapQuery;
+        this.wrappedPayload = new ArrayList<byte[]>(6);
     };
+
 
     @Override
     public Collection<byte[]> getPayload() throws IOException {
-	return wrappedPayload;
+        return wrappedPayload;
     };
 
+
     @Override
-    public boolean isPayloadAvailable() {
-	return wrappedPayload.isEmpty() == false;
+    public boolean isPayloadAvailable () {
+        return wrappedPayload.isEmpty() == false;
     };
 
-    public int doc() { return spans.doc(); }
 
-    // inherit javadocs
     @Override
-    public int start() { return start; }
+    public int doc () {
+        return spans.doc();
+    };
 
-    // inherit javadocs
+
     @Override
-    public int end() { return end; }
+    public int start () {
+        return start;
+    };
 
 
-    // inherit javadocs
+    @Override
+    public int end () {
+        return end;
+    };
+
+
     @Override
     public boolean next() throws IOException {
-	/* TODO:
-	 * In case of a split() (instead of a submatch())
-	 * Is the cache empty?
-	 * Otherwise: Next from list
-	 */
+        if (DEBUG) log.trace("Forward next match");
 
-	if (DEBUG)
-	    log.trace("Forward next match");
+        // Next span
+        while (spans.next()) {
+            if (DEBUG) log.trace("Forward next inner span");
 
-	// Next span
-	while (spans.next()) {
+            // No classes stored
+            wrappedPayload.clear();
 
-	    if (DEBUG)
-		log.trace("Forward next inner span");
+            start = -1;
+            if (spans.isPayloadAvailable()) {
+                end = 0;
 
-	    // No classes stored
-	    wrappedPayload.clear();
+                // Iterate over all payloads and find the maximum span per class
+                for (byte[] payload : spans.getPayload()) {
 
-	    start = -1;
-	    if (spans.isPayloadAvailable()) {
-		end = 0;
+                    // No class payload - ignore
+                    // this may be problematic for other calculated payloads!
+                    if (payload.length != 9) {
+                        if (DEBUG) log.trace("Ignore old payload {}", payload);
+                        continue;
+                    };
 
-		// Iterate over all payloads and find the maximum span per class
-		for (byte[] payload : spans.getPayload()) {
+                    // Found class payload of structure <i>start<i>end<b>class
+                    // and classes are matches!
+                    if (payload[8] == this.number) {
+                        tempStart = byte2int(payload, 0);
+                        tempEnd   = byte2int(payload, 4);
 
-		    // No class payload
-		    if (payload.length != 9) {
-			if (DEBUG)
-			    log.trace("Ignore old payload {}", payload);
-			continue;
-		    };
+                        if (DEBUG) {
+                            log.trace(
+                                "Found matching class {}-{}",
+                                tempStart,
+                                tempEnd
+                            );
+                        };
 
-		    // Todo: Implement Divide
-		    // Found class payload of structure <i>start<i>end<b>class
-		    // and classes are matches!
-		    if (payload[8] == this.number) {
-			bb.clear(); 
-			bb.put(payload); 
-			bb.rewind();
-			tempStart = bb.getInt();
-			tempEnd   = bb.getInt();
-
-			if (DEBUG)
-			    log.trace("Found matching class {}-{}", tempStart, tempEnd);
-
-			// Set start position 
-			if (start == -1)
-			    start = tempStart;
-			else if (tempStart < start)
-			    start = tempStart;
+                        // Set start position 
+                        if (start == -1 || tempStart < start)
+                            start = tempStart;
 			
-			// Set end position
-			if (tempEnd > end)
-			    end = tempEnd;
-		    };
+                        // Set end position
+                        if (tempEnd > end)
+                            end = tempEnd;
+                    };
 
-		    // Definately keep class information
-		    // Even if it is already used for shrinking
-		    wrappedPayload.add(payload);
-		};
-	    };
+                    // Definately keep class information
+                    // Even if it is already used for shrinking
+                    wrappedPayload.add(payload);
+                };
+            };
 
-	    // Class not found
-	    if (start == -1)
-		continue;
+            // Class not found
+            if (start == -1)
+                continue;
 
-	    if (DEBUG)
-		log.trace(
-		    "Start to focus on class {} from {} to {}",
-		    number,
-		    start,
-		    end
-		);
+            if (DEBUG) {
+                log.trace(
+                    "Start to focus on class {} from {} to {}",
+                    number,
+                    start,
+                    end
+                );
+            };
+            return true;
+        };
 
-	    return true;
-	};
-
-	// No more spans
-	return false;
+        // No more spans
+        this.wrappedPayload.clear();
+        return false;
     };
 
 
-    // inherit javadocs
+    // Todo: Check for this on document boundaries!
     @Override
     public boolean skipTo (int target) throws IOException {
-	return spans.skipTo(target);
+        return spans.skipTo(target);
     };
+
 
     @Override
     public String toString () {
-	return getClass().getName() + "(" + this.wrapQuery.toString() + ")@" +
-	    (doc() + ":" + start() + "-" + end());
+        return getClass().getName() + "(" + this.wrapQuery.toString() + ")@" +
+            (doc() + ":" + start() + "-" + end());
     };
-
 
     @Override
     public long cost () {
-	return spans.cost();
+        return spans.cost();
     };
 };

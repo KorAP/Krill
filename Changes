@@ -7,7 +7,8 @@
         - [feature] Presorting of element terms in the index for coherent
 	  SpanQuery sorting; Removed buffering of element candidates (diewald)
 	  Warning: This is a breaking change!
-	- [performance] Payloads in ElementSpans can now be lazily loaded (diewald)
+	- [performance] Payloads in ElementSpans can now be lazily loaded,
+	  MatchModifyClassSpans no longer rely on payload copies (diewald)
 	- [cleanup] Renamed /filter to /collection, 
 	  merge KorapHTML and KorapString,
 	  removed KorapSpan, KorapTermSpan and KorapLongSpan (diewald)

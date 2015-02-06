@@ -45,16 +45,16 @@ public class KorapByte {
      * Convert a byte array to an integer.
      *
      * @param data The byte array to convert.
-     * @param offset The byte offset.
+     * @param offset The byte offset (Not integer offset!).
      * @return The translated integer.
      */
-    // Based on
+    // Roughly based on
     // http://www.tutorials.de/java/228129-konvertierung-von-integer-byte-array.html
     public static int byte2int (byte[] data, int offset) {
-        int number = 0;   
-        int i = (offset * 4);  
-        for (; i < 4; ++i)
-            number |= (data[3-i] & 0xff) << (i << 3);
+        offset += 3;
+        int number = 0;
+        for (int i = 0; i < 4; ++i)
+            number |= (data[offset-i] & 0xff) << (i << 3);
         return number;
     };
 };

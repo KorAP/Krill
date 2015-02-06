@@ -22,34 +22,19 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
  * Shrinks spans to a classed span.
  */
 public class SpanMatchModifyClassQuery extends SpanClassQuery {
-    private boolean divide = false;
-
-    public SpanMatchModifyClassQuery (SpanQuery operand, byte number, boolean divide) {
-	super(operand, number);
-	this.divide = divide;
-    };
-
-    public SpanMatchModifyClassQuery (SpanQuery operand, boolean divide) {
-	this(operand, (byte) 1, divide);
-    };
 
     public SpanMatchModifyClassQuery (SpanQuery operand, byte number) {
-	this(operand, number, false);
+	super(operand, number);
     };
 
     public SpanMatchModifyClassQuery (SpanQuery operand) {
-	this(operand, (byte) 1, false);
+	this(operand, (byte) 1);
     };
 
     @Override
     public String toString (String field) {
 	StringBuffer buffer = new StringBuffer();
-	if (divide) {
-	    buffer.append("split(");
-	}
-	else {
-	    buffer.append("shrink(");
-	};
+    buffer.append("shrink(");
 	short classNr = (short) this.number;
 	buffer.append(classNr & 0xFF).append(": ");
         buffer.append(this.operand.toString());
@@ -61,7 +46,7 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
 
     @Override
     public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs, Map<Term,TermContext> termContexts) throws IOException {
-	return (Spans) new MatchModifyClassSpans(this.operand, context, acceptDocs, termContexts, number, divide);
+	return (Spans) new MatchModifyClassSpans(this.operand, context, acceptDocs, termContexts, number);
     };
 
     @Override
@@ -85,8 +70,7 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
     public SpanMatchModifyClassQuery clone() {
 	SpanMatchModifyClassQuery spanMatchQuery = new SpanMatchModifyClassQuery(
 	    (SpanQuery) this.operand.clone(),
-	    this.number,
-	    this.divide
+	    this.number
         );
 	spanMatchQuery.setBoost(getBoost());
 	return spanMatchQuery;
@@ -103,7 +87,7 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
 	
 	if (!this.operand.equals(spanMatchModifyClassQuery.operand)) return false;
 	if (this.number != spanMatchModifyClassQuery.number) return false;
-	if (this.divide != spanMatchModifyClassQuery.divide) return false;
+    //	if (this.divide != spanMatchModifyClassQuery.divide) return false;
 	return getBoost() == spanMatchModifyClassQuery.getBoost();
     };
 
@@ -114,7 +98,7 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
 	int result = 1;
 	result = operand.hashCode();
 	result += number + 33_333;
-	result += divide ? 1 : 0;
+    //	result += divide ? 1 : 0;
 	result ^= (result << 15) | (result >>> 18);
 	result += Float.floatToRawIntBits(getBoost());
 	return result;
