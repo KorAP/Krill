@@ -9,6 +9,8 @@ import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 
+import de.ids_mannheim.korap.util.CorpusDataException;
+
 import static de.ids_mannheim.korap.Test.*;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -73,7 +75,7 @@ public class TestIndex { // extends LuceneTestCase {
     private Directory index = new RAMDirectory();
 
     @Test
-    public void multiTermToken () {
+    public void multiTermToken () throws CorpusDataException {
 	MultiTermToken test = new MultiTermToken("hunde", "pos:n", "m:gen:pl");
 	assertEquals(test.terms.get(0).term, "hunde");
 	assertEquals(test.terms.get(1).term, "pos:n");

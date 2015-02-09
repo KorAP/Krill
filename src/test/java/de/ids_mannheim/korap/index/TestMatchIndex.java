@@ -17,11 +17,8 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.query.SpanElementQuery;
-import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.SpanMatchModifyClassQuery;
-import de.ids_mannheim.korap.query.SpanClassQuery;
+import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.query.*;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
 
@@ -44,17 +41,17 @@ public class TestMatchIndex {
 	// abcabcabac
 	FieldDocument fd = new FieldDocument();
 	fd.addTV("base",
-		 "abcabcabac",
-		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|_1#1-2]" +
-		 "[(2-3)s:c|i:c|_2#2-3]" +
-		 "[(3-4)s:a|i:a|_3#3-4]" +
-		 "[(4-5)s:b|i:b|_4#4-5]" +
-		 "[(5-6)s:c|i:c|_5#5-6]" +
-		 "[(6-7)s:a|i:a|_6#6-7]" +
-		 "[(7-8)s:b|i:b|_7#7-8]" +
-		 "[(8-9)s:a|i:a|_8#8-9]" +
-		 "[(9-10)s:c|i:c|_9#9-10]");
+             "abcabcabac",
+             "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
+             "[(1-2)s:b|i:b|_1#1-2]" +
+             "[(2-3)s:c|i:c|_2#2-3]" +
+             "[(3-4)s:a|i:a|_3#3-4]" +
+             "[(4-5)s:b|i:b|_4#4-5]" +
+             "[(5-6)s:c|i:c|_5#5-6]" +
+             "[(6-7)s:a|i:a|_6#6-7]" +
+             "[(7-8)s:b|i:b|_7#7-8]" +
+             "[(8-9)s:a|i:a|_8#8-9]" +
+             "[(9-10)s:c|i:c|_9#9-10]");
 	ki.addDoc(fd);
 
 	ki.commit();
@@ -214,200 +211,284 @@ public class TestMatchIndex {
 
     @Test
     public void indexExample2 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+        KorapIndex ki = new KorapIndex();
 
-	// abcabcabac
-	FieldDocument fd = new FieldDocument();
-	fd.addTV("base",
-		 "abcabcabac",
-		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|_1#1-2]" +
-		 "[(2-3)s:c|i:c|_2#2-3]" +
-		 "[(3-4)s:a|i:a|_3#3-4]" +
-		 "[(4-5)s:b|i:b|_4#4-5]" +
-		 "[(5-6)s:c|i:c|_5#5-6]" +
-		 "[(6-7)s:a|i:a|_6#6-7]" +
-		 "[(7-8)s:b|i:b|_7#7-8]" +
-		 "[(8-9)s:a|i:a|_8#8-9]" +
-		 "[(9-10)s:c|i:c|_9#9-10]");
-	ki.addDoc(fd);
+        // abcabcabac
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base",
+                 "abcabcabac",
+                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
+                 "[(1-2)s:b|i:b|_1#1-2]" +
+                 "[(2-3)s:c|i:c|_2#2-3]" +
+                 "[(3-4)s:a|i:a|_3#3-4]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:a|i:a|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:a|i:a|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+        ki.commit();
 
-	ki.commit();
+        SpanQuery sq;
+        KorapResult kr;
 
-	SpanQuery sq;
-	KorapResult kr;
-
-	// No contexts:
-	sq = new SpanOrQuery(
+        // No contexts:
+        sq = new SpanOrQuery(
             new SpanTermQuery(new Term("base", "s:a")),
-	    new SpanTermQuery(new Term("base", "s:c"))
+            new SpanTermQuery(new Term("base", "s:c"))
         );
-	kr = ki.search(sq, (short) 20);
+        kr = ki.search(sq, (short) 20);
 
-	assertEquals("totalResults", kr.getTotalResults(), 7);
-	assertEquals("SnippetBrackets (0)", "<span class=\"context-left\"></span><span class=\"match\">a</span><span class=\"context-right\">bcabca<span class=\"more\"></span></span>", kr.getMatch(0).getSnippetHTML());
-	assertEquals("SnippetBrackets (0)", "[a]bcabca ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("totalResults", kr.getTotalResults(), 7);
+        assertEquals("SnippetBrackets (0)", "<span class=\"context-left\"></span><span class=\"match\">a</span><span class=\"context-right\">bcabca<span class=\"more\"></span></span>", kr.getMatch(0).getSnippetHTML());
+        assertEquals("SnippetBrackets (0)", "[a]bcabca ...", kr.getMatch(0).getSnippetBrackets());
 
-	assertEquals("SnippetBrackets (1)", "ab[c]abcaba ...", kr.getMatch(1).getSnippetBrackets());
-	assertEquals("SnippetBrackets (1)", "<span class=\"context-left\">ab</span><span class=\"match\">c</span><span class=\"context-right\">abcaba<span class=\"more\"></span></span>", kr.getMatch(1).getSnippetHTML());
+        assertEquals("SnippetBrackets (1)", "ab[c]abcaba ...", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("SnippetBrackets (1)", "<span class=\"context-left\">ab</span><span class=\"match\">c</span><span class=\"context-right\">abcaba<span class=\"more\"></span></span>", kr.getMatch(1).getSnippetHTML());
+        
+        assertEquals("SnippetBrackets (6)", "... abcaba[c]", kr.getMatch(6).getSnippetBrackets());
+        assertEquals("SnippetBrackets (6)", "<span class=\"context-left\"><span class=\"more\"></span>abcaba</span><span class=\"match\">c</span><span class=\"context-right\"></span>", kr.getMatch(6).getSnippetHTML());
 
-	assertEquals("SnippetBrackets (6)", "... abcaba[c]", kr.getMatch(6).getSnippetBrackets());
-	assertEquals("SnippetBrackets (6)", "<span class=\"context-left\"><span class=\"more\"></span>abcaba</span><span class=\"match\">c</span><span class=\"context-right\"></span>", kr.getMatch(6).getSnippetHTML());
+        kr = ki.search(sq, 0, (short) 20, true, (short) 0, true, (short) 0);
 
-	kr = ki.search(sq, 0, (short) 20, true, (short) 0, true, (short) 0);
+        assertEquals("totalResults", kr.getTotalResults(), 7);
+        assertEquals("SnippetBrackets (0)", "[a] ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("SnippetHTML (0)", "<span class=\"context-left\"></span><span class=\"match\">a</span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.getMatch(0).getSnippetHTML());
 
-	assertEquals("totalResults", kr.getTotalResults(), 7);
-	assertEquals("SnippetBrackets (0)", "[a] ...", kr.getMatch(0).getSnippetBrackets());
-	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"></span><span class=\"match\">a</span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.getMatch(0).getSnippetHTML());
+        assertEquals("SnippetBrackets (1)", "... [c] ...", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("SnippetHTML (1)", "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\">c</span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.getMatch(1).getSnippetHTML());
 
-	assertEquals("SnippetBrackets (1)", "... [c] ...", kr.getMatch(1).getSnippetBrackets());
-	assertEquals("SnippetHTML (1)", "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\">c</span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.getMatch(1).getSnippetHTML());
-
-	assertEquals("SnippetBrackets (6)", "... [c]", kr.getMatch(6).getSnippetBrackets());
-	assertEquals("SnippetBrackets (6)", "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\">c</span><span class=\"context-right\"></span>", kr.getMatch(6).getSnippetHTML());
+        assertEquals("SnippetBrackets (6)", "... [c]", kr.getMatch(6).getSnippetBrackets());
+        assertEquals("SnippetBrackets (6)", "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\">c</span><span class=\"context-right\"></span>", kr.getMatch(6).getSnippetHTML());
     };
 
 
     @Test
     public void indexExample3 () throws Exception {
-	KorapIndex ki = new KorapIndex();
+        KorapIndex ki = new KorapIndex();
 
-	// abcabcabac
-	FieldDocument fd = new FieldDocument();
-	fd.addTV("base",
-		 "abcabcabac",
-		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|_1#1-2]" +
-		 "[(2-3)s:c|i:c|_2#2-3]" +
-		 "[(3-4)s:a|i:a|_3#3-4]" +
-		 "[(4-5)s:b|i:b|_4#4-5]" +
-		 "[(5-6)s:c|i:c|_5#5-6]" +
-		 "[(6-7)s:a|i:a|_6#6-7]" +
-		 "[(7-8)s:b|i:b|_7#7-8]" +
-		 "[(8-9)s:a|i:a|_8#8-9]" +
-		 "[(9-10)s:c|i:c|_9#9-10]");
-	ki.addDoc(fd);
+        // abcabcabac
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base",
+                 "abcabcabac",
+                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
+                 "[(1-2)s:b|i:b|_1#1-2]" +
+                 "[(2-3)s:c|i:c|_2#2-3]" +
+                 "[(3-4)s:a|i:a|_3#3-4]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:a|i:a|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:a|i:a|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+        ki.commit();
 
-	ki.commit();
+        KorapResult kr;
 
-	KorapResult kr;
+        KorapQuery kq = new KorapQuery("base");
 
-	KorapQuery kq = new KorapQuery("base");
+        SpanQuery sq = kq._(1,kq.seq(kq.seg("s:b")).append(kq.seg("s:a")).append(kq._(2,kq.seg("s:c")))).toQuery();
+        
+        kr = ki.search(sq, 0, (short) 20, true, (short) 2, true, (short) 5);
 
-	SpanQuery sq = kq._(1,kq.seq(kq.seg("s:b")).append(kq.seg("s:a")).append(kq._(2,kq.seg("s:c")))).toQuery();
-
-	kr = ki.search(sq, 0, (short) 20, true, (short) 2, true, (short) 5);
-
-	assertEquals("totalResults", kr.getTotalResults(), 1);
-	assertEquals("SnippetBrackets (0)", "... ca[{1:ba{2:c}}]", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("totalResults", kr.getTotalResults(), 1);
+        assertEquals("SnippetBrackets (0)", "... ca[{1:ba{2:c}}]", kr.getMatch(0).getSnippetBrackets());
     };
 
 
     @Test
     public void indexExampleExtend () throws IOException {
-	KorapIndex ki = new KorapIndex();
+        KorapIndex ki = new KorapIndex();
 
-	// abcabcabac
-	FieldDocument fd = new FieldDocument();
-	fd.addTV("base",
-		 "abcabcabac",
-		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|_1#1-2]" +
-		 "[(2-3)s:c|i:c|_2#2-3]" +
-		 "[(3-4)s:a|i:a|_3#3-4]" +
-		 "[(4-5)s:b|i:b|_4#4-5]" +
-		 "[(5-6)s:c|i:c|_5#5-6]" +
-		 "[(6-7)s:a|i:a|_6#6-7]" +
-		 "[(7-8)s:b|i:b|_7#7-8]" +
-		 "[(8-9)s:a|i:a|_8#8-9]" +
-		 "[(9-10)s:c|i:c|_9#9-10]");
-	ki.addDoc(fd);
+        // abcabcabac
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base",
+                 "abcabcabac",
+                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
+                 "[(1-2)s:b|i:b|_1#1-2]" +
+                 "[(2-3)s:c|i:c|_2#2-3]" +
+                 "[(3-4)s:a|i:a|_3#3-4]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:a|i:a|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:a|i:a|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+        ki.commit();
 
-	ki.commit();
+        SpanQuery sq;
+        KorapResult kr;
 
-	SpanQuery sq;
-	KorapResult kr;
-
-	sq = new SpanMatchModifyClassQuery(
+        sq = new SpanMatchModifyClassQuery(
             new SpanNextQuery(
-	        new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 2),
+                new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 2),
                 new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
             ), (byte) 3
         );
 
-	kr = ki.search(sq, (short) 10);
+        kr = ki.search(sq, (short) 10);
 
-	assertEquals("totalResults", kr.getTotalResults(), 3);
+        assertEquals("totalResults", kr.getTotalResults(), 3);
 
-	KorapMatch km = kr.getMatch(0);
-	assertEquals("StartPos (0)", 1, km.startPos);
-	assertEquals("EndPos (0)", 2, km.endPos);
-	assertEquals("SnippetBrackets (0)", "a[{3:b}]cabcab ...", km.getSnippetBrackets());
+        KorapMatch km = kr.getMatch(0);
+        assertEquals("StartPos (0)", 1, km.startPos);
+        assertEquals("EndPos (0)", 2, km.endPos);
+        assertEquals("SnippetBrackets (0)", "a[{3:b}]cabcab ...", km.getSnippetBrackets());
 
-	sq = new SpanMatchModifyClassQuery(
-	    new SpanMatchModifyClassQuery(
+        sq = new SpanMatchModifyClassQuery(
+            new SpanMatchModifyClassQuery(
                 new SpanNextQuery(
 	            new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 2),
                     new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
                 ), (byte) 3
-	    ), (byte) 2
-	);
+	        ), (byte) 2
+        );
 	
-	kr = ki.search(sq, (short) 10);
+        kr = ki.search(sq, (short) 10);
 
-	km = kr.getMatch(0);
-	assertEquals("StartPos (0)", 0, km.startPos);
-	assertEquals("EndPos (0)", 1, km.endPos);
-	assertEquals("SnippetBrackets (0)", "[{2:a}]bcabca ...", km.getSnippetBrackets());
+        km = kr.getMatch(0);
+        assertEquals("StartPos (0)", 0, km.startPos);
+        assertEquals("EndPos (0)", 1, km.endPos);
+        assertEquals("SnippetBrackets (0)", "[{2:a}]bcabca ...", km.getSnippetBrackets());
 
-
-	// TODO: Check ID
+        // TODO: Check ID
     };
 
 
     @Test
     public void indexExampleFocusWithSpan () throws IOException {
-	KorapIndex ki = new KorapIndex();
+        KorapIndex ki = new KorapIndex();
+        
+        // abcabcabac
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base",
+                 "abcabcabac",
+                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
+                 "[(1-2)s:b|i:b|_1#1-2|<>:s#1-5$<i>5]" +
+                 "[(2-3)s:c|i:c|_2#2-3|<>:s#2-7$<i>7]" +
+                 "[(3-4)s:a|i:a|_3#3-4]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:a|i:a|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:a|i:a|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+        ki.commit();
 
-	// abcabcabac
-	FieldDocument fd = new FieldDocument();
-	fd.addTV("base",
-		 "abcabcabac",
-		 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" +
-		 "[(1-2)s:b|i:b|_1#1-2|<>:s#1-5$<i>5]" +
-		 "[(2-3)s:c|i:c|_2#2-3|<>:s#2-7$<i>7]" +
-		 "[(3-4)s:a|i:a|_3#3-4]" +
-		 "[(4-5)s:b|i:b|_4#4-5]" +
-		 "[(5-6)s:c|i:c|_5#5-6]" +
-		 "[(6-7)s:a|i:a|_6#6-7]" +
-		 "[(7-8)s:b|i:b|_7#7-8]" +
-		 "[(8-9)s:a|i:a|_8#8-9]" +
-		 "[(9-10)s:c|i:c|_9#9-10]");
-	ki.addDoc(fd);
-
-	ki.commit();
-
-	SpanQuery sq;
-	KorapResult kr;
-
-	sq = new SpanWithinQuery(
-	    new SpanClassQuery(new SpanElementQuery("base", "s"), (byte) 2),
+        SpanQuery sq;
+        KorapResult kr;
+        
+        sq = new SpanWithinQuery(
+            new SpanClassQuery(new SpanElementQuery("base", "s"), (byte) 2),
             new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
         );
 
-	kr = ki.search(sq, (short) 10);
-	assertEquals(kr.getQuery(), "spanContain({2: <base:s />}, {3: base:s:b})");
-	assertEquals(kr.getMatch(0).getSnippetBrackets(), "a[{2:{3:b}cab}]cabac");
+        kr = ki.search(sq, (short) 10);
+        assertEquals(kr.getQuery(), "spanContain({2: <base:s />}, {3: base:s:b})");
+        assertEquals(kr.getMatch(0).getSnippetBrackets(), "a[{2:{3:b}cab}]cabac");
 
-	sq = new SpanMatchModifyClassQuery(
+        sq = new SpanMatchModifyClassQuery(
             new SpanWithinQuery(
 	        new SpanClassQuery(new SpanElementQuery("base", "s"), (byte) 2),
                 new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
             ), (byte) 3
         );
 
-	kr = ki.search(sq, (short) 10);
-	assertEquals(kr.getQuery(), "focus(3: spanContain({2: <base:s />}, {3: base:s:b}))");
-	assertEquals(kr.getMatch(0).getSnippetBrackets(), "a[{3:b}]cabcab ...");
+        kr = ki.search(sq, (short) 10);
+        assertEquals(kr.getQuery(), "focus(3: spanContain({2: <base:s />}, {3: base:s:b}))");
+        assertEquals(kr.getMatch(0).getSnippetBrackets(), "a[{3:b}]cabcab ...");
     };
+
+
+    @Test
+    public void indexExampleFocusWithSkip () throws IOException {
+        KorapIndex ki = new KorapIndex();
+        
+        // abcabcabac
+        FieldDocument fd = new FieldDocument();
+        // The payload should be ignored
+        fd.addTV("base",
+                 "abcabcabac",
+                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" + // |<>:p#0-10<i>9]" +
+                 "[(1-2)s:b|i:b|_1#1-2|<>:s#1-5$<i>5]" +
+                 "[(2-3)s:c|i:c|_2#2-3|<>:s#2-7$<i>7]" +
+                 "[(3-4)s:a|i:a|_3#3-4]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:a|i:a|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:a|i:a|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+
+        ki.addDoc(fd);
+        fd.addTV("base",
+                 "gbcgbcgbgc",
+                 "[(0-1)s:g|i:g|_0#0-1|-:t$<i>10|<>:p#0-10$<i>9]" +
+                 "[(1-2)s:b|i:b|_1#1-2|<>:s#1-5$<i>5]" +
+                 "[(2-3)s:c|i:c|_2#2-3|<>:s#2-7$<i>7]" +
+                 "[(3-4)s:g|i:g|_3#3-4]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:g|i:g|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:g|i:g|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+        fd.addTV("base",
+                 "gbcgbcgbgc",
+                 "[(0-1)s:g|i:g|_0#0-1|-:t$<i>10]" +
+                 "[(1-2)s:b|i:b|_1#1-2]" +
+                 "[(2-3)s:c|i:c|_2#2-3]" +
+                 "[(3-4)s:g|i:g|_3#3-4]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:g|i:g|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:g|i:g|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+        fd.addTV("base",
+                 "abcabcabac",
+                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10|<>:p#0-10$<i>9]" +
+                 "[(1-2)s:b|i:b|_1#1-2|<>:s#1-5$<i>5]" +
+                 "[(2-3)s:c|i:c|_2#2-3|<>:s#2-7$<i>7]" +
+                 "[(3-4)s:a|i:a|_3#3-4]" +
+                 "[(4-5)s:b|i:b|_4#4-5]" +
+                 "[(5-6)s:c|i:c|_5#5-6]" +
+                 "[(6-7)s:a|i:a|_6#6-7]" +
+                 "[(7-8)s:b|i:b|_7#7-8]" +
+                 "[(8-9)s:a|i:a|_8#8-9]" +
+                 "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        SpanQuery sq;
+        KorapResult kr;
+        KorapCollection kc = new KorapCollection(ki);
+
+        assertEquals("Documents", 4, kc.numberOf("documents"));
+
+        sq = new SpanWithinQuery(
+                 new SpanElementQuery("base", "p"),
+                 new SpanMatchModifyClassQuery(
+                     new SpanWithinQuery(
+                         new SpanClassQuery(new SpanElementQuery("base", "s"), (byte) 2),
+                         new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 3)
+                     ), (byte) 3
+                 )
+             );
+
+        fail("Skipping may go horribly wrong! (Known issue)");
+        kr = kc.search(sq);
+        assertEquals(kr.getQuery(), "spanContain(<base:p />, focus(3: spanContain({2: <base:s />}, {3: base:s:a})))");
+        assertEquals(12, kr.getTotalResults());
+        assertEquals("[a{2:bc{3:a}b}cabac]", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[ab{2:c{3:a}bcab}ac]", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("[ab{2:cabc{3:a}}bac]", kr.getMatch(2).getSnippetBrackets());
+    };
+
 };

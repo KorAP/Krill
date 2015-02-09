@@ -110,7 +110,8 @@ public class MatchModifyClassSpans extends Spans {
 
     @Override
     public boolean next() throws IOException {
-        if (DEBUG) log.trace("Forward next match");
+        if (DEBUG) log.trace("Forward next match in {}",
+                             this.doc());
 
         // Next span
         while (spans.next()) {
@@ -186,6 +187,7 @@ public class MatchModifyClassSpans extends Spans {
     // Todo: Check for this on document boundaries!
     @Override
     public boolean skipTo (int target) throws IOException {
+        if (DEBUG) log.trace("Skip MatchSpans");
         return spans.skipTo(target);
     };
 

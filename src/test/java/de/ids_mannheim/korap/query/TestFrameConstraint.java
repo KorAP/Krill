@@ -1,7 +1,12 @@
 package de.ids_mannheim.korap.query;
 
+import java.io.IOException;
+import java.util.Collection;
+
 import de.ids_mannheim.korap.query.FrameConstraint;
 import de.ids_mannheim.korap.util.QueryException;
+import org.apache.lucene.search.spans.Spans;
+
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -196,5 +201,54 @@ public class TestFrameConstraint {
         assertEquals(fc1.check("overlapsRight"),    false);
         assertEquals(fc1.check("succeedsDirectly"), true);
         assertEquals(fc1.check("succeeds"),         true);
+    };
+
+    private class TestSpans extends Spans {
+        private int s, e;
+
+        @Override
+        public int doc () {
+            return 0;
+        };
+
+        @Override
+        public int start () {
+            return this.s;
+        };
+
+        @Override
+        public int end () {
+            return this.e;
+        };
+
+        @Override
+        public boolean skipTo (int target) {
+            return true;
+        };
+
+        @Override
+        public boolean next () {
+            return true;
+        };
+
+        public Collection<byte[]> getPayload() throws IOException {
+            return null;
+        }
+
+        @Override
+        public boolean isPayloadAvailable() throws IOException {
+            return false;
+        };
+
+        @Override
+        public String toString () {				
+            return "";
+        };
+
+        @Override
+        public long cost () {				
+            return 1;
+        };
+
     };
 };

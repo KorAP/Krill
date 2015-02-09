@@ -9,6 +9,7 @@ import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.model.*;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.CorpusDataException;
 
 import static de.ids_mannheim.korap.util.KorapByte.*;
 
@@ -19,140 +20,145 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.Bits;
 
 /**
- * @author Nils Diewald
- *
  * Helper class for testing the KorapIndex framework (Simple).
+ *
+ * @author diewald
  */
 public class TestSimple {
 
     // Add document
     public static void addDoc(IndexWriter w, Map<String, String> m) throws IOException {
-	Document doc = new Document();
+        Document doc = new Document();
 
-	FieldType textFieldWithTermVectors = new FieldType(TextField.TYPE_STORED);
-	textFieldWithTermVectors.setStoreTermVectors(true);
-	/*
-	  No offsets are stored.
-	  textFieldWithTermVectors.setStoreTermVectorOffsets(true);
-	*/
-	textFieldWithTermVectors.setStoreTermVectorPositions(true);
-	textFieldWithTermVectors.setStoreTermVectorPayloads(true);
+        FieldType textFieldWithTermVectors = new FieldType(TextField.TYPE_STORED);
+        textFieldWithTermVectors.setStoreTermVectors(true);
+        /*
+          No offsets are stored.
+          textFieldWithTermVectors.setStoreTermVectorOffsets(true);
+        */
+        textFieldWithTermVectors.setStoreTermVectorPositions(true);
+        textFieldWithTermVectors.setStoreTermVectorPayloads(true);
 
-	Field textFieldAnalyzed = new Field(
-          "text",
-          m.get("textStr"),
-	  textFieldWithTermVectors
-	);
+        Field textFieldAnalyzed = new Field(
+            "text",
+            m.get("textStr"),
+            textFieldWithTermVectors
+        );
 
-	MultiTermTokenStream ts = getTermVector(m.get("text"));
+        MultiTermTokenStream ts = getTermVector(m.get("text"));
 
-	textFieldAnalyzed.setTokenStream( ts );
+        textFieldAnalyzed.setTokenStream( ts );
 
-	doc.add(textFieldAnalyzed);
+        doc.add(textFieldAnalyzed);
 
-	// Add document to writer
-	w.addDocument(doc);
+        // Add document to writer
+        w.addDocument(doc);
     };
 
     // Get Term Vector
     public static MultiTermTokenStream getTermVector (String stream) {
-	MultiTermTokenStream ts = new MultiTermTokenStream();
+        MultiTermTokenStream ts = new MultiTermTokenStream();
 
-	int pos = 0;
-	for (String seg : stream.split(" ")) {
-	    //	    System.err.println("** Prepare " + seg);
-	    String[] tokens = seg.split("\\|");
+        int pos = 0;
+        for (String seg : stream.split(" ")) {
+            //	    System.err.println("** Prepare " + seg);
+            String[] tokens = seg.split("\\|");
 
-	    int i = 0;
+            int i = 0;
 
-	    while (tokens[i].length() == 0)
-		i++;
+            while (tokens[i].length() == 0)
+                i++;
 
-	    MultiTermToken mtt = new MultiTermToken(tokens[i]);
-	    //	    System.err.println("** Add term " + tokens[i]);
-	    i++;
-	    for (; i < tokens.length; i++) {
-		if (tokens[i].length() == 0)
-		    continue;
-		mtt.add(tokens[i]);
-	    };
-
-	    ts.addMultiTermToken(mtt);
-	};
-
-	return ts;
+            try {
+                MultiTermToken mtt = new MultiTermToken(tokens[i]);
+                //	    System.err.println("** Add term " + tokens[i]);
+                i++;
+                for (; i < tokens.length; i++) {
+                    if (tokens[i].length() == 0)
+                        continue;
+                    mtt.add(tokens[i]);
+                };
+                ts.addMultiTermToken(mtt);
+            }
+            catch (CorpusDataException cde) {
+                fail(cde.getErrorCode() + ": " + cde.getMessage());
+            };
+        };
+        
+        return ts;
     };
+
 
     // Get query wrapper based on json file
     public static SpanQueryWrapper getJSONQuery (String jsonFile) {
-	SpanQueryWrapper sqwi;
+        SpanQueryWrapper sqwi;
 	
-	try {
-	    String json = getString(jsonFile);
-	    sqwi = new KorapQuery("tokens").fromJson(json);
-	}
-	catch (QueryException e) {
-	    fail(e.getMessage());
-	    sqwi = new KorapQuery("tokens").seg("???");
-	};
-	return sqwi;
+        try {
+            String json = getString(jsonFile);
+            sqwi = new KorapQuery("tokens").fromJson(json);
+        }
+        catch (QueryException e) {
+            fail(e.getMessage());
+            sqwi = new KorapQuery("tokens").seg("???");
+        };
+        return sqwi;
     };
 
 
     // Get string
     public static String getString (String path) {
-	StringBuilder contentBuilder = new StringBuilder();
-	try {
-	    BufferedReader in = new BufferedReader(new FileReader(path));
-	    String str;
-	    while ((str = in.readLine()) != null) {
-		contentBuilder.append(str);
-	    };
-	    in.close();
-	} catch (IOException e) {
-	    fail(e.getMessage());
-	}
-	return contentBuilder.toString();
+        StringBuilder contentBuilder = new StringBuilder();
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(path));
+            String str;
+            while ((str = in.readLine()) != null) {
+                contentBuilder.append(str);
+            };
+            in.close();
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+        return contentBuilder.toString();
     };
 
 
     // getSpan Info
     public static List<String> getSpanInfo (IndexReader reader, SpanQuery query)
-	throws IOException {
-	Map<Term, TermContext> termContexts = new HashMap<>();
-	List<String> spanArray = new ArrayList<>();
+        throws IOException {
+        Map<Term, TermContext> termContexts = new HashMap<>();
+        List<String> spanArray = new ArrayList<>();
+        
+        for (AtomicReaderContext atomic : reader.leaves()) {
+            Bits bitset = atomic.reader().getLiveDocs();
+            // Spans spans = NearSpansOrdered();
+            Spans spans = query.getSpans(atomic, bitset, termContexts);
 
-	for (AtomicReaderContext atomic : reader.leaves()) {
-	    Bits bitset = atomic.reader().getLiveDocs();
-	    // Spans spans = NearSpansOrdered();
-	    Spans spans = query.getSpans(atomic, bitset, termContexts);
-
-	    while (spans.next()) {
-		StringBuffer payloadString = new StringBuffer();
-		int docid = atomic.docBase + spans.doc();
-		if (spans.isPayloadAvailable()) {
-		    for (byte[] payload : spans.getPayload()) {
-			/* retrieve payload for current matching span */
-
-			payloadString.append(byte2int(payload)).append(",");
-			payloadString.append(byte2int(payload, 2));
-			//			payloadString.append(byte2int(payload, 1));
-			payloadString.append(" (" + payload.length + ")");
-			payloadString.append(" | ");
-		    };
-		};
-		spanArray.add(
-		    "Doc: " +
-		    docid +
-		    " with " +
-		    spans.start() +
-		    "-" +
-		    spans.end() +
-		    " || " +
-		    payloadString.toString()
-		);
-	    };
-	};
-	return spanArray;
+            while (spans.next()) {
+                StringBuffer payloadString = new StringBuffer();
+                int docid = atomic.docBase + spans.doc();
+                if (spans.isPayloadAvailable()) {
+                    for (byte[] payload : spans.getPayload()) {
+                        /* retrieve payload for current matching span */
+                        
+                        payloadString.append(byte2int(payload)).append(",");
+                        payloadString.append(byte2int(payload, 2));
+                        //			payloadString.append(byte2int(payload, 1));
+                        payloadString.append(" (" + payload.length + ")");
+                        payloadString.append(" | ");
+                    };
+                };
+                spanArray.add(
+                    "Doc: " +
+                    docid +
+                    " with " +
+                    spans.start() +
+                    "-" +
+                    spans.end() +
+                    " || " +
+                    payloadString.toString()
+                );
+            };
+        };
+        return spanArray;
     };
 };

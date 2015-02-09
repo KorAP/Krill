@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.model;
 
 import static de.ids_mannheim.korap.util.KorapByte.*;
+import de.ids_mannheim.korap.util.CorpusDataException;
 import org.apache.lucene.util.BytesRef;
 
 import java.util.*;
@@ -72,7 +73,13 @@ public class MultiTermTokenStream extends TokenStream {
      */
     public MultiTermTokenStream (String stream) {
         this();
-        this._fromString(stream);
+        try {
+            this._fromString(stream);
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
+        return;
     };
 
 
@@ -92,7 +99,13 @@ public class MultiTermTokenStream extends TokenStream {
         while ((j = stream.read(buf)) > 0)
             sb.append(buf, 0, j);
 
-        this._fromString(sb.toString());
+        try {
+            this._fromString(sb.toString());
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
+        return;
     };
 
 
@@ -129,8 +142,7 @@ public class MultiTermTokenStream extends TokenStream {
      * @param surface A surface string of a {@link MultiTerm}.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
-    public MultiTermTokenStream addMultiTermToken
-        (char prefix, String surface) {
+    public MultiTermTokenStream addMultiTermToken (char prefix, String surface) {
         return this.addMultiTermToken(new MultiTermToken(prefix, surface));
     };
 
@@ -145,8 +157,16 @@ public class MultiTermTokenStream extends TokenStream {
      */
     public MultiTermTokenStream addMultiTermToken
         (String surface, String ... moreTerms) {
-        return this.addMultiTermToken(new MultiTermToken(surface, moreTerms));
+        try {
+            this.addMultiTermToken(new MultiTermToken(surface, moreTerms));
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
+        return this;
     };
+
+
 
 
     /**
@@ -159,9 +179,14 @@ public class MultiTermTokenStream extends TokenStream {
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, String value) {
-        MultiTerm mt = new MultiTerm('-', key);
-        mt.setPayload(value);
-        this.multiTermTokens.get(0).add(mt);
+        try {
+            MultiTerm mt = new MultiTerm('-', key);
+            mt.setPayload(value);
+            this.multiTermTokens.get(0).add(mt);
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
         return this;
     };
 
@@ -176,9 +201,14 @@ public class MultiTermTokenStream extends TokenStream {
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, byte[] value) {
-        MultiTerm mt = new MultiTerm('-', key);
-        mt.setPayload(value);
-        this.multiTermTokens.get(0).add(mt);
+        try {
+            MultiTerm mt = new MultiTerm('-', key);
+            mt.setPayload(value);
+            this.multiTermTokens.get(0).add(mt);
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
         return this;
     };
 
@@ -193,9 +223,14 @@ public class MultiTermTokenStream extends TokenStream {
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, short value) {
-        MultiTerm mt = new MultiTerm('-', key);
-        mt.setPayload(value);
-        this.multiTermTokens.get(0).add(mt);
+        try {
+            MultiTerm mt = new MultiTerm('-', key);
+            mt.setPayload(value);
+            this.multiTermTokens.get(0).add(mt);
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
         return this;
     };
 
@@ -210,9 +245,14 @@ public class MultiTermTokenStream extends TokenStream {
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, long value) {
-        MultiTerm mt = new MultiTerm('-', key);
-        mt.setPayload(value);
-        this.multiTermTokens.get(0).add(mt);
+        try {
+            MultiTerm mt = new MultiTerm('-', key);
+            mt.setPayload(value);
+            this.multiTermTokens.get(0).add(mt);
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
         return this;
     };
 
@@ -227,9 +267,15 @@ public class MultiTermTokenStream extends TokenStream {
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, int value) {
-        MultiTerm mt = new MultiTerm('-', key);
-        mt.setPayload(value);
-        this.multiTermTokens.get(0).add(mt);
+        try {
+            MultiTerm mt = new MultiTerm('-', key);
+            mt.setPayload(value);
+            this.multiTermTokens.get(0).add(mt);
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
+
         return this;
     };
 
@@ -273,7 +319,7 @@ public class MultiTermTokenStream extends TokenStream {
 
 
     // Deserialize a string
-    private void _fromString (String stream) {
+    private void _fromString (String stream) throws CorpusDataException {
         Matcher matcher = pattern.matcher(stream);
 
         while (matcher.find()) {
@@ -282,7 +328,7 @@ public class MultiTermTokenStream extends TokenStream {
 
             for (i = 1; i < seg.length; i++)
                 mtt.add(seg[i]);
-            
+
             this.addMultiTermToken(mtt);
         };
     };
@@ -293,7 +339,7 @@ public class MultiTermTokenStream extends TokenStream {
      * This overrides the function in Lucene's TokenStream.
      */
     @Override
-    public final boolean incrementToken() throws IOException {
+    public final boolean incrementToken () throws IOException {
         this.payloadAttr.setPayload(null);
 
         // Last token reached
@@ -376,8 +422,8 @@ public class MultiTermTokenStream extends TokenStream {
     };
 
     @Override
-    public void reset() {
+    public void reset () {
         this.mttIndex = 0;
-        this.mtIndex = 0;
+        this.mtIndex  = 0;
     };
 };

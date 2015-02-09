@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.model;
 
 import static de.ids_mannheim.korap.util.KorapArray.*;
+import de.ids_mannheim.korap.util.CorpusDataException;
 import org.apache.lucene.util.BytesRef;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -8,6 +9,9 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/*
+ * Don't use ByteBuffer!
+ */
 /**
  * A MultiTerm represents a single term (e.g. a word, an annotation, a relation)
  * that can be part of a MultiTermToken.
@@ -64,7 +68,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
      *
      * @param term The term surface (see synopsis).
      */
-    public MultiTerm (String term) {
+    public MultiTerm (String term) throws CorpusDataException {
         _fromString(term);
     };
 
@@ -84,7 +88,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
      * @param prefix A special prefix for the term.
      * @param term The term surface (see synopsis).
      */
-    public MultiTerm (char prefix, String term) {
+    public MultiTerm (char prefix, String term) throws CorpusDataException {
         StringBuilder sb = new StringBuilder();
         _fromString(sb.append(prefix).append(':').append(term).toString());
     };
@@ -350,7 +354,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
     /*
      * Deserialize MultiTerm from string representation.
      */
-    private void _fromString (String term) {
+    private void _fromString (String term) throws CorpusDataException {
         String[] termSurface = term.split("\\$", 2);
 
         // Payload is given
@@ -431,9 +435,17 @@ public class MultiTerm implements Comparable<MultiTerm> {
                     
                 }
                 catch (NumberFormatException e) {
-                    if (DEBUG)
-                        log.warn("Offset not a number: {}", term);
+                    throw new CorpusDataException(
+                        952,
+                        "Given offset information is not numeric"
+                    );
                 };
+            }
+            else {
+                throw new CorpusDataException(
+                    953,
+                    "Given offset information is incomplete"
+                );
             };
         };
         this.term = stringOffset[0];

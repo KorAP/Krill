@@ -1,6 +1,12 @@
 package de.ids_mannheim.korap.model;
 
+import de.ids_mannheim.korap.util.CorpusDataException;
+
 import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -22,6 +28,10 @@ public class MultiTermToken {
     public List<MultiTerm> terms;
     private short i = 0;
     private boolean sorted = false;
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+    private final Logger log = LoggerFactory.getLogger(MultiTermTokenStream.class);
 
     /**
      * Construct a new MultiTermToken by passing a stream of
@@ -53,10 +63,15 @@ public class MultiTermToken {
         this.terms = new ArrayList<MultiTerm>(16);
 
         // Create a new MultiTerm
-        MultiTerm term = new MultiTerm(prefix, surface);
+        try {
+            MultiTerm term = new MultiTerm(prefix, surface);
 
-        // First word element
-        terms.add( term );
+            // First word element
+            terms.add( term );
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
     };
     
 
@@ -66,18 +81,23 @@ public class MultiTermToken {
      *
      * @param terms Take at least one {@link MultiTerm} string for a token.
      */
-    public MultiTermToken (String terms, String ... moreTerms) {
+    public MultiTermToken (String terms, String ... moreTerms) throws CorpusDataException {
         this.terms = new ArrayList<MultiTerm>(16);
 
         MultiTerm term = new MultiTerm(terms);
 
-        // First word element
-        this.terms.add( term );
+        try {
+            // First word element
+            this.terms.add( term );
 
-        // Further elements on same position
-        for (i = 0; i < moreTerms.length; i++) {
-            term = new MultiTerm( moreTerms[i] );
-            this.terms.add(term);
+            // Further elements on same position
+            for (i = 0; i < moreTerms.length; i++) {
+                term = new MultiTerm( moreTerms[i] );
+                this.terms.add(term);
+            };
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
         };
     };
 
@@ -101,10 +121,18 @@ public class MultiTermToken {
      * @param term A MultiTerm represented as a surface string.
      * @return The {@link MultiTermToken} object for chaining.
      */
-    public MultiTermToken add (String term) {
+    public MultiTermToken add (String term) throws CorpusDataException {
         if (term.length() == 0)
             return this;
-        return this.add(new MultiTerm(term));
+
+        try {
+            this.add(new MultiTerm(term));
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
+
+        return this;
     };
 
 
@@ -118,7 +146,15 @@ public class MultiTermToken {
     public MultiTermToken add (char prefix, String term) {
         if (term.length() == 0)
             return this;
-        return this.add(new MultiTerm(prefix, term));
+
+        try {
+            this.add(new MultiTerm(prefix, term));
+        }
+        catch (CorpusDataException cde) {
+            log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
+        };
+
+        return this;
     };
 
 

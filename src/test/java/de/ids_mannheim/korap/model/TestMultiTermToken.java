@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.model;
 
 import java.util.*;
 import de.ids_mannheim.korap.model.MultiTermToken;
+import de.ids_mannheim.korap.util.CorpusDataException;
 import java.io.IOException;
 import org.apache.lucene.util.BytesRef;
 
@@ -18,7 +19,7 @@ import org.junit.runners.JUnit4;
 public class TestMultiTermToken {
 
     @Test
-    public void multiTermTokenSimple () {
+    public void multiTermTokenSimple () throws CorpusDataException {
         MultiTermToken mtt = new MultiTermToken("t:test", "a:abbruch");
         assertEquals("[t:test|a:abbruch]", mtt.toString());
         mtt.add("b:banane");
@@ -38,7 +39,7 @@ public class TestMultiTermToken {
     };
 
     @Test
-    public void multiTermTokenOffsets () {
+    public void multiTermTokenOffsets () throws CorpusDataException {
         MultiTermToken mtt = new MultiTermToken("t:test#23-27");
         assertEquals("[t:test#23-27]", mtt.toString());
         mtt.add("b:baum#34-45");

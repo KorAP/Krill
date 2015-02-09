@@ -5,6 +5,7 @@ import de.ids_mannheim.korap.model.MultiTermTokenStream;
 import de.ids_mannheim.korap.model.MultiTermToken;
 import de.ids_mannheim.korap.KorapDocument;
 import de.ids_mannheim.korap.util.KorapDate;
+import de.ids_mannheim.korap.util.CorpusDataException;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -135,16 +136,22 @@ public class FieldDocument extends KorapDocument {
         // Iterate over all tokens in stream
         for (ArrayList<String> token : (ArrayList<ArrayList<String>>) node.get("stream")) {
 
-            // Initialize MultiTermToken
-            MultiTermToken mtt = new MultiTermToken(token.remove(0));
+            try {
+                // Initialize MultiTermToken
+                MultiTermToken mtt = new MultiTermToken(token.remove(0));
 
-            // Add rest of the list
-            for (String term : token) {
-                mtt.add(term);
+                // Add rest of the list
+                for (String term : token) {
+                    mtt.add(term);
+                 };
+
+                // Add MultiTermToken to stream
+                mtts.addMultiTermToken(mtt);
+
+            }
+            catch (CorpusDataException cde) {
+                this.addError(cde.getErrorCode(), cde.getMessage());
             };
-
-            // Add MultiTermToken to stream
-            mtts.addMultiTermToken(mtt);
         };
 
         // Add tokenstream to fielddocument
@@ -178,13 +185,18 @@ public class FieldDocument extends KorapDocument {
 
             for (ArrayList<String> token : (ArrayList<ArrayList<String>>) field.get("data")) {
 
-                MultiTermToken mtt = new MultiTermToken(token.remove(0));
+                try {
+                    MultiTermToken mtt = new MultiTermToken(token.remove(0));
 
-                for (String term : token) {
-                    mtt.add(term);
+                    for (String term : token) {
+                        mtt.add(term);
+                    };
+
+                    mtts.addMultiTermToken(mtt);
+                }
+                catch (CorpusDataException cde) {
+                    this.addError(cde.getErrorCode(), cde.getMessage());
                 };
-
-                mtts.addMultiTermToken(mtt);
             };
 
             // TODO: This is normally dependend to the tokenization!

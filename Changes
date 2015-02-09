@@ -7,6 +7,8 @@
         - [feature] Presorting of element terms in the index for coherent
 	  SpanQuery sorting; Removed buffering of element candidates (diewald)
 	  Warning: This is a breaking change!
+	- [feature] Added CorpusDataException to deal with data importing bugs;
+          made some imports break more easily though (diewald)
 	- [performance] Payloads in ElementSpans can now be lazily loaded,
 	  MatchModifyClassSpans no longer rely on payload copies (diewald)
 	- [cleanup] Renamed /filter to /collection, 

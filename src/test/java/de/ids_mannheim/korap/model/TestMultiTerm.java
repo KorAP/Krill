@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.model;
 
 import java.util.*;
 import de.ids_mannheim.korap.model.MultiTerm;
+import de.ids_mannheim.korap.util.CorpusDataException;
 import java.io.IOException;
 import org.apache.lucene.util.BytesRef;
 
@@ -15,7 +16,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestMultiTerm {
     @Test
-    public void multiTermSimple () {
+    public void multiTermSimple () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("test");
         assertEquals(mt.term, "test");
         assertNull(mt.payload);
@@ -24,7 +25,7 @@ public class TestMultiTerm {
     };
 
     @Test
-    public void multiTermPayload () {
+    public void multiTermPayload () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("test$5");
         assertEquals("test", mt.term);
         assertEquals(new BytesRef("5"), mt.payload);
@@ -33,7 +34,7 @@ public class TestMultiTerm {
     };
 
     @Test
-    public void multiTermOffset () {
+    public void multiTermOffset () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("versuch#2-34");
         assertEquals(mt.term, "versuch");
         assertNull(mt.payload);
@@ -42,7 +43,7 @@ public class TestMultiTerm {
     };
 
     @Test
-    public void multiTermOffsetPayload () {
+    public void multiTermOffsetPayload () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("example#6-42$hihi");
         assertEquals(mt.term, "example");
         assertEquals(new BytesRef("hihi"), mt.payload);
@@ -51,7 +52,7 @@ public class TestMultiTerm {
     };
 
     @Test
-    public void multiTermString () {
+    public void multiTermString () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("example#6-42$hihi");
         assertEquals("example#6-42$hihi", mt.toString());
         mt.term = "spassmacher";
@@ -59,7 +60,7 @@ public class TestMultiTerm {
     };
 
     @Test
-    public void multiTermStringPayloadType () {
+    public void multiTermStringPayloadType () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("example$<i>4000");
         assertEquals("example$<?>[0,0,f,a0]", mt.toString());
 
@@ -68,7 +69,7 @@ public class TestMultiTerm {
     };
     
     @Test
-    public void multiTermStringPayloadType2 () {
+    public void multiTermStringPayloadType2 () throws CorpusDataException {
         MultiTerm mt = new MultiTerm();
         mt.setTerm("beispiel");
         mt.setStart(40);
@@ -80,19 +81,19 @@ public class TestMultiTerm {
     };
 
     @Test
-    public void multiTermStringPayloadType3 () {
+    public void multiTermStringPayloadType3 () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("example$<b>120");
         assertEquals("example$x", mt.toString());
     };
 
     @Test
-    public void multiTermStringPayloadType4 () {
+    public void multiTermStringPayloadType4 () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("example$<i>420<b>120");
         assertEquals("example$<?>[0,0,1,a4,78]", mt.toString());
     };
 
     @Test
-    public void multiTermStringPayloadType5 () {
+    public void multiTermStringPayloadType5 () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("example$<i>4000");
         assertEquals("example$<?>[0,0,f,a0]", mt.toString());
 
@@ -104,7 +105,7 @@ public class TestMultiTerm {
     };
 
     @Test
-    public void multiTermStringFail () {
+    public void multiTermStringFail () throws CorpusDataException {
         MultiTerm mt = new MultiTerm("example#56-66");
         assertEquals(56, mt.getStart());
         assertEquals(66,mt.getEnd());
@@ -113,9 +114,15 @@ public class TestMultiTerm {
         assertEquals(56, mt.getStart());
         assertEquals(66, mt.getEnd());
 
-        mt = new MultiTerm("example#56$<i>a");
-        assertEquals(mt.getPayload(), null);
-        assertEquals(mt.getStart(), 0);
-        assertEquals(mt.getEnd(), 0);
+        try {
+            mt = new MultiTerm("example#56$<i>a");
+            assertEquals(mt.getPayload(), null);
+            assertEquals(mt.getStart(), 0);
+            assertEquals(mt.getEnd(), 0);
+        }
+        catch (CorpusDataException cde) {
+            // Works fine!
+            assertTrue(true);
+        };
     };
 };
