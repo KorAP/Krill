@@ -10,7 +10,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.wrap.*;
+import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanAttributeQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanElementQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanMatchModifyQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSubspanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -247,9 +260,10 @@ public class KorapQuery extends Notifications {
 
                 if (DEBUG) log.trace("Wrap span reference {},{}", startOffset, length);
 
-                return new SpanSubspanQueryWrapper(
-                    this.fromJson(operands.get(0)), startOffset, length
-                );
+                SpanQueryWrapper sqw = this.fromJson(operands.get(0));
+				SpanSubspanQueryWrapper ssqw = new SpanSubspanQueryWrapper(
+						sqw, startOffset, length);
+				return ssqw;
             };
 
             if (DEBUG) log.trace("Wrap class reference {}", number);
@@ -593,8 +607,8 @@ public class KorapQuery extends Notifications {
             SpanQueryWrapper sqw = this.fromJson(operands.get(0));
 
             // Problematic
-            if (sqw.maybeExtension())
-                return sqw.setClassNumber(number);
+			// if (sqw.maybeExtension())
+			// return sqw.setClassNumber(number);
 
             return new SpanClassQueryWrapper(sqw, number);
         };

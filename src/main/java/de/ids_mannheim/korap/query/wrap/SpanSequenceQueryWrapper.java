@@ -1,16 +1,20 @@
 package de.ids_mannheim.korap.query.wrap;
 
-import java.util.*;
-import de.ids_mannheim.korap.query.*;
-import de.ids_mannheim.korap.query.wrap.*;
-
-import de.ids_mannheim.korap.util.QueryException;
+import java.util.ArrayList;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.*;
-
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.ids_mannheim.korap.query.DistanceConstraint;
+import de.ids_mannheim.korap.query.SpanDistanceQuery;
+import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanExpansionQuery;
+import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
+import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.util.QueryException;
 
 /*
   TODO: Make isNegative work!
@@ -180,11 +184,16 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      * @param query A new {@link SpanQueryWrapper} to search for.
      * @return The {@link SpanSequenceQueryWrapper} object for chaining.
      */
-    public SpanSequenceQueryWrapper append (SpanQueryWrapper ssq) {
+	public SpanSequenceQueryWrapper append(SpanQueryWrapper ssq) {
 
         // The wrapper is null - ignore this in the sequence
         if (ssq.isNull())
             return this;
+		if (ssq.isEmpty) {
+			this.isEmpty = true;
+			this.min = ssq.min;
+			this.max = ssq.max;
+		}
 
         // As the spanQueryWrapper is not null,
         // the sequence can't be null as well

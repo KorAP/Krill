@@ -9,122 +9,128 @@ import de.ids_mannheim.korap.query.SpanSubspanQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
+ * Automatically handle the length parameter if it is less than 0, then no
+ * SpanSubspanQuery is created, but a SpanQuery for the subquery ?
+ * 
  * @author margaretha, diewald
  * 
  */
 public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 
-    private SpanQueryWrapper subquery;
-    private int startOffset, length;
+	private SpanQueryWrapper subquery;
+	private int startOffset, length;
 
-    private final static Logger log =
-        LoggerFactory.getLogger(SpanSubspanQueryWrapper.class);
+	private final static Logger log = LoggerFactory
+			.getLogger(SpanSubspanQueryWrapper.class);
 
-    // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+	// This advices the java compiler to ignore all loggings
+	public static final boolean DEBUG = false;
 
-    public SpanSubspanQueryWrapper(SpanQueryWrapper sqw,
-                                   int startOffset,
-                                   int length) {
-        this.subquery = sqw;
-        if (sqw == null) {
-            this.isNull = true;
-            return;
-        }
-        else {
-            this.isNull = false;
-        };
+	public SpanSubspanQueryWrapper(SpanQueryWrapper sqw, int startOffset,
+			int length) throws QueryException {
+		if (length < 0) {
+			throw new QueryException(
+					"SpanSubspanQuery cannot have length less than 0.");
+		}
 
-        this.startOffset = startOffset;
-        this.length = length;
+		this.subquery = sqw;
+		if (subquery != null) {
+			this.isNull = false;
+		} else
+			return;
 
-        // The embedded class is empty,
-        // but probably in a valid range
-        // - optimize
-        // subspan([]{,5}, 2) -> subspan([]{2,5}, 2)
-        // subspan([]{2,}, 2,5) -> subspan([]{2,5}, 2,5)
-        if (subquery.isEmpty()) {
+		this.startOffset = startOffset;
+		this.length = length;
 
-            // Todo: Is there a possible way to deal with that?
-            if (startOffset < 0) {
-                this.isNull = true;
-                return;
-            };
+		if (subquery.isEmpty()) {
+			handleEmptySubquery();
+		} else if (subquery.isNegative) {
+			handleNegativeSubquery();
+		}
+	}
 
-            // e.g, subspan([]{0,6}, 8)
-            if (subquery.getMax() < startOffset) {
-                this.isNull = true;
-                return;
-            };
+	private void handleNegativeSubquery() {
+		this.isNegative = true;
+		if (startOffset < 0) {
+			int max = Math.abs(startOffset) + length;
+			subquery.setMax(max);
+			startOffset = max + startOffset;
+		} else {
+			subquery.setMax(startOffset + length);
+		}
+		subquery.setMin(startOffset);
+		subquery.isOptional = false;
 
-            // Readjust the minimum of the subquery
-            if (startOffset > 0) {
-                subquery.setMin(startOffset);
-                subquery.isOptional = false;
-            };
+		setMax(subquery.max);
+		setMin(subquery.min);
+	}
 
-            // Readjust the maximum,
-            // although the following case may be somehow disputable:
-            // subspan([]{2,8}, 2, 1) -> subspan([]{2,5},2,1)
-            if (length > 0) {
-                int newMax = subquery.getMin() + startOffset + length;
-                if (subquery.getMax() > newMax) {
-                    subquery.setMax(subquery.getMin() + length);
-                };
-            };
-        };
+	private void handleEmptySubquery() {
+		if (subquery instanceof SpanRepetitionQueryWrapper) {
+			this.isEmpty = true;
+		}
+		// subspan([]{,5}, 2) -> subspan([]{2,5}, 2)
+		// e.g. subspan([]{0,6}, 8)
+		if (startOffset >= subquery.getMax()) {
+			this.isNull = true;
+			return;
+		}
+		if (startOffset < 0) {
+			startOffset = subquery.getMax() + startOffset;
+		}
+		subquery.isOptional = false;
+		subquery.setMin(startOffset);
 
-        // Todo: What happens with negative queries?
-        // submatch([base!=tree],3)
-    }
+		// subspan([]{2,}, 2,5) -> subspan([]{2,5}, 2,5)
+		int endOffset = startOffset + length;
+		if (length == 0) {
+			length = subquery.getMax() - startOffset;
+		}
+		else if (subquery.getMax() > endOffset || subquery.getMax() == 0) {
+			subquery.setMax(endOffset);
+		}
+		else if (subquery.getMax() < endOffset) {
+			length = subquery.max - subquery.min;
+		}
 
-    @Override
-    public SpanQuery toQuery() throws QueryException {
+		// System.out.println(subquery.min + "," + subquery.max);
+		setMax(subquery.max);
+		setMin(subquery.min);
+	}
 
-        if (this.isNull() || subquery.isNull()) {
-            if (DEBUG)
-                log.warn("Subquery of SpanSubspanquery is null.");
-            return null;
-        };
+	@Override
+	public SpanQuery toQuery() throws QueryException {
 
-        if (startOffset == 0 && length == 0) {
-            if (DEBUG)
-                log.warn("Not SpanSubspanQuery. Creating only the subquery.");
-            return subquery.toQuery();
-        };
+		if (this.isNull()) {
+			// if (DEBUG) log.warn("Subquery of SpanSubspanquery is null.");
+			return null;
+		}
 
-        // The embedded subquery may be null
-        SpanQuery sq = subquery.toQuery();
-        if (sq == null) return null;
-        
-        if (sq instanceof SpanTermQuery) {
+		SpanQuery sq = subquery.toQuery();
+		if (sq == null)
+			return null;
+		if (sq instanceof SpanTermQuery) {
+			if ((startOffset == 0 || startOffset == -1) && 
+					(length == 1 || length == 0)) {
+				// if (DEBUG) log.warn("Not SpanSubspanQuery. " +
+				// "Creating only a SpanQuery for the subquery.");
+				return sq;
+			}
+			return null;
+		}
 
-            // No relevant subspan
-            if ((startOffset == 0 || startOffset == -1) &&
-                (length <= 1)) {
-                if (DEBUG)
-                    log.warn("Not SpanSubspanQuery. " +
-                             "Creating only the subquery.");
-                return sq;
-            };
+		return new SpanSubspanQuery(sq, startOffset, length, true);
+	}
 
-            // Subspanquery can't match (always out of scope)
-            return null;
-        }
+	@Override
+	public boolean isNegative() {
+		return this.subquery.isNegative();
+	};
 
-        return new SpanSubspanQuery(sq, startOffset, length,
-                true);
-    }
-
-    @Override
-    public boolean isNegative () {
-        return this.subquery.isNegative();
-    };
-
-    @Override
-    public boolean isOptional () {
-        if (startOffset > 0)
-            return false;
-        return this.subquery.isOptional();
-    };
+	@Override
+	public boolean isOptional() {
+		if (startOffset > 0)
+			return false;
+		return this.subquery.isOptional();
+	};
 }

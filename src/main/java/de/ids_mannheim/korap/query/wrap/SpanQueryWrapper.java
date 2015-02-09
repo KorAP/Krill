@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query.wrap;
 
 import org.apache.lucene.search.spans.SpanQuery;
+
 import de.ids_mannheim.korap.util.QueryException;
 
 // TODO: Add warnings and errors - using KorapQuery
@@ -187,7 +188,7 @@ public class SpanQueryWrapper {
     public boolean maybeAnchor () {
         if (this.isNegative()) return false;
         if (this.isOptional()) return false;
-        if (this.isEmpty())    return false;
+		if (this.isEmpty()) { return false;}		
         return true;
     };
 

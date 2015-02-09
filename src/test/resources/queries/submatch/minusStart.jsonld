@@ -20,7 +20,7 @@
       ],
       "operation" : "operation:focus",
       "spanRef" : [
-         1,
+         -1,
          4
       ]
    },

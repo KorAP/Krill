@@ -1,18 +1,17 @@
 package de.ids_mannheim.korap.query;
 
-import java.util.*;
-import java.io.*;
+import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import static de.ids_mannheim.korap.TestSimple.*;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 /**
  * @author diewald
@@ -192,7 +191,8 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONseqNegativeEndClass () throws QueryException {
 	SpanQueryWrapper sqwi = jsonQueryFile("negative-last-class.jsonld");
 	// [tt/p=NN]{2:[tt/p!=NN]}
-	assertEquals(sqwi.toQuery().toString(), "spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{1, 1}, right, class:2)");
+	SpanQuery sq = sqwi.toQuery();
+	assertEquals(sq.toString(), "spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{1, 1}, right, class:2)");
     };
 
     @Test

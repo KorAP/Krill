@@ -3,10 +3,7 @@ package de.ids_mannheim.korap.query.wrap;
 import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.query.SpanClassQuery;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
-
-import java.util.*;
 
 
 // TODO: If this.subquery.isNegative(), it may be an Expansion!
@@ -20,6 +17,8 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
         this.number   = number;
         if (number != (byte) 0)
             this.hasClass = true;
+		this.min = subquery.min;
+        this.max=subquery.max;
     };
 
     public SpanClassQueryWrapper (SpanQueryWrapper subquery, short number) {
