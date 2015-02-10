@@ -78,6 +78,8 @@ public class TestSpanSubspanQueryJSON {
 
 	@Test
 	public void testEmptyMinusStartOffset() throws QueryException {
+		// no optimization
+		// submatch(-1,4:der []{1,8})
 		String filepath = getClass().getResource(
 				"/queries/submatch/empty-minusStart.jsonld").getFile();
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);
@@ -89,6 +91,8 @@ public class TestSpanSubspanQueryJSON {
 
 	@Test
 	public void testEmptyMax() throws QueryException {
+		// no optimization
+		// submatch(1,2:der []{1,8})
 		String filepath = getClass().getResource(
 				"/queries/submatch/empty-max.jsonld").getFile();
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);

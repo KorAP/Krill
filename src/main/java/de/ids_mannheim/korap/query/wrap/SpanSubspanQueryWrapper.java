@@ -44,7 +44,7 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 
 		if (subquery.isEmpty()) {
 			handleEmptySubquery();
-		} else if (subquery.isNegative) {
+		} else if (subquery.isNegative()) {
 			handleNegativeSubquery();
 		}
 	}
@@ -64,11 +64,8 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 		subquery.setMin(startOffset);
 		subquery.isOptional = false;
 
-		// setMax(subquery.max);
-		// setMin(subquery.min);
 		max = subquery.max - subquery.min;
 		min = max;
-
 	}
 
 	private void handleEmptySubquery() {
@@ -99,7 +96,6 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 			length = subquery.max - subquery.min;
 		}
 
-		// System.out.println(subquery.min + "," + subquery.max);
 		setMax(subquery.max);
 		setMin(subquery.min);
 	}
@@ -117,13 +113,9 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 			return null;
 		if (sq instanceof SpanTermQuery) {
 			if (subquery.isNegative()) {
-				// set expansion min max
-				// max = length;
-				// min = length;
 				return sq;
 			}
-			else if ((startOffset == 0 || startOffset == -1)
-					&&
+			else if ((startOffset == 0 || startOffset == -1) &&
 					(length == 1 || length == 0)) {
 				// if (DEBUG) log.warn("Not SpanSubspanQuery. " +
 				// "Creating only a SpanQuery for the subquery.");
