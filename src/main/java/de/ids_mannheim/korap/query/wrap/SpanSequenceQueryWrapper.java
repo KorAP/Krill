@@ -189,11 +189,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         // The wrapper is null - ignore this in the sequence
         if (ssq.isNull())
             return this;
-		if (ssq.isEmpty) {
-			this.isEmpty = true;
-			this.min = ssq.min;
-			this.max = ssq.max;
-		}
+		// if (ssq.isEmpty) {
+		// this.isEmpty = true;
+		// this.min = ssq.min;
+		// this.max = ssq.max;
+		// }
 
         // As the spanQueryWrapper is not null,
         // the sequence can't be null as well

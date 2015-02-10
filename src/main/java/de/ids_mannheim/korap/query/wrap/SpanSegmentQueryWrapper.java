@@ -169,6 +169,7 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 	    this.with(seg);
 	    this.isNull = false;
 	};
+	isNegative = true;
 	return this;
     };
 

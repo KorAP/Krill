@@ -78,27 +78,21 @@ public class TestSpanSubspanQueryJSON {
 
 	@Test
 	public void testEmptyMinusStartOffset() throws QueryException {
-		// subspan(spanExpansion(tokens:s:der, []{1, 8}, right),-1,4)
-		// need a spanExpansionQueryWrapper to adjust min, max
 		String filepath = getClass().getResource(
 				"/queries/submatch/empty-minusStart.jsonld").getFile();
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);
 		SpanQuery sq = sqwi.toQuery();
-		// subspan(spanExpansion(tokens:s:der, []{7, 8}, right),7,1)
 		assertEquals(
-				"subspan(spanExpansion(tokens:s:der, []{1, 8}, right), 7, 1)",
+				"subspan(spanExpansion(tokens:s:der, []{1, 8}, right), -1, 4)",
 				sq.toString());
 	}
 
 	@Test
 	public void testEmptyMax() throws QueryException {
-		// need a spanExpansionQueryWrapper to adjust min, max
 		String filepath = getClass().getResource(
 				"/queries/submatch/empty-max.jsonld").getFile();
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);
 		SpanQuery sq = sqwi.toQuery();
-		assertEquals(3, sqwi.getMax());
-		// subspan(spanExpansion(tokens:s:der, []{1, 3}, right),1,2)
 		assertEquals(
 				"subspan(spanExpansion(tokens:s:der, []{1, 8}, right), 1, 2)",
 				sq.toString());
@@ -179,7 +173,7 @@ public class TestSpanSubspanQueryJSON {
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);
 		SpanQuery sq = sqwi.toQuery();
 		assertEquals(
-				"spanExpansion(tokens:s:das, !{1: tokens:l:Baum}{1, 1}, right, class:1)",
+				"spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right, class:1)",
 				sq.toString());
 	}
 
@@ -217,7 +211,6 @@ public class TestSpanSubspanQueryJSON {
 				.getFile();
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);
 		SpanQuery sq = sqwi.toQuery();
-		// 1,1 expansion is enough
 		assertEquals(
 				"subspan(spanExpansion(tokens:s:das, !tokens:l:Baum{1, 3}, right), 1, 1)",
 				sq.toString());
@@ -225,9 +218,7 @@ public class TestSpanSubspanQueryJSON {
 
 	@Test
 	public void testNegativeRepetition() throws QueryException {
-		// das submatch(1,2:[base != Baum]{1,3})
-		// need a spanExpansionQueryWrapper to handle a null notquery and
-		// a repetition of a negative query
+		// das submatch(1,4:[base != Baum]{1,3})
 		String filepath = getClass().getResource(
 				"/queries/submatch/negative-repetition.jsonld")
 				.getFile();

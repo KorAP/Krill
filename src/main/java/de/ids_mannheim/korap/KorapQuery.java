@@ -607,8 +607,8 @@ public class KorapQuery extends Notifications {
             SpanQueryWrapper sqw = this.fromJson(operands.get(0));
 
             // Problematic
-			// if (sqw.maybeExtension())
-			// return sqw.setClassNumber(number);
+			if (sqw.maybeExtension())
+			return sqw.setClassNumber(number);
 
             return new SpanClassQueryWrapper(sqw, number);
         };
