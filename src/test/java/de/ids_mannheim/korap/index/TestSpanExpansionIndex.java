@@ -76,7 +76,8 @@ public class TestSpanExpansionIndex {
     }
 
     /**
-     * Classnumber Cannot check the expansion offset correctness directly
+     * Classnumber 
+     * Check the expansion offsets
      * */
     @Test
     public void testCase2() {
@@ -167,7 +168,8 @@ public class TestSpanExpansionIndex {
     }
 
     /**
-     * Left expansion with exclusion No expansion
+     * Left expansion with exclusion 
+     * No expansion
      * */
     @Test
     public void testCase4() throws IOException {
@@ -207,8 +209,8 @@ public class TestSpanExpansionIndex {
     }
 
     /**
-     * Expansion over start and end documents start => cut to 0 TODO: end => to
-     * be handled in rendering process
+     * Expansion over start and end documents start => cut to 0 
+     * TODO: end => to be handled in rendering process
      * 
      * @throws IOException
      * */
@@ -380,7 +382,6 @@ public class TestSpanExpansionIndex {
             while ((str = in.readLine()) != null) {
                 sb.append(str);
             }
-            ;
             in.close();
         } catch (IOException e) {
             fail(e.getMessage());

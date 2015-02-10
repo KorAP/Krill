@@ -1,0 +1,49 @@
+{
+    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+    "errors": [],
+    "warnings": [],
+    "messages": [[
+        303,
+        "Deprecated 2014-10-07: 'class' only to be supported until 3 months from deprecation date. Classes are now defined using the 'classOut' attribute."
+    ]],
+    "collection": {},
+    "query": {
+        "@type": "korap:reference",
+        "operation": "operation:focus",
+        "operands": [{
+            "@type": "korap:group",
+            "operation": "operation:class",
+            "class": 1,
+            "classOut": 1,
+            "operands": [{
+                "@type": "korap:group",
+                "operation": "operation:sequence",
+                "operands": [
+                    {
+                        "@type": "korap:token",
+                        "wrap": {
+                            "@type": "korap:term",
+                            "layer": "lemma",
+                            "key": "Baum",
+                            "match": "match:ne"
+                        }
+                    },
+                    {
+                        "@type": "korap:token",
+                        "wrap": {
+                            "@type": "korap:term",
+                            "layer": "orth",
+                            "key": "dass",
+                            "match": "match:eq"
+                        }
+                    }
+                ]
+            }]
+        }],
+        "spanRef": [
+            0,
+            1
+        ]
+    },
+    "meta": {"highlight": [1]}
+}

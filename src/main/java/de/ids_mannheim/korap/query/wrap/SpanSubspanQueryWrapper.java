@@ -110,7 +110,9 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 		if (sq == null)
 			return null;
 		if (sq instanceof SpanTermQuery) {
-			if ((startOffset == 0 || startOffset == -1) && 
+			if (subquery.isNegative()) return sq;
+			else if ((startOffset == 0 || startOffset == -1)
+					&&
 					(length == 1 || length == 0)) {
 				// if (DEBUG) log.warn("Not SpanSubspanQuery. " +
 				// "Creating only a SpanQuery for the subquery.");

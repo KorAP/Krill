@@ -18,7 +18,7 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
         if (number != (byte) 0)
             this.hasClass = true;
 		this.min = subquery.min;
-        this.max=subquery.max;
+		this.max = subquery.max;
     };
 
     public SpanClassQueryWrapper (SpanQueryWrapper subquery, short number) {
@@ -50,7 +50,7 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
     };
 
     public SpanQuery toQuery () throws QueryException {
-        if (this.subquery.isNull())
+		if (this.subquery.isNull())
             return (SpanQuery) null;
 
         SpanQuery sq = (SpanQuery) this.subquery.toQuery();

@@ -150,15 +150,13 @@ public class TestSpanSubspanQueryJSON {
 	}
 
 	@Test
-	public void testNegativeEmbeddedSequence() throws QueryException {
-		// submatch(1,1:das [base != Baum])
+	public void testNegativeToken() throws QueryException {
+		// submatch(0,1:[base != Baum])
 		String filepath = getClass().getResource(
-				"/queries/submatch/embedded-negative-seq.jsonld").getFile();
+				"/queries/submatch/negative-token.jsonld").getFile();
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);
 		SpanQuery sq = sqwi.toQuery();
-		assertEquals(
-				"subspan(spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right), 1, 1)",
-				sq.toString());
+		assertEquals("tokens:l:Baum", sq.toString());
 	}
 
 	@Test
@@ -174,25 +172,52 @@ public class TestSpanSubspanQueryJSON {
 	}
 
 	@Test
-	public void testNegativeToken() throws QueryException {
-		// submatch(0,1:[base != Baum])
+	public void testNegativeSequenceWithClass() throws QueryException {
+		// das {1:submatch(0,1:[base != Baum])}
 		String filepath = getClass().getResource(
-				"/queries/submatch/negative-token.jsonld").getFile();
+				"/queries/submatch/negative-sequence-class.jsonld").getFile();
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);
 		SpanQuery sq = sqwi.toQuery();
-		assertEquals("tokens:l:Baum", sq.toString());
+		assertEquals(
+				"spanExpansion(tokens:s:das, !{1: tokens:l:Baum}{1, 1}, right, class:1)",
+				sq.toString());
 	}
+
+	@Test
+	public void testNegativeEmbeddedSequence() throws QueryException {
+		// submatch(1,1:das [base != Baum])
+		String filepath = getClass().getResource(
+				"/queries/submatch/embedded-negative-seq.jsonld").getFile();
+		SpanQueryWrapper sqwi = getJSONQuery(filepath);
+		SpanQuery sq = sqwi.toQuery();
+		assertEquals(
+				"subspan(spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right), 1, 1)",
+				sq.toString());
+	}
+
+	@Test
+	public void testNegativeEmbeddedSequenceWithClass() throws QueryException {
+		// submatch(0,1:{1:[base != Baum] dass})
+		String filepath = getClass().getResource(
+				"/queries/submatch/embedded-negative-class-seq.jsonld")
+				.getFile();
+		SpanQueryWrapper sqwi = getJSONQuery(filepath);
+		SpanQuery sq = sqwi.toQuery();
+		assertEquals(
+				"subspan({1: spanExpansion(tokens:s:dass, !tokens:l:Baum{1, 1}, left)}, 0, 1)",
+				sq.toString());
+	}
+
 
 	@Test
 	public void testEmbeddedNegativeRepetition() throws QueryException {
 		// submatch(1,1:das [base != Baum]{1,3})
-		// need a spanExpansionQueryWrapper to handle a null notquery and
-		// a repetition of a negative query
 		String filepath = getClass().getResource(
 				"/queries/submatch/embedded-negative-repetition.jsonld")
 				.getFile();
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);
 		SpanQuery sq = sqwi.toQuery();
+		// 1,1 expansion is enough
 		assertEquals(
 				"subspan(spanExpansion(tokens:s:das, !tokens:l:Baum{1, 3}, right), 1, 1)",
 				sq.toString());
@@ -200,7 +225,7 @@ public class TestSpanSubspanQueryJSON {
 
 	@Test
 	public void testNegativeRepetition() throws QueryException {
-		// das submatch(1,1:[base != Baum]{1,3})
+		// das submatch(1,2:[base != Baum]{1,3})
 		// need a spanExpansionQueryWrapper to handle a null notquery and
 		// a repetition of a negative query
 		String filepath = getClass().getResource(
@@ -209,10 +234,7 @@ public class TestSpanSubspanQueryJSON {
 		SpanQueryWrapper sqwi = getJSONQuery(filepath);
 		SpanQuery sq = sqwi.toQuery();
 		assertEquals(
-				"spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right)",
+				"spanExpansion(tokens:s:das, !tokens:l:Baum{2, 2}, right)",
 				sq.toString());
 	}
-
-
-
 }

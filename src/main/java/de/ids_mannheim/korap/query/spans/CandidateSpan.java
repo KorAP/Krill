@@ -7,10 +7,9 @@ import java.util.Collection;
 import org.apache.lucene.search.spans.Spans;
 
 /**
- * A CandidateSpan works as an object storing the current state of the
- * corresponding Lucene {@link Spans}, which is an enumeration. CandidateSpan is
- * used for various purposes, such as for collecting spans which will be used in
- * a latter process or next matching.
+ * CandidateSpan stores the current state of a Lucene {@link Spans}, which is an
+ * enumeration. CandidateSpan is used for various purposes, such as for
+ * collecting spans which will be used in a latter process or next matching.
  * 
  * @author margaretha
  * */
