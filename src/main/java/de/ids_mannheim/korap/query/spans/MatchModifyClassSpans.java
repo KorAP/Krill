@@ -187,8 +187,13 @@ public class MatchModifyClassSpans extends Spans {
     // Todo: Check for this on document boundaries!
     @Override
     public boolean skipTo (int target) throws IOException {
-        if (DEBUG) log.trace("Skip MatchSpans");
-        return spans.skipTo(target);
+        if (DEBUG) log.trace("Skip MatchSpans {} -> {}",
+                             this.doc(), target);
+
+        if (this.doc() < target && spans.skipTo(target)) {
+            
+        };
+        return false;
     };
 
 

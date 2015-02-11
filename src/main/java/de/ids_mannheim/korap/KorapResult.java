@@ -288,6 +288,33 @@ public class KorapResult extends KorapResponse {
         return json;
     };
 
+    /**
+     * Stringifies the matches to give a brief overview on
+     * the result. Mainly used for testing.
+     *
+     * @return The stringified matches 
+     */
+    public String getOverview () {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Search for: ")
+            .append(this.query)
+            .append("\n");
+
+        int i = 1;
+
+        // Add matches as bracket strings
+        for (KorapMatch km : this.getMatches())
+            sb.append(i++)
+                .append(": ")
+                .append(km.getSnippetBrackets())
+                .append(" (Doc ")
+                .append(km.getLocalDocID())
+                .append(")\n");
+
+        return sb.toString();
+    };
+
 
     // For Collocation Analysis API
     @Deprecated

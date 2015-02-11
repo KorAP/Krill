@@ -378,17 +378,18 @@ public class TestWithinIndex {
         // <a><a><a>h</a>hij</a>hij</a>
         FieldDocument fd = new FieldDocument();
         fd.addTV("base",
-                 "h   i   j   h   i   j   h   i   j   ",
-                 "[(0-3)s:h|<>:a#0-27$<i>7|<>:a#0-18$<i>4|<>:a#0-36$<i>10]" + // 1
-                 "[(3-6)s:h]" +    // 2
-                 "[(12-15)s:i]" +  // 3
-                 "[(15-18)s:j]" +  // 4
-                 "[(18-21)s:h]" +  // 5
-                 "[(21-24)s:i]" +  // 6
-                 "[(24-27)s:j]" +  // 7
-                 "[(27-30)s:h]" +  // 8
-                 "[(30-33)s:i]" +  // 9
-                 "[(33-36)s:j]");  // 10
+                 // <a><a>hhij</a>hijh</a>ij</a>
+                 "h  h  i  j  h  i  j  h  i  j        ",
+                 "[s:h|_0#0-3|<>:a#0-24$<i>7|<>:a#0-12$<i>3|<>:a#0-30$<i>9]" + // 1
+                 "[s:h|_1#3-6]" +    // 2
+                 "[s:i|_2#6-9]" +    // 3
+                 "[s:j|_3#9-12]" +   // 4
+                 "[s:h|_4#12-15]" +  // 5
+                 "[s:i|_5#15-18]" +  // 6
+                 "[s:j|_6#18-21]" +  // 7
+                 "[s:h|_7#21-24]" +  // 8
+                 "[s:i|_8#24-27]" +  // 9
+                 "[s:j|_9#27-30]");  // 10
         ki.addDoc(fd);
 
         // Save documents
@@ -404,11 +405,11 @@ public class TestWithinIndex {
 
         assertEquals("totalResults", kr.getTotalResults(), 3);
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
-        assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
+        assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
         assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
         assertEquals("EndPos (1)", 7, kr.getMatch(1).endPos);
         assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
-        assertEquals("EndPos (2)", 10, kr.getMatch(2).endPos);
+        assertEquals("EndPos (2)", 9, kr.getMatch(2).endPos);
 	    
         sq = new SpanWithinQuery(
             new SpanElementQuery("base", "a"),
@@ -417,11 +418,13 @@ public class TestWithinIndex {
 
         kr = ki.search(sq, (short) 10);
 
-        assertEquals("totalResults", kr.getTotalResults(), 9);
+        assertEquals("totalResults", kr.getTotalResults(), 10);
+
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
-        assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
+        assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
         assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
-        assertEquals("EndPos (1)", 4, kr.getMatch(1).endPos);
+        assertEquals("EndPos (1)", 3, kr.getMatch(1).endPos);
+
         assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
         assertEquals("EndPos (2)", 7, kr.getMatch(2).endPos);
         assertEquals("StartPos (3)", 0, kr.getMatch(3).startPos);
@@ -429,13 +432,16 @@ public class TestWithinIndex {
         assertEquals("StartPos (4)", 0, kr.getMatch(4).startPos);
         assertEquals("EndPos (4)", 7, kr.getMatch(4).endPos);
         assertEquals("StartPos (5)", 0, kr.getMatch(5).startPos);
-        assertEquals("EndPos (5)", 10, kr.getMatch(5).endPos);
+        assertEquals("EndPos (5)", 7, kr.getMatch(5).endPos);
+
         assertEquals("StartPos (6)", 0, kr.getMatch(6).startPos);
-        assertEquals("EndPos (6)", 10, kr.getMatch(6).endPos);
+        assertEquals("EndPos (6)", 9, kr.getMatch(6).endPos);
         assertEquals("StartPos (7)", 0, kr.getMatch(7).startPos);
-        assertEquals("EndPos (7)", 10, kr.getMatch(7).endPos);
+        assertEquals("EndPos (7)", 9, kr.getMatch(7).endPos);
         assertEquals("StartPos (8)", 0, kr.getMatch(8).startPos);
-        assertEquals("EndPos (8)", 10, kr.getMatch(8).endPos);
+        assertEquals("EndPos (8)", 9, kr.getMatch(8).endPos);
+        assertEquals("StartPos (9)", 0, kr.getMatch(9).startPos);
+        assertEquals("EndPos (9)", 9, kr.getMatch(9).endPos);
     };
 
     @Test
@@ -446,18 +452,18 @@ public class TestWithinIndex {
         // <a><a><a>h</a>hij</a>hij</a>h
         FieldDocument fd = new FieldDocument();
         fd.addTV("base",
-                 "h   i   j   h   i   j   h   i   j   h   ",
-                 "[(0-3)s:h|<>:a#0-27$<i>7|<>:a#0-18$<i>4|<>:a#0-36$<i>10]" + // 1
+                 "h  h  i  j  h  i  j  h  i  j  h  ",
+                 "[(0-3)s:h|<>:a#0-21$<i>6|<>:a#0-12$<i>3|<>:a#0-30$<i>9]" + // 1
                  "[(3-6)s:h]" +    // 2
-                 "[(12-15)s:i]" +  // 3
-                 "[(15-18)s:j]" +  // 4
-                 "[(18-21)s:h]" +  // 5
-                 "[(21-24)s:i]" +  // 6
-                 "[(24-27)s:j]" +  // 7
-                 "[(27-30)s:h]" +  // 8
-                 "[(30-33)s:i]" +  // 9
-                 "[(33-36)s:j]" +  // 10
-                 "[(37-40)s:h]");
+                 "[(6-9)s:i]" +    // 3
+                 "[(9-12)s:j]" +   // 4
+                 "[(12-15)s:h]" +  // 5
+                 "[(15-18)s:i]" +  // 6
+                 "[(18-21)s:j]" +  // 7
+                 "[(21-24)s:h]" +  // 8
+                 "[(24-27)s:i]" +  // 9
+                 "[(27-30)s:j]" +  // 10
+                 "[(30-33)s:h]");
         ki.addDoc(fd);
 
         // Save documents
@@ -470,11 +476,11 @@ public class TestWithinIndex {
 
         assertEquals("totalResults", kr.getTotalResults(), 3);
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
-        assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
+        assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
         assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
-        assertEquals("EndPos (1)", 7, kr.getMatch(1).endPos);
+        assertEquals("EndPos (1)", 6, kr.getMatch(1).endPos);
         assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
-        assertEquals("EndPos (2)", 10, kr.getMatch(2).endPos);
+        assertEquals("EndPos (2)", 9, kr.getMatch(2).endPos);
         
         sq = new SpanWithinQuery(
             new SpanElementQuery("base", "a"),
@@ -485,23 +491,23 @@ public class TestWithinIndex {
 
         assertEquals("totalResults", kr.getTotalResults(), 9);
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
-        assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
+        assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
         assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
-        assertEquals("EndPos (1)", 4, kr.getMatch(1).endPos);
+        assertEquals("EndPos (1)", 3, kr.getMatch(1).endPos);
         assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
-        assertEquals("EndPos (2)", 7, kr.getMatch(2).endPos);
+        assertEquals("EndPos (2)", 6, kr.getMatch(2).endPos);
         assertEquals("StartPos (3)", 0, kr.getMatch(3).startPos);
-        assertEquals("EndPos (3)", 7, kr.getMatch(3).endPos);
+        assertEquals("EndPos (3)", 6, kr.getMatch(3).endPos);
         assertEquals("StartPos (4)", 0, kr.getMatch(4).startPos);
-        assertEquals("EndPos (4)", 7, kr.getMatch(4).endPos);
+        assertEquals("EndPos (4)", 6, kr.getMatch(4).endPos);
         assertEquals("StartPos (5)", 0, kr.getMatch(5).startPos);
-        assertEquals("EndPos (5)", 10, kr.getMatch(5).endPos);
+        assertEquals("EndPos (5)", 9, kr.getMatch(5).endPos);
         assertEquals("StartPos (6)", 0, kr.getMatch(6).startPos);
-        assertEquals("EndPos (6)", 10, kr.getMatch(6).endPos);
+        assertEquals("EndPos (6)", 9, kr.getMatch(6).endPos);
         assertEquals("StartPos (7)", 0, kr.getMatch(7).startPos);
-        assertEquals("EndPos (7)", 10, kr.getMatch(7).endPos);
+        assertEquals("EndPos (7)", 9, kr.getMatch(7).endPos);
         assertEquals("StartPos (8)", 0, kr.getMatch(8).startPos);
-        assertEquals("EndPos (8)", 10, kr.getMatch(8).endPos);
+        assertEquals("EndPos (8)", 9, kr.getMatch(8).endPos);
     };
 
 
@@ -513,19 +519,19 @@ public class TestWithinIndex {
         // <a><a><a>h</a>hij</a>hij</a>h<a>i</i>
         FieldDocument fd = new FieldDocument();
         fd.addTV("base",
-                 "h   i   j   h   i   j   h   i   j   h   i   ",
-                 "[(0-3)s:h|<>:a#0-27$<i>7|<>:a#0-18$<i>4|<>:a#0-36$<i>10]" + // 1
+                 "h  h  i  j  h  i  j  h  i  j  h  i  ",
+                 "[(0-3)s:h|<>:a#0-21$<i>7|<>:a#0-15$<i>4|<>:a#0-30$<i>10]" + // 1
                  "[(3-6)s:h]" +    // 2
-                 "[(12-15)s:i]" +  // 3
-                 "[(15-18)s:j]" +  // 4
-                 "[(18-21)s:h]" +  // 5
-                 "[(21-24)s:i]" +  // 6
-                 "[(24-27)s:j]" +  // 7
-                 "[(27-30)s:h]" +  // 8
-                 "[(30-33)s:i]" +  // 9
-                 "[(33-36)s:j]" +  // 10
-                 "[(37-40)s:h]" +  // 11
-                 "[(40-43)s:i|<>:a#40-43$<i>12]"); // 12
+                 "[(6-9)s:i]" +  // 3
+                 "[(9-12)s:j]" +  // 4
+                 "[(12-15)s:h]" +  // 5
+                 "[(15-18)s:i]" +  // 6
+                 "[(18-21)s:j]" +  // 7
+                 "[(21-24)s:h]" +  // 8
+                 "[(24-27)s:i]" +  // 9
+                 "[(27-30)s:j]" +  // 10
+                 "[(30-33)s:h]" +  // 11
+                 "[(33-36)s:i|<>:a#33-36$<i>12]"); // 12
         ki.addDoc(fd);
         
         // Save documents
@@ -554,25 +560,29 @@ public class TestWithinIndex {
 
         kr = ki.search(sq, (short) 10);
 
-        assertEquals("totalResults", kr.getTotalResults(), 9);
+        assertEquals("totalResults", kr.getTotalResults(), 11);
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
         assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
         assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
         assertEquals("EndPos (1)", 4, kr.getMatch(1).endPos);
         assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
-        assertEquals("EndPos (2)", 7, kr.getMatch(2).endPos);
+        assertEquals("EndPos (2)", 4, kr.getMatch(2).endPos);
+      
         assertEquals("StartPos (3)", 0, kr.getMatch(3).startPos);
         assertEquals("EndPos (3)", 7, kr.getMatch(3).endPos);
         assertEquals("StartPos (4)", 0, kr.getMatch(4).startPos);
         assertEquals("EndPos (4)", 7, kr.getMatch(4).endPos);
         assertEquals("StartPos (5)", 0, kr.getMatch(5).startPos);
-        assertEquals("EndPos (5)", 10, kr.getMatch(5).endPos);
+        assertEquals("EndPos (5)", 7, kr.getMatch(5).endPos);
+
         assertEquals("StartPos (6)", 0, kr.getMatch(6).startPos);
         assertEquals("EndPos (6)", 10, kr.getMatch(6).endPos);
         assertEquals("StartPos (7)", 0, kr.getMatch(7).startPos);
         assertEquals("EndPos (7)", 10, kr.getMatch(7).endPos);
         assertEquals("StartPos (8)", 0, kr.getMatch(8).startPos);
         assertEquals("EndPos (8)", 10, kr.getMatch(8).endPos);
+        assertEquals("StartPos (9)", 0, kr.getMatch(9).startPos);
+        assertEquals("EndPos (9)", 10, kr.getMatch(9).endPos);
     };
 
 
@@ -584,19 +594,19 @@ public class TestWithinIndex {
         // <a><a><a>h</a>hij</a>hij</a>h<a>h</h>
         FieldDocument fd = new FieldDocument();
         fd.addTV("base",
-                 "h   i   j   h   i   j   h   i   j   h   i   ",
-                 "[(0-3)s:h|<>:a#0-27$<i>7|<>:a#0-18$<i>4|<>:a#0-36$<i>10]" + // 1
-                 "[(3-6)s:h]" +    // 2
-                 "[(12-15)s:i]" +  // 3
-                 "[(15-18)s:j]" +  // 4
-                 "[(18-21)s:h]" +  // 5
-                 "[(21-24)s:i]" +  // 6
-                 "[(24-27)s:j]" +  // 7
-                 "[(27-30)s:h]" +  // 8
-                 "[(30-33)s:i]" +  // 9
-                 "[(33-36)s:j]" +  // 10
-                 "[(37-40)s:h]" +  // 11
-                 "[(40-43)s:h|<>:a#40-43$<i>12]"); // 12
+                 "h  h  i  j  h  i  j  h  i  j  h  h  ",
+                 "[(0-3)s:h|_0#0-3|<>:a#0-18$<i>6|<>:a#0-15$<i>4|<>:a#0-27$<i>8]" + // 1
+                 "[(3-6)s:h|_1#3-6]" +    // 2
+                 "[(6-9)s:i|_2#6-9]" +  // 3
+                 "[(9-12)s:j|_3#9-12]" +  // 4
+                 "[(12-15)s:h|_4#12-15]" +  // 5
+                 "[(15-18)s:i|_5#15-18]" +  // 6
+                 "[(18-21)s:j|_6#18-21]" +  // 7
+                 "[(21-24)s:h|_7#21-24]" +  // 8
+                 "[(24-27)s:i|_8#24-27]" +  // 9
+                 "[(27-30)s:j|_9#27-30]" +  // 10
+                 "[(30-33)s:h|_10#30-33|<>:a#30-36$<i>12]" + // 11
+                 "[(33-36)s:h|_11#33-36|<>:a#33-36$<i>12]"); // 12
         ki.addDoc(fd);
 
         // Save documents
@@ -608,15 +618,18 @@ public class TestWithinIndex {
 
         KorapResult kr = ki.search(sq, (short) 10);
     
-        assertEquals("totalResults", kr.getTotalResults(), 4);
+        assertEquals("totalResults", kr.getTotalResults(), 5);
+
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
         assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
         assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
-        assertEquals("EndPos (1)", 7, kr.getMatch(1).endPos);
+        assertEquals("EndPos (1)", 6, kr.getMatch(1).endPos);
         assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
-        assertEquals("EndPos (2)", 10, kr.getMatch(2).endPos);
-        assertEquals("StartPos (3)", 11, kr.getMatch(3).startPos);
+        assertEquals("EndPos (2)", 8, kr.getMatch(2).endPos);
+        assertEquals("StartPos (3)", 10, kr.getMatch(3).startPos);
         assertEquals("EndPos (3)", 12, kr.getMatch(3).endPos);
+        assertEquals("StartPos (4)", 11, kr.getMatch(4).startPos);
+        assertEquals("EndPos (4)", 12, kr.getMatch(4).endPos);
 
         sq = new SpanWithinQuery(
             new SpanElementQuery("base", "a"),
@@ -625,27 +638,37 @@ public class TestWithinIndex {
 
         kr = ki.search(sq, (short) 15);
 
-        assertEquals("totalResults", kr.getTotalResults(), 10);
+        assertEquals("totalResults", kr.getTotalResults(), 13);
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
         assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
         assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
         assertEquals("EndPos (1)", 4, kr.getMatch(1).endPos);
         assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
-        assertEquals("EndPos (2)", 7, kr.getMatch(2).endPos);
+        assertEquals("EndPos (2)", 4, kr.getMatch(2).endPos);
+
         assertEquals("StartPos (3)", 0, kr.getMatch(3).startPos);
-        assertEquals("EndPos (3)", 7, kr.getMatch(3).endPos);
+        assertEquals("EndPos (3)", 6, kr.getMatch(3).endPos);
         assertEquals("StartPos (4)", 0, kr.getMatch(4).startPos);
-        assertEquals("EndPos (4)", 7, kr.getMatch(4).endPos);
+        assertEquals("EndPos (4)", 6, kr.getMatch(4).endPos);
         assertEquals("StartPos (5)", 0, kr.getMatch(5).startPos);
-        assertEquals("EndPos (5)", 10, kr.getMatch(5).endPos);
+        assertEquals("EndPos (5)", 6, kr.getMatch(5).endPos);
+
         assertEquals("StartPos (6)", 0, kr.getMatch(6).startPos);
-        assertEquals("EndPos (6)", 10, kr.getMatch(6).endPos);
+        assertEquals("EndPos (6)", 8, kr.getMatch(6).endPos);
         assertEquals("StartPos (7)", 0, kr.getMatch(7).startPos);
-        assertEquals("EndPos (7)", 10, kr.getMatch(7).endPos);
+        assertEquals("EndPos (7)", 8, kr.getMatch(7).endPos);
         assertEquals("StartPos (8)", 0, kr.getMatch(8).startPos);
-        assertEquals("EndPos (8)", 10, kr.getMatch(8).endPos);
-        assertEquals("StartPos (9)", 11, kr.getMatch(9).startPos);
-        assertEquals("EndPos (9)", 12, kr.getMatch(9).endPos);
+        assertEquals("EndPos (8)", 8, kr.getMatch(8).endPos);
+        assertEquals("StartPos (9)", 0, kr.getMatch(9).startPos);
+        assertEquals("EndPos (9)", 8, kr.getMatch(9).endPos);
+
+        assertEquals("StartPos (10)", 10, kr.getMatch(10).startPos);
+        assertEquals("EndPos (10)", 12, kr.getMatch(10).endPos);
+        assertEquals("StartPos (11)", 10, kr.getMatch(11).startPos);
+        assertEquals("EndPos (11)", 12, kr.getMatch(11).endPos);
+
+        assertEquals("StartPos (12)", 11, kr.getMatch(12).startPos);
+        assertEquals("EndPos (12)", 12, kr.getMatch(12).endPos);
     };
 
 

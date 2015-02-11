@@ -15,6 +15,9 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.ids_mannheim.korap.query.SpanElementQuery;
 
 /**
@@ -27,6 +30,11 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 public class ElementSpans extends SpansWithId {
     private TermSpans termSpans;
     private boolean lazyLoaded = false;
+
+    private final Logger log = LoggerFactory.getLogger(ElementSpans.class);
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
 
     /**
      * Constructs ElementSpans for the given {@link SpanElementQuery}.
@@ -149,6 +157,10 @@ public class ElementSpans extends SpansWithId {
 
     @Override
     public boolean skipTo(int target) throws IOException {
+
+        if (DEBUG) log.trace("Skip ElementSpans {} -> {}",
+                             firstSpans.doc(), target);
+
         if (hasMoreSpans &&
             firstSpans.doc() < target &&
             firstSpans.skipTo(target)) {

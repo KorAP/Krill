@@ -410,9 +410,9 @@ public class TestMatchIndex {
         
         // abcabcabac
         FieldDocument fd = new FieldDocument();
-        // The payload should be ignored
         fd.addTV("base",
                  "abcabcabac",
+                 // The payload should be ignored
                  "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]" + // |<>:p#0-10<i>9]" +
                  "[(1-2)s:b|i:b|_1#1-2|<>:s#1-5$<i>5]" +
                  "[(2-3)s:c|i:c|_2#2-3|<>:s#2-7$<i>7]" +
@@ -423,8 +423,8 @@ public class TestMatchIndex {
                  "[(7-8)s:b|i:b|_7#7-8]" +
                  "[(8-9)s:a|i:a|_8#8-9]" +
                  "[(9-10)s:c|i:c|_9#9-10]");
-
         ki.addDoc(fd);
+        fd = new FieldDocument();
         fd.addTV("base",
                  "gbcgbcgbgc",
                  "[(0-1)s:g|i:g|_0#0-1|-:t$<i>10|<>:p#0-10$<i>9]" +
@@ -438,6 +438,7 @@ public class TestMatchIndex {
                  "[(8-9)s:g|i:g|_8#8-9]" +
                  "[(9-10)s:c|i:c|_9#9-10]");
         ki.addDoc(fd);
+        fd = new FieldDocument();
         fd.addTV("base",
                  "gbcgbcgbgc",
                  "[(0-1)s:g|i:g|_0#0-1|-:t$<i>10]" +
@@ -451,18 +452,19 @@ public class TestMatchIndex {
                  "[(8-9)s:g|i:g|_8#8-9]" +
                  "[(9-10)s:c|i:c|_9#9-10]");
         ki.addDoc(fd);
+        fd = new FieldDocument();
+        // contains(<p>, focus(3: contains({2:<s>}, {3:a})))
         fd.addTV("base",
-                 "abcabcabac",
-                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10|<>:p#0-10$<i>9]" +
+                 "acabcabac",
+                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10|<>:p#0-9$<i>8]" +
                  "[(1-2)s:b|i:b|_1#1-2|<>:s#1-5$<i>5]" +
-                 "[(2-3)s:c|i:c|_2#2-3|<>:s#2-7$<i>7]" +
-                 "[(3-4)s:a|i:a|_3#3-4]" +
-                 "[(4-5)s:b|i:b|_4#4-5]" +
-                 "[(5-6)s:c|i:c|_5#5-6]" +
-                 "[(6-7)s:a|i:a|_6#6-7]" +
-                 "[(7-8)s:b|i:b|_7#7-8]" +
-                 "[(8-9)s:a|i:a|_8#8-9]" +
-                 "[(9-10)s:c|i:c|_9#9-10]");
+                 "[(2-3)s:a|i:a|_2#2-3|<>:s#2-7$<i>7]" +
+                 "[(3-4)s:b|i:b|_3#3-4]" +
+                 "[(4-5)s:c|i:c|_4#4-5]" +
+                 "[(5-6)s:a|i:a|_5#5-6]" +
+                 "[(6-7)s:b|i:b|_6#6-7]" +
+                 "[(7-8)s:a|i:a|_7#7-8]" +
+                 "[(8-9)s:c|i:c|_8#8-9]");
         ki.addDoc(fd);
         ki.commit();
 
@@ -472,6 +474,7 @@ public class TestMatchIndex {
 
         assertEquals("Documents", 4, kc.numberOf("documents"));
 
+        // within(<p>, focus(3:within({2:<s>}, {3:a})))
         sq = new SpanWithinQuery(
                  new SpanElementQuery("base", "p"),
                  new SpanMatchModifyClassQuery(
@@ -483,7 +486,11 @@ public class TestMatchIndex {
              );
 
         fail("Skipping may go horribly wrong! (Known issue)");
+
         kr = kc.search(sq);
+        //        System.err.println(kr.getOverview());
+
+
         assertEquals(kr.getQuery(), "spanContain(<base:p />, focus(3: spanContain({2: <base:s />}, {3: base:s:a})))");
         assertEquals(12, kr.getTotalResults());
         assertEquals("[a{2:bc{3:a}b}cabac]", kr.getMatch(0).getSnippetBrackets());

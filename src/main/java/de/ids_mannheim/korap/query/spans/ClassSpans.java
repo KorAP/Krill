@@ -142,7 +142,12 @@ public class ClassSpans extends Spans {
     @Override
     public boolean skipTo (int target) throws IOException {
         classedPayload.clear();
-        if (hasmorespans && spans.doc() < target && spans.skipTo(target))
+
+        if (DEBUG) log.trace("Skip ClassSpans {} -> {}",
+                             spans.doc(), target);
+
+        if (hasmorespans && spans.doc() < target &&
+            spans.skipTo(target))
             return this.addClassPayload();
         return false;
     };
