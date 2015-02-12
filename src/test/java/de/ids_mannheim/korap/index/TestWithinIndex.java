@@ -1120,7 +1120,7 @@ public class TestWithinIndex {
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
                                +km.getSnippetBrackets());
 		};	
-*/
+        */
     };
 	
 	

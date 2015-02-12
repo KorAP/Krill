@@ -203,8 +203,98 @@ public class TestFrameConstraint {
         assertEquals(fc1.check("succeeds"),         true);
     };
 
+    @Test
+    public void testConstellation () throws QueryException {
+        FrameConstraint fc1 = new FrameConstraint();
+        fc1.invert();
+
+        // Precedes
+        assertEquals(
+            FrameConstraint.PRECEDES,
+            fc1._constellation(new TestSpans(2,3), new TestSpans(4,5))
+        );
+
+        // PrecedesDirectly
+        assertEquals(
+            FrameConstraint.PRECEDES_DIRECTLY,
+            fc1._constellation(new TestSpans(2,3), new TestSpans(3,5))
+        );
+
+        // OverlapsLeft
+        assertEquals(
+            FrameConstraint.OVERLAPS_LEFT,
+            fc1._constellation(new TestSpans(2,4), new TestSpans(3,5))
+        );
+
+        // AlignsLeft
+        assertEquals(
+            FrameConstraint.ALIGNS_LEFT,
+            fc1._constellation(new TestSpans(2,4), new TestSpans(2,5))
+        );
+
+        // StartsWith
+        assertEquals(
+            FrameConstraint.STARTS_WITH,
+            fc1._constellation(new TestSpans(2,5), new TestSpans(2,4))
+        );
+
+        // Matches
+        assertEquals(
+            FrameConstraint.MATCHES,
+            fc1._constellation(new TestSpans(2,5), new TestSpans(2,5))
+        );
+
+        // IsWithin
+        assertEquals(
+            FrameConstraint.IS_WITHIN,
+            fc1._constellation(new TestSpans(3,4), new TestSpans(2,5))
+        );
+
+        // IsAround
+        assertEquals(
+            FrameConstraint.IS_AROUND,
+            fc1._constellation(new TestSpans(2,5), new TestSpans(3,4))
+        );
+
+        // EndsWith
+        assertEquals(
+            FrameConstraint.ENDS_WITH,
+            fc1._constellation(new TestSpans(3,5), new TestSpans(4,5))
+        );
+
+        // AlignsRight
+        assertEquals(
+            FrameConstraint.ALIGNS_RIGHT,
+            fc1._constellation(new TestSpans(3,4), new TestSpans(2,4))
+        );
+
+        // OverlapsRight
+        assertEquals(
+            FrameConstraint.OVERLAPS_RIGHT,
+            fc1._constellation(new TestSpans(3,5), new TestSpans(2,4))
+        );
+
+        // SucceedsDirectly
+        assertEquals(
+            FrameConstraint.SUCCEEDS_DIRECTLY,
+            fc1._constellation(new TestSpans(4,6), new TestSpans(2,4))
+        );
+
+        // Succeeds
+        assertEquals(
+            FrameConstraint.SUCCEEDS,
+            fc1._constellation(new TestSpans(5,6), new TestSpans(2,4))
+        );
+    };
+
     private class TestSpans extends Spans {
         private int s, e;
+
+        // Constructor
+        public TestSpans (int start, int end) {
+            this.s = start;
+            this.e = end;
+        };
 
         @Override
         public int doc () {
