@@ -1,47 +1,76 @@
-# Seaweeds
+# Krill
 
-Search Engine for General Corpus Queries
+Corpus Retrieval Index looking up with Lucene
 
 ## Synopsis
 
 ## Description
 
-Seaweeds is a [Lucene](https://lucene.apache.org/) based search
-engine for large corpora, providing support for complex linguistic queries.
+Krill is a [Lucene](https://lucene.apache.org/) based search
+engine for large annotated corpora,
+developed at the Institute for German Language (IDS) in Mannheim,
+Germany.
 
 ## Features
 
-Seaweeds provides ...
-* fulltext search
-  (/Give me all occurrences of the phrase "tree hug"!/)
-* token-based annotation search
-  (/Give me all plural nouns in accusative!/)
-* span-based annotation search
-  (/Give me all nominal phrases!/)
-* support for multiple annotation sources
-  (/Give me all words marked as a noun by TreeTagger and marked as an adjective by CoreNLP!/)
-* support for complex queries ..
-  Example
-* support for conflicting span-based annotations
-  (i.e. overlapping spans)
-* support for multiple query languages by using
-  the [CoralQuery](https://github.com/KorAP/Koral)
-  protocol
+Krill is the reference implementation for the
+[KoralQuery](https://github.com/KorAP/Koral) protocol, covering
+most of its query features, including ...
 
+### Fulltext search
 
-## Prerequisites
+"Find all occurrences of the phrase 'sea monster'!"
+
+"Find all case-insensitive words matching the regular expression /krak.*/"
+
+### Token-based annotation search
+
+"Find all plural nouns in accusative!"
+
+### Span-based annotation search
+
+"Find all nominal phrases!"
+
+### Distance search
+
 ...
 
-## Starting
+### Positional search
 
-  $ git clone https://github.com/korap/Seaweeds
-  $ cd Seaweeds
+...
 
-To run the test suite, type ...
+### Nested queries
+
+...
+
+### Multiple annotation resources
+
+"Find all words marked as a noun by
+[TreeTagger](http://www.ims.uni-stuttgart.de/forschung/ressourcen/werkzeuge/treetagger.html)
+and marked as an adjective by CoreNLP](https://github.com/stanfordnlp/CoreNLP)!"
+
+### and many more ...
+
+Virtual Collections;
+partial highlightings;
+Support for overlapping spans;
+relational queries;
+hierarchical queries ...
+
+## Prerequisites
+
+...
+
+## Setup
+
+  $ git clone https://github.com/KorAP/Krill
+  $ cd Krill
+
+To run the test suite, type in ...
 
   $ mvn test
 
-To start the server, type ...
+To start the server, type in ...
 
   $ mvn compile exec:java
 
@@ -49,26 +78,29 @@ To compile and run the indexer, type ...
 
   $ mvn compile assembly:single
 
-  $ java -jar target/KorAP-lucene-index-X.XX.jar
+  $ java -jar target/KorAP-krill-X.XX.jar
     src/main/resources/korap.conf
     src/test/resources/examples/
 
-## Development
+## Development and License
 
-For recent changes, please consult the Changes file.
-
-## Reference
-
-Authors: Nils Diewald, Eliza Margaretha
+**Authors**: [Nils Diewald](http://nils-diewald.de/), Eliza Margaretha
 
 Copyright 2013-2015, IDS Mannheim, Germany
 
-Seaweeds is developed as part of the [KorAP](https://korap.ids-mannheim.de/)
-Corpus Analysis Platform
+Krill is developed as part of the [KorAP](https://korap.ids-mannheim.de/)
+Corpus Analysis Platform at the Institute for German Language (IDS).
+
+For recent changes and compatibility issues, please consult the
+[Changes](https://raw.githubusercontent.com/KorAP/Krill/master/Changes)
+file.
+
+Krill is published under the
+[BSD-2 License](https://raw.githubusercontent.com/KorAP/Krill/master/LICENSE).
 
 To cite this work, please ...
 
-## Bundled Software
+## References and bundled Software
 
 Named entities annotated in the test data by CoreNLP were using
 models based on:
