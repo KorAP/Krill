@@ -31,21 +31,36 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
         this(subquery, (byte) 0);
     };
 
+
+    @Override
     public boolean isEmpty () {
         return this.subquery.isEmpty();
     };
 
+
+    @Override
     public boolean isOptional () {
         return this.subquery.isOptional();
     };
 
+
+    @Override
     public boolean isNull () {
         return this.subquery.isNull();
     };
 
+
+    @Override
     public boolean isNegative () {
         return this.subquery.isNegative();
     };
+
+
+    @Override
+    public boolean maybeUnsorted () {
+        return this.subquery.maybeUnsorted();
+    };
+
 
     public SpanQuery toQuery () throws QueryException {
 		if (this.subquery.isNull())

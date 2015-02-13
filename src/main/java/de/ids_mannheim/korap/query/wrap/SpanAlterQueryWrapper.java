@@ -21,95 +21,102 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
     private List<SpanQueryWrapper> alternatives;
 
     public SpanAlterQueryWrapper (String field) {
-	this.field = field;
-	this.alternatives = new ArrayList<>();
+        this.field = field;
+        this.alternatives = new ArrayList<>();
     };
 
     public SpanAlterQueryWrapper (String field, SpanQuery query) {
-	this.field = field;
-	this.alternatives = new ArrayList<>();
-	this.alternatives.add(
+        this.field = field;
+        this.alternatives = new ArrayList<>();
+        this.alternatives.add(
             new SpanSimpleQueryWrapper(query)
         );
     };
 
     public SpanAlterQueryWrapper (String field, SpanQueryWrapper query) {
-	this.field = field;
-	this.alternatives = new ArrayList<>();
-	this.alternatives.add(query);
+        this.field = field;
+        this.alternatives = new ArrayList<>();
+        if (query.maybeUnsorted())
+            this.maybeUnsorted = true;
+        this.alternatives.add(query);
     };
 
     public SpanAlterQueryWrapper (String field, String ... terms) {
-	this.field = field;
-	this.alternatives = new ArrayList<>();
-	for (String term : terms) {
-	    this.isNull = false;
-	    this.alternatives.add(
-	        new SpanSimpleQueryWrapper(
+        this.field = field;
+        this.alternatives = new ArrayList<>();
+        for (String term : terms) {
+            this.isNull = false;
+            this.alternatives.add(
+                new SpanSimpleQueryWrapper(
                     new SpanTermQuery(
                         new Term(this.field, term)
-		    )
+                    )
                 )
             );
-	};
+        };
     };
 
     public SpanAlterQueryWrapper or (String term) {
-	return this.or(
-          new SpanTermQuery(new Term(this.field, term))
+        return this.or(
+            new SpanTermQuery(new Term(this.field, term))
         );
     };
 
     public SpanAlterQueryWrapper or (SpanQuery query) {
-	this.alternatives.add(
+        this.alternatives.add(
             new SpanSimpleQueryWrapper(query)
-	);
-	this.isNull = false;
-	return this;
+        );
+        this.isNull = false;
+        return this;
     };
 
     public SpanAlterQueryWrapper or (SpanQueryWrapper term) {
-	if (term.isNull())
-	    return this;
+        if (term.isNull())
+            return this;
 
-	if (term.isNegative())
-	    this.isNegative = true;
+        if (term.isNegative())
+            this.isNegative = true;
 
-	// If one operand is optional, the whole group can be optional
-	// a | b* | c
-	if (term.isOptional())
-	    this.isOptional = true;
+        // If one operand is optional, the whole group can be optional
+        // a | b* | c
+        if (term.isOptional())
+            this.isOptional = true;
 
-	this.alternatives.add( term );
-	this.isNull = false;
-	return this;
+        this.alternatives.add( term );
+
+        if (term.maybeUnsorted())
+            this.maybeUnsorted = true;
+
+
+        this.isNull = false;
+        return this;
     };
 
     public SpanAlterQueryWrapper or (SpanRegexQueryWrapper term) {
-	this.alternatives.add( term );
-	this.isNull = false;
-	return this;
+        this.alternatives.add( term );
+        this.isNull = false;
+        return this;
     };
 
     public SpanAlterQueryWrapper or (SpanWildcardQueryWrapper wc) {
-	this.alternatives.add( wc );
-	this.isNull = false;
-	return this;
+        this.alternatives.add( wc );
+        this.isNull = false;
+        return this;
     };
 
     public SpanQuery toQuery() throws QueryException {
-	if (this.isNull || this.alternatives.size() == 0)
-	    return (SpanQuery) null;
+        if (this.isNull || this.alternatives.size() == 0)
+            return (SpanQuery) null;
 	    
-	if (this.alternatives.size() == 1) {
-	    return (SpanQuery) this.alternatives.get(0).toQuery();
-	};
+        if (this.alternatives.size() == 1) {
+            return (SpanQuery) this.alternatives.get(0).toQuery();
+        };
 
-	Iterator<SpanQueryWrapper> clause = this.alternatives.iterator();
-	SpanOrQuery soquery = new SpanOrQuery( clause.next().toQuery() );
-	while (clause.hasNext()) {
-	    soquery.addClause( clause.next().toQuery() );
-	};
-	return (SpanQuery) soquery;
+        Iterator<SpanQueryWrapper> clause = this.alternatives.iterator();
+        SpanOrQuery soquery = new SpanOrQuery( clause.next().toQuery() );
+        while (clause.hasNext()) {
+            soquery.addClause( clause.next().toQuery() );
+        };
+        return (SpanQuery) soquery;
     };
 };

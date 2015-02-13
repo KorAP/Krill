@@ -33,7 +33,8 @@ public class SpanQueryWrapper {
         isNegative = false,
         isEmpty    = false,
         isExtended = false,
-        isExtendedToTheRight = false;
+        isExtendedToTheRight = false,
+        maybeUnsorted = false;
 
     /**
      * Serialize the wrapped query and return a SpanQuery.
@@ -210,6 +211,24 @@ public class SpanQueryWrapper {
      */
     public boolean maybeExtension () {
         return !this.maybeAnchor();
+    };
+
+
+    /**
+     * Check, if the wrapped query may need to be sorted
+     * on focussing on a specific class.
+     *
+     * Normally spans are always sorted, but in case of
+     * a wrapped relation query, classed operands may
+     * be in arbitrary order. When focussing on these
+     * classes, the span has to me reordered.
+     *
+     * @return <tt>true</tt> in case the wrapped query
+     *         has to be sorted on focussing,
+     *         otherwise <tt>false</tt>.
+     */
+    public boolean maybeUnsorted () {
+        return this.maybeUnsorted;
     };
 
 

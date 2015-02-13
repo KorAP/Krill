@@ -63,39 +63,57 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
     private byte flag;
 
     public SpanWithinQueryWrapper (SpanQueryWrapper element, SpanQueryWrapper wrap) {
-	this.element = element;
-	this.wrap = wrap;
+        this.element = element;
+        this.wrap = wrap;
 
-	// TODO: if (wrap.isNegative())	    
+        // TODO: if (wrap.isNegative())	    
 
-	this.flag = (byte) SpanWithinQuery.WITHIN;
-	if (!element.isNull() && !wrap.isNull())
-	    this.isNull = false;
+        this.flag = (byte) SpanWithinQuery.WITHIN;
+        if (!element.isNull() && !wrap.isNull())
+            this.isNull = false;
     };
 
-    public SpanWithinQueryWrapper (SpanQueryWrapper element, SpanQueryWrapper wrap, byte flag) {
-	this.element = element;
-	this.wrap = wrap;
-	this.flag = flag;
 
-	// TODO: if (wrap.isNegative())
+    public SpanWithinQueryWrapper
+        (SpanQueryWrapper element, SpanQueryWrapper wrap, byte flag) {
+        this.element = element;
+        this.wrap = wrap;
+        this.flag = flag;
 
-	if (!element.isNull() && !wrap.isNull())
-	    this.isNull = false;
+        // TODO: if (wrap.isNegative())
+
+        if (!element.isNull() && !wrap.isNull())
+            this.isNull = false;
     };
+
 
     public SpanQuery toQuery () throws QueryException {
-	if (this.isNull)
-	    return (SpanQuery) null;
+        if (this.isNull)
+            return (SpanQuery) null;
 	
-	// TODO: if (wrap.isNegative())
+        // TODO: if (wrap.isNegative())
 
-	return new SpanWithinQuery(this.element.toQuery(), this.wrap.toQuery(), this.flag);
+        return new SpanWithinQuery(this.element.toQuery(), this.wrap.toQuery(), this.flag);
     };
 
+
+    @Override
+    public boolean maybeUnsorted () {
+        if (this.wrap.maybeUnsorted())
+            return true;
+
+        // Todo: This is only true in case of non-exclusivity!
+        if (this.element.maybeUnsorted())
+            return true;
+
+        return this.maybeUnsorted;
+    };
+
+
+    @Override
     public boolean isNegative () {
-	if (this.element.isNegative())
-	    return true;
-	return false;
+        if (this.element.isNegative())
+            return true;
+        return false;
     };
 };

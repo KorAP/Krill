@@ -15,8 +15,11 @@ public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
         this.subquery = sqw;
         if (!inclusion) {
             this.isNegation = true;
-        }
-    }
+        };
+
+        if (sqw.maybeUnsorted())
+            this.maybeUnsorted = true;
+    };
 
     @Override
     public SpanQuery toQuery() throws QueryException {

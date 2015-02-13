@@ -138,4 +138,10 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 			return false;
 		return this.subquery.isOptional();
 	};
+
+
+	@Override
+	public boolean maybeUnsorted () {
+        return this.subquery.maybeUnsorted();
+    };
 }

@@ -1,6 +1,6 @@
 # Krill
 
-Corpus Retrieval Index looking up with Lucene
+A Corpus Retrieval Index using Lucene for Look-Ups
 
 ## Synopsis
 

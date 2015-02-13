@@ -18,86 +18,93 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
     private final static Logger log = LoggerFactory.getLogger(SpanSequenceQueryWrapper.class);
 
     public SpanRepetitionQueryWrapper () {
-	this.isEmpty = true;
-	this.isNull = false;
+        this.isEmpty = true;
+        this.isNull = false;
     };
 
     // This is for exact enumbered repetition, like in a{3}
     public SpanRepetitionQueryWrapper (SpanQueryWrapper subquery, int exact) {
-	if (!subquery.isEmpty())
-	    this.subquery = subquery;
-	else
-	    this.isEmpty = true;
+        if (!subquery.isEmpty()) {
+            this.subquery = subquery;
+            if (subquery.maybeUnsorted())
+                this.maybeUnsorted = true;
+        }
+        else
+            this.isEmpty = true;
 
-	if (exact < 1 || this.subquery.isNull()) {
-	    this.isNull = true;
-	    this.isOptional = true;
-	    this.min = 0;
-	    this.max = 0;
-	    return;
-	};
+        if (exact < 1 || this.subquery.isNull()) {
+            this.isNull = true;
+            this.isOptional = true;
+            this.min = 0;
+            this.max = 0;
+            return;
+        };
 	
-	this.min = exact;
-	this.max = exact;
+        this.min = exact;
+        this.max = exact;
     };
 
     // This is for a range of repetitions, like in a{2,3}, a{,4}, a{3,}, a+, a*, a?
     public SpanRepetitionQueryWrapper (SpanQueryWrapper subquery, int min, int max) {
 
-	if (!subquery.isEmpty())
-	    this.subquery = subquery;
-	else
-	    this.isEmpty = true;
+        if (!subquery.isEmpty()) {
+            this.subquery = subquery;
 
-	// Subquery may be an empty token
-	if (this.subquery.isNull()) {
-	    this.isNull = true;
-	    return;
-	}
-	else {
-	    this.isNull = false;
-	};
+            if (subquery.maybeUnsorted())
+                this.maybeUnsorted = true;
+        }
+        else
+            this.isEmpty = true;
+
+        // Subquery may be an empty token
+        if (this.subquery.isNull()) {
+            this.isNull = true;
+            return;
+        }
+        else {
+            this.isNull = false;
+        };
 	
-	if (min == 0) {
-	    this.isOptional = true;
-	    min = 1;
-	    if (max == 0)
-		this.isNull = true;
-	};
-
-	this.min = min;
-	this.max = max;
+        if (min == 0) {
+            this.isOptional = true;
+            min = 1;
+            if (max == 0)
+                this.isNull = true;
+        };
+        
+        this.min = min;
+        this.max = max;
     };
 
 
     // Serialize to Lucene SpanQuery
     public SpanQuery toQuery () throws QueryException {
 
-	// The query is null
-	if (this.isNull)
-	    return (SpanQuery) null;
+        // The query is null
+        if (this.isNull)
+            return (SpanQuery) null;
+        
+        if (this.isEmpty) {
+            log.error("You can't queryize an empty query");
+            return (SpanQuery) null;
+        };
 
-	if (this.isEmpty) {
-	    log.error("You can't queryize an empty query");
-	    return (SpanQuery) null;
-	};
+        // The query is not a repetition query at all, but may be optional
+        if (this.min == 1 && this.max == 1)
+            return this.subquery.toQuery();
 
-	// The query is not a repetition query at all, but may be optional
-	if (this.min == 1 && this.max == 1)
-	    return this.subquery.toQuery();
-
-	// That's a fine repetition query
-	return new SpanRepetitionQuery(
-	    this.subquery.toQuery(),
-	    this.min,
-	    this.max,
-	    true
-	);
+        // That's a fine repetition query
+        return new SpanRepetitionQuery(
+            this.subquery.toQuery(),
+            this.min,
+            this.max,
+            true
+        );
     };
 
     public boolean isNegative () {
-	if (this.subquery == null)
-	    return false;
-	return this.subquery.isNegative();
+        if (this.subquery == null)
+            return false;
+        return this.subquery.isNegative();
     };
 };

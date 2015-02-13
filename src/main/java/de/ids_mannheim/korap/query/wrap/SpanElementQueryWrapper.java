@@ -11,15 +11,15 @@ public class SpanElementQueryWrapper extends SpanQueryWrapper {
     String field;
 
     public SpanElementQueryWrapper (String field, String element) {
-	this.field = field;
-	this.element = element;
+        this.field = field;
+        this.element = element;
     };
 
     public SpanQuery toQuery () throws QueryException {
-	return (SpanQuery) new SpanElementQuery(this.field, this.element);
+        return (SpanQuery) new SpanElementQuery(this.field, this.element);
     };
 
     public boolean isNull () {
-	return false;
+        return false;
     };
 };

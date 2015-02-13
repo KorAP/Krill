@@ -127,6 +127,9 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         if (sswq.isNull())
             return;
 
+        if (sswq.maybeUnsorted())
+            this.maybeUnsorted = true;
+
         // Some debugging on initiating new sequences
         if (DEBUG) {
             if (!sswq.isEmpty()) {
@@ -189,6 +192,9 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         // The wrapper is null - ignore this in the sequence
         if (ssq.isNull())
             return this;
+
+        if (ssq.maybeUnsorted())
+            this.maybeUnsorted = true;
 
         // As the spanQueryWrapper is not null,
         // the sequence can't be null as well
@@ -277,6 +283,9 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
         // The sequence may be problematic
         this.isSolved = false;
+
+        if (ssq.maybeUnsorted())
+            this.maybeUnsorted = true;
 
         // Embed a nested sequence
         if (ssq instanceof SpanSequenceQueryWrapper) {
