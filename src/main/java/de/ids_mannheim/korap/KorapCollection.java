@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author diewald
  */
 /*
+ * TODO: Clean up for new KoralQuery
  * TODO: Make a cache for the bits
  *       Delete it in case of an extension or a filter
  * TODO: Maybe use randomaccessfilterstrategy
@@ -62,8 +63,14 @@ public class KorapCollection extends Notifications {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    public KorapCollection (KorapIndex ki) {
-        this.index = ki;
+
+    /**
+     * Construct a new KorapCollection by passing a KorapIndex.
+     *
+     * @param index The {@link KorapIndex} object.
+     */
+    public KorapCollection (KorapIndex index) {
+        this.index = index;
         this.filter = new ArrayList<FilterOperation>(5);
     };
 
@@ -147,7 +154,105 @@ public class KorapCollection extends Notifications {
      * @throws QueryException
      */
     public void fromJSON (JsonNode json) throws QueryException {
-        this.filter(new CollectionBuilder(json));
+        this.filter(this._fromJSON(json));
+    };
+
+
+    // Create a boolean filter from JSON
+    private BooleanFilter _fromJSON (JsonNode json) throws QueryException {
+        return this._fromJSON(json, "tokens");
+    };
+
+
+    // Create a booleanfilter from JSON
+    private BooleanFilter _fromJSON (JsonNode json, String field) throws QueryException {
+        BooleanFilter bfilter = new BooleanFilter();
+
+        // TODO: THIS UNFORTUNATELY BREAKS TESTS
+        if (!json.has("@type"))
+            throw new QueryException(701, "JSON-LD group has no @type attribute");
+
+        String type = json.get("@type").asText();
+        
+        // Single filter
+        if (type.equals("korap:doc")) {
+
+            String key     = "tokens";
+            String valtype = "type:string";
+            String match   = "match:eq";
+
+            if (json.has("key"))
+                key = json.get("key").asText();
+            
+            if (json.has("type"))
+                valtype = json.get("type").asText();
+
+            // Filter based on date
+            if (valtype.equals("type:date")) {
+
+                if (!json.has("value"))
+                    throw new QueryException(612, "Dates require value fields");
+
+                String dateStr = json.get("value").asText();
+                if (json.has("match"))
+                    match = json.get("match").asText();
+
+                // TODO: This isn't stable yet
+                switch (match) {
+                case "match:eq":
+                    bfilter.date(dateStr);
+                    break;
+                case "match:geq":
+                    bfilter.since(dateStr);
+                    break;
+                case "match:leq":
+                    bfilter.till(dateStr);
+                    break;
+                };
+                // No good reason for gt or lt
+                return bfilter;
+            }
+
+            else if (valtype.equals("type:string")) {
+                if (json.has("match"))
+                    match = json.get("match").asText();
+
+                if (match.equals("match:eq"))
+                    bfilter.and(key, json.get("value").asText());
+
+                return bfilter;
+            };
+        }
+
+        // nested group
+        else if (type.equals("korap:docGroup")) {
+            if (!json.has("operands") || !json.get("operands").isArray())
+                throw new QueryException(612, "Groups need operands");
+
+            String operation = "operation:and";
+            if (json.has("operation"))
+                operation = json.get("operation").asText();
+
+            BooleanFilter group = new BooleanFilter();
+
+            for (JsonNode operand : json.get("operands")) {
+                if (operation.equals("operation:and"))
+                    group.and(this._fromJSON(operand, field));
+
+                else if (operation.equals("operation:or"))
+                    group.or(this._fromJSON(operand, field));
+
+                else
+                    throw new QueryException(613, "Unknown document group operation");
+            };
+            bfilter.and(group);
+            return bfilter;
+        }
+
+        // Unknown type
+        else throw new QueryException(613, "Collection query type has to be doc or docGroup");
+        
+        return new BooleanFilter();
     };
 
 
@@ -178,6 +283,7 @@ public class KorapCollection extends Notifications {
      *        as a {@link JsonNode} object.
      * @throws QueryException
      */
+    @Deprecated
     public void fromJSONLegacy (JsonNode json) throws QueryException {
         if (!json.has("@type"))
             throw new QueryException(701, "JSON-LD group has no @type attribute");
@@ -185,24 +291,118 @@ public class KorapCollection extends Notifications {
         if (!json.has("@value"))
             throw new QueryException(851, "Legacy filter need @value fields");
 
+        BooleanFilter bf = this._fromJSONLegacy(json.get("@value"), "tokens");
         String type = json.get("@type").asText();
-
-        CollectionBuilder kf = new CollectionBuilder();
-        kf.setBooleanFilter(kf.fromJSONLegacy(json.get("@value"), "tokens"));
 
         // Filter the collection
         if (type.equals("korap:meta-filter")) {
             if (DEBUG)
                 log.trace("Add Filter LEGACY");
-            this.filter(kf);
+            this.filter(bf);
         }
         
         // Extend the collection
         else if (type.equals("korap:meta-extend")) {
             if (DEBUG)
                 log.trace("Add Extend LEGACY");
-            this.extend(kf);
+            this.extend(bf);
         };
+    };
+
+
+    // Create a boolean filter from a Json string
+    @Deprecated
+    private BooleanFilter _fromJSONLegacy (JsonNode json, String field)
+        throws QueryException {
+        BooleanFilter bfilter = new BooleanFilter();
+
+        if (!json.has("@type"))
+            throw new QueryException(612, "JSON-LD group has no @type attribute");
+	
+        String type = json.get("@type").asText();
+        
+        if (DEBUG) log.trace("@type: " + type);
+
+        if (json.has("@field"))
+            field = _getFieldLegacy(json);
+
+        if (type.equals("korap:term")) {
+            if (field != null && json.has("@value"))
+                bfilter.and(field, json.get("@value").asText());
+            return bfilter;
+        }
+        else if (type.equals("korap:group")) {
+            if (!json.has("relation"))
+                throw new QueryException(612, "Group needs relation");
+
+            if (!json.has("operands"))
+                throw new QueryException(612, "Group needs operand list");
+
+            String dateStr, till;
+            JsonNode operands = json.get("operands");
+
+            if (!operands.isArray())
+                throw new QueryException(612, "Group needs operand list");
+
+            if (DEBUG)
+                log.trace("relation found {}",  json.get("relation").asText());
+
+            BooleanFilter group = new BooleanFilter();
+	    
+            switch (json.get("relation").asText())  {
+            case "between":
+                dateStr = _getDateLegacy(json, 0);
+                till = _getDateLegacy(json, 1);
+                if (dateStr != null && till != null)
+                    bfilter.between(dateStr, till);
+                break;
+
+            case "until":
+                dateStr = _getDateLegacy(json, 0);
+                if (dateStr != null)
+                    bfilter.till(dateStr);
+                break;
+
+            case "since":
+                dateStr = _getDateLegacy(json, 0);
+                if (dateStr != null)
+                    bfilter.since(dateStr);
+                break;
+
+            case "equals":
+                dateStr = _getDateLegacy(json, 0);
+                if (dateStr != null)
+                    bfilter.date(dateStr);
+                break;
+
+            case "and":
+                if (operands.size() < 1)
+                    throw new QueryException(612, "Operation needs at least two operands");
+
+                for (JsonNode operand : operands) {
+                    group.and(this._fromJSONLegacy(operand, field));
+                };
+                bfilter.and(group);
+                break;
+
+            case "or":
+                if (operands.size() < 1)
+                    throw new QueryException(612, "Operation needs at least two operands");
+
+                for (JsonNode operand : operands) {
+                    group.or(this._fromJSONLegacy(operand, field));
+                };
+                bfilter.and(group);
+                break;
+
+            default:
+                throw new QueryException(613, "Relation is not supported");
+            };
+        }
+        else {
+            throw new QueryException(613, "Filter type is not a supported group");
+        };
+        return bfilter;
     };
 
 
@@ -519,6 +719,7 @@ public class KorapCollection extends Notifications {
     };
 
 
+    // Term relation API is not in use anymore
     @Deprecated
     public HashMap getTermRelation (String field) throws Exception {
         if (this.index == null) {
@@ -531,6 +732,7 @@ public class KorapCollection extends Notifications {
     };
 
 
+    // Term relation API is not in use anymore
     @Deprecated
     public String getTermRelationJSON (String field) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -585,5 +787,40 @@ public class KorapCollection extends Notifications {
 
         sw.append("}");
         return sw.getBuffer().toString();
+    };
+
+
+    // Get legacy field
+    @Deprecated
+    private static String  _getFieldLegacy (JsonNode json)  {
+        if (!json.has("@field"))
+            return (String) null;
+
+        String field = json.get("@field").asText();
+        return field.replaceFirst("korap:field#", "");
+    };
+
+
+    // Get legacy date
+    @Deprecated
+    private static String _getDateLegacy (JsonNode json, int index) {
+        if (!json.has("operands"))
+            return (String) null;
+
+        if (!json.get("operands").has(index))
+            return (String) null;
+
+        JsonNode date = json.get("operands").get(index);
+
+        if (!date.has("@type"))
+            return (String) null;
+
+        if (!date.get("@type").asText().equals("korap:date"))
+            return (String) null;
+        
+        if (!date.has("@value"))
+            return (String) null;
+
+        return date.get("@value").asText();
     };
 };
