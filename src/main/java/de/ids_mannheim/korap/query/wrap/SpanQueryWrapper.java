@@ -34,7 +34,8 @@ public class SpanQueryWrapper {
         isEmpty    = false,
         isExtended = false,
         isExtendedToTheRight = false,
-        maybeUnsorted = false;
+        maybeUnsorted = false,
+        retrieveNode = false;
 
     /**
      * Serialize the wrapped query and return a SpanQuery.
@@ -278,6 +279,20 @@ public class SpanQueryWrapper {
      */
     public SpanQueryWrapper setMax (int max) {
         this.max = max;
+        return this;
+    };
+
+
+    /**
+     * Make the query request node information in addition to
+     * span information.
+     *
+     * @param retrieve Boolean value saying the wrapper
+     *        has or has not to respect node information.
+     * @return The {@link SpanQueryWrapper} object for chaining.
+     */
+    public SpanQueryWrapper retrieveNode (boolean retrieve) {
+        this.retrieveNode = retrieve;
         return this;
     };
 

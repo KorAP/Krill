@@ -6,6 +6,14 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 
+/*
+ * SpanElementQuery has to support two constructors:
+ * One respecting and adding node information to the payload,
+ * one ignoring node information.
+ * node aka depth in a tree information is only relevant for
+ * child relation queries.
+ */
+
 public class SpanElementQueryWrapper extends SpanQueryWrapper {
     String element;
     String field;
@@ -15,10 +23,15 @@ public class SpanElementQueryWrapper extends SpanQueryWrapper {
         this.element = element;
     };
 
+
+    @Override
     public SpanQuery toQuery () throws QueryException {
+        // Todo: Respect request for retrieving node data (i.e. depth information)
         return (SpanQuery) new SpanElementQuery(this.field, this.element);
     };
 
+
+    @Override
     public boolean isNull () {
         return false;
     };

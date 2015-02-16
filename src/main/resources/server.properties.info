@@ -1,3 +1,6 @@
+lucene.version = ${project.version}
+lucene.name = ${project.name}
+
 # Lucene Backend properties
 lucene.properties   = true
 lucene.indexDir     = [PATH TO INDEX DIRECTORY]
@@ -9,3 +12,6 @@ lucene.db.class     = org.mariadb.jdbc.Driver
 lucene.db.URL       = jdbc:mysql://[DB_IP]:[DB_PORT]/[DB_NAME]
 lucene.db.pwd       = [DB_PWD]
 lucene.db.user      = [DB_USER]
+
+lucene.index.commit.count = 134217000
+lucene.index.commit.log = log/korap.commit.log

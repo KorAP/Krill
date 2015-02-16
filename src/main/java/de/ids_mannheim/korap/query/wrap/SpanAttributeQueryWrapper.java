@@ -24,7 +24,7 @@ public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
     @Override
     public SpanQuery toQuery() throws QueryException {
 
-        SpanQuery sq = subquery.toQuery();
+        SpanQuery sq = subquery.retrieveNode(this.retrieveNode).toQuery();
         if (sq instanceof SpanTermQuery) {
             return new SpanAttributeQuery((SpanTermQuery) sq, isNegation, true);
         }

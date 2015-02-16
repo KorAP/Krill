@@ -481,7 +481,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         try {
             this.constraints.add(
                 new DistanceConstraint(
-                    (SpanElementQuery) unit.toQuery(),
+                    (SpanElementQuery) unit.retrieveNode(this.retrieveNode).toQuery(),
                     min,
                     max,
                     isInOrder,
@@ -612,7 +612,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
             // Unproblematic single query
             if (this.segments.get(0).maybeAnchor())
-                return (SpanQuery) this.segments.get(0).toQuery();
+                return (SpanQuery) this.segments.get(0).retrieveNode(this.retrieveNode).toQuery();
 
             if (this.segments.get(0).isEmpty())
                 throw new QueryException(
@@ -653,7 +653,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         SpanQuery query = null;// = this.segments.get(0).toQuery();
         int i = 0;
         while (query == null && i < this.segments.size()) {
-            query = this.segments.get(i).toQuery();
+            query = this.segments.get(i).retrieveNode(this.retrieveNode).toQuery();
             i++;
         };
 
@@ -664,7 +664,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         if (!this.hasConstraints() && this.isInOrder()) {
             for (; i < this.segments.size(); i++) {
 
-                SpanQuery second = this.segments.get(i).toQuery();
+                SpanQuery second = this.segments.get(i).retrieveNode(this.retrieveNode).toQuery();
                 if (second == null)
                     continue;
 
@@ -688,7 +688,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     if (this.segments.get(i).isExtended())
                         throw new QueryException(613, limitationError);
 
-                    SpanQuery sq = (SpanQuery) this.segments.get(i).toQuery();
+                    SpanQuery sq = (SpanQuery) this.segments.get(i).retrieveNode(this.retrieveNode).toQuery();
                     if (sq == null) continue;
 
                     SpanDistanceQuery sdquery = new SpanDistanceQuery(
@@ -709,7 +709,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     if (this.segments.get(i).isExtended())
                         throw new QueryException(613, limitationError);
 
-                    SpanQuery sq = (SpanQuery) this.segments.get(i).toQuery();
+                    SpanQuery sq = (SpanQuery) this.segments.get(i).retrieveNode(this.retrieveNode).toQuery();
                     if (sq == null) continue;
                     
                     SpanDistanceQuery sdquery = new SpanDistanceQuery(
@@ -732,7 +732,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             if (this.segments.get(i).isExtended())
                 throw new QueryException(613, limitationError);
 
-            SpanQuery sq = (SpanQuery) this.segments.get(i).toQuery();
+            SpanQuery sq = (SpanQuery) this.segments.get(i).retrieveNode(this.retrieveNode).toQuery();
             if (sq == null) continue;
 
             query = new SpanMultipleDistanceQuery(
@@ -889,7 +889,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                           problem.getClassNumber());
 
             query = new SpanExpansionQuery(
-                anchor.toQuery(),
+                anchor.retrieveNode(this.retrieveNode).toQuery(),
                 problem.getMin(),
                 problem.getMax(),
                 direction,
@@ -909,8 +909,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                           problem.getClassNumber());
 
             query = new SpanExpansionQuery(
-                anchor.toQuery(),
-                problem.toQuery(),
+                anchor.retrieveNode(this.retrieveNode).toQuery(),
+                problem.retrieveNode(this.retrieveNode).toQuery(),
                 problem.getMin(),
                 problem.getMax(),
                 direction,
@@ -935,10 +935,10 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
         // [base=der][base=baum]
         if (mergeLeft)
-            ssqw.append(new SpanSimpleQueryWrapper(problem.toQuery()));
+            ssqw.append(new SpanSimpleQueryWrapper(problem.retrieveNode(this.retrieveNode).toQuery()));
         // [base=baum][base=der]
         else
-            ssqw.prepend(new SpanSimpleQueryWrapper(problem.toQuery()));
+            ssqw.prepend(new SpanSimpleQueryWrapper(problem.retrieveNode(this.retrieveNode).toQuery()));
 	
         saqw.or(ssqw);
 

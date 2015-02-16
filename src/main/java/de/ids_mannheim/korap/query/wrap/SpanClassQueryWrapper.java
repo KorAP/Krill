@@ -66,7 +66,7 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
 		if (this.subquery.isNull())
             return (SpanQuery) null;
 
-        SpanQuery sq = (SpanQuery) this.subquery.toQuery();
+        SpanQuery sq = (SpanQuery) this.subquery.retrieveNode(this.retrieveNode).toQuery();
 
         if (sq == null) return (SpanQuery) null;
 	

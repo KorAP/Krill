@@ -1,12 +1,8 @@
 package de.ids_mannheim.korap.node;
 
-/*
-  http://harryjoy.com/2012/09/08/simple-rest-client-in-java/
-*/
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -27,13 +23,18 @@ import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.response.KorapResponse;
 import static de.ids_mannheim.korap.util.KorapString.*;
 
+
+/**
+ * @author diewald
+ */
+// http://harryjoy.com/2012/09/08/simple-rest-client-in-java/
 public class TestResource {
 
     private HttpServer server;
     private WebTarget target;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp () throws Exception {
         // start the server
         server = KorapNode.startServer("milena", (String) null);
         // create the client
@@ -57,7 +58,7 @@ public class TestResource {
      * Test to see that the message "Gimme 5 minutes, please!" is sent in the response.
      */
     @Test
-    public void testPing() {
+    public void testPing () {
         String responseMsg = target.path("ping").request().get(String.class);
         assertEquals("Gimme 5 minutes, please!", responseMsg);
     };
@@ -75,7 +76,10 @@ public class TestResource {
                                       "02439"
             }) {
 
-            String json = StringfromFile(getClass().getResource("/wiki/" + i + ".json").getFile());
+            String json = StringfromFile(
+                getClass().getResource("/wiki/" + i + ".json").getFile()
+            );
+
             kresp = target.path("/index/" + i).
                 request("application/json").
                 put(Entity.json(json), KorapResponse.class);

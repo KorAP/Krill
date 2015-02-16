@@ -104,18 +104,25 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
         return this;
     };
 
+    @Override
     public SpanQuery toQuery() throws QueryException {
         if (this.isNull || this.alternatives.size() == 0)
             return (SpanQuery) null;
 	    
         if (this.alternatives.size() == 1) {
-            return (SpanQuery) this.alternatives.get(0).toQuery();
+            return (SpanQuery) this.alternatives.get(0).
+                retrieveNode(this.retrieveNode).
+                toQuery();
         };
 
         Iterator<SpanQueryWrapper> clause = this.alternatives.iterator();
-        SpanOrQuery soquery = new SpanOrQuery( clause.next().toQuery() );
+        SpanOrQuery soquery = new SpanOrQuery(
+            clause.next().retrieveNode(this.retrieveNode).toQuery()
+        );
         while (clause.hasNext()) {
-            soquery.addClause( clause.next().toQuery() );
+            soquery.addClause(
+                clause.next().retrieveNode(this.retrieveNode).toQuery()
+            );
         };
         return (SpanQuery) soquery;
     };

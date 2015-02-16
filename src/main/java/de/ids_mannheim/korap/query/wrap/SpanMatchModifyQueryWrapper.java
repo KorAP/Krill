@@ -45,9 +45,11 @@ public class SpanMatchModifyQueryWrapper extends SpanQueryWrapper {
     };
 
     public SpanQuery toQuery () throws QueryException {
-	if (this.subquery.isNull())
-	    return (SpanQuery) null;
-	return new SpanMatchModifyClassQuery(this.subquery.toQuery(), this.number);
+        if (this.subquery.isNull())
+            return (SpanQuery) null;
+        return new SpanMatchModifyClassQuery(
+            this.subquery.retrieveNode(this.retrieveNode).toQuery(), this.number
+        );
     };
 
     public boolean isOptional () {

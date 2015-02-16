@@ -93,7 +93,11 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
 	
         // TODO: if (wrap.isNegative())
 
-        return new SpanWithinQuery(this.element.toQuery(), this.wrap.toQuery(), this.flag);
+        return new SpanWithinQuery(
+            this.element.retrieveNode(this.retrieveNode).toQuery(),
+            this.wrap.retrieveNode(this.retrieveNode).toQuery(),
+            this.flag
+        );
     };
 
 

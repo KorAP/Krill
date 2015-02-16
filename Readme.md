@@ -1,8 +1,15 @@
 # Krill
 
-A Corpus Retrieval Index using Lucene for Look-Ups
+A Corpusdata Retrieval Index using Lucene for Look-Ups
+
 
 ## Synopsis
+
+... TODO:
+> Adding data (JSON via server)
+> Querying data (KoralQuery)
+> Show results (JSON)
+
 
 ## Description
 
@@ -11,55 +18,50 @@ engine for large annotated corpora,
 developed at the Institute for German Language (IDS) in Mannheim,
 Germany.
 
+**The software is in its early stages and not stable yet**
+
+
 ## Features
 
-Krill is the reference implementation for the
-[KoralQuery](https://github.com/KorAP/Koral) protocol, covering
-most of its query features, including ...
+Krill is the reference implementation for
+[KoralQuery](https://github.com/KorAP/Koral), covering
+most of the protocols features, including ...
 
-### Fulltext search
 
-"Find all occurrences of the phrase 'sea monster'!"
+- **Fulltext search**<br>
+  "Find all occurrences of the phrase 'sea monster'!"<br>
+  "Find all case-insensitive words matching the regular expression /krak.*/"
 
-"Find all case-insensitive words matching the regular expression /krak.*/"
+- **Token-based annotation search**<br>
+  "Find all plural nouns in accusative!"
 
-### Token-based annotation search
+- **Span-based annotation search**<br>
+  "Find all nominal phrases!"
 
-"Find all plural nouns in accusative!"
+- **Distance search**<br>
+  ...
 
-### Span-based annotation search
+- **Positional search**<br>
+  ...
 
-"Find all nominal phrases!"
+- **Nested queries**<br>
+  ...
 
-### Distance search
+- **and many more ...**<br>
+  Multiple annotation resources;
+  Virtual Collections;
+  Partial highlightings;
+  Support for overlapping spans;
+  Relational queries;
+  Hierarchical queries ...
 
-...
-
-### Positional search
-
-...
-
-### Nested queries
-
-...
-
-### Multiple annotation resources
-
-"Find all words marked as a noun by
-[TreeTagger](http://www.ims.uni-stuttgart.de/forschung/ressourcen/werkzeuge/treetagger.html)
-and marked as an adjective by CoreNLP](https://github.com/stanfordnlp/CoreNLP)!"
-
-### and many more ...
-
-Virtual Collections;
-partial highlightings;
-Support for overlapping spans;
-relational queries;
-hierarchical queries ...
 
 ## Prerequisites
 
-...
+At least Java 7,
+[Git](http://git-scm.com/),
+[Maven](https://maven.apache.org/).
+Further dependencies are resolved using Maven.
 
 ## Setup
 
@@ -82,6 +84,17 @@ To compile and run the indexer, type ...
     src/main/resources/korap.conf
     src/test/resources/examples/
 
+
+## Caveats
+
+Krill operates on tokens and is limited to a single tokenization stream.
+Token annotations therefore have to rely on that tokenization,
+Span annotations have to wrap at least one token.
+Punctuations are currently not supported.
+The order of results is currently bound to the order of documents in the
+index, but this is likely to change.
+
+
 ## Development and License
 
 **Authors**: [Nils Diewald](http://nils-diewald.de/), Eliza Margaretha
@@ -95,10 +108,20 @@ For recent changes and compatibility issues, please consult the
 [Changes](https://raw.githubusercontent.com/KorAP/Krill/master/Changes)
 file.
 
+**Contributions to Krill are very welcome!**
+Before contribution, please reformat your code according to the korap
+style guideline, provided by means of an
+[Eclipse style sheet](https://raw.githubusercontent.com/KorAP/Krill/master/korap-style.xml).
+You can either reformat using [Eclipse](http://eclipse.org/) or using
+[Maven](https://maven.apache.org/) with the command
+
+  $ mvn java-formatter:format
+
 Krill is published under the
 [BSD-2 License](https://raw.githubusercontent.com/KorAP/Krill/master/LICENSE).
 
 To cite this work, please ...
+
 
 ## References and bundled Software
 
