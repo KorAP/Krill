@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
@@ -95,9 +96,8 @@ public class SpanAttributeQuery extends SimpleSpanQuery {
     public String toString(String field) {
         StringBuilder sb = new StringBuilder();
         sb.append("spanAttribute(");
+		if (negation) sb.append("!");
         sb.append(firstClause.toString(field));
-        if (negation)
-            sb.append(", not");
         sb.append(")");
         sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();

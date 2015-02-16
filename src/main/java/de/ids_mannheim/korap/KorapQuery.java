@@ -1,6 +1,8 @@
 package de.ids_mannheim.korap;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.lucene.util.automaton.RegExp;
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSubspanQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWithAttributeQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
@@ -752,28 +755,28 @@ public class KorapQuery extends Notifications {
         // Branch on type
         switch (type) {
         case "korap:term":
-            String match = "match:eq";
-            if (json.has("match"))
-                match = json.get("match").asText();
-            
-            switch (match) {
-
-            case "match:ne":
-                if (DEBUG)
-                    log.trace("Term is negated");
-
-                SpanSegmentQueryWrapper ssqw =
-                    (SpanSegmentQueryWrapper) this._termFromJson(json);
-
-                ssqw.makeNegative();
-
-                return this.seg().without(ssqw);
-
-            case "match:eq":
+//            String match = "match:eq";
+//            if (json.has("match"))
+//                match = json.get("match").asText();
+//            
+//            switch (match) {
+//
+//            case "match:ne":
+//                if (DEBUG)
+//                    log.trace("Term is negated");
+//
+//                SpanSegmentQueryWrapper ssqw =
+//                    (SpanSegmentQueryWrapper) this._termFromJson(json);
+//
+//                ssqw.makeNegative();
+//
+//                return this.seg().without(ssqw);
+//
+//            case "match:eq":
                 return this._termFromJson(json);
-            };
-
-            throw new QueryException(741, "Match relation unknown");
+//            };
+//
+//            throw new QueryException(741, "Match relation unknown");
 
         case "korap:termGroup":
 
@@ -827,12 +830,11 @@ public class KorapQuery extends Notifications {
     // Deserialize korap:term
     private SpanQueryWrapper _termFromJson (JsonNode json)
         throws QueryException {
-
+    	
         if (!json.has("key") || json.get("key").asText().length() < 1) {
-            throw new QueryException(
-                740,
-                "Key definition is missing in term or span"
-            );
+			if (!json.has("attr"))
+				throw new QueryException(740,
+						"Key definition is missing in term or span");
         };
 	    
         if (!json.has("@type")) {
@@ -882,12 +884,6 @@ public class KorapQuery extends Notifications {
             case "const":
                 layer = "c";
                 break;
-
-                /*
-                  case "cat":
-                  layer = "c";
-                  break;
-                */
             };
 
             if (isCaseInsensitive && isTerm) {
@@ -935,22 +931,103 @@ public class KorapQuery extends Notifications {
             };
         };
 
-        if (isTerm)
-            return this.seg(value.toString());
+        if (isTerm){
+
+        	String match = "match:eq";
+			if (json.has("match")) {
+				match = json.get("match").asText();
+			}
+
+			SpanSegmentQueryWrapper ssqw = seg(value.toString());			
+			if (match.equals("match:ne")) {
+				if (DEBUG) log.trace("Term is negated");
+				ssqw.makeNegative();
+				return this.seg().without(ssqw);
+			} 
+			else if (match.equals("match:eq")) {
+				return ssqw;
+			} 
+			else {
+				throw new QueryException(741, "Match relation unknown");
+			}
+        }
 
         if (json.has("attr")) {
-            this.addWarning(
-                768,
-                "Attributes are currently not supported - results may not be correct"
-            );
+			JsonNode attrNode = json.get("attr");
+			if (!attrNode.has("@type")) {
+				throw new QueryException(701,
+						"JSON-LD group has no @type attribute");
+			}
 
-            // SpanQueryWrapper attrQueryWrapper =
-            // _attrFromJson(json.get("attr"));
-            // if (attrQueryWrapper != null) {
-            // return seg SpanElementWithAttributeQueryWrapper
-            // }
+			if (value.toString().isEmpty()) {
+				// attribute with arbitraty elements
+
+				this.addWarning(771,
+						"Arbitraty elements with attributes are currently not supported.");
+				return null;
+			}
+
+			SpanQueryWrapper elementWithIdWrapper = tag(value.toString());
+			if (elementWithIdWrapper == null) {
+				return null;
+			}
+
+			if (attrNode.get("@type").asText().equals("korap:term")) {
+				SpanQueryWrapper attrWrapper = _attrFromJson(json.get("attr"));
+				if (attrWrapper != null) {
+					return new SpanWithAttributeQueryWrapper(
+							elementWithIdWrapper, attrWrapper);
+				}
+				else {
+					throw new QueryException(747, "Attribute is null");
+				}
+			} 
+			else if (attrNode.get("@type").asText().equals("korap:termGroup")) {
+				if (!attrNode.has("relation")) {
+					throw new QueryException(743, "Term group expects a relation");
+				}
+
+				if (!attrNode.has("operands")) {
+					throw new QueryException(742, "Term group needs operand list");
+				}
+
+				String relation = attrNode.get("relation").asText();
+				JsonNode operands = attrNode.get("operands");
+
+				SpanQueryWrapper attrWrapper;
+				if ("relation:and".equals(relation)) {
+					List<SpanQueryWrapper> wrapperList = new ArrayList<SpanQueryWrapper>();
+					for (JsonNode operand : operands) {
+						attrWrapper = _termFromJson(operand);
+						if (attrWrapper == null) {
+							throw new QueryException(747, "Attribute is null");
+						}
+						wrapperList.add(attrWrapper);
+					}
+
+					return new SpanWithAttributeQueryWrapper(
+							elementWithIdWrapper, wrapperList);
+				}
+				else if ("relation:or".equals(relation)){
+					SpanAlterQueryWrapper saq = new SpanAlterQueryWrapper(field);
+					for (JsonNode operand : operands) {
+						attrWrapper = _termFromJson(operand);
+						if (attrWrapper == null) {
+							throw new QueryException(747, "Attribute is null");
+						}
+						saq.or(new SpanWithAttributeQueryWrapper(
+								elementWithIdWrapper, attrWrapper));
+					}
+					return saq;
+				}
+				else {
+					throw new QueryException(716, "Unknown relation");
+				}
+			}
+			else {
+	            this.addWarning(715, "Attribute type is not supported");
+	        }
         };
-
         return this.tag(value.toString());
     };
 
@@ -959,39 +1036,24 @@ public class KorapQuery extends Notifications {
     private SpanQueryWrapper _attrFromJson (JsonNode attrNode)
         throws QueryException {
 
-        if (!attrNode.has("@type")) {
-            throw new QueryException(
-                701,
-                "JSON-LD group has no @type attribute"
+		if (attrNode.has("key")) {
+			return _termFromJson(attrNode);
+		} 
+		else if (attrNode.has("tokenarity") || attrNode.has("arity")) {
+			this.addWarning(770, "Arity attributes are currently not supported"
+					+ " - results may not be correct"
             );
-        };
-
-        if (attrNode.get("@type").asText().equals("korap:term")) {
-            if (attrNode.has("tokenarity") || attrNode.has("arity")) {
-                this.addWarning(
-                    770,
-                    "Arity attributes are currently not supported" +
-                    " - results may not be correct"
+		} 
+		else if (attrNode.has("root")) {
+			String rootValue = attrNode.get("root").asText();
+			if (rootValue.equals("true") || rootValue.equals("false")) {
+				return new SpanAttributeQueryWrapper(
+						new SpanSimpleQueryWrapper("tokens", "@root",
+								Boolean.valueOf(rootValue))
                 );
-            };
-
-            if (attrNode.has("root")) {
-                String rootValue = attrNode.get("root").asText();
-                if (rootValue.equals("true") || rootValue.equals("false")) {
-                    return new SpanAttributeQueryWrapper(
-                        new SpanSimpleQueryWrapper("tokens", "@root"),
-                        Boolean.valueOf(rootValue)
-                    );
-                }
-                // wrong root value
             }
         }
-        // else if termnode
-        else {
-            this.addWarning(715, "Attribute type is not supported");
-        }
-
-        return null;
+		return null;
     }
 
 

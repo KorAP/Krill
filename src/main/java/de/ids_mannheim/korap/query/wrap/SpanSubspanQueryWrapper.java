@@ -9,9 +9,6 @@ import de.ids_mannheim.korap.query.SpanSubspanQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
- * Automatically handle the length parameter if it is less than 0, then no
- * SpanSubspanQuery is created, but a SpanQuery for the subquery ?
- * 
  * @author margaretha, diewald
  * 
  */
@@ -102,15 +99,10 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 
 	@Override
 	public SpanQuery toQuery() throws QueryException {
-
-		if (this.isNull()) {
-			// if (DEBUG) log.warn("Subquery of SpanSubspanquery is null.");
-			return null;
-		}
+		if (this.isNull()) { return null; }
 
 		SpanQuery sq = subquery.retrieveNode(this.retrieveNode).toQuery();
-		if (sq == null)
-			return null;
+		if (sq == null) return null;
 		if (sq instanceof SpanTermQuery) {
 			if (subquery.isNegative()) {
 				return sq;

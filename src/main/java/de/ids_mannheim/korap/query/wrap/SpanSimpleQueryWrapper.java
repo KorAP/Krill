@@ -12,6 +12,11 @@ public class SpanSimpleQueryWrapper extends SpanQueryWrapper {
         this.query = new SpanTermQuery(new Term(field, term));
     };
 
+	public SpanSimpleQueryWrapper(String field, String term, boolean value) {
+		this(field, term);
+		this.isNegative = !value;
+	}
+
     public SpanSimpleQueryWrapper (SpanQuery query) {
         this.isNull = false;
         this.query = query;

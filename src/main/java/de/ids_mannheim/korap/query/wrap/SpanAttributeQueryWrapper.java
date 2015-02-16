@@ -6,15 +6,26 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
+/**
+ * @author margaretha
+ * */
 public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
 
-    boolean isNegation = false;
     private SpanQueryWrapper subquery;
 
-    public SpanAttributeQueryWrapper (SpanQueryWrapper sqw, boolean inclusion) {
+	public SpanAttributeQueryWrapper(SpanQueryWrapper sqw) {
+		if (sqw == null) {
+			isNull = true;
+			return;
+		}
+		if (sqw.isEmpty()) {
+			isEmpty = true;
+			return;
+		}
+
         this.subquery = sqw;
-        if (!inclusion) {
-            this.isNegation = true;
+		if (sqw.isNegative) {
+			this.isNegative = true;
         };
 
         if (sqw.maybeUnsorted())
@@ -22,13 +33,20 @@ public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
     };
 
     @Override
-    public SpanQuery toQuery() throws QueryException {
-
+	public SpanQuery toQuery() throws QueryException {
+    	if (isNull || isEmpty) return null;
+    		
         SpanQuery sq = subquery.retrieveNode(this.retrieveNode).toQuery();
+		if (sq == null) {
+			isNull = true;
+			return null;
+		}
+		
         if (sq instanceof SpanTermQuery) {
-            return new SpanAttributeQuery((SpanTermQuery) sq, isNegation, true);
+			return new SpanAttributeQuery((SpanTermQuery) sq, isNegative, true);
         }
-
-        return null; // or exception??
+        else {
+        	throw new IllegalArgumentException("The subquery is not a SpanTermQuery.");
+        }		
     }
 }

@@ -1,0 +1,19 @@
+{
+    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+    "errors": [],
+    "warnings": [],
+    "messages": [],
+    "collection": {},
+    "query": {
+        "@type": "korap:span",
+        "attr": {
+            "@type": "korap:term",
+            "arity": {
+                "@type": "korap:boundary",
+                "min": 2,
+                "max": 2
+            }
+        }
+    },
+    "meta": {}
+}
