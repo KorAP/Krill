@@ -11,7 +11,7 @@ import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.SearchContext;
-import de.ids_mannheim.korap.KorapFilter;
+import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.KorapResult;
 import java.nio.file.Files;
 import java.nio.file.FileSystem;
@@ -97,7 +97,7 @@ public class TestKorapSearch {
 	        new KorapQuery("tokens").seg("s:Buchstaben")
         );
         ks.getCollection().filter(
-            new KorapFilter().and("textClass", "reisen")
+            new CollectionBuilder().and("textClass", "reisen")
         );
         ks.setCount(3);
         ks.setStartIndex(5);
@@ -913,7 +913,7 @@ public class TestKorapSearch {
         assertEquals(0, kc.numberOf("documents"));
 
         kc.extend(
-            new KorapFilter().or("corpusSigle", "BZK")
+            new CollectionBuilder().or("corpusSigle", "BZK")
         );
         ks.setCollection(kc);
         assertEquals(1, kc.numberOf("documents"));

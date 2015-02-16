@@ -36,6 +36,24 @@ import de.ids_mannheim.korap.util.QueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * KorapIndex implements a simple API for searching in and writing to a
+ * Lucene index and requesting several information about the index' nature.
+ * <br />
+ *
+ * <blockquote><pre>
+ *   KorapIndex ki = new KorapIndex(
+ *       new MMapDirectory(new File("/myindex"))
+ *   );
+ * </pre></blockquote>
+ *
+ * Properties can be stored in a properies file called 'index.properties'.
+ * Relevant properties are <code>lucene.version</code> and
+ * <code>lucene.name</code>.
+ *
+ * @author diewald
+ */
+
 /*
   TODO: Add word count as a meta data field!
   TODO: Validate document import!
@@ -61,25 +79,6 @@ import org.slf4j.LoggerFactory;
   -> search for frequencies of VVFIN/gehen
   -> c:VVFIN:[^:]*?:gehen:past:...
 */
-
-/**
- *
- * KorapIndex implements a simple API for searching in and writing to a
- * Lucene index and requesting several information about the index' nature.
- * <br />
- *
- * <pre>
- *   KorapIndex ki = new KorapIndex(
- *       new MMapDirectory(new File("/myindex"))
- *   );
- * </pre>
- *
- * Properties can be stored in a properies file called 'index.properties'.
- * Relevant properties are <code>lucene.version</code> and
- * <code>lucene.name</code>.
- *
- * @author diewald
- */
 public class KorapIndex {
 
     // Todo: Use configuration
@@ -468,6 +467,7 @@ public class KorapIndex {
      * @param type The type of meta information,
      *        e.g. <i>documents</i> or <i>sentences</i> as a string.
      * @return The number of the occurrences.
+     * @see KorapCollection#numberOf
      */
     public long numberOf (KorapCollection collection,
                           String field,
@@ -524,7 +524,17 @@ public class KorapIndex {
     };
 
 
-
+    /**
+     * Search for the number of occurrences of different types,
+     * e.g. <i>documents</i>, <i>sentences</i> etc.
+     *
+     * @param field The field containing the textual data and the
+     *        annotations as a string.
+     * @param type The type of meta information,
+     *        e.g. <i>documents</i> or <i>sentences</i> as a string.
+     * @return The number of the occurrences.
+     * @see KorapCollection#numberOf
+     */
     public long numberOf (String field, String type) {
         return this.numberOf(new KorapCollection(this), field, type);
     };
@@ -538,6 +548,7 @@ public class KorapIndex {
      * @param type The type of meta information,
      *        e.g. <i>documents</i> or <i>sentences</i> as a string.
      * @return The number of the occurrences.
+     * @see KorapCollection#numberOf
      */
     public long numberOf (String type) {
         return this.numberOf("tokens", type);

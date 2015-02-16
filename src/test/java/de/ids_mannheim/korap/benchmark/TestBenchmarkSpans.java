@@ -6,7 +6,6 @@ import java.io.*;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapCollection;
-import de.ids_mannheim.korap.KorapFilter;
 import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapQuery;

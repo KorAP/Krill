@@ -5,7 +5,6 @@ import java.io.*;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapCollection;
-import de.ids_mannheim.korap.KorapFilter;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.collection.BooleanFilter;
@@ -43,7 +42,7 @@ public class TestKorapCollectionLegacy {
 	};
 	ki.commit();
 
-	KorapFilter kf = new KorapFilter();
+	CollectionBuilder kf = new CollectionBuilder();
 
 	// Create Virtual collections:
 	KorapCollection kc = new KorapCollection(ki);
@@ -118,7 +117,7 @@ public class TestKorapCollectionLegacy {
 	    ki.commit();
 	};
 
-	KorapFilter kf = new KorapFilter();
+	CollectionBuilder kf = new CollectionBuilder();
 
 	// Create Virtual collections:
 	KorapCollection kc = new KorapCollection(ki);
@@ -198,7 +197,7 @@ public class TestKorapCollectionLegacy {
 
 	ki.commit();
 
-	KorapFilter kf = new KorapFilter();
+	CollectionBuilder kf = new CollectionBuilder();
 
 	// Create Virtual collections:
 	KorapCollection kc = new KorapCollection(ki);

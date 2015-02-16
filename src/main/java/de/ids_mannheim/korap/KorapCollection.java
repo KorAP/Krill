@@ -8,6 +8,7 @@ import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.collection.BooleanFilter;
 import de.ids_mannheim.korap.collection.FilterOperation;
+import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.response.Notifications;
 
 import org.apache.lucene.search.spans.SpanQuery;
@@ -26,28 +27,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * That's a pretty ugly API to
- * create virtual collections.
- * It works - so I got that going for
- * me, which is nice.
+ * Create a Virtual Collection of documents by means of a KoralQuery
+ * or by applying manual filters and extensions on Lucene fields.
+ *
+ * <blockquote><pre>
+ *   KorapCollection kc = new KorapCollection(json);
+ *   kc.filterUIDS("a1", "a2", "a3");
+ * </pre></blockquote>
+ *
+ * <strong>Warning</strong>: This API is deprecated and will
+ * be replaced in future versions. It supports legacy versions of
+ * KoralQuery.
  *
  * @author diewald
  */
-
-
-// TODO: Make a cache for the bits!!! DELETE IT IN CASE OF AN EXTENSION OR A FILTER!
-// TODO: Maybe use randomaccessfilterstrategy
-// TODO: Maybe a constantScoreQuery can make things faster?
-
-// THIS MAY CHANGE for stuff like combining virtual collections
-// See http://mail-archives.apache.org/mod_mbox/lucene-java-user/
-//     200805.mbox/%3C17080852.post@talk.nabble.com%3E
-
+/*
+ * TODO: Make a cache for the bits
+ *       Delete it in case of an extension or a filter
+ * TODO: Maybe use randomaccessfilterstrategy
+ * TODO: Maybe a constantScoreQuery can make things faster?
+ * See http://mail-archives.apache.org/mod_mbox/lucene-java-user/
+ *     200805.mbox/%3C17080852.post@talk.nabble.com%3E
+ */
 public class KorapCollection extends Notifications {
     private KorapIndex index;
     private KorapDate created;
     private String id;
-    //    private String error;
     private ArrayList<FilterOperation> filter;
     private int filterCount = 0;
     
@@ -62,10 +67,13 @@ public class KorapCollection extends Notifications {
         this.filter = new ArrayList<FilterOperation>(5);
     };
 
+
     /**
-     * Construct a new KorapCollection by passing a JSON query.
-     * This supports collections with key "collection" and
+     * Construct a new KorapCollection by passing a KoralQuery.
+     * This supports collections with the key "collection" and
      * legacy collections with the key "collections".
+     *
+     * @param jsonString The virtual collection as a KoralQuery.
      */
     public KorapCollection (String jsonString) {
         ObjectMapper mapper = new ObjectMapper();
@@ -73,7 +81,8 @@ public class KorapCollection extends Notifications {
 
         try {
             JsonNode json = mapper.readTree(jsonString);
-
+            
+            // Deserialize from recent collections
             if (json.has("collection")) {
                 this.fromJSON(json.get("collection"));
             }
@@ -90,8 +99,9 @@ public class KorapCollection extends Notifications {
                 };
             };
         }
+        // Some exceptions ...
         catch (QueryException qe) {
-            this.addError(qe.getErrorCode(),qe.getMessage());
+            this.addError(qe.getErrorCode(), qe.getMessage());
         }
         catch (IOException e) {
             this.addError(
@@ -104,11 +114,20 @@ public class KorapCollection extends Notifications {
     };
 
 
+    /**
+     * Construct a new KorapCollection.
+     */
     public KorapCollection () {
         this.filter = new ArrayList<FilterOperation>(5);
     };
 
 
+    /**
+     * Import the "collection" part of a KoralQuery.
+     *
+     * @param jsonString The "collection" part of a KoralQuery.
+     * @throws QueryException
+     */
     public void fromJSON (String jsonString) throws QueryException {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -120,14 +139,26 @@ public class KorapCollection extends Notifications {
     };
 
 
+    /**
+     * Import the "collection" part of a KoralQuery.
+     *
+     * @param json The "collection" part of a KoralQuery
+     *        as a {@link JsonNode} object.
+     * @throws QueryException
+     */
     public void fromJSON (JsonNode json) throws QueryException {
-        this.filter(new KorapFilter(json));
+        this.filter(new CollectionBuilder(json));
     };
 
 
     /**
-     * Legacy API for collection filters.
+     * Import the "collections" part of a KoralQuery.
+     * This method is deprecated and will vanish in future versions.
+     *
+     * @param jsonString The "collections" part of a KoralQuery.
+     * @throws QueryException
      */
+    @Deprecated
     public void fromJSONLegacy (String jsonString) throws QueryException {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -140,7 +171,12 @@ public class KorapCollection extends Notifications {
 
 
     /**
-     * Legacy API for collection filters.
+     * Import the "collections" part of a KoralQuery.
+     * This method is deprecated and will vanish in future versions.
+     *
+     * @param json The "collections" part of a KoralQuery
+     *        as a {@link JsonNode} object.
+     * @throws QueryException
      */
     public void fromJSONLegacy (JsonNode json) throws QueryException {
         if (!json.has("@type"))
@@ -151,14 +187,17 @@ public class KorapCollection extends Notifications {
 
         String type = json.get("@type").asText();
 
-        KorapFilter kf = new KorapFilter();
+        CollectionBuilder kf = new CollectionBuilder();
         kf.setBooleanFilter(kf.fromJSONLegacy(json.get("@value"), "tokens"));
+
+        // Filter the collection
         if (type.equals("korap:meta-filter")) {
             if (DEBUG)
                 log.trace("Add Filter LEGACY");
             this.filter(kf);
         }
-
+        
+        // Extend the collection
         else if (type.equals("korap:meta-extend")) {
             if (DEBUG)
                 log.trace("Add Extend LEGACY");
@@ -166,15 +205,27 @@ public class KorapCollection extends Notifications {
         };
     };
 
-    public int getCount() {
-        return this.filterCount;
+
+    /**
+     * Set the {@link KorapIndex} the virtual collection refers to.
+     *
+     * @param index The {@link KorapIndex} the virtual collection refers to.
+     */
+    public void setIndex (KorapIndex index) {
+        this.index = index;
     };
 
-    public void setIndex (KorapIndex ki) {
-        this.index = ki;
-    };
 
-    // The checks asre not necessary
+    /**
+     * Add a filter by means of a {@link BooleanFilter}.
+     *
+     * <strong>Warning</strong>: Filters are part of the collections
+     * legacy API and may vanish without warning.
+     *
+     * @param filter The filter to add to the collection.
+     * @return The {@link KorapCollection} object for chaining.
+     */
+    // TODO: The checks may not be necessary
     public KorapCollection filter (BooleanFilter filter) {
         if (DEBUG)
             log.trace("Added filter: {}", filter.toString());
@@ -199,7 +250,68 @@ public class KorapCollection extends Notifications {
         return this;
     };
 
-    // Filter based on UIDs
+
+    /**
+     * Add a filter by means of a {@link CollectionBuilder} object.
+     *
+     * <strong>Warning</strong>: Filters are part of the collections
+     * legacy API and may vanish without warning.
+     *
+     * @param filter The filter to add to the collection.
+     * @return The {@link KorapCollection} object for chaining.
+     */
+    public KorapCollection filter (CollectionBuilder filter) {
+        return this.filter(filter.getBooleanFilter());
+    };
+
+
+    /**
+     * Add an extension by means of a {@link BooleanFilter}.
+     *
+     * <strong>Warning</strong>: Extensions are part of the collections
+     * legacy API and may vanish without warning.
+     *
+     * @param extension The extension to add to the collection.
+     * @return The {@link KorapCollection} object for chaining.
+     */
+    public KorapCollection extend (BooleanFilter extension) {
+        if (DEBUG)
+            log.trace("Added extension: {}", extension.toString());
+
+        this.filter.add(
+            new FilterOperation(
+                (Filter) new QueryWrapperFilter(extension.toQuery()),
+                true
+            )
+        );
+        this.filterCount++;
+        return this;
+    };
+
+
+    /**
+     * Add an extension by means of a {@link CollectionBuilder} object.
+     *
+     * <strong>Warning</strong>: Extensions are part of the collections
+     * legacy API and may vanish without warning.
+     *
+     * @param extension The extension to add to the collection.
+     * @return The {@link KorapCollection} object for chaining.
+     */
+    public KorapCollection extend (CollectionBuilder extension) {
+        return this.extend(extension.getBooleanFilter());
+    };
+
+
+    /**
+     * Add a filter based on a list of unique document identifiers.
+     * UIDs may be indexed in the field "UID".
+     *
+     * This filter is not part of the legacy API!
+     *
+     * @param uids The list of unique document identifier.
+     * @return The {@link KorapCollection} object for chaining.
+     */
     public KorapCollection filterUIDs (String ... uids) {
         BooleanFilter filter = new BooleanFilter();
         filter.or("UID", uids);
@@ -209,38 +321,55 @@ public class KorapCollection extends Notifications {
     };
 
 
-    public KorapCollection filter (KorapFilter filter) {
-        return this.filter(filter.getBooleanFilter());
-    };
-
-
-    public KorapCollection extend (BooleanFilter filter) {
-        if (DEBUG)
-            log.trace("Added extension: {}", filter.toString());
-        this.filter.add(
-            new FilterOperation(
-                (Filter) new QueryWrapperFilter(filter.toQuery()),
-                true
-            )
-        );
-        this.filterCount++;
-        return this;
-    };
-
-    public KorapCollection extend (KorapFilter filter) {
-        return this.extend(filter.getBooleanFilter());
-    };
-
-    
-    public ArrayList<FilterOperation> getFilters () {
+    /**
+     * Get the list of filters constructing the collection.
+     *
+     * <strong>Warning</strong>: This is part of the collections
+     * legacy API and may vanish without warning.
+     *
+     * @return The list of filters.
+     */
+    public List<FilterOperation> getFilters () {
         return this.filter;
     };
 
-    public FilterOperation getFilter (int i) {
-        return this.filter.get(i);
+
+    /**
+     * Get a certain {@link FilterOperation} from the list of filters
+     * constructing the collection by its numerical index.
+     *
+     * <strong>Warning</strong>: This is part of the collections
+     * legacy API and may vanish without warning.
+     *
+     * @param index The index position of the requested {@link FilterOperation}.
+     * @return The {@link FilterOperation} at the certain list position.
+     */
+    public FilterOperation getFilter (int index) {
+        return this.filter.get(index);
     };
 
 
+    /**
+     * Get the number of filter operations constructing this collection.
+     *
+     * <strong>Warning</strong>: This is part of the collections
+     * legacy API and may vanish without warning.
+     *
+     * @return The number of filter operations constructing this collection.
+     */
+    public int getCount() {
+        return this.filterCount;
+    };
+
+
+    /**
+     * Generate a string representatio of the virtual collection.
+     *
+     * <strong>Warning</strong>: This currently does not generate a valid
+     * KoralQuery string, so this may change in a future version.
+     *
+     * @return A string representation of the virtual collection.
+     */
     public String toString () {
         StringBuilder sb = new StringBuilder();
         for (FilterOperation fo : this.filter) {
@@ -249,9 +378,19 @@ public class KorapCollection extends Notifications {
         return sb.toString();
     };
 
+
     /**
-     * Search in the virtual collection. This is just used for
-     * testing purposes and not recommended for serious usage. 
+     * Search in the virtual collection.
+     * This is mostly used for testing purposes
+     * and <strong>is not recommended</strong>
+     * as a common search API.
+     *
+     * Please use {@link KorapQuery#run} instead.
+     *
+     * @param query a {@link SpanQuery} to apply on the
+     *        virtual collection.
+     * @return A {@link KorapResult} object representing the search's
+     *         result.
      */
     public KorapResult search (SpanQuery query) {
         return this.index.search(
@@ -264,37 +403,47 @@ public class KorapCollection extends Notifications {
         );
     };
 
+
+    /**
+     * Create a bit vector representing the live documents of the
+     * virtual collection to be used in searches.
+     *
+     * @param The {@link AtomicReaderContext} to search in.
+     * @return A bit vector representing the live documents of the
+     *         virtual collection.
+     * @throws IOException
+     */
     public FixedBitSet bits (AtomicReaderContext atomic) throws IOException  {
-        /*
-          Use Bits.MatchAllBits(int len)
-        */
+        // TODO: Probably use Bits.MatchAllBits(int len)
         boolean noDoc = true;
         FixedBitSet bitset;
-
+        
+        // There are filters set
         if (this.filterCount > 0) {
             bitset = new FixedBitSet(atomic.reader().maxDoc());
 
-            ArrayList<FilterOperation> filters = (ArrayList<FilterOperation>) this.filter.clone();
+            ArrayList<FilterOperation> filters =
+                (ArrayList<FilterOperation>) this.filter.clone();
 
             FilterOperation kcInit = filters.remove(0);
             if (DEBUG)
                 log.trace("FILTER: {}", kcInit);
-
+            
             // Init vector
             DocIdSet docids = kcInit.filter.getDocIdSet(atomic, null);
 
             DocIdSetIterator filterIter = docids.iterator();
-
+            
+            // The filter has an effect
             if (filterIter != null) {
-                if (DEBUG)
-                    log.trace("InitFilter has effect");
+                if (DEBUG) log.trace("InitFilter has effect");
                 bitset.or(filterIter);
                 noDoc = false;
             };
-
+            
+            // Apply all filters sequentially
             for (FilterOperation kc : filters) {
-                if (DEBUG)
-                    log.trace("FILTER: {}", kc);
+                if (DEBUG) log.trace("FILTER: {}", kc);
 
                 // TODO: BUG???
                 docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null : bitset);
@@ -310,22 +459,16 @@ public class KorapCollection extends Notifications {
                     };
                     continue;
                 };
-                if (kc.isExtension()) {
-                    // System.err.println("Term found!");
-                    // System.err.println("Old Card:" + bitset.cardinality());
+                if (kc.isExtension())
                     bitset.or(filterIter);
-                    // System.err.println("New Card:" + bitset.cardinality());
-                }
-                else {
+                else
                     bitset.and(filterIter);
-                };
             };
 
             if (!noDoc) {
                 FixedBitSet livedocs = (FixedBitSet) atomic.reader().getLiveDocs();
-                if (livedocs != null) {
+                if (livedocs != null)
                     bitset.and(livedocs);
-                };
             };
         }
         else {
@@ -335,13 +478,39 @@ public class KorapCollection extends Notifications {
         return bitset;
     };
 
-    public long numberOf (String foundry, String type) throws IOException {
+
+    /**
+     * Search for the number of occurrences of different types,
+     * e.g. <i>documents</i>, <i>sentences</i> etc. in the virtual
+     * collection.
+     *
+     * @param field The field containing the textual data and the
+     *        annotations as a string.
+     * @param type The type of meta information,
+     *        e.g. <i>documents</i> or <i>sentences</i> as a string.
+     * @return The number of the occurrences.
+     * @throws IOException
+     * @see KorapIndex#numberOf
+     */
+    public long numberOf (String field, String type) throws IOException {
         if (this.index == null)
             return (long) -1;
 
-        return this.index.numberOf(this, foundry, type);
+        return this.index.numberOf(this, field, type);
     };
 
+
+    /**
+     * Search for the number of occurrences of different types,
+     * e.g. <i>documents</i>, <i>sentences</i> etc. in the virtual
+     * collection, in the <i>base</i> foundry.
+     *
+     * @param type The type of meta information,
+     *        e.g. <i>documents</i> or <i>sentences</i> as a string.
+     * @return The number of the occurrences.
+     * @throws IOException
+     * @see KorapIndex#numberOf
+     */
     public long numberOf (String type) throws IOException {
         if (this.index == null)
             return (long) -1;
@@ -349,9 +518,9 @@ public class KorapCollection extends Notifications {
         return this.index.numberOf(this, "tokens", type);
     };
 
-    // This is only for testing purposes!
+
     @Deprecated
-    public HashMap getTermRelation(String field) throws Exception {
+    public HashMap getTermRelation (String field) throws Exception {
         if (this.index == null) {
             HashMap<String,Long> map = new HashMap<>(1);
             map.put("-docs", (long) 0);
@@ -361,8 +530,9 @@ public class KorapCollection extends Notifications {
         return this.index.getTermRelation(this, field);
     };
 
+
     @Deprecated
-    public String getTermRelationJSON(String field) throws IOException {
+    public String getTermRelationJSON (String field) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         StringWriter sw = new StringWriter();
         sw.append("{\"field\":");

@@ -17,7 +17,8 @@
 	  renamed /analysis to /model,
 	  renamed shrink() to focus(),
 	  removed KorapPrimaryData,
-          fixed a lot of wrong tests for WithinSpans (diewald)
+          fixed a lot of wrong tests for WithinSpans,
+	  renamed KorapFilter to /collection/CollectionBuilder (diewald)
         - [feature] Improved deserialization of SpanSubSpanQueries
           (margaretha)
 	- [feature] Introducing the potential need for resorting queries

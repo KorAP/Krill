@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap;
+package de.ids_mannheim.korap.collection;
 
 import de.ids_mannheim.korap.collection.BooleanFilter;
 import de.ids_mannheim.korap.collection.RegexFilter;
@@ -13,37 +13,36 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-/*
-  Todo: WildCardFilter!
-  Support: delete boolean etc.
-  Support: supports foundries
-*/
-
 /**
- * @author diewald
- *
- * KorapFilter implements a simple API for creating meta queries
+ * CollectionBuilder implements a simple API for creating queries
  * constituing Virtual Collections.
+ *
+ * @author diewald
  */
-public class KorapFilter {
+/*
+ * Todo: WildCardFilter!
+ * Todo: Support delete boolean etc.
+ * Todo: Supports foundries
+ */
+public class CollectionBuilder {
     private BooleanFilter filter;
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapFilter.class);
+    private final static Logger log = LoggerFactory.getLogger(CollectionBuilder.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
     
-    public KorapFilter () {
+    public CollectionBuilder () {
         filter = new BooleanFilter();
     };
 
-    public KorapFilter (JsonNode json) throws QueryException {
+    public CollectionBuilder (JsonNode json) throws QueryException {
         filter = this.fromJSON(json, "tokens");
     };
 
-    protected BooleanFilter fromJSON (JsonNode json, String field) throws QueryException {
+
+    public BooleanFilter fromJSON (JsonNode json, String field) throws QueryException {
         BooleanFilter bfilter = new BooleanFilter();
 
         // TODO: THIS UNFORTUNATELY BREAKS TESTS
@@ -70,7 +69,7 @@ public class KorapFilter {
 
                 if (!json.has("value"))
                     throw new QueryException(612, "Dates require value fields");
-//-
+
                 String dateStr = json.get("value").asText();
                 if (json.has("match"))
                     match = json.get("match").asText();
@@ -87,18 +86,17 @@ public class KorapFilter {
                     bfilter.till(dateStr);
                     break;
                 };
-                /*
-                  No good reason for gt or lt
-                */
+                // No good reason for gt or lt
                 return bfilter;
             }
+
             else if (valtype.equals("type:string")) {
                 if (json.has("match"))
                     match = json.get("match").asText();
 
-                if (match.equals("match:eq")) {
+                if (match.equals("match:eq"))
                     bfilter.and(key, json.get("value").asText());
-                };
+
                 return bfilter;
             };
         }
@@ -106,7 +104,6 @@ public class KorapFilter {
         // nested group
         else if (type.equals("korap:docGroup")) {
             if (!json.has("operands") || !json.get("operands").isArray())
-//-
                 throw new QueryException(612, "Groups need operands");
 
             String operation = "operation:and";
@@ -116,30 +113,27 @@ public class KorapFilter {
             BooleanFilter group = new BooleanFilter();
 
             for (JsonNode operand : json.get("operands")) {
-                if (operation.equals("operation:and")) {
+                if (operation.equals("operation:and"))
                     group.and(this.fromJSON(operand, field));
-                }
-                else if (operation.equals("operation:or")) {
+
+                else if (operation.equals("operation:or"))
                     group.or(this.fromJSON(operand, field));
-                }
-                else {
+
+                else
                     throw new QueryException(613, "Unknown document group operation");
-                };
             };
             bfilter.and(group);
             return bfilter;
         }
 
         // Unknown type
-        else {
-// -
-            throw new QueryException(613, "Collection query type has to be doc or docGroup");
-        };
-
+        else throw new QueryException(613, "Collection query type has to be doc or docGroup");
+        
         return new BooleanFilter();
     };
-
-	/*
+    
+	
+    /*
       String type = json.get("@type").asText();
       String field = _getField(json);
 
@@ -153,13 +147,11 @@ public class KorapFilter {
 	    };
 	};
 	*/
-    //    };
     
-    protected BooleanFilter fromJSONLegacy (JsonNode json, String field)
+    public BooleanFilter fromJSONLegacy (JsonNode json, String field)
         throws QueryException {
         BooleanFilter bfilter = new BooleanFilter();
 
-//-
         if (!json.has("@type"))
             throw new QueryException(612, "JSON-LD group has no @type attribute");
 	
@@ -177,21 +169,16 @@ public class KorapFilter {
             return bfilter;
         }
         else if (type.equals("korap:group")) {
-//-
             if (!json.has("relation"))
                 throw new QueryException(612, "Group needs relation");
 
             if (!json.has("operands"))
-//-
                 throw new QueryException(612, "Group needs operand list");
-
-		//return bfilter;
 
             String dateStr, till;
             JsonNode operands = json.get("operands");
 
             if (!operands.isArray())
-//-
                 throw new QueryException(612, "Group needs operand list");
 
             if (DEBUG)
@@ -226,7 +213,6 @@ public class KorapFilter {
                 break;
 
             case "and":
-//-
                 if (operands.size() < 1)
                     throw new QueryException(612, "Operation needs at least two operands");
 
@@ -237,7 +223,6 @@ public class KorapFilter {
                 break;
 
             case "or":
-//-
                 if (operands.size() < 1)
                     throw new QueryException(612, "Operation needs at least two operands");
 
@@ -247,7 +232,6 @@ public class KorapFilter {
                 bfilter.and(group);
                 break;
 
-//-
             default:
                 throw new QueryException(613, "Relation is not supported");
             };
@@ -295,8 +279,6 @@ public class KorapFilter {
     };
 
     public BooleanFilter or (String type, String ... terms) {
-        if (DEBUG)
-            log.debug("Got some terms here");
         BooleanFilter bf = new BooleanFilter();
         bf.or(type, terms);
         return bf;
@@ -342,7 +324,7 @@ public class KorapFilter {
         return new RegexFilter(regex);
     };
 
-    public BooleanFilter getBooleanFilter()  {
+    public BooleanFilter getBooleanFilter ()  {
         return this.filter;
     };
 
