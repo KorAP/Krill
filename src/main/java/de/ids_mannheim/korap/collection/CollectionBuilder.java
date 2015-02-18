@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
  * CollectionBuilder implements a simple API for creating queries
  * constituing Virtual Collections.
  *
+ * <strong>Warning</strong>: The API is likely to change.
+ *
  * @author diewald
  */
 /*
@@ -36,6 +38,10 @@ public class CollectionBuilder {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
     
+
+    /**
+     * Construct a new CollectionBuilder object.
+     */
     public CollectionBuilder () {
         filter = new BooleanFilter();
     };

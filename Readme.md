@@ -3,20 +3,10 @@
 A Corpusdata Retrieval Index using Lucene for Look-Ups
 
 
-## Synopsis
-
-... TODO:
-> Adding data (JSON via server)
-> Querying data (KoralQuery)
-> Show results (JSON)
-
-
 ## Description
 
 Krill is a [Lucene](https://lucene.apache.org/) based search
-engine for large annotated corpora,
-developed at the Institute for German Language (IDS) in Mannheim,
-Germany.
+engine for large annotated corpora.
 
 **The software is in its early stages and not stable yet**
 
@@ -26,7 +16,6 @@ Germany.
 Krill is the reference implementation for
 [KoralQuery](https://github.com/KorAP/Koral), covering
 most of the protocols features, including ...
-
 
 - **Fulltext search**<br>
   "Find all occurrences of the phrase 'sea monster'!"<br>
@@ -63,26 +52,21 @@ At least Java 7,
 [Maven](https://maven.apache.org/).
 Further dependencies are resolved using Maven.
 
+
 ## Setup
+
+To fetch the latest version of Krill ...
 
   $ git clone https://github.com/KorAP/Krill
   $ cd Krill
 
-To run the test suite, type in ...
+To run the test suite ...
 
   $ mvn test
 
-To start the server, type in ...
+To run the server ...
 
   $ mvn compile exec:java
-
-To compile and run the indexer, type ...
-
-  $ mvn compile assembly:single
-
-  $ java -jar target/KorAP-krill-X.XX.jar
-    src/main/resources/korap.conf
-    src/test/resources/examples/
 
 
 ## Caveats
@@ -102,14 +86,36 @@ index, but this is likely to change.
 Copyright 2013-2015, IDS Mannheim, Germany
 
 Krill is developed as part of the [KorAP](https://korap.ids-mannheim.de/)
-Corpus Analysis Platform at the Institute for German Language (IDS).
+Corpus Analysis Platform at the Institute for German Language
+([IDS](http://www1.ids-mannheim.de/)),
+funded by the
+[Leibniz-Gemeinschaft](http://www.leibniz-gemeinschaft.de/en/about-us/leibniz-competition/projekte-2011/2011-funding-line-2/)
+and supported by the [KobRA](http://www.kobra.tu-dortmund.de) project,
+funded by the Federal Ministry of Education and Research
+([BMBF](http://www.bmbf.de/en/)).
 
 For recent changes and compatibility issues, please consult the
 [Changes](https://raw.githubusercontent.com/KorAP/Krill/master/Changes)
 file.
 
-**Contributions to Krill are very welcome!**
-Before contribution, please reformat your code according to the korap
+Krill is published under the
+[BSD-2 License](https://raw.githubusercontent.com/KorAP/Krill/master/LICENSE).
+The Eclipse format style is based on the default style in Eclipse,
+licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html).
+Parts of the test corpus by courtesy of the
+[DeReKo](http://ids-mannheim.de/kl/projekte/korpora/) project.
+
+To cite this work, please refer to:<br>
+Bański, Piotr, Joachim Bingel, Nils Diewald, Elena Frick, Michael Hanl, Marc Kupietz, Piotr Pęzik, Carsten Schnober, and Andreas Witt (2013):
+*KorAP: the new corpus analysis platform at IDS Mannheim*. In: Z. Vetulani and H. Uszkoreit (eds):
+*Human Language Technologies as a Challenge for Computer Science and Linguistics.*
+Proceedings of the 6th Language and Technology Conference. Poznań: Fundacja Uniwersytetu im. A. Mickiewicza. 
+
+
+## Contributions
+
+Contributions to Krill are very welcome!
+Before contributing, please reformat your code changes according to the KorAP
 style guideline, provided by means of an
 [Eclipse style sheet](https://raw.githubusercontent.com/KorAP/Krill/master/korap-style.xml).
 You can either reformat using [Eclipse](http://eclipse.org/) or using
@@ -117,19 +123,12 @@ You can either reformat using [Eclipse](http://eclipse.org/) or using
 
   $ mvn java-formatter:format
 
-Krill is published under the
-[BSD-2 License](https://raw.githubusercontent.com/KorAP/Krill/master/LICENSE).
-
-To cite this work, please ...
-
 
 ## References and bundled Software
 
 Named entities annotated in the test data by CoreNLP were using
 models based on:
 
-  Manaal Faruqui and Sebastian Padó (2010):
-  Training and Evaluating a German Named Entity
-  Recognizer with Semantic Generalization,
-  Proceedings of KONVENS 2010,
-  Saarbrücken, Germany
+Manaal Faruqui and Sebastian Padó (2010):
+*Training and Evaluating a German Named Entity Recognizer with Semantic Generalization*,
+Proceedings of KONVENS 2010, Saarbrücken, Germany
