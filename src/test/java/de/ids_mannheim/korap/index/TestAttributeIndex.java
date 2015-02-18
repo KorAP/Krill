@@ -72,7 +72,7 @@ public class TestAttributeIndex {
                         + "[(1-2)s:e|_2#1-2|<>:div#1-2$<i>2<s>1|<>:a#1-2$<i>2<s>2|@:class=book$<s>2<i>2|@:class=header$<s>1<i>2]"
                         + "[(2-3)s:b|_3#2-3|<>:div#2-3$<i>5<s>1|<>:a#1-2$<i>2<s>2|@:class=header$<s>2<i>2|@:class=book$<s>1<i>5]"
                         + "[(3-4)s:a|_4#3-4|<>:div#3-5$<i>5<s>1|@:class=title$<s>1<i>5]"
-                        + "[(4-5)s:b|_5#4-5|<>:div#4-5$<i>5<s>1|@:class=header$<s>1<i>5|@:class=book$<s>1<i>5|@:class=book$<s>1<i>5]"
+						+ "[(4-5)s:b|_5#4-5|<>:div#4-5$<i>5<s>1|@:class=header$<s>1<i>5|@:class=book$<s>1<i>5]"
                         + "[(5-6)s:d|_6#5-6|<>:s#5-6$<i>6<s>-1|<>:div#5-6$<i>6<s>1|@:class=header$<s>1<i>6]"
                         + "[(6-7)s:d|_7#6-7|<>:s#6-7$<i>7<s>2|<>:div#6-7$<i>7<s>1|@:class=header$<s>1<i>7|@:class=book$<s>2<i>7]");
 
@@ -171,6 +171,51 @@ public class TestAttributeIndex {
         assertEquals(6, kr.getMatch(0).getEndPos());
     }
 
+	/**
+	 * Element with only not attributes
+	 * 
+	 * @throws IOException
+	 * */
+	@Test
+	public void testcase9() throws IOException {
+
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+
+		SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
+				new Term("base", "@:class=book")), true, true);
+		SpanQuery sq = new SpanWithAttributeQuery(new SpanElementQuery("base",
+				"div"), saq, true);
+
+		kr = ki.search(sq, (short) 10);
+		assertEquals(4, kr.getTotalResults());
+		assertEquals(1, kr.getMatch(0).getStartPos());
+		assertEquals(2, kr.getMatch(0).getEndPos());
+		assertEquals(3, kr.getMatch(1).getStartPos());
+		assertEquals(5, kr.getMatch(1).getEndPos());
+		assertEquals(5, kr.getMatch(2).getStartPos());
+		assertEquals(6, kr.getMatch(2).getEndPos());
+		assertEquals(6, kr.getMatch(3).getStartPos());
+		assertEquals(7, kr.getMatch(3).getEndPos());
+
+		List<SpanQuery> sql = new ArrayList<>();
+		sql.add(saq);
+		sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+				"@:class=header")), true, true));
+		sq = new SpanWithAttributeQuery(new SpanElementQuery("base", "div"),
+				sql, true);
+
+		kr = ki.search(sq, (short) 10);
+		assertEquals(1, kr.getTotalResults());
+		assertEquals(3, kr.getMatch(0).getStartPos());
+		assertEquals(5, kr.getMatch(0).getEndPos());
+
+//		for (int i = 0; i < kr.getTotalResults(); i++) {
+//			System.out.println(kr.getMatch(i).getLocalDocID() + " "
+//					+ kr.getMatch(i).startPos + " " + kr.getMatch(i).endPos);
+//		}
+	}
+
     /**
      * same attribute types referring to different element types
      * */
@@ -230,23 +275,111 @@ public class TestAttributeIndex {
     }
 
     /**
-     * Arbitrary elements with a specific attribute This is just spanAttribute
-     * query, to get the elementEnd, you have to use getElementEnd().
-     * Alternatives (unimplemented): 1) store in payload? 2) wrap as a span
-     * */
+	 * Arbitrary elements with a specific attribute.
+	 * */
     @Test
     public void testCase5() throws IOException {
-        ki.addDoc(createFieldDoc1());
+		ki.addDoc(createFieldDoc2());
         ki.commit();
-        SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "@:class=book")), true);
-        kr = ki.search(saq, (short) 10);
-        assertEquals((long) 3, kr.getTotalResults());
+		SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
+				new Term("base", "@:class=book")), true);
 
-        /*
-         * for (int i=0; i< kr.getTotalResults(); i++){ System.out.println(
-         * kr.match(i).getLocalDocID()+" "+ kr.match(i).startPos + " " +
-         * kr.match(i).endPos ); }
-         */
+		SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(saq, true);
+		kr = ki.search(swaq, (short) 10);
+		assertEquals(6, kr.getTotalResults());
+
+		assertEquals(0, kr.getMatch(0).getStartPos());
+		assertEquals(3, kr.getMatch(0).getEndPos());
+		assertEquals(0, kr.getMatch(1).getStartPos());
+		assertEquals(5, kr.getMatch(1).getEndPos());
+		assertEquals(1, kr.getMatch(2).getStartPos());
+		assertEquals(2, kr.getMatch(2).getEndPos());
+		assertEquals(2, kr.getMatch(3).getStartPos());
+		assertEquals(5, kr.getMatch(3).getEndPos());
+		assertEquals(4, kr.getMatch(4).getStartPos());
+		assertEquals(5, kr.getMatch(4).getEndPos());
+		assertEquals(6, kr.getMatch(5).getStartPos());
+		assertEquals(7, kr.getMatch(5).getEndPos());
     }
+
+	/**
+	 * Arbitrary elements with multiple attributes.
+	 * */
+	@Test
+	public void testCase6() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+
+		List<SpanQuery> sql = new ArrayList<>();
+		sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+				"@:class=header")), true));
+		sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+				"@:class=book")), true));
+
+		SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sql, true);
+		kr = ki.search(swaq, (short) 10);
+		assertEquals(2, kr.getTotalResults());
+
+		assertEquals(0, kr.getMatch(0).getStartPos());
+		assertEquals(3, kr.getMatch(0).getEndPos());
+		assertEquals(4, kr.getMatch(1).getStartPos());
+		assertEquals(5, kr.getMatch(1).getEndPos());
+
+//		for (int i = 0; i < kr.getTotalResults(); i++) {
+//			System.out.println(kr.getMatch(i).getLocalDocID() + " "
+//					+ kr.getMatch(i).startPos + " " + kr.getMatch(i).endPos);
+//		}
+	}
+
+	/**
+	 * Arbitrary elements with an attribute and a not attribute.
+	 * */
+	@Test
+	public void testCase7() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+
+		List<SpanQuery> sql = new ArrayList<>();
+		sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+				"@:class=header")), true, true));
+		sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+				"@:class=book")), true));
+
+		SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sql, true);
+		kr = ki.search(swaq, (short) 10);
+		assertEquals(4, kr.getTotalResults());
+
+		assertEquals(0, kr.getMatch(0).getStartPos());
+		assertEquals(5, kr.getMatch(0).getEndPos());
+		assertEquals(1, kr.getMatch(1).getStartPos());
+		assertEquals(2, kr.getMatch(1).getEndPos());
+		assertEquals(2, kr.getMatch(2).getStartPos());
+		assertEquals(5, kr.getMatch(2).getEndPos());
+		assertEquals(6, kr.getMatch(3).getStartPos());
+		assertEquals(7, kr.getMatch(3).getEndPos());
+
+//		for (int i = 0; i < kr.getTotalResults(); i++) {
+//			System.out.println(kr.getMatch(i).getLocalDocID() + " "
+//					+ kr.getMatch(i).startPos + " " + kr.getMatch(i).endPos);
+//		}
+	}
+
+	/**
+	 * Arbitrary elements with only not attributes.
+	 * */
+	@Test(expected = IllegalArgumentException.class)
+	public void testCase8() throws IOException {
+		ki.addDoc(createFieldDoc2());
+		ki.commit();
+
+		List<SpanQuery> sql = new ArrayList<>();
+		sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+				"@:class=header")), true, true));
+		sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+				"@:class=book")), true, true));
+
+		SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sql, true);
+		kr = ki.search(swaq, (short) 10);
+	}
+
 }

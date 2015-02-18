@@ -8,6 +8,10 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
+
+import de.ids_mannheim.korap.query.spans.AttributeSpans;
+import de.ids_mannheim.korap.query.spans.ElementSpans;
 
 /**
  * A base class for Spanqueries. It added some properties and methods to the
@@ -110,28 +114,16 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
      * */
     public SimpleSpanQuery(SpanQuery firstClause,
             List<SpanQuery> secondClauses, boolean collectPayloads) {
-        this(firstClause, collectPayloads);
-
-        if (secondClauses == null) {
-            throw new IllegalArgumentException(
-                    "The list of second clauses cannot be null.");
-        }
-        if (secondClauses.size() < 1) {
-            throw new IllegalArgumentException(
-                    "The list of second clauses cannot be empty.");
-        }
-
-        for (SpanQuery secondClause : secondClauses) {
-            if (secondClause == null) {
-                throw new IllegalArgumentException(
-                        "A second clause cannot be null.");
-            }
-            checkField(secondClause);
-        }
-        this.setClauseList(secondClauses);
+		this(firstClause, collectPayloads);
+		setClauseList(secondClauses);
     }
 
-    private void checkField(SpanQuery clause) {
+	public SimpleSpanQuery(List<SpanQuery> clauses, boolean collectPayloads) {
+		this.collectPayloads = collectPayloads;
+		setClauseList(clauses);
+	}
+
+	private void checkField(SpanQuery clause) {
         if (!clause.getField().equals(field)) {
             throw new IllegalArgumentException(
                     "Clauses must have the same field.");
@@ -152,8 +144,27 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
      * 
      * @param clauseList a list of spanqueries
      */
-    public void setClauseList(List<SpanQuery> clauseList) {
-        this.clauseList = clauseList;
+	public void setClauseList(List<SpanQuery> clauses) {
+		if (clauses == null) {
+			throw new IllegalArgumentException(
+					"The list of clauses cannot be null.");
+		}
+		if (clauses.size() < 1) {
+			throw new IllegalArgumentException(
+					"The list of clauses cannot be empty.");
+		}
+
+		if (this.field == null) {
+			this.field = clauses.get(0).getField();
+		}
+
+		for (SpanQuery clause : clauses) {
+			if (clause == null) {
+				throw new IllegalArgumentException("A clause cannot be null.");
+			}
+			checkField(clause);
+		}
+		this.clauseList = clauses;
     }
 
     /**
@@ -247,10 +258,13 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
     @Override
     public Query rewrite(IndexReader reader) throws IOException {
         SimpleSpanQuery clone = null;
-        clone = updateClone(reader, clone, firstClause, 1);
+		if (firstClause != null) {
+			clone = updateClone(reader, clone, firstClause, 1);
+		}
         if (secondClause != null) {
             clone = updateClone(reader, clone, secondClause, 2);
-        } else if (clauseList != null) {
+        } 
+        else if (clauseList != null) {
             clone = updateClone(reader, clone, clauseList);
         }
         return (clone != null ? clone : this);

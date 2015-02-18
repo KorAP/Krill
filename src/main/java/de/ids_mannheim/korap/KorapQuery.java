@@ -959,6 +959,7 @@ public class KorapQuery extends Notifications {
 						"JSON-LD group has no @type attribute");
 			}
 
+			SpanQueryWrapper elementWithIdWrapper = null;
 			if (value.toString().isEmpty()) {
 				// attribute with arbitraty elements
 
@@ -966,10 +967,9 @@ public class KorapQuery extends Notifications {
 						"Arbitraty elements with attributes are currently not supported.");
 				return null;
 			}
-
-			SpanQueryWrapper elementWithIdWrapper = tag(value.toString());
-			if (elementWithIdWrapper == null) {
-				return null;
+			else{
+				elementWithIdWrapper = tag(value.toString());
+				if (elementWithIdWrapper == null) return null;
 			}
 
 			if (attrNode.get("@type").asText().equals("korap:term")) {

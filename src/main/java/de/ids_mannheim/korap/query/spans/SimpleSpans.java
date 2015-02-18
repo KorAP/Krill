@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
@@ -44,12 +45,12 @@ public abstract class SimpleSpans extends Spans{
   		matchPayload = new ArrayList<byte[]>();
   		
   		// Get the enumeration of the two spans to match
-  		firstSpans = simpleSpanQuery.getFirstClause().
-  			getSpans(context, acceptDocs, termContexts);
+		SpanQuery sq;
+		if ((sq = simpleSpanQuery.getFirstClause()) != null)
+			firstSpans = sq.getSpans(context, acceptDocs, termContexts);
   		
-  		if (simpleSpanQuery.getSecondClause() != null)
-  			secondSpans = simpleSpanQuery.getSecondClause().
-  				getSpans(context, acceptDocs, termContexts);
+		if ((sq = simpleSpanQuery.getSecondClause()) != null)
+			secondSpans = sq.getSpans(context, acceptDocs, termContexts);
   		
   		isStartEnumeration=true;
       }

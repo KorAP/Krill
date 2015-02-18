@@ -9,6 +9,7 @@ import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,23 +56,61 @@ public class SpansWithAttribute extends SpansWithId {
         referentSpans = spansWithId;
         referentSpans.hasSpanId = true; // dummy setting enabling reading elementRef
         hasMoreSpans = referentSpans.next();
-
-        attributeList = new ArrayList<AttributeSpans>();
-        notAttributeList = new ArrayList<AttributeSpans>();
-
-        List<SpanQuery> sqs = spanWithAttributeQuery.getClauseList();
-        if (sqs != null) {
-            for (SpanQuery sq : sqs) {
-                addAttributes((SpanAttributeQuery) sq, context, acceptDocs,
-                        termContexts);
-            }
-        } else {
-            addAttributes(
-                    (SpanAttributeQuery) spanWithAttributeQuery
-                            .getSecondClause(),
-                    context, acceptDocs, termContexts);
-        }
+		setAttributeList(spanWithAttributeQuery, context, acceptDocs,
+				termContexts);
     }
+
+	// if there is no (positive) attributes, but there are *not attributes*
+	// hasmorespan = true
+	public SpansWithAttribute(SpanWithAttributeQuery spanWithAttributeQuery,
+			AtomicReaderContext context,
+			Bits acceptDocs, Map<Term, TermContext> termContexts)
+			throws IOException {
+		super(spanWithAttributeQuery, context, acceptDocs, termContexts);
+		hasMoreSpans = true;
+		setAttributeList(spanWithAttributeQuery, context, acceptDocs,
+				termContexts);
+		if (attributeList.size() == 0){
+			throw new IllegalArgumentException("No (positive) attribute is defined."); 
+		}
+		else if (attributeList.size() > 1) {
+			referentSpans = attributeList.get(0);
+			attributeList.remove(0);
+		}
+	}
+
+	public void setAttributeList(SpanWithAttributeQuery swaq,
+			AtomicReaderContext context, Bits acceptDocs,
+			Map<Term, TermContext> termContexts) throws IOException {
+		
+		attributeList = new ArrayList<AttributeSpans>();
+		notAttributeList = new ArrayList<AttributeSpans>();
+
+		List<SpanQuery> attributeList = swaq.getClauseList();
+		if (swaq.isMultipleAttributes) {
+			if (attributeList != null) {
+				for (SpanQuery sq : attributeList) {
+					addAttributes((SpanAttributeQuery) sq, context, acceptDocs,
+							termContexts);
+				}
+			}
+			else {
+				throw new NullPointerException("Attribute list is null.");
+			}
+		} 
+		else if (swaq.getSecondClause() != null) {
+			addAttributes((SpanAttributeQuery) swaq.getSecondClause(),
+					context, acceptDocs, termContexts);
+		}
+		else if (swaq.getType().equals("spanWithAttribute") &&
+				swaq.getFirstClause() != null) {
+			addAttributes((SpanAttributeQuery) swaq.getFirstClause(),
+					context, acceptDocs, termContexts);
+		}
+		else {
+			throw new NullPointerException("No attribute is defined.");
+		}
+	}
 
     /**
      * Adds the given {@link SpanAttributeQuery} to the attributeList or
@@ -86,12 +125,14 @@ public class SpansWithAttribute extends SpansWithId {
     private void addAttributes(SpanAttributeQuery sq,
             AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
+    	
         AttributeSpans as = (AttributeSpans) sq.getSpans(context, acceptDocs,
                 termContexts);
         if (sq.isNegation()) {
             notAttributeList.add(as);
             as.next();
-        } else {
+        } 
+        else {
             attributeList.add(as);
             hasMoreSpans &= as.next();
         }
@@ -100,25 +141,45 @@ public class SpansWithAttribute extends SpansWithId {
     @Override
     public boolean next() throws IOException {
         isStartEnumeration = false;
-        return advance();
+		if (referentSpans == null) { // only one (positive) attribute
+			return advanceAttribute();
+		}
+		else { return advance(); }
     }
 
-    /**
-     * Searches for the next match by first identify a possible element
-     * position, and then ensuring that the element contains all the attributes
-     * and <em>do not</em> contain any of the not attributes.
-     * 
-     * @return <code>true</code> if the a match is found, <code>false</code>
-     *         otherwise.
-     * @throws IOException
-     */
+	private boolean advanceAttribute() throws IOException {
+		while(hasMoreSpans){
+			SpansWithId referentSpans = attributeList.get(0);
+			advanceNotAttributes(referentSpans);
+			if (checkNotReferentId(referentSpans)) {
+				this.matchDocNumber = referentSpans.doc();
+				this.matchStartPosition = referentSpans.start();
+				this.matchEndPosition = referentSpans.end();
+				this.matchPayload = referentSpans.getPayload();
+				this.spanId = referentSpans.getSpanId();
+				hasMoreSpans = referentSpans.next();
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Searches for the next match by first identify a possible element
+	 * position, and then ensuring that the element contains all the attributes
+	 * and <em>do not</em> contain any of the not attributes.
+	 * 
+	 * @return <code>true</code> if the a match is found, <code>false</code>
+	 *         otherwise.
+	 * @throws IOException
+	 */
     private boolean advance() throws IOException {
 
         while (hasMoreSpans && searchSpanPosition()) {
             //logger.info("element: " + withAttributeSpans.start() + ","+ withAttributeSpans.end() +
             //	" ref:"+withAttributeSpans.getSpanId());
 
-            if (checkReferentId() && checkNotReferentId()) {
+			if (checkReferentId() && checkNotReferentId(referentSpans)) {
                 this.matchDocNumber = referentSpans.doc();
                 this.matchStartPosition = referentSpans.start();
                 this.matchEndPosition = referentSpans.end();
@@ -151,8 +212,8 @@ public class SpansWithAttribute extends SpansWithId {
                 continue;
             }
             if (checkAttributeListPosition()) {
-                advanceNotAttributes();
-                //				    logger.info("element is found: "+ withAttributeSpans.start());
+				advanceNotAttributes(referentSpans);
+                // logger.info("element is found: "+ withAttributeSpans.start());
                 return true;
             }
         }
@@ -216,7 +277,7 @@ public class SpansWithAttribute extends SpansWithId {
      * 
      * @throws IOException
      */
-    private void advanceNotAttributes() throws IOException {
+	private void advanceNotAttributes(Spans referentSpans) throws IOException {
 
         for (AttributeSpans a : notAttributeList) {
             // advance the doc# of not AttributeSpans
@@ -231,7 +292,6 @@ public class SpansWithAttribute extends SpansWithId {
                     a.setFinish(true);
             }
         }
-        //return true;
     }
 
     /**
@@ -245,8 +305,8 @@ public class SpansWithAttribute extends SpansWithId {
      */
     private boolean checkReferentId() throws IOException {
         for (AttributeSpans attribute : attributeList) {
-            if (referentSpans.getSpanId() != attribute.getReferentId()) {
-                if (referentSpans.getSpanId() < attribute.getReferentId())
+			if (referentSpans.getSpanId() != attribute.getSpanId()) {
+				if (referentSpans.getSpanId() < attribute.getSpanId())
                     hasMoreSpans = attribute.next();
                 else {
                     hasMoreSpans = referentSpans.next();
@@ -268,12 +328,12 @@ public class SpansWithAttribute extends SpansWithId {
      *         <code>false</code> otherwise.
      * @throws IOException
      */
-    private boolean checkNotReferentId() throws IOException {
+	private boolean checkNotReferentId(SpansWithId referentSpans) throws IOException {
         for (AttributeSpans notAttribute : notAttributeList) {
             if (!notAttribute.isFinish()
                     && referentSpans.start() == notAttribute.start()
                     && referentSpans.getSpanId() == notAttribute
-                            .getReferentId()) {
+                            .getSpanId()) {
                 hasMoreSpans = referentSpans.next();
                 return false;
             }

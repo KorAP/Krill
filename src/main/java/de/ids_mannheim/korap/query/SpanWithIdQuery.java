@@ -56,4 +56,9 @@ public abstract class SpanWithIdQuery extends SimpleSpanQuery {
             List<SpanQuery> secondClauses, boolean collectPayloads) {
         super(firstClause, secondClauses, collectPayloads);
     }
+
+	public SpanWithIdQuery(List<SpanQuery> clauses,
+			boolean collectPayloads) {
+		super(clauses, collectPayloads);
+	}
 }

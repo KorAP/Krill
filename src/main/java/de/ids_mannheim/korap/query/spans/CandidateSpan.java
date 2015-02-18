@@ -14,7 +14,7 @@ import org.apache.lucene.search.spans.Spans;
  * @author margaretha
  * */
 public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
-    private int doc, start, end;
+	protected int doc, start, end;
     private long cost;
     private Collection<byte[]> payloads = new ArrayList<>();
     private int position;

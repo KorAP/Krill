@@ -11,11 +11,48 @@ import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 import de.ids_mannheim.korap.query.SpanWithIdQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
+/**
+ * No optimization using expansion
+ * 
+ * @author margaretha
+ * */
 public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 
 	private SpanQueryWrapper withIdQueryWrapper = null;
 	private SpanQueryWrapper attrQueryWrapper = null;
 	private List<SpanQueryWrapper> queryWrapperList = null;
+	private boolean isSingleAttribute = false;
+
+	public SpanWithAttributeQueryWrapper(SpanQueryWrapper attrQuery) {
+		if (attrQuery != null) isNull = false;
+		if (attrQuery.isEmpty()) {
+			isEmpty = true;
+			return;
+		}
+		this.attrQueryWrapper = attrQuery;
+		this.isSingleAttribute = true;
+	}
+
+	public SpanWithAttributeQueryWrapper(List<SpanQueryWrapper> attrList)
+			throws QueryException {
+
+		if (attrList != null) isNull = false;
+		if (attrList.isEmpty()) {
+			throw new QueryException("No attribute is defined.");
+		}
+
+		for (SpanQueryWrapper sqw : attrList) {
+			if (sqw == null) {
+				isNull = true;
+				return;
+			}
+			if (sqw.isEmpty) {
+				isEmpty = true;
+				return;
+			}
+		}
+		this.queryWrapperList = attrList;
+	}
 
 	public SpanWithAttributeQueryWrapper(SpanQueryWrapper withIdQuery,
 			SpanQueryWrapper attrQuery) {
@@ -30,6 +67,7 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 
 		this.attrQueryWrapper = attrQuery;
 		this.withIdQueryWrapper = withIdQuery;
+		this.isSingleAttribute = true;
 	}
 
 	public SpanWithAttributeQueryWrapper(SpanQueryWrapper withIdQuery,
@@ -42,6 +80,9 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 			isEmpty = true;
 			return;
 		}
+		// if (attrList.isEmpty()) {
+			// not withattribute query, just a normal query
+		// }
 
 		for (SpanQueryWrapper sqw : attrList) {
 			if (sqw == null) {
@@ -53,68 +94,108 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 				return;
 			}
 		}
-		if (attrList.isEmpty()) {
-			// not withattribute query, just a normal query
-		}
+		
 		this.queryWrapperList = attrList;
 		this.withIdQueryWrapper = withIdQuery;
-	}
-
-	public SpanAttributeQuery createSpanAttributeQuery(
-			SpanQueryWrapper attrQueryWrapper) throws QueryException {
-		SpanQuery sq = attrQueryWrapper.toQuery();
-		if (sq == null) {
-			isNull = true;
-			return null;
-		}
-		if (sq instanceof SpanTermQuery) {
-			return new SpanAttributeQuery(
-					(SpanTermQuery) sq,
-					attrQueryWrapper.isNegative, true);
-		} 
-		else {
-			throw new IllegalArgumentException(
-					"The subquery is not a SpanTermQuery.");
-		}
 	}
 
 	@Override
 	public SpanQuery toQuery() throws QueryException {
 
-		if (isNull || isEmpty) return null;
-		
+		if (isNull || isEmpty) return null;		
+		if (withIdQueryWrapper != null){
+			return createSpecificSpanWithAttributeQuery();
+		}
+		else{
+			return createArbitrarySpanWithAttributeQuery(); 
+		}
+	}
+	
+	private SpanQuery createSpecificSpanWithAttributeQuery()
+			throws QueryException {
 		SpanWithIdQuery withIdQuery = (SpanWithIdQuery) withIdQueryWrapper
 				.toQuery();
 		if (withIdQuery == null) {
 			isNull = true;
 			return null;
 		}
-		
-		if (attrQueryWrapper != null){
-			SpanAttributeQuery attrQuery = createSpanAttributeQuery(attrQueryWrapper);
+		if (isSingleAttribute) {
+			return createSpanWithSingleAttributeQuery(withIdQuery);
+		}
+		else if (queryWrapperList.isEmpty()) {
+			return withIdQuery;
+		}
+		else{
+			return createSpanWithAttributeListQuery(withIdQuery);
+		}
+	}
+	
+	private SpanWithAttributeQuery createSpanWithSingleAttributeQuery(
+			SpanWithIdQuery withIdQuery)
+			throws QueryException {
+		SpanAttributeQuery attrQuery = createSpanAttributeQuery(this.attrQueryWrapper);
+		if (attrQuery != null) {
+			if (withIdQuery != null) {
+				return new SpanWithAttributeQuery(withIdQuery, attrQuery, true);
+			} 
+			else {
+				return new SpanWithAttributeQuery(attrQuery, true);
+			}
+		}
+		isNull = true;
+		return null;
+	}
+
+	private SpanAttributeQuery createSpanAttributeQuery(
+			SpanQueryWrapper attrQueryWrapper) throws QueryException {
+		SpanQuery sq = attrQueryWrapper.toQuery();
+		if (sq != null) {
+			if (sq instanceof SpanTermQuery) {
+				return new SpanAttributeQuery((SpanTermQuery) sq,
+						attrQueryWrapper.isNegative, true);
+			} 
+			else {
+				throw new IllegalArgumentException(
+						"The subquery is not a SpanTermQuery.");
+			}
+		}
+		return null;
+	}
+
+	private SpanWithAttributeQuery createSpanWithAttributeListQuery(
+			SpanWithIdQuery withIdQuery)
+			throws QueryException {
+		List<SpanQuery> attrQueries = new ArrayList<SpanQuery>();
+		SpanQuery attrQuery = null;
+		for (SpanQueryWrapper sqw : queryWrapperList) {
+			attrQuery = createSpanAttributeQuery(sqw);
 			if (attrQuery == null) {
 				isNull = true;
 				return null;
 			}
-			return new SpanWithAttributeQuery(withIdQuery, attrQuery, true);
+			attrQueries.add(attrQuery);
 		}
-		else if (queryWrapperList != null) {
-			if (queryWrapperList.isEmpty()) {
-				return withIdQuery;
-			}
-
-			List<SpanQuery> attrQueries = new ArrayList<SpanQuery>();
-			SpanQuery attrQuery;
-			for (SpanQueryWrapper sqw : queryWrapperList) {
-				attrQuery = createSpanAttributeQuery(sqw);
-				if (attrQuery == null) {
-					isNull = true;
-					return null;
-				}
-				attrQueries.add(attrQuery);
-			}
+		
+		if (withIdQuery != null) {
 			return new SpanWithAttributeQuery(withIdQuery, attrQueries, true);
+		} 
+		else {
+			return new SpanWithAttributeQuery(attrQueries, true);
 		}
-		return null;		
 	}
+
+	private SpanQuery createArbitrarySpanWithAttributeQuery()
+			throws QueryException {
+		if (isSingleAttribute) {
+			return createSpanWithSingleAttributeQuery(null);
+		}
+		else if (queryWrapperList.isEmpty()) {
+			throw new QueryException("No attribute is defined.");
+		}
+		else{
+			return createSpanWithAttributeListQuery(null);
+		}				
+	}
+
+
 }

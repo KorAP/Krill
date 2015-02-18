@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 
-/**
+/** UPDATE THIS!
  * Span enumeration of attributes which are term spans with special payload
  * assignments referring to another span (e.g. element/relation span) to which
  * an attribute span belongs. The class is basically a wrapper of Lucene
@@ -36,13 +36,13 @@ import de.ids_mannheim.korap.query.SpanAttributeQuery;
  * 
  * @author margaretha
  * */
-public class AttributeSpans extends SimpleSpans {
+public class AttributeSpans extends SpansWithId {
 
     private List<CandidateAttributeSpan> candidateList;
     private int currentDoc, currentPosition;
-    private short referentId;
+	// private short referentId;
     private boolean isFinish;
-    private int elementEnd;
+	// private int elementEnd;
 
     protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
 
@@ -90,8 +90,8 @@ public class AttributeSpans extends SimpleSpans {
                 this.matchDocNumber = cs.getDoc();
                 this.matchStartPosition = cs.getStart();
                 this.matchEndPosition = cs.getEnd();
-                this.setReferentId(cs.getSpanId());
-                this.setElementEnd(cs.getElementEnd());
+				this.setSpanId(cs.getSpanId()); // referentId
+				// this.setElementEnd(cs.getElementEnd());
                 candidateList.remove(0);
                 return true;
             } else {
@@ -149,9 +149,9 @@ public class AttributeSpans extends SimpleSpans {
      * 
      * @return a span id, for instance a relation id or an element id
      */
-    public short getReferentId() {
-        return this.referentId;
-    }
+	// public short getReferentId() {
+	// return this.referentId;
+	// }
 
     /**
      * Sets the span id to which an attribute span belongs, for instance a
@@ -160,9 +160,9 @@ public class AttributeSpans extends SimpleSpans {
      * @param refId the span id to which an attribute span belongs, for
      *        instance a relation id or an element id.
      */
-    public void setReferentId(short refId) {
-        this.referentId = refId;
-    }
+	// public void setReferentId(short refId) {
+	// this.referentId = refId;
+	// }
 
     /**
      * Returns the end position of the element to which an attribute span
@@ -170,9 +170,9 @@ public class AttributeSpans extends SimpleSpans {
      * 
      * @return an element end position
      */
-    public int getElementEnd() {
-        return elementEnd;
-    }
+	// public int getElementEnd() {
+	// return elementEnd;
+	// }
 
     /**
      * Sets the end position of the element to which an attribute span belongs.
@@ -180,9 +180,9 @@ public class AttributeSpans extends SimpleSpans {
      * @param elementEnd the end position of the element to which an attribute
      *        span belongs.
      */
-    public void setElementEnd(int elementEnd) {
-        this.elementEnd = elementEnd;
-    }
+	// public void setElementEnd(int elementEnd) {
+	// this.elementEnd = elementEnd;
+	// }
 
     /**
      * Tells if the enumeration of the AttributeSpans has come to an end.
@@ -234,7 +234,7 @@ public class AttributeSpans extends SimpleSpans {
             Comparable<CandidateSpan> {
 
         private short spanId;
-        private int elementEnd;
+		// private int elementEnd;
 
         /**
          * Construct a CandidateAttributeSpan based on the given span, spanId,
@@ -251,8 +251,9 @@ public class AttributeSpans extends SimpleSpans {
         public CandidateAttributeSpan(Spans span, short spanId, int elementEnd)
                 throws IOException {
             super(span);
-            setSpanId(spanId);
-            setElementEnd(elementEnd);
+			setSpanId(spanId);
+			this.end = elementEnd;
+			// setElementEnd(elementEnd);
         }
 
         public void setSpanId(short spanId) {
@@ -263,13 +264,13 @@ public class AttributeSpans extends SimpleSpans {
             return spanId;
         }
 
-        public int getElementEnd() {
-            return elementEnd;
-        }
-
-        public void setElementEnd(int elementEnd) {
-            this.elementEnd = elementEnd;
-        }
+		// public int getElementEnd() {
+		// return elementEnd;
+		// }
+		//
+		// public void setElementEnd(int elementEnd) {
+		// this.elementEnd = elementEnd;
+		// }
 
         @Override
         public int compareTo(CandidateSpan o) {
