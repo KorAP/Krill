@@ -11,22 +11,22 @@
    ],
    "collection":null,
    "query":{
-      "@type" : "korap:reference",
+      "@type" : "koral:reference",
       "operands" : [
          {
-            "@type" : "korap:group",
+            "@type" : "koral:group",
             "frames" : [
                "frames:isAround"
             ],
             "operands" : [
                {
-                  "@type" : "korap:span",
+                  "@type" : "koral:span",
                   "key" : "s"
                },
                {
-                  "@type" : "korap:token",
+                  "@type" : "koral:token",
                   "wrap" : {
-                     "@type" : "korap:term",
+                     "@type" : "koral:term",
                      "foundry" : "tt",
                      "key" : "Haus",
                      "layer" : "lemma",

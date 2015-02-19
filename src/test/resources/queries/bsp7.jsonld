@@ -1,19 +1,19 @@
 {
   "@context" : {
     "korap" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/",
-    "query" : "korap:query",
-    "meta" : "korap:meta",
+    "query" : "koral:query",
+    "meta" : "koral:meta",
     "collections" : {
-      "@id" : "korap:collections",
+      "@id" : "koral:collections",
       "@container" : "@list"
     },
-    "token" : "korap:token/",
-    "distance" : "korap:distance/",
-    "boundary" : "korap:boundary/",
-    "group" : "korap:group/",
-    "span" : "korap:span/",
-    "term" : "korap:term/",
-    "termGroup" : "korap:termGroup/",
+    "token" : "koral:token/",
+    "distance" : "koral:distance/",
+    "boundary" : "koral:boundary/",
+    "group" : "koral:group/",
+    "span" : "koral:span/",
+    "term" : "koral:term/",
+    "termGroup" : "koral:termGroup/",
     "wrap" : "token:wrap",
     "operation" : {
       "@id" : "group:operation/",
@@ -68,19 +68,19 @@
       "@type" : "xsd:boolean"
     },
     "key" : {
-      "@id" : "korap:key",
+      "@id" : "koral:key",
       "@type" : "xsd:string"
     },
     "foundry" : {
-      "@id" : "korap:foundry",
+      "@id" : "koral:foundry",
       "@type" : "xsd:string"
     },
     "layer" : {
-      "@id" : "korap:layer",
+      "@id" : "koral:layer",
       "@type" : "xsd:string"
     },
     "value" : {
-      "@id" : "korap:value",
+      "@id" : "koral:value",
       "@type" : "xsd:string"
     },
     "caseInsensitive" : {
@@ -96,14 +96,14 @@
       "@type" : "@id"
     },
     "relation" : {
-      "@id" : "korap:relation/",
+      "@id" : "koral:relation/",
       "@type" : "@id"
     }
   },
   "query": {
-    "@type": "korap:token", 
+    "@type": "koral:token", 
     "wrap" : {
-      "@type": "korap:term", 
+      "@type": "koral:term", 
       "foundry": "mate",
       "layer": "lemma",
       "key": "Katze", 

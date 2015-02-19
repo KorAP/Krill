@@ -1,18 +1,18 @@
 {
   "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
   "query": {
-    "@type": "korap:group", 
+    "@type": "koral:group", 
     "frames": ["frames:startsWith", "frames:alignsLeft", "frames:matches"], 
     "operation": "operation:position",
     "operands": [
       {
-        "@type": "korap:span", 
+        "@type": "koral:span", 
         "key": "np"
       }, 
       {
-        "@type": "korap:token", 
+        "@type": "koral:token", 
         "wrap": {
-          "@type": "korap:term", 
+          "@type": "koral:term", 
           "layer": "pos",
           "key" : "Det", 
           "match" : "match:ne"

@@ -3,10 +3,10 @@
   "announcements" : [],
   "collections" : [
     {
-      "@type" : "korap:meta-filter",
+      "@type" : "koral:meta-filter",
       "@value" : {
-        "@field" : "korap:field#corpusID",
-        "@type" : "korap:term",
+        "@field" : "koral:field#corpusID",
+        "@type" : "koral:term",
         "@value" : "WPD"
       }
     }
@@ -17,9 +17,9 @@
     "count":9
   },
   "query" : {
-    "@type" : "korap:token",
+    "@type" : "koral:token",
     "wrap" : {
-      "@type" : "korap:term",
+      "@type" : "koral:term",
       "key" : "Buchstabe",
       "foundry" : "tt",
       "layer" : "lemma",

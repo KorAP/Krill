@@ -12,37 +12,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanAttributeQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanElementQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanMatchModifyQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSubspanQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWithAttributeQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.*;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
-
-/*
-  Todo: All queries with a final right expansion
-  der alte []
-  should be wrapped in a contains(<base/s=t>) to ensure
-  they are not outside the text.
-
-  TODO: Create Pre-filter while preparing a Query.
-  The pre-filter will contain a boolena query with all
-  necessary terms, supporting boolean OR, ignoring
-  negation terms (and negation subqueries), like
-  [base=Der]([base=alte]|[base=junge])[base=Mann & p!=ADJA]![base=war | base=lag]
-  Search for all documents containing "s:Der" and ("s:alte" or "s:junge") and "s:Mann"
-*/
 
 /**
  * KorapQuery implements a simple API for wrapping
@@ -70,6 +42,19 @@ import de.ids_mannheim.korap.util.QueryException;
  * @author diewald
  *
  */
+/*
+  Todo: All queries with a final right expansion
+  e.g. der alte []
+  should be wrapped in a contains(<base/s=t>) to ensure
+  they are not outside the text.
+
+  TODO: Create Pre-filter while preparing a Query.
+  The pre-filter will contain a boolena query with all
+  necessary terms, supporting boolean OR, ignoring
+  negation terms (and negation subqueries), like
+  [base=Der]([base=alte]|[base=junge])[base=Mann & p!=ADJA]![base=war | base=lag]
+  Search for all documents containing "s:Der" and ("s:alte" or "s:junge") and "s:Mann"
+*/
 public class KorapQuery extends Notifications {
     private String field;
     private ObjectMapper json;
@@ -103,7 +88,7 @@ public class KorapQuery extends Notifications {
     };
 
 
-    // Private class for korap:boundary objects
+    // Private class for koral:boundary objects
     private class Boundary {
         public int min, max;
 
@@ -120,7 +105,7 @@ public class KorapQuery extends Notifications {
             };
 
             // Wrong @type defined
-            if (!json.get("@type").asText().equals("korap:boundary"))
+            if (!json.get("@type").asText().equals("koral:boundary"))
                 throw new QueryException(702, "Boundary definition is invalid");
 
             // Set min boundary
@@ -134,7 +119,7 @@ public class KorapQuery extends Notifications {
                 defaultMax;
             
             if (DEBUG)
-                log.trace("Found korap:boundary with {}:{}", min, max);
+                log.trace("Found koral:boundary with {}:{}", min, max);
         };
     };
 
@@ -145,8 +130,8 @@ public class KorapQuery extends Notifications {
      * <p>
      * <blockquote><pre>
      *   KorapQuery kq = new KorapQuery("tokens");
-     *   SpanQueryWrapper sqw = kq.fromJson('{"@type":"korap:token","wrap":{' +
-     *      '"@type":"korap:term","foundry":"opennlp",' +
+     *   SpanQueryWrapper sqw = kq.fromJson('{"@type":"koral:token","wrap":{' +
+     *      '"@type":"koral:term","foundry":"opennlp",' +
      *      '"key":"tree","layer":"orth",' +
      *      '"match":"match:eq"}}'
      *   );
@@ -199,10 +184,10 @@ public class KorapQuery extends Notifications {
         String type = json.get("@type").asText();
 
         switch (type) {
-        case "korap:group":
+        case "koral:group":
             return this._groupFromJson(json);
 
-        case "korap:reference":
+        case "koral:reference":
             if (json.has("operation") &&
                 !json.get("operation").asText().equals("operation:focus"))
                 throw new QueryException(712, "Unknown reference operation");
@@ -271,11 +256,11 @@ public class KorapQuery extends Notifications {
 
             if (DEBUG) log.trace("Wrap class reference {}", number);
 
-            return new SpanMatchModifyQueryWrapper(
+            return new SpanFocusQueryWrapper(
                 this.fromJson(operands.get(0)), number
             );
 
-        case "korap:token":
+        case "koral:token":
             // The token is empty and should be treated like []
             if (!json.has("wrap"))
                 return new SpanRepetitionQueryWrapper();
@@ -283,7 +268,7 @@ public class KorapQuery extends Notifications {
             // Get wrapped token
             return this._segFromJson(json.get("wrap"));
 
-        case "korap:span":
+        case "koral:span":
             return this._termFromJson(json);
         };
 
@@ -292,7 +277,7 @@ public class KorapQuery extends Notifications {
     };
 
 
-    // Deserialize korap:group
+    // Deserialize koral:group
     private SpanQueryWrapper _groupFromJson (JsonNode json) throws QueryException {
 
         // No operation
@@ -338,7 +323,7 @@ public class KorapQuery extends Notifications {
         case "operation:or": // Deprecated in favor of operation:junction
             return this._operationJunctionFromJson(operands);
             /*
-        case "operation:submatch": // Deprecated in favor of korap:reference
+        case "operation:submatch": // Deprecated in favor of koral:reference
             return this._operationSubmatchFromJson(json, operands);
             */
         };
@@ -544,7 +529,7 @@ public class KorapQuery extends Notifications {
             );
         }; 
 
-        return new SpanMatchModifyQueryWrapper(
+        return new SpanFocusQueryWrapper(
             this.fromJson(operands.get(0)), number
         );
     };
@@ -664,7 +649,7 @@ public class KorapQuery extends Notifications {
             };
 
             JsonNode distances;
-            if (firstDistance.get("@type").asText().equals("korap:group")) {
+            if (firstDistance.get("@type").asText().equals("koral:group")) {
                 if (!firstDistance.has("operands") ||
                     !firstDistance.get("operands").isArray())
                     throw new QueryException(704, "Operation needs operand list");
@@ -674,7 +659,7 @@ public class KorapQuery extends Notifications {
 
             // Support korap distances
             // Support cosmas distances
-            else if (firstDistance.get("@type").asText().equals("korap:distance")
+            else if (firstDistance.get("@type").asText().equals("koral:distance")
                      ||
                      firstDistance.get("@type").asText().equals("cosmas:distance")) {
                 distances = json.get("distances");
@@ -742,7 +727,7 @@ public class KorapQuery extends Notifications {
     };
 
 
-    // Deserialize korap:token
+    // Deserialize koral:token
     private SpanQueryWrapper _segFromJson (JsonNode json) throws QueryException {
         if (!json.has("@type"))
             throw new QueryException(701, "JSON-LD group has no @type attribute");
@@ -754,7 +739,7 @@ public class KorapQuery extends Notifications {
 
         // Branch on type
         switch (type) {
-        case "korap:term":
+        case "koral:term":
 //            String match = "match:eq";
 //            if (json.has("match"))
 //                match = json.get("match").asText();
@@ -778,7 +763,7 @@ public class KorapQuery extends Notifications {
 //
 //            throw new QueryException(741, "Match relation unknown");
 
-        case "korap:termGroup":
+        case "koral:termGroup":
 
             if (!json.has("operands"))
                 throw new QueryException(742, "Term group needs operand list");
@@ -827,7 +812,7 @@ public class KorapQuery extends Notifications {
     };
 
 
-    // Deserialize korap:term
+    // Deserialize koral:term
     private SpanQueryWrapper _termFromJson (JsonNode json)
         throws QueryException {
     	
@@ -844,7 +829,7 @@ public class KorapQuery extends Notifications {
             );
         };
 
-        Boolean isTerm = json.get("@type").asText().equals("korap:term") ? true : false;
+        Boolean isTerm = json.get("@type").asText().equals("koral:term") ? true : false;
         Boolean isCaseInsensitive = false;
 
         if (json.has("caseInsensitive") && json.get("caseInsensitive").asBoolean())
@@ -972,7 +957,7 @@ public class KorapQuery extends Notifications {
 				if (elementWithIdWrapper == null) return null;
 			}
 
-			if (attrNode.get("@type").asText().equals("korap:term")) {
+			if (attrNode.get("@type").asText().equals("koral:term")) {
 				SpanQueryWrapper attrWrapper = _attrFromJson(json.get("attr"));
 				if (attrWrapper != null) {
 					return new SpanWithAttributeQueryWrapper(
@@ -982,7 +967,7 @@ public class KorapQuery extends Notifications {
 					throw new QueryException(747, "Attribute is null");
 				}
 			} 
-			else if (attrNode.get("@type").asText().equals("korap:termGroup")) {
+			else if (attrNode.get("@type").asText().equals("koral:termGroup")) {
 				if (!attrNode.has("relation")) {
 					throw new QueryException(743, "Term group expects a relation");
 				}
@@ -1378,21 +1363,21 @@ public class KorapQuery extends Notifications {
         return new SpanClassQueryWrapper(element);
     };
 
-    // MatchModify
-    public SpanMatchModifyQueryWrapper focus (byte number, SpanQueryWrapper element) {
-        return new SpanMatchModifyQueryWrapper(element, number);
+    // Focus
+    public SpanFocusQueryWrapper focus (byte number, SpanQueryWrapper element) {
+        return new SpanFocusQueryWrapper(element, number);
     };
 
-    public SpanMatchModifyQueryWrapper focus (int number, SpanQueryWrapper element) {
-        return new SpanMatchModifyQueryWrapper(element, number);
+    public SpanFocusQueryWrapper focus (int number, SpanQueryWrapper element) {
+        return new SpanFocusQueryWrapper(element, number);
     };
 
-    public SpanMatchModifyQueryWrapper focus (short number, SpanQueryWrapper element) {
-        return new SpanMatchModifyQueryWrapper(element, number);
+    public SpanFocusQueryWrapper focus (short number, SpanQueryWrapper element) {
+        return new SpanFocusQueryWrapper(element, number);
     };
 
-    public SpanMatchModifyQueryWrapper focus (SpanQueryWrapper element) {
-        return new SpanMatchModifyQueryWrapper(element);
+    public SpanFocusQueryWrapper focus (SpanQueryWrapper element) {
+        return new SpanFocusQueryWrapper(element);
     };
 
     // Repetition

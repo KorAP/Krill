@@ -175,7 +175,7 @@ public class KorapCollection extends Notifications {
         String type = json.get("@type").asText();
         
         // Single filter
-        if (type.equals("korap:doc")) {
+        if (type.equals("koral:doc")) {
 
             String key     = "tokens";
             String valtype = "type:string";
@@ -225,7 +225,7 @@ public class KorapCollection extends Notifications {
         }
 
         // nested group
-        else if (type.equals("korap:docGroup")) {
+        else if (type.equals("koral:docGroup")) {
             if (!json.has("operands") || !json.get("operands").isArray())
                 throw new QueryException(612, "Groups need operands");
 
@@ -295,14 +295,14 @@ public class KorapCollection extends Notifications {
         String type = json.get("@type").asText();
 
         // Filter the collection
-        if (type.equals("korap:meta-filter")) {
+        if (type.equals("koral:meta-filter")) {
             if (DEBUG)
                 log.trace("Add Filter LEGACY");
             this.filter(bf);
         }
         
         // Extend the collection
-        else if (type.equals("korap:meta-extend")) {
+        else if (type.equals("koral:meta-extend")) {
             if (DEBUG)
                 log.trace("Add Extend LEGACY");
             this.extend(bf);
@@ -326,12 +326,12 @@ public class KorapCollection extends Notifications {
         if (json.has("@field"))
             field = _getFieldLegacy(json);
 
-        if (type.equals("korap:term")) {
+        if (type.equals("koral:term")) {
             if (field != null && json.has("@value"))
                 bfilter.and(field, json.get("@value").asText());
             return bfilter;
         }
-        else if (type.equals("korap:group")) {
+        else if (type.equals("koral:group")) {
             if (!json.has("relation"))
                 throw new QueryException(612, "Group needs relation");
 
@@ -797,7 +797,7 @@ public class KorapCollection extends Notifications {
             return (String) null;
 
         String field = json.get("@field").asText();
-        return field.replaceFirst("korap:field#", "");
+        return field.replaceFirst("koral:field#", "");
     };
 
 
@@ -815,7 +815,7 @@ public class KorapCollection extends Notifications {
         if (!date.has("@type"))
             return (String) null;
 
-        if (!date.get("@type").asText().equals("korap:date"))
+        if (!date.get("@type").asText().equals("koral:date"))
             return (String) null;
         
         if (!date.has("@value"))

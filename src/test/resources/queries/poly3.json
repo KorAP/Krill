@@ -3,10 +3,10 @@
    "collection" : {},
    "collections" : [
       {
-         "@type" : "korap:meta-filter",
+         "@type" : "koral:meta-filter",
          "@value" : {
-            "@field" : "korap:field#corpusID",
-            "@type" : "korap:term",
+            "@field" : "koral:field#corpusID",
+            "@type" : "koral:term",
             "@value" : "WPD"
          }
       }
@@ -15,28 +15,28 @@
    "messages" : [],
    "meta" : {},
    "query" : {
-      "@type" : "korap:group",
+      "@type" : "koral:group",
       "operands" : [
          {
-            "@type" : "korap:token",
+            "@type" : "koral:token",
             "wrap" : {
-               "@type" : "korap:term",
+               "@type" : "koral:term",
                "key" : "Aa",
                "layer" : "orth",
                "match" : "match:eq"
             }
          },
          {
-            "@type" : "korap:token",
+            "@type" : "koral:token",
             "wrap" : {
-               "@type" : "korap:term",
+               "@type" : "koral:term",
                "key" : "durch",
                "layer" : "orth",
                "match" : "match:eq"
             }
          },
          {
-            "@type" : "korap:token"
+            "@type" : "koral:token"
          }
       ],
       "operation" : "operation:sequence"

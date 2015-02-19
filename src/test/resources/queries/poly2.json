@@ -6,10 +6,10 @@
    "collection" : {},
    "collections" : [
       {
-         "@type" : "korap:meta-filter",
+         "@type" : "koral:meta-filter",
          "@value" : {
-            "@field" : "korap:field#corpusID",
-            "@type" : "korap:term",
+            "@field" : "koral:field#corpusID",
+            "@type" : "koral:term",
             "@value" : "WPD"
          }
       }
@@ -17,25 +17,25 @@
    "errors" : [],
    "meta" : {},
    "query" : {
-      "@type" : "korap:group",
+      "@type" : "koral:group",
       "frames" : [
          "frames:isAround"
       ],
       "operands" : [
          {
-            "@type" : "korap:span",
+            "@type" : "koral:span",
             "key" : "s"
          },
          {
-            "@type" : "korap:group",
+            "@type" : "koral:group",
             "operands" : [
                {
-                  "@type" : "korap:group",
+                  "@type" : "koral:group",
                   "operands" : [
                      {
-                        "@type" : "korap:token",
+                        "@type" : "koral:token",
                         "wrap" : {
-                           "@type" : "korap:term",
+                           "@type" : "koral:term",
                            "caseInsensitive" : true,
                            "key" : "es",
                            "layer" : "orth",
@@ -43,9 +43,9 @@
                         }
                      },
                      {
-                        "@type" : "korap:token",
+                        "@type" : "koral:token",
                         "wrap" : {
-                           "@type" : "korap:term",
+                           "@type" : "koral:term",
                            "key" : "wird",
                            "layer" : "orth",
                            "match" : "match:eq"
@@ -55,12 +55,12 @@
                   "operation" : "operation:sequence"
                },
                {
-                  "@type" : "korap:group",
+                  "@type" : "koral:group",
                   "operands" : [
                      {
-                        "@type" : "korap:token",
+                        "@type" : "koral:token",
                         "wrap" : {
-                           "@type" : "korap:term",
+                           "@type" : "koral:term",
                            "caseInsensitive" : true,
                            "key" : "wird",
                            "layer" : "orth",
@@ -68,9 +68,9 @@
                         }
                      },
                      {
-                        "@type" : "korap:token",
+                        "@type" : "koral:token",
                         "wrap" : {
-                           "@type" : "korap:term",
+                           "@type" : "koral:term",
                            "key" : "es",
                            "layer" : "orth",
                            "match" : "match:eq"

@@ -9,9 +9,9 @@
 	}
     },
     "query":{
-	"@type":"korap:token",
+	"@type":"koral:token",
 	"wrap":{
-	    "@type":"korap:term",
+	    "@type":"koral:term",
 	    "foundry":"mate",
 	    "layer":"l",
 	    "key":"lediglich"
@@ -19,38 +19,38 @@
     },
     "collections": [
 	{
-	    "@type": "korap:meta-filter",
+	    "@type": "koral:meta-filter",
 	    "@id": "korap-filter#id-1223232",
 	    "@value": {
-		"@type": "korap:group",
+		"@type": "koral:group",
 		"relation": "or",
-		"@field": "korap:field#corpusID",
+		"@field": "koral:field#corpusID",
 		"operands": [
 		    {
-			"@type": "korap:term",
+			"@type": "koral:term",
 			"@value": "c-1"
 		    },
 		    {
-			"@type": "korap:term",
+			"@type": "koral:term",
 			"@value": "c-2"
 		    }
 		]
 	    }
 	},
 	{
-	    "@type": "korap:meta-filter",
+	    "@type": "koral:meta-filter",
 	    "@id": "korap-filter#id-1223232",
 	    "@value": {
-		"@type": "korap:group",
+		"@type": "koral:group",
 		"relation": "and",
-		"@field": "korap:field#corpusID",
+		"@field": "koral:field#corpusID",
 		"operands": [
 		    {
-			"@type": "korap:term",
+			"@type": "koral:term",
 			"@value": "d-1"
 		    },
 		    {
-			"@type": "korap:term",
+			"@type": "koral:term",
 			"@value": "d-2"
 		    }
 		]

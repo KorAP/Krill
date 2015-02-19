@@ -1,38 +1,38 @@
 {
   "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
   "query" : {
-    "@type" : "korap:group",
+    "@type" : "koral:group",
     "operation" : "operation:sequence",
     "operands" : [ {
-      "@type" : "korap:token",
+      "@type" : "koral:token",
       "wrap" : {
-        "@type" : "korap:term",
+        "@type" : "koral:term",
         "key" : "Institut",
         "layer" : "orth",
         "match" : "match:eq"
       }
     }, {
-      "@type" : "korap:token",
+      "@type" : "koral:token",
       "wrap" : {
-        "@type" : "korap:term",
+        "@type" : "koral:term",
         "key" : "FÜR",
         "layer" : "orth",
 	"caseInsensitive" : true,
         "match" : "match:eq"
       }
     }, {
-      "@type" : "korap:token",
+      "@type" : "koral:token",
       "wrap" : {
-        "@type" : "korap:term",
+        "@type" : "koral:term",
         "caseInsensitive" : true,
         "key" : "deutsche",
         "layer" : "orth",
         "match" : "match:eq"
       }
     }, {
-      "@type" : "korap:token",
+      "@type" : "koral:token",
       "wrap" : {
-        "@type" : "korap:term",
+        "@type" : "koral:term",
         "key" : "Sprache",
         "layer" : "orth",
         "match" : "match:eq"

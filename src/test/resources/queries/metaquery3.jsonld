@@ -9,13 +9,13 @@
     }
 },
    "query":{
-      "@type":"korap:group",
+      "@type":"koral:group",
       "operation":"operation:or",
       "operands":[
          {
-            "@type":"korap:token",
+            "@type":"koral:token",
             "wrap":{
-               "@type":"korap:term",
+               "@type":"koral:term",
 	        "foundry" : "mate",
                "layer":"l",
 	       "key":"Vokal",
@@ -23,13 +23,13 @@
             }
          },
          {
-            "@type":"korap:group",
+            "@type":"koral:group",
 	   "operation" : "operation:sequence",
             "operands":[
                {
-                  "@type":"korap:token",
+                  "@type":"koral:token",
                   "wrap":{
-                     "@type":"korap:term",
+                     "@type":"koral:term",
 		     "foundry" : "mate",
                      "layer":"l",
 		     "key" : "der",
@@ -37,9 +37,9 @@
                   }
                },
                {
-                  "@type":"korap:token",
+                  "@type":"koral:token",
                   "wrap":{
-                     "@type":"korap:term",
+                     "@type":"koral:term",
                      "foundry":"mate",
 		      "layer" : "p",
 		      "key" : "ADJA",

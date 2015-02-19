@@ -1,9 +1,9 @@
 {
   "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
   "query": {
-    "@type": "korap:token", 
+    "@type": "koral:token", 
     "wrap": {
-      "@type": "korap:term", 
+      "@type": "koral:term", 
       "foundry": "mate",
       "layer" : "lemma",
       "key":"sein", 

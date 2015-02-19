@@ -11,15 +11,15 @@
    ],
    "collection":null,
    "query":{
-      "@type" : "korap:reference",
+      "@type" : "koral:reference",
       "operands" : [
 	      {
-			"@type" : "korap:group",
+			"@type" : "koral:group",
 			"operands" : [
 			  {
-			    "@type" : "korap:token",
+			    "@type" : "koral:token",
 			    "wrap" : {
-			      "@type" : "korap:term",
+			      "@type" : "koral:term",
 			      "foundry" : "opennlp",
 			      "key" : "der",
 			      "layer" : "orth",
@@ -27,15 +27,15 @@
 			    }
 			  },
 			  {
-			    "@type" : "korap:group",
+			    "@type" : "koral:group",
 			    "boundary" : {
-			      "@type" : "korap:boundary",
+			      "@type" : "koral:boundary",
 			      "min" : 1,
 			      "max" : 8
 			    },
 			    "operands" : [
 			      {
-					"@type" : "korap:token"
+					"@type" : "koral:token"
 			      }
 			    ],
 			    "operation" : "operation:repetition"

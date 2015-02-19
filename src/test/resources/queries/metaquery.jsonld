@@ -9,13 +9,13 @@
       }
     },
    "query":{
-      "@type":"korap:group",
+      "@type":"koral:group",
       "operation":"operation:or",
       "operands":[
          {
-            "@type":"korap:token",
+            "@type":"koral:token",
             "wrap":{
-               "@type":"korap:term",
+               "@type":"koral:term",
                "foundry":"mate",
 	      "layer" : "lemma",
 	      "key" : "Vokal",
@@ -23,13 +23,13 @@
             }
          },
          {
-            "@type":"korap:group",
+            "@type":"koral:group",
 	   "operation": "operation:sequence",
             "operands":[
                {
-                  "@type":"korap:token",
+                  "@type":"koral:token",
                   "wrap":{
-                    "@type":"korap:term",
+                    "@type":"koral:term",
                     "foundry":"mate",
 		    "layer" : "base",
 		    "key" : "der",
@@ -37,9 +37,9 @@
                   }
                },
                {
-                  "@type":"korap:token",
+                  "@type":"koral:token",
                   "wrap":{
-                     "@type":"korap:term",
+                     "@type":"koral:term",
                      "foundry":"mate",
 		      "layer" : "pos",
 		      "key" : "ADJA",
@@ -52,60 +52,60 @@
    },
     "collections": [
         {
-            "@type": "korap:meta-filter",
+            "@type": "koral:meta-filter",
             "@id": "korap-filter#id-1223232",
             "@value": {
-                "@type": "korap:term",
-                "@field": "korap:field#textClass",
+                "@type": "koral:term",
+                "@field": "koral:field#textClass",
                 "@value": "wissenschaft"
             }
         },
         {
-            "@type": "korap:meta-filter",
+            "@type": "koral:meta-filter",
             "@id": "korap-filter#id-34345454",
             "@value": {
-                "@type": "korap:group",
+                "@type": "koral:group",
                 "relation": "and",
                 "operands": [
                     {
-                        "@type": "korap:term",
-                        "@field": "korap:field#pubPlace",
+                        "@type": "koral:term",
+                        "@field": "koral:field#pubPlace",
                         "@value": "Erfurt"
                     },
                     {
-                        "@type": "korap:term",
-                        "@field": "korap:field#author",
+                        "@type": "koral:term",
+                        "@field": "koral:field#author",
                         "@value": "Hesse"
                     }
                 ]
             }
         },
         {
-            "@type": "korap:meta-extend",
+            "@type": "koral:meta-extend",
             "@value": {
-                "@type": "korap:group",
+                "@type": "koral:group",
                 "relation": "and",
                 "operands": [
                     {
-                        "@type": "korap:group",
+                        "@type": "koral:group",
                         "comment": "other values can be 'since','until' in combination with a simple korap:term",
                         "relation": "between",
-                        "field": "korap:field#pubDate",
+                        "field": "koral:field#pubDate",
                         "operands": [
                             {
-                                "@type": "korap:date",
+                                "@type": "koral:date",
                                 "comment": "either long value or String representation '2013-04-29'",
                                 "@value": "2011-04-29"
                             },
                             {
-                                "@type": "korap:date",
+                                "@type": "koral:date",
                                 "@value": "2013-12-31"
                             }
                         ]
                     },
                     {
-                        "@type": "korap:term",
-                        "@field": "korap:field#textClass",
+                        "@type": "koral:term",
+                        "@field": "koral:field#textClass",
                         "@value": "freizeit"
                     }
                 ]

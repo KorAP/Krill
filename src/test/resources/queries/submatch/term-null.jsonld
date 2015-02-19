@@ -11,12 +11,12 @@
    ],
    "collection":null,
    "query":{
-      "@type" : "korap:reference",
+      "@type" : "koral:reference",
       "operands" : [
          {
-          "@type" : "korap:token",
+          "@type" : "koral:token",
           "wrap" : {
-             "@type" : "korap:term",
+             "@type" : "koral:term",
              "foundry" : "tt",
              "key" : "Haus",
              "layer" : "lemma",

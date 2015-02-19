@@ -5,10 +5,10 @@
     "messages": [],
     "collection": {},
     "query": {
-        "@type": "korap:span",
+        "@type": "koral:span",
         "key": "head",
         "attr": {
-            "@type": "korap:term",
+            "@type": "koral:term",
             "layer": "type",
             "key": "top",
             "match": "match:ne"

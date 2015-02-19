@@ -20,7 +20,6 @@ import de.ids_mannheim.korap.index.MatchCollector;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapSearch;
 import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.query.SpanMatchModifyClassQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;

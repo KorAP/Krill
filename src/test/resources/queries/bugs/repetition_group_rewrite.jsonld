@@ -1,9 +1,9 @@
 {
   "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
   "query" : {
-    "@type" : "korap:group",
+    "@type" : "koral:group",
     "boundary" : {
-      "@type" : "korap:boundary",
+      "@type" : "koral:boundary",
       "max" : 2,
       "min" : 2
     },
@@ -11,12 +11,12 @@
     "min" : 2,
     "operands" : [
       {
-        "@type" : "korap:group",
+        "@type" : "koral:group",
         "operands" : [
           {
-            "@type" : "korap:token",
+            "@type" : "koral:token",
             "wrap" : {
-              "@type" : "korap:term",
+              "@type" : "koral:term",
               "foundry" : "cnx",
               "key" : "A",
               "layer" : "p",
@@ -25,7 +25,7 @@
             }
           },
           {
-            "@type" : "korap:token"
+            "@type" : "koral:token"
           }
         ],
         "operation" : "operation:sequence"

@@ -83,7 +83,7 @@ index, but this is likely to change.
 
 **Authors**: [Nils Diewald](http://nils-diewald.de/), Eliza Margaretha
 
-Copyright 2013-2015, IDS Mannheim, Germany
+Copyright (c) 2013-2015, IDS Mannheim, Germany
 
 Krill is developed as part of the [KorAP](https://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Institute for German Language

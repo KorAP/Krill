@@ -184,7 +184,7 @@ public class TestKorapQueryJSON {
 
     @Test
     public void queryJSONDemo () throws QueryException {
-	SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson("{ \"query\" : { \"@type\" : \"korap:token\", \"wrap\" : { \"@type\" : \"korap:term\", \"foundry\" : \"base\", \"layer\" : \"p\", \"key\" : \"foo\", \"match\" : \"match:eq\" }}}");
+	SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson("{ \"query\" : { \"@type\" : \"koral:token\", \"wrap\" : { \"@type\" : \"koral:term\", \"foundry\" : \"base\", \"layer\" : \"p\", \"key\" : \"foo\", \"match\" : \"match:eq\" }}}");
 
 	assertEquals(sqwi.toQuery().toString(), "tokens:base/p:foo");
     };

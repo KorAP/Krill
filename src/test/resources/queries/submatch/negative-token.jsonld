@@ -5,12 +5,12 @@
     "messages": [],
     "collection": {},
     "query": {
-        "@type": "korap:reference",
+        "@type": "koral:reference",
         "operation": "operation:focus",
         "operands": [{
-            "@type": "korap:token",
+            "@type": "koral:token",
             "wrap": {
-                "@type": "korap:term",
+                "@type": "koral:term",
                 "layer": "lemma",
                 "key": "Baum",
                 "match": "match:ne"

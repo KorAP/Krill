@@ -1,7 +1,7 @@
 {
   "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
   "query": {
-    "@type": "korap:reference",
+    "@type": "koral:reference",
     "classRef" : [0],
     "operands" : []
   },

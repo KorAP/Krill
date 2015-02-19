@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Response class for search results.
  *
- * TODO: Synopsis
+ * TODO: Synopsis and let it base on KoralQuery
  *
  * @author diewald
  * @see KorapResponse

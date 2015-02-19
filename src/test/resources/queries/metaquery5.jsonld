@@ -9,9 +9,9 @@
     }
   },
   "query":{
-    "@type":"korap:token",
+    "@type":"koral:token",
     "wrap":{
-      "@type":"korap:term",
+      "@type":"koral:term",
       "foundry": "mate",
       "layer":"l",
       "key":"lediglich",
@@ -20,23 +20,23 @@
   },
   "collections": [
     {
-      "@type": "korap:meta-filter",
+      "@type": "koral:meta-filter",
       "@id": "korap-filter#id-1223232",
       "@value": {
-	"@type": "korap:group",
+	"@type": "koral:group",
 	"relation": "and",
 	"operands": [
 	  {
-            "@type": "korap:group",
+            "@type": "koral:group",
             "relation": "between",
-            "@field": "korap:field#pubDate",
+            "@field": "koral:field#pubDate",
             "operands": [
               {
-		"@type": "korap:date",
+		"@type": "koral:date",
 		"@value": "2000-01-01"
               },
               {
-		"@type": "korap:date",
+		"@type": "koral:date",
 		"@value": "2013-12-31"
               }
             ]

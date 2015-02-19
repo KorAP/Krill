@@ -1,10 +1,10 @@
 {
     "collections":[
 	{
-	    "@type":"korap:meta-filter",
+	    "@type":"koral:meta-filter",
 	    "@value":{
-		"@type":"korap:term",
-		"@field":"korap:field#corpusID",
+		"@type":"koral:term",
+		"@field":"koral:field#corpusID",
 		"@value":"WPD"
 	    }
 	}

@@ -73,7 +73,7 @@ public class TestMatchIndex {
 	assertEquals("SnippetBrackets (0)", "... bcabca[b{1:a}]c", kr.getMatch(0).getSnippetBrackets());
 
 	assertEquals("Test no 'more' context", "<span class=\"context-left\"><span class=\"more\"></span>bcabca</span><span class=\"match\">b<em class=\"class-1 level-0\">a</em></span><span class=\"context-right\">c</span>", kr.getMatch(0).getSnippetHTML());
-	sq = new SpanMatchModifyClassQuery(
+	sq = new SpanFocusQuery(
   	     new SpanNextQuery(
                 new SpanTermQuery(new Term("base", "s:b")),
                 new SpanClassQuery(
@@ -87,7 +87,7 @@ public class TestMatchIndex {
 	assertEquals("StartPos (0)", 8, kr.getMatch(0).startPos);
 	assertEquals("EndPos (0)", 9, kr.getMatch(0).endPos);
 	assertEquals("SnippetBrackets (0)", "... cabcab[{1:a}]c", kr.getMatch(0).getSnippetBrackets());
-	sq = new SpanMatchModifyClassQuery(
+	sq = new SpanFocusQuery(
             new SpanNextQuery(
 	        new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 2),
                 new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
@@ -117,7 +117,7 @@ public class TestMatchIndex {
 
 
 	// abcabcabac
-	sq = new SpanMatchModifyClassQuery( 
+	sq = new SpanFocusQuery( 
             new SpanNextQuery(
                 new SpanTermQuery(new Term("base", "s:a")),
                 new SpanClassQuery(
@@ -148,7 +148,7 @@ public class TestMatchIndex {
 
 	assertEquals("SnippetHTML (0) 2", "<span class=\"context-left\"><span class=\"more\"></span>a</span><span class=\"match\"><em class=\"class-2 level-0\">b<em class=\"class-1 level-1\">a</em></em></span><span class=\"context-right\"><span class=\"more\"></span></span>", kr.getMatch(0).getSnippetHTML());
 
-	sq = new SpanMatchModifyClassQuery(
+	sq = new SpanFocusQuery(
             new SpanClassQuery(
                 new SpanNextQuery(
 	            new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 1),
@@ -171,7 +171,7 @@ public class TestMatchIndex {
 	assertEquals("Token count", 10, ki.numberOf("base", "t"));
 
 	// Don't match the expected class!
-	sq = new SpanMatchModifyClassQuery(
+	sq = new SpanFocusQuery(
             new SpanNextQuery(
 	        new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 1),
 		new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 2)
@@ -182,7 +182,7 @@ public class TestMatchIndex {
 	
 	assertEquals("totalResults", kr.getTotalResults(), 0);
 
-	sq = new SpanMatchModifyClassQuery(
+	sq = new SpanFocusQuery(
             new SpanNextQuery(
                 new SpanTermQuery(new Term("base", "s:a")),
                 new SpanClassQuery(
@@ -322,7 +322,7 @@ public class TestMatchIndex {
         SpanQuery sq;
         KorapResult kr;
 
-        sq = new SpanMatchModifyClassQuery(
+        sq = new SpanFocusQuery(
             new SpanNextQuery(
                 new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 2),
                 new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
@@ -338,8 +338,8 @@ public class TestMatchIndex {
         assertEquals("EndPos (0)", 2, km.endPos);
         assertEquals("SnippetBrackets (0)", "a[{3:b}]cabcab ...", km.getSnippetBrackets());
 
-        sq = new SpanMatchModifyClassQuery(
-            new SpanMatchModifyClassQuery(
+        sq = new SpanFocusQuery(
+            new SpanFocusQuery(
                 new SpanNextQuery(
 	            new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 2),
                     new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
@@ -391,7 +391,7 @@ public class TestMatchIndex {
         assertEquals(kr.getQuery(), "spanContain({2: <base:s />}, {3: base:s:b})");
         assertEquals(kr.getMatch(0).getSnippetBrackets(), "a[{2:{3:b}cab}]cabac");
 
-        sq = new SpanMatchModifyClassQuery(
+        sq = new SpanFocusQuery(
             new SpanWithinQuery(
 	        new SpanClassQuery(new SpanElementQuery("base", "s"), (byte) 2),
                 new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")), (byte) 3)
@@ -477,7 +477,7 @@ public class TestMatchIndex {
         // within(<p>, focus(3:within({2:<s>}, {3:a})))
         sq = new SpanWithinQuery(
                  new SpanElementQuery("base", "p"),
-                 new SpanMatchModifyClassQuery(
+                 new SpanFocusQuery(
                      new SpanWithinQuery(
                          new SpanClassQuery(new SpanElementQuery("base", "s"), (byte) 2),
                          new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")), (byte) 3)

@@ -4,13 +4,13 @@
       ["This is a warning coming from the serialization"]
   ],
   "query": {
-    "@type" : "korap:reference",
+    "@type" : "koral:reference",
     "classRef" : [
       130
     ],
     "operands" : [
       {
-        "@type" : "korap:group",
+        "@type" : "koral:group",
         "class" : 131,
         "classIn" : [
           129,
@@ -20,31 +20,31 @@
         "classRefCheck" : "classRefCheck:includes",
         "operands" : [
           {
-            "@type" : "korap:group",
+            "@type" : "koral:group",
             "frame" : "frame:contains",
             "frames" : [],
             "operands" : [
               {
-                "@type" : "korap:group",
+                "@type" : "koral:group",
                 "class" : 129,
                 "classOut" : 129,
                 "operands" : [
                   {
-                    "@type" : "korap:span",
+                    "@type" : "koral:span",
                     "key" : "s"
                   }
                 ],
                 "operation" : "operation:class"
               },
               {
-                "@type" : "korap:group",
+                "@type" : "koral:group",
                 "class" : 130,
                 "classOut" : 130,
                 "operands" : [
                   {
-                    "@type" : "korap:token",
+                    "@type" : "koral:token",
                     "wrap" : {
-                      "@type" : "korap:term",
+                      "@type" : "koral:term",
                       "key" : "wegen",
                       "layer" : "orth",
                       "match" : "match:eq"

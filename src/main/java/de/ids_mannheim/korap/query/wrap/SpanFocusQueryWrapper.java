@@ -4,7 +4,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.util.QueryException;
 
-import de.ids_mannheim.korap.query.SpanMatchModifyClassQuery;
+import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
 import java.util.*;
@@ -20,26 +20,26 @@ import java.util.*;
 // On processing, there should be an ability to raise
 // a warning, in case an unordered result bubbles up.
 
-public class SpanMatchModifyQueryWrapper extends SpanQueryWrapper {
+public class SpanFocusQueryWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subquery;
     private byte number;
 
-    public SpanMatchModifyQueryWrapper (SpanQueryWrapper subquery, byte number) {
+    public SpanFocusQueryWrapper (SpanQueryWrapper subquery, byte number) {
 	this.subquery = subquery;
 	this.number = number;
     };
 
-    public SpanMatchModifyQueryWrapper (SpanQueryWrapper subquery, short number) {
+    public SpanFocusQueryWrapper (SpanQueryWrapper subquery, short number) {
 	this.subquery = subquery;
 	this.number = (byte) number;
     };
 
-    public SpanMatchModifyQueryWrapper (SpanQueryWrapper subquery, int number) {
+    public SpanFocusQueryWrapper (SpanQueryWrapper subquery, int number) {
 	this.subquery = subquery;
 	this.number = (byte) number;
     };
 
-    public SpanMatchModifyQueryWrapper (SpanQueryWrapper subquery) {
+    public SpanFocusQueryWrapper (SpanQueryWrapper subquery) {
 	this.subquery = subquery;
 	this.number = (byte) 1;
     };
@@ -47,7 +47,7 @@ public class SpanMatchModifyQueryWrapper extends SpanQueryWrapper {
     public SpanQuery toQuery () throws QueryException {
         if (this.subquery.isNull())
             return (SpanQuery) null;
-        return new SpanMatchModifyClassQuery(
+        return new SpanFocusQuery(
             this.subquery.retrieveNode(this.retrieveNode).toQuery(), this.number
         );
     };

@@ -5,11 +5,11 @@
     "messages": [],
     "collection": {},
     "query": {
-        "@type": "korap:span",
+        "@type": "koral:span",
         "attr": {
-            "@type": "korap:term",
+            "@type": "koral:term",
             "arity": {
-                "@type": "korap:boundary",
+                "@type": "koral:boundary",
                 "min": 2,
                 "max": 2
             }

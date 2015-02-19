@@ -11,10 +11,10 @@
    ],
    "collection":null,
    "query":{
-      "@type" : "korap:reference",
+      "@type" : "koral:reference",
       "operands" : [
          {
-            "@type" : "korap:span",
+            "@type" : "koral:span",
             "key" : "s"
          }
       ],

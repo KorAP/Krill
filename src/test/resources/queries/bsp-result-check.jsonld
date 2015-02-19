@@ -9,21 +9,21 @@
     }
   },
   "query":{
-    "@type":"korap:group",
+    "@type":"koral:group",
     "operation":"operation:or",
     "operands":[
       {
-        "@type":"korap:token",
+        "@type":"koral:token",
         "wrap":{
-          "@type":"korap:term",
+          "@type":"koral:term",
           "layer":"orth",
           "key":"a",
           "match":"match:eq"
         }
       },{
-        "@type":"korap:token",
+        "@type":"koral:token",
         "wrap":{
-          "@type":"korap:term",
+          "@type":"koral:term",
           "layer":"orth",
           "key":"b",
           "match":"match:eq"

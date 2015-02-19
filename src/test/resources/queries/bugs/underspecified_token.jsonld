@@ -19,26 +19,26 @@
     }
   },
   "query":{
-    "@type":"korap:reference",
+    "@type":"koral:reference",
     "operation":"operation:focus",
     "classRef":[129],
     "operands":[
       {
-	"@type":"korap:group",
+	"@type":"koral:group",
 	"operation":"operation:sequence",
 	"operands":[
 	  {
-	    "@type":"korap:group",
+	    "@type":"koral:group",
 	    "operation":"operation:class",
 	    "class":129,
 	    "classOut":129,
 	    "operands":[
 	      {
-		"@type":"korap:group",
+		"@type":"koral:group",
 		"operation":"operation:or",
 		"operands":[
 		  {
-		    "@type":"korap:token",
+		    "@type":"koral:token",
 		    "wrap":{
 		      "key":"APPR",
 		      "match":"match:eq",
@@ -46,7 +46,7 @@
 		    }
 		  },
 		  {
-		    "@type":"korap:token",
+		    "@type":"koral:token",
 		    "wrap":{
 		      "key":"APPRART",
 		      "match":"match:eq",
@@ -58,15 +58,15 @@
 	    ]
 	  },
 	  {
-	    "@type":"korap:group",
+	    "@type":"koral:group",
 	    "operation":"operation:class",
 	    "class":129,
 	    "classOut":129,
 	    "operands":[
 	      {
-		"@type":"korap:token",
+		"@type":"koral:token",
 		"wrap":{
-		  "@type":"korap:term",
+		  "@type":"koral:term",
 		  "key":"Urlaub",
 		  "layer":"orth",
 		  "match":"match:eq",
@@ -79,10 +79,10 @@
 	"inOrder":true,
 	"distances":[
 	  {
-	    "@type":"korap:distance",
+	    "@type":"koral:distance",
 	    "key":"w",
 	    "boundary":{
-	      "@type":"korap:boundary",
+	      "@type":"koral:boundary",
 	      "min":0,
 	      "max":1
 	    },
@@ -95,10 +95,10 @@
   },
   "collections":[
     {
-      "@type":"korap:meta-filter",
+      "@type":"koral:meta-filter",
       "@value":{
-	"@type":"korap:term",
-	"@field":"korap:field#textClass",
+	"@type":"koral:term",
+	"@field":"koral:field#textClass",
 	"@value":"wissenschaft"
       }
     }

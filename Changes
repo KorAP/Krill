@@ -18,7 +18,9 @@
 	  renamed shrink() to focus(),
 	  removed KorapPrimaryData,
           fixed a lot of wrong tests for WithinSpans,
-	  renamed KorapFilter to /collection/CollectionBuilder (diewald)
+	  renamed KorapFilter to /collection/CollectionBuilder,
+	  renamed SpanMatchModify to SpanFocus,
+	  changed KoralQuery root prefix to "koral" (diewald)
         - [feature] Improved deserialization of SpanSubSpanQueries
           (margaretha)
 	- [feature] Introducing the potential need for resorting queries

@@ -4,7 +4,7 @@
   "warnings" : [ ],
   "announcements" : [ ],
   "collection" : {
-    "@type": "korap:doc",
+    "@type": "koral:doc",
     "key" : "title",
     "value" : "Mannheim",
     "match" : "match:contains"

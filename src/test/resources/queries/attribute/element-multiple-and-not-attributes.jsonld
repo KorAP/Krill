@@ -5,26 +5,26 @@
     "messages": [],
     "collection": {},
     "query": {
-        "@type": "korap:span",
+        "@type": "koral:span",
         "key": "div",
         "attr": {
-            "@type": "korap:termGroup",
+            "@type": "koral:termGroup",
             "relation": "relation:and",
             "operands": [
                 {
-                    "@type": "korap:term",
+                    "@type": "koral:term",
                     "layer": "type",
                     "key": "Zeitschrift",
                     "match": "match:eq"
                 },
                 {
-                    "@type": "korap:term",
+                    "@type": "koral:term",
                     "layer": "complete",
                     "key": "Y",
                     "match": "match:ne"
                 },
                 {
-                    "@type": "korap:term",
+                    "@type": "koral:term",
                     "layer": "n",
                     "key": "0",
                     "match": "match:eq"

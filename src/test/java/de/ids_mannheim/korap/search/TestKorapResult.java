@@ -171,17 +171,17 @@ public class TestKorapResult {
 	assertEquals("char", res.at("/request/meta/context/right/0").asText());
 	assertEquals(6, res.at("/request/meta/context/right/1").asInt());
 
-	assertEquals("korap:group", res.at("/request/query/@type").asText());
+	assertEquals("koral:group", res.at("/request/query/@type").asText());
 	assertEquals("operation:or", res.at("/request/query/operation").asText());
 
-	assertEquals("korap:token", res.at("/request/query/operands/0/@type").asText());
-	assertEquals("korap:term", res.at("/request/query/operands/0/wrap/@type").asText());
+	assertEquals("koral:token", res.at("/request/query/operands/0/@type").asText());
+	assertEquals("koral:term", res.at("/request/query/operands/0/wrap/@type").asText());
 	assertEquals("orth", res.at("/request/query/operands/0/wrap/layer").asText());
 	assertEquals("a", res.at("/request/query/operands/0/wrap/key").asText());
 	assertEquals("match:eq", res.at("/request/query/operands/0/wrap/match").asText());
 
-	assertEquals("korap:token", res.at("/request/query/operands/1/@type").asText());
-	assertEquals("korap:term", res.at("/request/query/operands/1/wrap/@type").asText());
+	assertEquals("koral:token", res.at("/request/query/operands/1/@type").asText());
+	assertEquals("koral:term", res.at("/request/query/operands/1/wrap/@type").asText());
 	assertEquals("orth", res.at("/request/query/operands/1/wrap/layer").asText());
 	assertEquals("b", res.at("/request/query/operands/1/wrap/key").asText());
 	assertEquals("match:eq", res.at("/request/query/operands/1/wrap/match").asText());

@@ -4,16 +4,16 @@
   "warnings" : [ ],
   "announcements" : [ ],
   "collection" : {
-    "@type" : "korap:docGroup",
+    "@type" : "koral:docGroup",
     "operation" : "operation:and",
     "operands" : [ {
-      "@type" : "korap:doc",
+      "@type" : "koral:doc",
       "key" : "pubDate",
       "type" : "type:date",
       "value" : "1990",
       "match" : "match:geq"
     }, {
-      "@type" : "korap:doc",
+      "@type" : "koral:doc",
       "key" : "pubDate",
       "type" : "type:date",
       "value" : "2006-10",

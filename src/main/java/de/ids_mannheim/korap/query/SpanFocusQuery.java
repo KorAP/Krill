@@ -32,28 +32,28 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
  *
  * @see MatchModifyClassSpans
  */
-public class SpanMatchModifyClassQuery extends SpanClassQuery {
+public class SpanFocusQuery extends SpanClassQuery {
 
     /**
-     * Construct a new SpanMatchModifyClassQuery.
+     * Construct a new SpanFocusQuery.
      *
      * @param operand The nested {@link SpanQuery}, that contains one or
      *        more classed spans.
      * @param number The class number to focus on.
      */
-    public SpanMatchModifyClassQuery (SpanQuery operand, byte number) {
+    public SpanFocusQuery (SpanQuery operand, byte number) {
         super(operand, number);
     };
 
 
     /**
-     * Construct a new SpanMatchModifyClassQuery.
+     * Construct a new SpanFocusQuery.
      * The class to focus on defaults to <tt>1</tt>.
      *
      * @param operand The nested {@link SpanQuery}, that contains one or
      *        more classed spans.
      */
-    public SpanMatchModifyClassQuery (SpanQuery operand) {
+    public SpanFocusQuery (SpanQuery operand) {
         this(operand, (byte) 1);
     };
 
@@ -87,7 +87,7 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
 
     @Override
     public Query rewrite (IndexReader reader) throws IOException {
-        SpanMatchModifyClassQuery clone = null;
+        SpanFocusQuery clone = null;
         SpanQuery query = (SpanQuery) this.operand.rewrite(reader);
         
         if (query != this.operand) {
@@ -104,27 +104,29 @@ public class SpanMatchModifyClassQuery extends SpanClassQuery {
 
 
     @Override
-    public SpanMatchModifyClassQuery clone() {
-        SpanMatchModifyClassQuery spanMatchQuery = new SpanMatchModifyClassQuery(
+    public SpanFocusQuery clone() {
+        SpanFocusQuery spanFocusQuery = new SpanFocusQuery(
             (SpanQuery) this.operand.clone(),
             this.number
         );
-        spanMatchQuery.setBoost(getBoost());
-        return spanMatchQuery;
+        spanFocusQuery.setBoost(getBoost());
+        return spanFocusQuery;
     };
 
 
     @Override
     public boolean equals (Object o) {
         if (this == o) return true;
-        if (!(o instanceof SpanMatchModifyClassQuery)) return false;
+        if (!(o instanceof SpanFocusQuery)) return false;
 	
-        final SpanMatchModifyClassQuery spanMatchModifyClassQuery =
-            (SpanMatchModifyClassQuery) o;
+        final SpanFocusQuery spanFocusQuery =
+            (SpanFocusQuery) o;
 	
-        if (!this.operand.equals(spanMatchModifyClassQuery.operand)) return false;
-        if (this.number != spanMatchModifyClassQuery.number) return false;
-        return getBoost() == spanMatchModifyClassQuery.getBoost();
+        if (!this.operand.equals(spanFocusQuery.operand)) return false;
+        if (this.number != spanFocusQuery.number) return false;
+
+        // Probably not necessary
+        return getBoost() == spanFocusQuery.getBoost();
     };
 
 

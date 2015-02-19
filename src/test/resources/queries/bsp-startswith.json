@@ -1,13 +1,13 @@
 {
   "@context":"http://korap.ids-mannheim.de/ns/query/context.json.ld",
   "query":{
-    "@type":"korap:group",
+    "@type":"koral:group",
     "relation":"position",
     "frames":[
       "frames:startsWith"
     ],
     "operands":[
       {
-	"@type":"korap:element",
+	"@type":"koral:element",
 	"@value":"s"
-      },{"@type":"korap:sequence","operands":[{"@type":"korap:group","class":"0","operands":[{"@type":"korap:token","@value":{"@type":"korap:term","@value":"tt_p:ADJA","relation":"="}}]},{"@type":"korap:token","@value":{"@type":"korap:term","@value":"mate_p:NN","relation":"="}}]}]},"meta":[{"@type":"korap:meta-filter","@value":{"@type":"korap:term","@field":"korap:field#corpusID","@value":"A00"}},{"@type":"korap:meta-extend","@value":{"@type":"korap:term","@field":"korap:field#corpusID","@value":"A01"}}],"startPage":1,"count":50,"context":{"left":["token",6],"right":["token",6]}}
+      },{"@type":"koral:sequence","operands":[{"@type":"koral:group","class":"0","operands":[{"@type":"koral:token","@value":{"@type":"koral:term","@value":"tt_p:ADJA","relation":"="}}]},{"@type":"koral:token","@value":{"@type":"koral:term","@value":"mate_p:NN","relation":"="}}]}]},"meta":[{"@type":"koral:meta-filter","@value":{"@type":"koral:term","@field":"koral:field#corpusID","@value":"A00"}},{"@type":"koral:meta-extend","@value":{"@type":"koral:term","@field":"koral:field#corpusID","@value":"A01"}}],"startPage":1,"count":50,"context":{"left":["token",6],"right":["token",6]}}

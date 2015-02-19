@@ -1,12 +1,12 @@
 {
   "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
   "query" : {
-    "@type" : "korap:group",
+    "@type" : "koral:group",
     "operands" : [
       {
-        "@type" : "korap:token",
+        "@type" : "koral:token",
         "wrap" : {
-          "@type" : "korap:term",
+          "@type" : "koral:term",
           "foundry" : "opennlp",
           "key" : "der",
           "layer" : "orth",
@@ -14,9 +14,9 @@
         }
       },
       {
-        "@type" : "korap:token",
+        "@type" : "koral:token",
         "wrap" : {
-          "@type" : "korap:term",
+          "@type" : "koral:term",
           "foundry" : "opennlp",
           "key" : "alte",
           "layer" : "orth",
@@ -24,9 +24,9 @@
         }
       },
       {
-        "@type" : "korap:token",
+        "@type" : "koral:token",
         "wrap" : {
-          "@type" : "korap:term",
+          "@type" : "koral:term",
           "foundry" : "opennlp",
           "key" : "Digraph",
           "layer" : "orth",
@@ -34,9 +34,9 @@
         }
       },
       {
-        "@type" : "korap:token",
+        "@type" : "koral:token",
         "wrap" : {
-          "@type" : "korap:term",
+          "@type" : "koral:term",
           "foundry" : "opennlp",
           "key" : "Aa",
           "layer" : "orth",
@@ -44,9 +44,9 @@
         }
       },
       {
-        "@type" : "korap:token",
+        "@type" : "koral:token",
         "wrap" : {
-          "@type" : "korap:term",
+          "@type" : "koral:term",
           "foundry" : "opennlp",
           "key" : "durch",
           "layer" : "orth",
@@ -54,9 +54,9 @@
         }
       },
       {
-        "@type" : "korap:token",
+        "@type" : "koral:token",
         "wrap" : {
-          "@type" : "korap:term",
+          "@type" : "koral:term",
           "foundry" : "opennlp",
           "key" : "Å",
           "layer" : "orth",

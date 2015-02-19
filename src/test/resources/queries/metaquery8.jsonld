@@ -1,9 +1,9 @@
 {
     "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
     "query": {
-	"@type": "korap:token", 
+	"@type": "koral:token", 
 	"wrap": {
-	    "@type": "korap:term", 
+	    "@type": "koral:term", 
 	    "foundry": "mate",
 	    "layer" : "lemma",
 	    "key":"der", 
@@ -20,19 +20,19 @@
     },
     "collections": [
 	{
-	    "@type": "korap:meta-filter",
+	    "@type": "koral:meta-filter",
 	    "@id": "korap-filter#id-1223232",
 	    "@value": {
-		"@type": "korap:group",
+		"@type": "koral:group",
 		"relation": "or",
-		"@field": "korap:field#ID",
+		"@field": "koral:field#ID",
 		"operands": [
 		    {
-			"@type": "korap:term",
+			"@type": "koral:term",
 			"@value": "WPD_AAA.00001"
 		    },
 		    {
-			"@type": "korap:term",
+			"@type": "koral:term",
 			"@value": "WPD_AAA.00002"
 		    }
 		]

@@ -1,12 +1,12 @@
 {
   "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
   "query": {
-    "@type" : "korap:group",
+    "@type" : "koral:group",
     "distances" : [
       {
-        "@type" : "korap:distance",
+        "@type" : "koral:distance",
         "boundary" : {
-          "@type" : "korap:boundary",
+          "@type" : "koral:boundary",
           "max" : 11,
           "min" : 1
         },
@@ -18,21 +18,21 @@
     "inOrder" : true,
     "operands" : [
       {
-        "@type" : "korap:token",
+        "@type" : "koral:token",
         "wrap" : {
-          "@type" : "korap:term",
+          "@type" : "koral:term",
           "key" : "er",
           "layer" : "orth",
           "match" : "match:eq"
         }
       },
       {
-        "@type" : "korap:group",
+        "@type" : "koral:group",
         "distances" : [
           {
-            "@type" : "korap:distance",
+            "@type" : "koral:distance",
             "boundary" : {
-              "@type" : "korap:boundary",
+              "@type" : "koral:boundary",
               "max" : 11,
               "min" : 2
             },
@@ -44,18 +44,18 @@
         "inOrder" : true,
         "operands" : [
           {
-            "@type" : "korap:token",
+            "@type" : "koral:token",
             "wrap" : {
-              "@type" : "korap:term",
+              "@type" : "koral:term",
               "key" : "kann",
               "layer" : "orth",
               "match" : "match:eq"
             }
           },
           {
-            "@type" : "korap:token",
+            "@type" : "koral:token",
             "wrap" : {
-              "@type" : "korap:term",
+              "@type" : "koral:term",
               "key" : "sagte",
               "layer" : "orth",
               "match" : "match:eq"

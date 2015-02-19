@@ -10,17 +10,17 @@
     "context":"paragraph"
   },
   "query":{
-    "@type":"korap:group",
+    "@type":"koral:group",
     "operation":"operation:sequence",
     "operands":[
       {
-	"@type":"korap:group",
+	"@type":"koral:group",
 	"operation":"operation:repetition",
 	"operands":[
 	  {
-	    "@type":"korap:token",
+	    "@type":"koral:token",
 	    "wrap":{
-	      "@type":"korap:term",
+	      "@type":"koral:term",
 	      "foundry":"tt",
 	      "layer":"p",
 	      "type":"type:regex",
@@ -30,7 +30,7 @@
 	  }
 	],
 	"boundary":{
-	  "@type":"korap:boundary",
+	  "@type":"koral:boundary",
 	  "min":0,
 	  "max":3
 	},
@@ -38,9 +38,9 @@
 	"max":3
       },
       {
-	"@type":"korap:token",
+	"@type":"koral:token",
 	"wrap":{
-	  "@type":"korap:term",
+	  "@type":"koral:term",
 	  "foundry":"tt",
 	  "layer":"p",
 	  "type":"type:regex",
@@ -52,10 +52,10 @@
   },
   "collections":[
     {
-      "@type":"korap:meta-filter",
+      "@type":"koral:meta-filter",
       "@value":{
-	"@type":"korap:term",
-	"@field":"korap:field#corpusID",
+	"@type":"koral:term",
+	"@field":"koral:field#corpusID",
 	"@value":"WPD"
       }
     }

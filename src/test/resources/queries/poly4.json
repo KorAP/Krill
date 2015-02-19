@@ -3,10 +3,10 @@
    "collection" : {},
    "collections" : [
       {
-         "@type" : "korap:meta-filter",
+         "@type" : "koral:meta-filter",
          "@value" : {
-            "@field" : "korap:field#corpusID",
-            "@type" : "korap:term",
+            "@field" : "koral:field#corpusID",
+            "@type" : "koral:term",
             "@value" : "WPD"
          }
       }
@@ -28,9 +28,9 @@
    ],
    "meta" : {},
    "query" : {
-      "@type" : "korap:group",
+      "@type" : "koral:group",
       "boundary" : {
-         "@type" : "korap:boundary",
+         "@type" : "koral:boundary",
          "max" : 3,
          "min" : 1
       },
@@ -38,16 +38,16 @@
       "min" : 1,
       "operands" : [
          {
-            "@type" : "korap:group",
+            "@type" : "koral:group",
             "operands" : [
                {
-                  "@type" : "korap:group",
+                  "@type" : "koral:group",
                   "classOut" : 1,
                   "operands" : [
                      {
-                        "@type" : "korap:token",
+                        "@type" : "koral:token",
                         "wrap" : {
-                           "@type" : "korap:term",
+                           "@type" : "koral:term",
                            "foundry" : "tt",
                            "key" : "NN",
                            "layer" : "p",
@@ -58,9 +58,9 @@
                   "operation" : "operation:class"
                },
                {
-                  "@type" : "korap:group",
+                  "@type" : "koral:group",
                   "boundary" : {
-                     "@type" : "korap:boundary",
+                     "@type" : "koral:boundary",
                      "max" : 5,
                      "min" : 1
                   },
@@ -68,7 +68,7 @@
                   "min" : 1,
                   "operands" : [
                      {
-                        "@type" : "korap:token"
+                        "@type" : "koral:token"
                      }
                   ],
                   "operation" : "operation:repetition"

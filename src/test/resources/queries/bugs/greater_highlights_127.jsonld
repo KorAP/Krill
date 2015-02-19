@@ -1,14 +1,14 @@
 {
   "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
   "query": {
-    "@type" : "korap:group",
+    "@type" : "koral:group",
     "class" : 127,
     "classOut" : 127,
     "operands" : [
       {
-        "@type" : "korap:token",
+        "@type" : "koral:token",
         "wrap" : {
-          "@type" : "korap:term",
+          "@type" : "koral:term",
           "key" : "Alphabet",
           "layer" : "orth",
           "match" : "match:eq"
