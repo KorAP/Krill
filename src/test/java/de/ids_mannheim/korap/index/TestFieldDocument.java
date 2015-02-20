@@ -198,7 +198,7 @@ public class TestFieldDocument {
 	ks.context.left.setCharacter(true).setLength(6);
 	ks.context.right.setToken(true).setLength(6);
 
-	assertEquals("... okal. [Der Buchstabe A hat in {1:deutschen Texten} eine durchschnittliche Häufigkeit von 6,51 %.] Er ist damit der sechsthäufigste Buchstabe ...", ks.run(ki).getMatch(0).getSnippetBrackets());
+	assertEquals("... okal. [Der Buchstabe A hat in {1:deutschen Texten} eine durchschnittliche Häufigkeit von 6,51 %.] Er ist damit der sechsthäufigste Buchstabe ...", ks.apply(ki).getMatch(0).getSnippetBrackets());
     };
 
     @Test

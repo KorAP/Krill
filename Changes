@@ -20,7 +20,9 @@
           fixed a lot of wrong tests for WithinSpans,
 	  renamed KorapFilter to /collection/CollectionBuilder,
 	  renamed SpanMatchModify to SpanFocus,
-	  changed KoralQuery root prefix to "koral" (diewald)
+	  changed KoralQuery root prefix to "koral",
+	  renamed different kinds of "queries" throughout classes,
+	  renamed KorapSearch#run to KorapSearch#apply (diewald)
         - [feature] Improved deserialization of SpanSubSpanQueries
           (margaretha)
 	- [feature] Introducing the potential need for resorting queries

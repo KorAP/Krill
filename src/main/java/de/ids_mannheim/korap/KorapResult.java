@@ -39,7 +39,7 @@ public class KorapResult extends KorapResponse {
     public static final short ITEMS_PER_PAGE_MAX = 100;
 
     private int startIndex = 0;
-    private String query;
+    private String serialQuery;
 
     private List<KorapMatch> matches;
 
@@ -67,7 +67,7 @@ public class KorapResult extends KorapResponse {
     /**
      * Construct a new KorapResult object.
      *
-     * @param query Query representation as a string.
+     * @param serialQuery Query representation as a string.
      * @param startIndex Offset position in match array.
      * @param itemsPerPage Number of matches per page.
      * @param context Requested {@link SearchContext}
@@ -82,7 +82,7 @@ public class KorapResult extends KorapResponse {
         // mapper.disable(SerializationFeature.WRITE_NULL_MAP_VALUES);
 
         this.matches = new ArrayList<>(itemsPerPage);
-        this.query = query;
+        this.serialQuery = query;
         this.startIndex = startIndex;
         this.itemsPerPage =
             (itemsPerPage > ITEMS_PER_PAGE_MAX || itemsPerPage < 1) ?
@@ -187,8 +187,8 @@ public class KorapResult extends KorapResponse {
      *
      * @return The string representation of the search query.
      */
-    public String getQuery () {
-        return this.query;
+    public String getSerialQuery () {
+        return this.serialQuery;
     };
 
 
@@ -281,8 +281,8 @@ public class KorapResult extends KorapResponse {
         // TODO: <test>
         if (this.request != null)
             json.put("request", this.request);
-        if (this.query != null)
-            json.put("query", this.query);
+        if (this.serialQuery != null)
+            json.put("serialQuery", this.serialQuery);
         // </test>
 
         return json;
@@ -298,7 +298,7 @@ public class KorapResult extends KorapResponse {
         StringBuilder sb = new StringBuilder();
 
         sb.append("Search for: ")
-            .append(this.query)
+            .append(this.serialQuery)
             .append("\n");
 
         int i = 1;

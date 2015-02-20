@@ -91,7 +91,7 @@ public class KorapCollection extends Notifications {
             
             // Deserialize from recent collections
             if (json.has("collection")) {
-                this.fromJSON(json.get("collection"));
+                this.fromJson(json.get("collection"));
             }
 	    
             // Legacy collection serialization
@@ -102,7 +102,7 @@ public class KorapCollection extends Notifications {
                     "Collections are deprecated in favour of a single collection"
                 );
                 for (JsonNode collection : json.get("collections")) {
-                    this.fromJSONLegacy(collection);
+                    this.fromJsonLegacy(collection);
                 };
             };
         }
@@ -135,14 +135,16 @@ public class KorapCollection extends Notifications {
      * @param jsonString The "collection" part of a KoralQuery.
      * @throws QueryException
      */
-    public void fromJSON (String jsonString) throws QueryException {
+    public KorapCollection fromJson (String jsonString) throws QueryException {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            this.fromJSON((JsonNode) mapper.readTree(jsonString));
+            this.fromJson((JsonNode) mapper.readTree(jsonString));
         }
         catch (Exception e) {
             this.addError(621, "Unable to parse JSON", "KorapCollection");
         };
+
+        return this;
     };
 
 
@@ -153,19 +155,20 @@ public class KorapCollection extends Notifications {
      *        as a {@link JsonNode} object.
      * @throws QueryException
      */
-    public void fromJSON (JsonNode json) throws QueryException {
-        this.filter(this._fromJSON(json));
+    public KorapCollection fromJson (JsonNode json) throws QueryException {
+        this.filter(this._fromJson(json));
+        return this;
     };
 
 
     // Create a boolean filter from JSON
-    private BooleanFilter _fromJSON (JsonNode json) throws QueryException {
-        return this._fromJSON(json, "tokens");
+    private BooleanFilter _fromJson (JsonNode json) throws QueryException {
+        return this._fromJson(json, "tokens");
     };
 
 
     // Create a booleanfilter from JSON
-    private BooleanFilter _fromJSON (JsonNode json, String field) throws QueryException {
+    private BooleanFilter _fromJson (JsonNode json, String field) throws QueryException {
         BooleanFilter bfilter = new BooleanFilter();
 
         // TODO: THIS UNFORTUNATELY BREAKS TESTS
@@ -237,10 +240,10 @@ public class KorapCollection extends Notifications {
 
             for (JsonNode operand : json.get("operands")) {
                 if (operation.equals("operation:and"))
-                    group.and(this._fromJSON(operand, field));
+                    group.and(this._fromJson(operand, field));
 
                 else if (operation.equals("operation:or"))
-                    group.or(this._fromJSON(operand, field));
+                    group.or(this._fromJson(operand, field));
 
                 else
                     throw new QueryException(613, "Unknown document group operation");
@@ -264,14 +267,15 @@ public class KorapCollection extends Notifications {
      * @throws QueryException
      */
     @Deprecated
-    public void fromJSONLegacy (String jsonString) throws QueryException {
+    public KorapCollection fromJsonLegacy (String jsonString) throws QueryException {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            this.fromJSONLegacy((JsonNode) mapper.readValue(jsonString, JsonNode.class));
+            this.fromJsonLegacy((JsonNode) mapper.readValue(jsonString, JsonNode.class));
         }
         catch (Exception e) {
             this.addError(621, "Unable to parse JSON", "KorapCollection");
         };
+        return this;
     };
 
 
@@ -284,14 +288,14 @@ public class KorapCollection extends Notifications {
      * @throws QueryException
      */
     @Deprecated
-    public void fromJSONLegacy (JsonNode json) throws QueryException {
+    public KorapCollection fromJsonLegacy (JsonNode json) throws QueryException {
         if (!json.has("@type"))
             throw new QueryException(701, "JSON-LD group has no @type attribute");
 
         if (!json.has("@value"))
             throw new QueryException(851, "Legacy filter need @value fields");
 
-        BooleanFilter bf = this._fromJSONLegacy(json.get("@value"), "tokens");
+        BooleanFilter bf = this._fromJsonLegacy(json.get("@value"), "tokens");
         String type = json.get("@type").asText();
 
         // Filter the collection
@@ -307,12 +311,14 @@ public class KorapCollection extends Notifications {
                 log.trace("Add Extend LEGACY");
             this.extend(bf);
         };
+
+        return this;
     };
 
 
     // Create a boolean filter from a Json string
     @Deprecated
-    private BooleanFilter _fromJSONLegacy (JsonNode json, String field)
+    private BooleanFilter _fromJsonLegacy (JsonNode json, String field)
         throws QueryException {
         BooleanFilter bfilter = new BooleanFilter();
 
@@ -380,7 +386,7 @@ public class KorapCollection extends Notifications {
                     throw new QueryException(612, "Operation needs at least two operands");
 
                 for (JsonNode operand : operands) {
-                    group.and(this._fromJSONLegacy(operand, field));
+                    group.and(this._fromJsonLegacy(operand, field));
                 };
                 bfilter.and(group);
                 break;
@@ -390,7 +396,7 @@ public class KorapCollection extends Notifications {
                     throw new QueryException(612, "Operation needs at least two operands");
 
                 for (JsonNode operand : operands) {
-                    group.or(this._fromJSONLegacy(operand, field));
+                    group.or(this._fromJsonLegacy(operand, field));
                 };
                 bfilter.and(group);
                 break;

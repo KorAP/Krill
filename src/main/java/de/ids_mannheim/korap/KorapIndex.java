@@ -1146,7 +1146,7 @@ public class KorapIndex {
         collection.setIndex(this);
 
         // Get the spanquery from the KorapSearch object
-        SpanQuery query = ks.getQuery();
+        SpanQuery query = ks.getSpanQuery();
 
         // Get the field of textual data and annotations ("tokens")
         String field = query.getField();
@@ -1387,7 +1387,7 @@ public class KorapIndex {
         this.termContexts = new HashMap<Term, TermContext>();
 
         // Get span query
-        SpanQuery query = ks.getQuery();
+        SpanQuery query = ks.getSpanQuery();
 
         // Get the field of textual data and annotations
         String field = query.getField();

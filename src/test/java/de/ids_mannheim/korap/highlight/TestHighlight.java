@@ -282,8 +282,8 @@ public class TestHighlight { // extends LuceneTestCase {
         String json = getString(getClass().getResource("/queries/bugs/greater_highlights_15.jsonld").getFile());
 	
         KorapSearch ks = new KorapSearch(json);
-        KorapResult kr = ks.run(ki);
-        assertEquals(kr.getQuery(),"{15: tokens:s:Alphabet}");
+        KorapResult kr = ks.apply(ki);
+        assertEquals(kr.getSerialQuery(),"{15: tokens:s:Alphabet}");
         assertEquals(kr.getTotalResults(),7);
         assertEquals(kr.getStartIndex(),0);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),"... 2. Herkunft Die aus dem proto-semitischen [{15:Alphabet}] stammende Urform des Buchstaben ist wahrscheinlich ...");
@@ -293,8 +293,8 @@ public class TestHighlight { // extends LuceneTestCase {
 
         // 16
         ks = new KorapSearch(json);
-        kr = ks.run(ki);
-        assertEquals(kr.getQuery(),"{16: tokens:s:Alphabet}");
+        kr = ks.apply(ki);
+        assertEquals(kr.getSerialQuery(),"{16: tokens:s:Alphabet}");
         assertEquals(kr.getTotalResults(),7);
         assertEquals(kr.getStartIndex(),0);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),"... 2. Herkunft Die aus dem proto-semitischen [{16:Alphabet}] stammende Urform des Buchstaben ist wahrscheinlich ...");
@@ -304,8 +304,8 @@ public class TestHighlight { // extends LuceneTestCase {
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_127.jsonld").getFile());
 	
         ks = new KorapSearch(json);
-        kr = ks.run(ki);
-        assertEquals(kr.getQuery(),"{127: tokens:s:Alphabet}");
+        kr = ks.apply(ki);
+        assertEquals(kr.getSerialQuery(),"{127: tokens:s:Alphabet}");
         assertEquals(kr.getTotalResults(),7);
         assertEquals(kr.getStartIndex(),0);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),"... 2. Herkunft Die aus dem proto-semitischen [{127:Alphabet}] stammende Urform des Buchstaben ist wahrscheinlich ...");
@@ -315,8 +315,8 @@ public class TestHighlight { // extends LuceneTestCase {
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_255.jsonld").getFile());
 
         ks = new KorapSearch(json);
-        kr = ks.run(ki);
-        assertEquals(kr.getQuery(),"{255: tokens:s:Alphabet}");
+        kr = ks.apply(ki);
+        assertEquals(kr.getSerialQuery(),"{255: tokens:s:Alphabet}");
         assertEquals(kr.getTotalResults(),7);
         assertEquals(kr.getStartIndex(),0);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),"... 2. Herkunft Die aus dem proto-semitischen [Alphabet] stammende Urform des Buchstaben ist wahrscheinlich ...");
@@ -326,7 +326,7 @@ public class TestHighlight { // extends LuceneTestCase {
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_300.jsonld").getFile());
 
         ks = new KorapSearch(json);
-        kr = ks.run(ki);
+        kr = ks.apply(ki);
         assertEquals(709, kr.getError(0).getCode());
         assertEquals("Valid class numbers exceeded", kr.getError(0).getMessage());
 

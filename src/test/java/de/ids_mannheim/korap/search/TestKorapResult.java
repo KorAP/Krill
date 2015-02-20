@@ -62,7 +62,7 @@ public class TestKorapResult {
 	ObjectMapper mapper = new ObjectMapper();
 	JsonNode res = mapper.readTree(kr.toJsonString());
 	assertEquals(7, res.at("/totalResults").asInt());
-	assertEquals("spanOr([{1: base:s:a}, {2: base:s:b}])", res.at("/query").asText());
+	assertEquals("spanOr([{1: base:s:a}, {2: base:s:b}])", res.at("/serialQuery").asText());
 	assertEquals(0, res.at("/startIndex").asInt());
 	assertEquals(25, res.at("/itemsPerPage").asInt());
 	assertEquals("token", res.at("/context/left/0").asText());
@@ -112,7 +112,7 @@ public class TestKorapResult {
 	String json = getString(getClass().getResource("/queries/bugs/optionality_warning.jsonld").getFile());
 	KorapSearch ks = new KorapSearch(json);
 
-	KorapResult kr = ks.run(ki);
+	KorapResult kr = ks.apply(ki);
 	assertEquals((long) 2, kr.getTotalResults());
 
 	ObjectMapper mapper = new ObjectMapper();
@@ -154,14 +154,14 @@ public class TestKorapResult {
 
 	String json = getString(getClass().getResource("/queries/bsp-result-check.jsonld").getFile());
 	KorapSearch ks = new KorapSearch(json);
-	KorapResult kr = ks.run(ki);
+	KorapResult kr = ks.apply(ki);
 	assertEquals((long) 7, kr.getTotalResults());
 
 	ObjectMapper mapper = new ObjectMapper();
 	JsonNode res = mapper.readTree(kr.toJsonString());
 
 	assertEquals(7, res.at("/totalResults").asInt());
-	assertEquals("spanOr([tokens:s:a, tokens:s:b])", res.at("/query").asText());
+	assertEquals("spanOr([tokens:s:a, tokens:s:b])", res.at("/serialQuery").asText());
 	assertEquals(5, res.at("/itemsPerPage").asInt());
 	assertEquals(0, res.at("/startIndex").asInt());
 	assertEquals(1, res.at("/request/meta/startPage").asInt());
@@ -228,7 +228,7 @@ public class TestKorapResult {
 	ObjectMapper mapper = new ObjectMapper();
 	JsonNode res = mapper.readTree(kr.toTokenListJsonString());
 	assertEquals(3, res.at("/totalResults").asInt());
-	assertEquals("spanNext(base:s:a, base:s:b)", res.at("/query").asText());
+	assertEquals("spanNext(base:s:a, base:s:b)", res.at("/serialQuery").asText());
 	assertEquals(0, res.at("/startIndex").asInt());
 	assertEquals(25, res.at("/itemsPerPage").asInt());
 

@@ -234,7 +234,7 @@ public class Resource {
 		// Only return the first match per text
 		ks.setItemsPerResource(1);
 
-		return ks.run(index).toJsonString();
+		return ks.apply(index).toJsonString();
 	    };
 	    KorapResult kr = new KorapResult();
 	    kr.setNode(KorapNode.getName());
@@ -329,7 +329,7 @@ public class Resource {
 
 	// Search index
         if (index != null) {
-            KorapResult kr = new KorapSearch(json).run(index);
+            KorapResult kr = new KorapSearch(json).apply(index);
 	    kr.setNode(KorapNode.getName());
 	    return kr.toJsonString();
 	};
