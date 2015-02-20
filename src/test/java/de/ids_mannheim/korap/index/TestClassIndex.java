@@ -68,7 +68,7 @@ public class TestClassIndex {
 	assertEquals("EndPos (0)", 9, kr.getMatch(0).endPos);
 	assertEquals("SnippetBrackets (0)", "... bcabca[ba]c", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"><span class=\"more\">" +
-			"</span>bcabca</span><span class=\"match\">ba</span><span class=\"context-right" +
+			"</span>bcabca</span><mark>ba</mark><span class=\"context-right" +
 			"\">c</span>", kr.getMatch(0).getSnippetHTML());
 
 	sq = new SpanTermQuery(new Term("base", "s:b"));
@@ -80,8 +80,8 @@ public class TestClassIndex {
 	assertEquals("SnippetBrackets (0)", "a[b]cabcab ...", kr.getMatch(0).getSnippetBrackets());
 
 
-	assertEquals("SnippetHTML (0)", "<span class=\"context-left\">a</span><span class=\"match\">" +
-			"b</span><span class=\"context-right\">cabcab<span class=\"more\"></span></span>", 
+	assertEquals("SnippetHTML (0)", "<span class=\"context-left\">a</span><mark>" +
+			"b</mark><span class=\"context-right\">cabcab<span class=\"more\"></span></span>", 
 			kr.getMatch(0).getSnippetHTML());
 
 	assertEquals("StartPos (1)", 4, kr.getMatch(1).startPos);
@@ -98,8 +98,8 @@ public class TestClassIndex {
 	assertEquals("StartPos (0)", 1, kr.getMatch(0).startPos);
 	assertEquals("EndPos (0)", 2, kr.getMatch(0).endPos);
 	assertEquals("snippetBrackets (0)", "a[{1:b}]cabcab ...", kr.getMatch(0).getSnippetBrackets());
-	assertEquals("snippetHTML (0)", "<span class=\"context-left\">a</span><span class=\"match\">" +
-			"<em class=\"class-1 level-0\">b</em></span><span class=\"context-right\">cabcab<span " +
+	assertEquals("snippetHTML (0)", "<span class=\"context-left\">a</span><mark>" +
+			"<mark class=\"class-1 level-0\">b</mark></mark><span class=\"context-right\">cabcab<span " +
 			"class=\"more\"></span></span>", kr.getMatch(0).getSnippetHTML());
 
 	assertEquals("StartPos (1)", 4, kr.getMatch(1).startPos);
@@ -123,7 +123,7 @@ public class TestClassIndex {
 	assertEquals("EndPos (0)", 2, kr.getMatch(0).endPos);
 	assertEquals("SnippetBrackets (0)", "[a{1:b}]cabcab ...", kr.getMatch(0).getSnippetBrackets());
 
-	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"></span><span class=\"match\">a<em class=\"class-1 level-0\">b</em></span><span class=\"context-right\">cabcab<span class=\"more\"></span></span>", kr.getMatch(0).getSnippetHTML());
+	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"></span><mark>a<mark class=\"class-1 level-0\">b</mark></mark><span class=\"context-right\">cabcab<span class=\"more\"></span></span>", kr.getMatch(0).getSnippetHTML());
 
 	assertEquals("StartPos (1)", 3, kr.getMatch(1).startPos);
 	assertEquals("EndPos (1)", 5, kr.getMatch(1).endPos);
@@ -166,19 +166,19 @@ public class TestClassIndex {
 
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 	assertEquals("SnippetBrackets (0)", "abcabc[a{2:b{1:a}}]c", kr.getMatch(0).getSnippetBrackets());
-	assertEquals("SnippetHTML (0)", "<span class=\"context-left\">abcabc</span><span class=\"match\">a<em class=\"class-2 level-0\">b<em class=\"class-1 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.getMatch(0).getSnippetHTML());
+	assertEquals("SnippetHTML (0)", "<span class=\"context-left\">abcabc</span><mark>a<mark class=\"class-2 level-0\">b<mark class=\"class-1 level-1\">a</mark></mark></mark><span class=\"context-right\">c</span>", kr.getMatch(0).getSnippetHTML());
 
 	// Offset tokens
 	kr = ki.search(sq, 0, (short) 10, true, (short) 2, true, (short) 2);
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 	assertEquals("SnippetBrackets (0)", "... bc[a{2:b{1:a}}]c", kr.getMatch(0).getSnippetBrackets());
-	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"><span class=\"more\"></span>bc</span><span class=\"match\">a<em class=\"class-2 level-0\">b<em class=\"class-1 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.getMatch(0).getSnippetHTML());
+	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"><span class=\"more\"></span>bc</span><mark>a<mark class=\"class-2 level-0\">b<mark class=\"class-1 level-1\">a</mark></mark></mark><span class=\"context-right\">c</span>", kr.getMatch(0).getSnippetHTML());
 
 	// Offset Characters
 	kr = ki.search(sq, 0, (short) 10, false, (short) 2, false, (short) 2);
 	assertEquals("totalResults", kr.getTotalResults(), 1);
 	assertEquals("SnippetBrackets (0)", "... bc[a{2:b{1:a}}]c", kr.getMatch(0).getSnippetBrackets());
-	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"><span class=\"more\"></span>bc</span><span class=\"match\">a<em class=\"class-2 level-0\">b<em class=\"class-1 level-1\">a</em></em></span><span class=\"context-right\">c</span>", kr.getMatch(0).getSnippetHTML());
+	assertEquals("SnippetHTML (0)", "<span class=\"context-left\"><span class=\"more\"></span>bc</span><mark>a<mark class=\"class-2 level-0\">b<mark class=\"class-1 level-1\">a</mark></mark></mark><span class=\"context-right\">c</span>", kr.getMatch(0).getSnippetHTML());
 
 
 	// System.err.println(kr.toJSON());

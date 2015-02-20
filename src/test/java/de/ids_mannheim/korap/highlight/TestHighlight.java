@@ -59,7 +59,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(km.getEndPos(),    2);
         assertEquals(km.getStartPos(1), 1);
         assertEquals(km.getEndPos(1),   2);
-        assertEquals("<span class=\"context-left\">a</span><span class=\"match\"><em class=\"class-1 level-0\">b</em></span><span class=\"context-right\">c</span>", km.getSnippetHTML());
+        assertEquals("<span class=\"context-left\">a</span><mark><mark class=\"class-1 level-0\">b</mark></mark><span class=\"context-right\">c</span>", km.getSnippetHTML());
 
         kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).append(kq._(2, kq.seg("s:c"))).toQuery());
         km = kr.getMatch(0);
@@ -69,7 +69,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(km.getEndPos(1),   2);
         assertEquals(km.getStartPos(2), 2);
         assertEquals(km.getEndPos(2),   3);
-        assertEquals("<span class=\"context-left\">a</span><span class=\"match\"><em class=\"class-1 level-0\">b</em><em class=\"class-2 level-0\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
+        assertEquals("<span class=\"context-left\">a</span><mark><mark class=\"class-1 level-0\">b</mark><mark class=\"class-2 level-0\">c</mark></mark><span class=\"context-right\"></span>", km.getSnippetHTML());
 
 
         kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seq(kq.seg("s:a")).append(kq.seg("s:b")))).append(kq._(2, kq.seg("s:c"))).toQuery());
@@ -80,7 +80,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(km.getEndPos(1),   2);
         assertEquals(km.getStartPos(2), 2);
         assertEquals(km.getEndPos(2),   3);
-        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><em class=\"class-1 level-0\">ab</em><em class=\"class-2 level-0\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
+        assertEquals("<span class=\"context-left\"></span><mark><mark class=\"class-1 level-0\">ab</mark><mark class=\"class-2 level-0\">c</mark></mark><span class=\"context-right\"></span>", km.getSnippetHTML());
 
 
         kr = ki.search((SpanQuery) kq._(3, kq.seq(kq._(1, kq.seq(kq.seg("s:a")).append(kq.seg("s:b")))).append(kq._(2, kq.seg("s:c")))).toQuery());
@@ -93,7 +93,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(km.getEndPos(2),   3);
         assertEquals(km.getStartPos(3), 0);
         assertEquals(km.getEndPos(3),   3);
-        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><em class=\"class-3 level-0\"><em class=\"class-1 level-1\">ab</em><em class=\"class-2 level-1\">c</em></em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
+        assertEquals("<span class=\"context-left\"></span><mark><mark class=\"class-3 level-0\"><mark class=\"class-1 level-1\">ab</mark><mark class=\"class-2 level-1\">c</mark></mark></mark><span class=\"context-right\"></span>", km.getSnippetHTML());
     };
 
     @Test
@@ -125,14 +125,14 @@ public class TestHighlight { // extends LuceneTestCase {
         KorapResult kr = ki.search((SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).append(kq.seg("s:c")).toQuery());
         KorapMatch km = kr.getMatch(0);
         km.addHighlight(0, 1, (short) 7);
-        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><em class=\"class-7 level-0\">ab</em>c</span><span class=\"context-right\"></span>", km.getSnippetHTML());
+        assertEquals("<span class=\"context-left\"></span><mark><mark class=\"class-7 level-0\">ab</mark>c</mark><span class=\"context-right\"></span>", km.getSnippetHTML());
 
         km.addHighlight(1, 2, (short) 6);
-        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><em class=\"class-7 level-0\">a<em class=\"class-6 level-1\">b</em></em><em class=\"class-6 level-1\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
+        assertEquals("<span class=\"context-left\"></span><mark><mark class=\"class-7 level-0\">a<mark class=\"class-6 level-1\">b</mark></mark><mark class=\"class-6 level-1\">c</mark></mark><span class=\"context-right\"></span>", km.getSnippetHTML());
 
         km.addHighlight(0, 1, (short) 5);
         assertEquals("[{7:{5:a{6:b}}}{6:c}]", km.getSnippetBrackets());
-        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><em class=\"class-7 level-0\"><em class=\"class-5 level-1\">a<em class=\"class-6 level-2\">b</em></em></em><em class=\"class-6 level-2\">c</em></span><span class=\"context-right\"></span>", km.getSnippetHTML());
+        assertEquals("<span class=\"context-left\"></span><mark><mark class=\"class-7 level-0\"><mark class=\"class-5 level-1\">a<mark class=\"class-6 level-2\">b</mark></mark></mark><mark class=\"class-6 level-2\">c</mark></mark><span class=\"context-right\"></span>", km.getSnippetHTML());
 
     };
 
@@ -287,7 +287,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(kr.getTotalResults(),7);
         assertEquals(kr.getStartIndex(),0);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),"... 2. Herkunft Die aus dem proto-semitischen [{15:Alphabet}] stammende Urform des Buchstaben ist wahrscheinlich ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),"<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><em class=\"class-15 level-0\">Alphabet</em></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+        assertEquals(kr.getMatch(0).getSnippetHTML(),"<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><mark><mark class=\"class-15 level-0\">Alphabet</mark></mark><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_16.jsonld").getFile());
 
@@ -298,7 +298,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(kr.getTotalResults(),7);
         assertEquals(kr.getStartIndex(),0);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),"... 2. Herkunft Die aus dem proto-semitischen [{16:Alphabet}] stammende Urform des Buchstaben ist wahrscheinlich ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),"<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><em class=\"class-16 level-0\">Alphabet</em></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+        assertEquals(kr.getMatch(0).getSnippetHTML(),"<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><mark><mark class=\"class-16 level-0\">Alphabet</mark></mark><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         // 127
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_127.jsonld").getFile());
@@ -309,7 +309,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(kr.getTotalResults(),7);
         assertEquals(kr.getStartIndex(),0);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),"... 2. Herkunft Die aus dem proto-semitischen [{127:Alphabet}] stammende Urform des Buchstaben ist wahrscheinlich ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),"<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><em class=\"class-127 level-0\">Alphabet</em></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+        assertEquals(kr.getMatch(0).getSnippetHTML(),"<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><mark><mark class=\"class-127 level-0\">Alphabet</mark></mark><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         // 255
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_255.jsonld").getFile());
@@ -320,7 +320,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(kr.getTotalResults(),7);
         assertEquals(kr.getStartIndex(),0);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),"... 2. Herkunft Die aus dem proto-semitischen [Alphabet] stammende Urform des Buchstaben ist wahrscheinlich ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),"<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\">Alphabet</span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+        assertEquals(kr.getMatch(0).getSnippetHTML(),"<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><mark>Alphabet</mark><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         // 300
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_300.jsonld").getFile());

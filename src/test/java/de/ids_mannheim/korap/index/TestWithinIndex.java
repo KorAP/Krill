@@ -818,7 +818,7 @@ public class TestWithinIndex {
         assertEquals("totalResults", kr.getTotalResults(), 1);
         
         assertEquals("... schrie: [\"{3:Das war ich}!\"] und ...",kr.getMatch(0).getSnippetBrackets());
-        assertEquals("<span class=\"context-left\"><span class=\"more\"></span>schrie: </span><span class=\"match\">&quot;<em class=\"class-3 level-0\">Das war ich</em>!&quot;</span><span class=\"context-right\"> und<span class=\"more\"></span></span>",kr.getMatch(0).getSnippetHTML());
+        assertEquals("<span class=\"context-left\"><span class=\"more\"></span>schrie: </span><mark>&quot;<mark class=\"class-3 level-0\">Das war ich</mark>!&quot;</mark><span class=\"context-right\"> und<span class=\"more\"></span></span>",kr.getMatch(0).getSnippetHTML());
 
         kr = ki.search(sq, 0, (short) 15, true, (short) 0, true, (short) 0);
         assertEquals("... [\"{3:Das war ich}!\"] ...",kr.getMatch(0).getSnippetBrackets());

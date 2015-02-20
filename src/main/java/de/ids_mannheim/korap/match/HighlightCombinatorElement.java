@@ -45,66 +45,68 @@ public class HighlightCombinatorElement {
 
     // Return html fragment for this combinator element
     public String toHTML (KorapMatch match, FixedBitSet level, byte[] levelCache) {	    
-	// Opening
-	if (this.type == 1) {
-	    StringBuilder sb = new StringBuilder();
-	    if (this.number == -1) {
-		sb.append("<span class=\"match\">");
-	    }
+        // Opening
+        if (this.type == 1) {
+            StringBuilder sb = new StringBuilder();
+            if (this.number == -1) {
+                sb.append("<mark>");
+            }
 
-	    else if (this.number < -1) {
-		sb.append("<span xml:id=\"")
-		    .append(match.getPosID(
-					   match.getClassID(this.number)))
-		    .append("\">");
-	    }
+            else if (this.number < -1) {
+                sb.append("<span xml:id=\"")
+                    .append(match.getPosID(match.getClassID(this.number)))
+                    .append("\">");
+            }
 
-	    else if (this.number >= 256) {
-		sb.append("<span ");
-		if (this.number < 2048) {
-		    sb.append("title=\"")
-			.append(match.getAnnotationID(this.number))
-			.append('"');
-		}
-		else {
-		    Relation rel = match.getRelationID(this.number);
-		    sb.append("xlink:title=\"")
-			.append(rel.annotation)
-			.append("\" xlink:type=\"simple\" xlink:href=\"#")
-			.append(match.getPosID(rel.ref))
-			.append('"');
-		};
-		sb.append('>');
-	    }
+            else if (this.number >= 256) {
+                sb.append("<span ");
+                if (this.number < 2048) {
+                    sb.append("title=\"")
+                        .append(match.getAnnotationID(this.number))
+                        .append('"');
+                }
+                else {
+                    Relation rel = match.getRelationID(this.number);
+                    sb.append("xlink:title=\"")
+                        .append(rel.annotation)
+                        .append("\" xlink:type=\"simple\" xlink:href=\"#")
+                        .append(match.getPosID(rel.ref))
+                        .append('"');
+                };
+                sb.append('>');
+            }
 
-	    // Highlight - < 256
-	    else {
-		// Get the first free level slot
-		byte pos;
-		if (levelCache[this.number] != '\0') {
-		    pos = levelCache[this.number];
-		}
-		else {
-		    pos = (byte) level.nextSetBit(0);
-		    level.clear(pos);
-		    levelCache[this.number] = pos;
-		};
-		sb.append("<em class=\"class-")
-		    .append(this.number)
-		    .append(" level-")
-		    .append(pos)
-		    .append("\">");
-	    };
-	    return sb.toString();
-	}
-	// Closing
-	else if (this.type == 2) {
-	    if (this.number <= -1 || this.number >= 256)
-		return "</span>";
-
-	    if (this.terminal)
-		level.set((int) levelCache[this.number]);
-	    return "</em>";
+            // Highlight - < 256
+            else {
+                // Get the first free level slot
+                byte pos;
+                if (levelCache[this.number] != '\0') {
+                    pos = levelCache[this.number];
+                }
+                else {
+                    pos = (byte) level.nextSetBit(0);
+                    level.clear(pos);
+                    levelCache[this.number] = pos;
+                };
+                sb.append("<mark class=\"class-")
+                    .append(this.number)
+                    .append(" level-")
+                    .append(pos)
+                    .append("\">");
+            };
+            return sb.toString();
+        }
+        // Closing
+        else if (this.type == 2) {
+            if (this.number < -1 || this.number >= 256)
+                return "</span>";
+           
+            if (this.number == -1)
+                return "</mark>";
+         
+            if (this.terminal)
+                level.set((int) levelCache[this.number]);
+            return "</mark>";
 	};
 
 	// HTML encode primary data

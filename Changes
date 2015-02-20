@@ -27,6 +27,8 @@
 	  on focussing (e.g., set by relations) (diewald)
 	- [bugfix] Hopefully fixing a resource related bug for
 	  server instantiation (diewald)
+	- [bugfix] Changed attribute spans to contain element's width (margaretha)
+	- [feature] Improved highlighting to use semantic html5 (#193; diewald)
 
 0.49.3 2015-02-03
         - [documentation] Improved documentation for API classes (diewald)

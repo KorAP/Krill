@@ -186,22 +186,22 @@ public class TestMatchIdentifier {
 		     "<span class=\"more\">"+
 		     "</span>"+
 		     "</span>"+
-		     "<span class=\"match\">"+
-		     "<em class=\"class-2 level-0\">"+
+		     "<mark>"+
+		     "<mark class=\"class-2 level-0\">"+
 		     "<span title=\"f/m:acht\">"+
 		     "<span title=\"f/y:eight\">"+
 		     "b"+
 		     "</span>"+
 		     "</span>"+
-		     "<em class=\"class-4 level-1\">"+
+		     "<mark class=\"class-4 level-1\">"+
 		     "<span title=\"f/m:neun\">"+
 		     "<span title=\"f/y:nine\">"+
 		     "a"+
 		     "</span>"+
 		     "</span>"+
-		     "</em>"+
-		     "</em>"+
-		     "</span>"+
+		     "</mark>"+
+		     "</mark>"+
+		     "</mark>"+
 		     "<span class=\"context-right\">"+
 		     "<span class=\"more\">"+
 		     "</span>"+
@@ -229,8 +229,8 @@ public class TestMatchIdentifier {
 		     "<span class=\"more\">" +
 		     "</span>" +
 		     "</span>" +
-		     "<span class=\"match\">" +
-		     "<em class=\"class-2 level-0\">" +
+		     "<mark>" +
+		     "<mark class=\"class-2 level-0\">" +
 		     "<span title=\"f/m:acht\">" +
 		     "<span title=\"f/y:eight\">" +
 		     "<span title=\"it/is:8\">" +
@@ -240,7 +240,7 @@ public class TestMatchIdentifier {
 		     "</span>" +
 		     "</span>" +
 		     "</span>" +
-		     "<em class=\"class-4 level-1\">" +
+		     "<mark class=\"class-4 level-1\">" +
 		     "<span title=\"f/m:neun\">" +
 		     "<span title=\"f/y:nine\">" +
 		     "<span title=\"it/is:9\">" +
@@ -250,9 +250,9 @@ public class TestMatchIdentifier {
 		     "</span>" +
 		     "</span>" +
 		     "</span>" +
-		     "</em>" +
-		     "</em>" +
-		     "</span>" +
+		     "</mark>" +
+		     "</mark>" +
+		     "</mark>" +
 		     "<span class=\"context-right\">" +
 		     "<span class=\"more\">" +
 		     "</span>" +
@@ -279,7 +279,7 @@ public class TestMatchIdentifier {
 		     "<span class=\"more\">" +
 		     "</span>" +
 		     "</span>" +
-		     "<span class=\"match\">" +
+		     "<mark>" +
 		     "<span title=\"f/m:acht\">" +
 		     "<span title=\"f/y:eight\">" +
 		     "<span title=\"it/is:8\">" +
@@ -298,7 +298,7 @@ public class TestMatchIdentifier {
 		     "</span>" +
 		     "</span>" +
 		     "</span>" +
-		     "</span>" +
+		     "</mark>" +
 		     "<span class=\"context-right\">" +
 		     "<span class=\"more\">" +
 		     "</span>" +
@@ -367,9 +367,9 @@ public class TestMatchIdentifier {
 		     "<span class=\"more\">" +
 		     "</span>" +
 		     "</span>" +
-		     "<span class=\"match\">" +
+		     "<mark>" +
 		     "<span title=\"x/tag\">" +
-		     "<em class=\"class-2 level-0\">" +
+		     "<mark class=\"class-2 level-0\">" +
 		     "<span title=\"f/m:acht\">" +
 		     "<span title=\"f/y:eight\">" +
 		     "<span title=\"it/is:8\">" +
@@ -379,7 +379,7 @@ public class TestMatchIdentifier {
 		     "</span>" +
 		     "</span>" +
 		     "</span>" +
-		     "<em class=\"class-4 level-1\">" +
+		     "<mark class=\"class-4 level-1\">" +
 		     "<span title=\"f/m:neun\">" +
 		     "<span title=\"f/y:nine\">" +
 		     "<span title=\"it/is:9\">" +
@@ -389,8 +389,8 @@ public class TestMatchIdentifier {
 		     "</span>" +
 		     "</span>" +
 		     "</span>" +
-		     "</em>" +
-		     "</em>" +
+		     "</mark>" +
+		     "</mark>" +
 		     "<span title=\"f/m:zehn\">" +
 		     "<span title=\"f/y:ten\">" +
 		     "<span title=\"it/is:10\">" +
@@ -401,7 +401,7 @@ public class TestMatchIdentifier {
 		     "</span>" +
 		     "</span>" +
 		     "</span>" +
-		     "</span>" +
+		     "</mark>" +
 		     "<span class=\"context-right\">" +
 		     "</span>",
 		     km.getSnippetHTML());
@@ -427,7 +427,7 @@ public class TestMatchIdentifier {
 	assertEquals("SnippetBrackets (1)",
 		     "<span class=\"context-left\">" +
 		     "</span>" +
-		     "<span class=\"match\">" +
+		     "<mark>" +
 		     "<span xlink:title=\"x/rel:a\" " +
 		     "xlink:type=\"simple\" " +
 		     "xlink:href=\"#word-c1!d1-p3\">" +
@@ -449,7 +449,7 @@ public class TestMatchIdentifier {
 		     "<span title=\"x/o:fünftens\">" +
 		     "b" +
 		     "</span>" +
-		     "</span>" +
+		     "</mark>" +
 		     "<span class=\"context-right\">" +
 		     "<span class=\"more\">" +
 		     "</span>" +
@@ -466,7 +466,7 @@ public class TestMatchIdentifier {
 	assertEquals("SnippetBrackets (1)",
 		     "<span class=\"context-left\">" +
 		     "</span>" +
-		     "<span class=\"match\">" +
+		     "<mark>" +
 		     "<span xlink:title=\"x/rel:a\" " +
 		     "xlink:type=\"simple\" " +
 		     "xlink:href=\"#word-c1!d1-p3\">" +
@@ -477,7 +477,7 @@ public class TestMatchIdentifier {
 		     "<span title=\"x/o:zweitens\">" +
 		     "b" +
 		     "</span>" +
-		     "<em class=\"class-7 level-0\">" +
+		     "<mark class=\"class-7 level-0\">" +
 		     "<span title=\"x/o:drittens\">" +
 		     "c" +
 		     "</span>" +
@@ -486,11 +486,11 @@ public class TestMatchIdentifier {
 		     "a" +
 		     "</span>" +
 		     "</span>" +
-		     "</em>" +
+		     "</mark>" +
 		     "<span title=\"x/o:fünftens\">" +
 		     "b" +
 		     "</span>" +
-		     "</span>" +
+		     "</mark>" +
 		     "<span class=\"context-right\">" +
 		     "<span class=\"more\">" +
 		     "</span>" +
@@ -572,7 +572,7 @@ public class TestMatchIdentifier {
 	assertEquals("SnippetHTML (2)",
 		     "<span class=\"context-left\">" +
 		     "</span>" +
-		     "<span class=\"match\">"+
+		     "<mark>"+
 		     "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" xlink:href=\"#word-c1!d1-p3\">"+
 		     "<span title=\"f/m:eins\">"+
 		     "<span title=\"f/y:one\">"+
@@ -607,7 +607,7 @@ public class TestMatchIdentifier {
 		     "</span>"+
 		     "</span>"+
 		     "</span>"+
-		     "</span>"+
+		     "</mark>"+
 		     "<span class=\"context-right\">"+
 		     "<span class=\"more\">"+
 		     "</span>"+
