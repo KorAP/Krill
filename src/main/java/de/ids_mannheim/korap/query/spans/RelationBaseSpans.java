@@ -24,6 +24,7 @@ import de.ids_mannheim.korap.query.SpanWithIdQuery;
 public abstract class RelationBaseSpans extends SpansWithId {
 
     protected short leftId, rightId;
+	protected int leftStart, leftEnd;
     protected int rightStart, rightEnd;
 
     /**

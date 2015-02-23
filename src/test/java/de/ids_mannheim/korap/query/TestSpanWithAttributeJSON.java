@@ -101,7 +101,7 @@ public class TestSpanWithAttributeJSON {
 				sq.toString());
 	}
 
-	@Test(expected = QueryException.class)
+	@Test(expected = AssertionError.class)
 	public void testAnyElementSingleNotAttribute() throws QueryException {
 		String filepath = getClass().getResource(
 						"/queries/attribute/any-element-with-single-not-attribute.jsonld")
