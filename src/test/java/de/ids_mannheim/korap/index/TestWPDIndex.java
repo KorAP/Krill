@@ -17,7 +17,7 @@ import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.collection.BooleanFilter;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -29,7 +29,7 @@ public class TestWPDIndex {
 	long start, end;
 	KorapIndex ki;
 	KorapResult kr;
-	KorapSearch ks;
+	Krill ks;
 	
 	private SpanDistanceQuery createElementDistanceQuery(String e, String x, String y, 
 			int min, int max, boolean isOrdered, boolean exclusion){
@@ -70,18 +70,18 @@ public class TestWPDIndex {
 		SpanDistanceQuery sq;
 		// ordered
 		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, true,false);
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 8);
 
 		// unordered
 		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, false,false);				
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 11);
 		
 		sq = createDistanceQuery("s:kommen", "s:Wir", 1, 1, false,false);				
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 11);
 		//System.out.println(kr.getTotalResults());
@@ -97,20 +97,20 @@ public class TestWPDIndex {
 	public void testCase2() throws IOException{
 
 		SpanQuery q = new SpanTermQuery(new Term("tokens","s:Wir"));
-		ks = new KorapSearch(q);
+		ks = new Krill(q);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 1907);
 		
 		SpanDistanceQuery sq;
 		// ordered
 		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, true, true);				
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 1899);
 		
 		// unordered
 		sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, false, true);				
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 1896);	
 	}
@@ -121,13 +121,13 @@ public class TestWPDIndex {
 		// ordered
 		SpanDistanceQuery sq = createElementDistanceQuery("s","s:weg", "s:fahren", 
 				0, 1, true, false);
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);		
 		assertEquals(kr.getTotalResults(), 3);
 		
 		// unordered
 		sq = createElementDistanceQuery("s","s:weg", "s:fahren", 0, 1, false,false);
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 5);
 		
@@ -144,7 +144,7 @@ public class TestWPDIndex {
 		
 		// only 1
 		sq = createElementDistanceQuery("s","s:weg", "s:fahren", 1, 1, false,false);
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 3);		
 	}
@@ -153,7 +153,7 @@ public class TestWPDIndex {
 	@Test
 	public void testCase4() throws IOException{
 		SpanDistanceQuery sq = createElementDistanceQuery("s","s:weg", "s:fahren", 1, 1, false, true);
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 979);
 		//0.8s
@@ -174,18 +174,18 @@ public class TestWPDIndex {
 	public void testCase5() throws IOException{
 		SpanQuery sq;
 		sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),1,2, true);
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 4116416);
 		//0.9s
 		
 		sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),1,1, true);
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 3879671);
 		
 		sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),2,2, true);
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 236745);
 		//0.65s
@@ -198,14 +198,14 @@ public class TestWPDIndex {
         		new SpanTermQuery(new Term("tokens", "tt/p:NN")),
         		new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens","mate/p:ADJA")),2,2, true)
     		);
-		ks = new KorapSearch(sq);
+		ks = new Krill(sq);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 30223);
 		// 1.1s
 		
 		SpanQuery sq2 = new SpanNextQuery(sq,
 				new SpanTermQuery(new Term("tokens", "tt/p:NN")));
-		ks = new KorapSearch(sq2);
+		ks = new Krill(sq2);
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 26607);
 		// 1.1s

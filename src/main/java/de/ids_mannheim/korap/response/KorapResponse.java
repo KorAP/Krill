@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.response.Notifications;
 
 /**
@@ -31,6 +32,8 @@ public class KorapResponse extends Notifications {
     ObjectMapper mapper = new ObjectMapper();
 
     private String version, name, node, listener;
+    private KorapQuery query;
+
     private long
         totalResources = -2, // Not set
         totalResults   = -2; // Not set
@@ -313,6 +316,31 @@ public class KorapResponse extends Notifications {
 
 
     /**
+     * Get the KoralQuery query object.
+     *
+     * @return The {@link KorapQuery} object,
+     *         representing the KoralQuery query object.
+     */
+    @JsonIgnore
+    public KorapQuery getQuery () {
+        return this.query;
+    };
+
+
+    /**
+     * Set the KoralQuery query object.
+     *
+     * @param query The {@link KorapQuery} object,
+     *        representing the KoralQuery query object.
+     */
+    @JsonIgnore
+    public KorapResponse setQuery (KorapQuery query) {
+        this.query = query;
+        return this;
+    };
+
+
+    /**
      * Serialize response as a {@link JsonNode}.
      *
      * @return {@link JsonNode} representation of the response
@@ -357,6 +385,14 @@ public class KorapResponse extends Notifications {
         // totalResults is set
         if (this.totalResults != -2)
             json.put("totalResults", this.totalResults);
+
+        // KoralQuery query object
+        if (this.getQuery() != null) {
+            JsonNode queryNode =
+                this.getQuery().toJsonNode();
+            if (queryNode != null)
+                json.put("query", queryNode);
+        };
 
         return (JsonNode) json;
     };

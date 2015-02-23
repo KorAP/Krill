@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapDocument;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -175,13 +175,13 @@ public class TestFieldDocument {
 
 	KorapQuery kq = new KorapQuery("tokens");
 
-	KorapSearch ks;
+	Krill ks;
 	KorapResult kr;
 
 	// Start creating query
 	// within(<s>, {1: {2: [mate/p=ADJA & mate/m=number:sg]}[opennlp/p=NN & tt/p=NN]})
 
-	ks = new KorapSearch(kq.within(
+	ks = new Krill(kq.within(
               kq.tag("s"),
               kq._(1,
                 kq.seq(

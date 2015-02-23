@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /*
-  TODO: Reuse the KorapSearch code for data serialization!
+  TODO: Reuse the Krill code for data serialization!
 */
 /**
  * Response class for search results.
@@ -31,7 +31,7 @@ import java.util.List;
  */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KorapResult extends KorapResponse {
+public class KorapResult extends Krill {
     ObjectMapper mapper = new ObjectMapper();
 
     @JsonIgnore

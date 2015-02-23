@@ -5,7 +5,7 @@ import java.io.*;
 
 import static de.ids_mannheim.korap.TestSimple.*;
 
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapIndex;
@@ -29,10 +29,10 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestKorapSearch {
+public class TestKrill {
     @Test
     public void searchCount () {
-        KorapSearch ks = new KorapSearch(
+        Krill ks = new Krill(
             new KorapQuery("field1").seg("a").with("b")
         );
         // Count:
@@ -48,7 +48,7 @@ public class TestKorapSearch {
 
     @Test
     public void searchStartIndex () {
-        KorapSearch ks = new KorapSearch(
+        Krill ks = new Krill(
             new KorapQuery("field1").seg("a").with("b")
         );
         // startIndex
@@ -66,7 +66,7 @@ public class TestKorapSearch {
 
     @Test
     public void searchQuery () {
-        KorapSearch ks = new KorapSearch(
+        Krill ks = new Krill(
             new KorapQuery("field1").seg("a").with("b")
         );
         // query
@@ -93,7 +93,7 @@ public class TestKorapSearch {
         };
         ki.commit();
 
-        KorapSearch ks = new KorapSearch(
+        Krill ks = new Krill(
 	        new KorapQuery("tokens").seg("s:Buchstaben")
         );
         ks.getCollection().filter(
@@ -135,7 +135,7 @@ public class TestKorapSearch {
             getClass().getResource("/queries/metaquery3.jsonld").getFile()
         );
 
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
 		KorapResult kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 66);
         assertEquals(5, kr.getItemsPerPage());
@@ -177,12 +177,12 @@ public class TestKorapSearch {
             getClass().getResource("/queries/metaquery4.jsonld").getFile()
         );
 
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         KorapResult kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 1);
 
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         // Ignore the collection part of the query!
         ks.setCollection(new KorapCollection());
         kr = ks.apply(ki);
@@ -193,14 +193,14 @@ public class TestKorapSearch {
             getClass().getResource("/queries/metaquery5.jsonld").getFile()
         );
 
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 1);
 
         json = getString(
             getClass().getResource("/queries/metaquery6.jsonld").getFile()
         );
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 1);
     };
@@ -225,7 +225,7 @@ public class TestKorapSearch {
             );
         };
         ki.commit();
-        KorapResult kr = new KorapSearch("{ query").apply(ki);
+        KorapResult kr = new Krill("{ query").apply(ki);
         assertEquals(kr.getTotalResults(), 0);
         assertEquals(kr.getError(0).getMessage(), "Unable to parse JSON");
     };
@@ -254,7 +254,7 @@ public class TestKorapSearch {
             getClass().getResource("/queries/bsp-fail1.jsonld").getFile()
         );
 
-        KorapResult kr = new KorapSearch(json).apply(ki);
+        KorapResult kr = new Krill(json).apply(ki);
         assertEquals(0, kr.getStartIndex());
         assertEquals(kr.getTotalResults(), 0);
         assertEquals(25, kr.getItemsPerPage());
@@ -284,7 +284,7 @@ public class TestKorapSearch {
             getClass().getResource("/queries/bsp-fail2.jsonld").getFile()
         );
 
-        KorapResult kr = new KorapSearch(json).apply(ki);
+        KorapResult kr = new Krill(json).apply(ki);
         assertEquals(50, kr.getItemsPerPage());
         assertEquals(49950, kr.getStartIndex());
         assertEquals(kr.getTotalResults(), 0);
@@ -314,7 +314,7 @@ public class TestKorapSearch {
             getClass().getResource("/queries/bsp-context.jsonld").getFile()
         );
 
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         KorapResult kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
         assertEquals("A bzw. a ist der erste Buchstabe des" +
@@ -334,7 +334,8 @@ public class TestKorapSearch {
             getClass().getResource("/queries/bsp-context-2.jsonld").getFile()
         );
 
-        kr = new KorapSearch(json).apply(ki);
+        kr = new Krill(json).apply(ki);
+
         assertEquals(kr.getTotalResults(), -1);
         assertEquals("... lls seit den Griechen beibehalten worden." +
                      " 3. Bedeutungen in der Biologie steht A für"+
@@ -373,7 +374,7 @@ public class TestKorapSearch {
             getClass().getResource("/queries/bsp-paging.jsonld").getFile()
         );
 
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         KorapResult kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
         assertEquals(5, kr.getStartIndex());
@@ -382,7 +383,7 @@ public class TestKorapSearch {
         json = getString(
             getClass().getResource("/queries/bsp-cutoff.jsonld").getFile()
         );
-        ks = ks = new KorapSearch(json);
+        ks = ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), -1);
         assertEquals(2, kr.getStartIndex());
@@ -421,7 +422,7 @@ public class TestKorapSearch {
             getFile()
         );
 
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         KorapResult kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
         assertEquals(0, kr.getStartIndex());
@@ -434,7 +435,7 @@ public class TestKorapSearch {
         assertEquals("WPD_AAA.00002", kr.getMatch(8).getDocID());
         assertEquals("WPD_AAA.00004", kr.getMatch(9).getDocID());
 
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         ks.setItemsPerResource(1);
 
         kr = ks.apply(ki);
@@ -447,7 +448,7 @@ public class TestKorapSearch {
         assertEquals(0, kr.getStartIndex());
         assertEquals(20, kr.getItemsPerPage());
         
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         ks.setItemsPerResource(2);
 
         kr = ks.apply(ki);
@@ -462,7 +463,7 @@ public class TestKorapSearch {
         assertEquals(0, kr.getStartIndex());
         assertEquals(20, kr.getItemsPerPage());
 
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         ks.setItemsPerResource(1);
         ks.setStartIndex(1);
         ks.setCount(1);
@@ -510,7 +511,7 @@ public class TestKorapSearch {
             getFile()
         );
 
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         ks.setItemsPerResource(1);
         KorapCollection kc = new KorapCollection();
         kc.filterUIDs(new String[]{"1", "4"});
@@ -599,7 +600,7 @@ public class TestKorapSearch {
         assertNull(fd.getDocEditor());
         assertNull(fd.getDocAuthor());
 
-        KorapSearch ks = new KorapSearch(
+        Krill ks = new Krill(
             new KorapQuery("tokens").
             seg("mate/m:case:nom").
             with("mate/m:number:pl")
@@ -690,7 +691,7 @@ public class TestKorapSearch {
         assertNull(fd.getDocEditor());
         assertNull(fd.getDocAuthor());
         
-        KorapSearch ks = new KorapSearch(
+        Krill ks = new Krill(
             new KorapQuery("tokens").
             seg("mate/m:case:nom").
             with("mate/m:number:sg")
@@ -724,7 +725,7 @@ public class TestKorapSearch {
         );
 
         KorapQuery kq = new KorapQuery("tokens");
-        KorapSearch ks = new KorapSearch(
+        Krill ks = new Krill(
             kq.focus(
                 1,
                 kq.contains(kq.tag("base/s:s"), kq._(1, kq.seg("s:Leben")))
@@ -743,7 +744,7 @@ public class TestKorapSearch {
         );
 
         // Try with high class - don't highlight
-        ks = new KorapSearch(
+        ks = new Krill(
             kq.focus(
                 129,
                 kq.contains(kq.tag("base/s:s"), kq._(129, kq.seg("s:Leben")))
@@ -761,7 +762,7 @@ public class TestKorapSearch {
             "[Leben] gerufen hatten. Pressemeldungen zufolge haben sich ..."
         );
 
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(
             kr.getSerialQuery(),
@@ -806,7 +807,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         KorapResult kr = ks.apply(ki);
         assertEquals(
             kr.getSerialQuery(),
@@ -851,7 +852,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         KorapResult kr = ks.apply(ki);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -902,7 +903,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         KorapCollection kc = ks.getCollection();
 
         // No index was set
@@ -985,7 +986,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         KorapResult kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 276);
         assertEquals(0, kr.getStartIndex());
@@ -997,7 +998,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 147);
@@ -1011,7 +1012,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 28);
@@ -1025,7 +1026,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 0);
@@ -1038,7 +1039,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
 
         assertEquals("filter with QueryWrapperFilter("+
@@ -1079,7 +1080,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         ks.setCutOff(false);
         SearchContext sc = ks.getContext();
         sc.left.setLength((short) 10);
@@ -1101,7 +1102,7 @@ public class TestKorapSearch {
             getFile()
         );
 
-        kr = new KorapSearch(json).apply(ki);
+        kr = new Krill(json).apply(ki);
         assertEquals(
             kr.getMatch(0).getSnippetBrackets(),
             "steht a für den dezimalen [Wert] 97 sowohl im ASCII-"+
@@ -1150,7 +1151,7 @@ public class TestKorapSearch {
             getFile()
         );
 
-        KorapResult kr = new KorapSearch(json).apply(ki);
+        KorapResult kr = new Krill(json).apply(ki);
 
         assertEquals(
             kr.getError(0).getMessage(),
@@ -1183,7 +1184,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-		KorapResult kr = new KorapSearch(json).apply(ki);				
+		KorapResult kr = new Krill(json).apply(ki);				
 		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
                      "[der alte Digraph Aa durch Å] ersetzt worden, " +
                      "in Eigennamen und Ortsnamen ...",
@@ -1199,7 +1200,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-		kr = new KorapSearch(json).apply(ki);
+		kr = new Krill(json).apply(ki);
 		
 		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
                      "[der alte Digraph Aa durch Å] ersetzt worden, " +
@@ -1229,7 +1230,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-		kr = new KorapSearch(json).apply(ki);
+		kr = new Krill(json).apply(ki);
 		
 		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
                      "[der alte Digraph Aa durch Å] ersetzt worden, " +
@@ -1245,7 +1246,7 @@ public class TestKorapSearch {
             getFile()
         );
 	
-		kr = new KorapSearch(json).apply(ki);	
+		kr = new Krill(json).apply(ki);	
 		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
                      "[der alte Digraph Aa durch Å] ersetzt worden, " +
                      "in Eigennamen und Ortsnamen ...",

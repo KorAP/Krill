@@ -6,7 +6,7 @@ import java.io.*;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapCollection;
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapQuery;
 import org.apache.lucene.store.MMapDirectory;
@@ -46,7 +46,7 @@ public class TestBenchmarkSpans {
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
-            kr = new KorapSearch(json).apply(ki);
+            kr = new Krill(json).apply(ki);
         };
         t2 = System.nanoTime();
 
@@ -99,7 +99,7 @@ public class TestBenchmarkSpans {
         t1 = System.nanoTime();
         double length = 0;
         for (int i = 1; i <= rounds; i++) {
-            kr = new KorapSearch(json).apply(ki);
+            kr = new Krill(json).apply(ki);
             length += kr.toJsonString().length();
         };
         t2 = System.nanoTime();
@@ -141,7 +141,7 @@ public class TestBenchmarkSpans {
         t1 = System.nanoTime();
         double length = 0;
         for (int i = 1; i <= rounds; i++) {
-            kr = new KorapSearch(json).apply(ki);
+            kr = new Krill(json).apply(ki);
         };
         t2 = System.nanoTime();
 
@@ -182,7 +182,7 @@ public class TestBenchmarkSpans {
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
-            kr = new KorapSearch(json).apply(ki);
+            kr = new Krill(json).apply(ki);
         };
         t2 = System.nanoTime();
 
@@ -197,7 +197,7 @@ public class TestBenchmarkSpans {
         
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
-            kr = new KorapSearch(json).apply(ki);
+            kr = new Krill(json).apply(ki);
         };
         t2 = System.nanoTime();
 
@@ -212,7 +212,7 @@ public class TestBenchmarkSpans {
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
-            kr = new KorapSearch(json).apply(ki);
+            kr = new Krill(json).apply(ki);
         };
         t2 = System.nanoTime();
 
@@ -329,7 +329,7 @@ public class TestBenchmarkSpans {
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
-            kr = new KorapSearch(json).apply(ki);
+            kr = new Krill(json).apply(ki);
         };
         t2 = System.nanoTime();
 

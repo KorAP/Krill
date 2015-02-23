@@ -22,7 +22,7 @@ import javax.ws.rs.WebApplicationException;
 
 import de.ids_mannheim.korap.KorapNode;
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
@@ -62,6 +62,9 @@ public class Resource {
     // Initiate Logger
     private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
 
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
     // Slightly based on String::BooleanSimple
     static Pattern p = Pattern.compile(
         "\\s*(?i:false|no|inactive|disabled|off|n|neg(?:ative)?|not|null|undef)\\s*"
@@ -69,14 +72,14 @@ public class Resource {
 
     // Check if a string is meant to represent null
     private static boolean isNull (String value) {
-	if (value == null)
-	    return true;
+        if (value == null)
+            return true;
 
-	Matcher m = p.matcher(value);
-	if (m.matches())
-	    return true;
+        Matcher m = p.matcher(value);
+        if (m.matches())
+            return true;
 
-	return false;
+        return false;
     };
 
 
@@ -86,22 +89,22 @@ public class Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
-	KorapIndex index = KorapNode.getIndex();
-	KorapResponse kresp = new KorapResponse();
-	kresp.setNode(KorapNode.getName());
-	kresp.setName(index.getName());
-	kresp.setVersion(index.getVersion());
+        KorapIndex index = KorapNode.getIndex();
+        KorapResponse kresp = new KorapResponse();
+        kresp.setNode(KorapNode.getName());
+        kresp.setName(index.getName());
+        kresp.setVersion(index.getVersion());
 
-	kresp.setListener(KorapNode.getListener());
-	long texts = -1;
-	/*
-	kresp.addMessage(
-	    "Number of documents in the index",
-	    String.parseLong(index.numberOf("documents"))
-	);
-	*/
-	kresp.addMessage(680, "Server is up and running!");
-	return kresp.toJsonString();
+        kresp.setListener(KorapNode.getListener());
+        long texts = -1;
+        /*
+          kresp.addMessage(
+          "Number of documents in the index",
+          String.parseLong(index.numberOf("documents"))
+          );
+        */
+        kresp.addMessage(680, "Server is up and running!");
+        return kresp.toJsonString();
     };
     
 
@@ -120,44 +123,50 @@ public class Resource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public String add (@PathParam("textID") Integer uid,
-		       @Context UriInfo uri,
-		       String json) {
-	/*
-	 * See
-	 * http://www.mkyong.com/webservices/jax-rs/file-upload-example-in-jersey/
-	 */
+                       @Context UriInfo uri,
+                       String json) {
+        /*
+         * See
+         * http://www.mkyong.com/webservices/jax-rs/file-upload-example-in-jersey/
+         */
 
-	// Todo: Parameter for server node
+        // Todo: Parameter for server node
 
-	// Get index
-	KorapIndex index = KorapNode.getIndex();
+        if (DEBUG)
+            log.trace("Added new document with unique identifier {}", uid);
 
-	KorapResponse kresp = new KorapResponse();
-	kresp.setNode(KorapNode.getName());
+        // Get index
+        KorapIndex index = KorapNode.getIndex();
 
-	if (index == null) {
-	    kresp.addError(601, "Unable to find index");
-	    return kresp.toJsonString();
-	};
+        KorapResponse kresp = new KorapResponse();
+        kresp.setNode(KorapNode.getName());
 
-	kresp.setVersion(index.getVersion());
-	kresp.setName(index.getName());
+        if (index == null) {
+            kresp.addError(601, "Unable to find index");
+            return kresp.toJsonString();
+        };
 
-	String ID = "Unknown";
-	try {
-	    FieldDocument fd = index.addDoc(uid, json);
-	    ID = fd.getID();
-	}
-	// Set HTTP to ???
-	// TODO: This may be a field error!
-	catch (IOException e) {
-	    kresp.addError(602, "Unable to add document to index");
-	    return kresp.toJsonString();
-	};
+        kresp.setVersion(index.getVersion());
+        kresp.setName(index.getName());
 
-	// Set HTTP to 200
-	kresp.addMessage(681, "Document was added successfully", ID);
-	return kresp.toJsonString();
+        String ID = "Unknown";
+        try {
+            FieldDocument fd = index.addDoc(uid, json);
+            ID = fd.getID();
+        }
+        // Set HTTP to ???
+        // TODO: This may be a field error!
+        catch (IOException e) {
+            kresp.addError(602, "Unable to add document to index");
+            return kresp.toJsonString();
+        };
+
+        // Set HTTP to 200
+        kresp.addMessage(681, "Document was added successfully", ID);
+
+
+        System.err.println(kresp.toJsonString());
+        return kresp.toJsonString();
     };
 
 
@@ -170,31 +179,31 @@ public class Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public String commit () {
 
-	// Get index
-	KorapIndex index = KorapNode.getIndex();
-	KorapResponse kresp = new KorapResponse();
-	kresp.setNode(KorapNode.getName());
+        // Get index
+        KorapIndex index = KorapNode.getIndex();
+        KorapResponse kresp = new KorapResponse();
+        kresp.setNode(KorapNode.getName());
 
-	if (index == null) {
-	    kresp.addError(601, "Unable to find index");
-	    return kresp.toJsonString();
-	};
+        if (index == null) {
+            kresp.addError(601, "Unable to find index");
+            return kresp.toJsonString();
+        };
 
-	kresp.setVersion(index.getVersion());
-	kresp.setName(index.getName());
+        kresp.setVersion(index.getVersion());
+        kresp.setName(index.getName());
+        
+        // There are documents to commit
+        try {
+            index.commit();
+        }
+        catch (IOException e) {
+            // Set HTTP to ???
+            kresp.addError(603, "Unable to commit staged data to index");
+            return kresp.toJsonString();
+        };
 
-	// There are documents to commit
-	try {
-	    index.commit();
-	}
-	catch (IOException e) {
-	    // Set HTTP to ???
-	    kresp.addError(603, "Unable to commit staged data to index");
-	    return kresp.toJsonString();
-	};
-
-	// Set HTTP to ???
-	return kresp.toJsonString();
+        // Set HTTP to ???
+        return kresp.toJsonString();
     };
 
 
@@ -209,47 +218,47 @@ public class Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     public String find (String json, @Context UriInfo uri) {
 
-	// Get index
-	KorapIndex index = KorapNode.getIndex();
+        // Get index
+        KorapIndex index = KorapNode.getIndex();
 
-	// Search index
+        // Search index
         if (index != null) {
-	    KorapSearch ks = new KorapSearch(json);
+            Krill ks = new Krill(json);
 
-	    // Get query parameters
-	    MultivaluedMap<String,String> qp = uri.getQueryParameters();
+            // Get query parameters
+            MultivaluedMap<String,String> qp = uri.getQueryParameters();
 
-	    if (qp.get("uid") != null) {
+            if (qp.get("uid") != null) {
 
-		// Build Collection based on a list of uids
-		List<String> uids = qp.get("uid");
-		KorapCollection kc = new KorapCollection();
-		kc.filterUIDs(uids.toArray(new String[uids.size()]));
+                // Build Collection based on a list of uids
+                List<String> uids = qp.get("uid");
+                KorapCollection kc = new KorapCollection();
+                kc.filterUIDs(uids.toArray(new String[uids.size()]));
+                
+                // TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
+                
+                // Override old collection
+                ks.setCollection(kc);
 
-		// TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
+                // Only return the first match per text
+                ks.setItemsPerResource(1);
 
-		// Override old collection
-		ks.setCollection(kc);
+                return ks.apply(index).toJsonString();
+            };
+            KorapResult kr = new KorapResult();
+            kr.setNode(KorapNode.getName());
+            kr.addError(610, "Missing request parameters", "No unique IDs were given");
+            return kr.toJsonString();
+        };
 
-		// Only return the first match per text
-		ks.setItemsPerResource(1);
-
-		return ks.apply(index).toJsonString();
-	    };
-	    KorapResult kr = new KorapResult();
-	    kr.setNode(KorapNode.getName());
-	    kr.addError(610, "Missing request parameters", "No unique IDs were given");
-	    return kr.toJsonString();
-	};
-
-	KorapResponse kresp = new KorapResponse();
-	kresp.setNode(KorapNode.getName());
-	kresp.setName(index.getName());
-	kresp.setVersion(index.getVersion());
-
-	kresp.addError(601, "Unable to find index");
-	
-	return kresp.toJsonString();
+        KorapResponse kresp = new KorapResponse();
+        kresp.setNode(KorapNode.getName());
+        kresp.setName(index.getName());
+        kresp.setVersion(index.getVersion());
+        
+        kresp.addError(601, "Unable to find index");
+        
+        return kresp.toJsonString();
     };
 
 
@@ -263,45 +272,45 @@ public class Resource {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public String collect (String json,
-			   @PathParam("resultID") String resultID,
-			   @Context UriInfo uri) {
+                           @PathParam("resultID") String resultID,
+                           @Context UriInfo uri) {
 
-	// Get index
-	KorapIndex index = KorapNode.getIndex();
+        // Get index
+        KorapIndex index = KorapNode.getIndex();
 
-	// No index found
-	if (index == null) {
-	    KorapResponse kresp = new KorapResponse();
-	    kresp.setNode(KorapNode.getName());
-	    kresp.addError(601, "Unable to find index");
-  	    return kresp.toJsonString();
-	};
+        // No index found
+        if (index == null) {
+            KorapResponse kresp = new KorapResponse();
+            kresp.setNode(KorapNode.getName());
+            kresp.addError(601, "Unable to find index");
+            return kresp.toJsonString();
+        };
 
-	// Get the database
-	try {
-	    MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_" + resultID);
-	    Connection conn = KorapNode.getDBPool().getConnection();
-	    mc.setDBPool("mysql", KorapNode.getDBPool(), conn);
+        // Get the database
+        try {
+            MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_" + resultID);
+            Connection conn = KorapNode.getDBPool().getConnection();
+            mc.setDBPool("mysql", KorapNode.getDBPool(), conn);
+            
+            // TODO: Only search in self documents (REPLICATION FTW!)
+            
+            Krill ks = new Krill(json);
+            MatchCollector result = index.collect(ks, mc);
 
-	    // TODO: Only search in self documents (REPLICATION FTW!)
+            result.setNode(KorapNode.getName());
+            return result.toJsonString();
+        }
+        catch (SQLException e) {
+            log.error(e.getLocalizedMessage());
+        };
 
-	    KorapSearch ks = new KorapSearch(json);
-	    MatchCollector result = index.collect(ks, mc);
+        KorapResponse kresp = new KorapResponse();
+        kresp.setNode(KorapNode.getName());
+        kresp.setName(index.getName());
+        kresp.setVersion(index.getVersion());
 
-	    result.setNode(KorapNode.getName());
-	    return result.toJsonString();
-	}
-	catch (SQLException e) {
-	    log.error(e.getLocalizedMessage());
-	};
-
-	KorapResponse kresp = new KorapResponse();
-	kresp.setNode(KorapNode.getName());
-	kresp.setName(index.getName());
-	kresp.setVersion(index.getVersion());
-
-	kresp.addError(604, "Unable to connect to database");
-	return kresp.toJsonString();
+        kresp.addError(604, "Unable to connect to database");
+        return kresp.toJsonString();
     };
 
 
@@ -329,7 +338,7 @@ public class Resource {
 
 	// Search index
         if (index != null) {
-            KorapResult kr = new KorapSearch(json).apply(index);
+            KorapResult kr = new Krill(json).apply(index);
 	    kr.setNode(KorapNode.getName());
 	    return kr.toJsonString();
 	};

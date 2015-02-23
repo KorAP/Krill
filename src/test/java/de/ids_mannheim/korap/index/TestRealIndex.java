@@ -19,7 +19,7 @@ import de.ids_mannheim.korap.util.QueryException;
 public class TestRealIndex {
     KorapIndex ki;
     KorapResult kr;
-    KorapSearch ks;
+    Krill ks;
     KorapQuery kq;
 	
     public TestRealIndex() throws IOException {
@@ -36,7 +36,7 @@ public class TestRealIndex {
     @Test
     public void testCase1() throws IOException, QueryException {
 	KorapQuery kq = new KorapQuery("tokens");
-	ks = new KorapSearch(kq.within(kq.tag("base/s:s"), kq.seq(kq.re("s:.*")).append(kq._(kq.re("s:.*")))).toQuery());
+	ks = new Krill(kq.within(kq.tag("base/s:s"), kq.seq(kq.re("s:.*")).append(kq._(kq.re("s:.*")))).toQuery());
 	ks.setTimeOut(10000);
 	kr = ks.apply(ki);
 	System.err.println(kr.toJsonString());

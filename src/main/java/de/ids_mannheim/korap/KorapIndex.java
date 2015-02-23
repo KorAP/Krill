@@ -835,7 +835,7 @@ public class KorapIndex {
                     log.trace("We've found a matching document");
 
                 HashSet<String> fields = (HashSet<String>)
-                    new KorapSearch().getFields().clone();
+                    new Krill().getFields().clone();
                 fields.add(field);
 
                 // Get terms from the document
@@ -1076,13 +1076,13 @@ public class KorapIndex {
      * Search in the index.
      */
     public KorapResult search (SpanQuery query) {
-        return this.search(new KorapSearch(query));
+        return this.search(new Krill(query));
     };
 
 
     public KorapResult search (SpanQuery query, short count) {
         return this.search(
-            new KorapSearch(query).setCount(count)
+            new Krill(query).setCount(count)
         );
     };
 
@@ -1096,7 +1096,7 @@ public class KorapIndex {
                                boolean rightTokenContext,
                                short rightContext) {
 
-        KorapSearch ks = new KorapSearch(query);
+        Krill ks = new Krill(query);
         ks.setStartIndex(startIndex).setCount(count);
         ks.setContext(
             new SearchContext(
@@ -1119,7 +1119,7 @@ public class KorapIndex {
                                short leftContext,
                                boolean rightTokenContext,
                                short rightContext) {
-        KorapSearch ks = new KorapSearch(query);
+        Krill ks = new Krill(query);
         ks.setContext(
             new SearchContext(
                 leftTokenContext,
@@ -1136,7 +1136,7 @@ public class KorapIndex {
     /**
      * Search the endpoint.
      */
-    public KorapResult search (KorapSearch ks) {
+    public KorapResult search (Krill ks) {
         if (DEBUG)
             log.trace("Start search");
 
@@ -1145,7 +1145,7 @@ public class KorapIndex {
         KorapCollection collection = ks.getCollection();
         collection.setIndex(this);
 
-        // Get the spanquery from the KorapSearch object
+        // Get the spanquery from the Krill object
         SpanQuery query = ks.getSpanQuery();
 
         // Get the field of textual data and annotations ("tokens")
@@ -1376,7 +1376,7 @@ public class KorapIndex {
 
 
     // Collect matches
-    public MatchCollector collect (KorapSearch ks, MatchCollector mc) {
+    public MatchCollector collect (Krill ks, MatchCollector mc) {
         if (DEBUG)
             log.trace("Start collecting");
 

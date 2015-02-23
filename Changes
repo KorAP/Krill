@@ -1,4 +1,10 @@
-0.49.4 2015-02-13
+0.50.1 2015-02-23
+	- Deserialization of arbitrary elements with attributes (margaretha)
+
+0.50 2015-02-23
+        - Project name is now "Krill"
+
+0.49.4 2015-02-20
         - [documentation] Improved documentation for API classes,
 	  improved test coverage for utility classes (diewald)
    	- [performance] Updated Lucene dependency from 4.5.1 to 4.10.3,

@@ -34,13 +34,13 @@ public class KorapNode {
     // Index
     private static KorapIndex index;
     private static ComboPooledDataSource cpds;
-    private static String path;
-    private static String name = "unknown";
+    private static String path,
+                          name = "unknown";
 
     private static String dbUser, dbPwd;
 
-    private static String dbClass = "org.sqlite.JDBC";
-    private static String dbURL   = "jdbc:sqlite:";
+    private static String dbClass = "org.sqlite.JDBC",
+                          dbURL   = "jdbc:sqlite:";
     
     /*
      * Todo: Add shutdown hook,
@@ -50,7 +50,9 @@ public class KorapNode {
      */
 
     /**
-     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.
+     * Starts Grizzly HTTP server exposing JAX-RS
+     * resources defined in this application.
+     *
      * @return Grizzly HTTP server.
      */
     public static HttpServer startServer() {
@@ -112,7 +114,7 @@ public class KorapNode {
      * @param args
      * @throws IOException
      */
-    public static void main(String[] args) throws IOException {
+    public static void main (String[] args) throws IOException {
         // WADL available at BASE_URI + application.wadl
 
         final HttpServer server = startServer();

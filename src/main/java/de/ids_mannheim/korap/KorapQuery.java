@@ -71,7 +71,8 @@ import de.ids_mannheim.korap.util.QueryException;
 */
 public class KorapQuery extends Notifications {
     private String field;
-    private ObjectMapper json;
+    private ObjectMapper mapper;
+    private JsonNode json;
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapQuery.class);
@@ -98,7 +99,7 @@ public class KorapQuery extends Notifications {
      */
     public KorapQuery (String field) {
         this.field = field;
-        this.json = new ObjectMapper();
+        this.mapper = new ObjectMapper();
     };
 
 
@@ -159,7 +160,7 @@ public class KorapQuery extends Notifications {
         JsonNode jsonN;
         try {
             // Read Json string
-            jsonN = this.json.readValue(json, JsonNode.class);
+            jsonN = this.mapper.readValue(json, JsonNode.class);
         }
 
         // Something went wrong
@@ -193,6 +194,9 @@ public class KorapQuery extends Notifications {
         int number = 0;
         if (!json.has("@type"))
             throw new QueryException(701, "JSON-LD group has no @type attribute");
+
+        // Set this for serialization
+        this.json = json;
 
         // Get @type for branching
         String type = json.get("@type").asText();
@@ -1078,8 +1082,17 @@ public class KorapQuery extends Notifications {
             }
         }
 		return null;
-    }
+    };
 
+    public JsonNode toJsonNode () {
+        return this.json;
+    };
+
+    public String toJsonString () {
+        if (this.json == null)
+            return "{}";
+        return this.json.toString();
+    };
 
 
     /*

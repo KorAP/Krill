@@ -8,7 +8,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.index.FieldDocument;
 
@@ -211,7 +211,7 @@ public class TestHighlight { // extends LuceneTestCase {
 
         kq = new KorapQuery("base");
         q = (SpanQuery) kq.or(kq._(1, kq.seg("i:a"))).or(kq._(2, kq.seg("i:c"))).toQuery();
-        KorapSearch qs = new KorapSearch(q);
+        Krill qs = new Krill(q);
         qs.getContext().left.setToken(true).setLength((short) 1);
         qs.getContext().right.setToken(true).setLength((short) 1);
         kr = ki.search(qs);
@@ -247,7 +247,7 @@ public class TestHighlight { // extends LuceneTestCase {
         q = (SpanQuery) kq._(
             3, kq.or(kq._(1, kq.seg("i:a"))).or(kq._(2, kq.seg("i:c")))
         ).toQuery();
-        qs = new KorapSearch(q);
+        qs = new Krill(q);
         qs.getContext().left.setToken(true).setLength((short) 0);
         qs.getContext().right.setToken(true).setLength((short) 0);
         kr = ki.search(qs);
@@ -281,7 +281,7 @@ public class TestHighlight { // extends LuceneTestCase {
         // 15
         String json = getString(getClass().getResource("/queries/bugs/greater_highlights_15.jsonld").getFile());
 	
-        KorapSearch ks = new KorapSearch(json);
+        Krill ks = new Krill(json);
         KorapResult kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),"{15: tokens:s:Alphabet}");
         assertEquals(kr.getTotalResults(),7);
@@ -292,7 +292,7 @@ public class TestHighlight { // extends LuceneTestCase {
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_16.jsonld").getFile());
 
         // 16
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),"{16: tokens:s:Alphabet}");
         assertEquals(kr.getTotalResults(),7);
@@ -303,7 +303,7 @@ public class TestHighlight { // extends LuceneTestCase {
         // 127
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_127.jsonld").getFile());
 	
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),"{127: tokens:s:Alphabet}");
         assertEquals(kr.getTotalResults(),7);
@@ -314,7 +314,7 @@ public class TestHighlight { // extends LuceneTestCase {
         // 255
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_255.jsonld").getFile());
 
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),"{255: tokens:s:Alphabet}");
         assertEquals(kr.getTotalResults(),7);
@@ -325,7 +325,7 @@ public class TestHighlight { // extends LuceneTestCase {
         // 300
         json = getString(getClass().getResource("/queries/bugs/greater_highlights_300.jsonld").getFile());
 
-        ks = new KorapSearch(json);
+        ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(709, kr.getError(0).getCode());
         assertEquals("Valid class numbers exceeded", kr.getError(0).getMessage());

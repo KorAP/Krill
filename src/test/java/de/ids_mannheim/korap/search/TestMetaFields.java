@@ -5,7 +5,7 @@ import java.io.*;
 
 import static de.ids_mannheim.korap.TestSimple.*;
 
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapIndex;
@@ -48,7 +48,7 @@ public class TestMetaFields {
             getClass().getResource("/queries/metas/fields.jsonld").getFile()
         );
 	
-        KorapSearch ks = new KorapSearch(jsonString);
+        Krill ks = new Krill(jsonString);
 
         KorapResult kr = ks.apply(ki);
         assertEquals((long) 17, kr.getTotalResults());
@@ -75,7 +75,7 @@ public class TestMetaFields {
         jsonString = getString(
             getClass().getResource("/queries/metas/fields_2.jsonld").getFile()
         );
-        ks = new KorapSearch(jsonString);
+        ks = new Krill(jsonString);
         kr = ks.apply(ki);
         assertEquals((long) 17, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());

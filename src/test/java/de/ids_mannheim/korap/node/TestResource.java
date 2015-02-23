@@ -10,6 +10,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.client.Entity;
 
 import org.glassfish.grizzly.http.server.HttpServer;
+import com.fasterxml.jackson.jaxrs.annotation.JacksonFeatures;
 
 import static org.junit.Assert.*;
 import org.junit.After;
@@ -29,7 +30,6 @@ import static de.ids_mannheim.korap.util.KorapString.*;
  */
 // http://harryjoy.com/2012/09/08/simple-rest-client-in-java/
 public class TestResource {
-
     private HttpServer server;
     private WebTarget target;
 
@@ -44,8 +44,17 @@ public class TestResource {
         // support for JSON in the client (you also have to uncomment
         // dependency on jersey-media-json module in pom.xml and Main.startServer())
         // --
-        // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
 
+        // c.configuration().enable(com.sun.jersey.api.json.POJOMappingFeature());
+        // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
+        // c.register(JacksonFeature.class);
+        // c.register(com.fasterxml.jackson.jaxrs.annotation.JacksonFeatures.class);
+
+        /*
+        ClientConfig clientConfig = new DefaultClientConfig();
+        clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
+        Client c = Client.create(clientConfig);
+*/
         target = c.target(KorapNode.BASE_URI);
     };
 
@@ -80,9 +89,11 @@ public class TestResource {
                 getClass().getResource("/wiki/" + i + ".json").getFile()
             );
 
+            Entity jsonE = Entity.json(json);
+
             kresp = target.path("/index/" + i).
                 request("application/json").
-                put(Entity.json(json), KorapResponse.class);
+                put(jsonE, KorapResponse.class);
 
             assertEquals(kresp.getNode(), "milena");
             assertFalse(kresp.hasErrors());

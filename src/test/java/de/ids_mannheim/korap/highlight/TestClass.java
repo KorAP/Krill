@@ -14,7 +14,7 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
@@ -23,7 +23,7 @@ import de.ids_mannheim.korap.util.QueryException;
 public class TestClass {
 	KorapIndex ki;
 	KorapResult kr;
-	KorapSearch ks;
+	Krill ks;
 	
 	@Test
 	public void queryJSONpoly1() throws QueryException, IOException {

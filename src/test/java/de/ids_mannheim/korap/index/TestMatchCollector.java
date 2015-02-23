@@ -18,7 +18,7 @@ import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.index.MatchCollector;
 import de.ids_mannheim.korap.KorapCollection;
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
@@ -77,7 +77,7 @@ public class TestMatchCollector {
 
 	sq = new SpanTermQuery(new Term("base", "s:b"));
 	MatchCollector mc = ki.collect(
-	  new KorapSearch(sq).setCount((short) 10),
+	  new Krill(sq).setCount((short) 10),
 	  new MatchCollector()
 	);
 

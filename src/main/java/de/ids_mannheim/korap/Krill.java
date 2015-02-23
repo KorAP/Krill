@@ -10,10 +10,13 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.index.SearchContext;
-import de.ids_mannheim.korap.response.Notifications;
+import de.ids_mannheim.korap.response.KorapResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Krill is a corpus data retrieval index using Lucene for Look-Ups.
@@ -33,16 +36,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 /*
  * Todo: Use a configuration file
  * Todo: Let this class extend KorapResult!
- *   KorapResult = new KorapSearch(String json).run(KorapIndex ki);
+ *   KorapResult = new Krill(String json).run(KorapIndex ki);
  * Todo: Set timeout default value per config file
  */
-
-public class KorapSearch extends Notifications {
+public class Krill extends KorapResponse {
     private int startIndex = 0, limit = 0;
     private short count = 25, countMax = 50, itemsPerResource = 0;
     private boolean cutOff = false;
-
-    private SpanQuery spanQuery;
 
     private KorapCollection collection;
     private KorapIndex index;
@@ -51,8 +51,9 @@ public class KorapSearch extends Notifications {
     private long timeout = (long) 120_000;
 
     private HashSet<String> fields;
-    private HashSet<Integer> highlights;
+            HashSet<Integer> highlights;
 
+    private SpanQuery spanQuery;
     private JsonNode request;
 
     public SearchContext context;
@@ -60,12 +61,15 @@ public class KorapSearch extends Notifications {
 
     private long timeoutStart = Long.MIN_VALUE;
 
+    // Logger
+    private final static Logger log = LoggerFactory.getLogger(Krill.class);
+
     {
         context  = new SearchContext();
 
         fields = new HashSet<String>(16);
 
-        // Lift legacy fields per default
+        // LEGACY: Lift following fields per default
         for (String field : new String[]{
                 "ID",
                 "UID",
@@ -87,11 +91,11 @@ public class KorapSearch extends Notifications {
         highlights = new HashSet<Integer>(3);
     };
 
-
+    
     /**
      * Construct a new Krill object.
      */
-    public KorapSearch () {};
+    public Krill () {};
 
 
     /**
@@ -100,7 +104,7 @@ public class KorapSearch extends Notifications {
      *
      * @param query The {@link SpanQueryWrapper} object.
      */
-    public KorapSearch (SpanQueryWrapper query) {
+    public Krill (SpanQueryWrapper query) {
         try {
             this.spanQuery = query.toQuery();
         }
@@ -116,37 +120,72 @@ public class KorapSearch extends Notifications {
      *
      * @param query The {@link SpanQuery} object.
      */
-    public KorapSearch (SpanQuery query) {
+    public Krill (SpanQuery query) {
         this.spanQuery = query;
     };
 
 
-    public KorapSearch (String jsonString) {
-        try {
-            // Parse json string
-            this.fromJson(jsonString);
-        }
-        catch (QueryException qe) {
-            this.addError(qe.getErrorCode(), qe.getMessage());
-        };
-    };
-
-    public KorapSearch (JsonNode json) {
-        try {
-            this.fromJson(json);
-        }
-        catch (QueryException qe) {
-            this.addError(qe.getErrorCode(), qe.getMessage());
-        };
+    /**
+     * Construct a new Krill object,
+     * consuming a KoralQuery json string.
+     *
+     * @param query The KoralQuery json string.
+     */
+    public Krill (String query) {
+        // Parse json string
+        this.fromJson(query);
     };
 
 
-    public KorapSearch fromJson (JsonNode json) throws QueryException {
+    /**
+     * Construct a new Krill object,
+     * consuming a KoralQuery {@link JsonNode} object.
+     *
+     * @param query The KoralQuery {@link JsonNode} object.
+     */
+    public Krill (JsonNode query) {
+        this.fromJson(query);
+    };
+
+
+    /**
+     * Parse KoralQuery as a json string.
+     *
+     * @param query The KoralQuery json string.
+     * @return The {@link Krill} object for chaining.
+     * @throws QueryException
+     */
+    public Krill fromJson (String query) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            this.request = mapper.readTree(query);
+            this.fromJson(this.request);
+        }
+
+        // Unable to parse JSON
+        catch (IOException e) {
+            this.addError(621, "Unable to parse JSON");
+        };
+
+        return this;
+    };
+
+
+    /**
+     * Parse KoralQuery as a {@link JsonNode} object.
+     *
+     * @param query The KoralQuery {@link JsonNode} object.
+     * @return The {@link Krill} object for chaining.
+     * @throws QueryException
+     */
+    public Krill fromJson (JsonNode json) {
+
         // Parse "query" attribute
         if (json.has("query")) {
             try {
                 KorapQuery kq = new KorapQuery("tokens");
                 SpanQueryWrapper qw = kq.fromJson(json.get("query"));
+                this.setQuery(kq);
 
                 // Unable to process result
                 if (qw.isEmpty())
@@ -166,8 +205,9 @@ public class KorapSearch extends Notifications {
                 this.addError(q.getErrorCode(), q.getMessage());
             };
         }
-        else
+        else {
             this.addError(700, "No query given");
+        };
 
         // <legacycode>
         if (json.has("warning") &&
@@ -189,22 +229,27 @@ public class KorapSearch extends Notifications {
         this.copyNotificationsFrom(json);
 	    
         // virtual collections
-        if (json.has("collection")) {
-            this.setCollection(
-                new KorapCollection().fromJson(json.get("collection"))
-            );
-        }
+        try {
+            if (json.has("collection")) {
+                this.setCollection(
+                    new KorapCollection().fromJson(json.get("collection"))
+                );
+            }
 
-        // <legacycode>
-        else if (json.has("collections")) {
-            KorapCollection kc = new KorapCollection();
-            for (JsonNode collection : json.get("collections")) {
-                kc.fromJsonLegacy(collection);
+            // <legacycode>
+            else if (json.has("collections")) {
+                KorapCollection kc = new KorapCollection();
+                for (JsonNode collection : json.get("collections")) {
+                    kc.fromJsonLegacy(collection);
+                };
+                
+                this.setCollection(kc);
             };
-
-            this.setCollection(kc);
+            // </legacycode>
+        }
+        catch (QueryException q) {
+            this.addError(q.getErrorCode(), q.getMessage());
         };
-        // </legacycode>
 
 
         // No errors
@@ -277,23 +322,6 @@ public class KorapSearch extends Notifications {
         return this;
     };
 
-
-    public KorapSearch fromJson (String jsonString) throws QueryException {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            this.request = mapper.readTree(jsonString);
-            this.fromJson(this.request);
-        }
-
-        // Unable to parse JSON
-        catch (IOException e) {
-            this.addError(621, "Unable to parse JSON");
-        };
-
-        return this;
-    };
-
-
     public long getTimeOut () {
         return this.timeout;
     };
@@ -302,35 +330,17 @@ public class KorapSearch extends Notifications {
         this.timeout = timeout;
     };
 
-    public SpanQuery getSpanQuery () {
-        return this.spanQuery;
-    };
 
     public JsonNode getRequest () {
         return this.request;
     };
 
-    public KorapSearch setSpanQuery (SpanQueryWrapper sqwi) {
-        // this.copyNotifications(sqwi);
-        try {
-            this.spanQuery = sqwi.toQuery();
-        }
-        catch (QueryException q) {
-            this.addError(q.getErrorCode(), q.getMessage());
-        };
-        return this;
-    };
-
-    public KorapSearch setSpanQuery (SpanQuery sq) {
-        this.spanQuery = sq;
-        return this;
-    };
 
     public SearchContext getContext () {
         return this.context;
     };
 
-    public KorapSearch setContext (SearchContext context) {
+    public Krill setContext (SearchContext context) {
         this.context = context;
         return this;
     };
@@ -339,12 +349,12 @@ public class KorapSearch extends Notifications {
         return this.startIndex;
     };
     
-    public KorapSearch setStartIndex (int value) {
+    public Krill setStartIndex (int value) {
         this.startIndex = (value >= 0) ? value : 0;
         return this;
     };
 
-    public KorapSearch setStartPage (int value) {
+    public Krill setStartPage (int value) {
         if (value >= 0)
             this.setStartIndex((value * this.getCount()) - this.getCount());
         else
@@ -364,7 +374,7 @@ public class KorapSearch extends Notifications {
         return this.limit;
     };
 
-    public KorapSearch setLimit (int limit) {
+    public Krill setLimit (int limit) {
         if (limit > 0)
             this.limit = limit;
         return this;
@@ -374,30 +384,30 @@ public class KorapSearch extends Notifications {
         return this.cutOff;
     };
 
-    public KorapSearch setCutOff (boolean cutOff) {
+    public Krill setCutOff (boolean cutOff) {
         this.cutOff = cutOff;
         return this;
     };
 
-    public KorapSearch setCount (int value) {
+    public Krill setCount (int value) {
         // Todo: Maybe update startIndex with known startPage!
         this.setCount((short) value);
         return this;
     };
 
-    public KorapSearch setCount (short value) {
+    public Krill setCount (short value) {
         if (value > 0)
             this.count = (value <= this.countMax) ? value : this.countMax;
         return this;
     };
 
-    public KorapSearch setItemsPerResource (short value) {
+    public Krill setItemsPerResource (short value) {
         if (value >= 0)
             this.itemsPerResource = value;
         return this;
     };
 
-    public KorapSearch setItemsPerResource (int value) {
+    public Krill setItemsPerResource (int value) {
         return this.setItemsPerResource((short) value);
     };
 
@@ -419,9 +429,9 @@ public class KorapSearch extends Notifications {
      * Add a field to the set of fields to retrieve.
      *
      * @param field The field to retrieve.
-     * @return The {@link KorapSearch} object for chaining.
+     * @return The {@link Krill} object for chaining.
      */
-    public KorapSearch addField (String field) {
+    public Krill addField (String field) {
         this.fields.add(field);
         return this;
     };
@@ -431,15 +441,15 @@ public class KorapSearch extends Notifications {
      * Add class numbers to highlight in KWIC view.
      *
      * @param classNumber The number of a class to highlight.
-     * @return The {@link KorapSearch} object for chaining.
+     * @return The {@link Krill} object for chaining.
      */
-    public KorapSearch addHighlight (int classNumber) {
+    public Krill addHighlight (int classNumber) {
         this.highlights.add(classNumber);
         return this;
     };
 
 
-    public KorapSearch setCollection (KorapCollection kc) {
+    public Krill setCollection (KorapCollection kc) {
         this.collection = kc;
         
         // Move messages from the collection
@@ -455,35 +465,84 @@ public class KorapSearch extends Notifications {
     };
 
 
+    public KorapIndex getIndex () {
+        return this.index;
+    };
+
+    public Krill setIndex (KorapIndex ki) {
+        this.index = ki;
+        return this;
+    };
+
+
     /**
      * Apply the KoralQuery to an index.
+     *
+     * @param index The {@link KorapIndex}
+     *        the search should be applyied to.
+     * @return The result as a {@link KorapResult} object.
      */
-    public KorapResult apply (KorapIndex ki) {
-        if (this.spanQuery == null) {
-            KorapResult kr = new KorapResult();
-            kr.setRequest(this.request);
+    public KorapResult apply (KorapIndex index) {
+        return this.setIndex(index).apply();
+    };
 
-            if (this.hasErrors())
-                kr.copyNotificationsFrom(this);
-            else
-                kr.addError(700, "No query given");
-            return kr;
-        };
 
+    /**
+     * Apply the KoralQuery to an index.
+     *
+     * @return The result as a {@link KorapResult} object.
+     */
+    public KorapResult apply () {
+
+        // Create new KorapResult object to return
+        KorapResult kr = new KorapResult();
+
+        // There were errors
         if (this.hasErrors()) {
-            KorapResult kr = new KorapResult();
-
-            // TODO: dev mode
-            kr.setRequest(this.request);
             kr.copyNotificationsFrom(this);
-            return kr;
+        }
+
+        // There was no index
+        else if (this.index == null) {
+            kr.addError(601, "Unable to find index");
+        }
+
+        // Apply search
+        else {
+            kr = this.index.search(this);
+            this.getCollection().setIndex(this.index);
+            kr.copyNotificationsFrom(this);
         };
 
-        this.getCollection().setIndex(ki);
-        KorapResult kr = ki.search(this);
+        // TODO: Only for development mode
         kr.setRequest(this.request);
-        kr.copyNotificationsFrom(this);
-        this.clearNotifications();
+        kr.setQuery(this.getQuery());
+
         return kr;
+    };
+
+    @Deprecated
+    public SpanQuery getSpanQuery () {
+        return this.spanQuery;
+    };
+
+
+    @Deprecated
+    public Krill setSpanQuery (SpanQueryWrapper sqwi) {
+        // this.copyNotifications(sqwi);
+        try {
+            this.spanQuery = sqwi.toQuery();
+        }
+        catch (QueryException q) {
+            this.addError(q.getErrorCode(), q.getMessage());
+        };
+        return this;
+    };
+
+
+    @Deprecated
+    public Krill setSpanQuery (SpanQuery sq) {
+        this.spanQuery = sq;
+        return this;
     };
 };

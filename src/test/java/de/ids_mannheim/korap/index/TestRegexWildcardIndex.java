@@ -16,7 +16,7 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapSearch;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
 import org.apache.lucene.search.Query;
@@ -52,7 +52,7 @@ public class TestRegexWildcardIndex {
 	SpanQuery sq = kq.re("s:af*e").toQuery();
 	assertEquals("SpanMultiTermQueryWrapper(base:/s:af*e/)", sq.toString());
 			
-	KorapSearch ks = new KorapSearch(sq);
+	Krill ks = new Krill(sq);
 	ks.context.left.setToken(true).setLength(1);
 	ks.context.right.setToken(true).setLength(1);
 
@@ -109,7 +109,7 @@ public class TestRegexWildcardIndex {
 	SpanQuery sq = kq.wc("s:af*e").toQuery();
 	assertEquals("SpanMultiTermQueryWrapper(base:s:af*e)", sq.toString());
 
-	KorapSearch ks = new KorapSearch(sq);
+	Krill ks = new Krill(sq);
 	ks.context.left.setToken(true).setLength(1);
 	ks.context.right.setToken(true).setLength(1);
 
@@ -168,7 +168,7 @@ public class TestRegexWildcardIndex {
 	SpanQuery sq = kq.re("s:Af*e", true).toQuery();
 	assertEquals("SpanMultiTermQueryWrapper(base:/i:af*e/)", sq.toString());
 
-	KorapSearch ks = new KorapSearch(sq);
+	Krill ks = new Krill(sq);
 	ks.context.left.setToken(true).setLength(1);
 	ks.context.right.setToken(true).setLength(1);
 
@@ -233,7 +233,7 @@ public class TestRegexWildcardIndex {
 	SpanQuery sq = kq.seq(kq.seg("s:affe")).append(kq.re("s:af*e")).toQuery();
 	assertEquals("spanNext(base:s:affe, SpanMultiTermQueryWrapper(base:/s:af*e/))", sq.toString());
 
-	KorapSearch ks = new KorapSearch(sq);
+	Krill ks = new Krill(sq);
 	ks.context.left.setToken(true).setLength(1);
 	ks.context.right.setToken(true).setLength(1);
 
@@ -274,7 +274,7 @@ public class TestRegexWildcardIndex {
 						   ),
 				   kq.seg("s:affe")).toQuery();
 	assertEquals("spanContain(spanNext(SpanMultiTermQueryWrapper(base:/s:a.*e/), SpanMultiTermQueryWrapper(base:/s:af*e/)), base:s:affe)", sq.toString());
-	KorapSearch ks = new KorapSearch(sq);
+	Krill ks = new Krill(sq);
 	ks.context.left.setToken(true).setLength(1);
 	ks.context.right.setToken(true).setLength(1);
 
