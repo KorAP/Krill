@@ -23,11 +23,15 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 	private List<SpanQueryWrapper> queryWrapperList = null;
 	private boolean isSingleAttribute = false;
 
-	public SpanWithAttributeQueryWrapper(SpanQueryWrapper attrQuery) {
+	public SpanWithAttributeQueryWrapper(SpanQueryWrapper attrQuery)
+			throws QueryException {
 		if (attrQuery != null) isNull = false;
 		if (attrQuery.isEmpty()) {
 			isEmpty = true;
 			return;
+		}
+		if (attrQuery.isNegative) {
+			throw new QueryException("The query requires a positive attribute.");
 		}
 		this.attrQueryWrapper = attrQuery;
 		this.isSingleAttribute = true;
@@ -41,6 +45,7 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 			throw new QueryException("No attribute is defined.");
 		}
 
+		boolean isAllNegative = true;
 		for (SpanQueryWrapper sqw : attrList) {
 			if (sqw == null) {
 				isNull = true;
@@ -50,6 +55,12 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 				isEmpty = true;
 				return;
 			}
+			if (!sqw.isNegative) {
+				isAllNegative = false;
+			}
+		}
+		if (isAllNegative) {
+			throw new QueryException("No positive attribute is defined.");
 		}
 		this.queryWrapperList = attrList;
 	}

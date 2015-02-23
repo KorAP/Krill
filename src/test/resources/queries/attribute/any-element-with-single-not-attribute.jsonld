@@ -5,12 +5,12 @@
     "messages": [],
     "collection": {},
     "query": {
-        "@type": "koral:span",
+        "@type": "korap:span",        
         "attr": {
-            "@type": "koral:term",
+            "@type": "korap:term",
             "layer": "type",
             "key": "top",
-            "match": "match:eq"
+            "match": "match:ne"
         }
     },
     "meta": {}

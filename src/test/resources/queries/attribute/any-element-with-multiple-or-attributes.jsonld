@@ -1,0 +1,35 @@
+{
+    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+    "errors": [],
+    "warnings": [],
+    "messages": [],
+    "collection": {},
+    "query": {
+        "@type": "korap:span",
+        "attr": {
+            "@type": "korap:termGroup",
+            "relation": "relation:or",
+            "operands": [
+                {
+                    "@type": "korap:term",
+                    "layer": "type",
+                    "key": "Zeitschrift",
+                    "match": "match:eq"
+                },
+                {
+                    "@type": "korap:term",
+                    "layer": "complete",
+                    "key": "Y",
+                    "match": "match:eq"
+                },
+                {
+                    "@type": "korap:term",
+                    "layer": "n",
+                    "key": "0",
+                    "match": "match:eq"
+                }
+            ]
+        }
+    },
+    "meta": {}
+}

@@ -12,7 +12,21 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.wrap.*;
+import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanAttributeQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanElementQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanFocusQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSubspanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWithAttributeQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -944,78 +958,103 @@ public class KorapQuery extends Notifications {
 						"JSON-LD group has no @type attribute");
 			}
 
-			SpanQueryWrapper elementWithIdWrapper = null;
 			if (value.toString().isEmpty()) {
-				// attribute with arbitraty elements
-
-				this.addWarning(771,
-						"Arbitraty elements with attributes are currently not supported.");
-				return null;
+				return createElementAttrFromJson(null, json, attrNode);
+				// this.addWarning(771,
+				// "Arbitraty elements with attributes are currently not supported.");
 			}
 			else{
-				elementWithIdWrapper = tag(value.toString());
-				if (elementWithIdWrapper == null) return null;
+				SpanQueryWrapper elementWithIdWrapper = tag(value.toString());
+				if (elementWithIdWrapper == null){ return null; }
+				return createElementAttrFromJson(elementWithIdWrapper, json,
+						attrNode);
 			}
-
-			if (attrNode.get("@type").asText().equals("koral:term")) {
-				SpanQueryWrapper attrWrapper = _attrFromJson(json.get("attr"));
-				if (attrWrapper != null) {
-					return new SpanWithAttributeQueryWrapper(
-							elementWithIdWrapper, attrWrapper);
-				}
-				else {
-					throw new QueryException(747, "Attribute is null");
-				}
-			} 
-			else if (attrNode.get("@type").asText().equals("koral:termGroup")) {
-				if (!attrNode.has("relation")) {
-					throw new QueryException(743, "Term group expects a relation");
-				}
-
-				if (!attrNode.has("operands")) {
-					throw new QueryException(742, "Term group needs operand list");
-				}
-
-				String relation = attrNode.get("relation").asText();
-				JsonNode operands = attrNode.get("operands");
-
-				SpanQueryWrapper attrWrapper;
-				if ("relation:and".equals(relation)) {
-					List<SpanQueryWrapper> wrapperList = new ArrayList<SpanQueryWrapper>();
-					for (JsonNode operand : operands) {
-						attrWrapper = _termFromJson(operand);
-						if (attrWrapper == null) {
-							throw new QueryException(747, "Attribute is null");
-						}
-						wrapperList.add(attrWrapper);
-					}
-
-					return new SpanWithAttributeQueryWrapper(
-							elementWithIdWrapper, wrapperList);
-				}
-				else if ("relation:or".equals(relation)){
-					SpanAlterQueryWrapper saq = new SpanAlterQueryWrapper(field);
-					for (JsonNode operand : operands) {
-						attrWrapper = _termFromJson(operand);
-						if (attrWrapper == null) {
-							throw new QueryException(747, "Attribute is null");
-						}
-						saq.or(new SpanWithAttributeQueryWrapper(
-								elementWithIdWrapper, attrWrapper));
-					}
-					return saq;
-				}
-				else {
-					throw new QueryException(716, "Unknown relation");
-				}
-			}
-			else {
-	            this.addWarning(715, "Attribute type is not supported");
-	        }
         };
         return this.tag(value.toString());
     };
 
+	private SpanQueryWrapper createElementAttrFromJson(
+			SpanQueryWrapper elementWithIdWrapper, JsonNode json,
+			JsonNode attrNode) throws QueryException {
+
+		if (attrNode.get("@type").asText().equals("koral:term")) {
+			SpanQueryWrapper attrWrapper = _attrFromJson(json.get("attr"));
+			if (attrWrapper != null) {
+				if (elementWithIdWrapper != null){
+					return new SpanWithAttributeQueryWrapper(elementWithIdWrapper,
+						attrWrapper);
+				}
+				else {
+					return new SpanWithAttributeQueryWrapper(attrWrapper);
+				}
+			} 
+			else {
+				throw new QueryException(747, "Attribute is null");
+			}
+		} 
+ else if (attrNode.get("@type").asText().equals("koral:termGroup")) {
+			return handleAttrGroup(elementWithIdWrapper, attrNode);
+		}
+		else {
+			this.addWarning(715, "Attribute type is not supported");
+		}
+		return elementWithIdWrapper;
+	}
+	
+	private SpanQueryWrapper handleAttrGroup(
+			SpanQueryWrapper elementWithIdWrapper, JsonNode attrNode)
+			throws QueryException {
+		if (!attrNode.has("relation")) {
+			throw new QueryException(743, "Term group expects a relation");
+		}
+		if (!attrNode.has("operands")) {
+			throw new QueryException(742, "Term group needs operand list");
+		}
+
+		String relation = attrNode.get("relation").asText();
+		JsonNode operands = attrNode.get("operands");
+
+		SpanQueryWrapper attrWrapper;
+		if ("relation:and".equals(relation)) {
+			List<SpanQueryWrapper> wrapperList = new ArrayList<SpanQueryWrapper>();
+			for (JsonNode operand : operands) {
+				attrWrapper = _termFromJson(operand);
+				if (attrWrapper == null) {
+					throw new QueryException(747, "Attribute is null");
+				}
+				wrapperList.add(attrWrapper);
+			}
+
+			if (elementWithIdWrapper != null){
+				return new SpanWithAttributeQueryWrapper(elementWithIdWrapper,
+					wrapperList);
+			}
+			else {
+				return new SpanWithAttributeQueryWrapper(wrapperList);
+			}
+		} 
+		else if ("relation:or".equals(relation)) {
+			SpanAlterQueryWrapper saq = new SpanAlterQueryWrapper(field);
+			SpanWithAttributeQueryWrapper saqw;
+			for (JsonNode operand : operands) {
+				attrWrapper = _termFromJson(operand);
+				if (attrWrapper == null) {
+					throw new QueryException(747, "Attribute is null");
+				}
+				if (elementWithIdWrapper != null) {
+					saqw = new SpanWithAttributeQueryWrapper(
+							elementWithIdWrapper, attrWrapper);
+				} else {
+					saqw = new SpanWithAttributeQueryWrapper(attrWrapper);
+				}
+				saq.or(saqw);
+			}
+			return saq;
+		}
+		else {
+			throw new QueryException(716, "Unknown relation");
+		}
+	}
 
     // Get attributes from a json termgroup
     private SpanQueryWrapper _attrFromJson (JsonNode attrNode)
