@@ -47,7 +47,6 @@ public class Notifications {
 
     private Messages warnings, errors, messages;
 
-
     /**
      * Check for warnings.
      *
@@ -369,7 +368,7 @@ public class Notifications {
     /**
      * Copy notifications from a {@link JsonNode} object.
      *
-     * @param request Notifications containing {@lin JsonNode}.
+     * @param request Notifications containing {@link JsonNode}.
      * @return Notification object for chaining
      */
     public Notifications copyNotificationsFrom (JsonNode request) {
@@ -405,6 +404,20 @@ public class Notifications {
 
 
     /**
+     * Move notifications from a passed {@link Notification} object
+     * to the invocant.
+     *
+     * @param notes Notification object.
+     * @return The invocant object for chaining
+     */
+    public Notifications moveNotificationsFrom (Notifications notes) {
+        this.copyNotificationsFrom(notes);
+        notes.clearNotifications();
+        return this;
+    };
+
+
+    /**
      * Clear all notifications.
      *
      * @return Notification object for chaining
@@ -418,6 +431,7 @@ public class Notifications {
             this.errors.clear();
         return this;
     };
+
 
 
     /**

@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 // KorAP classes
 import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.index.*;
+import de.ids_mannheim.korap.meta.*;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -835,7 +836,7 @@ public class KorapIndex {
                     log.trace("We've found a matching document");
 
                 HashSet<String> fields = (HashSet<String>)
-                    new Krill().getFields().clone();
+                    new Krill().getMeta().getFields().clone();
                 fields.add(field);
 
                 // Get terms from the document
@@ -852,6 +853,7 @@ public class KorapIndex {
                 if (DEBUG)
                     log.trace("The document has the id '{}'", match.getDocID());
 
+                // Todo:
                 SearchContext context = match.getContext();
 
                 // Search for minimal surrounding sentences
@@ -1081,9 +1083,9 @@ public class KorapIndex {
 
 
     public KorapResult search (SpanQuery query, short count) {
-        return this.search(
-            new Krill(query).setCount(count)
-        );
+        Krill krill = new Krill(query);
+        krill.getMeta().setCount(count);
+        return this.search(krill);
     };
 
 
@@ -1097,8 +1099,9 @@ public class KorapIndex {
                                short rightContext) {
 
         Krill ks = new Krill(query);
-        ks.setStartIndex(startIndex).setCount(count);
-        ks.setContext(
+        KrillMeta meta = ks.getMeta();
+        meta.setStartIndex(startIndex).setCount(count);
+        meta.setContext(
             new SearchContext(
                 leftTokenContext,
                 leftContext,
@@ -1120,7 +1123,7 @@ public class KorapIndex {
                                boolean rightTokenContext,
                                short rightContext) {
         Krill ks = new Krill(query);
-        ks.setContext(
+        ks.getMeta().setContext(
             new SearchContext(
                 leftTokenContext,
                 leftContext,
@@ -1151,12 +1154,14 @@ public class KorapIndex {
         // Get the field of textual data and annotations ("tokens")
         String field = query.getField();
 
+        KrillMeta meta = ks.getMeta();
+
         // Todo: Make kr subclassing ks - so ks has a method for a new KorapResult!
         KorapResult kr = new KorapResult(
             query.toString(),
-            ks.getStartIndex(),
-            ks.getCount(),
-            ks.getContext()
+            meta.getStartIndex(),
+            meta.getCount(),
+            meta.getContext()
         );
 
         // Set version info to result
@@ -1164,7 +1169,7 @@ public class KorapIndex {
             kr.setVersion(this.getVersion());
 
         // The following fields should be lifted for matches
-        HashSet<String> fields = (HashSet<String>) ks.getFields().clone();
+        HashSet<String> fields = (HashSet<String>) meta.getFields().clone();
         fields.add(field);
 
         // Some initializations ...
@@ -1172,12 +1177,13 @@ public class KorapIndex {
             startIndex              = kr.getStartIndex(),
             count                   = kr.getItemsPerPage(),
             hits                    = kr.getItemsPerPage() + startIndex,
-            limit                   = ks.getLimit(),
+            limit                   = meta.getLimit(),
             itemsPerResourceCounter = 0;
-        boolean cutoff              = ks.doCutOff();
-        short itemsPerResource      = ks.getItemsPerResource();
+        boolean cutoff              = meta.doCutOff();
+        short itemsPerResource      = meta.getItemsPerResource();
 
         // Check if there is work to do at all
+        // TODO: Deprecated
         if (limit > 0) {
             if (hits > limit)
                 hits = limit;
@@ -1188,12 +1194,13 @@ public class KorapIndex {
         };
 
         // Collect matches from atomic readers
-        ArrayList<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(kr.getItemsPerPage());
+        ArrayList<KorapMatch> atomicMatches =
+            new ArrayList<KorapMatch>(kr.getItemsPerPage());
         
         // Start time out thread
         TimeOutThread tthread = new TimeOutThread();
         tthread.start();
-        long timeout = ks.getTimeOut();
+        long timeout = meta.getTimeOut();
 
         // See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
         long t1 = System.nanoTime();
@@ -1310,6 +1317,8 @@ public class KorapIndex {
 
                 // Can be disabled TEMPORARILY
                 while (!cutoff && spans.next()) {
+
+                    // TODO: Deprecated
                     if (limit > 0 && i >= limit)
                         break;
                     

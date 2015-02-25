@@ -241,7 +241,7 @@ public class Resource {
                 ks.setCollection(kc);
 
                 // Only return the first match per text
-                ks.setItemsPerResource(1);
+                ks.getMeta().setItemsPerResource(1);
 
                 return ks.apply(index).toJsonString();
             };

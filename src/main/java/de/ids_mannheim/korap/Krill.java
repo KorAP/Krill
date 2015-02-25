@@ -5,11 +5,10 @@ import java.util.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.index.SearchContext;
+import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.response.KorapResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,82 +19,65 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Krill is a corpus data retrieval index using Lucene for Look-Ups.
- * It is the reference implementation for KoralQuery consumption.
+ * It is the reference implementation for KoralQuery consumption,
+ * and supports specified query and collection objects,
+ * and proprietary meta objects.
  *
  * <blockquote><pre>
  *   // Create a new krill search object passing a KoralQuery string
- *   Krill krill = new Krill(jsonString);
+ *   Krill krill = new Krill(koralQueryString);
  *
- *   // Run the query on an index
+ *   // Run the query on an index - receive a search result
  *   KrillResult kr = krill.apply(new KrillIndex());
  * </pre></blockquote>
  *
  * @author diewald
  * @author margaretha
+ *
+ * @see KrillMeta
+ * @see KorapCollection
+ * @see KorapQuery
+ * @see KorapIndex
  */
 /*
  * Todo: Use a configuration file
- * Todo: Let this class extend KorapResult!
- *   KorapResult = new Krill(String json).run(KorapIndex ki);
- * Todo: Set timeout default value per config file
  */
 public class Krill extends KorapResponse {
-    private int startIndex = 0, limit = 0;
-    private short count = 25, countMax = 50, itemsPerResource = 0;
-    private boolean cutOff = false;
-
-    private KorapCollection collection;
     private KorapIndex index;
-
-    // Timeout search after milliseconds
-    private long timeout = (long) 120_000;
-
-    private HashSet<String> fields;
-            HashSet<Integer> highlights;
-
     private SpanQuery spanQuery;
     private JsonNode request;
-
-    public SearchContext context;
     private String spanContext;
-
-    private long timeoutStart = Long.MIN_VALUE;
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Krill.class);
-
-    {
-        context  = new SearchContext();
-
-        fields = new HashSet<String>(16);
-
-        // LEGACY: Lift following fields per default
-        for (String field : new String[]{
-                "ID",
-                "UID",
-                "textSigle",
-                "corpusID",
-                "author",
-                "title",
-                "subTitle",
-                "textClass",
-                "pubPlace",
-                "pubDate",
-                "foundries",
-                "layerInfo",
-                "tokenization"}) {
-            fields.add(field);
-        };
-
-        // Classes used for highlights
-        highlights = new HashSet<Integer>(3);
-    };
-
     
+
     /**
      * Construct a new Krill object.
      */
     public Krill () {};
+
+
+    /**
+     * Construct a new Krill object,
+     * consuming a KoralQuery json string.
+     *
+     * @param query The KoralQuery json string.
+     */
+    public Krill (String query) {
+        this.fromJson(query);
+    };
+
+
+    /**
+     * Construct a new Krill object,
+     * consuming a KoralQuery {@link JsonNode} object.
+     *
+     * @param query The KoralQuery {@link JsonNode} object.
+     */
+    public Krill (JsonNode query) {
+        this.fromJson(query);
+    };
 
 
     /**
@@ -126,29 +108,6 @@ public class Krill extends KorapResponse {
 
 
     /**
-     * Construct a new Krill object,
-     * consuming a KoralQuery json string.
-     *
-     * @param query The KoralQuery json string.
-     */
-    public Krill (String query) {
-        // Parse json string
-        this.fromJson(query);
-    };
-
-
-    /**
-     * Construct a new Krill object,
-     * consuming a KoralQuery {@link JsonNode} object.
-     *
-     * @param query The KoralQuery {@link JsonNode} object.
-     */
-    public Krill (JsonNode query) {
-        this.fromJson(query);
-    };
-
-
-    /**
      * Parse KoralQuery as a json string.
      *
      * @param query The KoralQuery json string.
@@ -156,8 +115,9 @@ public class Krill extends KorapResponse {
      * @throws QueryException
      */
     public Krill fromJson (String query) {
-        ObjectMapper mapper = new ObjectMapper();
+        // Parse query string
         try {
+            ObjectMapper mapper = new ObjectMapper();
             this.request = mapper.readTree(query);
             this.fromJson(this.request);
         }
@@ -187,27 +147,29 @@ public class Krill extends KorapResponse {
                 SpanQueryWrapper qw = kq.fromJson(json.get("query"));
                 this.setQuery(kq);
 
-                // Unable to process result
+                // Throw an error, in case the query matches everywhere
                 if (qw.isEmpty())
                     this.addError(780, "This query matches everywhere");
+
                 else {
+                    // Serialize a Lucene SpanQuery based on the SpanQueryWrapper
                     this.spanQuery = qw.toQuery();
+
+                    // Throw a warning in case the root object is optional
                     if (qw.isOptional())
                         this.addWarning(781, "Optionality of query is ignored");
+
+                    // Throw a warning in case the root object is negative
                     if (qw.isNegative())
                         this.addWarning(782, "Exclusivity of query is ignored");
                 };
-                // Copy notifications from query
-                this.copyNotificationsFrom(kq);
-                kq.clearNotifications();
             }
             catch (QueryException q) {
                 this.addError(q.getErrorCode(), q.getMessage());
             };
         }
-        else {
+        else
             this.addError(700, "No query given");
-        };
 
         // <legacycode>
         if (json.has("warning") &&
@@ -216,19 +178,10 @@ public class Krill extends KorapResponse {
         };
         // </legacycode>
 
-        // <legacycode>
-        if (json.has("warnings")) {
-            JsonNode warnings = json.get("warnings");
-            for (JsonNode node : warnings)
-                if (node.asText().length() > 0)
-                    this.addWarning(799, node.asText());
-        };
-        // </legacycode>
-
         // Copy notifications from request
         this.copyNotificationsFrom(json);
 	    
-        // virtual collections
+        // Parse virtual collections
         try {
             if (json.has("collection")) {
                 this.setCollection(
@@ -251,226 +204,31 @@ public class Krill extends KorapResponse {
             this.addError(q.getErrorCode(), q.getMessage());
         };
 
+        // No errors occured - parse meta object
+        if (!this.hasErrors() && json.has("meta"))
+            this.setMeta(new KrillMeta(json.get("meta")));
 
-        // No errors
-        if (!this.hasErrors()) {
-
-            // Parse meta section
-            if (json.has("meta")) {
-                JsonNode meta = json.get("meta");
-
-                // Defined count
-                if (meta.has("count"))
-                    this.setCount(meta.get("count").asInt());
-
-                // Defined startIndex
-                if (meta.has("startIndex"))
-                    this.setStartIndex(meta.get("startIndex").asInt());
-
-                // Defined startPage
-                if (meta.has("startPage"))
-                    this.setStartPage(meta.get("startPage").asInt());
-
-                // Defined cutOff
-                if (meta.has("cutOff"))
-                    this.setCutOff(meta.get("cutOff").asBoolean());
-
-                // Defined contexts
-                if (meta.has("context"))
-                    this.context.fromJson(meta.get("context"));
-
-                // Defined resource count
-                if (meta.has("timeout"))
-                    this.setTimeOut(meta.get("timeout").asLong());
-
-                // Defined resource count
-                if (meta.has("itemsPerResource"))
-                    this.setItemsPerResource(
-                        meta.get("itemsPerResource").asInt()
-                    );
-
-                // Defined highlights
-                if (meta.has("highlight")) {
-
-                    // Add highlights
-                    if (meta.get("highlight").isArray()) {
-                        for (JsonNode highlight : (JsonNode) meta.get("highlight")) {
-                            this.addHighlight(highlight.asInt());
-                        };
-                    }
-                    else
-                        this.addHighlight(meta.get("highlight").asInt());
-                };
-
-                // Only lift a limited amount of fields from the metadata
-                if (meta.has("fields")) {
-                        
-                    // Remove legacy default fields
-                    this.fields.clear();
-
-                    // Add fields
-                    if (meta.get("fields").isArray()) {
-                        for (JsonNode field : (JsonNode) meta.get("fields")) {
-                            this.addField(field.asText());
-                        };
-                    }
-                    else
-                        this.addField(meta.get("fields").asText());
-                };
-            };
-        };
         return this;
-    };
-
-    public long getTimeOut () {
-        return this.timeout;
-    };
-
-    public void setTimeOut (long timeout) {
-        this.timeout = timeout;
-    };
-
-
-    public JsonNode getRequest () {
-        return this.request;
-    };
-
-
-    public SearchContext getContext () {
-        return this.context;
-    };
-
-    public Krill setContext (SearchContext context) {
-        this.context = context;
-        return this;
-    };
-
-    public int getStartIndex () {
-        return this.startIndex;
-    };
-    
-    public Krill setStartIndex (int value) {
-        this.startIndex = (value >= 0) ? value : 0;
-        return this;
-    };
-
-    public Krill setStartPage (int value) {
-        if (value >= 0)
-            this.setStartIndex((value * this.getCount()) - this.getCount());
-        else
-            this.startIndex = 0;
-        return this;
-    };
-
-    public short getCount () {
-        return this.count;
-    };
-
-    public short getCountMax () {
-        return this.countMax;
-    };
-
-    public int getLimit () {
-        return this.limit;
-    };
-
-    public Krill setLimit (int limit) {
-        if (limit > 0)
-            this.limit = limit;
-        return this;
-    };
-
-    public boolean doCutOff () {
-        return this.cutOff;
-    };
-
-    public Krill setCutOff (boolean cutOff) {
-        this.cutOff = cutOff;
-        return this;
-    };
-
-    public Krill setCount (int value) {
-        // Todo: Maybe update startIndex with known startPage!
-        this.setCount((short) value);
-        return this;
-    };
-
-    public Krill setCount (short value) {
-        if (value > 0)
-            this.count = (value <= this.countMax) ? value : this.countMax;
-        return this;
-    };
-
-    public Krill setItemsPerResource (short value) {
-        if (value >= 0)
-            this.itemsPerResource = value;
-        return this;
-    };
-
-    public Krill setItemsPerResource (int value) {
-        return this.setItemsPerResource((short) value);
-    };
-
-    public short getItemsPerResource () {
-        return this.itemsPerResource;
-    };
-
-
-    // Get set of fields
-    /**
-     * Get the fields as a set
-     */
-    public HashSet<String> getFields () {
-        return this.fields;
     };
 
 
     /**
-     * Add a field to the set of fields to retrieve.
+     * Get the associated {@link KorapIndex} object.
      *
-     * @param field The field to retrieve.
-     * @return The {@link Krill} object for chaining.
+     * @return The associated {@link KorapIndex} object.
      */
-    public Krill addField (String field) {
-        this.fields.add(field);
-        return this;
-    };
-
-
-    /**
-     * Add class numbers to highlight in KWIC view.
-     *
-     * @param classNumber The number of a class to highlight.
-     * @return The {@link Krill} object for chaining.
-     */
-    public Krill addHighlight (int classNumber) {
-        this.highlights.add(classNumber);
-        return this;
-    };
-
-
-    public Krill setCollection (KorapCollection kc) {
-        this.collection = kc;
-        
-        // Move messages from the collection
-        this.copyNotificationsFrom(kc);
-        kc.clearNotifications();
-        return this;
-    };
-
-    public KorapCollection getCollection () {
-        if (this.collection == null)
-            this.collection = new KorapCollection();
-        return this.collection;
-    };
-
-
     public KorapIndex getIndex () {
         return this.index;
     };
 
-    public Krill setIndex (KorapIndex ki) {
-        this.index = ki;
+
+    /**
+     * Set the associated {@link KorapIndex} object.
+     *
+     * @param index The associated {@link KorapIndex} object.
+     */
+    public Krill setIndex (KorapIndex index) {
+        this.index = index;
         return this;
     };
 
@@ -521,6 +279,13 @@ public class Krill extends KorapResponse {
         return kr;
     };
 
+
+    @Deprecated
+    public JsonNode getRequest () {
+        return this.request;
+    };
+
+
     @Deprecated
     public SpanQuery getSpanQuery () {
         return this.spanQuery;
@@ -529,7 +294,6 @@ public class Krill extends KorapResponse {
 
     @Deprecated
     public Krill setSpanQuery (SpanQueryWrapper sqwi) {
-        // this.copyNotifications(sqwi);
         try {
             this.spanQuery = sqwi.toQuery();
         }
@@ -539,7 +303,7 @@ public class Krill extends KorapResponse {
         return this;
     };
 
-
+    
     @Deprecated
     public Krill setSpanQuery (SpanQuery sq) {
         this.spanQuery = sq;

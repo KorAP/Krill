@@ -76,8 +76,10 @@ public class TestMatchCollector {
 	SpanQuery sq;
 
 	sq = new SpanTermQuery(new Term("base", "s:b"));
+    Krill krill = new Krill(sq);
+    krill.getMeta().setCount((short) 10);
 	MatchCollector mc = ki.collect(
-	  new Krill(sq).setCount((short) 10),
+	  krill,
 	  new MatchCollector()
 	);
 

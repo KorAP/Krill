@@ -6,11 +6,12 @@ import java.io.*;
 import static de.ids_mannheim.korap.TestSimple.*;
 
 import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.index.SearchContext;
+import de.ids_mannheim.korap.meta.SearchContext;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.KorapResult;
 import java.nio.file.Files;
@@ -32,36 +33,42 @@ import org.junit.runners.JUnit4;
 public class TestKrill {
     @Test
     public void searchCount () {
-        Krill ks = new Krill(
-            new KorapQuery("field1").seg("a").with("b")
+        Krill k = new Krill(
+          new KorapQuery("field1").seg("a").with("b")
         );
+
+        KrillMeta meta = k.getMeta();
+
         // Count:
-        ks.setCount(30);
-        assertEquals(ks.getCount(), 30);
-        ks.setCount(20);
-        assertEquals(ks.getCount(), 20);
-        ks.setCount(-50);
-        assertEquals(ks.getCount(), 20);
-        ks.setCount(500);
-        assertEquals(ks.getCount(), ks.getCountMax());
+        meta.setCount(30);
+        assertEquals(meta.getCount(), 30);
+        meta.setCount(20);
+        assertEquals(meta.getCount(), 20);
+        meta.setCount(-50);
+        assertEquals(meta.getCount(), 20);
+        meta.setCount(500);
+        assertEquals(meta.getCount(), meta.getCountMax());
     };
 
     @Test
     public void searchStartIndex () {
-        Krill ks = new Krill(
+        Krill k = new Krill(
             new KorapQuery("field1").seg("a").with("b")
         );
+
+        KrillMeta meta = k.getMeta();
+
         // startIndex
-        ks.setStartIndex(5);
-        assertEquals(ks.getStartIndex(), 5);
-        ks.setStartIndex(1);
-        assertEquals(ks.getStartIndex(), 1);
-        ks.setStartIndex(0);
-        assertEquals(ks.getStartIndex(), 0);
-        ks.setStartIndex(70);
-        assertEquals(ks.getStartIndex(), 70);
-        ks.setStartIndex(-5);
-        assertEquals(ks.getStartIndex(), 0);
+        meta.setStartIndex(5);
+        assertEquals(meta.getStartIndex(), 5);
+        meta.setStartIndex(1);
+        assertEquals(meta.getStartIndex(), 1);
+        meta.setStartIndex(0);
+        assertEquals(meta.getStartIndex(), 0);
+        meta.setStartIndex(70);
+        assertEquals(meta.getStartIndex(), 70);
+        meta.setStartIndex(-5);
+        assertEquals(meta.getStartIndex(), 0);
     };
 
     @Test
@@ -96,19 +103,32 @@ public class TestKrill {
         Krill ks = new Krill(
 	        new KorapQuery("tokens").seg("s:Buchstaben")
         );
+
+        // Todo: This is not an acceptable collection, but sigh
         ks.getCollection().filter(
             new CollectionBuilder().and("textClass", "reisen")
         );
-        ks.setCount(3);
-        ks.setStartIndex(5);
-        ks.context.left.setLength(1);
-        ks.context.right.setLength(1);
+
+        KrillMeta meta = ks.getMeta();
+        meta.setCount(3);
+        meta.setStartIndex(5);
+        meta.getContext().left.setLength(1);
+        meta.getContext().right.setLength(1);
+        
         KorapResult kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 6);
         assertEquals(
             kr.getMatch(0).getSnippetBrackets(),
             "... dem [Buchstaben] A ..."
         );
+
+        JsonNode res = ks.toJsonNode();
+        assertEquals(3, res.at("/meta/count").asInt());
+        assertEquals(5, res.at("/meta/startIndex").asInt());
+        assertEquals("token", res.at("/meta/context/left/0").asText());
+        assertEquals(1, res.at("/meta/context/left/1").asInt());
+        assertEquals("token", res.at("/meta/context/right/0").asText());
+        assertEquals(1, res.at("/meta/context/right/1").asInt());
     };
 
 
@@ -323,8 +343,8 @@ public class TestKrill {
                      " eine durchschnittliche Häufigkeit  ...",
                      kr.getMatch(0).getSnippetBrackets());
 
-        ks.setCount(5);
-        ks.setStartPage(2);
+        ks.getMeta().setCount(5);
+        ks.getMeta().setStartPage(2);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
         assertEquals(5, kr.getStartIndex());
@@ -436,7 +456,7 @@ public class TestKrill {
         assertEquals("WPD_AAA.00004", kr.getMatch(9).getDocID());
 
         ks = new Krill(json);
-        ks.setItemsPerResource(1);
+        ks.getMeta().setItemsPerResource(1);
 
         kr = ks.apply(ki);
 
@@ -449,7 +469,7 @@ public class TestKrill {
         assertEquals(20, kr.getItemsPerPage());
         
         ks = new Krill(json);
-        ks.setItemsPerResource(2);
+        ks.getMeta().setItemsPerResource(2);
 
         kr = ks.apply(ki);
 
@@ -464,9 +484,10 @@ public class TestKrill {
         assertEquals(20, kr.getItemsPerPage());
 
         ks = new Krill(json);
-        ks.setItemsPerResource(1);
-        ks.setStartIndex(1);
-        ks.setCount(1);
+        KrillMeta meta = ks.getMeta();
+        meta.setItemsPerResource(1);
+        meta.setStartIndex(1);
+        meta.setCount(1);
 
         kr = ks.apply(ki);
 	
@@ -512,7 +533,8 @@ public class TestKrill {
         );
 
         Krill ks = new Krill(json);
-        ks.setItemsPerResource(1);
+        ks.getMeta().setItemsPerResource(1);
+
         KorapCollection kc = new KorapCollection();
         kc.filterUIDs(new String[]{"1", "4"});
         kc.setIndex(ki);
@@ -1081,8 +1103,8 @@ public class TestKrill {
         );
 	
         Krill ks = new Krill(json);
-        ks.setCutOff(false);
-        SearchContext sc = ks.getContext();
+        ks.getMeta().setCutOff(false);
+        SearchContext sc = ks.getMeta().getContext();
         sc.left.setLength((short) 10);
         sc.right.setLength((short) 10);
         

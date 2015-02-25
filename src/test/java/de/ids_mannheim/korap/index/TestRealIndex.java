@@ -23,23 +23,23 @@ public class TestRealIndex {
     KorapQuery kq;
 	
     public TestRealIndex() throws IOException {
-	InputStream is = getClass().getResourceAsStream("/server.properties");
-	Properties prop = new Properties();
-	prop.load(is);
+        InputStream is = getClass().getResourceAsStream("/server.properties");
+        Properties prop = new Properties();
+        prop.load(is);
 	
-	String indexPath = prop.getProperty("lucene.indexDir");
-	System.err.println(indexPath);
-	MMapDirectory md = new MMapDirectory(new File(indexPath));
-	ki = new KorapIndex(md);
+        String indexPath = prop.getProperty("lucene.indexDir");
+        System.err.println(indexPath);
+        MMapDirectory md = new MMapDirectory(new File(indexPath));
+        ki = new KorapIndex(md);
     };
 
     @Test
     public void testCase1() throws IOException, QueryException {
-	KorapQuery kq = new KorapQuery("tokens");
-	ks = new Krill(kq.within(kq.tag("base/s:s"), kq.seq(kq.re("s:.*")).append(kq._(kq.re("s:.*")))).toQuery());
-	ks.setTimeOut(10000);
-	kr = ks.apply(ki);
-	System.err.println(kr.toJsonString());
-	assertEquals(8, kr.getTotalResults());
+        KorapQuery kq = new KorapQuery("tokens");
+        ks = new Krill(kq.within(kq.tag("base/s:s"), kq.seq(kq.re("s:.*")).append(kq._(kq.re("s:.*")))).toQuery());
+        ks.getMeta().setTimeOut(10000);
+        kr = ks.apply(ki);
+        System.err.println(kr.toJsonString());
+        assertEquals(8, kr.getTotalResults());
     };
 }

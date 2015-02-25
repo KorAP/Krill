@@ -3,14 +3,6 @@
   <modelVersion>4.0.0</modelVersion>
 
   <!--
-      ** Indexer
-      # install the indexer
-      $ mvn clean compile assembly:single
-      # Then run e.g.
-      $ java -jar target/Krill-X.XX.jar
-             src/main/resources/korap.conf
-             /data/hdd/lucene-new/WPD/
-
       ** Server
       # Start the server with
       $ mvn clean compile exec:java
@@ -19,6 +11,14 @@
       # Format the code with
       $ mvn java-formatter:format
 
+      ** Indexer
+         (This is not the preferred way to index new data!)
+      # install the indexer
+      $ mvn clean compile assembly:single
+      # Then run e.g.
+      $ java -jar target/Krill-X.XX.jar
+             src/main/resources/korap.conf
+             /data/hdd/lucene-new/WPD/
   -->
 
   <groupId>KorAP-modules</groupId>
@@ -190,7 +190,17 @@
       <artifactId>jackson-core</artifactId>
       <version>2.4.4</version>
     </dependency>
-<!--
+
+    <!-- JSON-LD support -->
+    <!--
+    <dependency>
+      <groupId>com.github.jsonld-java</groupId>
+      <artifactId>jsonld-java</artifactId>
+      <version>0.5.2-SNAPSHOT</version>
+    </dependency>
+    -->
+
+    <!--
     Temporarily disable @Experimental annotation
     <dependency>
       <groupId>KorapAnnotationProcessor</groupId>
@@ -198,7 +208,8 @@
       <version>0.0.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
--->
+    -->
+
   </dependencies>
 
   <build>

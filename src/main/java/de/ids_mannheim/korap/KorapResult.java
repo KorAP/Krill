@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import de.ids_mannheim.korap.index.PositionsToOffset;
-import de.ids_mannheim.korap.index.SearchContext;
+
+// Remove:
+import de.ids_mannheim.korap.meta.SearchContext;
 import de.ids_mannheim.korap.response.KorapResponse;
 
 import org.slf4j.Logger;

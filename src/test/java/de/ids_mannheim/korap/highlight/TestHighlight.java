@@ -212,8 +212,8 @@ public class TestHighlight { // extends LuceneTestCase {
         kq = new KorapQuery("base");
         q = (SpanQuery) kq.or(kq._(1, kq.seg("i:a"))).or(kq._(2, kq.seg("i:c"))).toQuery();
         Krill qs = new Krill(q);
-        qs.getContext().left.setToken(true).setLength((short) 1);
-        qs.getContext().right.setToken(true).setLength((short) 1);
+        qs.getMeta().getContext().left.setToken(true).setLength((short) 1);
+        qs.getMeta().getContext().right.setToken(true).setLength((short) 1);
         kr = ki.search(qs);
         assertEquals((long) 10, kr.getTotalResults());
 
@@ -228,8 +228,8 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals("[{1:a}]b ...", kr.getMatch(8).getSnippetBrackets());
         assertEquals("... b[{2:a}]", kr.getMatch(9).getSnippetBrackets());
 
-        qs.getContext().left.setToken(true).setLength((short) 0);
-        qs.getContext().right.setToken(true).setLength((short) 0);
+        qs.getMeta().getContext().left.setToken(true).setLength((short) 0);
+        qs.getMeta().getContext().right.setToken(true).setLength((short) 0);
         kr = ki.search(qs);
         assertEquals((long) 10, kr.getTotalResults());
 
@@ -248,8 +248,8 @@ public class TestHighlight { // extends LuceneTestCase {
             3, kq.or(kq._(1, kq.seg("i:a"))).or(kq._(2, kq.seg("i:c")))
         ).toQuery();
         qs = new Krill(q);
-        qs.getContext().left.setToken(true).setLength((short) 0);
-        qs.getContext().right.setToken(true).setLength((short) 0);
+        qs.getMeta().getContext().left.setToken(true).setLength((short) 0);
+        qs.getMeta().getContext().right.setToken(true).setLength((short) 0);
         kr = ki.search(qs);
         assertEquals((long) 10, kr.getTotalResults());
 

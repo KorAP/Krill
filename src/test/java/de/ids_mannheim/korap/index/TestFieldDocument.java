@@ -20,6 +20,7 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapDocument;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -192,11 +193,12 @@ public class TestFieldDocument {
 	      )
             ));
 	
-	ks.setCount(1);
-	ks.setCutOff(true);
+    KrillMeta meta = ks.getMeta();
+	meta.setCount(1);
+	meta.setCutOff(true);
 
-	ks.context.left.setCharacter(true).setLength(6);
-	ks.context.right.setToken(true).setLength(6);
+	meta.getContext().left.setCharacter(true).setLength(6);
+	meta.getContext().right.setToken(true).setLength(6);
 
 	assertEquals("... okal. [Der Buchstabe A hat in {1:deutschen Texten} eine durchschnittliche Häufigkeit von 6,51 %.] Er ist damit der sechsthäufigste Buchstabe ...", ks.apply(ki).getMatch(0).getSnippetBrackets());
     };

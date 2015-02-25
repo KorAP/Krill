@@ -11,7 +11,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.*;
 
 import de.ids_mannheim.korap.index.PositionsToOffset;
-import de.ids_mannheim.korap.index.SearchContext;
+
+// Todo:
+import de.ids_mannheim.korap.meta.SearchContext;
 
 import de.ids_mannheim.korap.match.HighlightCombinator;
 import de.ids_mannheim.korap.match.HighlightCombinatorElement;

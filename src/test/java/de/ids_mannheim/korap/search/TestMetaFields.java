@@ -10,7 +10,7 @@ import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.index.SearchContext;
+import de.ids_mannheim.korap.meta.SearchContext;
 import de.ids_mannheim.korap.KorapResult;
 import java.nio.file.Files;
 import java.nio.file.FileSystem;

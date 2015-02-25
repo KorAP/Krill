@@ -12,21 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanAttributeQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanElementQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanFocusQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSubspanQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWithAttributeQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.*;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -54,9 +40,10 @@ import de.ids_mannheim.korap.util.QueryException;
  * </pre></blockquote>
  *
  * @author diewald
- *
  */
 /*
+  Todo: Use full-blown jsonld processor
+
   Todo: All queries with a final right expansion
   e.g. der alte []
   should be wrapped in a contains(<base/s=t>) to ensure
@@ -80,7 +67,7 @@ public class KorapQuery extends Notifications {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    // This is obsolete!
+    // <legacy>
     public static final byte
         OVERLAP      = SpanWithinQuery.OVERLAP,
         REAL_OVERLAP = SpanWithinQuery.REAL_OVERLAP,
@@ -89,8 +76,17 @@ public class KorapQuery extends Notifications {
         ENDSWITH     = SpanWithinQuery.ENDSWITH,
         STARTSWITH   = SpanWithinQuery.STARTSWITH,
         MATCH        = SpanWithinQuery.MATCH;
+    // </legacy>
 
     private static final int MAX_CLASS_NUM = 255; // 127;
+
+    /**
+     * Constructs a new object for query generation.
+     */
+    public KorapQuery () {
+        this.mapper = new ObjectMapper();
+    };
+
 
     /**
      * Constructs a new object for query generation.
@@ -195,7 +191,8 @@ public class KorapQuery extends Notifications {
         if (!json.has("@type"))
             throw new QueryException(701, "JSON-LD group has no @type attribute");
 
-        // Set this for serialization
+        // Set this for reserialization
+        // This may be changed later on
         this.json = json;
 
         // Get @type for branching

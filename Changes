@@ -1,5 +1,6 @@
-0.50.1 2015-02-23
-	- Deserialization of arbitrary elements with attributes (margaretha)
+0.50.1 2015-02-25
+	- [feature] Deserialization of arbitrary elements with attributes (margaretha)
+	- [cleanup] Extract KrillMeta from Krill (diewald)
 
 0.50 2015-02-23
         - Project name is now "Krill"

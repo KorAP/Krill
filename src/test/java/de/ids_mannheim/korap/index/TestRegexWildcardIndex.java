@@ -53,8 +53,8 @@ public class TestRegexWildcardIndex {
 	assertEquals("SpanMultiTermQueryWrapper(base:/s:af*e/)", sq.toString());
 			
 	Krill ks = new Krill(sq);
-	ks.context.left.setToken(true).setLength(1);
-	ks.context.right.setToken(true).setLength(1);
+	ks.getMeta().getContext().left.setToken(true).setLength(1);
+	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
 	assertEquals((long) 2, kr.getTotalResults());
@@ -110,8 +110,8 @@ public class TestRegexWildcardIndex {
 	assertEquals("SpanMultiTermQueryWrapper(base:s:af*e)", sq.toString());
 
 	Krill ks = new Krill(sq);
-	ks.context.left.setToken(true).setLength(1);
-	ks.context.right.setToken(true).setLength(1);
+	ks.getMeta().getContext().left.setToken(true).setLength(1);
+	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
 	assertEquals((long) 2, kr.getTotalResults());
@@ -169,8 +169,8 @@ public class TestRegexWildcardIndex {
 	assertEquals("SpanMultiTermQueryWrapper(base:/i:af*e/)", sq.toString());
 
 	Krill ks = new Krill(sq);
-	ks.context.left.setToken(true).setLength(1);
-	ks.context.right.setToken(true).setLength(1);
+	ks.getMeta().getContext().left.setToken(true).setLength(1);
+	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
 	assertEquals((long) 2, kr.getTotalResults());
@@ -234,8 +234,8 @@ public class TestRegexWildcardIndex {
 	assertEquals("spanNext(base:s:affe, SpanMultiTermQueryWrapper(base:/s:af*e/))", sq.toString());
 
 	Krill ks = new Krill(sq);
-	ks.context.left.setToken(true).setLength(1);
-	ks.context.right.setToken(true).setLength(1);
+	ks.getMeta().getContext().left.setToken(true).setLength(1);
+	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
 	assertEquals((long) 1, kr.getTotalResults());
@@ -275,8 +275,8 @@ public class TestRegexWildcardIndex {
 				   kq.seg("s:affe")).toQuery();
 	assertEquals("spanContain(spanNext(SpanMultiTermQueryWrapper(base:/s:a.*e/), SpanMultiTermQueryWrapper(base:/s:af*e/)), base:s:affe)", sq.toString());
 	Krill ks = new Krill(sq);
-	ks.context.left.setToken(true).setLength(1);
-	ks.context.right.setToken(true).setLength(1);
+	ks.getMeta().getContext().left.setToken(true).setLength(1);
+	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
 	KorapResult kr = ki.search(ks);
 	assertEquals((long) 1, kr.getTotalResults());

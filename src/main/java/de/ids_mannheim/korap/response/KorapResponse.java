@@ -8,12 +8,16 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillMeta;
+
 
 import de.ids_mannheim.korap.KorapQuery;
 import de.ids_mannheim.korap.response.Notifications;
 
 /**
  * Base class for objects meant to be responded by the server.
+ * This inherits KoralQuery requests.
  *
  * <p>
  * <blockquote><pre>
@@ -30,6 +34,9 @@ import de.ids_mannheim.korap.response.Notifications;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KorapResponse extends Notifications {
     ObjectMapper mapper = new ObjectMapper();
+
+    private KrillMeta meta;
+    private KorapCollection collection;
 
     private String version, name, node, listener;
     private KorapQuery query;
@@ -323,6 +330,8 @@ public class KorapResponse extends Notifications {
      */
     @JsonIgnore
     public KorapQuery getQuery () {
+        if (this.query == null)
+            this.query = new KorapQuery();
         return this.query;
     };
 
@@ -332,11 +341,74 @@ public class KorapResponse extends Notifications {
      *
      * @param query The {@link KorapQuery} object,
      *        representing the KoralQuery query object.
+     * @return The {@link KorapResponse} object for chaining
      */
     @JsonIgnore
     public KorapResponse setQuery (KorapQuery query) {
         this.query = query;
-        return this;
+
+        // Move messages from the query
+        return (KorapResponse) this.moveNotificationsFrom(query);
+    };
+
+
+    /**
+     * Get the associated collection object.
+     * In case no collection information was defined yet,
+     * a new {@link KorapCollection} object will be created.
+     *
+     * @return The attached {@link KorapCollection} object.
+     */
+    @JsonIgnore
+    public KorapCollection getCollection () {
+        if (this.collection == null)
+            this.collection = new KorapCollection();
+        return this.collection;
+    };
+
+
+    /**
+     * Set a new {@link KorapCollection} object.
+     *
+     * @param collection A {@link KorapCollection} object.
+     * @return The {@link KorapResponse} object for chaining
+     */
+    @JsonIgnore
+    public KorapResponse setCollection (KorapCollection collection) {
+        this.collection = collection;
+        
+        // Move messages from the collection
+        return (KorapResponse) this.moveNotificationsFrom(collection);
+    };
+
+    
+    /**
+     * Get the associated meta object.
+     * In case no meta information was defined yet,
+     * a new {@link KrillMeta} object will be created.
+     *
+     * @return The attached {@link KrillMeta} object.
+     */
+    @JsonIgnore
+    public KrillMeta getMeta () {
+        if (this.meta == null)
+            this.meta = new KrillMeta();
+        return this.meta;
+    };
+
+
+    /**
+     * Set a new {@link KrillMeta} object.
+     *
+     * @param meta A {@link KrillMeta} object.
+     * @return The {@link KorapResponse} object for chaining
+     */
+    @JsonIgnore
+    public KorapResponse setMeta (KrillMeta meta) {
+        this.meta = meta;
+        
+        // Move messages from the collection
+        return (KorapResponse) this.moveNotificationsFrom(meta);
     };
 
 
@@ -378,7 +450,7 @@ public class KorapResponse extends Notifications {
         if (this.getBenchmark() != null)
             json.put("benchmark", this.getBenchmark());
 
-        // totalTexts is set
+        // totalResources is set
         if (this.totalResources != -2)
             json.put("totalResources", this.totalResources);
         
@@ -387,11 +459,25 @@ public class KorapResponse extends Notifications {
             json.put("totalResults", this.totalResults);
 
         // KoralQuery query object
-        if (this.getQuery() != null) {
-            JsonNode queryNode =
-                this.getQuery().toJsonNode();
+        if (this.query != null) {
+            JsonNode queryNode = this.getQuery().toJsonNode();
             if (queryNode != null)
                 json.put("query", queryNode);
+        };
+
+        // KoralQuery meta object
+        if (this.meta != null) {
+            JsonNode metaNode = this.meta.toJsonNode();
+            if (metaNode != null)
+                json.put("meta", metaNode);
+        };
+
+        // KoralQuery collection object
+        if (this.collection != null &&
+            this.collection.getFilters().toArray().length > 0) {
+            JsonNode collNode = this.collection.toJsonNode();
+            if (collNode != null)
+                json.put("collection", collNode);
         };
 
         return (JsonNode) json;
