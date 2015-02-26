@@ -8,7 +8,7 @@ A Corpusdata Retrieval Index using Lucene for Look-Ups
 Krill is a [Lucene](https://lucene.apache.org/) based search
 engine for large annotated corpora.
 
-**The software is in its early stages and not stable yet**
+**The software is in its early stages and not stable yet - use on your own risk!**
 
 
 ## Features
@@ -62,9 +62,9 @@ To fetch the latest version of Krill ...
 
 To run the test suite ...
 
-  $ mvn test
+  $ mvn clean test
 
-To run the server ...
+To start the server ...
 
   $ mvn compile exec:java
 
@@ -73,7 +73,7 @@ To run the server ...
 
 Krill operates on tokens and is limited to a single tokenization stream.
 Token annotations therefore have to rely on that tokenization,
-Span annotations have to wrap at least one token.
+span annotations have to wrap at least one token.
 Punctuations are currently not supported.
 The order of results is currently bound to the order of documents in the
 index, but this is likely to change.
@@ -118,7 +118,7 @@ Contributions to Krill are very welcome!
 Before contributing, please reformat your code changes according to the KorAP
 style guideline, provided by means of an
 [Eclipse style sheet](https://raw.githubusercontent.com/KorAP/Krill/master/korap-style.xml).
-You can either reformat using [Eclipse](http://eclipse.org/) or using
+You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) using
 [Maven](https://maven.apache.org/) with the command
 
   $ mvn java-formatter:format
