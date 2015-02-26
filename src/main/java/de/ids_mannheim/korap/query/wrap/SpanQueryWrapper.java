@@ -15,6 +15,10 @@ import de.ids_mannheim.korap.util.QueryException;
  * This class is meant to be extended by
  * wrapper classes.
  *
+ * <strong>Warning</strong>: SpanQueryWrapper
+ * will probably be merged with {@link KrillQuery}
+ * in near future. Use of this API is on your own risk.
+ *
  * @author diewald
  */
 public class SpanQueryWrapper {

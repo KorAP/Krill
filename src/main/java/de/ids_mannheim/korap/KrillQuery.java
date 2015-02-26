@@ -29,9 +29,11 @@ import de.ids_mannheim.korap.util.QueryException;
  * @author diewald
  */
 /*
-  Todo: Use full-blown jsonld processor
+  TODO: Merge this with SpanQueryWrapper
 
-  Todo: All queries with a final right expansion
+  TODO: Use full-blown jsonld processor
+
+  TODO: All queries with a final right expansion
   e.g. der alte []
   should be wrapped in a contains(<base/s=t>) to ensure
   they are not outside the text.

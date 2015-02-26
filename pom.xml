@@ -235,7 +235,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>de.ids_mannheim.korap.KorapIndexer</mainClass>
+              <mainClass>de.ids_mannheim.korap.index.Indexer</mainClass>
             </manifest>
           </archive>
           <appendAssemblyId>false</appendAssemblyId>
@@ -245,16 +245,16 @@
         </configuration>
         <executions>
           <execution>
-            <id>KorapIndexer</id>
+            <id>Indexer</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
             <configuration>
-              <finalName>KorapIndexer</finalName>
+              <finalName>Indexer</finalName>
               <archive>
                 <manifest>
-		  <mainClass>de.ids_mannheim.korap.KorapIndexer</mainClass>
+		  <mainClass>de.ids_mannheim.korap.index.Indexer</mainClass>
                 </manifest>
               </archive>
             </configuration>
