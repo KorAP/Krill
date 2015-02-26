@@ -26,11 +26,12 @@ import org.apache.lucene.util.automaton.*;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-// KorAP classes
+// Krill classes
 import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.index.*;
 import de.ids_mannheim.korap.meta.*;
 import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.response.MatchCollector;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.util.QueryException;
 

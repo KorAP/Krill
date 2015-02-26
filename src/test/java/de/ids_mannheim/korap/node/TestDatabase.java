@@ -1,7 +1,7 @@
 package de.ids_mannheim.korap.node;
 
-import de.ids_mannheim.korap.index.MatchCollector;
-import de.ids_mannheim.korap.index.collector.MatchCollectorDB;
+import de.ids_mannheim.korap.response.MatchCollector;
+import de.ids_mannheim.korap.response.collector.MatchCollectorDB;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -7,7 +7,8 @@
 	  renamed KorapDocument to model/AbstractDocument,
 	  renamed KorapMatch to response/Match,
 	  renamed KorapIndex to KrillIndex,
-	  renamed KorapCollection to KrillCollection (diewald)
+	  renamed KorapCollection to KrillCollection,
+	  move collector classes from index to response (diewald)
         - [documentation] Improved documentation for API classes (diewald)
 
 0.50 2015-02-23

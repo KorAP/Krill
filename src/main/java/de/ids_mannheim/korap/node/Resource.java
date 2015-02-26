@@ -29,8 +29,8 @@ import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.KorapResponse;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.index.MatchCollector;
-import de.ids_mannheim.korap.index.collector.MatchCollectorDB;
+import de.ids_mannheim.korap.response.MatchCollector;
+import de.ids_mannheim.korap.response.collector.MatchCollectorDB;
 
 import java.util.List;
 import java.util.regex.Pattern;

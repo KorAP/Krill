@@ -1,7 +1,7 @@
-package de.ids_mannheim.korap.index.collector;
+package de.ids_mannheim.korap.response.collector;
 import de.ids_mannheim.korap.KorapNode;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.index.MatchCollector;
+import de.ids_mannheim.korap.response.MatchCollector;
 import com.fasterxml.jackson.annotation.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
