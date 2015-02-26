@@ -7,7 +7,7 @@ import static de.ids_mannheim.korap.TestSimple.*;
 
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapCollection;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.meta.SearchContext;

@@ -16,7 +16,7 @@ import org.apache.lucene.util.automaton.RegExp;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
@@ -292,7 +292,7 @@ public class TestSpanExpansionIndex {
         String jsonPath = getClass().getResource("/queries/poly3.json")
                 .getFile();
         String jsonQuery = readFile(jsonPath);
-        SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson(jsonQuery);
+        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(jsonQuery);
 
         SpanQuery sq = sqwi.toQuery();
         //System.out.println(sq.toString());

@@ -8,7 +8,7 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import org.apache.lucene.store.MMapDirectory;
 import de.ids_mannheim.korap.collection.BooleanFilter;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -367,11 +367,11 @@ public class TestBenchmarkSpans {
 	
         try {
             String json = getString(jsonFile);
-            sqwi = new KorapQuery("tokens").fromJson(json);
+            sqwi = new KrillQuery("tokens").fromJson(json);
         }
         catch (QueryException e) {
             fail(e.getMessage());
-            sqwi = new KorapQuery("tokens").seg("???");
+            sqwi = new KrillQuery("tokens").seg("???");
         };
         return sqwi;
     };

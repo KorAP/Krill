@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see KrillMeta
  * @see KorapCollection
- * @see KorapQuery
+ * @see KrillQuery
  * @see KorapIndex
  */
 /*
@@ -143,7 +143,7 @@ public class Krill extends KorapResponse {
         // Parse "query" attribute
         if (json.has("query")) {
             try {
-                KorapQuery kq = new KorapQuery("tokens");
+                KrillQuery kq = new KrillQuery("tokens");
                 SpanQueryWrapper qw = kq.fromJson(json.get("query"));
                 this.setQuery(kq);
 

@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -30,7 +30,7 @@ public class TestClass {
 		
 		String jsonPath = getClass().getResource("/queries/poly1.json").getFile();
 		String jsonQuery = readFile(jsonPath);
-		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson(
+		SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(
 				jsonQuery
 		);
 		
@@ -63,7 +63,7 @@ public class TestClass {
 		
 		String jsonPath = getClass().getResource("/queries/poly4.json").getFile();
 		String jsonQuery = readFile(jsonPath);
-		SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson(
+		SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(
 				jsonQuery
 		);
 		SpanQuery sq = sqwi.toQuery();

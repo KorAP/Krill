@@ -6,7 +6,7 @@ import java.io.*;
 import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapMatch;
@@ -54,7 +54,7 @@ public class TestKorapResult {
         // Commit!
         ki.commit();
 
-        KorapQuery kq = new KorapQuery("base");
+        KrillQuery kq = new KrillQuery("base");
         SpanQuery q = (SpanQuery) kq.or(
             kq._(1, kq.seg("s:a"))).or(kq._(2, kq.seg("s:b"))
         ).toQuery();
@@ -221,7 +221,7 @@ public class TestKorapResult {
         // Commit!
         ki.commit();
 
-        KorapQuery kq = new KorapQuery("base");
+        KrillQuery kq = new KrillQuery("base");
         SpanQuery q = (SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).toQuery();
         KorapResult kr = ki.search(q);
 

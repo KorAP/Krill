@@ -6,7 +6,7 @@ import java.io.IOException;
 import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapMatch;

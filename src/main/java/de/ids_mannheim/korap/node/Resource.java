@@ -164,8 +164,8 @@ public class Resource {
         // Set HTTP to 200
         kresp.addMessage(681, "Document was added successfully", ID);
 
+        // System.err.println(kresp.toJsonString());
 
-        System.err.println(kresp.toJsonString());
         return kresp.toJsonString();
     };
 

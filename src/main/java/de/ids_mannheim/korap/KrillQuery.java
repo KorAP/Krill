@@ -17,13 +17,13 @@ import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
- * KorapQuery implements a simple API for wrapping
+ * KrillQuery implements a simple API for wrapping
  * KorAP Lucene Index specific query classes and provides
  * deserialization of JSON-LD queries.
  *
  * Build complex queries.
  * <blockquote><pre>
- *   KorapQuery kq = new KorapQuery("tokens");
+ *   KrillQuery kq = new KrillQuery("tokens");
  *   SpanQueryWrapper sqw = (SpanQueryWrapper)
  *     kq.seq(
  *       kq.empty(),
@@ -36,7 +36,7 @@ import de.ids_mannheim.korap.util.QueryException;
  *
  * Deserialize from JSON input.
  * <blockquote><pre>
- *   SpanQueryWrapper = new KorapQuery("tokens").fromJson("{... JsonString ...}");
+ *   SpanQueryWrapper = new KrillQuery("tokens").fromJson("{... JsonString ...}");
  * </pre></blockquote>
  *
  * @author diewald
@@ -56,13 +56,13 @@ import de.ids_mannheim.korap.util.QueryException;
   [base=Der]([base=alte]|[base=junge])[base=Mann & p!=ADJA]![base=war | base=lag]
   Search for all documents containing "s:Der" and ("s:alte" or "s:junge") and "s:Mann"
 */
-public class KorapQuery extends Notifications {
+public class KrillQuery extends Notifications {
     private String field;
     private ObjectMapper mapper;
     private JsonNode json;
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapQuery.class);
+    private final static Logger log = LoggerFactory.getLogger(KrillQuery.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -83,7 +83,7 @@ public class KorapQuery extends Notifications {
     /**
      * Constructs a new object for query generation.
      */
-    public KorapQuery () {
+    public KrillQuery () {
         this.mapper = new ObjectMapper();
     };
 
@@ -93,7 +93,7 @@ public class KorapQuery extends Notifications {
      *
      * @param field The specific index field for the query.
      */
-    public KorapQuery (String field) {
+    public KrillQuery (String field) {
         this.field = field;
         this.mapper = new ObjectMapper();
     };
@@ -140,7 +140,7 @@ public class KorapQuery extends Notifications {
      *
      * <p>
      * <blockquote><pre>
-     *   KorapQuery kq = new KorapQuery("tokens");
+     *   KrillQuery kq = new KrillQuery("tokens");
      *   SpanQueryWrapper sqw = kq.fromJson('{"@type":"koral:token","wrap":{' +
      *      '"@type":"koral:term","foundry":"opennlp",' +
      *      '"key":"tree","layer":"orth",' +
@@ -1102,7 +1102,7 @@ public class KorapQuery extends Notifications {
      * Create a query object based on a regular expression.
      *
      * <blockquote><pre>
-     *   KorapQuery kq = new KorapQuery("tokens");
+     *   KrillQuery kq = new KrillQuery("tokens");
      *   SpanRegexQueryWrapper re = kq.re(".+?");
      * </pre></blockquote>
      *
@@ -1130,7 +1130,7 @@ public class KorapQuery extends Notifications {
      * </ul>
      *
      * <blockquote><pre>
-     *   KorapQuery kq = new KorapQuery("tokens");
+     *   KrillQuery kq = new KrillQuery("tokens");
      *   SpanRegexQueryWrapper re = kq.re("[Aa]lternatives?", RegExp.NONE);
      * </pre></blockquote>
      *
@@ -1149,7 +1149,7 @@ public class KorapQuery extends Notifications {
      * Supports flags (see above) and case insensitivity.
      *
      * <blockquote><pre>
-     *   KorapQuery kq = new KorapQuery("tokens");
+     *   KrillQuery kq = new KrillQuery("tokens");
      *   SpanRegexQueryWrapper re = kq.re("alternatives?", RegExp.NONE, true);
      * </pre></blockquote>
      *
@@ -1169,7 +1169,7 @@ public class KorapQuery extends Notifications {
      * Supports case insensitivity.
      *
      * <blockquote><pre>
-     *   KorapQuery kq = new KorapQuery("tokens");
+     *   KrillQuery kq = new KrillQuery("tokens");
      *   SpanRegexQueryWrapper re = kq.re("alternatives?", true);
      * </pre></blockquote>
      *
@@ -1203,7 +1203,7 @@ public class KorapQuery extends Notifications {
      * Supports case insensitivity.
      *
      * <blockquote><pre>
-     *   KorapQuery kq = new KorapQuery("tokens");
+     *   KrillQuery kq = new KrillQuery("tokens");
      *   SpanWildcardQueryWrapper wc = kq.wc("wall*", true);
      * </pre></blockquote>
      *
@@ -1220,7 +1220,7 @@ public class KorapQuery extends Notifications {
      * Create a segment query object.
      *
      * <blockquote><pre>
-     *   KorapQuery kq = new KorapQuery("tokens");
+     *   KrillQuery kq = new KrillQuery("tokens");
      *   SpanSegmentQueryWrapper seg = kq.seg();
      * </pre></blockquote>
      *
@@ -1237,7 +1237,7 @@ public class KorapQuery extends Notifications {
      * and {@link SpanAlterQueryWrapper} objects.
      *
      * <blockquote><pre>
-     *   KorapQuery kq = new KorapQuery("tokens");
+     *   KrillQuery kq = new KrillQuery("tokens");
      *   SpanSegmentQueryWrapper seg = kq.seg(
      *       kq.re("mate/p=.*?"),
      *       kq.re("opennlp/p=.*?")
@@ -1275,7 +1275,7 @@ public class KorapQuery extends Notifications {
      * Create an empty query segment.
      *
      * <blockquote><pre>
-     *   KorapQuery kq = new KorapQuery("tokens");
+     *   KrillQuery kq = new KrillQuery("tokens");
      *   SpanRepetitionQueryWrapper seg = kq.empty();
      * </pre></blockquote>
      */

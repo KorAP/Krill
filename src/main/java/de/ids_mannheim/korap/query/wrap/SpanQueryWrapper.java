@@ -4,7 +4,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.util.QueryException;
 
-// TODO: Add warnings and errors - using KorapQuery
+// TODO: Add warnings and errors - using KrillQuery
 
 /**
  * A wrapper base class for Lucene SpanQueries,

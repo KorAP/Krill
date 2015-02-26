@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
 
@@ -80,7 +80,7 @@ public class TestKorapIndex {
         assertEquals(3, ki.numberOf("base", "documents"));
         assertEquals(10, ki.numberOf("base", "sentences"));
 
-        // KorapQuery kq = new KorapQuery("text");
+        // KrillQuery kq = new KrillQuery("text");
         // ki.search();
     };
 

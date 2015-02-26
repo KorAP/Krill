@@ -5,7 +5,7 @@ import java.io.*;
 
 import static org.junit.Assert.*;
 
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.model.*;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
@@ -95,11 +95,11 @@ public class TestSimple {
 	
         try {
             String json = getString(jsonFile);
-            sqwi = new KorapQuery("tokens").fromJson(json);
+            sqwi = new KrillQuery("tokens").fromJson(json);
         }
         catch (QueryException e) {
             fail(e.getMessage());
-            sqwi = new KorapQuery("tokens").seg("???");
+            sqwi = new KrillQuery("tokens").seg("???");
         };
         return sqwi;
     };

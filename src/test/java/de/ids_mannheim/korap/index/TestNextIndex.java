@@ -16,7 +16,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.index.FieldDocument;

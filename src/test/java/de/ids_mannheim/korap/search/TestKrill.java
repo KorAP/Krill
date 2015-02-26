@@ -8,7 +8,7 @@ import static de.ids_mannheim.korap.TestSimple.*;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.KorapCollection;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.meta.SearchContext;
@@ -34,7 +34,7 @@ public class TestKrill {
     @Test
     public void searchCount () {
         Krill k = new Krill(
-          new KorapQuery("field1").seg("a").with("b")
+          new KrillQuery("field1").seg("a").with("b")
         );
 
         KrillMeta meta = k.getMeta();
@@ -53,7 +53,7 @@ public class TestKrill {
     @Test
     public void searchStartIndex () {
         Krill k = new Krill(
-            new KorapQuery("field1").seg("a").with("b")
+            new KrillQuery("field1").seg("a").with("b")
         );
 
         KrillMeta meta = k.getMeta();
@@ -74,7 +74,7 @@ public class TestKrill {
     @Test
     public void searchQuery () {
         Krill ks = new Krill(
-            new KorapQuery("field1").seg("a").with("b")
+            new KrillQuery("field1").seg("a").with("b")
         );
         // query
         assertEquals(ks.getSpanQuery().toString(), "spanSegment(field1:a, field1:b)");
@@ -101,7 +101,7 @@ public class TestKrill {
         ki.commit();
 
         Krill ks = new Krill(
-	        new KorapQuery("tokens").seg("s:Buchstaben")
+	        new KrillQuery("tokens").seg("s:Buchstaben")
         );
 
         // Todo: This is not an acceptable collection, but sigh
@@ -623,7 +623,7 @@ public class TestKrill {
         assertNull(fd.getDocAuthor());
 
         Krill ks = new Krill(
-            new KorapQuery("tokens").
+            new KrillQuery("tokens").
             seg("mate/m:case:nom").
             with("mate/m:number:pl")
         );
@@ -714,7 +714,7 @@ public class TestKrill {
         assertNull(fd.getDocAuthor());
         
         Krill ks = new Krill(
-            new KorapQuery("tokens").
+            new KrillQuery("tokens").
             seg("mate/m:case:nom").
             with("mate/m:number:sg")
         );
@@ -746,7 +746,7 @@ public class TestKrill {
             getFile()
         );
 
-        KorapQuery kq = new KorapQuery("tokens");
+        KrillQuery kq = new KrillQuery("tokens");
         Krill ks = new Krill(
             kq.focus(
                 1,

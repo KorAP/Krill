@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillMeta;
@@ -135,7 +135,7 @@ public class TestFieldDocument {
 	assertEquals(fd.getPubPlace(),"Bochum");
 	assertEquals(fd.getPubDate().toDisplay(),"2013-06-17");
 
-	KorapQuery kq = new KorapQuery("tokens");
+	KrillQuery kq = new KrillQuery("tokens");
 	KorapResult kr = ki.search((SpanQuery) kq.seq(kq._(3, kq.seg("s:b"))).toQuery());
 
 	KorapMatch km = kr.getMatch(0);
@@ -174,7 +174,7 @@ public class TestFieldDocument {
 	};
 	ki.commit();
 
-	KorapQuery kq = new KorapQuery("tokens");
+	KrillQuery kq = new KrillQuery("tokens");
 
 	Krill ks;
 	KorapResult kr;
@@ -251,11 +251,11 @@ public class TestFieldDocument {
 	
 	try {
 	    String json = getString(jsonFile);
-	    sqwi = new KorapQuery("tokens").fromJson(json);
+	    sqwi = new KrillQuery("tokens").fromJson(json);
 	}
 	catch (QueryException e) {
 	    fail(e.getMessage());
-	    sqwi = new KorapQuery("tokens").seg("???");
+	    sqwi = new KrillQuery("tokens").seg("???");
 	};
 	return sqwi;
     };

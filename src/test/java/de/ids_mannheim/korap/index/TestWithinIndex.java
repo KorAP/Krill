@@ -16,7 +16,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
@@ -1090,7 +1090,7 @@ public class TestWithinIndex {
     public void queryJSONpoly2() throws QueryException, IOException {
         String jsonPath = getClass().getResource("/queries/poly2.json").getFile();
         String jsonPQuery = readFile(jsonPath);		
-        SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson(jsonPQuery);
+        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(jsonPQuery);
 		
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
 		

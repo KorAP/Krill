@@ -6,7 +6,7 @@ import java.io.*;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
 import static org.junit.Assert.*;
@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestKorapQueryJSON {
+public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp1 () throws QueryException {
@@ -184,7 +184,7 @@ public class TestKorapQueryJSON {
 
     @Test
     public void queryJSONDemo () throws QueryException {
-	SpanQueryWrapper sqwi = new KorapQuery("tokens").fromJson("{ \"query\" : { \"@type\" : \"koral:token\", \"wrap\" : { \"@type\" : \"koral:term\", \"foundry\" : \"base\", \"layer\" : \"p\", \"key\" : \"foo\", \"match\" : \"match:eq\" }}}");
+	SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson("{ \"query\" : { \"@type\" : \"koral:token\", \"wrap\" : { \"@type\" : \"koral:term\", \"foundry\" : \"base\", \"layer\" : \"p\", \"key\" : \"foo\", \"match\" : \"match:eq\" }}}");
 
 	assertEquals(sqwi.toQuery().toString(), "tokens:base/p:foo");
     };
@@ -306,7 +306,7 @@ public class TestKorapQueryJSON {
 	// ((MORPH(APPR) ODER MORPH(APPRART)) /+w1 Urlaub
 	try {
 	    String json = getString(getClass().getResource("/queries/bugs/underspecified_token.jsonld").getFile());
-	    new KorapQuery("tokens").fromJson(json);
+	    new KrillQuery("tokens").fromJson(json);
 	}
 	catch (QueryException e) {
 	    assertEquals(701, e.getErrorCode());
@@ -357,11 +357,11 @@ public class TestKorapQueryJSON {
 	
 	try {
 	    String json = getString(jsonFile);
-	    sqwi = new KorapQuery("tokens").fromJson(json);
+	    sqwi = new KrillQuery("tokens").fromJson(json);
 	}
 	catch (QueryException e) {
 	    fail(e.getMessage());
-	    sqwi = new KorapQuery("tokens").seg("???");
+	    sqwi = new KrillQuery("tokens").seg("???");
 	};
 	return sqwi;
     };

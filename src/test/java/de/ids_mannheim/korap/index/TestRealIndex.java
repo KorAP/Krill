@@ -20,7 +20,7 @@ public class TestRealIndex {
     KorapIndex ki;
     KorapResult kr;
     Krill ks;
-    KorapQuery kq;
+    KrillQuery kq;
 	
     public TestRealIndex() throws IOException {
         InputStream is = getClass().getResourceAsStream("/server.properties");
@@ -35,7 +35,7 @@ public class TestRealIndex {
 
     @Test
     public void testCase1() throws IOException, QueryException {
-        KorapQuery kq = new KorapQuery("tokens");
+        KrillQuery kq = new KrillQuery("tokens");
         ks = new Krill(kq.within(kq.tag("base/s:s"), kq.seq(kq.re("s:.*")).append(kq._(kq.re("s:.*")))).toQuery());
         ks.getMeta().setTimeOut(10000);
         kr = ks.apply(ki);

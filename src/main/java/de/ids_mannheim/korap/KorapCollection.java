@@ -591,7 +591,7 @@ public class KorapCollection extends Notifications {
      * and <strong>is not recommended</strong>
      * as a common search API.
      *
-     * Please use {@link KorapQuery#run} instead.
+     * Please use {@link KrillQuery#run} instead.
      *
      * @param query a {@link SpanQuery} to apply on the
      *        virtual collection.

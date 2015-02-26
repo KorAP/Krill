@@ -12,7 +12,7 @@ import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KrillMeta;
 
 
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.response.Notifications;
 
 /**
@@ -39,7 +39,7 @@ public class KorapResponse extends Notifications {
     private KorapCollection collection;
 
     private String version, name, node, listener;
-    private KorapQuery query;
+    private KrillQuery query;
 
     private long
         totalResources = -2, // Not set
@@ -325,13 +325,13 @@ public class KorapResponse extends Notifications {
     /**
      * Get the KoralQuery query object.
      *
-     * @return The {@link KorapQuery} object,
+     * @return The {@link KrillQuery} object,
      *         representing the KoralQuery query object.
      */
     @JsonIgnore
-    public KorapQuery getQuery () {
+    public KrillQuery getQuery () {
         if (this.query == null)
-            this.query = new KorapQuery();
+            this.query = new KrillQuery();
         return this.query;
     };
 
@@ -339,12 +339,12 @@ public class KorapResponse extends Notifications {
     /**
      * Set the KoralQuery query object.
      *
-     * @param query The {@link KorapQuery} object,
+     * @param query The {@link KrillQuery} object,
      *        representing the KoralQuery query object.
      * @return The {@link KorapResponse} object for chaining
      */
     @JsonIgnore
-    public KorapResponse setQuery (KorapQuery query) {
+    public KorapResponse setQuery (KrillQuery query) {
         this.query = query;
 
         // Move messages from the query

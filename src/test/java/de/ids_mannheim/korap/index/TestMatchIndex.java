@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapCollection;
@@ -287,7 +287,7 @@ public class TestMatchIndex {
 
         KorapResult kr;
 
-        KorapQuery kq = new KorapQuery("base");
+        KrillQuery kq = new KrillQuery("base");
 
         SpanQuery sq = kq._(1,kq.seq(kq.seg("s:b")).append(kq.seg("s:a")).append(kq._(2,kq.seg("s:c")))).toQuery();
         

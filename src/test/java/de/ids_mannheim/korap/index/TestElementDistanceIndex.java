@@ -17,7 +17,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
-import de.ids_mannheim.korap.KorapQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -211,11 +211,11 @@ public class TestElementDistanceIndex {
         
         SpanQueryWrapper sqwi;
         try {    	    
-    	    sqwi = new KorapQuery("tokens").fromJson(json);
+    	    sqwi = new KrillQuery("tokens").fromJson(json);
     	}
     	catch (QueryException e) {
     	    fail(e.getMessage());
-    	    sqwi = new KorapQuery("tokens").seg("???");
+    	    sqwi = new KrillQuery("tokens").seg("???");
     	};        
     	
         
