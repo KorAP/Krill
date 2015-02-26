@@ -30,6 +30,7 @@ import de.ids_mannheim.korap.response.Notifications;
  * @author diewald
  * @see Notifications
  */
+// Todo: Use configuration file to get default token field "tokens"
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KorapResponse extends Notifications {
@@ -328,10 +329,11 @@ public class KorapResponse extends Notifications {
      * @return The {@link KrillQuery} object,
      *         representing the KoralQuery query object.
      */
+    // TODO: "tokens" shouldn't be fixed.
     @JsonIgnore
     public KrillQuery getQuery () {
         if (this.query == null)
-            this.query = new KrillQuery();
+            this.query = new KrillQuery("tokens");
         return this.query;
     };
 

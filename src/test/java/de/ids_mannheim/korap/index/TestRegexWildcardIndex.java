@@ -17,6 +17,7 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
 import org.apache.lucene.search.Query;
@@ -48,7 +49,7 @@ public class TestRegexWildcardIndex {
 
 	ki.commit();
 
-	KrillQuery kq = new KrillQuery("base");
+	QueryBuilder kq = new QueryBuilder("base");
 	SpanQuery sq = kq.re("s:af*e").toQuery();
 	assertEquals("SpanMultiTermQueryWrapper(base:/s:af*e/)", sq.toString());
 			
@@ -61,22 +62,22 @@ public class TestRegexWildcardIndex {
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("affe [afffe] baum ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:baum.*").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:baum.*").toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... afffe [baum] baumgarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:.....?garten").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:.....?garten").toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... baumgarten [steingarten] franz ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:ha.s").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:ha.s").toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... franz [hans] haus ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... hans [haus] efeu ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:.*ff.*").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:.*ff.*").toQuery()));
 	assertEquals((long) 3, kr.getTotalResults());
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("affe [afffe] baum ...", kr.getMatch(1).getSnippetBrackets());
@@ -105,7 +106,7 @@ public class TestRegexWildcardIndex {
 
 	ki.commit();
 
-	KrillQuery kq = new KrillQuery("base");
+	QueryBuilder kq = new QueryBuilder("base");
 	SpanQuery sq = kq.wc("s:af*e").toQuery();
 	assertEquals("SpanMultiTermQueryWrapper(base:s:af*e)", sq.toString());
 
@@ -118,25 +119,25 @@ public class TestRegexWildcardIndex {
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("affe [afffe] baum ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").wc("s:baum.*").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").wc("s:baum.*").toQuery()));
 	assertEquals((long) 0, kr.getTotalResults());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").wc("s:baum*").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").wc("s:baum*").toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... afffe [baum] baumgarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").wc("s:*garten").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").wc("s:*garten").toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... baumgarten [steingarten] franz ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").wc("s:ha?s").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").wc("s:ha?s").toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... franz [hans] haus ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... hans [haus] efeu ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").wc("s:?ff?").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").wc("s:?ff?").toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... efeu [effe]", kr.getMatch(1).getSnippetBrackets());
@@ -164,7 +165,7 @@ public class TestRegexWildcardIndex {
 
 	ki.commit();
 
-	KrillQuery kq = new KrillQuery("base");
+	QueryBuilder kq = new QueryBuilder("base");
 	SpanQuery sq = kq.re("s:Af*e", true).toQuery();
 	assertEquals("SpanMultiTermQueryWrapper(base:/i:af*e/)", sq.toString());
 
@@ -177,30 +178,30 @@ public class TestRegexWildcardIndex {
 	assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("AfFe [aFfFE] Baum ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:Af.*e").toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:Af.*e").toQuery()));
 	assertEquals((long) 1, kr.getTotalResults());
 	assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:baum.*", true).toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:baum.*", true).toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... aFfFE [Baum] Baumgarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... Baum [Baumgarten] SteinGarten ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:.*garten", true).toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:.*garten", true).toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... Baum [Baumgarten] SteinGarten ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... Baumgarten [SteinGarten] franZ ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:.*garten", false).toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:.*garten", false).toQuery()));
 	assertEquals((long) 1, kr.getTotalResults());
 	assertEquals("... Baum [Baumgarten] SteinGarten ...", kr.getMatch(0).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:ha.s", true).toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:ha.s", true).toQuery()));
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("... franZ [HaNs] Haus ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... HaNs [Haus] Efeu ...", kr.getMatch(1).getSnippetBrackets());
 
-	kr = ki.search(ks.setSpanQuery(new KrillQuery("base").re("s:.*f*e", true).toQuery()));
+	kr = ki.search(ks.setSpanQuery(new QueryBuilder("base").re("s:.*f*e", true).toQuery()));
 	assertEquals((long) 3, kr.getTotalResults());
 	assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("AfFe [aFfFE] Baum ...", kr.getMatch(1).getSnippetBrackets());
@@ -229,7 +230,7 @@ public class TestRegexWildcardIndex {
 
 	ki.commit();
 
-	KrillQuery kq = new KrillQuery("base");
+	QueryBuilder kq = new QueryBuilder("base");
 	SpanQuery sq = kq.seq(kq.seg("s:affe")).append(kq.re("s:af*e")).toQuery();
 	assertEquals("spanNext(base:s:affe, SpanMultiTermQueryWrapper(base:/s:af*e/))", sq.toString());
 
@@ -265,7 +266,7 @@ public class TestRegexWildcardIndex {
 
 	ki.commit();
 
-	KrillQuery kq = new KrillQuery("base");
+	QueryBuilder kq = new QueryBuilder("base");
 	SpanQuery sq = kq.contains(
 				   kq.seq(
 					  kq.re("s:a.*e")

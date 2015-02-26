@@ -1,6 +1,8 @@
-0.50.1 2015-02-25
+0.50.1 2015-02-26
 	- [feature] Deserialization of arbitrary elements with attributes (margaretha)
-	- [cleanup] Extract KrillMeta from Krill (diewald)
+	- [cleanup] Extract KrillMeta from Krill,
+	  rename KorapQuery to KrillQuery,
+	  extract QueryBuilder from KrillQuery (diewald)
 
 0.50 2015-02-23
         - Project name is now "Krill"

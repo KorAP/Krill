@@ -14,13 +14,13 @@ import org.apache.lucene.store.MMapDirectory;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.*;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestRealIndex {
     KorapIndex ki;
     KorapResult kr;
     Krill ks;
-    KrillQuery kq;
 	
     public TestRealIndex() throws IOException {
         InputStream is = getClass().getResourceAsStream("/server.properties");
@@ -35,7 +35,7 @@ public class TestRealIndex {
 
     @Test
     public void testCase1() throws IOException, QueryException {
-        KrillQuery kq = new KrillQuery("tokens");
+        QueryBuilder kq = new QueryBuilder("tokens");
         ks = new Krill(kq.within(kq.tag("base/s:s"), kq.seq(kq.re("s:.*")).append(kq._(kq.re("s:.*")))).toQuery());
         ks.getMeta().setTimeOut(10000);
         kr = ks.apply(ki);

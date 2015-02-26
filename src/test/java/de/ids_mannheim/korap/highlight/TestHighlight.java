@@ -7,6 +7,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapMatch;
@@ -50,7 +51,7 @@ public class TestHighlight { // extends LuceneTestCase {
         ki.commit();
 
 
-        KrillQuery kq = new KrillQuery("tokens");
+        QueryBuilder kq = new QueryBuilder("tokens");
         KorapResult kr = ki.search(
             (SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).toQuery()
         );
@@ -120,7 +121,7 @@ public class TestHighlight { // extends LuceneTestCase {
         FieldDocument fd = ki.addDoc(json);
         ki.commit();
 
-        KrillQuery kq = new KrillQuery("tokens");
+        QueryBuilder kq = new QueryBuilder("tokens");
 
         KorapResult kr = ki.search((SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).append(kq.seg("s:c")).toQuery());
         KorapMatch km = kr.getMatch(0);
@@ -187,7 +188,7 @@ public class TestHighlight { // extends LuceneTestCase {
         // Commit!
         ki.commit();
 
-        KrillQuery kq = new KrillQuery("base");
+        QueryBuilder kq = new QueryBuilder("base");
         SpanQuery q = (SpanQuery) kq.or(kq._(1, kq.seg("s:a"))).or(kq._(2, kq.seg("s:b"))).toQuery();
         KorapResult kr = ki.search(q);
         assertEquals((long) 14, kr.getTotalResults());
@@ -209,7 +210,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals("a[{2:b}]a", kr.getMatch(12).getSnippetBrackets());
         assertEquals("ab[{1:a}]", kr.getMatch(13).getSnippetBrackets());
 
-        kq = new KrillQuery("base");
+        kq = new QueryBuilder("base");
         q = (SpanQuery) kq.or(kq._(1, kq.seg("i:a"))).or(kq._(2, kq.seg("i:c"))).toQuery();
         Krill qs = new Krill(q);
         qs.getMeta().getContext().left.setToken(true).setLength((short) 1);

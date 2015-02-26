@@ -9,6 +9,7 @@ import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import org.apache.lucene.store.MMapDirectory;
 import de.ids_mannheim.korap.collection.BooleanFilter;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -371,7 +372,7 @@ public class TestBenchmarkSpans {
         }
         catch (QueryException e) {
             fail(e.getMessage());
-            sqwi = new KrillQuery("tokens").seg("???");
+            sqwi = new QueryBuilder("tokens").seg("???");
         };
         return sqwi;
     };

@@ -1,3 +1,4 @@
+
 package de.ids_mannheim.korap.search;
 
 import java.util.*;
@@ -10,6 +11,7 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 
 import de.ids_mannheim.korap.util.QueryException;
@@ -54,7 +56,7 @@ public class TestKorapResult {
         // Commit!
         ki.commit();
 
-        KrillQuery kq = new KrillQuery("base");
+        QueryBuilder kq = new QueryBuilder("base");
         SpanQuery q = (SpanQuery) kq.or(
             kq._(1, kq.seg("s:a"))).or(kq._(2, kq.seg("s:b"))
         ).toQuery();
@@ -221,7 +223,7 @@ public class TestKorapResult {
         // Commit!
         ki.commit();
 
-        KrillQuery kq = new KrillQuery("base");
+        QueryBuilder kq = new QueryBuilder("base");
         SpanQuery q = (SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).toQuery();
         KorapResult kr = ki.search(q);
 

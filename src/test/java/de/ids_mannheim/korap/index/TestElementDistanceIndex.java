@@ -19,6 +19,7 @@ import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -215,7 +216,7 @@ public class TestElementDistanceIndex {
     	}
     	catch (QueryException e) {
     	    fail(e.getMessage());
-    	    sqwi = new KrillQuery("tokens").seg("???");
+    	    sqwi = new QueryBuilder("tokens").seg("???");
     	};        
     	
         

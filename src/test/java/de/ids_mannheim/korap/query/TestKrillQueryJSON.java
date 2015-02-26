@@ -7,6 +7,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.util.QueryException;
 
 import static org.junit.Assert.*;
@@ -361,7 +362,7 @@ public class TestKrillQueryJSON {
 	}
 	catch (QueryException e) {
 	    fail(e.getMessage());
-	    sqwi = new KrillQuery("tokens").seg("???");
+	    sqwi = new QueryBuilder("tokens").seg("???");
 	};
 	return sqwi;
     };

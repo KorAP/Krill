@@ -15,6 +15,7 @@ import de.ids_mannheim.korap.match.PosIdentifier;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.util.QueryException;
@@ -91,7 +92,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
-	KrillQuery kq = new KrillQuery("tokens");
+	QueryBuilder kq = new QueryBuilder("tokens");
 	Krill ks = new Krill(
 	    kq._(2,kq.seq(kq.seg("s:b")).append(kq._(kq.seg("s:a"))))
         );

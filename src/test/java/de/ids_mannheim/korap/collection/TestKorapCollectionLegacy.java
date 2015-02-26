@@ -7,6 +7,7 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.collection.BooleanFilter;
 
 import org.apache.lucene.index.Term;
@@ -78,7 +79,7 @@ public class TestKorapCollectionLegacy {
 	assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
 	// Create a query
-	KrillQuery kq = new KrillQuery("tokens");
+	QueryBuilder kq = new QueryBuilder("tokens");
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
 	KorapResult kr = kc.search(query);
@@ -155,7 +156,7 @@ public class TestKorapCollectionLegacy {
 	assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
 	// Create a query
-	KrillQuery kq = new KrillQuery("tokens");
+	QueryBuilder kq = new QueryBuilder("tokens");
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
 	KorapResult kr = kc.search(query);
@@ -208,7 +209,7 @@ public class TestKorapCollectionLegacy {
 	assertEquals("Paragraphs", 139, kc.numberOf("paragraphs"));
 
 	// Create a query
-	KrillQuery kq = new KrillQuery("tokens");
+	QueryBuilder kq = new QueryBuilder("tokens");
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
 	KorapResult kr = kc.search(query);

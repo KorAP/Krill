@@ -4,39 +4,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.util.automaton.RegExp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.apache.lucene.util.automaton.RegExp;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.query.SpanWithinQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.wrap.*;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
- * KrillQuery implements a simple API for wrapping
- * KorAP Lucene Index specific query classes and provides
- * deserialization of JSON-LD queries.
+ * KrillQuery provides deserialization methods
+ * for KoralQuery query objects.
  *
- * Build complex queries.
  * <blockquote><pre>
- *   KrillQuery kq = new KrillQuery("tokens");
- *   SpanQueryWrapper sqw = (SpanQueryWrapper)
- *     kq.seq(
- *       kq.empty(),
- *       kq.seg(
- *         kq.re("mate/p=N.*"),
- *         kq.re("opennlp/p=N.*")
- *       )
- *     );
- * </pre></blockquote>
- *
- * Deserialize from JSON input.
- * <blockquote><pre>
- *   SpanQueryWrapper = new KrillQuery("tokens").fromJson("{... JsonString ...}");
+ *   SpanQueryWrapper sqw = new KrillQuery("tokens").fromJson("{... JsonString ...}");
  * </pre></blockquote>
  *
  * @author diewald
@@ -58,7 +45,7 @@ import de.ids_mannheim.korap.util.QueryException;
 */
 public class KrillQuery extends Notifications {
     private String field;
-    private ObjectMapper mapper;
+    private QueryBuilder builder;
     private JsonNode json;
 
     // Logger
@@ -81,21 +68,15 @@ public class KrillQuery extends Notifications {
     private static final int MAX_CLASS_NUM = 255; // 127;
 
     /**
-     * Constructs a new object for query generation.
-     */
-    public KrillQuery () {
-        this.mapper = new ObjectMapper();
-    };
-
-
-    /**
-     * Constructs a new object for query generation.
+     * Constructs a new object for query deserialization
+     * and building. Expects the name of an index field
+     * to apply the query on (this should normally be
+     * a token stream field).
      *
      * @param field The specific index field for the query.
      */
     public KrillQuery (String field) {
         this.field = field;
-        this.mapper = new ObjectMapper();
     };
 
 
@@ -156,7 +137,7 @@ public class KrillQuery extends Notifications {
         JsonNode jsonN;
         try {
             // Read Json string
-            jsonN = this.mapper.readValue(json, JsonNode.class);
+            jsonN = new ObjectMapper().readValue(json, JsonNode.class);
         }
 
         // Something went wrong
@@ -289,6 +270,49 @@ public class KrillQuery extends Notifications {
 
         // Unknown query type
         throw new QueryException(713, "Query type is not supported");
+    };
+
+
+    /**
+     * Get the associated {@link QueryBuilder} object
+     * for query building.
+     */
+    public QueryBuilder builder () {
+        if (this.builder == null)
+            this.builder = new QueryBuilder(this.field);
+        return this.builder;
+    };
+
+
+    /**
+     * Return the associated KoralQuery query object
+     * as a {@link JsonNode}. This won't work,
+     * if the object was build using a {@link QueryBuilder},
+     * therefore it is limited to mirror a deserialized KoralQuery
+     * object.
+     *
+     * @return The {@link JsonNode} representing the query object
+     *         of a deserialized KoralQuery object.
+     */
+    public JsonNode toJsonNode () {
+        return this.json;
+    };
+
+
+    /**
+     * Return the associated KoralQuery query object
+     * as a JSON string. This won't work,
+     * if the object was build using a {@link QueryBuilder},
+     * therefore it is limited to mirror a deserialized KoralQuery
+     * object.
+     *
+     * @return A JSON string representing the query object
+     *         of a deserialized KoralQuery object.
+     */
+    public String toJsonString () {
+        if (this.json == null)
+            return "{}";
+        return this.json.toString();
     };
 
 
@@ -628,7 +652,7 @@ public class KrillQuery extends Notifications {
         if (operands.size() == 1)
             return this.fromJson(operands.get(0));
 
-        SpanSequenceQueryWrapper sseqqw = this.seq();
+        SpanSequenceQueryWrapper sseqqw = this.builder().seq();
 
         // Say if the operand order is important
         if (json.has("inOrder"))
@@ -786,7 +810,7 @@ public class KrillQuery extends Notifications {
             // Get operands
             JsonNode operands = json.get("operands");
 
-            SpanSegmentQueryWrapper ssegqw = this.seg();
+            SpanSegmentQueryWrapper ssegqw = this.builder().seg();
             
             if (!json.has("relation"))
                 throw new QueryException(743, "Term group expects a relation");
@@ -915,13 +939,15 @@ public class KrillQuery extends Notifications {
         // Regular expression or wildcard
         if (isTerm && json.has("type")) {
 
+            QueryBuilder qb = this.builder();
+
             // Branch on type
             switch (json.get("type").asText()) {
             case "type:regex":
-                return this.seg(this.re(value.toString(), isCaseInsensitive));
+                return qb.seg(qb.re(value.toString(), isCaseInsensitive));
 
             case "type:wildcard":
-                return this.seq(this.wc(value.toString(), isCaseInsensitive));
+                return qb.seq(qb.wc(value.toString(), isCaseInsensitive));
 
             case "type:string":
                 break;
@@ -938,11 +964,11 @@ public class KrillQuery extends Notifications {
 				match = json.get("match").asText();
 			}
 
-			SpanSegmentQueryWrapper ssqw = seg(value.toString());			
+			SpanSegmentQueryWrapper ssqw = this.builder().seg(value.toString());			
 			if (match.equals("match:ne")) {
 				if (DEBUG) log.trace("Term is negated");
 				ssqw.makeNegative();
-				return this.seg().without(ssqw);
+				return this.builder().seg().without(ssqw);
 			} 
 			else if (match.equals("match:eq")) {
 				return ssqw;
@@ -960,30 +986,33 @@ public class KrillQuery extends Notifications {
 			}
 
 			if (value.toString().isEmpty()) {
-				return createElementAttrFromJson(null, json, attrNode);
+				return _createElementAttrFromJson(null, json, attrNode);
 				// this.addWarning(771,
 				// "Arbitraty elements with attributes are currently not supported.");
 			}
 			else{
-				SpanQueryWrapper elementWithIdWrapper = tag(value.toString());
+				SpanQueryWrapper elementWithIdWrapper = this.builder().tag(value.toString());
 				if (elementWithIdWrapper == null){ return null; }
-				return createElementAttrFromJson(elementWithIdWrapper, json,
+				return _createElementAttrFromJson(elementWithIdWrapper, json,
 						attrNode);
 			}
         };
-        return this.tag(value.toString());
+        return this.builder().tag(value.toString());
     };
 
-	private SpanQueryWrapper createElementAttrFromJson(
-			SpanQueryWrapper elementWithIdWrapper, JsonNode json,
-			JsonNode attrNode) throws QueryException {
+
+    // Deserialize elements with attributes
+	private SpanQueryWrapper _createElementAttrFromJson (
+                SpanQueryWrapper elementWithIdWrapper,
+                JsonNode json,
+                JsonNode attrNode) throws QueryException {
 
 		if (attrNode.get("@type").asText().equals("koral:term")) {
 			SpanQueryWrapper attrWrapper = _attrFromJson(json.get("attr"));
 			if (attrWrapper != null) {
 				if (elementWithIdWrapper != null){
 					return new SpanWithAttributeQueryWrapper(elementWithIdWrapper,
-						attrWrapper);
+                                                             attrWrapper);
 				}
 				else {
 					return new SpanWithAttributeQueryWrapper(attrWrapper);
@@ -993,18 +1022,20 @@ public class KrillQuery extends Notifications {
 				throw new QueryException(747, "Attribute is null");
 			}
 		} 
- else if (attrNode.get("@type").asText().equals("koral:termGroup")) {
-			return handleAttrGroup(elementWithIdWrapper, attrNode);
+        else if (attrNode.get("@type").asText().equals("koral:termGroup")) {
+			return _handleAttrGroup(elementWithIdWrapper, attrNode);
 		}
 		else {
 			this.addWarning(715, "Attribute type is not supported");
 		}
 		return elementWithIdWrapper;
 	}
-	
-	private SpanQueryWrapper handleAttrGroup(
-			SpanQueryWrapper elementWithIdWrapper, JsonNode attrNode)
-			throws QueryException {
+
+
+    // Deserialize attribute groups
+	private SpanQueryWrapper _handleAttrGroup (
+                SpanQueryWrapper elementWithIdWrapper,
+                JsonNode attrNode) throws QueryException {
 		if (!attrNode.has("relation")) {
 			throw new QueryException(743, "Term group expects a relation");
 		}
@@ -1028,7 +1059,7 @@ public class KrillQuery extends Notifications {
 
 			if (elementWithIdWrapper != null){
 				return new SpanWithAttributeQueryWrapper(elementWithIdWrapper,
-					wrapperList);
+                                                         wrapperList);
 			}
 			else {
 				return new SpanWithAttributeQueryWrapper(wrapperList);
@@ -1044,7 +1075,9 @@ public class KrillQuery extends Notifications {
 				}
 				if (elementWithIdWrapper != null) {
 					saqw = new SpanWithAttributeQueryWrapper(
-							elementWithIdWrapper, attrWrapper);
+                        elementWithIdWrapper,
+                        attrWrapper
+                    );
 				} else {
 					saqw = new SpanWithAttributeQueryWrapper(attrWrapper);
 				}
@@ -1079,362 +1112,5 @@ public class KrillQuery extends Notifications {
             }
         }
 		return null;
-    };
-
-    public JsonNode toJsonNode () {
-        return this.json;
-    };
-
-    public String toJsonString () {
-        if (this.json == null)
-            return "{}";
-        return this.json.toString();
-    };
-
-
-    /*
-     * Following are builder methods that will probably move
-     * to a separated class in the future
-     */
-
-
-    /**
-     * Create a query object based on a regular expression.
-     *
-     * <blockquote><pre>
-     *   KrillQuery kq = new KrillQuery("tokens");
-     *   SpanRegexQueryWrapper re = kq.re(".+?");
-     * </pre></blockquote>
-     *
-     * @param re The regular expession as a string.
-     * @return A {@link SpanRegexQueryWrapper} object.
-     */
-    public SpanRegexQueryWrapper re (String re) {
-        return new SpanRegexQueryWrapper(this.field, re, RegExp.ALL, false);
-    };
-
-
-    /**
-     * Create a query object based on a regular expression.
-     *
-     * Supports flags as defined in {@link org.apache.lucene.util.automaton.RegExp}:
-     * <ul>
-     *   <li><tt>RegExp.ALL</tt> - enables all optional regexp syntax</li>
-     *   <li><tt>RegExp.ANYSTRING</tt> - enables anystring (@)</li>
-     *   <li><tt>RegExp.AUTOMATON</tt> - enables named automata (&lt;identifier&gt;)</li>
-     *   <li><tt>RegExp.COMPLEMENT</tt> - enables complement (~)</li>
-     *   <li><tt>RegExp.EMPTY</tt> - enables empty language (#)</li>
-     *   <li><tt>RegExp.INTERSECTION</tt> - enables intersection (&amp;)</li>
-     *   <li><tt>RegExp.INTERVAL</tt> - enables numerical intervals (&lt;n-m&gt;)</li>
-     *   <li><tt>RegExp.NONE</tt> - enables no optional regexp syntax</li>
-     * </ul>
-     *
-     * <blockquote><pre>
-     *   KrillQuery kq = new KrillQuery("tokens");
-     *   SpanRegexQueryWrapper re = kq.re("[Aa]lternatives?", RegExp.NONE);
-     * </pre></blockquote>
-     *
-     * @param re The regular expession as a string.
-     * @param flags The flag for the regular expression.
-     * @return A {@link SpanRegexQueryWrapper} object.
-     */
-    public SpanRegexQueryWrapper re (String re, int flags) {
-        return new SpanRegexQueryWrapper(this.field, re, flags, false);
-    };
-
-
-    /**
-     * Create a query object based on a regular expression.
-     *
-     * Supports flags (see above) and case insensitivity.
-     *
-     * <blockquote><pre>
-     *   KrillQuery kq = new KrillQuery("tokens");
-     *   SpanRegexQueryWrapper re = kq.re("alternatives?", RegExp.NONE, true);
-     * </pre></blockquote>
-     *
-     * @param re The regular expession as a string.
-     * @param flags The flag for the regular expression.
-     * @param caseinsensitive A boolean value indicating case insensitivity.
-     * @return A {@link SpanRegexQueryWrapper} object.
-     */
-    public SpanRegexQueryWrapper re (String re, int flags, boolean caseinsensitive) {
-        return new SpanRegexQueryWrapper(this.field, re, flags, caseinsensitive);
-    };
-
-
-    /**
-     * Create a query object based on a regular expression.
-     *
-     * Supports case insensitivity.
-     *
-     * <blockquote><pre>
-     *   KrillQuery kq = new KrillQuery("tokens");
-     *   SpanRegexQueryWrapper re = kq.re("alternatives?", true);
-     * </pre></blockquote>
-     *
-     * @param re The regular expession as a string.
-     * @param flags The flag for the regular expression.
-     * @return A {@link SpanRegexQueryWrapper} object.
-     */
-    public SpanRegexQueryWrapper re (String re, boolean caseinsensitive) {
-        return new SpanRegexQueryWrapper(this.field, re, RegExp.ALL, caseinsensitive);
-    };
-
-    /**
-     * Create a query object based on a wildcard term.
-     * <tt>*</tt> indicates an optional sequence of arbitrary characters,
-     * <tt>?</tt> indicates a single character,
-     * <tt>\</tt> can be used for escaping.
-     *
-     * @param wc The wildcard term as a string.
-     * @return A {@link SpanWildcardQueryWrapper} object.
-     */
-    public SpanWildcardQueryWrapper wc (String wc) {
-        return new SpanWildcardQueryWrapper(this.field, wc, false);
-    };
-
-    /**
-     * Create a query object based on a wildcard term.
-     * <tt>*</tt> indicates an optional sequence of arbitrary characters,
-     * <tt>?</tt> indicates a single character,
-     * <tt>\</tt> can be used for escaping.
-     *
-     * Supports case insensitivity.
-     *
-     * <blockquote><pre>
-     *   KrillQuery kq = new KrillQuery("tokens");
-     *   SpanWildcardQueryWrapper wc = kq.wc("wall*", true);
-     * </pre></blockquote>
-     *
-     * @param wc The wildcard term as a string.
-     * @param caseinsensitive A boolean value indicating case insensitivity.
-     * @return A {@link SpanWildcardQueryWrapper} object.
-     */
-    public SpanWildcardQueryWrapper wc (String wc, boolean caseinsensitive) {
-        return new SpanWildcardQueryWrapper(this.field, wc, caseinsensitive);
-    };
-
-
-    /**
-     * Create a segment query object.
-     *
-     * <blockquote><pre>
-     *   KrillQuery kq = new KrillQuery("tokens");
-     *   SpanSegmentQueryWrapper seg = kq.seg();
-     * </pre></blockquote>
-     *
-     * @return A {@link SpanSegmentQueryWrapper} object.
-     */
-    public SpanSegmentQueryWrapper seg () {
-        return new SpanSegmentQueryWrapper(this.field);
-    };
-
-
-    /**
-     * Create a segment query object.
-     * Supports sequences of strings or {@link SpanRegexQueryWrapper},
-     * and {@link SpanAlterQueryWrapper} objects.
-     *
-     * <blockquote><pre>
-     *   KrillQuery kq = new KrillQuery("tokens");
-     *   SpanSegmentQueryWrapper seg = kq.seg(
-     *       kq.re("mate/p=.*?"),
-     *       kq.re("opennlp/p=.*?")
-     *   );
-     * </pre></blockquote>
-     *
-     * @param terms[] An array of terms, the segment consists of.
-     * @return A {@link SpanSegmentQueryWrapper} object.
-     */
-    // Sequence of regular expression queries
-    public SpanSegmentQueryWrapper seg (SpanRegexQueryWrapper ... terms) {
-        SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper(this.field);
-        for (SpanRegexQueryWrapper t : terms)
-            ssq.with(t);
-        return ssq;
-    };
-
-    // Sequence of alternative queries
-    public SpanSegmentQueryWrapper seg (SpanAlterQueryWrapper ... terms) {
-        SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper(this.field);
-        for (SpanAlterQueryWrapper t : terms)
-            ssq.with(t);
-        return ssq;
-    };
-
-    // Sequence of alternative queries
-    public SpanSegmentQueryWrapper seg (String ... terms) {
-        SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper(this.field);
-        for (String t : terms)
-            ssq.with(t);
-        return ssq;
-    };
-
-    /**
-     * Create an empty query segment.
-     *
-     * <blockquote><pre>
-     *   KrillQuery kq = new KrillQuery("tokens");
-     *   SpanRepetitionQueryWrapper seg = kq.empty();
-     * </pre></blockquote>
-     */
-    public SpanRepetitionQueryWrapper empty () {
-        return new SpanRepetitionQueryWrapper();
-    };
-
-
-    // TODO: Further JavaDocs
-
-
-    /**
-     * Create a segment alternation query object.
-     * @param terms[] An array of alternative terms.
-     */
-    public SpanAlterQueryWrapper or (SpanQueryWrapper ... terms) {
-        SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
-        for (SpanQueryWrapper t : terms)
-            ssaq.or(t);
-        return ssaq;
-    };
-
-
-    public SpanAlterQueryWrapper or (String ... terms) {
-        SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
-        for (String t : terms)
-            ssaq.or(t);
-        return ssaq;
-    };
-
-
-    // SpanSegmentSequenceQueries
-    /**
-     * Create a sequence of segments query object.
-     */
-    public SpanSequenceQueryWrapper seq () {
-        return new SpanSequenceQueryWrapper(this.field);
-    };
-
-
-    /**
-     * Create a sequence of segments query object.
-     * @param terms[] An array of segment defining terms.
-     */
-    public SpanSequenceQueryWrapper seq (SpanQueryWrapper ... terms) {
-        SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper(this.field);
-        for (SpanQueryWrapper t : terms)
-            sssq.append(t);
-        return sssq;
-    };
-
-
-    /**
-     * Create a sequence of segments query object.
-     * @param re A SpanSegmentRegexQuery, starting the sequence.
-     */
-    public SpanSequenceQueryWrapper seq (SpanRegexQueryWrapper re) {
-        return new SpanSequenceQueryWrapper(this.field, re);
-    };
-
-
-    public SpanSequenceQueryWrapper seq (Object ... terms) {
-        SpanSequenceQueryWrapper ssq = new SpanSequenceQueryWrapper(this.field);
-        for (Object t : terms) {
-            if (t instanceof SpanQueryWrapper) {
-                ssq.append((SpanQueryWrapper) t);
-            }
-            else if (t instanceof SpanRegexQueryWrapper) {
-                ssq.append((SpanRegexQueryWrapper) t);
-            }
-            else {
-                log.error("{} is not an acceptable parameter for seq()", t.getClass());
-                return ssq;
-            };
-        };
-        return ssq;
-    };
-
-
-    public SpanElementQueryWrapper tag (String element) {
-        return new SpanElementQueryWrapper(this.field, element);
-    };
-
-    /**
-     * Create a wrapping within query object.
-     * @param element A SpanQuery.
-     * @param embedded A SpanQuery that is wrapped in the element.
-     */
-    @Deprecated
-    public SpanWithinQueryWrapper within (SpanQueryWrapper element,
-                                          SpanQueryWrapper embedded) {
-        return new SpanWithinQueryWrapper(element, embedded);
-    };
-    
-    public SpanWithinQueryWrapper contains (SpanQueryWrapper element,
-                                            SpanQueryWrapper embedded) {
-        return new SpanWithinQueryWrapper(element, embedded, WITHIN);
-    };
-
-    public SpanWithinQueryWrapper startswith (SpanQueryWrapper element,
-                                              SpanQueryWrapper embedded) {
-        return new SpanWithinQueryWrapper(element, embedded, STARTSWITH);
-    };
-
-    public SpanWithinQueryWrapper endswith (SpanQueryWrapper element,
-                                            SpanQueryWrapper embedded) {
-        return new SpanWithinQueryWrapper(element, embedded, ENDSWITH);
-    };
-
-    public SpanWithinQueryWrapper overlaps (SpanQueryWrapper element,
-                                            SpanQueryWrapper embedded) {
-        return new SpanWithinQueryWrapper(element, embedded, OVERLAP);
-    }; 
-
-    public SpanWithinQueryWrapper matches (SpanQueryWrapper element,
-                                           SpanQueryWrapper embedded) {
-        return new SpanWithinQueryWrapper(element, embedded, MATCH);
-    }; 
-
-    // Class
-    public SpanClassQueryWrapper _ (byte number, SpanQueryWrapper element) {
-        return new SpanClassQueryWrapper(element, number);
-    };
-
-    public SpanClassQueryWrapper _ (int number, SpanQueryWrapper element) {
-        return new SpanClassQueryWrapper(element, number);
-    };
-
-    public SpanClassQueryWrapper _ (short number, SpanQueryWrapper element) {
-        return new SpanClassQueryWrapper(element, number);
-    };
-
-    public SpanClassQueryWrapper _ (SpanQueryWrapper element) {
-        return new SpanClassQueryWrapper(element);
-    };
-
-    // Focus
-    public SpanFocusQueryWrapper focus (byte number, SpanQueryWrapper element) {
-        return new SpanFocusQueryWrapper(element, number);
-    };
-
-    public SpanFocusQueryWrapper focus (int number, SpanQueryWrapper element) {
-        return new SpanFocusQueryWrapper(element, number);
-    };
-
-    public SpanFocusQueryWrapper focus (short number, SpanQueryWrapper element) {
-        return new SpanFocusQueryWrapper(element, number);
-    };
-
-    public SpanFocusQueryWrapper focus (SpanQueryWrapper element) {
-        return new SpanFocusQueryWrapper(element);
-    };
-
-    // Repetition
-    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapper element, int exact) {
-        return new SpanRepetitionQueryWrapper(element, exact);
-    };
-
-    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapper element, int min, int max) {
-        return new SpanRepetitionQueryWrapper(element, min, max);
     };
 };

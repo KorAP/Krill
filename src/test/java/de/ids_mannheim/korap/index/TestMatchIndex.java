@@ -287,7 +287,7 @@ public class TestMatchIndex {
 
         KorapResult kr;
 
-        KrillQuery kq = new KrillQuery("base");
+        QueryBuilder kq = new QueryBuilder("base");
 
         SpanQuery sq = kq._(1,kq.seq(kq.seg("s:b")).append(kq.seg("s:a")).append(kq._(2,kq.seg("s:c")))).toQuery();
         
