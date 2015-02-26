@@ -12,7 +12,7 @@ import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.search.NumericRangeQuery;
 
 import de.ids_mannheim.korap.util.KorapDate;
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.util.QueryException;
 
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class BooleanFilter {
     private String type;
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapCollection.class);
+    private final static Logger log = LoggerFactory.getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;

@@ -6,7 +6,7 @@ import java.io.*;
 import static de.ids_mannheim.korap.TestSimple.*;
 
 import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;

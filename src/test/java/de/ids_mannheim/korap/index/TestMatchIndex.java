@@ -16,7 +16,7 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.query.*;
 import de.ids_mannheim.korap.index.FieldDocument;
@@ -470,7 +470,7 @@ public class TestMatchIndex {
 
         SpanQuery sq;
         KorapResult kr;
-        KorapCollection kc = new KorapCollection(ki);
+        KrillCollection kc = new KrillCollection(ki);
 
         assertEquals("Documents", 4, kc.numberOf("documents"));
 

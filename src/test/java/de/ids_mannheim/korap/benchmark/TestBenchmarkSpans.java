@@ -5,7 +5,7 @@ import java.io.*;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KrillQuery;
@@ -35,7 +35,7 @@ public class TestBenchmarkSpans {
         KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
 
         // Create a container for virtual collections:
-        KorapCollection kc = new KorapCollection(ki);
+        KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
@@ -86,7 +86,7 @@ public class TestBenchmarkSpans {
         KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
         
         // Create a container for virtual collections:
-        KorapCollection kc = new KorapCollection(ki);
+        KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
@@ -129,7 +129,7 @@ public class TestBenchmarkSpans {
         KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
 
         // Create a container for virtual collections:
-        KorapCollection kc = new KorapCollection(ki);
+        KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
@@ -171,7 +171,7 @@ public class TestBenchmarkSpans {
         KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
 
         // Create a container for virtual collections:
-        KorapCollection kc = new KorapCollection(ki);
+        KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         // Without classes
@@ -318,7 +318,7 @@ public class TestBenchmarkSpans {
         KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
 
         // Create a container for virtual collections:
-        KorapCollection kc = new KorapCollection(ki);
+        KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author margaretha
  *
  * @see KrillMeta
- * @see KorapCollection
+ * @see KrillCollection
  * @see KrillQuery
  * @see KrillIndex
  */
@@ -185,13 +185,13 @@ public class Krill extends KorapResponse {
         try {
             if (json.has("collection")) {
                 this.setCollection(
-                    new KorapCollection().fromJson(json.get("collection"))
+                    new KrillCollection().fromJson(json.get("collection"))
                 );
             }
 
             // <legacycode>
             else if (json.has("collections")) {
-                KorapCollection kc = new KorapCollection();
+                KrillCollection kc = new KrillCollection();
                 for (JsonNode collection : json.get("collections")) {
                     kc.fromJsonLegacy(collection);
                 };

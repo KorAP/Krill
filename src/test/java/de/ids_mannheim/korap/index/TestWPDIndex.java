@@ -13,7 +13,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.store.MMapDirectory;
 import org.junit.Test;
 
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KorapResult;
@@ -161,7 +161,7 @@ public class TestWPDIndex {
 		// Check if it includes some results
 		BooleanFilter bf = new BooleanFilter();
 		bf.or("ID", "WPD_BBB.04463", "WPD_III.00758");
-		KorapCollection kc = new KorapCollection();	
+		KrillCollection kc = new KrillCollection();	
 		kc.filter(bf);
 		ks.setCollection(kc);
 		kr = ks.apply(ki);		

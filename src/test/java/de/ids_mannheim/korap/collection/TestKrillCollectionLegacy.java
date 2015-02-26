@@ -4,7 +4,7 @@ import java.io.*;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestKorapCollectionLegacy {
+public class TestKrillCollectionLegacy {
 
     @Test
     public void filterExample () throws Exception {
@@ -46,7 +46,7 @@ public class TestKorapCollectionLegacy {
 	CollectionBuilder kf = new CollectionBuilder();
 
 	// Create Virtual collections:
-	KorapCollection kc = new KorapCollection(ki);
+	KrillCollection kc = new KrillCollection(ki);
 
 	assertEquals("Documents", 7, kc.numberOf("documents"));
 
@@ -121,7 +121,7 @@ public class TestKorapCollectionLegacy {
 	CollectionBuilder kf = new CollectionBuilder();
 
 	// Create Virtual collections:
-	KorapCollection kc = new KorapCollection(ki);
+	KrillCollection kc = new KrillCollection(ki);
 
 	assertEquals("Documents", 7, kc.numberOf("documents"));
 
@@ -201,7 +201,7 @@ public class TestKorapCollectionLegacy {
 	CollectionBuilder kf = new CollectionBuilder();
 
 	// Create Virtual collections:
-	KorapCollection kc = new KorapCollection(ki);
+	KrillCollection kc = new KrillCollection(ki);
 	kc.filter( kf.and("textClass", "reisen").and("textClass", "freizeit-unterhaltung") );
 	assertEquals("Documents", 5, kc.numberOf("documents"));
 	assertEquals("Tokens", 1678, kc.numberOf("tokens"));
@@ -257,7 +257,7 @@ public class TestKorapCollectionLegacy {
         assertEquals(86,kr.getTotalResults());
 
 	// Create Virtual collections:
-	KorapCollection kc = new KorapCollection();
+	KrillCollection kc = new KrillCollection();
 	kc.filterUIDs(new String[]{"2", "3", "4"});
 	kc.setIndex(ki);
 	assertEquals("Documents", 3, kc.numberOf("documents"));

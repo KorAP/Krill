@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillMeta;
 
 
@@ -37,7 +37,7 @@ public class KorapResponse extends Notifications {
     ObjectMapper mapper = new ObjectMapper();
 
     private KrillMeta meta;
-    private KorapCollection collection;
+    private KrillCollection collection;
 
     private String version, name, node, listener;
     private KrillQuery query;
@@ -357,26 +357,26 @@ public class KorapResponse extends Notifications {
     /**
      * Get the associated collection object.
      * In case no collection information was defined yet,
-     * a new {@link KorapCollection} object will be created.
+     * a new {@link KrillCollection} object will be created.
      *
-     * @return The attached {@link KorapCollection} object.
+     * @return The attached {@link KrillCollection} object.
      */
     @JsonIgnore
-    public KorapCollection getCollection () {
+    public KrillCollection getCollection () {
         if (this.collection == null)
-            this.collection = new KorapCollection();
+            this.collection = new KrillCollection();
         return this.collection;
     };
 
 
     /**
-     * Set a new {@link KorapCollection} object.
+     * Set a new {@link KrillCollection} object.
      *
-     * @param collection A {@link KorapCollection} object.
+     * @param collection A {@link KrillCollection} object.
      * @return The {@link KorapResponse} object for chaining
      */
     @JsonIgnore
-    public KorapResponse setCollection (KorapCollection collection) {
+    public KorapResponse setCollection (KrillCollection collection) {
         this.collection = collection;
         
         // Move messages from the collection

@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.collection;
 import java.util.*;
 import java.io.*;
 
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 
 import static de.ids_mannheim.korap.TestSimple.*;
 
@@ -14,14 +14,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestKorapCollectionJSON {
+public class TestKrillCollectionJSON {
 
     final String path = "/queries/collections/";
 
     @Test
     public void collection1 () {
         String metaQuery = _getJSONString("collection_1.jsonld");
-        KorapCollection kc = new KorapCollection(metaQuery);
+        KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(
             kc.toString(),
             "filter with QueryWrapperFilter(+pubDate:20000101); "
@@ -31,7 +31,7 @@ public class TestKorapCollectionJSON {
     @Test
     public void collection2 () {
         String metaQuery = _getJSONString("collection_2.jsonld");
-        KorapCollection kc = new KorapCollection(metaQuery);
+        KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(
             kc.toString(),
             "filter with QueryWrapperFilter(+(+pubDate:"+
@@ -43,7 +43,7 @@ public class TestKorapCollectionJSON {
     @Test
     public void collection3 () {
         String metaQuery = _getJSONString("collection_3.jsonld");
-        KorapCollection kc = new KorapCollection(metaQuery);
+        KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(kc.toString(), "");
     };
 
@@ -51,7 +51,7 @@ public class TestKorapCollectionJSON {
     @Test
     public void collection5 () {
         String metaQuery = _getJSONString("collection_5.jsonld");
-        KorapCollection kc = new KorapCollection(metaQuery);
+        KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(
             kc.toString(),
             "filter with QueryWrapperFilter(+(pubDate:"+
@@ -63,7 +63,7 @@ public class TestKorapCollectionJSON {
     @Test
     public void nocollectiontypegiven () {
         String metaQuery = _getJSONString("multiterm_rewrite_collection.jsonld");
-        KorapCollection kc = new KorapCollection(metaQuery);
+        KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(701, kc.getError(0).getCode());
     };
 
@@ -71,7 +71,7 @@ public class TestKorapCollectionJSON {
     @Test
     public void noCollection () {
         String metaQuery = _getJSONString("no_collection.jsonld");
-        KorapCollection kc = new KorapCollection(metaQuery);
+        KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(
             "filter with QueryWrapperFilter(+corpusID:WPD); ",
             kc.toString()

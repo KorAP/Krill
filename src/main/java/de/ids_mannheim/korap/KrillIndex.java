@@ -460,15 +460,15 @@ public class KrillIndex {
      * e.g. <i>documents</i>, <i>sentences</i> etc.
      *
      * @param collection The scope of the numbering by means of a
-     *        {@link KorapCollection}
+     *        {@link KrillCollection}
      * @param field The field containing the textual data and the
      *        annotations as a string.
      * @param type The type of meta information,
      *        e.g. <i>documents</i> or <i>sentences</i> as a string.
      * @return The number of the occurrences.
-     * @see KorapCollection#numberOf
+     * @see KrillCollection#numberOf
      */
-    public long numberOf (KorapCollection collection,
+    public long numberOf (KrillCollection collection,
                           String field,
                           String type) {
         // Short cut for documents
@@ -532,10 +532,10 @@ public class KrillIndex {
      * @param type The type of meta information,
      *        e.g. <i>documents</i> or <i>sentences</i> as a string.
      * @return The number of the occurrences.
-     * @see KorapCollection#numberOf
+     * @see KrillCollection#numberOf
      */
     public long numberOf (String field, String type) {
-        return this.numberOf(new KorapCollection(this), field, type);
+        return this.numberOf(new KrillCollection(this), field, type);
     };
 
 
@@ -547,7 +547,7 @@ public class KrillIndex {
      * @param type The type of meta information,
      *        e.g. <i>documents</i> or <i>sentences</i> as a string.
      * @return The number of the occurrences.
-     * @see KorapCollection#numberOf
+     * @see KrillCollection#numberOf
      */
     public long numberOf (String type) {
         return this.numberOf("tokens", type);
@@ -980,7 +980,7 @@ public class KrillIndex {
 
     @Deprecated
     public HashMap getTermRelation (String field) throws Exception {
-        return this.getTermRelation(new KorapCollection(this), field);
+        return this.getTermRelation(new KrillCollection(this), field);
     };
 
 
@@ -988,7 +988,7 @@ public class KrillIndex {
      * Analyze how terms relate
      */
     @Deprecated
-    public HashMap getTermRelation (KorapCollection kc, String field) throws Exception {
+    public HashMap getTermRelation (KrillCollection kc, String field) throws Exception {
         HashMap<String,Long> map = new HashMap<>(100);
         long docNumber = 0, checkNumber = 0;
         
@@ -1112,7 +1112,7 @@ public class KrillIndex {
 
 
     @Deprecated
-    public KorapResult search (KorapCollection collection,
+    public KorapResult search (KrillCollection collection,
                                SpanQuery query,
                                int startIndex,
                                short count,
@@ -1143,7 +1143,7 @@ public class KrillIndex {
 
         this.termContexts = new HashMap<Term, TermContext>();
 
-        KorapCollection collection = ks.getCollection();
+        KrillCollection collection = ks.getCollection();
         collection.setIndex(this);
 
         // Get the spanquery from the Krill object
@@ -1387,7 +1387,7 @@ public class KrillIndex {
         if (DEBUG)
             log.trace("Start collecting");
 
-        KorapCollection collection = ks.getCollection();
+        KrillCollection collection = ks.getCollection();
         collection.setIndex(this);
 
         // Init term context

@@ -23,7 +23,7 @@ import javax.ws.rs.WebApplicationException;
 import de.ids_mannheim.korap.KorapNode;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.KorapResponse;
@@ -232,7 +232,7 @@ public class Resource {
 
                 // Build Collection based on a list of uids
                 List<String> uids = qp.get("uid");
-                KorapCollection kc = new KorapCollection();
+                KrillCollection kc = new KrillCollection();
                 kc.filterUIDs(uids.toArray(new String[uids.size()]));
                 
                 // TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)

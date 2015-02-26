@@ -28,16 +28,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Create a Virtual Collection of documents by means of a KoralQuery
- * or by applying manual filters and extensions on Lucene fields.
+ * collection object.
+ * Alternatively by applying manual filters and extensions on Lucene fields.
  *
  * <blockquote><pre>
- *   KorapCollection kc = new KorapCollection(json);
+ *   KrillCollection kc = new KrillCollection(json);
  *   kc.filterUIDS("a1", "a2", "a3");
  * </pre></blockquote>
  *
  * <strong>Warning</strong>: This API is deprecated and will
  * be replaced in future versions. It supports legacy versions of
- * KoralQuery.
+ * KoralQuery that will be disabled.
  *
  * @author diewald
  */
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * See http://mail-archives.apache.org/mod_mbox/lucene-java-user/
  *     200805.mbox/%3C17080852.post@talk.nabble.com%3E
  */
-public class KorapCollection extends Notifications {
+public class KrillCollection extends Notifications {
     private KrillIndex index;
     private KorapDate created;
     private String id;
@@ -58,31 +59,31 @@ public class KorapCollection extends Notifications {
     private int filterCount = 0;
     
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapCollection.class);
+    private final static Logger log = LoggerFactory.getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
 
     /**
-     * Construct a new KorapCollection by passing a KrillIndex.
+     * Construct a new KrillCollection by passing a KrillIndex.
      *
      * @param index The {@link KrillIndex} object.
      */
-    public KorapCollection (KrillIndex index) {
+    public KrillCollection (KrillIndex index) {
         this.index = index;
         this.filter = new ArrayList<FilterOperation>(5);
     };
 
 
     /**
-     * Construct a new KorapCollection by passing a KoralQuery.
+     * Construct a new KrillCollection by passing a KoralQuery.
      * This supports collections with the key "collection" and
      * legacy collections with the key "collections".
      *
      * @param jsonString The virtual collection as a KoralQuery.
      */
-    public KorapCollection (String jsonString) {
+    public KrillCollection (String jsonString) {
         ObjectMapper mapper = new ObjectMapper();
         this.filter = new ArrayList<FilterOperation>(5);
 
@@ -114,7 +115,7 @@ public class KorapCollection extends Notifications {
             this.addError(
                 621,
                 "Unable to parse JSON",
-                "KorapCollection",
+                "KrillCollection",
                 e.getLocalizedMessage()
             );
         };
@@ -122,9 +123,9 @@ public class KorapCollection extends Notifications {
 
 
     /**
-     * Construct a new KorapCollection.
+     * Construct a new KrillCollection.
      */
-    public KorapCollection () {
+    public KrillCollection () {
         this.filter = new ArrayList<FilterOperation>(5);
     };
 
@@ -135,13 +136,13 @@ public class KorapCollection extends Notifications {
      * @param jsonString The "collection" part of a KoralQuery.
      * @throws QueryException
      */
-    public KorapCollection fromJson (String jsonString) throws QueryException {
+    public KrillCollection fromJson (String jsonString) throws QueryException {
         ObjectMapper mapper = new ObjectMapper();
         try {
             this.fromJson((JsonNode) mapper.readTree(jsonString));
         }
         catch (Exception e) {
-            this.addError(621, "Unable to parse JSON", "KorapCollection");
+            this.addError(621, "Unable to parse JSON", "KrillCollection");
         };
 
         return this;
@@ -155,7 +156,7 @@ public class KorapCollection extends Notifications {
      *        as a {@link JsonNode} object.
      * @throws QueryException
      */
-    public KorapCollection fromJson (JsonNode json) throws QueryException {
+    public KrillCollection fromJson (JsonNode json) throws QueryException {
         this.filter(this._fromJson(json));
         return this;
     };
@@ -267,13 +268,13 @@ public class KorapCollection extends Notifications {
      * @throws QueryException
      */
     @Deprecated
-    public KorapCollection fromJsonLegacy (String jsonString) throws QueryException {
+    public KrillCollection fromJsonLegacy (String jsonString) throws QueryException {
         ObjectMapper mapper = new ObjectMapper();
         try {
             this.fromJsonLegacy((JsonNode) mapper.readValue(jsonString, JsonNode.class));
         }
         catch (Exception e) {
-            this.addError(621, "Unable to parse JSON", "KorapCollection");
+            this.addError(621, "Unable to parse JSON", "KrillCollection");
         };
         return this;
     };
@@ -288,7 +289,7 @@ public class KorapCollection extends Notifications {
      * @throws QueryException
      */
     @Deprecated
-    public KorapCollection fromJsonLegacy (JsonNode json) throws QueryException {
+    public KrillCollection fromJsonLegacy (JsonNode json) throws QueryException {
         if (!json.has("@type"))
             throw new QueryException(701, "JSON-LD group has no @type attribute");
 
@@ -429,10 +430,10 @@ public class KorapCollection extends Notifications {
      * legacy API and may vanish without warning.
      *
      * @param filter The filter to add to the collection.
-     * @return The {@link KorapCollection} object for chaining.
+     * @return The {@link KrillCollection} object for chaining.
      */
     // TODO: The checks may not be necessary
-    public KorapCollection filter (BooleanFilter filter) {
+    public KrillCollection filter (BooleanFilter filter) {
         if (DEBUG)
             log.trace("Added filter: {}", filter.toString());
         
@@ -464,9 +465,9 @@ public class KorapCollection extends Notifications {
      * legacy API and may vanish without warning.
      *
      * @param filter The filter to add to the collection.
-     * @return The {@link KorapCollection} object for chaining.
+     * @return The {@link KrillCollection} object for chaining.
      */
-    public KorapCollection filter (CollectionBuilder filter) {
+    public KrillCollection filter (CollectionBuilder filter) {
         return this.filter(filter.getBooleanFilter());
     };
 
@@ -478,9 +479,9 @@ public class KorapCollection extends Notifications {
      * legacy API and may vanish without warning.
      *
      * @param extension The extension to add to the collection.
-     * @return The {@link KorapCollection} object for chaining.
+     * @return The {@link KrillCollection} object for chaining.
      */
-    public KorapCollection extend (BooleanFilter extension) {
+    public KrillCollection extend (BooleanFilter extension) {
         if (DEBUG)
             log.trace("Added extension: {}", extension.toString());
 
@@ -502,9 +503,9 @@ public class KorapCollection extends Notifications {
      * legacy API and may vanish without warning.
      *
      * @param extension The extension to add to the collection.
-     * @return The {@link KorapCollection} object for chaining.
+     * @return The {@link KrillCollection} object for chaining.
      */
-    public KorapCollection extend (CollectionBuilder extension) {
+    public KrillCollection extend (CollectionBuilder extension) {
         return this.extend(extension.getBooleanFilter());
     };
 
@@ -516,9 +517,9 @@ public class KorapCollection extends Notifications {
      * This filter is not part of the legacy API!
      *
      * @param uids The list of unique document identifier.
-     * @return The {@link KorapCollection} object for chaining.
+     * @return The {@link KrillCollection} object for chaining.
      */
-    public KorapCollection filterUIDs (String ... uids) {
+    public KrillCollection filterUIDs (String ... uids) {
         BooleanFilter filter = new BooleanFilter();
         filter.or("UID", uids);
         if (DEBUG)

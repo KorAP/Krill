@@ -7,7 +7,7 @@ import static de.ids_mannheim.korap.TestSimple.*;
 
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillMeta;
-import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.QueryBuilder;
@@ -205,7 +205,7 @@ public class TestKrill {
 
         ks = new Krill(json);
         // Ignore the collection part of the query!
-        ks.setCollection(new KorapCollection());
+        ks.setCollection(new KrillCollection());
         kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 5);
@@ -413,7 +413,7 @@ public class TestKrill {
         json = getString(
             getClass().getResource("/queries/metaquery9.jsonld").getFile()
         );
-        KorapCollection kc = new KorapCollection(json);
+        KrillCollection kc = new KrillCollection(json);
         kc.setIndex(ki);
         assertEquals(7, kc.numberOf("documents"));
     };
@@ -536,7 +536,7 @@ public class TestKrill {
         Krill ks = new Krill(json);
         ks.getMeta().setItemsPerResource(1);
 
-        KorapCollection kc = new KorapCollection();
+        KrillCollection kc = new KrillCollection();
         kc.filterUIDs(new String[]{"1", "4"});
         kc.setIndex(ki);
         ks.setCollection(kc);
@@ -927,7 +927,7 @@ public class TestKrill {
         );
 	
         Krill ks = new Krill(json);
-        KorapCollection kc = ks.getCollection();
+        KrillCollection kc = ks.getCollection();
 
         // No index was set
         assertEquals(-1, kc.numberOf("documents"));
@@ -1303,7 +1303,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        KorapCollection kc = new KorapCollection(ki);
+        KrillCollection kc = new KrillCollection(ki);
 
         assertEquals(7, kc.numberOf("documents"));
 
@@ -1359,7 +1359,7 @@ public class TestKrill {
         );
         ki.commit();
 
-        KorapCollection kc = new KorapCollection(ki);
+        KrillCollection kc = new KrillCollection(ki);
         assertEquals(3, kc.numberOf("documents"));
 
     	HashMap map = kc.getTermRelation("textClass");
@@ -1437,7 +1437,7 @@ public class TestKrill {
         );
         ki.commit();
 
-        KorapCollection kc = new KorapCollection(ki);
+        KrillCollection kc = new KrillCollection(ki);
         assertEquals(4, kc.numberOf("documents"));
 
     	HashMap map = kc.getTermRelation("textClass");
