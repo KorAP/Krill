@@ -15,6 +15,7 @@ import de.ids_mannheim.korap.index.PositionsToOffset;
 // Todo:
 import de.ids_mannheim.korap.meta.SearchContext;
 
+import de.ids_mannheim.korap.model.AbstractDocument;
 import de.ids_mannheim.korap.match.HighlightCombinator;
 import de.ids_mannheim.korap.match.HighlightCombinatorElement;
 import de.ids_mannheim.korap.match.Relation;
@@ -47,7 +48,7 @@ import org.apache.lucene.search.spans.Spans;
  * @see KorapResult
  */
 @JsonInclude(Include.NON_NULL)
-public class KorapMatch extends KorapDocument {
+public class KorapMatch extends AbstractDocument {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
@@ -361,7 +362,8 @@ public class KorapMatch extends KorapDocument {
      * @param field  Primary data field.
      * @param fields Hash object with all supported fields.
      */
-    public void populateDocument (Document doc, String field, HashSet<String> fields) {
+    public void populateDocument (Document doc,
+                                  String field, HashSet<String> fields) {
 	this.setField(field);
 	this.setPrimaryData( doc.get(field) );
 	if (fields.contains("corpusID"))

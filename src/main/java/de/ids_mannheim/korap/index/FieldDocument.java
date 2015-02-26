@@ -1,9 +1,8 @@
 package de.ids_mannheim.korap.index;
 
-import org.apache.lucene.document.Document;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
 import de.ids_mannheim.korap.model.MultiTermToken;
-import de.ids_mannheim.korap.KorapDocument;
+import de.ids_mannheim.korap.model.AbstractDocument;
 import de.ids_mannheim.korap.util.KorapDate;
 import de.ids_mannheim.korap.util.CorpusDataException;
 
@@ -11,6 +10,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.StoredField;
@@ -35,7 +35,7 @@ import java.util.*;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 // @JsonDeserialize(using = FieldDocumentDeserializer.class)
-public class FieldDocument extends KorapDocument {
+public class FieldDocument extends AbstractDocument {
     ObjectMapper mapper = new ObjectMapper();
 
     public Document doc = new Document();

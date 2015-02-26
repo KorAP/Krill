@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap;
+package de.ids_mannheim.korap.model;
 
 import java.util.*;
 
@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.*;
 
 /**
  * Abstract class representing a document in the
- * KorAP index.
+ * Krill index.
  *
  * This model is rather specific to DeReKo data and
  * should be considered experimental. It may be replaced
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.*;
  * @author diewald
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class KorapDocument extends KorapResponse {
+public abstract class AbstractDocument extends KorapResponse {
     private String primaryData;
 
     @JsonIgnore

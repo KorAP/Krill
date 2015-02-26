@@ -15,12 +15,12 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapDocument;
+import de.ids_mannheim.korap.model.AbstractDocument;
 
 @RunWith(JUnit4.class)
 public class TestKorapDocument {
 
-    private class KorapRealDocument extends KorapDocument {};
+    private class KorapRealDocument extends AbstractDocument {};
 
     @Test
     public void createDocument () throws IOException {
