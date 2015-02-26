@@ -24,8 +24,8 @@ import de.ids_mannheim.korap.KorapNode;
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapCollection;
-import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.KorapResponse;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.util.QueryException;
@@ -410,15 +410,15 @@ public class Resource {
 
 	    // Nothing found
 	    catch (QueryException qe) {
-		// Todo: Make KorapMatch rely on KorapResponse!
-                KorapMatch km = new KorapMatch();
+		// Todo: Make Match rely on KorapResponse!
+                Match km = new Match();
                 km.addError(qe.getErrorCode(), qe.getMessage());
                 return km.toJsonString();
             }
 	};
 
 	// Response with error message
-        KorapMatch km = new KorapMatch();
+        Match km = new Match();
         km.addError(601, "Unable to find index");
         return km.toJsonString();
     };

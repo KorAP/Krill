@@ -12,7 +12,9 @@ import de.ids_mannheim.korap.index.PositionsToOffset;
 
 // Remove:
 import de.ids_mannheim.korap.meta.SearchContext;
+
 import de.ids_mannheim.korap.response.KorapResponse;
+import de.ids_mannheim.korap.response.Match;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +45,7 @@ public class KorapResult extends Krill {
     private int startIndex = 0;
     private String serialQuery;
 
-    private List<KorapMatch> matches;
+    private List<Match> matches;
 
     private SearchContext context;
 
@@ -54,8 +56,8 @@ public class KorapResult extends Krill {
     private JsonNode request;
 
     // Logger
-    // This is KorapMatch instead of KorapResult!
-    private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
+    // This is Match instead of KorapResult!
+    private final static Logger log = LoggerFactory.getLogger(Match.class);
 
 
     /**
@@ -96,9 +98,9 @@ public class KorapResult extends Krill {
     /**
      * Add a new match to the result set.
      *
-     * @param match A {@link KorapMatch} to add.
+     * @param match A {@link Match} to add.
      */
-    public void add (KorapMatch km) {
+    public void add (Match km) {
         this.matches.add(km);
     };
 
@@ -195,24 +197,24 @@ public class KorapResult extends Krill {
 
 
     /**
-     * Get a certain {@link KorapMatch} by index.
+     * Get a certain {@link Match} by index.
      *
      * @param index The numerical index of the match,
      *        starts with <tt>0</tt>.
-     * @return The {@link KorapMatch} object.
+     * @return The {@link Match} object.
      */
     @JsonIgnore
-    public KorapMatch getMatch (int index) {
+    public Match getMatch (int index) {
         return this.matches.get(index);
     };
 
 
     /**
-     * Get the list of {@link KorapMatch} matches.
+     * Get the list of {@link Match} matches.
      *
-     * @return The list of {@link KorapMatch} objects.
+     * @return The list of {@link Match} objects.
      */
-    public List<KorapMatch> getMatches() {
+    public List<Match> getMatches() {
         return this.matches;
     };
 
@@ -306,7 +308,7 @@ public class KorapResult extends Krill {
         int i = 1;
 
         // Add matches as bracket strings
-        for (KorapMatch km : this.getMatches())
+        for (Match km : this.getMatches())
             sb.append(i++)
                 .append(": ")
                 .append(km.getSnippetBrackets())
@@ -326,7 +328,7 @@ public class KorapResult extends Krill {
         ArrayNode array = json.putArray("matches");
 	
         // Add matches as token lists
-        for (KorapMatch km : this.getMatches())
+        for (Match km : this.getMatches())
             array.add(km.toTokenList());
 
         try {

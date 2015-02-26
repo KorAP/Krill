@@ -1,5 +1,5 @@
 package de.ids_mannheim.korap.index;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.KorapResponse;
 import java.util.*;
 

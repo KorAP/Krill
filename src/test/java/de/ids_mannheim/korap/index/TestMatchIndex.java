@@ -15,9 +15,9 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapMatch;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.KorapCollection;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.query.*;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
@@ -333,7 +333,7 @@ public class TestMatchIndex {
 
         assertEquals("totalResults", kr.getTotalResults(), 3);
 
-        KorapMatch km = kr.getMatch(0);
+        Match km = kr.getMatch(0);
         assertEquals("StartPos (0)", 1, km.startPos);
         assertEquals("EndPos (0)", 2, km.endPos);
         assertEquals("SnippetBrackets (0)", "a[{3:b}]cabcab ...", km.getSnippetBrackets());

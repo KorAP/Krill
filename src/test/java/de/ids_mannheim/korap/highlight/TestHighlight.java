@@ -10,7 +10,7 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.index.FieldDocument;
 
 import de.ids_mannheim.korap.util.QueryException;
@@ -55,7 +55,7 @@ public class TestHighlight { // extends LuceneTestCase {
         KorapResult kr = ki.search(
             (SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).toQuery()
         );
-        KorapMatch km = kr.getMatch(0);
+        Match km = kr.getMatch(0);
         assertEquals(km.getStartPos(),  1);
         assertEquals(km.getEndPos(),    2);
         assertEquals(km.getStartPos(1), 1);
@@ -124,7 +124,7 @@ public class TestHighlight { // extends LuceneTestCase {
         QueryBuilder kq = new QueryBuilder("tokens");
 
         KorapResult kr = ki.search((SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).append(kq.seg("s:c")).toQuery());
-        KorapMatch km = kr.getMatch(0);
+        Match km = kr.getMatch(0);
         km.addHighlight(0, 1, (short) 7);
         assertEquals("<span class=\"context-left\"></span><mark><mark class=\"class-7 level-0\">ab</mark>c</mark><span class=\"context-right\"></span>", km.getSnippetHTML());
 

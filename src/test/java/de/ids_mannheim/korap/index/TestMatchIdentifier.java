@@ -17,7 +17,7 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.KorapResult;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.util.QueryException;
 
 
@@ -102,7 +102,7 @@ public class TestMatchIdentifier {
 	assertEquals("StartPos (0)", kr.getMatch(0).startPos, 7);
 	assertEquals("EndPos (0)",   kr.getMatch(0).endPos,   9);
 
-	KorapMatch km = kr.getMatch(0);
+	Match km = kr.getMatch(0);
 
 	assertEquals("SnippetBrackets (0)", "... bcabca[{2:b{1:a}}]c", km.getSnippetBrackets());
 	assertEquals("ID (0)", "match-c1!d1-p7-9(2)7-8(1)8-8", km.getID());
@@ -114,7 +114,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
-	KorapMatch km = ki.getMatch("match-c1!d1-p7-9(0)8-8(2)7-8");
+	Match km = ki.getMatch("match-c1!d1-p7-9(0)8-8(2)7-8");
 
 	assertEquals("StartPos (0)", 7, km.getStartPos());
 	assertEquals("EndPos (0)", 9, km.getEndPos());
@@ -217,7 +217,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
-	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
+	Match km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
 			     "tokens",
 			     null,
 			     null,
@@ -267,7 +267,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
-	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
+	Match km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
 			     "tokens",
 			     null,
 			     null,
@@ -313,7 +313,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
-	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
+	Match km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8",
 			     "tokens",
 			     null,
 			     null,
@@ -332,7 +332,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
-	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-10(4)8-8(2)7-8",
+	Match km = ki.getMatchInfo("match-c1!d1-p7-10(4)8-8(2)7-8",
 			     "tokens",
 			     null,
 			     null,
@@ -351,7 +351,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
-	KorapMatch km = ki.getMatchInfo("match-c1!d1-p7-10(4)8-8(2)7-8",
+	Match km = ki.getMatchInfo("match-c1!d1-p7-10(4)8-8(2)7-8",
 			     "tokens",
 			     null,
 			     null,
@@ -414,7 +414,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
-	KorapMatch km = ki.getMatchInfo("match-c1!d1-p0-5(4)8-8(2)7-8",
+	Match km = ki.getMatchInfo("match-c1!d1-p0-5(4)8-8(2)7-8",
 			     "tokens",
 			     "x",
 			     null,
@@ -508,7 +508,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc3());
 	ki.addDoc(createSimpleFieldDoc4());
 	ki.commit();
-	KorapMatch km;
+	Match km;
 
 	km = ki.getMatchInfo("match-c1!d1-p3-4",
 			     "tokens",
@@ -562,7 +562,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc2());
 	ki.commit();
 
-	KorapMatch km = ki.getMatchInfo("match-c1!d1-p0-4",
+	Match km = ki.getMatchInfo("match-c1!d1-p0-4",
 			     "tokens",
 			     null,
 			     null,
@@ -623,7 +623,7 @@ public class TestMatchIdentifier {
 	ki.addDoc(createSimpleFieldDoc4());
 	ki.commit();
 
-	KorapMatch km = ki.getMatchInfo("match-c1!d4-p3-9",
+	Match km = ki.getMatchInfo("match-c1!d4-p3-9",
 					"tokens",
 					"f",
 					"m",

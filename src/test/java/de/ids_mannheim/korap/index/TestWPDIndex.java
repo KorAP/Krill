@@ -15,7 +15,7 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.collection.BooleanFilter;
@@ -85,7 +85,7 @@ public class TestWPDIndex {
 		kr = ks.apply(ki);
 		assertEquals(kr.getTotalResults(), 11);
 		//System.out.println(kr.getTotalResults());
-		//for (KorapMatch km : kr.getMatches()){
+		//for (Match km : kr.getMatches()){
 			//System.out.println(km.getDocID() +" "+km.getStartPos() +" "+ km.getEndPos());
         	//System.out.println(km.getSnippetBrackets());
         	//System.out.println(km.toJSON());

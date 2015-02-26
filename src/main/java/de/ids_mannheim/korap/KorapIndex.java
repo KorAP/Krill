@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.index.*;
 import de.ids_mannheim.korap.meta.*;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -612,7 +613,7 @@ public class KorapIndex {
     };
 
 
-    public KorapMatch getMatch (String id) throws QueryException {
+    public Match getMatch (String id) throws QueryException {
         return this.getMatchInfo(
             id,       // MatchID
             "tokens", // field
@@ -627,7 +628,7 @@ public class KorapIndex {
 
 
     // There is a good chance that some of these methods will die ...
-    public KorapMatch getMatchInfo (String id,
+    public Match getMatchInfo (String id,
                                     String field,
                                     String foundry,
                                     String layer,
@@ -646,7 +647,7 @@ public class KorapIndex {
     };
 
 
-    public KorapMatch getMatchInfo (String id,
+    public Match getMatchInfo (String id,
                                     String field,
                                     String foundry,
                                     String layer,
@@ -665,7 +666,7 @@ public class KorapIndex {
         );
     };
 
-    public KorapMatch getMatchInfo (String id,
+    public Match getMatchInfo (String id,
                                     String field,
                                     boolean info,
                                     String foundry,
@@ -696,10 +697,10 @@ public class KorapIndex {
      * Get a match.
      */
     /*
-      KorapInfo is associated with a KorapMatch and has an array with all informations
+      KorapInfo is associated with a Match and has an array with all informations
       per position in the match.
     */
-    public KorapMatch getMatchInfo (String idString,
+    public Match getMatchInfo (String idString,
                                     String field,
                                     boolean info,
                                     List<String> foundry,
@@ -708,7 +709,7 @@ public class KorapIndex {
                                     boolean includeHighlights,
                                     boolean extendToSentence) throws QueryException {
 
-        KorapMatch match = new KorapMatch(idString, includeHighlights);
+        Match match = new Match(idString, includeHighlights);
 
         if (this.getVersion() != null)
             match.setVersion(this.getVersion());
@@ -1194,8 +1195,8 @@ public class KorapIndex {
         };
 
         // Collect matches from atomic readers
-        ArrayList<KorapMatch> atomicMatches =
-            new ArrayList<KorapMatch>(kr.getItemsPerPage());
+        ArrayList<Match> atomicMatches =
+            new ArrayList<Match>(kr.getItemsPerPage());
         
         // Start time out thread
         TimeOutThread tthread = new TimeOutThread();
@@ -1285,8 +1286,8 @@ public class KorapIndex {
                     // Do not load all of this, in case the doc is the same!
                     Document doc = lreader.document(localDocID, fields);
 
-                    // Create new KorapMatch
-                    KorapMatch match = new KorapMatch(
+                    // Create new Match
+                    Match match = new Match(
                         pto,
                         localDocID,
                         spans.start(),
@@ -1409,7 +1410,7 @@ public class KorapIndex {
         HashSet<String> fields = new HashSet<>(1);
         fields.add("UID");
 
-        // List<KorapMatch> atomicMatches = new ArrayList<KorapMatch>(10);
+        // List<Match> atomicMatches = new ArrayList<Match>(10);
         try {
 
             // Rewrite query (for regex and wildcard queries)
@@ -1444,7 +1445,7 @@ public class KorapIndex {
                     // New match
                     // MatchIdentifier possibly needs more
                     /*
-                      KorapMatch match = new KorapMatch();
+                      Match match = new Match();
                       match.setStartPos(spans.start());
                       match.setEndPos(spans.end());
                       

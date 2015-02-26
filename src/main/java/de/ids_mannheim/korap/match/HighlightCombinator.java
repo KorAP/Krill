@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.match;
 
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.match.HighlightCombinatorElement;
 import java.util.*;
 import java.io.*;
@@ -13,8 +13,8 @@ import org.slf4j.LoggerFactory;
 */
 public class HighlightCombinator {
 
-    // Logger (use the KorapMatch class)
-    private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
+    // Logger (use the Match class)
+    private final static Logger log = LoggerFactory.getLogger(Match.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -25,161 +25,161 @@ public class HighlightCombinator {
 
     // Empty constructor
     public HighlightCombinator () {
-	this.combine = new LinkedList<>();
+        this.combine = new LinkedList<>();
     };
 
     // Return the combination list
     public LinkedList<HighlightCombinatorElement> list () {
-	return this.combine;
+        return this.combine;
     };
 
     // get the first element (without removing)
     public HighlightCombinatorElement getFirst () {
-	return this.combine.getFirst();
+        return this.combine.getFirst();
     };
 
     // get the last element (without removing)
     public HighlightCombinatorElement getLast () {
-	return this.combine.getLast();
+        return this.combine.getLast();
     };
 
     // get an element by index (without removing)
     public HighlightCombinatorElement get (int index) {
-	return this.combine.get(index);
+        return this.combine.get(index);
     };
 
     // Get the size of the combinator stack
     public short size () {
-	return (short) this.combine.size();
+        return (short) this.combine.size();
     };
 
     // Add primary data to the stack
     public void addString (String characters) {
-	this.combine.add(new HighlightCombinatorElement(characters));
+        this.combine.add(new HighlightCombinatorElement(characters));
     };
 
     // Add opening highlight combinator to the stack
     public void addOpen (int number) {
-	this.combine.add(new HighlightCombinatorElement((byte) 1, number));
-	this.balanceStack.push(number);
+        this.combine.add(new HighlightCombinatorElement((byte) 1, number));
+        this.balanceStack.push(number);
     };
 
     // Add closing highlight combinator to the stack
     public void addClose (int number) {
-	HighlightCombinatorElement lastComb;
+        HighlightCombinatorElement lastComb;
 
-	// Clean up temporary stack
-	this.tempStack.clear();
+        // Clean up temporary stack
+        this.tempStack.clear();
+        
+        // Check if there is an opening tag at least
+        if (this.balanceStack.empty()) {
+            if (DEBUG)
+                log.trace("The balance stack is empty");
+            return;
+        };
 
-	// Check if there is an opening tag at least
-	if (this.balanceStack.empty()) {
-	    if (DEBUG)
-		log.trace("The balance stack is empty");
-	    return;
-	};
+        // Just some debug information
+        if (DEBUG) {
+            StringBuilder sb = new StringBuilder("Stack for checking with class ");
+            sb.append(number).append(" is ");
+            for (int s : this.balanceStack) {
+                sb.append('[').append(s).append(']');
+            };
+            log.trace(sb.toString());
+        };
 
-	// Just some debug information
-	if (DEBUG) {
-	    StringBuilder sb = new StringBuilder("Stack for checking with class ");
-	    sb.append(number).append(" is ");
-	    for (int s : this.balanceStack) {
-		sb.append('[').append(s).append(']');
-	    };
-	    log.trace(sb.toString());
-	};
+        // class number of the last element
+        // It's already ensured the stack is not empty
+        int eold = this.balanceStack.pop();
+        
+        // the closing element is not balanced, i.e. the last element differs
+        while (eold != number) {
+            
+            // Retrieve last combinator on stack
+            lastComb = this.combine.peekLast();
+            
+            if (DEBUG)
+                log.trace("Closing element is unbalanced - {} " +
+                          "!= {} with lastComb {}|{}|{}",
+                          eold,
+                          number,
+                          lastComb.type,
+                          lastComb.number,
+                          lastComb.characters);
 
-	// class number of the last element
-	// It's already ensured the stack is not empty
-	int eold = this.balanceStack.pop();
+            // combinator is opening and the number is not equal to the last
+            // element on the balanceStack
+            if (lastComb.type == 1 && lastComb.number == eold) {
+                
+                // Remove the last element - it's empty and uninteresting!
+                this.combine.removeLast();
+            }
 
-	// the closing element is not balanced, i.e. the last element differs
-	while (eold != number) {
+            // combinator is either closing (??) or another opener
+            else {
 
-	    // Retrieve last combinator on stack
-	    lastComb = this.combine.peekLast();
-
-	    if (DEBUG)
-		log.trace("Closing element is unbalanced - {} " +
-			  "!= {} with lastComb {}|{}|{}",
-			  eold,
-			  number,
-			  lastComb.type,
-			  lastComb.number,
-			  lastComb.characters);
-
-	    // combinator is opening and the number is not equal to the last
-	    // element on the balanceStack
-	    if (lastComb.type == 1 && lastComb.number == eold) {
+                if (DEBUG)
+                    log.trace("close element a) {}", eold);
 		
-		// Remove the last element - it's empty and uninteresting!
-		this.combine.removeLast();
-	    }
+                // Add a closer for the old element (this has following elements)
+                this.combine.add(new HighlightCombinatorElement((byte) 2, eold, false));
+            };
 
-	    // combinator is either closing (??) or another opener
-	    else {
+            // add this element number temporarily on the stack
+            tempStack.push(eold);
 
-		if (DEBUG)
-		    log.trace("close element a) {}", eold);
-		
-		// Add a closer for the old element (this has following elements)
-		this.combine.add(new HighlightCombinatorElement((byte) 2, eold, false));
-	    };
+            // Check next element
+            eold = this.balanceStack.pop();
+        };
 
-	    // add this element number temporarily on the stack
-	    tempStack.push(eold);
+        // Get last combinator on the stack
+        lastComb = this.combine.peekLast();
 
-	    // Check next element
-	    eold = this.balanceStack.pop();
-	};
-
-	// Get last combinator on the stack
-	lastComb = this.combine.peekLast();
-
-	if (DEBUG) {
-	    log.trace("LastComb: " +
-		      lastComb.type +
-		      '|' +
-		      lastComb.number +
-		      '|' + lastComb.characters +
-		      " for " +
-		      number);
-	    log.trace("Stack for checking 2: {}|{}|{}|{}",
-		      lastComb.type,
-		      lastComb.number,
-		      lastComb.characters,
-		      number);
-	};
-
-	if (lastComb.type == 1 && lastComb.number == number) {
-	    while (lastComb.type == 1 && lastComb.number == number) {
-		// Remove the damn thing - It's empty and uninteresting!
-		this.combine.removeLast();
-		lastComb = this.combine.peekLast();
-	    };
-	}
-	else {
-	    if (DEBUG)
-		log.trace("close element b) {}", number);
+        if (DEBUG) {
+            log.trace("LastComb: " +
+                      lastComb.type +
+                      '|' +
+                      lastComb.number +
+                      '|' + lastComb.characters +
+                      " for " +
+                      number);
+            log.trace("Stack for checking 2: {}|{}|{}|{}",
+                      lastComb.type,
+                      lastComb.number,
+                      lastComb.characters,
+                      number);
+        };
+        
+        if (lastComb.type == 1 && lastComb.number == number) {
+            while (lastComb.type == 1 && lastComb.number == number) {
+                // Remove the damn thing - It's empty and uninteresting!
+                this.combine.removeLast();
+                lastComb = this.combine.peekLast();
+            };
+        }
+        else {
+            if (DEBUG)
+                log.trace("close element b) {}", number);
 	    
-	    // Add a closer
-	    this.combine.add(new HighlightCombinatorElement((byte) 2, number));
-	};
+            // Add a closer
+            this.combine.add(new HighlightCombinatorElement((byte) 2, number));
+        };
 
-	// Fetch everything from the tempstack and reopen it
-	for (int e : tempStack) {
-	    if (DEBUG)
-		log.trace("Reopen element {}", e);
-	    combine.add(new HighlightCombinatorElement((byte) 1, e));
-	    balanceStack.push(e);
-	};
+        // Fetch everything from the tempstack and reopen it
+        for (int e : tempStack) {
+            if (DEBUG)
+                log.trace("Reopen element {}", e);
+            combine.add(new HighlightCombinatorElement((byte) 1, e));
+            balanceStack.push(e);
+        };
     };
 
     // Get all combined elements as a string
     public String toString () {
-	StringBuilder sb = new StringBuilder();
-	for (HighlightCombinatorElement e : combine) {
-	    sb.append(e.toString()).append("\n");
-	};
-	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        for (HighlightCombinatorElement e : combine) {
+            sb.append(e.toString()).append("\n");
+        };
+        return sb.toString();
     };
 };

@@ -11,7 +11,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
@@ -79,7 +79,7 @@ public class TestClass {
 		kr = ki.search(sq, (short) 10);
 				
 		/*
-		for (KorapMatch km : kr.getMatches()){
+		for (Match km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 					+km.getSnippetBrackets()
 			);

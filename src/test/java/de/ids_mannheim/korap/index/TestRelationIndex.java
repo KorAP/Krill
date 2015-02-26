@@ -9,7 +9,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -382,7 +382,7 @@ public class TestRelationIndex {
         assertEquals(5,kr.getMatch(6).getStartPos());
         assertEquals(7,kr.getMatch(6).getEndPos());     
         
-//       for (KorapMatch km : kr.getMatches()){        
+//       for (Match km : kr.getMatches()){        
 //            System.out.println(km.getStartPos() +","+km.getEndPos()
 //                    //  +" "+km.getSnippetBrackets()
 //            );
@@ -446,7 +446,7 @@ public class TestRelationIndex {
 				false, true, true); 
 		kr = ki.search(rv3,(short) 10);
 		
-		/*for (KorapMatch km : kr.getMatches()){		
+		/*for (Match km : kr.getMatches()){		
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets()
 					);
@@ -478,7 +478,7 @@ public class TestRelationIndex {
 				false, true, true);
 		kr = ki.search(rv,(short) 10);
 		
-		/*for (KorapMatch km : kr.getMatches()){
+		/*for (Match km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets());
 			}*/
@@ -519,7 +519,7 @@ public class TestRelationIndex {
 				true, false, true);
 		kr = ki.search(rv,(short) 10);
 		
-		/*for (KorapMatch km : kr.getMatches()){
+		/*for (Match km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets());
 			}*/
@@ -551,7 +551,7 @@ public class TestRelationIndex {
 				new SpanElementQuery("base","np"), 
 				false, true, true);
 		kr = ki.search(rv,(short) 10);
-		/*for (KorapMatch km : kr.getMatches()){
+		/*for (Match km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets());
 			}*/
@@ -575,7 +575,7 @@ public class TestRelationIndex {
 				
 		kr = ki.search(rv3,(short) 10);
 		
-		/*for (KorapMatch km : kr.getMatches()){		
+		/*for (Match km : kr.getMatches()){		
 		System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 			+km.getSnippetBrackets());
 		}*/		
@@ -652,7 +652,7 @@ public class TestRelationIndex {
 				false, true, true);
 		kr = ki.search(rv,(short) 10);
 		
-		/*for (KorapMatch km : kr.getMatches()){		
+		/*for (Match km : kr.getMatches()){		
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 				+km.getSnippetBrackets());
 			}*/
@@ -691,7 +691,7 @@ public class TestRelationIndex {
 				3, false, true, true);
 		kr = ki.search(rv,(short) 10);
 		
-		/*for (KorapMatch km : kr.getMatches()){
+		/*for (Match km : kr.getMatches()){
 			System.out.println(km.getStartPos() +","+km.getEndPos()
 				+" "+km.getSnippetBrackets()
 				);

@@ -15,7 +15,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.index.MatchCollector;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.Krill;

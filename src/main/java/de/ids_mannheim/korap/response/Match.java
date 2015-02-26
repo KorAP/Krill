@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap;
+package de.ids_mannheim.korap.response;
 import java.util.*;
 import java.io.*;
 
@@ -48,10 +48,10 @@ import org.apache.lucene.search.spans.Spans;
  * @see KorapResult
  */
 @JsonInclude(Include.NON_NULL)
-public class KorapMatch extends AbstractDocument {
+public class Match extends AbstractDocument {
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapMatch.class);
+    private final static Logger log = LoggerFactory.getLogger(Match.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -105,7 +105,7 @@ public class KorapMatch extends AbstractDocument {
     private boolean processed = false;
 
     /**
-     * Constructs a new KorapMatch object.
+     * Constructs a new Match object.
      * Todo: Maybe that's not necessary!
      *
      * @param pto The PositionsToOffset object, containing relevant
@@ -118,7 +118,7 @@ public class KorapMatch extends AbstractDocument {
      * @see #snippetBrackets()
      * @see PositionsToOffset
      */
-    public KorapMatch (PositionsToOffset pto,
+    public Match (PositionsToOffset pto,
 		       int localDocID,
 		       int startPos,
 		       int endPos) {
@@ -130,19 +130,19 @@ public class KorapMatch extends AbstractDocument {
 
     
     /**
-     * Constructs a new KorapMatch object.
+     * Constructs a new Match object.
      */
-    public KorapMatch () {};
+    public Match () {};
 
     
     /**
-     * Constructs a new KorapMatch object.
+     * Constructs a new Match object.
      *
      * @param idString Match identifier string as provided by KorapResult.
      * @param includeHighlights Boolean value indicating if possible provided
      *        highlight information should be ignored or not.
      */
-    public KorapMatch (String idString, boolean includeHighlights) {
+    public Match (String idString, boolean includeHighlights) {
 	MatchIdentifier id = new MatchIdentifier(idString);
 	if (id.getStartPos() > -1) {
 	    this.setCorpusID(id.getCorpusID());
@@ -635,7 +635,7 @@ public class KorapMatch extends AbstractDocument {
     };
 
 
-    public KorapMatch setContext (SearchContext context) {
+    public Match setContext (SearchContext context) {
 	this.context = context;
 	return this;
     };

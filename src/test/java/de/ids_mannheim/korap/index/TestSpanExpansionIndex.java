@@ -56,7 +56,7 @@ public class TestSpanExpansionIndex {
         assertEquals(8, kr.getMatch(2).getEndPos());
 
         /*
-         * for (KorapMatch km : kr.getMatches()) {
+         * for (Match km : kr.getMatches()) {
          * System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
          * km.getSnippetBrackets()); }
          */
@@ -101,7 +101,7 @@ public class TestSpanExpansionIndex {
         assertEquals(156, kr.getMatch(3).getEndPos(1));
 
         /*
-         * for (KorapMatch km : kr.getMatches()){
+         * for (Match km : kr.getMatches()){
          * System.out.println(km.getStartPos() +","+km.getEndPos()+" "
          * +km.getSnippetBrackets()); }
          */
@@ -127,7 +127,7 @@ public class TestSpanExpansionIndex {
         assertEquals(36, kr.getMatch(3).getEndPos(1));
 
         /*
-         * for (KorapMatch km : kr.getMatches()){
+         * for (Match km : kr.getMatches()){
          * System.out.println(km.getStartPos() +","+km.getEndPos()+" "
          * +km.getSnippetBrackets()); }
          */
@@ -161,7 +161,7 @@ public class TestSpanExpansionIndex {
         assertEquals(13, kr.getMatch(3).getEndPos(1));
 
         /*
-         * for (KorapMatch km : kr.getMatches()){
+         * for (Match km : kr.getMatches()){
          * System.out.println(km.getStartPos() +","+km.getEndPos()+" "
          * +km.getSnippetBrackets()); }
          */
@@ -201,7 +201,7 @@ public class TestSpanExpansionIndex {
         assertEquals(14, kr.getMatch(6).getEndPos(1));
 
         /*
-         * for (KorapMatch km : kr.getMatches()){
+         * for (Match km : kr.getMatches()){
          * System.out.println(km.getStartPos() +","+km.getEndPos()+" "
          * +km.getSnippetBrackets()); }
          */
@@ -240,7 +240,7 @@ public class TestSpanExpansionIndex {
         assertEquals(12, kr.getMatch(3).getEndPos());
 
         /*
-         * for (KorapMatch km : kr.getMatches()){
+         * for (Match km : kr.getMatches()){
          * System.out.println(km.getStartPos() +","+km.getEndPos()+" "
          * //+km.getSnippetBrackets() ); }
          */
@@ -302,7 +302,7 @@ public class TestSpanExpansionIndex {
         assertEquals(208, kr.getMatch(0).getEndPos());
 
         /*
-         * for (KorapMatch km : kr.getMatches()){
+         * for (Match km : kr.getMatches()){
          * System.out.println(km.getStartPos() +","+km.getEndPos()+" "
          * +km.getSnippetBrackets() ); }
          */
@@ -336,7 +336,7 @@ public class TestSpanExpansionIndex {
         assertEquals((long) 3, kr.getTotalResults());
 
         /*
-         * for (KorapMatch km : kr.getMatches()){
+         * for (Match km : kr.getMatches()){
          * System.out.println(km.getStartPos() +","+km.getEndPos()+" "
          * +km.getSnippetBrackets() ); }
          */

@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillMeta;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
@@ -138,7 +138,7 @@ public class TestFieldDocument {
 	QueryBuilder kq = new QueryBuilder("tokens");
 	KorapResult kr = ki.search((SpanQuery) kq.seq(kq._(3, kq.seg("s:b"))).toQuery());
 
-	KorapMatch km = kr.getMatch(0);
+	Match km = kr.getMatch(0);
 
 	assertEquals(km.getPrimaryData(),"abc");
 	assertEquals(km.getCorpusID(),"WPD");

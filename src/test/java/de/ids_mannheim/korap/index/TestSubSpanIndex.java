@@ -51,7 +51,7 @@ public class TestSubSpanIndex {
         assertEquals(185, kr.getMatch(1).getEndPos());
 
         /*
-         * for (KorapMatch km : kr.getMatches()){
+         * for (Match km : kr.getMatches()){
          * System.out.println(km.getStartPos() +","+km.getEndPos()
          * +km.getSnippetBrackets()); }
          */
@@ -109,7 +109,7 @@ public class TestSubSpanIndex {
         assertEquals(183, kr.getMatch(1).getStartPos());
         assertEquals(185, kr.getMatch(1).getEndPos());
 
-        // for (KorapMatch km : kr.getMatches()) {
+        // for (Match km : kr.getMatches()) {
         // System.out.println(km.getStartPos() + "," + km.getEndPos()
         // + km.getSnippetBrackets());
         // }

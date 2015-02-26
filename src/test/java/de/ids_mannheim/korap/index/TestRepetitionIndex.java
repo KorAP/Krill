@@ -11,7 +11,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
@@ -227,7 +227,7 @@ public class TestRepetitionIndex {
         assertEquals(77, kr.getMatch(0).getEndPos());
         assertEquals(74, kr.getMatch(1).getStartPos());
         assertEquals(77, kr.getMatch(1).getEndPos());
-       /* for (KorapMatch km : kr.getMatches()){
+       /* for (Match km : kr.getMatches()){
         	System.out.println(km.getSnippetBrackets());
         	System.out.println(km.getStartPos() +","+km.getEndPos());
         }*/
@@ -241,7 +241,7 @@ public class TestRepetitionIndex {
         assertEquals(73, kr.getMatch(0).getStartPos());
         assertEquals(77, kr.getMatch(0).getEndPos());
         /*
-        for (KorapMatch km : kr.getMatches()){
+        for (Match km : kr.getMatches()){
         	System.out.println(km.getSnippetBrackets());
         	System.out.println(km.getStartPos() +","+km.getEndPos());
         }*/

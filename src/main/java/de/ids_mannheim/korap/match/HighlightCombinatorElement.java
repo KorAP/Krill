@@ -1,7 +1,7 @@
 package de.ids_mannheim.korap.match;
 
 import org.apache.lucene.util.FixedBitSet;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.match.Relation;
 import static de.ids_mannheim.korap.util.KorapString.*;
 import java.util.*;
@@ -44,7 +44,7 @@ public class HighlightCombinatorElement {
     };
 
     // Return html fragment for this combinator element
-    public String toHTML (KorapMatch match, FixedBitSet level, byte[] levelCache) {	    
+    public String toHTML (Match match, FixedBitSet level, byte[] levelCache) {	    
         // Opening
         if (this.type == 1) {
             StringBuilder sb = new StringBuilder();
@@ -114,7 +114,7 @@ public class HighlightCombinatorElement {
     };
 
     // Return bracket fragment for this combinator element
-    public String toBrackets (KorapMatch match) {
+    public String toBrackets (Match match) {
 	if (this.type == 1) {
 	    StringBuilder sb = new StringBuilder();
 	    

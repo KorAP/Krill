@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KorapIndex;
-import de.ids_mannheim.korap.KorapMatch;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -192,7 +192,7 @@ public class TestWithinIndex {
         assertEquals("Doc (11)", 1, kr.getMatch(11).internalDocID);
 
         /*
-		for (KorapMatch km : kr.getMatches()){		
+		for (Match km : kr.getMatches()){		
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
                                +km.getSnippetBrackets());
 		};	
@@ -1116,7 +1116,7 @@ public class TestWithinIndex {
         assertEquals(252, kr.getMatch(1).getEndPos());
 
         /*
-		for (KorapMatch km : kr.getMatches()){		
+		for (Match km : kr.getMatches()){		
 			System.out.println(km.getStartPos() +","+km.getEndPos()+" "
                                +km.getSnippetBrackets());
 		};	
