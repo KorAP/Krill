@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.node;
+package de.ids_mannheim.korap.server;
 
 import java.io.*;
 
@@ -20,7 +20,7 @@ import javax.ws.rs.ext.WriterInterceptor;
 import javax.ws.rs.ext.WriterInterceptorContext;
 import javax.ws.rs.WebApplicationException;
 
-import de.ids_mannheim.korap.KorapNode;
+import de.ids_mannheim.korap.server.Node;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillCollection;
@@ -60,7 +60,7 @@ public class Resource {
     private String version;
 
     // Initiate Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
+    private final static Logger log = LoggerFactory.getLogger(Node.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -89,13 +89,13 @@ public class Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
-        KrillIndex index = KorapNode.getIndex();
+        KrillIndex index = Node.getIndex();
         KorapResponse kresp = new KorapResponse();
-        kresp.setNode(KorapNode.getName());
+        kresp.setNode(Node.getName());
         kresp.setName(index.getName());
         kresp.setVersion(index.getVersion());
 
-        kresp.setListener(KorapNode.getListener());
+        kresp.setListener(Node.getListener());
         long texts = -1;
         /*
           kresp.addMessage(
@@ -136,10 +136,10 @@ public class Resource {
             log.trace("Added new document with unique identifier {}", uid);
 
         // Get index
-        KrillIndex index = KorapNode.getIndex();
+        KrillIndex index = Node.getIndex();
 
         KorapResponse kresp = new KorapResponse();
-        kresp.setNode(KorapNode.getName());
+        kresp.setNode(Node.getName());
 
         if (index == null) {
             kresp.addError(601, "Unable to find index");
@@ -180,9 +180,9 @@ public class Resource {
     public String commit () {
 
         // Get index
-        KrillIndex index = KorapNode.getIndex();
+        KrillIndex index = Node.getIndex();
         KorapResponse kresp = new KorapResponse();
-        kresp.setNode(KorapNode.getName());
+        kresp.setNode(Node.getName());
 
         if (index == null) {
             kresp.addError(601, "Unable to find index");
@@ -219,7 +219,7 @@ public class Resource {
     public String find (String json, @Context UriInfo uri) {
 
         // Get index
-        KrillIndex index = KorapNode.getIndex();
+        KrillIndex index = Node.getIndex();
 
         // Search index
         if (index != null) {
@@ -246,13 +246,13 @@ public class Resource {
                 return ks.apply(index).toJsonString();
             };
             KorapResult kr = new KorapResult();
-            kr.setNode(KorapNode.getName());
+            kr.setNode(Node.getName());
             kr.addError(610, "Missing request parameters", "No unique IDs were given");
             return kr.toJsonString();
         };
 
         KorapResponse kresp = new KorapResponse();
-        kresp.setNode(KorapNode.getName());
+        kresp.setNode(Node.getName());
         kresp.setName(index.getName());
         kresp.setVersion(index.getVersion());
         
@@ -276,12 +276,12 @@ public class Resource {
                            @Context UriInfo uri) {
 
         // Get index
-        KrillIndex index = KorapNode.getIndex();
+        KrillIndex index = Node.getIndex();
 
         // No index found
         if (index == null) {
             KorapResponse kresp = new KorapResponse();
-            kresp.setNode(KorapNode.getName());
+            kresp.setNode(Node.getName());
             kresp.addError(601, "Unable to find index");
             return kresp.toJsonString();
         };
@@ -289,15 +289,15 @@ public class Resource {
         // Get the database
         try {
             MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_" + resultID);
-            Connection conn = KorapNode.getDBPool().getConnection();
-            mc.setDBPool("mysql", KorapNode.getDBPool(), conn);
+            Connection conn = Node.getDBPool().getConnection();
+            mc.setDBPool("mysql", Node.getDBPool(), conn);
             
             // TODO: Only search in self documents (REPLICATION FTW!)
             
             Krill ks = new Krill(json);
             MatchCollector result = index.collect(ks, mc);
 
-            result.setNode(KorapNode.getName());
+            result.setNode(Node.getName());
             return result.toJsonString();
         }
         catch (SQLException e) {
@@ -305,7 +305,7 @@ public class Resource {
         };
 
         KorapResponse kresp = new KorapResponse();
-        kresp.setNode(KorapNode.getName());
+        kresp.setNode(Node.getName());
         kresp.setName(index.getName());
         kresp.setVersion(index.getVersion());
 
@@ -334,17 +334,17 @@ public class Resource {
     public String search (String json) {
 
 	// Get index
-	KrillIndex index = KorapNode.getIndex();
+	KrillIndex index = Node.getIndex();
 
 	// Search index
         if (index != null) {
             KorapResult kr = new Krill(json).apply(index);
-	    kr.setNode(KorapNode.getName());
+	    kr.setNode(Node.getName());
 	    return kr.toJsonString();
 	};
 
 	KorapResponse kresp = new KorapResponse();
-	kresp.setNode(KorapNode.getName());
+	kresp.setNode(Node.getName());
 	kresp.setName(index.getName());
 	kresp.setVersion(index.getVersion());
 
@@ -359,7 +359,7 @@ public class Resource {
 			 @Context UriInfo uri) {
 
 	// Get index
-	KrillIndex index = KorapNode.getIndex();
+	KrillIndex index = Node.getIndex();
 
 	// Search index
         if (index != null) {
@@ -444,7 +444,7 @@ public class Resource {
     public String collection (String json) {
 
 	// Get index
-	KrillIndex index = KorapNode.getIndex();
+	KrillIndex index = Node.getIndex();
 
 	if (index == null)
 	    return "{\"documents\" : -1, error\" : \"No index given\" }";

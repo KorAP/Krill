@@ -1,5 +1,5 @@
 package de.ids_mannheim.korap.response.collector;
-import de.ids_mannheim.korap.KorapNode;
+import de.ids_mannheim.korap.server.Node;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.MatchCollector;
 import com.fasterxml.jackson.annotation.*;
@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class MatchCollectorDB extends MatchCollector {
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
+    private final static Logger log = LoggerFactory.getLogger(Node.class);
 
     /*
      * Todo: In case there are multiple threads searching,

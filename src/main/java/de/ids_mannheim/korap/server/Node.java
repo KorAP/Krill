@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap;
+package de.ids_mannheim.korap.server;
 
 import java.util.*;
 import java.io.*;
@@ -23,13 +23,13 @@ import com.mchange.v2.c3p0.*;
  *
  * @author diewald
  */
-public class KorapNode {
+public class Node {
 
     // Base URI the Grizzly HTTP server will listen on
     public static String BASE_URI = "http://localhost:8080/";
     
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
+    private final static Logger log = LoggerFactory.getLogger(Node.class);
 
     // Index
     private static KrillIndex index;
@@ -60,7 +60,7 @@ public class KorapNode {
         // Load configuration
         try {
             InputStream file = new FileInputStream(
-                KorapNode.class.getClassLoader()
+                Node.class.getClassLoader()
                 .getResource("server.properties")
                 .getFile()
             );
@@ -69,8 +69,8 @@ public class KorapNode {
 
             // Node properties
             path     = prop.getProperty("lucene.indexDir", path);
-            name     = prop.getProperty("lucene.node.name", name);
-            BASE_URI = prop.getProperty("lucene.node.baseURI", BASE_URI);
+            name     = prop.getProperty("lucene.server.name", name);
+            BASE_URI = prop.getProperty("lucene.server.baseURI", BASE_URI);
 
             // Database properties
             dbUser  = prop.getProperty("lucene.db.user",    dbUser);
@@ -86,7 +86,7 @@ public class KorapNode {
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
         final ResourceConfig rc =
-            new ResourceConfig().packages("de.ids_mannheim.korap.node");
+            new ResourceConfig().packages("de.ids_mannheim.korap.server");
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
@@ -98,7 +98,7 @@ public class KorapNode {
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
         final ResourceConfig rc =
-            new ResourceConfig().packages("de.ids_mannheim.korap.node");
+            new ResourceConfig().packages("de.ids_mannheim.korap.server");
 
         name = nodeName;
         path = indexPath;
