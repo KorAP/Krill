@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.match;
+package de.ids_mannheim.korap.response.match;
 import java.util.*;
 import java.util.regex.*;
 
@@ -7,20 +7,20 @@ public class DocIdentifier {
     protected String corpusID, docID;
 
     public String getCorpusID () {
-	return this.corpusID;
+        return this.corpusID;
     };
 
     public void setCorpusID (String id) {
-	if (id != null && !id.contains("!"))
-	    this.corpusID = id;
+        if (id != null && !id.contains("!"))
+            this.corpusID = id;
     };
 
     public String getDocID () {
-	return this.docID;
+        return this.docID;
     };
 
     public void setDocID (String id) {
-	if (id != null && !id.contains("!"))
-	    this.docID = id;
+        if (id != null && !id.contains("!"))
+            this.docID = id;
     };
 };

@@ -9,8 +9,8 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.match.MatchIdentifier;
-import de.ids_mannheim.korap.match.PosIdentifier;
+import de.ids_mannheim.korap.response.match.MatchIdentifier;
+import de.ids_mannheim.korap.response.match.PosIdentifier;
 
 import de.ids_mannheim.korap.KorapIndex;
 import de.ids_mannheim.korap.KrillQuery;

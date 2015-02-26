@@ -1,7 +1,7 @@
-package de.ids_mannheim.korap.match;
+package de.ids_mannheim.korap.response.match;
 
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.match.HighlightCombinatorElement;
+import de.ids_mannheim.korap.response.match.HighlightCombinatorElement;
 import java.util.*;
 import java.io.*;
 

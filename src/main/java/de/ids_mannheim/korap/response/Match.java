@@ -16,11 +16,11 @@ import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.meta.SearchContext;
 
 import de.ids_mannheim.korap.model.AbstractDocument;
-import de.ids_mannheim.korap.match.HighlightCombinator;
-import de.ids_mannheim.korap.match.HighlightCombinatorElement;
-import de.ids_mannheim.korap.match.Relation;
-import de.ids_mannheim.korap.match.MatchIdentifier;
-import de.ids_mannheim.korap.match.PosIdentifier;
+import de.ids_mannheim.korap.response.match.HighlightCombinator;
+import de.ids_mannheim.korap.response.match.HighlightCombinatorElement;
+import de.ids_mannheim.korap.response.match.Relation;
+import de.ids_mannheim.korap.response.match.MatchIdentifier;
+import de.ids_mannheim.korap.response.match.PosIdentifier;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 
 import org.slf4j.Logger;

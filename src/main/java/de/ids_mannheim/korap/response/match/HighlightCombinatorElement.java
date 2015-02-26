@@ -1,8 +1,8 @@
-package de.ids_mannheim.korap.match;
+package de.ids_mannheim.korap.response.match;
 
 import org.apache.lucene.util.FixedBitSet;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.match.Relation;
+import de.ids_mannheim.korap.response.match.Relation;
 import static de.ids_mannheim.korap.util.KorapString.*;
 import java.util.*;
 import java.io.*;
@@ -24,23 +24,23 @@ public class HighlightCombinatorElement {
 
     // Constructor for highlighting elements
     public HighlightCombinatorElement (byte type, int number) {
-	this.type = type;
-	this.number = number;
+        this.type = type;
+        this.number = number;
     };
 
     // Constructor for highlighting elements,
     // that may not be terminal, i.e. they were closed and will
     // be reopened for overlapping issues.
     public HighlightCombinatorElement (byte type, int number, boolean terminal) {
-	this.type     = type;
-	this.number   = number;
-	this.terminal = terminal;
+        this.type     = type;
+        this.number   = number;
+        this.terminal = terminal;
     };
 
     // Constructor for textual data
     public HighlightCombinatorElement (String characters) {
-	this.type = (byte) 0;
-	this.characters = characters;
+        this.type = (byte) 0;
+        this.characters = characters;
     };
 
     // Return html fragment for this combinator element
@@ -57,7 +57,7 @@ public class HighlightCombinatorElement {
                     .append(match.getPosID(match.getClassID(this.number)))
                     .append("\">");
             }
-
+            
             else if (this.number >= 256) {
                 sb.append("<span ");
                 if (this.number < 2048) {
