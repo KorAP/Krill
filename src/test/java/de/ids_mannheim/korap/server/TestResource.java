@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.node;
+package de.ids_mannheim.korap.server;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import java.io.FileInputStream;
 
-import de.ids_mannheim.korap.KorapNode;
+import de.ids_mannheim.korap.server.Node;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.response.KorapResponse;
 import static de.ids_mannheim.korap.util.KrillString.*;
@@ -36,7 +36,7 @@ public class TestResource {
     @Before
     public void setUp () throws Exception {
         // start the server
-        server = KorapNode.startServer("milena", (String) null);
+        server = Node.startServer("milena", (String) null);
         // create the client
         Client c = ClientBuilder.newClient();
 
@@ -55,7 +55,7 @@ public class TestResource {
         clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
         Client c = Client.create(clientConfig);
 */
-        target = c.target(KorapNode.BASE_URI);
+        target = c.target(Node.BASE_URI);
     };
 
     @After
@@ -91,14 +91,19 @@ public class TestResource {
 
             Entity jsonE = Entity.json(json);
 
-            kresp = target.path("/index/" + i).
-                request("application/json").
-                put(jsonE, KorapResponse.class);
+            try {
+                kresp = target.path("/index/" + i).
+                    request("application/json").
+                    put(jsonE, KorapResponse.class);
 
-            assertEquals(kresp.getNode(), "milena");
-            assertFalse(kresp.hasErrors());
-            assertFalse(kresp.hasWarnings());
-            assertFalse(kresp.hasMessages());
+                assertEquals(kresp.getNode(), "milena");
+                assertFalse(kresp.hasErrors());
+                assertFalse(kresp.hasWarnings());
+                assertFalse(kresp.hasMessages());
+            }
+            catch (Exception e) {
+                fail("Server response failed " + e.getMessage() + " (Known issue)");
+            }
         };
 
         kresp = target.path("/index").
@@ -117,17 +122,23 @@ public class TestResource {
             getClass().getResource("/queries/bsp-uid-example.jsonld").getFile()
         );
 
-        KorapResponse kresp
-            = target.path("/").
-            queryParam("uid", "1").
-            queryParam("uid", "4").
-            request("application/json").
-            post(Entity.json(json), KorapResponse.class);
+        try {
+            KorapResponse kresp
+                = target.path("/").
+                queryParam("uid", "1").
+                queryParam("uid", "4").
+                request("application/json").
+                post(Entity.json(json), KorapResponse.class);
 
-        assertEquals(2, kresp.getTotalResults());
-        assertFalse(kresp.hasErrors());
-        assertFalse(kresp.hasWarnings());
-        assertFalse(kresp.hasMessages());
+            assertEquals(2, kresp.getTotalResults());
+            assertFalse(kresp.hasErrors());
+            assertFalse(kresp.hasWarnings());
+            assertFalse(kresp.hasMessages());
+        }
+        catch (Exception e) {
+            fail("Server response failed: " + e.getMessage() + " (Known issue)");
+        };
+
     };
 
     public static String getString (String path) {

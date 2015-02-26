@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.node;
+package de.ids_mannheim.korap.server;
 
 import de.ids_mannheim.korap.response.MatchCollector;
 import de.ids_mannheim.korap.response.collector.MatchCollectorDB;
@@ -25,11 +25,11 @@ public class TestDatabase {
 
     @Before
     public void setUp() throws Exception {
-	Class.forName("org.sqlite.JDBC");
-	conn = DriverManager.getConnection("jdbc:sqlite::memory:");
-	this.stat = conn.createStatement();
-	stat.executeUpdate("CREATE TABLE IF NOT EXISTS people (name TEXT, age INTEGER);");
-	conn.setAutoCommit(false);
+        Class.forName("org.sqlite.JDBC");
+        conn = DriverManager.getConnection("jdbc:sqlite::memory:");
+        this.stat = conn.createStatement();
+        stat.executeUpdate("CREATE TABLE IF NOT EXISTS people (name TEXT, age INTEGER);");
+        conn.setAutoCommit(false);
     };
 
     @Test
