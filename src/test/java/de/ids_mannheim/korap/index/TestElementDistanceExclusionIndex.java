@@ -9,7 +9,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -19,7 +19,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 public class TestElementDistanceExclusionIndex {
 	
     KorapResult kr;
-    KorapIndex ki; 
+    KrillIndex ki; 
     
     private SpanQuery createQuery(String e, String x, String y, int min, int max, boolean isOrdered,
     		boolean exclusion){
@@ -90,7 +90,7 @@ public class TestElementDistanceExclusionIndex {
      * */
     @Test
     public void testCase1() throws IOException{
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.commit();
         SpanQuery sq;
@@ -106,7 +106,7 @@ public class TestElementDistanceExclusionIndex {
      * */
     @Test
     public void testCase2() throws IOException{
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.commit();
         SpanQuery sq;       
@@ -129,7 +129,7 @@ public class TestElementDistanceExclusionIndex {
      * */
     @Test
     public void testCase3() throws IOException{
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.commit();
         SpanQuery sq;
@@ -155,7 +155,7 @@ public class TestElementDistanceExclusionIndex {
 	 * */
 	@Test
     public void testCase4() throws IOException{
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
     	ki.addDoc(createFieldDoc0());
         ki.addDoc(createFieldDoc1()); 
         ki.commit();
@@ -178,7 +178,7 @@ public class TestElementDistanceExclusionIndex {
 	 * */
 	@Test
     public void testCase5() throws IOException{
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
     	ki.addDoc(createFieldDoc0());
         ki.addDoc(createFieldDoc1());
         ki.addDoc(createFieldDoc0());

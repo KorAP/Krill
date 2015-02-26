@@ -14,7 +14,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
@@ -46,7 +46,7 @@ public class TestWithinIndex {
 
     @Test
     public void indexExample1a () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // <a>x<a>y<a>zhij</a>hij</a>hij</a>
         FieldDocument fd = new FieldDocument();
@@ -99,7 +99,7 @@ public class TestWithinIndex {
     @Test
     public void indexExample1b () throws IOException {
         // Cases 9, 12, 13
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // <a>x<a>y<a>zhij</a>hij</a>hij</a>
         FieldDocument fd = new FieldDocument();
@@ -205,7 +205,7 @@ public class TestWithinIndex {
     @Test
     public void indexExample1c () throws IOException {
         // Cases 9, 12, 13
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // <a>x<a>y<a>zhij</a>hij</a>hij</a>
         FieldDocument fd = new FieldDocument();
@@ -284,7 +284,7 @@ public class TestWithinIndex {
     @Test
     public void indexExample1d () throws IOException {
         // Cases 9, 12, 13
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // <a>x<a>y<a>zhij</a>hij</a>hij</a>
         FieldDocument fd = new FieldDocument();
@@ -373,7 +373,7 @@ public class TestWithinIndex {
     
     @Test
     public void indexExample2a () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // <a><a><a>h</a>hij</a>hij</a>
         FieldDocument fd = new FieldDocument();
@@ -446,7 +446,7 @@ public class TestWithinIndex {
 
     @Test
     public void indexExample2b () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // 6,9,12
         // <a><a><a>h</a>hij</a>hij</a>h
@@ -513,7 +513,7 @@ public class TestWithinIndex {
 
     @Test
     public void indexExample2c () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // 2, 6, 9, 12
         // <a><a><a>h</a>hij</a>hij</a>h<a>i</i>
@@ -588,7 +588,7 @@ public class TestWithinIndex {
 
     @Test
     public void indexExample2d () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         
         // 2, 6, 9, 12, 7
         // <a><a><a>h</a>hij</a>hij</a>h<a>h</h>
@@ -674,7 +674,7 @@ public class TestWithinIndex {
 
     @Test
     public void indexExample3 () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // <a><a><a>u</a></a></a>
         FieldDocument fd = new FieldDocument();
@@ -793,7 +793,7 @@ public class TestWithinIndex {
 
     @Test
     public void indexExample3Offsets () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // Er schrie: <s>"Das war ich!"</s>
         FieldDocument fd = new FieldDocument();
@@ -903,7 +903,7 @@ public class TestWithinIndex {
 
     @Test
     public void indexExample4 () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // Case 1, 6, 7, 13
         // xy<a><a>x</a>b<a>c</a></a>x
@@ -940,7 +940,7 @@ public class TestWithinIndex {
     @Test
     public void indexExample5 () throws IOException {
         // 1,2,3,6,9,10,12
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // hij<a>hi<a>h<a>ij</a></a>hi</a>
         FieldDocument fd = new FieldDocument();
@@ -987,7 +987,7 @@ public class TestWithinIndex {
 
     @Test
     public void indexExample6 () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // 2,5,8,12,13
         // h<a><a>i</a>j</a><a>h</a>i j<a>h i</a>j
         FieldDocument fd = new FieldDocument();
@@ -1027,7 +1027,7 @@ public class TestWithinIndex {
 
     @Test
     public void indexExample7 () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // 4,5,11,13
         // x<a>x h</a>i j h<a>i j</a>
         FieldDocument fd = new FieldDocument();
@@ -1068,7 +1068,7 @@ public class TestWithinIndex {
     /** SpanElementQueries */
     @Test
     public void indexExample8() throws IOException{	   
-        KorapIndex ki = new KorapIndex();		
+        KrillIndex ki = new KrillIndex();		
         FieldDocument fd = new FieldDocument();
         // <a>xx <e>hi j <e>hi j</e></e></a>
         fd.addTV("base",
@@ -1094,7 +1094,7 @@ public class TestWithinIndex {
 		
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
 		
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         ki.addDocFile(
             getClass().getResource("/wiki/DDD-08370.json.gz").getFile(),

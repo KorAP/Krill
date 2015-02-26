@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.KorapResult;
@@ -29,7 +29,7 @@ public class TestHighlight { // extends LuceneTestCase {
     @Test
     public void checkHighlights () throws IOException, QueryException  {
 
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         String json = new String(
 "{" +
 "  \"fields\" : [" +
@@ -100,7 +100,7 @@ public class TestHighlight { // extends LuceneTestCase {
     @Test
     public void checkHighlightsManually () throws IOException, QueryException  {
 
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         String json = new String(
 "{" +
 "  \"fields\" : [" +
@@ -139,7 +139,7 @@ public class TestHighlight { // extends LuceneTestCase {
 
     @Test
     public void highlightMissingBug () throws IOException, QueryException  {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
@@ -270,7 +270,7 @@ public class TestHighlight { // extends LuceneTestCase {
     public void highlightGreaterClassBug () throws IOException, QueryException  {
 
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001", "00002"}) {
             ki.addDocFile(

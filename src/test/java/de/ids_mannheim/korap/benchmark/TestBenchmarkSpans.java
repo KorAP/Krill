@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.benchmark;
 import java.util.*;
 import java.io.*;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.Krill;
@@ -32,7 +32,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KorapIndex ki = new KorapIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
 
         // Create a container for virtual collections:
         KorapCollection kc = new KorapCollection(ki);
@@ -83,7 +83,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KorapIndex ki = new KorapIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
         
         // Create a container for virtual collections:
         KorapCollection kc = new KorapCollection(ki);
@@ -126,7 +126,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KorapIndex ki = new KorapIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
 
         // Create a container for virtual collections:
         KorapCollection kc = new KorapCollection(ki);
@@ -168,7 +168,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KorapIndex ki = new KorapIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
 
         // Create a container for virtual collections:
         KorapCollection kc = new KorapCollection(ki);
@@ -280,7 +280,7 @@ public class TestBenchmarkSpans {
         double length = 0;
         for (int i = 1; i <= rounds; i++) {
             // Construct index
-            KorapIndex ki = new KorapIndex();
+            KrillIndex ki = new KrillIndex();
             
             // Indexing test files
             for (String d : docs) {
@@ -315,7 +315,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KorapIndex ki = new KorapIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
 
         // Create a container for virtual collections:
         KorapCollection kc = new KorapCollection(ki);

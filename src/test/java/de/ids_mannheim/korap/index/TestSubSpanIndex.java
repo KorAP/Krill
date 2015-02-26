@@ -8,7 +8,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -17,10 +17,10 @@ import de.ids_mannheim.korap.query.SpanSubspanQuery;
 public class TestSubSpanIndex {
 
     KorapResult kr;
-    KorapIndex ki;
+    KrillIndex ki;
 
     public TestSubSpanIndex () throws IOException {
-        ki = new KorapIndex();
+        ki = new KrillIndex();
         ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),
                 true);
         ki.commit();

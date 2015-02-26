@@ -159,12 +159,11 @@ public class TestSpanSequenceQuery {
             scqw.toQuery();
         }
         catch (Exception e) {
-            fail(e.getMessage() + "(Known issue)");
+            fail(e.getMessage() + " (Known issue)");
         };
         // assertEquals("", scqw.toQuery().toString());
 
         /*
-
         sssq = new SpanSequenceQueryWrapper("field");
         sssc = new SpanClassQueryWrapper(sssq, (short) 2);
         SpanSequenceQueryWrapper sssq2 = new SpanSequenceQueryWrapper("field");

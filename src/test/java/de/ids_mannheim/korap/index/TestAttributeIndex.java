@@ -11,7 +11,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -20,12 +20,12 @@ import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 
 public class TestAttributeIndex {
 
-    private KorapIndex ki = new KorapIndex();
+    private KrillIndex ki = new KrillIndex();
     private KorapResult kr;
     private FieldDocument fd;
 
     public TestAttributeIndex() throws IOException {
-        ki = new KorapIndex();
+        ki = new KrillIndex();
     }
 
     private FieldDocument createFieldDoc0() {

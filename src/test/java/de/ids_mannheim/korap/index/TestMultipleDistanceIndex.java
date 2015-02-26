@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -24,7 +24,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 @RunWith(JUnit4.class)
 public class TestMultipleDistanceIndex {
 	
-	private KorapIndex ki;
+	private KrillIndex ki;
 	private KorapResult kr;
 
 	public SpanQuery createQuery(String x, String y, List<DistanceConstraint> 
@@ -108,7 +108,7 @@ public class TestMultipleDistanceIndex {
      * */
     @Test
 	public void testCase1() throws IOException {
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.commit();
         
@@ -137,7 +137,7 @@ public class TestMultipleDistanceIndex {
      * */
 	@Test
 	public void testCase2() throws IOException {
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.commit();
 		
@@ -188,7 +188,7 @@ public class TestMultipleDistanceIndex {
      * */
     @Test
    	public void testCase3() throws IOException {
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
     	ki.addDoc(createFieldDoc0()); 
     	ki.addDoc(createFieldDoc1());
     	ki.addDoc(createFieldDoc2());
@@ -228,7 +228,7 @@ public class TestMultipleDistanceIndex {
      * */
     @Test
    	public void testCase4() throws IOException {
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
     	ki.addDoc(createFieldDoc0());
     	ki.addDoc(createFieldDoc3());
     	ki.addDoc(createFieldDoc1());
@@ -259,7 +259,7 @@ public class TestMultipleDistanceIndex {
 	 * */
     @Test
    	public void testCase5() throws IOException {
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
     	ki.addDoc(createFieldDoc0());    	
     	ki.addDoc(createFieldDoc1());    	
     	ki.commit();
@@ -290,7 +290,7 @@ public class TestMultipleDistanceIndex {
      * */
     @Test
    	public void testCase6() throws IOException {
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
     	ki.addDoc(createFieldDoc3());    	
     	ki.commit();
     	
@@ -333,7 +333,7 @@ public class TestMultipleDistanceIndex {
      * */
     @Test
     public void testCase7() throws IOException {
-    	ki = new KorapIndex();   	
+    	ki = new KrillIndex();   	
     	ki.addDoc(createFieldDoc2());    	
     	ki.commit();
     	

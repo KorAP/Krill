@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 @RunWith(JUnit4.class)
 public class TestUnorderedElementDistanceIndex {
 	
-	private KorapIndex ki;
+	private KrillIndex ki;
 	private KorapResult kr;
 	
 	private FieldDocument createFieldDoc0() {
@@ -108,7 +108,7 @@ public class TestUnorderedElementDistanceIndex {
 	@Test
 	public void testCase1() throws IOException{
 		//System.out.println("testCase1");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.commit();
         
@@ -137,7 +137,7 @@ public class TestUnorderedElementDistanceIndex {
 	@Test
 	public void testCase2() throws IOException{
 		//System.out.println("testCase2");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.addDoc(createFieldDoc1());
         ki.addDoc(createFieldDoc2());
@@ -162,7 +162,7 @@ public class TestUnorderedElementDistanceIndex {
 	@Test
 	public void testCase3() throws IOException{
 		//System.out.println("testCase3");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc1());
         ki.commit();
         
@@ -186,7 +186,7 @@ public class TestUnorderedElementDistanceIndex {
 	@Test
 	public void testCase4() throws IOException{
 		//System.out.println("testCase4");
-		ki = new KorapIndex();		
+		ki = new KrillIndex();		
         ki.addDoc(createFieldDoc1());
         ki.addDoc(createFieldDoc0());        
         ki.addDoc(createFieldDoc3());
@@ -217,7 +217,7 @@ public class TestUnorderedElementDistanceIndex {
 	/** Next */
 	@Test
 	public void testCase5() throws IOException{
-		ki = new KorapIndex();		
+		ki = new KrillIndex();		
         ki.addDoc(createFieldDoc0());
         ki.commit();
 		

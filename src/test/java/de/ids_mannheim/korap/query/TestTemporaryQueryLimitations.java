@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
@@ -29,7 +29,7 @@ public class TestTemporaryQueryLimitations {
     public void classRefCheckNotSupported () throws IOException, QueryException  {
 
 	// Construct index
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	String json = new String(
 "{" +
 "  \"fields\" : [" +

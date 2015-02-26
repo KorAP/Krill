@@ -9,7 +9,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -37,7 +37,7 @@ public class TestPosToOffset {
 
     @Test
     public void indexExample1 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	FieldDocument fd = new FieldDocument();
 	fd.addTV("base",

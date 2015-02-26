@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 @RunWith(JUnit4.class)
 public class TestUnorderedDistanceIndex{
 	
-    private KorapIndex ki;
+    private KrillIndex ki;
 	private KorapResult kr;
 
 	private FieldDocument createFieldDoc0(){
@@ -105,7 +105,7 @@ public class TestUnorderedDistanceIndex{
 	@Test
 	public void testCase1() throws IOException{
 		//System.out.println("testcase 1");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 	    ki.addDoc(createFieldDoc0()); 
 	    ki.commit();    
 	    
@@ -124,7 +124,7 @@ public class TestUnorderedDistanceIndex{
 	@Test
 	public void testCase2() throws IOException{
 		//System.out.println("testcase 2");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 		ki.addDoc(createFieldDoc0());
 	    ki.addDoc(createFieldDoc1()); 
 	    ki.commit();    
@@ -142,7 +142,7 @@ public class TestUnorderedDistanceIndex{
 	@Test
 	public void testCase3() throws IOException{		
 		//System.out.println("testcase 3");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 		ki.addDoc(createFieldDoc0());
 	    ki.addDoc(createFieldDoc1()); 
 	    ki.addDoc(createFieldDoc2());
@@ -164,7 +164,7 @@ public class TestUnorderedDistanceIndex{
 	@Test
 	public void testCase4() throws IOException{
 		//System.out.println("testcase 4");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 		ki.addDoc(createFieldDoc0());
 	    ki.addDoc(createFieldDoc1()); 
 	    ki.addDoc(createFieldDoc2());
@@ -187,7 +187,7 @@ public class TestUnorderedDistanceIndex{
 	 /** ElementQueries */    
     @Test
     public void testCase5() throws IOException{    	
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
 	    ki.addDoc(createFieldDoc0()); 
 	    ki.commit();    
 	    
@@ -236,7 +236,7 @@ public class TestUnorderedDistanceIndex{
      * */
     @Test
     public void testCase6() throws IOException{    	
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
 	    ki.addDoc(createFieldDoc0()); 
 	    ki.commit();    
 	    
@@ -252,7 +252,7 @@ public class TestUnorderedDistanceIndex{
 	@Test
 	public void testCase7() throws IOException{
 		//System.out.println("testcase 7");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 		ki.addDoc(createFieldDoc0());
 	    ki.addDoc(createFieldDoc1()); 
 	    ki.commit();    
@@ -278,7 +278,7 @@ public class TestUnorderedDistanceIndex{
 	 * */
 	@Test
 	public void testCase8() throws IOException{
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 	    ki.addDoc(createFieldDoc1()); 
 	    ki.commit();
 	    SpanQuery sq = new SpanNextQuery(

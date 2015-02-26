@@ -5,7 +5,7 @@ import java.util.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.response.Notifications;
@@ -37,13 +37,13 @@ import org.slf4j.LoggerFactory;
  * @see KrillMeta
  * @see KorapCollection
  * @see KrillQuery
- * @see KorapIndex
+ * @see KrillIndex
  */
 /*
  * Todo: Use a configuration file
  */
 public class Krill extends KorapResponse {
-    private KorapIndex index;
+    private KrillIndex index;
     private SpanQuery spanQuery;
     private JsonNode request;
     private String spanContext;
@@ -213,21 +213,21 @@ public class Krill extends KorapResponse {
 
 
     /**
-     * Get the associated {@link KorapIndex} object.
+     * Get the associated {@link KrillIndex} object.
      *
-     * @return The associated {@link KorapIndex} object.
+     * @return The associated {@link KrillIndex} object.
      */
-    public KorapIndex getIndex () {
+    public KrillIndex getIndex () {
         return this.index;
     };
 
 
     /**
-     * Set the associated {@link KorapIndex} object.
+     * Set the associated {@link KrillIndex} object.
      *
-     * @param index The associated {@link KorapIndex} object.
+     * @param index The associated {@link KrillIndex} object.
      */
-    public Krill setIndex (KorapIndex index) {
+    public Krill setIndex (KrillIndex index) {
         this.index = index;
         return this;
     };
@@ -236,11 +236,11 @@ public class Krill extends KorapResponse {
     /**
      * Apply the KoralQuery to an index.
      *
-     * @param index The {@link KorapIndex}
+     * @param index The {@link KrillIndex}
      *        the search should be applyied to.
      * @return The result as a {@link KorapResult} object.
      */
-    public KorapResult apply (KorapIndex index) {
+    public KorapResult apply (KrillIndex index) {
         return this.setIndex(index).apply();
     };
 

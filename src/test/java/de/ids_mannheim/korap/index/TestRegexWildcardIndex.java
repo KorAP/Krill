@@ -13,7 +13,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
@@ -29,7 +29,7 @@ public class TestRegexWildcardIndex {
 
     @Test
     public void indexRegex () throws Exception {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// abcabcabac
 	FieldDocument fd = new FieldDocument();
@@ -86,7 +86,7 @@ public class TestRegexWildcardIndex {
 
     @Test
     public void indexWildcard () throws Exception {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// abcabcabac
 	FieldDocument fd = new FieldDocument();
@@ -145,7 +145,7 @@ public class TestRegexWildcardIndex {
 
     @Test
     public void indexRegexCaseInsensitive () throws Exception {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// abcabcabac
 	FieldDocument fd = new FieldDocument();
@@ -210,7 +210,7 @@ public class TestRegexWildcardIndex {
 
     @Test
     public void indexRegexCombined () throws Exception {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// abcabcabac
 	FieldDocument fd = new FieldDocument();
@@ -246,7 +246,7 @@ public class TestRegexWildcardIndex {
 
     @Test
     public void indexRegexWithinRewrite () throws Exception {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// abcabcabac
 	FieldDocument fd = new FieldDocument();

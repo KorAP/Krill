@@ -13,7 +13,7 @@ import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -24,14 +24,14 @@ import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 @RunWith(JUnit4.class)
 public class TestSegmentNegationIndex {
     private SpanQuery sq;
-    private KorapIndex ki;
+    private KrillIndex ki;
     private KorapResult kr;
     private FieldDocument fd;
     private Logger log;	
 	
     @Test
     public void testcaseNegation() throws Exception {
-	ki = new KorapIndex();
+	ki = new KrillIndex();
 	ki.addDoc(createFieldDoc0());
 	ki.addDoc(createFieldDoc1());
 	ki.addDoc(createFieldDoc2());

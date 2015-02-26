@@ -15,7 +15,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.automaton.RegExp;
 import org.junit.Test;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -27,10 +27,10 @@ import de.ids_mannheim.korap.util.QueryException;
 public class TestSpanExpansionIndex {
 
     KorapResult kr;
-    KorapIndex ki;
+    KrillIndex ki;
 
     public TestSpanExpansionIndex() throws IOException {
-        ki = new KorapIndex();
+        ki = new KrillIndex();
         ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),
                 true);
         ki.commit();
@@ -216,7 +216,7 @@ public class TestSpanExpansionIndex {
      * */
     @Test
     public void testCase5() throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.commit();
 
@@ -253,7 +253,7 @@ public class TestSpanExpansionIndex {
      * */
     @Test
     public void testCase6() throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); // same doc
         ki.addDoc(createFieldDoc1()); // only not clause
         ki.addDoc(createFieldDoc2()); // only main clause
@@ -282,7 +282,7 @@ public class TestSpanExpansionIndex {
      * */
     @Test
     public void testCase7() throws IOException, QueryException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),
                 true);
         ki.addDocFile(getClass().getResource("/wiki/00002.json.gz").getFile(),
@@ -315,7 +315,7 @@ public class TestSpanExpansionIndex {
      * */
     @Test
     public void testQueryRewriteBug() throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); // same doc
         ki.addDoc(createFieldDoc1()); // only not clause
         ki.addDoc(createFieldDoc2()); // only main clause

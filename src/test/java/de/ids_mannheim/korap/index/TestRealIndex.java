@@ -18,7 +18,7 @@ import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestRealIndex {
-    KorapIndex ki;
+    KrillIndex ki;
     KorapResult kr;
     Krill ks;
 	
@@ -30,7 +30,7 @@ public class TestRealIndex {
         String indexPath = prop.getProperty("lucene.indexDir");
         System.err.println(indexPath);
         MMapDirectory md = new MMapDirectory(new File(indexPath));
-        ki = new KorapIndex(md);
+        ki = new KrillIndex(md);
     };
 
     @Test

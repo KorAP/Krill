@@ -13,7 +13,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.index.MatchCollector;
@@ -38,7 +38,7 @@ public class TestMatchCollector {
 
     @Test
     public void indexExample1 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// abcabcabac
 	FieldDocument fd = new FieldDocument();

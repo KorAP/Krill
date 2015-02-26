@@ -13,17 +13,17 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
 
 @RunWith(JUnit4.class)
-public class TestKorapIndex {
+public class TestKrillIndex {
 
     @Test
     public void indexExample () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         assertEquals(0, ki.numberOf("base", "documents"));
         assertEquals(0, ki.numberOf("base", "tokens"));
@@ -86,7 +86,7 @@ public class TestKorapIndex {
 
     @Test
     public void indexAlteration () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         
         assertEquals(0, ki.numberOf("base", "documents"));
 

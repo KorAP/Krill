@@ -18,7 +18,7 @@ import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexWriter;
 
 /**
- * Helper class for testing the KorapIndex framework (Normal).
+ * Helper class for testing the KrillIndex framework (Normal).
  *
  * @author diewald
  */

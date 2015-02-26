@@ -39,12 +39,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * KorapIndex implements a simple API for searching in and writing to a
+ * KrillIndex implements a simple API for searching in and writing to a
  * Lucene index and requesting several information about the index' nature.
  * <br />
  *
  * <blockquote><pre>
- *   KorapIndex ki = new KorapIndex(
+ *   KrillIndex ki = new KrillIndex(
  *       new MMapDirectory(new File("/myindex"))
  *   );
  * </pre></blockquote>
@@ -55,7 +55,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author diewald
  */
-
 /*
   TODO: Add word count as a meta data field!
   TODO: Validate document import!
@@ -81,12 +80,10 @@ import org.slf4j.LoggerFactory;
   -> search for frequencies of VVFIN/gehen
   -> c:VVFIN:[^:]*?:gehen:past:...
 */
-public class KorapIndex {
-
+public class KrillIndex {
     // Todo: Use configuration
-    // Last line of defense for simple DOS attacks!
-    private int maxTermRelations = 100;
-    private int autoCommit = 500;
+    private int maxTermRelations = 100, // Last line of defense
+                autoCommit = 500;
 
     private Directory directory;
 
@@ -113,7 +110,7 @@ public class KorapIndex {
         bbTerm   = ByteBuffer.allocate(16);
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KorapIndex.class);
+    private final static Logger log = LoggerFactory.getLogger(KrillIndex.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -142,33 +139,33 @@ public class KorapIndex {
 
 
     /**
-     * Constructs a new KorapIndex in-memory.
+     * Constructs a new KrillIndex in-memory.
      *
      * @throws IOException
      */
-    public KorapIndex () throws IOException {
+    public KrillIndex () throws IOException {
         this((Directory) new RAMDirectory());
     };
 
 
     /**
-     * Constructs a new KorapIndex bound to a persistant index.
+     * Constructs a new KrillIndex bound to a persistant index.
      *
      * @param index Path to an {@link FSDirectory} index
      * @throws IOException
      */
-    public KorapIndex (String index) throws IOException {
+    public KrillIndex (String index) throws IOException {
         this(FSDirectory.open(new File( index )));
     };
 
 
     /**
-     * Constructs a new KorapIndex bound to a persistant index.
+     * Constructs a new KrillIndex bound to a persistant index.
      *
      * @param directory A {@link Directory} pointing to an index
      * @throws IOException
      */
-    public KorapIndex (Directory directory) throws IOException {
+    public KrillIndex (Directory directory) throws IOException {
         this.directory = directory;
 
         // TODO: Shouldn't be here

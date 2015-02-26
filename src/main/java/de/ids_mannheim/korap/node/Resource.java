@@ -21,7 +21,7 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 import javax.ws.rs.WebApplicationException;
 
 import de.ids_mannheim.korap.KorapNode;
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapResult;
@@ -89,7 +89,7 @@ public class Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
-        KorapIndex index = KorapNode.getIndex();
+        KrillIndex index = KorapNode.getIndex();
         KorapResponse kresp = new KorapResponse();
         kresp.setNode(KorapNode.getName());
         kresp.setName(index.getName());
@@ -136,7 +136,7 @@ public class Resource {
             log.trace("Added new document with unique identifier {}", uid);
 
         // Get index
-        KorapIndex index = KorapNode.getIndex();
+        KrillIndex index = KorapNode.getIndex();
 
         KorapResponse kresp = new KorapResponse();
         kresp.setNode(KorapNode.getName());
@@ -180,7 +180,7 @@ public class Resource {
     public String commit () {
 
         // Get index
-        KorapIndex index = KorapNode.getIndex();
+        KrillIndex index = KorapNode.getIndex();
         KorapResponse kresp = new KorapResponse();
         kresp.setNode(KorapNode.getName());
 
@@ -219,7 +219,7 @@ public class Resource {
     public String find (String json, @Context UriInfo uri) {
 
         // Get index
-        KorapIndex index = KorapNode.getIndex();
+        KrillIndex index = KorapNode.getIndex();
 
         // Search index
         if (index != null) {
@@ -276,7 +276,7 @@ public class Resource {
                            @Context UriInfo uri) {
 
         // Get index
-        KorapIndex index = KorapNode.getIndex();
+        KrillIndex index = KorapNode.getIndex();
 
         // No index found
         if (index == null) {
@@ -334,7 +334,7 @@ public class Resource {
     public String search (String json) {
 
 	// Get index
-	KorapIndex index = KorapNode.getIndex();
+	KrillIndex index = KorapNode.getIndex();
 
 	// Search index
         if (index != null) {
@@ -359,7 +359,7 @@ public class Resource {
 			 @Context UriInfo uri) {
 
 	// Get index
-	KorapIndex index = KorapNode.getIndex();
+	KrillIndex index = KorapNode.getIndex();
 
 	// Search index
         if (index != null) {
@@ -444,7 +444,7 @@ public class Resource {
     public String collection (String json) {
 
 	// Get index
-	KorapIndex index = KorapNode.getIndex();
+	KrillIndex index = KorapNode.getIndex();
 
 	if (index == null)
 	    return "{\"documents\" : -1, error\" : \"No index given\" }";

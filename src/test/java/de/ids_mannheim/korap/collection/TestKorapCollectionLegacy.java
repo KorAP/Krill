@@ -2,7 +2,7 @@ package de.ids_mannheim.korap.collection;
 
 import java.io.*;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KorapResult;
@@ -28,7 +28,7 @@ public class TestKorapCollectionLegacy {
     public void filterExample () throws Exception {
 	
 	// Construct index
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	// Indexing test files
 	for (String i : new String[] {"00001",
 				      "00002",
@@ -103,7 +103,7 @@ public class TestKorapCollectionLegacy {
 	// That's exactly the same test class, but with multiple atomic indices
 
 	// Construct index
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	// Indexing test files
 	for (String i : new String[] {"00001",
 				      "00002",
@@ -179,7 +179,7 @@ public class TestKorapCollectionLegacy {
     public void filterExample2 () throws Exception {
 	
 	// Construct index
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	// Indexing test files
 	for (String i : new String[] {"00001",
 				      "00002",
@@ -229,7 +229,7 @@ public class TestKorapCollectionLegacy {
     public void uidCollection () throws IOException {
 	
 	// Construct index
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	// Indexing test files
 	int uid = 1;
 	for (String i : new String[] {"00001",

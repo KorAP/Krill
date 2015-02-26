@@ -14,7 +14,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
@@ -41,7 +41,7 @@ public class TestNextIndex {
 
     @Test
     public void indexExample1 () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // abcabcabac
         FieldDocument fd = new FieldDocument();
@@ -118,7 +118,7 @@ public class TestNextIndex {
 
     @Test
     public void indexExample2 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// abcabcabac
 	FieldDocument fd = new FieldDocument();
@@ -153,7 +153,7 @@ public class TestNextIndex {
 
     @Test
     public void indexExample3 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// abcabcabac
 	FieldDocument fd = new FieldDocument();
@@ -187,7 +187,7 @@ public class TestNextIndex {
 
     @Test
     public void indexExample4 () throws IOException {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         // abcabcabac
         // abc<x>abc<x>a</x>b</x>ac
@@ -263,7 +263,7 @@ public class TestNextIndex {
      * */
 	@Test
 	public void indexExample5 () throws IOException {
-		KorapIndex ki = new KorapIndex();
+		KrillIndex ki = new KrillIndex();
 		ki.addDoc(createFieldDoc1());		
 		ki.addDoc(createFieldDoc2());
 		ki.commit();
@@ -301,7 +301,7 @@ public class TestNextIndex {
 	/** Skip to NextSpan */
 	@Test
 	public void indexExample6() throws IOException{
-		KorapIndex ki = new KorapIndex();
+		KrillIndex ki = new KrillIndex();
 		ki.addDoc(createFieldDoc1());		
 		ki.addDoc(createFieldDoc2());		
 		ki.addDoc(createFieldDoc3());
@@ -325,7 +325,7 @@ public class TestNextIndex {
 
 	@Test
 	public void indexExample7Distances () throws Exception{
-		KorapIndex ki = new KorapIndex();
+		KrillIndex ki = new KrillIndex();
 		ki.addDoc(createFieldDoc1());		
 		ki.addDoc(createFieldDoc2());		
 		ki.addDoc(createFieldDoc3());
@@ -345,7 +345,7 @@ public class TestNextIndex {
 
 	@Test
 	public void indexExample8Distances () throws Exception{
-		KorapIndex ki = new KorapIndex();
+		KrillIndex ki = new KrillIndex();
 		ki.addDoc(createFieldDoc1());		
 		ki.addDoc(createFieldDoc2());		
 		ki.addDoc(createFieldDoc3());
@@ -365,7 +365,7 @@ public class TestNextIndex {
 
 	@Test
 	public void indexExample9() throws IOException{
-		KorapIndex ki = new KorapIndex();
+		KrillIndex ki = new KrillIndex();
 		ki.addDoc(createFieldDoc1());	
 		ki.commit();
 		

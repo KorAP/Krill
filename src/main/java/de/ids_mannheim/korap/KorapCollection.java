@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  *     200805.mbox/%3C17080852.post@talk.nabble.com%3E
  */
 public class KorapCollection extends Notifications {
-    private KorapIndex index;
+    private KrillIndex index;
     private KorapDate created;
     private String id;
     private ArrayList<FilterOperation> filter;
@@ -65,11 +65,11 @@ public class KorapCollection extends Notifications {
 
 
     /**
-     * Construct a new KorapCollection by passing a KorapIndex.
+     * Construct a new KorapCollection by passing a KrillIndex.
      *
-     * @param index The {@link KorapIndex} object.
+     * @param index The {@link KrillIndex} object.
      */
-    public KorapCollection (KorapIndex index) {
+    public KorapCollection (KrillIndex index) {
         this.index = index;
         this.filter = new ArrayList<FilterOperation>(5);
     };
@@ -413,11 +413,11 @@ public class KorapCollection extends Notifications {
 
 
     /**
-     * Set the {@link KorapIndex} the virtual collection refers to.
+     * Set the {@link KrillIndex} the virtual collection refers to.
      *
-     * @param index The {@link KorapIndex} the virtual collection refers to.
+     * @param index The {@link KrillIndex} the virtual collection refers to.
      */
-    public void setIndex (KorapIndex index) {
+    public void setIndex (KrillIndex index) {
         this.index = index;
     };
 
@@ -696,7 +696,7 @@ public class KorapCollection extends Notifications {
      *        e.g. <i>documents</i> or <i>sentences</i> as a string.
      * @return The number of the occurrences.
      * @throws IOException
-     * @see KorapIndex#numberOf
+     * @see KrillIndex#numberOf
      */
     public long numberOf (String field, String type) throws IOException {
         if (this.index == null)
@@ -715,7 +715,7 @@ public class KorapCollection extends Notifications {
      *        e.g. <i>documents</i> or <i>sentences</i> as a string.
      * @return The number of the occurrences.
      * @throws IOException
-     * @see KorapIndex#numberOf
+     * @see KrillIndex#numberOf
      */
     public long numberOf (String type) throws IOException {
         if (this.index == null)

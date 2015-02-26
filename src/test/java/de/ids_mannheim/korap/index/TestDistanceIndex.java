@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.query.SpanSegmentQuery;
 @RunWith(JUnit4.class)
 public class TestDistanceIndex {
     KorapResult kr;
-    KorapIndex ki;   
+    KrillIndex ki;   
  
     private FieldDocument createFieldDoc0() {
     	FieldDocument fd = new FieldDocument();
@@ -95,7 +95,7 @@ public class TestDistanceIndex {
      * */
     @Test
     public void testCase1() throws IOException{
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.commit();
         SpanQuery sq;
@@ -135,7 +135,7 @@ public class TestDistanceIndex {
      * */
     @Test
     public void testCase2() throws IOException{
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
 	    ki.addDoc(createFieldDoc1()); 
 	    ki.commit();    
 	    
@@ -167,7 +167,7 @@ public class TestDistanceIndex {
      * */
     @Test
     public void testCase3() throws IOException{
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
     	ki.addDoc(createFieldDoc0());
         ki.commit();
         ki.addDoc(createFieldDoc2());
@@ -188,7 +188,7 @@ public class TestDistanceIndex {
      * */ 
     @Test
     public void testCase4() throws IOException{
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
     	ki.addDoc(createFieldDoc0());
         ki.commit();
         ki.addDoc(createFieldDoc2());
@@ -212,7 +212,7 @@ public class TestDistanceIndex {
     /** ElementQueries */    
     @Test
     public void testCase5() throws IOException{    	
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
 	    ki.addDoc(createFieldDoc1()); 
 	    ki.commit();    
 	    
@@ -256,7 +256,7 @@ public class TestDistanceIndex {
     /** Skip to */    
     @Test
     public void testCase6() throws IOException{    	
-    	ki = new KorapIndex();
+    	ki = new KrillIndex();
     	ki.addDoc(createFieldDoc2());
 	    ki.addDoc(createFieldDoc1());
 	    ki.commit();
@@ -289,7 +289,7 @@ public class TestDistanceIndex {
     /** Same tokens */
     @Test
     public void testCase7() throws IOException{    	
-    	ki = new KorapIndex();    	
+    	ki = new KrillIndex();    	
 	    ki.addDoc(createFieldDoc1());
 	    ki.commit();
 	    	    

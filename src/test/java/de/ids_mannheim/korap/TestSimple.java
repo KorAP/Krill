@@ -21,7 +21,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.Bits;
 
 /**
- * Helper class for testing the KorapIndex framework (Simple).
+ * Helper class for testing the KrillIndex framework (Simple).
  *
  * @author diewald
  */

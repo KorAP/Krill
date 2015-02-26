@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.beans.PropertyVetoException;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import org.apache.lucene.store.MMapDirectory;
 
 import com.mchange.v2.c3p0.*;
@@ -32,7 +32,7 @@ public class KorapNode {
     private final static Logger log = LoggerFactory.getLogger(KorapNode.class);
 
     // Index
-    private static KorapIndex index;
+    private static KrillIndex index;
     private static ComboPooledDataSource cpds;
     private static String path,
                           name = "unknown";
@@ -185,7 +185,7 @@ public class KorapNode {
 
 
     // Get Lucene Index
-    public static KorapIndex getIndex () {
+    public static KrillIndex getIndex () {
 
         // Index already instantiated
         if (index != null)
@@ -196,7 +196,7 @@ public class KorapNode {
             // Get a temporary index
             if (path == null)
                 // Temporary index
-                index = new KorapIndex();
+                index = new KrillIndex();
 
             else {
                 File file = new File(path);
@@ -208,7 +208,7 @@ public class KorapNode {
                 };
 
                 // Set real index
-                index = new KorapIndex(new MMapDirectory(file));
+                index = new KrillIndex(new MMapDirectory(file));
             };
             return index;
         }

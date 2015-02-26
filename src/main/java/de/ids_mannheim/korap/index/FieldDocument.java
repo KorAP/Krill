@@ -28,7 +28,7 @@ import java.util.*;
 
 /**
  * FieldDocument represents a simple API to create documents
- * for storing with KorapIndex. <i>Field</i> in the name resembles
+ * for storing with KrillIndex. <i>Field</i> in the name resembles
  * the meaning of Lucene index fields.
  *
  * @author diewald

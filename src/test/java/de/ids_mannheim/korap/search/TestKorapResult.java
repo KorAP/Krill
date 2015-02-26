@@ -6,7 +6,7 @@ import java.io.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
@@ -32,7 +32,7 @@ public class TestKorapResult {
 
     @Test
     public void checkJSONResult () throws Exception  {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
@@ -100,7 +100,7 @@ public class TestKorapResult {
 
     @Test
     public void checkJSONResultWarningBug () throws Exception  {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
@@ -131,7 +131,7 @@ public class TestKorapResult {
 
     @Test
     public void checkJSONResultForJSONInput () throws Exception  {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
@@ -199,7 +199,7 @@ public class TestKorapResult {
 
     @Test
     public void checkJSONTokenResult () throws Exception  {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");

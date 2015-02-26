@@ -13,7 +13,7 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -31,7 +31,7 @@ public class TestElementIndex {
 
     @Test
     public void indexExample1 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// <a>x<a>y<a>zhij</a>hij</a>hij</a>hij</a>
 	FieldDocument fd = new FieldDocument();
@@ -99,7 +99,7 @@ public class TestElementIndex {
 
     @Test
     public void indexExample2 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// <a><a><a>h</a>hhij</a>hij</a>hij</a>
 	FieldDocument fd = new FieldDocument();
@@ -137,7 +137,7 @@ public class TestElementIndex {
 
     @Test
     public void indexExample3 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// <a><a><a>u</a></a></a>
 	FieldDocument fd = new FieldDocument();
@@ -262,7 +262,7 @@ public class TestElementIndex {
 
     @Test
     public void indexExample4 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	FieldDocument fd = new FieldDocument();
 	fd.addTV("base",
@@ -295,7 +295,7 @@ public class TestElementIndex {
 
     @Test
     public void indexExample5 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	FieldDocument fd = new FieldDocument();
 	fd.addTV("base",
@@ -330,7 +330,7 @@ public class TestElementIndex {
     @Test
     public void indexExample6 () throws IOException {
 
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// <a>x<a>y<a>zhij</a>hij</a>hij</a>
 	FieldDocument fd = new FieldDocument();

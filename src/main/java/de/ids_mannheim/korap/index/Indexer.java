@@ -2,7 +2,7 @@ package de.ids_mannheim.korap.index;
 import java.util.*;
 import java.io.*;
 import org.apache.lucene.store.MMapDirectory;
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,14 +16,14 @@ import org.slf4j.LoggerFactory;
  * Usage: java -jar Krill-X.XX.jar [propfile] [directories]*
  */
 public class Indexer {
-    KorapIndex index;
+    KrillIndex index;
     String indexDir;
     int count;
     int commitCount;
 
     // Init logger
     private final static Logger log =
-        LoggerFactory.getLogger(KorapIndex.class);
+        LoggerFactory.getLogger(KrillIndex.class);
 
 
     /**
@@ -43,7 +43,7 @@ public class Indexer {
         String commitCount = prop.getProperty("lucene.index.commit.count", "1000");
 
         // Create a new index object based on the directory
-        this.index = new KorapIndex(new MMapDirectory(new File(indexDir)));
+        this.index = new KrillIndex(new MMapDirectory(new File(indexDir)));
         this.count = 0;
         this.commitCount = Integer.parseInt(commitCount);
     };

@@ -10,7 +10,7 @@ import java.io.IOException;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.util.QueryException;
 
 
 public class TestClass {
-	KorapIndex ki;
+	KrillIndex ki;
 	KorapResult kr;
 	Krill ks;
 	
@@ -37,7 +37,7 @@ public class TestClass {
 		SpanNextQuery sq = (SpanNextQuery) sqwi.toQuery();
 		//System.out.println(sq.toString());
 		
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 	    ki.addDocFile(
 	    	getClass().getResource("/wiki/JJJ-00785.json.gz").getFile(),true);
 	    ki.addDocFile(
@@ -71,7 +71,7 @@ public class TestClass {
 		// System.out.println(sq.toString());
 		
 
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 	    ki.addDocFile(
 	    	getClass().getResource("/wiki/SSS-09803.json.gz").getFile(),true);
 	    

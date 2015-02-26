@@ -10,7 +10,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -18,7 +18,7 @@ import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
 public class TestRepetitionIndex {
 	
-    private KorapIndex ki;
+    private KrillIndex ki;
 	private KorapResult kr;
 
 	private FieldDocument createFieldDoc0(){
@@ -85,7 +85,7 @@ public class TestRepetitionIndex {
 
 	@Test
 	public void testCase1() throws IOException{
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.commit();
         
@@ -126,7 +126,7 @@ public class TestRepetitionIndex {
 	/** Skip to */
 	@Test
 	public void testCase2() throws IOException{
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.addDoc(createFieldDoc3());
         ki.addDoc(createFieldDoc2());
@@ -156,7 +156,7 @@ public class TestRepetitionIndex {
 	/** OR */
 	@Test
 	public void testCase3() throws IOException{
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.commit();
         
@@ -182,7 +182,7 @@ public class TestRepetitionIndex {
 	
 	@Test
 	public void testCase4() throws IOException {
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc1());
         ki.commit();
         
@@ -210,7 +210,7 @@ public class TestRepetitionIndex {
 	
 	@Test
 	public void testCase5() throws IOException {
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 	    ki.addDocFile(
 	        getClass().getResource("/wiki/00001.json.gz").getFile(), true
         );

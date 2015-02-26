@@ -8,7 +8,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
@@ -59,11 +59,11 @@ xip/morph_pos:VERB & mpt/morph_msd:Sg & mpt/morph_msd:Dat & #1 >[func=”SUBJ”
      */
 
 public class TestRelationIndex {
-	private KorapIndex ki;
+	private KrillIndex ki;
 	private KorapResult kr;
 
 	public TestRelationIndex() throws IOException {
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 	}
 	
 	private FieldDocument createFieldDoc0(){

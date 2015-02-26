@@ -8,7 +8,7 @@ import static de.ids_mannheim.korap.TestSimple.*;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.meta.SearchContext;
 import de.ids_mannheim.korap.KorapResult;
@@ -34,7 +34,7 @@ public class TestMetaFields {
     public void searchMetaFields () throws IOException {
 
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002"}) {

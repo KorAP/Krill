@@ -14,7 +14,7 @@ import org.apache.lucene.store.MMapDirectory;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KorapCollection;
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
@@ -27,7 +27,7 @@ import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
 public class TestWPDIndex {
 	long start, end;
-	KorapIndex ki;
+	KrillIndex ki;
 	KorapResult kr;
 	Krill ks;
 	
@@ -61,7 +61,7 @@ public class TestWPDIndex {
 		
 		String indexPath = prop.getProperty("lucene.indexDir");
 		MMapDirectory md = new MMapDirectory(new File(indexPath));
-		ki = new KorapIndex(md);
+		ki = new KrillIndex(md);
 	}
 	
 	/** Token distance spans */

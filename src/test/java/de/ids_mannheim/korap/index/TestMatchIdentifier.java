@@ -12,7 +12,7 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.response.match.MatchIdentifier;
 import de.ids_mannheim.korap.response.match.PosIdentifier;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.QueryBuilder;
@@ -88,7 +88,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample1 () throws IOException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
@@ -110,7 +110,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample2 () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
@@ -213,7 +213,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample3 () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
@@ -263,7 +263,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample4 () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
@@ -309,7 +309,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample5Spans () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
@@ -328,7 +328,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample6Spans () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
@@ -347,7 +347,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample7Spans () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
@@ -410,7 +410,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample6Relations () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.commit();
 
@@ -502,7 +502,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample7SentenceExpansion () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc());
 	ki.addDoc(createSimpleFieldDoc2());
 	ki.addDoc(createSimpleFieldDoc3());
@@ -558,7 +558,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExample7Dependencies () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc2());
 	ki.commit();
 
@@ -619,7 +619,7 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexExampleMultipleFoundries () throws IOException, QueryException {
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	ki.addDoc(createSimpleFieldDoc4());
 	ki.commit();
 

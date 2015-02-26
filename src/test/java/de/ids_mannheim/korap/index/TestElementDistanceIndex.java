@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
@@ -31,7 +31,7 @@ import de.ids_mannheim.korap.util.QueryException;
 public class TestElementDistanceIndex {
 	
 	KorapResult kr;
-    KorapIndex ki;   
+    KrillIndex ki;   
     
 	private FieldDocument createFieldDoc0() {
     	FieldDocument fd = new FieldDocument();
@@ -110,7 +110,7 @@ public class TestElementDistanceIndex {
 	@Test
 	public void testCase1() throws IOException{
 		//System.out.println("testCase1");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.addDoc(createFieldDoc1());        
         ki.commit();
@@ -131,7 +131,7 @@ public class TestElementDistanceIndex {
 	@Test
 	public void testCase2() throws IOException{
 		//System.out.println("testCase2");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); 
         ki.addDoc(createFieldDoc1());
         ki.addDoc(createFieldDoc2());
@@ -152,7 +152,7 @@ public class TestElementDistanceIndex {
 	@Test
 	public void testCase3() throws IOException{
 		//System.out.println("testCase3");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 		ki.addDoc(createFieldDoc0());
         ki.addDoc(createFieldDoc1());
         ki.addDoc(createFieldDoc3());
@@ -177,7 +177,7 @@ public class TestElementDistanceIndex {
 	@Test
 	public void testCase4() throws IOException{
 		//System.out.println("testCase4");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 		ki.addDoc(createFieldDoc0());       
         ki.commit();
         
@@ -197,7 +197,7 @@ public class TestElementDistanceIndex {
 	@Test
 	public void testCase5() throws Exception{
 		//System.out.println("testCase4");
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 		ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),true);       
         ki.commit();
         

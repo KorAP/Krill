@@ -16,7 +16,7 @@ import org.junit.runners.JUnit4;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.Krill;
@@ -120,7 +120,7 @@ public class TestFieldDocument {
 "  \"pubPlace\"  : \"Bochum\"" +
 "}");
 
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 	FieldDocument fd = ki.addDoc(json);
 
 	ki.commit();
@@ -158,7 +158,7 @@ public class TestFieldDocument {
     public void indexExample3 () throws IOException {
 
 	// Construct index
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// Indexing test files
 	for (String i : new String[] {"00001",
@@ -207,7 +207,7 @@ public class TestFieldDocument {
     public void queryJSONBsp18 () throws Exception {
 
 	// Construct index
-	KorapIndex ki = new KorapIndex();
+	KrillIndex ki = new KrillIndex();
 
 	// Indexing test files
 	for (String i : new String[] {"00001",

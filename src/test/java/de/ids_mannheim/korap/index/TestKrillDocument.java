@@ -18,13 +18,13 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.model.AbstractDocument;
 
 @RunWith(JUnit4.class)
-public class TestKorapDocument {
+public class TestKrillDocument {
 
-    private class KorapRealDocument extends AbstractDocument {};
+    private class KrillRealDocument extends AbstractDocument {};
 
     @Test
     public void createDocument () throws IOException {
-        KorapRealDocument krd = new KorapRealDocument();
+        KrillRealDocument krd = new KrillRealDocument();
         krd.setPubDate("2014-10-12");
         assertEquals("20141012", krd.getPubDate().toString());
         assertEquals("2014-10-12", krd.getPubDateString());

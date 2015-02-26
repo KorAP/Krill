@@ -9,7 +9,7 @@ import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.KorapCollection;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapIndex;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.meta.SearchContext;
@@ -85,7 +85,7 @@ public class TestKrill {
     @Test
     public void searchIndex () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -136,7 +136,7 @@ public class TestKrill {
     @Test
     public void searchJSON () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -170,7 +170,7 @@ public class TestKrill {
     @Test
     public void searchJSON2 () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -230,7 +230,7 @@ public class TestKrill {
     @Test
     public void searchJSONFailure () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -255,7 +255,7 @@ public class TestKrill {
     @Test
     public void searchJSONindexboundary () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -285,7 +285,7 @@ public class TestKrill {
     @Test
     public void searchJSONindexboundary2 () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -315,7 +315,7 @@ public class TestKrill {
     @Test
     public void searchJSONcontext () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -375,7 +375,7 @@ public class TestKrill {
     @Test
     public void searchJSONstartPage () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -422,7 +422,7 @@ public class TestKrill {
     @Test
     public void searchJSONitemsPerResource () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -509,7 +509,7 @@ public class TestKrill {
          * TestResource#testCollection
          */
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         int uid = 1;
         for (String i : new String[] {"00001",
@@ -552,7 +552,7 @@ public class TestKrill {
     @Test
     public void searchJSONnewJSON () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         FieldDocument fd = ki.addDocFile(
             1,
@@ -639,7 +639,7 @@ public class TestKrill {
     @Test
     public void searchJSONnewJSON2 () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         FieldDocument fd = ki.addDocFile(
             1,
@@ -730,7 +730,7 @@ public class TestKrill {
     @Test
     public void searchJSONcosmasBoundaryBug () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         FieldDocument fd = ki.addDocFile(
             1,
@@ -805,7 +805,7 @@ public class TestKrill {
     @Test
     public void searchJSONmultipleClassesBug () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         ki.addDocFile(
             1,
@@ -850,7 +850,7 @@ public class TestKrill {
     @Test
     public void searchJSONmultipleClassesBugTokenList () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         ki.addDocFile(
             1,
@@ -902,7 +902,7 @@ public class TestKrill {
     @Test
     public void searchJSONmultitermRewriteBug () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
 
         assertEquals(ki.numberOf("documents"), 0);
 
@@ -986,7 +986,7 @@ public class TestKrill {
     @Test
     public void searchJSONCollection () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -1079,7 +1079,7 @@ public class TestKrill {
     @Test
     public void searchJSONSentenceContext () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -1150,7 +1150,7 @@ public class TestKrill {
     @Test
     public void searchJSONbug () throws IOException {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -1189,7 +1189,7 @@ public class TestKrill {
     @Test
     public void searchJSONexpansionBug () throws IOException {
 		// Construct index
-		KorapIndex ki = new KorapIndex();
+		KrillIndex ki = new KrillIndex();
 		// Indexing test files
 		ki.addDocFile(
             getClass().
@@ -1233,7 +1233,7 @@ public class TestKrill {
 		assertEquals(kr.getTotalResults(), 1);
 	
 		// Now try with one file ahead
-		ki = new KorapIndex();
+		ki = new KrillIndex();
 		for (String i : new String[] {"00001",
                                       "00002"}) {
 		    ki.addDocFile(
@@ -1285,7 +1285,7 @@ public class TestKrill {
     @Test
     public void getFoundryDistribution () throws Exception {
         // Construct index
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002",
@@ -1318,7 +1318,7 @@ public class TestKrill {
 
     @Test
     public void getTextClassDistribution () throws Exception {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         ki.addDoc(
 "{" +
 "  \"fields\" : [" +
@@ -1382,7 +1382,7 @@ public class TestKrill {
 
     @Test
     public void getTextClassDistribution2 () throws Exception {
-        KorapIndex ki = new KorapIndex();
+        KrillIndex ki = new KrillIndex();
         ki.addDoc(
 "{" +
 "  \"fields\" : [" +
