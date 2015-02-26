@@ -1,7 +1,7 @@
 package de.ids_mannheim.korap.util;
 
 import java.util.*;
-import static de.ids_mannheim.korap.util.KorapArray.*;
+import static de.ids_mannheim.korap.util.KrillArray.*;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import org.junit.runners.JUnit4;
  * @author diewald
  */
 @RunWith(JUnit4.class)
-public class TestKorapArray {
+public class TestKrillArray {
 
     @Test
     public void StringJoin1 () {

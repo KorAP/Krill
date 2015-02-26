@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author diewald
  */
-public class KorapString {
+public class KrillString {
 
     /**
      * Get String from file.

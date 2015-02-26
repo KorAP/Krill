@@ -3,13 +3,13 @@ package de.ids_mannheim.korap.util;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-import static de.ids_mannheim.korap.util.KorapString.*;
+import static de.ids_mannheim.korap.util.KrillString.*;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
  * @author diewald
  */
-public class TestKorapString {
+public class TestKrillString {
 
     @Test
     public void testHTMLescape() {

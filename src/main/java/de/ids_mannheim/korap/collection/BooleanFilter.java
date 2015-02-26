@@ -11,7 +11,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.search.NumericRangeQuery;
 
-import de.ids_mannheim.korap.util.KorapDate;
+import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -120,16 +120,16 @@ public class BooleanFilter {
     };
 
     public BooleanFilter since (String dateStr) {
-	int since = new KorapDate(dateStr).floor();
+	int since = new KrillDate(dateStr).floor();
 
-	if (since == 0 || since == KorapDate.BEGINNING)
+	if (since == 0 || since == KrillDate.BEGINNING)
 	    return this;
 
 	bool.add(
 	    NumericRangeQuery.newIntRange(
 	        "pubDate",
 		since,
-		KorapDate.END,
+		KrillDate.END,
 		true,
 		true
 	    ),
@@ -142,14 +142,14 @@ public class BooleanFilter {
 
     public BooleanFilter till (String dateStr) {
 	try {
-	    int till =  new KorapDate(dateStr).ceil();
-	    if (till == 0 || till == KorapDate.END)
+	    int till =  new KrillDate(dateStr).ceil();
+	    if (till == 0 || till == KrillDate.END)
 		return this;
 
 	    bool.add(
                 NumericRangeQuery.newIntRange(
   	            "pubDate",
-                    KorapDate.BEGINNING,
+                    KrillDate.BEGINNING,
                     till,
                     true,
                     true
@@ -165,16 +165,16 @@ public class BooleanFilter {
 
 
     public BooleanFilter between (String beginStr, String endStr) {
-	KorapDate beginDF = new KorapDate(beginStr);
+	KrillDate beginDF = new KrillDate(beginStr);
 
 	int begin = beginDF.floor();
 
-	int end = new KorapDate(endStr).ceil();
+	int end = new KrillDate(endStr).ceil();
 
 	if (end == 0)
 	    return this;
 
-	if (begin == KorapDate.BEGINNING && end == KorapDate.END)
+	if (begin == KrillDate.BEGINNING && end == KrillDate.END)
 	    return this;
 
 	if (begin == end) {
@@ -197,7 +197,7 @@ public class BooleanFilter {
 
 
     public BooleanFilter date (String dateStr) {
-	KorapDate dateDF = new KorapDate(dateStr);
+	KrillDate dateDF = new KrillDate(dateStr);
 
 	if (dateDF.year == 0)
 	    return this;
@@ -206,7 +206,7 @@ public class BooleanFilter {
 	    int begin = dateDF.floor();
 	    int end = dateDF.ceil();
 
-	    if (end == 0 || (begin == KorapDate.BEGINNING && end == KorapDate.END))
+	    if (end == 0 || (begin == KrillDate.BEGINNING && end == KrillDate.END))
 		return this;
 	    
 	    this.bool.add(

@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.model;
 
-import static de.ids_mannheim.korap.util.KorapArray.*;
+import static de.ids_mannheim.korap.util.KrillArray.*;
 import de.ids_mannheim.korap.util.CorpusDataException;
 import org.apache.lucene.util.BytesRef;
 import java.nio.ByteBuffer;

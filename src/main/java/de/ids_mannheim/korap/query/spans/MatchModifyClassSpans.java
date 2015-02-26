@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.query.spans;
 
-import static de.ids_mannheim.korap.util.KorapByte.*;
+import static de.ids_mannheim.korap.util.KrillByte.*;
 
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.SpanQuery;

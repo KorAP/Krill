@@ -8,7 +8,7 @@ import java.util.*;
  *
  * @author diewald
  */
-public class KorapArray {
+public class KrillArray {
 
     /**
      * Join a sequence of strings to a single string.

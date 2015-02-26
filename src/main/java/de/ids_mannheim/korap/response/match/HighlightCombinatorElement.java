@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.response.match;
 import org.apache.lucene.util.FixedBitSet;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.match.Relation;
-import static de.ids_mannheim.korap.util.KorapString.*;
+import static de.ids_mannheim.korap.util.KrillString.*;
 import java.util.*;
 import java.io.*;
 

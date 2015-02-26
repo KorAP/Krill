@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.IOException;
 
 import de.ids_mannheim.korap.*;
-import de.ids_mannheim.korap.util.KorapDate;
+import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.collection.BooleanFilter;
 import de.ids_mannheim.korap.collection.FilterOperation;
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 public class KrillCollection extends Notifications {
     private KrillIndex index;
-    private KorapDate created;
+    private KrillDate created;
     private String id;
     private ArrayList<FilterOperation> filter;
     private int filterCount = 0;

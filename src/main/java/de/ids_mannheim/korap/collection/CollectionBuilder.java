@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.collection;
 import de.ids_mannheim.korap.collection.BooleanFilter;
 import de.ids_mannheim.korap.collection.RegexFilter;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.util.KorapDate;
+import de.ids_mannheim.korap.util.KrillDate;
 
 import org.apache.lucene.search.Query;
 

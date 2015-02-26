@@ -2,7 +2,7 @@ package de.ids_mannheim.korap.model;
 
 import java.util.*;
 
-import de.ids_mannheim.korap.util.KorapDate;
+import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.KorapResponse;
 
@@ -34,7 +34,7 @@ public abstract class AbstractDocument extends KorapResponse {
         localDocID,
         UID;
 
-    private KorapDate
+    private KrillDate
         pubDate,
         // newly added
         creationDate;
@@ -74,12 +74,12 @@ public abstract class AbstractDocument extends KorapResponse {
 
     /**
      * Get the publication date of the document
-     * as a {@link KorapDate} object.
+     * as a {@link KrillDate} object.
      *
-     * @return A {@link KorapDate} object for chaining.
+     * @return A {@link KrillDate} object for chaining.
      */
     @JsonIgnore
-    public KorapDate getPubDate () {
+    public KrillDate getPubDate () {
         return this.pubDate;
     };
 
@@ -88,7 +88,7 @@ public abstract class AbstractDocument extends KorapResponse {
      * Get the publication date of the document
      * as a string.
      *
-     * @return A string containing the {@link KorapDate}.
+     * @return A string containing the {@link KrillDate}.
      */    
     @JsonProperty("pubDate")
     public String getPubDateString () {
@@ -101,12 +101,12 @@ public abstract class AbstractDocument extends KorapResponse {
     /**
      * Set the publication date of the document.
      *
-     * @param date The date as a {@link KorapDate}
+     * @param date The date as a {@link KrillDate}
      * compatible string representation.
-     * @return A {@link KorapDate} object for chaining.
+     * @return A {@link KrillDate} object for chaining.
      */
-    public KorapDate setPubDate (String date) {
-        this.pubDate = new KorapDate(date);
+    public KrillDate setPubDate (String date) {
+        this.pubDate = new KrillDate(date);
         return this.pubDate;
     };
 
@@ -114,22 +114,22 @@ public abstract class AbstractDocument extends KorapResponse {
     /**
      * Set the publication date of the document.
      *
-     * @param date The date as a {@link KorapDate} object.
-     * @return A {@link KorapDate} object for chaining.
+     * @param date The date as a {@link KrillDate} object.
+     * @return A {@link KrillDate} object for chaining.
      */
-    public KorapDate setPubDate (KorapDate date) {
+    public KrillDate setPubDate (KrillDate date) {
         return (this.pubDate = date);
     };
 
 
     /**
      * Get the creation date of the document
-     * as a {@link KorapDate} object.
+     * as a {@link KrillDate} object.
      *
-     * @return A {@link KorapDate} object for chaining.
+     * @return A {@link KrillDate} object for chaining.
      */
     @JsonIgnore
-    public KorapDate getCreationDate () {
+    public KrillDate getCreationDate () {
         return this.creationDate;
     };
 
@@ -138,7 +138,7 @@ public abstract class AbstractDocument extends KorapResponse {
      * Get the creation date of the document
      * as a string.
      *
-     * @return A string containing the {@link KorapDate}.
+     * @return A string containing the {@link KrillDate}.
      */
     @JsonProperty("creationDate")
     public String getCreationDateString () {
@@ -151,12 +151,12 @@ public abstract class AbstractDocument extends KorapResponse {
     /**
      * Set the creation date of the document.
      *
-     * @param date The date as a {@link KorapDate}
+     * @param date The date as a {@link KrillDate}
      * compatible string representation.
-     * @return A {@link KorapDate} object for chaining.
+     * @return A {@link KrillDate} object for chaining.
      */
-    public KorapDate setCreationDate (String date) {
-        this.creationDate = new KorapDate(date);
+    public KrillDate setCreationDate (String date) {
+        this.creationDate = new KrillDate(date);
         return this.creationDate;
     };
 
@@ -164,10 +164,10 @@ public abstract class AbstractDocument extends KorapResponse {
     /**
      * Set the creation date of the document.
      *
-     * @param date The date as a {@link KorapDate} object.
-     * @return A {@link KorapDate} object for chaining.
+     * @param date The date as a {@link KrillDate} object.
+     * @return A {@link KrillDate} object for chaining.
      */
-    public KorapDate setCreationDate (KorapDate date) {
+    public KrillDate setCreationDate (KrillDate date) {
         return (this.creationDate = date);
     };    
 

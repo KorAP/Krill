@@ -8,7 +8,7 @@ import java.util.*;
  *
  * @author diewald
  */
-public class KorapByte {
+public class KrillByte {
 
     /**
      * Convert an integer to a byte array.

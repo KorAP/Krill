@@ -12,7 +12,7 @@ import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.CorpusDataException;
 
-import static de.ids_mannheim.korap.util.KorapByte.*;
+import static de.ids_mannheim.korap.util.KrillByte.*;
 
 import org.apache.lucene.index.*;
 import org.apache.lucene.document.*;

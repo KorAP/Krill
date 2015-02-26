@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.regex.*;
 
 /**
- * KorapDate implements a helper object to stringify
+ * KrillDate implements a helper object to stringify
  * and parse date strings optimized
  * for integer range queries in Lucene.
  * No support for b.c. dates.
@@ -15,18 +15,18 @@ import java.util.regex.*;
  * {@link http://www.w3.org/TR/NOTE-datetime W3-DateTimes}.
  *
  * <blockquote><pre>
- *   KorapDate kd = new KorapDate("2005-06-03");
+ *   KrillDate kd = new KrillDate("2005-06-03");
  *   System.err.println(kd.day());
  *   // 3
 
- *   kd = new KorapDate("2005-06");
+ *   kd = new KrillDate("2005-06");
  *   System.err.println(kd.month());
  *   // 6
  * </pre></blockquote>
  *
  * @author diewald
  */
-public class KorapDate {
+public class KrillDate {
 
     /**
      * The year of the date.
@@ -66,17 +66,17 @@ public class KorapDate {
 
 
     /**
-     * Construct a new KorapDate object.
+     * Construct a new KrillDate object.
      */
-    public KorapDate () { };
+    public KrillDate () { };
 
 
     /**
-     * Construct a new KorapDate object.
+     * Construct a new KrillDate object.
      *
      * @param date The date as a string (see synopsis).
      */
-    public KorapDate (String date) {
+    public KrillDate (String date) {
         if (date == null || date.isEmpty())
             return;
 
@@ -97,7 +97,7 @@ public class KorapDate {
      * undefined date segments.
      *
      * <blockquote><pre>
-     *   KorapDate kd = new KorapDate("2005-06");
+     *   KrillDate kd = new KrillDate("2005-06");
      *   System.err.println(kd.ceil());
      *   // 20050699
      * </pre></blockquote>
@@ -117,7 +117,7 @@ public class KorapDate {
      * undefined date segments.
      *
      * <blockquote><pre>
-     *   KorapDate kd = new KorapDate("2005-06");
+     *   KrillDate kd = new KrillDate("2005-06");
      *   System.err.println(kd.floor());
      *   // 20050600
      * </pre></blockquote>

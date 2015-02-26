@@ -22,7 +22,7 @@ import java.io.FileInputStream;
 import de.ids_mannheim.korap.KorapNode;
 import de.ids_mannheim.korap.KorapResult;
 import de.ids_mannheim.korap.response.KorapResponse;
-import static de.ids_mannheim.korap.util.KorapString.*;
+import static de.ids_mannheim.korap.util.KrillString.*;
 
 
 /**

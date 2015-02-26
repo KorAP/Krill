@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.index;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
 import de.ids_mannheim.korap.model.MultiTermToken;
 import de.ids_mannheim.korap.model.AbstractDocument;
-import de.ids_mannheim.korap.util.KorapDate;
+import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.CorpusDataException;
 
 import com.fasterxml.jackson.annotation.*;
@@ -251,16 +251,16 @@ public class FieldDocument extends AbstractDocument {
 
     @JsonProperty("pubDate")
     @Override
-    public KorapDate setPubDate (String pubDate) {
-        KorapDate date = super.setPubDate(pubDate);
+    public KrillDate setPubDate (String pubDate) {
+        KrillDate date = super.setPubDate(pubDate);
         this.addInt("pubDate", date.toString());
         return date;
     };
 
     @JsonProperty("creationDate")
     @Override
-    public KorapDate setCreationDate (String creationDate) {
-        KorapDate date = super.setCreationDate(creationDate);
+    public KrillDate setCreationDate (String creationDate) {
+        KrillDate date = super.setCreationDate(creationDate);
         this.addInt("creationDate", date.toString());
         return date;
     };

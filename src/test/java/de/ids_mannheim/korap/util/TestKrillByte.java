@@ -3,14 +3,14 @@ package de.ids_mannheim.korap.util;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
-import static de.ids_mannheim.korap.util.KorapByte.*;
+import static de.ids_mannheim.korap.util.KrillByte.*;
 import de.ids_mannheim.korap.util.QueryException;
 import java.nio.ByteBuffer;
 
 /**
  * @author diewald
  */
-public class TestKorapByte {
+public class TestKrillByte {
 
     @Test
     public void testConversion() {
