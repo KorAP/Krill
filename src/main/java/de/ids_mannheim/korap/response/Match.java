@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.node.*;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 
 // Todo:
-import de.ids_mannheim.korap.meta.SearchContext;
+import de.ids_mannheim.korap.response.SearchContext;
 
 import de.ids_mannheim.korap.index.AbstractDocument;
 import de.ids_mannheim.korap.response.match.HighlightCombinator;

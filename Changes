@@ -16,7 +16,8 @@
 	  moved KorapNode to server/Node,
 	  moved KorapResult to response/Result,
 	  renamed KorapResponse to Response,
-	  moved model/* to index (diewald)
+	  moved model/* to index,
+	  moved meta/SearchContext to response/SearchContext (diewald)
         - [documentation] Improved documentation for API classes (diewald)
 
 0.50 2015-02-23

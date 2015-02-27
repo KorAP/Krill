@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.meta;
+package de.ids_mannheim.korap.response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;

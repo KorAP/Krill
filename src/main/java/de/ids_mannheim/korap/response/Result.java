@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 
 // Remove:
-import de.ids_mannheim.korap.meta.SearchContext;
+import de.ids_mannheim.korap.response.SearchContext;
 
 import de.ids_mannheim.korap.response.Response;
 import de.ids_mannheim.korap.response.Match;

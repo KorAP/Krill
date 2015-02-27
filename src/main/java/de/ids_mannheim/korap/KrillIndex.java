@@ -29,7 +29,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 // Krill classes
 import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.index.*;
-import de.ids_mannheim.korap.meta.*;
 import de.ids_mannheim.korap.response.*;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.util.QueryException;
