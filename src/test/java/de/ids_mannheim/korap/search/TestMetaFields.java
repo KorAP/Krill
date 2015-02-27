@@ -11,7 +11,7 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.meta.SearchContext;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import java.nio.file.Files;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -50,7 +50,7 @@ public class TestMetaFields {
 	
         Krill ks = new Krill(jsonString);
 
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals((long) 17, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(9, kr.getItemsPerPage());

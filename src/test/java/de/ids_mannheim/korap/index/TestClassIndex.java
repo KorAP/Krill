@@ -15,7 +15,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -55,7 +55,7 @@ public class TestClassIndex {
 	ki.commit();
 
 	SpanQuery sq;
-	KorapResult kr;
+	Result kr;
 
 	sq = new SpanNextQuery(
             new SpanTermQuery(new Term("base", "s:b")),
@@ -246,7 +246,7 @@ public class TestClassIndex {
 	ki.commit();
 
 	SpanQuery sq;
-	KorapResult kr;
+	Result kr;
 
 	/*
 	sq = new SpanNextQuery(

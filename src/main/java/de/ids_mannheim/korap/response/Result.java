@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap;
+package de.ids_mannheim.korap.response;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -15,6 +15,7 @@ import de.ids_mannheim.korap.meta.SearchContext;
 
 import de.ids_mannheim.korap.response.KorapResponse;
 import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.Krill;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KorapResult extends Krill {
+public class Result extends Krill {
     ObjectMapper mapper = new ObjectMapper();
 
     @JsonIgnore
@@ -56,27 +57,27 @@ public class KorapResult extends Krill {
     private JsonNode request;
 
     // Logger
-    // This is Match instead of KorapResult!
+    // This is Match instead of Result!
     private final static Logger log = LoggerFactory.getLogger(Match.class);
 
 
     /**
-     * Construct a new KorapResult object.
+     * Construct a new Result object.
      */
-    public KorapResult() {
+    public Result() {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
     };
 
 
     /**
-     * Construct a new KorapResult object.
+     * Construct a new Result object.
      *
      * @param serialQuery Query representation as a string.
      * @param startIndex Offset position in match array.
      * @param itemsPerPage Number of matches per page.
      * @param context Requested {@link SearchContext}
      */
-    public KorapResult(String query,
+    public Result(String query,
                        int startIndex,
                        short itemsPerPage,
                        SearchContext context) {
@@ -119,9 +120,9 @@ public class KorapResult extends Krill {
      * Set the number of items (documents) shown per page.
      *
      * @param count Number of items shown per page.
-     * @return {@link KorapResult} object for chaining.
+     * @return {@link Result} object for chaining.
      */
-    public KorapResult setItemsPerPage (short count) {
+    public Result setItemsPerPage (short count) {
         this.itemsPerPage = count;
         return this;
     };
@@ -141,9 +142,9 @@ public class KorapResult extends Krill {
      * Set serialized query as a {@link JsonNode}.
      *
      * @param request {@link JsonNode} representation of the query object.
-     * @return {@link KorapResult} object for chaining.
+     * @return {@link Result} object for chaining.
      */    
-    public KorapResult setRequest (JsonNode request) {
+    public Result setRequest (JsonNode request) {
         this.request = request;
         return this;
     };
@@ -165,9 +166,9 @@ public class KorapResult extends Krill {
      * Defaults to <tt>0</tt>, which is infinite.
      *
      * @param value The number of items shown per resource.
-     * @return {@link KorapResult} object for chaining.
+     * @return {@link Result} object for chaining.
      */
-    public KorapResult setItemsPerResource (short value) {
+    public Result setItemsPerResource (short value) {
         this.itemsPerResource = value;
         return this;
     };
@@ -178,9 +179,9 @@ public class KorapResult extends Krill {
      * Defaults to <tt>0</tt>, which is infinite.
      *
      * @param value The number of items shown per resource.
-     * @return {@link KorapResult} object for chaining.
+     * @return {@link Result} object for chaining.
      */
-    public KorapResult setItemsPerResource (int value) {
+    public Result setItemsPerResource (int value) {
         this.itemsPerResource = (short) value;
         return this;
     };
@@ -247,9 +248,9 @@ public class KorapResult extends Krill {
      *
      * @param context The {@link SearchContext} object providing
      *        search context parameters.
-     * @return {@link KorapResult} object for chaining.
+     * @return {@link Result} object for chaining.
      */
-    public KorapResult setContext (SearchContext context) {
+    public Result setContext (SearchContext context) {
         this.context = context;
         return this;
     };

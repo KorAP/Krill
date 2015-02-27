@@ -16,7 +16,7 @@ import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -96,7 +96,7 @@ public class TestMatchIdentifier {
 	Krill ks = new Krill(
 	    kq._(2,kq.seq(kq.seg("s:b")).append(kq._(kq.seg("s:a"))))
         );
-	KorapResult kr = ki.search(ks);
+	Result kr = ki.search(ks);
 
 	assertEquals("totalResults", kr.getTotalResults(),    1);
 	assertEquals("StartPos (0)", kr.getMatch(0).startPos, 7);

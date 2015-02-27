@@ -13,7 +13,8 @@
 	  renamed KorapArray to KrillArray,
 	  renamed KorapByte to KrillByte,
 	  renamed KorapString to KrillString,
-	  moved KorapNode to server/Node (diewald)
+	  moved KorapNode to server/Node,
+	  moved KorapResult to response/Result (diewald)
         - [documentation] Improved documentation for API classes (diewald)
 
 0.50 2015-02-23

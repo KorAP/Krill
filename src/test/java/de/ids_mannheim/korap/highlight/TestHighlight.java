@@ -8,7 +8,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.index.FieldDocument;
@@ -52,7 +52,7 @@ public class TestHighlight { // extends LuceneTestCase {
 
 
         QueryBuilder kq = new QueryBuilder("tokens");
-        KorapResult kr = ki.search(
+        Result kr = ki.search(
             (SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).toQuery()
         );
         Match km = kr.getMatch(0);
@@ -123,7 +123,7 @@ public class TestHighlight { // extends LuceneTestCase {
 
         QueryBuilder kq = new QueryBuilder("tokens");
 
-        KorapResult kr = ki.search((SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).append(kq.seg("s:c")).toQuery());
+        Result kr = ki.search((SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).append(kq.seg("s:c")).toQuery());
         Match km = kr.getMatch(0);
         km.addHighlight(0, 1, (short) 7);
         assertEquals("<span class=\"context-left\"></span><mark><mark class=\"class-7 level-0\">ab</mark>c</mark><span class=\"context-right\"></span>", km.getSnippetHTML());
@@ -190,7 +190,7 @@ public class TestHighlight { // extends LuceneTestCase {
 
         QueryBuilder kq = new QueryBuilder("base");
         SpanQuery q = (SpanQuery) kq.or(kq._(1, kq.seg("s:a"))).or(kq._(2, kq.seg("s:b"))).toQuery();
-        KorapResult kr = ki.search(q);
+        Result kr = ki.search(q);
         assertEquals((long) 14, kr.getTotalResults());
         assertEquals("[{1:a}]bab", kr.getMatch(0).getSnippetBrackets());
         assertEquals("a[{2:b}]ab", kr.getMatch(1).getSnippetBrackets());
@@ -283,7 +283,7 @@ public class TestHighlight { // extends LuceneTestCase {
         String json = getString(getClass().getResource("/queries/bugs/greater_highlights_15.jsonld").getFile());
 	
         Krill ks = new Krill(json);
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),"{15: tokens:s:Alphabet}");
         assertEquals(kr.getTotalResults(),7);
         assertEquals(kr.getStartIndex(),0);

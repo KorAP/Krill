@@ -42,10 +42,10 @@ import org.apache.lucene.search.spans.Spans;
 */
 
 /**
- * Representation of Matches in a KorapResult.
+ * Representation of Matches in a Result.
  *
  * @author Nils Diewald
- * @see KorapResult
+ * @see Result
  */
 @JsonInclude(Include.NON_NULL)
 public class Match extends AbstractDocument {
@@ -138,7 +138,7 @@ public class Match extends AbstractDocument {
     /**
      * Constructs a new Match object.
      *
-     * @param idString Match identifier string as provided by KorapResult.
+     * @param idString Match identifier string as provided by Result.
      * @param includeHighlights Boolean value indicating if possible provided
      *        highlight information should be ignored or not.
      */
@@ -620,7 +620,7 @@ public class Match extends AbstractDocument {
     /**
      * Get possible error message.
      */
-    // Identical to KorapResult
+    // Identical to Result
     public String getError () {
 	return this.error;
     };
@@ -1332,7 +1332,7 @@ public class Match extends AbstractDocument {
     };
     
 
-    // Identical to KorapResult!
+    // Identical to Result!
     public String toJsonString () {
 	ObjectNode json = (ObjectNode) mapper.valueToTree(this);
 

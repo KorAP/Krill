@@ -15,7 +15,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
@@ -76,7 +76,7 @@ public class TestElementIndex {
 
 	SpanQuery sq = new SpanElementQuery("base", "a");
 
-	KorapResult kr = ki.search(sq, (short) 10);
+	Result kr = ki.search(sq, (short) 10);
 
 	assertEquals("totalResults", kr.getTotalResults(), 6);
 
@@ -124,7 +124,7 @@ public class TestElementIndex {
 
 	SpanQuery sq = new SpanElementQuery("base", "a");
 
-	KorapResult kr = ki.search(sq, (short) 10);
+	Result kr = ki.search(sq, (short) 10);
 
 	assertEquals("totalResults", kr.getTotalResults(), 3);
 	assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
@@ -224,7 +224,7 @@ public class TestElementIndex {
 
 	SpanQuery sq = new SpanElementQuery("base", "a");
 
-	KorapResult kr = ki.search(sq, (short) 15);
+	Result kr = ki.search(sq, (short) 15);
 
 	// System.err.println(kr.toJSON());
 
@@ -286,7 +286,7 @@ public class TestElementIndex {
 
 	SpanQuery sq = new SpanElementQuery("base", "a");
 
-	KorapResult kr = ki.search(sq, 0, (short) 15, false, (short) 3, false, (short) 3);
+	Result kr = ki.search(sq, 0, (short) 15, false, (short) 3, false, (short) 3);
 	
 	assertEquals("... ccc[222222]fff ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... fff[333333]iii ...", kr.getMatch(1).getSnippetBrackets());
@@ -319,7 +319,7 @@ public class TestElementIndex {
 
 	SpanQuery sq = new SpanElementQuery("base", "a");
 
-	KorapResult kr = ki.search(sq, 0, (short) 15, false, (short) 3, false, (short) 3);
+	Result kr = ki.search(sq, 0, (short) 15, false, (short) 3, false, (short) 3);
 
 	assertEquals("[111111]ccc ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("... ccc[222222]fff ...", kr.getMatch(1).getSnippetBrackets());
@@ -400,7 +400,7 @@ public class TestElementIndex {
 	ki.commit();
 
 	SpanQuery sq;
-	KorapResult kr;
+	Result kr;
 
 	sq = new SpanElementQuery("base", "a");
 	kr = ki.search(sq, (short) 15);

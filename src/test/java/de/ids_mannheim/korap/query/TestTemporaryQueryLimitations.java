@@ -7,7 +7,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.index.FieldDocument;
@@ -53,7 +53,7 @@ public class TestTemporaryQueryLimitations {
 	json = getString(getClass().getResource("/queries/bugs/cosmas_classrefcheck.jsonld").getFile());
 	
 	Krill ks = new Krill(json);
-	KorapResult kr = ks.apply(ki);
+	Result kr = ks.apply(ki);
 	assertEquals(kr.getSerialQuery(),"focus(130: {131: spanContain({129: <tokens:s />}, {130: tokens:s:wegen})})");
 	assertEquals(kr.getTotalResults(),0);
 	assertEquals(kr.getStartIndex(),0);

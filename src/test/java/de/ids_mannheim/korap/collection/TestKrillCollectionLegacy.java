@@ -5,7 +5,7 @@ import java.io.*;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KrillCollection;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.collection.BooleanFilter;
@@ -82,7 +82,7 @@ public class TestKrillCollectionLegacy {
 	QueryBuilder kq = new QueryBuilder("tokens");
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
-	KorapResult kr = kc.search(query);
+	Result kr = kc.search(query);
 	assertEquals(kr.getTotalResults(), 70);
 
 	kc.extend( kf.and("textClass", "uninteresting") );
@@ -159,7 +159,7 @@ public class TestKrillCollectionLegacy {
 	QueryBuilder kq = new QueryBuilder("tokens");
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
-	KorapResult kr = kc.search(query);
+	Result kr = kc.search(query);
 	assertEquals(kr.getTotalResults(), 70);
 
 	kc.extend( kf.and("textClass", "uninteresting") );
@@ -212,7 +212,7 @@ public class TestKrillCollectionLegacy {
 	QueryBuilder kq = new QueryBuilder("tokens");
 	SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
-	KorapResult kr = kc.search(query);
+	Result kr = kc.search(query);
 
 	assertEquals(kr.getTotalResults(), 369);
 
@@ -253,7 +253,7 @@ public class TestKrillCollectionLegacy {
 	assertEquals("Tokens",    2661, ki.numberOf("tokens"));
 
 	SpanQuery sq = new SpanTermQuery(new Term("tokens", "s:der"));
-	KorapResult kr = ki.search(sq, (short) 10);
+	Result kr = ki.search(sq, (short) 10);
         assertEquals(86,kr.getTotalResults());
 
 	// Create Virtual collections:

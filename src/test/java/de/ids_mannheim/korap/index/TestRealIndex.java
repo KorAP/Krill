@@ -14,12 +14,13 @@ import org.apache.lucene.store.MMapDirectory;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.*;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestRealIndex {
     KrillIndex ki;
-    KorapResult kr;
+    Result kr;
     Krill ks;
 	
     public TestRealIndex() throws IOException {

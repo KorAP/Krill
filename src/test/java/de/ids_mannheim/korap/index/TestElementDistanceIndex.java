@@ -18,7 +18,7 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -30,7 +30,7 @@ import de.ids_mannheim.korap.util.QueryException;
 @RunWith(JUnit4.class)
 public class TestElementDistanceIndex {
 	
-	KorapResult kr;
+	Result kr;
     KrillIndex ki;   
     
 	private FieldDocument createFieldDoc0() {

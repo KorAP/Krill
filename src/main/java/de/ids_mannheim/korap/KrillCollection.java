@@ -10,6 +10,7 @@ import de.ids_mannheim.korap.collection.BooleanFilter;
 import de.ids_mannheim.korap.collection.FilterOperation;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.response.Notifications;
+import de.ids_mannheim.korap.response.Result;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.*;
@@ -596,10 +597,10 @@ public class KrillCollection extends Notifications {
      *
      * @param query a {@link SpanQuery} to apply on the
      *        virtual collection.
-     * @return A {@link KorapResult} object representing the search's
+     * @return A {@link Result} object representing the search's
      *         result.
      */
-    public KorapResult search (SpanQuery query) {
+    public Result search (SpanQuery query) {
         return this.index.search(
             this,
             query,

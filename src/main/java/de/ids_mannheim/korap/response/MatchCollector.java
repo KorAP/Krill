@@ -34,7 +34,7 @@ public class MatchCollector extends KorapResponse {
     public void close () {};
 
     /*
-     * The following methods are shared and should be used from KorapResult
+     * The following methods are shared and should be used from Result
      * And:
      * getQueryHash
      * getNode

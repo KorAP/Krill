@@ -8,7 +8,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.query.QueryBuilder;
@@ -28,7 +28,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestKorapResult {
+public class TestResult {
 
     @Test
     public void checkJSONResult () throws Exception  {
@@ -60,7 +60,7 @@ public class TestKorapResult {
         SpanQuery q = (SpanQuery) kq.or(
             kq._(1, kq.seg("s:a"))).or(kq._(2, kq.seg("s:b"))
         ).toQuery();
-        KorapResult kr = ki.search(q);
+        Result kr = ki.search(q);
         assertEquals((long) 7, kr.getTotalResults());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -116,7 +116,7 @@ public class TestKorapResult {
         String json = getString(getClass().getResource("/queries/bugs/optionality_warning.jsonld").getFile());
         Krill ks = new Krill(json);
 
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals((long) 2, kr.getTotalResults());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -159,7 +159,7 @@ public class TestKorapResult {
             getClass().getResource("/queries/bsp-result-check.jsonld").getFile()
         );
         Krill ks = new Krill(json);
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals((long) 7, kr.getTotalResults());
 
         ObjectMapper mapper = new ObjectMapper();
@@ -225,7 +225,7 @@ public class TestKorapResult {
 
         QueryBuilder kq = new QueryBuilder("base");
         SpanQuery q = (SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).toQuery();
-        KorapResult kr = ki.search(q);
+        Result kr = ki.search(q);
 
         assertEquals((long) 3, kr.getTotalResults());
         ObjectMapper mapper = new ObjectMapper();

@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
@@ -25,7 +25,7 @@ import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 public class TestSegmentNegationIndex {
     private SpanQuery sq;
     private KrillIndex ki;
-    private KorapResult kr;
+    private Result kr;
     private FieldDocument fd;
     private Logger log;	
 	

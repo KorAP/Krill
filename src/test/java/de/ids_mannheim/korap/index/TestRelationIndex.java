@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
@@ -60,7 +60,7 @@ xip/morph_pos:VERB & mpt/morph_msd:Sg & mpt/morph_msd:Dat & #1 >[func=”SUBJ”
 
 public class TestRelationIndex {
 	private KrillIndex ki;
-	private KorapResult kr;
+	private Result kr;
 
 	public TestRelationIndex() throws IOException {
 		ki = new KrillIndex();

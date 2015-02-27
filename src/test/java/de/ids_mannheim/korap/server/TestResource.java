@@ -20,7 +20,7 @@ import org.junit.Test;
 import java.io.FileInputStream;
 
 import de.ids_mannheim.korap.server.Node;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.KorapResponse;
 import static de.ids_mannheim.korap.util.KrillString.*;
 

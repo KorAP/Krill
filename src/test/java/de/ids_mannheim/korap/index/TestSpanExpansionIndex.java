@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
@@ -26,7 +26,7 @@ import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSpanExpansionIndex {
 
-    KorapResult kr;
+    Result kr;
     KrillIndex ki;
 
     public TestSpanExpansionIndex() throws IOException {

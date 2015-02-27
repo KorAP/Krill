@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -22,7 +22,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 public class TestUnorderedDistanceIndex{
 	
     private KrillIndex ki;
-	private KorapResult kr;
+	private Result kr;
 
 	private FieldDocument createFieldDoc0(){
     	FieldDocument fd = new FieldDocument();

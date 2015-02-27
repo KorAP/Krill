@@ -17,7 +17,7 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.model.MultiTermTokenStream;
@@ -61,7 +61,7 @@ public class TestNextIndex {
         ki.commit();
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
 
         sq = new SpanNextQuery(
             new SpanTermQuery(new Term("base", "s:a")),
@@ -139,7 +139,7 @@ public class TestNextIndex {
 	ki.commit();
 
 	SpanQuery sq;
-	KorapResult kr;
+	Result kr;
 
 	sq = new SpanNextQuery(
 	       new SpanTermQuery(new Term("base", "s:c")),
@@ -174,7 +174,7 @@ public class TestNextIndex {
 	ki.commit();
 
 	SpanQuery sq;
-	KorapResult kr;
+	Result kr;
 
 	sq = new SpanNextQuery(
 	       new SpanElementQuery("base", "x"),
@@ -226,7 +226,7 @@ public class TestNextIndex {
         ki.commit();
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
 
         sq = new SpanNextQuery(
             new SpanElementQuery("base", "x"),
@@ -274,7 +274,7 @@ public class TestNextIndex {
 					new SpanTermQuery(new Term("base","s:d")),
 					new SpanTermQuery(new Term("base","s:b"))
 				);
-		KorapResult kr = ki.search(sq, (short) 10);			
+		Result kr = ki.search(sq, (short) 10);			
 				
 		assertEquals("totalResults", kr.getTotalResults(), 2);
 		// Match #0
@@ -315,7 +315,7 @@ public class TestNextIndex {
 				)
 			);
 		
-		KorapResult kr = ki.search(sq, (short) 10);			
+		Result kr = ki.search(sq, (short) 10);			
 		assertEquals("totalResults", kr.getTotalResults(), 1);
 		assertEquals("doc-number", 2, kr.getMatch(0).getLocalDocID());
 		assertEquals("StartPos", 0, kr.getMatch(0).startPos);
@@ -335,7 +335,7 @@ public class TestNextIndex {
 		SpanSequenceQueryWrapper sq = new SpanSequenceQueryWrapper("base");
 		sq.append("i:b").append("i:d").withConstraint(1,3);
 		
-		KorapResult kr = ki.search(sq.toQuery(), (short) 10);			
+		Result kr = ki.search(sq.toQuery(), (short) 10);			
 
 		assertEquals("totalResults", kr.getTotalResults(), 3);
 		assertEquals("doc-number", "match-doc-0-p2-5", kr.getMatch(0).getID());
@@ -355,7 +355,7 @@ public class TestNextIndex {
 		SpanSequenceQueryWrapper sq = new SpanSequenceQueryWrapper("base");
 		sq.append("i:a").append("i:b").withConstraint(0, 3, "e");
 		
-		KorapResult kr = ki.search(sq.toQuery(), (short) 10);			
+		Result kr = ki.search(sq.toQuery(), (short) 10);			
 
 		assertEquals("totalResults", kr.getTotalResults(), 3);
 		assertEquals("doc-number", "match-doc-0-p3-6", kr.getMatch(0).getID());
@@ -376,7 +376,7 @@ public class TestNextIndex {
 				new SpanTermQuery(new Term("base","s:c"))
 			);
 		
-		KorapResult kr = ki.search(sq, (short) 10);
+		Result kr = ki.search(sq, (short) 10);
 		
 		assertEquals(0, kr.getMatch(0).getStartPos());
 		assertEquals(2, kr.getMatch(0).getEndPos());

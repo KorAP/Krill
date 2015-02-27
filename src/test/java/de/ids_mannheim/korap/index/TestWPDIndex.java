@@ -16,7 +16,7 @@ import org.junit.Test;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.collection.BooleanFilter;
 import de.ids_mannheim.korap.query.DistanceConstraint;
@@ -28,7 +28,7 @@ import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 public class TestWPDIndex {
 	long start, end;
 	KrillIndex ki;
-	KorapResult kr;
+	Result kr;
 	Krill ks;
 	
 	private SpanDistanceQuery createElementDistanceQuery(String e, String x, String y, 

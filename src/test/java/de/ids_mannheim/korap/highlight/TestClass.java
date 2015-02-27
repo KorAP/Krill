@@ -13,7 +13,7 @@ import org.junit.Test;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
@@ -22,7 +22,7 @@ import de.ids_mannheim.korap.util.QueryException;
 
 public class TestClass {
 	KrillIndex ki;
-	KorapResult kr;
+	Result kr;
 	Krill ks;
 	
 	@Test

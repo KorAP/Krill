@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.response.Match;
@@ -136,7 +136,7 @@ public class TestFieldDocument {
 	assertEquals(fd.getPubDate().toDisplay(),"2013-06-17");
 
 	QueryBuilder kq = new QueryBuilder("tokens");
-	KorapResult kr = ki.search((SpanQuery) kq.seq(kq._(3, kq.seg("s:b"))).toQuery());
+	Result kr = ki.search((SpanQuery) kq.seq(kq._(3, kq.seg("s:b"))).toQuery());
 
 	Match km = kr.getMatch(0);
 
@@ -177,7 +177,7 @@ public class TestFieldDocument {
 	QueryBuilder kq = new QueryBuilder("tokens");
 
 	Krill ks;
-	KorapResult kr;
+	Result kr;
 
 	// Start creating query
 	// within(<s>, {1: {2: [mate/p=ADJA & mate/m=number:sg]}[opennlp/p=NN & tt/p=NN]})
@@ -225,7 +225,7 @@ public class TestFieldDocument {
 
 	SpanQueryWrapper sqwi = jsonQuery(getClass().getResource("/queries/bsp18.jsonld").getFile());
 
-	KorapResult kr = ki.search(sqwi.toQuery(), 0, (short) 5, true, (short) 2, false, (short) 5);
+	Result kr = ki.search(sqwi.toQuery(), 0, (short) 5, true, (short) 2, false, (short) 5);
 
 	// Bug:
 	// System.err.println(kr.toJSON());

@@ -17,7 +17,7 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
@@ -69,7 +69,7 @@ public class TestWithinIndex {
         ki.commit();
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
 
         sq = new SpanWithinQuery(
             new SpanElementQuery("base", "a"),
@@ -142,7 +142,7 @@ public class TestWithinIndex {
         ki.commit();
         
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
 
         sq = new SpanWithinQuery(
             new SpanElementQuery("base", "a"),
@@ -247,7 +247,7 @@ public class TestWithinIndex {
         ki.commit();
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
 
         sq = new SpanWithinQuery(
             new SpanElementQuery("base", "a"),
@@ -335,7 +335,7 @@ public class TestWithinIndex {
         ki.commit();
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
 
         sq = new SpanElementQuery("base", "a");
         kr = ki.search(sq, (short) 15);
@@ -398,7 +398,7 @@ public class TestWithinIndex {
         assertEquals(1, ki.numberOf("documents"));
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
 
         sq = new SpanElementQuery("base", "a");
         kr = ki.search(sq, (short) 10);
@@ -472,7 +472,7 @@ public class TestWithinIndex {
         assertEquals(1, ki.numberOf("documents"));
 
         SpanQuery sq = new SpanElementQuery("base", "a");
-        KorapResult kr = ki.search(sq, (short) 10);
+        Result kr = ki.search(sq, (short) 10);
 
         assertEquals("totalResults", kr.getTotalResults(), 3);
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
@@ -541,7 +541,7 @@ public class TestWithinIndex {
 
         SpanQuery sq = new SpanElementQuery("base", "a");
 
-        KorapResult kr = ki.search(sq, (short) 10);
+        Result kr = ki.search(sq, (short) 10);
     
         assertEquals("totalResults", kr.getTotalResults(), 4);
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
@@ -616,7 +616,7 @@ public class TestWithinIndex {
 
         SpanQuery sq = new SpanElementQuery("base", "a");
 
-        KorapResult kr = ki.search(sq, (short) 10);
+        Result kr = ki.search(sq, (short) 10);
     
         assertEquals("totalResults", kr.getTotalResults(), 5);
 
@@ -760,7 +760,7 @@ public class TestWithinIndex {
 
         SpanQuery sq = new SpanElementQuery("base", "a");
 
-        KorapResult kr = ki.search(sq, (short) 15);
+        Result kr = ki.search(sq, (short) 15);
 
         assertEquals("totalResults", kr.getTotalResults(), 12);
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
@@ -813,7 +813,7 @@ public class TestWithinIndex {
         ki.commit();
         
         SpanQuery sq = new SpanClassQuery(new SpanElementQuery("base", "sentence"), (byte)3);
-        KorapResult kr;
+        Result kr;
         kr = ki.search(sq, 0, (short) 15, true, (short) 1, true, (short) 1);
         assertEquals("totalResults", kr.getTotalResults(), 1);
         
@@ -928,7 +928,7 @@ public class TestWithinIndex {
             new SpanTermQuery(new Term("base", "s:x"))
         );
 
-        KorapResult kr = ki.search(sq, (short) 10);
+        Result kr = ki.search(sq, (short) 10);
 
         assertEquals("totalResults", kr.getTotalResults(), 2);
         assertEquals("StartPos (0)", 2, kr.getMatch(0).startPos);
@@ -971,7 +971,7 @@ public class TestWithinIndex {
             )
         );
 
-        KorapResult kr = ki.search(sq, (short) 10);
+        Result kr = ki.search(sq, (short) 10);
 
         assertEquals("totalResults", kr.getTotalResults(), 4);
 
@@ -1020,7 +1020,7 @@ public class TestWithinIndex {
             )
         );
 
-        KorapResult kr = ki.search(sq, (short) 10);
+        Result kr = ki.search(sq, (short) 10);
         assertEquals("totalResults", kr.getTotalResults(), 0);
     };
 
@@ -1059,7 +1059,7 @@ public class TestWithinIndex {
             )
         );
 
-        KorapResult kr = ki.search(sq, (short) 10);
+        Result kr = ki.search(sq, (short) 10);
         
         assertEquals("totalResults", kr.getTotalResults(), 0);
     };
@@ -1106,7 +1106,7 @@ public class TestWithinIndex {
         );
 
         ki.commit();
-        KorapResult kr = ki.search(sq, (short) 10);
+        Result kr = ki.search(sq, (short) 10);
         assertEquals(2, kr.getTotalResults());
         assertEquals(0, kr.getMatch(0).getLocalDocID());
         assertEquals(76, kr.getMatch(0).getStartPos());

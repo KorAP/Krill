@@ -24,7 +24,7 @@ import de.ids_mannheim.korap.server.Node;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillCollection;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.KorapResponse;
 import de.ids_mannheim.korap.index.FieldDocument;
@@ -245,7 +245,7 @@ public class Resource {
 
                 return ks.apply(index).toJsonString();
             };
-            KorapResult kr = new KorapResult();
+            Result kr = new Result();
             kr.setNode(Node.getName());
             kr.addError(610, "Missing request parameters", "No unique IDs were given");
             return kr.toJsonString();
@@ -338,7 +338,7 @@ public class Resource {
 
 	// Search index
         if (index != null) {
-            KorapResult kr = new Krill(json).apply(index);
+            Result kr = new Krill(json).apply(index);
 	    kr.setNode(Node.getName());
 	    return kr.toJsonString();
 	};

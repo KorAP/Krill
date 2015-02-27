@@ -15,7 +15,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.query.*;
@@ -57,7 +57,7 @@ public class TestMatchIndex {
 	ki.commit();
 
 	SpanQuery sq;
-	KorapResult kr;
+	Result kr;
 
 	sq = new SpanNextQuery(
             new SpanTermQuery(new Term("base", "s:b")),
@@ -231,7 +231,7 @@ public class TestMatchIndex {
         ki.commit();
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
 
         // No contexts:
         sq = new SpanOrQuery(
@@ -285,7 +285,7 @@ public class TestMatchIndex {
         ki.addDoc(fd);
         ki.commit();
 
-        KorapResult kr;
+        Result kr;
 
         QueryBuilder kq = new QueryBuilder("base");
 
@@ -320,7 +320,7 @@ public class TestMatchIndex {
         ki.commit();
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
 
         sq = new SpanFocusQuery(
             new SpanNextQuery(
@@ -380,7 +380,7 @@ public class TestMatchIndex {
         ki.commit();
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
         
         sq = new SpanWithinQuery(
             new SpanClassQuery(new SpanElementQuery("base", "s"), (byte) 2),
@@ -469,7 +469,7 @@ public class TestMatchIndex {
         ki.commit();
 
         SpanQuery sq;
-        KorapResult kr;
+        Result kr;
         KrillCollection kc = new KrillCollection(ki);
 
         assertEquals("Documents", 4, kc.numberOf("documents"));

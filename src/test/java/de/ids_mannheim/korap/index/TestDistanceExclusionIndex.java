@@ -10,7 +10,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -19,7 +19,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 public class TestDistanceExclusionIndex {
 
     private KrillIndex ki;
-	private KorapResult kr;
+	private Result kr;
 
 	/** Ordered, unordered
 	 * */

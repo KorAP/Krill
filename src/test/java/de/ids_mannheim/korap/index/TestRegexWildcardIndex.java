@@ -15,7 +15,7 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
@@ -57,7 +57,7 @@ public class TestRegexWildcardIndex {
 	ks.getMeta().getContext().left.setToken(true).setLength(1);
 	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
-	KorapResult kr = ki.search(ks);
+	Result kr = ki.search(ks);
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("affe [afffe] baum ...", kr.getMatch(1).getSnippetBrackets());
@@ -114,7 +114,7 @@ public class TestRegexWildcardIndex {
 	ks.getMeta().getContext().left.setToken(true).setLength(1);
 	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
-	KorapResult kr = ki.search(ks);
+	Result kr = ki.search(ks);
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("affe [afffe] baum ...", kr.getMatch(1).getSnippetBrackets());
@@ -173,7 +173,7 @@ public class TestRegexWildcardIndex {
 	ks.getMeta().getContext().left.setToken(true).setLength(1);
 	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
-	KorapResult kr = ki.search(ks);
+	Result kr = ki.search(ks);
 	assertEquals((long) 2, kr.getTotalResults());
 	assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
 	assertEquals("AfFe [aFfFE] Baum ...", kr.getMatch(1).getSnippetBrackets());
@@ -238,7 +238,7 @@ public class TestRegexWildcardIndex {
 	ks.getMeta().getContext().left.setToken(true).setLength(1);
 	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
-	KorapResult kr = ki.search(ks);
+	Result kr = ki.search(ks);
 	assertEquals((long) 1, kr.getTotalResults());
 	assertEquals("[affe afffe] baum ...", kr.getMatch(0).getSnippetBrackets());
     };
@@ -279,7 +279,7 @@ public class TestRegexWildcardIndex {
 	ks.getMeta().getContext().left.setToken(true).setLength(1);
 	ks.getMeta().getContext().right.setToken(true).setLength(1);
 
-	KorapResult kr = ki.search(ks);
+	Result kr = ki.search(ks);
 	assertEquals((long) 1, kr.getTotalResults());
 	assertEquals("[affe afffe] baum ...", kr.getMatch(0).getSnippetBrackets());
     };

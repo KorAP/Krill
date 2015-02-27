@@ -12,14 +12,14 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
 public class TestRepetitionIndex {
 	
     private KrillIndex ki;
-	private KorapResult kr;
+	private Result kr;
 
 	private FieldDocument createFieldDoc0(){
     	FieldDocument fd = new FieldDocument();

@@ -6,7 +6,7 @@ import java.util.*;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.response.KorapResponse;
@@ -238,9 +238,9 @@ public class Krill extends KorapResponse {
      *
      * @param index The {@link KrillIndex}
      *        the search should be applyied to.
-     * @return The result as a {@link KorapResult} object.
+     * @return The result as a {@link Result} object.
      */
-    public KorapResult apply (KrillIndex index) {
+    public Result apply (KrillIndex index) {
         return this.setIndex(index).apply();
     };
 
@@ -248,12 +248,12 @@ public class Krill extends KorapResponse {
     /**
      * Apply the KoralQuery to an index.
      *
-     * @return The result as a {@link KorapResult} object.
+     * @return The result as a {@link Result} object.
      */
-    public KorapResult apply () {
+    public Result apply () {
 
-        // Create new KorapResult object to return
-        KorapResult kr = new KorapResult();
+        // Create new Result object to return
+        Result kr = new Result();
 
         // There were errors
         if (this.hasErrors()) {

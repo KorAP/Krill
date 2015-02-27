@@ -7,7 +7,7 @@ import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import org.apache.lucene.store.MMapDirectory;
@@ -43,7 +43,7 @@ public class TestBenchmarkSpans {
 
         int rounds = 100;
 
-        KorapResult kr = new KorapResult();
+        Result kr = new Result();
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
@@ -94,7 +94,7 @@ public class TestBenchmarkSpans {
         
         int rounds = 10000;
         
-        KorapResult kr = new KorapResult();
+        Result kr = new Result();
         String result = new String("");
         
         t1 = System.nanoTime();
@@ -137,7 +137,7 @@ public class TestBenchmarkSpans {
 
         int rounds = 10;
 
-        KorapResult kr = new KorapResult();
+        Result kr = new Result();
 
         t1 = System.nanoTime();
         double length = 0;
@@ -179,7 +179,7 @@ public class TestBenchmarkSpans {
 
         int rounds = 2000;
         
-        KorapResult kr = new KorapResult();
+        Result kr = new Result();
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
@@ -326,7 +326,7 @@ public class TestBenchmarkSpans {
 
         int rounds = 500;
     
-        KorapResult kr = new KorapResult();
+        Result kr = new Result();
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {

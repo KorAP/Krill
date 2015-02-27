@@ -14,7 +14,7 @@ import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.meta.SearchContext;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
-import de.ids_mannheim.korap.KorapResult;
+import de.ids_mannheim.korap.response.Result;
 import java.nio.file.Files;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -116,7 +116,7 @@ public class TestKrill {
         meta.getContext().left.setLength(1);
         meta.getContext().right.setLength(1);
         
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 6);
         assertEquals(
             kr.getMatch(0).getSnippetBrackets(),
@@ -157,7 +157,7 @@ public class TestKrill {
         );
 
         Krill ks = new Krill(json);
-		KorapResult kr = ks.apply(ki);
+		Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 66);
         assertEquals(5, kr.getItemsPerPage());
         assertEquals(5, kr.getStartIndex());
@@ -199,7 +199,7 @@ public class TestKrill {
         );
 
         Krill ks = new Krill(json);
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 1);
 
@@ -246,7 +246,7 @@ public class TestKrill {
             );
         };
         ki.commit();
-        KorapResult kr = new Krill("{ query").apply(ki);
+        Result kr = new Krill("{ query").apply(ki);
         assertEquals(kr.getTotalResults(), 0);
         assertEquals(kr.getError(0).getMessage(), "Unable to parse JSON");
     };
@@ -275,7 +275,7 @@ public class TestKrill {
             getClass().getResource("/queries/bsp-fail1.jsonld").getFile()
         );
 
-        KorapResult kr = new Krill(json).apply(ki);
+        Result kr = new Krill(json).apply(ki);
         assertEquals(0, kr.getStartIndex());
         assertEquals(kr.getTotalResults(), 0);
         assertEquals(25, kr.getItemsPerPage());
@@ -305,7 +305,7 @@ public class TestKrill {
             getClass().getResource("/queries/bsp-fail2.jsonld").getFile()
         );
 
-        KorapResult kr = new Krill(json).apply(ki);
+        Result kr = new Krill(json).apply(ki);
         assertEquals(50, kr.getItemsPerPage());
         assertEquals(49950, kr.getStartIndex());
         assertEquals(kr.getTotalResults(), 0);
@@ -336,7 +336,7 @@ public class TestKrill {
         );
 
         Krill ks = new Krill(json);
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
         assertEquals("A bzw. a ist der erste Buchstabe des" +
                      " lateinischen [Alphabets] und ein Vokal." +
@@ -396,7 +396,7 @@ public class TestKrill {
         );
 
         Krill ks = new Krill(json);
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
         assertEquals(5, kr.getStartIndex());
         assertEquals(5, kr.getItemsPerPage());
@@ -444,7 +444,7 @@ public class TestKrill {
         );
 
         Krill ks = new Krill(json);
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
         assertEquals(0, kr.getStartIndex());
         assertEquals(20, kr.getItemsPerPage());
@@ -541,7 +541,7 @@ public class TestKrill {
         kc.setIndex(ki);
         ks.setCollection(kc);
 
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 2);
         assertEquals(0, kr.getStartIndex());
@@ -628,7 +628,7 @@ public class TestKrill {
             seg("mate/m:case:nom").
             with("mate/m:number:pl")
         );
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 148);
         assertEquals(0, kr.getStartIndex());
@@ -719,7 +719,7 @@ public class TestKrill {
             seg("mate/m:case:nom").
             with("mate/m:number:sg")
         );
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 6);
         assertEquals(0, kr.getStartIndex());
@@ -755,7 +755,7 @@ public class TestKrill {
             )
         );
 
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals(
             kr.getSerialQuery(),
             "focus(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}))"
@@ -831,7 +831,7 @@ public class TestKrill {
         );
 	
         Krill ks = new Krill(json);
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals(
             kr.getSerialQuery(),
             "{4: spanNext({1: spanNext({2: tokens:s:ins}, "+
@@ -876,7 +876,7 @@ public class TestKrill {
         );
 	
         Krill ks = new Krill(json);
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toTokenListJsonString());
@@ -942,7 +942,7 @@ public class TestKrill {
         ks.setCollection(kc);
         assertEquals(1, kc.numberOf("documents"));
 
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         
         assertEquals(
             kr.getSerialQuery(),
@@ -1010,7 +1010,7 @@ public class TestKrill {
         );
 	
         Krill ks = new Krill(json);
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 276);
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
@@ -1109,7 +1109,7 @@ public class TestKrill {
         sc.left.setLength((short) 10);
         sc.right.setLength((short) 10);
         
-        KorapResult kr = ks.apply(ki);
+        Result kr = ks.apply(ki);
         assertEquals(
             kr.getMatch(1).getSnippetBrackets(),
             "... dezimalen [Wert] 65 sowohl ..."
@@ -1174,7 +1174,7 @@ public class TestKrill {
             getFile()
         );
 
-        KorapResult kr = new Krill(json).apply(ki);
+        Result kr = new Krill(json).apply(ki);
 
         assertEquals(
             kr.getError(0).getMessage(),
@@ -1207,7 +1207,7 @@ public class TestKrill {
             getFile()
         );
 	
-		KorapResult kr = new Krill(json).apply(ki);				
+		Result kr = new Krill(json).apply(ki);				
 		assertEquals("... Buchstabe des Alphabetes. In Dänemark ist " +
                      "[der alte Digraph Aa durch Å] ersetzt worden, " +
                      "in Eigennamen und Ortsnamen ...",

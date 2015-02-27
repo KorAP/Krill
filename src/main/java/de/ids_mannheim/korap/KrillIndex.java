@@ -30,8 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.index.*;
 import de.ids_mannheim.korap.meta.*;
-import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.response.MatchCollector;
+import de.ids_mannheim.korap.response.*;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -1076,12 +1075,12 @@ public class KrillIndex {
     /**
      * Search in the index.
      */
-    public KorapResult search (SpanQuery query) {
+    public Result search (SpanQuery query) {
         return this.search(new Krill(query));
     };
 
 
-    public KorapResult search (SpanQuery query, short count) {
+    public Result search (SpanQuery query, short count) {
         Krill krill = new Krill(query);
         krill.getMeta().setCount(count);
         return this.search(krill);
@@ -1089,7 +1088,7 @@ public class KrillIndex {
 
 
     @Deprecated
-    public KorapResult search (SpanQuery query,
+    public Result search (SpanQuery query,
                                int startIndex,
                                short count,
                                boolean leftTokenContext,
@@ -1113,7 +1112,7 @@ public class KrillIndex {
 
 
     @Deprecated
-    public KorapResult search (KrillCollection collection,
+    public Result search (KrillCollection collection,
                                SpanQuery query,
                                int startIndex,
                                short count,
@@ -1138,7 +1137,7 @@ public class KrillIndex {
     /**
      * Search the endpoint.
      */
-    public KorapResult search (Krill ks) {
+    public Result search (Krill ks) {
         if (DEBUG)
             log.trace("Start search");
 
@@ -1155,8 +1154,8 @@ public class KrillIndex {
 
         KrillMeta meta = ks.getMeta();
 
-        // Todo: Make kr subclassing ks - so ks has a method for a new KorapResult!
-        KorapResult kr = new KorapResult(
+        // Todo: Make kr subclassing ks - so ks has a method for a new Result!
+        Result kr = new Result(
             query.toString(),
             meta.getStartIndex(),
             meta.getCount(),
@@ -1293,7 +1292,7 @@ public class KrillIndex {
                     );
                     match.setContext(kr.getContext());
 
-                    // Add match to KorapResult
+                    // Add match to Result
                     kr.add(match);
 
                     if (spans.isPayloadAvailable())
