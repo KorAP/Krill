@@ -26,7 +26,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.model.MultiTermTokenStream;
+import de.ids_mannheim.korap.index.MultiTermTokenStream;
 
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 

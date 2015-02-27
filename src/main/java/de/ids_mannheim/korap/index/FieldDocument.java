@@ -1,8 +1,8 @@
 package de.ids_mannheim.korap.index;
 
-import de.ids_mannheim.korap.model.MultiTermTokenStream;
-import de.ids_mannheim.korap.model.MultiTermToken;
-import de.ids_mannheim.korap.model.AbstractDocument;
+import de.ids_mannheim.korap.index.MultiTermTokenStream;
+import de.ids_mannheim.korap.index.MultiTermToken;
+import de.ids_mannheim.korap.index.AbstractDocument;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.CorpusDataException;
 

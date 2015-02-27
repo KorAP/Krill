@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.model.*;
+import de.ids_mannheim.korap.index.*;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.CorpusDataException;

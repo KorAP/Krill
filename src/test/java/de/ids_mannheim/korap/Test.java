@@ -5,8 +5,8 @@ import java.io.IOException;
 
 import static org.junit.Assert.*;
 
-import de.ids_mannheim.korap.model.MultiTermTokenStream;
-import de.ids_mannheim.korap.model.MultiTermToken;
+import de.ids_mannheim.korap.index.MultiTermTokenStream;
+import de.ids_mannheim.korap.index.MultiTermToken;
 import de.ids_mannheim.korap.util.CorpusDataException;
 
 import org.apache.lucene.document.Document;

@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.model;
+package de.ids_mannheim.korap.index;
 
 import de.ids_mannheim.korap.util.CorpusDataException;
 

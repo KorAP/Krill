@@ -15,7 +15,8 @@
 	  renamed KorapString to KrillString,
 	  moved KorapNode to server/Node,
 	  moved KorapResult to response/Result,
-	  renamed KorapResponse to Response (diewald)
+	  renamed KorapResponse to Response,
+	  moved model/* to index (diewald)
         - [documentation] Improved documentation for API classes (diewald)
 
 0.50 2015-02-23

@@ -16,7 +16,7 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.model.MultiTermTokenStream;
+import de.ids_mannheim.korap.index.MultiTermTokenStream;
 
 @RunWith(JUnit4.class)
 public class TestKrillIndex {

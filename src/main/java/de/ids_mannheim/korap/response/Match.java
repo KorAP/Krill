@@ -15,7 +15,7 @@ import de.ids_mannheim.korap.index.PositionsToOffset;
 // Todo:
 import de.ids_mannheim.korap.meta.SearchContext;
 
-import de.ids_mannheim.korap.model.AbstractDocument;
+import de.ids_mannheim.korap.index.AbstractDocument;
 import de.ids_mannheim.korap.response.match.HighlightCombinator;
 import de.ids_mannheim.korap.response.match.HighlightCombinatorElement;
 import de.ids_mannheim.korap.response.match.Relation;

@@ -1,7 +1,7 @@
-package de.ids_mannheim.korap.model;
+package de.ids_mannheim.korap.index;
 
 import java.util.*;
-import de.ids_mannheim.korap.model.MultiTermToken;
+import de.ids_mannheim.korap.index.MultiTermToken;
 import de.ids_mannheim.korap.util.CorpusDataException;
 import java.io.IOException;
 import org.apache.lucene.util.BytesRef;

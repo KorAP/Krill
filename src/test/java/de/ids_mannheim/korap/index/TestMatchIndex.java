@@ -20,7 +20,7 @@ import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.query.*;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.model.MultiTermTokenStream;
+import de.ids_mannheim.korap.index.MultiTermTokenStream;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
