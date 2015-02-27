@@ -10,7 +10,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.MultivaluedMap;
@@ -26,7 +25,7 @@ import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.response.KorapResponse;
+import de.ids_mannheim.korap.response.Response;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.response.MatchCollector;
@@ -90,7 +89,7 @@ public class Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
         KrillIndex index = Node.getIndex();
-        KorapResponse kresp = new KorapResponse();
+        Response kresp = new Response();
         kresp.setNode(Node.getName());
         kresp.setName(index.getName());
         kresp.setVersion(index.getVersion());
@@ -138,7 +137,7 @@ public class Resource {
         // Get index
         KrillIndex index = Node.getIndex();
 
-        KorapResponse kresp = new KorapResponse();
+        Response kresp = new Response();
         kresp.setNode(Node.getName());
 
         if (index == null) {
@@ -181,7 +180,7 @@ public class Resource {
 
         // Get index
         KrillIndex index = Node.getIndex();
-        KorapResponse kresp = new KorapResponse();
+        Response kresp = new Response();
         kresp.setNode(Node.getName());
 
         if (index == null) {
@@ -251,7 +250,7 @@ public class Resource {
             return kr.toJsonString();
         };
 
-        KorapResponse kresp = new KorapResponse();
+        Response kresp = new Response();
         kresp.setNode(Node.getName());
         kresp.setName(index.getName());
         kresp.setVersion(index.getVersion());
@@ -280,7 +279,7 @@ public class Resource {
 
         // No index found
         if (index == null) {
-            KorapResponse kresp = new KorapResponse();
+            Response kresp = new Response();
             kresp.setNode(Node.getName());
             kresp.addError(601, "Unable to find index");
             return kresp.toJsonString();
@@ -304,7 +303,7 @@ public class Resource {
             log.error(e.getLocalizedMessage());
         };
 
-        KorapResponse kresp = new KorapResponse();
+        Response kresp = new Response();
         kresp.setNode(Node.getName());
         kresp.setName(index.getName());
         kresp.setVersion(index.getVersion());
@@ -343,7 +342,7 @@ public class Resource {
 	    return kr.toJsonString();
 	};
 
-	KorapResponse kresp = new KorapResponse();
+	Response kresp = new Response();
 	kresp.setNode(Node.getName());
 	kresp.setName(index.getName());
 	kresp.setVersion(index.getVersion());
@@ -410,7 +409,7 @@ public class Resource {
 
 	    // Nothing found
 	    catch (QueryException qe) {
-		// Todo: Make Match rely on KorapResponse!
+		// Todo: Make Match rely on Response!
                 Match km = new Match();
                 km.addError(qe.getErrorCode(), qe.getMessage());
                 return km.toJsonString();

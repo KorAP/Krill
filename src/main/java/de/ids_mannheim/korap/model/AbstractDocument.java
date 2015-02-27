@@ -4,7 +4,7 @@ import java.util.*;
 
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.response.KorapResponse;
+import de.ids_mannheim.korap.response.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.*;
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.*;
  * @author diewald
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class AbstractDocument extends KorapResponse {
+public abstract class AbstractDocument extends Response {
     private String primaryData;
 
     @JsonIgnore

@@ -13,7 +13,7 @@ import de.ids_mannheim.korap.index.PositionsToOffset;
 // Remove:
 import de.ids_mannheim.korap.meta.SearchContext;
 
-import de.ids_mannheim.korap.response.KorapResponse;
+import de.ids_mannheim.korap.response.Response;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.Krill;
 
@@ -32,7 +32,7 @@ import java.util.List;
  * TODO: Synopsis and let it base on KoralQuery
  *
  * @author diewald
- * @see KorapResponse
+ * @see Response
  */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)

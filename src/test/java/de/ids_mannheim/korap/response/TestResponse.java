@@ -4,7 +4,7 @@ import java.io.*;
 
 import de.ids_mannheim.korap.response.Messages;
 import de.ids_mannheim.korap.response.Notifications;
-import de.ids_mannheim.korap.response.KorapResponse;
+import de.ids_mannheim.korap.response.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -22,7 +22,7 @@ public class TestResponse {
 
     @Test
     public void testResponse () throws IOException {
-		KorapResponse resp = new KorapResponse();
+		Response resp = new Response();
 		assertEquals("{}", resp.toJsonString());
 		resp.setVersion("0.24");
         resp.setNode("Tanja");
@@ -51,7 +51,7 @@ public class TestResponse {
 
     @Test
     public void testResponseNotifications () throws IOException {
-        KorapResponse resp = new KorapResponse();
+        Response resp = new Response();
         assertEquals("{}", resp.toJsonString());
         resp.setVersion("0.24");
         resp.setNode("Tanja");
@@ -85,45 +85,45 @@ public class TestResponse {
     @Test
     public void testResponseDeserialzation () throws IOException {
         String jsonResponse = "{\"version\":\"0.38\"}";
-        KorapResponse kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+        Response kresp = mapper.readValue(jsonResponse, Response.class);
 
         assertEquals("0.38", kresp.getVersion());
         assertNull(kresp.getName());
         assertEquals(jsonResponse, kresp.toJsonString());
 
         jsonResponse = "{\"version\":\"seaweed-0.49\"}";
-        kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+        kresp = mapper.readValue(jsonResponse, Response.class);
         assertEquals("0.49", kresp.getVersion());
         assertEquals("seaweed", kresp.getName());
         assertTrue(kresp.toJsonString().contains("seaweed-0.49"));
 
         jsonResponse = "{\"version\":\"seaweed-\"}";
-        kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+        kresp = mapper.readValue(jsonResponse, Response.class);
         assertEquals("seaweed-", kresp.getVersion());
         assertNull(kresp.getName());
         assertTrue(kresp.toJsonString().contains("seaweed-"));
 
         jsonResponse = "{\"timeExceeded\":true}";
-        kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+        kresp = mapper.readValue(jsonResponse, Response.class);
         assertTrue(kresp.hasTimeExceeded());
         assertTrue(kresp.hasWarnings());
 
         jsonResponse = "{\"benchmark\":\"40.5s\", \"foo\":\"bar\"}";
-        kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+        kresp = mapper.readValue(jsonResponse, Response.class);
         assertEquals("40.5s", kresp.getBenchmark());
 
         jsonResponse = "{\"listener\":\"10.0.10.14:678\", \"foo\":\"bar\"}";
-        kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+        kresp = mapper.readValue(jsonResponse, Response.class);
         assertEquals("10.0.10.14:678", kresp.getListener());
 
         jsonResponse = "{\"node\":\"tanja\", \"foo\":\"bar\"}";
-        kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+        kresp = mapper.readValue(jsonResponse, Response.class);
         assertEquals("tanja", kresp.getNode());
 
         jsonResponse = "{\"node\":\"tanja\", \"version\":\"seaweed-0.49\", " +
             " \"benchmark\":\"40.5s\",  \"listener\":\"10.0.10.14:678\"," +
             "\"timeExceeded\":true }";
-        kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+        kresp = mapper.readValue(jsonResponse, Response.class);
         assertEquals("0.49", kresp.getVersion());
         assertEquals("seaweed", kresp.getName());
         assertEquals("40.5s", kresp.getBenchmark());
@@ -138,7 +138,7 @@ public class TestResponse {
             " \"node\":\"tanja\", \"version\":\"seaweed-0.49\", " +
             " \"benchmark\":\"40.5s\",  \"listener\":\"10.0.10.14:678\"," +
             "\"timeExceeded\":true }";
-        kresp = mapper.readValue(jsonResponse, KorapResponse.class);
+        kresp = mapper.readValue(jsonResponse, Response.class);
         assertTrue(kresp.hasWarnings());
         assertTrue(kresp.hasErrors());
         assertFalse(kresp.hasMessages());

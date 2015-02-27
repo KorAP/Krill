@@ -8,10 +8,9 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillMeta;
-
-
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.response.Notifications;
 
@@ -21,7 +20,7 @@ import de.ids_mannheim.korap.response.Notifications;
  *
  * <p>
  * <blockquote><pre>
- *   KorapResponse km = new KorapResponse();
+ *   Response km = new Response();
  *   System.out.println(
  *     km.toJsonString()
  *   );
@@ -33,7 +32,7 @@ import de.ids_mannheim.korap.response.Notifications;
 // Todo: Use configuration file to get default token field "tokens"
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class KorapResponse extends Notifications {
+public class Response extends Notifications {
     ObjectMapper mapper = new ObjectMapper();
 
     private KrillMeta meta;
@@ -50,9 +49,9 @@ public class KorapResponse extends Notifications {
 
 
     /**
-     * Construct a new KorapResponse object.
+     * Construct a new Response object.
      */
-    public KorapResponse () {};
+    public Response () {};
 
 
     /**
@@ -69,9 +68,9 @@ public class KorapResponse extends Notifications {
      * Set the string representation of the backend's version.
      *
      * @param version The string representation of the backend's version
-     * @return KorapResponse object for chaining
+     * @return Response object for chaining
      */
-    public KorapResponse setVersion (String fullVersion) {
+    public Response setVersion (String fullVersion) {
         int found = fullVersion.lastIndexOf('-');
 
         // Is combined name and version
@@ -103,9 +102,9 @@ public class KorapResponse extends Notifications {
      * All nodes in a cluster should have the same backend name.
      *
      * @param name The string representation of the backend's name
-     * @return KorapResponse object for chaining
+     * @return Response object for chaining
      */
-    public KorapResponse setName (String name) {
+    public Response setName (String name) {
         this.name = name;
         return this;
     };
@@ -127,9 +126,9 @@ public class KorapResponse extends Notifications {
      * Each node in a cluster has a unique name.
      *
      * @param version The string representation of the node's name
-     * @return KorapResponse object for chaining
+     * @return Response object for chaining
      */
-    public KorapResponse setNode (String name) {
+    public Response setNode (String name) {
         this.node = name;
         return this;
     };
@@ -156,9 +155,9 @@ public class KorapResponse extends Notifications {
      *
      * @param timeout Either <tt>true</tt> or <tt>false</tt>,
      * in case the response timed out
-     * @return KorapResponse object for chaining
+     * @return Response object for chaining
      */
-    public KorapResponse setTimeExceeded (boolean timeout) {
+    public Response setTimeExceeded (boolean timeout) {
         if (timeout)
             this.addWarning(682, "Response time exceeded");
         this.timeExceeded = timeout;
@@ -182,10 +181,10 @@ public class KorapResponse extends Notifications {
      *
      * @param ts1 Starting time of the benchmark
      * @param ts2 Ending time of the benchmark
-     * @return KorapResponse object for chaining
+     * @return Response object for chaining
      */
     @JsonIgnore
-    public KorapResponse setBenchmark (long ts1, long ts2) {
+    public Response setBenchmark (long ts1, long ts2) {
         this.benchmark =
             (ts2 - ts1) < 100_000_000 ?
             // Store as miliseconds
@@ -201,9 +200,9 @@ public class KorapResponse extends Notifications {
      *
      * @param bm String representation of a benchmark
      *           (including trailing time unit)
-     * @return KorapResponse for chaining
+     * @return Response for chaining
      */
-    public KorapResponse setBenchmark (String bm) {
+    public Response setBenchmark (String bm) {
         this.benchmark = bm;
         return this;
     };
@@ -229,9 +228,9 @@ public class KorapResponse extends Notifications {
      * </pre></blockquote>
      *
      * @param listener String representation of the listener URI
-     * @return KorapResponse object for chaining
+     * @return Response object for chaining
      */
-    public KorapResponse setListener (String listener) {
+    public Response setListener (String listener) {
         this.listener = listener;
         return this;
     };
@@ -253,9 +252,9 @@ public class KorapResponse extends Notifications {
      * Set the total number of results.
      *
      * @param results The total number of results.
-     * @return {link KorapResponse} object for chaining.
+     * @return {link Response} object for chaining.
      */
-    public KorapResponse setTotalResults (long results) {
+    public Response setTotalResults (long results) {
         this.totalResults = results;
         return this;
     };
@@ -266,9 +265,9 @@ public class KorapResponse extends Notifications {
      *
      * @param incr The number of results the total number should
      *        be incremented by.
-     * @return {@link KorapResponse} object for chaining.
+     * @return {@link Response} object for chaining.
      */
-    public KorapResponse incrTotalResults (int incr) {
+    public Response incrTotalResults (int incr) {
         if (this.totalResults < 0)
             this.totalResults = incr;
         else
@@ -297,9 +296,9 @@ public class KorapResponse extends Notifications {
      *
      * @param resources The total number of resources the total
      *        number of results occur in.
-     * @return {@link KorapResponse} object for chaining.
+     * @return {@link Response} object for chaining.
      */
-    public KorapResponse setTotalResources (long resources) {
+    public Response setTotalResources (long resources) {
         this.totalResources = resources;
         return this;
     };
@@ -312,9 +311,9 @@ public class KorapResponse extends Notifications {
      * @param incr The number of resources the total number of
      *        results occur in should be incremented by.
      *        (I don't care that this isn't English!)
-     * @return {@link KorapResponse} object for chaining.
+     * @return {@link Response} object for chaining.
      */
-    public KorapResponse incrTotalResources (int i) {
+    public Response incrTotalResources (int i) {
         if (this.totalResources < 0)
             this.totalResources = i;
         else
@@ -343,14 +342,14 @@ public class KorapResponse extends Notifications {
      *
      * @param query The {@link KrillQuery} object,
      *        representing the KoralQuery query object.
-     * @return The {@link KorapResponse} object for chaining
+     * @return The {@link Response} object for chaining
      */
     @JsonIgnore
-    public KorapResponse setQuery (KrillQuery query) {
+    public Response setQuery (KrillQuery query) {
         this.query = query;
 
         // Move messages from the query
-        return (KorapResponse) this.moveNotificationsFrom(query);
+        return (Response) this.moveNotificationsFrom(query);
     };
 
 
@@ -373,14 +372,14 @@ public class KorapResponse extends Notifications {
      * Set a new {@link KrillCollection} object.
      *
      * @param collection A {@link KrillCollection} object.
-     * @return The {@link KorapResponse} object for chaining
+     * @return The {@link Response} object for chaining
      */
     @JsonIgnore
-    public KorapResponse setCollection (KrillCollection collection) {
+    public Response setCollection (KrillCollection collection) {
         this.collection = collection;
         
         // Move messages from the collection
-        return (KorapResponse) this.moveNotificationsFrom(collection);
+        return (Response) this.moveNotificationsFrom(collection);
     };
 
     
@@ -403,14 +402,14 @@ public class KorapResponse extends Notifications {
      * Set a new {@link KrillMeta} object.
      *
      * @param meta A {@link KrillMeta} object.
-     * @return The {@link KorapResponse} object for chaining
+     * @return The {@link Response} object for chaining
      */
     @JsonIgnore
-    public KorapResponse setMeta (KrillMeta meta) {
+    public Response setMeta (KrillMeta meta) {
         this.meta = meta;
         
         // Move messages from the collection
-        return (KorapResponse) this.moveNotificationsFrom(meta);
+        return (Response) this.moveNotificationsFrom(meta);
     };
 
 

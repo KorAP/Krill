@@ -1,9 +1,9 @@
 package de.ids_mannheim.korap.response;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.response.KorapResponse;
+import de.ids_mannheim.korap.response.Response;
 import java.util.*;
 
-public class MatchCollector extends KorapResponse {
+public class MatchCollector extends Response {
     public int totalResultDocs = 0;
     /*
       private int totalResults;

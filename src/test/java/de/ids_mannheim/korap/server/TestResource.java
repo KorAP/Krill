@@ -21,7 +21,7 @@ import java.io.FileInputStream;
 
 import de.ids_mannheim.korap.server.Node;
 import de.ids_mannheim.korap.response.Result;
-import de.ids_mannheim.korap.response.KorapResponse;
+import de.ids_mannheim.korap.response.Response;
 import static de.ids_mannheim.korap.util.KrillString.*;
 
 
@@ -74,7 +74,7 @@ public class TestResource {
 
     @Test
     public void testResource() throws IOException {
-        KorapResponse kresp;
+        Response kresp;
 
         for (String i : new String[] {"00001",
                                       "00002",
@@ -94,7 +94,7 @@ public class TestResource {
             try {
                 kresp = target.path("/index/" + i).
                     request("application/json").
-                    put(jsonE, KorapResponse.class);
+                    put(jsonE, Response.class);
 
                 assertEquals(kresp.getNode(), "milena");
                 assertFalse(kresp.hasErrors());
@@ -108,7 +108,7 @@ public class TestResource {
 
         kresp = target.path("/index").
             request("application/json").
-            post(Entity.text(""), KorapResponse.class);
+            post(Entity.text(""), Response.class);
         assertEquals(kresp.getNode(), "milena");
         assertFalse(kresp.hasErrors());
         assertFalse(kresp.hasWarnings());
@@ -123,12 +123,12 @@ public class TestResource {
         );
 
         try {
-            KorapResponse kresp
+            Response kresp
                 = target.path("/").
                 queryParam("uid", "1").
                 queryParam("uid", "4").
                 request("application/json").
-                post(Entity.json(json), KorapResponse.class);
+                post(Entity.json(json), Response.class);
 
             assertEquals(2, kresp.getTotalResults());
             assertFalse(kresp.hasErrors());

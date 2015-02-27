@@ -9,7 +9,7 @@ import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.response.Notifications;
-import de.ids_mannheim.korap.response.KorapResponse;
+import de.ids_mannheim.korap.response.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /*
  * Todo: Use a configuration file
  */
-public class Krill extends KorapResponse {
+public class Krill extends Response {
     private KrillIndex index;
     private SpanQuery spanQuery;
     private JsonNode request;

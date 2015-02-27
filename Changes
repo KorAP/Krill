@@ -1,4 +1,4 @@
-0.50.1 2015-02-26
+0.50.1 2015-02-27
 	- [feature] Deserialization of arbitrary elements with attributes (margaretha)
 	- [cleanup] Extracted KrillMeta from Krill,
 	  renamed KorapQuery to KrillQuery,
@@ -14,7 +14,8 @@
 	  renamed KorapByte to KrillByte,
 	  renamed KorapString to KrillString,
 	  moved KorapNode to server/Node,
-	  moved KorapResult to response/Result (diewald)
+	  moved KorapResult to response/Result,
+	  renamed KorapResponse to Response (diewald)
         - [documentation] Improved documentation for API classes (diewald)
 
 0.50 2015-02-23
