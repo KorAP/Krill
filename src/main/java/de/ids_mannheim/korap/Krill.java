@@ -24,19 +24,19 @@ import org.slf4j.LoggerFactory;
  * and proprietary meta objects.
  *
  * <blockquote><pre>
- *   // Create a new krill search object passing a KoralQuery string
+ *   // Create a new krill search object by passing a KoralQuery string
  *   Krill krill = new Krill(koralQueryString);
  *
- *   // Run the query on an index - receive a search result
- *   KrillResult kr = krill.apply(new KrillIndex());
+ *   // Apply the query to an index and receive a search result
+ *   Result result = krill.apply(new KrillIndex());
  * </pre></blockquote>
  *
  * @author diewald
  * @author margaretha
  *
- * @see KrillMeta
  * @see KrillCollection
  * @see KrillQuery
+ * @see KrillMeta
  * @see KrillIndex
  */
 /*
@@ -50,7 +50,6 @@ public class Krill extends Response {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Krill.class);
-    
 
     /**
      * Construct a new Krill object.
@@ -90,6 +89,8 @@ public class Krill extends Response {
         try {
             this.spanQuery = query.toQuery();
         }
+
+        // Add the error to the KoralQuery response
         catch (QueryException q) {
             this.addError(q.getErrorCode(), q.getMessage());
         };
@@ -204,7 +205,7 @@ public class Krill extends Response {
             this.addError(q.getErrorCode(), q.getMessage());
         };
 
-        // No errors occured - parse meta object
+        // Parse meta object
         if (!this.hasErrors() && json.has("meta"))
             this.setMeta(new KrillMeta(json.get("meta")));
 
@@ -226,6 +227,7 @@ public class Krill extends Response {
      * Set the associated {@link KrillIndex} object.
      *
      * @param index The associated {@link KrillIndex} object.
+     * @return The {@link Krill} object for chaining.
      */
     public Krill setIndex (KrillIndex index) {
         this.index = index;
@@ -280,18 +282,32 @@ public class Krill extends Response {
     };
 
 
-    @Deprecated
-    public JsonNode getRequest () {
-        return this.request;
-    };
-
-
+    /**
+     * Get the associated {@link SpanQuery} deserialization
+     * (i.e. the internal correspandence to KoralQuery's query object).
+     *
+     * <strong>Warning</strong>: SpanQueries may be lazy deserialized
+     * in future versions of Krill, rendering this API obsolete.
+     *
+     * @return The deserialized {@link SpanQuery} object.
+     */
     @Deprecated
     public SpanQuery getSpanQuery () {
         return this.spanQuery;
     };
 
 
+    /**
+     * Set the SpanQuery by means of a {@link SpanQueryWrapper} object
+     * (i.e. the internal correspandence to KoralQuery's query object).
+     *
+     * <strong>Warning</strong>: SpanQueries may be lazy deserialized
+     * in future versions of Krill, rendering this API obsolete.
+     *
+     * @param query The {@link SpanQueryWrapper} to unwrap
+     *        the {@link SpanQuery} object.
+     * @return The {@link Krill} object for chaining.
+     */
     @Deprecated
     public Krill setSpanQuery (SpanQueryWrapper sqwi) {
         try {
@@ -303,10 +319,27 @@ public class Krill extends Response {
         return this;
     };
 
-    
+
+    /**
+     * Set the {@link SpanQuery} object
+     * (i.e. the internal correspandence to KoralQuery's query object).
+     *
+     * <strong>Warning</strong>: SpanQueries may be lazy deserialized
+     * in future versions of Krill, rendering this API obsolete.
+     *
+     * @param query The {@link SpanQuery} object.
+     * @return The {@link Krill} object for chaining.
+     */    
     @Deprecated
     public Krill setSpanQuery (SpanQuery sq) {
         this.spanQuery = sq;
         return this;
+    };
+
+
+    // Requests are out - queries will be mirrored completely
+    @Deprecated
+    public JsonNode getRequest () {
+        return this.request;
     };
 };

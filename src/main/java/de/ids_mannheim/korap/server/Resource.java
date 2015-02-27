@@ -150,7 +150,8 @@ public class Resource {
 
         String ID = "Unknown";
         try {
-            FieldDocument fd = index.addDoc(uid, json);
+            FieldDocument fd = index.addDoc(json);
+            fd.setUID(uid);
             ID = fd.getID();
         }
         // Set HTTP to ???

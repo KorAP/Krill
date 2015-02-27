@@ -17,7 +17,8 @@
 	  moved KorapResult to response/Result,
 	  renamed KorapResponse to Response,
 	  moved model/* to index,
-	  moved meta/SearchContext to response/SearchContext (diewald)
+	  moved meta/SearchContext to response/SearchContext,
+	  krillified property files (diewald)
         - [documentation] Improved documentation for API classes (diewald)
 
 0.50 2015-02-23

@@ -40,38 +40,41 @@ import org.slf4j.LoggerFactory;
 /**
  * KrillIndex implements a simple API for searching in and writing to a
  * Lucene index and requesting several information about the index' nature.
+ * Please consult {@link Krill} for the preferred use of this class.
  * <br />
  *
  * <blockquote><pre>
  *   KrillIndex ki = new KrillIndex(
  *       new MMapDirectory(new File("/myindex"))
  *   );
+ *   Result result = new Krill(koralQueryString).apply(ki);
  * </pre></blockquote>
  *
- * Properties can be stored in a properies file called 'index.properties'.
- * Relevant properties are <code>lucene.version</code> and
- * <code>lucene.name</code>.
+ * Properties can be stored in a properies file called <tt>krill.properties</tt>.
+ * Relevant properties are <tt>krill.version</tt> and
+ * <tt>krill.name</tt>.
  *
  * @author diewald
  */
 /*
+  NOTE: Search could run in parallel on atomic readers (although Lucene developers
+        strongly discourage that). Benefits are not clear and testing is harder,
+        so let's stick to serial processing for now.
   TODO: Add word count as a meta data field!
-  TODO: Validate document import!
-  TODO: DON'T STORE THE TEXT IN THE TOKENS FIELD!
-        It has only to be lifted for match views!!!
-  TODO: Support layer for specific foundries (IMPORTANT)
+  TODO: Improve validation of document import!
+  TODO: Don't store the text in the token field!
+        (It has only to be lifted for match views!
+        Benchmark how worse that is!)
+  TODO: Support layer for specific foundries in terminfo (IMPORTANT)
   TODO: Use FieldCache!
   TODO: Reuse the indexreader everywhere - it should be threadsafe!
+  TODO: Support document removal!
+  TODO: Support document update!
+  TODO: Support callback for interrupts (to stop the searching)!
+  TODO: Support multiple indices (Probably).
 
   http://invertedindex.blogspot.co.il/2009/04/lucene-dociduid-mapping-and-payload.html
   see korap/search.java -> retrieveTokens
-
-  Todo: Support document removal!
-  Todo: Support document update! // it's now part of IndexWriter
-
-  Support a callback for interrupts (to stop the searching)!
-
-  Support multiple indices.
 
   Support frequency search with regular expressions, so multiple bookkeeping:
   c<:VVFIN:ging:gehen:past::
@@ -80,33 +83,6 @@ import org.slf4j.LoggerFactory;
   -> c:VVFIN:[^:]*?:gehen:past:...
 */
 public class KrillIndex {
-    // Todo: Use configuration
-    private int maxTermRelations = 100, // Last line of defense
-                autoCommit = 500;
-
-    private Directory directory;
-
-    // Temp:
-    public IndexReader reader;
-
-    private IndexWriter writer;
-    private IndexWriterConfig config;
-    private IndexSearcher searcher;
-    private boolean readerOpen = false;
-
-    // The commit counter is only there for
-    // counting unstaged changes per thread (for bulk insertions)
-    // It does not represent real unstaged documents.
-    private int commitCounter = 0;
-    private HashMap termContexts;
-    private ObjectMapper mapper = new ObjectMapper();
-    private String version, name;
-
-    private byte[] pl = new byte[4];
-    private static ByteBuffer
-        bb       = ByteBuffer.allocate(4),
-        bbOffset = ByteBuffer.allocate(8),
-        bbTerm   = ByteBuffer.allocate(16);
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KrillIndex.class);
@@ -114,9 +90,40 @@ public class KrillIndex {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
+    // TODO: Use configuration instead.
+    // Last line of defense against DOS
+    private int maxTermRelations = 100;
+    private int autoCommit = 500;
+    private String version;
+    private String name;
+
+    // Temp:
+    private IndexReader reader;
+
+    private IndexWriter writer;
+    private IndexWriterConfig config;
+    private IndexSearcher searcher;
+    private boolean readerOpen = false;
+    private Directory directory;
+
+    // The commit counter is only there for
+    // counting unstaged changes per thread (for bulk insertions)
+    // It does not represent real unstaged documents.
+    private int commitCounter = 0;
+    private HashMap termContexts;
+    private ObjectMapper mapper = new ObjectMapper();
+
+    private byte[] pl = new byte[4];
+    private static ByteBuffer
+        bb       = ByteBuffer.allocate(4),
+        bbOffset = ByteBuffer.allocate(8),
+        bbTerm   = ByteBuffer.allocate(16);
+
+    // Some initializations ...
+    // TODO: This should probably happen at a more central point
     {
         Properties prop = new Properties();
-        URL file = getClass().getClassLoader().getResource("index.properties");
+        URL file = getClass().getClassLoader().getResource("krill.properties");
 
         // File found
         if (file != null) {
@@ -125,8 +132,30 @@ public class KrillIndex {
             try {
                 InputStream fr = new FileInputStream(f);
                 prop.load(fr);
-                this.version = prop.getProperty("lucene.version");
-                this.name    = prop.getProperty("lucene.name");
+                this.version    = prop.getProperty("krill.version");
+                this.name       = prop.getProperty("krill.name");
+
+                // Check for auto commit value
+                String stringProp = prop.getProperty("krill.index.commit.auto");
+                if (stringProp != null) {
+                    try {
+                        this.autoCommit = Integer.parseInt(stringProp);
+                    }
+                    catch (NumberFormatException e) {
+                        log.error("krill.index.commit.auto expected to be a numerical value");
+                    };
+                };
+
+                // Check for maximum term relations
+                stringProp = prop.getProperty("krill.index.relations.max");
+                if (stringProp != null) {
+                    try {
+                        this.maxTermRelations = Integer.parseInt(stringProp);
+                    }
+                    catch (NumberFormatException e) {
+                        log.error("krill.index.commit.auto expected to be a numerical value");
+                    };
+                };
             }
 
             // Unable to read property file
@@ -138,23 +167,13 @@ public class KrillIndex {
 
 
     /**
-     * Constructs a new KrillIndex in-memory.
+     * Constructs a new KrillIndex.
+     * This will be in-memory.
      *
      * @throws IOException
      */
     public KrillIndex () throws IOException {
         this((Directory) new RAMDirectory());
-    };
-
-
-    /**
-     * Constructs a new KrillIndex bound to a persistant index.
-     *
-     * @param index Path to an {@link FSDirectory} index
-     * @throws IOException
-     */
-    public KrillIndex (String index) throws IOException {
-        this(FSDirectory.open(new File( index )));
     };
 
 
@@ -167,8 +186,8 @@ public class KrillIndex {
     public KrillIndex (Directory directory) throws IOException {
         this.directory = directory;
 
-        // TODO: Shouldn't be here
         // Add analyzers
+        // TODO: Should probably not be here
         Map<String,Analyzer> analyzerPerField = new HashMap<String,Analyzer>();
         analyzerPerField.put("textClass", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
         analyzerPerField.put("foundries", new WhitespaceAnalyzer(Version.LUCENE_CURRENT));
@@ -203,45 +222,53 @@ public class KrillIndex {
 
 
     /**
-     * Close the connections of the index reader and the writer.
-     * @throws IOException
-     */ 
-    public void close () throws IOException {
-        this.closeReader();
-        this.closeWriter();
-    };
-
-
-    // Get index reader object
+     * The Lucene {@link IndexReader} object.
+     *
+     * Will be opened, in case it's closed.
+     *
+     * @return The {@link IndexReader} object.
+     */
     public IndexReader reader () {
-        if (!readerOpen)
-            this.openReader();
         // Todo: Maybe use DirectoryReader.openIfChanged(DirectoryReader)
-        
+        if (!readerOpen)
+            this.openReader();        
         return this.reader;
     };
-    
 
-    // Get index searcher object
+
+    /**
+     * The Lucene {@link IndexWriter} object.
+     *
+     * Will be created, in case it doesn't exist yet.
+     *
+     * @return The {@link IndexWriter} object.
+     * @throws IOException
+     */
+    public IndexWriter writer () throws IOException {
+        // Open writer if not already opened
+        if (this.writer == null)
+            this.writer = new IndexWriter(this.directory, this.config);
+        return this.writer;
+    };
+
+
+    /**
+     * The Lucene {@link IndexSearcher} object.
+     *
+     * Will be created, in case it doesn't exist yet.
+     *
+     * @return The {@link IndexSearcher} object.
+     */
     public IndexSearcher searcher () {
-        if (this.searcher == null) {
+        if (this.searcher == null)
             this.searcher = new IndexSearcher(this.reader());
-        };
         return this.searcher;
     };
 
 
-    // Close index writer
-    public void closeWriter () throws IOException {
-        if (this.writer != null)
-            this.writer.close();
-    };
-
-
     // Open index reader
-    public void openReader () {
+    private void openReader () {
         try {
-
             // open reader
             this.reader = DirectoryReader.open(this.directory);
             readerOpen = true;
@@ -251,34 +278,100 @@ public class KrillIndex {
 
         // Failed to open reader
         catch (IOException e) {
-            //e.printStackTrace();
+            // e.printStackTrace();
             log.warn( e.getLocalizedMessage() );
         };
     };
 
 
     // Close index reader
-    public void closeReader () throws IOException {
+    private void closeReader () throws IOException {
         if (readerOpen) {
             this.reader.close();
             readerOpen = false;
         };
     };
 
-    /*
-     * Some of these addDoc methods will probably be DEPRECATED,
-     * as they were added while the API changed slowly.
-     */
 
-    // Add document to index as FieldDocument
-    public FieldDocument addDoc (FieldDocument fd) {
+    // Close index writer
+    private void closeWriter () throws IOException {
+        if (this.writer != null)
+            this.writer.close();
+    };
+
+
+    /**
+     * Close the associated {@link IndexReader}
+     * and the associated {@link IndexWriter},
+     * in case they are opened.
+     *
+     * @throws IOException
+     */ 
+    public void close () throws IOException {
+        this.closeReader();
+        this.closeWriter();
+    };
+
+
+    /**
+     * Commit staged data to the index,
+     * if the commit counter indicates there is staged data.
+     *
+     * @param force Force the commit,
+     *        even if there is no staged data.
+     * @throws IOException
+     */
+    public void commit (boolean force) throws IOException {
+        // There is something to commit
+        if (commitCounter > 0 || !force)
+            this.commit();
+    };
+
+
+    /**
+     * Commit staged data to the index.
+     *
+     * @throws IOException
+     */
+    public void commit () throws IOException {
+        this.writer().commit();
+        commitCounter = 0;
+        this.closeReader();
+    };
+
+
+    /**
+     * Get autocommit value.
+     *
+     * @return The autocommit value.
+     */
+    public int getAutoCommit () {
+        return this.autoCommit;
+    };
+
+
+    /**
+     * Set the autocommit value.
+     *
+     * @param value The autocommit value.
+     */
+    public void setAutoCommit (int value) {
+        this.autoCommit = value;
+    };
+
+
+    /**
+     * Add a document to the index as a {@link FieldDocument}.
+     *
+     * @param doc The {@link FieldDocument} to add to the index.
+     * @return The {@link FieldDocument}, which means, the same
+     *         object, that was passed to the method.
+     */
+    public FieldDocument addDoc (FieldDocument doc) {
         try {
-            // Open writer if not already opened
-            if (this.writer == null)
-                this.writer = new IndexWriter(this.directory, this.config);
 
             // Add document to writer
-            this.writer.addDocument( fd.doc );
+            this.writer().addDocument( doc.doc );
             if (++commitCounter > autoCommit) {
                 this.commit();
                 commitCounter = 0;
@@ -287,37 +380,29 @@ public class KrillIndex {
 
         // Failed to add document
         catch (IOException e) {
-            log.error("File json not found");
+            log.error("Unable to add document");
         };
-        return fd;
-    };
 
-    // Add document to index as JSON object with a unique ID
-    public FieldDocument addDoc (int uid, String json) throws IOException {
-        FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
-        fd.setUID(uid);
-        return this.addDoc(fd);
+        return doc;
     };
 
 
-    // Add document to index as JSON object
+    /**
+     * Add a document to the index as a JSON string.
+     *
+     * @param json The document to add to the index as a string.
+     * @return The created {@link FieldDocument}.
+     * @throws IOException
+     */
     public FieldDocument addDoc (String json) throws IOException {
         FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
         return this.addDoc(fd);
     };
 
 
-    // Add document to index as JSON file
-    public FieldDocument addDoc (File json) {
-        try {
-            FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
-            return this.addDoc(fd);
-        }
-        catch (IOException e) {
-            log.error("File json not parseable");	    
-        };
-        return (FieldDocument) null;
-    };
+
+    // To document:
+
 
 
     // Add document to index as JSON file
@@ -326,7 +411,7 @@ public class KrillIndex {
     };
 
 
-    private FieldDocument _addDocfromFile (String json, boolean gzip) {
+    public FieldDocument addDocfromFile (String json, boolean gzip) {
         try {
             if (gzip) {
 
@@ -350,13 +435,26 @@ public class KrillIndex {
     
     // Add document to index as JSON file (possibly gzipped)
     public FieldDocument addDocFile(String json, boolean gzip) {
-        return this.addDoc(this._addDocfromFile(json, gzip));
+        return this.addDoc(this.addDocfromFile(json, gzip));
     };
+
+
+    /**
+     * Add a document to the index as a JSON string
+     * with a unique integer ID (unique throughout the index
+     * or even throughout the cluster of indices).
+     *
+     * @param uid The unique document identifier.
+     * @param json The document to add to the index as a string.
+     * @return The created {@link FieldDocument}.
+     * @throws IOException
+     */
+
 
 
     // Add document to index as JSON file (possibly gzipped)
     public FieldDocument addDocFile(int uid, String json, boolean gzip) {
-        FieldDocument fd = this._addDocfromFile(json, gzip);
+        FieldDocument fd = this.addDocfromFile(json, gzip);
         if (fd != null) {
             fd.setUID(uid);
             return this.addDoc(fd);
@@ -364,38 +462,6 @@ public class KrillIndex {
         return fd;
     };
 
-
-    // Commit changes to the index
-    public void commit (boolean force) throws IOException {
-        // There is something to commit
-        if (commitCounter > 0 || !force)
-            this.commit();
-    };
-
-
-    // Commit changes to the index
-    public void commit () throws IOException {
-        // Open writer if not already opened
-        if (this.writer == null)
-            this.writer = new IndexWriter(this.directory, this.config);
-
-        // Force commit
-        this.writer.commit();
-        commitCounter = 0;
-        this.closeReader();
-    };
-
-
-    // Get autoCommit valiue
-    public int autoCommit () {
-        return this.autoCommit;
-    };
-
-
-    // Set autoCommit value
-    public void autoCommit (int number) {
-        this.autoCommit = number;
-    };
 
 
     // Search for meta information in term vectors

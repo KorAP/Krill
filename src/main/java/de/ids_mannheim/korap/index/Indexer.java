@@ -31,16 +31,16 @@ public class Indexer {
      *
      * @param prop A {@link Properties} object with
      *        at least the following information:
-     *        <tt>lucene.indexDir</tt>.
+     *        <tt>krill.indexDir</tt>.
      * @throws IOException
      */
     public Indexer (Properties prop) throws IOException {
-        this.indexDir = prop.getProperty("lucene.indexDir");
+        this.indexDir = prop.getProperty("krill.indexDir");
 
         System.out.println("Index to " + this.indexDir);
 	
         // Default to 1000 documents till the next commit
-        String commitCount = prop.getProperty("lucene.index.commit.count", "1000");
+        String commitCount = prop.getProperty("krill.index.commit.count", "1000");
 
         // Create a new index object based on the directory
         this.index = new KrillIndex(new MMapDirectory(new File(indexDir)));

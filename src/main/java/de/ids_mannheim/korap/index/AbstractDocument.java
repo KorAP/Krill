@@ -247,6 +247,7 @@ public abstract class AbstractDocument extends Response {
      * Set the unique identifier of the document.
      *
      * @param UID The unique identifier of the document as an integer.
+     * @return The invocant for chaining.
      */
     public void setUID (int UID) {
         this.UID = UID;
@@ -258,6 +259,7 @@ public abstract class AbstractDocument extends Response {
      *
      * @param UID The unique identifier of the document as a
      *        string representing an integer.
+     * @return The invocant for chaining.
      * @throws NumberFormatException
      */
     public void setUID (String UID) throws NumberFormatException {

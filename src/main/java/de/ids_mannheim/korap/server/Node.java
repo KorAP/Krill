@@ -61,22 +61,22 @@ public class Node {
         try {
             InputStream file = new FileInputStream(
                 Node.class.getClassLoader()
-                .getResource("server.properties")
+                .getResource("krill.properties")
                 .getFile()
             );
             Properties prop = new Properties();
             prop.load(file);
 
             // Node properties
-            path     = prop.getProperty("lucene.indexDir", path);
-            name     = prop.getProperty("lucene.server.name", name);
-            BASE_URI = prop.getProperty("lucene.server.baseURI", BASE_URI);
+            path     = prop.getProperty("krill.indexDir", path);
+            name     = prop.getProperty("krill.server.name", name);
+            BASE_URI = prop.getProperty("krill.server.baseURI", BASE_URI);
 
             // Database properties
-            dbUser  = prop.getProperty("lucene.db.user",    dbUser);
-            dbPwd   = prop.getProperty("lucene.db.pwd",     dbPwd);
-            dbClass = prop.getProperty("lucene.db.class",   dbClass);
-            dbURL   = prop.getProperty("lucene.db.jdbcURL", dbURL);
+            dbUser  = prop.getProperty("krill.db.user",    dbUser);
+            dbPwd   = prop.getProperty("krill.db.pwd",     dbPwd);
+            dbClass = prop.getProperty("krill.db.class",   dbClass);
+            dbURL   = prop.getProperty("krill.db.jdbcURL", dbURL);
 
         }
         catch (IOException e) {
@@ -125,7 +125,7 @@ public class Node {
                 new Runnable() {
                     @Override
                     public void run() {
-                        log.info("Stup Server");
+                        log.info("Stop Server");
                         // staaahp!
                         server.stop();
                     }
