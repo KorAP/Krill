@@ -19,10 +19,15 @@ import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
+ * <p>
  * KrillQuery provides deserialization methods
  * for KoralQuery query objects.
+ * </p>
  *
  * <blockquote><pre>
+ *   // Create or receive a KoralQuery JSON string
+ *   String koral = "{\"@type\":"koral:group", ... }";
+ *
  *   SpanQueryWrapper sqw = new KrillQuery("tokens").fromJson("{... JsonString ...}");
  * </pre></blockquote>
  *
@@ -37,7 +42,7 @@ import de.ids_mannheim.korap.util.QueryException;
   e.g. der alte []
   should be wrapped in a contains(<base/s=t>) to ensure
   they are not outside the text.
-
+  
   TODO: Create Pre-filter while preparing a Query.
   The pre-filter will contain a boolena query with all
   necessary terms, supporting boolean OR, ignoring
@@ -46,8 +51,8 @@ import de.ids_mannheim.korap.util.QueryException;
   Search for all documents containing "s:Der" and ("s:alte" or "s:junge") and "s:Mann"
 */
 public class KrillQuery extends Notifications {
-    private String field;
     private QueryBuilder builder;
+    private String field;
     private JsonNode json;
 
     // Logger
@@ -68,19 +73,6 @@ public class KrillQuery extends Notifications {
     // </legacy>
 
     private static final int MAX_CLASS_NUM = 255; // 127;
-
-    /**
-     * Constructs a new object for query deserialization
-     * and building. Expects the name of an index field
-     * to apply the query on (this should normally be
-     * a token stream field).
-     *
-     * @param field The specific index field for the query.
-     */
-    public KrillQuery (String field) {
-        this.field = field;
-    };
-
 
     // Private class for koral:boundary objects
     private class Boundary {
@@ -117,17 +109,33 @@ public class KrillQuery extends Notifications {
         };
     };
 
+    /**
+     * Constructs a new object for query deserialization
+     * and building. Expects the name of an index field
+     * to apply the query on (this should normally be
+     * a token stream field).
+     *
+     * @param field The specific index field for the query.
+     */
+    public KrillQuery (String field) {
+        this.field = field;
+    };
+
 
     /**
-     * Deserialize JSON-LD query to a {@link SpanQueryWrapper} object.
+     * <p>Deserialize JSON-LD query to a {@link SpanQueryWrapper} object.</p>
      *
-     * <p>
      * <blockquote><pre>
      *   KrillQuery kq = new KrillQuery("tokens");
-     *   SpanQueryWrapper sqw = kq.fromJson('{"@type":"koral:token","wrap":{' +
-     *      '"@type":"koral:term","foundry":"opennlp",' +
-     *      '"key":"tree","layer":"orth",' +
-     *      '"match":"match:eq"}}'
+     *   SpanQueryWrapper sqw = kq.fromJson(
+     *     "{\"@type\" : \"koral:token\","+
+     *      "\"wrap\" : {" +
+     *        "\"@type\" :   \"koral:term\"," +
+     *        "\"foundry\" : \"opennlp\"," +
+     *        "\"key\" :     \"tree\"," +
+     *        "\"layer\" :   \"orth\"," +
+     *        "\"match\" :   \"match:eq\""+
+     *      "}}"
      *   );
      * </pre></blockquote>
      *
@@ -159,18 +167,22 @@ public class KrillQuery extends Notifications {
 
 
     /**
-     * Deserialize JSON-LD query as a {@link JsonNode} object
-     * to a {@link SpanQueryWrapper} object.
+     * <p>Deserialize JSON-LD query as a {@link JsonNode} object
+     * to a {@link SpanQueryWrapper} object.</p>
      *
      * @param json {@link JsonNode} representing the JSON query string.
      * @return {@link SpanQueryWrapper} object. 
      * @throws QueryException
      */
     // TODO: Exception messages are horrible!
-    // TODO: Use the shortcuts implemented in this class instead of the wrapper constructors
+    // TODO: Use the shortcuts implemented in the builder
+    //       instead of the wrapper constructors
     // TODO: Rename this span context!
     public SpanQueryWrapper fromJson (JsonNode json) throws QueryException {
         int number = 0;
+
+        // Only accept @typed objects for the moment
+        // TODO: Support @context for cosmas:...
         if (!json.has("@type"))
             throw new QueryException(701, "JSON-LD group has no @type attribute");
 
@@ -276,8 +288,16 @@ public class KrillQuery extends Notifications {
 
 
     /**
+     * <p>
      * Get the associated {@link QueryBuilder} object
      * for query building.
+     * </p>
+     *
+     * <blockquote><pre>
+     *   SpanQueryWrapper query = new KrillQuery("tokens").builder().re("mate/p=N.*");
+     * </pre></blockquote>
+     *
+     * @return The {@link QueryBuilder}.
      */
     public QueryBuilder builder () {
         if (this.builder == null)

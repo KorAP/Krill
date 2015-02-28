@@ -18,17 +18,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Krill is a corpus data retrieval index using Lucene for Look-Ups.
+ * <p>Krill is a corpus data retrieval index using Lucene for Look-Ups.</p>
+ *
+ * <p>
  * It is the reference implementation for KoralQuery consumption,
- * and supports specified query and collection objects,
- * and proprietary meta objects.
+ * and this class acts as the central point for consuming and
+ * responding to KoralQuery requests.
+ * </p>
+ *
+ * <p>
+ * The processing of the collection section of the request is delegated
+ * to {@link KrillCollection}, the query section to {@link KrillQuery},
+ * and the meta section to {@link KrillMeta}.
+ * </p>
  *
  * <blockquote><pre>
- *   // Create a new krill search object by passing a KoralQuery string
- *   Krill krill = new Krill(koralQueryString);
+ *   // Create or receive a KoralQuery JSON string
+ *   String koral = "{\"query\":{...}, \"collection\":{...}, ... }";
+ *
+ *   // Create a new krill search object by passing the Query
+ *   Krill krill = new Krill(koral);
  *
  *   // Apply the query to an index and receive a search result
- *   Result result = krill.apply(new KrillIndex());
+ *   // This may invoke different actions depending on the request
+ *   Result result = krill.setIndex(new KrillIndex()).apply();
  * </pre></blockquote>
  *
  * @author diewald
@@ -39,9 +52,7 @@ import org.slf4j.LoggerFactory;
  * @see KrillMeta
  * @see KrillIndex
  */
-/*
- * Todo: Use a configuration file
- */
+// Todo: Use a krill.properties configuration file
 public class Krill extends Response {
     private KrillIndex index;
     private SpanQuery spanQuery;
@@ -153,6 +164,7 @@ public class Krill extends Response {
                     this.addError(780, "This query matches everywhere");
 
                 else {
+
                     // Serialize a Lucene SpanQuery based on the SpanQueryWrapper
                     this.spanQuery = qw.toQuery();
 
@@ -182,7 +194,7 @@ public class Krill extends Response {
         // Copy notifications from request
         this.copyNotificationsFrom(json);
 	    
-        // Parse virtual collections
+        // Parse "collection" or "collections" attribute
         try {
             if (json.has("collection")) {
                 this.setCollection(
@@ -205,7 +217,7 @@ public class Krill extends Response {
             this.addError(q.getErrorCode(), q.getMessage());
         };
 
-        // Parse meta object
+        // Parse "meta" attribute
         if (!this.hasErrors() && json.has("meta"))
             this.setMeta(new KrillMeta(json.get("meta")));
 
@@ -224,7 +236,7 @@ public class Krill extends Response {
 
 
     /**
-     * Set the associated {@link KrillIndex} object.
+     * Set the {@link KrillIndex} object.
      *
      * @param index The associated {@link KrillIndex} object.
      * @return The {@link Krill} object for chaining.
@@ -237,6 +249,9 @@ public class Krill extends Response {
 
     /**
      * Apply the KoralQuery to an index.
+     * This may invoke different actions depending
+     * on the meta information, like {@link KrillIndex#search}
+     * or {@link KrillIndex#collect}.
      *
      * @param index The {@link KrillIndex}
      *        the search should be applyied to.
@@ -249,6 +264,9 @@ public class Krill extends Response {
 
     /**
      * Apply the KoralQuery to an index.
+     * This may invoke different actions depending
+     * on the meta information, like {@link KrillIndex#search}
+     * or {@link KrillIndex#collect}.
      *
      * @return The result as a {@link Result} object.
      */
