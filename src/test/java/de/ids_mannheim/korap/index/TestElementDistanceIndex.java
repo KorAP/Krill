@@ -198,7 +198,7 @@ public class TestElementDistanceIndex {
 	public void testCase5() throws Exception{
 		//System.out.println("testCase4");
 		ki = new KrillIndex();
-		ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),true);       
+		ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"),true);       
         ki.commit();
         
         InputStream is = getClass().getResourceAsStream("/queries/cosmas1.json");        

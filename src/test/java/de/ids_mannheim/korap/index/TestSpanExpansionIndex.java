@@ -31,7 +31,7 @@ public class TestSpanExpansionIndex {
 
     public TestSpanExpansionIndex() throws IOException {
         ki = new KrillIndex();
-        ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"),
                 true);
         ki.commit();
     }
@@ -283,9 +283,9 @@ public class TestSpanExpansionIndex {
     @Test
     public void testCase7() throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
-        ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"),
                 true);
-        ki.addDocFile(getClass().getResource("/wiki/00002.json.gz").getFile(),
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"),
                 true);
         ki.commit();
 

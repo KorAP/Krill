@@ -1,12 +1,11 @@
 package de.ids_mannheim.korap;
 
-// Java classes
-import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.regex.Pattern;
-import java.io.*;
-import java.net.URL;
-import java.nio.ByteBuffer;
+// Krill classes
+import de.ids_mannheim.korap.*;
+import de.ids_mannheim.korap.index.*;
+import de.ids_mannheim.korap.response.*;
+import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.util.QueryException;
 
 // Lucene classes
 import org.apache.lucene.search.*;
@@ -26,52 +25,72 @@ import org.apache.lucene.util.automaton.*;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-// Krill classes
-import de.ids_mannheim.korap.*;
-import de.ids_mannheim.korap.index.*;
-import de.ids_mannheim.korap.response.*;
-import de.ids_mannheim.korap.query.SpanElementQuery;
-import de.ids_mannheim.korap.util.QueryException;
-
 // Log4j Logger classes
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// Java core classes
+import java.util.*;
+import java.util.zip.GZIPInputStream;
+import java.util.regex.Pattern;
+import java.io.*;
+import java.net.URL;
+import java.nio.ByteBuffer;
+
 /**
- * KrillIndex implements a simple API for searching in and writing to a
+ * <p>KrillIndex implements a simple API for searching in and writing to a
  * Lucene index and requesting several information about the index' nature.
- * Please consult {@link Krill} for the preferred use of this class.
- * <br />
+ * Please consult {@link Krill} for the preferred use of this class.</p>
  *
  * <blockquote><pre>
+ *   // Create new file backed index
  *   KrillIndex ki = new KrillIndex(
  *       new MMapDirectory(new File("/myindex"))
  *   );
- *   Result result = new Krill(koralQueryString).apply(ki);
+ *
+ *   // Add documents to the index
+ *   ki.addDoc(1, "{\"ID\":\"WPD-001\", ... }");
+ *   ki.addDoc(2, "{\"ID\":\"WPD-002\", ... }");
+ *
+ *   // Apply Krill searches on the index
+ *   String koral = "{\"@type\":"koral:group", ... }";
+ *   Result result = new Krill(koral).apply(ki);
  * </pre></blockquote>
  *
- * Properties can be stored in a properies file called <tt>krill.properties</tt>.
- * Relevant properties are <tt>krill.version</tt> and
- * <tt>krill.name</tt>.
+ * <p>Properties can be stored in a properies file called
+ * <tt>krill.properties</tt>. Relevant properties are
+ * <tt>krill.version</tt> and <tt>krill.name</tt>.</p>
  *
  * @author diewald
  */
 /*
-  NOTE: Search could run in parallel on atomic readers (although Lucene developers
-        strongly discourage that). Benefits are not clear and testing is harder,
-        so let's stick to serial processing for now.
+ * Concerning parallel processing:
+ * ===============================
+ * Search /could/ be run in parallel on atomic readers
+ * (although Lucene developers strongly discourage that).
+ * Benefits are not clear and would need some benchmarks,
+ * the huge drawback would be more complicated testing.
+ * Aside from (probably) co-occurrence analysis, shared memory
+ * is not an important thing, so I guess the preferred
+ * way of using Krill on multicore machines for now is by using
+ * the same mechanism as for distribution:
+ * Running multiple nodes (and separated indices) per machine,
+ * registered independently at the Zookeeper.
+ *
+ * On the other hand: Threaded indexing should be implemented!
+ */
+/*
+  TODO: Use FieldCache!!!
   TODO: Add word count as a meta data field!
   TODO: Improve validation of document import!
   TODO: Don't store the text in the token field!
         (It has only to be lifted for match views!
         Benchmark how worse that is!)
   TODO: Support layer for specific foundries in terminfo (IMPORTANT)
-  TODO: Use FieldCache!
   TODO: Reuse the indexreader everywhere - it should be threadsafe!
   TODO: Support document removal!
   TODO: Support document update!
   TODO: Support callback for interrupts (to stop the searching)!
-  TODO: Support multiple indices (Probably).
 
   http://invertedindex.blogspot.co.il/2009/04/lucene-dociduid-mapping-and-payload.html
   see korap/search.java -> retrieveTokens
@@ -368,6 +387,9 @@ public class KrillIndex {
      *         object, that was passed to the method.
      */
     public FieldDocument addDoc (FieldDocument doc) {
+        if (doc == null)
+            return doc;
+
         try {
 
             // Add document to writer
@@ -394,30 +416,101 @@ public class KrillIndex {
      * @return The created {@link FieldDocument}.
      * @throws IOException
      */
-    public FieldDocument addDoc (String json) throws IOException {
-        FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
-        return this.addDoc(fd);
+    public FieldDocument addDoc (String json) {
+        return this.addDoc(_fromJson(json));
     };
 
 
-
-    // To document:
-
-
-
-    // Add document to index as JSON file
-    public FieldDocument addDocFile(String json) {
-        return this.addDocFile(json, false);
+    /**
+     * Add a document to the index as a JSON string
+     * with a unique integer ID (unique throughout the index
+     * or even throughout the cluster of indices).
+     *
+     * @param uid The unique document identifier.
+     * @param json The document to add to the index as a string.
+     * @return The created {@link FieldDocument}.
+     * @throws IOException
+     */
+    public FieldDocument addDoc (Integer uid, String json) {
+        FieldDocument fd = _fromJson(json);
+        if (fd != null) {
+            fd.setUID(uid);
+            fd = this.addDoc(fd);
+        };
+        return fd;
     };
 
 
-    public FieldDocument addDocfromFile (String json, boolean gzip) {
+    /**
+     * Add a document to the index as a JSON string.
+     *
+     * @param json The document to add to the index as
+     *        an {@link InputStream}.
+     * @return The created {@link FieldDocument}.
+     * @throws IOException
+     */
+    public FieldDocument addDoc (InputStream json) {
+        return this.addDoc(_fromFile(json, false));
+    };
+
+
+    /**
+     * Add a document to the index as a JSON string.
+     *
+     * @param json The document to add to the index as
+     *        an {@link InputStream}.
+     * @param gzip Boolean value indicating if the file is gzipped.
+     * @return The created {@link FieldDocument}.
+     * @throws IOException
+     */
+    public FieldDocument addDoc (InputStream json, boolean gzip) {
+        return this.addDoc(_fromFile(json, gzip));
+    };
+
+
+    /**
+     * Add a document to the index as a JSON string
+     * with a unique integer ID (unique throughout the index
+     * or even throughout the cluster of indices).
+     *
+     * @param uid The unique document identifier.
+     * @param json The document to add to the index as
+     *        an {@link InputStream}.
+     * @param gzip Boolean value indicating if the file is gzipped.
+     * @return The created {@link FieldDocument}.
+     * @throws IOException
+     */
+    public FieldDocument addDoc (Integer uid, InputStream json, boolean gzip) {
+        FieldDocument fd = _fromFile(json, gzip);
+        if (fd != null) {
+            fd.setUID(uid);
+            return this.addDoc(fd);
+        };
+        return fd;
+    };
+
+
+    // Parse JSON document from Input stream
+    private FieldDocument _fromJson (String json) {
+        try {
+            FieldDocument fd = this.mapper.readValue(json, FieldDocument.class);
+            return fd;
+        }
+        catch (IOException e) {
+            log.error("File json not found");
+        };
+        return (FieldDocument) null;
+    };
+
+
+    // Load json document from file
+    private FieldDocument _fromFile (InputStream json, boolean gzip) {
         try {
             if (gzip) {
 
                 // Create json field document
                 FieldDocument fd = this.mapper.readValue(
-                    new GZIPInputStream(new FileInputStream(json)),
+                    new GZIPInputStream(json),
                     FieldDocument.class
                 );
                 return fd;
@@ -432,35 +525,10 @@ public class KrillIndex {
         return (FieldDocument) null;
     };
 
-    
-    // Add document to index as JSON file (possibly gzipped)
-    public FieldDocument addDocFile(String json, boolean gzip) {
-        return this.addDoc(this.addDocfromFile(json, gzip));
-    };
-
-
-    /**
-     * Add a document to the index as a JSON string
-     * with a unique integer ID (unique throughout the index
-     * or even throughout the cluster of indices).
-     *
-     * @param uid The unique document identifier.
-     * @param json The document to add to the index as a string.
-     * @return The created {@link FieldDocument}.
-     * @throws IOException
-     */
 
 
 
-    // Add document to index as JSON file (possibly gzipped)
-    public FieldDocument addDocFile(int uid, String json, boolean gzip) {
-        FieldDocument fd = this.addDocfromFile(json, gzip);
-        if (fd != null) {
-            fd.setUID(uid);
-            return this.addDoc(fd);
-        };
-        return fd;
-    };
+
 
 
 
@@ -729,13 +797,13 @@ public class KrillIndex {
     };
 
     public Match getMatchInfo (String id,
-                                    String field,
-                                    boolean info,
-                                    String foundry,
-                                    String layer,
-                                    boolean includeSpans,
-                                    boolean includeHighlights,
-                                    boolean extendToSentence) throws QueryException {
+                               String field,
+                               boolean info,
+                               String foundry,
+                               String layer,
+                               boolean includeSpans,
+                               boolean includeHighlights,
+                               boolean extendToSentence) throws QueryException {
     	ArrayList<String> foundryList = new ArrayList<>(1);
         if (foundry != null)
             foundryList.add(foundry);
@@ -763,13 +831,13 @@ public class KrillIndex {
       per position in the match.
     */
     public Match getMatchInfo (String idString,
-                                    String field,
-                                    boolean info,
-                                    List<String> foundry,
-                                    List<String> layer,
-                                    boolean includeSpans,
-                                    boolean includeHighlights,
-                                    boolean extendToSentence) throws QueryException {
+                               String field,
+                               boolean info,
+                               List<String> foundry,
+                               List<String> layer,
+                               boolean includeSpans,
+                               boolean includeHighlights,
+                               boolean extendToSentence) throws QueryException {
 
         Match match = new Match(idString, includeHighlights);
 

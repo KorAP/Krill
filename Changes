@@ -1,4 +1,4 @@
-0.50.1 2015-02-27
+0.50.1 2015-03-02
 	- [feature] Deserialization of arbitrary elements with attributes (margaretha)
 	- [cleanup] Extracted KrillMeta from Krill,
 	  renamed KorapQuery to KrillQuery,
@@ -19,7 +19,8 @@
 	  moved model/* to index,
 	  moved meta/SearchContext to response/SearchContext,
 	  krillified property files,
-	  added Errorcodes (diewald)
+	  added Errorcodes,
+	  removed KrillIndex#addDocFile (diewald)
         - [documentation] Improved documentation for API classes (diewald)
 
 0.50 2015-02-23

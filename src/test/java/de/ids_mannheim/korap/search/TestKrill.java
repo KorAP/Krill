@@ -94,8 +94,8 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+            ki.addDoc(
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -145,8 +145,8 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+            ki.addDoc(
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -187,8 +187,8 @@ public class TestKrill {
                                         "07452-deep"
                                       */
             }) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+            ki.addDoc(
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -240,8 +240,8 @@ public class TestKrill {
                                       "00006",
                                       "02439"
             }) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+            ki.addDoc(
+                      getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -264,8 +264,8 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+            ki.addDoc(
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -294,8 +294,8 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+            ki.addDoc(
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -324,8 +324,8 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+            ki.addDoc(
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -384,8 +384,8 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+            ki.addDoc(
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -431,8 +431,8 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+            ki.addDoc(
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -519,9 +519,9 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
+            ki.addDoc(
                 uid++,
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -554,11 +554,10 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        FieldDocument fd = ki.addDocFile(
+        FieldDocument fd = ki.addDoc(
             1,
             getClass().
-            getResource("/goe/AGA-03828.json.gz").
-            getFile(),
+            getResourceAsStream("/goe/AGA-03828.json.gz"),
             true
         );
         ki.commit();
@@ -641,11 +640,10 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        FieldDocument fd = ki.addDocFile(
+        FieldDocument fd = ki.addDoc(
             1,
             getClass().
-            getResource("/bzk/D59-00089.json.gz").
-            getFile(),
+            getResourceAsStream("/bzk/D59-00089.json.gz"),
             true
         );
         ki.commit();
@@ -732,11 +730,10 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        FieldDocument fd = ki.addDocFile(
+        FieldDocument fd = ki.addDoc(
             1,
             getClass().
-            getResource("/bzk/D59-00089.json.gz").
-            getFile(),
+            getResourceAsStream("/bzk/D59-00089.json.gz"),
             true
 	    );
         ki.commit();
@@ -807,18 +804,16 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        ki.addDocFile(
+        ki.addDoc(
             1,
             getClass().
-            getResource("/bzk/D59-00089.json.gz").
-            getFile(),
+            getResourceAsStream("/bzk/D59-00089.json.gz"),
             true
         );
-        ki.addDocFile(
+        ki.addDoc(
             2,
             getClass().
-            getResource("/bzk/D59-00089.json.gz").
-            getFile(),
+            getResourceAsStream("/bzk/D59-00089.json.gz"),
             true
         );
 
@@ -852,18 +847,16 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        ki.addDocFile(
+        ki.addDoc(
             1,
             getClass().
-            getResource("/goe/AGA-03828.json.gz").
-            getFile(),
+            getResourceAsStream("/goe/AGA-03828.json.gz"),
             true
         );
-        ki.addDocFile(
+        ki.addDoc(
             2,
             getClass().
-            getResource("/bzk/D59-00089.json.gz").
-            getFile(),
+            getResourceAsStream("/bzk/D59-00089.json.gz"),
             true
         );
 
@@ -907,11 +900,10 @@ public class TestKrill {
         assertEquals(ki.numberOf("documents"), 0);
 
         // Indexing test files
-        FieldDocument fd = ki.addDocFile(
+        FieldDocument fd = ki.addDoc(
             1,
             getClass().
-            getResource("/bzk/D59-00089.json.gz").
-            getFile(),
+            getResourceAsStream("/bzk/D59-00089.json.gz"),
             true
         );
         ki.commit();
@@ -995,10 +987,9 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
+            ki.addDoc(
                 getClass().
-                getResource("/wiki/" + i + ".json.gz").
-                getFile(),
+                getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -1088,10 +1079,9 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
+            ki.addDoc(
                 getClass().
-                getResource("/wiki/" + i + ".json.gz").
-                getFile(),
+                getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -1159,10 +1149,9 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
+            ki.addDoc(
                 getClass().
-                getResource("/wiki/" + i + ".json.gz").
-                getFile(),
+                getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };
@@ -1191,10 +1180,9 @@ public class TestKrill {
 		// Construct index
 		KrillIndex ki = new KrillIndex();
 		// Indexing test files
-		ki.addDocFile(
+		ki.addDoc(
             getClass().
-            getResource("/wiki/00002.json.gz").
-            getFile(),
+            getResourceAsStream("/wiki/00002.json.gz"),
             true
         );
 		ki.commit();
@@ -1236,10 +1224,9 @@ public class TestKrill {
 		ki = new KrillIndex();
 		for (String i : new String[] {"00001",
                                       "00002"}) {
-		    ki.addDocFile(
+		    ki.addDoc(
                 getClass().
-                getResource("/wiki/" + i + ".json.gz").
-                getFile(),
+                getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
 		};
@@ -1294,10 +1281,9 @@ public class TestKrill {
                                       "00005",
                                       "00006",
                                       "02439"}) {
-            ki.addDocFile(
+            ki.addDoc(
                 getClass().
-                getResource("/wiki/" + i + ".json.gz").
-                getFile(),
+                getResourceAsStream("/wiki/" + i + ".json.gz"),
                 true
             );
         };

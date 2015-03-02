@@ -37,8 +37,8 @@ public class TestMetaFields {
         // Indexing test files
         for (String i : new String[] {"00001",
                                       "00002"}) {
-            ki.addDocFile(
-                getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+            ki.addDoc(
+                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"), true
             );
         };
         ki.commit();

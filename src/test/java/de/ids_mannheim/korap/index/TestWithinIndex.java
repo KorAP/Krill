@@ -1096,12 +1096,12 @@ public class TestWithinIndex {
 		
         KrillIndex ki = new KrillIndex();
 
-        ki.addDocFile(
-            getClass().getResource("/wiki/DDD-08370.json.gz").getFile(),
+        ki.addDoc(
+            getClass().getResourceAsStream("/wiki/DDD-08370.json.gz"),
             true
         );
-        ki.addDocFile(
-            getClass().getResource("/wiki/PPP-02924.json.gz").getFile(),
+        ki.addDoc(
+            getClass().getResourceAsStream("/wiki/PPP-02924.json.gz"),
             true
         );
 

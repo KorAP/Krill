@@ -61,16 +61,21 @@ public class Indexer {
                 System.out.print("  Index " + found + " ... ");
 
                 // Add file to the index
-                if (this.index.addDocFile(found, true) == null) {
-                    System.out.println("fail.");
-                    continue;
-                };
-                System.out.println("done (" + count + ").");
-                this.count++;
+                try {
+                    if (this.index.addDoc(new FileInputStream(found), true) == null) {
+                        System.out.println("fail.");
+                        continue;
+                    };
+                    System.out.println("done (" + count + ").");
+                    this.count++;
 
-                // Commit in case the commit count is reached
-                if ((this.count % this.commitCount) == 0)
-                    this.commit();
+                    // Commit in case the commit count is reached
+                    if ((this.count % this.commitCount) == 0)
+                        this.commit();
+                }
+                catch (FileNotFoundException e) {
+                    System.out.println("not found!");
+                };
             };
         };
     };

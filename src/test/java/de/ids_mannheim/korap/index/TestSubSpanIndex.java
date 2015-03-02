@@ -21,7 +21,7 @@ public class TestSubSpanIndex {
 
     public TestSubSpanIndex () throws IOException {
         ki = new KrillIndex();
-        ki.addDocFile(getClass().getResource("/wiki/00001.json.gz").getFile(),
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"),
                 true);
         ki.commit();
     }

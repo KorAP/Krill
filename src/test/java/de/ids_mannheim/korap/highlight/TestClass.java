@@ -38,10 +38,10 @@ public class TestClass {
 		//System.out.println(sq.toString());
 		
 		ki = new KrillIndex();
-	    ki.addDocFile(
-	    	getClass().getResource("/wiki/JJJ-00785.json.gz").getFile(),true);
-	    ki.addDocFile(
-		        getClass().getResource("/wiki/DDD-01402.json.gz").getFile(),true);
+	    ki.addDoc(
+	    	getClass().getResourceAsStream("/wiki/JJJ-00785.json.gz"),true);
+	    ki.addDoc(
+		        getClass().getResourceAsStream("/wiki/DDD-01402.json.gz"),true);
 		ki.commit();
 		kr = ki.search(sq, (short) 10);
 
@@ -72,8 +72,8 @@ public class TestClass {
 		
 
 		ki = new KrillIndex();
-	    ki.addDocFile(
-	    	getClass().getResource("/wiki/SSS-09803.json.gz").getFile(),true);
+	    ki.addDoc(
+	    	getClass().getResourceAsStream("/wiki/SSS-09803.json.gz"), true);
 	    
 	    ki.commit();
 		kr = ki.search(sq, (short) 10);

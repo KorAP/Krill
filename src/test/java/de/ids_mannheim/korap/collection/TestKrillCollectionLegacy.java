@@ -37,8 +37,8 @@ public class TestKrillCollectionLegacy {
 				      "00005",
 				      "00006",
 				      "02439"}) {
-	    ki.addDocFile(
-	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+	    ki.addDoc(
+	        getClass().getResourceAsStream("/wiki/" + i + ".json.gz"), true
             );
 	};
 	ki.commit();
@@ -112,8 +112,8 @@ public class TestKrillCollectionLegacy {
 				      "00005",
 				      "00006",
 				      "02439"}) {
-	    ki.addDocFile(
-	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+	    ki.addDoc(
+	      getClass().getResourceAsStream("/wiki/" + i + ".json.gz"), true
             );
 	    ki.commit();
 	};
@@ -188,13 +188,13 @@ public class TestKrillCollectionLegacy {
 				      "00005",
 				      "00006",
 				      "02439"}) {
-	  ki.addDocFile(
-	      getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+	  ki.addDoc(
+	      getClass().getResourceAsStream("/wiki/" + i + ".json.gz"), true
             );
 	};
 	ki.commit();
 
-	ki.addDocFile(getClass().getResource("/wiki/00012-fakemeta.json.gz").getFile(), true);
+	ki.addDoc(getClass().getResourceAsStream("/wiki/00012-fakemeta.json.gz"), true);
 
 	ki.commit();
 
@@ -239,9 +239,9 @@ public class TestKrillCollectionLegacy {
 				      "00005",
 				      "00006",
 				      "02439"}) {
-	    FieldDocument fd = ki.addDocFile(
-		uid++,
-	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(),
+	    FieldDocument fd = ki.addDoc(
+                                     uid++,
+	        getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
 		true
 	    );
 	};

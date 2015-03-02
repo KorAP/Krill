@@ -168,8 +168,8 @@ public class TestFieldDocument {
 				      "00005",
 				      "00006",
 				      "02439"}) {
-	    FieldDocument fd = ki.addDocFile(
-	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+	    FieldDocument fd = ki.addDoc(
+	        getClass().getResourceAsStream("/wiki/" + i + ".json.gz"), true
             );
 	};
 	ki.commit();
@@ -217,8 +217,8 @@ public class TestFieldDocument {
 				      "00005",
 				      "00006",
 				      "02439"}) {
-	    FieldDocument fd = ki.addDocFile(
-	        getClass().getResource("/wiki/" + i + ".json.gz").getFile(), true
+	    FieldDocument fd = ki.addDoc(
+	        getClass().getResourceAsStream("/wiki/" + i + ".json.gz"), true
             );
 	};
 	ki.commit();

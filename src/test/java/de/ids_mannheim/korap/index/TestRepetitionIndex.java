@@ -211,8 +211,8 @@ public class TestRepetitionIndex {
 	@Test
 	public void testCase5() throws IOException {
 		ki = new KrillIndex();
-	    ki.addDocFile(
-	        getClass().getResource("/wiki/00001.json.gz").getFile(), true
+	    ki.addDoc(
+	        getClass().getResourceAsStream("/wiki/00001.json.gz"), true
         );
 		ki.commit();
 		

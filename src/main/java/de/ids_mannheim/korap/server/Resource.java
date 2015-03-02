@@ -148,18 +148,16 @@ public class Resource {
         kresp.setVersion(index.getVersion());
         kresp.setName(index.getName());
 
-        String ID = "Unknown";
-        try {
-            FieldDocument fd = index.addDoc(json);
-            fd.setUID(uid);
-            ID = fd.getID();
-        }
-        // Set HTTP to ???
-        // TODO: This may be a field error!
-        catch (IOException e) {
+        FieldDocument fd = index.addDoc(uid, json);
+        if (fd == null) {
+            // Set HTTP to ???
+            // TODO: This may be a field error!
             kresp.addError(602, "Unable to add document to index");
             return kresp.toJsonString();
         };
+
+        String ID = "Unknown";
+        ID = fd.getID();
 
         // Set HTTP to 200
         kresp.addMessage(681, "Document was added successfully", ID);

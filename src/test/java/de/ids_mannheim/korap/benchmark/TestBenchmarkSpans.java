@@ -28,11 +28,11 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmark1 () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/korap.conf").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
@@ -79,11 +79,11 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmark2JSON () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/korap.conf").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
         
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
@@ -122,11 +122,11 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmarkSentences () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/korap.conf").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
@@ -164,11 +164,11 @@ public class TestBenchmarkSpans {
         // [orth=Der]{1:[orth=Mann]{2:[orth=und]}}
 
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/korap.conf").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
@@ -284,8 +284,8 @@ public class TestBenchmarkSpans {
             
             // Indexing test files
             for (String d : docs) {
-                FieldDocument fd = ki.addDocFile(
-                    getClass().getResource("/wiki/" + d + ".json.gz").getFile(),
+                FieldDocument fd = ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + d + ".json.gz"),
                     true
                 );
             };
@@ -311,11 +311,11 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmark3 () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/korap.conf").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("lucene.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
