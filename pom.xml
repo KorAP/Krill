@@ -285,7 +285,7 @@
         <artifactId>maven-java-formatter-plugin</artifactId>
         <version>0.4</version>
 	<configuration>
-	  <configFile>${project.basedir}/korap-style.xml</configFile>
+	  <configFile>${project.basedir}/Format.xml</configFile>
 	  <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
 	  <compilerSource>1.7</compilerSource>
 	  <compilerCompliance>1.7</compilerCompliance>
