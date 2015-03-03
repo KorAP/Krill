@@ -117,7 +117,7 @@ Proceedings of the 6th Language and Technology Conference. Poznań: Fundacja Uni
 Contributions to Krill are very welcome!
 Before contributing, please reformat your code changes according to the KorAP
 style guideline, provided by means of an
-[Eclipse style sheet](https://raw.githubusercontent.com/KorAP/Krill/master/korap-style.xml).
+[Eclipse style sheet](https://raw.githubusercontent.com/KorAP/Krill/master/Format.xml).
 You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) using
 [Maven](https://maven.apache.org/) with the command
 

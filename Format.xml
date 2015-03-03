@@ -624,13 +624,13 @@
     <!-- Comment blocks -->
     <setting
 	id="org.eclipse.jdt.core.formatter.comment.format_line_comments"
-	value="true"/>
+	value="false"/><!-- This differs from default -->
     <setting
 	id="org.eclipse.jdt.core.formatter.comment.indent_parameter_description"
 	value="true"/>
     <setting
 	id="org.eclipse.jdt.core.formatter.comment.preserve_white_space_between_code_and_line_comments"
-	value="false"/>
+	value="true"/><!-- This differs from default -->
     <setting
 	id="org.eclipse.jdt.core.formatter.comment.indent_root_tags"
 	value="true"/>
@@ -639,19 +639,19 @@
 	value="true"/>
     <setting
 	id="org.eclipse.jdt.core.formatter.join_lines_in_comments"
-	value="true"/>
+	value="false"/><!-- This differs from default -->
     <setting
 	id="org.eclipse.jdt.core.formatter.comment.format_html"
-	value="true"/>
+	value="false"/><!-- This differs from default -->
     <setting
 	id="org.eclipse.jdt.core.formatter.comment.format_source_code"
-	value="true"/>
+	value="false"/><!-- This differs from default -->
     <setting
 	id="org.eclipse.jdt.core.formatter.comment.format_header"
 	value="false"/>
     <setting
 	id="org.eclipse.jdt.core.formatter.comment.format_block_comments"
-	value="true"/>
+	value="false"/><!-- This differs from default -->
     <setting
 	id="org.eclipse.jdt.core.formatter.never_indent_line_comments_on_first_column"
 	value="false"/>
