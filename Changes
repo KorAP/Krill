@@ -1,5 +1,14 @@
+0.51 2015-03-03
+        - This is a major version (prepared for the GitHub release)
+        - [cleanup] Changed groupID to "de.ids_mannheim.korap",
+	  renamed korap-style.xml to Format.xml (diewald)
+	- [bugfix] Updated Format.xml to work with
+	  recent versions of Eclipse (diewald)
+        - [documentation] Improved documentation for API classes (diewald)
+
 0.50.1 2015-03-02
-	- [feature] Deserialization of arbitrary elements with attributes (margaretha)
+	- [feature] Deserialization of arbitrary elements with
+	  attributes (margaretha)
 	- [cleanup] Extracted KrillMeta from Krill,
 	  renamed KorapQuery to KrillQuery,
 	  extracted QueryBuilder from KrillQuery,
@@ -57,12 +66,15 @@
 	  on focussing (e.g., set by relations) (diewald)
 	- [bugfix] Hopefully fixing a resource related bug for
 	  server instantiation (diewald)
-	- [bugfix] Changed attribute spans to contain element's width (margaretha)
+	- [bugfix] Changed attribute spans to contain element's
+	  width (margaretha)
 	- [feature] Improved highlighting to use semantic html5 (#193; diewald)
 
 0.49.3 2015-02-03
-        - [documentation] Improved documentation for API classes (diewald)
-	- [documentation] Improved documentation for various queries (margaretha)
+        - [documentation] Improved documentation for
+	  API classes (diewald)
+	- [documentation] Improved documentation for
+	  various queries (margaretha)
 	- [feature] Added deserialization of SpanSubSpanQueries
           (margaretha, diewald)
 	- [bugfix] Null filters are now correctly extended (diewald)
@@ -76,25 +88,27 @@
 	  (diewald, margaretha)
 
 0.49.2 2014-12-05
-	- [documentation] Improved documentation for various queries (margaretha)
+	- [documentation] Improved documentation for
+          various queries (margaretha)
 	- [feature] Added @Experimental support (margaretha)
 	- [feature] Added Eclipse based code formatting (diewald)
 
 0.49.1 2014-11-25
-        - [cleanup] Major refactoring for new response messages (diewald)
-	- [cleanup] Removed deprecated error messaging (diewald)
-        - [cleanup] Removed long-term deprecated methods in KorapResult (diewald)
-        - [cleanup] Removed long-term deprecated methods in KorapMatch (diewald)
-	- [cleanup] Renamed toJSON->toJsonString (diewald)
-	- [cleanup] Renamed toJSONnode->toJsonNode (diewald)
-	- [cleanup] Renamed fromJSON->fromJson (diewald)
+        - [cleanup] Major refactoring for new response messages,
+	  removed deprecated error messaging,
+          removed long-term deprecated methods in KorapResult,
+	  removed long-term deprecated methods in KorapMatch,
+	  renamed toJSON->toJsonString
+	  renamed toJSONnode->toJsonNode,
+	  renamed fromJSON->fromJson (diewald)
 	- [documentation] Improved documentation for notifications (diewald)
 
 0.49 2014-11-14
         - This is a major version (prepared for the Evaluation Meeting)
         - [bugfix] Rewrite works in repeating expansions (margaretha)
 	- [feature] Clean timeout with parameter support (diewald)
-	- [workaround] Support unknown overlap frame, if frames are known (diewald)
+	- [workaround] Support unknown overlap frame,
+	  if frames are known (diewald)
 	- [bugfix] Class payload fixed in SpanRepetitions (margaretha)
 	- [bugfix] #179 Expansion bug fixed (margaretha)
 	- [bugfix] Corrected small bug where null warnings where
@@ -141,7 +155,8 @@
         - [cleanup] Prepare test suite for publication (diewald)
 
 0.44 2014-09-28
-        - [feature] Match collector using database for distributed search (diewald)
+        - [feature] Match collector using database for
+	  distributed search (diewald)
 	- [bugfix] Unified boundary handling and prevent nullpointer
 	  exceptions on parsing (diewald)
 	- [bugfix] Ordering of payloads reversed to make nesting highlights
@@ -149,7 +164,8 @@
    	- [performance] Updated Lucene dependency from 4.3.1 to 4.5.1 (diewald)
    	- [performance] Updated Jackson dependency from 2.2.2 to 2.4.0 (diewald)
 	- [bugfix] Return matches correctly with JSON (diewald)
-	- [bugfix] Repare database tests working with temporary databases (diewald)
+	- [bugfix] Repare database tests working with temporary
+	  databases (diewald)
 
 0.43 2014-09-23
         - [cleanup] Made a lot of stuff rely on KorapResponse (diewald)
@@ -177,7 +193,8 @@
 0.32 2014-08-01
         - [bugfix] Fix for repetition candidates (margaretha)
  	- [bugfix] Some fixes for negative segments (diewald)
- 	- [bugfix] SpanMatchModify now skips in case the requested class isn't found (diewald)
+ 	- [bugfix] SpanMatchModify now skips in case the
+	  requested class isn't found (diewald)
  	- [performance] Some logging issues fixed (diewald)
 
 0.31.8 2014-07-24
@@ -264,7 +281,8 @@
         - Added sentence extension for match info (diewald)
 
 0.30 2014-02-13
-        - This is a major version (prepared for the IDS meeting on the 17th of february)
+        - This is a major version
+	  (prepared for the IDS meeting on the 17th of february)
 	- Improved stringification for distance queries (margaretha)
 
 0.26.4 2014-02-12
@@ -293,7 +311,7 @@
 
 0.25.3 2014-01-10
         - Updated Lucene to 4.3.1 (diewald)
-	- Eliza Margaretha has joined the team
+	- Welcome! Eliza Margaretha has joined the team!
 
 0.25.2 2013-12-29
         - Fixed highlight bug with empty reopened tags

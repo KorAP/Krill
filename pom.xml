@@ -22,9 +22,9 @@
              /data/hdd/lucene-new/WPD/
   -->
 
-  <groupId>KorAP-modules</groupId>
+  <groupId>de.ids_mannheim.korap</groupId>
   <artifactId>Krill</artifactId>
-  <version>0.50.1</version>
+  <version>0.51</version>
   <packaging>jar</packaging>
 
   <name>Krill</name>
@@ -150,22 +150,20 @@
 
     <!-- JSON support in Jersey -->
     <!--
-	<dependency>
-	<groupId>org.glassfish.jersey.media</groupId>
-	<artifactId>jersey-media-moxy</artifactId>
-	</dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-moxy</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-json</artifactId>
       <version>1.9</version>
     </dependency>
-    -->
-    <!--
-	<dependency>
-	<groupId>org.glassfish.jersey.media</groupId>
-	<artifactId>jersey-media-json-jackson</artifactId>
-	<version>2.16</version>
-	</dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
+      <version>2.16</version>
+    </dependency>
     -->
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -199,9 +197,7 @@
       <artifactId>jsonld-java</artifactId>
       <version>0.5.2-SNAPSHOT</version>
     </dependency>
-    -->
 
-    <!--
     Temporarily disable @Experimental annotation
     <dependency>
       <groupId>KorapAnnotationProcessor</groupId>
@@ -305,7 +301,7 @@
           </execution>
         </executions>
         <configuration>
-          <mainClass>de.ids_mannheim.korap.KorapNode</mainClass>
+          <mainClass>de.ids_mannheim.korap.server.Node</mainClass>
         </configuration>
       </plugin>
     </plugins>
@@ -315,14 +311,14 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
 	<includes>
-	  <include>index.properties</include>
+	  <include>krill.properties</include>
 	</includes>
       </resource>
       <resource>
         <directory>src/main/resources</directory>
         <filtering>false</filtering>
 	<excludes>
-	  <exclude>index.properties</exclude>
+	  <exclude>krill.properties</exclude>
 	</excludes>
       </resource>
     </resources> 
@@ -332,14 +328,14 @@
         <directory>src/test/resources</directory>
         <filtering>true</filtering>
 	<includes>
-	  <include>index.properties</include>
+	  <include>krill.properties</include>
 	</includes>
       </testResource>
       <testResource>
         <directory>src/test/resources</directory>
         <filtering>false</filtering>
 	<excludes>
-	  <exclude>index.properties</exclude>
+	  <exclude>krill.properties</exclude>
 	</excludes>
       </testResource>
     </testResources> 
