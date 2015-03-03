@@ -16,6 +16,7 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.io.FileInputStream;
 
@@ -72,7 +73,7 @@ public class TestResource {
         assertEquals("Gimme 5 minutes, please!", responseMsg);
     };
 
-    @Test
+    @Ignore
     public void testResource() throws IOException {
         Response kresp;
 
@@ -115,7 +116,8 @@ public class TestResource {
         assertFalse(kresp.hasMessages());
     };
 
-    @Test
+
+    @Ignore
     public void testCollection() throws IOException {
 
         String json = getString(

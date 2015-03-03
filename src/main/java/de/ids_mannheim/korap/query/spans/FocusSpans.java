@@ -38,14 +38,14 @@ import org.slf4j.LoggerFactory;
  * @author diewald
  */
 
-public class MatchModifyClassSpans extends Spans {
+public class FocusSpans extends Spans {
     private List<byte[]> wrappedPayload;
     private Collection<byte[]> payload;
     private final Spans spans;
     private byte number;
 
     private SpanQuery wrapQuery;
-    private final Logger log = LoggerFactory.getLogger(MatchModifyClassSpans.class);
+    private final Logger log = LoggerFactory.getLogger(FocusSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -56,7 +56,7 @@ public class MatchModifyClassSpans extends Spans {
                 tempEnd = 0;
 
     /**
-     * Construct a MatchModifyClassSpan for the given {@link SpanQuery}.
+     * Construct a FocusSpan for the given {@link SpanQuery}.
      * 
      * @param wrapQuery A {@link SpanQuery}.
      * @param context The {@link AtomicReaderContext}.
@@ -66,7 +66,7 @@ public class MatchModifyClassSpans extends Spans {
      * @param number The class number to focus on.
      * @throws IOException
      */
-    public MatchModifyClassSpans (SpanQuery wrapQuery,
+    public FocusSpans (SpanQuery wrapQuery,
                                   AtomicReaderContext context,
                                   Bits acceptDocs,
                                   Map<Term,TermContext> termContexts,

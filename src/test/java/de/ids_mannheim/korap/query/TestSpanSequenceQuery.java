@@ -57,7 +57,7 @@ public class TestSpanSequenceQuery {
         assertEquals("spanMultipleDistance(spanMultipleDistance(field:a, field:b, [(w[2:3], ordered, notExcluded), (s[6:8], ordered, notExcluded)]), field:c, [(w[2:3], ordered, notExcluded), (s[6:8], ordered, notExcluded)])", sssq.toQuery().toString());
     };
 
-    @Test
+    @Ignore
     public void spanSequenceQueryWrapper () throws QueryException {
 
         SpanSequenceQueryWrapper ssqw, ssqw2;

@@ -15,7 +15,7 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
-import de.ids_mannheim.korap.query.spans.MatchModifyClassSpans;
+import de.ids_mannheim.korap.query.spans.FocusSpans;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 
 /**
@@ -30,7 +30,7 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
  *
  * @author diewald
  *
- * @see MatchModifyClassSpans
+ * @see FocusSpans
  */
 public class SpanFocusQuery extends SpanClassQuery {
 
@@ -75,7 +75,7 @@ public class SpanFocusQuery extends SpanClassQuery {
     public Spans getSpans (final AtomicReaderContext context,
                            Bits acceptDocs,
                            Map<Term,TermContext> termContexts) throws IOException {
-        return (Spans) new MatchModifyClassSpans(
+        return (Spans) new FocusSpans(
             this.operand,
             context,
             acceptDocs,
