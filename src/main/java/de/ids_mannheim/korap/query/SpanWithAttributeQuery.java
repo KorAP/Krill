@@ -18,9 +18,10 @@ import de.ids_mannheim.korap.query.spans.SpansWithAttribute;
 import de.ids_mannheim.korap.query.spans.TermSpansWithId;
 
 /**
- * Enumeration of spans (e.g. element or relation spans) having some specific
- * attribute(s) or <em>not</em> having some attribute(s). It is necessary that
- * the spans have ids to be able to identify to which span an attribute belongs. <br />
+ * Enumeration of spans (e.g. element or relation spans) having some
+ * specific attribute(s) or <em>not</em> having some attribute(s). It
+ * is necessary that the spans have ids to be able to identify to
+ * which span an attribute belongs. <br />
  * <br />
  * 
  * In the example below, the SpanWithAttributeQuery retrieves
@@ -39,59 +40,69 @@ import de.ids_mannheim.korap.query.spans.TermSpansWithId;
  */
 public class SpanWithAttributeQuery extends SpanWithIdQuery {
 
-	public boolean isMultipleAttributes;
+    public boolean isMultipleAttributes;
     private String type;
 
-	/**
-	 * Constructs a SpanWithAttributeQuery for any arbitrary SpansWithId (e.g.
-	 * elements, relations) having the specified {@link SpanAttributeQuery}.
-	 * 
-	 * @param attributeQuery a SpanAttributeQuery
-	 * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
-	 */
-	public SpanWithAttributeQuery(SpanAttributeQuery attributeQuery,
-			boolean collectPayloads) {
-		super(attributeQuery, collectPayloads);
-		type = "spanWithAttribute";
-	}
+    /**
+     * Constructs a SpanWithAttributeQuery for any arbitrary
+     * SpansWithId (e.g. elements, relations) having the specified
+     * {@link SpanAttributeQuery}.
+     * 
+     * @param attributeQuery
+     *            a SpanAttributeQuery
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise <code>false</code>.
+     */
+    public SpanWithAttributeQuery (SpanAttributeQuery attributeQuery,
+            boolean collectPayloads) {
+        super(attributeQuery, collectPayloads);
+        type = "spanWithAttribute";
+    }
 
-	public SpanWithAttributeQuery(List<SpanQuery> attributeQueries,
-			boolean collectPayloads) {
-		super(attributeQueries, collectPayloads);
-		isMultipleAttributes = true;
-		type = "spanWithAttribute";
-	}
+    public SpanWithAttributeQuery (List<SpanQuery> attributeQueries,
+            boolean collectPayloads) {
+        super(attributeQueries, collectPayloads);
+        isMultipleAttributes = true;
+        type = "spanWithAttribute";
+    }
 
     /**
-     * Constructs a SpanWithAttributeQuery for the specified SpanWithIdQuery and
-     * SpanAttributeQuery retrieving spans having a specific attribute.
+     * Constructs a SpanWithAttributeQuery for the specified
+     * SpanWithIdQuery and SpanAttributeQuery retrieving spans having
+     * a specific attribute.
      * 
-     * If the SpanWithIdQuery is a SpanAttributeQuery, this will return arbitrary 
-     * elements with two specified attributes (i.e. and relation between the two 
-     * attributes).
+     * If the SpanWithIdQuery is a SpanAttributeQuery, this will
+     * return arbitrary elements with two specified attributes (i.e.
+     * and relation between the two attributes).
      * 
-     * @param firstClause a SpanWithIdQuery
-     * @param secondClause a SpanAttributeQuery
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
+     * @param firstClause
+     *            a SpanWithIdQuery
+     * @param secondClause
+     *            a SpanAttributeQuery
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise <code>false</code>.
      */
-    public SpanWithAttributeQuery(SpanWithIdQuery firstClause,
+    public SpanWithAttributeQuery (SpanWithIdQuery firstClause,
             SpanAttributeQuery secondClause, boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
         setType();
     }
 
     /**
-     * @param firstClause a SpanWithIdQuery
-     * @param secondClauses a list of SpanAttributeQueries
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
+     * @param firstClause
+     *            a SpanWithIdQuery
+     * @param secondClauses
+     *            a list of SpanAttributeQueries
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise <code>false</code>.
      */
-    public SpanWithAttributeQuery(SpanWithIdQuery firstClause,
+    public SpanWithAttributeQuery (SpanWithIdQuery firstClause,
             List<SpanQuery> secondClauses, boolean collectPayloads) {
         super(firstClause, secondClauses, collectPayloads);
         isMultipleAttributes = true;
@@ -108,104 +119,106 @@ public class SpanWithAttributeQuery extends SpanWithIdQuery {
     }
 
     /**
-     * Sets the type of the query based of the class of the firstClause / first
-     * span.
+     * Sets the type of the query based of the class of the
+     * firstClause / first span.
      * 
      */
     public void setType() {
         if (SpanElementQuery.class.isInstance(firstClause)) {
             type = "spanElementWithAttribute";
-        } else if (SpanRelationQuery.class.isInstance(firstClause)) {
+        }
+        else if (SpanRelationQuery.class.isInstance(firstClause)) {
             type = "spanRelationWithAttribute";
-        } else if (SpanTermWithIdQuery.class.isInstance(firstClause)) {
+        }
+        else if (SpanTermWithIdQuery.class.isInstance(firstClause)) {
             type = "spanTermWithAttribute";
         }
     }
 
     @Override
     public SimpleSpanQuery clone() {
-		if (secondClause != null) {
-			if (isMultipleAttributes) {
-				return new SpanWithAttributeQuery(
-						(SpanWithIdQuery) firstClause.clone(), cloneClauseList(),
-						collectPayloads);
-			} 
-			else {
-				return new SpanWithAttributeQuery(
-						(SpanWithIdQuery) firstClause.clone(),
-						(SpanAttributeQuery) secondClause.clone(),
-						collectPayloads);
+        if (secondClause != null) {
+            if (isMultipleAttributes) {
+                return new SpanWithAttributeQuery(
+                        (SpanWithIdQuery) firstClause.clone(),
+                        cloneClauseList(), collectPayloads);
+            }
+            else {
+                return new SpanWithAttributeQuery(
+                        (SpanWithIdQuery) firstClause.clone(),
+                        (SpanAttributeQuery) secondClause.clone(),
+                        collectPayloads);
             }
         }
         else {
-			if (isMultipleAttributes) {
-				return new SpanWithAttributeQuery(cloneClauseList(),
-						collectPayloads);
-			} 
-			else {
-				return new SpanWithAttributeQuery(
-					(SpanAttributeQuery) firstClause.clone(),
-                    collectPayloads);
-			}
-        }	
+            if (isMultipleAttributes) {
+                return new SpanWithAttributeQuery(cloneClauseList(),
+                        collectPayloads);
+            }
+            else {
+                return new SpanWithAttributeQuery(
+                        (SpanAttributeQuery) firstClause.clone(),
+                        collectPayloads);
+            }
+        }
     }
 
-	private List<SpanQuery> cloneClauseList() {
-		List<SpanQuery> clauseList = new ArrayList<SpanQuery>();
-		SpanAttributeQuery saq;
-		for (SpanQuery q : this.clauseList) {
-			saq = (SpanAttributeQuery) q;
-			clauseList.add(saq.clone());
-		}
-		return clauseList;
-	}
+    private List<SpanQuery> cloneClauseList() {
+        List<SpanQuery> clauseList = new ArrayList<SpanQuery>();
+        SpanAttributeQuery saq;
+        for (SpanQuery q : this.clauseList) {
+            saq = (SpanAttributeQuery) q;
+            clauseList.add(saq.clone());
+        }
+        return clauseList;
+    }
 
     @Override
     public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
 
-		if (type.equals("spanWithAttribute")) {
-			return new SpansWithAttribute(this, context, acceptDocs,
-					termContexts);
-		}
+        if (type.equals("spanWithAttribute")) {
+            return new SpansWithAttribute(this, context, acceptDocs,
+                    termContexts);
+        }
 
         Spans spans = this.getFirstClause().getSpans(context, acceptDocs,
                 termContexts);
 
-		if (type.equals("spanElementWithAttribute")) {
+        if (type.equals("spanElementWithAttribute")) {
             return new SpansWithAttribute(this, (ElementSpans) spans, context,
                     acceptDocs, termContexts);
-        } 
+        }
         else if (type.equals("spanRelationWithAttribute")) {
             return new SpansWithAttribute(this, (RelationSpans) spans, context,
                     acceptDocs, termContexts);
         }
-        else if (type.equals("spanTermWithAttribute")){
-        	return new SpansWithAttribute(this, (TermSpansWithId) spans, context,
-                acceptDocs, termContexts);
+        else if (type.equals("spanTermWithAttribute")) {
+            return new SpansWithAttribute(this, (TermSpansWithId) spans,
+                    context, acceptDocs, termContexts);
         }
         else {
-			throw new IllegalArgumentException("Span query type: " + type
-					+ "is unknown.");
-		}
+            throw new IllegalArgumentException("Span query type: " + type
+                    + "is unknown.");
+        }
     }
 
     @Override
     public String toString(String field) {
-    	boolean isFirstClassNull = true;
+        boolean isFirstClassNull = true;
         StringBuilder sb = new StringBuilder();
         sb.append(type);
         sb.append("(");
-		if (firstClause != null) {
-			sb.append(firstClause.toString(field));
-			isFirstClassNull = false;
-		}
-		if (secondClause !=null){
-			sb.append(", ");
+        if (firstClause != null) {
+            sb.append(firstClause.toString(field));
+            isFirstClassNull = false;
+        }
+        if (secondClause != null) {
+            sb.append(", ");
             sb.append(secondClause.toString(field));
         }
-		else if (isMultipleAttributes) {
-			if (!isFirstClassNull) sb.append(", ");
+        else if (isMultipleAttributes) {
+            if (!isFirstClassNull) sb.append(", ");
             sb.append("[");
 
             SpanQuery sq;
@@ -213,13 +226,12 @@ public class SpanWithAttributeQuery extends SpanWithIdQuery {
                 sq = clauseList.get(i);
                 sb.append(sq.toString(field));
 
-                if (i < clauseList.size() - 1)
-                    sb.append(", ");
+                if (i < clauseList.size() - 1) sb.append(", ");
             }
 
             sb.append("]");
-        } 
-		sb.append(")");
+        }
+        sb.append(")");
         return sb.toString();
     }
 }

@@ -46,17 +46,16 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  * */
 public class SpanRelationQuery extends SpanWithIdQuery {
 
-	private String type;
+    private String type;
 
-	/**
-	 * Constructs a SpanRelationQuery based on the given span query.
-	 * 
-	 * @param firstClause
-	 *            a SpanQuery.
-	 * @param collectPayloads
-	 *            a boolean flag representing the value <code>true</code> if
-	 *            payloads are to be collected, otherwise <code>false</code>.
-	 */
+    /**
+     * Constructs a SpanRelationQuery based on the given span query.
+     * 
+     * @param firstClause a SpanQuery.
+     * @param collectPayloads
+     *            a boolean flag representing the value <code>true</code> if
+     *            payloads are to be collected, otherwise <code>false</code>.
+     */
     public SpanRelationQuery(SpanQuery firstClause, boolean collectPayloads) {
         super(firstClause, collectPayloads);
     }
