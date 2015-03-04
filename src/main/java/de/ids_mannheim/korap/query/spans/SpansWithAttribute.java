@@ -176,8 +176,8 @@ public class SpansWithAttribute extends SpansWithId {
     private boolean advance() throws IOException {
 
         while (hasMoreSpans && searchSpanPosition()) {
-            //logger.info("element: " + withAttributeSpans.start() + ","+ withAttributeSpans.end() +
-            //	" ref:"+withAttributeSpans.getSpanId());
+//			System.out.println("element: " + referentSpans.start() + ","
+//					+ referentSpans.end() + " ref:"+ referentSpans.getSpanId());
 
 			if (checkReferentId() && checkNotReferentId(referentSpans)) {
                 this.matchDocNumber = referentSpans.doc();
@@ -258,9 +258,10 @@ public class SpansWithAttribute extends SpansWithId {
             AttributeSpans attributes) throws IOException {
 
         while (hasMoreSpans && ensureSameDoc(spans, attributes)) {
-            if (attributes.start() == spans.start())
+			if (attributes.start() == spans.start()
+					&& attributes.end() == spans.end())
                 return true;
-            else if (attributes.start() > spans.start())
+			else if (attributes.start() >= spans.start())
                 hasMoreSpans = spans.next();
             else
                 hasMoreSpans = attributes.next();

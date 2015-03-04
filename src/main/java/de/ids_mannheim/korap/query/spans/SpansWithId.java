@@ -36,11 +36,13 @@ public abstract class SpansWithId extends SimpleSpans {
         super(spanWithIdQuery, context, acceptDocs, termContexts);
     }
 
-    /**
-     * Returns the span id of the current span
-     * 
-     * @return the span id of the current span
-     */
+	public SpansWithId() {}
+
+	/**
+	 * Returns the span id of the current span
+	 * 
+	 * @return the span id of the current span
+	 */
     public short getSpanId() {
         return spanId;
     }

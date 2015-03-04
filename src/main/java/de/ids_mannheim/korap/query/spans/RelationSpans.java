@@ -93,6 +93,7 @@ public class RelationSpans extends RelationBaseSpans {
                 this.matchDocNumber = cs.getDoc();
                 this.matchStartPosition = cs.getStart();
                 this.matchEndPosition = cs.getEnd();
+				this.matchPayload = cs.getPayloads();
                 this.setRightStart(cs.getRightStart());
                 this.setRightEnd(cs.getRightEnd());
                 this.spanId = cs.getSpanId(); // relation id
@@ -100,7 +101,8 @@ public class RelationSpans extends RelationBaseSpans {
                 this.rightId = cs.getRightId();
                 candidateList.remove(0);
                 return true;
-            } else {
+            } 
+            else {
                 setCandidateList();
                 currentDoc = relationTermSpan.doc();
                 currentPosition = relationTermSpan.start();
@@ -119,19 +121,13 @@ public class RelationSpans extends RelationBaseSpans {
     private void setCandidateList() throws IOException {
         while (hasMoreSpans && relationTermSpan.doc() == currentDoc
                 && relationTermSpan.start() == currentPosition) {
-            CandidateRelationSpan cs = new CandidateRelationSpan(
-                    relationTermSpan);
+            CandidateRelationSpan cs = new CandidateRelationSpan(relationTermSpan);
             readPayload(cs);
-
+			setPayload(cs);
             candidateList.add(cs);
             hasMoreSpans = relationTermSpan.next();
         }
         Collections.sort(candidateList);
-
-        //		for (CandidateRelationSpan cs:candidateList){
-        //			System.out.println(cs.getStart()+","+cs.getEnd() //+" <size:" +payload.get(0).length 
-        //				+" target "+cs.getRightStart()+","+cs.getRightEnd() +" id:"+cs.getSpanId());
-        //		}
     }
 
     /**
@@ -179,6 +175,26 @@ public class RelationSpans extends RelationBaseSpans {
         cs.setSpanId(bb.getShort(length - 6)); //relation id
         // Payload is cleared.		
     }
+
+	private void setPayload(CandidateRelationSpan cs) throws IOException {
+		ArrayList<byte[]> payload = new ArrayList<byte[]>();
+		if (relationTermSpan.isPayloadAvailable()) {
+			payload.addAll(relationTermSpan.getPayload());
+		}
+		payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
+				(byte) 1));
+		payload.add(createClassPayload(cs.getRightStart(), cs.getRightEnd(),
+				(byte) 2));
+		cs.setPayloads(payload);
+	}
+
+	private byte[] createClassPayload(int start, int end, byte classNumber) {
+		ByteBuffer buffer = ByteBuffer.allocate(9);
+		buffer.putInt(start);
+		buffer.putInt(end);
+		buffer.put(classNumber);
+		return buffer.array();
+	}
 
     @Override
     public boolean skipTo(int target) throws IOException {
@@ -236,41 +252,17 @@ public class RelationSpans extends RelationBaseSpans {
     }
 
     /**
-     * CandidateRelationSpan stores a state of RelationSpans. In a list,
-     * CandidateRelationSpans are ordered first by the position of the relation
-     * left side and then by the position of the relation right side.
-     */
-    class CandidateRelationSpan extends CandidateSpan implements
-            Comparable<CandidateSpan> {
+	 * CandidateRelationSpan stores a state of RelationSpans. In a list,
+	 * CandidateRelationSpans are ordered first by the position of the relation
+	 * left side.
+	 */
+	class CandidateRelationSpan extends CandidateSpan {
 
         private int rightStart, rightEnd;
         private short leftId, rightId;
 
         public CandidateRelationSpan(Spans span) throws IOException {
             super(span);
-        }
-
-        @Override
-        public int compareTo(CandidateSpan o) {
-
-            int sourcePositionComparison = super.compareTo(o);
-
-            CandidateRelationSpan cs = (CandidateRelationSpan) o;
-            if (sourcePositionComparison == 0) {
-                if (this.getRightStart() == cs.getRightStart()) {
-                    if (this.getRightEnd() == cs.getRightEnd())
-                        return 0;
-                    if (this.getRightEnd() > cs.getRightEnd())
-                        return 1;
-                    else
-                        return -1;
-                } else if (this.getRightStart() < cs.getRightStart())
-                    return -1;
-                else
-                    return 1;
-            }
-
-            return sourcePositionComparison;
         }
 
         public int getRightEnd() {

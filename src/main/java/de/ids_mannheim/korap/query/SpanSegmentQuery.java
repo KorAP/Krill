@@ -26,6 +26,8 @@ import de.ids_mannheim.korap.query.spans.SegmentSpans;
  * */
 public class SpanSegmentQuery extends SimpleSpanQuery {
 
+	private boolean isRelation;
+
     /**
      * Constructs a SpanSegmentQuery from the two given SpanQueries, by default
      * payloads are to be collected.
@@ -51,6 +53,12 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
         super(firstClause, secondClause, collectPayloads);
     }
 
+	public SpanSegmentQuery(SpanRelationQuery firstClause,
+			SpanWithIdQuery secondClause, boolean collectPayloads) {
+		super(firstClause, secondClause, true);
+		isRelation = true;
+    }
+    
     @Override
     public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
@@ -104,6 +112,14 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
         result ^= (31 * result) + (result >>> 3);
         result += Float.floatToRawIntBits(getBoost());
         return result;
-    };
+	}
+
+	public boolean isRelation() {
+		return isRelation;
+	}
+
+	public void setRelation(boolean isRelation) {
+		this.isRelation = isRelation;
+	};
 
 }

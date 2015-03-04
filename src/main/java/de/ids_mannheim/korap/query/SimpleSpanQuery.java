@@ -57,7 +57,7 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  * */
 public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
 
-    protected SpanQuery firstClause, secondClause;
+	protected SpanQuery firstClause = null, secondClause = null;
     protected List<SpanQuery> clauseList = null;
     private String field;
     protected boolean collectPayloads;

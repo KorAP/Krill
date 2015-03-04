@@ -41,7 +41,8 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 
 		if (subquery.isEmpty()) {
 			handleEmptySubquery();
-		} else if (subquery.isNegative()) {
+		} 
+		else if (subquery.isNegative()) {
 			handleNegativeSubquery();
 		}
 	}
@@ -52,7 +53,8 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 			int max = Math.abs(startOffset) + length;
 			subquery.setMax(max);
 			startOffset = max + startOffset;
-		} else {
+		} 
+		else {
 			int endOffset = startOffset + length;
 			if (subquery.getMax() > endOffset) {
 				subquery.setMax(startOffset + length);

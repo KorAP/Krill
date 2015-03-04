@@ -23,9 +23,11 @@ import de.ids_mannheim.korap.query.SpanWithIdQuery;
  */
 public abstract class RelationBaseSpans extends SpansWithId {
 
-    protected short leftId, rightId;
+	protected short leftId, rightId;
 	protected int leftStart, leftEnd;
-    protected int rightStart, rightEnd;
+	protected int rightStart, rightEnd;
+
+    public RelationBaseSpans(){};
 
     /**
      * Constructs RelationBaseSpans based on the given SpanWithIdQuery.
@@ -61,11 +63,27 @@ public abstract class RelationBaseSpans extends SpansWithId {
         this.leftId = leftId;
     }
 
-    /**
-     * Returns the id of the right hand side of the relation.
-     * 
-     * @return an id
-     */
+	public int getLeftStart() {
+		return leftStart;
+	}
+
+	public void setLeftStart(int leftStart) {
+		this.leftStart = leftStart;
+	}
+
+	public int getLeftEnd() {
+		return leftEnd;
+	}
+
+	public void setLeftEnd(int leftEnd) {
+		this.leftEnd = leftEnd;
+	}
+
+	/**
+	 * Returns the id of the right hand side of the relation.
+	 * 
+	 * @return an id
+	 */
     public short getRightId() {
         return rightId;
     }

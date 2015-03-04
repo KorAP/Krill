@@ -40,9 +40,7 @@ public class AttributeSpans extends SpansWithId {
 
     private List<CandidateAttributeSpan> candidateList;
     private int currentDoc, currentPosition;
-	// private short referentId;
     private boolean isFinish;
-	// private int elementEnd;
 
     protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
 
@@ -91,7 +89,6 @@ public class AttributeSpans extends SpansWithId {
                 this.matchStartPosition = cs.getStart();
                 this.matchEndPosition = cs.getEnd();
 				this.setSpanId(cs.getSpanId()); // referentId
-				// this.setElementEnd(cs.getElementEnd());
                 candidateList.remove(0);
                 return true;
             } else {
@@ -135,54 +132,22 @@ public class AttributeSpans extends SpansWithId {
         List<byte[]> payload = (List<byte[]>) firstSpans.getPayload();
         ByteBuffer wrapper = ByteBuffer.wrap(payload.get(0));
 
-        short spanId = wrapper.getShort(0);
-        int elementEnd = -1;
-        if (payload.get(0).length == 6) {
-            elementEnd = wrapper.getInt(2);
-        }
-        return new CandidateAttributeSpan(firstSpans, spanId, elementEnd);
+		short spanId;
+		int start = 0, end;
+
+		if (payload.get(0).length == 6) {
+			end = wrapper.getInt(0);
+			spanId = wrapper.getShort(4);
+			return new CandidateAttributeSpan(firstSpans, spanId, end);
+		}
+		else if (payload.get(0).length == 10) {
+			end = wrapper.getInt(4);
+			spanId = wrapper.getShort(8);
+			return new CandidateAttributeSpan(firstSpans, spanId, start, end);
+		}
+        
+		throw new NullPointerException("Missing element end in payloads.");
     }
-
-    /**
-     * Return the span id to which an attribute span belongs, for instance a
-     * relation id or an element id.
-     * 
-     * @return a span id, for instance a relation id or an element id
-     */
-	// public short getReferentId() {
-	// return this.referentId;
-	// }
-
-    /**
-     * Sets the span id to which an attribute span belongs, for instance a
-     * relation id or an element id.
-     * 
-     * @param refId the span id to which an attribute span belongs, for
-     *        instance a relation id or an element id.
-     */
-	// public void setReferentId(short refId) {
-	// this.referentId = refId;
-	// }
-
-    /**
-     * Returns the end position of the element to which an attribute span
-     * belongs.
-     * 
-     * @return an element end position
-     */
-	// public int getElementEnd() {
-	// return elementEnd;
-	// }
-
-    /**
-     * Sets the end position of the element to which an attribute span belongs.
-     * 
-     * @param elementEnd the end position of the element to which an attribute
-     *        span belongs.
-     */
-	// public void setElementEnd(int elementEnd) {
-	// this.elementEnd = elementEnd;
-	// }
 
     /**
      * Tells if the enumeration of the AttributeSpans has come to an end.
@@ -234,7 +199,6 @@ public class AttributeSpans extends SpansWithId {
             Comparable<CandidateSpan> {
 
         private short spanId;
-		// private int elementEnd;
 
         /**
          * Construct a CandidateAttributeSpan based on the given span, spanId,
@@ -253,24 +217,23 @@ public class AttributeSpans extends SpansWithId {
             super(span);
 			setSpanId(spanId);
 			this.end = elementEnd;
-			// setElementEnd(elementEnd);
         }
 
-        public void setSpanId(short spanId) {
+		public CandidateAttributeSpan(Spans span, short spanId,
+				int start, int end) throws IOException {
+			super(span);
+			setSpanId(spanId);
+			this.start = start;
+			this.end = end;
+		}
+
+		public void setSpanId(short spanId) {
             this.spanId = spanId;
         }
 
         public short getSpanId() {
             return spanId;
         }
-
-		// public int getElementEnd() {
-		// return elementEnd;
-		// }
-		//
-		// public void setElementEnd(int elementEnd) {
-		// this.elementEnd = elementEnd;
-		// }
 
         @Override
         public int compareTo(CandidateSpan o) {

@@ -46,32 +46,19 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  * */
 public class SpanRelationQuery extends SpanWithIdQuery {
 
-    /**
-     * Constructs a SpanRelationQuery based on the given span query.
-     * 
-     * @param firstClause a SpanQuery.
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
-     */
+	private String type;
+
+	/**
+	 * Constructs a SpanRelationQuery based on the given span query.
+	 * 
+	 * @param firstClause
+	 *            a SpanQuery.
+	 * @param collectPayloads
+	 *            a boolean flag representing the value <code>true</code> if
+	 *            payloads are to be collected, otherwise <code>false</code>.
+	 */
     public SpanRelationQuery(SpanQuery firstClause, boolean collectPayloads) {
         super(firstClause, collectPayloads);
-    }
-
-    /**
-     * Constructs a SpanRelationQuery which embeds another
-     * {@link SpanRelationQuery}. This is useful for querying a relation having
-     * a specific variable.
-     * 
-     * @param spanRelationQuery a SpanRelationQuery
-     * @param secondClause a SpanQuery
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
-     */
-    public SpanRelationQuery(SpanRelationQuery spanRelationQuery,
-            SpanQuery secondClause, boolean collectPayloads) {
-        super(spanRelationQuery, secondClause, collectPayloads);
     }
 
     @Override

@@ -21,6 +21,9 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
     private CandidateSpan childSpan; // used for example for multiple distance
                                      // with unordered constraint
     protected short spanId;
+	private short leftId, rightId;
+	private int leftStart, leftEnd;
+	private int rightStart, rightEnd;
 
     /**
      * Constructs a CandidateSpan for the given Span.
@@ -233,7 +236,55 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
         this.spanId = spanId;
     }
 
-    @Override
+	public short getLeftId() {
+		return leftId;
+	}
+
+	public void setLeftId(short leftId) {
+		this.leftId = leftId;
+	}
+
+	public short getRightId() {
+		return rightId;
+	}
+
+	public void setRightId(short rightId) {
+		this.rightId = rightId;
+	}
+
+	public int getLeftStart() {
+		return leftStart;
+	}
+
+	public void setLeftStart(int leftStart) {
+		this.leftStart = leftStart;
+	}
+
+	public int getLeftEnd() {
+		return leftEnd;
+	}
+
+	public void setLeftEnd(int leftEnd) {
+		this.leftEnd = leftEnd;
+	}
+
+	public int getRightStart() {
+		return rightStart;
+	}
+
+	public void setRightStart(int rightStart) {
+		this.rightStart = rightStart;
+	}
+
+	public int getRightEnd() {
+		return rightEnd;
+	}
+
+	public void setRightEnd(int rightEnd) {
+		this.rightEnd = rightEnd;
+	}
+
+	@Override
     public int compareTo(CandidateSpan o) {
         if (this.doc == o.doc) {
             if (this.getStart() == o.getStart()) {

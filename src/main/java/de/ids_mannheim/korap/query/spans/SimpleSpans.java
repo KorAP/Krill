@@ -31,19 +31,22 @@ public abstract class SimpleSpans extends Spans{
 	protected int matchDocNumber, matchStartPosition, matchEndPosition;	
 	protected Collection<byte[]> matchPayload;	
       
+	public SimpleSpans() {
+		collectPayloads = true;
+		matchDocNumber = -1;
+		matchStartPosition = -1;
+		matchEndPosition = -1;
+		matchPayload = new ArrayList<byte[]>();
+		isStartEnumeration = true;
+	};
+	
     public SimpleSpans (SimpleSpanQuery simpleSpanQuery,
 			AtomicReaderContext context,
 			Bits acceptDocs,
 			Map<Term,TermContext> termContexts) throws IOException {
-    	
+		this();
     	query = simpleSpanQuery;
     	collectPayloads = query.isCollectPayloads();
-    	
-  		matchDocNumber= -1;
-  		matchStartPosition= -1;
-  		matchEndPosition= -1;
-  		matchPayload = new ArrayList<byte[]>();
-  		
   		// Get the enumeration of the two spans to match
 		SpanQuery sq;
 		if ((sq = simpleSpanQuery.getFirstClause()) != null)
@@ -52,7 +55,6 @@ public abstract class SimpleSpans extends Spans{
 		if ((sq = simpleSpanQuery.getSecondClause()) != null)
 			secondSpans = sq.getSpans(context, acceptDocs, termContexts);
   		
-  		isStartEnumeration=true;
       }
   	
   	/** If the current x and y are not in the same document, to skip the 
@@ -113,7 +115,7 @@ public abstract class SimpleSpans extends Spans{
   		return matchEndPosition;
   	}
 
-  	@Override
+	@Override
   	public Collection<byte[]> getPayload() throws IOException {
   		return matchPayload;
   	}

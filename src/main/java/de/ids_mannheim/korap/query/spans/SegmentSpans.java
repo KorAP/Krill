@@ -18,6 +18,7 @@ import de.ids_mannheim.korap.query.SpanSegmentQuery;
  * */
 public class SegmentSpans extends NonPartialOverlappingSpans {
 
+	private boolean isRelation;
     /**
      * Creates SegmentSpans from the given {@link SpanSegmentQuery}.
      * 
@@ -30,7 +31,13 @@ public class SegmentSpans extends NonPartialOverlappingSpans {
     public SegmentSpans(SpanSegmentQuery spanSegmentQuery,
             AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
-        super(spanSegmentQuery, context, acceptDocs, termContexts);
+		super(spanSegmentQuery, context, acceptDocs, termContexts);
+		if (spanSegmentQuery.isRelation()) {
+			SpansWithId s2 = (SpansWithId) secondSpans;
+			// hacking for element query
+			s2.hasSpanId = true;
+			isRelation = true;
+		}
     }
 
     /**
@@ -40,16 +47,38 @@ public class SegmentSpans extends NonPartialOverlappingSpans {
      * */
     @Override
     protected int findMatch() {
+		RelationSpans s1;
+		SpansWithId s2;
         if (firstSpans.start() == secondSpans.start()
                 && firstSpans.end() == secondSpans.end()) {
-            matchDocNumber = firstSpans.doc();
-            matchStartPosition = firstSpans.start();
-            matchEndPosition = firstSpans.end();
-            return 0;
-        } else if (firstSpans.start() < secondSpans.start()
+
+			if (isRelation) {
+				s1 = (RelationSpans) firstSpans;
+				s2 = (SpansWithId) secondSpans;
+
+				//System.out.println("segment: " + s1.getRightStart() + " "
+				// + s1.getRightEnd());
+				if (s1.getLeftId() == s2.getSpanId()) {
+					setMatch();
+					return 0;
+				}
+			}
+			else {
+				setMatch();
+				return 0;
+			}            
+		}
+
+		if (firstSpans.start() < secondSpans.start()
                 || firstSpans.end() < secondSpans.end())
             return -1;
 
         return 1;
     }
+
+	private void setMatch() {
+		matchDocNumber = firstSpans.doc();
+		matchStartPosition = firstSpans.start();
+		matchEndPosition = firstSpans.end();
+	}
 }
