@@ -8,7 +8,8 @@ A Corpusdata Retrieval Index using Lucene for Look-Ups
 Krill is a [Lucene](https://lucene.apache.org/) based search
 engine for large annotated corpora.
 
-**The software is in its early stages and not stable yet - use on your own risk!**
+**The software is in its early stages and not stable yet!**
+**Use it on your own risk!**
 
 
 ## Features
@@ -81,7 +82,8 @@ index, but this is likely to change.
 
 ## Development and License
 
-**Authors**: [Nils Diewald](http://nils-diewald.de/), Eliza Margaretha
+**Authors**: [Nils Diewald](http://nils-diewald.de/),
+	     [Eliza Margaretha](http://www1.ids-mannheim.de/direktion/personal/margaretha.html)
 
 Copyright (c) 2013-2015, IDS Mannheim, Germany
 
@@ -124,11 +126,22 @@ You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) us
   $ mvn java-formatter:format
 
 
-## References and bundled Software
+## References
 
-Named entities annotated in the test data by CoreNLP were using
-models based on:
+Annotation tools and models used in preparation of the test corpora are based on the following work:
 
-Manaal Faruqui and Sebastian Padó (2010):
-*Training and Evaluating a German Named Entity Recognizer with Semantic Generalization*,
-Proceedings of KONVENS 2010, Saarbrücken, Germany
+Bohnet, Bernd (2010): *Top accuracy and fast dependency parsing is not a contradiction*. In *Proceedings of COLING*, pp 89–97, Beijing, China.
+
+Bohnet, Bernd, Joakim Nivre, Igor Boguslavsky, Richard Farkas, Filip Ginter, and Jan Hajic (2013): *Joint Morphological and Syntactic Analysis for Richly Inflected Languages*. Transactions of the Association for Computational Linguistics, 1, pp. 415-428.        
+
+Faruqui, Manaal and Sebastian Padó (2010): *Training and Evaluating a German Named Entity Recognizer with Semantic Generalization*. In *Proceedings of KONVENS 2010*, Saarbrücken, Germany.
+
+Finkel, Jenny R. and Christopher D. Manning (2009): *Joint parsing and named entity recognition*. In *Proceedings of Human Language Technologies: The 2009 Annual Conference of the North American Chapter of the Association for Computational Linguistics, NAACL ’09*, pp. 326–334, Stroudsburg, PA, USA.
+
+Hockenmaier, Julia, Gann Bierner, and Jason Baldridge (2000): *Providing Robustness for a CCG system*. In *Proceedings of the ESSLLI Workshop on Linguistic Theory and Grammar Implementation*, Birmingham, United Kingdom.
+
+Manning, Christopher D., Mihai Surdeanu, John Bauer, Jenny Finkel, Steven J. Bethard, and David McClosky (2014): *The Stanford CoreNLP Natural Language Processing Toolkit*. In *Proceedings of 52nd Annual Meeting of the Association for Computational Linguistics: System Demonstrations*, pp. 55-60.
+
+Schmid, Helmut (1995): *Improvements in Part-of-Speech Tagging with an Application to German*. In *Proceedings of the ACL SIGDAT-Workshop*. Dublin, Ireland.
+
+Schmid, Helmut (1994): *Probabilistic Part-of-Speech Tagging Using Decision Trees*. In *Proceedings of International Conference on New Methods in Language Processing*. Manchester, United Kingdom.

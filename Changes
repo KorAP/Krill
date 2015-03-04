@@ -8,6 +8,7 @@
 	- [bugfix] Updated AttributeSpans (margaretha)
 	- [bugfix] Updated SpanRelationQuery (margaretha)
 	- [cleanup] Autoformat (diewald)
+        - [documentation] References added to the Readme (diewald)
 
 0.50.1 2015-03-02
 	- [feature] Deserialization of arbitrary elements with
