@@ -1,4 +1,3 @@
-
 package de.ids_mannheim.korap.search;
 
 import java.util.*;
@@ -31,35 +30,28 @@ import org.junit.runners.JUnit4;
 public class TestResult {
 
     @Test
-    public void checkJSONResult () throws Exception  {
+    public void checkJSONResult () throws Exception {
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
-        fd.addTV("base",
-                 "abab",
-                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" +
-                 "[(1-2)s:b|i:b|_1#1-2]" +
-                 "[(2-3)s:a|i:c|_2#2-3]" +
-                 "[(3-4)s:b|i:a|_3#3-4]");
+        fd.addTV("base", "abab", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]"
+                + "[(3-4)s:b|i:a|_3#3-4]");
         ki.addDoc(fd);
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addString("UID", "2");
-        fd.addTV("base",
-                 "aba",
-                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>3]" +
-                 "[(1-2)s:b|i:b|_1#1-2]" +
-                 "[(2-3)s:a|i:c|_2#2-3]");
+        fd.addTV("base", "aba", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>3]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]");
         ki.addDoc(fd);
 
         // Commit!
         ki.commit();
 
         QueryBuilder kq = new QueryBuilder("base");
-        SpanQuery q = (SpanQuery) kq.or(
-            kq._(1, kq.seg("s:a"))).or(kq._(2, kq.seg("s:b"))
-        ).toQuery();
+        SpanQuery q = (SpanQuery) kq.or(kq._(1, kq.seg("s:a")))
+                .or(kq._(2, kq.seg("s:b"))).toQuery();
         Result kr = ki.search(q);
         assertEquals((long) 7, kr.getTotalResults());
 
@@ -67,7 +59,7 @@ public class TestResult {
         JsonNode res = mapper.readTree(kr.toJsonString());
         assertEquals(7, res.at("/totalResults").asInt());
         assertEquals("spanOr([{1: base:s:a}, {2: base:s:b}])",
-                     res.at("/serialQuery").asText());
+                res.at("/serialQuery").asText());
         assertEquals(0, res.at("/startIndex").asInt());
         assertEquals(25, res.at("/itemsPerPage").asInt());
         assertEquals("token", res.at("/context/left/0").asText());
@@ -84,7 +76,9 @@ public class TestResult {
         assertEquals(1, res.at("/matches/0/UID").asInt());
         assertEquals("doc-1", res.at("/matches/0/docID").asText());
         assertEquals("match-doc-1-p0-1(1)0-0", res.at("/matches/0/ID").asText());
-        assertEquals("<span class=\"context-left\"></span><mark><mark class=\"class-1 level-0\">a</mark></mark><span class=\"context-right\">bab</span>", res.at("/matches/0/snippet").asText());
+        assertEquals(
+                "<span class=\"context-left\"></span><mark><mark class=\"class-1 level-0\">a</mark></mark><span class=\"context-right\">bab</span>",
+                res.at("/matches/0/snippet").asText());
 
         assertEquals("base", res.at("/matches/6/field").asText());
         /*
@@ -95,25 +89,26 @@ public class TestResult {
         assertEquals(2, res.at("/matches/6/UID").asInt());
         assertEquals("doc-2", res.at("/matches/6/docID").asText());
         assertEquals("match-doc-2-p2-3(1)2-2", res.at("/matches/6/ID").asText());
-        assertEquals("<span class=\"context-left\">ab</span><mark><mark class=\"class-1 level-0\">a</mark></mark><span class=\"context-right\"></span>", res.at("/matches/6/snippet").asText());
+        assertEquals(
+                "<span class=\"context-left\">ab</span><mark><mark class=\"class-1 level-0\">a</mark></mark><span class=\"context-right\"></span>",
+                res.at("/matches/6/snippet").asText());
     };
 
+
     @Test
-    public void checkJSONResultWarningBug () throws Exception  {
+    public void checkJSONResultWarningBug () throws Exception {
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
-        fd.addTV("tokens",
-                 "abab",
-                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" +
-                 "[(1-2)s:b|i:b|_1#1-2]" +
-                 "[(2-3)s:a|i:c|_2#2-3]" +
-                 "[(3-4)s:b|i:a|_3#3-4]");
+        fd.addTV("tokens", "abab", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]"
+                + "[(3-4)s:b|i:a|_3#3-4]");
         ki.addDoc(fd);
         ki.commit();
 
-        String json = getString(getClass().getResource("/queries/bugs/optionality_warning.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/bugs/optionality_warning.jsonld").getFile());
         Krill ks = new Krill(json);
 
         Result kr = ks.apply(ki);
@@ -124,40 +119,33 @@ public class TestResult {
 
         // Old:
         // assertEquals("Optionality of query is ignored", res.at("/warning").asText());
-        assertEquals("Optionality of query is ignored",
-                     res.at("/warnings/0/1").asText());
+        assertEquals("Optionality of query is ignored", res.at("/warnings/0/1")
+                .asText());
     };
 
 
     @Test
-    public void checkJSONResultForJSONInput () throws Exception  {
+    public void checkJSONResultForJSONInput () throws Exception {
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
-        fd.addTV("tokens",
-                 "abab",
-                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" +
-                 "[(1-2)s:b|i:b|_1#1-2]" +
-                 "[(2-3)s:a|i:c|_2#2-3]" +
-                 "[(3-4)s:b|i:a|_3#3-4]");
+        fd.addTV("tokens", "abab", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]"
+                + "[(3-4)s:b|i:a|_3#3-4]");
         ki.addDoc(fd);
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addString("UID", "2");
-        fd.addTV("tokens",
-                 "aba",
-                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>3]" +
-                 "[(1-2)s:b|i:b|_1#1-2]" +
-                 "[(2-3)s:a|i:c|_2#2-3]");
+        fd.addTV("tokens", "aba", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>3]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]");
         ki.addDoc(fd);
-    
+
         // Commit!
         ki.commit();
 
-        String json = getString(
-            getClass().getResource("/queries/bsp-result-check.jsonld").getFile()
-        );
+        String json = getString(getClass().getResource(
+                "/queries/bsp-result-check.jsonld").getFile());
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
         assertEquals((long) 7, kr.getTotalResults());
@@ -166,7 +154,8 @@ public class TestResult {
         JsonNode res = mapper.readTree(kr.toJsonString());
 
         assertEquals(7, res.at("/totalResults").asInt());
-        assertEquals("spanOr([tokens:s:a, tokens:s:b])", res.at("/serialQuery").asText());
+        assertEquals("spanOr([tokens:s:a, tokens:s:b])", res.at("/serialQuery")
+                .asText());
         assertEquals(5, res.at("/itemsPerPage").asInt());
         assertEquals(0, res.at("/startIndex").asInt());
         assertEquals(1, res.at("/request/meta/startPage").asInt());
@@ -177,61 +166,69 @@ public class TestResult {
         assertEquals(6, res.at("/request/meta/context/right/1").asInt());
 
         assertEquals("koral:group", res.at("/request/query/@type").asText());
-        assertEquals("operation:or", res.at("/request/query/operation").asText());
+        assertEquals("operation:or", res.at("/request/query/operation")
+                .asText());
 
-        assertEquals("koral:token", res.at("/request/query/operands/0/@type").asText());
-        assertEquals("koral:term", res.at("/request/query/operands/0/wrap/@type").asText());
-        assertEquals("orth", res.at("/request/query/operands/0/wrap/layer").asText());
+        assertEquals("koral:token", res.at("/request/query/operands/0/@type")
+                .asText());
+        assertEquals("koral:term",
+                res.at("/request/query/operands/0/wrap/@type").asText());
+        assertEquals("orth", res.at("/request/query/operands/0/wrap/layer")
+                .asText());
         assertEquals("a", res.at("/request/query/operands/0/wrap/key").asText());
-        assertEquals("match:eq", res.at("/request/query/operands/0/wrap/match").asText());
+        assertEquals("match:eq", res.at("/request/query/operands/0/wrap/match")
+                .asText());
 
-        assertEquals("koral:token", res.at("/request/query/operands/1/@type").asText());
-        assertEquals("koral:term", res.at("/request/query/operands/1/wrap/@type").asText());
-        assertEquals("orth", res.at("/request/query/operands/1/wrap/layer").asText());
+        assertEquals("koral:token", res.at("/request/query/operands/1/@type")
+                .asText());
+        assertEquals("koral:term",
+                res.at("/request/query/operands/1/wrap/@type").asText());
+        assertEquals("orth", res.at("/request/query/operands/1/wrap/layer")
+                .asText());
         assertEquals("b", res.at("/request/query/operands/1/wrap/key").asText());
-        assertEquals("match:eq", res.at("/request/query/operands/1/wrap/match").asText());
+        assertEquals("match:eq", res.at("/request/query/operands/1/wrap/match")
+                .asText());
 
         assertEquals(1, res.at("/matches/0/UID").asInt());
         assertEquals("doc-1", res.at("/matches/0/docID").asText());
         assertEquals("match-doc-1-p0-1", res.at("/matches/0/ID").asText());
-        assertEquals("<span class=\"context-left\"></span><mark>a</mark><span class=\"context-right\">bab</span>", res.at("/matches/0/snippet").asText());
+        assertEquals(
+                "<span class=\"context-left\"></span><mark>a</mark><span class=\"context-right\">bab</span>",
+                res.at("/matches/0/snippet").asText());
     };
 
+
     @Test
-    public void checkJSONTokenResult () throws Exception  {
+    public void checkJSONTokenResult () throws Exception {
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
-        fd.addTV("base",
-                 "abab",
-                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" +
-                 "[(1-2)s:b|i:b|_1#1-2]" +
-                 "[(2-3)s:a|i:c|_2#2-3]" +
-                 "[(3-4)s:b|i:a|_3#3-4]");
+        fd.addTV("base", "abab", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]"
+                + "[(3-4)s:b|i:a|_3#3-4]");
         ki.addDoc(fd);
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addString("UID", "2");
-        fd.addTV("base",
-                 "aba",
-                 "[(0-1)s:a|i:a|_0#0-1|-:t$<i>3]" +
-                 "[(1-2)s:b|i:b|_1#1-2]" +
-                 "[(2-3)s:a|i:c|_2#2-3]");
+        fd.addTV("base", "aba", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>3]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]");
         ki.addDoc(fd);
-        
+
         // Commit!
         ki.commit();
 
         QueryBuilder kq = new QueryBuilder("base");
-        SpanQuery q = (SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b")).toQuery();
+        SpanQuery q = (SpanQuery) kq.seq(kq.seg("s:a")).append(kq.seg("s:b"))
+                .toQuery();
         Result kr = ki.search(q);
 
         assertEquals((long) 3, kr.getTotalResults());
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toTokenListJsonString());
         assertEquals(3, res.at("/totalResults").asInt());
-        assertEquals("spanNext(base:s:a, base:s:b)", res.at("/serialQuery").asText());
+        assertEquals("spanNext(base:s:a, base:s:b)", res.at("/serialQuery")
+                .asText());
         assertEquals(0, res.at("/startIndex").asInt());
         assertEquals(25, res.at("/itemsPerPage").asInt());
 
@@ -253,7 +250,8 @@ public class TestResult {
         assertEquals(1, res.at("/matches/2/tokens/1/0").asInt());
         assertEquals(2, res.at("/matches/2/tokens/1/1").asInt());
     };
-    
+
+
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
@@ -263,7 +261,8 @@ public class TestResult {
                 contentBuilder.append(str);
             };
             in.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             fail(e.getMessage());
         }
         return contentBuilder.toString();

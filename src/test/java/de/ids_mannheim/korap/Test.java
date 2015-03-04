@@ -19,12 +19,13 @@ import org.apache.lucene.index.IndexWriter;
 
 /**
  * Helper class for testing the KrillIndex framework (Normal).
- *
+ * 
  * @author diewald
  */
 public class Test {
 
-    public static void addDoc(IndexWriter w, Map<String, String> m) throws IOException {
+    public static void addDoc (IndexWriter w, Map<String, String> m)
+            throws IOException {
         Document doc = new Document();
         String[] strInt = { "pubDate" };
         String[] strStr = { "id", "corpus", "pubPlace" };
@@ -45,21 +46,19 @@ public class Test {
             doc.add(new IntField(s, Integer.parseInt(m.get(s)), Field.Store.YES));
         };
 
-        FieldType textFieldWithTermVectors = new FieldType(TextField.TYPE_STORED);
+        FieldType textFieldWithTermVectors = new FieldType(
+                TextField.TYPE_STORED);
         textFieldWithTermVectors.setStoreTermVectors(true);
         textFieldWithTermVectors.setStoreTermVectorOffsets(true);
         textFieldWithTermVectors.setStoreTermVectorPositions(true);
         textFieldWithTermVectors.setStoreTermVectorPayloads(true);
 
-        Field textFieldAnalyzed = new Field(
-            "text",
-            m.get("textStr"),
-            textFieldWithTermVectors
-        );
+        Field textFieldAnalyzed = new Field("text", m.get("textStr"),
+                textFieldWithTermVectors);
 
         MultiTermTokenStream ts = getTermVector(m.get("text"));
 
-        textFieldAnalyzed.setTokenStream( ts );
+        textFieldAnalyzed.setTokenStream(ts);
 
         doc.add(textFieldAnalyzed);
 
@@ -67,17 +66,18 @@ public class Test {
         w.addDocument(doc);
     };
 
+
     public static MultiTermTokenStream getTermVector (String stream) {
         MultiTermTokenStream ts = new MultiTermTokenStream();
 
         int pos = 0;
         for (String seg : stream.split(" ")) {
-            
+
             String[] tokseg = seg.split("\\|");
 
             try {
                 MultiTermToken mtt = new MultiTermToken('s', tokseg[0]);
-            
+
                 mtt.add("T");
                 mtt.add('i', tokseg[0].toLowerCase());
                 mtt.add('p', tokseg[1]);
@@ -91,14 +91,14 @@ public class Test {
                 if (tokseg.length == 5) {
                     mtt.add('e', tokseg[4]);
                 };
-                
+
                 ts.addMultiTermToken(mtt);
             }
             catch (CorpusDataException cde) {
                 fail(cde.getErrorCode() + ": " + cde.getMessage());
             };
         };
-        
+
         return ts;
     };
 };

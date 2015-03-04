@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 
 /**
- * Enumeration of special spans which length is stored in their payload,
+ * Enumeration of special spans which length is stored in their
+ * payload,
  * representing elements such as phrases, sentences and paragraphs.
  * 
  * @author margaretha
@@ -39,23 +40,29 @@ public class ElementSpans extends SpansWithId {
     /**
      * Constructs ElementSpans for the given {@link SpanElementQuery}.
      * 
-     * @param spanElementQuery A {@link SpanElementQuery}.
-     * @param context The {@link AtomicReaderContext}.
-     * @param acceptDocs Bit vector representing the documents
-     *        to be searched in.
-     * @param termContexts A map managing {@link TermState TermStates}.
+     * @param spanElementQuery
+     *            A {@link SpanElementQuery}.
+     * @param context
+     *            The {@link AtomicReaderContext}.
+     * @param acceptDocs
+     *            Bit vector representing the documents
+     *            to be searched in.
+     * @param termContexts
+     *            A map managing {@link TermState TermStates}.
      * @throws IOException
      */
-    public ElementSpans(SpanElementQuery spanElementQuery,
-                        AtomicReaderContext context, Bits acceptDocs,
-                        Map<Term, TermContext> termContexts) throws IOException {
+    public ElementSpans (SpanElementQuery spanElementQuery,
+                         AtomicReaderContext context, Bits acceptDocs,
+                         Map<Term, TermContext> termContexts)
+            throws IOException {
         super(spanElementQuery, context, acceptDocs, termContexts);
         termSpans = (TermSpans) this.firstSpans;
         hasMoreSpans = true;
     };
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         isStartEnumeration = false;
 
         if (!hasMoreSpans || !(hasMoreSpans = termSpans.next()))
@@ -134,18 +141,19 @@ public class ElementSpans extends SpansWithId {
         return this.matchEndPosition;
     };
 
-  	@Override
-  	public Collection<byte[]> getPayload() {
+
+    @Override
+    public Collection<byte[]> getPayload () {
         this.processPayload();
-  		return this.matchPayload;
-  	};
+        return this.matchPayload;
+    };
 
 
-  	@Override
-  	public boolean isPayloadAvailable() {
+    @Override
+    public boolean isPayloadAvailable () {
         this.processPayload();
-  		return !this.matchPayload.isEmpty();
-  	};
+        return !this.matchPayload.isEmpty();
+    };
 
 
     @Override
@@ -156,14 +164,13 @@ public class ElementSpans extends SpansWithId {
 
 
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
 
-        if (DEBUG) log.trace("Skip ElementSpans {} -> {}",
-                             firstSpans.doc(), target);
+        if (DEBUG)
+            log.trace("Skip ElementSpans {} -> {}", firstSpans.doc(), target);
 
-        if (hasMoreSpans &&
-            firstSpans.doc() < target &&
-            firstSpans.skipTo(target)) {
+        if (hasMoreSpans && firstSpans.doc() < target
+                && firstSpans.skipTo(target)) {
             return this.setToCurrent();
         };
 
@@ -172,8 +179,9 @@ public class ElementSpans extends SpansWithId {
         return false;
     };
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return termSpans.cost();
     };
 };

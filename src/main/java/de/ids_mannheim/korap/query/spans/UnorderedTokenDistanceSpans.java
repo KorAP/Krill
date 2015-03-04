@@ -14,8 +14,10 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /**
- * Enumeration of span matches, whose two child spans have a specific range of
- * distance (within a min and a max distance) and can be in any order. The unit
+ * Enumeration of span matches, whose two child spans have a specific
+ * range of
+ * distance (within a min and a max distance) and can be in any order.
+ * The unit
  * distance is a token position.
  * 
  * @author margaretha
@@ -23,22 +25,27 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
 
     /**
-     * Constructs UnorderedTokenDistanceSpans for the given SpanDistanceQuery.
+     * Constructs UnorderedTokenDistanceSpans for the given
+     * SpanDistanceQuery.
      * 
-     * @param query a SpanDistanceQuery
+     * @param query
+     *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public UnorderedTokenDistanceSpans(SpanDistanceQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public UnorderedTokenDistanceSpans (SpanDistanceQuery query,
+                                        AtomicReaderContext context,
+                                        Bits acceptDocs,
+                                        Map<Term, TermContext> termContexts)
+            throws IOException {
         super(query, context, acceptDocs, termContexts);
     }
 
+
     @Override
-    protected boolean prepareLists() throws IOException {
+    protected boolean prepareLists () throws IOException {
 
         if (firstSpanList.isEmpty() && secondSpanList.isEmpty()) {
             if (hasMoreFirstSpans && hasMoreSecondSpans
@@ -48,15 +55,18 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
                 currentDocNum = firstSpans.doc();
                 hasMoreFirstSpans = firstSpans.next();
                 hasMoreSecondSpans = secondSpans.next();
-            } else {
+            }
+            else {
                 hasMoreSpans = false;
                 return false;
             }
-        } else if (firstSpanList.isEmpty() && hasMoreFirstSpans
+        }
+        else if (firstSpanList.isEmpty() && hasMoreFirstSpans
                 && firstSpans.doc() == currentDocNum) {
             firstSpanList.add(new CandidateSpan(firstSpans));
             hasMoreFirstSpans = firstSpans.next();
-        } else if (secondSpanList.isEmpty() && hasMoreSecondSpans
+        }
+        else if (secondSpanList.isEmpty() && hasMoreSecondSpans
                 && secondSpans.doc() == currentDocNum) {
             secondSpanList.add(new CandidateSpan(secondSpans));
             hasMoreSecondSpans = secondSpans.next();
@@ -64,8 +74,9 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
         return true;
     }
 
+
     @Override
-    protected boolean setCandidateList(List<CandidateSpan> candidateList,
+    protected boolean setCandidateList (List<CandidateSpan> candidateList,
             Spans candidate, boolean hasMoreCandidates,
             List<CandidateSpan> targetList) throws IOException {
 
@@ -80,16 +91,21 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
         return hasMoreCandidates;
     }
 
+
     /**
-     * Tells if the target and candidate spans are not too far from each other
+     * Tells if the target and candidate spans are not too far from
+     * each other
      * (within the maximum distance).
      * 
-     * @param target a target span
-     * @param candidate a candidate span
-     * @return <code>true</code> if the target and candidate spans are within
+     * @param target
+     *            a target span
+     * @param candidate
+     *            a candidate span
+     * @return <code>true</code> if the target and candidate spans are
+     *         within
      *         the maximum distance, <code>false</code> otherwise.
      */
-    protected boolean isWithinMaxDistance(CandidateSpan target, Spans candidate) {
+    protected boolean isWithinMaxDistance (CandidateSpan target, Spans candidate) {
         // left candidate
         if (candidate.end() < target.getStart()
                 && candidate.end() + maxDistance <= target.getStart()) {
@@ -103,8 +119,9 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
         return true;
     }
 
+
     @Override
-    protected List<CandidateSpan> findMatches(CandidateSpan target,
+    protected List<CandidateSpan> findMatches (CandidateSpan target,
             List<CandidateSpan> candidateList) {
 
         List<CandidateSpan> matches = new ArrayList<>();
@@ -132,8 +149,9 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
         return matches;
     }
 
+
     @Override
-    protected void updateList(List<CandidateSpan> candidateList) {
+    protected void updateList (List<CandidateSpan> candidateList) {
         candidateList.remove(0);
     }
 

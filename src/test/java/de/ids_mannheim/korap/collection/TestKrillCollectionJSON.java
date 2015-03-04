@@ -18,25 +18,23 @@ public class TestKrillCollectionJSON {
 
     final String path = "/queries/collections/";
 
+
     @Test
     public void collection1 () {
         String metaQuery = _getJSONString("collection_1.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(
-            kc.toString(),
-            "filter with QueryWrapperFilter(+pubDate:20000101); "
-        );
+        assertEquals(kc.toString(),
+                "filter with QueryWrapperFilter(+pubDate:20000101); ");
     };
+
 
     @Test
     public void collection2 () {
         String metaQuery = _getJSONString("collection_2.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(
-            kc.toString(),
-            "filter with QueryWrapperFilter(+(+pubDate:"+
-            "[19900000 TO 99999999] +pubDate:[0 TO 20061099])); "
-        );
+        assertEquals(kc.toString(),
+                "filter with QueryWrapperFilter(+(+pubDate:"
+                        + "[19900000 TO 99999999] +pubDate:[0 TO 20061099])); ");
     };
 
 
@@ -52,11 +50,8 @@ public class TestKrillCollectionJSON {
     public void collection5 () {
         String metaQuery = _getJSONString("collection_5.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(
-            kc.toString(),
-            "filter with QueryWrapperFilter(+(pubDate:"+
-            "[19900000 TO 99999999] title:Mannheim)); "
-        );
+        assertEquals(kc.toString(), "filter with QueryWrapperFilter(+(pubDate:"
+                + "[19900000 TO 99999999] title:Mannheim)); ");
     };
 
 
@@ -72,10 +67,8 @@ public class TestKrillCollectionJSON {
     public void noCollection () {
         String metaQuery = _getJSONString("no_collection.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(
-            "filter with QueryWrapperFilter(+corpusID:WPD); ",
-            kc.toString()
-        );
+        assertEquals("filter with QueryWrapperFilter(+corpusID:WPD); ",
+                kc.toString());
     };
 
 

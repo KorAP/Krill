@@ -1,22 +1,28 @@
 package de.ids_mannheim.korap.response.match;
+
 import java.util.*;
 
 public class PosIdentifier extends DocIdentifier {
     private int pos;
 
+
     public PosIdentifier () {};
+
 
     public void setPos (int pos) {
         if (pos >= 0)
             this.pos = pos;
     };
 
+
     public int getPos () {
         return this.pos;
     };
 
+
     public String toString () {
-        if (this.docID == null) return null;
+        if (this.docID == null)
+            return null;
 
         StringBuilder sb = new StringBuilder("word-");
 

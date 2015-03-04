@@ -17,19 +17,22 @@ public class TestKrillArray {
 
     @Test
     public void StringJoin1 () {
-        String[] test = new String[]{"a", "bc", "def"};
+        String[] test = new String[] { "a", "bc", "def" };
         assertEquals(join(",", test), "a,bc,def");
     };
+
 
     @Test
     public void StringJoin2 () {
         assertEquals(join(",", "a", "bc", "def"), "a,bc,def");
     };
 
+
     @Test
     public void StringJoin3 () {
         assertEquals(join(',', "a", "bc", "def"), "a,bc,def");
     };
+
 
     @Test
     public void StringJoin4 () {

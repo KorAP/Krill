@@ -15,18 +15,25 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 
 /**
- * Enumeration of Spans expanded with minimum <code>m</code> and maximum
- * <code>n</code> tokens, and throughout all the expansions do <em>not</em>
+ * Enumeration of Spans expanded with minimum <code>m</code> and
+ * maximum
+ * <code>n</code> tokens, and throughout all the expansions do
+ * <em>not</em>
  * contain a specific Spans (notClause). See examples in
  * {@link SpanExpansionQuery}.
  * 
- * The expansion direction is designated with the sign of a number, namely a
- * negative number signifies the expansion to the <em>left</em> of the original
- * span, and a positive number (including 0) signifies the expansion to the
+ * The expansion direction is designated with the sign of a number,
+ * namely a
+ * negative number signifies the expansion to the <em>left</em> of the
+ * original
+ * span, and a positive number (including 0) signifies the expansion
+ * to the
  * <em>right</em> of the original span.
  * 
- * The expansion offsets, namely the start and end position of an expansion
- * part, can be stored in payloads. A class number is assigned to the offsets
+ * The expansion offsets, namely the start and end position of an
+ * expansion
+ * part, can be stored in payloads. A class number is assigned to the
+ * offsets
  * grouping them altogether.
  * 
  * @author margaretha
@@ -42,19 +49,23 @@ public class ExpandedExclusionSpans extends SimpleSpans {
 
     private long matchCost;
 
+
     /**
      * Constructs ExpandedExclusionSpans from the given
      * {@link SpanExpansionQuery}.
      * 
-     * @param spanExpansionQuery a SpanExpansionQuery
+     * @param spanExpansionQuery
+     *            a SpanExpansionQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public ExpandedExclusionSpans(SpanExpansionQuery spanExpansionQuery,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public ExpandedExclusionSpans (SpanExpansionQuery spanExpansionQuery,
+                                   AtomicReaderContext context,
+                                   Bits acceptDocs,
+                                   Map<Term, TermContext> termContexts)
+            throws IOException {
         super(spanExpansionQuery, context, acceptDocs, termContexts);
 
         if (spanExpansionQuery.getSecondClause() == null) {
@@ -82,21 +93,24 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         hasMoreSpans = firstSpans.next();
     }
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         matchPayload.clear();
         isStartEnumeration = false;
         return advance();
     }
 
+
     /**
      * Advances the ExpandedExclusionSpans to the next match.
      * 
-     * @return <code>true</code> if a match is found, <code>false</code>
+     * @return <code>true</code> if a match is found,
+     *         <code>false</code>
      *         otherwise.
      * @throws IOException
      */
-    private boolean advance() throws IOException {
+    private boolean advance () throws IOException {
         while (hasMoreSpans || candidateSpans.size() > 0) {
             if (candidateSpans.size() > 0) {
                 // set a candidate span as a match
@@ -108,22 +122,26 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 matchCost = cs.getCost() + notClause.cost();
                 candidateSpans.remove(0);
                 return true;
-            } else if (!hasMoreNotClause || notClause.doc() > firstSpans.doc()) {
+            }
+            else if (!hasMoreNotClause || notClause.doc() > firstSpans.doc()) {
                 generateCandidates(min, max, direction);
                 hasMoreSpans = firstSpans.next();
-            } else
+            }
+            else
                 findMatches();
         }
         return false;
     }
 
+
     /**
-     * Finds matches by expanding the firstspans either to the left or to the
+     * Finds matches by expanding the firstspans either to the left or
+     * to the
      * right.
      * 
      * @throws IOException
      */
-    private void findMatches() throws IOException {
+    private void findMatches () throws IOException {
         while (hasMoreNotClause && notClause.doc() <= firstSpans.doc()) {
             if (notClause.doc() == firstSpans.doc()) {
                 if (direction < 0) { // left
@@ -133,17 +151,19 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                     expandRight();
                 }
                 break;
-            } else if (!notClause.next())
+            }
+            else if (!notClause.next())
                 hasMoreNotClause = false;
         }
     }
+
 
     /**
      * Expands the firstspans to the left.
      * 
      * @throws IOException
      */
-    private void expandLeft() throws IOException {
+    private void expandLeft () throws IOException {
         //int counter = max;
         int maxPos = max;
         CandidateSpan lastNotClause = null;
@@ -178,12 +198,13 @@ public class ExpandedExclusionSpans extends SimpleSpans {
             hasMoreSpans = firstSpans.next();
     }
 
+
     /**
      * Expands the firstspans to the right.
      * 
      * @throws IOException
      */
-    private void expandRight() throws IOException {
+    private void expandRight () throws IOException {
         int expansionEnd = firstSpans.end() + max;
         int maxPos = max;
         boolean isFound = false;
@@ -213,20 +234,26 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 maxPos = firstNotClause.getStart() - firstSpans.end() - 1;
                 generateCandidates(min, maxPos, direction);
             }
-        } else
+        }
+        else
             hasMoreSpans = firstSpans.next();
     }
 
+
     /**
-     * Creates new candidate matches for the given direction, minimum and
+     * Creates new candidate matches for the given direction, minimum
+     * and
      * maximum positions.
      * 
-     * @param minPos minimum position
-     * @param maxPos maximum position
-     * @param direction the expansion direction
+     * @param minPos
+     *            minimum position
+     * @param maxPos
+     *            maximum position
+     * @param direction
+     *            the expansion direction
      * @throws IOException
      */
-    private void generateCandidates(int minPos, int maxPos, int direction)
+    private void generateCandidates (int minPos, int maxPos, int direction)
             throws IOException {
         int counter;
         int start, end;
@@ -245,7 +272,8 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 }
                 counter--;
             }
-        } else { // right
+        }
+        else { // right
             counter = minPos;
             while (counter <= maxPos) {
                 start = firstSpans.start();
@@ -261,17 +289,22 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         }
     }
 
+
     /**
-     * Creates payloads for a candiate match by copying the payloads of the
-     * firstspans, and adds expansion offsets with the given start and end
+     * Creates payloads for a candiate match by copying the payloads
+     * of the
+     * firstspans, and adds expansion offsets with the given start and
+     * end
      * positions to the payloads, if the class number is set.
      * 
-     * @param start the start offset
-     * @param end the end offset
+     * @param start
+     *            the start offset
+     * @param end
+     *            the end offset
      * @return payloads
      * @throws IOException
      */
-    private ArrayList<byte[]> createPayloads(int start, int end)
+    private ArrayList<byte[]> createPayloads (int start, int end)
             throws IOException {
 
         ArrayList<byte[]> payload = new ArrayList<byte[]>();
@@ -286,15 +319,19 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         return payload;
     }
 
+
     /**
-     * Generates a byte array of extension offsets and class number to be added
+     * Generates a byte array of extension offsets and class number to
+     * be added
      * into the payloads.
      * 
-     * @param start the start offset
-     * @param end the end offset
+     * @param start
+     *            the start offset
+     * @param end
+     *            the end offset
      * @return a byte array of extension offsets and class number
      */
-    private byte[] createExtensionPayloads(int start, int end) {
+    private byte[] createExtensionPayloads (int start, int end) {
         ByteBuffer buffer = ByteBuffer.allocate(9);
         buffer.putInt(start);
         buffer.putInt(end);
@@ -302,8 +339,9 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         return buffer.array();
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (firstSpans.doc() < target)) {
             if (!firstSpans.skipTo(target)) {
                 hasMoreSpans = false;
@@ -314,8 +352,9 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return matchCost;
     }
 }

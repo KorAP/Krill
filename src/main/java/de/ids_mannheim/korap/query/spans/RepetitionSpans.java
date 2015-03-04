@@ -15,7 +15,8 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
 /**
- * Enumeration of spans occurring multiple times in a sequence. The number of
+ * Enumeration of spans occurring multiple times in a sequence. The
+ * number of
  * repetition depends on the min and max parameters.
  * 
  * @author margaretha
@@ -26,18 +27,22 @@ public class RepetitionSpans extends SimpleSpans {
     private long matchCost;
     private List<CandidateSpan> matchList;
 
+
     /**
-     * Constructs RepetitionSpans from the given {@link SpanRepetitionQuery}.
+     * Constructs RepetitionSpans from the given
+     * {@link SpanRepetitionQuery}.
      * 
-     * @param query a SpanRepetitionQuery
+     * @param query
+     *            a SpanRepetitionQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public RepetitionSpans(SpanRepetitionQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public RepetitionSpans (SpanRepetitionQuery query,
+                            AtomicReaderContext context, Bits acceptDocs,
+                            Map<Term, TermContext> termContexts)
+            throws IOException {
         super(query, context, acceptDocs, termContexts);
         this.min = query.getMin();
         this.max = query.getMax();
@@ -45,23 +50,28 @@ public class RepetitionSpans extends SimpleSpans {
         hasMoreSpans = firstSpans.next();
     }
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         isStartEnumeration = false;
         matchPayload.clear();
         return advance();
     }
 
+
     /**
-     * Advances the RepetitionSpans to the next match by setting the first
-     * element in the matchlist as the current match. When the matchlist is
+     * Advances the RepetitionSpans to the next match by setting the
+     * first
+     * element in the matchlist as the current match. When the
+     * matchlist is
      * empty, it has to be set first.
      * 
-     * @return <code>true</code> if a match is found, <code>false</code>
+     * @return <code>true</code> if a match is found,
+     *         <code>false</code>
      *         otherwise.
      * @throws IOException
      */
-    private boolean advance() throws IOException {
+    private boolean advance () throws IOException {
 
         while (hasMoreSpans || !matchList.isEmpty()) {
             if (!matchList.isEmpty()) {
@@ -77,13 +87,14 @@ public class RepetitionSpans extends SimpleSpans {
         return false;
     }
 
+
     /**
      * Collects all adjacent firstspans occurring in a sequence.
      * 
      * @return a list of the adjacent spans
      * @throws IOException
      */
-    private List<CandidateSpan> collectAdjacentSpans() throws IOException {
+    private List<CandidateSpan> collectAdjacentSpans () throws IOException {
 
         CandidateSpan startSpan = new CandidateSpan(firstSpans);
 
@@ -97,7 +108,8 @@ public class RepetitionSpans extends SimpleSpans {
 
             if (firstSpans.start() > prevSpan.getEnd()) {
                 break;
-            } else if (firstSpans.start() == prevSpan.getEnd()) {
+            }
+            else if (firstSpans.start() == prevSpan.getEnd()) {
                 prevSpan = new CandidateSpan(firstSpans);
                 adjacentSpans.add(prevSpan);
             }
@@ -105,13 +117,15 @@ public class RepetitionSpans extends SimpleSpans {
         return adjacentSpans;
     }
 
+
     /**
-     * Generates all possible repetition match spans from the given list of
+     * Generates all possible repetition match spans from the given
+     * list of
      * adjacent spans and add them to the match list.
      * 
      * @param adjacentSpans
      */
-    private void setMatchList(List<CandidateSpan> adjacentSpans) {
+    private void setMatchList (List<CandidateSpan> adjacentSpans) {
         CandidateSpan startSpan, endSpan, matchSpan;
         for (int i = min; i < max + 1; i++) {
             int j = 0;
@@ -124,10 +138,12 @@ public class RepetitionSpans extends SimpleSpans {
                         matchSpan.setPayloads(computeMatchPayload(
                                 adjacentSpans, 0, endIndex - 1));
                         matchList.add(matchSpan);
-                    } catch (CloneNotSupportedException e) {
+                    }
+                    catch (CloneNotSupportedException e) {
                         e.printStackTrace();
                     }
-                } else {
+                }
+                else {
                     endSpan = adjacentSpans.get(endIndex);
                     matchSpan = new CandidateSpan(startSpan.getStart(),
                             endSpan.getEnd(), startSpan.getDoc(),
@@ -144,19 +160,27 @@ public class RepetitionSpans extends SimpleSpans {
         Collections.sort(matchList);
     }
 
+
     /**
-     * Creates payloads by adding all the payloads of some adjacent spans, that
-     * are all spans in the given list whose index is between the start and end
+     * Creates payloads by adding all the payloads of some adjacent
+     * spans, that
+     * are all spans in the given list whose index is between the
+     * start and end
      * index (including those with these indexes).
      * 
-     * @param adjacentSpans a list of adjacentSpans
-     * @param start the start index representing the first adjacent span in the
-     *        list to be computed
-     * @param end the end index representing the last adjacent span in the list
-     *        to be computed
+     * @param adjacentSpans
+     *            a list of adjacentSpans
+     * @param start
+     *            the start index representing the first adjacent span
+     *            in the
+     *            list to be computed
+     * @param end
+     *            the end index representing the last adjacent span in
+     *            the list
+     *            to be computed
      * @return payloads
      */
-    private Collection<byte[]> computeMatchPayload(
+    private Collection<byte[]> computeMatchPayload (
             List<CandidateSpan> adjacentSpans, int start, int end) {
         Collection<byte[]> payload = new ArrayList<byte[]>();
         for (int i = start; i <= end; i++) {
@@ -165,17 +189,22 @@ public class RepetitionSpans extends SimpleSpans {
         return payload;
     }
 
+
     /**
-     * Computes the matchcost by adding all the cost of the adjacent spans
+     * Computes the matchcost by adding all the cost of the adjacent
+     * spans
      * between the start and end index in the given list.
      * 
-     * @param adjacentSpans a list of adjacent spans
-     * @param start the start index
-     * @param end the end index
+     * @param adjacentSpans
+     *            a list of adjacent spans
+     * @param start
+     *            the start index
+     * @param end
+     *            the end index
      * @return
      */
-    private long computeMatchCost(List<CandidateSpan> adjacentSpans, int start,
-            int end) {
+    private long computeMatchCost (List<CandidateSpan> adjacentSpans,
+            int start, int end) {
         long matchCost = 0;
         for (int i = start; i <= end; i++) {
             matchCost += adjacentSpans.get(i).getCost();
@@ -183,13 +212,16 @@ public class RepetitionSpans extends SimpleSpans {
         return matchCost;
     }
 
+
     /**
-     * Sets properties for the current match from the given candidate span.
+     * Sets properties for the current match from the given candidate
+     * span.
      * 
-     * @param candidateSpan the match candidate span
+     * @param candidateSpan
+     *            the match candidate span
      * @throws IOException
      */
-    private void setMatchProperties(CandidateSpan candidateSpan)
+    private void setMatchProperties (CandidateSpan candidateSpan)
             throws IOException {
         matchDocNumber = candidateSpan.getDoc();
         matchStartPosition = candidateSpan.getStart();
@@ -199,8 +231,9 @@ public class RepetitionSpans extends SimpleSpans {
         }
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && firstSpans.doc() < target) {
             if (!firstSpans.skipTo(target)) {
                 hasMoreSpans = false;
@@ -211,8 +244,9 @@ public class RepetitionSpans extends SimpleSpans {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return matchCost;
     }
 }

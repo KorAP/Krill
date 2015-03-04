@@ -30,7 +30,7 @@ import java.util.*;
  * FieldDocument represents a simple API to create documents
  * for storing with KrillIndex. <i>Field</i> in the name resembles
  * the meaning of Lucene index fields.
- *
+ * 
  * @author diewald
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -40,9 +40,9 @@ public class FieldDocument extends AbstractDocument {
 
     public Document doc = new Document();
 
-    private FieldType tvField   = new FieldType(TextField.TYPE_STORED);
+    private FieldType tvField = new FieldType(TextField.TYPE_STORED);
     private FieldType tvNoField = new FieldType(TextField.TYPE_NOT_STORED);
-    private FieldType keywords  = new FieldType(TextField.TYPE_STORED);
+    private FieldType keywords = new FieldType(TextField.TYPE_STORED);
 
     {
         tvField.setStoreTermVectors(true);
@@ -62,71 +62,86 @@ public class FieldDocument extends AbstractDocument {
         keywords.setIndexOptions(IndexOptions.DOCS_ONLY);
     };
 
+
     // see http://www.cowtowncoder.com/blog/archives/2011/07/entry_457.html
 
     public void addInt (String key, int value) {
         doc.add(new IntField(key, value, Field.Store.YES));
     };
 
+
     public void addInt (String key, String value) {
         this.addInt(key, Integer.parseInt(value));
     };
+
 
     public void addText (String key, String value) {
         doc.add(new TextField(key, value, Field.Store.YES));
     };
 
+
     public void addKeyword (String key, String value) {
         doc.add(new Field(key, value, keywords));
     };
+
 
     public void addString (String key, String value) {
         doc.add(new StringField(key, value, Field.Store.YES));
     };
 
+
     public void addStored (String key, String value) {
         doc.add(new StoredField(key, value));
     };
+
 
     public void addStored (String key, int value) {
         doc.add(new StoredField(key, value));
     };
 
+
     public void addTV (String key, String value, String tsString) {
         this.addTV(key, value, new MultiTermTokenStream(tsString));
     };
+
 
     public void addTV (String key, String tsString) {
         this.addTV(key, new MultiTermTokenStream(tsString));
     };
 
+
     public void addTV (String key, String value, MultiTermTokenStream ts) {
-        Field textField = new Field( key, value, tvField );
-        textField.setTokenStream( ts );
+        Field textField = new Field(key, value, tvField);
+        textField.setTokenStream(ts);
         doc.add(textField);
     };
 
+
     public void addTV (String key, MultiTermTokenStream ts) {
-        Field textField = new Field( key, ts, tvNoField );
+        Field textField = new Field(key, ts, tvNoField);
         doc.add(textField);
     };
+
 
     public String toString () {
         return doc.toString();
     };
 
+
     public MultiTermTokenStream newMultiTermTokenStream (String ts) {
         return new MultiTermTokenStream(ts);
     };
+
 
     public MultiTermTokenStream newMultiTermTokenStream () {
         return new MultiTermTokenStream();
     };
 
+
     /**
      * Deserialize token stream data.
      */
-    public void setData (Map<String,Object> node) {
+    public void setData (Map<String, Object> node) {
         this.setPrimaryData((String) node.get("text"));
 
         String fieldName = (String) node.get("name");
@@ -134,7 +149,8 @@ public class FieldDocument extends AbstractDocument {
         MultiTermTokenStream mtts = this.newMultiTermTokenStream();
 
         // Iterate over all tokens in stream
-        for (ArrayList<String> token : (ArrayList<ArrayList<String>>) node.get("stream")) {
+        for (ArrayList<String> token : (ArrayList<ArrayList<String>>) node
+                .get("stream")) {
 
             try {
                 // Initialize MultiTermToken
@@ -143,7 +159,7 @@ public class FieldDocument extends AbstractDocument {
                 // Add rest of the list
                 for (String term : token) {
                     mtt.add(term);
-                 };
+                };
 
                 // Add MultiTermToken to stream
                 mtts.addMultiTermToken(mtt);
@@ -170,20 +186,22 @@ public class FieldDocument extends AbstractDocument {
             this.setTokenSource((String) node.get("tokenSource"));
     };
 
+
     /**
      * Deserialize token stream data (LEGACY).
      */
     public void setFields (ArrayList<Map<String, Object>> fields) {
-        
-        Map<String,Object> primary = fields.remove(0);
+
+        Map<String, Object> primary = fields.remove(0);
         this.setPrimaryData((String) primary.get("primaryData"));
 
-        for (Map<String,Object> field : fields) {
+        for (Map<String, Object> field : fields) {
 
             String fieldName = (String) field.get("name");
             MultiTermTokenStream mtts = this.newMultiTermTokenStream();
 
-            for (ArrayList<String> token : (ArrayList<ArrayList<String>>) field.get("data")) {
+            for (ArrayList<String> token : (ArrayList<ArrayList<String>>) field
+                    .get("data")) {
 
                 try {
                     MultiTermToken mtt = new MultiTermToken(token.remove(0));
@@ -219,11 +237,13 @@ public class FieldDocument extends AbstractDocument {
         };
     };
 
+
     @Override
     public void setTextClass (String textClass) {
         super.setTextClass(textClass);
         this.addKeyword("textClass", textClass);
     };
+
 
     @Override
     public void setTitle (String title) {
@@ -231,11 +251,13 @@ public class FieldDocument extends AbstractDocument {
         this.addText("title", title);
     };
 
+
     @Override
     public void setSubTitle (String subTitle) {
         super.setSubTitle(subTitle);
         this.addText("subTitle", subTitle);
     };
+
 
     @Override
     public void setAuthor (String author) {
@@ -243,11 +265,13 @@ public class FieldDocument extends AbstractDocument {
         this.addText("author", author);
     };
 
+
     @Override
     public void setPubPlace (String pubPlace) {
         super.setPubPlace(pubPlace);
         this.addString("pubPlace", pubPlace);
     };
+
 
     @JsonProperty("pubDate")
     @Override
@@ -257,6 +281,7 @@ public class FieldDocument extends AbstractDocument {
         return date;
     };
 
+
     @JsonProperty("creationDate")
     @Override
     public KrillDate setCreationDate (String creationDate) {
@@ -265,12 +290,14 @@ public class FieldDocument extends AbstractDocument {
         return date;
     };
 
+
     // No longer supported
     @Override
     public void setCorpusID (String corpusID) {
         super.setCorpusID(corpusID);
         this.addString("corpusID", corpusID);
     };
+
 
     // No longer supported
     @Override
@@ -279,11 +306,13 @@ public class FieldDocument extends AbstractDocument {
         this.addString("ID", ID);
     };
 
+
     @Override
     public void setUID (int ID) {
         super.setUID(ID);
         this.addString("UID", new Integer(ID).toString());
     };
+
 
     // No longer supported
     @Override
@@ -292,11 +321,13 @@ public class FieldDocument extends AbstractDocument {
         this.addStored("layerInfo", layerInfo);
     };
 
+
     @Override
     public void setLayerInfos (String layerInfos) {
         super.setLayerInfos(layerInfos);
         this.addStored("layerInfos", layerInfos);
     };
+
 
     @Override
     public void setTextSigle (String textSigle) {
@@ -304,11 +335,13 @@ public class FieldDocument extends AbstractDocument {
         this.addString("textSigle", textSigle);
     };
 
+
     @Override
     public void setDocSigle (String docSigle) {
         super.setDocSigle(docSigle);
         this.addString("docSigle", docSigle);
     };
+
 
     @Override
     public void setCorpusSigle (String corpusSigle) {
@@ -316,11 +349,13 @@ public class FieldDocument extends AbstractDocument {
         this.addString("corpusSigle", corpusSigle);
     };
 
+
     @Override
     public void setPublisher (String publisher) {
         super.setPublisher(publisher);
         this.addStored("publisher", publisher);
     };
+
 
     @Override
     public void setEditor (String editor) {
@@ -328,11 +363,13 @@ public class FieldDocument extends AbstractDocument {
         this.addStored("editor", editor);
     };
 
+
     @Override
     public void setTextType (String textType) {
         super.setTextType(textType);
         this.addString("textType", textType);
     };
+
 
     @Override
     public void setTextTypeArt (String textTypeArt) {
@@ -340,11 +377,13 @@ public class FieldDocument extends AbstractDocument {
         this.addString("textTypeArt", textTypeArt);
     };
 
+
     @Override
     public void setTextTypeRef (String textTypeRef) {
         super.setTextTypeRef(textTypeRef);
         this.addString("textTypeRef", textTypeRef);
     };
+
 
     @Override
     public void setTextColumn (String textColumn) {
@@ -352,11 +391,13 @@ public class FieldDocument extends AbstractDocument {
         this.addString("textColumn", textColumn);
     };
 
+
     @Override
     public void setTextDomain (String textDomain) {
         super.setTextDomain(textDomain);
         this.addString("textDomain", textDomain);
     };
+
 
     @Override
     public void setLicense (String license) {
@@ -364,11 +405,13 @@ public class FieldDocument extends AbstractDocument {
         this.addString("license", license);
     };
 
+
     @Override
     public void setPages (String pages) {
         super.setPages(pages);
         this.addStored("pages", pages);
     };
+
 
     @Override
     public void setFileEditionStatement (String fileEditionStatement) {
@@ -376,11 +419,13 @@ public class FieldDocument extends AbstractDocument {
         this.addStored("fileEditionStatement", fileEditionStatement);
     };
 
+
     @Override
     public void setBiblEditionStatement (String biblEditionStatement) {
         super.setBiblEditionStatement(biblEditionStatement);
         this.addStored("biblEditionStatement", biblEditionStatement);
     };
+
 
     @Override
     public void setReference (String reference) {
@@ -388,11 +433,13 @@ public class FieldDocument extends AbstractDocument {
         this.addStored("reference", reference);
     };
 
+
     @Override
     public void setLanguage (String language) {
         super.setLanguage(language);
         this.addString("language", language);
     };
+
 
     @Override
     public void setDocTitle (String docTitle) {
@@ -400,11 +447,13 @@ public class FieldDocument extends AbstractDocument {
         this.addText("docTitle", docTitle);
     };
 
+
     @Override
     public void setDocSubTitle (String docSubTitle) {
         super.setDocSubTitle(docSubTitle);
         this.addText("docSubTitle", docSubTitle);
     };
+
 
     @Override
     public void setDocAuthor (String docAuthor) {
@@ -412,11 +461,13 @@ public class FieldDocument extends AbstractDocument {
         this.addText("docAuthor", docAuthor);
     };
 
+
     @Override
     public void setDocEditor (String docEditor) {
         super.setDocEditor(docEditor);
         this.addStored("docEditor", docEditor);
     };
+
 
     @Override
     public void setCorpusTitle (String corpusTitle) {
@@ -424,11 +475,13 @@ public class FieldDocument extends AbstractDocument {
         this.addText("corpusTitle", corpusTitle);
     };
 
+
     @Override
     public void setCorpusSubTitle (String corpusSubTitle) {
         super.setCorpusSubTitle(corpusSubTitle);
         this.addText("corpusSubTitle", corpusSubTitle);
     };
+
 
     @Override
     public void setCorpusAuthor (String corpusAuthor) {
@@ -436,11 +489,13 @@ public class FieldDocument extends AbstractDocument {
         this.addText("corpusAuthor", corpusAuthor);
     };
 
+
     @Override
     public void setCorpusEditor (String corpusEditor) {
         super.setCorpusEditor(corpusEditor);
         this.addStored("corpusEditor", corpusEditor);
     };
+
 
     @Override
     public void setKeywords (String keywords) {
@@ -448,11 +503,13 @@ public class FieldDocument extends AbstractDocument {
         this.addKeyword("keywords", keywords);
     };
 
+
     @Override
     public void setTokenSource (String tokenSource) {
         super.setTokenSource(tokenSource);
         this.addStored("tokenSource", tokenSource);
     };
+
 
     @Override
     public void setFoundries (String foundries) {

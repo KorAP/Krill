@@ -34,6 +34,7 @@ public class TestResource {
     private HttpServer server;
     private WebTarget target;
 
+
     @Before
     public void setUp () throws Exception {
         // start the server
@@ -55,17 +56,20 @@ public class TestResource {
         ClientConfig clientConfig = new DefaultClientConfig();
         clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
         Client c = Client.create(clientConfig);
-*/
+        */
         target = c.target(Node.BASE_URI);
     };
 
+
     @After
-    public void tearDown() throws Exception {
+    public void tearDown () throws Exception {
         server.stop();
     };
 
+
     /**
-     * Test to see that the message "Gimme 5 minutes, please!" is sent in the response.
+     * Test to see that the message "Gimme 5 minutes, please!" is sent
+     * in the response.
      */
     @Test
     public void testPing () {
@@ -73,29 +77,22 @@ public class TestResource {
         assertEquals("Gimme 5 minutes, please!", responseMsg);
     };
 
+
     @Ignore
-    public void testResource() throws IOException {
+    public void testResource () throws IOException {
         Response kresp;
 
-        for (String i : new String[] {"00001",
-                                      "00002",
-                                      "00003",
-                                      "00004",
-                                      "00005",
-                                      "00006",
-                                      "02439"
-            }) {
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
+                "00005", "00006", "02439" }) {
 
-            String json = StringfromFile(
-                getClass().getResource("/wiki/" + i + ".json").getFile()
-            );
+            String json = StringfromFile(getClass().getResource(
+                    "/wiki/" + i + ".json").getFile());
 
             Entity jsonE = Entity.json(json);
 
             try {
-                kresp = target.path("/index/" + i).
-                    request("application/json").
-                    put(jsonE, Response.class);
+                kresp = target.path("/index/" + i).request("application/json")
+                        .put(jsonE, Response.class);
 
                 assertEquals(kresp.getNode(), "milena");
                 assertFalse(kresp.hasErrors());
@@ -103,13 +100,13 @@ public class TestResource {
                 assertFalse(kresp.hasMessages());
             }
             catch (Exception e) {
-                fail("Server response failed " + e.getMessage() + " (Known issue)");
+                fail("Server response failed " + e.getMessage()
+                        + " (Known issue)");
             }
         };
 
-        kresp = target.path("/index").
-            request("application/json").
-            post(Entity.text(""), Response.class);
+        kresp = target.path("/index").request("application/json")
+                .post(Entity.text(""), Response.class);
         assertEquals(kresp.getNode(), "milena");
         assertFalse(kresp.hasErrors());
         assertFalse(kresp.hasWarnings());
@@ -118,19 +115,15 @@ public class TestResource {
 
 
     @Ignore
-    public void testCollection() throws IOException {
+    public void testCollection () throws IOException {
 
-        String json = getString(
-            getClass().getResource("/queries/bsp-uid-example.jsonld").getFile()
-        );
+        String json = getString(getClass().getResource(
+                "/queries/bsp-uid-example.jsonld").getFile());
 
         try {
-            Response kresp
-                = target.path("/").
-                queryParam("uid", "1").
-                queryParam("uid", "4").
-                request("application/json").
-                post(Entity.json(json), Response.class);
+            Response kresp = target.path("/").queryParam("uid", "1")
+                    .queryParam("uid", "4").request("application/json")
+                    .post(Entity.json(json), Response.class);
 
             assertEquals(2, kresp.getTotalResults());
             assertFalse(kresp.hasErrors());
@@ -142,6 +135,7 @@ public class TestResource {
         };
 
     };
+
 
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();

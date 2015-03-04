@@ -1,4 +1,5 @@
 package de.ids_mannheim.korap.index;
+
 import java.util.*;
 import java.io.*;
 import org.apache.lucene.store.MMapDirectory;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
  * is using the standalone server system,
  * this tool may be more suitable for your needs
  * (especially as it is way faster).
- *
+ * 
  * Usage: java -jar Krill-X.XX.jar [propfile] [directories]*
  */
 public class Indexer {
@@ -22,25 +23,26 @@ public class Indexer {
     int commitCount;
 
     // Init logger
-    private final static Logger log =
-        LoggerFactory.getLogger(KrillIndex.class);
+    private final static Logger log = LoggerFactory.getLogger(KrillIndex.class);
 
 
     /**
      * Construct a new indexer object.
-     *
-     * @param prop A {@link Properties} object with
-     *        at least the following information:
-     *        <tt>krill.indexDir</tt>.
+     * 
+     * @param prop
+     *            A {@link Properties} object with
+     *            at least the following information:
+     *            <tt>krill.indexDir</tt>.
      * @throws IOException
      */
     public Indexer (Properties prop) throws IOException {
         this.indexDir = prop.getProperty("krill.indexDir");
 
         System.out.println("Index to " + this.indexDir);
-	
+
         // Default to 1000 documents till the next commit
-        String commitCount = prop.getProperty("krill.index.commit.count", "1000");
+        String commitCount = prop.getProperty("krill.index.commit.count",
+                "1000");
 
         // Create a new index object based on the directory
         this.index = new KrillIndex(new MMapDirectory(new File(indexDir)));
@@ -48,11 +50,13 @@ public class Indexer {
         this.commitCount = Integer.parseInt(commitCount);
     };
 
+
     /**
      * Parse a directory for document files.
-     *
-     * @param dir The {@link File} directory containing
-     * documents to index.
+     * 
+     * @param dir
+     *            The {@link File} directory containing
+     *            documents to index.
      */
     public void parse (File dir) {
         for (String file : dir.list()) {
@@ -80,6 +84,7 @@ public class Indexer {
         };
     };
 
+
     /**
      * Commit changes to the index.
      */
@@ -95,12 +100,14 @@ public class Indexer {
         System.out.println("done.");
     };
 
+
     /**
      * Main method.
-     *
-     * @param argv Argument list,
-     *        expecting the properties file
-     *        and a list of directories
+     * 
+     * @param argv
+     *            Argument list,
+     *            expecting the properties file
+     *            and a list of directories
      * @throws IOException
      */
     public static void main (String[] argv) throws IOException {
@@ -110,11 +117,9 @@ public class Indexer {
         if (argv.length < 2) {
 
             String jar = new File(Indexer.class.getProtectionDomain()
-                                  .getCodeSource()
-                                  .getLocation()
-                                  .getPath()).getName();
-            System.out.println("Usage: java -jar " + jar +
-                               " [propfile] [directories]*");
+                    .getCodeSource().getLocation().getPath()).getName();
+            System.out.println("Usage: java -jar " + jar
+                    + " [propfile] [directories]*");
             return;
         };
 
@@ -129,7 +134,7 @@ public class Indexer {
         System.out.println();
 
         // Iterate over list of directories
-        for (String arg :  Arrays.copyOfRange(argv, 1, argv.length)) {
+        for (String arg : Arrays.copyOfRange(argv, 1, argv.length)) {
             File f = new File(arg);
             if (f.isDirectory())
                 ki.parse(f);

@@ -12,7 +12,7 @@ import de.ids_mannheim.korap.util.QueryException;
 public class TestKrillDate {
 
     @Test
-    public void testByString() {
+    public void testByString () {
         KrillDate kd = new KrillDate("2005-06-03");
         assertEquals(2005, kd.year);
         assertEquals(6, kd.month);
@@ -46,7 +46,7 @@ public class TestKrillDate {
 
 
     @Test
-    public void testWithCeil() {
+    public void testWithCeil () {
         KrillDate kd = new KrillDate("2005-06-03");
         assertEquals(2005, kd.year);
         assertEquals(6, kd.month);
@@ -72,8 +72,9 @@ public class TestKrillDate {
         assertEquals(99999999, kd.ceil());
     };
 
+
     @Test
-    public void testWithFloor() {
+    public void testWithFloor () {
         KrillDate kd = new KrillDate("2005-06-03");
         assertEquals(2005, kd.year);
         assertEquals(6, kd.month);
@@ -99,8 +100,9 @@ public class TestKrillDate {
         assertEquals(0, kd.floor());
     };
 
+
     @Test
-    public void testToString() {
+    public void testToString () {
         KrillDate kd = new KrillDate("2005-06-03");
         assertEquals(2005, kd.year);
         assertEquals(6, kd.month);
@@ -126,8 +128,9 @@ public class TestKrillDate {
         assertEquals(null, kd.toString());
     };
 
+
     @Test
-    public void testToCeilString() {
+    public void testToCeilString () {
         KrillDate kd = new KrillDate("2005-06-03");
         assertEquals(2005, kd.year);
         assertEquals(6, kd.month);
@@ -155,7 +158,7 @@ public class TestKrillDate {
 
 
     @Test
-    public void testToFloorString() {
+    public void testToFloorString () {
         KrillDate kd = new KrillDate("2005-06-03");
         assertEquals(2005, kd.year);
         assertEquals(6, kd.month);
@@ -180,6 +183,7 @@ public class TestKrillDate {
         assertEquals(0, kd.day);
         assertEquals("0", kd.toFloorString());
     };
+
 
     @Test
     public void testDisplay () {

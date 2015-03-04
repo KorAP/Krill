@@ -15,10 +15,14 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /**
- * Enumeration of span matches, whose two child spans have a specific range of
- * distance (within a min and a max distance) and can be in any order. The unit
- * distance is an element, which can be a sentence or a paragraph for instance.
- * The distance is the difference between the positions of elements containing
+ * Enumeration of span matches, whose two child spans have a specific
+ * range of
+ * distance (within a min and a max distance) and can be in any order.
+ * The unit
+ * distance is an element, which can be a sentence or a paragraph for
+ * instance.
+ * The distance is the difference between the positions of elements
+ * containing
  * the spans.
  * 
  * @author margaretha
@@ -33,19 +37,23 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
     // target span
     private List<CandidateSpan> elementList;
 
+
     /**
      * Constructs UnorderedElementDistanceSpans for the given
      * {@link SpanDistanceQuery}.
      * 
-     * @param query a SpanDistanceQuery
+     * @param query
+     *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public UnorderedElementDistanceSpans(SpanDistanceQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public UnorderedElementDistanceSpans (SpanDistanceQuery query,
+                                          AtomicReaderContext context,
+                                          Bits acceptDocs,
+                                          Map<Term, TermContext> termContexts)
+            throws IOException {
         super(query, context, acceptDocs, termContexts);
         elements = query.getElementQuery().getSpans(context, acceptDocs,
                 termContexts);
@@ -54,8 +62,9 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         elementList = new ArrayList<CandidateSpan>();
     }
 
+
     @Override
-    protected boolean prepareLists() throws IOException {
+    protected boolean prepareLists () throws IOException {
 
         if (firstSpanList.isEmpty() && secondSpanList.isEmpty()) {
             if (hasMoreFirstSpans && hasMoreSecondSpans && hasMoreElements
@@ -70,15 +79,18 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
                         hasMoreFirstSpans);
                 hasMoreSecondSpans = addSpan(secondSpans, secondSpanList,
                         hasMoreSecondSpans);
-            } else {
+            }
+            else {
                 hasMoreSpans = false;
                 return false;
             }
-        } else if (firstSpanList.isEmpty() && hasMoreFirstSpans
+        }
+        else if (firstSpanList.isEmpty() && hasMoreFirstSpans
                 && firstSpans.doc() == currentDocNum) {
             hasMoreFirstSpans = addSpan(firstSpans, firstSpanList,
                     hasMoreFirstSpans);
-        } else if (secondSpanList.isEmpty() && hasMoreSecondSpans
+        }
+        else if (secondSpanList.isEmpty() && hasMoreSecondSpans
                 && secondSpans.doc() == currentDocNum) {
             hasMoreSecondSpans = addSpan(secondSpans, secondSpanList,
                     hasMoreSecondSpans);
@@ -87,20 +99,27 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         return true;
     }
 
+
     /**
-     * Adds all the spans occurring in the current document, as CandidateSpans
-     * to the specified candidate list, and tells if the enumeration of the
+     * Adds all the spans occurring in the current document, as
+     * CandidateSpans
+     * to the specified candidate list, and tells if the enumeration
+     * of the
      * spans has finished, or not.
      * 
-     * @param span a Span
-     * @param list a candidateList
-     * @param hasMoreSpan a boolean describing if the span enumeration has
-     *        finished or not.
-     * @return <code>true</code> if the the span enumeration has finished,
+     * @param span
+     *            a Span
+     * @param list
+     *            a candidateList
+     * @param hasMoreSpan
+     *            a boolean describing if the span enumeration has
+     *            finished or not.
+     * @return <code>true</code> if the the span enumeration has
+     *         finished,
      *         <code>false</code> otherwise.
      * @throws IOException
      */
-    private boolean addSpan(Spans span, List<CandidateSpan> list,
+    private boolean addSpan (Spans span, List<CandidateSpan> list,
             boolean hasMoreSpan) throws IOException {
         int position;
         while (hasMoreSpan && span.doc() == currentDocNum) {
@@ -115,15 +134,18 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         return hasMoreSpan;
     }
 
+
     /**
-     * Finds the element position of the specified span in the element list or
+     * Finds the element position of the specified span in the element
+     * list or
      * by advancing the element spans until encountering the span.
      * 
-     * @param span a Span
+     * @param span
+     *            a Span
      * @return the element position
      * @throws IOException
      */
-    private int findElementPosition(Spans span) throws IOException {
+    private int findElementPosition (Spans span) throws IOException {
         // Check in the element list
         if (!elementList.isEmpty()
                 && span.end() <= elementList.get(elementList.size() - 1)
@@ -139,15 +161,17 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         return (advanceElementTo(span) ? elementPosition : -1);
     }
 
+
     /**
      * Advances the element spans until encountering the given span.
      * 
      * @param span
-     * @return <code>true</code> if such an element is found, <code>false</code>
+     * @return <code>true</code> if such an element is found,
+     *         <code>false</code>
      *         if the span is not in an element.
      * @throws IOException
      */
-    private boolean advanceElementTo(Spans span) throws IOException {
+    private boolean advanceElementTo (Spans span) throws IOException {
         while (hasMoreElements && elements.doc() == currentDocNum
                 && elements.start() < span.end()) {
 
@@ -163,8 +187,9 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         return false; // invalid
     }
 
+
     @Override
-    protected boolean setCandidateList(List<CandidateSpan> candidateList,
+    protected boolean setCandidateList (List<CandidateSpan> candidateList,
             Spans candidate, boolean hasMoreCandidates,
             List<CandidateSpan> targetList) throws IOException {
 
@@ -179,7 +204,8 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
                     if (isWithinMaxDistance(target, cs)) {
                         candidateList.add(cs);
-                    } else
+                    }
+                    else
                         break;
                 }
                 hasMoreCandidates = candidate.next();
@@ -188,14 +214,17 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         return hasMoreCandidates;
     }
 
+
     /**
-     * Tells if the target and candidate spans are not too far from each other
+     * Tells if the target and candidate spans are not too far from
+     * each other
      * (within the maximum distance).
      * 
-     * @return <code>true</code> if the target and candidate spans are within
+     * @return <code>true</code> if the target and candidate spans are
+     *         within
      *         the maximum distance, <code>false</code> otherwise.
      * */
-    protected boolean isWithinMaxDistance(CandidateSpan target,
+    protected boolean isWithinMaxDistance (CandidateSpan target,
             CandidateSpan candidate) {
         int candidatePos = candidate.getPosition();
         int targetPos = target.getPosition();
@@ -211,8 +240,9 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         return true;
     }
 
+
     @Override
-    protected List<CandidateSpan> findMatches(CandidateSpan target,
+    protected List<CandidateSpan> findMatches (CandidateSpan target,
             List<CandidateSpan> candidateList) {
 
         List<CandidateSpan> matches = new ArrayList<>();
@@ -234,20 +264,25 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         return matches;
     }
 
+
     @Override
-    protected void updateList(List<CandidateSpan> candidateList) {
+    protected void updateList (List<CandidateSpan> candidateList) {
         updateElementList(candidateList.get(0).getPosition());
         candidateList.remove(0);
     }
 
+
     /**
-     * Reduces the number of elements kept in the element list by removing the
-     * elements whose position is smaller than or identical to the position of
+     * Reduces the number of elements kept in the element list by
+     * removing the
+     * elements whose position is smaller than or identical to the
+     * position of
      * the last target span.
      * 
-     * @param position the last target span position
+     * @param position
+     *            the last target span position
      */
-    private void updateElementList(int position) {
+    private void updateElementList (int position) {
         Iterator<CandidateSpan> i = elementList.iterator();
         CandidateSpan e;
         while (i.hasNext()) {

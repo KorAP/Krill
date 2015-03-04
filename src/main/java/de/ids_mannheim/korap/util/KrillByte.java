@@ -5,15 +5,16 @@ import java.util.*;
 /**
  * A collection of byte and byte array related
  * utility functions.
- *
+ * 
  * @author diewald
  */
 public class KrillByte {
 
     /**
      * Convert an integer to a byte array.
-     *
-     * @param number The number to convert.
+     * 
+     * @param number
+     *            The number to convert.
      * @return The translated byte array.
      */
     // Based on
@@ -22,7 +23,7 @@ public class KrillByte {
         byte[] data = new byte[4];
         for (int i = 0; i < 4; ++i) {
             int shift = i << 3; // That's identical to i * 8
-            data[3-i] = (byte)((number & (0xff << shift)) >>> shift);
+            data[3 - i] = (byte) ((number & (0xff << shift)) >>> shift);
         };
         return data;
     };
@@ -30,8 +31,9 @@ public class KrillByte {
 
     /**
      * Convert a byte array to an integer.
-     *
-     * @param data The byte array to convert.
+     * 
+     * @param data
+     *            The byte array to convert.
      * @return The translated integer.
      */
     // Based on
@@ -43,9 +45,11 @@ public class KrillByte {
 
     /**
      * Convert a byte array to an integer.
-     *
-     * @param data The byte array to convert.
-     * @param offset The byte offset (Not integer offset!).
+     * 
+     * @param data
+     *            The byte array to convert.
+     * @param offset
+     *            The byte offset (Not integer offset!).
      * @return The translated integer.
      */
     // Roughly based on
@@ -54,7 +58,7 @@ public class KrillByte {
         offset += 3;
         int number = 0;
         for (int i = 0; i < 4; ++i)
-            number |= (data[offset-i] & 0xff) << (i << 3);
+            number |= (data[offset - i] & 0xff) << (i << 3);
         return number;
     };
 };

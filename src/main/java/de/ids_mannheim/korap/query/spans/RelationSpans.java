@@ -19,11 +19,14 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
 
 /**
- * Enumeration of spans denoting relations between two tokens/elements. The
- * start and end of a RelationSpan always denote the start and end of the
+ * Enumeration of spans denoting relations between two
+ * tokens/elements. The
+ * start and end of a RelationSpan always denote the start and end of
+ * the
  * left-side token/element.
  * 
- * There are 4 types of relations, which is differentiated by the payload length
+ * There are 4 types of relations, which is differentiated by the
+ * payload length
  * in bytes.
  * <ol>
  * <li>Token to token relation (1 int & 3 short, length: 10)</li>
@@ -31,17 +34,24 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
  * <li>Span to token (int, byte, int, 3 short, length: 15)</li>
  * <li>Span to Span (3 int & 3 short, length: 18)</li>
  * </ol>
- * Every integer value denotes the start/end position of the start/target of a
- * relation, in this format: (sourceEndPos?, startTargetPos, endTargetPos?). The
- * end position of a token is identical to its start position, and therefore not
+ * Every integer value denotes the start/end position of the
+ * start/target of a
+ * relation, in this format: (sourceEndPos?, startTargetPos,
+ * endTargetPos?). The
+ * end position of a token is identical to its start position, and
+ * therefore not
  * is saved in a payload.
  * 
- * The short values denote the relation id, left id, and right id. The byte in
- * relation #3 is just a dummy to create a different length from the relation
+ * The short values denote the relation id, left id, and right id. The
+ * byte in
+ * relation #3 is just a dummy to create a different length from the
+ * relation
  * #2.
  * 
- * NOTE: Sorting of the candidate spans can alternatively be done in indexing,
- * instead of here. (first by left positions and then by right positions)
+ * NOTE: Sorting of the candidate spans can alternatively be done in
+ * indexing,
+ * instead of here. (first by left positions and then by right
+ * positions)
  * 
  * @author margaretha
  * */
@@ -53,47 +63,56 @@ public class RelationSpans extends RelationBaseSpans {
     protected Logger logger = LoggerFactory.getLogger(RelationSpans.class);
     private List<CandidateRelationSpan> candidateList;
 
+
     /**
-     * Constructs RelationSpans from the given {@link SpanRelationQuery}.
+     * Constructs RelationSpans from the given
+     * {@link SpanRelationQuery}.
      * 
-     * @param relationSpanQuery a SpanRelationQuery
+     * @param relationSpanQuery
+     *            a SpanRelationQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public RelationSpans(SpanRelationQuery relationSpanQuery,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public RelationSpans (SpanRelationQuery relationSpanQuery,
+                          AtomicReaderContext context, Bits acceptDocs,
+                          Map<Term, TermContext> termContexts)
+            throws IOException {
         super(relationSpanQuery, context, acceptDocs, termContexts);
         candidateList = new ArrayList<>();
         relationTermSpan = (TermSpans) firstSpans;
         hasMoreSpans = relationTermSpan.next();
     }
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         isStartEnumeration = false;
         return advance();
     }
 
+
     /**
-     * Returns true if there is a next match by checking if the CandidateList is
-     * not empty and set the first element of the list as the next match.
-     * Otherwise, if the RelationSpan has not ended yet, try to set the
+     * Returns true if there is a next match by checking if the
+     * CandidateList is
+     * not empty and set the first element of the list as the next
+     * match.
+     * Otherwise, if the RelationSpan has not ended yet, try to set
+     * the
      * CandidateList.
      * 
      * @return true if there is a next match.
      * @throws IOException
      */
-    private boolean advance() throws IOException {
+    private boolean advance () throws IOException {
         while (hasMoreSpans || !candidateList.isEmpty()) {
             if (!candidateList.isEmpty()) {
                 CandidateRelationSpan cs = candidateList.get(0);
                 this.matchDocNumber = cs.getDoc();
                 this.matchStartPosition = cs.getStart();
                 this.matchEndPosition = cs.getEnd();
-				this.matchPayload = cs.getPayloads();
+                this.matchPayload = cs.getPayloads();
                 this.setRightStart(cs.getRightStart());
                 this.setRightEnd(cs.getRightEnd());
                 this.spanId = cs.getSpanId(); // relation id
@@ -101,7 +120,7 @@ public class RelationSpans extends RelationBaseSpans {
                 this.rightId = cs.getRightId();
                 candidateList.remove(0);
                 return true;
-            } 
+            }
             else {
                 setCandidateList();
                 currentDoc = relationTermSpan.doc();
@@ -111,33 +130,40 @@ public class RelationSpans extends RelationBaseSpans {
         return false;
     }
 
+
     /**
-     * Setting the CandidateList by adding all relationTermSpan whose start
+     * Setting the CandidateList by adding all relationTermSpan whose
+     * start
      * position is the same as the current span position, and sort the
      * candidateList.
      * 
      * @throws IOException
      */
-    private void setCandidateList() throws IOException {
+    private void setCandidateList () throws IOException {
         while (hasMoreSpans && relationTermSpan.doc() == currentDoc
                 && relationTermSpan.start() == currentPosition) {
-            CandidateRelationSpan cs = new CandidateRelationSpan(relationTermSpan);
+            CandidateRelationSpan cs = new CandidateRelationSpan(
+                    relationTermSpan);
             readPayload(cs);
-			setPayload(cs);
+            setPayload(cs);
             candidateList.add(cs);
             hasMoreSpans = relationTermSpan.next();
         }
         Collections.sort(candidateList);
     }
 
+
     /**
-     * Identify the relation type of the given {@link CandidateRelationSpan} by
-     * checking the length of its payloads, and set some properties of the span
+     * Identify the relation type of the given
+     * {@link CandidateRelationSpan} by
+     * checking the length of its payloads, and set some properties of
+     * the span
      * based on the payloads.
      * 
-     * @param cs a CandidateRelationSpan
+     * @param cs
+     *            a CandidateRelationSpan
      */
-    private void readPayload(CandidateRelationSpan cs) {
+    private void readPayload (CandidateRelationSpan cs) {
         List<byte[]> payload = (List<byte[]>) cs.getPayloads();
         int length = payload.get(0).length;
         ByteBuffer bb = ByteBuffer.allocate(length);
@@ -176,28 +202,31 @@ public class RelationSpans extends RelationBaseSpans {
         // Payload is cleared.		
     }
 
-	private void setPayload(CandidateRelationSpan cs) throws IOException {
-		ArrayList<byte[]> payload = new ArrayList<byte[]>();
-		if (relationTermSpan.isPayloadAvailable()) {
-			payload.addAll(relationTermSpan.getPayload());
-		}
-		payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
-				(byte) 1));
-		payload.add(createClassPayload(cs.getRightStart(), cs.getRightEnd(),
-				(byte) 2));
-		cs.setPayloads(payload);
-	}
 
-	private byte[] createClassPayload(int start, int end, byte classNumber) {
-		ByteBuffer buffer = ByteBuffer.allocate(9);
-		buffer.putInt(start);
-		buffer.putInt(end);
-		buffer.put(classNumber);
-		return buffer.array();
-	}
+    private void setPayload (CandidateRelationSpan cs) throws IOException {
+        ArrayList<byte[]> payload = new ArrayList<byte[]>();
+        if (relationTermSpan.isPayloadAvailable()) {
+            payload.addAll(relationTermSpan.getPayload());
+        }
+        payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
+                (byte) 1));
+        payload.add(createClassPayload(cs.getRightStart(), cs.getRightEnd(),
+                (byte) 2));
+        cs.setPayloads(payload);
+    }
+
+
+    private byte[] createClassPayload (int start, int end, byte classNumber) {
+        ByteBuffer buffer = ByteBuffer.allocate(9);
+        buffer.putInt(start);
+        buffer.putInt(end);
+        buffer.put(classNumber);
+        return buffer.array();
+    }
+
 
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (firstSpans.doc() < target)) {
             if (!firstSpans.skipTo(target)) {
                 candidateList.clear();
@@ -210,90 +239,108 @@ public class RelationSpans extends RelationBaseSpans {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return firstSpans.cost();
     }
+
 
     /**
      * Returns the right start position of the current RelationSpan.
      * 
      * @return the right start position of the current RelationSpan.
      */
-    public int getRightStart() {
+    public int getRightStart () {
         return rightStart;
     }
+
 
     /**
      * Sets the right start position of the current RelationSpan.
      * 
-     * @param rightStart the right start position of the current RelationSpan
+     * @param rightStart
+     *            the right start position of the current RelationSpan
      */
-    public void setRightStart(int rightStart) {
+    public void setRightStart (int rightStart) {
         this.rightStart = rightStart;
     }
+
 
     /**
      * Returns the right end position of the current RelationSpan.
      * 
      * @return the right end position of the current RelationSpan.
      */
-    public int getRightEnd() {
+    public int getRightEnd () {
         return rightEnd;
     }
+
 
     /**
      * Sets the right end position of the current RelationSpan.
      * 
-     * @param rightEnd the right end position of the current RelationSpan.
+     * @param rightEnd
+     *            the right end position of the current RelationSpan.
      */
-    public void setRightEnd(int rightEnd) {
+    public void setRightEnd (int rightEnd) {
         this.rightEnd = rightEnd;
     }
 
     /**
-	 * CandidateRelationSpan stores a state of RelationSpans. In a list,
-	 * CandidateRelationSpans are ordered first by the position of the relation
-	 * left side.
-	 */
-	class CandidateRelationSpan extends CandidateSpan {
+     * CandidateRelationSpan stores a state of RelationSpans. In a
+     * list,
+     * CandidateRelationSpans are ordered first by the position of the
+     * relation
+     * left side.
+     */
+    class CandidateRelationSpan extends CandidateSpan {
 
         private int rightStart, rightEnd;
         private short leftId, rightId;
 
-        public CandidateRelationSpan(Spans span) throws IOException {
+
+        public CandidateRelationSpan (Spans span) throws IOException {
             super(span);
         }
 
-        public int getRightEnd() {
+
+        public int getRightEnd () {
             return rightEnd;
         }
 
-        public void setRightEnd(int rightEnd) {
+
+        public void setRightEnd (int rightEnd) {
             this.rightEnd = rightEnd;
         }
 
-        public int getRightStart() {
+
+        public int getRightStart () {
             return rightStart;
         }
 
-        public void setRightStart(int rightStart) {
+
+        public void setRightStart (int rightStart) {
             this.rightStart = rightStart;
         }
 
-        public short getLeftId() {
+
+        public short getLeftId () {
             return leftId;
         }
 
-        public void setLeftId(short leftId) {
+
+        public void setLeftId (short leftId) {
             this.leftId = leftId;
         }
 
-        public short getRightId() {
+
+        public short getRightId () {
             return rightId;
         }
 
-        public void setRightId(short rightId) {
+
+        public void setRightId (short rightId) {
             this.rightId = rightId;
         }
 

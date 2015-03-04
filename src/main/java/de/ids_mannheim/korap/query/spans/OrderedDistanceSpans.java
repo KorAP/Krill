@@ -26,18 +26,22 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
     protected int candidateListIndex;
     protected int candidateListDocNum;
 
+
     /**
-     * Constructs OrderedDistanceSpans based on the given SpanDistanceQuery.
+     * Constructs OrderedDistanceSpans based on the given
+     * SpanDistanceQuery.
      * 
-     * @param query a SpanDistanceQuery
+     * @param query
+     *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public OrderedDistanceSpans(SpanDistanceQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public OrderedDistanceSpans (SpanDistanceQuery query,
+                                 AtomicReaderContext context, Bits acceptDocs,
+                                 Map<Term, TermContext> termContexts)
+            throws IOException {
         super(query, context, acceptDocs, termContexts);
 
         minDistance = query.getMinDistance();
@@ -50,11 +54,12 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
         candidateListDocNum = firstSpans.doc();
     }
 
+
     /**
      * Finds a span match in the candidate list.
      * */
     @Override
-    protected boolean advance() throws IOException {
+    protected boolean advance () throws IOException {
         while (hasMoreSpans && candidateListIndex < candidateList.size()) {
             // Check candidates
             for (candidateListIndex++; candidateListIndex < candidateList
@@ -66,53 +71,70 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
             do { // Forward secondspan
                 hasMoreSpans = secondSpans.next();
                 setCandidateList();
-            } while (hasMoreSpans && !isSecondSpanValid());
+            }
+            while (hasMoreSpans && !isSecondSpanValid());
         }
         return false;
     }
 
+
     /**
-     * Determines if the current second span is valid (i.e. within an element).
-     * It is always valid in TokenDistanceSpan, but it can be invalid in the
-     * ElementDistanceSpan, namely when it is not within a particular element (a
+     * Determines if the current second span is valid (i.e. within an
+     * element).
+     * It is always valid in TokenDistanceSpan, but it can be invalid
+     * in the
+     * ElementDistanceSpan, namely when it is not within a particular
+     * element (a
      * sentence or a paragraph depends on the element distance unit).
      * 
      * @return <code>true</code> of the current second span is valid,
      *         <code>false</code> otherwise.
      * @throws IOException
      */
-    protected abstract boolean isSecondSpanValid() throws IOException;
+    protected abstract boolean isSecondSpanValid () throws IOException;
+
 
     /**
-     * Stores/collects the states of all possible firstspans as candidate spans
-     * for the current secondspan. The candidate spans must be within the
+     * Stores/collects the states of all possible firstspans as
+     * candidate spans
+     * for the current secondspan. The candidate spans must be within
+     * the
      * maximum distance from the current secondspan.
      * 
      * @throws IOException
      */
-    protected abstract void setCandidateList() throws IOException;
+    protected abstract void setCandidateList () throws IOException;
+
 
     /**
-     * Defines the conditions for a match and tells if a match is found.
+     * Defines the conditions for a match and tells if a match is
+     * found.
      * 
-     * @return <code>true</code> if a match is found, <code>false</code>
+     * @return <code>true</code> if a match is found,
+     *         <code>false</code>
      *         otherwise.
      * @throws IOException
      */
-    protected abstract boolean findMatch() throws IOException;
+    protected abstract boolean findMatch () throws IOException;
+
 
     /**
-     * Defines the properties of a span match. The distance between the first
-     * and the second spans is zero, when there is an intersection between them
-     * in {@link TokenDistanceSpans}, or they occur in the same element in
-     * {@link ElementDistanceSpans}.
+     * Defines the properties of a span match. The distance between
+     * the first
+     * and the second spans is zero, when there is an intersection
+     * between them
+     * in {@link TokenDistanceSpans}, or they occur in the same
+     * element in {@link ElementDistanceSpans}.
      * 
-     * @param candidateSpan a match span
-     * @param isDistanceZero <code>true</code> if the distance between the first
-     *        and the second spans is zero, <code>false</code> otherwise.
+     * @param candidateSpan
+     *            a match span
+     * @param isDistanceZero
+     *            <code>true</code> if the distance between the first
+     *            and the second spans is zero, <code>false</code>
+     *            otherwise.
      * @throws IOException
      */
-    protected void setMatchProperties(CandidateSpan candidateSpan,
+    protected void setMatchProperties (CandidateSpan candidateSpan,
             boolean isDistanceZero) throws IOException {
 
         setMatchFirstSpan(candidateSpan);
@@ -123,7 +145,8 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
                     secondSpans.start());
             matchEndPosition = Math.max(candidateSpan.getEnd(),
                     secondSpans.end());
-        } else {
+        }
+        else {
             matchStartPosition = candidateSpan.getStart();
             matchEndPosition = secondSpans.end();
         }
@@ -139,8 +162,9 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
         }
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (secondSpans.doc() < target)) {
             if (!secondSpans.skipTo(target)) {
                 candidateList.clear();

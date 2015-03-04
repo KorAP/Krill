@@ -12,20 +12,24 @@ import de.ids_mannheim.korap.util.QueryException;
 public class SpanClassQueryWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subquery;
 
+
     public SpanClassQueryWrapper (SpanQueryWrapper subquery, byte number) {
         this.subquery = subquery;
-        this.number   = number;
+        this.number = number;
         if (number != (byte) 0)
             this.hasClass = true;
     };
+
 
     public SpanClassQueryWrapper (SpanQueryWrapper subquery, short number) {
         this(subquery, (byte) number);
     };
 
+
     public SpanClassQueryWrapper (SpanQueryWrapper subquery, int number) {
         this(subquery, (byte) number);
     };
+
 
     public SpanClassQueryWrapper (SpanQueryWrapper subquery) {
         this(subquery, (byte) 0);
@@ -63,13 +67,15 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
 
 
     public SpanQuery toQuery () throws QueryException {
-		if (this.subquery.isNull())
+        if (this.subquery.isNull())
             return (SpanQuery) null;
 
-        SpanQuery sq = (SpanQuery) this.subquery.retrieveNode(this.retrieveNode).toQuery();
+        SpanQuery sq = (SpanQuery) this.subquery
+                .retrieveNode(this.retrieveNode).toQuery();
 
-        if (sq == null) return (SpanQuery) null;
-	
+        if (sq == null)
+            return (SpanQuery) null;
+
         if (this.number == (byte) 0) {
             return new SpanClassQuery(sq);
         };

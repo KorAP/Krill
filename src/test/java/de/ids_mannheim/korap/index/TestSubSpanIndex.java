@@ -19,15 +19,16 @@ public class TestSubSpanIndex {
     Result kr;
     KrillIndex ki;
 
+
     public TestSubSpanIndex () throws IOException {
         ki = new KrillIndex();
-        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"),
-                true);
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
     }
 
+
     @Test
-    public void testCase1() throws IOException {
+    public void testCase1 () throws IOException {
         SpanDistanceQuery sdq = new SpanDistanceQuery(new SpanTermQuery(
                 new Term("tokens", "tt/p:NN")), new SpanTermQuery(new Term(
                 "tokens", "tt/p:VAFIN")), new DistanceConstraint(5, 5, true,
@@ -57,8 +58,9 @@ public class TestSubSpanIndex {
          */
     }
 
+
     @Test
-    public void testCase2() {
+    public void testCase2 () {
         SpanDistanceQuery sdq = new SpanDistanceQuery(new SpanTermQuery(
                 new Term("tokens", "tt/p:NN")), new SpanTermQuery(new Term(
                 "tokens", "tt/p:VAFIN")), new DistanceConstraint(5, 5, true,
@@ -85,9 +87,10 @@ public class TestSubSpanIndex {
 
     }
 
+
     // Length 0
     @Test
-    public void testCase3() {
+    public void testCase3 () {
         SpanDistanceQuery sdq = new SpanDistanceQuery(new SpanTermQuery(
                 new Term("tokens", "tt/p:NN")), new SpanTermQuery(new Term(
                 "tokens", "tt/p:VAFIN")), new DistanceConstraint(5, 5, true,

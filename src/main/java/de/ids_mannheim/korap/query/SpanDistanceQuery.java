@@ -19,20 +19,26 @@ import de.ids_mannheim.korap.query.spans.UnorderedElementDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
 
 /**
- * SpanDistanceQuery calculates the distance between two spans and compares it
- * to the distance constraints. The distance constraints are specified as a
- * {@link DistanceConstraint} instance having various properties: the distance
- * unit, the order of the spans (ordered or unordered), co-occurrence (i.e. the
+ * SpanDistanceQuery calculates the distance between two spans and
+ * compares it
+ * to the distance constraints. The distance constraints are specified
+ * as a {@link DistanceConstraint} instance having various properties:
+ * the distance
+ * unit, the order of the spans (ordered or unordered), co-occurrence
+ * (i.e. the
  * spans should co-occur or not), minimum and maximum distance. <br/>
  * <br/>
- * The distance unit can be a word (token), a sentence or a paragraph. The
- * resulting spans typically stretch from the starting position of a former span
+ * The distance unit can be a word (token), a sentence or a paragraph.
+ * The
+ * resulting spans typically stretch from the starting position of a
+ * former span
  * to the end position of the latter span. <br/>
  * <br/>
  * Query examples:
  * 
  * <ol>
- * <li>Search two terms x and y which are separated by minimum two and maximum
+ * <li>Search two terms x and y which are separated by minimum two and
+ * maximum
  * three other words. The order of x and y does not matter.
  * 
  * <pre>
@@ -40,7 +46,8 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
  * </pre>
  * 
  * </li>
- * <li>Search two terms x and y which are separated by minimum two and maximum
+ * <li>Search two terms x and y which are separated by minimum two and
+ * maximum
  * three other words. X must precede y.
  * 
  * <pre>
@@ -49,7 +56,8 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
  * 
  * </li>
  * <li>
- * Search term x which do not occur with term y in minimum two and maximum three
+ * Search term x which do not occur with term y in minimum two and
+ * maximum three
  * other words. X must precede y.
  * 
  * <pre>
@@ -57,12 +65,15 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
  * </pre>
  * 
  * </li>
- * <li>Search two terms x and y separated by minimum one and maximum two
+ * <li>Search two terms x and y separated by minimum one and maximum
+ * two
  * sentences. X must precede y.
  * 
  * <pre>
- * SpanElementQuery e = new SpanElementQuery(&quot;tokens&quot;, &quot;s&quot;);
- * DistanceConstraint dc = new DistanceConstraint(e, 2, 3, true, false);
+ * SpanElementQuery e = new SpanElementQuery(&quot;tokens&quot;,
+ * &quot;s&quot;);
+ * DistanceConstraint dc = new DistanceConstraint(e, 2, 3, true,
+ * false);
  * </pre>
  * 
  * </li>
@@ -74,8 +85,10 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
  * <li>
  * 
  * <pre>
- * SpanDistanceQuery sq = new SpanDistanceQuery(new SpanTermQuery(new Term(
- *         &quot;tokens&quot;, x)), new SpanTermQuery(new Term(&quot;tokens&quot;, y)), dc, true);
+ * SpanDistanceQuery sq = new SpanDistanceQuery(new SpanTermQuery(new
+ * Term(
+ * &quot;tokens&quot;, x)), new SpanTermQuery(new
+ * Term(&quot;tokens&quot;, y)), dc, true);
  * </pre>
  * 
  * </li>
@@ -83,8 +96,9 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
  * 
  * <pre>
  * SpanDistanceQuery sq = new SpanDistanceQuery(
- *         new SpanElementQuery(&quot;tokens&quot;, &quot;s&quot;), new SpanElementQuery(&quot;tokens&quot;, y),
- *         dc, true);
+ * new SpanElementQuery(&quot;tokens&quot;, &quot;s&quot;), new
+ * SpanElementQuery(&quot;tokens&quot;, y),
+ * dc, true);
  * </pre>
  * 
  * </li>
@@ -104,21 +118,30 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
     private String spanName;
     private DistanceConstraint constraint;
 
+
     /**
-     * Constructs a SpanDistanceQuery comparing the distance between the spans
-     * of the two specified spanqueries and based-on the given distance
+     * Constructs a SpanDistanceQuery comparing the distance between
+     * the spans
+     * of the two specified spanqueries and based-on the given
+     * distance
      * constraints.
      * 
-     * @param firstClause a span query
-     * @param secondClause a span query
-     * @param constraint a DistanceConstraint containing all the constraints
-     *        required for the distance query
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
+     * @param firstClause
+     *            a span query
+     * @param secondClause
+     *            a span query
+     * @param constraint
+     *            a DistanceConstraint containing all the constraints
+     *            required for the distance query
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise
+     *            <code>false</code>.
      */
-    public SpanDistanceQuery(SpanQuery firstClause, SpanQuery secondClause,
-            DistanceConstraint constraint, boolean collectPayloads) {
+    public SpanDistanceQuery (SpanQuery firstClause, SpanQuery secondClause,
+                              DistanceConstraint constraint,
+                              boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
 
         if (constraint == null) {
@@ -136,13 +159,15 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
         if (constraint.getElementQuery() != null) {
             spanName = "spanElementDistance";
             this.elementQuery = constraint.getElementQuery();
-        } else {
+        }
+        else {
             spanName = "spanDistance";
         }
     }
 
+
     @Override
-    public String toString(String field) {
+    public String toString (String field) {
         StringBuilder sb = new StringBuilder();
         sb.append(this.spanName);
         sb.append("(");
@@ -163,8 +188,9 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
         return sb.toString();
     }
 
+
     @Override
-    public SpanDistanceQuery clone() {
+    public SpanDistanceQuery clone () {
         SpanDistanceQuery spanDistanceQuery = new SpanDistanceQuery(
                 (SpanQuery) firstClause.clone(),
                 (SpanQuery) secondClause.clone(), this.constraint,
@@ -177,25 +203,29 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
         return spanDistanceQuery;
     }
 
+
     @Override
-    public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
+    public Spans getSpans (AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
 
         if (this.elementQuery != null) {
             if (isExclusion()) {
                 return new ElementDistanceExclusionSpans(this, context,
                         acceptDocs, termContexts);
-            } else if (isOrdered) {
+            }
+            else if (isOrdered) {
                 return new ElementDistanceSpans(this, context, acceptDocs,
                         termContexts);
             }
             return new UnorderedElementDistanceSpans(this, context, acceptDocs,
                     termContexts);
 
-        } else if (isExclusion()) {
+        }
+        else if (isExclusion()) {
             return new DistanceExclusionSpans(this, context, acceptDocs,
                     termContexts);
-        } else if (isOrdered) {
+        }
+        else if (isOrdered) {
             return new TokenDistanceSpans(this, context, acceptDocs,
                     termContexts);
         }
@@ -203,81 +233,97 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
                 termContexts);
     }
 
+
     /**
      * Returns the minimum distance constraint.
      * 
      * @return the minimum distance constraint
      */
-    public int getMinDistance() {
+    public int getMinDistance () {
         return minDistance;
     }
+
 
     /**
      * Sets the minimum distance constraint.
      * 
-     * @param minDistance the minimum distance constraint
+     * @param minDistance
+     *            the minimum distance constraint
      */
-    public void setMinDistance(int minDistance) {
+    public void setMinDistance (int minDistance) {
         this.minDistance = minDistance;
     }
+
 
     /**
      * Returns the maximum distance.
      * 
      * @return the maximum distance constraint
      */
-    public int getMaxDistance() {
+    public int getMaxDistance () {
         return maxDistance;
     }
+
 
     /**
      * Sets a maximum distance.
      * 
-     * @param maxDistance the maximum distance
+     * @param maxDistance
+     *            the maximum distance
      */
-    public void setMaxDistance(int maxDistance) {
+    public void setMaxDistance (int maxDistance) {
         this.maxDistance = maxDistance;
     }
+
 
     /**
      * Returns the element query used as the distance unit.
      * 
      * @return the element distance unit
      */
-    public SpanElementQuery getElementQuery() {
+    public SpanElementQuery getElementQuery () {
         return elementQuery;
     }
+
 
     /**
      * Sets the specified element query used as the distance unit.
      * 
-     * @param elementQuery the SpanElementQuery used as the distance unit
+     * @param elementQuery
+     *            the SpanElementQuery used as the distance unit
      */
-    public void setElementQuery(SpanElementQuery elementQuery) {
+    public void setElementQuery (SpanElementQuery elementQuery) {
         this.elementQuery = elementQuery;
     }
+
 
     /**
      * Tells weather the second sub-span should co-occur or not.
      * 
-     * @return a boolean with <code>true</code> if the second sub-span should
+     * @return a boolean with <code>true</code> if the second sub-span
+     *         should
      *         <em>not</em> co-occur, <code>false</code> otherwise.
      */
-    public boolean isExclusion() {
+    public boolean isExclusion () {
         return exclusion;
     }
 
+
     /**
-     * Sets <code>true</code> if the second sub-span should <em>not</em>
+     * Sets <code>true</code> if the second sub-span should
+     * <em>not</em>
      * co-occur, <code>false</code> otherwise.
      * 
-     * @param exclusion a boolean with value <code>true</code> if the second
-     *        sub-span should <em>not</em> co-occur, <code>false</code>
-     *        otherwise.
+     * @param exclusion
+     *            a boolean with value <code>true</code> if the second
+     *            sub-span should <em>not</em> co-occur,
+     *            <code>false</code>
+     *            otherwise.
      */
-    public void setExclusion(boolean exclusion) {
+    public void setExclusion (boolean exclusion) {
         this.exclusion = exclusion;
     }
+
 
     /**
      * Tells whether the spans must occur in order or not.
@@ -285,17 +331,19 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
      * @return <code>true</code> if the spans must occur in order,
      *         <code>false</code> otherwise.
      */
-    public boolean isOrdered() {
+    public boolean isOrdered () {
         return isOrdered;
     }
+
 
     /**
      * Sets whether the spans must occur in order or not.
      * 
-     * @param isOrdered <code>true</code> if the spans must occur in order,
-     *        <code>false</code> otherwise.
+     * @param isOrdered
+     *            <code>true</code> if the spans must occur in order,
+     *            <code>false</code> otherwise.
      */
-    public void setOrder(boolean isOrdered) {
+    public void setOrder (boolean isOrdered) {
         this.isOrdered = isOrdered;
     }
 

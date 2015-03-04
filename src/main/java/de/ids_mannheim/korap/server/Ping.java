@@ -7,14 +7,14 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * A useful ping service.
- *
+ * 
  * @author Nils Diewald
  */
 @Path("ping")
 public class Ping {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String getIt() {
+    public String getIt () {
         return "Gimme 5 minutes, please!";
     };
 };

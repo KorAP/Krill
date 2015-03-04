@@ -30,17 +30,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Create a Virtual Collection of documents by means of a KoralQuery
  * collection object.
- * Alternatively by applying manual filters and extensions on Lucene fields.
- *
+ * Alternatively by applying manual filters and extensions on Lucene
+ * fields.
+ * 
  * <blockquote><pre>
- *   KrillCollection kc = new KrillCollection(json);
- *   kc.filterUIDS("a1", "a2", "a3");
+ * KrillCollection kc = new KrillCollection(json);
+ * kc.filterUIDS("a1", "a2", "a3");
  * </pre></blockquote>
- *
+ * 
  * <strong>Warning</strong>: This API is deprecated and will
  * be replaced in future versions. It supports legacy versions of
  * KoralQuery that will be disabled.
- *
+ * 
  * @author diewald
  */
 /*
@@ -58,9 +59,10 @@ public class KrillCollection extends Notifications {
     private String id;
     private ArrayList<FilterOperation> filter;
     private int filterCount = 0;
-    
+
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KrillCollection.class);
+    private final static Logger log = LoggerFactory
+            .getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -68,8 +70,9 @@ public class KrillCollection extends Notifications {
 
     /**
      * Construct a new KrillCollection by passing a KrillIndex.
-     *
-     * @param index The {@link KrillIndex} object.
+     * 
+     * @param index
+     *            The {@link KrillIndex} object.
      */
     public KrillCollection (KrillIndex index) {
         this.index = index;
@@ -81,8 +84,9 @@ public class KrillCollection extends Notifications {
      * Construct a new KrillCollection by passing a KoralQuery.
      * This supports collections with the key "collection" and
      * legacy collections with the key "collections".
-     *
-     * @param jsonString The virtual collection as a KoralQuery.
+     * 
+     * @param jsonString
+     *            The virtual collection as a KoralQuery.
      */
     public KrillCollection (String jsonString) {
         ObjectMapper mapper = new ObjectMapper();
@@ -90,19 +94,17 @@ public class KrillCollection extends Notifications {
 
         try {
             JsonNode json = mapper.readTree(jsonString);
-            
+
             // Deserialize from recent collections
             if (json.has("collection")) {
                 this.fromJson(json.get("collection"));
             }
-	    
+
             // Legacy collection serialization
             // This will be removed!
             else if (json.has("collections")) {
-                this.addMessage(
-                    850,
-                    "Collections are deprecated in favour of a single collection"
-                );
+                this.addMessage(850,
+                        "Collections are deprecated in favour of a single collection");
                 for (JsonNode collection : json.get("collections")) {
                     this.fromJsonLegacy(collection);
                 };
@@ -113,12 +115,8 @@ public class KrillCollection extends Notifications {
             this.addError(qe.getErrorCode(), qe.getMessage());
         }
         catch (IOException e) {
-            this.addError(
-                621,
-                "Unable to parse JSON",
-                "KrillCollection",
-                e.getLocalizedMessage()
-            );
+            this.addError(621, "Unable to parse JSON", "KrillCollection",
+                    e.getLocalizedMessage());
         };
     };
 
@@ -133,8 +131,9 @@ public class KrillCollection extends Notifications {
 
     /**
      * Import the "collection" part of a KoralQuery.
-     *
-     * @param jsonString The "collection" part of a KoralQuery.
+     * 
+     * @param jsonString
+     *            The "collection" part of a KoralQuery.
      * @throws QueryException
      */
     public KrillCollection fromJson (String jsonString) throws QueryException {
@@ -152,9 +151,10 @@ public class KrillCollection extends Notifications {
 
     /**
      * Import the "collection" part of a KoralQuery.
-     *
-     * @param json The "collection" part of a KoralQuery
-     *        as a {@link JsonNode} object.
+     * 
+     * @param json
+     *            The "collection" part of a KoralQuery
+     *            as a {@link JsonNode} object.
      * @throws QueryException
      */
     public KrillCollection fromJson (JsonNode json) throws QueryException {
@@ -170,25 +170,27 @@ public class KrillCollection extends Notifications {
 
 
     // Create a booleanfilter from JSON
-    private BooleanFilter _fromJson (JsonNode json, String field) throws QueryException {
+    private BooleanFilter _fromJson (JsonNode json, String field)
+            throws QueryException {
         BooleanFilter bfilter = new BooleanFilter();
 
         // TODO: THIS UNFORTUNATELY BREAKS TESTS
         if (!json.has("@type"))
-            throw new QueryException(701, "JSON-LD group has no @type attribute");
+            throw new QueryException(701,
+                    "JSON-LD group has no @type attribute");
 
         String type = json.get("@type").asText();
-        
+
         // Single filter
         if (type.equals("koral:doc")) {
 
-            String key     = "tokens";
+            String key = "tokens";
             String valtype = "type:string";
-            String match   = "match:eq";
+            String match = "match:eq";
 
             if (json.has("key"))
                 key = json.get("key").asText();
-            
+
             if (json.has("type"))
                 valtype = json.get("type").asText();
 
@@ -204,15 +206,15 @@ public class KrillCollection extends Notifications {
 
                 // TODO: This isn't stable yet
                 switch (match) {
-                case "match:eq":
-                    bfilter.date(dateStr);
-                    break;
-                case "match:geq":
-                    bfilter.since(dateStr);
-                    break;
-                case "match:leq":
-                    bfilter.till(dateStr);
-                    break;
+                    case "match:eq":
+                        bfilter.date(dateStr);
+                        break;
+                    case "match:geq":
+                        bfilter.since(dateStr);
+                        break;
+                    case "match:leq":
+                        bfilter.till(dateStr);
+                        break;
                 };
                 // No good reason for gt or lt
                 return bfilter;
@@ -248,15 +250,18 @@ public class KrillCollection extends Notifications {
                     group.or(this._fromJson(operand, field));
 
                 else
-                    throw new QueryException(613, "Unknown document group operation");
+                    throw new QueryException(613,
+                            "Unknown document group operation");
             };
             bfilter.and(group);
             return bfilter;
         }
 
         // Unknown type
-        else throw new QueryException(613, "Collection query type has to be doc or docGroup");
-        
+        else
+            throw new QueryException(613,
+                    "Collection query type has to be doc or docGroup");
+
         return new BooleanFilter();
     };
 
@@ -264,15 +269,18 @@ public class KrillCollection extends Notifications {
     /**
      * Import the "collections" part of a KoralQuery.
      * This method is deprecated and will vanish in future versions.
-     *
-     * @param jsonString The "collections" part of a KoralQuery.
+     * 
+     * @param jsonString
+     *            The "collections" part of a KoralQuery.
      * @throws QueryException
      */
     @Deprecated
-    public KrillCollection fromJsonLegacy (String jsonString) throws QueryException {
+    public KrillCollection fromJsonLegacy (String jsonString)
+            throws QueryException {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            this.fromJsonLegacy((JsonNode) mapper.readValue(jsonString, JsonNode.class));
+            this.fromJsonLegacy((JsonNode) mapper.readValue(jsonString,
+                    JsonNode.class));
         }
         catch (Exception e) {
             this.addError(621, "Unable to parse JSON", "KrillCollection");
@@ -284,15 +292,17 @@ public class KrillCollection extends Notifications {
     /**
      * Import the "collections" part of a KoralQuery.
      * This method is deprecated and will vanish in future versions.
-     *
-     * @param json The "collections" part of a KoralQuery
-     *        as a {@link JsonNode} object.
+     * 
+     * @param json
+     *            The "collections" part of a KoralQuery
+     *            as a {@link JsonNode} object.
      * @throws QueryException
      */
     @Deprecated
     public KrillCollection fromJsonLegacy (JsonNode json) throws QueryException {
         if (!json.has("@type"))
-            throw new QueryException(701, "JSON-LD group has no @type attribute");
+            throw new QueryException(701,
+                    "JSON-LD group has no @type attribute");
 
         if (!json.has("@value"))
             throw new QueryException(851, "Legacy filter need @value fields");
@@ -306,7 +316,7 @@ public class KrillCollection extends Notifications {
                 log.trace("Add Filter LEGACY");
             this.filter(bf);
         }
-        
+
         // Extend the collection
         else if (type.equals("koral:meta-extend")) {
             if (DEBUG)
@@ -321,15 +331,17 @@ public class KrillCollection extends Notifications {
     // Create a boolean filter from a Json string
     @Deprecated
     private BooleanFilter _fromJsonLegacy (JsonNode json, String field)
-        throws QueryException {
+            throws QueryException {
         BooleanFilter bfilter = new BooleanFilter();
 
         if (!json.has("@type"))
-            throw new QueryException(612, "JSON-LD group has no @type attribute");
-	
+            throw new QueryException(612,
+                    "JSON-LD group has no @type attribute");
+
         String type = json.get("@type").asText();
-        
-        if (DEBUG) log.trace("@type: " + type);
+
+        if (DEBUG)
+            log.trace("@type: " + type);
 
         if (json.has("@field"))
             field = _getFieldLegacy(json);
@@ -353,62 +365,67 @@ public class KrillCollection extends Notifications {
                 throw new QueryException(612, "Group needs operand list");
 
             if (DEBUG)
-                log.trace("relation found {}",  json.get("relation").asText());
+                log.trace("relation found {}", json.get("relation").asText());
 
             BooleanFilter group = new BooleanFilter();
-	    
-            switch (json.get("relation").asText())  {
-            case "between":
-                dateStr = _getDateLegacy(json, 0);
-                till = _getDateLegacy(json, 1);
-                if (dateStr != null && till != null)
-                    bfilter.between(dateStr, till);
-                break;
 
-            case "until":
-                dateStr = _getDateLegacy(json, 0);
-                if (dateStr != null)
-                    bfilter.till(dateStr);
-                break;
+            switch (json.get("relation").asText()) {
+                case "between":
+                    dateStr = _getDateLegacy(json, 0);
+                    till = _getDateLegacy(json, 1);
+                    if (dateStr != null && till != null)
+                        bfilter.between(dateStr, till);
+                    break;
 
-            case "since":
-                dateStr = _getDateLegacy(json, 0);
-                if (dateStr != null)
-                    bfilter.since(dateStr);
-                break;
+                case "until":
+                    dateStr = _getDateLegacy(json, 0);
+                    if (dateStr != null)
+                        bfilter.till(dateStr);
+                    break;
 
-            case "equals":
-                dateStr = _getDateLegacy(json, 0);
-                if (dateStr != null)
-                    bfilter.date(dateStr);
-                break;
+                case "since":
+                    dateStr = _getDateLegacy(json, 0);
+                    if (dateStr != null)
+                        bfilter.since(dateStr);
+                    break;
 
-            case "and":
-                if (operands.size() < 1)
-                    throw new QueryException(612, "Operation needs at least two operands");
+                case "equals":
+                    dateStr = _getDateLegacy(json, 0);
+                    if (dateStr != null)
+                        bfilter.date(dateStr);
+                    break;
 
-                for (JsonNode operand : operands) {
-                    group.and(this._fromJsonLegacy(operand, field));
-                };
-                bfilter.and(group);
-                break;
+                case "and":
+                    if (operands.size() < 1)
+                        throw new QueryException(612,
+                                "Operation needs at least two operands");
 
-            case "or":
-                if (operands.size() < 1)
-                    throw new QueryException(612, "Operation needs at least two operands");
+                    for (JsonNode operand : operands) {
+                        group.and(this._fromJsonLegacy(operand, field));
+                    }
+                    ;
+                    bfilter.and(group);
+                    break;
 
-                for (JsonNode operand : operands) {
-                    group.or(this._fromJsonLegacy(operand, field));
-                };
-                bfilter.and(group);
-                break;
+                case "or":
+                    if (operands.size() < 1)
+                        throw new QueryException(612,
+                                "Operation needs at least two operands");
 
-            default:
-                throw new QueryException(613, "Relation is not supported");
+                    for (JsonNode operand : operands) {
+                        group.or(this._fromJsonLegacy(operand, field));
+                    }
+                    ;
+                    bfilter.and(group);
+                    break;
+
+                default:
+                    throw new QueryException(613, "Relation is not supported");
             };
         }
         else {
-            throw new QueryException(613, "Filter type is not a supported group");
+            throw new QueryException(613,
+                    "Filter type is not a supported group");
         };
         return bfilter;
     };
@@ -416,8 +433,10 @@ public class KrillCollection extends Notifications {
 
     /**
      * Set the {@link KrillIndex} the virtual collection refers to.
-     *
-     * @param index The {@link KrillIndex} the virtual collection refers to.
+     * 
+     * @param index
+     *            The {@link KrillIndex} the virtual collection refers
+     *            to.
      */
     public void setIndex (KrillIndex index) {
         this.index = index;
@@ -426,18 +445,19 @@ public class KrillCollection extends Notifications {
 
     /**
      * Add a filter by means of a {@link BooleanFilter}.
-     *
+     * 
      * <strong>Warning</strong>: Filters are part of the collections
      * legacy API and may vanish without warning.
-     *
-     * @param filter The filter to add to the collection.
+     * 
+     * @param filter
+     *            The filter to add to the collection.
      * @return The {@link KrillCollection} object for chaining.
      */
     // TODO: The checks may not be necessary
     public KrillCollection filter (BooleanFilter filter) {
         if (DEBUG)
             log.trace("Added filter: {}", filter.toString());
-        
+
         if (filter == null) {
             this.addWarning(830, "Filter was empty");
             return this;
@@ -461,11 +481,12 @@ public class KrillCollection extends Notifications {
 
     /**
      * Add a filter by means of a {@link CollectionBuilder} object.
-     *
+     * 
      * <strong>Warning</strong>: Filters are part of the collections
      * legacy API and may vanish without warning.
-     *
-     * @param filter The filter to add to the collection.
+     * 
+     * @param filter
+     *            The filter to add to the collection.
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection filter (CollectionBuilder filter) {
@@ -475,35 +496,36 @@ public class KrillCollection extends Notifications {
 
     /**
      * Add an extension by means of a {@link BooleanFilter}.
-     *
-     * <strong>Warning</strong>: Extensions are part of the collections
+     * 
+     * <strong>Warning</strong>: Extensions are part of the
+     * collections
      * legacy API and may vanish without warning.
-     *
-     * @param extension The extension to add to the collection.
+     * 
+     * @param extension
+     *            The extension to add to the collection.
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection extend (BooleanFilter extension) {
         if (DEBUG)
             log.trace("Added extension: {}", extension.toString());
 
-        this.filter.add(
-            new FilterOperation(
-                (Filter) new QueryWrapperFilter(extension.toQuery()),
-                true
-            )
-        );
+        this.filter.add(new FilterOperation((Filter) new QueryWrapperFilter(
+                extension.toQuery()), true));
         this.filterCount++;
         return this;
     };
 
 
     /**
-     * Add an extension by means of a {@link CollectionBuilder} object.
-     *
-     * <strong>Warning</strong>: Extensions are part of the collections
+     * Add an extension by means of a {@link CollectionBuilder}
+     * object.
+     * 
+     * <strong>Warning</strong>: Extensions are part of the
+     * collections
      * legacy API and may vanish without warning.
-     *
-     * @param extension The extension to add to the collection.
+     * 
+     * @param extension
+     *            The extension to add to the collection.
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection extend (CollectionBuilder extension) {
@@ -514,10 +536,11 @@ public class KrillCollection extends Notifications {
     /**
      * Add a filter based on a list of unique document identifiers.
      * UIDs may be indexed in the field "UID".
-     *
+     * 
      * This filter is not part of the legacy API!
-     *
-     * @param uids The list of unique document identifier.
+     * 
+     * @param uids
+     *            The list of unique document identifier.
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection filterUIDs (String ... uids) {
@@ -531,10 +554,10 @@ public class KrillCollection extends Notifications {
 
     /**
      * Get the list of filters constructing the collection.
-     *
+     * 
      * <strong>Warning</strong>: This is part of the collections
      * legacy API and may vanish without warning.
-     *
+     * 
      * @return The list of filters.
      */
     public List<FilterOperation> getFilters () {
@@ -545,12 +568,15 @@ public class KrillCollection extends Notifications {
     /**
      * Get a certain {@link FilterOperation} from the list of filters
      * constructing the collection by its numerical index.
-     *
+     * 
      * <strong>Warning</strong>: This is part of the collections
      * legacy API and may vanish without warning.
-     *
-     * @param index The index position of the requested {@link FilterOperation}.
-     * @return The {@link FilterOperation} at the certain list position.
+     * 
+     * @param index
+     *            The index position of the requested
+     *            {@link FilterOperation}.
+     * @return The {@link FilterOperation} at the certain list
+     *         position.
      */
     public FilterOperation getFilter (int index) {
         return this.filter.get(index);
@@ -558,24 +584,27 @@ public class KrillCollection extends Notifications {
 
 
     /**
-     * Get the number of filter operations constructing this collection.
-     *
+     * Get the number of filter operations constructing this
+     * collection.
+     * 
      * <strong>Warning</strong>: This is part of the collections
      * legacy API and may vanish without warning.
-     *
-     * @return The number of filter operations constructing this collection.
+     * 
+     * @return The number of filter operations constructing this
+     *         collection.
      */
-    public int getCount() {
+    public int getCount () {
         return this.filterCount;
     };
 
 
     /**
      * Generate a string representatio of the virtual collection.
-     *
-     * <strong>Warning</strong>: This currently does not generate a valid
+     * 
+     * <strong>Warning</strong>: This currently does not generate a
+     * valid
      * KoralQuery string, so this may change in a future version.
-     *
+     * 
      * @return A string representation of the virtual collection.
      */
     public String toString () {
@@ -592,69 +621,68 @@ public class KrillCollection extends Notifications {
      * This is mostly used for testing purposes
      * and <strong>is not recommended</strong>
      * as a common search API.
-     *
+     * 
      * Please use {@link KrillQuery#run} instead.
-     *
-     * @param query a {@link SpanQuery} to apply on the
-     *        virtual collection.
+     * 
+     * @param query
+     *            a {@link SpanQuery} to apply on the
+     *            virtual collection.
      * @return A {@link Result} object representing the search's
      *         result.
      */
     public Result search (SpanQuery query) {
-        return this.index.search(
-            this,
-            query,
-            0,
-            (short) 20,
-            true, (short) 5,
-            true, (short) 5
-        );
+        return this.index.search(this, query, 0, (short) 20, true, (short) 5,
+                true, (short) 5);
     };
 
 
     /**
      * Create a bit vector representing the live documents of the
      * virtual collection to be used in searches.
-     *
-     * @param The {@link AtomicReaderContext} to search in.
+     * 
+     * @param The
+     *            {@link AtomicReaderContext} to search in.
      * @return A bit vector representing the live documents of the
      *         virtual collection.
      * @throws IOException
      */
-    public FixedBitSet bits (AtomicReaderContext atomic) throws IOException  {
+    public FixedBitSet bits (AtomicReaderContext atomic) throws IOException {
         // TODO: Probably use Bits.MatchAllBits(int len)
         boolean noDoc = true;
         FixedBitSet bitset;
-        
+
         // There are filters set
         if (this.filterCount > 0) {
             bitset = new FixedBitSet(atomic.reader().maxDoc());
 
-            ArrayList<FilterOperation> filters =
-                (ArrayList<FilterOperation>) this.filter.clone();
+            ArrayList<FilterOperation> filters = (ArrayList<FilterOperation>) this.filter
+                    .clone();
 
             FilterOperation kcInit = filters.remove(0);
             if (DEBUG)
                 log.trace("FILTER: {}", kcInit);
-            
+
             // Init vector
             DocIdSet docids = kcInit.filter.getDocIdSet(atomic, null);
 
             DocIdSetIterator filterIter = docids.iterator();
-            
+
             // The filter has an effect
             if (filterIter != null) {
-                if (DEBUG) log.trace("InitFilter has effect");
+                if (DEBUG)
+                    log.trace("InitFilter has effect");
                 bitset.or(filterIter);
                 noDoc = false;
             };
-            
+
             // Apply all filters sequentially
             for (FilterOperation kc : filters) {
-                if (DEBUG) log.trace("FILTER: {}", kc);
+                if (DEBUG)
+                    log.trace("FILTER: {}", kc);
 
                 // TODO: BUG???
-                docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null : bitset);
+                docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null
+                        : bitset);
                 filterIter = docids.iterator();
 
                 if (filterIter == null) {
@@ -674,7 +702,8 @@ public class KrillCollection extends Notifications {
             };
 
             if (!noDoc) {
-                FixedBitSet livedocs = (FixedBitSet) atomic.reader().getLiveDocs();
+                FixedBitSet livedocs = (FixedBitSet) atomic.reader()
+                        .getLiveDocs();
                 if (livedocs != null)
                     bitset.and(livedocs);
             };
@@ -691,11 +720,14 @@ public class KrillCollection extends Notifications {
      * Search for the number of occurrences of different types,
      * e.g. <i>documents</i>, <i>sentences</i> etc. in the virtual
      * collection.
-     *
-     * @param field The field containing the textual data and the
-     *        annotations as a string.
-     * @param type The type of meta information,
-     *        e.g. <i>documents</i> or <i>sentences</i> as a string.
+     * 
+     * @param field
+     *            The field containing the textual data and the
+     *            annotations as a string.
+     * @param type
+     *            The type of meta information,
+     *            e.g. <i>documents</i> or <i>sentences</i> as a
+     *            string.
      * @return The number of the occurrences.
      * @throws IOException
      * @see KrillIndex#numberOf
@@ -712,9 +744,11 @@ public class KrillCollection extends Notifications {
      * Search for the number of occurrences of different types,
      * e.g. <i>documents</i>, <i>sentences</i> etc. in the virtual
      * collection, in the <i>base</i> foundry.
-     *
-     * @param type The type of meta information,
-     *        e.g. <i>documents</i> or <i>sentences</i> as a string.
+     * 
+     * @param type
+     *            The type of meta information,
+     *            e.g. <i>documents</i> or <i>sentences</i> as a
+     *            string.
      * @return The number of the occurrences.
      * @throws IOException
      * @see KrillIndex#numberOf
@@ -731,7 +765,7 @@ public class KrillCollection extends Notifications {
     @Deprecated
     public HashMap getTermRelation (String field) throws Exception {
         if (this.index == null) {
-            HashMap<String,Long> map = new HashMap<>(1);
+            HashMap<String, Long> map = new HashMap<>(1);
             map.put("-docs", (long) 0);
             return map;
         };
@@ -746,26 +780,26 @@ public class KrillCollection extends Notifications {
         ObjectMapper mapper = new ObjectMapper();
         StringWriter sw = new StringWriter();
         sw.append("{\"field\":");
-        mapper.writeValue(sw,field);
+        mapper.writeValue(sw, field);
         sw.append(",");
 
         try {
             HashMap<String, Long> map = this.getTermRelation(field);
 
             sw.append("\"documents\":");
-            mapper.writeValue(sw,map.remove("-docs"));
+            mapper.writeValue(sw, map.remove("-docs"));
             sw.append(",");
 
             String[] keys = map.keySet().toArray(new String[map.size()]);
 
-            HashMap<String,Integer> setHash = new HashMap<>(20);
-            ArrayList<HashMap<String,Long>> set = new ArrayList<>(20);
+            HashMap<String, Integer> setHash = new HashMap<>(20);
+            ArrayList<HashMap<String, Long>> set = new ArrayList<>(20);
             ArrayList<Long[]> overlap = new ArrayList<>(100);
-	    
+
             int count = 0;
             for (String key : keys) {
                 if (!key.startsWith("#__")) {
-                    HashMap<String,Long> simpleMap = new HashMap<>();
+                    HashMap<String, Long> simpleMap = new HashMap<>();
                     simpleMap.put(key, map.remove(key));
                     set.add(simpleMap);
                     setHash.put(key, count++);
@@ -790,7 +824,7 @@ public class KrillCollection extends Notifications {
         }
         catch (Exception e) {
             sw.append("\"error\":");
-            mapper.writeValue(sw,e.getMessage());
+            mapper.writeValue(sw, e.getMessage());
         };
 
         sw.append("}");
@@ -800,7 +834,7 @@ public class KrillCollection extends Notifications {
 
     // Get legacy field
     @Deprecated
-    private static String  _getFieldLegacy (JsonNode json)  {
+    private static String _getFieldLegacy (JsonNode json) {
         if (!json.has("@field"))
             return (String) null;
 
@@ -825,7 +859,7 @@ public class KrillCollection extends Notifications {
 
         if (!date.get("@type").asText().equals("koral:date"))
             return (String) null;
-        
+
         if (!date.has("@value"))
             return (String) null;
 

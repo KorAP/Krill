@@ -17,15 +17,15 @@ import de.ids_mannheim.korap.response.Notifications;
 /**
  * Base class for objects meant to be responded by the server.
  * This inherits KoralQuery requests.
- *
+ * 
  * <p>
  * <blockquote><pre>
- *   Response km = new Response();
- *   System.out.println(
- *     km.toJsonString()
- *   );
+ * Response km = new Response();
+ * System.out.println(
+ * km.toJsonString()
+ * );
  * </pre></blockquote>
- *
+ * 
  * @author diewald
  * @see Notifications
  */
@@ -41,9 +41,8 @@ public class Response extends Notifications {
     private String version, name, node, listener;
     private KrillQuery query;
 
-    private long
-        totalResources = -2, // Not set
-        totalResults   = -2; // Not set
+    private long totalResources = -2, // Not set
+            totalResults = -2; // Not set
     private String benchmark;
     private boolean timeExceeded = false;
 
@@ -56,7 +55,7 @@ public class Response extends Notifications {
 
     /**
      * Get string representation of the backend's version.
-     *
+     * 
      * @return String representation of the backend's version
      */
     public String getVersion () {
@@ -66,8 +65,9 @@ public class Response extends Notifications {
 
     /**
      * Set the string representation of the backend's version.
-     *
-     * @param version The string representation of the backend's version
+     * 
+     * @param version
+     *            The string representation of the backend's version
      * @return Response object for chaining
      */
     public Response setVersion (String fullVersion) {
@@ -89,7 +89,7 @@ public class Response extends Notifications {
     /**
      * Get string representation of the backend's name.
      * All nodes in a cluster should have the same backend name.
-     *
+     * 
      * @return String representation of the backend's name
      */
     public String getName () {
@@ -100,8 +100,9 @@ public class Response extends Notifications {
     /**
      * Set the string representation of the backend's name.
      * All nodes in a cluster should have the same backend name.
-     *
-     * @param name The string representation of the backend's name
+     * 
+     * @param name
+     *            The string representation of the backend's name
      * @return Response object for chaining
      */
     public Response setName (String name) {
@@ -113,7 +114,7 @@ public class Response extends Notifications {
     /**
      * Get string representation of the node's name.
      * Each node in a cluster has a unique name.
-     *
+     * 
      * @return String representation of the node's name
      */
     public String getNode () {
@@ -124,8 +125,9 @@ public class Response extends Notifications {
     /**
      * Set the string representation of the node's name.
      * Each node in a cluster has a unique name.
-     *
-     * @param version The string representation of the node's name
+     * 
+     * @param version
+     *            The string representation of the node's name
      * @return Response object for chaining
      */
     public Response setNode (String name) {
@@ -136,7 +138,7 @@ public class Response extends Notifications {
 
     /**
      * Check if the response time was exceeded.
-     *
+     * 
      * @return <tt>true</tt> in case the response had a timeout,
      *         otherwise <tt>false</tt>
      */
@@ -144,17 +146,18 @@ public class Response extends Notifications {
     public boolean hasTimeExceeded () {
         return this.timeExceeded;
     };
-    
+
 
     /**
      * Set to <tt>true</tt> if time is exceeded
      * based on a timeout.
-     *
+     * 
      * <p>
      * Will add a warning (682) to the output.
-     *
-     * @param timeout Either <tt>true</tt> or <tt>false</tt>,
-     * in case the response timed out
+     * 
+     * @param timeout
+     *            Either <tt>true</tt> or <tt>false</tt>,
+     *            in case the response timed out
      * @return Response object for chaining
      */
     public Response setTimeExceeded (boolean timeout) {
@@ -167,50 +170,53 @@ public class Response extends Notifications {
 
     /**
      * Get the benchmark time as a string.
-     *
+     * 
      * @return String representation of the benchmark
      *         (including trailing time unit)
      */
     public String getBenchmark () {
         return this.benchmark;
     };
-    
+
 
     /**
      * Set the benchmark as timestamp differences.
-     *
-     * @param ts1 Starting time of the benchmark
-     * @param ts2 Ending time of the benchmark
+     * 
+     * @param ts1
+     *            Starting time of the benchmark
+     * @param ts2
+     *            Ending time of the benchmark
      * @return Response object for chaining
      */
     @JsonIgnore
     public Response setBenchmark (long ts1, long ts2) {
-        this.benchmark =
-            (ts2 - ts1) < 100_000_000 ?
-            // Store as miliseconds
-            (((double) (ts2 - ts1) * 1e-6) + " ms") :
-            // Store as seconds
-            (((double) (ts2 - ts1) / 1000000000.0) + " s");
+        this.benchmark = (ts2 - ts1) < 100_000_000 ?
+        // Store as miliseconds
+        (((double) (ts2 - ts1) * 1e-6) + " ms")
+                :
+                // Store as seconds
+                (((double) (ts2 - ts1) / 1000000000.0) + " s");
         return this;
     };
-    
+
 
     /**
      * Set the benchmark as a string representation.
-     *
-     * @param bm String representation of a benchmark
-     *           (including trailing time unit)
+     * 
+     * @param bm
+     *            String representation of a benchmark
+     *            (including trailing time unit)
      * @return Response for chaining
      */
     public Response setBenchmark (String bm) {
         this.benchmark = bm;
         return this;
     };
-    
+
 
     /**
      * Get the listener URI as a string.
-     *
+     * 
      * @return The listener URI as a string representation
      */
     public String getListener () {
@@ -219,15 +225,17 @@ public class Response extends Notifications {
 
 
     /**
-     * Set the listener URI as a String. This is probably the localhost
+     * Set the listener URI as a String. This is probably the
+     * localhost
      * with an arbitrary port, like
-     *
+     * 
      * <p>
      * <blockquote><pre>
-     *   http://localhost:8080/
+     * http://localhost:8080/
      * </pre></blockquote>
-     *
-     * @param listener String representation of the listener URI
+     * 
+     * @param listener
+     *            String representation of the listener URI
      * @return Response object for chaining
      */
     public Response setListener (String listener) {
@@ -238,7 +246,7 @@ public class Response extends Notifications {
 
     /**
      * Get the total number of results.
-     *
+     * 
      * @return The total number of results.
      */
     public long getTotalResults () {
@@ -250,8 +258,9 @@ public class Response extends Notifications {
 
     /**
      * Set the total number of results.
-     *
-     * @param results The total number of results.
+     * 
+     * @param results
+     *            The total number of results.
      * @return {link Response} object for chaining.
      */
     public Response setTotalResults (long results) {
@@ -262,9 +271,10 @@ public class Response extends Notifications {
 
     /**
      * Increment the total number of results by a certain value.
-     *
-     * @param incr The number of results the total number should
-     *        be incremented by.
+     * 
+     * @param incr
+     *            The number of results the total number should
+     *            be incremented by.
      * @return {@link Response} object for chaining.
      */
     public Response incrTotalResults (int incr) {
@@ -279,7 +289,7 @@ public class Response extends Notifications {
     /**
      * Get the total number of resources the total number of
      * results occur in.
-     *
+     * 
      * @return The total number of resources the total number of
      *         results occur in.
      */
@@ -293,9 +303,10 @@ public class Response extends Notifications {
     /**
      * Set the total number of resources the total number of
      * results occur in.
-     *
-     * @param resources The total number of resources the total
-     *        number of results occur in.
+     * 
+     * @param resources
+     *            The total number of resources the total
+     *            number of results occur in.
      * @return {@link Response} object for chaining.
      */
     public Response setTotalResources (long resources) {
@@ -307,10 +318,11 @@ public class Response extends Notifications {
     /**
      * Increment the total number of resources the total number
      * of results occur in by a certain value.
-     *
-     * @param incr The number of resources the total number of
-     *        results occur in should be incremented by.
-     *        (I don't care that this isn't English!)
+     * 
+     * @param incr
+     *            The number of resources the total number of
+     *            results occur in should be incremented by.
+     *            (I don't care that this isn't English!)
      * @return {@link Response} object for chaining.
      */
     public Response incrTotalResources (int i) {
@@ -324,7 +336,7 @@ public class Response extends Notifications {
 
     /**
      * Get the KoralQuery query object.
-     *
+     * 
      * @return The {@link KrillQuery} object,
      *         representing the KoralQuery query object.
      */
@@ -339,9 +351,10 @@ public class Response extends Notifications {
 
     /**
      * Set the KoralQuery query object.
-     *
-     * @param query The {@link KrillQuery} object,
-     *        representing the KoralQuery query object.
+     * 
+     * @param query
+     *            The {@link KrillQuery} object,
+     *            representing the KoralQuery query object.
      * @return The {@link Response} object for chaining
      */
     @JsonIgnore
@@ -357,7 +370,7 @@ public class Response extends Notifications {
      * Get the associated collection object.
      * In case no collection information was defined yet,
      * a new {@link KrillCollection} object will be created.
-     *
+     * 
      * @return The attached {@link KrillCollection} object.
      */
     @JsonIgnore
@@ -370,24 +383,25 @@ public class Response extends Notifications {
 
     /**
      * Set a new {@link KrillCollection} object.
-     *
-     * @param collection A {@link KrillCollection} object.
+     * 
+     * @param collection
+     *            A {@link KrillCollection} object.
      * @return The {@link Response} object for chaining
      */
     @JsonIgnore
     public Response setCollection (KrillCollection collection) {
         this.collection = collection;
-        
+
         // Move messages from the collection
         return (Response) this.moveNotificationsFrom(collection);
     };
 
-    
+
     /**
      * Get the associated meta object.
      * In case no meta information was defined yet,
      * a new {@link KrillMeta} object will be created.
-     *
+     * 
      * @return The attached {@link KrillMeta} object.
      */
     @JsonIgnore
@@ -400,14 +414,15 @@ public class Response extends Notifications {
 
     /**
      * Set a new {@link KrillMeta} object.
-     *
-     * @param meta A {@link KrillMeta} object.
+     * 
+     * @param meta
+     *            A {@link KrillMeta} object.
      * @return The {@link Response} object for chaining
      */
     @JsonIgnore
     public Response setMeta (KrillMeta meta) {
         this.meta = meta;
-        
+
         // Move messages from the collection
         return (Response) this.moveNotificationsFrom(meta);
     };
@@ -415,7 +430,7 @@ public class Response extends Notifications {
 
     /**
      * Serialize response as a {@link JsonNode}.
-     *
+     * 
      * @return {@link JsonNode} representation of the response
      */
     @Override
@@ -427,7 +442,7 @@ public class Response extends Notifications {
         StringBuilder sb = new StringBuilder();
         if (this.getName() != null) {
             sb.append(this.getName());
-            
+
             if (this.getVersion() != null)
                 sb.append("-");
         };
@@ -438,10 +453,10 @@ public class Response extends Notifications {
 
         if (sb.length() > 0)
             json.put("version", sb.toString());
-        
+
         if (this.timeExceeded)
             json.put("timeExceeded", true);
-        
+
         if (this.getNode() != null)
             json.put("node", this.getNode());
 
@@ -454,7 +469,7 @@ public class Response extends Notifications {
         // totalResources is set
         if (this.totalResources != -2)
             json.put("totalResources", this.totalResources);
-        
+
         // totalResults is set
         if (this.totalResults != -2)
             json.put("totalResults", this.totalResults);
@@ -474,8 +489,8 @@ public class Response extends Notifications {
         };
 
         // KoralQuery collection object
-        if (this.collection != null &&
-            this.collection.getFilters().toArray().length > 0) {
+        if (this.collection != null
+                && this.collection.getFilters().toArray().length > 0) {
             JsonNode collNode = this.collection.toJsonNode();
             if (collNode != null)
                 json.put("collection", collNode);
@@ -490,21 +505,21 @@ public class Response extends Notifications {
      * <p>
      * <blockquote><pre>
      * {
-     *   "version" : "Lucene-Backend-0.49.1",
-     *   "timeExceeded" : true,
-     *   "node" : "Tanja",
-     *   "listener" : "http://localhost:8080/",
-     *   "benchmark" : "12.3s",
-     *   "errors": [
-     *     [123, "You are not allowed to serialize these messages"],
-     *     [124, "Your request was invalid"]
-     *   ],
-     *   "messages" : [
-     *     [125, "Class is deprecated", "Notifications"]
-     *   ]
+     * "version" : "Lucene-Backend-0.49.1",
+     * "timeExceeded" : true,
+     * "node" : "Tanja",
+     * "listener" : "http://localhost:8080/",
+     * "benchmark" : "12.3s",
+     * "errors": [
+     * [123, "You are not allowed to serialize these messages"],
+     * [124, "Your request was invalid"]
+     * ],
+     * "messages" : [
+     * [125, "Class is deprecated", "Notifications"]
+     * ]
      * }
      * </pre></blockquote>
-     *
+     * 
      * @return String representation of the response
      */
     public String toJsonString () {
@@ -517,10 +532,7 @@ public class Response extends Notifications {
             msg = ", \"" + e.getLocalizedMessage() + "\"";
         };
 
-        return
-            "{\"errors\":["+
-            "[620, " +
-            "\"Unable to generate JSON\"" + msg + "]" +
-            "]}";
+        return "{\"errors\":[" + "[620, " + "\"Unable to generate JSON\"" + msg
+                + "]" + "]}";
     };
 };

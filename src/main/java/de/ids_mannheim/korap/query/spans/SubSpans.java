@@ -23,6 +23,7 @@ public class SubSpans extends SimpleSpans {
 
     private int startOffset, length;
 
+
     /**
      * Constructs SubSpans for the given {@link SpanSubspanQuery}
      * specifiying the start offset and the length of the subspans.
@@ -35,19 +36,21 @@ public class SubSpans extends SimpleSpans {
      * @throws IOException
      */
     public SubSpans (SpanSubspanQuery subspanQuery,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+                     AtomicReaderContext context, Bits acceptDocs,
+                     Map<Term, TermContext> termContexts) throws IOException {
         super(subspanQuery, context, acceptDocs, termContexts);
         this.startOffset = subspanQuery.getStartOffset();
         this.length = subspanQuery.getLength();
         hasMoreSpans = firstSpans.next();
     }
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         isStartEnumeration = false;
         return advance();
     }
+
 
     /**
      * Advances the SubSpans to the next match.
@@ -56,7 +59,7 @@ public class SubSpans extends SimpleSpans {
      *         <code>false</code> otherwise.
      * @throws IOException
      */
-    private boolean advance() throws IOException {
+    private boolean advance () throws IOException {
         while (hasMoreSpans) {
             if (findMatch()) {
                 hasMoreSpans = firstSpans.next();
@@ -67,12 +70,13 @@ public class SubSpans extends SimpleSpans {
         return false;
     }
 
+
     /**
      * Sets the properties of the current match/subspan.
      * 
      * @throws IOException
      */
-    public boolean findMatch() throws IOException {
+    public boolean findMatch () throws IOException {
         if (this.startOffset < 0) {
             matchStartPosition = firstSpans.end() + startOffset;
             if (matchStartPosition < firstSpans.start()) {
@@ -100,8 +104,9 @@ public class SubSpans extends SimpleSpans {
         return true;
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (firstSpans.doc() < target)) {
             if (!firstSpans.skipTo(target)) {
                 hasMoreSpans = false;
@@ -112,8 +117,9 @@ public class SubSpans extends SimpleSpans {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return firstSpans.cost() + 1;
     }
 

@@ -14,40 +14,46 @@ public class TestMessage {
 
     @Test
     public void StringMessage () {
-	Messages km = new Messages();
-	assertEquals("[]", km.toJsonString());
+        Messages km = new Messages();
+        assertEquals("[]", km.toJsonString());
     };
+
 
     @Test
     public void StringMessageSet () {
-	Messages km = new Messages();
-	km.add(612,"Foo");
-	assertEquals("[[612,\"Foo\"]]", km.toJsonString());
-	km.add(613,"Bar");
-	assertEquals("[[612,\"Foo\"],[613,\"Bar\"]]", km.toJsonString());
+        Messages km = new Messages();
+        km.add(612, "Foo");
+        assertEquals("[[612,\"Foo\"]]", km.toJsonString());
+        km.add(613, "Bar");
+        assertEquals("[[612,\"Foo\"],[613,\"Bar\"]]", km.toJsonString());
     };
+
 
     @Test
     public void StringMessageParameters () {
-	Messages km = new Messages();
-	km.add(612,"Foo");
-	assertEquals("[[612,\"Foo\"]]", km.toJsonString());
-	km.add(613,"Bar", "Instanz");
-	assertEquals("[[612,\"Foo\"],[613,\"Bar\",\"Instanz\"]]", km.toJsonString());
-	km.add(614,"Test");
-	assertEquals("[[612,\"Foo\"],[613,\"Bar\",\"Instanz\"],[614,\"Test\"]]", km.toJsonString());
+        Messages km = new Messages();
+        km.add(612, "Foo");
+        assertEquals("[[612,\"Foo\"]]", km.toJsonString());
+        km.add(613, "Bar", "Instanz");
+        assertEquals("[[612,\"Foo\"],[613,\"Bar\",\"Instanz\"]]",
+                km.toJsonString());
+        km.add(614, "Test");
+        assertEquals(
+                "[[612,\"Foo\"],[613,\"Bar\",\"Instanz\"],[614,\"Test\"]]",
+                km.toJsonString());
     };
+
 
     @Test
     public void CheckIterability () {
-	Messages km = new Messages();
-	km.add(612,"Foo");
-	km.add(613,"Bar", "Instanz");
-	km.add(614,"Test");
-	String test = "";
-	for (Message msg : km)
-	    test += msg.getCode();
+        Messages km = new Messages();
+        km.add(612, "Foo");
+        km.add(613, "Bar", "Instanz");
+        km.add(614, "Test");
+        String test = "";
+        for (Message msg : km)
+            test += msg.getCode();
 
-	assertEquals(test, "612613614");
+        assertEquals(test, "612613614");
     };
 };

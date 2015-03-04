@@ -28,9 +28,9 @@ import java.util.List;
 */
 /**
  * Response class for search results.
- *
+ * 
  * TODO: Synopsis and let it base on KoralQuery
- *
+ * 
  * @author diewald
  * @see Response
  */
@@ -40,7 +40,7 @@ public class Result extends Krill {
     ObjectMapper mapper = new ObjectMapper();
 
     @JsonIgnore
-    public static final short ITEMS_PER_PAGE     = 25;
+    public static final short ITEMS_PER_PAGE = 25;
     public static final short ITEMS_PER_PAGE_MAX = 100;
 
     private int startIndex = 0;
@@ -50,9 +50,7 @@ public class Result extends Krill {
 
     private SearchContext context;
 
-    private short
-        itemsPerPage     = ITEMS_PER_PAGE,
-        itemsPerResource = 0;
+    private short itemsPerPage = ITEMS_PER_PAGE, itemsPerResource = 0;
 
     private JsonNode request;
 
@@ -64,23 +62,25 @@ public class Result extends Krill {
     /**
      * Construct a new Result object.
      */
-    public Result() {
+    public Result () {
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
     };
 
 
     /**
      * Construct a new Result object.
-     *
-     * @param serialQuery Query representation as a string.
-     * @param startIndex Offset position in match array.
-     * @param itemsPerPage Number of matches per page.
-     * @param context Requested {@link SearchContext}
+     * 
+     * @param serialQuery
+     *            Query representation as a string.
+     * @param startIndex
+     *            Offset position in match array.
+     * @param itemsPerPage
+     *            Number of matches per page.
+     * @param context
+     *            Requested {@link SearchContext}
      */
-    public Result(String query,
-                       int startIndex,
-                       short itemsPerPage,
-                       SearchContext context) {
+    public Result (String query, int startIndex, short itemsPerPage,
+                   SearchContext context) {
 
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         // mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
@@ -89,17 +89,17 @@ public class Result extends Krill {
         this.matches = new ArrayList<>(itemsPerPage);
         this.serialQuery = query;
         this.startIndex = startIndex;
-        this.itemsPerPage =
-            (itemsPerPage > ITEMS_PER_PAGE_MAX || itemsPerPage < 1) ?
-            ITEMS_PER_PAGE : itemsPerPage;
+        this.itemsPerPage = (itemsPerPage > ITEMS_PER_PAGE_MAX || itemsPerPage < 1) ? ITEMS_PER_PAGE
+                : itemsPerPage;
         this.context = context;
     };
 
 
     /**
      * Add a new match to the result set.
-     *
-     * @param match A {@link Match} to add.
+     * 
+     * @param match
+     *            A {@link Match} to add.
      */
     public void add (Match km) {
         this.matches.add(km);
@@ -108,7 +108,7 @@ public class Result extends Krill {
 
     /**
      * Get the number of items (documents) shown per page.
-     *
+     * 
      * @return Number of items shown per page.
      */
     public short getItemsPerPage () {
@@ -118,8 +118,9 @@ public class Result extends Krill {
 
     /**
      * Set the number of items (documents) shown per page.
-     *
-     * @param count Number of items shown per page.
+     * 
+     * @param count
+     *            Number of items shown per page.
      * @return {@link Result} object for chaining.
      */
     public Result setItemsPerPage (short count) {
@@ -130,7 +131,7 @@ public class Result extends Krill {
 
     /**
      * Get serialized query as a {@link JsonNode}.
-     *
+     * 
      * @return {@link JsonNode} representation of the query object.
      */
     public JsonNode getRequest () {
@@ -140,10 +141,11 @@ public class Result extends Krill {
 
     /**
      * Set serialized query as a {@link JsonNode}.
-     *
-     * @param request {@link JsonNode} representation of the query object.
+     * 
+     * @param request
+     *            {@link JsonNode} representation of the query object.
      * @return {@link Result} object for chaining.
-     */    
+     */
     public Result setRequest (JsonNode request) {
         this.request = request;
         return this;
@@ -153,7 +155,7 @@ public class Result extends Krill {
     /**
      * Get the number of items shown per resource (document).
      * Defaults to <tt>0</tt>, which is infinite.
-     *
+     * 
      * @return The number of items shown per resource.
      */
     public short getItemsPerResource () {
@@ -164,8 +166,9 @@ public class Result extends Krill {
     /**
      * Set the number of items (matches) shown per resource (text).
      * Defaults to <tt>0</tt>, which is infinite.
-     *
-     * @param value The number of items shown per resource.
+     * 
+     * @param value
+     *            The number of items shown per resource.
      * @return {@link Result} object for chaining.
      */
     public Result setItemsPerResource (short value) {
@@ -175,10 +178,12 @@ public class Result extends Krill {
 
 
     /**
-     * Set the number of items (matches) shown per resource (document).
+     * Set the number of items (matches) shown per resource
+     * (document).
      * Defaults to <tt>0</tt>, which is infinite.
-     *
-     * @param value The number of items shown per resource.
+     * 
+     * @param value
+     *            The number of items shown per resource.
      * @return {@link Result} object for chaining.
      */
     public Result setItemsPerResource (int value) {
@@ -189,7 +194,7 @@ public class Result extends Krill {
 
     /**
      * Get the string representation of the search query.
-     *
+     * 
      * @return The string representation of the search query.
      */
     public String getSerialQuery () {
@@ -199,9 +204,10 @@ public class Result extends Krill {
 
     /**
      * Get a certain {@link Match} by index.
-     *
-     * @param index The numerical index of the match,
-     *        starts with <tt>0</tt>.
+     * 
+     * @param index
+     *            The numerical index of the match,
+     *            starts with <tt>0</tt>.
      * @return The {@link Match} object.
      */
     @JsonIgnore
@@ -212,10 +218,10 @@ public class Result extends Krill {
 
     /**
      * Get the list of {@link Match} matches.
-     *
+     * 
      * @return The list of {@link Match} objects.
      */
-    public List<Match> getMatches() {
+    public List<Match> getMatches () {
         return this.matches;
     };
 
@@ -223,7 +229,7 @@ public class Result extends Krill {
     /**
      * Get the number of the first match in the result set
      * (<i>aka</i> the offset). Starts with <tt>0</tt>.
-     *
+     * 
      * @return The index number of the first match in the result set.
      */
     public int getStartIndex () {
@@ -234,7 +240,7 @@ public class Result extends Krill {
     /**
      * Get the context parameters of the search by means of a
      * {@link SearchContext} object.
-     *
+     * 
      * @return The {@link SearchContext} object.
      */
     public SearchContext getContext () {
@@ -245,9 +251,10 @@ public class Result extends Krill {
     /**
      * Set the context parameters of the search by means of a
      * {@link SearchContext} object.
-     *
-     * @param context The {@link SearchContext} object providing
-     *        search context parameters.
+     * 
+     * @param context
+     *            The {@link SearchContext} object providing
+     *            search context parameters.
      * @return {@link Result} object for chaining.
      */
     public Result setContext (SearchContext context) {
@@ -258,7 +265,7 @@ public class Result extends Krill {
 
     /**
      * Serialize the result set as a {@link JsonNode}.
-     *
+     * 
      * @return {@link JsonNode} representation of the search results.
      */
     public JsonNode toJsonNode () {
@@ -293,29 +300,24 @@ public class Result extends Krill {
         return json;
     };
 
+
     /**
      * Stringifies the matches to give a brief overview on
      * the result. Mainly used for testing.
-     *
-     * @return The stringified matches 
+     * 
+     * @return The stringified matches
      */
     public String getOverview () {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("Search for: ")
-            .append(this.serialQuery)
-            .append("\n");
+        sb.append("Search for: ").append(this.serialQuery).append("\n");
 
         int i = 1;
 
         // Add matches as bracket strings
         for (Match km : this.getMatches())
-            sb.append(i++)
-                .append(": ")
-                .append(km.getSnippetBrackets())
-                .append(" (Doc ")
-                .append(km.getLocalDocID())
-                .append(")\n");
+            sb.append(i++).append(": ").append(km.getSnippetBrackets())
+                    .append(" (Doc ").append(km.getLocalDocID()).append(")\n");
 
         return sb.toString();
     };
@@ -325,9 +327,9 @@ public class Result extends Krill {
     @Deprecated
     public String toTokenListJsonString () {
         ObjectNode json = (ObjectNode) mapper.valueToTree(this);
-        
+
         ArrayNode array = json.putArray("matches");
-	
+
         // Add matches as token lists
         for (Match km : this.getMatches())
             array.add(km.toTokenList());
@@ -338,7 +340,7 @@ public class Result extends Krill {
         catch (Exception e) {
             log.warn(e.getLocalizedMessage());
         };
-        
+
         return "{}";
     };
 };

@@ -15,12 +15,15 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subquery;
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(SpanSequenceQueryWrapper.class);
+    private final static Logger log = LoggerFactory
+            .getLogger(SpanSequenceQueryWrapper.class);
+
 
     public SpanRepetitionQueryWrapper () {
         this.isEmpty = true;
         this.isNull = false;
     };
+
 
     // This is for exact enumbered repetition, like in a{3}
     public SpanRepetitionQueryWrapper (SpanQueryWrapper subquery, int exact) {
@@ -39,13 +42,15 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
             this.max = 0;
             return;
         };
-	
+
         this.min = exact;
         this.max = exact;
     };
 
+
     // This is for a range of repetitions, like in a{2,3}, a{,4}, a{3,}, a+, a*, a?
-    public SpanRepetitionQueryWrapper (SpanQueryWrapper subquery, int min, int max) {
+    public SpanRepetitionQueryWrapper (SpanQueryWrapper subquery, int min,
+                                       int max) {
 
         if (!subquery.isEmpty()) {
             this.subquery = subquery;
@@ -64,14 +69,14 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
         else {
             this.isNull = false;
         };
-	
+
         if (min == 0) {
             this.isOptional = true;
             min = 1;
             if (max == 0)
                 this.isNull = true;
         };
-        
+
         this.min = min;
         this.max = max;
     };
@@ -83,7 +88,7 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
         // The query is null
         if (this.isNull)
             return (SpanQuery) null;
-        
+
         if (this.isEmpty) {
             log.error("You can't queryize an empty query");
             return (SpanQuery) null;
@@ -94,13 +99,10 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
             return this.subquery.retrieveNode(this.retrieveNode).toQuery();
 
         // That's a fine repetition query
-        return new SpanRepetitionQuery(
-            this.subquery.retrieveNode(this.retrieveNode).toQuery(),
-            this.min,
-            this.max,
-            true
-        );
+        return new SpanRepetitionQuery(this.subquery.retrieveNode(
+                this.retrieveNode).toQuery(), this.min, this.max, true);
     };
+
 
     public boolean isNegative () {
         if (this.subquery == null)

@@ -15,22 +15,22 @@ import de.ids_mannheim.korap.util.QueryException;
 /**
  * A unified notification class for KorAP related errors,
  * warnings and messages.
- *
+ * 
  * <p>
  * The object contains lists of errors, warnings and messages
  * and new warnings, errors or messages are appended to these lists.
- *
+ * 
  * <p>
  * <blockquote><pre>
- *   Notifications n = new Notifications();
- *   n.addWarning(456, "Something went wrong");
- *   if (n.hasWarnings()) {
- *     for (Message msg : n.getWarnings())
- *       System.err.out(msg.getCode() + ": " + msg.getMessage());
- *   };
- *   System.err.println(n.toJsonString());
+ * Notifications n = new Notifications();
+ * n.addWarning(456, "Something went wrong");
+ * if (n.hasWarnings()) {
+ * for (Message msg : n.getWarnings())
+ * System.err.out(msg.getCode() + ": " + msg.getMessage());
+ * };
+ * System.err.println(n.toJsonString());
  * </pre></blockquote>
- *
+ * 
  * @author Nils Diewald
  * @see de.ids_mannheim.korap.response.Messages
  */
@@ -47,10 +47,12 @@ public class Notifications {
 
     private Messages warnings, errors, messages;
 
+
     /**
      * Check for warnings.
-     *
-     * @return <tt>true</tt> in case there are warnings, otherwise <tt>false</tt>
+     * 
+     * @return <tt>true</tt> in case there are warnings, otherwise
+     *         <tt>false</tt>
      */
     public boolean hasWarnings () {
         if (this.warnings == null || this.warnings.size() == 0)
@@ -61,7 +63,7 @@ public class Notifications {
 
     /**
      * Return all warnings.
-     *
+     * 
      * @return {@link Messages} representing all warnings
      */
     public Messages getWarnings () {
@@ -71,8 +73,9 @@ public class Notifications {
 
     /**
      * Set warnings by means of a {@link JsonNode}.
-     *
-     * @param msgs JSON array of warnings.
+     * 
+     * @param msgs
+     *            JSON array of warnings.
      * @return {@link Notifications} object for chaining.
      */
     public Notifications setWarnings (JsonNode msgs) {
@@ -85,9 +88,11 @@ public class Notifications {
 
     /**
      * Return a specific warning based on an index.
-     *
-     * @param index The index of the warning in the list of warnings.
-     * @return The message in case it exists, otherwise <code>null</code>
+     * 
+     * @param index
+     *            The index of the warning in the list of warnings.
+     * @return The message in case it exists, otherwise
+     *         <code>null</code>
      */
     public Message getWarning (int index) {
         if (this.warnings != null)
@@ -98,10 +103,13 @@ public class Notifications {
 
     /**
      * Appends a new warning.
-     *
-     * @param code  Integer code representation of the warning
-     * @param msg   String representation of the warning
-     * @param terms Optional strings of additional information
+     * 
+     * @param code
+     *            Integer code representation of the warning
+     * @param msg
+     *            String representation of the warning
+     * @param terms
+     *            Optional strings of additional information
      * @return Notification object for chaining
      */
     public Notifications addWarning (int code, String msg, String ... terms) {
@@ -111,31 +119,34 @@ public class Notifications {
         return this;
     };
 
+
     /**
      * Appends a new warning.
-     *
-     * @param node  {@link JsonNode} representing a warning message
+     * 
+     * @param node
+     *            {@link JsonNode} representing a warning message
      * @return Notification object for chaining
      */
     public Notifications addWarning (JsonNode node) {
         if (this.warnings == null)
             this.warnings = new Messages();
-    
+
         try {
             this.warnings.add(node);
         }
         catch (QueryException qe) {
             this.warnings.add(qe.getErrorCode(), qe.getMessage());
         };
-        
+
         return this;
     };
 
 
     /**
      * Appends new warnings.
-     *
-     * @param msgs  {@link Messages} representing multiple warnings
+     * 
+     * @param msgs
+     *            {@link Messages} representing multiple warnings
      * @return Notification object for chaining
      */
     public Notifications addWarnings (Messages msgs) {
@@ -149,7 +160,7 @@ public class Notifications {
 
     /**
      * Return all errors.
-     *
+     * 
      * @return The {@link Messages} object representing all errors
      */
     public Messages getErrors () {
@@ -159,8 +170,9 @@ public class Notifications {
 
     /**
      * Set errors by means of a {@link JsonNode}.
-     *
-     * @param msgs JSON array of errors.
+     * 
+     * @param msgs
+     *            JSON array of errors.
      * @return Notifications object for chaining.
      */
     public Notifications setErrors (JsonNode msgs) {
@@ -172,9 +184,11 @@ public class Notifications {
 
     /**
      * Return a specific error based on an index.
-     *
-     * @param index The index of the error in the list of errors.
-     * @return The message in case it exists, otherwise <code>null</code>
+     * 
+     * @param index
+     *            The index of the error in the list of errors.
+     * @return The message in case it exists, otherwise
+     *         <code>null</code>
      */
     public Message getError (int index) {
         if (this.errors != null)
@@ -185,8 +199,9 @@ public class Notifications {
 
     /**
      * Check for errors.
-     *
-     * @return <tt>true</tt> in case there are errors, otherwise <tt>false</tt>
+     * 
+     * @return <tt>true</tt> in case there are errors, otherwise
+     *         <tt>false</tt>
      */
     public boolean hasErrors () {
         if (this.errors == null || this.errors.size() == 0)
@@ -197,10 +212,13 @@ public class Notifications {
 
     /**
      * Appends a new error.
-     *
-     * @param code  Integer code representation of the error
-     * @param msg   String representation of the error
-     * @param terms Optional strings of additional information
+     * 
+     * @param code
+     *            Integer code representation of the error
+     * @param msg
+     *            String representation of the error
+     * @param terms
+     *            Optional strings of additional information
      * @return Notification object for chaining
      */
     public Notifications addError (int code, String msg, String ... terms) {
@@ -213,8 +231,9 @@ public class Notifications {
 
     /**
      * Appends a new error.
-     *
-     * @param node  {@link JsonNode} representing an error message
+     * 
+     * @param node
+     *            {@link JsonNode} representing an error message
      * @return Notification object for chaining
      */
     public Notifications addError (JsonNode msg) {
@@ -226,15 +245,16 @@ public class Notifications {
         catch (QueryException qe) {
             this.errors.add(qe.getErrorCode(), qe.getMessage());
         };
-        
+
         return this;
     };
 
 
     /**
      * Appends new errors.
-     *
-     * @param msgs  {@link Messages} representing multiple errors
+     * 
+     * @param msgs
+     *            {@link Messages} representing multiple errors
      * @return Notification object for chaining
      */
     public Notifications addErrors (Messages msgs) {
@@ -248,7 +268,7 @@ public class Notifications {
 
     /**
      * Return all messages.
-     *
+     * 
      * @return {@link Messages} representing all messages
      */
     public Messages getMessages () {
@@ -258,8 +278,9 @@ public class Notifications {
 
     /**
      * Set messages by means of a {@link JsonNode}.
-     *
-     * @param msgs JSON array of messages.
+     * 
+     * @param msgs
+     *            JSON array of messages.
      * @return Notifications object for chaining.
      */
     public Notifications setMessages (JsonNode msgs) {
@@ -271,9 +292,11 @@ public class Notifications {
 
     /**
      * Return a specific message based on an index.
-     *
-     * @param index The index of the message in the list of messages.
-     * @return The message in case it exists, otherwise <code>null</code>
+     * 
+     * @param index
+     *            The index of the message in the list of messages.
+     * @return The message in case it exists, otherwise
+     *         <code>null</code>
      */
     public Message getMessage (int index) {
         if (this.messages != null)
@@ -284,8 +307,9 @@ public class Notifications {
 
     /**
      * Check for messages.
-     *
-     * @return <tt>true</tt> in case there are messages, otherwise <tt>false</tt>
+     * 
+     * @return <tt>true</tt> in case there are messages, otherwise
+     *         <tt>false</tt>
      */
     public boolean hasMessages () {
         if (this.messages == null || this.messages.size() == 0)
@@ -296,10 +320,13 @@ public class Notifications {
 
     /**
      * Appends a new message.
-     *
-     * @param code  Integer code representation of the message
-     * @param msg   String representation of the message
-     * @param terms Optional strings of additional information
+     * 
+     * @param code
+     *            Integer code representation of the message
+     * @param msg
+     *            String representation of the message
+     * @param terms
+     *            Optional strings of additional information
      * @return Notification object for chaining
      */
     public Notifications addMessage (int code, String msg, String ... terms) {
@@ -312,8 +339,9 @@ public class Notifications {
 
     /**
      * Appends a new message.
-     *
-     * @param node  {@link JsonNode} representing a message
+     * 
+     * @param node
+     *            {@link JsonNode} representing a message
      * @return Notification object for chaining
      */
     public Notifications addMessage (JsonNode msg) {
@@ -331,8 +359,9 @@ public class Notifications {
 
     /**
      * Appends new messages.
-     *
-     * @param msgs  {@link Messages} representing multiple messages
+     * 
+     * @param msgs
+     *            {@link Messages} representing multiple messages
      * @return Notification object for chaining
      */
     public Notifications addMessages (Messages msgs) {
@@ -346,8 +375,9 @@ public class Notifications {
 
     /**
      * Copy notifications from another notification object.
-     *
-     * @param notes Notification object to copy notifications from.
+     * 
+     * @param notes
+     *            Notification object to copy notifications from.
      * @return Notification object for chaining
      */
     public Notifications copyNotificationsFrom (Notifications notes) {
@@ -359,31 +389,29 @@ public class Notifications {
             if (notes.hasMessages())
                 this.addMessages((Messages) notes.getMessages().clone());
         }
-        catch (CloneNotSupportedException cnse) {
-        };
+        catch (CloneNotSupportedException cnse) {};
         return this;
     };
 
 
     /**
      * Copy notifications from a {@link JsonNode} object.
-     *
-     * @param request Notifications containing {@link JsonNode}.
+     * 
+     * @param request
+     *            Notifications containing {@link JsonNode}.
      * @return Notification object for chaining
      */
     public Notifications copyNotificationsFrom (JsonNode request) {
 
         // Add warnings from JSON
-        if (request.has("warnings") &&
-            request.get("warnings").isArray()) {
+        if (request.has("warnings") && request.get("warnings").isArray()) {
             JsonNode msgs = request.get("warnings");
             for (JsonNode msg : msgs)
                 this.addWarning(msg);
         };
 
         // Add messages from JSON
-        if (request.has("messages") &&
-            request.get("messages").isArray()) {
+        if (request.has("messages") && request.get("messages").isArray()) {
             JsonNode msgs = request.get("messages");
             if (msgs.isArray())
                 for (JsonNode msg : msgs)
@@ -391,14 +419,13 @@ public class Notifications {
         };
 
         // Add errors from JSON
-        if (request.has("errors") &&
-            request.get("errors").isArray()) {
+        if (request.has("errors") && request.get("errors").isArray()) {
             JsonNode msgs = request.get("errors");
             if (msgs.isArray())
                 for (JsonNode msg : msgs)
                     this.addError(msg);
         };
-        
+
         return this;
     };
 
@@ -406,8 +433,9 @@ public class Notifications {
     /**
      * Move notifications from a passed {@link Notification} object
      * to the invocant.
-     *
-     * @param notes Notification object.
+     * 
+     * @param notes
+     *            Notification object.
      * @return The invocant object for chaining
      */
     public Notifications moveNotificationsFrom (Notifications notes) {
@@ -419,7 +447,7 @@ public class Notifications {
 
     /**
      * Clear all notifications.
-     *
+     * 
      * @return Notification object for chaining
      */
     public Notifications clearNotifications () {
@@ -436,12 +464,12 @@ public class Notifications {
 
     /**
      * Serialize Notifications as a {@link JsonNode}.
-     *
+     * 
      * @return {@link JsonNode} representation of all warnings,
      *         errors, and messages.
      */
     public JsonNode toJsonNode () {
-        ObjectNode json =  mapper.createObjectNode();
+        ObjectNode json = mapper.createObjectNode();
 
         // Add messages
         if (this.hasWarnings())
@@ -450,7 +478,7 @@ public class Notifications {
             json.put("errors", this.getErrors().toJsonNode());
         if (this.hasMessages())
             json.put("messages", this.getMessages().toJsonNode());
-        
+
         return (JsonNode) json;
     };
 
@@ -460,17 +488,18 @@ public class Notifications {
      * <p>
      * <blockquote><pre>
      * {
-     *   "errors": [
-     *     [123, "You are not allowed to serialize these messages"],
-     *     [124, "Your request was invalid"]
-     *   ],
-     *   "messages" : [
-     *     [125, "Class is deprecated", "Notifications"]
-     *   ]
+     * "errors": [
+     * [123, "You are not allowed to serialize these messages"],
+     * [124, "Your request was invalid"]
+     * ],
+     * "messages" : [
+     * [125, "Class is deprecated", "Notifications"]
+     * ]
      * }
      * </pre></blockquote>
-     *
-     * @return String representation of all warnings, errors, and messages
+     * 
+     * @return String representation of all warnings, errors, and
+     *         messages
      */
     public String toJsonString () {
         String msg = "";
@@ -485,10 +514,7 @@ public class Notifications {
             msg = ", \"" + e.getLocalizedMessage() + "\"";
         };
 
-        return
-            "{\"errors\" : [" +
-            "[620, " +
-            "\"Unable to generate JSON\"" + msg + "]" +
-            "]}";
+        return "{\"errors\" : [" + "[620, " + "\"Unable to generate JSON\""
+                + msg + "]" + "]}";
     };
 };

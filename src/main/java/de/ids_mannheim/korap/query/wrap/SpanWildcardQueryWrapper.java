@@ -10,12 +10,15 @@ import java.util.*;
 
 public class SpanWildcardQueryWrapper extends SpanQueryWrapper {
     private SpanQuery query;
-    
+
+
     public SpanWildcardQueryWrapper (String field, String wc) {
         this(field, wc, false);
     };
 
-    public SpanWildcardQueryWrapper (String field, String wc, boolean caseinsensitive) {
+
+    public SpanWildcardQueryWrapper (String field, String wc,
+                                     boolean caseinsensitive) {
         if (caseinsensitive) {
             if (wc.startsWith("s:")) {
                 wc = wc.replaceFirst("s:", "i:");
@@ -23,12 +26,14 @@ public class SpanWildcardQueryWrapper extends SpanQueryWrapper {
             wc = wc.toLowerCase();
         };
         WildcardQuery wcquery = new WildcardQuery(new Term(field, wc));
-        query = new SpanMultiTermQueryWrapper<WildcardQuery>( wcquery );
+        query = new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
     };
 
-    public SpanQuery toQuery() {
+
+    public SpanQuery toQuery () {
         return this.query;
     };
+
 
     public boolean isNull () {
         return false;

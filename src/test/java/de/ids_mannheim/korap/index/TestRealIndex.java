@@ -22,22 +22,25 @@ public class TestRealIndex {
     KrillIndex ki;
     Result kr;
     Krill ks;
-	
-    public TestRealIndex() throws IOException {
+
+
+    public TestRealIndex () throws IOException {
         InputStream is = getClass().getResourceAsStream("/server.properties");
         Properties prop = new Properties();
         prop.load(is);
-	
+
         String indexPath = prop.getProperty("lucene.indexDir");
         System.err.println(indexPath);
         MMapDirectory md = new MMapDirectory(new File(indexPath));
         ki = new KrillIndex(md);
     };
 
+
     @Test
-    public void testCase1() throws IOException, QueryException {
+    public void testCase1 () throws IOException, QueryException {
         QueryBuilder kq = new QueryBuilder("tokens");
-        ks = new Krill(kq.within(kq.tag("base/s:s"), kq.seq(kq.re("s:.*")).append(kq._(kq.re("s:.*")))).toQuery());
+        ks = new Krill(kq.within(kq.tag("base/s:s"),
+                kq.seq(kq.re("s:.*")).append(kq._(kq.re("s:.*")))).toQuery());
         ks.getMeta().setTimeOut(10000);
         kr = ks.apply(ki);
         System.err.println(kr.toJsonString());

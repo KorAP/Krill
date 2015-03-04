@@ -1,4 +1,5 @@
 package de.ids_mannheim.korap.response.collector;
+
 import de.ids_mannheim.korap.server.Node;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.MatchCollector;
@@ -31,6 +32,7 @@ public class MatchCollectorDB extends MatchCollector {
     private Connection connection;
     private PreparedStatement prepared;
 
+
     /*
      * Create a new collector for database connections
      */
@@ -39,6 +41,7 @@ public class MatchCollectorDB extends MatchCollector {
         this.resultID = resultID;
         this.matchCollector = new ArrayList<int[]>(bufferSize + 2);
     };
+
 
     /*
      * Add matches till the bufferSize exceeds - then commit to the database.
@@ -49,22 +52,26 @@ public class MatchCollectorDB extends MatchCollector {
 
         this.incrTotalResultDocs(1);
         this.incrTotalResults(matchCount);
-        this.matchCollector.add(new int[]{UID, matchCount});
+        this.matchCollector.add(new int[] { UID, matchCount });
         this.docCollect++;
     };
+
 
     @JsonIgnore
     public void setDatabaseType (String type) {
         this.databaseType = type;
     };
 
+
     @JsonIgnore
     public String getDatabaseType () {
         return this.databaseType;
     };
 
+
     @JsonIgnore
-    public void setDBPool (String type, DataSource ds, Connection conn) throws SQLException {
+    public void setDBPool (String type, DataSource ds, Connection conn)
+            throws SQLException {
         this.setDatabaseType(type);
         this.connection = conn;
         this.pool = ds;
@@ -76,6 +83,8 @@ public class MatchCollectorDB extends MatchCollector {
         this.setDatabaseType(type);
         this.pool = ds;
     };
+
+
     /*
       Create prepared statement for multiple requests
       this.prepared = this.conn.prepareStatement(
@@ -85,25 +94,24 @@ public class MatchCollectorDB extends MatchCollector {
       Difference between mariadb and sqlite!
     */
 
-    
+
     /* TODO: Ensure the commit was successful! */
-    public void commit () {	
+    public void commit () {
         if (this.pool == null)
             return;
 
         try {
-	    /*
-	     * This should be heavily optimized! It's aweful!
-	     * ARGHHHHHHH!
-	     */
+            /*
+             * This should be heavily optimized! It's aweful!
+             * ARGHHHHHHH!
+             */
             if (this.connection.isClosed())
                 this.connection = this.pool.getConnection();
 
             StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO ")
-                .append(this.resultID)
-                .append(" (text_id, match_count) ");
-            
+            sb.append("INSERT INTO ").append(this.resultID)
+                    .append(" (text_id, match_count) ");
+
             // SQLite batch insertion idiom
             if (this.getDatabaseType().equals("sqlite")) {
                 for (int i = 1; i < this.docCollect; i++) {
@@ -123,7 +131,7 @@ public class MatchCollectorDB extends MatchCollector {
                 };
                 sb.append("(?,?)");
             }
-            
+
             // Unknown idiom
             else {
                 log.error("Unsupported Database type");
@@ -131,10 +139,11 @@ public class MatchCollectorDB extends MatchCollector {
             };
 
             // Prepare statement based on the string
-            PreparedStatement prep = this.connection.prepareStatement(sb.toString());
+            PreparedStatement prep = this.connection.prepareStatement(sb
+                    .toString());
 
             int i = 1;
-            ListIterator li = this.matchCollector.listIterator(); 
+            ListIterator li = this.matchCollector.listIterator();
             while (li.hasNext()) {
                 int[] v = (int[]) li.next();
                 prep.setInt(i++, v[0]);
@@ -156,6 +165,7 @@ public class MatchCollectorDB extends MatchCollector {
         return;
     };
 
+
     /*
      * Close collector and connection
      */
@@ -164,10 +174,11 @@ public class MatchCollectorDB extends MatchCollector {
         try {
             this.connection.close();
         }
-       	catch (SQLException e) {
+        catch (SQLException e) {
             log.warn(e.getLocalizedMessage());
         }
     };
+
 
     /*
      * Close collector and probably connection

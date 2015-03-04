@@ -28,7 +28,7 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
 
 /**
  * Compare two spans and check how they relate positionally.
- *
+ * 
  * @author diewald
  */
 public class WithinSpans extends Spans {
@@ -38,7 +38,7 @@ public class WithinSpans extends Spans {
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-    
+
     private boolean more = false;
 
     // Boolean value indicating if span B
@@ -46,20 +46,13 @@ public class WithinSpans extends Spans {
     // or span A (false);
     boolean nextSpanB = true;
 
-    private int
-        wrapStart     = -1,
-        wrapEnd       = -1,
-        embeddedStart = -1,
-        embeddedEnd   = -1,
-        wrapDoc       = -1,
-        embeddedDoc   = -1,
-        matchDoc      = -1,
-        matchStart    = -1,
-        matchEnd      = -1;
-    
+    private int wrapStart = -1, wrapEnd = -1, embeddedStart = -1,
+            embeddedEnd = -1, wrapDoc = -1, embeddedDoc = -1, matchDoc = -1,
+            matchStart = -1, matchEnd = -1;
+
     private Collection<byte[]> matchPayload;
     private Collection<byte[]> embeddedPayload;
-    
+
     // Indicates that the wrap and the embedded spans are in the same doc
     private boolean inSameDoc = false;
 
@@ -78,14 +71,9 @@ public class WithinSpans extends Spans {
                                  A.end = B.end
       m   -> 12 |                A = B
     */
-    public static final byte
-        OVERLAP      = (byte) 0,
-        REAL_OVERLAP = (byte) 2,
-        WITHIN       = (byte) 4,
-        REAL_WITHIN  = (byte) 6,
-        ENDSWITH     = (byte) 8,
-        STARTSWITH   = (byte) 10,
-        MATCH        = (byte) 12;
+    public static final byte OVERLAP = (byte) 0, REAL_OVERLAP = (byte) 2,
+            WITHIN = (byte) 4, REAL_WITHIN = (byte) 6, ENDSWITH = (byte) 8,
+            STARTSWITH = (byte) 10, MATCH = (byte) 12;
 
     private byte flag;
 
@@ -103,25 +91,29 @@ public class WithinSpans extends Spans {
     private boolean tryMatch = true;
 
     // Two buffers for storing candidates
-    private LinkedList<WithinSpan>
-        spanStore1,
-        spanStore2;
+    private LinkedList<WithinSpan> spanStore1, spanStore2;
+
 
     /**
      * Construct a new WithinSpans object.
-     *
-     * @param spanWithinQuery The parental {@link SpanWithinQuery}.
-     * @param context The {@link AtomicReaderContext}.
-     * @param acceptDocs Bit vector representing the documents
-     *        to be searched in.
-     * @param termContexts A map managing {@link TermState TermStates}.
-     * @param flag A byte flag indicating the positional condition of the sub spans.
+     * 
+     * @param spanWithinQuery
+     *            The parental {@link SpanWithinQuery}.
+     * @param context
+     *            The {@link AtomicReaderContext}.
+     * @param acceptDocs
+     *            Bit vector representing the documents
+     *            to be searched in.
+     * @param termContexts
+     *            A map managing {@link TermState TermStates}.
+     * @param flag
+     *            A byte flag indicating the positional condition of
+     *            the sub spans.
      */
     public WithinSpans (SpanWithinQuery spanWithinQuery,
-                        AtomicReaderContext context,
-                        Bits acceptDocs,
-                        Map<Term,TermContext> termContexts,
-                        byte flag) throws IOException {
+                        AtomicReaderContext context, Bits acceptDocs,
+                        Map<Term, TermContext> termContexts, byte flag)
+            throws IOException {
 
         if (DEBUG)
             log.trace("Construct WithinSpans");
@@ -130,16 +122,10 @@ public class WithinSpans extends Spans {
         this.matchPayload = new LinkedList<byte[]>();
 
         // Get spans
-        this.wrapSpans = spanWithinQuery.wrap().getSpans(
-            context,
-            acceptDocs,
-            termContexts
-        );
-        this.embeddedSpans = spanWithinQuery.embedded().getSpans(
-            context,
-            acceptDocs,
-            termContexts
-        );
+        this.wrapSpans = spanWithinQuery.wrap().getSpans(context, acceptDocs,
+                termContexts);
+        this.embeddedSpans = spanWithinQuery.embedded().getSpans(context,
+                acceptDocs, termContexts);
 
         this.flag = flag;
 
@@ -150,7 +136,7 @@ public class WithinSpans extends Spans {
         // kept for toString() only.
         this.query = spanWithinQuery;
     };
-    
+
 
     // Move to next match, returning true iff any such exists.
     @Override
@@ -161,32 +147,34 @@ public class WithinSpans extends Spans {
 
         // Initialize spans
         if (!this.init()) {
-            this.more        = false;
-            this.inSameDoc   = false;
-            this.wrapDoc     = DocIdSetIterator.NO_MORE_DOCS;
+            this.more = false;
+            this.inSameDoc = false;
+            this.wrapDoc = DocIdSetIterator.NO_MORE_DOCS;
             this.embeddedDoc = DocIdSetIterator.NO_MORE_DOCS;
-            this.matchDoc    = DocIdSetIterator.NO_MORE_DOCS;
+            this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
             return false;
         };
 
         // There are more spans and they are in the same document
 
         while (this.more && (wrapDoc == embeddedDoc ||
-                             // this.inSameDoc ||
-                             this.toSameDoc())) {
+        // this.inSameDoc ||
+                this.toSameDoc())) {
             if (DEBUG)
-                log.trace("We are in the same doc: {}, {}", wrapDoc, embeddedDoc);
+                log.trace("We are in the same doc: {}, {}", wrapDoc,
+                        embeddedDoc);
 
             // Both spans match according to the flag
             // Silently the next operations are prepared
             if (this.tryMatch && this.doesMatch()) {
-                
+
                 if (this.wrapEnd == -1)
                     this.wrapEnd = this.wrapSpans.end();
-		
-                this.matchStart = embeddedStart < wrapStart ? embeddedStart : wrapStart;
-                this.matchEnd   = embeddedEnd   > wrapEnd   ? embeddedEnd   : wrapEnd;
-                this.matchDoc   = embeddedDoc;
+
+                this.matchStart = embeddedStart < wrapStart ? embeddedStart
+                        : wrapStart;
+                this.matchEnd = embeddedEnd > wrapEnd ? embeddedEnd : wrapEnd;
+                this.matchDoc = embeddedDoc;
                 this.matchPayload.clear();
 
                 if (this.embeddedPayload != null)
@@ -196,12 +184,8 @@ public class WithinSpans extends Spans {
                     this.matchPayload.addAll(wrapSpans.getPayload());
 
                 if (DEBUG)
-                    log.trace(
-                              "   ---- MATCH ---- {}-{} ({})",
-                              matchStart,
-                              matchEnd,
-                              matchDoc
-                              );
+                    log.trace("   ---- MATCH ---- {}-{} ({})", matchStart,
+                            matchEnd, matchDoc);
 
                 this.tryMatch = false;
                 return true;
@@ -212,10 +196,10 @@ public class WithinSpans extends Spans {
 
                 // Next time try the match
                 this.tryMatch = true;
-		
+
                 if (DEBUG)
                     log.trace("In the next embedded branch");
-		
+
                 WithinSpan current = null;
 
                 // New - fetch until theres a span in the correct doc or bigger
@@ -230,7 +214,7 @@ public class WithinSpans extends Spans {
                 if (current == null) {
                     if (DEBUG)
                         log.trace("SpanStore 2 is empty");
-                    
+
                     // Forward with embedding
                     if (!this.embeddedSpans.next()) {
                         this.nextSpanA();
@@ -240,20 +224,20 @@ public class WithinSpans extends Spans {
                     else if (DEBUG) {
                         log.trace("Fetch next embedded span");
                     };
-		    
+
                     this.embeddedStart = this.embeddedSpans.start();
                     this.embeddedEnd = -1;
                     this.embeddedPayload = null;
                     this.embeddedDoc = this.embeddedSpans.doc();
 
                     if (this.embeddedDoc != this.wrapDoc) {
-                        
+
                         if (DEBUG) {
                             log.trace("Embedded span is in a new document {}",
-                                      _currentEmbedded().toString());
+                                    _currentEmbedded().toString());
                             log.trace("Reset current embedded doc");
-                        };	
-	
+                        };
+
                         /*
                         if (DEBUG)
                             log.trace("Clear all span stores");
@@ -271,15 +255,13 @@ public class WithinSpans extends Spans {
                         this.nextSpanA();
                         continue;
                     };
-		    
+
                     if (DEBUG)
-                        log.trace(
-                            "   Forward embedded span to {}",
-                            _currentEmbedded().toString()
-                        );
-                    
+                        log.trace("   Forward embedded span to {}",
+                                _currentEmbedded().toString());
+
                     if (this.embeddedDoc != this.wrapDoc) {
-                     
+
                         // Is this always a good idea?
                         /*
                         this.spanStore1.clear();
@@ -289,7 +271,7 @@ public class WithinSpans extends Spans {
                         this.embeddedStart = -1;
                         this.embeddedEnd = -1;
                         this.embeddedPayload = null;
-			
+
                         if (!this.toSameDoc()) {
                             this.more = false;
                             this.inSameDoc = false;
@@ -304,7 +286,7 @@ public class WithinSpans extends Spans {
                     this.nextSpanB();
                     continue;
                 }
-		
+
                 // Fetch from second store?
                 else {
                     /** TODO: Change this to a single embedded object! */
@@ -313,7 +295,8 @@ public class WithinSpans extends Spans {
                     this.embeddedDoc = current.doc;
 
                     if (current.payload != null) {
-                        this.embeddedPayload = new ArrayList<byte[]>(current.payload.size());
+                        this.embeddedPayload = new ArrayList<byte[]>(
+                                current.payload.size());
                         this.embeddedPayload.addAll(current.payload);
                     }
                     else {
@@ -321,8 +304,9 @@ public class WithinSpans extends Spans {
                     };
 
                     if (DEBUG)
-                        log.trace("Fetch current from SpanStore 2: {}", current.toString());
-		    
+                        log.trace("Fetch current from SpanStore 2: {}",
+                                current.toString());
+
                     this.tryMatch = true;
                 };
                 continue;
@@ -347,10 +331,8 @@ public class WithinSpans extends Spans {
                 };
 
                 // Move everything to spanStore2
-                this.spanStore2.addAll(
-                    0,
-                    (LinkedList<WithinSpan>) this.spanStore1.clone()
-                );
+                this.spanStore2.addAll(0,
+                        (LinkedList<WithinSpan>) this.spanStore1.clone());
                 this.spanStore1.clear();
 
                 if (DEBUG) {
@@ -359,7 +341,7 @@ public class WithinSpans extends Spans {
                         log.trace("     | {}", i.toString());
                     };
                 };
-                
+
             }
             else if (DEBUG) {
                 log.trace("spanStore 1 is empty");
@@ -371,15 +353,13 @@ public class WithinSpans extends Spans {
                 // Reset wrapping information
                 this.wrapStart = this.wrapSpans.start();
                 this.wrapEnd = -1;
-		
+
                 // Retrieve doc information
                 this.wrapDoc = this.wrapSpans.doc();
 
                 if (DEBUG)
-                    log.trace(
-                        "   Forward wrap span to {}",
-                        _currentWrap().toString()
-                    );
+                    log.trace("   Forward wrap span to {}", _currentWrap()
+                            .toString());
 
                 if (this.embeddedDoc != this.wrapDoc) {
                     if (DEBUG)
@@ -403,7 +383,7 @@ public class WithinSpans extends Spans {
                     // Do not match with the current state
                     this.tryMatch = false;
                 };
-                
+
                 this.nextSpanB();
                 continue;
             }
@@ -439,7 +419,7 @@ public class WithinSpans extends Spans {
         this.more = true;
         this.inSameDoc = true;
 
-        this.wrapDoc     = this.wrapSpans.doc();
+        this.wrapDoc = this.wrapSpans.doc();
         this.embeddedDoc = this.embeddedSpans.doc();
 
         // Clear all spanStores
@@ -455,13 +435,13 @@ public class WithinSpans extends Spans {
 
         // Last doc was reached
         else if (this.wrapDoc == DocIdSetIterator.NO_MORE_DOCS) {
-            this.more      = false;
-            this.matchDoc  = DocIdSetIterator.NO_MORE_DOCS;
+            this.more = false;
+            this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
             this.inSameDoc = false;
             return false;
         }
         else {
-            if (DEBUG)  {
+            if (DEBUG) {
                 log.trace("Current position already is in the same doc");
                 log.trace("Embedded: {}", _currentEmbedded().toString());
             };
@@ -480,15 +460,15 @@ public class WithinSpans extends Spans {
                 if (!wrapSpans.skipTo(this.embeddedDoc)) {
                     this.more = false;
                     this.inSameDoc = false;
-                    this.matchDoc  = DocIdSetIterator.NO_MORE_DOCS;
+                    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
                     return false;
                 };
-                
+
                 if (DEBUG)
                     log.trace("Skip wrap to doc {}", this.embeddedDoc);
-		
+
                 this.wrapDoc = this.wrapSpans.doc();
-                
+
                 if (wrapDoc == DocIdSetIterator.NO_MORE_DOCS) {
                     this.more = false;
                     this.inSameDoc = false;
@@ -505,57 +485,57 @@ public class WithinSpans extends Spans {
 
                 this.spanStore1.clear();
                 this.spanStore2.clear();
-		              
+
                 if (wrapDoc == embeddedDoc) {
                     this.wrapStart = this.wrapSpans.start();
                     this.embeddedStart = this.embeddedSpans.start();
                     this.matchDoc = this.embeddedDoc;
                     return true;
                 };
-                
+
                 this.wrapStart = -1;
                 this.embeddedStart = -1;
             }
-	
+
             // Forward embedInfo
             else if (this.wrapDoc > this.embeddedDoc) {
-                
+
                 // Set document information
                 if (!this.embeddedSpans.skipTo(this.wrapDoc)) {
                     this.more = false;
                     this.inSameDoc = false;
-                    this.matchDoc  = DocIdSetIterator.NO_MORE_DOCS;
+                    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
                     return false;
                 };
-                               
+
                 this.embeddedDoc = this.embeddedSpans.doc();
-                
+
                 if (this.embeddedDoc == DocIdSetIterator.NO_MORE_DOCS) {
-                    this.more      = false;
+                    this.more = false;
                     this.inSameDoc = false;
-                    this.wrapDoc   = DocIdSetIterator.NO_MORE_DOCS;
-                    this.matchDoc  = DocIdSetIterator.NO_MORE_DOCS;
+                    this.wrapDoc = DocIdSetIterator.NO_MORE_DOCS;
+                    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
                     return false;
                 };
 
                 if (DEBUG)
                     log.trace("Skip embedded to doc {}", this.embeddedDoc);
-                
+
                 this.embeddedStart = this.embeddedSpans.start();
                 this.embeddedEnd = -1;
                 this.embeddedPayload = null;
-                
+
                 if (this.wrapDoc == this.embeddedDoc) {
                     this.matchDoc = this.embeddedDoc;
                     return true;
                 };
             }
             else {
-                this.matchDoc  = DocIdSetIterator.NO_MORE_DOCS;
+                this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
                 return false;
             };
         };
-        
+
         this.matchDoc = this.wrapDoc;
         return true;
     };
@@ -576,7 +556,7 @@ public class WithinSpans extends Spans {
 
             if (DEBUG)
                 log.trace("No spans initialized");
-	    
+
             this.embeddedDoc = -1;
             this.more = false;
             return false;
@@ -584,39 +564,38 @@ public class WithinSpans extends Spans {
         this.more = true;
 
         // Store current positions for wrapping and embedded spans
-        this.wrapDoc     = this.wrapSpans.doc();
+        this.wrapDoc = this.wrapSpans.doc();
         this.embeddedDoc = this.embeddedSpans.doc();
 
         // Set inSameDoc to true, if it is true
         if (this.embeddedDoc == this.wrapDoc)
             this.inSameDoc = true;
-	
+
         return true;
     };
 
 
-    /** Skips to the first match beyond the current, whose document number is
-     * greater than or equal to <i>target</i>. <p>Returns true iff there is such
-     * a match.  <p>Behaves as if written: <pre class="prettyprint">
-     *   boolean skipTo(int target) {
-     *     do {
-     *       if (!next())
-     *         return false;
-     *     } while (target > doc());
-     *     return true;
-     *   }
+    /**
+     * Skips to the first match beyond the current, whose document
+     * number is
+     * greater than or equal to <i>target</i>. <p>Returns true iff
+     * there is such
+     * a match. <p>Behaves as if written: <pre class="prettyprint">
+     * boolean skipTo(int target) {
+     * do {
+     * if (!next())
+     * return false;
+     * } while (target > doc());
+     * return true;
+     * }
      * </pre>
      * Most implementations are considerably more efficient than that.
      */
     public boolean skipTo (int target) throws IOException {
 
         if (DEBUG)
-            log.trace(
-                "skipTo document {}/{} -> {}",
-                this.embeddedDoc,
-                this.wrapDoc,
-                target
-            );
+            log.trace("skipTo document {}/{} -> {}", this.embeddedDoc,
+                    this.wrapDoc, target);
 
         // Initialize spans
         if (!this.init())
@@ -646,12 +625,14 @@ public class WithinSpans extends Spans {
         return this.toSameDoc();
     };
 
+
     private void nextSpanA () {
         if (DEBUG)
             log.trace("Try wrap next time");
         this.tryMatch = false;
         this.nextSpanB = false;
     };
+
 
     private void nextSpanB () {
         if (DEBUG)
@@ -668,14 +649,14 @@ public class WithinSpans extends Spans {
 
         if (this.wrapStart == -1)
             this.wrapStart = this.wrapSpans.start();
-	
+
         if (this.embeddedStart == -1) {
             this.embeddedStart = this.embeddedSpans.start();
-            this.embeddedEnd   = this.embeddedSpans.end();
+            this.embeddedEnd = this.embeddedSpans.end();
         };
 
         this.wrapEnd = -1;
-	
+
         // Shortcut to prevent lazyloading of .end()
         if (this.wrapStart > this.embeddedStart) {
             // Can't match for in, rin, ew, sw, and m
@@ -711,44 +692,41 @@ public class WithinSpans extends Spans {
         if (currentCase >= (byte) 3 && currentCase <= (byte) 11) {
             switch (flag) {
 
-            case WITHIN:
-                if (currentCase >= 6  && currentCase <= 10 && currentCase != 8)
-                    match = true;
-                break;
+                case WITHIN:
+                    if (currentCase >= 6 && currentCase <= 10
+                            && currentCase != 8)
+                        match = true;
+                    break;
 
-            case REAL_WITHIN:
-                if (currentCase == 6 ||
-                    currentCase == 9 ||
-                    currentCase == 10)
-                    match = true;
-                break;
-        
-            case MATCH:
-                if (currentCase == 7)
-                    match = true;
-                break;
+                case REAL_WITHIN:
+                    if (currentCase == 6 || currentCase == 9
+                            || currentCase == 10)
+                        match = true;
+                    break;
 
-            case STARTSWITH:
-                if (currentCase == 7 ||
-                    currentCase == 6)
-                    match = true;
-                break;
+                case MATCH:
+                    if (currentCase == 7)
+                        match = true;
+                    break;
 
-            case ENDSWITH:
-                if (currentCase == 7 ||
-                    currentCase == 10)
-                    match = true;
-                break;
+                case STARTSWITH:
+                    if (currentCase == 7 || currentCase == 6)
+                        match = true;
+                    break;
 
-            case OVERLAP:
-                match = true;
-                break;
+                case ENDSWITH:
+                    if (currentCase == 7 || currentCase == 10)
+                        match = true;
+                    break;
 
-            case REAL_OVERLAP:
-                if (currentCase == 3 ||
-                    currentCase == 11)
+                case OVERLAP:
                     match = true;
-                break;
+                    break;
+
+                case REAL_OVERLAP:
+                    if (currentCase == 3 || currentCase == 11)
+                        match = true;
+                    break;
             };
         };
 
@@ -764,173 +742,176 @@ public class WithinSpans extends Spans {
 
     private void _logCurrentCase (byte currentCase) {
         log.trace("Current Case is {}", currentCase);
-	
+
         String _e = _currentEmbedded().toString();
-	    
+
         log.trace("    |---|    {}", _currentWrap().toString());
 
         switch (currentCase) {
-        case 1:
-            log.trace("|-|          {}", _e);
-            break;
-        case 2:
-            log.trace("|---|        {}", _e);
-	    break;
-        case 3:
-            log.trace("  |---|      {}", _e);
-            break;
-        case 4:
-            log.trace("  |-----|    {}", _e);
-            break;
-        case 5:
-            log.trace("  |-------|  {}", _e);
-            break;
-        case 6:
-            log.trace("    |-|      {}", _e);
-            break;
-        case 7:
-            log.trace("    |---|    {}", _e);
-            break;
-        case 8:
-            log.trace("    |-----|  {}", _e);
-            break;
-        case 9:
-            log.trace("     |-|     {}", _e);
-            break;
-        case 10:
-            log.trace("      |-|    {}", _e);
-            break;
-        case 11:
-            log.trace("      |---|  {}", _e);
-            break;
-        case 12:
-            log.trace("        |-|  {}", _e);
-            break;
-        case 13:
-            log.trace("         |-| {}", _e);
-            break;
-	    
-        case 15:
-            // Fake case
-            log.trace("      |---?  {}", _e);
-            break;
+            case 1:
+                log.trace("|-|          {}", _e);
+                break;
+            case 2:
+                log.trace("|---|        {}", _e);
+                break;
+            case 3:
+                log.trace("  |---|      {}", _e);
+                break;
+            case 4:
+                log.trace("  |-----|    {}", _e);
+                break;
+            case 5:
+                log.trace("  |-------|  {}", _e);
+                break;
+            case 6:
+                log.trace("    |-|      {}", _e);
+                break;
+            case 7:
+                log.trace("    |---|    {}", _e);
+                break;
+            case 8:
+                log.trace("    |-----|  {}", _e);
+                break;
+            case 9:
+                log.trace("     |-|     {}", _e);
+                break;
+            case 10:
+                log.trace("      |-|    {}", _e);
+                break;
+            case 11:
+                log.trace("      |---|  {}", _e);
+                break;
+            case 12:
+                log.trace("        |-|  {}", _e);
+                break;
+            case 13:
+                log.trace("         |-| {}", _e);
+                break;
 
-        case 16:
-            // Fake case
-            log.trace("  |---?      {}", _e);
-            break;
+            case 15:
+                // Fake case
+                log.trace("      |---?  {}", _e);
+                break;
+
+            case 16:
+                // Fake case
+                log.trace("  |---?      {}", _e);
+                break;
         };
     };
-    
+
 
     private WithinSpan _currentWrap () {
         WithinSpan _wrap = new WithinSpan();
-        _wrap.start = this.wrapStart != -1 ? this.wrapStart : this.wrapSpans.start();
-        _wrap.end   = this.wrapEnd   != -1 ? this.wrapEnd   : this.wrapSpans.end();
-        _wrap.doc   = this.wrapDoc   != -1 ? this.wrapDoc   : this.wrapSpans.doc();
+        _wrap.start = this.wrapStart != -1 ? this.wrapStart : this.wrapSpans
+                .start();
+        _wrap.end = this.wrapEnd != -1 ? this.wrapEnd : this.wrapSpans.end();
+        _wrap.doc = this.wrapDoc != -1 ? this.wrapDoc : this.wrapSpans.doc();
         return _wrap;
     };
-	    
+
+
     private WithinSpan _currentEmbedded () {
         WithinSpan _embedded = new WithinSpan();
-        _embedded.start = this.embeddedStart != -1 ?
-                          this.embeddedStart : this.embeddedSpans.start();
-        _embedded.end   = this.embeddedEnd   != -1 ?
-                          this.embeddedEnd   : this.embeddedSpans.end();
-        _embedded.doc   = this.embeddedDoc   != -1 ?
-                          this.embeddedDoc   : this.embeddedSpans.doc();
+        _embedded.start = this.embeddedStart != -1 ? this.embeddedStart
+                : this.embeddedSpans.start();
+        _embedded.end = this.embeddedEnd != -1 ? this.embeddedEnd
+                : this.embeddedSpans.end();
+        _embedded.doc = this.embeddedDoc != -1 ? this.embeddedDoc
+                : this.embeddedSpans.doc();
         return _embedded;
     };
-    
+
 
     private void todo (byte currentCase) throws IOException {
-	/*
-	  Check what to do next with the spans.
-	  
-	  The different follow up steps are:
-	  - storeEmbedded -> store span B for later checks
-	  - nextSpanA     -> forward a
-	  - nextSpanB     -> forward b
+        /*
+          Check what to do next with the spans.
+          
+          The different follow up steps are:
+          - storeEmbedded -> store span B for later checks
+          - nextSpanA     -> forward a
+          - nextSpanB     -> forward b
 
-	  These rules were automatically generated
-	*/
+          These rules were automatically generated
+        */
 
-	// Case 1, 2
-	if (currentCase <= (byte) 2) {
-	    this.nextSpanB();
-	}
-
-	// Case 12, 13
-	else if (currentCase >= (byte) 12) {
-	    this.storeEmbedded();
-	    this.nextSpanA();
-	}
-
-	// Case 3, 4, 5, 8
-	else if (currentCase <= (byte) 5 ||
-             currentCase == (byte) 8) {
-	    if (flag <= 2)
-            this.storeEmbedded();
-	    this.nextSpanB();
-	}
-
-	// Case 11
-	else if (currentCase == (byte) 11) {
-	    if (this.flag == REAL_WITHIN) {
+        // Case 1, 2
+        if (currentCase <= (byte) 2) {
             this.nextSpanB();
-	    }
-	    else if (this.flag >= STARTSWITH) {
+        }
+
+        // Case 12, 13
+        else if (currentCase >= (byte) 12) {
+            this.storeEmbedded();
             this.nextSpanA();
-	    }
-	    else {
-            this.storeEmbedded();
+        }
+
+        // Case 3, 4, 5, 8
+        else if (currentCase <= (byte) 5 || currentCase == (byte) 8) {
+            if (flag <= 2)
+                this.storeEmbedded();
             this.nextSpanB();
-	    };
-	}
+        }
+
+        // Case 11
+        else if (currentCase == (byte) 11) {
+            if (this.flag == REAL_WITHIN) {
+                this.nextSpanB();
+            }
+            else if (this.flag >= STARTSWITH) {
+                this.nextSpanA();
+            }
+            else {
+                this.storeEmbedded();
+                this.nextSpanB();
+            };
+        }
 
 
-	// Case 6, 7, 9, 10
-	else {
-	    
-	    if (
-		// Case 6
-		(currentCase == (byte) 6 && this.flag == MATCH) ||
+        // Case 6, 7, 9, 10
+        else {
 
-		// Case 7
-		(currentCase == (byte) 7 && this.flag == REAL_WITHIN) ||
+            if (
+            // Case 6
+            (currentCase == (byte) 6 && this.flag == MATCH) ||
 
-		// Case 9, 10
-		(currentCase >= (byte) 9 && this.flag >= STARTSWITH)) {
-	    
-		this.nextSpanA();
-	    }
-	    else {
-		this.storeEmbedded();
-		this.nextSpanB();
-	    };
-	};
+            // Case 7
+                    (currentCase == (byte) 7 && this.flag == REAL_WITHIN) ||
+
+                    // Case 9, 10
+                    (currentCase >= (byte) 9 && this.flag >= STARTSWITH)) {
+
+                this.nextSpanA();
+            }
+            else {
+                this.storeEmbedded();
+                this.nextSpanB();
+            };
+        };
     };
+
 
     // Store the current embedded span in the first spanStore
     private void storeEmbedded () throws IOException {
 
         // Create a current copy
         WithinSpan embedded = new WithinSpan();
-        embedded.start = this.embeddedStart != -1 ?
-                         this.embeddedStart : this.embeddedSpans.start();
-        embedded.end   = this.embeddedEnd   != -1 ?
-                         this.embeddedEnd : this.embeddedSpans.end();
-        embedded.doc   = this.embeddedDoc;
+        embedded.start = this.embeddedStart != -1 ? this.embeddedStart
+                : this.embeddedSpans.start();
+        embedded.end = this.embeddedEnd != -1 ? this.embeddedEnd
+                : this.embeddedSpans.end();
+        embedded.doc = this.embeddedDoc;
 
         // Copy payloads
         if (this.embeddedPayload != null) {
-            embedded.payload = new ArrayList<byte[]>(this.embeddedPayload.size());
+            embedded.payload = new ArrayList<byte[]>(
+                    this.embeddedPayload.size());
             embedded.payload.addAll(this.embeddedPayload);
         }
         else if (this.embeddedSpans.isPayloadAvailable()) {
             embedded.payload = new ArrayList<byte[]>(3);
             Collection<byte[]> payload = this.embeddedSpans.getPayload();
-            
+
             this.embeddedPayload = new ArrayList<byte[]>(payload.size());
             this.embeddedPayload.addAll(payload);
             embedded.payload.addAll(payload);
@@ -939,9 +920,10 @@ public class WithinSpans extends Spans {
         this.spanStore1.add(embedded);
 
         if (DEBUG)
-            log.trace("Pushed to spanStore 1 {} (in storeEmbedded)", embedded.toString());
+            log.trace("Pushed to spanStore 1 {} (in storeEmbedded)",
+                    embedded.toString());
     };
-    
+
 
     // Return case number
     private byte withinCase () {
@@ -955,17 +937,17 @@ public class WithinSpans extends Spans {
             if (this.wrapStart > this.embeddedEnd) {
                 return (byte) 1;
             }
-            
+
             // Case 2
             //   |-|
             // |-|
             else if (this.wrapStart == this.embeddedEnd) {
                 return (byte) 2;
             };
-            
+
             // Load wrapEnd
             this.wrapEnd = this.wrapSpans.end();
-            
+
             // Case 3
             //   |---|
             // |---|
@@ -979,13 +961,13 @@ public class WithinSpans extends Spans {
             else if (this.wrapEnd == this.embeddedEnd) {
                 return (byte) 4;
             };
-            
+
             // Case 5
             //  |-|
             // |---|
             return (byte) 5;
         }
-        
+
         // case 6-8
         else if (this.wrapStart == this.embeddedStart) {
 
@@ -1011,7 +993,7 @@ public class WithinSpans extends Spans {
             // |---|
             return (byte) 8;
         }
-        
+
         // wrapStart < embeddedStart
 
         // Load wrapEnd
@@ -1023,56 +1005,65 @@ public class WithinSpans extends Spans {
         if (this.wrapEnd < this.embeddedStart) {
             return (byte) 13;
         }
-        
+
         // Case 9
         // |---|
         //  |-|
         else if (this.wrapEnd > this.embeddedEnd) {
             return (byte) 9;
         }
-        
+
         // Case 10
         // |---|
         //   |-|
         else if (this.wrapEnd == this.embeddedEnd) {
             return (byte) 10;
         }
-        
+
         // Case 11
         // |---|
         //   |---|
         else if (this.wrapEnd > this.embeddedStart) {
             return (byte) 11;
         }
-	
+
         // case 12
         // |-|
         //   |-|
         return (byte) 12;
-    };   
+    };
 
 
-    /** Returns the document number of the current match.  Initially invalid. */
+    /**
+     * Returns the document number of the current match. Initially
+     * invalid.
+     */
     @Override
     public int doc () {
         return matchDoc;
     };
 
-    
-    /** Returns the start position of the embedding wrap.  Initially invalid. */
+
+    /**
+     * Returns the start position of the embedding wrap. Initially
+     * invalid.
+     */
     @Override
     public int start () {
         return matchStart;
     };
 
-    
-    /** Returns the end position of the embedding wrap.  Initially invalid. */
+
+    /**
+     * Returns the end position of the embedding wrap. Initially
+     * invalid.
+     */
     @Override
     public int end () {
-	return matchEnd;
+        return matchEnd;
     };
 
-    
+
     /**
      * Returns the payload data for the current span.
      * This is invalid until {@link #next()} is called for
@@ -1080,72 +1071,82 @@ public class WithinSpans extends Spans {
      * This method must not be called more than once after each call
      * of {@link #next()}. However, most payloads are loaded lazily,
      * so if the payload data for the current position is not needed,
-     * this method may not be called at all for performance reasons. An ordered
-     * SpanQuery does not lazy load, so if you have payloads in your index and
-     * you do not want ordered SpanNearQuerys to collect payloads, you can
+     * this method may not be called at all for performance reasons.
+     * An ordered
+     * SpanQuery does not lazy load, so if you have payloads in your
+     * index and
+     * you do not want ordered SpanNearQuerys to collect payloads, you
+     * can
      * disable collection with a constructor option.<br>
      * <br>
-     * Note that the return type is a collection, thus the ordering should not be relied upon.
+     * Note that the return type is a collection, thus the ordering
+     * should not be relied upon.
      * <br/>
+     * 
      * @lucene.experimental
-     *
-     * @return a List of byte arrays containing the data of this payload, otherwise null if isPayloadAvailable is false
-     * @throws IOException if there is a low-level I/O error
+     * 
+     * @return a List of byte arrays containing the data of this
+     *         payload, otherwise null if isPayloadAvailable is false
+     * @throws IOException
+     *             if there is a low-level I/O error
      */
     // public abstract Collection<byte[]> getPayload() throws IOException;
     @Override
-    public Collection<byte[]> getPayload() throws IOException {
-	return matchPayload;
+    public Collection<byte[]> getPayload () throws IOException {
+        return matchPayload;
     };
-    
+
 
     /**
      * Checks if a payload can be loaded at this position.
      * <p/>
-     * Payloads can only be loaded once per call to
-     * {@link #next()}.
-     *
-     * @return true if there is a payload available at this position that can be loaded
+     * Payloads can only be loaded once per call to {@link #next()}.
+     * 
+     * @return true if there is a payload available at this position
+     *         that can be loaded
      */
     @Override
-    public boolean isPayloadAvailable() {
-	return matchPayload.isEmpty() == false;
+    public boolean isPayloadAvailable () {
+        return matchPayload.isEmpty() == false;
     };
 
-    
+
     // Todo: This may be in the wrong version
     @Override
-    public long cost() {
-	return wrapSpans.cost() + embeddedSpans.cost();
+    public long cost () {
+        return wrapSpans.cost() + embeddedSpans.cost();
     };
 
-    
+
     @Override
-    public String toString() {
-	return getClass().getName() + "("+query.toString()+")@"+
-	    (embeddedDoc <= 0?"START":(more?(doc()+":"+start()+"-"+end()):"END"));
+    public String toString () {
+        return getClass().getName()
+                + "("
+                + query.toString()
+                + ")@"
+                + (embeddedDoc <= 0 ? "START" : (more ? (doc() + ":" + start()
+                        + "-" + end()) : "END"));
     };
 
 
     // This was formerly the default candidate span class,
     // before it was refactored out
-    private class WithinSpan implements Comparable<WithinSpan>, Cloneable  {
-        public int
-            start = -1,
-            end   = -1,
-            doc   = -1;
+    private class WithinSpan implements Comparable<WithinSpan>, Cloneable {
+        public int start = -1, end = -1, doc = -1;
 
         public Collection<byte[]> payload;
 
         public short elementRef = -1;
-    
+
+
         public void clear () {
             this.start = -1;
             this.end = -1;
             this.doc = -1;
             clearPayload();
         };
-    
+
+
         @Override
         public int compareTo (WithinSpan o) {
             /* optimizable for short numbers to return o.end - this.end */
@@ -1164,16 +1165,19 @@ public class WithinSpans extends Spans {
             return 1;
         };
 
-        public short getElementRef() {
+
+        public short getElementRef () {
             return elementRef;
         }
 
-        public void setElementRef(short elementRef) {
+
+        public void setElementRef (short elementRef) {
             this.elementRef = elementRef;
         };
-    
+
+
         @Override
-        public Object clone() {
+        public Object clone () {
             WithinSpan span = new WithinSpan();
             span.start = this.start;
             span.end = this.end;
@@ -1181,6 +1185,7 @@ public class WithinSpans extends Spans {
             span.payload.addAll(this.payload);
             return span;
         };
+
 
         public WithinSpan copyFrom (WithinSpan o) {
             this.start = o.start;
@@ -1190,19 +1195,19 @@ public class WithinSpans extends Spans {
             this.payload.addAll(o.payload);
             return this;
         };
-        
+
+
         public void clearPayload () {
             if (this.payload != null)
                 this.payload.clear();
         };
 
+
         public String toString () {
             StringBuilder sb = new StringBuilder("[");
-            return sb.append(this.start).append('-')
-                .append(this.end)
-                .append('(').append(this.doc).append(')')
-                .append(']')
-                .toString();
+            return sb.append(this.start).append('-').append(this.end)
+                    .append('(').append(this.doc).append(')').append(']')
+                    .toString();
         };
     };
 };

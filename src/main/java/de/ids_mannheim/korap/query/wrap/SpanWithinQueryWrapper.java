@@ -62,7 +62,9 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper wrap;
     private byte flag;
 
-    public SpanWithinQueryWrapper (SpanQueryWrapper element, SpanQueryWrapper wrap) {
+
+    public SpanWithinQueryWrapper (SpanQueryWrapper element,
+                                   SpanQueryWrapper wrap) {
         this.element = element;
         this.wrap = wrap;
 
@@ -74,8 +76,8 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
     };
 
 
-    public SpanWithinQueryWrapper
-        (SpanQueryWrapper element, SpanQueryWrapper wrap, byte flag) {
+    public SpanWithinQueryWrapper (SpanQueryWrapper element,
+                                   SpanQueryWrapper wrap, byte flag) {
         this.element = element;
         this.wrap = wrap;
         this.flag = flag;
@@ -90,14 +92,12 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
     public SpanQuery toQuery () throws QueryException {
         if (this.isNull)
             return (SpanQuery) null;
-	
+
         // TODO: if (wrap.isNegative())
 
-        return new SpanWithinQuery(
-            this.element.retrieveNode(this.retrieveNode).toQuery(),
-            this.wrap.retrieveNode(this.retrieveNode).toQuery(),
-            this.flag
-        );
+        return new SpanWithinQuery(this.element.retrieveNode(this.retrieveNode)
+                .toQuery(),
+                this.wrap.retrieveNode(this.retrieveNode).toQuery(), this.flag);
     };
 
 

@@ -46,12 +46,15 @@ import java.sql.Connection;
 
 /**
  * Root resource (exposed at root path)
- * The responses only represent JSON responses, although HTML responses
+ * The responses only represent JSON responses, although HTML
+ * responses
  * may be handy.
- *
+ * 
  * @author Nils Diewald
- *
- * Look at http://www.mkyong.com/webservices/jax-rs/json-example-with-jersey-jackson/
+ * 
+ *         Look at
+ *         http://www.mkyong.com/webservices/jax-rs/json-example
+ *         -with-jersey-jackson/
  */
 @Path("/")
 public class Resource {
@@ -65,9 +68,9 @@ public class Resource {
     public static final boolean DEBUG = false;
 
     // Slightly based on String::BooleanSimple
-    static Pattern p = Pattern.compile(
-        "\\s*(?i:false|no|inactive|disabled|off|n|neg(?:ative)?|not|null|undef)\\s*"
-    );
+    static Pattern p = Pattern
+            .compile("\\s*(?i:false|no|inactive|disabled|off|n|neg(?:ative)?|not|null|undef)\\s*");
+
 
     // Check if a string is meant to represent null
     private static boolean isNull (String value) {
@@ -105,12 +108,14 @@ public class Resource {
         kresp.addMessage(680, "Server is up and running!");
         return kresp.toJsonString();
     };
-    
+
 
     /**
      * Add new documents to the index
-     *
-     * @param json JSON-LD string with search and potential meta filters.
+     * 
+     * @param json
+     *            JSON-LD string with search and potential meta
+     *            filters.
      */
     /*
      * Support GZip:
@@ -121,9 +126,8 @@ public class Resource {
     @Path("/index/{textID}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String add (@PathParam("textID") Integer uid,
-                       @Context UriInfo uri,
-                       String json) {
+    public String add (@PathParam("textID") Integer uid, @Context UriInfo uri,
+            String json) {
         /*
          * See
          * http://www.mkyong.com/webservices/jax-rs/file-upload-example-in-jersey/
@@ -189,7 +193,7 @@ public class Resource {
 
         kresp.setVersion(index.getVersion());
         kresp.setName(index.getName());
-        
+
         // There are documents to commit
         try {
             index.commit();
@@ -207,8 +211,9 @@ public class Resource {
 
 
     /**
-     * Find matches in the lucene index based on UIDs and return one match per doc.
-     *
+     * Find matches in the lucene index based on UIDs and return one
+     * match per doc.
+     * 
      * @param text_id
      */
     @POST
@@ -224,7 +229,7 @@ public class Resource {
             Krill ks = new Krill(json);
 
             // Get query parameters
-            MultivaluedMap<String,String> qp = uri.getQueryParameters();
+            MultivaluedMap<String, String> qp = uri.getQueryParameters();
 
             if (qp.get("uid") != null) {
 
@@ -232,9 +237,9 @@ public class Resource {
                 List<String> uids = qp.get("uid");
                 KrillCollection kc = new KrillCollection();
                 kc.filterUIDs(uids.toArray(new String[uids.size()]));
-                
+
                 // TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
-                
+
                 // Override old collection
                 ks.setCollection(kc);
 
@@ -245,7 +250,8 @@ public class Resource {
             };
             Result kr = new Result();
             kr.setNode(Node.getName());
-            kr.addError(610, "Missing request parameters", "No unique IDs were given");
+            kr.addError(610, "Missing request parameters",
+                    "No unique IDs were given");
             return kr.toJsonString();
         };
 
@@ -253,25 +259,25 @@ public class Resource {
         kresp.setNode(Node.getName());
         kresp.setName(index.getName());
         kresp.setVersion(index.getVersion());
-        
+
         kresp.addError(601, "Unable to find index");
-        
+
         return kresp.toJsonString();
     };
 
 
     /**
-     * Collect matches and aggregate the UIDs plus matchcount in the database.
-     *
+     * Collect matches and aggregate the UIDs plus matchcount in the
+     * database.
+     * 
      * @param text_id
      */
     @PUT
     @Path("/collect/{resultID}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String collect (String json,
-                           @PathParam("resultID") String resultID,
-                           @Context UriInfo uri) {
+    public String collect (String json, @PathParam("resultID") String resultID,
+            @Context UriInfo uri) {
 
         // Get index
         KrillIndex index = Node.getIndex();
@@ -289,9 +295,9 @@ public class Resource {
             MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_" + resultID);
             Connection conn = Node.getDBPool().getConnection();
             mc.setDBPool("mysql", Node.getDBPool(), conn);
-            
+
             // TODO: Only search in self documents (REPLICATION FTW!)
-            
+
             Krill ks = new Krill(json);
             MatchCollector result = index.collect(ks, mc);
 
@@ -313,17 +319,16 @@ public class Resource {
 
 
 
-
-
     /* These routes are still wip: */
-
 
 
 
     /**
      * Search the lucene index.
-     *
-     * @param json JSON-LD string with search and potential meta filters.
+     * 
+     * @param json
+     *            JSON-LD string with search and potential meta
+     *            filters.
      */
     @POST
     @Path("/search")
@@ -331,95 +336,86 @@ public class Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     public String search (String json) {
 
-	// Get index
-	KrillIndex index = Node.getIndex();
+        // Get index
+        KrillIndex index = Node.getIndex();
 
-	// Search index
+        // Search index
         if (index != null) {
             Result kr = new Krill(json).apply(index);
-	    kr.setNode(Node.getName());
-	    return kr.toJsonString();
-	};
+            kr.setNode(Node.getName());
+            return kr.toJsonString();
+        };
 
-	Response kresp = new Response();
-	kresp.setNode(Node.getName());
-	kresp.setName(index.getName());
-	kresp.setVersion(index.getVersion());
+        Response kresp = new Response();
+        kresp.setNode(Node.getName());
+        kresp.setName(index.getName());
+        kresp.setVersion(index.getVersion());
 
-	kresp.addError(601, "Unable to find index");
-	return kresp.toJsonString();
+        kresp.addError(601, "Unable to find index");
+        return kresp.toJsonString();
     };
+
 
     @GET
     @Path("/match/{matchID}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String match (@PathParam("matchID") String id,
-			 @Context UriInfo uri) {
+    public String match (@PathParam("matchID") String id, @Context UriInfo uri) {
 
-	// Get index
-	KrillIndex index = Node.getIndex();
+        // Get index
+        KrillIndex index = Node.getIndex();
 
-	// Search index
+        // Search index
         if (index != null) {
 
-	    // Get query parameters
-	    MultivaluedMap<String,String> qp = uri.getQueryParameters();
+            // Get query parameters
+            MultivaluedMap<String, String> qp = uri.getQueryParameters();
 
-	    boolean includeSpans = false,
-		includeHighlights = true,
-		extendToSentence = false,
-		info = false;
+            boolean includeSpans = false, includeHighlights = true, extendToSentence = false, info = false;
 
-	    // Optional query parameter "info" for more information on the match
-	    if (!isNull(qp.getFirst("info")))
-		info = true;
-	    
-	    // Optional query parameter "spans" for span information inclusion
-	    if (!isNull(qp.getFirst("spans"))) {
-		includeSpans = true;
-		info = true;
-	    };
+            // Optional query parameter "info" for more information on the match
+            if (!isNull(qp.getFirst("info")))
+                info = true;
 
-	    // Optional query parameter "highlights" for highlight information inclusion
-	    String highlights = qp.getFirst("highlights");
-	    if (highlights != null && isNull(highlights))
-		includeHighlights = false;
+            // Optional query parameter "spans" for span information inclusion
+            if (!isNull(qp.getFirst("spans"))) {
+                includeSpans = true;
+                info = true;
+            };
 
-	    // Optional query parameter "extended" for sentence expansion
-	    if (!isNull(qp.getFirst("extended")))
-		extendToSentence = true;
+            // Optional query parameter "highlights" for highlight information inclusion
+            String highlights = qp.getFirst("highlights");
+            if (highlights != null && isNull(highlights))
+                includeHighlights = false;
 
-	    List<String> foundries = qp.get("foundry");
-	    List<String> layers    = qp.get("layer");
+            // Optional query parameter "extended" for sentence expansion
+            if (!isNull(qp.getFirst("extended")))
+                extendToSentence = true;
 
-            try {		
-		// Get match info
-                return index.getMatchInfo(
-		    id,
-		    "tokens",
-		    info,
-		    foundries,
-		    layers,
-		    includeSpans,
-		    includeHighlights,
-		    extendToSentence
-		).toJsonString();
+            List<String> foundries = qp.get("foundry");
+            List<String> layers = qp.get("layer");
+
+            try {
+                // Get match info
+                return index.getMatchInfo(id, "tokens", info, foundries,
+                        layers, includeSpans, includeHighlights,
+                        extendToSentence).toJsonString();
             }
 
-	    // Nothing found
-	    catch (QueryException qe) {
-		// Todo: Make Match rely on Response!
+            // Nothing found
+            catch (QueryException qe) {
+                // Todo: Make Match rely on Response!
                 Match km = new Match();
                 km.addError(qe.getErrorCode(), qe.getMessage());
                 return km.toJsonString();
             }
-	};
+        };
 
-	// Response with error message
+        // Response with error message
         Match km = new Match();
         km.addError(601, "Unable to find index");
         return km.toJsonString();
     };
+
 
     /*
       POST /collect/:result_id
@@ -441,35 +437,35 @@ public class Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     public String collection (String json) {
 
-	// Get index
-	KrillIndex index = Node.getIndex();
+        // Get index
+        KrillIndex index = Node.getIndex();
 
-	if (index == null)
-	    return "{\"documents\" : -1, error\" : \"No index given\" }";
+        if (index == null)
+            return "{\"documents\" : -1, error\" : \"No index given\" }";
 
-	return "{}";
+        return "{}";
     };
 
 
 
     // Interceptor class
     public class GZIPReaderInterceptor implements ReaderInterceptor {
-	@Override
-	public Object aroundReadFrom(ReaderInterceptorContext context)
-	    throws IOException, WebApplicationException {
-	    final InputStream originalInputStream = context.getInputStream();
-	    context.setInputStream(new GZIPInputStream(originalInputStream));
-	    return context.proceed();
-	};
+        @Override
+        public Object aroundReadFrom (ReaderInterceptorContext context)
+                throws IOException, WebApplicationException {
+            final InputStream originalInputStream = context.getInputStream();
+            context.setInputStream(new GZIPInputStream(originalInputStream));
+            return context.proceed();
+        };
     };
 
     public class GZIPWriterInterceptor implements WriterInterceptor {
-	@Override
-	public void aroundWriteTo(WriterInterceptorContext context)
-	    throws IOException, WebApplicationException {
-	    final OutputStream outputStream = context.getOutputStream();
-	    context.setOutputStream(new GZIPOutputStream(outputStream));
-	    context.proceed();
-	};
+        @Override
+        public void aroundWriteTo (WriterInterceptorContext context)
+                throws IOException, WebApplicationException {
+            final OutputStream outputStream = context.getOutputStream();
+            context.setOutputStream(new GZIPOutputStream(outputStream));
+            context.proceed();
+        };
     };
 };

@@ -13,10 +13,14 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /**
- * Enumeration of token-based distance span matches consisting of two child
- * spans having an actual distance in the range of the minimum and maximum
- * distance parameters specified in the corresponding query. A TokenDistanceSpan
- * starts from the minimum start positions of its child spans and ends at the
+ * Enumeration of token-based distance span matches consisting of two
+ * child
+ * spans having an actual distance in the range of the minimum and
+ * maximum
+ * distance parameters specified in the corresponding query. A
+ * TokenDistanceSpan
+ * starts from the minimum start positions of its child spans and ends
+ * at the
  * maximum end positions of the child spans.
  * 
  * @author margaretha
@@ -26,26 +30,30 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
     /**
      * Constructs TokenDistanceSpans from the given query.
      * 
-     * @param query a SpanDistanceQuery
+     * @param query
+     *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public TokenDistanceSpans(SpanDistanceQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public TokenDistanceSpans (SpanDistanceQuery query,
+                               AtomicReaderContext context, Bits acceptDocs,
+                               Map<Term, TermContext> termContexts)
+            throws IOException {
         super(query, context, acceptDocs, termContexts);
         hasMoreSpans = hasMoreFirstSpans;
     }
 
+
     @Override
-    protected void setCandidateList() throws IOException {
+    protected void setCandidateList () throws IOException {
         if (candidateListDocNum == secondSpans.doc()) {
             copyPossibleCandidates();
             addNewCandidates();
             candidateListIndex = -1;
-        } else {
+        }
+        else {
             candidateList.clear();
             if (hasMoreFirstSpans && ensureSameDoc(firstSpans, secondSpans)) {
                 candidateListDocNum = firstSpans.doc();
@@ -55,13 +63,16 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
         }
     }
 
+
     /**
-     * Restructures the candidateList to contain only candidate (first) spans
-     * which are still possible to create a match, from the candidate list
+     * Restructures the candidateList to contain only candidate
+     * (first) spans
+     * which are still possible to create a match, from the candidate
+     * list
      * prepared for the previous second spans.
      * 
      * */
-    private void copyPossibleCandidates() {
+    private void copyPossibleCandidates () {
         List<CandidateSpan> temp = new ArrayList<>();
         for (CandidateSpan cs : candidateList) {
             if (cs.getEnd() + maxDistance > secondSpans.start())
@@ -70,10 +81,12 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
         candidateList = temp;
     }
 
+
     /**
-     * Add new possible firstspan candidates for the current secondspan.
+     * Add new possible firstspan candidates for the current
+     * secondspan.
      * */
-    private void addNewCandidates() throws IOException {
+    private void addNewCandidates () throws IOException {
         while (hasMoreFirstSpans && firstSpans.doc() == candidateListDocNum
                 && firstSpans.start() < secondSpans.end()) {
 
@@ -84,8 +97,9 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
         }
     }
 
+
     @Override
-    protected boolean findMatch() throws IOException {
+    protected boolean findMatch () throws IOException {
         CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
         if (minDistance == 0
                 &&
@@ -108,14 +122,16 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
         return false;
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
         return candidateSpan.getCost() + secondSpans.cost();
     }
 
+
     @Override
-    protected boolean isSecondSpanValid() throws IOException {
+    protected boolean isSecondSpanValid () throws IOException {
         return true;
     }
 }

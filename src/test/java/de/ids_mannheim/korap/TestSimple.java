@@ -22,16 +22,18 @@ import org.apache.lucene.util.Bits;
 
 /**
  * Helper class for testing the KrillIndex framework (Simple).
- *
+ * 
  * @author diewald
  */
 public class TestSimple {
 
     // Add document
-    public static void addDoc(IndexWriter w, Map<String, String> m) throws IOException {
+    public static void addDoc (IndexWriter w, Map<String, String> m)
+            throws IOException {
         Document doc = new Document();
 
-        FieldType textFieldWithTermVectors = new FieldType(TextField.TYPE_STORED);
+        FieldType textFieldWithTermVectors = new FieldType(
+                TextField.TYPE_STORED);
         textFieldWithTermVectors.setStoreTermVectors(true);
         /*
           No offsets are stored.
@@ -40,21 +42,19 @@ public class TestSimple {
         textFieldWithTermVectors.setStoreTermVectorPositions(true);
         textFieldWithTermVectors.setStoreTermVectorPayloads(true);
 
-        Field textFieldAnalyzed = new Field(
-            "text",
-            m.get("textStr"),
-            textFieldWithTermVectors
-        );
+        Field textFieldAnalyzed = new Field("text", m.get("textStr"),
+                textFieldWithTermVectors);
 
         MultiTermTokenStream ts = getTermVector(m.get("text"));
 
-        textFieldAnalyzed.setTokenStream( ts );
+        textFieldAnalyzed.setTokenStream(ts);
 
         doc.add(textFieldAnalyzed);
 
         // Add document to writer
         w.addDocument(doc);
     };
+
 
     // Get Term Vector
     public static MultiTermTokenStream getTermVector (String stream) {
@@ -85,7 +85,7 @@ public class TestSimple {
                 fail(cde.getErrorCode() + ": " + cde.getMessage());
             };
         };
-        
+
         return ts;
     };
 
@@ -93,7 +93,7 @@ public class TestSimple {
     // Get query wrapper based on json file
     public static SpanQueryWrapper getJSONQuery (String jsonFile) {
         SpanQueryWrapper sqwi;
-	
+
         try {
             String json = getString(jsonFile);
             sqwi = new KrillQuery("tokens").fromJson(json);
@@ -116,7 +116,8 @@ public class TestSimple {
                 contentBuilder.append(str);
             };
             in.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             fail(e.getMessage());
         }
         return contentBuilder.toString();
@@ -125,10 +126,10 @@ public class TestSimple {
 
     // getSpan Info
     public static List<String> getSpanInfo (IndexReader reader, SpanQuery query)
-        throws IOException {
+            throws IOException {
         Map<Term, TermContext> termContexts = new HashMap<>();
         List<String> spanArray = new ArrayList<>();
-        
+
         for (AtomicReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
@@ -140,7 +141,7 @@ public class TestSimple {
                 if (spans.isPayloadAvailable()) {
                     for (byte[] payload : spans.getPayload()) {
                         /* retrieve payload for current matching span */
-                        
+
                         payloadString.append(byte2int(payload)).append(",");
                         payloadString.append(byte2int(payload, 2));
                         //			payloadString.append(byte2int(payload, 1));
@@ -148,16 +149,8 @@ public class TestSimple {
                         payloadString.append(" | ");
                     };
                 };
-                spanArray.add(
-                    "Doc: " +
-                    docid +
-                    " with " +
-                    spans.start() +
-                    "-" +
-                    spans.end() +
-                    " || " +
-                    payloadString.toString()
-                );
+                spanArray.add("Doc: " + docid + " with " + spans.start() + "-"
+                        + spans.end() + " || " + payloadString.toString());
             };
         };
         return spanArray;

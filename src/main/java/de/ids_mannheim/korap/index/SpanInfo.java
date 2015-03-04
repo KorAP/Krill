@@ -1,8 +1,8 @@
 package de.ids_mannheim.korap.index;
+
 import de.ids_mannheim.korap.index.TermInfo;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.index.PositionsToOffset;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ import java.util.*;
 
 public class SpanInfo {
     ArrayList<TermInfo> terms;
-    HashMap<Integer,Integer> startChar, endChar;
+    HashMap<Integer, Integer> startChar, endChar;
     PositionsToOffset pto;
     int localDocID;
 
@@ -20,13 +20,15 @@ public class SpanInfo {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
+
     public SpanInfo (PositionsToOffset pto, int localDocID) {
-        this.terms      = new ArrayList<TermInfo>(64);
-        this.startChar  = new HashMap<Integer,Integer>(16);
-        this.endChar    = new HashMap<Integer,Integer>(16);
-        this.pto        = pto;
+        this.terms = new ArrayList<TermInfo>(64);
+        this.startChar = new HashMap<Integer, Integer>(16);
+        this.endChar = new HashMap<Integer, Integer>(16);
+        this.pto = pto;
         this.localDocID = localDocID;
     };
+
 
     public void add (TermInfo info) {
         info.analyze();
@@ -39,6 +41,7 @@ public class SpanInfo {
         };
     };
 
+
     public ArrayList<TermInfo> getTerms () {
         // Sort terms (this will also analyze them!)
         Collections.sort(this.terms);
@@ -48,7 +51,8 @@ public class SpanInfo {
         // missing this information
         for (TermInfo t : this.terms) {
             if (DEBUG)
-                log.trace("Check offsets for {} and {}", t.getStartPos(), t.getEndPos());
+                log.trace("Check offsets for {} and {}", t.getStartPos(),
+                        t.getEndPos());
             found = true;
             if (t.getStartChar() == -1) {
                 if (this.startChar.containsKey(t.getStartPos()))
@@ -62,15 +66,11 @@ public class SpanInfo {
                 else
                     found = false;
             };
-            
+
             // Add this to found offsets
             if (found && t.getStartPos() == t.getEndPos())
-                this.pto.addOffset(
-                    this.localDocID,
-                    t.getStartPos(),
-                    t.getStartChar(),
-                    t.getEndChar()
-                );
+                this.pto.addOffset(this.localDocID, t.getStartPos(),
+                        t.getStartChar(), t.getEndChar());
             else {
                 if (DEBUG)
                     log.trace("{} can't be found!", t.getAnnotation());

@@ -22,18 +22,22 @@ import de.ids_mannheim.korap.query.spans.NextSpans;
  */
 
 /**
- * SpanNextQuery matches two spans which are directly next to each other. It is
+ * SpanNextQuery matches two spans which are directly next to each
+ * other. It is
  * identical to a phrase query with exactly two clauses.
  * 
- * In the example below, the SpanNextQuery retrieves {@link NextSpans} starting
- * from the start position of {@link TermSpans} "turn" and ending at the end
+ * In the example below, the SpanNextQuery retrieves {@link NextSpans}
+ * starting
+ * from the start position of {@link TermSpans} "turn" and ending at
+ * the end
  * position of {@link TermSpans} "off" occurring immediately after the
  * {@link TermSpans} "turn".
  * 
  * <pre>
  * SpanNextQuery sq = new SpanNextQuery(
- *      new SpanTermQuery(new Term(&quot;tokens&quot;,&quot;s:turn&quot;)), 
- *      new SpanTermQuery(new Term(&quot;tokens&quot;, &quot;s:off&quot;)));
+ * new SpanTermQuery(new Term(&quot;tokens&quot;,&quot;s:turn&quot;)),
+ * new SpanTermQuery(new Term(&quot;tokens&quot;,
+ * &quot;s:off&quot;)));
  * </pre>
  * 
  * @author diewald
@@ -43,42 +47,55 @@ import de.ids_mannheim.korap.query.spans.NextSpans;
 public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
 
     /**
-     * Constructs a SpanNextQuery for the two specified {@link SpanQuery
-     * SpanQueries} whose payloads are to be collected for the resulting
-     * {@link NextSpans}. The first SpanQuery is immediately followed by the
+     * Constructs a SpanNextQuery for the two specified
+     * {@link SpanQuery
+     * SpanQueries} whose payloads are to be collected for the
+     * resulting {@link NextSpans}. The first SpanQuery is immediately
+     * followed by the
      * second SpanQuery.
      * 
-     * @param firstClause the first SpanQuery
-     * @param secondClause the second SpanQuery
+     * @param firstClause
+     *            the first SpanQuery
+     * @param secondClause
+     *            the second SpanQuery
      */
-    public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause) {
+    public SpanNextQuery (SpanQuery firstClause, SpanQuery secondClause) {
         this(firstClause, secondClause, true);
     };
 
+
     /**
-     * Constructs a SpanNextQuery for the two specified {@link SpanQuery
-     * SpanQueries} where the first SpanQuery is immediately followed by the
+     * Constructs a SpanNextQuery for the two specified
+     * {@link SpanQuery
+     * SpanQueries} where the first SpanQuery is immediately followed
+     * by the
      * second SpanQuery.
      * 
-     * @param firstClause the first SpanQuery
-     * @param secondClause the second SpanQuery
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
+     * @param firstClause
+     *            the first SpanQuery
+     * @param secondClause
+     *            the second SpanQuery
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise
+     *            <code>false</code>.
      */
-    public SpanNextQuery(SpanQuery firstClause, SpanQuery secondClause,
-            boolean collectPayloads) {
+    public SpanNextQuery (SpanQuery firstClause, SpanQuery secondClause,
+                          boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
     };
 
+
     @Override
-    public Spans getSpans(final AtomicReaderContext context, Bits acceptDocs,
+    public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
         return (Spans) new NextSpans(this, context, acceptDocs, termContexts);
     };
 
+
     @Override
-    public SpanNextQuery clone() {
+    public SpanNextQuery clone () {
         SpanNextQuery spanNextQuery = new SpanNextQuery(
                 (SpanQuery) firstClause.clone(),
                 (SpanQuery) secondClause.clone(), collectPayloads);
@@ -86,11 +103,12 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
         return spanNextQuery;
     };
 
+
     /*
      * Rewrite query in case it includes regular expressions or wildcards
      */
     @Override
-    public Query rewrite(IndexReader reader) throws IOException {
+    public Query rewrite (IndexReader reader) throws IOException {
         SpanNextQuery clone = null;
 
         // Does the first clause needs a rewrite?
@@ -99,8 +117,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
             if (clone == null)
                 clone = this.clone();
             clone.firstClause = query;
-        }
-        ;
+        };
 
         // Does the second clause needs a rewrite?
         query = (SpanQuery) secondClause.rewrite(reader);
@@ -108,8 +125,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
             if (clone == null)
                 clone = this.clone();
             clone.secondClause = query;
-        }
-        ;
+        };
 
         // There is a clone and it is important
         if (clone != null)
@@ -118,8 +134,9 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
         return this;
     };
 
+
     @Override
-    public String toString(String field) {
+    public String toString (String field) {
         StringBuilder sb = new StringBuilder();
         sb.append("spanNext(");
         sb.append(firstClause.toString(field));
@@ -130,9 +147,10 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
         return sb.toString();
     }
 
+
     /** Returns true iff <code>o</code> is equal to this. */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals (Object o) {
         if (this == o)
             return true;
         if (!(o instanceof SpanNextQuery))
@@ -150,9 +168,10 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
         return getBoost() == spanNextQuery.getBoost();
     };
 
+
     // I don't know what I am doing here
     @Override
-    public int hashCode() {
+    public int hashCode () {
         int result;
         result = firstClause.hashCode() + secondClause.hashCode();
         result ^= (result << 31) | (result >>> 2); // reversible

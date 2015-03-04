@@ -28,18 +28,21 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmark1 () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+                prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
-        String json = getString(getClass().getResource("/queries/benchmark1.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/benchmark1.jsonld").getFile());
 
         int rounds = 100;
 
@@ -52,24 +55,24 @@ public class TestBenchmarkSpans {
         t2 = System.nanoTime();
 
         // assertEquals("TotalResults", 30751, kr.getTotalResults());
-        assertEquals("TotalResults",  kr.getTotalResults(), 4803739);
+        assertEquals("TotalResults", kr.getTotalResults(), 4803739);
 
         //	long seconds = (long) (t2 - t1 / 1000) % 60 ;
-        double seconds = (double)(t2-t1) / 1000000000.0;
-	
+        double seconds = (double) (t2 - t1) / 1000000000.0;
+
         // System.out.println("It took " + seconds + " seconds");
 
         // 100 times:
         // 43,538 sec
         // 4.874
-        
+
         // 1000 times:
         // 36.613 sec
 
         // After refactoring
         // 100 times
         // 273.58114372 seconds
-        
+
         // After intro of attributes
         // 100 times
         // 350.171506379 seconds
@@ -79,24 +82,27 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmark2JSON () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
-        
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+                prop.getProperty("krill.indexDir"))));
+
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
-        String json = getString(getClass().getResource("/queries/benchmark2.jsonld").getFile());
-        
+        String json = getString(getClass().getResource(
+                "/queries/benchmark2.jsonld").getFile());
+
         int rounds = 10000;
-        
+
         Result kr = new Result();
         String result = new String("");
-        
+
         t1 = System.nanoTime();
         double length = 0;
         for (int i = 1; i <= rounds; i++) {
@@ -110,8 +116,8 @@ public class TestBenchmarkSpans {
         // System.err.println(kr.toJSON());
 
         //	long seconds = (long) (t2 - t1 / 1000) % 60 ;
-        double seconds = (double)(t2-t1) / 1000000000.0;
-	
+        double seconds = (double) (t2 - t1) / 1000000000.0;
+
         // System.out.println("It took " + seconds + " seconds");
 
         // 10000 times:
@@ -122,18 +128,21 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmarkSentences () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+                prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
-        String json = getString(getClass().getResource("/queries/benchmark4.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/benchmark4.jsonld").getFile());
 
         int rounds = 10;
 
@@ -147,38 +156,42 @@ public class TestBenchmarkSpans {
         t2 = System.nanoTime();
 
         // System.err.println(kr.getMatch(0).toJSON());
-        
-        assertEquals("TotalResults1", kr.getTotalResults(), 4116282);
-        assertEquals("TotalResults2", kr.getTotalResults(), ki.numberOf("sentences"));
 
-        double seconds = (double)(t2-t1) / 1000000000.0;
-        
+        assertEquals("TotalResults1", kr.getTotalResults(), 4116282);
+        assertEquals("TotalResults2", kr.getTotalResults(),
+                ki.numberOf("sentences"));
+
+        double seconds = (double) (t2 - t1) / 1000000000.0;
+
         // System.out.println("It took " + seconds + " seconds");
         // 100 rounds
         // 56.253 secs
     };
 
-    
+
     @Test
     public void checkBenchmarkClasses () throws IOException {
         // [orth=Der]{1:[orth=Mann]{2:[orth=und]}}
 
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+                prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         // Without classes
-        String json = getString(getClass().getResource("/queries/benchmark5-ohne.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/benchmark5-ohne.jsonld").getFile());
 
         int rounds = 2000;
-        
+
         Result kr = new Result();
 
         t1 = System.nanoTime();
@@ -187,29 +200,31 @@ public class TestBenchmarkSpans {
         };
         t2 = System.nanoTime();
 
-        double seconds = (double)(t2-t1) / 1000000000.0;
-        
+        double seconds = (double) (t2 - t1) / 1000000000.0;
+
         // System.out.println("It took " + seconds + " seconds without classes");
 
         t1 = 0;
         t2 = 0;
         // With classes
-        json = getString(getClass().getResource("/queries/benchmark5.jsonld").getFile());
-        
+        json = getString(getClass().getResource("/queries/benchmark5.jsonld")
+                .getFile());
+
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
             kr = new Krill(json).apply(ki);
         };
         t2 = System.nanoTime();
 
-        seconds = (double)(t2-t1) / 1000000000.0;
-        
+        seconds = (double) (t2 - t1) / 1000000000.0;
+
         // System.out.println("It took " + seconds + " seconds with classes");
 
         t1 = 0;
         t2 = 0;
         // With submatch
-        json = getString(getClass().getResource("/queries/benchmark5-submatch.jsonld").getFile());
+        json = getString(getClass().getResource(
+                "/queries/benchmark5-submatch.jsonld").getFile());
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
@@ -217,12 +232,12 @@ public class TestBenchmarkSpans {
         };
         t2 = System.nanoTime();
 
-        seconds = (double)(t2-t1) / 1000000000.0;
-        
+        seconds = (double) (t2 - t1) / 1000000000.0;
+
         // System.out.println("It took " + seconds + " seconds with submatches");
 
         /** HERE IS A BUG! */
-        
+
         // System.err.println(kr.toJsonString());
 
         // System.err.println(kr.toJSON());
@@ -249,11 +264,12 @@ public class TestBenchmarkSpans {
         // It took 15.368675425 seconds without classes
         // It took 18.347603186 seconds with classes
         // It took 15.941057294 seconds with submatches
-        
+
         // It took 15.241253549 seconds without classes
         // It took 17.30375624 seconds with classes
         // It took 15.367171254 seconds with submatches
     };
+
 
     @Test
     public void checkBenchmarkIndexDocuments () throws IOException {
@@ -264,14 +280,8 @@ public class TestBenchmarkSpans {
         ArrayList<String> docs = new ArrayList<String>(700);
 
         for (int a = 0; a < 50; a++) {
-            for (String d : new String[] {
-                    "00001",
-                    "00002",
-                    "00003",
-                    "00004",
-                    "00005",
-                    "00006",
-                    "02439"}) {
+            for (String d : new String[] { "00001", "00002", "00003", "00004",
+                    "00005", "00006", "02439" }) {
                 docs.add(d);
             };
         };
@@ -281,19 +291,18 @@ public class TestBenchmarkSpans {
         for (int i = 1; i <= rounds; i++) {
             // Construct index
             KrillIndex ki = new KrillIndex();
-            
+
             // Indexing test files
             for (String d : docs) {
                 FieldDocument fd = ki.addDoc(
-                    getClass().getResourceAsStream("/wiki/" + d + ".json.gz"),
-                    true
-                );
+                        getClass().getResourceAsStream(
+                                "/wiki/" + d + ".json.gz"), true);
             };
             ki.commit();
         };
         t2 = System.nanoTime();
 
-        double seconds = (double)(t2-t1) / 1000000000.0;
+        double seconds = (double) (t2 - t1) / 1000000000.0;
         // System.out.println("It took " + seconds + " seconds");
 
         // 10 times / 350 docs:
@@ -311,21 +320,24 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmark3 () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+                prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
-        String json = getString(getClass().getResource("/queries/benchmark3.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/benchmark3.jsonld").getFile());
 
         int rounds = 500;
-    
+
         Result kr = new Result();
 
         t1 = System.nanoTime();
@@ -339,8 +351,8 @@ public class TestBenchmarkSpans {
         // System.err.println(kr.toJSON());
 
         //	long seconds = (long) (t2 - t1 / 1000) % 60 ;
-        double seconds = (double)(t2-t1) / 1000000000.0;
-	
+        double seconds = (double) (t2 - t1) / 1000000000.0;
+
         System.out.println("It took " + seconds + " seconds");
 
         // 500 times:
@@ -357,15 +369,17 @@ public class TestBenchmarkSpans {
                 contentBuilder.append(str);
             };
             in.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             fail(e.getMessage());
         }
         return contentBuilder.toString();
     };
-    
+
+
     public static SpanQueryWrapper jsonQuery (String jsonFile) {
         SpanQueryWrapper sqwi;
-	
+
         try {
             String json = getString(jsonFile);
             sqwi = new KrillQuery("tokens").fromJson(json);

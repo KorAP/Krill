@@ -35,22 +35,18 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
     private byte flag;
     private boolean collectPayloads;
 
-    public static final byte
-        OVERLAP      = WithinSpans.OVERLAP,
-        REAL_OVERLAP = WithinSpans.REAL_OVERLAP,
-        WITHIN       = WithinSpans.WITHIN,
-        REAL_WITHIN  = WithinSpans.REAL_WITHIN,
-        ENDSWITH     = WithinSpans.ENDSWITH,
-        STARTSWITH   = WithinSpans.STARTSWITH,
-        MATCH        = WithinSpans.MATCH;
+    public static final byte OVERLAP = WithinSpans.OVERLAP,
+            REAL_OVERLAP = WithinSpans.REAL_OVERLAP,
+            WITHIN = WithinSpans.WITHIN, REAL_WITHIN = WithinSpans.REAL_WITHIN,
+            ENDSWITH = WithinSpans.ENDSWITH,
+            STARTSWITH = WithinSpans.STARTSWITH, MATCH = WithinSpans.MATCH;
+
 
     // may support "starting" and "ending"
 
 
     // Constructor
-    public SpanWithinQuery (SpanQuery wrap,
-                            SpanQuery embedded,
-                            byte flag,
+    public SpanWithinQuery (SpanQuery wrap, SpanQuery embedded, byte flag,
                             boolean collectPayloads) {
 
         this.field = embedded.getField();
@@ -62,72 +58,73 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
 
 
     // Constructor
-    public SpanWithinQuery(String element,
-                           SpanQuery embedded) {
+    public SpanWithinQuery (String element, SpanQuery embedded) {
         this(element, embedded, WITHIN, true);
     };
 
 
     // Constructor
-    public SpanWithinQuery (String element,
-                            SpanQuery embedded,
-                            byte flag,
+    public SpanWithinQuery (String element, SpanQuery embedded, byte flag,
                             boolean collectPayloads) {
-        this(
-             (SpanQuery) new SpanElementQuery(embedded.getField(), element),
-             embedded,
-             flag,
-             collectPayloads
-             );
+        this((SpanQuery) new SpanElementQuery(embedded.getField(), element),
+                embedded, flag, collectPayloads);
     };
 
 
     // Constructor
-    public SpanWithinQuery(String element,
-                           SpanQuery embedded,
-                           byte flag) {
+    public SpanWithinQuery (String element, SpanQuery embedded, byte flag) {
         this(element, embedded, flag, true);
     };
 
 
     // Constructor
-    public SpanWithinQuery (String element,
-                            SpanQuery embedded,
+    public SpanWithinQuery (String element, SpanQuery embedded,
                             boolean collectPayloads) {
         this(element, embedded, WITHIN, collectPayloads);
     };
 
 
     // Constructor
-    public SpanWithinQuery(SpanQuery wrap,
-                           SpanQuery embedded,
-                           byte flag) {
+    public SpanWithinQuery (SpanQuery wrap, SpanQuery embedded, byte flag) {
         this(wrap, embedded, flag, true);
     };
 
 
     // Constructor
-    public SpanWithinQuery(SpanQuery wrap,
-                           SpanQuery embedded) {
+    public SpanWithinQuery (SpanQuery wrap, SpanQuery embedded) {
         this(wrap, embedded, WITHIN, true);
     };
 
 
     @Override
-    public String getField()    { return field;    };
-    public SpanQuery wrap()     { return wrap;     };
-    public SpanQuery embedded() { return embedded; };
-    public byte flag()          { return flag; };
+    public String getField () {
+        return field;
+    };
 
-    
+
+    public SpanQuery wrap () {
+        return wrap;
+    };
+
+
+    public SpanQuery embedded () {
+        return embedded;
+    };
+
+
+    public byte flag () {
+        return flag;
+    };
+
+
     @Override
-    public void extractTerms(Set<Term> terms) {
+    public void extractTerms (Set<Term> terms) {
         embedded.extractTerms(terms);
     };
-  
+
 
     @Override
-    public String toString(String field) {
+    public String toString (String field) {
         StringBuilder buffer = new StringBuilder();
         buffer.append("span");
         buffer.append(flagToString());
@@ -139,38 +136,36 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
         buffer.append(ToStringUtils.boost(getBoost()));
         return buffer.toString();
     };
-    
+
 
     private String flagToString () {
         switch (flag) {
-        case OVERLAP:
-            return "Overlap";
-        case REAL_OVERLAP:
-            return "OverlapStrict";
-        case WITHIN:
-            return "Contain";
-        case REAL_WITHIN:
-            return "ContainStrict";
-        case ENDSWITH:
-            return "EndsWith";
-        case STARTSWITH:
-            return "StartsWith";
-        case MATCH:
-            return "Match";
+            case OVERLAP:
+                return "Overlap";
+            case REAL_OVERLAP:
+                return "OverlapStrict";
+            case WITHIN:
+                return "Contain";
+            case REAL_WITHIN:
+                return "ContainStrict";
+            case ENDSWITH:
+                return "EndsWith";
+            case STARTSWITH:
+                return "StartsWith";
+            case MATCH:
+                return "Match";
         };
         return "Contains";
     };
 
 
     @Override
-    public Spans getSpans (final AtomicReaderContext context,
-                           Bits acceptDocs,
-                           Map<Term,TermContext> termContexts) throws IOException {
-        return (Spans) new WithinSpans (
-            this, context, acceptDocs, termContexts, this.flag
-        );
+    public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
+            Map<Term, TermContext> termContexts) throws IOException {
+        return (Spans) new WithinSpans(this, context, acceptDocs, termContexts,
+                this.flag);
     };
-    
+
 
     /*
      * Rewrite query in case it includes regular expressions or wildcards
@@ -201,16 +196,13 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
 
         return this;
     };
-  
+
 
     @Override
     public SpanWithinQuery clone () {
         SpanWithinQuery spanWithinQuery = new SpanWithinQuery(
-            (SpanQuery) wrap.clone(),
-            (SpanQuery) embedded.clone(),
-            this.flag,
-            this.collectPayloads
-        );
+                (SpanQuery) wrap.clone(), (SpanQuery) embedded.clone(),
+                this.flag, this.collectPayloads);
         spanWithinQuery.setBoost(getBoost());
         return spanWithinQuery;
     };
@@ -220,23 +212,28 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
      * Returns true iff <code>o</code> is equal to this.
      */
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SpanWithinQuery)) return false;
-        
+    public boolean equals (Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof SpanWithinQuery))
+            return false;
+
         final SpanWithinQuery spanWithinQuery = (SpanWithinQuery) o;
-        
-        if (collectPayloads != spanWithinQuery.collectPayloads) return false;
-        if (!wrap.equals(spanWithinQuery.wrap)) return false;
-        if (!embedded.equals(spanWithinQuery.embedded)) return false;
-        
+
+        if (collectPayloads != spanWithinQuery.collectPayloads)
+            return false;
+        if (!wrap.equals(spanWithinQuery.wrap))
+            return false;
+        if (!embedded.equals(spanWithinQuery.embedded))
+            return false;
+
         return getBoost() == spanWithinQuery.getBoost();
     };
 
 
     // I don't know what I am doing here
     @Override
-    public int hashCode() {
+    public int hashCode () {
         int result = flag;
         result = embedded.hashCode();
         result += wrap.hashCode();

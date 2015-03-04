@@ -18,6 +18,7 @@ public class SpanElementQueryWrapper extends SpanQueryWrapper {
     String element;
     String field;
 
+
     public SpanElementQueryWrapper (String field, String element) {
         this.field = field;
         this.element = element;

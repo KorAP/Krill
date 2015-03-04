@@ -11,8 +11,10 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /**
- * Span enumeration of spans (the firstSpans) which do <em>not</em> occur
- * together with other spans (the secondSpans) within a range of distance.
+ * Span enumeration of spans (the firstSpans) which do <em>not</em>
+ * occur
+ * together with other spans (the secondSpans) within a range of
+ * distance.
  * 
  * @author margaretha
  * */
@@ -22,21 +24,28 @@ public class DistanceExclusionSpans extends DistanceSpans {
     private boolean isOrdered;
     private boolean hasMoreSecondSpans;
 
+
     /**
      * Constructs DistanceExclusionSpans for the specified
      * {@link SpanDistanceQuery}.
      * 
-     * @param query a SpanDistanceQuery
+     * @param query
+     *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
-     * @param isOrdered a boolean flag representing the value <code>true</code>
-     *        if the spans must occur in order, <code>false</code> otherwise.
+     * @param isOrdered
+     *            a boolean flag representing the value
+     *            <code>true</code>
+     *            if the spans must occur in order, <code>false</code>
+     *            otherwise.
      * @throws IOException
      */
-    public DistanceExclusionSpans(SpanDistanceQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public DistanceExclusionSpans (SpanDistanceQuery query,
+                                   AtomicReaderContext context,
+                                   Bits acceptDocs,
+                                   Map<Term, TermContext> termContexts)
+            throws IOException {
         super(query, context, acceptDocs, termContexts);
         minDistance = query.getMinDistance();
         maxDistance = query.getMaxDistance();
@@ -45,8 +54,9 @@ public class DistanceExclusionSpans extends DistanceSpans {
         hasMoreSecondSpans = secondSpans.next();
     }
 
+
     @Override
-    protected boolean advance() throws IOException {
+    protected boolean advance () throws IOException {
 
         while (hasMoreSpans) {
             if (hasMoreSecondSpans)
@@ -61,13 +71,15 @@ public class DistanceExclusionSpans extends DistanceSpans {
         return false;
     }
 
+
     /**
-     * Advance the second span until it occurs on the right side of the first
+     * Advance the second span until it occurs on the right side of
+     * the first
      * span.
      * 
      * @throws IOException
      */
-    private void forwardSecondSpans() throws IOException {
+    private void forwardSecondSpans () throws IOException {
 
         if (secondSpans.doc() < firstSpans.doc()) {
             hasMoreSecondSpans = secondSpans.skipTo(firstSpans.doc());
@@ -85,14 +97,17 @@ public class DistanceExclusionSpans extends DistanceSpans {
         }
     }
 
+
     /**
-     * Calculate the distance / difference between a firstspan and a secondspan
+     * Calculate the distance / difference between a firstspan and a
+     * secondspan
      * positions.
      * 
-     * @return distance the difference between the positions of a firstspan and
+     * @return distance the difference between the positions of a
+     *         firstspan and
      *         a secondspan.
      * */
-    private int calculateActualDistance() {
+    private int calculateActualDistance () {
         // right secondSpan
         if (firstSpans.end() <= secondSpans.start())
             return secondSpans.start() - firstSpans.end() + 1;
@@ -100,14 +115,18 @@ public class DistanceExclusionSpans extends DistanceSpans {
         return firstSpans.start() - secondSpans.end() + 1;
     }
 
+
     /**
-     * Check the distance between the current first span and second span against
+     * Check the distance between the current first span and second
+     * span against
      * the min and max distance constraints.
      * 
-     * @return true if the distance between the first and the second spans are
-     *         smaller as the minimum distance or bigger than the max distance.
+     * @return true if the distance between the first and the second
+     *         spans are
+     *         smaller as the minimum distance or bigger than the max
+     *         distance.
      */
-    private boolean findMatch() throws IOException {
+    private boolean findMatch () throws IOException {
         if (!hasMoreSecondSpans || secondSpans.doc() > firstSpans.doc()) {
             setMatchProperties();
             return true;
@@ -126,12 +145,13 @@ public class DistanceExclusionSpans extends DistanceSpans {
         return false;
     }
 
+
     /**
      * Set the current firstspan as the current match.
      * 
      * @throws IOException
      */
-    private void setMatchProperties() throws IOException {
+    private void setMatchProperties () throws IOException {
         matchDocNumber = firstSpans.doc();
         matchStartPosition = firstSpans.start();
         matchEndPosition = firstSpans.end();
@@ -142,8 +162,9 @@ public class DistanceExclusionSpans extends DistanceSpans {
         setMatchFirstSpan(new CandidateSpan(firstSpans));
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && firstSpans.doc() < target) {
             if (!firstSpans.skipTo(target)) {
                 hasMoreSpans = false;
@@ -153,8 +174,9 @@ public class DistanceExclusionSpans extends DistanceSpans {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return firstSpans.cost() + secondSpans.cost();
     }
 

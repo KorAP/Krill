@@ -16,10 +16,12 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 
 /**
- * NextSpans is an enumeration of Span matches, which ensures that a span is
+ * NextSpans is an enumeration of Span matches, which ensures that a
+ * span is
  * immediately followed by another span.
  * 
- * The implementation allows multiple matches at the same firstspan position.
+ * The implementation allows multiple matches at the same firstspan
+ * position.
  * 
  * @author margaretha
  * @author diewald
@@ -33,17 +35,19 @@ public class NextSpans extends SimpleSpans {
 
     private Logger log = LoggerFactory.getLogger(NextSpans.class);
 
+
     /**
      * Constructs NextSpans for the given {@link SpanNextQuery}.
      * 
-     * @param spanNextQuery a SpanNextQuery
+     * @param spanNextQuery
+     *            a SpanNextQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public NextSpans(SpanNextQuery spanNextQuery, AtomicReaderContext context,
-            Bits acceptDocs, Map<Term, TermContext> termContexts)
+    public NextSpans (SpanNextQuery spanNextQuery, AtomicReaderContext context,
+                      Bits acceptDocs, Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanNextQuery, context, acceptDocs, termContexts);
         collectPayloads = spanNextQuery.isCollectPayloads();
@@ -52,22 +56,26 @@ public class NextSpans extends SimpleSpans {
         candidateList = new ArrayList<>();
     }
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         isStartEnumeration = false;
         matchPayload.clear();
         return advance();
     }
 
+
     /**
-     * Advances the NextSpans to the next match by checking the matchList or
+     * Advances the NextSpans to the next match by checking the
+     * matchList or
      * setting the matchlist first, if it is empty.
      * 
-     * @return <code>true</code> if a match is found, <code>false</code>
+     * @return <code>true</code> if a match is found,
+     *         <code>false</code>
      *         otherwise.
      * @throws IOException
      */
-    private boolean advance() throws IOException {
+    private boolean advance () throws IOException {
 
         while (hasMoreSpans || !matchList.isEmpty() || !candidateList.isEmpty()) {
             if (!matchList.isEmpty()) {
@@ -91,17 +99,20 @@ public class NextSpans extends SimpleSpans {
         return false;
     }
 
+
     /**
-     * Sets the matchlist by first searching the candidates and then find all
+     * Sets the matchlist by first searching the candidates and then
+     * find all
      * the matches.
      * 
      * @throws IOException
      */
-    private void setMatchList() throws IOException {
+    private void setMatchList () throws IOException {
         if (firstSpans.doc() == candidateListDocNum) {
             searchCandidates();
             searchMatches();
-        } else {
+        }
+        else {
             candidateList.clear();
             if (hasMoreSpans && ensureSameDoc(firstSpans, secondSpans)) {
                 candidateListDocNum = firstSpans.doc();
@@ -110,35 +121,43 @@ public class NextSpans extends SimpleSpans {
         }
     }
 
+
     /**
-     * Removes all second span candidates whose start position is not the same
-     * as the firstspan's end position, otherwise creates a match and add it to
+     * Removes all second span candidates whose start position is not
+     * the same
+     * as the firstspan's end position, otherwise creates a match and
+     * add it to
      * the matchlist.
      * 
      * @throws IOException
      */
-    private void searchCandidates() throws IOException {
+    private void searchCandidates () throws IOException {
         Iterator<CandidateSpan> i = candidateList.iterator();
         CandidateSpan cs;
         while (i.hasNext()) {
             cs = i.next();
             if (cs.getStart() == firstSpans.end()) {
                 addMatch(cs);
-            } else {
+            }
+            else {
                 i.remove();
             }
         }
     }
 
+
     /**
-     * Finds all secondspans whose start position is the same as the end
-     * position of the firstspans, until the secondspans' start position is
-     * bigger than the firstspans' end position. Adds those secondspans to the
+     * Finds all secondspans whose start position is the same as the
+     * end
+     * position of the firstspans, until the secondspans' start
+     * position is
+     * bigger than the firstspans' end position. Adds those
+     * secondspans to the
      * candidateList and creates matches.
      * 
      * @throws IOException
      */
-    private void searchMatches() throws IOException {
+    private void searchMatches () throws IOException {
 
         while (hasMoreSpans && candidateListDocNum == secondSpans.doc()) {
             if (secondSpans.start() > firstSpans.end()) {
@@ -152,15 +171,19 @@ public class NextSpans extends SimpleSpans {
         }
     }
 
+
     /**
-     * Creates a match from the given CandidateSpan representing a secondspan
-     * state whose start position is identical to the end position of the
+     * Creates a match from the given CandidateSpan representing a
+     * secondspan
+     * state whose start position is identical to the end position of
+     * the
      * current firstspan, and adds it to the matchlist.
      * 
-     * @param cs a CandidateSpan
+     * @param cs
+     *            a CandidateSpan
      * @throws IOException
      */
-    private void addMatch(CandidateSpan cs) throws IOException {
+    private void addMatch (CandidateSpan cs) throws IOException {
 
         int start = firstSpans.start();
         long cost = firstSpans.cost() + cs.getCost();
@@ -177,8 +200,9 @@ public class NextSpans extends SimpleSpans {
                 candidateListDocNum, cost, payloads));
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (firstSpans.doc() < target)) {
             if (!firstSpans.skipTo(target)) {
                 hasMoreSpans = false;
@@ -189,8 +213,9 @@ public class NextSpans extends SimpleSpans {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return firstSpans.cost() + secondSpans.cost();
     }
 };

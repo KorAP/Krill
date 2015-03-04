@@ -1,4 +1,5 @@
 package de.ids_mannheim.korap.index;
+
 import org.apache.lucene.util.Counter;
 import java.lang.*;
 import java.lang.InterruptedException.*;
@@ -14,31 +15,35 @@ public class TimeOutThread extends Thread {
     private volatile boolean stop = false;
     private Counter counter;
 
+
     public TimeOutThread () {
-	super("TimeOutThread");
-	counter = Counter.newCounter(true);
+        super("TimeOutThread");
+        counter = Counter.newCounter(true);
     };
 
+
     @Override
-    public void run() {
-	while (!stop) {
-	    counter.addAndGet(resolution);
-	    try {
-		Thread.sleep( resolution );
-	    }
-	    catch (InterruptedException ie) {
-		throw new ThreadInterruptedException(ie);
-	    };
-	};
+    public void run () {
+        while (!stop) {
+            counter.addAndGet(resolution);
+            try {
+                Thread.sleep(resolution);
+            }
+            catch (InterruptedException ie) {
+                throw new ThreadInterruptedException(ie);
+            };
+        };
     };
+
 
     // Get miliseconds
     public long getTime () {
-	return counter.get();
+        return counter.get();
     };
-	
+
+
     // Stops the timer thread 
     public void stopTimer () {
-	stop = true;
+        stop = true;
     };
 };

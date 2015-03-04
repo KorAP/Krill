@@ -35,25 +35,23 @@ public class TestMetaFields {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        for (String i : new String[] {"00001",
-                                      "00002"}) {
+        for (String i : new String[] { "00001", "00002" }) {
             ki.addDoc(
-                getClass().getResourceAsStream("/wiki/" + i + ".json.gz"), true
-            );
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
         };
         ki.commit();
 
-        String jsonString = getString(
-            getClass().getResource("/queries/metas/fields.jsonld").getFile()
-        );
-	
+        String jsonString = getString(getClass().getResource(
+                "/queries/metas/fields.jsonld").getFile());
+
         Krill ks = new Krill(jsonString);
 
         Result kr = ks.apply(ki);
         assertEquals((long) 17, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(9, kr.getItemsPerPage());
-        
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toJsonString());
         assertEquals(0, res.at("/matches/0/UID").asInt());
@@ -71,24 +69,25 @@ public class TestMetaFields {
         assertEquals("", res.at("/matches/0/layerInfo").asText());
         assertEquals("", res.at("/matches/0/tokenization").asText());
 
-        jsonString = getString(
-            getClass().getResource("/queries/metas/fields_2.jsonld").getFile()
-        );
+        jsonString = getString(getClass().getResource(
+                "/queries/metas/fields_2.jsonld").getFile());
         ks = new Krill(jsonString);
         kr = ks.apply(ki);
         assertEquals((long) 17, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(2, kr.getItemsPerPage());
-        
+
         mapper = new ObjectMapper();
         res = mapper.readTree(kr.toJsonString());
         assertEquals(0, res.at("/matches/0/UID").asInt());
         assertEquals("", res.at("/matches/0/corpusID").asText());
-        assertEquals("Ruru,Jens.Ol,Aglarech", res.at("/matches/0/author").asText());
+        assertEquals("Ruru,Jens.Ol,Aglarech", res.at("/matches/0/author")
+                .asText());
         assertEquals("A", res.at("/matches/0/title").asText());
         assertEquals("WPD_AAA.00001", res.at("/matches/0/docID").asText());
         assertEquals("", res.at("/matches/0/textSigle").asText());
-        assertEquals("match-WPD_AAA.00001-p6-7", res.at("/matches/0/ID").asText());
+        assertEquals("match-WPD_AAA.00001-p6-7", res.at("/matches/0/ID")
+                .asText());
         assertEquals("", res.at("/matches/0/subTitle").asText());
         assertEquals("", res.at("/matches/0/textClass").asText());
         assertEquals("", res.at("/matches/0/pubPlace").asText());

@@ -20,13 +20,14 @@ public class TestResponse {
 
     ObjectMapper mapper = new ObjectMapper();
 
+
     @Test
     public void testResponse () throws IOException {
-		Response resp = new Response();
-		assertEquals("{}", resp.toJsonString());
-		resp.setVersion("0.24");
+        Response resp = new Response();
+        assertEquals("{}", resp.toJsonString());
+        resp.setVersion("0.24");
         resp.setNode("Tanja");
-        assertEquals("0.24",resp.getVersion());
+        assertEquals("0.24", resp.getVersion());
         assertEquals("Tanja", resp.getNode());
 
         assertFalse(resp.hasWarnings());
@@ -49,13 +50,14 @@ public class TestResponse {
         assertEquals("took a while", respJson.at("/benchmark").asText());
     };
 
+
     @Test
     public void testResponseNotifications () throws IOException {
         Response resp = new Response();
         assertEquals("{}", resp.toJsonString());
         resp.setVersion("0.24");
         resp.setNode("Tanja");
-        assertEquals("0.24",resp.getVersion());
+        assertEquals("0.24", resp.getVersion());
         assertEquals("Tanja", resp.getNode());
 
         assertFalse(resp.hasWarnings());
@@ -75,12 +77,13 @@ public class TestResponse {
         respJson = mapper.readTree(resp.toJsonString());
         assertEquals("0.24", respJson.at("/version").asText());
         assertEquals("Tanja", respJson.at("/node").asText());
-        
+
         assertEquals("Fehler 1", respJson.at("/warnings/0/1").asText());
         assertEquals("Fehler 2", respJson.at("/warnings/1/1").asText());
         assertEquals("Fehler 3", respJson.at("/warnings/2/1").asText());
         assertEquals("Fehler 4", respJson.at("/errors/0/1").asText());
     };
+
 
     @Test
     public void testResponseDeserialzation () throws IOException {
@@ -120,9 +123,9 @@ public class TestResponse {
         kresp = mapper.readValue(jsonResponse, Response.class);
         assertEquals("tanja", kresp.getNode());
 
-        jsonResponse = "{\"node\":\"tanja\", \"version\":\"seaweed-0.49\", " +
-            " \"benchmark\":\"40.5s\",  \"listener\":\"10.0.10.14:678\"," +
-            "\"timeExceeded\":true }";
+        jsonResponse = "{\"node\":\"tanja\", \"version\":\"seaweed-0.49\", "
+                + " \"benchmark\":\"40.5s\",  \"listener\":\"10.0.10.14:678\","
+                + "\"timeExceeded\":true }";
         kresp = mapper.readValue(jsonResponse, Response.class);
         assertEquals("0.49", kresp.getVersion());
         assertEquals("seaweed", kresp.getName());
@@ -132,12 +135,12 @@ public class TestResponse {
         assertTrue(kresp.hasTimeExceeded());
         assertTrue(kresp.hasWarnings());
 
-        jsonResponse = "{\"warnings\":[[123,\"This is a warning\"]," +
-            "[124,\"This is a second warning\"]],"+
-            "\"errors\":[[125,\"This is a single error\"]], "+
-            " \"node\":\"tanja\", \"version\":\"seaweed-0.49\", " +
-            " \"benchmark\":\"40.5s\",  \"listener\":\"10.0.10.14:678\"," +
-            "\"timeExceeded\":true }";
+        jsonResponse = "{\"warnings\":[[123,\"This is a warning\"],"
+                + "[124,\"This is a second warning\"]],"
+                + "\"errors\":[[125,\"This is a single error\"]], "
+                + " \"node\":\"tanja\", \"version\":\"seaweed-0.49\", "
+                + " \"benchmark\":\"40.5s\",  \"listener\":\"10.0.10.14:678\","
+                + "\"timeExceeded\":true }";
         kresp = mapper.readValue(jsonResponse, Response.class);
         assertTrue(kresp.hasWarnings());
         assertTrue(kresp.hasErrors());
@@ -146,7 +149,8 @@ public class TestResponse {
 
         // THIS MAY BREAK!
         assertEquals(kresp.getWarning(0).getMessage(), "This is a warning");
-        assertEquals(kresp.getWarning(1).getMessage(), "This is a second warning");
+        assertEquals(kresp.getWarning(1).getMessage(),
+                "This is a second warning");
         assertEquals(kresp.getWarning(2).getMessage(), "Response time exceeded");
         assertEquals("0.49", kresp.getVersion());
         assertEquals("seaweed", kresp.getName());

@@ -10,18 +10,18 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- *
+ * 
  * A MultiTermToken represents a set of {@link MultiTerm MultiTerms}
  * starting at the same position, i.e. represents a segment
  * in a {@link MultiTermTokenStream}.
- *
+ * 
  * <blockquote><pre>
- *  MultiTermToken mtt = new MultiTermToken("t:test", "a:abbruch");
- *  mtt.add("b:banane");
- *  System.err.println(mtt.toString());
- *  // [t:test|a:abbruch|b:banane]
+ * MultiTermToken mtt = new MultiTermToken("t:test", "a:abbruch");
+ * mtt.add("b:banane");
+ * System.err.println(mtt.toString());
+ * // [t:test|a:abbruch|b:banane]
  * </pre></blockquote>
- *
+ * 
  * @author diewald
  */
 public class MultiTermToken {
@@ -31,18 +31,22 @@ public class MultiTermToken {
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-    private final Logger log = LoggerFactory.getLogger(MultiTermTokenStream.class);
+    private final Logger log = LoggerFactory
+            .getLogger(MultiTermTokenStream.class);
+
 
     /**
      * Construct a new MultiTermToken by passing a stream of
      * {@link MultiTerm MultiTerms}.
-     *
-     * @param terms Take at least one {@link MultiTerm} object for a token.
+     * 
+     * @param terms
+     *            Take at least one {@link MultiTerm} object for a
+     *            token.
      */
     public MultiTermToken (MultiTerm terms, MultiTerm ... moreTerms) {
         this.terms = new ArrayList<MultiTerm>(16);
-        
-        this.terms.add( terms );
+
+        this.terms.add(terms);
 
         // Further elements on same position
         for (i = 0; i < moreTerms.length; i++) {
@@ -54,9 +58,11 @@ public class MultiTermToken {
     /**
      * Construct a new MultiTermToken by passing a {@link MultiTerm}
      * represented as a prefixed string.
-     *
-     * @param prefix The term prefix.
-     * @param surface The term surface.
+     * 
+     * @param prefix
+     *            The term prefix.
+     * @param surface
+     *            The term surface.
      * @see MultiTerm
      */
     public MultiTermToken (char prefix, String surface) {
@@ -67,32 +73,35 @@ public class MultiTermToken {
             MultiTerm term = new MultiTerm(prefix, surface);
 
             // First word element
-            terms.add( term );
+            terms.add(term);
         }
         catch (CorpusDataException cde) {
             log.error("{}: {}", cde.getErrorCode(), cde.getMessage());
         };
     };
-    
+
 
     /**
      * Construct a new MultiTermToken by passing a stream of
      * {@link MultiTerm MultiTerms} represented as strings.
-     *
-     * @param terms Take at least one {@link MultiTerm} string for a token.
+     * 
+     * @param terms
+     *            Take at least one {@link MultiTerm} string for a
+     *            token.
      */
-    public MultiTermToken (String terms, String ... moreTerms) throws CorpusDataException {
+    public MultiTermToken (String terms, String ... moreTerms)
+            throws CorpusDataException {
         this.terms = new ArrayList<MultiTerm>(16);
 
         MultiTerm term = new MultiTerm(terms);
 
         try {
             // First word element
-            this.terms.add( term );
+            this.terms.add(term);
 
             // Further elements on same position
             for (i = 0; i < moreTerms.length; i++) {
-                term = new MultiTerm( moreTerms[i] );
+                term = new MultiTerm(moreTerms[i]);
                 this.terms.add(term);
             };
         }
@@ -101,11 +110,12 @@ public class MultiTermToken {
         };
     };
 
-    
+
     /**
      * Add a new {@link MultiTerm} to the MultiTermToken.
-     *
-     * @param term A {@link MultiTerm} object.
+     * 
+     * @param term
+     *            A {@link MultiTerm} object.
      * @return The {@link MultiTermToken} object for chaining.
      */
     public MultiTermToken add (MultiTerm term) {
@@ -117,8 +127,9 @@ public class MultiTermToken {
 
     /**
      * Add a new {@link MultiTerm} to the MultiTermToken.
-     *
-     * @param term A MultiTerm represented as a surface string.
+     * 
+     * @param term
+     *            A MultiTerm represented as a surface string.
      * @return The {@link MultiTermToken} object for chaining.
      */
     public MultiTermToken add (String term) throws CorpusDataException {
@@ -138,9 +149,11 @@ public class MultiTermToken {
 
     /**
      * Add a new {@link MultiTerm} to the MultiTermToken.
-     *
-     * @param prefix A MultiTerm prefix.
-     * @param term A MultiTerm represented as a surface string.
+     * 
+     * @param prefix
+     *            A MultiTerm prefix.
+     * @param term
+     *            A MultiTerm represented as a surface string.
      * @return The {@link MultiTermToken} object for chaining.
      */
     public MultiTermToken add (char prefix, String term) {
@@ -160,9 +173,10 @@ public class MultiTermToken {
 
     /**
      * Get a {@link MultiTerm} by index.
-     *
-     * @param index The index position of a {@link MultiTerm}
-     *        in the {@link MultiTermToken}.
+     * 
+     * @param index
+     *            The index position of a {@link MultiTerm} in the
+     *            {@link MultiTermToken}.
      * @return A {@link MultiTerm}.
      */
     public MultiTerm get (int index) {
@@ -171,11 +185,11 @@ public class MultiTermToken {
 
 
     /**
-     * Get the number of {@link MultiTerm MultiTerms}
-     * in the MultiTermToken.
-     *
-     * @return The number of {@link MultiTerm MultiTerms}
-     *         in the MultiTermToken.
+     * Get the number of {@link MultiTerm MultiTerms} in the
+     * MultiTermToken.
+     * 
+     * @return The number of {@link MultiTerm MultiTerms} in the
+     *         MultiTermToken.
      */
     public int getSize () {
         return this.terms.size();
@@ -184,7 +198,7 @@ public class MultiTermToken {
 
     /**
      * Sort the {@link MultiTerm MultiTerms} in the correct order.
-     *
+     * 
      * @return The {@link MultiTermToken} object for chaining.
      */
     public MultiTermToken sort () {
@@ -199,7 +213,7 @@ public class MultiTermToken {
 
     /**
      * Serialize the MultiTermToken to a string.
-     *
+     * 
      * @return A string representation of the MultiTermToken,
      *         with leading offset information.
      */
@@ -211,7 +225,7 @@ public class MultiTermToken {
             sb.append(this.terms.get(i).toString()).append('|');
         };
         sb.append(this.terms.get(i).toString()).append(']');
-        
+
         return sb.toString();
     };
 };

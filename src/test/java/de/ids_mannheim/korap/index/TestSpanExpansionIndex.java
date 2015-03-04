@@ -29,18 +29,19 @@ public class TestSpanExpansionIndex {
     Result kr;
     KrillIndex ki;
 
-    public TestSpanExpansionIndex() throws IOException {
+
+    public TestSpanExpansionIndex () throws IOException {
         ki = new KrillIndex();
-        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"),
-                true);
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
     }
+
 
     /**
      * Left and right expansions
      * */
     @Test
-    public void testCase1() throws IOException {
+    public void testCase1 () throws IOException {
 
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "s:des"));
         // left
@@ -75,12 +76,13 @@ public class TestSpanExpansionIndex {
         assertEquals(161, kr.getMatch(3).getEndPos());
     }
 
+
     /**
-     * Classnumber 
+     * Classnumber
      * Check the expansion offsets
      * */
     @Test
-    public void testCase2() {
+    public void testCase2 () {
         byte classNumber = 1;
         SpanExpansionQuery sq;
         // create new payload for the expansion offsets
@@ -133,11 +135,12 @@ public class TestSpanExpansionIndex {
          */
     }
 
+
     /**
      * Right expansion with exclusion
      * */
     @Test
-    public void testCase3() throws IOException {
+    public void testCase3 () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
         SpanTermQuery notQuery = new SpanTermQuery(new Term("tokens",
@@ -167,12 +170,13 @@ public class TestSpanExpansionIndex {
          */
     }
 
+
     /**
-     * Left expansion with exclusion 
+     * Left expansion with exclusion
      * No expansion
      * */
     @Test
-    public void testCase4() throws IOException {
+    public void testCase4 () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
         SpanTermQuery notQuery = new SpanTermQuery(new Term("tokens",
@@ -208,14 +212,15 @@ public class TestSpanExpansionIndex {
 
     }
 
+
     /**
-     * Expansion over start and end documents start => cut to 0 
+     * Expansion over start and end documents start => cut to 0
      * TODO: end => to be handled in rendering process
      * 
      * @throws IOException
      * */
     @Test
-    public void testCase5() throws IOException {
+    public void testCase5 () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.commit();
@@ -246,13 +251,14 @@ public class TestSpanExpansionIndex {
          */
     }
 
+
     /**
      * Expansion exclusion : multiple documents
      * 
      * @throws IOException
      * */
     @Test
-    public void testCase6() throws IOException {
+    public void testCase6 () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); // same doc
         ki.addDoc(createFieldDoc1()); // only not clause
@@ -277,16 +283,15 @@ public class TestSpanExpansionIndex {
         assertEquals(4, kr.getMatch(4).getEndPos());
     }
 
+
     /**
      * Skip to
      * */
     @Test
-    public void testCase7() throws IOException, QueryException {
+    public void testCase7 () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
-        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"),
-                true);
-        ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"),
-                true);
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.commit();
 
         String jsonPath = getClass().getResource("/queries/poly3.json")
@@ -308,13 +313,14 @@ public class TestSpanExpansionIndex {
          */
     }
 
+
     /**
      * Query rewrite bug
      * 
      * @throws IOException
      * */
     @Test
-    public void testQueryRewriteBug() throws IOException {
+    public void testQueryRewriteBug () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); // same doc
         ki.addDoc(createFieldDoc1()); // only not clause
@@ -342,7 +348,8 @@ public class TestSpanExpansionIndex {
          */
     }
 
-    private FieldDocument createFieldDoc0() {
+
+    private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base", "ceccecdeec", "[(0-1)s:c|_0#0-1]"
@@ -354,7 +361,8 @@ public class TestSpanExpansionIndex {
         return fd;
     }
 
-    private FieldDocument createFieldDoc1() {
+
+    private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("base", "bbccdd", "[(0-1)s:b|s:c|_0#0-1]"
@@ -364,7 +372,8 @@ public class TestSpanExpansionIndex {
         return fd;
     }
 
-    private FieldDocument createFieldDoc2() {
+
+    private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV("base", "beccea", "[(0-1)s:b|s:c|_0#0-1]"
@@ -374,7 +383,8 @@ public class TestSpanExpansionIndex {
         return fd;
     }
 
-    private String readFile(String path) {
+
+    private String readFile (String path) {
         StringBuilder sb = new StringBuilder();
         try {
             BufferedReader in = new BufferedReader(new FileReader(path));
@@ -383,7 +393,8 @@ public class TestSpanExpansionIndex {
                 sb.append(str);
             }
             in.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             fail(e.getMessage());
         }
         return sb.toString();

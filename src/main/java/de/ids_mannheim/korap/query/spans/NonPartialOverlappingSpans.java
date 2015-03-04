@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 
 /**
- * An abstract class for Span enumeration whose two child spans are matched by
+ * An abstract class for Span enumeration whose two child spans are
+ * matched by
  * their positions and do not have a partial overlap.
  * 
  * @author margaretha
@@ -24,19 +25,23 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
     private Logger log = LoggerFactory
             .getLogger(NonPartialOverlappingSpans.class);
 
+
     /**
      * Constructs NonPartialOverlappingSpans from the given
      * {@link SimpleSpanQuery}.
      * 
-     * @param simpleSpanQuery a SimpleSpanQuery
+     * @param simpleSpanQuery
+     *            a SimpleSpanQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public NonPartialOverlappingSpans(SimpleSpanQuery simpleSpanQuery,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public NonPartialOverlappingSpans (SimpleSpanQuery simpleSpanQuery,
+                                       AtomicReaderContext context,
+                                       Bits acceptDocs,
+                                       Map<Term, TermContext> termContexts)
+            throws IOException {
         super(simpleSpanQuery, context, acceptDocs, termContexts);
 
         // Warning: not implemented, results in errors for SpanNextQuery 
@@ -46,8 +51,9 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
 
     }
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         // Warning: this does not work for overlapping spans 
         // e.g. get multiple second spans in a firstspan
         hasMoreSpans &= firstSpans.next();
@@ -56,14 +62,16 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
         return advance();
     }
 
+
     /**
      * Advances to the next match.
      * 
-     * @return <code>true</code> if a match is found, <code>false</code>
+     * @return <code>true</code> if a match is found,
+     *         <code>false</code>
      *         otherwise.
      * @throws IOException
      */
-    protected boolean advance() throws IOException {
+    protected boolean advance () throws IOException {
         // The complexity is linear for searching in a document. 
         // It's better if we can skip to >= position in a document.
         while (hasMoreSpans && ensureSameDoc(firstSpans, secondSpans)) {
@@ -71,29 +79,35 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
             if (matchCase == 0) {
                 doCollectPayloads();
                 return true;
-            } else if (matchCase == 1) {
+            }
+            else if (matchCase == 1) {
                 hasMoreSpans = secondSpans.next();
-            } else {
+            }
+            else {
                 hasMoreSpans = firstSpans.next();
             }
         }
         return false;
     }
 
+
     /**
      * Specifies the condition for a match.
      * 
-     * @return 0 iff match is found, -1 to advance the firstspan, 1 to advance
+     * @return 0 iff match is found, -1 to advance the firstspan, 1 to
+     *         advance
      *         the secondspan
      * */
-    protected abstract int findMatch();
+    protected abstract int findMatch ();
+
 
     /**
-     * Collects available payloads from the current first and second spans.
+     * Collects available payloads from the current first and second
+     * spans.
      * 
      * @throws IOException
      */
-    private void doCollectPayloads() throws IOException {
+    private void doCollectPayloads () throws IOException {
         Collection<byte[]> payload;
         if (collectPayloads) {
             if (firstSpans.isPayloadAvailable()) {
@@ -107,8 +121,9 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
         }
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (firstSpans.doc() < target)) {
             if (!firstSpans.skipTo(target)) {
                 hasMoreSpans = false;
@@ -119,8 +134,9 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return firstSpans.cost() + secondSpans.cost();
     }
 }

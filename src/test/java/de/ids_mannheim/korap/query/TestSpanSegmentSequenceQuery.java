@@ -19,66 +19,88 @@ public class TestSpanSegmentSequenceQuery {
 
     @Test
     public void spanSegmentSequenceQuery () throws QueryException {
-	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field");
+        SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field");
 
-	assertNull(sssq.toQuery());
- 
-	sssq.append("a").append("b");
+        assertNull(sssq.toQuery());
 
-	assertEquals("spanNext(field:a, field:b)", sssq.toQuery().toString());
+        sssq.append("a").append("b");
 
-	sssq.append("c");
+        assertEquals("spanNext(field:a, field:b)", sssq.toQuery().toString());
 
-	assertEquals("spanNext(spanNext(field:a, field:b), field:c)", sssq.toQuery().toString());
+        sssq.append("c");
+
+        assertEquals("spanNext(spanNext(field:a, field:b), field:c)", sssq
+                .toQuery().toString());
     };
+
 
     @Test
     public void spanSegmentSequenceQuery2 () throws QueryException {
-	SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field", "-c", "-d", "-e");
-	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "a", "b");
+        SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field",
+                "-c", "-d", "-e");
+        SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field",
+                "a", "b");
 
-	sssq.append(ssq);
+        sssq.append(ssq);
 
-	assertEquals("spanNext(spanNext(field:a, field:b), spanSegment(spanSegment(field:-c, field:-d), field:-e))", sssq.toQuery().toString());
+        assertEquals(
+                "spanNext(spanNext(field:a, field:b), spanSegment(spanSegment(field:-c, field:-d), field:-e))",
+                sssq.toQuery().toString());
 
     };
+
 
     @Test
     public void spanSegmentSequenceQuery3 () throws QueryException {
-	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "a", "b");
-	SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field", "c.?d");
+        SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field",
+                "a", "b");
+        SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field", "c.?d");
 
-	sssq.append(ssreq);
+        sssq.append(ssreq);
 
-	assertEquals("spanNext(spanNext(field:a, field:b), SpanMultiTermQueryWrapper(field:/c.?d/))", sssq.toQuery().toString());
+        assertEquals(
+                "spanNext(spanNext(field:a, field:b), SpanMultiTermQueryWrapper(field:/c.?d/))",
+                sssq.toQuery().toString());
     };
+
 
     @Test
     public void spanSegmentSequenceQueryPrepend () throws QueryException {
-	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "b", "c");
+        SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field",
+                "b", "c");
 
-	sssq.prepend("a");
+        sssq.prepend("a");
 
-	assertEquals("spanNext(spanNext(field:a, field:b), field:c)", sssq.toQuery().toString());
+        assertEquals("spanNext(spanNext(field:a, field:b), field:c)", sssq
+                .toQuery().toString());
     };
+
 
     @Test
     public void spanSegmentSequenceQueryPrepend2 () throws QueryException {
-	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "d", "e");
-	SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field", "-a", "-b", "-c");
+        SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field",
+                "d", "e");
+        SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field",
+                "-a", "-b", "-c");
 
-	sssq.prepend(ssq);
+        sssq.prepend(ssq);
 
-	assertEquals("spanNext(spanNext(spanSegment(spanSegment(field:-a, field:-b), field:-c), field:d), field:e)", sssq.toQuery().toString());
+        assertEquals(
+                "spanNext(spanNext(spanSegment(spanSegment(field:-a, field:-b), field:-c), field:d), field:e)",
+                sssq.toQuery().toString());
     };
+
 
     @Test
     public void spanSegmentSequenceQueryPrepend3 () throws QueryException {
-	SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field", "c", "d");
-	SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field", "a.?b");
+        SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field",
+                "c", "d");
+        SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field", "a.?b");
 
-	sssq.prepend(ssreq);
+        sssq.prepend(ssreq);
 
-	assertEquals("spanNext(spanNext(SpanMultiTermQueryWrapper(field:/a.?b/), field:c), field:d)", sssq.toQuery().toString());
+        assertEquals(
+                "spanNext(spanNext(SpanMultiTermQueryWrapper(field:/a.?b/), field:c), field:d)",
+                sssq.toQuery().toString());
     };
 };

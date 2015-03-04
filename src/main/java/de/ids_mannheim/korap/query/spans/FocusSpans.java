@@ -22,19 +22,22 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Spans, that can focus on the span boundaries of classed subqueries.
- * The boundaries of the classed subquery may exceed the boundaries of the
+ * The boundaries of the classed subquery may exceed the boundaries of
+ * the
  * nested query.
- *
- * In case multiple classes are found with the very same number, the span
- * is maximized to start on the first occurrence from the left and end on
+ * 
+ * In case multiple classes are found with the very same number, the
+ * span
+ * is maximized to start on the first occurrence from the left and end
+ * on
  * the last occurrence on the right.
- *
+ * 
  * In case the class to focus on is not found in the payloads,
  * the match is ignored.
- *
+ * 
  * <strong>Warning</strong>: Payloads other than class payloads won't
  * bubble up currently. That behaviour may change in the future
- *
+ * 
  * @author diewald
  */
 
@@ -50,36 +53,38 @@ public class FocusSpans extends Spans {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    private int start = -1,
-                end;
-    private int tempStart = 0,
-                tempEnd = 0;
+    private int start = -1, end;
+    private int tempStart = 0, tempEnd = 0;
+
 
     /**
      * Construct a FocusSpan for the given {@link SpanQuery}.
      * 
-     * @param wrapQuery A {@link SpanQuery}.
-     * @param context The {@link AtomicReaderContext}.
-     * @param acceptDocs Bit vector representing the documents
-     *        to be searched in.
-     * @param termContexts A map managing {@link TermState TermStates}.
-     * @param number The class number to focus on.
+     * @param wrapQuery
+     *            A {@link SpanQuery}.
+     * @param context
+     *            The {@link AtomicReaderContext}.
+     * @param acceptDocs
+     *            Bit vector representing the documents
+     *            to be searched in.
+     * @param termContexts
+     *            A map managing {@link TermState TermStates}.
+     * @param number
+     *            The class number to focus on.
      * @throws IOException
      */
-    public FocusSpans (SpanQuery wrapQuery,
-                                  AtomicReaderContext context,
-                                  Bits acceptDocs,
-                                  Map<Term,TermContext> termContexts,
-                                  byte number) throws IOException {
-        this.spans     = wrapQuery.getSpans(context, acceptDocs, termContexts);
-        this.number    = number;
+    public FocusSpans (SpanQuery wrapQuery, AtomicReaderContext context,
+                       Bits acceptDocs, Map<Term, TermContext> termContexts,
+                       byte number) throws IOException {
+        this.spans = wrapQuery.getSpans(context, acceptDocs, termContexts);
+        this.number = number;
         this.wrapQuery = wrapQuery;
         this.wrappedPayload = new ArrayList<byte[]>(6);
     };
 
 
     @Override
-    public Collection<byte[]> getPayload() throws IOException {
+    public Collection<byte[]> getPayload () throws IOException {
         return wrappedPayload;
     };
 
@@ -109,13 +114,14 @@ public class FocusSpans extends Spans {
 
 
     @Override
-    public boolean next() throws IOException {
-        if (DEBUG) log.trace("Forward next match in {}",
-                             this.doc());
+    public boolean next () throws IOException {
+        if (DEBUG)
+            log.trace("Forward next match in {}", this.doc());
 
         // Next span
         while (spans.next()) {
-            if (DEBUG) log.trace("Forward next inner span");
+            if (DEBUG)
+                log.trace("Forward next inner span");
 
             // No classes stored
             wrappedPayload.clear();
@@ -130,7 +136,8 @@ public class FocusSpans extends Spans {
                     // No class payload - ignore
                     // this may be problematic for other calculated payloads!
                     if (payload.length != 9) {
-                        if (DEBUG) log.trace("Ignore old payload {}", payload);
+                        if (DEBUG)
+                            log.trace("Ignore old payload {}", payload);
                         continue;
                     };
 
@@ -138,20 +145,17 @@ public class FocusSpans extends Spans {
                     // and classes are matches!
                     if (payload[8] == this.number) {
                         tempStart = byte2int(payload, 0);
-                        tempEnd   = byte2int(payload, 4);
+                        tempEnd = byte2int(payload, 4);
 
                         if (DEBUG) {
-                            log.trace(
-                                "Found matching class {}-{}",
-                                tempStart,
-                                tempEnd
-                            );
+                            log.trace("Found matching class {}-{}", tempStart,
+                                    tempEnd);
                         };
 
                         // Set start position 
                         if (start == -1 || tempStart < start)
                             start = tempStart;
-			
+
                         // Set end position
                         if (tempEnd > end)
                             end = tempEnd;
@@ -168,12 +172,8 @@ public class FocusSpans extends Spans {
                 continue;
 
             if (DEBUG) {
-                log.trace(
-                    "Start to focus on class {} from {} to {}",
-                    number,
-                    start,
-                    end
-                );
+                log.trace("Start to focus on class {} from {} to {}", number,
+                        start, end);
             };
             return true;
         };
@@ -187,11 +187,11 @@ public class FocusSpans extends Spans {
     // Todo: Check for this on document boundaries!
     @Override
     public boolean skipTo (int target) throws IOException {
-        if (DEBUG) log.trace("Skip MatchSpans {} -> {}",
-                             this.doc(), target);
+        if (DEBUG)
+            log.trace("Skip MatchSpans {} -> {}", this.doc(), target);
 
         if (this.doc() < target && spans.skipTo(target)) {
-            
+
         };
         return false;
     };
@@ -199,9 +199,10 @@ public class FocusSpans extends Spans {
 
     @Override
     public String toString () {
-        return getClass().getName() + "(" + this.wrapQuery.toString() + ")@" +
-            (doc() + ":" + start() + "-" + end());
+        return getClass().getName() + "(" + this.wrapQuery.toString() + ")@"
+                + (doc() + ":" + start() + "-" + end());
     };
+
 
     @Override
     public long cost () {

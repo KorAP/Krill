@@ -1,10 +1,13 @@
-0.51 2015-03-03
+0.51 2015-03-04
         - This is a major version (prepared for the GitHub release)
         - [cleanup] Changed groupID to "de.ids_mannheim.korap",
 	  renamed korap-style.xml to Format.xml (diewald)
 	- [bugfix] Updated Format.xml to work with
 	  recent versions of Eclipse (diewald)
         - [documentation] Improved documentation for API classes (diewald)
+	- [bugfix] Updated AttributeSpans (margaretha)
+	- [bugfix] Updated SpanRelationQuery (margaretha)
+	- [cleanup] Autoformat (diewald)
 
 0.50.1 2015-03-02
 	- [feature] Deserialization of arbitrary elements with

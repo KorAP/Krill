@@ -7,31 +7,36 @@ import java.util.Collection;
 import org.apache.lucene.search.spans.Spans;
 
 /**
- * CandidateSpan stores the current state of a Lucene {@link Spans}, which is an
- * enumeration. CandidateSpan is used for various purposes, such as for
- * collecting spans which will be used in a latter process or next matching.
+ * CandidateSpan stores the current state of a Lucene {@link Spans},
+ * which is an
+ * enumeration. CandidateSpan is used for various purposes, such as
+ * for
+ * collecting spans which will be used in a latter process or next
+ * matching.
  * 
  * @author margaretha
  * */
 public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
-	protected int doc, start, end;
+    protected int doc, start, end;
     private long cost;
     private Collection<byte[]> payloads = new ArrayList<>();
     private int position;
     private CandidateSpan childSpan; // used for example for multiple distance
                                      // with unordered constraint
     protected short spanId;
-	private short leftId, rightId;
-	private int leftStart, leftEnd;
-	private int rightStart, rightEnd;
+    private short leftId, rightId;
+    private int leftStart, leftEnd;
+    private int rightStart, rightEnd;
+
 
     /**
      * Constructs a CandidateSpan for the given Span.
      * 
-     * @param span a Span
+     * @param span
+     *            a Span
      * @throws IOException
      */
-    public CandidateSpan(Spans span) throws IOException {
+    public CandidateSpan (Spans span) throws IOException {
         this.doc = span.doc();
         this.start = span.start();
         this.end = span.end();
@@ -40,32 +45,44 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
             setPayloads(span.getPayload());
     }
 
+
     /**
-     * Constructs a CandidateSpan for the given Span and element position (where
-     * the span is included in a document). The element position is important
+     * Constructs a CandidateSpan for the given Span and element
+     * position (where
+     * the span is included in a document). The element position is
+     * important
      * for the matching process in {@link ElementDistanceSpans}.
      * 
-     * @param span a Span
-     * @param position an element position
+     * @param span
+     *            a Span
+     * @param position
+     *            an element position
      * @throws IOException
      */
-    public CandidateSpan(Spans span, int position) throws IOException {
+    public CandidateSpan (Spans span, int position) throws IOException {
         this(span);
         this.position = position;
     }
 
+
     /**
-     * Constructs a CandidateSpan from all the given variables which are
+     * Constructs a CandidateSpan from all the given variables which
+     * are
      * properties of a Span.
      * 
-     * @param start the start position of a span
-     * @param end the end position of a span
-     * @param doc the document including the span
-     * @param cost the cost of finding a span
-     * @param payloads the payloads of a span
+     * @param start
+     *            the start position of a span
+     * @param end
+     *            the end position of a span
+     * @param doc
+     *            the document including the span
+     * @param cost
+     *            the cost of finding a span
+     * @param payloads
+     *            the payloads of a span
      */
-    public CandidateSpan(int start, int end, int doc, long cost,
-            Collection<byte[]> payloads) {
+    public CandidateSpan (int start, int end, int doc, long cost,
+                          Collection<byte[]> payloads) {
         this.start = start;
         this.end = end;
         this.doc = doc;
@@ -74,81 +91,94 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
             setPayloads(payloads);
     }
 
+
     @Override
-    protected CandidateSpan clone() throws CloneNotSupportedException {
+    protected CandidateSpan clone () throws CloneNotSupportedException {
         return new CandidateSpan(this.start, this.end, this.doc, this.cost,
                 this.payloads);
     }
+
 
     /**
      * Returns the document number containing the CandidateSpan.
      * 
      * @return the document number
      */
-    public int getDoc() {
+    public int getDoc () {
         return doc;
     }
+
 
     /**
      * Sets the document number containing the CandidateSpan.
      * 
-     * @param doc the document number
+     * @param doc
+     *            the document number
      */
-    public void setDoc(int doc) {
+    public void setDoc (int doc) {
         this.doc = doc;
     }
+
 
     /**
      * Returns the start position of the CandidateSpan.
      * 
      * @return the start position
      */
-    public int getStart() {
+    public int getStart () {
         return start;
     }
+
 
     /**
      * Sets the start position of the CandidateSpan.
      * 
-     * @param start the start position
+     * @param start
+     *            the start position
      */
-    public void setStart(int start) {
+    public void setStart (int start) {
         this.start = start;
     }
+
 
     /**
      * Returns the end position of the CandidateSpan.
      * 
      * @return the end position
      */
-    public int getEnd() {
+    public int getEnd () {
         return end;
     }
+
 
     /**
      * Sets the end position of the CandidateSpan.
      * 
-     * @param end the end position
+     * @param end
+     *            the end position
      */
-    public void setEnd(int end) {
+    public void setEnd (int end) {
         this.end = end;
     }
+
 
     /**
      * Returns the payloads of the CandidateSpan.
      * 
      * @return the payloads
      */
-    public Collection<byte[]> getPayloads() {
+    public Collection<byte[]> getPayloads () {
         return payloads;
     }
+
 
     /**
      * Sets the payloads of the CandidateSpan.
      * 
-     * @param payloads the payloads
+     * @param payloads
+     *            the payloads
      */
-    public void setPayloads(Collection<byte[]> payloads) {
+    public void setPayloads (Collection<byte[]> payloads) {
 
         for (byte[] b : payloads) {
             if (b == null)
@@ -158,134 +188,168 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
         }
     }
 
+
     /**
      * Returns the cost of finding the CandidateSpan.
      * 
      * @return the cost
      */
-    public long getCost() {
+    public long getCost () {
         return cost;
     }
+
 
     /**
      * Sets the cost of finding the CandidateSpan.
      * 
-     * @param cost the cost
+     * @param cost
+     *            the cost
      */
-    public void setCost(long cost) {
+    public void setCost (long cost) {
         this.cost = cost;
     }
 
+
     /**
-     * Returns the element position number containing the CandidateSpan.
+     * Returns the element position number containing the
+     * CandidateSpan.
      * 
      * @return the element position number
      */
-    public int getPosition() {
+    public int getPosition () {
         return position;
     }
+
 
     /**
      * Sets the element position number containing the CandidateSpan.
      * 
-     * @param position the element position number
+     * @param position
+     *            the element position number
      */
-    public void setPosition(int position) {
+    public void setPosition (int position) {
         this.position = position;
     }
+
 
     /**
      * Returns a child/sub Span of the CandidateSpan.
      * 
      * @return a child/sub span of the CandidateSpan
      */
-    public CandidateSpan getChildSpan() {
+    public CandidateSpan getChildSpan () {
         return childSpan;
     }
+
 
     /**
      * Sets the child/sub span of the CandidateSpan.
      * 
-     * @param childSpan a child/sub span of the CandidateSpan
+     * @param childSpan
+     *            a child/sub span of the CandidateSpan
      */
-    public void setChildSpan(CandidateSpan childSpan) {
+    public void setChildSpan (CandidateSpan childSpan) {
         this.childSpan = childSpan;
     }
 
+
     /**
-     * Returns the span id of another Span related to the CandidateSpan. Only
-     * CandidateSpan of particular Spans such as {@link AttributeSpans} having
-     * this property. For instance, an AttributeSpan has a spanId of the element
+     * Returns the span id of another Span related to the
+     * CandidateSpan. Only
+     * CandidateSpan of particular Spans such as
+     * {@link AttributeSpans} having
+     * this property. For instance, an AttributeSpan has a spanId of
+     * the element
      * it belongs to.
      * 
-     * @return the span id of another Span related to the CandidateSpan
+     * @return the span id of another Span related to the
+     *         CandidateSpan
      */
-    public short getSpanId() {
+    public short getSpanId () {
         return spanId;
     }
 
+
     /**
-     * Sets the span id of another Span related to the CandidateSpan. Only
-     * CandidateSpan of particular Spans such as {@link AttributeSpans} having
-     * this property. For instance, an AttributeSpan has a spanId of the element
+     * Sets the span id of another Span related to the CandidateSpan.
+     * Only
+     * CandidateSpan of particular Spans such as
+     * {@link AttributeSpans} having
+     * this property. For instance, an AttributeSpan has a spanId of
+     * the element
      * it belongs to.
      * 
-     * @param spanId the span id of another Span related to the CandidateSpan
+     * @param spanId
+     *            the span id of another Span related to the
+     *            CandidateSpan
      */
-    public void setSpanId(short spanId) {
+    public void setSpanId (short spanId) {
         this.spanId = spanId;
     }
 
-	public short getLeftId() {
-		return leftId;
-	}
 
-	public void setLeftId(short leftId) {
-		this.leftId = leftId;
-	}
+    public short getLeftId () {
+        return leftId;
+    }
 
-	public short getRightId() {
-		return rightId;
-	}
 
-	public void setRightId(short rightId) {
-		this.rightId = rightId;
-	}
+    public void setLeftId (short leftId) {
+        this.leftId = leftId;
+    }
 
-	public int getLeftStart() {
-		return leftStart;
-	}
 
-	public void setLeftStart(int leftStart) {
-		this.leftStart = leftStart;
-	}
+    public short getRightId () {
+        return rightId;
+    }
 
-	public int getLeftEnd() {
-		return leftEnd;
-	}
 
-	public void setLeftEnd(int leftEnd) {
-		this.leftEnd = leftEnd;
-	}
+    public void setRightId (short rightId) {
+        this.rightId = rightId;
+    }
 
-	public int getRightStart() {
-		return rightStart;
-	}
 
-	public void setRightStart(int rightStart) {
-		this.rightStart = rightStart;
-	}
+    public int getLeftStart () {
+        return leftStart;
+    }
 
-	public int getRightEnd() {
-		return rightEnd;
-	}
 
-	public void setRightEnd(int rightEnd) {
-		this.rightEnd = rightEnd;
-	}
+    public void setLeftStart (int leftStart) {
+        this.leftStart = leftStart;
+    }
 
-	@Override
-    public int compareTo(CandidateSpan o) {
+
+    public int getLeftEnd () {
+        return leftEnd;
+    }
+
+
+    public void setLeftEnd (int leftEnd) {
+        this.leftEnd = leftEnd;
+    }
+
+
+    public int getRightStart () {
+        return rightStart;
+    }
+
+
+    public void setRightStart (int rightStart) {
+        this.rightStart = rightStart;
+    }
+
+
+    public int getRightEnd () {
+        return rightEnd;
+    }
+
+
+    public void setRightEnd (int rightEnd) {
+        this.rightEnd = rightEnd;
+    }
+
+
+    @Override
+    public int compareTo (CandidateSpan o) {
         if (this.doc == o.doc) {
             if (this.getStart() == o.getStart()) {
                 if (this.getEnd() == o.getEnd())
@@ -294,11 +358,13 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
                     return 1;
                 else
                     return -1;
-            } else if (this.getStart() < o.getStart())
+            }
+            else if (this.getStart() < o.getStart())
                 return -1;
             else
                 return 1;
-        } else if (this.doc < o.doc)
+        }
+        else if (this.doc < o.doc)
             return -1;
         else
             return 1;

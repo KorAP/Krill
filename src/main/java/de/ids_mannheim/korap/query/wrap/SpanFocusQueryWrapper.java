@@ -24,43 +24,50 @@ public class SpanFocusQueryWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subquery;
     private byte number;
 
+
     public SpanFocusQueryWrapper (SpanQueryWrapper subquery, byte number) {
-	this.subquery = subquery;
-	this.number = number;
+        this.subquery = subquery;
+        this.number = number;
     };
+
 
     public SpanFocusQueryWrapper (SpanQueryWrapper subquery, short number) {
-	this.subquery = subquery;
-	this.number = (byte) number;
+        this.subquery = subquery;
+        this.number = (byte) number;
     };
+
 
     public SpanFocusQueryWrapper (SpanQueryWrapper subquery, int number) {
-	this.subquery = subquery;
-	this.number = (byte) number;
+        this.subquery = subquery;
+        this.number = (byte) number;
     };
 
+
     public SpanFocusQueryWrapper (SpanQueryWrapper subquery) {
-	this.subquery = subquery;
-	this.number = (byte) 1;
+        this.subquery = subquery;
+        this.number = (byte) 1;
     };
+
 
     public SpanQuery toQuery () throws QueryException {
         if (this.subquery.isNull())
             return (SpanQuery) null;
-        return new SpanFocusQuery(
-            this.subquery.retrieveNode(this.retrieveNode).toQuery(), this.number
-        );
+        return new SpanFocusQuery(this.subquery.retrieveNode(this.retrieveNode)
+                .toQuery(), this.number);
     };
+
 
     public boolean isOptional () {
-	return this.subquery.isOptional();
+        return this.subquery.isOptional();
     };
+
 
     public boolean isNull () {
-	return this.subquery.isNull();
+        return this.subquery.isNull();
     };
 
+
     public boolean isNegative () {
-	return this.subquery.isNegative();
+        return this.subquery.isNegative();
     };
 };

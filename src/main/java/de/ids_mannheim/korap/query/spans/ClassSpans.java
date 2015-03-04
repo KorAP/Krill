@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * And the start and end position of the span, so this information
  * can bubble up for later processing (similar to captures in regular
  * expression).
- *
+ * 
  * @author diewald
  */
 
@@ -39,25 +39,29 @@ public class ClassSpans extends Spans {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
+
     /**
      * Construct a new ClassSpans object.
-     *
-     * @param operand An arbitrary nested {@link SpanQuery}.
-     * @param context The {@link AtomicReaderContext}.
-     * @param acceptDocs Bit vector representing the documents
-     *        to be searched in.
-     * @param termContexts A map managing {@link TermState TermStates}.
-     * @param number The identifying class number.
+     * 
+     * @param operand
+     *            An arbitrary nested {@link SpanQuery}.
+     * @param context
+     *            The {@link AtomicReaderContext}.
+     * @param acceptDocs
+     *            Bit vector representing the documents
+     *            to be searched in.
+     * @param termContexts
+     *            A map managing {@link TermState TermStates}.
+     * @param number
+     *            The identifying class number.
      */
-    public ClassSpans (SpanQuery operand,
-                       AtomicReaderContext context,
-                       Bits acceptDocs,
-                       Map<Term,TermContext> termContexts,
+    public ClassSpans (SpanQuery operand, AtomicReaderContext context,
+                       Bits acceptDocs, Map<Term, TermContext> termContexts,
                        byte number) throws IOException {
         spans = operand.getSpans(context, acceptDocs, termContexts);
 
         // The number of the class
-        this.number  = number;
+        this.number = number;
 
         // The current operand
         this.operand = operand;
@@ -100,7 +104,8 @@ public class ClassSpans extends Spans {
 
     @Override
     public boolean next () throws IOException {
-        if (DEBUG) log.trace("Forward next");
+        if (DEBUG)
+            log.trace("Forward next");
 
         if (spans.next())
             return this.addClassPayload();
@@ -108,46 +113,43 @@ public class ClassSpans extends Spans {
         hasmorespans = false;
         return false;
     };
-    
-    private boolean addClassPayload () throws IOException {
-    	hasmorespans = true;
 
-	    classedPayload.clear();
+
+    private boolean addClassPayload () throws IOException {
+        hasmorespans = true;
+
+        classedPayload.clear();
 
         // Subquery has payloads
-	    if (spans.isPayloadAvailable()) {
+        if (spans.isPayloadAvailable()) {
             classedPayload.addAll(spans.getPayload());
-            if (DEBUG) log.trace("Found payload in nested SpanQuery");
-	    };
-
-	    if (DEBUG) {
-            log.trace(
-                "Wrap class {} around span {} - {}",
-                number,
-                spans.start(),
-                spans.end()
-            );
+            if (DEBUG)
+                log.trace("Found payload in nested SpanQuery");
         };
 
-	    // Todo: Better allocate using a Factory!
-	    bb.clear();
-	    bb.putInt(spans.start()).putInt(spans.end()).put(number);
+        if (DEBUG) {
+            log.trace("Wrap class {} around span {} - {}", number,
+                    spans.start(), spans.end());
+        };
 
-	    // Add highlight information as byte array
-	    classedPayload.add(bb.array());
+        // Todo: Better allocate using a Factory!
+        bb.clear();
+        bb.putInt(spans.start()).putInt(spans.end()).put(number);
+
+        // Add highlight information as byte array
+        classedPayload.add(bb.array());
         return true;
-	};
+    };
 
 
     @Override
     public boolean skipTo (int target) throws IOException {
         classedPayload.clear();
 
-        if (DEBUG) log.trace("Skip ClassSpans {} -> {}",
-                             spans.doc(), target);
+        if (DEBUG)
+            log.trace("Skip ClassSpans {} -> {}", spans.doc(), target);
 
-        if (hasmorespans && spans.doc() < target &&
-            spans.skipTo(target))
+        if (hasmorespans && spans.doc() < target && spans.skipTo(target))
             return this.addClassPayload();
         return false;
     };
@@ -155,13 +157,13 @@ public class ClassSpans extends Spans {
 
     @Override
     public String toString () {
-        return getClass().getName() + "(" + this.operand.toString() + ")@" +
-            (doc() + ":" + start() + "-" + end());
+        return getClass().getName() + "(" + this.operand.toString() + ")@"
+                + (doc() + ":" + start() + "-" + end());
     };
 
 
     @Override
-    public long cost() {
+    public long cost () {
         return spans.cost();
     };
 };

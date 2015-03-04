@@ -26,105 +26,112 @@ public class SpanClassQuery extends SpanQuery {
     protected byte number;
     protected SpanQuery operand;
 
+
     public SpanClassQuery (SpanQuery operand, byte number) {
-	this.field = operand.getField();
-	this.operand = operand;
-	this.number = number;
+        this.field = operand.getField();
+        this.operand = operand;
+        this.number = number;
     };
+
 
     public SpanClassQuery (SpanQuery operand) {
-	this.field = operand.getField();
-	this.operand = operand;
-	this.number = (byte) 1;
+        this.field = operand.getField();
+        this.operand = operand;
+        this.number = (byte) 1;
     };
+
 
     public byte number () {
-	return this.number;
+        return this.number;
     };
 
+
     @Override
-    public String getField () { return field; }
+    public String getField () {
+        return field;
+    }
+
 
     @Override
     public void extractTerms (Set<Term> terms) {
-	this.operand.extractTerms(terms);
+        this.operand.extractTerms(terms);
     };
+
 
     @Override
     public String toString (String field) {
-	StringBuffer buffer = new StringBuffer("{");
-	short classNr = (short) this.number;
-	buffer.append(classNr & 0xFF).append(": ");
+        StringBuffer buffer = new StringBuffer("{");
+        short classNr = (short) this.number;
+        buffer.append(classNr & 0xFF).append(": ");
         buffer.append(this.operand.toString()).append('}');
-	buffer.append(ToStringUtils.boost(getBoost()));
-	return buffer.toString();
+        buffer.append(ToStringUtils.boost(getBoost()));
+        return buffer.toString();
     };
 
+
     @Override
-    public Spans getSpans (final AtomicReaderContext context,
-			   Bits acceptDocs,
-			   Map<Term,TermContext> termContexts) throws IOException {
-	return (Spans) new ClassSpans(
-	    this.operand,
-	    context,
-	    acceptDocs,
-	    termContexts,
-	    number
-        );
+    public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
+            Map<Term, TermContext> termContexts) throws IOException {
+        return (Spans) new ClassSpans(this.operand, context, acceptDocs,
+                termContexts, number);
     };
+
 
     @Override
     public Query rewrite (IndexReader reader) throws IOException {
-	SpanClassQuery clone = null;
-	SpanQuery query = (SpanQuery) this.operand.rewrite(reader);
+        SpanClassQuery clone = null;
+        SpanQuery query = (SpanQuery) this.operand.rewrite(reader);
 
-	if (query != this.operand) {
-	    if (clone == null)
-		clone = this.clone();
-	    clone.operand = query;
-	};
+        if (query != this.operand) {
+            if (clone == null)
+                clone = this.clone();
+            clone.operand = query;
+        };
 
-	if (clone != null)
-	    return clone;
+        if (clone != null)
+            return clone;
 
-	return this;
+        return this;
     };
 
+
     @Override
-    public SpanClassQuery clone() {
-	SpanClassQuery spanClassQuery = new SpanClassQuery(
-	    (SpanQuery) this.operand.clone(),
-	    this.number
-        );
-	spanClassQuery.setBoost(getBoost());
-	return spanClassQuery;
+    public SpanClassQuery clone () {
+        SpanClassQuery spanClassQuery = new SpanClassQuery(
+                (SpanQuery) this.operand.clone(), this.number);
+        spanClassQuery.setBoost(getBoost());
+        return spanClassQuery;
     };
 
 
     /** Returns true iff <code>o</code> is equal to this. */
     @Override
     public boolean equals (Object o) {
-	if (this == o) return true;
-	if (!(o instanceof SpanClassQuery)) return false;
-	
-	final SpanClassQuery spanClassQuery = (SpanClassQuery) o;
-	
-	if (!this.operand.equals(spanClassQuery.operand)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof SpanClassQuery))
+            return false;
 
-	if (this.number != spanClassQuery.number) return false;
+        final SpanClassQuery spanClassQuery = (SpanClassQuery) o;
 
-	return getBoost() == spanClassQuery.getBoost();
+        if (!this.operand.equals(spanClassQuery.operand))
+            return false;
+
+        if (this.number != spanClassQuery.number)
+            return false;
+
+        return getBoost() == spanClassQuery.getBoost();
     };
 
 
     // I don't know what I am doing here
     @Override
-    public int hashCode() {
-	int result = 1;
-	result = operand.hashCode();
-	result += (int) number;
-	result ^= (result << 15) | (result >>> 18);
-	result += Float.floatToRawIntBits(getBoost());
-	return result;
+    public int hashCode () {
+        int result = 1;
+        result = operand.hashCode();
+        result += (int) number;
+        result ^= (result << 15) | (result >>> 18);
+        result += Float.floatToRawIntBits(getBoost());
+        return result;
     };
 };

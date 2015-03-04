@@ -16,12 +16,12 @@ import com.fasterxml.jackson.annotation.*;
 /**
  * Abstract class representing a document in the
  * Krill index.
- *
+ * 
  * This model is rather specific to DeReKo data and
  * should be considered experimental. It may be replaced
  * by a more agnostic model.
  * string fields, e.g. may be combined with a prefix.
- *
+ * 
  * @author diewald
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -29,53 +29,47 @@ public abstract class AbstractDocument extends Response {
     private String primaryData;
 
     @JsonIgnore
-    public int
-        internalDocID,
-        localDocID,
-        UID;
+    public int internalDocID, localDocID, UID;
 
-    private KrillDate
-        pubDate,
-        // newly added
-        creationDate;
+    private KrillDate pubDate,
+    // newly added
+            creationDate;
 
     private String
 
-        // No longer supported
-        ID,
-        corpusID,
-        field,
-        layerInfo,
-        tokenization,
+    // No longer supported
+            ID,
+            corpusID,
+            field,
+            layerInfo,
+            tokenization,
 
-        // Still supported
-        foundries,
-        textClass,
-        pubPlace,
+            // Still supported
+            foundries,
+            textClass,
+            pubPlace,
 
-        // Newly added for the corpus/doc/text distinction of DeReKo
-        textSigle, docSigle, corpusSigle,
-        title,       subTitle,       author,       editor,
-        docTitle,    docSubTitle,    docAuthor,    docEditor,
-        corpusTitle, corpusSubTitle, corpusAuthor, corpusEditor,
-        textType, textTypeArt, textTypeRef, textColumn, textDomain,
-        fileEditionStatement, biblEditionStatement,
-        publisher,
-        reference,
-        language,
-        license,
-        pages,
-        keywords,
+            // Newly added for the corpus/doc/text distinction of DeReKo
+            textSigle, docSigle, corpusSigle, title, subTitle, author,
+            editor,
+            docTitle, docSubTitle, docAuthor, docEditor,
+            corpusTitle,
+            corpusSubTitle, corpusAuthor, corpusEditor, textType,
+            textTypeArt,
+            textTypeRef, textColumn, textDomain,
+            fileEditionStatement,
+            biblEditionStatement, publisher, reference, language,
+            license,
+            pages, keywords,
 
-        // Meta information regarding annotations
-        tokenSource,
-        layerInfos;
+            // Meta information regarding annotations
+            tokenSource, layerInfos;
 
 
     /**
      * Get the publication date of the document
      * as a {@link KrillDate} object.
-     *
+     * 
      * @return A {@link KrillDate} object for chaining.
      */
     @JsonIgnore
@@ -87,9 +81,9 @@ public abstract class AbstractDocument extends Response {
     /**
      * Get the publication date of the document
      * as a string.
-     *
+     * 
      * @return A string containing the {@link KrillDate}.
-     */    
+     */
     @JsonProperty("pubDate")
     public String getPubDateString () {
         if (this.pubDate != null)
@@ -100,9 +94,10 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set the publication date of the document.
-     *
-     * @param date The date as a {@link KrillDate}
-     * compatible string representation.
+     * 
+     * @param date
+     *            The date as a {@link KrillDate} compatible string
+     *            representation.
      * @return A {@link KrillDate} object for chaining.
      */
     public KrillDate setPubDate (String date) {
@@ -113,8 +108,9 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set the publication date of the document.
-     *
-     * @param date The date as a {@link KrillDate} object.
+     * 
+     * @param date
+     *            The date as a {@link KrillDate} object.
      * @return A {@link KrillDate} object for chaining.
      */
     public KrillDate setPubDate (KrillDate date) {
@@ -125,7 +121,7 @@ public abstract class AbstractDocument extends Response {
     /**
      * Get the creation date of the document
      * as a {@link KrillDate} object.
-     *
+     * 
      * @return A {@link KrillDate} object for chaining.
      */
     @JsonIgnore
@@ -137,7 +133,7 @@ public abstract class AbstractDocument extends Response {
     /**
      * Get the creation date of the document
      * as a string.
-     *
+     * 
      * @return A string containing the {@link KrillDate}.
      */
     @JsonProperty("creationDate")
@@ -150,9 +146,10 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set the creation date of the document.
-     *
-     * @param date The date as a {@link KrillDate}
-     * compatible string representation.
+     * 
+     * @param date
+     *            The date as a {@link KrillDate} compatible string
+     *            representation.
      * @return A {@link KrillDate} object for chaining.
      */
     public KrillDate setCreationDate (String date) {
@@ -163,38 +160,40 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set the creation date of the document.
-     *
-     * @param date The date as a {@link KrillDate} object.
+     * 
+     * @param date
+     *            The date as a {@link KrillDate} object.
      * @return A {@link KrillDate} object for chaining.
      */
     public KrillDate setCreationDate (KrillDate date) {
         return (this.creationDate = date);
-    };    
+    };
 
 
     /**
      * Get the name of the author of the document.
-     *
+     * 
      * @return The name of the author as a string.
      */
     public String getAuthor () {
         return this.author;
     };
-        
+
 
     /**
      * Set the name of the author of the document.
-     *
-     * @param author The name of the author as a string.
+     * 
+     * @param author
+     *            The name of the author as a string.
      */
     public void setAuthor (String author) {
         this.author = author;
     };
-    
+
 
     /**
      * Get the text class of the document.
-     *
+     * 
      * @return The text class of the document as a string.
      */
     public String getTextClass () {
@@ -204,8 +203,9 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set the text class of the document.
-     *
-     * @param textClass The text class of the document as a string.
+     * 
+     * @param textClass
+     *            The text class of the document as a string.
      */
     public void setTextClass (String textClass) {
         this.textClass = textClass;
@@ -214,39 +214,41 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Get the publication place of the document.
-     *
+     * 
      * @return The publication place of the document as a string.
      */
     public String getPubPlace () {
         return this.pubPlace;
     };
-    
-    
+
+
     /**
      * Set the publication place of the document.
-     *
-     * @param pubPlace The publication place of the document as a string.
+     * 
+     * @param pubPlace
+     *            The publication place of the document as a string.
      */
     public void setPubPlace (String pubPlace) {
         this.pubPlace = pubPlace;
-    };    
+    };
 
 
     /**
      * Get the unique identifier of the document.
-     *
+     * 
      * @return The unique identifier of the document as an integer.
      */
     @JsonProperty("UID")
     public int getUID () {
         return this.UID;
     };
-    
+
 
     /**
      * Set the unique identifier of the document.
-     *
-     * @param UID The unique identifier of the document as an integer.
+     * 
+     * @param UID
+     *            The unique identifier of the document as an integer.
      * @return The invocant for chaining.
      */
     public void setUID (int UID) {
@@ -256,9 +258,10 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set the unique identifier of the document.
-     *
-     * @param UID The unique identifier of the document as a
-     *        string representing an integer.
+     * 
+     * @param UID
+     *            The unique identifier of the document as a
+     *            string representing an integer.
      * @return The invocant for chaining.
      * @throws NumberFormatException
      */
@@ -270,7 +273,7 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Get the title of the document.
-     *
+     * 
      * @return The title of the document as a string.
      */
     public String getTitle () {
@@ -280,17 +283,18 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set the title of the document.
-     *
-     * @param title The title of the document as a string.
+     * 
+     * @param title
+     *            The title of the document as a string.
      */
     public void setTitle (String title) {
         this.title = title;
     };
-    
-        
+
+
     /**
      * Get the subtitle of the document.
-     *
+     * 
      * @return The subtitle of the document as a string.
      */
     public String getSubTitle () {
@@ -300,8 +304,9 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set the subtitle of the document.
-     *
-     * @param subTitle The subtitle of the document as a string.
+     * 
+     * @param subTitle
+     *            The subtitle of the document as a string.
      */
     public void setSubTitle (String subTitle) {
         this.subTitle = subTitle;
@@ -310,7 +315,7 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Get the primary data of the document.
-     *
+     * 
      * @return The primary data of the document as a string.
      */
     public String getPrimaryData () {
@@ -323,9 +328,11 @@ public abstract class AbstractDocument extends Response {
     /**
      * Get the primary data of the document,
      * starting with a given character offset.
-     *
-     * @param startOffset The starting character offset.
-     * @return The substring of primary data of the document as a string.
+     * 
+     * @param startOffset
+     *            The starting character offset.
+     * @return The substring of primary data of the document as a
+     *         string.
      */
     public String getPrimaryData (int startOffset) {
         return this.primaryData.substring(startOffset);
@@ -336,10 +343,13 @@ public abstract class AbstractDocument extends Response {
      * Get the primary data of the document,
      * starting with a given character offset and ending
      * with a given character offset.
-     *
-     * @param startOffset The starting character offset.
-     * @param endOffset The ending character offset.
-     * @return The substring of the primary data of the document as a string.
+     * 
+     * @param startOffset
+     *            The starting character offset.
+     * @param endOffset
+     *            The ending character offset.
+     * @return The substring of the primary data of the document as a
+     *         string.
      */
     public String getPrimaryData (int startOffset, int endOffset) {
         return this.primaryData.substring(startOffset, endOffset);
@@ -348,19 +358,22 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set the primary data of the document.
-     *
-     * @param primary The primary data of the document
-     *        as a string.
+     * 
+     * @param primary
+     *            The primary data of the document
+     *            as a string.
      */
     public void setPrimaryData (String primary) {
         this.primaryData = primary;
     };
 
+
     /**
      * Get the length of the primary data of the document
      * (i.e. the number of characters).
-     *
-     * @return The length of the primary data of the document as an integer.
+     * 
+     * @return The length of the primary data of the document as an
+     *         integer.
      */
     @JsonIgnore
     public int getPrimaryDataLength () {
@@ -370,8 +383,8 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Get information on the foundries the document
-     * is annotated with as a string. 
-     *
+     * is annotated with as a string.
+     * 
      * @return The foundry information string.
      */
     public String getFoundries () {
@@ -381,9 +394,10 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set information on the foundries the document
-     * is annotated with. 
-     *
-     * @param foundries The foundry information string.
+     * is annotated with.
+     * 
+     * @param foundries
+     *            The foundry information string.
      */
     public void setFoundries (String foundries) {
         this.foundries = foundries;
@@ -392,8 +406,8 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Get information on the layers the document
-     * is annotated with as a string. 
-     *
+     * is annotated with as a string.
+     * 
      * @return The layer information string.
      */
     public String getLayerInfos () {
@@ -403,9 +417,10 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set information on the layers the document
-     * is annotated with as a string. 
-     *
-     * @param layerInfos The layer information string.
+     * is annotated with as a string.
+     * 
+     * @param layerInfos
+     *            The layer information string.
      */
     public void setLayerInfos (String layerInfos) {
         this.layerInfos = layerInfos;
@@ -414,8 +429,8 @@ public abstract class AbstractDocument extends Response {
 
     // This is the new text id
     /**
-     * Get the text sigle as a string. 
-     *
+     * Get the text sigle as a string.
+     * 
      * @return The text sigle as a string.
      */
     public String getTextSigle () {
@@ -425,9 +440,10 @@ public abstract class AbstractDocument extends Response {
 
     // This is the new text id
     /**
-     * Set the text sigle as a string. 
-     *
-     * @param textSigle The text sigle as a string.
+     * Set the text sigle as a string.
+     * 
+     * @param textSigle
+     *            The text sigle as a string.
      */
     public void setTextSigle (String textSigle) {
         this.textSigle = textSigle;
@@ -436,8 +452,8 @@ public abstract class AbstractDocument extends Response {
 
     // This is the new corpus id
     /**
-     * Get the corpus sigle as a string. 
-     *
+     * Get the corpus sigle as a string.
+     * 
      * @return The corpus sigle as a string.
      */
     public String getCorpusSigle () {
@@ -447,9 +463,10 @@ public abstract class AbstractDocument extends Response {
 
     // This is the new corpus id
     /**
-     * Set the corpus sigle as a string. 
-     *
-     * @param corpusSigle The corpus sigle as a string.
+     * Set the corpus sigle as a string.
+     * 
+     * @param corpusSigle
+     *            The corpus sigle as a string.
      */
     public void setCorpusSigle (String corpusSigle) {
         this.corpusSigle = corpusSigle;
@@ -457,8 +474,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the document sigle as a string. 
-     *
+     * Get the document sigle as a string.
+     * 
      * @return The document sigle as a string.
      */
     public String getDocSigle () {
@@ -467,9 +484,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the document sigle as a string. 
-     *
-     * @param docSigle The document sigle as a string.
+     * Set the document sigle as a string.
+     * 
+     * @param docSigle
+     *            The document sigle as a string.
      */
     public void setDocSigle (String docSigle) {
         this.docSigle = docSigle;
@@ -477,8 +495,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the name of the publisher as a string. 
-     *
+     * Get the name of the publisher as a string.
+     * 
      * @return The name of the publisher as a string.
      */
     public String getPublisher () {
@@ -487,9 +505,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the name of the publisher as a string. 
-     *
-     * @param publisher The name of the publisher as a string.
+     * Set the name of the publisher as a string.
+     * 
+     * @param publisher
+     *            The name of the publisher as a string.
      */
     public void setPublisher (String publisher) {
         this.publisher = publisher;
@@ -497,8 +516,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the name of the editor as a string. 
-     *
+     * Get the name of the editor as a string.
+     * 
      * @return The name of the editor as a string.
      */
     public String getEditor () {
@@ -507,9 +526,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the name of the editor as a string. 
-     *
-     * @param editor The name of the editor as a string.
+     * Set the name of the editor as a string.
+     * 
+     * @param editor
+     *            The name of the editor as a string.
      */
     public void setEditor (String editor) {
         this.editor = editor;
@@ -517,8 +537,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the type of the text as a string. 
-     *
+     * Get the type of the text as a string.
+     * 
      * @return The type of the text as a string.
      */
     public String getTextType () {
@@ -527,9 +547,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the type of the text as a string. 
-     *
-     * @param textType The type of the text as a string.
+     * Set the type of the text as a string.
+     * 
+     * @param textType
+     *            The type of the text as a string.
      */
     public void setTextType (String textType) {
         this.textType = textType;
@@ -537,8 +558,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the type art of the text as a string. 
-     *
+     * Get the type art of the text as a string.
+     * 
      * @return The type art of the text as a string.
      */
     public String getTextTypeArt () {
@@ -547,9 +568,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the type art of the text as a string. 
-     *
-     * @param textTypeArt The type art of the text as a string.
+     * Set the type art of the text as a string.
+     * 
+     * @param textTypeArt
+     *            The type art of the text as a string.
      */
     public void setTextTypeArt (String textTypeArt) {
         this.textTypeArt = textTypeArt;
@@ -557,9 +579,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the type reference of the text as a string. 
-     *
-     * @param textTypeRef The type reference of the text as a string.
+     * Set the type reference of the text as a string.
+     * 
+     * @param textTypeRef
+     *            The type reference of the text as a string.
      */
     public void setTextTypeRef (String textTypeRef) {
         this.textTypeRef = textTypeRef;
@@ -567,8 +590,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the type reference of the text as a string. 
-     *
+     * Get the type reference of the text as a string.
+     * 
      * @return The type reference of the text as a string.
      */
     public String getTextTypeRef () {
@@ -577,8 +600,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the column of the text as a string. 
-     *
+     * Get the column of the text as a string.
+     * 
      * @return The column of the text as a string.
      */
     public String getTextColumn () {
@@ -587,9 +610,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the column of the text as a string. 
-     *
-     * @param textColumn The column of the text as a string.
+     * Set the column of the text as a string.
+     * 
+     * @param textColumn
+     *            The column of the text as a string.
      */
     public void setTextColumn (String textColumn) {
         this.textColumn = textColumn;
@@ -597,8 +621,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the domain of the text as a string. 
-     *
+     * Get the domain of the text as a string.
+     * 
      * @return The domain of the text as a string.
      */
     public String getTextDomain () {
@@ -607,9 +631,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the domain of the text as a string. 
-     *
-     * @param textDomain The domain of the text as a string.
+     * Set the domain of the text as a string.
+     * 
+     * @param textDomain
+     *            The domain of the text as a string.
      */
     public void setTextDomain (String textDomain) {
         this.textDomain = textDomain;
@@ -617,8 +642,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the license of the text as a string. 
-     *
+     * Get the license of the text as a string.
+     * 
      * @return The license of the text as a string.
      */
     public String getLicense () {
@@ -627,9 +652,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the license of the text as a string. 
-     *
-     * @param license The license of the text as a string.
+     * Set the license of the text as a string.
+     * 
+     * @param license
+     *            The license of the text as a string.
      */
     public void setLicense (String license) {
         this.license = license;
@@ -637,8 +663,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the page numbers of the text as a string. 
-     *
+     * Get the page numbers of the text as a string.
+     * 
      * @return The page numbers of the text as a string.
      */
     public String getPages () {
@@ -647,9 +673,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the page numbers of the text as a string. 
-     *
-     * @param pages The page numbers of the text as a string.
+     * Set the page numbers of the text as a string.
+     * 
+     * @param pages
+     *            The page numbers of the text as a string.
      */
     public void setPages (String pages) {
         this.pages = pages;
@@ -657,8 +684,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the file edition statement of the text as a string. 
-     *
+     * Get the file edition statement of the text as a string.
+     * 
      * @return The file edition statement of the text as a string.
      */
     public String getFileEditionStatement () {
@@ -667,10 +694,11 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the file edition statement of the text as a string. 
-     *
-     * @param fileEditionStatement The file edition statement
-     *        of the text as a string.
+     * Set the file edition statement of the text as a string.
+     * 
+     * @param fileEditionStatement
+     *            The file edition statement
+     *            of the text as a string.
      */
     public void setFileEditionStatement (String fileEditionStatement) {
         this.fileEditionStatement = fileEditionStatement;
@@ -678,9 +706,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the bibliograhic edition statement of the text as a string. 
-     *
-     * @return The bibliograhic edition statement of the text as a string.
+     * Get the bibliograhic edition statement of the text as a string.
+     * 
+     * @return The bibliograhic edition statement of the text as a
+     *         string.
      */
     public String getBiblEditionStatement () {
         return this.biblEditionStatement;
@@ -688,10 +717,11 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the bibliograhic edition statement of the text as a string. 
-     *
-     * @param biblEditionStatement The bibliograhic edition statement
-     *        of the text as a string.
+     * Set the bibliograhic edition statement of the text as a string.
+     * 
+     * @param biblEditionStatement
+     *            The bibliograhic edition statement
+     *            of the text as a string.
      */
     public void setBiblEditionStatement (String biblEditionStatement) {
         this.biblEditionStatement = biblEditionStatement;
@@ -699,8 +729,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the reference of the text as a string. 
-     *
+     * Get the reference of the text as a string.
+     * 
      * @return The reference of the text as a string.
      */
     public String getReference () {
@@ -709,9 +739,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the reference of the text as a string. 
-     *
-     * @param reference The reference of the text as a string.
+     * Set the reference of the text as a string.
+     * 
+     * @param reference
+     *            The reference of the text as a string.
      */
     public void setReference (String reference) {
         this.reference = reference;
@@ -719,8 +750,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the language of the text as a string. 
-     *
+     * Get the language of the text as a string.
+     * 
      * @return The language of the text as a string.
      */
     public String getLanguage () {
@@ -729,9 +760,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the language of the text as a string. 
-     *
-     * @param language The language of the text as a string.
+     * Set the language of the text as a string.
+     * 
+     * @param language
+     *            The language of the text as a string.
      */
     public void setLanguage (String language) {
         this.language = language;
@@ -739,8 +771,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the corpus title of the text as a string. 
-     *
+     * Get the corpus title of the text as a string.
+     * 
      * @return The corpus title of the text as a string.
      */
     public String getCorpusTitle () {
@@ -749,9 +781,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the corpus title of the text as a string. 
-     *
-     * @param corpusTitle The corpus title of the text as a string.
+     * Set the corpus title of the text as a string.
+     * 
+     * @param corpusTitle
+     *            The corpus title of the text as a string.
      */
     public void setCorpusTitle (String corpusTitle) {
         this.corpusTitle = corpusTitle;
@@ -759,8 +792,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the corpus subtitle of the text as a string. 
-     *
+     * Get the corpus subtitle of the text as a string.
+     * 
      * @return The corpus subtitle of the text as a string.
      */
     public String getCorpusSubTitle () {
@@ -769,10 +802,11 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the corpus subtitle of the text as a string. 
-     *
-     * @param corpusSubTitle The corpus subtitle of the
-     *        text as a string.
+     * Set the corpus subtitle of the text as a string.
+     * 
+     * @param corpusSubTitle
+     *            The corpus subtitle of the
+     *            text as a string.
      */
     public void setCorpusSubTitle (String corpusSubTitle) {
         this.corpusSubTitle = corpusSubTitle;
@@ -780,8 +814,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the corpus author of the text as a string. 
-     *
+     * Get the corpus author of the text as a string.
+     * 
      * @return The corpus author of the text as a string.
      */
     public String getCorpusAuthor () {
@@ -790,8 +824,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the corpus author of the text as a string. 
-     *
+     * Set the corpus author of the text as a string.
+     * 
      * @return The corpus author of the text as a string.
      */
     public void setCorpusAuthor (String corpusAuthor) {
@@ -800,8 +834,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the corpus editor of the text as a string. 
-     *
+     * Get the corpus editor of the text as a string.
+     * 
      * @return The corpus editor of the text as a string.
      */
     public String getCorpusEditor () {
@@ -810,9 +844,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the corpus editor of the text as a string. 
-     *
-     * @param corpusEditor The corpus editor of the text as a string.
+     * Set the corpus editor of the text as a string.
+     * 
+     * @param corpusEditor
+     *            The corpus editor of the text as a string.
      */
     public void setCorpusEditor (String corpusEditor) {
         this.corpusEditor = corpusEditor;
@@ -820,18 +855,20 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the document title of the text as a string. 
-     *
+     * Get the document title of the text as a string.
+     * 
      * @return The document title of the text as a string.
      */
     public String getDocTitle () {
         return this.docTitle;
     };
 
+
     /**
-     * Set the document title of the text as a string. 
-     *
-     * @param docTitle The document title of the text as a string.
+     * Set the document title of the text as a string.
+     * 
+     * @param docTitle
+     *            The document title of the text as a string.
      */
     public void setDocTitle (String docTitle) {
         this.docTitle = docTitle;
@@ -839,8 +876,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the subtitle of the document of the text as a string. 
-     *
+     * Get the subtitle of the document of the text as a string.
+     * 
      * @return The subtitle of the document of the text as a string.
      */
     public String getDocSubTitle () {
@@ -849,10 +886,11 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the subtitle of the document of the text as a string. 
-     *
-     * @param docSubTitle The subtitle of the document of the
-     *        text as a string.
+     * Set the subtitle of the document of the text as a string.
+     * 
+     * @param docSubTitle
+     *            The subtitle of the document of the
+     *            text as a string.
      */
     public void setDocSubTitle (String docSubTitle) {
         this.docSubTitle = docSubTitle;
@@ -860,8 +898,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the author of the document of the text as a string. 
-     *
+     * Get the author of the document of the text as a string.
+     * 
      * @return The author of the document of the text as a string.
      */
     public String getDocAuthor () {
@@ -870,9 +908,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the author of the document of the text as a string. 
-     *
-     * @param docAuthor The author of the document of the text as a string.
+     * Set the author of the document of the text as a string.
+     * 
+     * @param docAuthor
+     *            The author of the document of the text as a string.
      */
     public void setDocAuthor (String docAuthor) {
         this.docAuthor = docAuthor;
@@ -880,8 +919,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the editor of the document of the text as a string. 
-     *
+     * Get the editor of the document of the text as a string.
+     * 
      * @return The editor of the document of the text as a string.
      */
     public String getDocEditor () {
@@ -890,9 +929,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the editor of the document of the text as a string. 
-     *
-     * @param docEditor The editor of the document of the text as a string.
+     * Set the editor of the document of the text as a string.
+     * 
+     * @param docEditor
+     *            The editor of the document of the text as a string.
      */
     public void setDocEditor (String docEditor) {
         this.docEditor = docEditor;
@@ -900,8 +940,8 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the keywords of the text as a string. 
-     *
+     * Get the keywords of the text as a string.
+     * 
      * @return The keywords of the text as a string.
      */
     public String getKeywords () {
@@ -910,9 +950,10 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the keywords of the text as a string. 
-     *
-     * @param keywords The keywords of the text as a string.
+     * Set the keywords of the text as a string.
+     * 
+     * @param keywords
+     *            The keywords of the text as a string.
      */
     public void setKeywords (String keywords) {
         this.keywords = keywords;
@@ -921,8 +962,8 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Get information about the source of tokenization
-     * as a string. 
-     *
+     * as a string.
+     * 
      * @return The tokenization information as a string.
      */
     public String getTokenSource () {
@@ -932,9 +973,10 @@ public abstract class AbstractDocument extends Response {
 
     /**
      * Set information about the source of tokenization
-     * as a string. 
-     *
-     * @param tokenSource The tokenization information as a string.
+     * as a string.
+     * 
+     * @param tokenSource
+     *            The tokenization information as a string.
      */
     public void setTokenSource (String tokenSource) {
         this.tokenSource = tokenSource;

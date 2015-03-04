@@ -17,15 +17,19 @@ public class TestSpanWithinQuery {
     @Test
     public void spanSegmentWithinQuery () throws QueryException {
 
-	SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper("field", "a", "b", "c");
-	SpanWithinQuery ssequery = new SpanWithinQuery("s", ssquery.toQuery());
+        SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper(
+                "field", "a", "b", "c");
+        SpanWithinQuery ssequery = new SpanWithinQuery("s", ssquery.toQuery());
 
-	assertEquals("spanContain(<field:s />, spanNext(spanNext(field:a, field:b), field:c))", ssequery.toString());
+        assertEquals(
+                "spanContain(<field:s />, spanNext(spanNext(field:a, field:b), field:c))",
+                ssequery.toString());
 
-	ssquery = new SpanSequenceQueryWrapper("field", "a", "b");
-	ssequery = new SpanWithinQuery("p", ssquery.toQuery());
-	assertEquals("spanContain(<field:p />, spanNext(field:a, field:b))", ssequery.toString());
+        ssquery = new SpanSequenceQueryWrapper("field", "a", "b");
+        ssequery = new SpanWithinQuery("p", ssquery.toQuery());
+        assertEquals("spanContain(<field:p />, spanNext(field:a, field:b))",
+                ssequery.toString());
 
     };
-    
+
 };

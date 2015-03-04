@@ -24,11 +24,13 @@ public class TestSpanElementQuery {
         assertEquals("<field:b />", sequery.toString());
     };
 
+
     @Test
     public void spanElement2Query () {
         SpanElementQuery sequery = new SpanElementQuery("field", "xyz");
         assertEquals("<field:xyz />", sequery.toString());
     };
+
 
     @Test
     public void spanElement3Query () {

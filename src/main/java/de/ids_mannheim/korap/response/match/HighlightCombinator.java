@@ -21,42 +21,50 @@ public class HighlightCombinator {
 
     private LinkedList<HighlightCombinatorElement> combine;
     private Stack<Integer> balanceStack = new Stack<>();
-    private Stack<Integer> tempStack    = new Stack<>();
+    private Stack<Integer> tempStack = new Stack<>();
+
 
     // Empty constructor
     public HighlightCombinator () {
         this.combine = new LinkedList<>();
     };
 
+
     // Return the combination list
     public LinkedList<HighlightCombinatorElement> list () {
         return this.combine;
     };
+
 
     // get the first element (without removing)
     public HighlightCombinatorElement getFirst () {
         return this.combine.getFirst();
     };
 
+
     // get the last element (without removing)
     public HighlightCombinatorElement getLast () {
         return this.combine.getLast();
     };
+
 
     // get an element by index (without removing)
     public HighlightCombinatorElement get (int index) {
         return this.combine.get(index);
     };
 
+
     // Get the size of the combinator stack
     public short size () {
         return (short) this.combine.size();
     };
 
+
     // Add primary data to the stack
     public void addString (String characters) {
         this.combine.add(new HighlightCombinatorElement(characters));
     };
+
 
     // Add opening highlight combinator to the stack
     public void addOpen (int number) {
@@ -64,13 +72,14 @@ public class HighlightCombinator {
         this.balanceStack.push(number);
     };
 
+
     // Add closing highlight combinator to the stack
     public void addClose (int number) {
         HighlightCombinatorElement lastComb;
 
         // Clean up temporary stack
         this.tempStack.clear();
-        
+
         // Check if there is an opening tag at least
         if (this.balanceStack.empty()) {
             if (DEBUG)
@@ -80,7 +89,8 @@ public class HighlightCombinator {
 
         // Just some debug information
         if (DEBUG) {
-            StringBuilder sb = new StringBuilder("Stack for checking with class ");
+            StringBuilder sb = new StringBuilder(
+                    "Stack for checking with class ");
             sb.append(number).append(" is ");
             for (int s : this.balanceStack) {
                 sb.append('[').append(s).append(']');
@@ -91,26 +101,22 @@ public class HighlightCombinator {
         // class number of the last element
         // It's already ensured the stack is not empty
         int eold = this.balanceStack.pop();
-        
+
         // the closing element is not balanced, i.e. the last element differs
         while (eold != number) {
-            
+
             // Retrieve last combinator on stack
             lastComb = this.combine.peekLast();
-            
+
             if (DEBUG)
-                log.trace("Closing element is unbalanced - {} " +
-                          "!= {} with lastComb {}|{}|{}",
-                          eold,
-                          number,
-                          lastComb.type,
-                          lastComb.number,
-                          lastComb.characters);
+                log.trace("Closing element is unbalanced - {} "
+                        + "!= {} with lastComb {}|{}|{}", eold, number,
+                        lastComb.type, lastComb.number, lastComb.characters);
 
             // combinator is opening and the number is not equal to the last
             // element on the balanceStack
             if (lastComb.type == 1 && lastComb.number == eold) {
-                
+
                 // Remove the last element - it's empty and uninteresting!
                 this.combine.removeLast();
             }
@@ -120,9 +126,10 @@ public class HighlightCombinator {
 
                 if (DEBUG)
                     log.trace("close element a) {}", eold);
-		
+
                 // Add a closer for the old element (this has following elements)
-                this.combine.add(new HighlightCombinatorElement((byte) 2, eold, false));
+                this.combine.add(new HighlightCombinatorElement((byte) 2, eold,
+                        false));
             };
 
             // add this element number temporarily on the stack
@@ -136,20 +143,12 @@ public class HighlightCombinator {
         lastComb = this.combine.peekLast();
 
         if (DEBUG) {
-            log.trace("LastComb: " +
-                      lastComb.type +
-                      '|' +
-                      lastComb.number +
-                      '|' + lastComb.characters +
-                      " for " +
-                      number);
-            log.trace("Stack for checking 2: {}|{}|{}|{}",
-                      lastComb.type,
-                      lastComb.number,
-                      lastComb.characters,
-                      number);
+            log.trace("LastComb: " + lastComb.type + '|' + lastComb.number
+                    + '|' + lastComb.characters + " for " + number);
+            log.trace("Stack for checking 2: {}|{}|{}|{}", lastComb.type,
+                    lastComb.number, lastComb.characters, number);
         };
-        
+
         if (lastComb.type == 1 && lastComb.number == number) {
             while (lastComb.type == 1 && lastComb.number == number) {
                 // Remove the damn thing - It's empty and uninteresting!
@@ -160,7 +159,7 @@ public class HighlightCombinator {
         else {
             if (DEBUG)
                 log.trace("close element b) {}", number);
-	    
+
             // Add a closer
             this.combine.add(new HighlightCombinatorElement((byte) 2, number));
         };
@@ -173,6 +172,7 @@ public class HighlightCombinator {
             balanceStack.push(e);
         };
     };
+
 
     // Get all combined elements as a string
     public String toString () {

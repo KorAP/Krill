@@ -36,10 +36,9 @@ public class TestKrillIndex {
         fd.addInt("zahl1", 56);
         fd.addInt("zahl2", "58");
         fd.addText("teaser", "Das ist der Name der Rose");
-        fd.addTV("base",
-                 "ich bau",
-                 "[(0-3)s:ich|l:ich|p:PPER|-:sentences$<i>2]" +
-                 "[(4-7)s:bau|l:bauen|p:VVFIN]");
+        fd.addTV("base", "ich bau",
+                "[(0-3)s:ich|l:ich|p:PPER|-:sentences$<i>2]"
+                        + "[(4-7)s:bau|l:bauen|p:VVFIN]");
         ki.addDoc(fd);
 
         fd = new FieldDocument();
@@ -53,7 +52,7 @@ public class TestKrillIndex {
         mtts.addMultiTermToken("s:sind#4-8", "l:sein", "p:VVFIN");
         mtts.addMeta("sentences", (int) 5);
         fd.addTV("base", "wir sind", mtts);
-        
+
         ki.addDoc(fd);
 
         /* Save documents */
@@ -68,10 +67,8 @@ public class TestKrillIndex {
         fd.addInt("zahl1", 59);
         fd.addInt("zahl2", 65);
         fd.addText("teaser", "Noch ein Versuch");
-        fd.addTV("base",
-                 "ich bau",
-                 "[(0-3)s:der|l:der|p:DET|-:sentences$<i>3]" +
-                 "[(4-8)s:baum|l:baum|p:NN]");
+        fd.addTV("base", "ich bau", "[(0-3)s:der|l:der|p:DET|-:sentences$<i>3]"
+                + "[(4-8)s:baum|l:baum|p:NN]");
         ki.addDoc(fd);
 
         /* Save documents */
@@ -84,16 +81,17 @@ public class TestKrillIndex {
         // ki.search();
     };
 
+
     @Test
     public void indexAlteration () throws IOException {
         KrillIndex ki = new KrillIndex();
-        
+
         assertEquals(0, ki.numberOf("base", "documents"));
 
         FieldDocument fd = new FieldDocument();
         fd.addString("name", "Peter");
         ki.addDoc(fd);
-        
+
         assertEquals(0, ki.numberOf("base", "documents"));
 
         fd = new FieldDocument();

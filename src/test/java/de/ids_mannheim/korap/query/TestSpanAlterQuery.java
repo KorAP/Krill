@@ -14,45 +14,56 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class TestSpanAlterQuery  {
+public class TestSpanAlterQuery {
     @Test
     public void spanAlterQuery () throws QueryException {
 
-	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
-	ssaquery.or("b");
-	assertEquals("field:b", ssaquery.toQuery().toString());
+        SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
+        ssaquery.or("b");
+        assertEquals("field:b", ssaquery.toQuery().toString());
     };
+
 
     @Test
     public void spanAlterQuery2 () throws QueryException {
 
-	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
-	ssaquery.or("b").or("c");
-	assertEquals("spanOr([field:b, field:c])", ssaquery.toQuery().toString());
+        SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
+        ssaquery.or("b").or("c");
+        assertEquals("spanOr([field:b, field:c])", ssaquery.toQuery()
+                .toString());
     };
+
 
     @Test
     public void spanAlterQuery3 () throws QueryException {
-	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
-	ssaquery.or("b").or("c").or("d");
-	assertEquals("spanOr([field:b, field:c, field:d])", ssaquery.toQuery().toString());
+        SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
+        ssaquery.or("b").or("c").or("d");
+        assertEquals("spanOr([field:b, field:c, field:d])", ssaquery.toQuery()
+                .toString());
     };
 
 
     @Test
     public void spanAlterQuery4 () throws QueryException {
-	SpanSegmentQueryWrapper segquery = new SpanSegmentQueryWrapper("field", "a", "b", "c");
-	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
-	ssaquery.or("d").or(segquery).or("e");
-	assertEquals("spanOr([field:d, spanSegment(spanSegment(field:a, field:b), field:c), field:e])", ssaquery.toQuery().toString());
+        SpanSegmentQueryWrapper segquery = new SpanSegmentQueryWrapper("field",
+                "a", "b", "c");
+        SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
+        ssaquery.or("d").or(segquery).or("e");
+        assertEquals(
+                "spanOr([field:d, spanSegment(spanSegment(field:a, field:b), field:c), field:e])",
+                ssaquery.toQuery().toString());
     };
+
 
     @Test
     public void spanAlterQuery5 () throws QueryException {
-	SpanRegexQueryWrapper srequery = new SpanRegexQueryWrapper("field", "a[bc]d.?e");
-	SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
-	ssaquery.or("f").or(srequery).or("g");
-	assertEquals("spanOr([field:f, SpanMultiTermQueryWrapper(field:/a[bc]d.?e/), field:g])", ssaquery.toQuery().toString());
+        SpanRegexQueryWrapper srequery = new SpanRegexQueryWrapper("field",
+                "a[bc]d.?e");
+        SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
+        ssaquery.or("f").or(srequery).or("g");
+        assertEquals(
+                "spanOr([field:f, SpanMultiTermQueryWrapper(field:/a[bc]d.?e/), field:g])",
+                ssaquery.toQuery().toString());
     };
 
 };

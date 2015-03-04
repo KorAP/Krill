@@ -16,8 +16,10 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /**
- * Enumeration of span matches, whose two child spans have a specific range of
- * distance (within a minimum and a maximum distance) and can occur in any
+ * Enumeration of span matches, whose two child spans have a specific
+ * range of
+ * distance (within a minimum and a maximum distance) and can occur in
+ * any
  * order.
  * 
  * @author margaretha
@@ -32,19 +34,23 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
     private int matchListSpanNum;
     protected int currentDocNum;
 
+
     /**
-     * Constructs UnorderedDistanceSpans for the given {@link SpanDistanceQuery}
-     * .
+     * Constructs UnorderedDistanceSpans for the given
+     * {@link SpanDistanceQuery} .
      * 
-     * @param query a SpanDistanceQuery
+     * @param query
+     *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public UnorderedDistanceSpans(SpanDistanceQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public UnorderedDistanceSpans (SpanDistanceQuery query,
+                                   AtomicReaderContext context,
+                                   Bits acceptDocs,
+                                   Map<Term, TermContext> termContexts)
+            throws IOException {
         super(query, context, acceptDocs, termContexts);
         minDistance = query.getMinDistance();
         maxDistance = query.getMaxDistance();
@@ -58,8 +64,9 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         hasMoreSpans = hasMoreFirstSpans && hasMoreSecondSpans;
     }
 
+
     @Override
-    protected boolean advance() throws IOException {
+    protected boolean advance () throws IOException {
         while (hasMoreSpans || !matchList.isEmpty()) {
             if (!matchList.isEmpty()) {
                 setMatchProperties();
@@ -71,28 +78,38 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         return false;
     }
 
+
     /**
-     * Updates the firstSpanList and secondSpanList by adding the next possible
-     * first and second spans. Both the spans must be in the same document. In
-     * UnorderedElementDistanceSpans, a span that is not in an element (distance
-     * unit), is not added to its candidate list. The element must also be in
+     * Updates the firstSpanList and secondSpanList by adding the next
+     * possible
+     * first and second spans. Both the spans must be in the same
+     * document. In
+     * UnorderedElementDistanceSpans, a span that is not in an element
+     * (distance
+     * unit), is not added to its candidate list. The element must
+     * also be in
      * the same document.
      * 
-     * @return <code>true</code> if at least one of the candidate lists can be
+     * @return <code>true</code> if at least one of the candidate
+     *         lists can be
      *         filled, <code>false</code> otherwise.
      * @throws IOException
      */
-    protected abstract boolean prepareLists() throws IOException;
+    protected abstract boolean prepareLists () throws IOException;
+
 
     /**
-     * Sets the list of matches for the span having the smallest position (i.e.
-     * between the first and the second spans), and its candidates (i.e. its
-     * counterparts). The candidates also must have smaller positions. Simply
+     * Sets the list of matches for the span having the smallest
+     * position (i.e.
+     * between the first and the second spans), and its candidates
+     * (i.e. its
+     * counterparts). The candidates also must have smaller positions.
+     * Simply
      * remove the span if it does not have any candidates.
      * 
      * @throws IOException
      */
-    protected void setMatchList() throws IOException {
+    protected void setMatchList () throws IOException {
 
         hasMoreFirstSpans = setCandidateList(firstSpanList, firstSpans,
                 hasMoreFirstSpans, secondSpanList);
@@ -130,7 +147,8 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
                 setMatchFirstSpan(currentFirstSpan);
                 matchListSpanNum = 2;
                 updateList(firstSpanList);
-            } else {
+            }
+            else {
                 // log.trace("current target: "
                 // + secondSpanList.get(0).getStart() + " "
                 // + secondSpanList.get(0).getEnd());
@@ -144,12 +162,14 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
                 matchListSpanNum = 1;
                 updateList(secondSpanList);
             }
-        } else if (firstSpanList.isEmpty()) {
+        }
+        else if (firstSpanList.isEmpty()) {
             // log.trace("current target: " + secondSpanList.get(0).getStart()
             // + " " + secondSpanList.get(0).getEnd());
             // log.trace("candidates: empty");
             updateList(secondSpanList);
-        } else {
+        }
+        else {
             // log.trace("current target: " + firstSpanList.get(0).getStart()
             // + " " + firstSpanList.get(0).getEnd());
             // log.trace("candidates: empty");
@@ -157,18 +177,25 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         }
     }
 
+
     /**
-     * Tells if the last candidate from the secondSpanList has a smaller end
-     * position than the end position of the the last candidate from the
+     * Tells if the last candidate from the secondSpanList has a
+     * smaller end
+     * position than the end position of the the last candidate from
+     * the
      * firstSpanList.
      * 
-     * @param currentFirstSpan the current firstspan
-     * @param currentSecondSpan the current secondspan
-     * @return <code>true</code> if the end position of the last candidate from
-     *         the secondSpanList is smaller than that from the firstSpanList,
+     * @param currentFirstSpan
+     *            the current firstspan
+     * @param currentSecondSpan
+     *            the current secondspan
+     * @return <code>true</code> if the end position of the last
+     *         candidate from
+     *         the secondSpanList is smaller than that from the
+     *         firstSpanList,
      *         <code>false</code> otherwise.
      */
-    private boolean isLastCandidateSmaller(CandidateSpan currentFirstSpan,
+    private boolean isLastCandidateSmaller (CandidateSpan currentFirstSpan,
             CandidateSpan currentSecondSpan) {
         if (currentFirstSpan.getEnd() == currentSecondSpan.getEnd()) {
             int secondEnd = secondSpanList.get(secondSpanList.size() - 1)
@@ -180,51 +207,68 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         return false;
     }
 
+
     /**
      * Performs an update based on the given candidateList. In
      * {@link UnorderedTokenDistanceSpans}, the first candidate in the
-     * candidateList is simply removed. In {@link UnorderedElementDistanceSpans}
-     * , the elementList is also updated.
+     * candidateList is simply removed. In
+     * {@link UnorderedElementDistanceSpans} , the elementList is also
+     * updated.
      * 
-     * @param candidateList a candidateList
+     * @param candidateList
+     *            a candidateList
      */
-    protected abstract void updateList(List<CandidateSpan> candidateList);
+    protected abstract void updateList (List<CandidateSpan> candidateList);
+
 
     /**
-     * Sets the candidate list for the first element in the target list and
+     * Sets the candidate list for the first element in the target
+     * list and
      * tells if the the specified spans has finished or not.
      * 
-     * @param candidateList a list of candidate spans
-     * @param candidate a Spans
-     * @param hasMoreCandidates a boolean
-     * @param targetList a list of target spans
-     * @return <code>true</code> if the span enumeration still has a next
-     *         element to be a candidate, <code>false</code> otherwise.
+     * @param candidateList
+     *            a list of candidate spans
+     * @param candidate
+     *            a Spans
+     * @param hasMoreCandidates
+     *            a boolean
+     * @param targetList
+     *            a list of target spans
+     * @return <code>true</code> if the span enumeration still has a
+     *         next
+     *         element to be a candidate, <code>false</code>
+     *         otherwise.
      * @throws IOException
      */
-    protected abstract boolean setCandidateList(
+    protected abstract boolean setCandidateList (
             List<CandidateSpan> candidateList, Spans candidate,
             boolean hasMoreCandidates, List<CandidateSpan> targetList)
             throws IOException;
 
-    /**
-     * Finds all matches between the target span and its candidates in the
-     * candidate list.
-     * 
-     * @param target a target span
-     * @param candidateList a candidate list
-     * @return the matches in a list
-     */
-    protected abstract List<CandidateSpan> findMatches(CandidateSpan target,
-            List<CandidateSpan> candidateList);
 
     /**
-     * Computes match properties and creates a candidate span match to be added
+     * Finds all matches between the target span and its candidates in
+     * the
+     * candidate list.
+     * 
+     * @param target
+     *            a target span
+     * @param candidateList
+     *            a candidate list
+     * @return the matches in a list
+     */
+    protected abstract List<CandidateSpan> findMatches (CandidateSpan target,
+            List<CandidateSpan> candidateList);
+
+
+    /**
+     * Computes match properties and creates a candidate span match to
+     * be added
      * to the match list.
      * 
      * @return a candidate span match
      * */
-    protected CandidateSpan createMatchCandidate(CandidateSpan target,
+    protected CandidateSpan createMatchCandidate (CandidateSpan target,
             CandidateSpan cs, boolean isDistanceZero) {
 
         int start = Math.min(target.getStart(), cs.getStart());
@@ -247,11 +291,13 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         return match;
     }
 
+
     /**
-     * Assigns the first candidate span in the match list as the current span
+     * Assigns the first candidate span in the match list as the
+     * current span
      * match, and removes it from the matchList.
      * */
-    private void setMatchProperties() {
+    private void setMatchProperties () {
         CandidateSpan cs = matchList.get(0);
         matchDocNumber = cs.getDoc();
         matchStartPosition = cs.getStart();
@@ -273,8 +319,9 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         // + getMatchSecondSpan().getEnd());
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (secondSpans.doc() < target)) {
             if (!secondSpans.skipTo(target)) {
                 hasMoreSpans = false;
@@ -289,8 +336,9 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return matchCost;
     }
 

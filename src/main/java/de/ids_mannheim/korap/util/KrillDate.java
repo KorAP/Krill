@@ -8,22 +8,22 @@ import java.util.regex.*;
  * and parse date strings optimized
  * for integer range queries in Lucene.
  * No support for b.c. dates.
- *
- * Strings are parsed and serialized to
- * {@link http://tools.ietf.org/html/rfc3339 RFC3339}
- * compatible strings with a day granularity according to
- * {@link http://www.w3.org/TR/NOTE-datetime W3-DateTimes}.
- *
+ * 
+ * Strings are parsed and serialized to {@link http
+ * ://tools.ietf.org/html/rfc3339 RFC3339} compatible strings with a
+ * day granularity according to {@link http
+ * ://www.w3.org/TR/NOTE-datetime W3-DateTimes}.
+ * 
  * <blockquote><pre>
- *   KrillDate kd = new KrillDate("2005-06-03");
- *   System.err.println(kd.day());
- *   // 3
-
- *   kd = new KrillDate("2005-06");
- *   System.err.println(kd.month());
- *   // 6
+ * KrillDate kd = new KrillDate("2005-06-03");
+ * System.err.println(kd.day());
+ * // 3
+ * 
+ * kd = new KrillDate("2005-06");
+ * System.err.println(kd.month());
+ * // 6
  * </pre></blockquote>
- *
+ * 
  * @author diewald
  */
 public class KrillDate {
@@ -47,11 +47,9 @@ public class KrillDate {
 
 
     // Date string regex pattern
-    private static final Pattern datePattern = Pattern.compile(
-        "\\s*(\\d\\d\\d\\d)" +
-        "(?:\\s*[-/]?\\s*(\\d\\d)" +
-        "(?:\\s*[-/]?\\s*(\\d\\d))?)?\\s*"
-    );
+    private static final Pattern datePattern = Pattern
+            .compile("\\s*(\\d\\d\\d\\d)" + "(?:\\s*[-/]?\\s*(\\d\\d)"
+                    + "(?:\\s*[-/]?\\s*(\\d\\d))?)?\\s*");
 
     /**
      * Static value representing the minimum date.
@@ -68,13 +66,14 @@ public class KrillDate {
     /**
      * Construct a new KrillDate object.
      */
-    public KrillDate () { };
+    public KrillDate () {};
 
 
     /**
      * Construct a new KrillDate object.
-     *
-     * @param date The date as a string (see synopsis).
+     * 
+     * @param date
+     *            The date as a string (see synopsis).
      */
     public KrillDate (String date) {
         if (date == null || date.isEmpty())
@@ -87,7 +86,7 @@ public class KrillDate {
             if (m.group(2) != null)
                 this.month = Integer.parseInt(m.group(2));
             if (m.group(3) != null)
-                this.day   = Integer.parseInt(m.group(3));
+                this.day = Integer.parseInt(m.group(3));
         };
     };
 
@@ -95,33 +94,32 @@ public class KrillDate {
     /**
      * Get the date as an integer with ceiled values for
      * undefined date segments.
-     *
+     * 
      * <blockquote><pre>
-     *   KrillDate kd = new KrillDate("2005-06");
-     *   System.err.println(kd.ceil());
-     *   // 20050699
+     * KrillDate kd = new KrillDate("2005-06");
+     * System.err.println(kd.ceil());
+     * // 20050699
      * </pre></blockquote>
-     *
+     * 
      * @return ceiled integer value.
      */
     public int ceil () {
-        return
-            (ceil((byte) 4, this.year) * 10_000) +
-            (ceil((byte) 2, this.month) * 100) +
-            (ceil((byte) 2, this.day));
+        return (ceil((byte) 4, this.year) * 10_000)
+                + (ceil((byte) 2, this.month) * 100)
+                + (ceil((byte) 2, this.day));
     };
 
 
     /**
      * Get the date as an integer with floored values for
      * undefined date segments.
-     *
+     * 
      * <blockquote><pre>
-     *   KrillDate kd = new KrillDate("2005-06");
-     *   System.err.println(kd.floor());
-     *   // 20050600
+     * KrillDate kd = new KrillDate("2005-06");
+     * System.err.println(kd.floor());
+     * // 20050600
      * </pre></blockquote>
-     *
+     * 
      * @return floored integer value.
      */
     public int floor () {
@@ -146,10 +144,10 @@ public class KrillDate {
     /**
      * Serialize date to string, appended by zeros,
      * in the form of &quot;20050300&quot;.
-     *
+     * 
      * @return The date as a string.
      */
-    public String toString() {
+    public String toString () {
         StringBuilder sb = this.toStringBuilder();
         if (sb.length() < 4)
             return null;
@@ -167,10 +165,10 @@ public class KrillDate {
 
     /**
      * Serialize ceiled date to string.
-     *
+     * 
      * @return The date as a string.
      */
-    public String toCeilString() {
+    public String toCeilString () {
         StringBuilder sb = new StringBuilder();
         return sb.append(this.ceil()).toString();
     };
@@ -178,10 +176,10 @@ public class KrillDate {
 
     /**
      * Serialize floored date to string.
-     *
+     * 
      * @return The date as a string.
      */
-    public String toFloorString() {
+    public String toFloorString () {
         StringBuilder sb = new StringBuilder();
         return sb.append(this.floor()).toString();
     };
@@ -190,10 +188,10 @@ public class KrillDate {
     /**
      * Serialize date to displayable string.
      * See format description in the class description.
-     *
+     * 
      * @return The date as a string.
      */
-    public String toDisplay() {
+    public String toDisplay () {
         StringBuilder sb = this.toStringBuilder();
         if (sb.length() == 8)
             sb.insert(6, '-');
@@ -217,9 +215,9 @@ public class KrillDate {
                 sb.append("20");
 
             sb.append(this.year);
-	    
+
             if (this.month != 0) {
-                
+
                 // Append month
                 if (this.month < 10)
                     sb.append('0');

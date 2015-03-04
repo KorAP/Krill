@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.*;
 
-
 import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.response.Notifications;
@@ -28,7 +27,7 @@ public class KrillMeta extends Notifications {
     private SearchContext context;
 
     private HashSet<String> fields;
-            HashSet<Integer> highlights;
+    HashSet<Integer> highlights;
 
     // Timeout search after milliseconds
     private long timeout = (long) 120_000;
@@ -42,34 +41,25 @@ public class KrillMeta extends Notifications {
 
         // Lift following fields per default
         // These fields are chosen for <legacy /> reasons
-        for (String field : new String[]{
-                "ID",
-                "UID",
-                "textSigle",
-                "corpusID",
-                "author",
-                "title",
-                "subTitle",
-                "textClass",
-                "pubPlace",
-                "pubDate",
-                "foundries",
-                "layerInfo",
-                "tokenization"}) {
+        for (String field : new String[] { "ID", "UID", "textSigle",
+                "corpusID", "author", "title", "subTitle", "textClass",
+                "pubPlace", "pubDate", "foundries", "layerInfo", "tokenization" }) {
             fields.add(field);
         };
 
         // Classes used for highlights
         highlights = new HashSet<Integer>(3);
-        context  = new SearchContext();
+        context = new SearchContext();
     };
 
 
     public KrillMeta () {};
 
+
     public KrillMeta (JsonNode json) {
         this.fromJson(json);
     };
+
 
     public KrillMeta (String json) {
         try {
@@ -79,6 +69,7 @@ public class KrillMeta extends Notifications {
             this.addError(q.getErrorCode(), q.getMessage());
         };
     };
+
 
     public KrillMeta fromJson (String json) throws QueryException {
         JsonNode jsonN;
@@ -149,13 +140,13 @@ public class KrillMeta extends Notifications {
             else
                 this.addHighlight(json.get("highlight").asInt());
         };
-        
+
         // Defined fields to lift from the index
         if (json.has("fields")) {
-                        
+
             // Remove default fields
             this.fields.clear();
-            
+
             // Add fields
             if (json.get("fields").isArray()) {
                 for (JsonNode field : (JsonNode) json.get("fields")) {
@@ -174,17 +165,20 @@ public class KrillMeta extends Notifications {
         return this.count;
     };
 
+
     public KrillMeta setCount (int value) {
         // Todo: Maybe update startIndex with known startPage!
         this.setCount((short) value);
         return this;
     };
 
+
     public KrillMeta setCount (short value) {
         if (value > 0)
             this.count = (value <= this.countMax) ? value : this.countMax;
         return this;
     };
+
 
     public short getCountMax () {
         return this.countMax;
@@ -194,11 +188,13 @@ public class KrillMeta extends Notifications {
     public int getStartIndex () {
         return this.startIndex;
     };
-    
+
+
     public KrillMeta setStartIndex (int value) {
         this.startIndex = (value >= 0) ? value : 0;
         return this;
     };
+
 
     public KrillMeta setStartPage (int value) {
         if (value >= 0)
@@ -213,9 +209,11 @@ public class KrillMeta extends Notifications {
         return this.timeout;
     };
 
+
     public void setTimeOut (long timeout) {
         this.timeout = timeout;
     };
+
 
     public KrillMeta setItemsPerResource (short value) {
         if (value >= 0)
@@ -223,9 +221,11 @@ public class KrillMeta extends Notifications {
         return this;
     };
 
+
     public KrillMeta setItemsPerResource (int value) {
         return this.setItemsPerResource((short) value);
     };
+
 
     public short getItemsPerResource () {
         return this.itemsPerResource;
@@ -235,6 +235,7 @@ public class KrillMeta extends Notifications {
     public SearchContext getContext () {
         return this.context;
     };
+
 
     public KrillMeta setContext (SearchContext context) {
         this.context = context;
@@ -253,8 +254,9 @@ public class KrillMeta extends Notifications {
 
     /**
      * Add a field to the set of fields to retrieve.
-     *
-     * @param field The field to retrieve.
+     * 
+     * @param field
+     *            The field to retrieve.
      * @return The {@link Krill} object for chaining.
      */
     public KrillMeta addField (String field) {
@@ -265,8 +267,9 @@ public class KrillMeta extends Notifications {
 
     /**
      * Add class numbers to highlight in KWIC view.
-     *
-     * @param classNumber The number of a class to highlight.
+     * 
+     * @param classNumber
+     *            The number of a class to highlight.
      * @return The {@link Krill} object for chaining.
      */
     public KrillMeta addHighlight (int classNumber) {
@@ -279,6 +282,7 @@ public class KrillMeta extends Notifications {
     public boolean doCutOff () {
         return this.cutOff;
     };
+
 
     @Deprecated
     public KrillMeta setCutOff (boolean cutOff) {
@@ -295,6 +299,7 @@ public class KrillMeta extends Notifications {
         return this.limit;
     };
 
+
     // TODO:
     // This limits the search results with offset
     // Maybe can be deprecated!
@@ -309,7 +314,7 @@ public class KrillMeta extends Notifications {
     @Override
     public JsonNode toJsonNode () {
         ObjectMapper mapper = new ObjectMapper();
-        ObjectNode json =  mapper.createObjectNode();
+        ObjectNode json = mapper.createObjectNode();
         // json.put("@type", "koral:meta");
 
         ArrayNode fieldNode = mapper.createArrayNode();
@@ -322,23 +327,23 @@ public class KrillMeta extends Notifications {
 
         // Add limit attribute
         if (this.limit > 0)
-            json.put("limit",  this.getLimit());
+            json.put("limit", this.getLimit());
         // </legacy>
 
         // Add count attribute
-        json.put("count",      this.getCount());
+        json.put("count", this.getCount());
 
         // Add startindex attribute
         json.put("startIndex", this.getStartIndex());
 
         // Add timeout attribute
-        json.put("timeout",    this.getTimeOut());
+        json.put("timeout", this.getTimeOut());
 
         // Add context attribute
-        json.put("context",    this.getContext().toJsonNode());
+        json.put("context", this.getContext().toJsonNode());
 
         // Add fields attribute
-        json.put("fields",     fieldNode); 
+        json.put("fields", fieldNode);
 
         // Add itemsPerResource attribute
         if (this.itemsPerResource > 0)

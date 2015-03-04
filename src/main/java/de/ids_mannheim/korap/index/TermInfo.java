@@ -24,22 +24,22 @@ public class TermInfo implements Comparable<TermInfo> {
     private ByteBuffer payload;
     private boolean analyzed = false;
 
-    private int startChar = -1,
-        endChar   = -1,
-        startPos  = -1,
-        endPos    = -1;
+    private int startChar = -1, endChar = -1, startPos = -1, endPos = -1;
 
     private byte depth = (byte) 0;
-    
-    private Pattern prefixRegex = Pattern.compile("(?:([^/]+)/)?([^:/]+)(?::(.+?))?");
+
+    private Pattern prefixRegex = Pattern
+            .compile("(?:([^/]+)/)?([^:/]+)(?::(.+?))?");
     private Matcher matcher;
 
+
     public TermInfo (String term, int pos, ByteBuffer payload) {
-        this.term     = term;
+        this.term = term;
         this.startPos = pos;
-        this.endPos   = pos;
-        this.payload  = payload;
+        this.endPos = pos;
+        this.payload = payload;
     };
+
 
     public TermInfo analyze () {
         if (analyzed)
@@ -51,39 +51,40 @@ public class TermInfo implements Comparable<TermInfo> {
         this.payload.rewind();
 
         switch (tterm.charAt(0)) {
-        case '<':
-            // "<>:mate/l:..."
-            if (tterm.charAt(1) == '>') {
-                // span
-                this.type = "span";
-                tterm = tterm.substring(3);
-                ttype = 2;
-            }
-            // rel-target
-            else {
-                this.type = "relTarget";
+            case '<':
+                // "<>:mate/l:..."
+                if (tterm.charAt(1) == '>') {
+                    // span
+                    this.type = "span";
+                    tterm = tterm.substring(3);
+                    ttype = 2;
+                }
+                // rel-target
+                else {
+                    this.type = "relTarget";
+                    tterm = tterm.substring(2);
+                    ttype = 3;
+                }
+                ;
+                break;
+
+            case '>':
+                // rel-src
+                this.type = "relSrc";
                 tterm = tterm.substring(2);
                 ttype = 3;
-            };
-            break;
+                break;
 
-        case '>':
-            // rel-src
-            this.type = "relSrc";
-            tterm = tterm.substring(2);
-            ttype = 3;
-            break;
-            
-        case '_':
-            // pos
-            this.type = "pos";
-            ttype = 1;
-            tterm = tterm.substring(1);
-            break;
+            case '_':
+                // pos
+                this.type = "pos";
+                ttype = 1;
+                tterm = tterm.substring(1);
+                break;
 
-        default:
-            // term
-            this.type = "term";
+            default:
+                // term
+                this.type = "term";
         };
 
         // Analyze term value
@@ -97,8 +98,8 @@ public class TermInfo implements Comparable<TermInfo> {
                     this.foundry = matcher.group(1);
                 else
                     this.foundry = "base";
-                this.layer   = matcher.group(2);
-                this.value   = matcher.group(3);
+                this.layer = matcher.group(2);
+                this.value = matcher.group(3);
             };
         }
 
@@ -106,76 +107,89 @@ public class TermInfo implements Comparable<TermInfo> {
         else {
             this.value = tterm;
             this.startChar = this.payload.getInt();
-            this.endChar   = this.payload.getInt();
+            this.endChar = this.payload.getInt();
         };
-        
+
         // for spans
         if (ttype == 2) {
             this.startChar = this.payload.getInt();
-            this.endChar   = this.payload.getInt();
+            this.endChar = this.payload.getInt();
         };
 
         // for spans and relations
         if (ttype > 1)
             // Unsure if this is correct
-            this.endPos = this.payload.getInt() -1;
-        
+            this.endPos = this.payload.getInt() - 1;
+
         if (ttype == 2 && this.payload.position() < lastPos) {
             this.depth = this.payload.get();
         };
-        
+
         // payloads can have different meaning
         analyzed = true;
         return this;
     };
 
+
     public String getType () {
         return this.type;
     };
+
 
     public int getStartChar () {
         return this.startChar;
     };
 
+
     public void setStartChar (int pos) {
         this.startChar = pos;
     };
+
 
     public int getEndChar () {
         return this.endChar;
     };
 
+
     public void setEndChar (int pos) {
         this.endChar = pos;
     };
+
 
     public int getStartPos () {
         return this.startPos;
     };
 
+
     public int getEndPos () {
         return this.endPos;
     };
+
 
     public byte getDepth () {
         return this.depth;
     };
 
+
     public String getFoundry () {
         return this.foundry;
     };
+
 
     public String getLayer () {
         return this.layer;
     };
 
+
     public String getValue () {
         return this.value;
     };
 
+
     public String getAnnotation () {
         return this.annotation;
     };
+
 
     public String toString () {
         this.analyze();
@@ -197,6 +211,7 @@ public class TermInfo implements Comparable<TermInfo> {
 
         return sb.toString();
     };
+
 
     @Override
     public int compareTo (TermInfo obj) {

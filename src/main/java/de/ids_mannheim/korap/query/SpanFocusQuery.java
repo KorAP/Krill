@@ -20,26 +20,30 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
 
 /**
  * Modify the span of a match to the boundaries of a certain class.
- *
- * In case multiple classes are found with the very same number, the span
- * is maximized to start on the first occurrence from the left and end on
+ * 
+ * In case multiple classes are found with the very same number, the
+ * span
+ * is maximized to start on the first occurrence from the left and end
+ * on
  * the last occurrence on the right.
- *
+ * 
  * In case the class to modify on is not found in the subquery,
  * the match is ignored.
- *
+ * 
  * @author diewald
- *
+ * 
  * @see FocusSpans
  */
 public class SpanFocusQuery extends SpanClassQuery {
 
     /**
      * Construct a new SpanFocusQuery.
-     *
-     * @param operand The nested {@link SpanQuery}, that contains one or
-     *        more classed spans.
-     * @param number The class number to focus on.
+     * 
+     * @param operand
+     *            The nested {@link SpanQuery}, that contains one or
+     *            more classed spans.
+     * @param number
+     *            The class number to focus on.
      */
     public SpanFocusQuery (SpanQuery operand, byte number) {
         super(operand, number);
@@ -49,9 +53,10 @@ public class SpanFocusQuery extends SpanClassQuery {
     /**
      * Construct a new SpanFocusQuery.
      * The class to focus on defaults to <tt>1</tt>.
-     *
-     * @param operand The nested {@link SpanQuery}, that contains one or
-     *        more classed spans.
+     * 
+     * @param operand
+     *            The nested {@link SpanQuery}, that contains one or
+     *            more classed spans.
      */
     public SpanFocusQuery (SpanQuery operand) {
         this(operand, (byte) 1);
@@ -72,16 +77,10 @@ public class SpanFocusQuery extends SpanClassQuery {
 
 
     @Override
-    public Spans getSpans (final AtomicReaderContext context,
-                           Bits acceptDocs,
-                           Map<Term,TermContext> termContexts) throws IOException {
-        return (Spans) new FocusSpans(
-            this.operand,
-            context,
-            acceptDocs,
-            termContexts,
-            number
-        );
+    public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
+            Map<Term, TermContext> termContexts) throws IOException {
+        return (Spans) new FocusSpans(this.operand, context, acceptDocs,
+                termContexts, number);
     };
 
 
@@ -89,7 +88,7 @@ public class SpanFocusQuery extends SpanClassQuery {
     public Query rewrite (IndexReader reader) throws IOException {
         SpanFocusQuery clone = null;
         SpanQuery query = (SpanQuery) this.operand.rewrite(reader);
-        
+
         if (query != this.operand) {
             if (clone == null)
                 clone = this.clone();
@@ -104,11 +103,9 @@ public class SpanFocusQuery extends SpanClassQuery {
 
 
     @Override
-    public SpanFocusQuery clone() {
+    public SpanFocusQuery clone () {
         SpanFocusQuery spanFocusQuery = new SpanFocusQuery(
-            (SpanQuery) this.operand.clone(),
-            this.number
-        );
+                (SpanQuery) this.operand.clone(), this.number);
         spanFocusQuery.setBoost(getBoost());
         return spanFocusQuery;
     };
@@ -116,14 +113,17 @@ public class SpanFocusQuery extends SpanClassQuery {
 
     @Override
     public boolean equals (Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SpanFocusQuery)) return false;
-	
-        final SpanFocusQuery spanFocusQuery =
-            (SpanFocusQuery) o;
-	
-        if (!this.operand.equals(spanFocusQuery.operand)) return false;
-        if (this.number != spanFocusQuery.number) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof SpanFocusQuery))
+            return false;
+
+        final SpanFocusQuery spanFocusQuery = (SpanFocusQuery) o;
+
+        if (!this.operand.equals(spanFocusQuery.operand))
+            return false;
+        if (this.number != spanFocusQuery.number)
+            return false;
 
         // Probably not necessary
         return getBoost() == spanFocusQuery.getBoost();

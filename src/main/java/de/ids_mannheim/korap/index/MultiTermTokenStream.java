@@ -26,15 +26,15 @@ import java.io.IOException;
  */
 
 /**
- * MultiTermTokenStream extends Lucenes {@link TokenStream}
- * to work with {@link MultiTermToken MultiTermTokens}.
- *
+ * MultiTermTokenStream extends Lucenes {@link TokenStream} to work
+ * with {@link MultiTermToken MultiTermTokens}.
+ * 
  * <blockquote><pre>
- *   MultiTermTokenStream mtts = new MultiTermTokenStream(
- *       "[s:den#0-3|i:den|p:DET|l:der|m:c:acc|m:n:sg|m:masc]"
- *   );
+ * MultiTermTokenStream mtts = new MultiTermTokenStream(
+ * "[s:den#0-3|i:den|p:DET|l:der|m:c:acc|m:n:sg|m:masc]"
+ * );
  * </pre></blockquote>
- *
+ * 
  * @author diewald
  * @see TokenStream
  */
@@ -43,33 +43,35 @@ public class MultiTermTokenStream extends TokenStream {
     private PositionIncrementAttribute posIncrAttr;
     private PayloadAttribute payloadAttr;
 
-    private static final Pattern pattern =
-        Pattern.compile("\\[(?:\\([0-9]+-[0-9]+\\))?([^\\]]+?)\\]");
+    private static final Pattern pattern = Pattern
+            .compile("\\[(?:\\([0-9]+-[0-9]+\\))?([^\\]]+?)\\]");
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-    private final Logger log = LoggerFactory.getLogger(MultiTermTokenStream.class);
+    private final Logger log = LoggerFactory
+            .getLogger(MultiTermTokenStream.class);
 
     private List<MultiTermToken> multiTermTokens;
-    private int mttIndex   = 0,
-                mtIndex    = 0;
+    private int mttIndex = 0, mtIndex = 0;
     private short i = 0;
+
 
     /**
      * Construct a new MultiTermTokenStream object.
      */
     public MultiTermTokenStream () {
-        this.charTermAttr    = this.addAttribute(CharTermAttribute.class);
-        this.posIncrAttr     = this.addAttribute(PositionIncrementAttribute.class);
-        this.payloadAttr     = this.addAttribute(PayloadAttribute.class);
+        this.charTermAttr = this.addAttribute(CharTermAttribute.class);
+        this.posIncrAttr = this.addAttribute(PositionIncrementAttribute.class);
+        this.payloadAttr = this.addAttribute(PayloadAttribute.class);
         this.multiTermTokens = new ArrayList<MultiTermToken>(100);
     };
 
 
     /**
      * Construct a new MultiTermTokenStream object
-     *
-     * @param stream The stream as a string representation.
+     * 
+     * @param stream
+     *            The stream as a string representation.
      */
     public MultiTermTokenStream (String stream) {
         this();
@@ -85,13 +87,14 @@ public class MultiTermTokenStream extends TokenStream {
 
     /**
      * Construct a new MultiTermTokenStream object
-     *
-     * @param stream The stream as a {@link Reader} object.
+     * 
+     * @param stream
+     *            The stream as a {@link Reader} object.
      * @throws IOException
      */
     public MultiTermTokenStream (Reader stream) throws IOException {
         this();
-	
+
         StringBuilder sb = new StringBuilder(4096);
         char[] buf = new char[128];
 
@@ -111,8 +114,9 @@ public class MultiTermTokenStream extends TokenStream {
 
     /**
      * Append a {@link MultiTermToken} to the MultiTermTokenStream.
-     *
-     * @param mtt A {@link MultiTermToken}.
+     * 
+     * @param mtt
+     *            A {@link MultiTermToken}.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMultiTermToken (MultiTermToken mtt) {
@@ -124,12 +128,13 @@ public class MultiTermTokenStream extends TokenStream {
     /**
      * Append a {@link MultiTermToken} to the MultiTermTokenStream
      * by means of a set of {@link MultiTerm MultiTerms}.
-     *
-     * @param mts A list of {@link MultiTerm} objects.
+     * 
+     * @param mts
+     *            A list of {@link MultiTerm} objects.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
-    public MultiTermTokenStream addMultiTermToken
-        (MultiTerm mts, MultiTerm ... moreTerms) {
+    public MultiTermTokenStream addMultiTermToken (MultiTerm mts,
+            MultiTerm ... moreTerms) {
         return this.addMultiTermToken(new MultiTermToken(mts, moreTerms));
     };
 
@@ -137,9 +142,12 @@ public class MultiTermTokenStream extends TokenStream {
     /**
      * Append a {@link MultiTermToken} to the MultiTermTokenStream
      * by means of a single {@link MultiTerm} as a prefixed term.
-     *
-     * @param prefix A prefix character of a surface form of a {@link MultiTerm}.
-     * @param surface A surface string of a {@link MultiTerm}.
+     * 
+     * @param prefix
+     *            A prefix character of a surface form of a
+     *            {@link MultiTerm}.
+     * @param surface
+     *            A surface string of a {@link MultiTerm}.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMultiTermToken (char prefix, String surface) {
@@ -151,12 +159,13 @@ public class MultiTermTokenStream extends TokenStream {
      * Append a {@link MultiTermToken} to the MultiTermTokenStream
      * by means of {@link MultiTerm MultiTerm} represented as a set
      * of terms represented as strings.
-     *
-     * @param surface At least one surface string of a {@link MultiTerm}.
+     * 
+     * @param surface
+     *            At least one surface string of a {@link MultiTerm}.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
-    public MultiTermTokenStream addMultiTermToken
-        (String surface, String ... moreTerms) {
+    public MultiTermTokenStream addMultiTermToken (String surface,
+            String ... moreTerms) {
         try {
             this.addMultiTermToken(new MultiTermToken(surface, moreTerms));
         }
@@ -168,14 +177,15 @@ public class MultiTermTokenStream extends TokenStream {
 
 
 
-
     /**
      * Add meta information to the MultiTermTokenStream.
-     *
+     * 
      * <strong>This is experimental!</strong>
-     *
-     * @param key A string for denoting the meta information.
-     * @param value The value of the meta key as a string.
+     * 
+     * @param key
+     *            A string for denoting the meta information.
+     * @param value
+     *            The value of the meta key as a string.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, String value) {
@@ -193,11 +203,13 @@ public class MultiTermTokenStream extends TokenStream {
 
     /**
      * Add meta information to the MultiTermTokenStream.
-     *
+     * 
      * <strong>This is experimental!</strong>
-     *
-     * @param key A string for denoting the meta information.
-     * @param value The value of the meta key as a byte array.
+     * 
+     * @param key
+     *            A string for denoting the meta information.
+     * @param value
+     *            The value of the meta key as a byte array.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, byte[] value) {
@@ -215,11 +227,13 @@ public class MultiTermTokenStream extends TokenStream {
 
     /**
      * Add meta information to the MultiTermTokenStream.
-     *
+     * 
      * <strong>This is experimental!</strong>
-     *
-     * @param key A string for denoting the meta information.
-     * @param value The value of the meta key as a short value.
+     * 
+     * @param key
+     *            A string for denoting the meta information.
+     * @param value
+     *            The value of the meta key as a short value.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, short value) {
@@ -237,11 +251,13 @@ public class MultiTermTokenStream extends TokenStream {
 
     /**
      * Add meta information to the MultiTermTokenStream.
-     *
+     * 
      * <strong>This is experimental!</strong>
-     *
-     * @param key A string for denoting the meta information.
-     * @param value The value of the meta key as a long value.
+     * 
+     * @param key
+     *            A string for denoting the meta information.
+     * @param value
+     *            The value of the meta key as a long value.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, long value) {
@@ -259,11 +275,13 @@ public class MultiTermTokenStream extends TokenStream {
 
     /**
      * Add meta information to the MultiTermTokenStream.
-     *
+     * 
      * <strong>This is experimental!</strong>
-     *
-     * @param key A string for denoting the meta information.
-     * @param value The value of the meta key as a integer value.
+     * 
+     * @param key
+     *            A string for denoting the meta information.
+     * @param value
+     *            The value of the meta key as a integer value.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
     public MultiTermTokenStream addMeta (String key, int value) {
@@ -282,9 +300,10 @@ public class MultiTermTokenStream extends TokenStream {
 
     /**
      * Get a {@link MultiTermToken} by index.
-     *
-     * @param index The index position of a {@link MultiTermToken}
-     *        in the {@link MultiTermTokenStream}.
+     * 
+     * @param index
+     *            The index position of a {@link MultiTermToken} in
+     *            the {@link MultiTermTokenStream}.
      * @return A {@link MultiTermToken}.
      */
     public MultiTermToken get (int index) {
@@ -293,11 +312,11 @@ public class MultiTermTokenStream extends TokenStream {
 
 
     /**
-     * Get the number of {@link MultiTermToken MultiTermTokens}
-     * in the stream.
-     *
-     * @return The number of {@link MultiTermToken MultiTermTokens}
-     *         in the stream.
+     * Get the number of {@link MultiTermToken MultiTermTokens} in the
+     * stream.
+     * 
+     * @return The number of {@link MultiTermToken MultiTermTokens} in
+     *         the stream.
      */
     public int getSize () {
         return this.multiTermTokens.size();
@@ -306,13 +325,13 @@ public class MultiTermTokenStream extends TokenStream {
 
     /**
      * Serialize the MultiTermTokenStream to a string.
-     *
+     * 
      * @return The MultiTermTokenStream as a string.
      */
     public String toString () {
         StringBuffer sb = new StringBuffer();
         for (MultiTermToken mtt : this.multiTermTokens) {
-            sb.append( mtt.toString() );
+            sb.append(mtt.toString());
         };
         return sb.toString();
     };
@@ -324,7 +343,7 @@ public class MultiTermTokenStream extends TokenStream {
 
         while (matcher.find()) {
             String[] seg = matcher.group(1).split("\\|");
-            MultiTermToken mtt = new MultiTermToken( seg[0] );
+            MultiTermToken mtt = new MultiTermToken(seg[0]);
 
             for (i = 1; i < seg.length; i++)
                 mtt.add(seg[i]);
@@ -349,7 +368,7 @@ public class MultiTermTokenStream extends TokenStream {
         };
 
         // Get current token
-        MultiTermToken mtt = this.multiTermTokens.get( this.mttIndex );
+        MultiTermToken mtt = this.multiTermTokens.get(this.mttIndex);
 
         // Sort the MultiTermToken
         mtt.sort();
@@ -367,7 +386,7 @@ public class MultiTermTokenStream extends TokenStream {
 
             // Get last token
             else {
-                mtt = this.multiTermTokens.get( this.mttIndex );
+                mtt = this.multiTermTokens.get(this.mttIndex);
             };
         };
 
@@ -375,16 +394,17 @@ public class MultiTermTokenStream extends TokenStream {
         MultiTerm mt = mtt.terms.get(this.mtIndex);
 
         // Set the relative position to the former term
-        posIncrAttr.setPositionIncrement( this.mtIndex == 0 ? 1 : 0 );
+        posIncrAttr.setPositionIncrement(this.mtIndex == 0 ? 1 : 0);
         charTermAttr.setEmpty();
-        charTermAttr.append( mt.term );
+        charTermAttr.append(mt.term);
 
         BytesRef payload = new BytesRef();
 
         // There is offset information
         if (mt.start != mt.end) {
             if (DEBUG)
-                log.trace("MultiTerm with payload offset: {}-{}", mt.start, mt.end);
+                log.trace("MultiTerm with payload offset: {}-{}", mt.start,
+                        mt.end);
 
             // Add offsets to BytesRef payload
             payload.append(new BytesRef(int2byte(mt.start)));
@@ -397,7 +417,7 @@ public class MultiTermTokenStream extends TokenStream {
             if (DEBUG)
                 log.trace("Create payload[1] {}", payload.toString());
         };
-        
+
         // There is payload in the current token to index
         if (payload.length > 0) {
             payloadAttr.setPayload(payload);
@@ -413,7 +433,7 @@ public class MultiTermTokenStream extends TokenStream {
                 sb.append('$').append(payload.toString());
             sb.append(']');
             sb.append(" with increment ").append(this.mtIndex == 0 ? 1 : 0);
-            
+
             log.trace(sb.toString());
         };
 
@@ -421,9 +441,10 @@ public class MultiTermTokenStream extends TokenStream {
         return true;
     };
 
+
     @Override
     public void reset () {
         this.mttIndex = 0;
-        this.mtIndex  = 0;
+        this.mtIndex = 0;
     };
 };

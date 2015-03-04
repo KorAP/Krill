@@ -9,15 +9,15 @@ import com.fasterxml.jackson.databind.node.*;
 
 /**
  * A message for Notifications.
- *
+ * 
  * <p>
  * <blockquote><pre>
- *   Message m = new Message();
- *   m.setCode(614);
- *   m.setMessage("This is a new message");
- *   m.addParameter("MyClass");
+ * Message m = new Message();
+ * m.setCode(614);
+ * m.setMessage("This is a new message");
+ * m.addParameter("MyClass");
  * </pre></blockquote>
- *
+ * 
  * @author Nils Diewald
  * @see de.ids_mannheim.korap.response.Messages
  */
@@ -32,19 +32,22 @@ public class Message implements Cloneable {
 
     /**
      * Construct a new message object.
-     *
-     * @param code Code number representing the message code
-     * @param msg String representation of the message
+     * 
+     * @param code
+     *            Code number representing the message code
+     * @param msg
+     *            String representation of the message
      * @return The new message object
      */
     public Message (int code, String msg) {
         this.code = code;
-        this.msg  = msg;
+        this.msg = msg;
     };
+
 
     /**
      * Construct a new message object.
-     *
+     * 
      * @return The new empty message object
      */
     public Message () {};
@@ -52,7 +55,7 @@ public class Message implements Cloneable {
 
     /**
      * Return the string representation of the message.
-     *
+     * 
      * @return String representation of the message
      */
     @JsonIgnore
@@ -63,8 +66,9 @@ public class Message implements Cloneable {
 
     /**
      * Set the string representation of the message.
-     *
-     * @param msg String representation of the message
+     * 
+     * @param msg
+     *            String representation of the message
      * @return Message object for chaining
      */
     @JsonIgnore
@@ -76,7 +80,7 @@ public class Message implements Cloneable {
 
     /**
      * Return the integer code representation of the message.
-     *
+     * 
      * @return Integer code representation of the message
      */
     @JsonIgnore
@@ -88,8 +92,9 @@ public class Message implements Cloneable {
 
     /**
      * Set the integer representation of the message.
-     *
-     * @param code Integer code representation of the message
+     * 
+     * @param code
+     *            Integer code representation of the message
      * @return Message object for chaining
      */
     @JsonIgnore
@@ -101,7 +106,7 @@ public class Message implements Cloneable {
 
     /**
      * Add additional string parameters to the message.
-     *
+     * 
      * @return Message object for chaining
      */
     public Message addParameter (String param) {
@@ -114,9 +119,10 @@ public class Message implements Cloneable {
 
     /**
      * Create a clone of the Message.
-     *
-     * @return The cloned message object 
-     * @throws CloneNotSupportedException if message can't be cloned
+     * 
+     * @return The cloned message object
+     * @throws CloneNotSupportedException
+     *             if message can't be cloned
      */
     public Object clone () throws CloneNotSupportedException {
         Message clone = new Message();
@@ -127,7 +133,7 @@ public class Message implements Cloneable {
 
         // Copy message code
         clone.code = this.code;
-        
+
         // Copy parameters
         if (this.parameters != null) {
             for (String p : this.parameters) {
@@ -138,9 +144,10 @@ public class Message implements Cloneable {
         return clone;
     };
 
+
     /**
      * Serialize Message as a JsonNode.
-     *
+     * 
      * @return JsonNode representation of the message
      */
     public JsonNode toJsonNode () {
@@ -148,7 +155,7 @@ public class Message implements Cloneable {
 
         if (this.code != 0)
             message.add(this.getCode());
-        
+
         message.add(this.getMessage());
         if (parameters != null)
             for (String p : parameters)
@@ -163,7 +170,7 @@ public class Message implements Cloneable {
      * <blockquote><pre>
      * [123, "You are not allowed to serialize these messages"]
      * </pre></blockquote>
-     *
+     * 
      * @return String representation of the message
      */
     public String toJsonString () {
@@ -175,8 +182,6 @@ public class Message implements Cloneable {
             // Bad in case the message contains quotes!
             msg = ", \"" + e.getLocalizedMessage() + "\"";
         };
-        return
-            "[620, " +
-            "\"Unable to generate JSON\"" + msg + "]";
+        return "[620, " + "\"Unable to generate JSON\"" + msg + "]";
     };
 };

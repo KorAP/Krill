@@ -18,35 +18,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * <p>Krill is a corpus data retrieval index using Lucene for Look-Ups.</p>
- *
+ * <p>Krill is a corpus data retrieval index using Lucene for
+ * Look-Ups.</p>
+ * 
  * <p>
  * It is the reference implementation for KoralQuery consumption,
  * and this class acts as the central point for consuming and
  * responding to KoralQuery requests.
  * </p>
- *
+ * 
  * <p>
- * The processing of the collection section of the request is delegated
- * to {@link KrillCollection}, the query section to {@link KrillQuery},
+ * The processing of the collection section of the request is
+ * delegated
+ * to {@link KrillCollection}, the query section to {@link KrillQuery}
+ * ,
  * and the meta section to {@link KrillMeta}.
  * </p>
- *
+ * 
  * <blockquote><pre>
- *   // Create or receive a KoralQuery JSON string
- *   String koral = "{\"query\":{...}, \"collection\":{...}, ... }";
- *
- *   // Create a new krill search object by passing the Query
- *   Krill krill = new Krill(koral);
- *
- *   // Apply the query to an index and receive a search result
- *   // This may invoke different actions depending on the request
- *   Result result = krill.setIndex(new KrillIndex()).apply();
+ * // Create or receive a KoralQuery JSON string
+ * String koral = "{\"query\":{...}, \"collection\":{...}, ... }";
+ * 
+ * // Create a new krill search object by passing the Query
+ * Krill krill = new Krill(koral);
+ * 
+ * // Apply the query to an index and receive a search result
+ * // This may invoke different actions depending on the request
+ * Result result = krill.setIndex(new KrillIndex()).apply();
  * </pre></blockquote>
- *
+ * 
  * @author diewald
  * @author margaretha
- *
+ * 
  * @see KrillCollection
  * @see KrillQuery
  * @see KrillMeta
@@ -62,6 +65,7 @@ public class Krill extends Response {
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Krill.class);
 
+
     /**
      * Construct a new Krill object.
      */
@@ -71,8 +75,9 @@ public class Krill extends Response {
     /**
      * Construct a new Krill object,
      * consuming a KoralQuery json string.
-     *
-     * @param query The KoralQuery json string.
+     * 
+     * @param query
+     *            The KoralQuery json string.
      */
     public Krill (String query) {
         this.fromJson(query);
@@ -82,8 +87,9 @@ public class Krill extends Response {
     /**
      * Construct a new Krill object,
      * consuming a KoralQuery {@link JsonNode} object.
-     *
-     * @param query The KoralQuery {@link JsonNode} object.
+     * 
+     * @param query
+     *            The KoralQuery {@link JsonNode} object.
      */
     public Krill (JsonNode query) {
         this.fromJson(query);
@@ -93,8 +99,9 @@ public class Krill extends Response {
     /**
      * Construct a new Krill object,
      * consuming a {@link SpanQueryWrapper} object.
-     *
-     * @param query The {@link SpanQueryWrapper} object.
+     * 
+     * @param query
+     *            The {@link SpanQueryWrapper} object.
      */
     public Krill (SpanQueryWrapper query) {
         try {
@@ -106,13 +113,14 @@ public class Krill extends Response {
             this.addError(q.getErrorCode(), q.getMessage());
         };
     };
-    
+
 
     /**
      * Construct a new Krill object,
      * consuming a {@link SpanQuery} object.
-     *
-     * @param query The {@link SpanQuery} object.
+     * 
+     * @param query
+     *            The {@link SpanQuery} object.
      */
     public Krill (SpanQuery query) {
         this.spanQuery = query;
@@ -121,8 +129,9 @@ public class Krill extends Response {
 
     /**
      * Parse KoralQuery as a json string.
-     *
-     * @param query The KoralQuery json string.
+     * 
+     * @param query
+     *            The KoralQuery json string.
      * @return The {@link Krill} object for chaining.
      * @throws QueryException
      */
@@ -145,8 +154,9 @@ public class Krill extends Response {
 
     /**
      * Parse KoralQuery as a {@link JsonNode} object.
-     *
-     * @param query The KoralQuery {@link JsonNode} object.
+     * 
+     * @param query
+     *            The KoralQuery {@link JsonNode} object.
      * @return The {@link Krill} object for chaining.
      * @throws QueryException
      */
@@ -185,21 +195,19 @@ public class Krill extends Response {
             this.addError(700, "No query given");
 
         // <legacycode>
-        if (json.has("warning") &&
-            json.get("warning").asText().length() > 0) {
+        if (json.has("warning") && json.get("warning").asText().length() > 0) {
             this.addWarning(799, json.get("warning").asText());
         };
         // </legacycode>
 
         // Copy notifications from request
         this.copyNotificationsFrom(json);
-	    
+
         // Parse "collection" or "collections" attribute
         try {
             if (json.has("collection")) {
-                this.setCollection(
-                    new KrillCollection().fromJson(json.get("collection"))
-                );
+                this.setCollection(new KrillCollection().fromJson(json
+                        .get("collection")));
             }
 
             // <legacycode>
@@ -208,7 +216,7 @@ public class Krill extends Response {
                 for (JsonNode collection : json.get("collections")) {
                     kc.fromJsonLegacy(collection);
                 };
-                
+
                 this.setCollection(kc);
             };
             // </legacycode>
@@ -227,7 +235,7 @@ public class Krill extends Response {
 
     /**
      * Get the associated {@link KrillIndex} object.
-     *
+     * 
      * @return The associated {@link KrillIndex} object.
      */
     public KrillIndex getIndex () {
@@ -237,8 +245,9 @@ public class Krill extends Response {
 
     /**
      * Set the {@link KrillIndex} object.
-     *
-     * @param index The associated {@link KrillIndex} object.
+     * 
+     * @param index
+     *            The associated {@link KrillIndex} object.
      * @return The {@link Krill} object for chaining.
      */
     public Krill setIndex (KrillIndex index) {
@@ -250,11 +259,12 @@ public class Krill extends Response {
     /**
      * Apply the KoralQuery to an index.
      * This may invoke different actions depending
-     * on the meta information, like {@link KrillIndex#search}
-     * or {@link KrillIndex#collect}.
-     *
-     * @param index The {@link KrillIndex}
-     *        the search should be applyied to.
+     * on the meta information, like {@link KrillIndex#search} or
+     * {@link KrillIndex#collect}.
+     * 
+     * @param index
+     *            The {@link KrillIndex} the search should be applyied
+     *            to.
      * @return The result as a {@link Result} object.
      */
     public Result apply (KrillIndex index) {
@@ -265,9 +275,9 @@ public class Krill extends Response {
     /**
      * Apply the KoralQuery to an index.
      * This may invoke different actions depending
-     * on the meta information, like {@link KrillIndex#search}
-     * or {@link KrillIndex#collect}.
-     *
+     * on the meta information, like {@link KrillIndex#search} or
+     * {@link KrillIndex#collect}.
+     * 
      * @return The result as a {@link Result} object.
      */
     public Result apply () {
@@ -302,11 +312,12 @@ public class Krill extends Response {
 
     /**
      * Get the associated {@link SpanQuery} deserialization
-     * (i.e. the internal correspandence to KoralQuery's query object).
-     *
+     * (i.e. the internal correspandence to KoralQuery's query
+     * object).
+     * 
      * <strong>Warning</strong>: SpanQueries may be lazy deserialized
      * in future versions of Krill, rendering this API obsolete.
-     *
+     * 
      * @return The deserialized {@link SpanQuery} object.
      */
     @Deprecated
@@ -317,13 +328,15 @@ public class Krill extends Response {
 
     /**
      * Set the SpanQuery by means of a {@link SpanQueryWrapper} object
-     * (i.e. the internal correspandence to KoralQuery's query object).
-     *
+     * (i.e. the internal correspandence to KoralQuery's query
+     * object).
+     * 
      * <strong>Warning</strong>: SpanQueries may be lazy deserialized
      * in future versions of Krill, rendering this API obsolete.
-     *
-     * @param query The {@link SpanQueryWrapper} to unwrap
-     *        the {@link SpanQuery} object.
+     * 
+     * @param query
+     *            The {@link SpanQueryWrapper} to unwrap
+     *            the {@link SpanQuery} object.
      * @return The {@link Krill} object for chaining.
      */
     @Deprecated
@@ -340,14 +353,16 @@ public class Krill extends Response {
 
     /**
      * Set the {@link SpanQuery} object
-     * (i.e. the internal correspandence to KoralQuery's query object).
-     *
+     * (i.e. the internal correspandence to KoralQuery's query
+     * object).
+     * 
      * <strong>Warning</strong>: SpanQueries may be lazy deserialized
      * in future versions of Krill, rendering this API obsolete.
-     *
-     * @param query The {@link SpanQuery} object.
+     * 
+     * @param query
+     *            The {@link SpanQuery} object.
      * @return The {@link Krill} object for chaining.
-     */    
+     */
     @Deprecated
     public Krill setSpanQuery (SpanQuery sq) {
         this.spanQuery = sq;

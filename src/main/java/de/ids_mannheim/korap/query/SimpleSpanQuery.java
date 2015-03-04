@@ -14,21 +14,28 @@ import de.ids_mannheim.korap.query.spans.AttributeSpans;
 import de.ids_mannheim.korap.query.spans.ElementSpans;
 
 /**
- * A base class for Spanqueries. It added some properties and methods to the
+ * A base class for Spanqueries. It added some properties and methods
+ * to the
  * Lucene {@link SpanQuery} class.
  * 
- * The constructors of this class specify three kinds of spanqueries: <br/>
+ * The constructors of this class specify three kinds of spanqueries:
+ * <br/>
  * <br/>
  * 
  * <ol>
- * <li>Term span based queries are spanqueries retrieving spans based on a
+ * <li>Term span based queries are spanqueries retrieving spans based
+ * on a
  * single sub/child spanquery. <br/>
- * This kind of query is similar to the Lucene {@link SpanTermQuery}. It
- * searches for term spans in an index and creates a span enumeration of them.
- * Additionally, the retrieved spans contain some information related to the
+ * This kind of query is similar to the Lucene {@link SpanTermQuery}.
+ * It
+ * searches for term spans in an index and creates a span enumeration
+ * of them.
+ * Additionally, the retrieved spans contain some information related
+ * to the
  * type of the term spans, or modified the term span positions.
  * 
- * For instance, a {@link SpanAttributeQuery} retrieves {@link AttributeSpans},
+ * For instance, a {@link SpanAttributeQuery} retrieves
+ * {@link AttributeSpans},
  * which in addition to the Lucene SpanTermQuery properties, also have
  * references to element or relation spans. <br/>
  * <br/>
@@ -36,17 +43,23 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  * 
  * <li>Spanqueries based on two sub/child spanqueries. <br/>
  * These queries compare the positions or other properties of two sub
- * spanqueries. Examples of such queries are distance-based queries calculating
- * the distance between two sub/child spans. The resulting spans possibly
- * stretch from the start position of a sub/child span to the end position of
+ * spanqueries. Examples of such queries are distance-based queries
+ * calculating
+ * the distance between two sub/child spans. The resulting spans
+ * possibly
+ * stretch from the start position of a sub/child span to the end
+ * position of
  * the other sub/child span. <br/>
  * <br/>
  * </li>
  * 
- * <li>Spanqueries comparing a sub/child spanquery to a list of spanqueries. <br/>
- * An example of such queries is {@link SpanWithAttributeQuery} matching an
- * {@link SpanElementQuery} and a list of SpanAttributeQueries. In other words,
- * it retrieves {@link ElementSpans} having some specific attributes.<br/>
+ * <li>Spanqueries comparing a sub/child spanquery to a list of
+ * spanqueries. <br/>
+ * An example of such queries is {@link SpanWithAttributeQuery}
+ * matching an {@link SpanElementQuery} and a list of
+ * SpanAttributeQueries. In other words,
+ * it retrieves {@link ElementSpans} having some specific
+ * attributes.<br/>
  * <br/>
  * </li>
  * </ol>
@@ -57,21 +70,26 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  * */
 public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
 
-	protected SpanQuery firstClause = null, secondClause = null;
+    protected SpanQuery firstClause = null, secondClause = null;
     protected List<SpanQuery> clauseList = null;
     private String field;
     protected boolean collectPayloads;
 
+
     /**
-     * Constructs a new SimpleSpanQuery using the specified {@link SpanQuery}
-     * and set whether payloads are to be collected or not.
+     * Constructs a new SimpleSpanQuery using the specified
+     * {@link SpanQuery} and set whether payloads are to be collected
+     * or not.
      * 
-     * @param firstClause a {@link SpanQuery}
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
+     * @param firstClause
+     *            a {@link SpanQuery}
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise
+     *            <code>false</code>.
      * */
-    public SimpleSpanQuery(SpanQuery firstClause, boolean collectPayloads) {
+    public SimpleSpanQuery (SpanQuery firstClause, boolean collectPayloads) {
         if (firstClause == null) {
             throw new IllegalArgumentException(
                     "The first clause cannot be null.");
@@ -81,18 +99,24 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
         this.collectPayloads = collectPayloads;
     }
 
+
     /**
-     * Constructs a new SimpleSpanQuery using the specified spanqueries and set
+     * Constructs a new SimpleSpanQuery using the specified
+     * spanqueries and set
      * whether payloads are to be collected or not.
      * 
-     * @param firstClause a {@link SpanQuery}
-     * @param secondClause a {@link SpanQuery}
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
+     * @param firstClause
+     *            a {@link SpanQuery}
+     * @param secondClause
+     *            a {@link SpanQuery}
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise
+     *            <code>false</code>.
      * */
-    public SimpleSpanQuery(SpanQuery firstClause, SpanQuery secondClause,
-            boolean collectPayloads) {
+    public SimpleSpanQuery (SpanQuery firstClause, SpanQuery secondClause,
+                            boolean collectPayloads) {
         this(firstClause, collectPayloads);
         if (secondClause == null) {
             throw new IllegalArgumentException(
@@ -102,114 +126,134 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
         this.setSecondClause(secondClause);
     }
 
+
     /**
-     * Constructs a new SimpleSpanQuery using the spanqueries in the specified
+     * Constructs a new SimpleSpanQuery using the spanqueries in the
+     * specified
      * list and set whether payloads are to be collected or not.
      * 
-     * @param firstClause a {@link SpanQuery}
-     * @param secondClauses a list of spanqueries
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
+     * @param firstClause
+     *            a {@link SpanQuery}
+     * @param secondClauses
+     *            a list of spanqueries
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise
+     *            <code>false</code>.
      * */
-    public SimpleSpanQuery(SpanQuery firstClause,
-            List<SpanQuery> secondClauses, boolean collectPayloads) {
-		this(firstClause, collectPayloads);
-		setClauseList(secondClauses);
+    public SimpleSpanQuery (SpanQuery firstClause,
+                            List<SpanQuery> secondClauses,
+                            boolean collectPayloads) {
+        this(firstClause, collectPayloads);
+        setClauseList(secondClauses);
     }
 
-	public SimpleSpanQuery(List<SpanQuery> clauses, boolean collectPayloads) {
-		this.collectPayloads = collectPayloads;
-		setClauseList(clauses);
-	}
 
-	private void checkField(SpanQuery clause) {
+    public SimpleSpanQuery (List<SpanQuery> clauses, boolean collectPayloads) {
+        this.collectPayloads = collectPayloads;
+        setClauseList(clauses);
+    }
+
+
+    private void checkField (SpanQuery clause) {
         if (!clause.getField().equals(field)) {
             throw new IllegalArgumentException(
                     "Clauses must have the same field.");
         }
     }
 
+
     /**
      * Returns a set of child spanqueries used in this query.
      * 
      * @return a list of spanqueries
      */
-    public List<SpanQuery> getClauseList() {
+    public List<SpanQuery> getClauseList () {
         return clauseList;
     }
+
 
     /**
      * Sets a list of child spanqueries.
      * 
-     * @param clauseList a list of spanqueries
+     * @param clauseList
+     *            a list of spanqueries
      */
-	public void setClauseList(List<SpanQuery> clauses) {
-		if (clauses == null) {
-			throw new IllegalArgumentException(
-					"The list of clauses cannot be null.");
-		}
-		if (clauses.size() < 1) {
-			throw new IllegalArgumentException(
-					"The list of clauses cannot be empty.");
-		}
+    public void setClauseList (List<SpanQuery> clauses) {
+        if (clauses == null) {
+            throw new IllegalArgumentException(
+                    "The list of clauses cannot be null.");
+        }
+        if (clauses.size() < 1) {
+            throw new IllegalArgumentException(
+                    "The list of clauses cannot be empty.");
+        }
 
-		if (this.field == null) {
-			this.field = clauses.get(0).getField();
-		}
+        if (this.field == null) {
+            this.field = clauses.get(0).getField();
+        }
 
-		for (SpanQuery clause : clauses) {
-			if (clause == null) {
-				throw new IllegalArgumentException("A clause cannot be null.");
-			}
-			checkField(clause);
-		}
-		this.clauseList = clauses;
+        for (SpanQuery clause : clauses) {
+            if (clause == null) {
+                throw new IllegalArgumentException("A clause cannot be null.");
+            }
+            checkField(clause);
+        }
+        this.clauseList = clauses;
     }
+
 
     /**
      * {@inheritDoc}
      * */
     @Override
-    public String getField() {
+    public String getField () {
         return field;
     }
+
 
     /**
      * Returns the first child {@link SpanQuery}.
      * 
      * @return the first child {@link SpanQuery}.
      */
-    public SpanQuery getFirstClause() {
+    public SpanQuery getFirstClause () {
         return firstClause;
     }
+
 
     /**
      * Sets the first child {@link SpanQuery}.
      * 
-     * @param firstClause the first child {@link SpanQuery}.
+     * @param firstClause
+     *            the first child {@link SpanQuery}.
      */
-    public void setFirstClause(SpanQuery firstClause) {
+    public void setFirstClause (SpanQuery firstClause) {
         this.firstClause = firstClause;
     }
+
 
     /**
      * Returns the second child {@link SpanQuery}.
      * 
      * @return the second child {@link SpanQuery}.
      */
-    public SpanQuery getSecondClause() {
+    public SpanQuery getSecondClause () {
         return secondClause;
     }
+
 
     /**
      * Sets the second child {@link SpanQuery}.
      * 
-     * @param secondClause the second child {@link SpanQuery}.
+     * @param secondClause
+     *            the second child {@link SpanQuery}.
      */
-    public void setSecondClause(SpanQuery secondClause) {
+    public void setSecondClause (SpanQuery secondClause) {
         this.secondClause = secondClause;
     }
+
 
     /**
      * Tells if payloads are to be collected or not.
@@ -217,25 +261,28 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
      * @return <code>true</code> if payloads are to be collected,
      *         <code>false</code> otherwise.
      */
-    public boolean isCollectPayloads() {
+    public boolean isCollectPayloads () {
         return collectPayloads;
     }
+
 
     /**
      * Sets <code>true</code> if payloads are to be collected,
      * <code>false</code> otherwise.
      * 
-     * @param collectPayloads a boolean flag determining if payloads are to be
-     *        collected or not.
+     * @param collectPayloads
+     *            a boolean flag determining if payloads are to be
+     *            collected or not.
      */
-    public void setCollectPayloads(boolean collectPayloads) {
+    public void setCollectPayloads (boolean collectPayloads) {
         this.collectPayloads = collectPayloads;
     }
+
 
     // For rewriting fuzzy searches like wildcard and regex
     /** {@inheritDoc} */
     @Override
-    public void extractTerms(Set<Term> terms) {
+    public void extractTerms (Set<Term> terms) {
 
         if (terms == null) {
             throw new IllegalArgumentException("The term set cannot be null.");
@@ -247,31 +294,35 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
 
         if (secondClause != null) {
             secondClause.extractTerms(terms);
-        } else if (clauseList != null) {
+        }
+        else if (clauseList != null) {
             for (SpanQuery clause : clauseList) {
                 clause.extractTerms(terms);
             }
         }
     };
 
+
     /** {@inheritDoc} */
     @Override
-    public Query rewrite(IndexReader reader) throws IOException {
+    public Query rewrite (IndexReader reader) throws IOException {
         SimpleSpanQuery clone = null;
-		if (firstClause != null) {
-			clone = updateClone(reader, clone, firstClause, 1);
-		}
+        if (firstClause != null) {
+            clone = updateClone(reader, clone, firstClause, 1);
+        }
         if (secondClause != null) {
             clone = updateClone(reader, clone, secondClause, 2);
-        } 
+        }
         else if (clauseList != null) {
             clone = updateClone(reader, clone, clauseList);
         }
         return (clone != null ? clone : this);
     }
 
+
     /**
-     * Rewrites the spanqueries from the specified list, sets them to the clone,
+     * Rewrites the spanqueries from the specified list, sets them to
+     * the clone,
      * and return the clone.
      * 
      * @param reader
@@ -280,7 +331,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
      * @return a SimpleSpanQuery
      * @throws IOException
      */
-    private SimpleSpanQuery updateClone(IndexReader reader,
+    private SimpleSpanQuery updateClone (IndexReader reader,
             SimpleSpanQuery clone, List<SpanQuery> spanQueries)
             throws IOException {
 
@@ -295,8 +346,10 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
         return clone;
     }
 
+
     /**
-     * Rewrites the specified {@link SpanQuery} and sets it either as the first
+     * Rewrites the specified {@link SpanQuery} and sets it either as
+     * the first
      * or the second child {@link SpanQuery} of the clone.
      * 
      * @param reader
@@ -306,7 +359,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
      * @return a SimpleSpanQuery
      * @throws IOException
      */
-    private SimpleSpanQuery updateClone(IndexReader reader,
+    private SimpleSpanQuery updateClone (IndexReader reader,
             SimpleSpanQuery clone, SpanQuery sq, int clauseNumber)
             throws IOException {
         SpanQuery query = (SpanQuery) sq.rewrite(reader);
@@ -321,12 +374,13 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
         return clone;
     }
 
+
     /**
      * {@inheritDoc}
      * */
     // Used in rewriting query
     @Override
-    public boolean equals(Object o) {
+    public boolean equals (Object o) {
         if (this == o)
             return true;
         if (getClass() != o.getClass())
@@ -339,7 +393,8 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
             return false;
         if (secondClause != null && !secondClause.equals(q.secondClause)) {
             return false;
-        } else if (clauseList != null) {
+        }
+        else if (clauseList != null) {
             for (int i = 0; i < clauseList.size(); i++) {
                 SpanQuery query = (SpanQuery) clauseList.get(i);
                 if (!query.equals(q.getClauseList().get(i))) {
@@ -351,13 +406,15 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
         return true;
     };
 
+
     /** {@inheritDoc} */
     @Override
-    public int hashCode() {
+    public int hashCode () {
         int hc = firstClause.hashCode();
         if (secondClause != null) {
             hc += secondClause.hashCode();
-        } else if (clauseList != null) {
+        }
+        else if (clauseList != null) {
             for (int i = 0; i < clauseList.size(); i++) {
                 hc += clauseList.get(i).hashCode();
             }
@@ -367,6 +424,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
         return hc;
     };
 
-    public abstract SimpleSpanQuery clone();
+
+    public abstract SimpleSpanQuery clone ();
 
 }

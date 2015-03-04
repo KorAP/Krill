@@ -13,11 +13,16 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /**
- * Span enumeration of element-based distance span matches. Each match consists
- * of two child spans. The element-distance between the child spans is the
- * difference between the element position numbers where the child spans are.
- * The element-distance unit can be a sentence or a paragraph. All other child
- * spans' occurrences which are not in a sentence or a paragraph (with respect
+ * Span enumeration of element-based distance span matches. Each match
+ * consists
+ * of two child spans. The element-distance between the child spans is
+ * the
+ * difference between the element position numbers where the child
+ * spans are.
+ * The element-distance unit can be a sentence or a paragraph. All
+ * other child
+ * spans' occurrences which are not in a sentence or a paragraph (with
+ * respect
  * to the element distance type currently used), are ignored.
  * 
  * Note: elements cannot overlap with each other.
@@ -31,18 +36,22 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
     private int elementPosition;
     private int secondSpanPostion;
 
+
     /**
-     * Constructs ElementDistanceSpans based on the given SpanDistanceQuery.
+     * Constructs ElementDistanceSpans based on the given
+     * SpanDistanceQuery.
      * 
-     * @param query a SpanDistanceQuery
+     * @param query
+     *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public ElementDistanceSpans(SpanDistanceQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public ElementDistanceSpans (SpanDistanceQuery query,
+                                 AtomicReaderContext context, Bits acceptDocs,
+                                 Map<Term, TermContext> termContexts)
+            throws IOException {
         super(query, context, acceptDocs, termContexts);
 
         elements = query.getElementQuery().getSpans(context, acceptDocs,
@@ -53,8 +62,9 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         elementPosition = 0;
     }
 
+
     @Override
-    protected boolean findMatch() throws IOException {
+    protected boolean findMatch () throws IOException {
         CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
         int actualDistance = secondSpanPostion - candidateSpan.getPosition();
 
@@ -72,13 +82,15 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         return false;
     }
 
+
     @Override
-    protected void setCandidateList() throws IOException {
+    protected void setCandidateList () throws IOException {
         if (candidateListDocNum == elements.doc()
                 && candidateListDocNum == secondSpans.doc()) {
             candidateListIndex = -1;
             addNewCandidates();
-        } else {
+        }
+        else {
             candidateList.clear();
             if (hasMoreFirstSpans
                     && findSameDoc(firstSpans, secondSpans, elements)) {
@@ -90,13 +102,15 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         }
     }
 
+
     /**
-     * Add new possible (candidate) firstspans. Candidate firstspans must be in
+     * Add new possible (candidate) firstspans. Candidate firstspans
+     * must be in
      * an element and not too far from the secondspan.
      * 
      * @throws IOException
      */
-    private void addNewCandidates() throws IOException {
+    private void addNewCandidates () throws IOException {
         while (hasMoreFirstSpans && firstSpans.doc() == candidateListDocNum
                 && firstSpans.start() < secondSpans.end()) {
 
@@ -109,12 +123,14 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         }
     }
 
+
     /**
-     * Advance elements until encountering a span within the given document.
+     * Advance elements until encountering a span within the given
+     * document.
      * 
      * @return true iff an element containing the span, is found.
      */
-    private boolean advanceElementTo(Spans span) throws IOException {
+    private boolean advanceElementTo (Spans span) throws IOException {
         while (hasMoreElements && elements.doc() == candidateListDocNum
                 && elements.start() < span.end()) {
 
@@ -129,13 +145,16 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         return false;
     }
 
+
     /**
-     * Reduce the number of candidates by removing all candidates that are not
+     * Reduce the number of candidates by removing all candidates that
+     * are not
      * within the max distance from the given element position.
      * 
-     * @param position an element position
+     * @param position
+     *            an element position
      */
-    private void filterCandidateList(int position) {
+    private void filterCandidateList (int position) {
 
         Iterator<CandidateSpan> i = candidateList.iterator();
         CandidateSpan cs;
@@ -150,8 +169,9 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         // System.out.println("pos "+position+" " +candidateList.size());
     }
 
+
     @Override
-    protected boolean isSecondSpanValid() throws IOException {
+    protected boolean isSecondSpanValid () throws IOException {
         if (advanceElementTo(secondSpans)) {
             secondSpanPostion = elementPosition;
             filterCandidateList(secondSpanPostion);
@@ -161,8 +181,9 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         return false;
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
         return elements.cost() + candidateSpan.getCost() + secondSpans.cost();
     }

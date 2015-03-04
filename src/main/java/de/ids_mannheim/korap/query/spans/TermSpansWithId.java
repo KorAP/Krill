@@ -14,9 +14,12 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
 
 /**
- * Enumeration of termSpans having an id. This class just wraps the usual Lucene
- * TermSpans, and adds spanid property. It reads the term-id from a term span
- * payload. The term-id is encoded in a short, starting from (offset) 0 in the
+ * Enumeration of termSpans having an id. This class just wraps the
+ * usual Lucene
+ * TermSpans, and adds spanid property. It reads the term-id from a
+ * term span
+ * payload. The term-id is encoded in a short, starting from (offset)
+ * 0 in the
  * payload.
  * 
  * @author margaretha
@@ -25,37 +28,43 @@ public class TermSpansWithId extends SpansWithId {
 
     private TermSpans termSpans;
 
+
     /**
      * Creates TermSpansWithId from the given spanTermWithIdQuery.
      * 
-     * @param spanTermWithIdQuery a spanTermWithIdQuery
+     * @param spanTermWithIdQuery
+     *            a spanTermWithIdQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
      * @throws IOException
      */
-    public TermSpansWithId(SpanTermWithIdQuery spanTermWithIdQuery,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+    public TermSpansWithId (SpanTermWithIdQuery spanTermWithIdQuery,
+                            AtomicReaderContext context, Bits acceptDocs,
+                            Map<Term, TermContext> termContexts)
+            throws IOException {
         super(spanTermWithIdQuery, context, acceptDocs, termContexts);
         termSpans = (TermSpans) firstSpans;
         hasMoreSpans = termSpans.next();
     }
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         isStartEnumeration = false;
         return advance();
     }
 
+
     /**
      * Advances to the next match and set it as the current match.
      * 
-     * @return <code>true</code> if a match is found, <code>false</code>
+     * @return <code>true</code> if a match is found,
+     *         <code>false</code>
      *         otherwise.
      * @throws IOException
      */
-    private boolean advance() throws IOException {
+    private boolean advance () throws IOException {
         while (hasMoreSpans) {
             readPayload();
             matchDocNumber = firstSpans.doc();
@@ -67,21 +76,24 @@ public class TermSpansWithId extends SpansWithId {
         return false;
     }
 
+
     /**
-     * Read the payloads of the current firstspan and set the term id info from
+     * Read the payloads of the current firstspan and set the term id
+     * info from
      * the payloads.
      * 
      * @throws IOException
      */
-    private void readPayload() throws IOException {
+    private void readPayload () throws IOException {
         List<byte[]> payload = (List<byte[]>) firstSpans.getPayload();
         ByteBuffer bb = ByteBuffer.allocate(payload.get(0).length);
         bb.put(payload.get(0));
         setSpanId(bb.getShort(0)); //term id
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (firstSpans.doc() < target)) {
             if (!firstSpans.skipTo(target)) {
                 return false;
@@ -92,8 +104,9 @@ public class TermSpansWithId extends SpansWithId {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return firstSpans.cost(); // plus cost from reading payload
     }
 

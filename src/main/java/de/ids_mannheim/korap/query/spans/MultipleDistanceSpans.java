@@ -12,17 +12,21 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
 /**
- * Span enumeration of matches whose two sub-spans have exactly the same first
- * and second sub-sub-spans. To obtain these matches, the span matches of the
+ * Span enumeration of matches whose two sub-spans have exactly the
+ * same first
+ * and second sub-sub-spans. To obtain these matches, the span matches
+ * of the
  * child spans are filtered.
  * 
- * MultipleDistanceSpans accommodates distance constraint with exclusion. <br />
+ * MultipleDistanceSpans accommodates distance constraint with
+ * exclusion. <br />
  * <br />
  * 
  * This class deals with the following cases:
  * <ol>
  * <li>return the match from another non-exclusion constraint.</li>
- * <li>return only the first-span when all constraints are exclusions.</li>
+ * <li>return only the first-span when all constraints are
+ * exclusions.</li>
  * <li>spans are not in the same doc</li>
  * </ol>
  * 
@@ -33,26 +37,34 @@ public class MultipleDistanceSpans extends DistanceSpans {
     private DistanceSpans x, y;
     private boolean isOrdered;
 
+
     /**
-     * Constructs MultipleDistanceSpans for the two given Spans with the given
-     * {@link SpanMultipleDistanceQuery}.
+     * Constructs MultipleDistanceSpans for the two given Spans with
+     * the given {@link SpanMultipleDistanceQuery}.
      * 
-     * @param query a SpanMultipleDistanceQuery
+     * @param query
+     *            a SpanMultipleDistanceQuery
      * @param context
      * @param acceptDocs
      * @param termContexts
-     * @param firstSpans the firstspans
-     * @param secondSpans the secondspans
-     * @param isOrdered <code>true</code> if the spans must occur in order,
-     *        <code>false</code> otherwise.
-     * @param exclusion <code>true</code> if the secondspans must <em>not</em>
-     *        occur together with the firstspans.
+     * @param firstSpans
+     *            the firstspans
+     * @param secondSpans
+     *            the secondspans
+     * @param isOrdered
+     *            <code>true</code> if the spans must occur in order,
+     *            <code>false</code> otherwise.
+     * @param exclusion
+     *            <code>true</code> if the secondspans must
+     *            <em>not</em>
+     *            occur together with the firstspans.
      * @throws IOException
      */
-    public MultipleDistanceSpans(SpanMultipleDistanceQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts, Spans firstSpans,
-            Spans secondSpans, boolean isOrdered, boolean exclusion)
+    public MultipleDistanceSpans (SpanMultipleDistanceQuery query,
+                                  AtomicReaderContext context, Bits acceptDocs,
+                                  Map<Term, TermContext> termContexts,
+                                  Spans firstSpans, Spans secondSpans,
+                                  boolean isOrdered, boolean exclusion)
             throws IOException {
         super(query, context, acceptDocs, termContexts);
         this.isOrdered = isOrdered;
@@ -62,17 +74,19 @@ public class MultipleDistanceSpans extends DistanceSpans {
         hasMoreSpans = x.next() && y.next();
     }
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         isStartEnumeration = false;
         matchPayload.clear();
         return advance();
     }
 
+
     /**
      * Finds the next match.
      * */
-    protected boolean advance() throws IOException {
+    protected boolean advance () throws IOException {
         while (hasMoreSpans && ensureSameDoc(x, y)) {
             if (findMatch()) {
                 moveForward();
@@ -83,12 +97,13 @@ public class MultipleDistanceSpans extends DistanceSpans {
         return false;
     }
 
+
     /**
      * Finds the next match of one of the sub/child-span.
      * 
      * @throws IOException
      */
-    private void moveForward() throws IOException {
+    private void moveForward () throws IOException {
         if (isOrdered) {
             if (x.end() < y.end()
                     || (x.end() == y.end() && x.start() < y.start()))
@@ -107,14 +122,16 @@ public class MultipleDistanceSpans extends DistanceSpans {
         }
     }
 
+
     /**
-     * Checks if the sub-spans of x and y having exactly the same position. This
+     * Checks if the sub-spans of x and y having exactly the same
+     * position. This
      * is basically an AND operation.
      * 
      * @return true iff the sub-spans are identical.
      * @throws IOException
      */
-    protected boolean findMatch() throws IOException {
+    protected boolean findMatch () throws IOException {
 
         CandidateSpan xf = x.getMatchFirstSpan();
         CandidateSpan xs = x.getMatchSecondSpan();
@@ -140,7 +157,8 @@ public class MultipleDistanceSpans extends DistanceSpans {
                 }
                 return true;
             }
-        } else if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()
+        }
+        else if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()
                 && xs.getStart() == ys.getStart() && xs.getEnd() == ys.getEnd()) {
             setMatchProperties(x, false);
             return true;
@@ -148,14 +166,19 @@ public class MultipleDistanceSpans extends DistanceSpans {
         return false;
     }
 
+
     /**
-     * Sets the properties of the given span as the current match properties.
+     * Sets the properties of the given span as the current match
+     * properties.
      * 
-     * @param span a DistanceSpan
-     * @param exclusion <code>true</code> if the spans must <em>not</em> occur
-     *        together, <code>false</code> otherwise.
+     * @param span
+     *            a DistanceSpan
+     * @param exclusion
+     *            <code>true</code> if the spans must <em>not</em>
+     *            occur
+     *            together, <code>false</code> otherwise.
      */
-    private void setMatchProperties(DistanceSpans span, boolean exclusion) {
+    private void setMatchProperties (DistanceSpans span, boolean exclusion) {
         matchStartPosition = span.start();
         matchEndPosition = span.end();
         matchDocNumber = span.doc();
@@ -166,8 +189,9 @@ public class MultipleDistanceSpans extends DistanceSpans {
             setMatchSecondSpan(span.getMatchSecondSpan());
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (y.doc() < target)) {
             if (!y.skipTo(target)) {
                 return false;
@@ -178,8 +202,9 @@ public class MultipleDistanceSpans extends DistanceSpans {
         return advance();
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         return x.cost() + y.cost();
     }
 

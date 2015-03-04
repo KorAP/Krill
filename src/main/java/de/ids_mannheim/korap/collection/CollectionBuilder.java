@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 /**
  * CollectionBuilder implements a simple API for creating queries
  * constituing Virtual Collections.
- *
+ * 
  * <strong>Warning</strong>: The API is likely to change.
- *
+ * 
  * @author diewald
  */
 /*
@@ -31,13 +31,12 @@ public class CollectionBuilder {
     private String field = "tokens";
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(
-        CollectionBuilder.class
-    );
+    private final static Logger log = LoggerFactory
+            .getLogger(CollectionBuilder.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-    
+
 
     /**
      * Construct a new CollectionBuilder object.
@@ -45,12 +44,14 @@ public class CollectionBuilder {
     public CollectionBuilder () {
         filter = new BooleanFilter();
     };
-    
+
+
     public BooleanFilter and (String type, String ... terms) {
         BooleanFilter bf = new BooleanFilter();
         bf.and(type, terms);
         return bf;
     };
+
 
     public BooleanFilter or (String type, String ... terms) {
         BooleanFilter bf = new BooleanFilter();
@@ -58,11 +59,13 @@ public class CollectionBuilder {
         return bf;
     };
 
+
     public BooleanFilter and (String type, RegexFilter re) {
         BooleanFilter bf = new BooleanFilter();
         bf.and(type, re);
         return bf;
     };
+
 
     public BooleanFilter or (String type, RegexFilter re) {
         BooleanFilter bf = new BooleanFilter();
@@ -70,11 +73,13 @@ public class CollectionBuilder {
         return bf;
     };
 
+
     public BooleanFilter since (String date) {
         BooleanFilter bf = new BooleanFilter();
         bf.since(date);
         return bf;
     };
+
 
     public BooleanFilter till (String date) {
         BooleanFilter bf = new BooleanFilter();
@@ -82,11 +87,13 @@ public class CollectionBuilder {
         return bf;
     };
 
+
     public BooleanFilter date (String date) {
         BooleanFilter bf = new BooleanFilter();
         bf.date(date);
         return bf;
     };
+
 
     public BooleanFilter between (String date1, String date2) {
         BooleanFilter bf = new BooleanFilter();
@@ -94,21 +101,26 @@ public class CollectionBuilder {
         return bf;
     };
 
+
     public RegexFilter re (String regex) {
         return new RegexFilter(regex);
     };
 
-    public BooleanFilter getBooleanFilter ()  {
+
+    public BooleanFilter getBooleanFilter () {
         return this.filter;
     };
+
 
     public void setBooleanFilter (BooleanFilter bf) {
         this.filter = bf;
     };
 
+
     public Query toQuery () {
         return this.filter.toQuery();
     };
+
 
     public String toString () {
         return this.filter.toQuery().toString();

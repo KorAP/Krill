@@ -14,59 +14,75 @@ import org.apache.lucene.util.ToStringUtils;
 import de.ids_mannheim.korap.query.spans.SegmentSpans;
 
 /**
- * SpanSegmentQuery matches two spans having exactly the same start and end
+ * SpanSegmentQuery matches two spans having exactly the same start
+ * and end
  * positions, for instance:
  * 
  * <pre>
- * sq = new SpanSegmentQuery(new SpanTermQuery(new Term(&quot;tokens&quot;, &quot;s:Hund&quot;)),
- *         new SpanTermQuery(new Term(&quot;tokens&quot;, &quot;tt/p:NN&quot;)));
+ * sq = new SpanSegmentQuery(new SpanTermQuery(new
+ * Term(&quot;tokens&quot;, &quot;s:Hund&quot;)),
+ * new SpanTermQuery(new Term(&quot;tokens&quot;,
+ * &quot;tt/p:NN&quot;)));
  * </pre>
  * 
  * @author margaretha
  * */
 public class SpanSegmentQuery extends SimpleSpanQuery {
 
-	private boolean isRelation;
+    private boolean isRelation;
+
 
     /**
-     * Constructs a SpanSegmentQuery from the two given SpanQueries, by default
+     * Constructs a SpanSegmentQuery from the two given SpanQueries,
+     * by default
      * payloads are to be collected.
      * 
-     * @param firstClause a {@link SpanQuery}
-     * @param secondClause a {@link SpanQuery}
+     * @param firstClause
+     *            a {@link SpanQuery}
+     * @param secondClause
+     *            a {@link SpanQuery}
      */
-    public SpanSegmentQuery(SpanQuery firstClause, SpanQuery secondClause) {
+    public SpanSegmentQuery (SpanQuery firstClause, SpanQuery secondClause) {
         this(firstClause, secondClause, true);
     }
+
 
     /**
      * Constructs a SpanSegmentQuery from the two given SpanQueries.
      * 
-     * @param firstClause a {@link SpanQuery}
-     * @param secondClause a {@link SpanQuery}
-     * @param collectPayloads a boolean flag representing the value
-     *        <code>true</code> if payloads are to be collected, otherwise
-     *        <code>false</code>.
+     * @param firstClause
+     *            a {@link SpanQuery}
+     * @param secondClause
+     *            a {@link SpanQuery}
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise
+     *            <code>false</code>.
      */
-    public SpanSegmentQuery(SpanQuery firstClause, SpanQuery secondClause,
-            boolean collectPayloads) {
+    public SpanSegmentQuery (SpanQuery firstClause, SpanQuery secondClause,
+                             boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
     }
 
-	public SpanSegmentQuery(SpanRelationQuery firstClause,
-			SpanWithIdQuery secondClause, boolean collectPayloads) {
-		super(firstClause, secondClause, true);
-		isRelation = true;
+
+    public SpanSegmentQuery (SpanRelationQuery firstClause,
+                             SpanWithIdQuery secondClause,
+                             boolean collectPayloads) {
+        super(firstClause, secondClause, true);
+        isRelation = true;
     }
-    
+
+
     @Override
-    public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
+    public Spans getSpans (AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
         return (Spans) new SegmentSpans(this, context, acceptDocs, termContexts);
     }
 
+
     @Override
-    public SpanSegmentQuery clone() {
+    public SpanSegmentQuery clone () {
         SpanSegmentQuery spanSegmentQuery = new SpanSegmentQuery(
                 (SpanQuery) firstClause.clone(),
                 (SpanQuery) secondClause.clone(), collectPayloads);
@@ -74,8 +90,9 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
         return spanSegmentQuery;
     }
 
+
     @Override
-    public String toString(String field) {
+    public String toString (String field) {
         StringBuilder sb = new StringBuilder();
         sb.append("spanSegment(");
         sb.append(firstClause.toString(field));
@@ -86,8 +103,9 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
         return sb.toString();
     }
 
+
     @Override
-    public boolean equals(Object o) {
+    public boolean equals (Object o) {
         if (this == o)
             return true;
         if (!(o instanceof SpanSegmentQuery))
@@ -105,21 +123,24 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
         return getBoost() == spanSegmentQuery.getBoost();
     };
 
+
     @Override
-    public int hashCode() {
+    public int hashCode () {
         int result;
         result = firstClause.hashCode() + secondClause.hashCode();
         result ^= (31 * result) + (result >>> 3);
         result += Float.floatToRawIntBits(getBoost());
         return result;
-	}
+    }
 
-	public boolean isRelation() {
-		return isRelation;
-	}
 
-	public void setRelation(boolean isRelation) {
-		this.isRelation = isRelation;
-	};
+    public boolean isRelation () {
+        return isRelation;
+    }
+
+
+    public void setRelation (boolean isRelation) {
+        this.isRelation = isRelation;
+    };
 
 }

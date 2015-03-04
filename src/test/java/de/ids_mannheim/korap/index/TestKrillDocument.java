@@ -22,6 +22,7 @@ public class TestKrillDocument {
 
     private class KrillRealDocument extends AbstractDocument {};
 
+
     @Test
     public void createDocument () throws IOException {
         KrillRealDocument krd = new KrillRealDocument();
@@ -48,8 +49,7 @@ public class TestKrillDocument {
         try {
             krd.setUID("zzz");
         }
-        catch (NumberFormatException e) {
-        };
+        catch (NumberFormatException e) {};
         assertEquals(561, krd.getUID());
 
         krd.setTitle("An Example");
@@ -61,7 +61,7 @@ public class TestKrillDocument {
         krd.setPrimaryData("We don't need no education");
         assertEquals("We don't need no education", krd.getPrimaryData());
         assertEquals("don't need no education", krd.getPrimaryData(3));
-        assertEquals("do", krd.getPrimaryData(3,5));
+        assertEquals("do", krd.getPrimaryData(3, 5));
         assertEquals(26, krd.getPrimaryDataLength());
 
         krd.setPrimaryData("abc");
