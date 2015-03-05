@@ -1,4 +1,4 @@
-# Krill
+![Krill](http://nils-diewald.de/temp/krill-logo.png)
 
 A Corpusdata Retrieval Index using Lucene for Look-Ups
 
@@ -29,13 +29,10 @@ most of the protocols features, including ...
   "Find all nominal phrases!"
 
 - **Distance search**<br>
-  ...
 
 - **Positional search**<br>
-  ...
 
 - **Nested queries**<br>
-  ...
 
 - **and many more ...**<br>
   Multiple annotation resources;
