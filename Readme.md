@@ -131,6 +131,7 @@ You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) us
   $ mvn java-formatter:format
 ```
 
+Please submit your contributions ideally via our Gerrit server (https://korap.ids-mannheim.de/gerrit/) to facilitate reviewing. However, we are also happy to accept contributions via GitHub.
 
 ## References
 
