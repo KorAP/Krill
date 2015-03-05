@@ -6,11 +6,10 @@ A Corpusdata Retrieval Index using Lucene for Look-Ups
 ## Description
 
 Krill is a [Lucene](https://lucene.apache.org/) based search
-engine for large annotated corpora.
+engine for large annotated corpora,
+used as a backend component of the [KorAP Corpus Analysis](http://korap.ids-mannheim.de/) at the [IDS Mannheim](http://ids-mannheim.de/).
 
-**! The software is in its early stages and not stable yet!**
-** Use it on your own risk!**
-
+**! This software is in its early stages and not stable yet! Use it on your own risk!**
 
 ## Features
 
@@ -19,24 +18,23 @@ Krill is the reference implementation for
 most of the protocols features, including ...
 
 - **Fulltext search**<br>
-  ***"Find all occurrences of the phrase 'sea monster'!"***<br>
-  ***"Find all case-insensitive words matching the regular expression /krak.*/!"***
+  *"Find all occurrences of the phrase 'sea monster'!"*<br>
+  *"Find all case-insensitive words matching the regular expression /krak.*/!"*
 
 - **Token-based annotation search**<br>
-  "Find all plural nouns in accusative!"
+  *"Find all plural nouns in accusative!"*
 
 - **Span-based annotation search**<br>
-  "Find all nominal phrases!"
+  *"Find all nominal phrases!"*
 
 - **Distance search**<br>
-  "Find a verb that is in a distance of five words to the noun 'Squid'!"
+  *"Find a verb that is in a distance of five words to the noun 'Squid'!"*
 
 - **Positional search**<br>
-  "Find a noun at the end of a nominal phrase!"
+  *"Find a noun at the end of a nominal phrase!"*
 
 - **Nested queries**<br>
-  "Find a determiner at the beginning of a named entity,
-  that occurs at the end of a sentence!"
+  *"Find a determiner at the beginning of a named entity, that occurs at the end of a sentence!"*
 
 - **and many more ...**<br>
   Multiple annotation resources;
@@ -45,7 +43,6 @@ most of the protocols features, including ...
   Support for overlapping spans;
   Relational queries;
   Hierarchical queries ...
-
 
 ## Prerequisites
 
