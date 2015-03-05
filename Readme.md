@@ -7,7 +7,7 @@ A Corpusdata Retrieval Index using Lucene for Look-Ups
 
 Krill is a [Lucene](https://lucene.apache.org/) based search
 engine for large annotated corpora,
-used as a backend component of the [KorAP Corpus Analysis](http://korap.ids-mannheim.de/) at the [IDS Mannheim](http://ids-mannheim.de/).
+used as a backend component of the [KorAP Corpus Analysis Platform](http://korap.ids-mannheim.de/) at the [IDS Mannheim](http://ids-mannheim.de/).
 
 **! This software is in its early stages and not stable yet! Use it on your own risk!**
 
