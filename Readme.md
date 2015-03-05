@@ -137,6 +137,11 @@ You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) us
   $ mvn java-formatter:format
 ```
 
+Your contributions should ideally be committed via our [Gerrit server](https://korap.ids-mannheim.de/gerrit/)
+to facilitate reviewing (see [Gerrit Code Review - A Quick Introduction](https://korap.ids-mannheim.de/gerrit/Documentation/intro-quick.html)
+if you are not familiar with Gerrit). However, we are also happy to accept comments and pull requests
+via GitHub.
+
 Please note that unless you explicitly state otherwise any
 contribution intentionally submitted for inclusion into Krill shall –
 as Krill itself – be under the [BSD-2 License](https://raw.githubusercontent.com/KorAP/Krill/master/LICENSE).
