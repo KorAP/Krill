@@ -131,6 +131,10 @@ You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) us
   $ mvn java-formatter:format
 ```
 
+Please submit your contributions ideally via our [Gerrit server](https://korap.ids-mannheim.de/gerrit/)
+to facilitate reviewing (see [Gerrit Code Review - A Quick Introduction](https://korap.ids-mannheim.de/gerrit/Documentation/intro-quick.html)
+if you are not familiar with Gerrit). However, we are also happy to accept comments and pull requests
+via GitHub.
 
 ## References
 
