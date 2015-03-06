@@ -61,6 +61,8 @@ $ git clone https://github.com/KorAP/Krill
 $ cd Krill
 ```
 
+To configure Krill, edit `bin/log4j.properties` and create `bin/krill.properties` using `bin/krill.properties.info` as a template.
+
 To run the test suite ...
 
 ```
