@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.server;
 
 import java.util.*;
 import java.io.*;
+import java.net.URL;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -57,9 +58,14 @@ public class Node {
     public static HttpServer startServer () {
 
         // Load configuration
+        URL resUrl = Node.class.getClassLoader().getResource("krill.properties");
+        if (resUrl == null) {
+            log.error("Cannot find \"krill.properties\". Please create it "
+											+"using \"krill.properties.info\" as template. Terminating.");
+            System.exit(1);
+        }
         try {
-            InputStream file = new FileInputStream(Node.class.getClassLoader()
-                    .getResource("krill.properties").getFile());
+            InputStream file = new FileInputStream(resUrl.getFile());
             Properties prop = new Properties();
             prop.load(file);
 
