@@ -131,6 +131,9 @@ You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) us
   $ mvn java-formatter:format
 ```
 
+Please note that unless you explicitly state otherwise any
+contribution intentionally submitted for inclusion into Krill shall –
+as Krill itself – be under the [BSD-2 License](https://raw.githubusercontent.com/KorAP/Krill/master/LICENSE).
 
 ## References
 
