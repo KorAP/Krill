@@ -136,6 +136,8 @@ You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) us
 
 Annotation tools and models used in preparation of the test corpora are based on the following work:
 
+Belica, Cyril (1994): *A German Lemmatizer*. MECOLB Final Report MLAP93-21/WP2. Luxemburg.
+
 Bohnet, Bernd (2010): *Top accuracy and fast dependency parsing is not a contradiction*. In *Proceedings of COLING*, pp 89–97, Beijing, China.
 
 Bohnet, Bernd, Joakim Nivre, Igor Boguslavsky, Richard Farkas, Filip Ginter, and Jan Hajic (2013): *Joint Morphological and Syntactic Analysis for Richly Inflected Languages*. Transactions of the Association for Computational Linguistics, 1, pp. 415-428.        
