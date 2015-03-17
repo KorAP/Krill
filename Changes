@@ -1,4 +1,4 @@
-0.51 2015-03-04
+0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)
         - [cleanup] Changed groupID to "de.ids_mannheim.korap",
 	  renamed korap-style.xml to Format.xml (diewald)
@@ -9,6 +9,10 @@
 	- [bugfix] Updated SpanRelationQuery (margaretha)
 	- [cleanup] Autoformat (diewald)
         - [documentation] References added to the Readme (diewald)
+	- [bugfix] Improved failing for missing property file (kupietz)
+	- [bugfix] Fixed tests for server responses to not use
+	  Jackson deserialization (diewald)
+	- [cleanup] No more jersey logging in tests (diewald)
 
 0.50.1 2015-03-02
 	- [feature] Deserialization of arbitrary elements with

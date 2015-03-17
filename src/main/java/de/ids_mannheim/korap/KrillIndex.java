@@ -116,8 +116,8 @@ public class KrillIndex {
     // Last line of defense against DOS
     private int maxTermRelations = 100;
     private int autoCommit = 500;
-    private String version;
-    private String name;
+    private String version = "unknown";
+    private String name = "Krill";
 
     // Temp:
     private IndexReader reader;
