@@ -27,7 +27,7 @@ import de.ids_mannheim.korap.query.spans.SegmentSpans;
  * 
  * @author margaretha
  * */
-public class SpanSegmentQuery extends SimpleSpanQuery {
+public class SpanSegmentQuery extends SpanWithIdQuery {
 
     private boolean isRelation;
 

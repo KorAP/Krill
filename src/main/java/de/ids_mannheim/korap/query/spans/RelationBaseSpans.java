@@ -24,14 +24,16 @@ import de.ids_mannheim.korap.query.SpanWithIdQuery;
  * @author margaretha
  * 
  */
-public abstract class RelationBaseSpans extends SpansWithId {
+public abstract class RelationBaseSpans extends SimpleSpans {
 
     protected short leftId, rightId;
     protected int leftStart, leftEnd;
     protected int rightStart, rightEnd;
 
 
-    public RelationBaseSpans () {};
+    public RelationBaseSpans () {
+        this.hasSpanId = true;
+    };
 
 
     /**
@@ -52,6 +54,7 @@ public abstract class RelationBaseSpans extends SpansWithId {
                               Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanWithIdQuery, context, acceptDocs, termContexts);
+        this.hasSpanId = true;
     }
 
 
