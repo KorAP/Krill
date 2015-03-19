@@ -8,9 +8,9 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 
+import de.ids_mannheim.korap.query.SimpleSpanQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
-import de.ids_mannheim.korap.query.SpanWithIdQuery;
 
 /**
  * RelationBaseSpans is a base class for relation spans containing
@@ -24,14 +24,16 @@ import de.ids_mannheim.korap.query.SpanWithIdQuery;
  * @author margaretha
  * 
  */
-public abstract class RelationBaseSpans extends SpansWithId {
+public abstract class RelationBaseSpans extends SimpleSpans {
 
     protected short leftId, rightId;
     protected int leftStart, leftEnd;
     protected int rightStart, rightEnd;
 
 
-    public RelationBaseSpans () {};
+    public RelationBaseSpans () {
+        this.hasSpanId = true;
+    };
 
 
     /**
@@ -47,11 +49,12 @@ public abstract class RelationBaseSpans extends SpansWithId {
      * @param termContexts
      * @throws IOException
      */
-    public RelationBaseSpans (SpanWithIdQuery spanWithIdQuery,
+    public RelationBaseSpans (SimpleSpanQuery spanWithIdQuery,
                               AtomicReaderContext context, Bits acceptDocs,
                               Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanWithIdQuery, context, acceptDocs, termContexts);
+        this.hasSpanId = true;
     }
 
 

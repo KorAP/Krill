@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
+import org.apache.lucene.index.TermState;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
@@ -82,6 +83,16 @@ public class ClassSpans extends Spans {
         // We set payloads here - so it's always true
         return true;
     };
+
+
+    public byte getNumber () {
+        return number;
+    }
+
+
+    public void setNumber (byte number) {
+        this.number = number;
+    }
 
 
     @Override

@@ -47,7 +47,7 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  * @author diewald
  * @author margaretha
  */
-public class SpanElementQuery extends SpanWithIdQuery {
+public class SpanElementQuery extends SimpleSpanQuery {
     private static Term elementTerm;
     private String elementStr;
 

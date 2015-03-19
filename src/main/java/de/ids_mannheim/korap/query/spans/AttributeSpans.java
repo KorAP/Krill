@@ -44,7 +44,7 @@ import de.ids_mannheim.korap.query.SpanAttributeQuery;
  * 
  * @author margaretha
  * */
-public class AttributeSpans extends SpansWithId {
+public class AttributeSpans extends SimpleSpans {
 
     private List<CandidateAttributeSpan> candidateList;
     private int currentDoc, currentPosition;
@@ -69,6 +69,8 @@ public class AttributeSpans extends SpansWithId {
                            Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanAttributeQuery, context, acceptDocs, termContexts);
+        this.hasSpanId = true;
+
         candidateList = new ArrayList<>();
         hasMoreSpans = firstSpans.next();
         if (hasMoreSpans) {
@@ -163,6 +165,7 @@ public class AttributeSpans extends SpansWithId {
             return new CandidateAttributeSpan(firstSpans, spanId, end);
         }
         else if (payload.get(0).length == 10) {
+            start = wrapper.getInt(0);
             end = wrapper.getInt(4);
             spanId = wrapper.getShort(8);
             return new CandidateAttributeSpan(firstSpans, spanId, start, end);
