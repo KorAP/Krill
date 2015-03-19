@@ -1,31 +1,29 @@
 package de.ids_mannheim.korap.index;
 
-import java.util.*;
-import java.io.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import org.apache.lucene.util.Version;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.Bits;
+import java.io.IOException;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanOrQuery;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.query.SpanClassQuery;
+import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanFocusQuery;
+import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.query.*;
-import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.index.MultiTermTokenStream;
-
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.index.Term;
+import de.ids_mannheim.korap.response.Result;
 
 // mvn -Dtest=TestWithinIndex#indexExample1 test
 
@@ -33,6 +31,48 @@ import org.apache.lucene.index.Term;
 
 @RunWith(JUnit4.class)
 public class TestMatchIndex {
+    @Test
+    public void testEmbeddedClassQuery () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        // abcabcabac
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base", "abcabcabac", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]"
+                + "[(3-4)s:a|i:a|_3#3-4]" + "[(4-5)s:b|i:b|_4#4-5]"
+                + "[(5-6)s:c|i:c|_5#5-6]" + "[(6-7)s:a|i:a|_6#6-7]"
+                + "[(7-8)s:b|i:b|_7#7-8]" + "[(8-9)s:a|i:a|_8#8-9]"
+                + "[(9-10)s:c|i:c|_9#9-10]");
+        ki.addDoc(fd);
+
+        ki.commit();
+
+        SpanQuery sq;
+        Result kr;
+
+        sq = new SpanFocusQuery(new SpanClassQuery(new SpanNextQuery(
+                new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")),
+                        (byte) 1), new SpanClassQuery(new SpanTermQuery(
+                        new Term("base", "s:c")), (byte) 2)), (byte) 3),
+                (byte) 3);
+
+        kr = ki.search(sq, (short) 10);
+
+        assertEquals("totalResults", kr.getTotalResults(), 2);
+        assertEquals("StartPos (0)", 1, kr.getMatch(0).startPos);
+        assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
+        assertEquals("SnippetBrackets (0)", "a[{3:{1:b}{2:c}}]abcaba ...", kr
+                .getMatch(0).getSnippetBrackets());
+        assertEquals("StartPos (1)", 4, kr.getMatch(1).startPos);
+        assertEquals("EndPos (1)", 6, kr.getMatch(1).endPos);
+        assertEquals("SnippetBrackets (1)", "abca[{3:{1:b}{2:c}}]abac", kr
+                .getMatch(1).getSnippetBrackets());
+
+        assertEquals("Document count", 1, ki.numberOf("base", "documents"));
+        assertEquals("Token count", 10, ki.numberOf("base", "t"));
+
+    }
+
 
     @Test
     public void indexExample1 () throws IOException {
@@ -149,26 +189,7 @@ public class TestMatchIndex {
                 "<span class=\"context-left\"><span class=\"more\"></span>a</span><mark><mark class=\"class-2 level-0\">b<mark class=\"class-1 level-1\">a</mark></mark></mark><span class=\"context-right\"><span class=\"more\"></span></span>",
                 kr.getMatch(0).getSnippetHTML());
 
-        sq = new SpanFocusQuery(new SpanClassQuery(new SpanNextQuery(
-                new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")),
-                        (byte) 1), new SpanClassQuery(new SpanTermQuery(
-                        new Term("base", "s:c")), (byte) 2)), (byte) 3),
-                (byte) 3);
 
-        kr = ki.search(sq, (short) 10);
-
-        assertEquals("totalResults", kr.getTotalResults(), 2);
-        assertEquals("StartPos (0)", 1, kr.getMatch(0).startPos);
-        assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
-        assertEquals("SnippetBrackets (0)", "a[{3:{1:b}{2:c}}]abcaba ...", kr
-                .getMatch(0).getSnippetBrackets());
-        assertEquals("StartPos (1)", 4, kr.getMatch(1).startPos);
-        assertEquals("EndPos (1)", 6, kr.getMatch(1).endPos);
-        assertEquals("SnippetBrackets (1)", "abca[{3:{1:b}{2:c}}]abac", kr
-                .getMatch(1).getSnippetBrackets());
-
-        assertEquals("Document count", 1, ki.numberOf("base", "documents"));
-        assertEquals("Token count", 10, ki.numberOf("base", "t"));
 
         // Don't match the expected class!
         sq = new SpanFocusQuery(new SpanNextQuery(new SpanClassQuery(
@@ -375,15 +396,15 @@ public class TestMatchIndex {
         SpanQuery sq;
         Result kr;
 
-        sq = new SpanWithinQuery(new SpanClassQuery(new SpanElementQuery(
-                "base", "s"), (byte) 2), new SpanClassQuery(new SpanTermQuery(
-                new Term("base", "s:b")), (byte) 3));
-
-        kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getSerialQuery(),
-                "spanContain({2: <base:s />}, {3: base:s:b})");
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "a[{2:{3:b}cab}]cabac");
+        //        sq = new SpanWithinQuery(new SpanClassQuery(new SpanElementQuery(
+        //                "base", "s"), (byte) 2), new SpanClassQuery(new SpanTermQuery(
+        //                new Term("base", "s:b")), (byte) 3));
+        //
+        //        kr = ki.search(sq, (short) 10);
+        //        assertEquals(kr.getSerialQuery(),
+        //                "spanContain({2: <base:s />}, {3: base:s:b})");
+        //        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+        //                "a[{2:{3:b}cab}]cabac");
 
         sq = new SpanFocusQuery(new SpanWithinQuery(new SpanClassQuery(
                 new SpanElementQuery("base", "s"), (byte) 2),

@@ -33,6 +33,9 @@ public abstract class SimpleSpans extends Spans {
     protected int matchDocNumber, matchStartPosition, matchEndPosition;
     protected Collection<byte[]> matchPayload;
 
+    protected short spanId;
+    protected boolean hasSpanId = false;
+
 
     public SimpleSpans () {
         collectPayloads = true;
@@ -149,6 +152,28 @@ public abstract class SimpleSpans extends Spans {
                 + ")@"
                 + (isStartEnumeration ? "START" : (hasMoreSpans ? (doc() + ":"
                         + start() + "-" + end()) : "END"));
+    }
+
+
+
+    /**
+     * Returns the span id of the current span
+     * 
+     * @return the span id of the current span
+     */
+    public short getSpanId () {
+        return spanId;
+    }
+
+
+    /**
+     * Sets the span id of the current span
+     * 
+     * @param spanId
+     *            span id
+     */
+    public void setSpanId (short spanId) {
+        this.spanId = spanId;
     }
 
 }

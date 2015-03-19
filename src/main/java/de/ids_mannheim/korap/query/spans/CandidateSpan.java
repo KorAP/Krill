@@ -19,7 +19,7 @@ import org.apache.lucene.search.spans.Spans;
 public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
     protected int doc, start, end;
     private long cost;
-    private Collection<byte[]> payloads = new ArrayList<>();
+    private Collection<byte[]> payloads;
     private int position;
     private CandidateSpan childSpan; // used for example for multiple distance
                                      // with unordered constraint
@@ -41,8 +41,18 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
         this.start = span.start();
         this.end = span.end();
         this.cost = span.cost();
-        if (span.isPayloadAvailable())
+
+        this.payloads = new ArrayList<>();
+        if (span.isPayloadAvailable()) {
             setPayloads(span.getPayload());
+        }
+        if (span instanceof SimpleSpans) {
+            SimpleSpans temp = (SimpleSpans) span;
+            this.spanId = temp.getSpanId();
+        }
+        else if (span instanceof ClassSpans) {
+            this.spanId = ((ClassSpans) span).getNumber();
+        }
     }
 
 
@@ -180,6 +190,7 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
      */
     public void setPayloads (Collection<byte[]> payloads) {
 
+        this.payloads = new ArrayList<>();
         for (byte[] b : payloads) {
             if (b == null)
                 this.payloads.add(null);

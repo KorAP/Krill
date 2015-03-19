@@ -51,7 +51,7 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  * 
  * @author margaretha
  * */
-public class SpanRelationQuery extends SpanWithIdQuery {
+public class SpanRelationQuery extends SimpleSpanQuery {
 
     private String type;
 
