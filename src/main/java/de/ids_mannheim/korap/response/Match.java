@@ -1,39 +1,42 @@
 package de.ids_mannheim.korap.response;
 
-import java.util.*;
-import java.io.*;
-
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.*;
-
-import de.ids_mannheim.korap.index.PositionsToOffset;
-
-// Todo:
-import de.ids_mannheim.korap.response.SearchContext;
-
-import de.ids_mannheim.korap.index.AbstractDocument;
-import de.ids_mannheim.korap.response.match.HighlightCombinator;
-import de.ids_mannheim.korap.response.match.HighlightCombinatorElement;
-import de.ids_mannheim.korap.response.match.Relation;
-import de.ids_mannheim.korap.response.match.MatchIdentifier;
-import de.ids_mannheim.korap.response.match.PosIdentifier;
-import de.ids_mannheim.korap.query.SpanElementQuery;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.util.FixedBitSet;
-import org.apache.lucene.util.Bits;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.FixedBitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import de.ids_mannheim.korap.index.AbstractDocument;
+import de.ids_mannheim.korap.index.PositionsToOffset;
+import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.response.match.HighlightCombinator;
+import de.ids_mannheim.korap.response.match.HighlightCombinatorElement;
+import de.ids_mannheim.korap.response.match.MatchIdentifier;
+import de.ids_mannheim.korap.response.match.PosIdentifier;
+import de.ids_mannheim.korap.response.match.Relation;
 
 /*
   Todo: The implemented classes and private names are horrible!
@@ -55,7 +58,7 @@ public class Match extends AbstractDocument {
     private final static Logger log = LoggerFactory.getLogger(Match.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();

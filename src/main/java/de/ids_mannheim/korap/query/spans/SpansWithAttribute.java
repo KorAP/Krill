@@ -32,9 +32,9 @@ import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
  * 
  * @author margaretha
  * */
-public class SpansWithAttribute extends SpansWithId {
+public class SpansWithAttribute extends SimpleSpans {
 
-    private SpansWithId referentSpans;
+    private SimpleSpans referentSpans;
     private List<AttributeSpans> attributeList;
     private List<AttributeSpans> notAttributeList;
 
@@ -56,13 +56,16 @@ public class SpansWithAttribute extends SpansWithId {
      * @throws IOException
      */
     public SpansWithAttribute (SpanWithAttributeQuery spanWithAttributeQuery,
-                               SpansWithId spansWithId,
+                               SimpleSpans referentSpans,
                                AtomicReaderContext context, Bits acceptDocs,
                                Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanWithAttributeQuery, context, acceptDocs, termContexts);
-        referentSpans = spansWithId;
-        referentSpans.hasSpanId = true; // dummy setting enabling reading elementRef
+        // if (!referentSpans.hasSpanId) {
+        // throw new
+        // IllegalArgumentException("Referent spans must have ids.");
+        // }
+        this.referentSpans = referentSpans;
         hasMoreSpans = referentSpans.next();
         setAttributeList(spanWithAttributeQuery, context, acceptDocs,
                 termContexts);
@@ -168,7 +171,7 @@ public class SpansWithAttribute extends SpansWithId {
 
     private boolean advanceAttribute () throws IOException {
         while (hasMoreSpans) {
-            SpansWithId referentSpans = attributeList.get(0);
+            SimpleSpans referentSpans = attributeList.get(0);
             advanceNotAttributes(referentSpans);
             if (checkNotReferentId(referentSpans)) {
                 this.matchDocNumber = referentSpans.doc();
@@ -199,8 +202,9 @@ public class SpansWithAttribute extends SpansWithId {
     private boolean advance () throws IOException {
 
         while (hasMoreSpans && searchSpanPosition()) {
-            //			System.out.println("element: " + referentSpans.start() + ","
-            //					+ referentSpans.end() + " ref:"+ referentSpans.getSpanId());
+            // System.out.println(referentSpans.start() + ","
+            // + referentSpans.end() + " " +
+            // referentSpans.getSpanId());
 
             if (checkReferentId() && checkNotReferentId(referentSpans)) {
                 this.matchDocNumber = referentSpans.doc();
@@ -287,7 +291,7 @@ public class SpansWithAttribute extends SpansWithId {
      * document and
      * start position.
      * */
-    private boolean ensureSamePosition (SpansWithId spans,
+    private boolean ensureSamePosition (SimpleSpans spans,
             AttributeSpans attributes) throws IOException {
 
         while (hasMoreSpans && ensureSameDoc(spans, attributes)) {
@@ -373,7 +377,7 @@ public class SpansWithAttribute extends SpansWithId {
      *         <code>false</code> otherwise.
      * @throws IOException
      */
-    private boolean checkNotReferentId (SpansWithId referentSpans)
+    private boolean checkNotReferentId (SimpleSpans referentSpans)
             throws IOException {
         for (AttributeSpans notAttribute : notAttributeList) {
             if (!notAttribute.isFinish()

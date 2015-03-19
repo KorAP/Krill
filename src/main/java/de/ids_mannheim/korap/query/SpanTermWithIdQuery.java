@@ -10,7 +10,6 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.spans.SpansWithId;
 import de.ids_mannheim.korap.query.spans.TermSpansWithId;
 
 /**
@@ -32,7 +31,7 @@ import de.ids_mannheim.korap.query.spans.TermSpansWithId;
  * 
  * @author margaretha
  * */
-public class SpanTermWithIdQuery extends SpanWithIdQuery {
+public class SpanTermWithIdQuery extends SimpleSpanQuery {
 
     /**
      * Constructs a SpanTermWithIdQuery for the given term.

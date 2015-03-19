@@ -169,28 +169,34 @@ public class RelationSpans extends RelationBaseSpans {
         ByteBuffer bb = ByteBuffer.allocate(length);
         bb.put(payload.get(0));
 
+        cs.setLeftStart(cs.start);
+
         int i;
         switch (length) {
-            case 10: // Token to token				
+            case 10: // Token to token
                 i = bb.getInt(0);
-                cs.setRightStart(i - 1);
-                cs.setRightEnd(i);
+                cs.setLeftEnd(cs.start + 1);
+                cs.setRightStart(i);
+                cs.setRightEnd(i + 1);
                 break;
 
             case 14: // Token to span
+                cs.setLeftEnd(cs.start + 1);
                 cs.setRightStart(bb.getInt(0));
                 cs.setRightEnd(bb.getInt(4));
                 break;
 
             case 15: // Span to token
                 cs.setEnd(bb.getInt(0));
+                cs.setLeftEnd(cs.end);
                 i = bb.getInt(5);
-                cs.setRightStart(i - 1);
-                cs.setRightEnd(i);
+                cs.setRightStart(i);
+                cs.setRightEnd(i + 1);
                 break;
 
             case 18: // Span to span
                 cs.setEnd(bb.getInt(0));
+                cs.setLeftEnd(cs.end);
                 cs.setRightStart(bb.getInt(4));
                 cs.setRightEnd(bb.getInt(8));
                 break;
@@ -199,7 +205,7 @@ public class RelationSpans extends RelationBaseSpans {
         cs.setRightId(bb.getShort(length - 2)); //right id
         cs.setLeftId(bb.getShort(length - 4)); //left id
         cs.setSpanId(bb.getShort(length - 6)); //relation id
-        // Payload is cleared.		
+        // Payload is cleared.
     }
 
 

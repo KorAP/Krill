@@ -67,7 +67,7 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
 
 
     public SpanSegmentQuery (SpanRelationQuery firstClause,
-                             SpanWithIdQuery secondClause,
+                             SimpleSpanQuery secondClause,
                              boolean collectPayloads) {
         super(firstClause, secondClause, true);
         isRelation = true;

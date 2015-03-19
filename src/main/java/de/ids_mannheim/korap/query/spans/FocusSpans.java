@@ -1,66 +1,69 @@
 package de.ids_mannheim.korap.query.spans;
 
-import static de.ids_mannheim.korap.util.KrillByte.*;
+import static de.ids_mannheim.korap.util.KrillByte.byte2int;
 
-import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.search.spans.SpanQuery;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.util.ArrayUtil;
+import org.apache.lucene.index.TermState;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.Bits;
-
-import java.io.IOException;
-
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.ids_mannheim.korap.query.SpanFocusQuery;
+
 
 /**
- * Spans, that can focus on the span boundaries of classed subqueries.
+ * originalSpans, that can focus on the span boundaries of classed
+ * subqueries.
  * The boundaries of the classed subquery may exceed the boundaries of
  * the
  * nested query.
  * 
  * In case multiple classes are found with the very same number, the
- * span
- * is maximized to start on the first occurrence from the left and end
- * on
- * the last occurrence on the right.
+ * span is
+ * maximized to start on the first occurrence from the left and end on
+ * the last
+ * occurrence on the right.
  * 
- * In case the class to focus on is not found in the payloads,
- * the match is ignored.
+ * In case the class to focus on is not found in the payloads, the
+ * match is
+ * ignored.
  * 
  * <strong>Warning</strong>: Payloads other than class payloads won't
- * bubble up currently. That behaviour may change in the future
+ * bubble up
+ * currently. That behaviour may change in the futures
  * 
  * @author diewald
  */
 
-public class FocusSpans extends Spans {
-    private List<byte[]> wrappedPayload;
-    private Collection<byte[]> payload;
-    private final Spans spans;
-    private byte number;
-
-    private SpanQuery wrapQuery;
+public class FocusSpans extends SimpleSpans {
+    private List<Byte> classNumbers;
+    private SpanQuery query;
     private final Logger log = LoggerFactory.getLogger(FocusSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    private int start = -1, end;
-    private int tempStart = 0, tempEnd = 0;
+    // private SimpleSpans originalSpans;
+    private boolean isSorted;
+    private List<CandidateSpan> candidateSpans;
+    private int windowSize = 10;
+    private int currentDoc;
+    private byte number;
 
 
     /**
      * Construct a FocusSpan for the given {@link SpanQuery}.
      * 
-     * @param wrapQuery
+     * @param query
      *            A {@link SpanQuery}.
      * @param context
      *            The {@link AtomicReaderContext}.
@@ -73,139 +76,141 @@ public class FocusSpans extends Spans {
      *            The class number to focus on.
      * @throws IOException
      */
-    public FocusSpans (SpanQuery wrapQuery, AtomicReaderContext context,
-                       Bits acceptDocs, Map<Term, TermContext> termContexts,
-                       byte number) throws IOException {
-        this.spans = wrapQuery.getSpans(context, acceptDocs, termContexts);
-        this.number = number;
-        this.wrapQuery = wrapQuery;
-        this.wrappedPayload = new ArrayList<byte[]>(6);
-    };
+    public FocusSpans (SpanFocusQuery query, AtomicReaderContext context,
+                       Bits acceptDocs, Map<Term, TermContext> termContexts)
+            throws IOException {
+        super(query, context, acceptDocs, termContexts);
+        if (query.getClassNumbers() == null) {
+            throw new IllegalArgumentException(
+                    "At least one class number must be specified.");
+        }
+        classNumbers = query.getClassNumbers();
+        isSorted = query.isSorted();
+        candidateSpans = new ArrayList<CandidateSpan>();
+        hasMoreSpans = firstSpans.next();
+        currentDoc = firstSpans.doc();
 
-
-    @Override
-    public Collection<byte[]> getPayload () throws IOException {
-        return wrappedPayload;
-    };
-
-
-    @Override
-    public boolean isPayloadAvailable () {
-        return wrappedPayload.isEmpty() == false;
-    };
-
-
-    @Override
-    public int doc () {
-        return spans.doc();
-    };
-
-
-    @Override
-    public int start () {
-        return start;
-    };
-
-
-    @Override
-    public int end () {
-        return end;
-    };
+        // matchPayload = new ArrayList<byte[]>(6);
+        this.query = query;
+        hasSpanId = true;
+    }
 
 
     @Override
     public boolean next () throws IOException {
-        if (DEBUG)
-            log.trace("Forward next match in {}", this.doc());
+        matchPayload.clear();
+        CandidateSpan cs;
+        while (hasMoreSpans || candidateSpans.size() > 0) {
+            if (isSorted) {
 
-        // Next span
-        while (spans.next()) {
-            if (DEBUG)
-                log.trace("Forward next inner span");
+                if (firstSpans.isPayloadAvailable()
+                        && updateSpanPositions(cs = new CandidateSpan(
+                                firstSpans))) {
+                    setMatch(cs);
+                    hasMoreSpans = firstSpans.next();
+                    return true;
+                }
+                hasMoreSpans = firstSpans.next();
+            }
+            else if (candidateSpans.isEmpty()) {
+                currentDoc = firstSpans.doc();
+                collectCandidates();
+                Collections.sort(candidateSpans);
+            }
+            else {
+                setMatch(candidateSpans.get(0));
+                candidateSpans.remove(0);
+                return true;
+            }
+        }
 
-            // No classes stored
-            wrappedPayload.clear();
-
-            start = -1;
-            if (spans.isPayloadAvailable()) {
-                end = 0;
-
-                // Iterate over all payloads and find the maximum span per class
-                for (byte[] payload : spans.getPayload()) {
-
-                    // No class payload - ignore
-                    // this may be problematic for other calculated payloads!
-                    if (payload.length != 9) {
-                        if (DEBUG)
-                            log.trace("Ignore old payload {}", payload);
-                        continue;
-                    };
-
-                    // Found class payload of structure <i>start<i>end<b>class
-                    // and classes are matches!
-                    if (payload[8] == this.number) {
-                        tempStart = byte2int(payload, 0);
-                        tempEnd = byte2int(payload, 4);
-
-                        if (DEBUG) {
-                            log.trace("Found matching class {}-{}", tempStart,
-                                    tempEnd);
-                        };
-
-                        // Set start position 
-                        if (start == -1 || tempStart < start)
-                            start = tempStart;
-
-                        // Set end position
-                        if (tempEnd > end)
-                            end = tempEnd;
-                    };
-
-                    // Definately keep class information
-                    // Even if it is already used for shrinking
-                    wrappedPayload.add(payload);
-                };
-            };
-
-            // Class not found
-            if (start == -1)
-                continue;
-
-            if (DEBUG) {
-                log.trace("Start to focus on class {} from {} to {}", number,
-                        start, end);
-            };
-            return true;
-        };
-
-        // No more spans
-        this.wrappedPayload.clear();
         return false;
-    };
+    }
+
+
+    private void collectCandidates () throws IOException {
+        CandidateSpan cs = null;
+        while (hasMoreSpans && candidateSpans.size() < windowSize
+                && firstSpans.doc() == currentDoc) {
+
+            if (firstSpans.isPayloadAvailable()
+                    && updateSpanPositions(cs = new CandidateSpan(firstSpans))) {
+                candidateSpans.add(cs);
+            }
+            hasMoreSpans = firstSpans.next();
+        }
+    }
+
+
+    private void setMatch (CandidateSpan cs) {
+        matchStartPosition = cs.getStart();
+        matchEndPosition = cs.getEnd();
+        matchDocNumber = cs.getDoc();
+        matchPayload.addAll(cs.getPayloads());
+        setSpanId(cs.getSpanId());
+    }
+
+
+    private boolean updateSpanPositions (CandidateSpan candidateSpan)
+            throws IOException {
+        int minPos = 0, maxPos = 0;
+        int classStart, classEnd;
+        boolean isStart = true;
+        boolean isClassFound = false;
+
+        candidateSpan.getPayloads().clear();
+
+        // Iterate over all payloads and find the maximum span per class
+        for (byte[] payload : firstSpans.getPayload()) {
+            // No class payload - ignore
+            // this may be problematic for other calculated payloads!
+            if (payload.length == 9) {
+                if (classNumbers.contains(payload[8])) {
+                    isClassFound = true;
+                    classStart = byte2int(payload, 0);
+                    classEnd = byte2int(payload, 4);
+
+                    if (isStart || classStart < minPos) {
+                        minPos = classStart;
+                        isStart = false;
+                    }
+                    if (classEnd > maxPos) {
+                        maxPos = classEnd;
+                    }
+                }
+                candidateSpan.getPayloads().add(payload.clone());
+            }
+
+        }
+
+        if (isClassFound) {
+            candidateSpan.start = minPos;
+            candidateSpan.end = maxPos;
+        }
+
+        return isClassFound;
+    }
 
 
     // Todo: Check for this on document boundaries!
     @Override
     public boolean skipTo (int target) throws IOException {
-        if (DEBUG)
-            log.trace("Skip MatchSpans {} -> {}", this.doc(), target);
-
-        if (this.doc() < target && spans.skipTo(target)) {
-
-        };
+        if (this.doc() < target && firstSpans.skipTo(target)) {
+            return next();
+        }
         return false;
     };
 
 
     @Override
     public String toString () {
-        return getClass().getName() + "(" + this.wrapQuery.toString() + ")@"
+        return getClass().getName() + "(" + this.query.toString() + ")@"
                 + (doc() + ":" + start() + "-" + end());
     };
 
 
     @Override
     public long cost () {
-        return spans.cost();
+        return firstSpans.cost();
     };
 };

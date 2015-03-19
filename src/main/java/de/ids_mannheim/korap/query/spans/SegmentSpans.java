@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 
 import org.apache.lucene.index.AtomicReaderContext;
@@ -17,7 +18,7 @@ import de.ids_mannheim.korap.query.SpanSegmentQuery;
  * 
  * @author margaretha
  * */
-public class SegmentSpans extends NonPartialOverlappingSpans {
+public class SegmentSpans extends SimpleSpans {
 
     private boolean isRelation;
 
@@ -38,11 +39,49 @@ public class SegmentSpans extends NonPartialOverlappingSpans {
             throws IOException {
         super(spanSegmentQuery, context, acceptDocs, termContexts);
         if (spanSegmentQuery.isRelation()) {
-            SpansWithId s2 = (SpansWithId) secondSpans;
-            // hacking for element query
-            s2.hasSpanId = true;
             isRelation = true;
         }
+
+        collectPayloads = true;
+        hasMoreSpans = secondSpans.next();
+    }
+
+
+    @Override
+    public boolean next () throws IOException {
+        // Warning: this does not work for overlapping spans
+        // e.g. get multiple second spans in a firstspan
+        hasMoreSpans &= firstSpans.next();
+        isStartEnumeration = false;
+        matchPayload.clear();
+        return advance();
+    }
+
+
+    /**
+     * Advances to the next match.
+     * 
+     * @return <code>true</code> if a match is found,
+     *         <code>false</code> otherwise.
+     * @throws IOException
+     */
+    protected boolean advance () throws IOException {
+        // The complexity is linear for searching in a document.
+        // It's better if we can skip to >= position in a document.
+        while (hasMoreSpans && ensureSameDoc(firstSpans, secondSpans)) {
+            int matchCase = findMatch();
+            if (matchCase == 0) {
+                doCollectPayloads();
+                return true;
+            }
+            else if (matchCase == 1) {
+                hasMoreSpans = secondSpans.next();
+            }
+            else {
+                hasMoreSpans = firstSpans.next();
+            }
+        }
+        return false;
     }
 
 
@@ -52,21 +91,21 @@ public class SegmentSpans extends NonPartialOverlappingSpans {
      * secondspan are identical.
      * 
      * */
-    @Override
     protected int findMatch () {
         RelationSpans s1;
-        SpansWithId s2;
+        SimpleSpans s2;
         if (firstSpans.start() == secondSpans.start()
                 && firstSpans.end() == secondSpans.end()) {
 
             if (isRelation) {
                 s1 = (RelationSpans) firstSpans;
-                s2 = (SpansWithId) secondSpans;
+                s2 = (SimpleSpans) secondSpans;
 
                 //System.out.println("segment: " + s1.getRightStart() + " "
                 // + s1.getRightEnd());
                 if (s1.getLeftId() == s2.getSpanId()) {
                     setMatch();
+                    setSpanId(s2.getSpanId());
                     return 0;
                 }
             }
@@ -88,5 +127,45 @@ public class SegmentSpans extends NonPartialOverlappingSpans {
         matchDocNumber = firstSpans.doc();
         matchStartPosition = firstSpans.start();
         matchEndPosition = firstSpans.end();
+    }
+
+
+    /**
+     * Collects available payloads from the current first and second
+     * spans.
+     * 
+     * @throws IOException
+     */
+    private void doCollectPayloads () throws IOException {
+        Collection<byte[]> payload;
+        if (collectPayloads) {
+            if (firstSpans.isPayloadAvailable()) {
+                payload = firstSpans.getPayload();
+                matchPayload.addAll(payload);
+            }
+            if (secondSpans.isPayloadAvailable()) {
+                payload = secondSpans.getPayload();
+                matchPayload.addAll(payload);
+            }
+        }
+    }
+
+
+    @Override
+    public boolean skipTo (int target) throws IOException {
+        if (hasMoreSpans && (firstSpans.doc() < target)) {
+            if (!firstSpans.skipTo(target)) {
+                hasMoreSpans = false;
+                return false;
+            }
+        }
+        matchPayload.clear();
+        return advance();
+    }
+
+
+    @Override
+    public long cost () {
+        return firstSpans.cost() + secondSpans.cost();
     }
 }
