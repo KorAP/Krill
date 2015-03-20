@@ -67,13 +67,6 @@ To run the test suite ...
 $ mvn clean test
 ```
 
-
-To start the server ...
-
-```
-$ mvn compile exec:java
-```
-
 ## Caveats
 
 Krill operates on tokens and is limited to a single tokenization stream.
