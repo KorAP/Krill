@@ -10,12 +10,7 @@
 /todo.org
 /wiki.org
 
-# /src/main/java/de/ids_mannheim/korap/query/
-/src/main/java/de/ids_mannheim/korap/query/CopyOfSpanElementQuery.java
-
-# /src/main/java/de/ids_mannheim/korap/query/spans/
-/src/main/java/de/ids_mannheim/korap/query/spans/CopyOfElementSpans.java
-
 # /src/main/resources/
 /src/main/resources/server.properties
 /src/main/resources/korap.conf
+/bin
