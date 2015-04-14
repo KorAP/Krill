@@ -7,14 +7,25 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.lucene.util.automaton.RegExp;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.query.wrap.*;
+import de.ids_mannheim.korap.query.SpanWithinQuery;
+import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanAttributeQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanFocusQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRelationWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSubspanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWithAttributeQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -166,6 +177,9 @@ public class KrillQuery extends Notifications {
         return this.fromJson(jsonN);
     };
 
+    public SpanQueryWrapper fromJson(JsonNode json) throws QueryException {
+        return fromJson(json, null);
+    }
 
     /**
      * <p>Deserialize JSON-LD query as a {@link JsonNode} object
@@ -180,7 +194,8 @@ public class KrillQuery extends Notifications {
     // TODO: Use the shortcuts implemented in the builder
     //       instead of the wrapper constructors
     // TODO: Rename this span context!
-    public SpanQueryWrapper fromJson (JsonNode json) throws QueryException {
+    public SpanQueryWrapper fromJson(JsonNode json, String direction)
+            throws QueryException {
         int number = 0;
 
         // Only accept @typed objects for the moment
@@ -280,6 +295,12 @@ public class KrillQuery extends Notifications {
 
                 // Get wrapped token
                 return this._segFromJson(json.get("wrap"));
+
+            case "koral:relation":
+                if (!json.has("wrap")) {
+                    throw new QueryException(718, "Missing relation term");
+                }
+                return this._termFromJson(json.get("wrap"), direction);
 
             case "koral:span":
                 return this._termFromJson(json);
@@ -386,8 +407,14 @@ public class KrillQuery extends Notifications {
                 return this._operationRepetitionFromJson(json, operands);
 
             case "operation:relation":
-                throw new QueryException(765,
-                        "Relations are currently not supported");
+                if (!json.has("relation")) {
+                    throw new QueryException(717, "Missing relation node");
+                }
+                
+                return _operationRelationFromJson(operands,
+                        json.get("relation"));
+                /*throw new QueryException(765,
+                        "Relations are currently not supported");*/
 
             case "operation:or": // Deprecated in favor of operation:junction
                 return this._operationJunctionFromJson(operands);
@@ -401,6 +428,32 @@ public class KrillQuery extends Notifications {
         throw new QueryException(711, "Unknown group operation");
     };
 
+    private SpanQueryWrapper _operationRelationFromJson(JsonNode operands,
+            JsonNode relation)
+            throws QueryException {
+
+        if (operands.size() < 2) {
+            throw new QueryException(705,
+                    "Number of operands is not acceptable");
+        }
+
+        String direction = null;
+        SpanQueryWrapper operand1 = fromJson(operands.get(0));
+        SpanQueryWrapper operand2 = fromJson(operands.get(1));
+
+        if (operand1.isEmpty()) {
+            direction = "<:";
+        }
+        else {// if (operand2.isEmpty()) {
+            direction = ">:";
+        }
+
+        SpanQueryWrapper relationWrapper = fromJson(relation, direction);
+
+        return new SpanRelationWrapper(relationWrapper,
+                operand1, operand2);
+
+    }
 
     // Deserialize operation:junction
     private SpanQueryWrapper _operationJunctionFromJson (JsonNode operands)
@@ -861,9 +914,13 @@ public class KrillQuery extends Notifications {
         throw new QueryException(745, "Token type is not supported");
     };
 
+    private SpanQueryWrapper _termFromJson (JsonNode json)
+            throws QueryException {
+        return _termFromJson(json, null);
+    }
 
     // Deserialize koral:term
-    private SpanQueryWrapper _termFromJson (JsonNode json)
+    private SpanQueryWrapper _termFromJson(JsonNode json, String direction)
             throws QueryException {
 
         if (!json.has("key") || json.get("key").asText().length() < 1) {
@@ -886,6 +943,10 @@ public class KrillQuery extends Notifications {
             isCaseInsensitive = true;
 
         StringBuilder value = new StringBuilder();
+
+        if (direction != null) {
+            value.append(direction);
+        }
 
         // expect orth? expect lemma? 
         // s:den | i:den | cnx/l:die | mate/m:mood:ind | cnx/syn:@PREMOD |

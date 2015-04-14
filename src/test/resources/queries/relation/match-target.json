@@ -1,0 +1,24 @@
+{
+    "query": {
+        "@type": "koral:group",
+        "operation": "operation:relation",
+        "operands": [
+        	{"@type": "koral:token"},
+            {
+                "@type": "koral:span",
+                "layer": "c",
+                "key": "vp"                
+            }
+        ],
+        "relation": {
+            "@type": "koral:relation",
+            "wrap": {
+                "@type": "koral:term",
+                "foundry": "mate",
+                "layer": "d",
+                "key": "HEAD"
+            }
+        }
+    },
+    "meta": {}
+}

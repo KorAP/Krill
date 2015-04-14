@@ -171,6 +171,8 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
             SpanQueryWrapper attrQueryWrapper) throws QueryException {
         SpanQuery sq = attrQueryWrapper.toQuery();
         if (sq != null) {
+            if (sq instanceof SpanAttributeQuery)
+                return (SpanAttributeQuery) sq;
             if (sq instanceof SpanTermQuery) {
                 return new SpanAttributeQuery((SpanTermQuery) sq,
                         attrQueryWrapper.isNegative, true);

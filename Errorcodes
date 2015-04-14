@@ -30,6 +30,8 @@
 714: "Span references expect a start position and a length parameter"
 715: "Attribute type is not supported"
 716: "Unknown relation"
+717: "Missing relation node"
+718: "Missing relation term"
 740: "Key definition is missing in term or span"
 741: "Match relation unknown"
 742: "Term group needs operand list"
