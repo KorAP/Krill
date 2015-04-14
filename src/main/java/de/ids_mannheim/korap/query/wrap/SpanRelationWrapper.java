@@ -24,6 +24,11 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         else
             return;
 
+        if (relationQuery.isEmpty) {
+            this.isEmpty = true;
+            return;
+        }
+
         this.subQuery1 = operand1;
         this.subQuery2 = operand2;
     }
@@ -31,7 +36,7 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
     @Override
     public SpanQuery toQuery() throws QueryException {
 
-        if (this.isNull()) {
+        if (this.isNull() || this.isEmpty()) {
             return null;
         }
 
