@@ -12,7 +12,7 @@ import de.ids_mannheim.korap.util.QueryException;
 public class TestSpanRelationQueryJSON {
 
     @Test
-    public void testMatchRelationSource() throws QueryException {
+    public void testMatchRelationSource () throws QueryException {
         //
         String filepath = getClass().getResource(
                 "/queries/relation/match-source.json").getFile();
@@ -23,8 +23,9 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testMatchRelationTarget() throws QueryException {
+    public void testMatchRelationTarget () throws QueryException {
         //
         String filepath = getClass().getResource(
                 "/queries/relation/match-target.json").getFile();
@@ -35,8 +36,9 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testMatchRelationSourceAndTarget() throws QueryException {
+    public void testMatchRelationSourceAndTarget () throws QueryException {
         //
         String filepath = getClass().getResource(
                 "/queries/relation/match-source-and-target.json").getFile();
@@ -47,8 +49,9 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testMatchOperandWithProperty() throws QueryException {
+    public void testMatchOperandWithProperty () throws QueryException {
         //
         String filepath = getClass().getResource(
                 "/queries/relation/operand-with-property.json").getFile();
@@ -60,8 +63,9 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testMatchOperandWithAttribute() throws QueryException {
+    public void testMatchOperandWithAttribute () throws QueryException {
         //
         String filepath = getClass().getResource(
                 "/queries/relation/operand-with-attribute.json").getFile();
@@ -73,8 +77,9 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testMatchRelationOnly() throws QueryException {
+    public void testMatchRelationOnly () throws QueryException {
         //
         String filepath = getClass().getResource(
                 "/queries/relation/relation-only.json").getFile();
@@ -83,7 +88,8 @@ public class TestSpanRelationQueryJSON {
         assertEquals("focus([1,2]tokens:<:mate/d:HEAD)", sq.toString());
     }
 
-    public void testFocusSource() throws QueryException {
+
+    public void testFocusSource () throws QueryException {
         //
         String filepath = getClass().getResource(
                 "/queries/relation/focus-source.json").getFile();
@@ -94,7 +100,8 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
-    public void testFocusTarget() throws QueryException {
+
+    public void testFocusTarget () throws QueryException {
         String filepath = getClass().getResource(
                 "/queries/relation/match-source.json").getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);

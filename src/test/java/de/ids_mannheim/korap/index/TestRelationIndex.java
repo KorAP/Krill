@@ -116,7 +116,7 @@ public class TestRelationIndex {
     }
 
 
-    public static FieldDocument createFieldDoc2() {
+    public static FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV(

@@ -88,7 +88,7 @@ public class KrillQuery extends Notifications {
     // Variables used for relation queries
     private String direction;
     private byte[] classNumbers;
-    
+
     // Private class for koral:boundary objects
     private class Boundary {
         public int min, max;
@@ -185,6 +185,7 @@ public class KrillQuery extends Notifications {
         return this.fromJson(jsonN);
     };
 
+
     /**
      * <p>Deserialize JSON-LD query as a {@link JsonNode} object
      * to a {@link SpanQueryWrapper} object.</p>
@@ -198,7 +199,7 @@ public class KrillQuery extends Notifications {
     // TODO: Use the shortcuts implemented in the builder
     //       instead of the wrapper constructors
     // TODO: Rename this span context!
-    public SpanQueryWrapper fromJson(JsonNode json) throws QueryException {
+    public SpanQueryWrapper fromJson (JsonNode json) throws QueryException {
         int number = 0;
 
         // Only accept @typed objects for the moment
@@ -413,7 +414,7 @@ public class KrillQuery extends Notifications {
                 if (!json.has("relation")) {
                     throw new QueryException(717, "Missing relation node");
                 }
-                
+
                 return _operationRelationFromJson(operands,
                         json.get("relation"));
                 /*throw new QueryException(765,
@@ -431,9 +432,9 @@ public class KrillQuery extends Notifications {
         throw new QueryException(711, "Unknown group operation");
     };
 
-    private SpanQueryWrapper _operationRelationFromJson(JsonNode operands,
-            JsonNode relation)
-            throws QueryException {
+
+    private SpanQueryWrapper _operationRelationFromJson (JsonNode operands,
+            JsonNode relation) throws QueryException {
 
         if (operands.size() < 2) {
             throw new QueryException(705,
@@ -453,6 +454,7 @@ public class KrillQuery extends Notifications {
                 classNumbers);
 
     }
+
 
     // Deserialize operation:junction
     private SpanQueryWrapper _operationJunctionFromJson (JsonNode operands)
@@ -916,13 +918,15 @@ public class KrillQuery extends Notifications {
         throw new QueryException(745, "Token type is not supported");
     };
 
+
     private SpanQueryWrapper _termFromJson (JsonNode json)
             throws QueryException {
         return _termFromJson(json, null);
     }
 
+
     // Deserialize koral:term
-    private SpanQueryWrapper _termFromJson(JsonNode json, String direction)
+    private SpanQueryWrapper _termFromJson (JsonNode json, String direction)
             throws QueryException {
 
         if (!json.has("key") || json.get("key").asText().length() < 1) {

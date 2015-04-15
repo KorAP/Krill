@@ -15,9 +15,10 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subQuery2;
     private byte[] classNumbers;
 
+
     public SpanRelationWrapper (SpanQueryWrapper relationWrapper,
-            SpanQueryWrapper operand1, SpanQueryWrapper operand2,
-            byte[] classNumbers) {
+                                SpanQueryWrapper operand1,
+                                SpanQueryWrapper operand2, byte[] classNumbers) {
 
         this.relationQuery = relationWrapper;
         if (relationQuery != null) {
@@ -36,15 +37,17 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         this.classNumbers = classNumbers;
     }
 
+
     @Override
-    public SpanQuery toQuery() throws QueryException {
+    public SpanQuery toQuery () throws QueryException {
 
         if (this.isNull() || this.isEmpty()) {
             return null;
         }
 
         SpanQuery sq = relationQuery.retrieveNode(this.retrieveNode).toQuery();
-        if (sq == null) return null;
+        if (sq == null)
+            return null;
 
         ArrayList<Byte> classNumbers = new ArrayList<Byte>();
         for (byte c : this.classNumbers) {
@@ -59,8 +62,8 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
                 // match subquery2
                 subq2 = subQuery2.retrieveNode(this.retrieveNode).toQuery();
                 if (subq2 != null) {
-                    return new SpanFocusQuery(
-                            new SpanSegmentQuery(sq, subq2, true), classNumbers);
+                    return new SpanFocusQuery(new SpanSegmentQuery(sq, subq2,
+                            true), classNumbers);
                 }
             }
         }
@@ -69,29 +72,28 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
                 // match subquery1
                 subq1 = subQuery1.retrieveNode(this.retrieveNode).toQuery();
                 if (subq1 != null) {
-                    return new SpanFocusQuery(
-                            new SpanSegmentQuery(sq, subq1, true),
-                        classNumbers);
+                    return new SpanFocusQuery(new SpanSegmentQuery(sq, subq1,
+                            true), classNumbers);
                 }
-            }               
+            }
         }
-        else{
+        else {
             // match both
             subq1 = subQuery1.retrieveNode(this.retrieveNode).toQuery();
             if (subq1 != null) {
-                SpanFocusQuery fq = new SpanFocusQuery(new SpanSegmentQuery(sq, subq1,
-                        true), (byte) 2);
+                SpanFocusQuery fq = new SpanFocusQuery(new SpanSegmentQuery(sq,
+                        subq1, true), (byte) 2);
                 fq.setSorted(false);
                 sq = fq;
             }
-            
+
             subq2 = subQuery2.retrieveNode(this.retrieveNode).toQuery();
-            if (subq2 != null){
-                return new SpanFocusQuery(new SpanSegmentQuery(sq, subq2, true),
-                    classNumbers);
+            if (subq2 != null) {
+                return new SpanFocusQuery(
+                        new SpanSegmentQuery(sq, subq2, true), classNumbers);
             }
         }
-        
+
         return new SpanFocusQuery(sq, classNumbers);
     }
 }

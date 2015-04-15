@@ -66,9 +66,8 @@ public class Resource {
     public static final boolean DEBUG = false;
 
     // Slightly based on String::BooleanSimple
-    static Pattern p = Pattern
-        .compile("\\s*(?i:false|no|inactive|disabled|" +
-                 "off|n|neg(?:ative)?|not|null|undef)\\s*");
+    static Pattern p = Pattern.compile("\\s*(?i:false|no|inactive|disabled|"
+            + "off|n|neg(?:ative)?|not|null|undef)\\s*");
 
 
     /**
@@ -464,7 +463,7 @@ public class Resource {
         Matcher m = p.matcher(value);
         if (m.matches())
             return true;
-        
+
         return false;
     };
 };

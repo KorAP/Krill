@@ -70,23 +70,25 @@ public class Node {
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
         final ResourceConfig rc = new ResourceConfig()
-            .packages("de.ids_mannheim.korap.server");
+                .packages("de.ids_mannheim.korap.server");
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
-        return GrizzlyHttpServerFactory.createHttpServer(
-            URI.create(BASE_URI), rc
-        );
+        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI),
+                rc);
     };
+
 
     /**
      * Starts Grizzly HTTP server exposing JAX-RS
      * resources defined in this application.
      * Mainly used for testing.
      * 
-     * @param nodeName The name of the node.
-     * @param indexPath The path of the Lucene index.
-     *
+     * @param nodeName
+     *            The name of the node.
+     * @param indexPath
+     *            The path of the Lucene index.
+     * 
      * @return Grizzly {@link HttpServer} server.
      */
     public static HttpServer startServer (String nodeName, String indexPath) {
@@ -111,7 +113,8 @@ public class Node {
     /**
      * Runner method for Krill node.
      * 
-     * @param args No special arguments required.
+     * @param args
+     *            No special arguments required.
      * @throws IOException
      */
     public static void main (String[] args) throws IOException {
@@ -121,20 +124,17 @@ public class Node {
         final HttpServer server = startServer();
 
         // Establish shutdown hook
-        Runtime.getRuntime().addShutdownHook(
-            new Thread(
-                new Runnable() {
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 
-                    @Override
-                    public void run () {
-                        log.info("Stop Server");
-                        server.stop();
-                        if (cpds != null)
-                            cpds.close();
-                    };
+            @Override
+            public void run () {
+                log.info("Stop Server");
+                server.stop();
+                if (cpds != null)
+                    cpds.close();
+            };
 
-                }, "shutdownHook")
-        );
+        }, "shutdownHook"));
 
         // Start server
         try {
@@ -151,7 +151,7 @@ public class Node {
     /**
      * Get the name of the node.
      * The name is unique in the cluster and should be persistent.
-     *
+     * 
      * @return The unique name of the node.
      */
     public static String getName () {
@@ -161,8 +161,8 @@ public class Node {
 
     /**
      * Get the URI (incl. port) the node is listening on.
-     *
-     * @return The URI the node is listening on. 
+     * 
+     * @return The URI the node is listening on.
      */
     public static String getListener () {
         return BASE_URI;
@@ -181,7 +181,7 @@ public class Node {
     /**
      * Get the associated database pool
      * for match collection.
-     *
+     * 
      * @return The CPDS {@link ComboPooledDataSource} object.
      */
     public static ComboPooledDataSource getDBPool () {
@@ -213,7 +213,7 @@ public class Node {
 
     /**
      * Get the associuated {@link KrillIndex}.
-     *
+     * 
      * @return The associated {@link KrillIndex}.
      */
     public static KrillIndex getIndex () {
@@ -285,8 +285,9 @@ public class Node {
         // Load configuration
         URL resUrl = Node.class.getClassLoader().getResource(propFile);
         if (resUrl == null) {
-            log.error("Cannot find {}. Please create it using \"{}.info\" as template.",
-                      propFile, propFile);
+            log.error(
+                    "Cannot find {}. Please create it using \"{}.info\" as template.",
+                    propFile, propFile);
             return null;
         };
 

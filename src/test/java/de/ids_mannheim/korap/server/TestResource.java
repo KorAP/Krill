@@ -37,6 +37,7 @@ public class TestResource {
 
     ObjectMapper mapper = new ObjectMapper();
 
+
     @Before
     public void setUp () throws Exception {
         // start the server
@@ -80,6 +81,7 @@ public class TestResource {
         assertEquals("Gimme 5 minutes, please!", responseMsg);
     };
 
+
     @Test
     public void testInfo () throws IOException {
         String responseMsg = target.path("/").request().get(String.class);
@@ -105,7 +107,7 @@ public class TestResource {
             try {
                 // Put new documents to the index
                 resp = target.path("/index/" + i).request("application/json")
-                    .put(jsonE, String.class);
+                        .put(jsonE, String.class);
 
                 res = mapper.readTree(resp);
                 assertEquals("milena", res.at("/node").asText());
@@ -129,13 +131,12 @@ public class TestResource {
     public void testCollection () throws IOException {
 
         String json = getString(getClass().getResource(
-            "/queries/bsp-uid-example.jsonld").getFile()
-        );
+                "/queries/bsp-uid-example.jsonld").getFile());
 
         try {
             String resp = target.path("/").queryParam("uid", "1")
-                .queryParam("uid", "4").request("application/json")
-                .post(Entity.json(json), String.class);
+                    .queryParam("uid", "4").request("application/json")
+                    .post(Entity.json(json), String.class);
             JsonNode res = mapper.readTree(resp);
             assertEquals(2, res.at("/totalResults").asInt());
         }
