@@ -13,9 +13,11 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper relationQuery;
     private SpanQueryWrapper subQuery1;
     private SpanQueryWrapper subQuery2;
+    private byte[] classNumbers;
 
     public SpanRelationWrapper (SpanQueryWrapper relationWrapper,
-            SpanQueryWrapper operand1, SpanQueryWrapper operand2) {
+            SpanQueryWrapper operand1, SpanQueryWrapper operand2,
+            byte[] classNumbers) {
 
         this.relationQuery = relationWrapper;
         if (relationQuery != null) {
@@ -31,6 +33,7 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
 
         this.subQuery1 = operand1;
         this.subQuery2 = operand2;
+        this.classNumbers = classNumbers;
     }
 
     @Override
@@ -44,8 +47,11 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         if (sq == null) return null;
 
         ArrayList<Byte> classNumbers = new ArrayList<Byte>();
-        classNumbers.add((byte) 1);
-        classNumbers.add((byte) 2);
+        for (byte c : this.classNumbers) {
+            if (c > 0) {
+                classNumbers.add(c);
+            }
+        }
 
         SpanQuery subq1, subq2;
         if (subQuery1.isEmpty) {

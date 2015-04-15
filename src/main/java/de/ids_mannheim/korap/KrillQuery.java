@@ -85,6 +85,10 @@ public class KrillQuery extends Notifications {
 
     private static final int MAX_CLASS_NUM = 255; // 127;
 
+    // Variables used for relation queries
+    private String direction;
+    private byte[] classNumbers;
+    
     // Private class for koral:boundary objects
     private class Boundary {
         public int min, max;
@@ -129,6 +133,10 @@ public class KrillQuery extends Notifications {
      */
     public KrillQuery (String field) {
         this.field = field;
+        this.direction = ">:";
+        this.classNumbers = new byte[2];
+        this.classNumbers[0] = (byte) 1;
+        this.classNumbers[1] = (byte) 2;
     };
 
 
@@ -177,10 +185,6 @@ public class KrillQuery extends Notifications {
         return this.fromJson(jsonN);
     };
 
-    public SpanQueryWrapper fromJson(JsonNode json) throws QueryException {
-        return fromJson(json, null);
-    }
-
     /**
      * <p>Deserialize JSON-LD query as a {@link JsonNode} object
      * to a {@link SpanQueryWrapper} object.</p>
@@ -194,8 +198,7 @@ public class KrillQuery extends Notifications {
     // TODO: Use the shortcuts implemented in the builder
     //       instead of the wrapper constructors
     // TODO: Rename this span context!
-    public SpanQueryWrapper fromJson(JsonNode json, String direction)
-            throws QueryException {
+    public SpanQueryWrapper fromJson(JsonNode json) throws QueryException {
         int number = 0;
 
         // Only accept @typed objects for the moment
@@ -437,21 +440,17 @@ public class KrillQuery extends Notifications {
                     "Number of operands is not acceptable");
         }
 
-        String direction = null;
         SpanQueryWrapper operand1 = fromJson(operands.get(0));
         SpanQueryWrapper operand2 = fromJson(operands.get(1));
 
         if (operand1.isEmpty()) {
             direction = "<:";
         }
-        else {// if (operand2.isEmpty()) {
-            direction = ">:";
-        }
 
-        SpanQueryWrapper relationWrapper = fromJson(relation, direction);
+        SpanQueryWrapper relationWrapper = fromJson(relation);
 
-        return new SpanRelationWrapper(relationWrapper,
-                operand1, operand2);
+        return new SpanRelationWrapper(relationWrapper, operand1, operand2,
+                classNumbers);
 
     }
 
@@ -691,6 +690,9 @@ public class KrillQuery extends Notifications {
             if (number > MAX_CLASS_NUM) {
                 throw new QueryException(709, "Valid class numbers exceeded");
             };
+
+            this.classNumbers[0] = (byte) number;
+            this.classNumbers[1] = (byte) 0;
 
             // Serialize operand
             SpanQueryWrapper sqw = this.fromJson(operands.get(0));

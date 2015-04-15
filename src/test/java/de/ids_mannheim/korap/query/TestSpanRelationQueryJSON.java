@@ -82,4 +82,25 @@ public class TestSpanRelationQueryJSON {
         SpanQuery sq = sqwi.toQuery();
         assertEquals("focus([1,2]tokens:<:mate/d:HEAD)", sq.toString());
     }
+
+    public void testFocusSource() throws QueryException {
+        //
+        String filepath = getClass().getResource(
+                "/queries/relation/focus-source.json").getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "focus([1]spanSegment(focus(2: spanSegment(tokens:>:mate/d:HEAD, <tokens:c:s />)), <tokens:c:vp />))",
+                sq.toString());
+    }
+
+    public void testFocusTarget() throws QueryException {
+        String filepath = getClass().getResource(
+                "/queries/relation/match-source.json").getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "focus([2]spanSegment(tokens:>:mate/d:HEAD, <tokens:c:s />))",
+                sq.toString());
+    }
 }
