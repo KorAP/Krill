@@ -7,6 +7,7 @@ import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
@@ -53,8 +54,7 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  * */
 public class SpanRelationQuery extends SimpleSpanQuery {
 
-    private String type;
-
+    private int direction = 0;
 
     /**
      * Constructs a SpanRelationQuery based on the given span query.
@@ -69,6 +69,11 @@ public class SpanRelationQuery extends SimpleSpanQuery {
      */
     public SpanRelationQuery (SpanQuery firstClause, boolean collectPayloads) {
         super(firstClause, collectPayloads);
+        SpanTermQuery st = (SpanTermQuery) firstClause;
+        String direction = st.getTerm().text().substring(0, 1);
+        if (direction.equals("<")) {
+            this.direction = 1;
+        }
     }
 
 
@@ -95,6 +100,14 @@ public class SpanRelationQuery extends SimpleSpanQuery {
         sb.append(")");
         sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 
 }

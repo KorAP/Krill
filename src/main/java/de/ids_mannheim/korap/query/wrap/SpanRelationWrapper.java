@@ -49,31 +49,22 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         if (sq == null)
             return null;
 
-        ArrayList<Byte> classNumbers = new ArrayList<Byte>();
-        for (byte c : this.classNumbers) {
-            if (c > 0) {
-                classNumbers.add(c);
-            }
-        }
-
         SpanQuery subq1, subq2;
         if (subQuery1.isEmpty) {
             if (!subQuery2.isEmpty) {
-                // match subquery2
+                // match target
                 subq2 = subQuery2.retrieveNode(this.retrieveNode).toQuery();
                 if (subq2 != null) {
-                    return new SpanFocusQuery(new SpanSegmentQuery(sq, subq2,
-                            true), classNumbers);
+                    return createQuery(new SpanSegmentQuery(sq, subq2, true));
                 }
             }
         }
         else if (subQuery2.isEmpty) {
             if (!subQuery1.isEmpty) {
-                // match subquery1
+                // match source
                 subq1 = subQuery1.retrieveNode(this.retrieveNode).toQuery();
                 if (subq1 != null) {
-                    return new SpanFocusQuery(new SpanSegmentQuery(sq, subq1,
-                            true), classNumbers);
+                    return createQuery(new SpanSegmentQuery(sq, subq1, true));
                 }
             }
         }
@@ -89,11 +80,24 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
 
             subq2 = subQuery2.retrieveNode(this.retrieveNode).toQuery();
             if (subq2 != null) {
-                return new SpanFocusQuery(
-                        new SpanSegmentQuery(sq, subq2, true), classNumbers);
+                return createQuery(new SpanSegmentQuery(sq, subq2, true));
             }
         }
 
-        return new SpanFocusQuery(sq, classNumbers);
+        return createQuery(sq);
+    }
+
+    private SpanQuery createQuery(SpanQuery sq) {
+        ArrayList<Byte> classNumbers = new ArrayList<Byte>();
+        if (this.classNumbers != null) {
+            for (byte c : this.classNumbers) {
+                if (c > 0) {
+                    classNumbers.add(c);
+                }
+            }
+            return new SpanFocusQuery(sq, classNumbers);
+        }
+        return sq;
+
     }
 }

@@ -522,7 +522,7 @@ public class TestRelationIndex {
         SpanQuery rv = new SpanFocusQuery(new SpanSegmentQuery(
                 new SpanRelationQuery(new SpanTermQuery(new Term("base",
                         "<:dep")), true), new SpanTermWithIdQuery(new Term(
-                        "base", "pos:NN"), true), true), (byte) 2);
+                        "base", "pos:NN"), true), true), (byte) 1);
 
         kr = ki.search(rv, (short) 10);
         assertEquals((long) 3, kr.getTotalResults());
@@ -566,7 +566,7 @@ public class TestRelationIndex {
         SpanFocusQuery rv = new SpanFocusQuery(new SpanSegmentQuery(
                 new SpanRelationQuery(new SpanTermQuery(new Term("base",
                         "<:child-of")), true), new SpanElementQuery("base",
-                        "np"), true), (byte) 2);
+                        "np"), true), (byte) 1);
         rv.setSorted(false);
 
         kr = ki.search(rv, (short) 10);
@@ -602,7 +602,10 @@ public class TestRelationIndex {
         // return all nps whose children are articles
         SpanSegmentQuery rv3 = new SpanSegmentQuery(rv,
                 new SpanTermWithIdQuery(new Term("base", "pos:ART"), true));
-        kr = ki.search(rv3, (short) 10);
+        
+        
+        SpanFocusQuery sf = new SpanFocusQuery(rv3, (byte) 1);
+        kr = ki.search(sf, (short) 10);
 
         assertEquals((long) 2, kr.getTotalResults());
 

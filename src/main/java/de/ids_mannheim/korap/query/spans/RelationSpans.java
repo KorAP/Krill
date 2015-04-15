@@ -20,14 +20,11 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
 
 /**
  * Enumeration of spans denoting relations between two
- * tokens/elements. The
- * start and end of a RelationSpan always denote the start and end of
- * the
- * left-side token/element.
+ * tokens/elements. The start and end of a RelationSpan always denote
+ * the start and end of the left-side token/element.
  * 
  * There are 4 types of relations, which is differentiated by the
- * payload length
- * in bytes.
+ * payload length in bytes.
  * <ol>
  * <li>Token to token relation (1 int & 3 short, length: 10)</li>
  * <li>Token to span (2 int & 3 short, length: 14)</li>
@@ -35,29 +32,28 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
  * <li>Span to Span (3 int & 3 short, length: 18)</li>
  * </ol>
  * Every integer value denotes the start/end position of the
- * start/target of a
- * relation, in this format: (sourceEndPos?, startTargetPos,
- * endTargetPos?). The
- * end position of a token is identical to its start position, and
- * therefore not
- * is saved in a payload.
+ * start/target of a relation, in this format: (sourceEndPos?,
+ * startTargetPos, endTargetPos?). The end position of a token is
+ * identical to its start position, and therefore not is saved in a
+ * payload.
  * 
  * The short values denote the relation id, left id, and right id. The
- * byte in
- * relation #3 is just a dummy to create a different length from the
- * relation
- * #2.
+ * byte in relation #3 is just a dummy to create a different length
+ * from the relation #2.
  * 
  * NOTE: Sorting of the candidate spans can alternatively be done in
- * indexing,
- * instead of here. (first by left positions and then by right
- * positions)
+ * indexing, instead of here. (first by left positions and then by
+ * right positions)
+ * 
+ * The class number of relation source is always 1 and that of
+ * relation target is always 2 regardless of the relation direction.
  * 
  * @author margaretha
  * */
 public class RelationSpans extends RelationBaseSpans {
 
     private int currentDoc, currentPosition;
+    private int direction;
     private TermSpans relationTermSpan;
 
     protected Logger logger = LoggerFactory.getLogger(RelationSpans.class);
@@ -80,6 +76,7 @@ public class RelationSpans extends RelationBaseSpans {
                           Map<Term, TermContext> termContexts)
             throws IOException {
         super(relationSpanQuery, context, acceptDocs, termContexts);
+        direction = relationSpanQuery.getDirection();
         candidateList = new ArrayList<>();
         relationTermSpan = (TermSpans) firstSpans;
         hasMoreSpans = relationTermSpan.next();
@@ -214,10 +211,18 @@ public class RelationSpans extends RelationBaseSpans {
         if (relationTermSpan.isPayloadAvailable()) {
             payload.addAll(relationTermSpan.getPayload());
         }
-        payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
-                (byte) 1));
-        payload.add(createClassPayload(cs.getRightStart(), cs.getRightEnd(),
-                (byte) 2));
+        if (direction == 0) {
+            payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
+                    (byte) 1));
+            payload.add(createClassPayload(cs.getRightStart(),
+                    cs.getRightEnd(), (byte) 2));
+        }
+        else {
+            payload.add(createClassPayload(cs.getRightStart(),
+                    cs.getRightEnd(), (byte) 1));
+            payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
+                    (byte) 2));
+        }
         cs.setPayloads(payload);
     }
 

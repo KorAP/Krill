@@ -257,6 +257,9 @@ public class KrillQuery extends Notifications {
                     if (number > MAX_CLASS_NUM)
                         throw new QueryException(709,
                                 "Valid class numbers exceeded");
+
+                    this.classNumbers = null;
+
                 }
 
                 // Reference based on spans
@@ -692,9 +695,6 @@ public class KrillQuery extends Notifications {
             if (number > MAX_CLASS_NUM) {
                 throw new QueryException(709, "Valid class numbers exceeded");
             };
-
-            this.classNumbers[0] = (byte) number;
-            this.classNumbers[1] = (byte) 0;
 
             // Serialize operand
             SpanQueryWrapper sqw = this.fromJson(operands.get(0));
