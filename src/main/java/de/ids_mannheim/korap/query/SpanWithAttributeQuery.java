@@ -12,10 +12,8 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.spans.ElementSpans;
-import de.ids_mannheim.korap.query.spans.RelationSpans;
+import de.ids_mannheim.korap.query.spans.SimpleSpans;
 import de.ids_mannheim.korap.query.spans.SpansWithAttribute;
-import de.ids_mannheim.korap.query.spans.TermSpansWithId;
 
 /**
  * Enumeration of spans (e.g. element or relation spans) having some
@@ -40,7 +38,7 @@ import de.ids_mannheim.korap.query.spans.TermSpansWithId;
  * 
  * @author margaretha
  */
-public class SpanWithAttributeQuery extends SpanWithIdQuery {
+public class SpanWithAttributeQuery extends SimpleSpanQuery {
 
     public boolean isMultipleAttributes;
     private String type;
@@ -91,7 +89,7 @@ public class SpanWithAttributeQuery extends SpanWithIdQuery {
      *            <code>true</code> if payloads are to be collected,
      *            otherwise <code>false</code>.
      */
-    public SpanWithAttributeQuery (SpanWithIdQuery firstClause,
+    public SpanWithAttributeQuery (SimpleSpanQuery firstClause,
                                    SpanAttributeQuery secondClause,
                                    boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
@@ -109,7 +107,7 @@ public class SpanWithAttributeQuery extends SpanWithIdQuery {
      *            <code>true</code> if payloads are to be collected,
      *            otherwise <code>false</code>.
      */
-    public SpanWithAttributeQuery (SpanWithIdQuery firstClause,
+    public SpanWithAttributeQuery (SimpleSpanQuery firstClause,
                                    List<SpanQuery> secondClauses,
                                    boolean collectPayloads) {
         super(firstClause, secondClauses, collectPayloads);
@@ -137,7 +135,7 @@ public class SpanWithAttributeQuery extends SpanWithIdQuery {
         if (SpanElementQuery.class.isInstance(firstClause)) {
             type = "spanElementWithAttribute";
         }
-        else if (SpanRelationQuery.class.isInstance(firstClause)) {
+        else if (SpanFocusQuery.class.isInstance(firstClause)) {
             type = "spanRelationWithAttribute";
         }
         else if (SpanTermWithIdQuery.class.isInstance(firstClause)) {
@@ -147,16 +145,16 @@ public class SpanWithAttributeQuery extends SpanWithIdQuery {
 
 
     @Override
-    public SimpleSpanQuery clone () {
+    public SpanWithAttributeQuery clone () {
         if (secondClause != null) {
             if (isMultipleAttributes) {
                 return new SpanWithAttributeQuery(
-                        (SpanWithIdQuery) firstClause.clone(),
+                        (SimpleSpanQuery) firstClause.clone(),
                         cloneClauseList(), collectPayloads);
             }
             else {
                 return new SpanWithAttributeQuery(
-                        (SpanWithIdQuery) firstClause.clone(),
+                        (SimpleSpanQuery) firstClause.clone(),
                         (SpanAttributeQuery) secondClause.clone(),
                         collectPayloads);
             }
@@ -195,25 +193,10 @@ public class SpanWithAttributeQuery extends SpanWithIdQuery {
                     termContexts);
         }
 
-        Spans spans = this.getFirstClause().getSpans(context, acceptDocs,
+        SimpleSpans spans = (SimpleSpans) this.getFirstClause().getSpans(
+                context, acceptDocs, termContexts);
+        return new SpansWithAttribute(this, spans, context, acceptDocs,
                 termContexts);
-
-        if (type.equals("spanElementWithAttribute")) {
-            return new SpansWithAttribute(this, (ElementSpans) spans, context,
-                    acceptDocs, termContexts);
-        }
-        else if (type.equals("spanRelationWithAttribute")) {
-            return new SpansWithAttribute(this, (RelationSpans) spans, context,
-                    acceptDocs, termContexts);
-        }
-        else if (type.equals("spanTermWithAttribute")) {
-            return new SpansWithAttribute(this, (TermSpansWithId) spans,
-                    context, acceptDocs, termContexts);
-        }
-        else {
-            throw new IllegalArgumentException("Span query type: " + type
-                    + "is unknown.");
-        }
     }
 
 

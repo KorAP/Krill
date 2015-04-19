@@ -6,9 +6,9 @@ import java.util.List;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 
+import de.ids_mannheim.korap.query.SimpleSpanQuery;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
-import de.ids_mannheim.korap.query.SpanWithIdQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
@@ -133,7 +133,7 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 
     private SpanQuery createSpecificSpanWithAttributeQuery ()
             throws QueryException {
-        SpanWithIdQuery withIdQuery = (SpanWithIdQuery) withIdQueryWrapper
+        SimpleSpanQuery withIdQuery = (SimpleSpanQuery) withIdQueryWrapper
                 .toQuery();
         if (withIdQuery == null) {
             isNull = true;
@@ -152,7 +152,7 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 
 
     private SpanWithAttributeQuery createSpanWithSingleAttributeQuery (
-            SpanWithIdQuery withIdQuery) throws QueryException {
+            SimpleSpanQuery withIdQuery) throws QueryException {
         SpanAttributeQuery attrQuery = createSpanAttributeQuery(this.attrQueryWrapper);
         if (attrQuery != null) {
             if (withIdQuery != null) {
@@ -171,6 +171,8 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
             SpanQueryWrapper attrQueryWrapper) throws QueryException {
         SpanQuery sq = attrQueryWrapper.toQuery();
         if (sq != null) {
+            if (sq instanceof SpanAttributeQuery)
+                return (SpanAttributeQuery) sq;
             if (sq instanceof SpanTermQuery) {
                 return new SpanAttributeQuery((SpanTermQuery) sq,
                         attrQueryWrapper.isNegative, true);
@@ -185,7 +187,7 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 
 
     private SpanWithAttributeQuery createSpanWithAttributeListQuery (
-            SpanWithIdQuery withIdQuery) throws QueryException {
+            SimpleSpanQuery withIdQuery) throws QueryException {
         List<SpanQuery> attrQueries = new ArrayList<SpanQuery>();
         SpanQuery attrQuery = null;
         for (SpanQueryWrapper sqw : queryWrapperList) {

@@ -1,0 +1,30 @@
+{
+    "query": {
+        "@type": "koral:reference",
+        "operation": "operation:focus",
+        "classRef": [2],
+        "operands": [{
+            "@type": "koral:group",
+            "operation": "operation:relation",
+            "operands": [
+                {
+                    "@type": "koral:span",
+                    "key": "s"
+                },
+                {
+                    "@type": "koral:token"
+                }
+            ],
+            "relation": {
+                "@type": "koral:relation",
+                "wrap": {
+                    "@type": "koral:term",
+                    "foundry": "mate",
+                    "layer": "d",
+                    "key": "HEAD"
+                }
+            }
+        }]
+    },
+    "meta": {}
+}

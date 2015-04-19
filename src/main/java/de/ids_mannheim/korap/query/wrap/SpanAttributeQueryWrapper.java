@@ -15,10 +15,12 @@ public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
 
 
     public SpanAttributeQueryWrapper (SpanQueryWrapper sqw) {
-        if (sqw == null) {
-            isNull = true;
-            return;
+        if (sqw != null) {
+            isNull = false;
         }
+        else
+            return;
+
         if (sqw.isEmpty()) {
             isEmpty = true;
             return;

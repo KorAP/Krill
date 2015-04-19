@@ -10,6 +10,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.logging.LogManager;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.net.URI;
 import java.beans.PropertyVetoException;
@@ -20,31 +22,37 @@ import org.apache.lucene.store.MMapDirectory;
 import com.mchange.v2.c3p0.*;
 
 /**
- * Standalone REST-Service for the Lucene Search Backend.
+ * Standalone REST-Service for the Krill node.
+ * Reads a property file at <tt>krill.properties</tt>.
+ * Defaults to port <tt>9876</tt> if no information is given,
+ * and an unprotected in-memory SQLite database for collections.
  * 
  * @author diewald
  */
 public class Node {
 
     // Base URI the Grizzly HTTP server will listen on
-    public static String BASE_URI = "http://localhost:8080/";
+    public static String BASE_URI = "http://localhost:9876/";
+    private static String propFile = "krill.properties";
+
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Node.class);
 
     // Index
     private static KrillIndex index;
+
+    // Database
     private static ComboPooledDataSource cpds;
-    private static String path, name = "unknown";
-
+    private static String path = null;
+    private static String name = "unknown";
     private static String dbUser, dbPwd;
-
-    private static String dbClass = "org.sqlite.JDBC", dbURL = "jdbc:sqlite:";
+    private static String dbClass = "org.sqlite.JDBC";
+    private static String dbURL = "jdbc:sqlite:";
 
 
     /*
-     * Todo: Add shutdown hook,
-     * Then also close cdps.close();
+     * Todo: Close cdps.close() on shutdown.
      * see: https://10.0.10.12/trac/korap/browser/KorAP-modules/KorAP-REST/src/main/java/de/ids_mannheim/korap/web/Application.java
      * https://10.0.10.12/trac/korap/browser/KorAP-modules/KorAP-REST/src/main/java/de/ids_mannheim/korap/web/ShutdownHook.java
      */
@@ -52,38 +60,12 @@ public class Node {
     /**
      * Starts Grizzly HTTP server exposing JAX-RS
      * resources defined in this application.
+     * This will load a <tt>krill.properties</tt> property file.
      * 
      * @return Grizzly HTTP server.
      */
     public static HttpServer startServer () {
-
-        // Load configuration
-        URL resUrl = Node.class.getClassLoader().getResource("krill.properties");
-        if (resUrl == null) {
-            log.error("Cannot find \"krill.properties\". Please create it "
-                      +"using \"krill.properties.info\" as template. Terminating.");
-            System.exit(1);
-        }
-        try {
-            InputStream file = new FileInputStream(resUrl.getFile());
-            Properties prop = new Properties();
-            prop.load(file);
-
-            // Node properties
-            path = prop.getProperty("krill.indexDir", path);
-            name = prop.getProperty("krill.server.name", name);
-            BASE_URI = prop.getProperty("krill.server.baseURI", BASE_URI);
-
-            // Database properties
-            dbUser = prop.getProperty("krill.db.user", dbUser);
-            dbPwd = prop.getProperty("krill.db.pwd", dbPwd);
-            dbClass = prop.getProperty("krill.db.class", dbClass);
-            dbURL = prop.getProperty("krill.db.jdbcURL", dbURL);
-
-        }
-        catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-        };
+        _loadResourceProperties();
 
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
@@ -97,7 +79,21 @@ public class Node {
     };
 
 
+    /**
+     * Starts Grizzly HTTP server exposing JAX-RS
+     * resources defined in this application.
+     * Mainly used for testing.
+     * 
+     * @param nodeName
+     *            The name of the node.
+     * @param indexPath
+     *            The path of the Lucene index.
+     * 
+     * @return Grizzly {@link HttpServer} server.
+     */
     public static HttpServer startServer (String nodeName, String indexPath) {
+        LogManager.getLogManager().reset();
+        SLF4JBridgeHandler.install();
 
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
@@ -115,24 +111,29 @@ public class Node {
 
 
     /**
-     * Main method.
+     * Runner method for Krill node.
      * 
      * @param args
+     *            No special arguments required.
      * @throws IOException
      */
     public static void main (String[] args) throws IOException {
-        // WADL available at BASE_URI + application.wadl
 
+        // WADL available at BASE_URI + application.wadl
+        // Start the server with krill properties or given defaults
         final HttpServer server = startServer();
 
         // Establish shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+
             @Override
             public void run () {
                 log.info("Stop Server");
-                // staaahp!
                 server.stop();
-            }
+                if (cpds != null)
+                    cpds.close();
+            };
+
         }, "shutdownHook"));
 
         // Start server
@@ -147,25 +148,49 @@ public class Node {
     };
 
 
-    // What's the servers name?
+    /**
+     * Get the name of the node.
+     * The name is unique in the cluster and should be persistent.
+     * 
+     * @return The unique name of the node.
+     */
     public static String getName () {
         return name;
     };
 
 
-    // What is the server listening on?
+    /**
+     * Get the URI (incl. port) the node is listening on.
+     * 
+     * @return The URI the node is listening on.
+     */
     public static String getListener () {
         return BASE_URI;
     };
 
 
-    // Get database pool
+    /**
+     * Shut down the database pool.
+     */
+    public static void closeDBPool () {
+        if (cpds != null)
+            cpds.close();
+    };
+
+
+    /**
+     * Get the associated database pool
+     * for match collection.
+     * 
+     * @return The CPDS {@link ComboPooledDataSource} object.
+     */
     public static ComboPooledDataSource getDBPool () {
 
         // Pool already initiated
         if (cpds != null)
             return cpds;
 
+        // Initiate pool
         try {
 
             // Parameters are defined in the property file
@@ -186,7 +211,11 @@ public class Node {
     };
 
 
-    // Get Lucene Index
+    /**
+     * Get the associuated {@link KrillIndex}.
+     * 
+     * @return The associated {@link KrillIndex}.
+     */
     public static KrillIndex getIndex () {
 
         // Index already instantiated
@@ -196,10 +225,13 @@ public class Node {
         try {
 
             // Get a temporary index
-            if (path == null)
+            if (path == null) {
+
                 // Temporary index
                 index = new KrillIndex();
+            }
 
+            // Get a MMap directory index
             else {
                 File file = new File(path);
 
@@ -218,5 +250,47 @@ public class Node {
             log.error("Index not loadable at {}: {}", path, e.getMessage());
         };
         return null;
+    };
+
+
+    // Load properties from file
+    private static Properties _loadProperties (String propFile) {
+        try {
+            InputStream file = new FileInputStream(propFile);
+            Properties prop = new Properties();
+            prop.load(file);
+
+            // Node properties
+            path = prop.getProperty("krill.indexDir", path);
+            name = prop.getProperty("krill.server.name", name);
+            BASE_URI = prop.getProperty("krill.server.baseURI", BASE_URI);
+
+            // Database properties
+            dbUser = prop.getProperty("krill.db.user", dbUser);
+            dbPwd = prop.getProperty("krill.db.pwd", dbPwd);
+            dbClass = prop.getProperty("krill.db.class", dbClass);
+            dbURL = prop.getProperty("krill.db.jdbcURL", dbURL);
+            return prop;
+        }
+        catch (IOException e) {
+            log.error(e.getLocalizedMessage());
+        };
+        return null;
+    };
+
+
+    // Load properties from resource file
+    private static Properties _loadResourceProperties () {
+
+        // Load configuration
+        URL resUrl = Node.class.getClassLoader().getResource(propFile);
+        if (resUrl == null) {
+            log.error(
+                    "Cannot find {}. Please create it using \"{}.info\" as template.",
+                    propFile, propFile);
+            return null;
+        };
+
+        return _loadProperties(resUrl.getFile());
     };
 };

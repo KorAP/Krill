@@ -24,7 +24,7 @@ import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
  * 
  * @author margaretha
  * */
-public class TermSpansWithId extends SpansWithId {
+public class TermSpansWithId extends SimpleSpans {
 
     private TermSpans termSpans;
 
@@ -46,6 +46,7 @@ public class TermSpansWithId extends SpansWithId {
         super(spanTermWithIdQuery, context, acceptDocs, termContexts);
         termSpans = (TermSpans) firstSpans;
         hasMoreSpans = termSpans.next();
+        hasSpanId = true;
     }
 
 

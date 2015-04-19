@@ -1,60 +1,35 @@
 package de.ids_mannheim.korap.query;
 
 import java.io.IOException;
-
-import java.util.Set;
 import java.util.Map;
 
-import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.ClassSpans;
 
-
 /**
  * Marks spans with a special class payload.
  */
-public class SpanClassQuery extends SpanQuery {
-    public String field;
-    protected byte number;
-    protected SpanQuery operand;
-
-
-    public SpanClassQuery (SpanQuery operand, byte number) {
-        this.field = operand.getField();
-        this.operand = operand;
-        this.number = number;
-    };
+public class SpanClassQuery extends SimpleSpanQuery {
+    protected byte number = 1;
 
 
     public SpanClassQuery (SpanQuery operand) {
-        this.field = operand.getField();
-        this.operand = operand;
-        this.number = (byte) 1;
+        super(operand, false);
     };
 
 
-    public byte number () {
-        return this.number;
-    };
-
-
-    @Override
-    public String getField () {
-        return field;
-    }
-
-
-    @Override
-    public void extractTerms (Set<Term> terms) {
-        this.operand.extractTerms(terms);
+    public SpanClassQuery (SpanQuery operand, byte number) {
+        super(operand, false);
+        this.number = number;
     };
 
 
@@ -63,7 +38,7 @@ public class SpanClassQuery extends SpanQuery {
         StringBuffer buffer = new StringBuffer("{");
         short classNr = (short) this.number;
         buffer.append(classNr & 0xFF).append(": ");
-        buffer.append(this.operand.toString()).append('}');
+        buffer.append(this.firstClause.toString()).append('}');
         buffer.append(ToStringUtils.boost(getBoost()));
         return buffer.toString();
     };
@@ -72,7 +47,7 @@ public class SpanClassQuery extends SpanQuery {
     @Override
     public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
-        return (Spans) new ClassSpans(this.operand, context, acceptDocs,
+        return (Spans) new ClassSpans(this.firstClause, context, acceptDocs,
                 termContexts, number);
     };
 
@@ -80,12 +55,12 @@ public class SpanClassQuery extends SpanQuery {
     @Override
     public Query rewrite (IndexReader reader) throws IOException {
         SpanClassQuery clone = null;
-        SpanQuery query = (SpanQuery) this.operand.rewrite(reader);
+        SpanQuery query = (SpanQuery) this.firstClause.rewrite(reader);
 
-        if (query != this.operand) {
+        if (query != this.firstClause) {
             if (clone == null)
                 clone = this.clone();
-            clone.operand = query;
+            clone.firstClause = query;
         };
 
         if (clone != null)
@@ -98,7 +73,7 @@ public class SpanClassQuery extends SpanQuery {
     @Override
     public SpanClassQuery clone () {
         SpanClassQuery spanClassQuery = new SpanClassQuery(
-                (SpanQuery) this.operand.clone(), this.number);
+                (SpanQuery) this.firstClause.clone(), this.number);
         spanClassQuery.setBoost(getBoost());
         return spanClassQuery;
     };
@@ -114,7 +89,7 @@ public class SpanClassQuery extends SpanQuery {
 
         final SpanClassQuery spanClassQuery = (SpanClassQuery) o;
 
-        if (!this.operand.equals(spanClassQuery.operand))
+        if (!this.firstClause.equals(spanClassQuery.firstClause))
             return false;
 
         if (this.number != spanClassQuery.number)
@@ -128,10 +103,20 @@ public class SpanClassQuery extends SpanQuery {
     @Override
     public int hashCode () {
         int result = 1;
-        result = operand.hashCode();
+        result = firstClause.hashCode();
         result += (int) number;
         result ^= (result << 15) | (result >>> 18);
         result += Float.floatToRawIntBits(getBoost());
         return result;
+    }
+
+
+    public byte getNumber () {
+        return number;
+    }
+
+
+    public void setNumber (byte number) {
+        this.number = number;
     };
 };

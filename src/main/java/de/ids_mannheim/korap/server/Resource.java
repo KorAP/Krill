@@ -20,16 +20,16 @@ import javax.ws.rs.ext.WriterInterceptorContext;
 import javax.ws.rs.WebApplicationException;
 
 import de.ids_mannheim.korap.server.Node;
-import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Response;
-import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.response.MatchCollector;
 import de.ids_mannheim.korap.response.collector.MatchCollectorDB;
+import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.index.FieldDocument;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -45,16 +45,14 @@ import java.sql.Connection;
 
 
 /**
- * Root resource (exposed at root path)
+ * Root resource (exposed at root path) of the Krill node.
  * The responses only represent JSON responses, although HTML
- * responses
- * may be handy.
+ * responses may be handy.
  * 
- * @author Nils Diewald
- * 
- *         Look at
- *         http://www.mkyong.com/webservices/jax-rs/json-example
- *         -with-jersey-jackson/
+ * @author diewald
+ */
+/* Look at
+ * http://www.mkyong.com/webservices/jax-rs/json-example-with-jersey-jackson/
  */
 @Path("/")
 public class Resource {
@@ -68,21 +66,8 @@ public class Resource {
     public static final boolean DEBUG = false;
 
     // Slightly based on String::BooleanSimple
-    static Pattern p = Pattern
-            .compile("\\s*(?i:false|no|inactive|disabled|off|n|neg(?:ative)?|not|null|undef)\\s*");
-
-
-    // Check if a string is meant to represent null
-    private static boolean isNull (String value) {
-        if (value == null)
-            return true;
-
-        Matcher m = p.matcher(value);
-        if (m.matches())
-            return true;
-
-        return false;
-    };
+    static Pattern p = Pattern.compile("\\s*(?i:false|no|inactive|disabled|"
+            + "off|n|neg(?:ative)?|not|null|undef)\\s*");
 
 
     /**
@@ -91,19 +76,19 @@ public class Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
-        KrillIndex index = Node.getIndex();
         Response kresp = new Response();
         kresp.setNode(Node.getName());
+        kresp.setListener(Node.getListener());
+
+        // Get index
+        KrillIndex index = Node.getIndex();
         kresp.setName(index.getName());
         kresp.setVersion(index.getVersion());
-
-        kresp.setListener(Node.getListener());
-        long texts = -1;
         /*
-          kresp.addMessage(
+        kresp.addMessage(
           "Number of documents in the index",
           String.parseLong(index.numberOf("documents"))
-          );
+        );
         */
         kresp.addMessage(680, "Server is up and running!");
         return kresp.toJsonString();
@@ -134,7 +119,6 @@ public class Resource {
          */
 
         // Todo: Parameter for server node
-
         if (DEBUG)
             log.trace("Added new document with unique identifier {}", uid);
 
@@ -197,6 +181,7 @@ public class Resource {
         // There are documents to commit
         try {
             index.commit();
+            kresp.addMessage(683, "Staged data committed");
         }
         catch (IOException e) {
             // Set HTTP to ???
@@ -373,22 +358,22 @@ public class Resource {
             boolean includeSpans = false, includeHighlights = true, extendToSentence = false, info = false;
 
             // Optional query parameter "info" for more information on the match
-            if (!isNull(qp.getFirst("info")))
+            if (!_isNull(qp.getFirst("info")))
                 info = true;
 
             // Optional query parameter "spans" for span information inclusion
-            if (!isNull(qp.getFirst("spans"))) {
+            if (!_isNull(qp.getFirst("spans"))) {
                 includeSpans = true;
                 info = true;
             };
 
             // Optional query parameter "highlights" for highlight information inclusion
             String highlights = qp.getFirst("highlights");
-            if (highlights != null && isNull(highlights))
+            if (highlights != null && _isNull(highlights))
                 includeHighlights = false;
 
             // Optional query parameter "extended" for sentence expansion
-            if (!isNull(qp.getFirst("extended")))
+            if (!_isNull(qp.getFirst("extended")))
                 extendToSentence = true;
 
             List<String> foundries = qp.get("foundry");
@@ -467,5 +452,18 @@ public class Resource {
             context.setOutputStream(new GZIPOutputStream(outputStream));
             context.proceed();
         };
+    };
+
+
+    // Check if a string is meant to represent null
+    private static boolean _isNull (String value) {
+        if (value == null)
+            return true;
+
+        Matcher m = p.matcher(value);
+        if (m.matches())
+            return true;
+
+        return false;
     };
 };

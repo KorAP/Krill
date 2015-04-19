@@ -1,0 +1,35 @@
+{
+    "query": {
+        "@type": "koral:group",
+        "operation": "operation:relation",
+        "operands": [
+            {
+                "@type": "koral:span",
+                "layer": "c",
+                "key": "s",
+                "match": "match:eq",
+                "attr": {
+		            "@type": "koral:term",
+		            "layer": "type",
+		            "key": "top",
+		            "match": "match:eq"
+		        }           
+            },
+            {
+                "@type": "koral:span",
+                "layer": "c",
+                "key": "vp"
+            }
+        ],
+        "relation": {
+            "@type": "koral:relation",
+            "wrap": {
+                "@type": "koral:term",
+                "foundry": "mate",
+                "layer": "d",
+                "key": "HEAD"
+            }
+        }
+    },
+    "meta": {}
+}

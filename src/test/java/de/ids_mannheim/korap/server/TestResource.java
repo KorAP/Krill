@@ -10,13 +10,11 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.client.Entity;
 
 import org.glassfish.grizzly.http.server.HttpServer;
-import com.fasterxml.jackson.jaxrs.annotation.JacksonFeatures;
 
 import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import java.io.FileInputStream;
 
@@ -25,6 +23,9 @@ import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.Response;
 import static de.ids_mannheim.korap.util.KrillString.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * @author diewald
@@ -33,6 +34,8 @@ import static de.ids_mannheim.korap.util.KrillString.*;
 public class TestResource {
     private HttpServer server;
     private WebTarget target;
+
+    ObjectMapper mapper = new ObjectMapper();
 
 
     @Before
@@ -49,7 +52,7 @@ public class TestResource {
 
         // c.configuration().enable(com.sun.jersey.api.json.POJOMappingFeature());
         // c.configuration().enable(new org.glassfish.jersey.media.json.JsonJaxbFeature());
-        // c.register(JacksonFeature.class);
+        // c.register(JacksonFeatures.class);
         // c.register(com.fasterxml.jackson.jaxrs.annotation.JacksonFeatures.class);
 
         /*
@@ -64,6 +67,7 @@ public class TestResource {
     @After
     public void tearDown () throws Exception {
         server.stop();
+        Node.closeDBPool();
     };
 
 
@@ -78,9 +82,19 @@ public class TestResource {
     };
 
 
-    @Ignore
+    @Test
+    public void testInfo () throws IOException {
+        String responseMsg = target.path("/").request().get(String.class);
+        JsonNode res = mapper.readTree(responseMsg);
+        assertEquals("milena", res.at("/node").asText());
+        assertEquals(680, res.at("/messages/0/0").asInt());
+    };
+
+
+    @Test
     public void testResource () throws IOException {
-        Response kresp;
+        String resp;
+        JsonNode res;
 
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
@@ -91,13 +105,13 @@ public class TestResource {
             Entity jsonE = Entity.json(json);
 
             try {
-                kresp = target.path("/index/" + i).request("application/json")
-                        .put(jsonE, Response.class);
+                // Put new documents to the index
+                resp = target.path("/index/" + i).request("application/json")
+                        .put(jsonE, String.class);
 
-                assertEquals(kresp.getNode(), "milena");
-                assertFalse(kresp.hasErrors());
-                assertFalse(kresp.hasWarnings());
-                assertFalse(kresp.hasMessages());
+                res = mapper.readTree(resp);
+                assertEquals("milena", res.at("/node").asText());
+                assertEquals(681, res.at("/messages/0/0").asInt());
             }
             catch (Exception e) {
                 fail("Server response failed " + e.getMessage()
@@ -105,30 +119,26 @@ public class TestResource {
             }
         };
 
-        kresp = target.path("/index").request("application/json")
-                .post(Entity.text(""), Response.class);
-        assertEquals(kresp.getNode(), "milena");
-        assertFalse(kresp.hasErrors());
-        assertFalse(kresp.hasWarnings());
-        assertFalse(kresp.hasMessages());
+        resp = target.path("/index").request("application/json")
+                .post(Entity.text(""), String.class);
+        res = mapper.readTree(resp);
+        assertEquals("milena", res.at("/node").asText());
+        assertEquals(683, res.at("/messages/0/0").asInt());
     };
 
 
-    @Ignore
+    @Test
     public void testCollection () throws IOException {
 
         String json = getString(getClass().getResource(
                 "/queries/bsp-uid-example.jsonld").getFile());
 
         try {
-            Response kresp = target.path("/").queryParam("uid", "1")
+            String resp = target.path("/").queryParam("uid", "1")
                     .queryParam("uid", "4").request("application/json")
-                    .post(Entity.json(json), Response.class);
-
-            assertEquals(2, kresp.getTotalResults());
-            assertFalse(kresp.hasErrors());
-            assertFalse(kresp.hasWarnings());
-            assertFalse(kresp.hasMessages());
+                    .post(Entity.json(json), String.class);
+            JsonNode res = mapper.readTree(resp);
+            assertEquals(2, res.at("/totalResults").asInt());
         }
         catch (Exception e) {
             fail("Server response failed: " + e.getMessage() + " (Known issue)");

@@ -7,14 +7,25 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.lucene.util.automaton.RegExp;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.query.wrap.*;
+import de.ids_mannheim.korap.query.SpanWithinQuery;
+import de.ids_mannheim.korap.query.wrap.SpanAlterQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanAttributeQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanFocusQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRelationWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSubspanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWithAttributeQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -74,6 +85,10 @@ public class KrillQuery extends Notifications {
 
     private static final int MAX_CLASS_NUM = 255; // 127;
 
+    // Variables used for relation queries
+    private String direction;
+    private byte[] classNumbers;
+
     // Private class for koral:boundary objects
     private class Boundary {
         public int min, max;
@@ -118,6 +133,10 @@ public class KrillQuery extends Notifications {
      */
     public KrillQuery (String field) {
         this.field = field;
+        this.direction = ">:";
+        this.classNumbers = new byte[2];
+        this.classNumbers[0] = (byte) 1;
+        this.classNumbers[1] = (byte) 2;
     };
 
 
@@ -238,6 +257,9 @@ public class KrillQuery extends Notifications {
                     if (number > MAX_CLASS_NUM)
                         throw new QueryException(709,
                                 "Valid class numbers exceeded");
+
+                    this.classNumbers = null;
+
                 }
 
                 // Reference based on spans
@@ -280,6 +302,12 @@ public class KrillQuery extends Notifications {
 
                 // Get wrapped token
                 return this._segFromJson(json.get("wrap"));
+
+            case "koral:relation":
+                if (!json.has("wrap")) {
+                    throw new QueryException(718, "Missing relation term");
+                }
+                return this._termFromJson(json.get("wrap"), direction);
 
             case "koral:span":
                 return this._termFromJson(json);
@@ -386,8 +414,14 @@ public class KrillQuery extends Notifications {
                 return this._operationRepetitionFromJson(json, operands);
 
             case "operation:relation":
-                throw new QueryException(765,
-                        "Relations are currently not supported");
+                if (!json.has("relation")) {
+                    throw new QueryException(717, "Missing relation node");
+                }
+
+                return _operationRelationFromJson(operands,
+                        json.get("relation"));
+                /*throw new QueryException(765,
+                        "Relations are currently not supported");*/
 
             case "operation:or": // Deprecated in favor of operation:junction
                 return this._operationJunctionFromJson(operands);
@@ -400,6 +434,29 @@ public class KrillQuery extends Notifications {
         // Unknown
         throw new QueryException(711, "Unknown group operation");
     };
+
+
+    private SpanQueryWrapper _operationRelationFromJson (JsonNode operands,
+            JsonNode relation) throws QueryException {
+
+        if (operands.size() < 2) {
+            throw new QueryException(705,
+                    "Number of operands is not acceptable");
+        }
+
+        SpanQueryWrapper operand1 = fromJson(operands.get(0));
+        SpanQueryWrapper operand2 = fromJson(operands.get(1));
+
+        if (operand1.isEmpty()) {
+            direction = "<:";
+        }
+
+        SpanQueryWrapper relationWrapper = fromJson(relation);
+
+        return new SpanRelationWrapper(relationWrapper, operand1, operand2,
+                classNumbers);
+
+    }
 
 
     // Deserialize operation:junction
@@ -862,8 +919,14 @@ public class KrillQuery extends Notifications {
     };
 
 
-    // Deserialize koral:term
     private SpanQueryWrapper _termFromJson (JsonNode json)
+            throws QueryException {
+        return _termFromJson(json, null);
+    }
+
+
+    // Deserialize koral:term
+    private SpanQueryWrapper _termFromJson (JsonNode json, String direction)
             throws QueryException {
 
         if (!json.has("key") || json.get("key").asText().length() < 1) {
@@ -886,6 +949,10 @@ public class KrillQuery extends Notifications {
             isCaseInsensitive = true;
 
         StringBuilder value = new StringBuilder();
+
+        if (direction != null) {
+            value.append(direction);
+        }
 
         // expect orth? expect lemma? 
         // s:den | i:den | cnx/l:die | mate/m:mood:ind | cnx/syn:@PREMOD |

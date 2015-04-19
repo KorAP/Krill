@@ -1,4 +1,4 @@
-* 600 - 699 - Lucene Backend error codes
+* 600 - 699 - Krill server error codes
 600: "Unable to read index"
 601: "Unable to find index"
 602: "Unable to add document to index"
@@ -10,8 +10,9 @@
 680: "Server is up and running!"
 681: "Document was added successfully", document id
 682: "Response time exceeded"
+683: "Staged data committed"
 
-* 700 - 799 - Coral Deserialization errors
+* 700 - 799 - KoralQuery Deserialization errors
 700: "No Query given"
 701: "JSON-LD group has no @type attribute"
 702: "Boundary definition is invalid"
@@ -29,6 +30,8 @@
 714: "Span references expect a start position and a length parameter"
 715: "Attribute type is not supported"
 716: "Unknown relation"
+717: "Missing relation node"
+718: "Missing relation term"
 740: "Key definition is missing in term or span"
 741: "Match relation unknown"
 742: "Term group needs operand list"

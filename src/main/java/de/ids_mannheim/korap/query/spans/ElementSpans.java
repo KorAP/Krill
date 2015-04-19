@@ -11,10 +11,9 @@ import java.util.Map;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.index.TermState;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
  * @author margaretha
  * @author diewald
  */
-public class ElementSpans extends SpansWithId {
+public class ElementSpans extends SimpleSpans {
     private TermSpans termSpans;
     private boolean lazyLoaded = false;
 
@@ -58,6 +57,7 @@ public class ElementSpans extends SpansWithId {
         super(spanElementQuery, context, acceptDocs, termContexts);
         termSpans = (TermSpans) this.firstSpans;
         hasMoreSpans = true;
+        // hasSpanId = true;
     };
 
 
@@ -120,7 +120,13 @@ public class ElementSpans extends SpansWithId {
             this.matchEndPosition = bb.getInt(8);
 
             // Copy element id
-            this.setSpanId(this.hasSpanId ? bb.getShort(12) : (short) -1);
+            if (length >= 14) {
+                this.setSpanId(bb.getShort(12));
+                this.hasSpanId = true;
+            }
+            else {
+                this.setSpanId((short) -1);
+            }
 
             // Copy the start and end character offsets
             byte[] b = new byte[8];
