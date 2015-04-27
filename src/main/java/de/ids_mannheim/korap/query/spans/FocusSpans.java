@@ -52,12 +52,10 @@ public class FocusSpans extends SimpleSpans {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    // private SimpleSpans originalSpans;
-    private boolean isSorted;
+    private boolean isSorted, matchTemporaryClass, removeTemporaryClasses;
     private List<CandidateSpan> candidateSpans;
     private int windowSize = 10;
     private int currentDoc;
-    private byte number;
 
 
     /**
@@ -86,13 +84,16 @@ public class FocusSpans extends SimpleSpans {
         }
         classNumbers = query.getClassNumbers();
         isSorted = query.isSorted();
+        matchTemporaryClass = query.matchTemporaryClass();
+        removeTemporaryClasses = query.removeTemporaryClasses();
         candidateSpans = new ArrayList<CandidateSpan>();
         hasMoreSpans = firstSpans.next();
         currentDoc = firstSpans.doc();
 
-        // matchPayload = new ArrayList<byte[]>(6);
         this.query = query;
-        hasSpanId = true;
+        if (getSpanId() > 0) {
+            hasSpanId = true;
+        }
     }
 
 
@@ -164,7 +165,8 @@ public class FocusSpans extends SimpleSpans {
         for (byte[] payload : firstSpans.getPayload()) {
             // No class payload - ignore
             // this may be problematic for other calculated payloads!
-            if (payload.length == 9) {
+            if ((!matchTemporaryClass && payload.length == 9)
+                    || (matchTemporaryClass && payload.length == 10)) {
                 if (classNumbers.contains(payload[8])) {
                     isClassFound = true;
                     classStart = byte2int(payload, 0);
@@ -178,9 +180,12 @@ public class FocusSpans extends SimpleSpans {
                         maxPos = classEnd;
                     }
                 }
-                candidateSpan.getPayloads().add(payload.clone());
             }
 
+            if (removeTemporaryClasses && payload.length == 10) {
+                continue;
+            }
+            candidateSpan.getPayloads().add(payload.clone());
         }
 
         if (isClassFound) {

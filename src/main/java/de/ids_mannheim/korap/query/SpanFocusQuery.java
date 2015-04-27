@@ -21,16 +21,13 @@ import de.ids_mannheim.korap.query.spans.FocusSpans;
  * Modify the span of a match to the boundaries of a certain class.
  * 
  * In case multiple classes are found with the very same number, the
- * span is
- * maximized to start on the first occurrence from the left and end on
- * the last
- * occurrence on the right.
+ * span is maximized to start on the first occurrence from the left
+ * and end on the last occurrence on the right.
  * 
  * In case the class to modify on is not found in the subquery, the
- * match is
- * ignored.
+ * match is ignored.
  * 
- * @author diewald
+ * @author diewald, margaretha
  * 
  * @see FocusSpans
  */
@@ -38,7 +35,8 @@ public class SpanFocusQuery extends SimpleSpanQuery {
 
     private List<Byte> classNumbers = new ArrayList<Byte>();
     private boolean isSorted = true;
-
+    private boolean matchTemporaryClass = false;
+    private boolean removeTemporaryClasses = false;
 
     /**
      * Construct a new SpanFocusQuery.
@@ -59,7 +57,6 @@ public class SpanFocusQuery extends SimpleSpanQuery {
     public SpanFocusQuery (SpanQuery sq, List<Byte> classNumbers) {
         super(sq, true);
         this.classNumbers = classNumbers;
-        isSorted = false;
     };
 
 
@@ -83,6 +80,9 @@ public class SpanFocusQuery extends SimpleSpanQuery {
     public String toString (String field) {
         StringBuffer buffer = new StringBuffer();
         buffer.append("focus(");
+        if (matchTemporaryClass){
+            buffer.append("#");
+        }
         if (classNumbers.size() > 1) {
             buffer.append("[");
             for (int i = 0; i < classNumbers.size(); i++) {
@@ -133,6 +133,9 @@ public class SpanFocusQuery extends SimpleSpanQuery {
         SpanFocusQuery spanFocusQuery = new SpanFocusQuery(
                 (SpanQuery) this.firstClause.clone(), this.getClassNumbers());
         spanFocusQuery.setBoost(getBoost());
+        spanFocusQuery.setMatchTemporaryClass(this.matchTemporaryClass);
+        spanFocusQuery.setSorted(this.isSorted);
+        spanFocusQuery.setRemoveTemporaryClasses(this.removeTemporaryClasses);
         return spanFocusQuery;
     };
 
@@ -183,6 +186,22 @@ public class SpanFocusQuery extends SimpleSpanQuery {
 
     public void setSorted (boolean isSorted) {
         this.isSorted = isSorted;
+    }
+
+    public boolean matchTemporaryClass() {
+        return matchTemporaryClass;
+    }
+
+    public void setMatchTemporaryClass(boolean matchTemporaryClass) {
+        this.matchTemporaryClass = matchTemporaryClass;
+    }
+
+    public boolean removeTemporaryClasses() {
+        return removeTemporaryClasses;
+    }
+
+    public void setRemoveTemporaryClasses(boolean rem) {
+        this.removeTemporaryClasses = rem;
     }
 
 };

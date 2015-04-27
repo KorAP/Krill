@@ -26,16 +26,16 @@ import org.slf4j.LoggerFactory;
  * @author diewald
  */
 
-public class ClassSpans extends Spans {
-    private List<byte[]> classedPayload;
-    private final Spans spans;
-    private byte number;
-    private SpanQuery operand;
-    private Boolean hasmorespans = false;
+public class ClassSpans extends SimpleSpans {
+    protected List<byte[]> classedPayload;
+    protected Spans spans;
+    protected byte number;
+    protected SpanQuery operand;
+    protected Boolean hasmorespans = false;
 
-    private ByteBuffer bb = ByteBuffer.allocate(9);
+    protected ByteBuffer bb;
 
-    private final static Logger log = LoggerFactory.getLogger(ClassSpans.class);
+    private final Logger log = LoggerFactory.getLogger(ClassSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -69,6 +69,8 @@ public class ClassSpans extends Spans {
 
         // The highlighted payload
         this.classedPayload = new ArrayList<byte[]>(3);
+
+        this.bb = ByteBuffer.allocate(9);
     };
 
 
@@ -126,7 +128,7 @@ public class ClassSpans extends Spans {
     };
 
 
-    private boolean addClassPayload () throws IOException {
+    protected boolean addClassPayload() throws IOException {
         hasmorespans = true;
 
         classedPayload.clear();
@@ -149,6 +151,12 @@ public class ClassSpans extends Spans {
 
         // Add highlight information as byte array
         classedPayload.add(bb.array());
+        
+        if (spans instanceof SimpleSpans) {
+            SimpleSpans ss = (SimpleSpans) spans;
+            this.hasSpanId = ss.hasSpanId;
+            this.spanId = ss.spanId;
+        }
         return true;
     };
 

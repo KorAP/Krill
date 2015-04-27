@@ -85,10 +85,6 @@ public class KrillQuery extends Notifications {
 
     private static final int MAX_CLASS_NUM = 255; // 127;
 
-    // Variables used for relation queries
-    private String direction;
-    private byte[] classNumbers;
-
     // Private class for koral:boundary objects
     private class Boundary {
         public int min, max;
@@ -121,7 +117,6 @@ public class KrillQuery extends Notifications {
         };
     };
 
-
     /**
      * Constructs a new object for query deserialization
      * and building. Expects the name of an index field
@@ -133,10 +128,6 @@ public class KrillQuery extends Notifications {
      */
     public KrillQuery (String field) {
         this.field = field;
-        this.direction = ">:";
-        this.classNumbers = new byte[2];
-        this.classNumbers[0] = (byte) 1;
-        this.classNumbers[1] = (byte) 2;
     };
 
 
@@ -257,9 +248,6 @@ public class KrillQuery extends Notifications {
                     if (number > MAX_CLASS_NUM)
                         throw new QueryException(709,
                                 "Valid class numbers exceeded");
-
-                    this.classNumbers = null;
-
                 }
 
                 // Reference based on spans
@@ -302,12 +290,6 @@ public class KrillQuery extends Notifications {
 
                 // Get wrapped token
                 return this._segFromJson(json.get("wrap"));
-
-            case "koral:relation":
-                if (!json.has("wrap")) {
-                    throw new QueryException(718, "Missing relation term");
-                }
-                return this._termFromJson(json.get("wrap"), direction);
 
             case "koral:span":
                 return this._termFromJson(json);
@@ -446,16 +428,28 @@ public class KrillQuery extends Notifications {
 
         SpanQueryWrapper operand1 = fromJson(operands.get(0));
         SpanQueryWrapper operand2 = fromJson(operands.get(1));
-
-        if (operand1.isEmpty()) {
+        
+        String direction = ">:";
+        if (operand1.isEmpty() && !operand2.isEmpty()) {
             direction = "<:";
         }
 
-        SpanQueryWrapper relationWrapper = fromJson(relation);
-
-        return new SpanRelationWrapper(relationWrapper, operand1, operand2,
-                classNumbers);
-
+        if (!relation.has("@type"))
+            throw new QueryException(701,
+                    "JSON-LD group has no @type attribute");
+        
+        if (relation.get("@type").asText().equals("koral:relation")) {
+            if (!relation.has("wrap")) {
+                throw new QueryException(718, "Missing relation term");
+            }
+            SpanQueryWrapper relationWrapper = _termFromJson(
+                    relation.get("wrap"),
+                    direction);
+            return new SpanRelationWrapper(relationWrapper, operand1, operand2);
+        }
+        else {
+            throw new QueryException(713, "Query type is not supported");
+        }
     }
 
 

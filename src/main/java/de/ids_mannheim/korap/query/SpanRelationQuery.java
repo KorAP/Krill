@@ -1,6 +1,8 @@
 package de.ids_mannheim.korap.query;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.AtomicReaderContext;
@@ -55,7 +57,12 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
 public class SpanRelationQuery extends SimpleSpanQuery {
 
     private int direction = 0;
+    private byte tempSourceNum = 1;
+    private byte tempTargetNum = 2;
+    private byte sourceClass;
+    private byte targetClass;
 
+    private List<Byte> tempClassNumbers = Arrays.asList(tempSourceNum, tempTargetNum);
     /**
      * Constructs a SpanRelationQuery based on the given span query.
      * 
@@ -76,6 +83,13 @@ public class SpanRelationQuery extends SimpleSpanQuery {
         }
     }
 
+    public SpanRelationQuery (SpanQuery firstClause, List<Byte> classNumbers,
+            boolean collectPayloads) {
+        this(firstClause, collectPayloads);
+        this.tempClassNumbers = classNumbers;
+        this.tempSourceNum = classNumbers.get(0);
+        this.tempTargetNum = classNumbers.get(1);
+    }
 
     @Override
     public SimpleSpanQuery clone () {
@@ -95,9 +109,25 @@ public class SpanRelationQuery extends SimpleSpanQuery {
     @Override
     public String toString (String field) {
         StringBuilder sb = new StringBuilder();
+        if (sourceClass > 0) {
+            sb.append("{");
+            sb.append(sourceClass);
+            sb.append(": source:");
+        }
+        if (targetClass > 0) {
+            sb.append("{");
+            sb.append(targetClass);
+            sb.append(": target:");
+        }
         sb.append("spanRelation(");
         sb.append(firstClause.toString(field));
         sb.append(")");
+        if (sourceClass > 0) {
+            sb.append("}");
+        }
+        if (targetClass > 0) {
+            sb.append("}");
+        }
         sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();
     }
@@ -110,4 +140,54 @@ public class SpanRelationQuery extends SimpleSpanQuery {
         this.direction = direction;
     }
 
+    public List<Byte> getTempClassNumbers() {
+        return tempClassNumbers;
+    }
+
+    public void setTempClassNumbers(List<Byte> classNumbers) {
+        this.tempClassNumbers = classNumbers;
+    }
+
+    public byte getTempSourceNum() {
+        return tempSourceNum;
+    }
+
+    public void setTempSourceNum(byte sourceNum) {
+        this.tempSourceNum = sourceNum;
+    }
+
+    public byte getTempTargetNum() {
+        return tempTargetNum;
+    }
+
+    public void setTempTargetNum(byte targetNum) {
+        this.tempTargetNum = targetNum;
+    }
+
+    public byte getSourceClass() {
+        return sourceClass;
+    }
+
+    public void setSourceClass(byte sourceClass)
+            throws IllegalArgumentException {
+        if (sourceClass < 1) {
+            throw new IllegalArgumentException(
+                    "Class number must be bigger than 0.");
+        }
+
+        this.sourceClass = sourceClass;
+    }
+
+    public byte getTargetClass() {
+        return targetClass;
+    }
+
+    public void setTargetClass(byte targetClass)
+            throws IllegalArgumentException {
+        if (targetClass < 1) {
+            throw new IllegalArgumentException(
+                    "Class number must be bigger than 0.");
+        }
+        this.targetClass = targetClass;
+    }
 }

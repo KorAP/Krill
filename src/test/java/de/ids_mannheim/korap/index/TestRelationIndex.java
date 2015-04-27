@@ -3,7 +3,6 @@ package de.ids_mannheim.korap.index;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -12,8 +11,10 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
+import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
+import de.ids_mannheim.korap.query.SpanRelationMatchQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
@@ -128,7 +129,7 @@ public class TestRelationIndex {
                         + "<:child-of$<i>0<s>3<s>3<s>1|"
                         + "<:child-of$<i>7<i>0<i>1<s>4<s>2<s>3|"
                         + "<:child-of$<i>7<i>1<i>7<s>5<s>2<s>2|"
-                        + "<:dep$<i>1<s>2<s>1<s>1|"
+                        + "<:dep$<i>0<s>2<s>1<s>1|"
                         + "r@:func=sbj$<i>0<i>7<s>1]"
                         +
 
@@ -149,14 +150,15 @@ public class TestRelationIndex {
                         + "<:child-of$<i>4<b>0<i>3<s>14<s>3<s>1|"
                         + "<:child-of$<i>7<i>2<i>4<s>15<s>4<s>3|"
                         + "<:child-of$<i>7<i>4<i>7<s>16<s>4<s>2|"
-                        + "<:dep$<i>3<s>2<s>1<s>1]" +
+                        + ">:parent-of$<i>7<i>4<i>7<s>17<s>4<s>2|"
+                        + "<:dep$<i>3<s>3<s>1<s>1]" +
 
                         "[(3-4)s:Blümen|_3#14-20|pos:NN$<s>1|"
                         + ">:child-of$<i>2<i>4<s>17<s>1<s>3|"
                         + "<:dep$<i>1<s>2<s>1<s>1|" + ">:dep$<i>2<s>3<s>1<s>1|"
                         + ">:dep$<i>4<s>4<s>1<s>1|"
-                        + "r@:func=head$<i>2<i>4<s>2|"
-                        + "r@:func=obj$<i>1<i>4<s>2]" +
+                        + "r@:func=head$<i>2<i>4<s>3|"
+                        + "r@:func=obj$<i>2<i>4<s>3]" +
 
                         "[(4-5)s:für|_4#21-24|pos:PREP$<s>1|<>:pp#21-38$<i>7<s>2|"
                         + ">:child-of$<i>4<i>7<s>18<s>1<s>2|"
@@ -261,9 +263,7 @@ public class TestRelationIndex {
 
 
     /**
-     * Relations with attributes
-     * need focusMulti on span relation query before
-     * SpanWithAttributeQuery
+     * Relations only
      * */
     @Test
     public void testCase3 () throws IOException {
@@ -288,32 +288,11 @@ public class TestRelationIndex {
         assertEquals(3, kr.getMatch(4).getEndPos());
         assertEquals(2, kr.getMatch(5).getStartPos());
         assertEquals(4, kr.getMatch(5).getEndPos());
-
-        ArrayList<Byte> classNumbers = new ArrayList<Byte>();
-        classNumbers.add((byte) 1);
-        classNumbers.add((byte) 2);
-
-        SpanFocusQuery fq = new SpanFocusQuery(srq, classNumbers);
-        kr = ki.search(fq, (short) 20);
-        /*
-         * for (Match km : kr.getMatches()) {
-         * System.out.println(km.getStartPos() + "," + km.getEndPos()
-         * + " " + km.getSnippetBrackets()); }
-         */
-        assertEquals((long) 13, kr.getTotalResults());
-        assertEquals(0, kr.getMatch(0).getStartPos());
-        assertEquals(1, kr.getMatch(0).getEndPos());
-        assertEquals(0, kr.getMatch(1).getStartPos());
-        assertEquals(7, kr.getMatch(1).getEndPos());
-        assertEquals(0, kr.getMatch(2).getStartPos());
-        assertEquals(7, kr.getMatch(2).getEndPos());
-        assertEquals(1, kr.getMatch(3).getStartPos());
-        assertEquals(7, kr.getMatch(3).getEndPos());
-        assertEquals(1, kr.getMatch(4).getStartPos());
-        assertEquals(7, kr.getMatch(4).getEndPos());
     }
 
-
+    /**
+     * Relations only with/out attribute
+     * */
     @Test
     public void testCase4 () throws IOException {
         ki.addDoc(createFieldDoc2());
@@ -322,12 +301,14 @@ public class TestRelationIndex {
         SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
                 new Term("base", ">:child-of")), true);
 
-        ArrayList<Byte> classNumbers = new ArrayList<Byte>();
-        classNumbers.add((byte) 1);
-        classNumbers.add((byte) 2);
+        SpanFocusQuery fq = new SpanFocusQuery(srq, srq.getTempClassNumbers());
+        fq.setMatchTemporaryClass(true);
+        fq.setRemoveTemporaryClasses(true);
+        fq.setSorted(false);
 
-        SpanWithAttributeQuery wq = new SpanWithAttributeQuery(
-                new SpanFocusQuery(srq, classNumbers), new SpanAttributeQuery(
+        // child-of with attr func=sbj
+        SpanWithAttributeQuery wq = new SpanWithAttributeQuery(fq,
+                new SpanAttributeQuery(
                         new SpanTermQuery(new Term("base", "r@:func=sbj")),
                         true), true);
 
@@ -337,7 +318,7 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(0).getEndPos());
 
         // child-of without attr func=sbj
-        wq = new SpanWithAttributeQuery(new SpanFocusQuery(srq, classNumbers),
+        wq = new SpanWithAttributeQuery(fq,
                 new SpanAttributeQuery(new SpanTermQuery(new Term("base",
                         "r@:func=sbj")), true, true), true);
         kr = ki.search(wq, (short) 20);
@@ -345,87 +326,9 @@ public class TestRelationIndex {
     }
 
 
-    @Test
-    public void testCase5 () throws IOException {
-
-        ki.addDoc(createFieldDoc2());
-        ki.commit();
-
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", "<:dep")), true);
-        kr = ki.search(srq, (short) 10);
-
-        ArrayList<Byte> classNumbers = new ArrayList<Byte>();
-        classNumbers.add((byte) 1);
-        classNumbers.add((byte) 2);
-
-        SpanFocusQuery fq = new SpanFocusQuery(srq, classNumbers);
-        kr = ki.search(fq, (short) 10);
-        // for (Match km : kr.getMatches()) {
-        // System.out.println(km.getStartPos() + "," + km.getEndPos()
-        // + " "
-        // + km.getSnippetBrackets());
-        // }
-
-        SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "r@:func=obj")), true);
-        kr = ki.search(saq, (short) 10);
-
-        // child-of with attr func-obj
-        SpanWithAttributeQuery wq = new SpanWithAttributeQuery(
-                new SpanFocusQuery(srq, classNumbers), new SpanAttributeQuery(
-                        new SpanTermQuery(new Term("base", "r@:func=obj")),
-                        true), true);
-
-        kr = ki.search(wq, (short) 10);
-        assertEquals((long) 1, kr.getTotalResults());
-        assertEquals(1, kr.getMatch(0).getStartPos()); // element
-        assertEquals(4, kr.getMatch(0).getEndPos());
-    }
-
-
-    @Test
-    public void testCase10 () throws IOException {
-        ki.addDoc(createFieldDoc2());
-        ki.commit();
-        // target of a dependency relation
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", "<:dep")), true);
-        kr = ki.search(srq, (short) 10);
-        assertEquals((long) 6, kr.getTotalResults());
-
-        ArrayList<Byte> classNumbers = new ArrayList<Byte>();
-        classNumbers.add((byte) 1);
-        classNumbers.add((byte) 2);
-
-        SpanFocusQuery fq = new SpanFocusQuery(srq, classNumbers);
-        kr = ki.search(fq, (short) 10);
-        assertEquals((long) 6, kr.getTotalResults());
-
-        SpanAttributeQuery aq = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "r@:func=head")), true);
-        kr = ki.search(aq, (short) 10);
-
-        // dependency relation, which is also a head
-        SpanWithAttributeQuery wq = new SpanWithAttributeQuery(
-                new SpanFocusQuery(srq, classNumbers), new SpanAttributeQuery(
-                        new SpanTermQuery(new Term("base", "r@:func=head")),
-                        true), true);
-
-        kr = ki.search(wq, (short) 20);
-
-        assertEquals((long) 2, kr.getTotalResults());
-        assertEquals(2, kr.getMatch(0).getStartPos());
-        assertEquals(4, kr.getMatch(0).getEndPos());
-        assertEquals(5, kr.getMatch(1).getStartPos());
-        assertEquals(7, kr.getMatch(1).getEndPos());
-
-    }
-
-
     /**
-     * Match left return left
-     * Match right return right
+     * Relation directions <br/>
+     * Relation with specific sources, return the sources
      * */
     @Test
     public void testCase6 () throws IOException {
@@ -433,9 +336,15 @@ public class TestRelationIndex {
         ki.commit();
 
         // return all children that are NP
-        SpanQuery rv = new SpanSegmentQuery(new SpanRelationQuery(
-                new SpanTermQuery(new Term("base", ">:child-of")), true),
-                new SpanElementQuery("base", "np"), true);
+        SpanElementQuery seq1 = new SpanElementQuery("base", "np");
+        SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
+
+        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
+                new Term("base", ">:child-of")), true);
+
+        SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, scq1, true);
+        SpanFocusQuery rv = new SpanFocusQuery(rm, (byte) 1);
+        rv.setSorted(false);
 
         kr = ki.search(rv, (short) 10);
 
@@ -450,10 +359,10 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(3).getEndPos());
 
         // return all parents that are NP
-        rv = new SpanSegmentQuery(new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", "<:child-of")), true), new SpanElementQuery(
-                "base", "np"), true);
-
+        srq = new SpanRelationQuery(new SpanTermQuery(new Term("base",
+                "<:child-of")), true);
+        rm = new SpanRelationMatchQuery(srq, scq1, true);
+        rv = new SpanFocusQuery(rm, (byte) 1);
         kr = ki.search(rv, (short) 10);
 
         assertEquals(7, kr.getTotalResults());
@@ -473,10 +382,53 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(6).getEndPos());
     }
 
+    /**
+     * Dependency relations with attribute
+     * */
+    @Test
+    public void testCase5() throws IOException {
+        ki.addDoc(createFieldDoc2());
+        ki.commit();
+
+        // target of a dependency relation
+        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
+                new Term("base", "<:dep")), true);
+        kr = ki.search(srq, (short) 10);
+        assertEquals((long) 6, kr.getTotalResults());
+
+        SpanFocusQuery fq = new SpanFocusQuery(srq, srq.getTempClassNumbers());
+        fq.setMatchTemporaryClass(true);
+        fq.setRemoveTemporaryClasses(true);
+        // fq.setSorted(false);
+
+        kr = ki.search(fq, (short) 10);
+        assertEquals((long) 6, kr.getTotalResults());
+        // for (Match km : kr.getMatches()) {
+        // System.out.println(km.getStartPos() + "," + km.getEndPos()
+        // + " "
+        // + km.getSnippetBrackets());
+        // }
+        SpanAttributeQuery aq = new SpanAttributeQuery(new SpanTermQuery(
+                new Term("base", "r@:func=head")), true);
+        kr = ki.search(aq, (short) 10);
+
+        // dependency relation, which is also a head
+        SpanWithAttributeQuery wq = new SpanWithAttributeQuery(fq,
+                new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                        "r@:func=head")), true), true);
+
+        kr = ki.search(wq, (short) 20);
+
+        assertEquals((long) 2, kr.getTotalResults());
+        assertEquals(2, kr.getMatch(0).getStartPos());
+        assertEquals(4, kr.getMatch(0).getEndPos());
+        assertEquals(5, kr.getMatch(1).getStartPos());
+        assertEquals(7, kr.getMatch(1).getEndPos());
+
+    }
 
     /**
-     * Match left, return right
-     * sort by left, then sort by right
+     * Relation with specific targets, return any sources
      * */
     @Test
     public void testCase7 () throws IOException {
@@ -484,9 +436,17 @@ public class TestRelationIndex {
         ki.commit();
 
         // return all children that are NP
-        SpanQuery rv = new SpanSegmentQuery(new SpanRelationQuery(
-                new SpanTermQuery(new Term("base", ">:child-of")), true),
-                new SpanElementQuery("base", "np"), true);
+
+        SpanElementQuery seq1 = new SpanElementQuery("base", "np");
+        SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
+
+        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
+                new Term("base", ">:child-of")), true);
+        srq.setTargetClass((byte) 2);
+
+        SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, scq1, true);
+        SpanQuery rv = new SpanFocusQuery(rm, (byte) 1);
+
 
         //return all parents of np
         SpanFocusQuery rv2 = new SpanFocusQuery(rv, (byte) 2);
@@ -519,26 +479,32 @@ public class TestRelationIndex {
         ki.commit();
 
         //return source of dep relations to pos:NN
-        SpanQuery rv = new SpanFocusQuery(new SpanSegmentQuery(
-                new SpanRelationQuery(new SpanTermQuery(new Term("base",
-                        "<:dep")), true), new SpanTermWithIdQuery(new Term(
-                        "base", "pos:NN"), true), true), (byte) 1);
+        
+        SpanTermWithIdQuery tq = new SpanTermWithIdQuery(new Term("base",
+                "pos:NN"), true);
+        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(new Term("base",
+                "<:dep")), true);
+        srq.setSourceClass((byte) 1);
+        SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, tq, true);
+        SpanQuery rv = new SpanFocusQuery(rm, (byte) 1);
 
         kr = ki.search(rv, (short) 10);
         assertEquals((long) 3, kr.getTotalResults());
-        assertEquals(1, kr.getMatch(0).getStartPos());
-        assertEquals(2, kr.getMatch(0).getEndPos());
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(1, kr.getMatch(0).getEndPos());
         assertEquals(1, kr.getMatch(1).getStartPos());
         assertEquals(2, kr.getMatch(1).getEndPos());
         assertEquals(4, kr.getMatch(2).getStartPos());
         assertEquals(5, kr.getMatch(2).getEndPos());
 
-        //return target of dep relations from pos:NN
-        rv = new SpanFocusQuery(
-                new SpanSegmentQuery(new SpanRelationQuery(new SpanTermQuery(
-                        new Term("base", ">:dep")), true),
-                        new SpanTermWithIdQuery(new Term("base", "pos:NN"),
-                                true), true), (byte) 2);
+        // return target of dep relations from pos:NN
+        srq = new SpanRelationQuery(
+                new SpanTermQuery(
+                new Term("base", ">:dep")), true);
+        srq.setTargetClass((byte) 1);
+        rm = new SpanRelationMatchQuery(srq, tq, true);
+        rv = new SpanFocusQuery(rm, (byte) 1);
+
         kr = ki.search(rv, (short) 10);
         assertEquals((long) 3, kr.getTotalResults());
         assertEquals(2, kr.getMatch(0).getStartPos());
@@ -552,8 +518,9 @@ public class TestRelationIndex {
 
 
     /**
-     * Relation with variable match right, return left sort by right,
-     * then sort by left
+     * Relation with specific sources and return any targets <br/>
+     * Relation with specific sources and targets, return the targets <br/>
+     * Relation with specific sources and targets, return the sources
      * 
      * @throws IOException
      * */
@@ -563,10 +530,14 @@ public class TestRelationIndex {
         ki.commit();
 
         // return all children of np
-        SpanFocusQuery rv = new SpanFocusQuery(new SpanSegmentQuery(
-                new SpanRelationQuery(new SpanTermQuery(new Term("base",
-                        "<:child-of")), true), new SpanElementQuery("base",
-                        "np"), true), (byte) 1);
+        SpanElementQuery seq1 = new SpanElementQuery("base", "np");
+        SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
+        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
+                new Term("base", "<:child-of")), true);
+        srq.setSourceClass((byte) 2);
+        SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, scq1, true);
+        SpanFocusQuery rv = new SpanFocusQuery(rm, (byte) 2);
+
         rv.setSorted(false);
 
         kr = ki.search(rv, (short) 10);
@@ -586,12 +557,19 @@ public class TestRelationIndex {
         assertEquals(6, kr.getMatch(5).getEndPos());
         assertEquals(6, kr.getMatch(6).getStartPos());
         assertEquals(7, kr.getMatch(6).getEndPos());
-        // sorting left problem (solved)
 
         // return all children of np that are articles
-        SpanSegmentQuery rv2 = new SpanSegmentQuery(rv, new SpanTermQuery(
-                new Term("base", "pos:ART")));
-        kr = ki.search(rv2, (short) 10);
+
+        SpanTermWithIdQuery tiq = new SpanTermWithIdQuery(new Term("base",
+                "pos:ART"), true);
+        SpanClassQuery scq2 = new SpanClassQuery(tiq, (byte) 2);
+
+        srq = new SpanRelationQuery(new SpanTermQuery(new Term("base",
+                ">:child-of")), true);
+        rm = new SpanRelationMatchQuery(srq, scq2, scq1, true);
+        rv = new SpanFocusQuery(rm, (byte) 2);
+
+        kr = ki.search(rv, (short) 10);
 
         assertEquals((long) 2, kr.getTotalResults());
         assertEquals(2, kr.getMatch(0).getStartPos());
@@ -603,17 +581,41 @@ public class TestRelationIndex {
         SpanSegmentQuery rv3 = new SpanSegmentQuery(rv,
                 new SpanTermWithIdQuery(new Term("base", "pos:ART"), true));
         
-        
         SpanFocusQuery sf = new SpanFocusQuery(rv3, (byte) 1);
         kr = ki.search(sf, (short) 10);
 
         assertEquals((long) 2, kr.getTotalResults());
-
         assertEquals(2, kr.getMatch(0).getStartPos());
-        assertEquals(3, kr.getMatch(0).getEndPos());
+        assertEquals(4, kr.getMatch(0).getEndPos());
         assertEquals(5, kr.getMatch(1).getStartPos());
-        assertEquals(6, kr.getMatch(1).getEndPos());
+        assertEquals(7, kr.getMatch(1).getEndPos());
 
+    }
+
+    @Test
+    public void testCase10() throws IOException {
+        ki.addDoc(createFieldDoc2());
+        ki.commit();
+        SpanElementQuery seq1 = new SpanElementQuery("base", "np");
+        SpanElementQuery seq2 = new SpanElementQuery("base", "np");
+        SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
+        SpanClassQuery scq2 = new SpanClassQuery(seq2, (byte) 2);
+
+        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
+                new Term("base", ">:child-of")), true);
+        SpanRelationMatchQuery rq = new SpanRelationMatchQuery(srq, scq2, true);
+
+        kr = ki.search(rq, (short) 10);
+
+        assertEquals((long) 4, kr.getTotalResults());
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(7, kr.getMatch(0).getEndPos());
+        assertEquals(1, kr.getMatch(1).getStartPos());
+        assertEquals(7, kr.getMatch(1).getEndPos());
+        assertEquals(2, kr.getMatch(2).getStartPos());
+        assertEquals(7, kr.getMatch(2).getEndPos());
+        assertEquals(4, kr.getMatch(3).getStartPos());
+        assertEquals(7, kr.getMatch(3).getEndPos());
     }
 
 }

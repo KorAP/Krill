@@ -11,8 +11,15 @@
                     "@type": "koral:token"
                 },
                 {
-                    "@type": "koral:span",
-                    "key": "np"
+                   "@type": "koral:group",
+                    "operation": "operation:class",
+                    "classOut": 1,
+                    "operands": [{
+                        "@type": "koral:span",
+                        "layer": "c",
+                        "key": "np",
+                        "match": "match:eq"
+                    }]
                 }
             ],
             "relation": {
