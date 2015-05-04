@@ -16,7 +16,6 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanRelationMatchQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
-import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 import de.ids_mannheim.korap.response.Result;
@@ -346,6 +345,10 @@ public class TestRelationIndex {
         SpanFocusQuery rv = new SpanFocusQuery(rm, (byte) 1);
         rv.setSorted(false);
 
+        assertEquals(
+                "focus(1: focus(#[1,2]spanSegment(spanRelation(base:>:child-of), {1: <base:np />})))",
+                rv.toString());
+
         kr = ki.search(rv, (short) 10);
 
         assertEquals(4, kr.getTotalResults());
@@ -428,15 +431,14 @@ public class TestRelationIndex {
     }
 
     /**
-     * Relation with specific targets, return any sources
+     * Relation with specific sources, return any targets
      * */
     @Test
     public void testCase7 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        // return all children that are NP
-
+        // match all children that are NP
         SpanElementQuery seq1 = new SpanElementQuery("base", "np");
         SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
 
@@ -445,12 +447,16 @@ public class TestRelationIndex {
         srq.setTargetClass((byte) 2);
 
         SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, scq1, true);
-        SpanQuery rv = new SpanFocusQuery(rm, (byte) 1);
-
+        // SpanQuery rv = new SpanFocusQuery(rm, (byte) 1);
 
         //return all parents of np
-        SpanFocusQuery rv2 = new SpanFocusQuery(rv, (byte) 2);
+        SpanFocusQuery rv2 = new SpanFocusQuery(rm, (byte) 2);
         rv2.setSorted(false);
+
+        assertEquals(
+                "focus(2: focus(#[1,2]spanSegment({2: target:spanRelation(base:>:child-of)}, {1: <base:np />})))",
+                rv2.toString());
+
         kr = ki.search(rv2, (short) 10);
 
         assertEquals((long) 4, kr.getTotalResults());
@@ -537,8 +543,11 @@ public class TestRelationIndex {
         srq.setSourceClass((byte) 2);
         SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, scq1, true);
         SpanFocusQuery rv = new SpanFocusQuery(rm, (byte) 2);
-
         rv.setSorted(false);
+
+        assertEquals(
+                "focus(2: focus(#[1,2]spanSegment({2: source:spanRelation(base:<:child-of)}, {1: <base:np />})))",
+                rv.toString());
 
         kr = ki.search(rv, (short) 10);
 
@@ -569,6 +578,10 @@ public class TestRelationIndex {
         rm = new SpanRelationMatchQuery(srq, scq2, scq1, true);
         rv = new SpanFocusQuery(rm, (byte) 2);
 
+        assertEquals(
+                "focus(2: focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(base:>:child-of), {2: spanTermWithId(base:pos:ART)})), {1: <base:np />})))",
+                rv.toString());
+
         kr = ki.search(rv, (short) 10);
 
         assertEquals((long) 2, kr.getTotalResults());
@@ -578,10 +591,11 @@ public class TestRelationIndex {
         assertEquals(6, kr.getMatch(1).getEndPos());
 
         // return all nps whose children are articles
-        SpanSegmentQuery rv3 = new SpanSegmentQuery(rv,
-                new SpanTermWithIdQuery(new Term("base", "pos:ART"), true));
-        
-        SpanFocusQuery sf = new SpanFocusQuery(rv3, (byte) 1);
+        SpanFocusQuery sf = new SpanFocusQuery(rm, (byte) 1);
+        assertEquals(
+                "focus(1: focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(base:>:child-of), {2: spanTermWithId(base:pos:ART)})), {1: <base:np />})))",
+                sf.toString());
+
         kr = ki.search(sf, (short) 10);
 
         assertEquals((long) 2, kr.getTotalResults());

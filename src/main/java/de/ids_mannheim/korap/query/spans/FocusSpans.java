@@ -182,7 +182,8 @@ public class FocusSpans extends SimpleSpans {
                 }
             }
 
-            if (removeTemporaryClasses && payload.length == 10) {
+            if (payload.length == 8
+                    || (removeTemporaryClasses && payload.length == 10)) {
                 continue;
             }
             candidateSpan.getPayloads().add(payload.clone());
