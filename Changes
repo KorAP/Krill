@@ -1,3 +1,6 @@
+0.52 2015-06-10
+        - [bugfix] Fixed payload filtering in FocusSpans (margaretha)
+
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)
         - [cleanup] Changed groupID to "de.ids_mannheim.korap",
