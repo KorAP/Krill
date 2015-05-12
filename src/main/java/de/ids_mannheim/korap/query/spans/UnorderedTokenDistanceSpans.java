@@ -137,14 +137,16 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
             }
 
             // left candidate
-            if (cs.getEnd() < target.getStart())
+            if (cs.getEnd() < target.getStart()) {
                 actualDistance = target.getStart() - cs.getEnd() + 1;
-            else
+            }
+            else {
                 // right candidate
                 actualDistance = cs.getStart() - target.getEnd() + 1;
-
-            if (minDistance <= actualDistance && actualDistance <= maxDistance)
+            }
+            if (minDistance <= actualDistance && actualDistance <= maxDistance) {
                 matches.add(createMatchCandidate(target, cs, false));
+            }
         }
         return matches;
     }
