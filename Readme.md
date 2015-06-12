@@ -1,4 +1,4 @@
-![Krill](http://nils-diewald.de/temp/krill.png)
+![Krill](https://raw.githubusercontent.com/KorAP/Krill/master/misc/krill.png)
 
 A Corpusdata Retrieval Index using Lucene for Look-Ups
 
