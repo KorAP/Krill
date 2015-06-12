@@ -14,12 +14,16 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /**
  * Span enumeration of element-based distance span matches. Each match
- * consists of two child spans. The element-distance between the child
- * spans is the difference between the element position numbers where
- * the child spans are. The element-distance unit can be a sentence or
- * a paragraph. All other child spans' occurrences which are not in a
- * sentence or a paragraph (with respect to the element distance type
- * currently used), are ignored.
+ * consists
+ * of two child spans. The element-distance between the child spans is
+ * the
+ * difference between the element position numbers where the child
+ * spans are.
+ * The element-distance unit can be a sentence or a paragraph. All
+ * other child
+ * spans' occurrences which are not in a sentence or a paragraph (with
+ * respect
+ * to the element distance type currently used), are ignored.
  * 
  * Note: elements cannot overlap with each other.
  * 
@@ -101,7 +105,8 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
 
     /**
      * Add new possible (candidate) firstspans. Candidate firstspans
-     * must be in an element and not too far from the secondspan.
+     * must be in
+     * an element and not too far from the secondspan.
      * 
      * @throws IOException
      */
