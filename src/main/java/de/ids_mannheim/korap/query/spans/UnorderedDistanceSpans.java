@@ -100,10 +100,12 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
 
     /**
      * Sets the list of matches for the span having the smallest
-     * position (i.e. between the first and the second spans), and its
-     * candidates (i.e. its counterparts). The candidates also must
-     * have smaller positions. Simply remove the span if it does not
-     * have any candidates.
+     * position (i.e.
+     * between the first and the second spans), and its candidates
+     * (i.e. its
+     * counterparts). The candidates also must have smaller positions.
+     * Simply
+     * remove the span if it does not have any candidates.
      * 
      * @throws IOException
      */
@@ -115,13 +117,13 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
                 hasMoreSecondSpans, firstSpanList);
         // System.out.println("--------------------");
         // System.out.println("firstSpanList:");
-        // for (CandidateSpan cs : firstSpanList) {
-        // System.out.println(cs.getStart() + " " + cs.getEnd());
+        // for (CandidateSpan cs: firstSpanList) {
+        // System.out.println(cs.getStart() +" "+ cs.getEnd());
         // }
         //
         // System.out.println("secondSpanList:");
-        // for (CandidateSpan cs : secondSpanList) {
-        // System.out.println(cs.getStart() + " " + cs.getEnd());
+        // for (CandidateSpan cs: secondSpanList) {
+        // System.out.println(cs.getStart() +" "+ cs.getEnd());
         // }
 
         CandidateSpan currentFirstSpan, currentSecondSpan;
@@ -130,7 +132,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
             currentFirstSpan = firstSpanList.get(0);
             currentSecondSpan = secondSpanList.get(0);
 
-            if (currentFirstSpan.getStart() < currentSecondSpan.getStart()
+            if (currentFirstSpan.getEnd() < currentSecondSpan.getEnd()
                     || isLastCandidateSmaller(currentFirstSpan,
                             currentSecondSpan)) {
                 // log.trace("current target: "
@@ -178,16 +180,20 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
 
     /**
      * Tells if the last candidate from the secondSpanList has a
-     * smaller end position than the end position of the the last
-     * candidate from the firstSpanList.
+     * smaller end
+     * position than the end position of the the last candidate from
+     * the
+     * firstSpanList.
      * 
      * @param currentFirstSpan
      *            the current firstspan
      * @param currentSecondSpan
      *            the current secondspan
      * @return <code>true</code> if the end position of the last
-     *         candidate from the secondSpanList is smaller than that
-     *         from the firstSpanList, <code>false</code> otherwise.
+     *         candidate from
+     *         the secondSpanList is smaller than that from the
+     *         firstSpanList,
+     *         <code>false</code> otherwise.
      */
     private boolean isLastCandidateSmaller (CandidateSpan currentFirstSpan,
             CandidateSpan currentSecondSpan) {
@@ -279,6 +285,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
                 payloads.addAll(cs.getPayloads());
             }
         }
+
         CandidateSpan match = new CandidateSpan(start, end, doc, cost, payloads);
         match.setChildSpan(cs);
         return match;
