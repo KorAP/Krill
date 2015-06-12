@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
@@ -17,6 +19,7 @@ import de.ids_mannheim.korap.query.wrap.SpanAttributeQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanFocusQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanReferenceQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRelationWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
@@ -220,7 +223,6 @@ public class KrillQuery extends Notifications {
                     throw new QueryException(766,
                             "Peripheral references are currently not supported");
                 }
-                ;
 
                 JsonNode operands = json.get("operands");
 
@@ -378,6 +380,11 @@ public class KrillQuery extends Notifications {
         if (DEBUG)
             log.trace("Operands are {}", operands);
 
+        SpanQueryWrapper spanReferenceQueryWrapper = _operationReferenceFromJSON(json, operands);
+        if (spanReferenceQueryWrapper != null) {
+            return spanReferenceQueryWrapper;
+        }
+
         // Branch on operation
         switch (operation) {
             case "operation:junction":
@@ -416,6 +423,87 @@ public class KrillQuery extends Notifications {
         // Unknown
         throw new QueryException(711, "Unknown group operation");
     };
+
+    private SpanQueryWrapper _operationReferenceFromJSON(JsonNode node, JsonNode operands)
+            throws QueryException {
+        boolean isReference = false;
+        int classNum = -1;
+        int refOperandNum = -1;
+        JsonNode childNode;
+
+        for (int i = 0; i < operands.size(); i++) {
+            childNode = operands.get(i);
+            if (childNode.has("@type")
+                    && childNode.get("@type").asText()
+                            .equals("koral:reference")
+                    && childNode.has("operation")
+                    && childNode.get("operation").asText()
+                            .equals("operation:focus")
+                    && !childNode.has("operands")) {
+
+                if (childNode.has("classRef")) {
+                    classNum = childNode.get("classRef").get(0).asInt();
+                    refOperandNum = i;
+                    isReference = true;
+                    break;
+                }
+            }
+        }
+
+        if (isReference) {
+            JsonNode resolvedNode = _resolveReference(node, operands,
+                    refOperandNum, classNum);
+            return new SpanReferenceQueryWrapper(fromJson(resolvedNode),
+                    (byte) classNum);
+        }
+
+        return null;
+    }
+
+    private JsonNode _resolveReference(JsonNode node, JsonNode operands,
+            int refOperandNum, int classNum) throws QueryException {
+        JsonNode referent = null;
+        ObjectMapper m = new ObjectMapper();
+        ArrayNode newOperands = m.createArrayNode();
+        boolean isReferentFound = false;
+        for (int i = 0; i < operands.size(); i++) {
+            if (i != refOperandNum) {
+                if (!isReferentFound) {
+                    referent = _extractReferentClass(operands.get(i), classNum);
+                    if (referent != null) isReferentFound = true;
+                }
+                newOperands.insert(i, operands.get(i));
+            }
+        }
+
+        if (isReferentFound) {
+            newOperands.insert(refOperandNum, referent);
+            ((ObjectNode) node).set("operands", newOperands);
+            return node;
+        }
+        else
+            throw new QueryException("Referent node is not found");
+
+    }
+
+    private JsonNode _extractReferentClass(JsonNode node, int classNum) {
+        JsonNode referent;
+        if (node.has("classOut") && node.get("classOut").asInt() == classNum) {
+            // System.out.println("found: " + node.toString());
+            return node;
+        }
+        else {
+            if (node.has("operands") && node.get("operands").isArray()) {
+                for (JsonNode childOperand : node.get("operands")) {
+                    referent = _extractReferentClass(childOperand, classNum);
+                    if (referent != null) {
+                        return referent;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
 
     private SpanQueryWrapper _operationRelationFromJson (JsonNode operands,

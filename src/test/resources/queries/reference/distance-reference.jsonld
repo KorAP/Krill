@@ -1,0 +1,99 @@
+{
+    "query": {
+        "@type": "koral:group",
+        "operation": "operation:relation",
+        "operands": [
+            {
+                "@type": "koral:reference",
+                "operation": "operation:focus",
+                "classRef": [3],
+                "operands": [{
+                    "@type": "koral:group",
+                    "operation": "operation:sequence",
+                    "operands": [
+                        {
+                            "@type": "koral:reference",
+                            "operation": "operation:focus",
+                            "classRef": [1],
+                            "operands": [{
+                                "@type": "koral:group",
+                                "operation": "operation:sequence",
+                                "operands": [
+                                    {
+                                        "@type": "koral:group",
+                                        "operation": "operation:class",
+                                        "classOut": 1,
+                                        "operands": [{
+                                            "@type": "koral:span",
+                                            "key": "vb",
+                                            "match": "match:eq"
+                                        }]
+                                    },
+                                    {
+                                        "@type": "koral:group",
+                                        "operation": "operation:class",
+                                        "classOut": 2,
+                                        "operands": [{
+                                            "@type": "koral:span",
+                                            "key": "prp",
+                                            "match": "match:eq"
+                                        }]
+                                    }
+                                ],
+                                "distances": [{
+                                    "@type": "koral:distance",
+                                    "key": "w",
+                                    "boundary": {
+                                        "@type": "koral:boundary",
+                                        "min": 0,
+                                        "max": 1
+                                    },
+                                    "min": 0,
+                                    "max": 1
+                                }],
+                                "inOrder": false
+                            }]
+                        },
+                        {
+                            "@type": "koral:group",
+                            "operation": "operation:class",
+                            "classOut": 3,
+                            "operands": [{
+                                "@type": "koral:span",
+                                "key": "nn",
+                                "match": "match:eq"
+                            }]
+                        }
+                    ],
+                    "distances": [{
+                        "@type": "koral:distance",
+                        "key": "w",
+                        "boundary": {
+                            "@type": "koral:boundary",
+                            "min": 0,
+                            "max": 2
+                        },
+                        "min": 0,
+                        "max": 2
+                    }],
+                    "inOrder": false
+                }]
+            },
+            {
+                "@type": "koral:reference",
+                "operation": "operation:focus",
+                "classRef": [2]
+            }
+        ],
+        "relation": {
+            "@type": "koral:relation",
+            "wrap": {
+                "@type": "koral:term",
+                "foundry": "stanford",
+                "layer": "d",
+                "key":"tag"
+            }
+        }
+    },
+    "meta": {}
+}
