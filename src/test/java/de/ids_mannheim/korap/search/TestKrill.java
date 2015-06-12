@@ -22,7 +22,6 @@ import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
 
@@ -633,11 +632,6 @@ public class TestKrill {
                 "focus(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}))");
         assertEquals(40, kr.getMatch(0).getStartPos());
         assertEquals(41, kr.getMatch(0).getEndPos());
-
-        for (Match km : kr.getMatches()) {
-            System.out.println(km.getStartPos() + "," + km.getEndPos() + " "
-                    + km.getSnippetBrackets());
-        }
 
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
