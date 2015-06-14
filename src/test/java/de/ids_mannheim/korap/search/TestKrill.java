@@ -1,34 +1,29 @@
 package de.ids_mannheim.korap.search;
 
-import java.util.*;
-import java.io.*;
+import static de.ids_mannheim.korap.TestSimple.getString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
-import static de.ids_mannheim.korap.TestSimple.*;
+import java.io.IOException;
+import java.util.HashMap;
 
-import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.KrillMeta;
-import de.ids_mannheim.korap.KrillCollection;
-import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.collection.CollectionBuilder;
-import de.ids_mannheim.korap.response.SearchContext;
-import de.ids_mannheim.korap.response.Result;
-import java.nio.file.Files;
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
-import java.nio.ByteBuffer;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
-
-import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.KrillMeta;
+import de.ids_mannheim.korap.collection.CollectionBuilder;
+import de.ids_mannheim.korap.index.FieldDocument;
+import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.SearchContext;
 
 @RunWith(JUnit4.class)
 public class TestKrill {
@@ -635,6 +630,9 @@ public class TestKrill {
         Result kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),
                 "focus(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}))");
+        assertEquals(40, kr.getMatch(0).getStartPos());
+        assertEquals(41, kr.getMatch(0).getEndPos());
+
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
                 "... Initiative\" eine neue politische Gruppierung ins "

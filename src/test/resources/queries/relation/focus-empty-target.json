@@ -23,10 +23,7 @@
                     "operation": "operation:class",
                     "classOut": 2,
                     "operands": [{
-                        "@type": "koral:span",
-                        "layer": "c",
-                        "key": "np",
-                        "match": "match:eq"
+                        "@type": "koral:token"
                     }]
                 }
             ],

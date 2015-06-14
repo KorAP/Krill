@@ -94,6 +94,7 @@ public class SegmentSpans extends SimpleSpans {
     protected int findMatch () {
         RelationSpans s1;
         SimpleSpans s2;
+
         if (firstSpans.start() == secondSpans.start()
                 && firstSpans.end() == secondSpans.end()) {
 
@@ -101,13 +102,18 @@ public class SegmentSpans extends SimpleSpans {
                 s1 = (RelationSpans) firstSpans;
                 s2 = (SimpleSpans) secondSpans;
 
-                //System.out.println("segment: " + s1.getRightStart() + " "
-                // + s1.getRightEnd());
-                if (s1.getLeftId() == s2.getSpanId()) {
+                if (s2.hasSpanId) {
+                    if (s1.getLeftId() == s2.getSpanId()) {
+                        setSpanId(s2.getSpanId());
+                        setMatch();
+                        return 0;
+                    }
+                }
+                else {
                     setMatch();
-                    setSpanId(s2.getSpanId());
                     return 0;
                 }
+
             }
             else {
                 setMatch();

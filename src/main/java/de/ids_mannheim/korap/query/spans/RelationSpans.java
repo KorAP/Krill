@@ -58,7 +58,8 @@ public class RelationSpans extends RelationBaseSpans {
 
     protected Logger logger = LoggerFactory.getLogger(RelationSpans.class);
     private List<CandidateRelationSpan> candidateList;
-
+    private byte tempSourceNum, tempTargetNum;
+    private byte sourceClass, targetClass;
 
     /**
      * Constructs RelationSpans from the given
@@ -77,6 +78,11 @@ public class RelationSpans extends RelationBaseSpans {
             throws IOException {
         super(relationSpanQuery, context, acceptDocs, termContexts);
         direction = relationSpanQuery.getDirection();
+        tempSourceNum = relationSpanQuery.getTempSourceNum();
+        tempTargetNum = relationSpanQuery.getTempTargetNum();
+        sourceClass = relationSpanQuery.getSourceClass();
+        targetClass = relationSpanQuery.getTargetClass();
+
         candidateList = new ArrayList<>();
         relationTermSpan = (TermSpans) firstSpans;
         hasMoreSpans = relationTermSpan.next();
@@ -213,22 +219,47 @@ public class RelationSpans extends RelationBaseSpans {
         }
         if (direction == 0) {
             payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
-                    (byte) 1));
+                    tempSourceNum, false));
             payload.add(createClassPayload(cs.getRightStart(),
-                    cs.getRightEnd(), (byte) 2));
+                    cs.getRightEnd(), tempTargetNum, false));
+
+            if (sourceClass > 0) {
+                payload.add(createClassPayload(cs.getLeftStart(),
+                        cs.getLeftEnd(), sourceClass, true));
+            }
+            if (targetClass > 0) {
+                payload.add(createClassPayload(cs.getRightStart(),
+                        cs.getRightEnd(), targetClass, true));
+            }
+
         }
         else {
             payload.add(createClassPayload(cs.getRightStart(),
-                    cs.getRightEnd(), (byte) 1));
+                    cs.getRightEnd(), tempSourceNum, false));
             payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
-                    (byte) 2));
+                    tempTargetNum, false));
+
+            if (sourceClass > 0) {
+                payload.add(createClassPayload(cs.getRightStart(),
+                        cs.getRightEnd(), sourceClass, true));
+            }
+            if (targetClass > 0) {
+                payload.add(createClassPayload(cs.getLeftStart(),
+                        cs.getLeftEnd(), targetClass, true));
+            }
         }
         cs.setPayloads(payload);
     }
 
-
-    private byte[] createClassPayload (int start, int end, byte classNumber) {
-        ByteBuffer buffer = ByteBuffer.allocate(9);
+    private byte[] createClassPayload(int start, int end, byte classNumber,
+            boolean keep) {
+        ByteBuffer buffer = null;
+        if (keep) {
+            buffer = ByteBuffer.allocate(9);
+        }
+        else {
+            buffer = ByteBuffer.allocate(10);
+        }
         buffer.putInt(start);
         buffer.putInt(end);
         buffer.put(classNumber);
