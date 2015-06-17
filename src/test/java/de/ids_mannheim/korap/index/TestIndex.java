@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.index;
 import java.util.*;
 import java.io.*;
 
+import de.ids_mannheim.korap.index.MultiTerm;
 import de.ids_mannheim.korap.index.MultiTermToken;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
@@ -74,6 +75,40 @@ public class TestIndex { // extends LuceneTestCase {
 
     private Directory index = new RAMDirectory();
 
+    @Test
+    public void multiTerm () throws CorpusDataException {
+        MultiTerm test = new MultiTerm("test");
+        assertEquals(test.getTerm(), "test");
+        assertEquals(test.getPayload(), null);
+        assertEquals(test.getStart(), 0);
+        assertEquals(test.getEnd(), 0);
+        assertFalse(test.hasStoredOffsets());
+        assertEquals(test.toString(), "test");
+
+        test = new MultiTerm("test#0-4");
+        assertEquals(test.getTerm(), "test");
+        assertEquals(test.getPayload(), null);
+        assertEquals(test.getStart(), 0);
+        assertEquals(test.getEnd(), 4);
+        assertFalse(test.hasStoredOffsets());
+        assertEquals(test.toString(), "test#0-4");
+
+        test = new MultiTerm("<>:s:test#0-4$<i>67");
+        assertEquals(test.getTerm(), "<>:s:test");
+        assertEquals(test.getPayload().toString(), "[0 0 0 43]");
+        assertEquals(test.getStart(), 0);
+        assertEquals(test.getEnd(), 4);
+        assertFalse(test.hasStoredOffsets());
+        assertTrue(test.toString().startsWith("<>:s:test#0-4$"));
+
+        test = new MultiTerm("xip/l:\\#normal#0-5$<i>3999");
+        assertEquals(test.getTerm(), "xip/l:#normal");
+        assertEquals(test.getPayload().toString(), "[0 0 f 9f]");
+        assertEquals(test.getStart(), 0);
+        assertEquals(test.getEnd(), 5);
+        assertFalse(test.hasStoredOffsets());
+        assertTrue(test.toString().startsWith("xip/l:\\#normal#0-5$"));
+    };
 
     @Test
     public void multiTermToken () throws CorpusDataException {
@@ -87,7 +122,6 @@ public class TestIndex { // extends LuceneTestCase {
         assertEquals(test.terms.get(1).term, "pos:n");
         assertEquals(test.terms.get(2).term, "m:gen:pl");
     };
-
 
     private List initIndexer () throws IOException {
         List<Map<String, String>> list = new ArrayList<>();

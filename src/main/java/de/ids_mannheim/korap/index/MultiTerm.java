@@ -304,11 +304,13 @@ public class MultiTerm implements Comparable<MultiTerm> {
      * Offsets are attached following a hash sign,
      * payloads are attached following a dollar sign.
      * All payloads are written as UTF-8 character sequences.
+     *
+     * <b>For the moment this is only for testing purposes!</b>
      * 
      * @see #toStringShort().
      */
     public String toString () {
-        StringBuilder sb = new StringBuilder(this.term);
+        StringBuilder sb = new StringBuilder(_escape(this.term));
         if (this.start != this.end) {
             sb.append('#').append(this.start).append('-').append(this.end);
         };
@@ -355,7 +357,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
      * @see #toString().
      */
     public String toStringShort () {
-        StringBuilder sb = new StringBuilder(this.term);
+        StringBuilder sb = new StringBuilder(_escape(this.term));
         if (this.payload != null) {
             sb.append('$');
             try {
@@ -374,7 +376,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
      * Deserialize MultiTerm from string representation.
      */
     private void _fromString (String term) throws CorpusDataException {
-        String[] termSurface = term.split("\\$", 2);
+        String[] termSurface = term.split("(?<!\\\\)\\$", 2);
 
         // Payload is given
         if (termSurface.length == 2) {
@@ -439,7 +441,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
         };
 
         // Parse offset information
-        stringOffset = termSurface[0].split("\\#", 2);
+        stringOffset = termSurface[0].split("(?<!\\\\)\\#", 2);
 
         if (stringOffset.length == 2) {
 
@@ -455,14 +457,26 @@ public class MultiTerm implements Comparable<MultiTerm> {
                 }
                 catch (NumberFormatException e) {
                     throw new CorpusDataException(952,
-                            "Given offset information is not numeric");
+                            "Given offset information is not numeric in " + termSurface[0]);
                 };
             }
             else {
                 throw new CorpusDataException(953,
-                        "Given offset information is incomplete");
+                        "Given offset information is incomplete in " + termSurface[0]);
             };
         };
-        this.term = stringOffset[0];
+        this.term = _unescape(stringOffset[0]);
+    };
+
+    // Escape the term
+    private String _escape (String term) {
+        return term.replaceAll("([#\\$\\\\])", "\\\\$1");
+    };
+    
+    // Unescape the term
+    private String _unescape (String term) {
+        return term.replace("\\\\","\\")
+            .replace("\\#", "#")
+            .replace("\\$", "$");
     };
 };

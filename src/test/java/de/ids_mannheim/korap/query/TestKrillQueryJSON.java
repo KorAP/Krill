@@ -245,7 +245,6 @@ public class TestKrillQueryJSON {
         assertEquals(sqwi.toQuery().toString(), "tokens:base/p:foo");
     };
 
-
     @Test
     public void queryJSONBspClass () throws QueryException {
         SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(

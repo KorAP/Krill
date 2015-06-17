@@ -174,10 +174,10 @@ public class KrillCollection extends Notifications {
             throws QueryException {
         BooleanFilter bfilter = new BooleanFilter();
 
-        // TODO: THIS UNFORTUNATELY BREAKS TESTS
-        if (!json.has("@type"))
+        if (!json.has("@type")) {
             throw new QueryException(701,
                     "JSON-LD group has no @type attribute");
+        };
 
         String type = json.get("@type").asText();
 

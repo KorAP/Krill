@@ -166,7 +166,9 @@ public class Krill extends Response {
         if (json.has("query")) {
             try {
                 KrillQuery kq = new KrillQuery("tokens");
+
                 SpanQueryWrapper qw = kq.fromJson(json.get("query"));
+
                 this.setQuery(kq);
 
                 // Throw an error, in case the query matches everywhere
@@ -206,8 +208,12 @@ public class Krill extends Response {
         // Parse "collection" or "collections" attribute
         try {
             if (json.has("collection")) {
-                this.setCollection(new KrillCollection().fromJson(json
-                        .get("collection")));
+                JsonNode collNode = json.get("collection");
+                // TODO: Temporary
+                if (collNode.fieldNames().hasNext())
+                    this.setCollection(
+                        new KrillCollection().fromJson(collNode)
+                    );
             }
 
             // <legacycode>

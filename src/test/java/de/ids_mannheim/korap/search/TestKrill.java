@@ -188,6 +188,13 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 1);
     };
 
+    // Todo: There SHOULD be a failure here, but Koral currently creates empty collections
+    @Test
+    public void queryJSONapiTest1 () {
+        Krill test = new Krill("{\"@context\":\"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld\",\"errors\":[],\"warnings\":[],\"messages\":[],\"collection\":{},\"query\":{\"@type\":\"koral:token\",\"wrap\":{\"@type\":\"koral:term\",\"layer\":\"orth\",\"key\":\"Baum\",\"match\":\"match:eq\"}},\"meta\":{}}");
+        assertFalse(test.hasErrors());
+    };
+
 
     @Test
     public void searchJSONFailure () throws IOException {

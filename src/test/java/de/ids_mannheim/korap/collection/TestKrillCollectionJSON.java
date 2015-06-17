@@ -55,7 +55,7 @@ public class TestKrillCollectionJSON {
     };
 
 
-    @Test
+    @Ignore
     public void nocollectiontypegiven () {
         String metaQuery = _getJSONString("multiterm_rewrite_collection.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);

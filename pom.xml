@@ -18,7 +18,7 @@
 
       # Then run e.g.
       $ java -jar target/Krill-X.XX.jar
-             src/main/resources/korap.conf
+             src/main/resources/krill.properties
              /data/hdd/lucene-new/WPD/
   -->
 

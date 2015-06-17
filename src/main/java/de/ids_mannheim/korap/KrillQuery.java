@@ -286,6 +286,7 @@ public class KrillQuery extends Notifications {
                         this.fromJson(operands.get(0)), number);
 
             case "koral:token":
+
                 // The token is empty and should be treated like []
                 if (!json.has("wrap"))
                     return new SpanRepetitionQueryWrapper();
@@ -913,6 +914,7 @@ public class KrillQuery extends Notifications {
 
     // Deserialize koral:token
     private SpanQueryWrapper _segFromJson (JsonNode json) throws QueryException {
+
         if (!json.has("@type"))
             throw new QueryException(701,
                     "JSON-LD group has no @type attribute");
@@ -1266,6 +1268,8 @@ public class KrillQuery extends Notifications {
         else if (attrNode.has("root")) {
             String rootValue = attrNode.get("root").asText();
             if (rootValue.equals("true") || rootValue.equals("false")) {
+
+                // TODO: Here do not refer to 'tokens'!!!
                 return new SpanAttributeQueryWrapper(
                         new SpanSimpleQueryWrapper("tokens", "@root",
                                 Boolean.valueOf(rootValue)));
