@@ -1048,16 +1048,30 @@ public class KrillQuery extends Notifications {
 
         StringBuilder value = new StringBuilder();
 
-        if (direction != null) {
+        if (direction != null)
             value.append(direction);
-        }
 
         // expect orth? expect lemma? 
         // s:den | i:den | cnx/l:die | mate/m:mood:ind | cnx/syn:@PREMOD |
         // mate/m:number:sg | opennlp/p:ART
 
-        if (json.has("foundry") && json.get("foundry").asText().length() > 0)
+        if (json.has("foundry") && json.get("foundry").asText().length() > 0) {
             value.append(json.get("foundry").asText()).append('/');
+        }
+
+        // !!!LEGACY!!! TEMPORARY!!!! (Workaround)
+        /*
+         * This will be removed as soon as possible!
+         * This may render results WRONG if you are not dealing with Kustvakt,
+         * but we can't fix this for now. :-(
+         */
+        else if (json.has("layer")) {
+            if (json.get("layer").asText().matches("^(?:l(emma)?|p(os)?)$")) {
+                System.err.println("LEGACY INJECTION OF FOUNDRY!!! in KrillQuery");
+                value.append("tt/");
+            };
+        };
+        // /LEGACY
 
         // No default foundry defined
         if (json.has("layer") && json.get("layer").asText().length() > 0) {
@@ -1073,7 +1087,7 @@ public class KrillQuery extends Notifications {
                     break;
 
                 case "orth":
-                    // TODO: THIS IS A BUG! AND SHOULD BE NAMED "SURFACE" or .
+                    // TODO: THIS IS A BUG! AND SHOULD BE NAMED "SURFACE" or . OR *
                     layer = "s";
                     break;
 
