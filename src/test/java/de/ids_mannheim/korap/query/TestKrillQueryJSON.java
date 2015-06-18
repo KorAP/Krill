@@ -450,6 +450,17 @@ public class TestKrillQueryJSON {
                 "spanOverlap(<tokens:s />, spanNext(tokens:tt/p:CARD, SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/)))");
     };
 
+    @Test
+    public void queryJSONflags1 () throws QueryException {
+        // buchstabe/i
+        SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
+                "/queries/flags/caseInsensitive.jsonld").getFile());
+
+        assertEquals(
+                sqwi.toQuery().toString(),
+                "tokens:i:buchstabe");
+    };
+
 
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();

@@ -1,0 +1,23 @@
+{
+  "@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+  "errors":[],
+  "warnings":[],
+  "messages":[],
+  "collection":{},
+  "query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "layer":"orth",
+      "key":"buchstabe",
+      "match":"match:eq",
+      "flags":["flags:caseInsensitive"]
+    }
+  },
+  "meta":{
+    "startPage":1,
+    "count":25,
+    "cutOff":true,
+    "context":"paragraph"
+  }
+}

@@ -3,6 +3,7 @@ package de.ids_mannheim.korap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1028,9 +1029,22 @@ public class KrillQuery extends Notifications {
                 : false;
         Boolean isCaseInsensitive = false;
 
+        // Legacy
         if (json.has("caseInsensitive")
-                && json.get("caseInsensitive").asBoolean())
+            && json.get("caseInsensitive").asBoolean()) {
             isCaseInsensitive = true;
+        }
+
+        // Flags
+        else if (json.has("flags") && json.get("flags").isArray()) {
+            Iterator<JsonNode> flags = json.get("flags").elements();
+            while (flags.hasNext()) {
+                if (flags.next().asText().equals("flags:caseInsensitive")) {
+                    isCaseInsensitive = true;
+                    break;
+                };
+            };
+        };
 
         StringBuilder value = new StringBuilder();
 
