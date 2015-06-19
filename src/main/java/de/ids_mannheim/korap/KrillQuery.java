@@ -195,6 +195,14 @@ public class KrillQuery extends Notifications {
     //       instead of the wrapper constructors
     // TODO: Rename this span context!
     public SpanQueryWrapper fromJson (JsonNode json) throws QueryException {
+
+        // Set this for reserialization - may be changed later on
+        this.json = json;
+        return this._fromJson(json);
+    };
+
+
+    private SpanQueryWrapper _fromJson (JsonNode json) throws QueryException {
         int number = 0;
 
         // Only accept @typed objects for the moment
@@ -202,10 +210,6 @@ public class KrillQuery extends Notifications {
         if (!json.has("@type"))
             throw new QueryException(701,
                     "JSON-LD group has no @type attribute");
-
-        // Set this for reserialization
-        // This may be changed later on
-        this.json = json;
 
         // Get @type for branching
         String type = json.get("@type").asText();
@@ -273,18 +277,16 @@ public class KrillQuery extends Notifications {
                         log.trace("Wrap span reference {},{}", startOffset,
                                 length);
 
-                    SpanQueryWrapper sqw = this.fromJson(operands.get(0));
+                    SpanQueryWrapper sqw = this._fromJson(operands.get(0));
                     SpanSubspanQueryWrapper ssqw = new SpanSubspanQueryWrapper(
                             sqw, startOffset, length);
                     return ssqw;
-                }
-                ;
+                };
 
                 if (DEBUG)
                     log.trace("Wrap class reference {}", number);
 
-                return new SpanFocusQueryWrapper(
-                        this.fromJson(operands.get(0)), number);
+                return new SpanFocusQueryWrapper(this._fromJson(operands.get(0)), number);
 
             case "koral:token":
 
@@ -455,7 +457,7 @@ public class KrillQuery extends Notifications {
         if (isReference) {
             JsonNode resolvedNode = _resolveReference(node, operands,
                     refOperandNum, classNum);
-            return new SpanReferenceQueryWrapper(fromJson(resolvedNode),
+            return new SpanReferenceQueryWrapper(this._fromJson(resolvedNode),
                     (byte) classNum);
         }
 
@@ -516,8 +518,8 @@ public class KrillQuery extends Notifications {
                     "Number of operands is not acceptable");
         }
 
-        SpanQueryWrapper operand1 = fromJson(operands.get(0));
-        SpanQueryWrapper operand2 = fromJson(operands.get(1));
+        SpanQueryWrapper operand1 = this._fromJson(operands.get(0));
+        SpanQueryWrapper operand2 = this._fromJson(operands.get(1));
         
         String direction = ">:";
         if (operand1.isEmpty() && !operand2.isEmpty()) {
@@ -548,7 +550,7 @@ public class KrillQuery extends Notifications {
             throws QueryException {
         SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
         for (JsonNode operand : operands) {
-            ssaq.or(this.fromJson(operand));
+            ssaq.or(this._fromJson(operand));
         };
         return ssaq;
     };
@@ -640,8 +642,8 @@ public class KrillQuery extends Notifications {
         // </legacyCode>
 
         // Create SpanWithin Query
-        return new SpanWithinQueryWrapper(this.fromJson(operands.get(0)),
-                this.fromJson(operands.get(1)), flag);
+        return new SpanWithinQueryWrapper(this._fromJson(operands.get(0)),
+                this._fromJson(operands.get(1)), flag);
     };
 
 
@@ -690,7 +692,7 @@ public class KrillQuery extends Notifications {
         if (min > max)
             max = max;
 
-        SpanQueryWrapper sqw = this.fromJson(operands.get(0));
+        SpanQueryWrapper sqw = this._fromJson(operands.get(0));
 
         if (sqw.maybeExtension())
             return sqw.setMin(min).setMax(max);
@@ -728,7 +730,7 @@ public class KrillQuery extends Notifications {
                     "Span references are currently not supported");
         };
 
-        return new SpanFocusQueryWrapper(this.fromJson(operands.get(0)), number);
+        return new SpanFocusQueryWrapper(this._fromJson(operands.get(0)), number);
     };
 
 
@@ -781,7 +783,7 @@ public class KrillQuery extends Notifications {
             };
 
             // Serialize operand
-            SpanQueryWrapper sqw = this.fromJson(operands.get(0));
+            SpanQueryWrapper sqw = this._fromJson(operands.get(0));
 
             // Problematic
             if (sqw.maybeExtension())
@@ -800,7 +802,7 @@ public class KrillQuery extends Notifications {
 
         // Sequence with only one operand
         if (operands.size() == 1)
-            return this.fromJson(operands.get(0));
+            return this._fromJson(operands.get(0));
 
         SpanSequenceQueryWrapper sseqqw = this.builder().seq();
 
@@ -901,7 +903,7 @@ public class KrillQuery extends Notifications {
 
         // Add segments to sequence
         for (JsonNode operand : operands) {
-            sseqqw.append(this.fromJson(operand));
+            sseqqw.append(this._fromJson(operand));
         };
 
         // inOrder was set to false without a distance constraint
@@ -1029,19 +1031,23 @@ public class KrillQuery extends Notifications {
                 : false;
         Boolean isCaseInsensitive = false;
 
-        // Legacy
+        // <legacy>
         if (json.has("caseInsensitive")
             && json.get("caseInsensitive").asBoolean()) {
             isCaseInsensitive = true;
         }
+        // </legacy>
 
         // Flags
         else if (json.has("flags") && json.get("flags").isArray()) {
             Iterator<JsonNode> flags = json.get("flags").elements();
             while (flags.hasNext()) {
-                if (flags.next().asText().equals("flags:caseInsensitive")) {
+                String flag = flags.next().asText();
+                if (flag.equals("flags:caseInsensitive")) {
                     isCaseInsensitive = true;
-                    break;
+                }
+                else {
+                    this.addWarning(748, "Flag is unknown", flag);
                 };
             };
         };
@@ -1057,21 +1063,7 @@ public class KrillQuery extends Notifications {
 
         if (json.has("foundry") && json.get("foundry").asText().length() > 0) {
             value.append(json.get("foundry").asText()).append('/');
-        }
-
-        // !!!LEGACY!!! TEMPORARY!!!! (Workaround)
-        /*
-         * This will be removed as soon as possible!
-         * This may render results WRONG if you are not dealing with Kustvakt,
-         * but we can't fix this for now. :-(
-         */
-        else if (json.has("layer")) {
-            if (json.get("layer").asText().matches("^(?:l(emma)?|p(os)?)$")) {
-                System.err.println("LEGACY INJECTION OF FOUNDRY!!! in KrillQuery");
-                value.append("tt/");
-            };
         };
-        // /LEGACY
 
         // No default foundry defined
         if (json.has("layer") && json.get("layer").asText().length() > 0) {

@@ -40,6 +40,7 @@
 745: "Token type is not supported"
 746: "Term type is not supported - treated as a string"
 747: "Attribute is null"
+748: "Flag is unknown"
 750: "Passed notifications are not well formed"
 760: "Exclusion is currently not supported in position operations"
 761: "Class reference operators are currently not supported"

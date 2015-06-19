@@ -29,7 +29,10 @@ import de.ids_mannheim.korap.response.Notifications;
  * @author diewald
  * @see Notifications
  */
-// Todo: Use configuration file to get default token field "tokens"
+/*
+ * TODO: Use configuration file to get default token field "tokens"
+ * TODO: All these fields should be in meta!
+*/
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Response extends Notifications {
@@ -58,6 +61,7 @@ public class Response extends Notifications {
      * 
      * @return String representation of the backend's version
      */
+    @JsonIgnore
     public String getVersion () {
         return this.version;
     };
@@ -92,6 +96,7 @@ public class Response extends Notifications {
      * 
      * @return String representation of the backend's name
      */
+    @JsonIgnore
     public String getName () {
         return this.name;
     };
@@ -117,6 +122,7 @@ public class Response extends Notifications {
      * 
      * @return String representation of the node's name
      */
+    @JsonIgnore
     public String getNode () {
         return this.node;
     };
@@ -174,6 +180,7 @@ public class Response extends Notifications {
      * @return String representation of the benchmark
      *         (including trailing time unit)
      */
+    @JsonIgnore
     public String getBenchmark () {
         return this.benchmark;
     };
@@ -219,6 +226,7 @@ public class Response extends Notifications {
      * 
      * @return The listener URI as a string representation
      */
+    @JsonIgnore
     public String getListener () {
         return this.listener;
     };
@@ -249,6 +257,7 @@ public class Response extends Notifications {
      * 
      * @return The total number of results.
      */
+    @JsonIgnore
     public long getTotalResults () {
         if (this.totalResults == -2)
             return (long) 0;
@@ -293,6 +302,7 @@ public class Response extends Notifications {
      * @return The total number of resources the total number of
      *         results occur in.
      */
+    @JsonIgnore
     public long getTotalResources () {
         if (this.totalResources == -2)
             return (long) 0;
@@ -451,41 +461,45 @@ public class Response extends Notifications {
         if (this.getVersion() != null)
             sb.append(this.getVersion());
 
+        // KoralQuery meta object
+        if (this.meta != null) {
+            JsonNode metaNode = this.meta.toJsonNode();
+            if (metaNode != null)
+                json.put("meta", metaNode);
+        };
+
+        ObjectNode meta = json.has("meta") ?
+            (ObjectNode) json.get("meta") :
+            (ObjectNode) json.putObject("meta");
+
         if (sb.length() > 0)
-            json.put("version", sb.toString());
+            meta.put("version", sb.toString());
 
         if (this.timeExceeded)
-            json.put("timeExceeded", true);
+            meta.put("timeExceeded", true);
 
         if (this.getNode() != null)
-            json.put("node", this.getNode());
+            meta.put("node", this.getNode());
 
         if (this.getListener() != null)
-            json.put("listener", this.getListener());
+            meta.put("listener", this.getListener());
 
         if (this.getBenchmark() != null)
-            json.put("benchmark", this.getBenchmark());
+            meta.put("benchmark", this.getBenchmark());
 
         // totalResources is set
         if (this.totalResources != -2)
-            json.put("totalResources", this.totalResources);
+            meta.put("totalResources", this.totalResources);
 
         // totalResults is set
         if (this.totalResults != -2)
-            json.put("totalResults", this.totalResults);
+            meta.put("totalResults", this.totalResults);
 
         // KoralQuery query object
         if (this.query != null) {
             JsonNode queryNode = this.getQuery().toJsonNode();
             if (queryNode != null)
                 json.put("query", queryNode);
-        };
-
-        // KoralQuery meta object
-        if (this.meta != null) {
-            JsonNode metaNode = this.meta.toJsonNode();
-            if (metaNode != null)
-                json.put("meta", metaNode);
         };
 
         // KoralQuery collection object

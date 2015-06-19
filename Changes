@@ -4,6 +4,7 @@
 	  as Koral still creates them (diewald)
 	- [bugfix] Escaped characters now supported in MutiTerm (diewald)
 	- [feature] Deserialization of flags (diewald)
+	- [feature] Made responses valid KoralQueries (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)

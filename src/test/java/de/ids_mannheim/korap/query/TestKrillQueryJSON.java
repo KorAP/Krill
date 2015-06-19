@@ -461,6 +461,42 @@ public class TestKrillQueryJSON {
                 "tokens:i:buchstabe");
     };
 
+    @Test
+    public void queryJSONflags2 () throws QueryException {
+        // buchstabe/i
+        try {
+            String json = getString(
+                getClass().getResource(
+                    "/queries/flags/unknown1.jsonld"
+                ).getFile()
+            );
+            KrillQuery kq = new KrillQuery("tokens");
+            assertEquals(kq.fromJson(json).toQuery().toString(),"tokens:s:buchstabe");
+            assertEquals(kq.getWarning(0).getCode(), 748);
+            
+            json = getString(
+                getClass().getResource(
+                    "/queries/flags/unknown2.jsonld"
+                ).getFile()
+            );
+            kq = new KrillQuery("tokens");
+            assertEquals(kq.fromJson(json).toQuery().toString(),"tokens:i:buchstabe");
+            assertEquals(kq.getWarning(0).getCode(), 748);
+
+            json = getString(
+                getClass().getResource(
+                    "/queries/flags/unknown3.jsonld"
+                ).getFile()
+            );
+            kq = new KrillQuery("tokens");
+            assertEquals(kq.fromJson(json).toQuery().toString(),"tokens:i:buchstabe");
+            assertEquals(kq.getWarning(0).getCode(), 748);
+
+        }
+        catch (QueryException e) {
+            fail(e.getMessage());
+        };
+    };
 
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();

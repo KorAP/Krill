@@ -86,7 +86,7 @@ public class TestResource {
     public void testInfo () throws IOException {
         String responseMsg = target.path("/").request().get(String.class);
         JsonNode res = mapper.readTree(responseMsg);
-        assertEquals("milena", res.at("/node").asText());
+        assertEquals("milena", res.at("/meta/node").asText());
         assertEquals(680, res.at("/messages/0/0").asInt());
     };
 
@@ -110,7 +110,7 @@ public class TestResource {
                         .put(jsonE, String.class);
 
                 res = mapper.readTree(resp);
-                assertEquals("milena", res.at("/node").asText());
+                assertEquals("milena", res.at("/meta/node").asText());
                 assertEquals(681, res.at("/messages/0/0").asInt());
             }
             catch (Exception e) {
@@ -122,7 +122,7 @@ public class TestResource {
         resp = target.path("/index").request("application/json")
                 .post(Entity.text(""), String.class);
         res = mapper.readTree(resp);
-        assertEquals("milena", res.at("/node").asText());
+        assertEquals("milena", res.at("/meta/node").asText());
         assertEquals(683, res.at("/messages/0/0").asInt());
     };
 
@@ -138,7 +138,7 @@ public class TestResource {
                     .queryParam("uid", "4").request("application/json")
                     .post(Entity.json(json), String.class);
             JsonNode res = mapper.readTree(resp);
-            assertEquals(2, res.at("/totalResults").asInt());
+            assertEquals(2, res.at("/meta/totalResults").asInt());
         }
         catch (Exception e) {
             fail("Server response failed: " + e.getMessage() + " (Known issue)");

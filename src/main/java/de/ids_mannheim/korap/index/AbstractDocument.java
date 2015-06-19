@@ -318,6 +318,7 @@ public abstract class AbstractDocument extends Response {
      * 
      * @return The primary data of the document as a string.
      */
+    @JsonIgnore
     public String getPrimaryData () {
         if (this.primaryData == null)
             return "";
@@ -334,6 +335,7 @@ public abstract class AbstractDocument extends Response {
      * @return The substring of primary data of the document as a
      *         string.
      */
+    @JsonIgnore
     public String getPrimaryData (int startOffset) {
         return this.primaryData.substring(startOffset);
     };
@@ -351,6 +353,7 @@ public abstract class AbstractDocument extends Response {
      * @return The substring of the primary data of the document as a
      *         string.
      */
+    @JsonIgnore
     public String getPrimaryData (int startOffset, int endOffset) {
         return this.primaryData.substring(startOffset, endOffset);
     };

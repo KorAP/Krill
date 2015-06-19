@@ -3,6 +3,9 @@
 /sandbox
 /target
 /bin
+/blib
+/public
+/log
 /temp
 /tools
 /.settings
@@ -10,7 +13,9 @@
 /.classpath
 /todo.org
 /wiki.org
-
+*~
+.*
+!.gitignore
 # /src/main/resources/
 /src/main/resources/server.properties
 /src/main/resources/krill.properties

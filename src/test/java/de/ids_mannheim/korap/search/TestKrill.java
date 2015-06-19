@@ -724,12 +724,12 @@ public class TestKrill {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toTokenListJsonString());
 
-        assertEquals(1, res.at("/totalResults").asInt());
+        assertEquals(1, res.at("/meta/totalResults").asInt());
         assertEquals("{4: spanNext({1: spanNext({2: tokens:s:ins}, "
                 + "{3: tokens:s:Leben})}, tokens:s:gerufen)}",
-                res.at("/serialQuery").asText());
-        assertEquals(0, res.at("/startIndex").asInt());
-        assertEquals(25, res.at("/itemsPerPage").asInt());
+                res.at("/meta/serialQuery").asText());
+        assertEquals(0, res.at("/meta/startIndex").asInt());
+        assertEquals(25, res.at("/meta/itemsPerPage").asInt());
 
         assertEquals("BZK_D59.00089", res.at("/matches/0/textSigle").asText());
         assertEquals(328, res.at("/matches/0/tokens/0/0").asInt());

@@ -1424,6 +1424,7 @@ public class Match extends AbstractDocument {
     /*
      * Get identifier based on class number
      */
+    @JsonIgnore
     public int getClassID (int nr) {
         return this.identifierNumber.get(nr);
     };
@@ -1432,6 +1433,7 @@ public class Match extends AbstractDocument {
     /*
      * Get annotation based on id
      */
+    @JsonIgnore
     public String getAnnotationID (int nr) {
         return this.annotationNumber.get(nr);
     };
@@ -1440,6 +1442,7 @@ public class Match extends AbstractDocument {
     /*
      * Get relation based on id
      */
+    @JsonIgnore
     public Relation getRelationID (int nr) {
         return this.relationNumber.get(nr);
     };

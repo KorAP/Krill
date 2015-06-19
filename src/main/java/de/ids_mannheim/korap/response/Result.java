@@ -270,32 +270,11 @@ public class Result extends Krill {
      */
     public JsonNode toJsonNode () {
         ObjectNode json = (ObjectNode) mapper.valueToTree(super.toJsonNode());
-
-        // Relevant context setting
-        if (this.context != null)
-            json.put("context", this.getContext().toJsonNode());
-
-
-        // ItemsPerPage
-        json.put("itemsPerPage", this.itemsPerPage);
-
-        // Relevant itemsPerResource setting
-        if (this.itemsPerResource > 0)
-            json.put("itemsPerResource", this.itemsPerResource);
-
-        json.put("startIndex", this.startIndex);
+        this._addMeta(json);
 
         // Add matches
         if (this.matches != null)
             json.putPOJO("matches", this.getMatches());
-
-
-        // TODO: <test>
-        if (this.request != null)
-            json.put("request", this.request);
-        if (this.serialQuery != null)
-            json.put("serialQuery", this.serialQuery);
-        // </test>
 
         return json;
     };
@@ -326,7 +305,9 @@ public class Result extends Krill {
     // For Collocation Analysis API
     @Deprecated
     public String toTokenListJsonString () {
-        ObjectNode json = (ObjectNode) mapper.valueToTree(this);
+        ObjectNode json = (ObjectNode) mapper.valueToTree(super.toJsonNode());
+        // ObjectNode json = (ObjectNode) mapper.valueToTree(this);
+        this._addMeta(json);
 
         ArrayNode array = json.putArray("matches");
 
@@ -342,5 +323,36 @@ public class Result extends Krill {
         };
 
         return "{}";
+    };
+
+
+    private void _addMeta (ObjectNode json) {
+        ObjectNode meta = json.has("meta") ?
+            (ObjectNode) json.get("meta") :
+            (ObjectNode) json.putObject("meta");
+
+
+        // Relevant context setting
+        if (this.context != null)
+            meta.put("context", this.getContext().toJsonNode());
+
+        // ItemsPerPage
+        meta.put("itemsPerPage", this.itemsPerPage);
+
+        // Relevant itemsPerResource setting
+        if (this.itemsPerResource > 0)
+            meta.put("itemsPerResource", this.itemsPerResource);
+
+        // TODO: <test>
+        /*
+        if (this.request != null)
+            json.put("request", this.request);
+        */
+        if (this.serialQuery != null)
+            meta.put("serialQuery", this.serialQuery);
+        // </test>
+
+
+        meta.put("startIndex", this.startIndex);
     };
 };
