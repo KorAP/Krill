@@ -844,7 +844,7 @@ public class KrillQuery extends Notifications {
             }
 
             // Support korap distances
-            // Support cosmas distances
+            // TODO: Support cosmas distances
             else if (firstDistance.get("@type").asText()
                     .equals("koral:distance")
                     || firstDistance.get("@type").asText()
@@ -869,12 +869,15 @@ public class KrillQuery extends Notifications {
                     min = b.min;
                     max = b.max;
                 }
+
+                // <legacy>
                 else {
                     if (constraint.has("min"))
                         min = constraint.get("min").asInt(0);
                     if (constraint.has("max"))
                         max = constraint.get("max").asInt(100);
                 };
+                // </legacy>
 
                 // Add foundry and layer to the unit for new indices
                 if (constraint.has("foundry") && constraint.has("layer")
@@ -908,6 +911,9 @@ public class KrillQuery extends Notifications {
 
         // inOrder was set to false without a distance constraint
         if (!sseqqw.isInOrder() && !sseqqw.hasConstraints()) {
+            if (DEBUG)
+                log.trace("Add distance constraint - for the normal inorder case");
+
             sseqqw.withConstraint(1, 1, "w");
         };
 

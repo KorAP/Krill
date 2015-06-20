@@ -67,18 +67,48 @@ public class TestSpanReferenceQueryJSON {
     @Test
     public void testDistanceReferences() throws QueryException {
         String filepath = getClass().getResource(
-        // "/queries/reference/distance-reference.jsonld").getFile();
-                "/queries/reference/bug-multiple-distance.jsonld").getFile();
+            "/queries/reference/bug-multiple-distance-simple.jsonld"
+        ).getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
+
+        assertEquals("spanDistance(<tokens:c:vb />, <tokens:c:prp />, [(w[1:1], notOrdered, notExcluded)])", sq.toString());
+
+        // "/queries/reference/distance-reference.jsonld").getFile();
+        filepath = getClass().getResource(
+            "/queries/reference/bug-multiple-distance.jsonld"
+        ).getFile();
+        sqwi = getJSONQuery(filepath);
+        sq = sqwi.toQuery();
 
         // 'cat="VP" & cat="NP" & cat="PP" & #1 . #2 & #2 . #3 & #1 .
         // #3 & #2 ->dep #1'
         assertEquals(
-                "spanReference(focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:stanford/d:tag), "
-                        + "focus(2: spanDistance(focus(1: spanDistance(<tokens:c:vb />, {1: <tokens:c:prp />}, "
-                        + "[(w[1:1], notOrdered, notExcluded)])), {2: <tokens:c:nn />}, [(w[0:2], ordered, notExcluded)])))), "
-                        + "{1: <tokens:c:prp />})), 1)",
-                sq.toString());
+        "spanReference("+
+          "focus("+
+            "#[1,2]spanSegment("+
+              "focus("+
+                "#2: spanSegment("+
+                  "spanRelation(tokens:>:stanford/d:tag), " +
+                    "focus("+
+                      "2: spanDistance("+
+                        "focus("+
+                          "1: spanDistance("+
+                            "<tokens:c:vb />, "+
+                            "{1: <tokens:c:prp />}, " +
+                            "[(w[1:1], notOrdered, notExcluded)]"+
+                          ")"+
+                        "), "+
+                        "{2: <tokens:c:nn />}, "+
+                        "[(w[0:2], ordered, notExcluded)]"+
+                      ")"+
+                    ")"+
+                  ")"+
+                "), " +
+                "{1: <tokens:c:prp />}"+
+              ")"+
+            "), 1"+
+          ")",
+        sq.toString());
     }
 }

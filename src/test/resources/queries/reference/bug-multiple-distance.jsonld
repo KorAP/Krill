@@ -1,97 +1,97 @@
 {
-    "query": {
-        "@type": "koral:group",
-        "operation": "operation:relation",
-        "operands": [
+  "query": {
+    "@type": "koral:group",
+    "operation": "operation:relation",
+    "operands": [
+      {
+        "@type": "koral:reference",
+        "operation": "operation:focus",
+        "classRef": [2],
+        "operands": [{
+          "@type": "koral:group",
+          "operation": "operation:sequence",
+          "operands": [
             {
-                "@type": "koral:reference",
-                "operation": "operation:focus",
-                "classRef": [2],
-                "operands": [{
+              "@type": "koral:reference",
+              "operation": "operation:focus",
+              "classRef": [1],
+              "operands": [{
+                "@type": "koral:group",
+                "operation": "operation:sequence",
+                "operands": [
+                  {
+                    "@type": "koral:span",
+                    "layer": "c",
+                    "key": "vb",
+                    "match": "match:eq"
+                  },
+                  {
                     "@type": "koral:group",
-                    "operation": "operation:sequence",
-                    "operands": [
-                        {
-                            "@type": "koral:reference",
-                            "operation": "operation:focus",
-                            "classRef": [1],
-                            "operands": [{
-                                "@type": "koral:group",
-                                "operation": "operation:sequence",
-                                "operands": [
-                                    {
-                                        "@type": "koral:span",
-                                        "layer": "c",
-                                        "key": "vb",
-                                        "match": "match:eq"
-                                    },
-                                    {
-                                        "@type": "koral:group",
-                                        "operation": "operation:class",
-                                        "classOut": 1,
-                                        "operands": [{
-                                            "@type": "koral:span",
-                                            "layer": "c",
-                                            "key": "prp",
-                                            "match": "match:eq"
-                                        }]
-                                    }
-                                ],
-                                "inOrder": false,
-                                "distances": [{
-                                    "@type": "koral:distance",
-                                    "key": "w",
-                                    "boundary": {
-                                        "@type": "koral:boundary",
-                                        "min": 1,
-                                        "max": 1
-                                    },
-                                    "min": 1,
-                                    "max": 1
-                                }]                                
-                            }]
-                        },
-                        {
-                            "@type": "koral:group",
-                            "operation": "operation:class",
-                            "classOut": 2,
-                            "operands": [{
-                                "@type": "koral:span",
-                                "layer": "c",
-                                "key": "nn",
-                                "match": "match:eq"
-                            }]
-                        }
-                    ],
-                    "distances": [{
-                        "@type": "koral:distance",
-                        "key": "w",
-                        "boundary": {
-                            "@type": "koral:boundary",
-                            "min": 0,
-                            "max": 2
-                        },
-                        "min": 0,
-                        "max": 2
-                    }],
-                    "inOrder": true
-                }]
+                    "operation": "operation:class",
+                    "classOut": 1,
+                    "operands": [{
+                      "@type": "koral:span",
+                      "layer": "c",
+                      "key": "prp",
+                      "match": "match:eq"
+                    }]
+                  }
+                ],
+                "inOrder": false,
+                "distances": [{
+                  "@type": "koral:distance",
+                  "key": "w",
+                  "boundary": {
+                    "@type": "koral:boundary",
+                    "min": 1,
+                    "max": 1
+                  },
+                  "min": 1,
+                  "max": 1
+                }]                                
+              }]
             },
             {
-                "@type": "koral:reference",
-                "operation": "operation:focus",
-                "classRef": [1]
+              "@type": "koral:group",
+              "operation": "operation:class",
+              "classOut": 2,
+              "operands": [{
+                "@type": "koral:span",
+                "layer": "c",
+                "key": "nn",
+                "match": "match:eq"
+              }]
             }
-        ],
-        "relation": {
-            "@type": "koral:relation",
-            "wrap": {
-                "@type": "koral:term",
-                "foundry": "stanford",
-                "layer": "d",
-                "key":"tag"
-            }
-        }
-    },
-    "meta": {}
+          ],
+          "distances": [{
+            "@type": "koral:distance",
+            "key": "w",
+            "boundary": {
+              "@type": "koral:boundary",
+              "min": 0,
+              "max": 2
+            },
+            "min": 0,
+            "max": 2
+          }],
+          "inOrder": true
+        }]
+      },
+      {
+        "@type": "koral:reference",
+        "operation": "operation:focus",
+        "classRef": [1]
+      }
+    ],
+    "relation": {
+      "@type": "koral:relation",
+      "wrap": {
+        "@type": "koral:term",
+        "foundry": "stanford",
+        "layer": "d",
+        "key":"tag"
+      }
+    }
+  },
+  "meta": {}
 }

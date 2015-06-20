@@ -340,8 +340,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      * say:
      * 
      * <strong>Warning!</strong> Sequence constraints are experimental
-     * and
-     * may (hopefully) change in future versions!
+     * and may (hopefully) change in future versions!
      * 
      * @param min
      *            The minimum number of tokens between the elements
@@ -373,8 +372,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      * say:
      * 
      * <strong>Warning!</strong> Sequence constraints are experimental
-     * and
-     * may (hopefully) change in future versions!
+     * and may (hopefully) change in future versions!
      * 
      * @param min
      *            The minimum number of tokens between the elements
@@ -393,6 +391,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             boolean exclusion) {
         if (this.constraints == null)
             this.constraints = new ArrayList<DistanceConstraint>(1);
+        if (DEBUG)
+            log.trace("With contraint {}-{} (excl {})", min, max, exclusion);
         this.constraints.add(new DistanceConstraint(min, max, this.isInOrder,
                 exclusion));
         return this;
@@ -476,12 +476,20 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
     public SpanSequenceQueryWrapper withConstraint (int min, int max,
             String unit, boolean exclusion) {
 
+        if (DEBUG)
+            log.trace("With contraint {}-{} (unit {}, excl {})",
+                      min, max, unit, exclusion);
+
         // Word unit
         if (unit.equals("w")) {
+
+            // Initialize constraint
             if (this.constraints == null)
                 this.constraints = new ArrayList<DistanceConstraint>(1);
+
             this.constraints.add(new DistanceConstraint(min, max, isInOrder,
                     exclusion));
+
             return this;
         };
 
@@ -527,6 +535,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      */
     public SpanSequenceQueryWrapper withConstraint (int min, int max,
             SpanElementQueryWrapper unit, boolean exclusion) {
+
+        if (DEBUG)
+            log.trace("With contraint {}-{} (unit {}, excl {})",
+                      min, max, unit.toString(), exclusion);
+
         if (this.constraints == null)
             this.constraints = new ArrayList<DistanceConstraint>(1);
 
@@ -588,8 +601,10 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         // that will be optimized away later on
         if (this.constraints.size() == 1) {
             DistanceConstraint dc = this.constraints.get(0);
-            if (dc.getUnit().equals("w") && dc.getMinDistance() == 1
-                    && dc.getMaxDistance() == 1) {
+            if (dc.getUnit().equals("w") &&
+                dc.getMinDistance() == 1 &&
+                dc.getMaxDistance() == 1 &&
+                this.isInOrder) {
                 return false;
             };
         };
