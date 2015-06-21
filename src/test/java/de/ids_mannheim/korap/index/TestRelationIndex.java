@@ -289,6 +289,7 @@ public class TestRelationIndex {
         assertEquals(4, kr.getMatch(5).getEndPos());
     }
 
+
     /**
      * Relations only with/out attribute
      * */
@@ -307,9 +308,8 @@ public class TestRelationIndex {
 
         // child-of with attr func=sbj
         SpanWithAttributeQuery wq = new SpanWithAttributeQuery(fq,
-                new SpanAttributeQuery(
-                        new SpanTermQuery(new Term("base", "r@:func=sbj")),
-                        true), true);
+                new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                        "r@:func=sbj")), true), true);
 
         kr = ki.search(wq, (short) 20);
         assertEquals((long) 1, kr.getTotalResults());
@@ -385,11 +385,12 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(6).getEndPos());
     }
 
+
     /**
      * Dependency relations with attribute
      * */
     @Test
-    public void testCase5() throws IOException {
+    public void testCase5 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
@@ -429,6 +430,7 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(1).getEndPos());
 
     }
+
 
     /**
      * Relation with specific sources, return any targets
@@ -485,11 +487,11 @@ public class TestRelationIndex {
         ki.commit();
 
         //return source of dep relations to pos:NN
-        
+
         SpanTermWithIdQuery tq = new SpanTermWithIdQuery(new Term("base",
                 "pos:NN"), true);
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(new Term("base",
-                "<:dep")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
+                new Term("base", "<:dep")), true);
         srq.setSourceClass((byte) 1);
         SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, tq, true);
         SpanQuery rv = new SpanFocusQuery(rm, (byte) 1);
@@ -505,8 +507,7 @@ public class TestRelationIndex {
 
         // return target of dep relations from pos:NN
         srq = new SpanRelationQuery(
-                new SpanTermQuery(
-                new Term("base", ">:dep")), true);
+                new SpanTermQuery(new Term("base", ">:dep")), true);
         srq.setTargetClass((byte) 1);
         rm = new SpanRelationMatchQuery(srq, tq, true);
         rv = new SpanFocusQuery(rm, (byte) 1);
@@ -525,7 +526,8 @@ public class TestRelationIndex {
 
     /**
      * Relation with specific sources and return any targets <br/>
-     * Relation with specific sources and targets, return the targets <br/>
+     * Relation with specific sources and targets, return the targets
+     * <br/>
      * Relation with specific sources and targets, return the sources
      * 
      * @throws IOException
@@ -606,8 +608,9 @@ public class TestRelationIndex {
 
     }
 
+
     @Test
-    public void testCase10() throws IOException {
+    public void testCase10 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
         SpanElementQuery seq1 = new SpanElementQuery("base", "np");

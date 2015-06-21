@@ -477,8 +477,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             String unit, boolean exclusion) {
 
         if (DEBUG)
-            log.trace("With contraint {}-{} (unit {}, excl {})",
-                      min, max, unit, exclusion);
+            log.trace("With contraint {}-{} (unit {}, excl {})", min, max,
+                    unit, exclusion);
 
         // Word unit
         if (unit.equals("w")) {
@@ -537,8 +537,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             SpanElementQueryWrapper unit, boolean exclusion) {
 
         if (DEBUG)
-            log.trace("With contraint {}-{} (unit {}, excl {})",
-                      min, max, unit.toString(), exclusion);
+            log.trace("With contraint {}-{} (unit {}, excl {})", min, max,
+                    unit.toString(), exclusion);
 
         if (this.constraints == null)
             this.constraints = new ArrayList<DistanceConstraint>(1);
@@ -601,10 +601,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         // that will be optimized away later on
         if (this.constraints.size() == 1) {
             DistanceConstraint dc = this.constraints.get(0);
-            if (dc.getUnit().equals("w") &&
-                dc.getMinDistance() == 1 &&
-                dc.getMaxDistance() == 1 &&
-                this.isInOrder) {
+            if (dc.getUnit().equals("w") && dc.getMinDistance() == 1
+                    && dc.getMaxDistance() == 1 && this.isInOrder) {
                 return false;
             };
         };

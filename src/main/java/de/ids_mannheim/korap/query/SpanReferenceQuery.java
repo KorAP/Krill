@@ -16,8 +16,9 @@ public class SpanReferenceQuery extends SimpleSpanQuery {
 
     private byte classNum;
 
+
     public SpanReferenceQuery (SpanQuery firstClause, byte classNum,
-            boolean collectPayloads) {
+                               boolean collectPayloads) {
         super(firstClause, collectPayloads);
         this.classNum = classNum;
     }
@@ -50,11 +51,12 @@ public class SpanReferenceQuery extends SimpleSpanQuery {
     }
 
 
-    public byte getClassNum() {
+    public byte getClassNum () {
         return classNum;
     }
 
-    public void setClassNum(byte classNum) {
+
+    public void setClassNum (byte classNum) {
         this.classNum = classNum;
     }
 

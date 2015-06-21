@@ -1,0 +1,25 @@
+{
+  "@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+  "errors":[],
+  "warnings":[],
+  "messages":[],
+  "collection":{
+    "@type":"koral:doc",
+    "key":"textClass",
+    "value":"reisen",
+    "match":"match:eq"
+  },
+  "query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "layer":"orth",
+      "key":"der",
+      "match":"match:eq",
+      "foundry":"opennlp"
+    }
+  },
+  "meta":{
+    "cutOff":null
+  }
+}

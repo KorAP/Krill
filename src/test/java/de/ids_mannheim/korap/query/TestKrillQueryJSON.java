@@ -245,6 +245,7 @@ public class TestKrillQueryJSON {
         assertEquals(sqwi.toQuery().toString(), "tokens:base/p:foo");
     };
 
+
     @Test
     public void queryJSONBspClass () throws QueryException {
         SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
@@ -450,46 +451,40 @@ public class TestKrillQueryJSON {
                 "spanOverlap(<tokens:s />, spanNext(tokens:tt/p:CARD, SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/)))");
     };
 
+
     @Test
     public void queryJSONflags1 () throws QueryException {
         // buchstabe/i
         SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
                 "/queries/flags/caseInsensitive.jsonld").getFile());
 
-        assertEquals(
-                sqwi.toQuery().toString(),
-                "tokens:i:buchstabe");
+        assertEquals(sqwi.toQuery().toString(), "tokens:i:buchstabe");
     };
+
 
     @Test
     public void queryJSONflags2 () throws QueryException {
         // buchstabe/i
         try {
-            String json = getString(
-                getClass().getResource(
-                    "/queries/flags/unknown1.jsonld"
-                ).getFile()
-            );
+            String json = getString(getClass().getResource(
+                    "/queries/flags/unknown1.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
-            assertEquals(kq.fromJson(json).toQuery().toString(),"tokens:s:buchstabe");
-            assertEquals(kq.getWarning(0).getCode(), 748);
-            
-            json = getString(
-                getClass().getResource(
-                    "/queries/flags/unknown2.jsonld"
-                ).getFile()
-            );
-            kq = new KrillQuery("tokens");
-            assertEquals(kq.fromJson(json).toQuery().toString(),"tokens:i:buchstabe");
+            assertEquals(kq.fromJson(json).toQuery().toString(),
+                    "tokens:s:buchstabe");
             assertEquals(kq.getWarning(0).getCode(), 748);
 
-            json = getString(
-                getClass().getResource(
-                    "/queries/flags/unknown3.jsonld"
-                ).getFile()
-            );
+            json = getString(getClass().getResource(
+                    "/queries/flags/unknown2.jsonld").getFile());
             kq = new KrillQuery("tokens");
-            assertEquals(kq.fromJson(json).toQuery().toString(),"tokens:i:buchstabe");
+            assertEquals(kq.fromJson(json).toQuery().toString(),
+                    "tokens:i:buchstabe");
+            assertEquals(kq.getWarning(0).getCode(), 748);
+
+            json = getString(getClass().getResource(
+                    "/queries/flags/unknown3.jsonld").getFile());
+            kq = new KrillQuery("tokens");
+            assertEquals(kq.fromJson(json).toQuery().toString(),
+                    "tokens:i:buchstabe");
             assertEquals(kq.getWarning(0).getCode(), 748);
 
         }
@@ -497,6 +492,7 @@ public class TestKrillQueryJSON {
             fail(e.getMessage());
         };
     };
+
 
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();

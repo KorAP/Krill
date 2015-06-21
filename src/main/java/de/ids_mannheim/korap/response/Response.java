@@ -40,9 +40,9 @@ public class Response extends Notifications {
 
     private KrillMeta meta;
     private KrillCollection collection;
+    private KrillQuery query;
 
     private String version, name, node, listener;
-    private KrillQuery query;
 
     private long totalResources = -2, // Not set
             totalResults = -2; // Not set
@@ -403,7 +403,9 @@ public class Response extends Notifications {
         this.collection = collection;
 
         // Move messages from the collection
-        return (Response) this.moveNotificationsFrom(collection);
+        Response resp = (Response) this.moveNotificationsFrom(collection);
+
+        return resp;
     };
 
 
@@ -468,9 +470,8 @@ public class Response extends Notifications {
                 json.put("meta", metaNode);
         };
 
-        ObjectNode meta = json.has("meta") ?
-            (ObjectNode) json.get("meta") :
-            (ObjectNode) json.putObject("meta");
+        ObjectNode meta = json.has("meta") ? (ObjectNode) json.get("meta")
+                : (ObjectNode) json.putObject("meta");
 
         if (sb.length() > 0)
             meta.put("version", sb.toString());
@@ -503,8 +504,8 @@ public class Response extends Notifications {
         };
 
         // KoralQuery collection object
-        if (this.collection != null
-                && this.collection.getFilters().toArray().length > 0) {
+        if (this.collection != null) {
+            // && this.collection.getFilters().toArray().length > 0) {
             JsonNode collNode = this.collection.toJsonNode();
             if (collNode != null)
                 json.put("collection", collNode);

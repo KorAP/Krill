@@ -89,6 +89,7 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
     public void testFocusSource () throws QueryException {
         //
@@ -101,8 +102,9 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testFocusTarget() throws QueryException {
+    public void testFocusTarget () throws QueryException {
         String filepath = getClass().getResource(
                 "/queries/relation/focus-target.json").getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
@@ -113,8 +115,9 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testFocusEmptyTarget() throws QueryException {
+    public void testFocusEmptyTarget () throws QueryException {
         String filepath = getClass().getResource(
                 "/queries/relation/focus-empty-target.json").getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
@@ -124,8 +127,9 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testFocusEmptyBoth() throws QueryException {
+    public void testFocusEmptyBoth () throws QueryException {
         String filepath = getClass().getResource(
                 "/queries/relation/focus-empty-both.json").getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);

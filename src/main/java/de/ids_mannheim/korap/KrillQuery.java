@@ -121,6 +121,7 @@ public class KrillQuery extends Notifications {
         };
     };
 
+
     /**
      * Constructs a new object for query deserialization
      * and building. Expects the name of an index field
@@ -281,12 +282,14 @@ public class KrillQuery extends Notifications {
                     SpanSubspanQueryWrapper ssqw = new SpanSubspanQueryWrapper(
                             sqw, startOffset, length);
                     return ssqw;
-                };
+                }
+                ;
 
                 if (DEBUG)
                     log.trace("Wrap class reference {}", number);
 
-                return new SpanFocusQueryWrapper(this._fromJson(operands.get(0)), number);
+                return new SpanFocusQueryWrapper(
+                        this._fromJson(operands.get(0)), number);
 
             case "koral:token":
 
@@ -384,7 +387,8 @@ public class KrillQuery extends Notifications {
         if (DEBUG)
             log.trace("Operands are {}", operands);
 
-        SpanQueryWrapper spanReferenceQueryWrapper = _operationReferenceFromJSON(json, operands);
+        SpanQueryWrapper spanReferenceQueryWrapper = _operationReferenceFromJSON(
+                json, operands);
         if (spanReferenceQueryWrapper != null) {
             return spanReferenceQueryWrapper;
         }
@@ -428,8 +432,9 @@ public class KrillQuery extends Notifications {
         throw new QueryException(711, "Unknown group operation");
     };
 
-    private SpanQueryWrapper _operationReferenceFromJSON(JsonNode node, JsonNode operands)
-            throws QueryException {
+
+    private SpanQueryWrapper _operationReferenceFromJSON (JsonNode node,
+            JsonNode operands) throws QueryException {
         boolean isReference = false;
         int classNum = -1;
         int refOperandNum = -1;
@@ -464,7 +469,8 @@ public class KrillQuery extends Notifications {
         return null;
     }
 
-    private JsonNode _resolveReference(JsonNode node, JsonNode operands,
+
+    private JsonNode _resolveReference (JsonNode node, JsonNode operands,
             int refOperandNum, int classNum) throws QueryException {
         JsonNode referent = null;
         ObjectMapper m = new ObjectMapper();
@@ -474,7 +480,8 @@ public class KrillQuery extends Notifications {
             if (i != refOperandNum) {
                 if (!isReferentFound) {
                     referent = _extractReferentClass(operands.get(i), classNum);
-                    if (referent != null) isReferentFound = true;
+                    if (referent != null)
+                        isReferentFound = true;
                 }
                 newOperands.insert(i, operands.get(i));
             }
@@ -490,7 +497,8 @@ public class KrillQuery extends Notifications {
 
     }
 
-    private JsonNode _extractReferentClass(JsonNode node, int classNum) {
+
+    private JsonNode _extractReferentClass (JsonNode node, int classNum) {
         JsonNode referent;
         if (node.has("classOut") && node.get("classOut").asInt() == classNum) {
             // System.out.println("found: " + node.toString());
@@ -520,7 +528,7 @@ public class KrillQuery extends Notifications {
 
         SpanQueryWrapper operand1 = this._fromJson(operands.get(0));
         SpanQueryWrapper operand2 = this._fromJson(operands.get(1));
-        
+
         String direction = ">:";
         if (operand1.isEmpty() && !operand2.isEmpty()) {
             direction = "<:";
@@ -529,14 +537,13 @@ public class KrillQuery extends Notifications {
         if (!relation.has("@type"))
             throw new QueryException(701,
                     "JSON-LD group has no @type attribute");
-        
+
         if (relation.get("@type").asText().equals("koral:relation")) {
             if (!relation.has("wrap")) {
                 throw new QueryException(718, "Missing relation term");
             }
             SpanQueryWrapper relationWrapper = _termFromJson(
-                    relation.get("wrap"),
-                    direction);
+                    relation.get("wrap"), direction);
             return new SpanRelationWrapper(relationWrapper, operand1, operand2);
         }
         else {
@@ -730,7 +737,8 @@ public class KrillQuery extends Notifications {
                     "Span references are currently not supported");
         };
 
-        return new SpanFocusQueryWrapper(this._fromJson(operands.get(0)), number);
+        return new SpanFocusQueryWrapper(this._fromJson(operands.get(0)),
+                number);
     };
 
 
@@ -1039,7 +1047,7 @@ public class KrillQuery extends Notifications {
 
         // <legacy>
         if (json.has("caseInsensitive")
-            && json.get("caseInsensitive").asBoolean()) {
+                && json.get("caseInsensitive").asBoolean()) {
             isCaseInsensitive = true;
         }
         // </legacy>

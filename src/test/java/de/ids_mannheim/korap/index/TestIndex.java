@@ -75,6 +75,7 @@ public class TestIndex { // extends LuceneTestCase {
 
     private Directory index = new RAMDirectory();
 
+
     @Test
     public void multiTerm () throws CorpusDataException {
         MultiTerm test = new MultiTerm("test");
@@ -110,6 +111,7 @@ public class TestIndex { // extends LuceneTestCase {
         assertTrue(test.toString().startsWith("xip/l:\\#normal#0-5$"));
     };
 
+
     @Test
     public void multiTermToken () throws CorpusDataException {
         MultiTermToken test = new MultiTermToken("hunde", "pos:n", "m:gen:pl");
@@ -122,6 +124,7 @@ public class TestIndex { // extends LuceneTestCase {
         assertEquals(test.terms.get(1).term, "pos:n");
         assertEquals(test.terms.get(2).term, "m:gen:pl");
     };
+
 
     private List initIndexer () throws IOException {
         List<Map<String, String>> list = new ArrayList<>();

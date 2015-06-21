@@ -304,7 +304,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
      * Offsets are attached following a hash sign,
      * payloads are attached following a dollar sign.
      * All payloads are written as UTF-8 character sequences.
-     *
+     * 
      * <b>For the moment this is only for testing purposes!</b>
      * 
      * @see #toStringShort().
@@ -457,26 +457,29 @@ public class MultiTerm implements Comparable<MultiTerm> {
                 }
                 catch (NumberFormatException e) {
                     throw new CorpusDataException(952,
-                            "Given offset information is not numeric in " + termSurface[0]);
+                            "Given offset information is not numeric in "
+                                    + termSurface[0]);
                 };
             }
             else {
                 throw new CorpusDataException(953,
-                        "Given offset information is incomplete in " + termSurface[0]);
+                        "Given offset information is incomplete in "
+                                + termSurface[0]);
             };
         };
         this.term = _unescape(stringOffset[0]);
     };
 
+
     // Escape the term
     private String _escape (String term) {
         return term.replaceAll("([#\\$\\\\])", "\\\\$1");
     };
-    
+
+
     // Unescape the term
     private String _unescape (String term) {
-        return term.replace("\\\\","\\")
-            .replace("\\#", "#")
-            .replace("\\$", "$");
+        return term.replace("\\\\", "\\").replace("\\#", "#")
+                .replace("\\$", "$");
     };
 };

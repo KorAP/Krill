@@ -28,6 +28,7 @@ public class TestReferenceIndex {
     private KrillIndex ki;
     private Result kr;
 
+
     @Test
     public void testCase1 () throws IOException {
         ki = new KrillIndex();
@@ -55,7 +56,8 @@ public class TestReferenceIndex {
         // SpanSegmentQuery ssq2 = new SpanSegmentQuery(sfq2, scq3,
         // true);
 
-        SpanRelationMatchQuery rq = new SpanRelationMatchQuery(srq, sfq1, scq3, true);
+        SpanRelationMatchQuery rq = new SpanRelationMatchQuery(srq, sfq1, scq3,
+                true);
 
         // System.out.println(rq.toString());
         SpanFocusQuery sfq3 = new SpanFocusQuery(rq, (byte) 1);
@@ -85,8 +87,9 @@ public class TestReferenceIndex {
         assertEquals(7, kr.getMatch(0).getEndPos());
     }
 
+
     @Test
-    public void testCase2() throws IOException, QueryException {
+    public void testCase2 () throws IOException, QueryException {
 
         String filepath = getClass().getResource(
                 "/queries/reference/distance-reference.jsonld").getFile();
@@ -97,13 +100,12 @@ public class TestReferenceIndex {
         // .{0,2} #3 & #3 -> #2
 
         assertEquals(
-            "spanReference(focus(#[1,2]spanSegment(focus(#2: "
-                    + "spanSegment(spanRelation(tokens:>:stanford/d:tag), "
-                    + "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, "
-                    + "{2: <tokens:prp />}, [(w[0:1], notOrdered, notExcluded)])), "
-                    + "{3: <tokens:nn />}, [(w[0:2], notOrdered, notExcluded)])))), "
-                    + "{2: <tokens:prp />})), 2)",
-            sq.toString());
+                "spanReference(focus(#[1,2]spanSegment(focus(#2: "
+                        + "spanSegment(spanRelation(tokens:>:stanford/d:tag), "
+                        + "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, "
+                        + "{2: <tokens:prp />}, [(w[0:1], notOrdered, notExcluded)])), "
+                        + "{3: <tokens:nn />}, [(w[0:2], notOrdered, notExcluded)])))), "
+                        + "{2: <tokens:prp />})), 2)", sq.toString());
 
         SpanElementQuery seq1 = new SpanElementQuery("tokens", "vb");
         // new SpanTermQuery(new Term("tokens", "c:vb"));
@@ -174,9 +176,10 @@ public class TestReferenceIndex {
         // }
     }
 
+
     // multiple references
     @Test
-    public void testCase3() throws IOException, QueryException {
+    public void testCase3 () throws IOException, QueryException {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.commit();
@@ -209,17 +212,17 @@ public class TestReferenceIndex {
         assertEquals(13, kr.getMatch(1).getEndPos());
     }
 
+
     // multiple document
     @Test
-    public void testCase4() throws Exception {
+    public void testCase4 () throws Exception {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.addDoc(createFieldDoc1());
         ki.commit();
 
         String filepath = getClass().getResource(
-                "/queries/reference/distance-reference.jsonld")
-                .getFile();
+                "/queries/reference/distance-reference.jsonld").getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
@@ -231,7 +234,8 @@ public class TestReferenceIndex {
         assertEquals(4, kr.getMatch(3).getEndPos());
     }
 
-    public static FieldDocument createFieldDoc1() {
+
+    public static FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV(
@@ -256,69 +260,69 @@ public class TestReferenceIndex {
         return fd;
     }
 
+
     public static FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV(
                 "tokens",
                 "Frankenstein, treat my daughter well. She is the one that saved your master who you hold so dear.",
-                
+
                 "[(0-12)s:Frankenstein|_0#0-12|<>:nn#0-12$<i>1<s>18|<>:s#0-37$<i>5<s>1|"
                         + "<>:np#0-13$<i>1<s>2|"
                         + "<:stanford/d:tag$<i>1<s>1<s>18<s>19]"
 
-                + "[(14-19)s:treat|_1#14-19|<>:vb#14-19$<i>2<s>19|<>:vp#14-36$<i>5<s>3|"
+                        + "[(14-19)s:treat|_1#14-19|<>:vb#14-19$<i>2<s>19|<>:vp#14-36$<i>5<s>3|"
                         + ">:stanford/d:tag$<i>0<s>2<s>19<s>18|"
                         + ">:stanford/d:tag$<i>3<s>3<s>19<s>21|"
                         + ">:stanford/d:tag$<i>4<s>4<s>19<s>22]"
 
-                + "[(20-22)s:my|_2#20-22|<>:prp#20-22$<i>3<s>20|<>:np#20-31$<i>4<s>4]"
+                        + "[(20-22)s:my|_2#20-22|<>:prp#20-22$<i>3<s>20|<>:np#20-31$<i>4<s>4]"
 
-                + "[(23-31)s:daughter|_3#23-31|<>:nn#23-31$<i>4<s>21|"
+                        + "[(23-31)s:daughter|_3#23-31|<>:nn#23-31$<i>4<s>21|"
                         + ">:stanford/d:tag$<i>2<s>5<s>21<s>20]"
 
-                + "[(32-36)s:well|_4#32-36|<>:rb#32-36$<i>5<s>22|<>:advp#32-36$<i>5<s>5]"
+                        + "[(32-36)s:well|_4#32-36|<>:rb#32-36$<i>5<s>22|<>:advp#32-36$<i>5<s>5]"
 
-                + "[(38-41)s:She|_5#38-41|<>:prp#38-41$<i>6<s>23|<>:np#38-41$<i>6<s>36|<>:s#38-97$<i>18<s>6]"
+                        + "[(38-41)s:She|_5#38-41|<>:prp#38-41$<i>6<s>23|<>:np#38-41$<i>6<s>36|<>:s#38-97$<i>18<s>6]"
 
-                + "[(42-44)s:is|_6#42-44|<>:vb#42-44$<i>7<s>24|<>:vp#42-96$<i>18<s>7]"
+                        + "[(42-44)s:is|_6#42-44|<>:vb#42-44$<i>7<s>24|<>:vp#42-96$<i>18<s>7]"
 
-                + "[(45-48)s:the|_7#45-48|<>:dt#45-48$<i>8<s>25|<>:np#45-52$<i>9<s>8|<>:np#45-96$<i>18<s>9]"
+                        + "[(45-48)s:the|_7#45-48|<>:dt#45-48$<i>8<s>25|<>:np#45-52$<i>9<s>8|<>:np#45-96$<i>18<s>9]"
 
-                + "[(49-52)s:one|_8#49-52|<>:nn#49-52$<i>9<s>26|"
+                        + "[(49-52)s:one|_8#49-52|<>:nn#49-52$<i>9<s>26|"
                         + ">:stanford/d:tag$<i>5<s>6<s>26<s>23|"
                         + ">:stanford/d:tag$<i>6<s>7<s>26<s>24|"
                         + ">:stanford/d:tag$<i>7<s>8<s>26<s>25|"
                         + ">:stanford/d:tag$<i>10<s>9<s>26<s>28]"
-                
-                + "[(53-57)s:that|_9#53-57|<>:rp#53-57$<i>10<s>27|<>:sb#53-96$<i>18<s>10]"
-                                              
-                + "[(58-63)s:saved|_10#58-63|<>:vb#58-63$<i>11<s>28|<>:s#58-96$<i>18<s>11|"
+
+                        + "[(53-57)s:that|_9#53-57|<>:rp#53-57$<i>10<s>27|<>:sb#53-96$<i>18<s>10]"
+
+                        + "[(58-63)s:saved|_10#58-63|<>:vb#58-63$<i>11<s>28|<>:s#58-96$<i>18<s>11|"
                         + "<>:vp#58-96$<i>18<s>12|"
                         + ">:stanford/d:tag$<i>9<s>10<s>28<s>27|"
                         + ">:stanford/d:tag$<i>12<s>11<s>28<s>30|"
                         + ">:stanford/d:tag$<i>15<s>12<s>28<s>33]"
 
-                + "[(64-68)s:your|_11#64-68|<>:prp#64-68$<i>12<s>29|<>:np#64-75$<i>13<s>13]"
+                        + "[(64-68)s:your|_11#64-68|<>:prp#64-68$<i>12<s>29|<>:np#64-75$<i>13<s>13]"
 
-                + "[(69-75)s:master|_12#69-75|<>:nn#69-75$<i>13<s>30|"
+                        + "[(69-75)s:master|_12#69-75|<>:nn#69-75$<i>13<s>30|"
                         + ">:stanford/d:tag$<i>11<s>13<s>30<s>29]"
 
-                + "[(76-79)s:who|_13#76-79|<>:rp#76-79$<i>14<s>31|<>:sb#76-96$<i>18<s>14]"
+                        + "[(76-79)s:who|_13#76-79|<>:rp#76-79$<i>14<s>31|<>:sb#76-96$<i>18<s>14]"
 
-                + "[(80-83)s:you|_14#80-83|<>:prp#80-83$<i>15<s>32|<>:np#80-83$<i>15<s>37|<>:s#80-96$<i>18<s>15]"
+                        + "[(80-83)s:you|_14#80-83|<>:prp#80-83$<i>15<s>32|<>:np#80-83$<i>15<s>37|<>:s#80-96$<i>18<s>15]"
 
-                + "[(84-88)s:hold|_15#84-88|<>:vb#84-88$<i>16<s>33|<>:vp#84-96$<i>18<s>16|"
+                        + "[(84-88)s:hold|_15#84-88|<>:vb#84-88$<i>16<s>33|<>:vp#84-96$<i>18<s>16|"
                         + ">:stanford/d:tag$<i>13<s>14<s>33<s>31|"
                         + ">:stanford/d:tag$<i>14<s>15<s>33<s>32|"
                         + ">:stanford/d:tag$<i>17<s>16<s>33<s>35]"
 
-                + "[(89-91)s:so|_16#89-91|<>:rb#89-91$<i>17<s>341|<>:adjp#89-96$<i>18<s>17]"
+                        + "[(89-91)s:so|_16#89-91|<>:rb#89-91$<i>17<s>341|<>:adjp#89-96$<i>18<s>17]"
 
-                + "[(92-96)s:dear|_17#92-96|<>:jj#92-96$<i>18<s>35|"
-                        + ">:stanford/d:tag$<i>16<s>17<s>35<s>34]"
-                 );
-                        
+                        + "[(92-96)s:dear|_17#92-96|<>:jj#92-96$<i>18<s>35|"
+                        + ">:stanford/d:tag$<i>16<s>17<s>35<s>34]");
+
         return fd;
     }
 }

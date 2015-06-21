@@ -12,14 +12,15 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.FocusSpans;
 
-public class SpanRelationMatchQuery extends SimpleSpanQuery{
+public class SpanRelationMatchQuery extends SimpleSpanQuery {
 
     private SpanQuery operandQuery;
     private SpanQuery operand2Query;
     private SpanRelationQuery relationQuery;
 
-    public SpanRelationMatchQuery (SpanRelationQuery relation, SpanQuery operand,
-            boolean collectPayloads) {
+
+    public SpanRelationMatchQuery (SpanRelationQuery relation,
+                                   SpanQuery operand, boolean collectPayloads) {
 
         checkVariables(relation, operand);
         SpanFocusQuery sq = new SpanFocusQuery(new SpanSegmentQuery(
@@ -34,8 +35,10 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery{
         this.collectPayloads = collectPayloads;
     }
 
-    public SpanRelationMatchQuery (SpanRelationQuery relation, SpanQuery source,
-            SpanQuery target, boolean collectPayloads) {
+
+    public SpanRelationMatchQuery (SpanRelationQuery relation,
+                                   SpanQuery source, SpanQuery target,
+                                   boolean collectPayloads) {
 
         checkVariables(relation, source, target);
         SpanFocusQuery sq = null;
@@ -63,7 +66,8 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery{
 
     }
 
-    public void checkVariables(SpanRelationQuery relation, SpanQuery operand) {
+
+    public void checkVariables (SpanRelationQuery relation, SpanQuery operand) {
         if (relation == null) {
             throw new IllegalArgumentException(
                     "The relation query cannot be null.");
@@ -80,8 +84,10 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery{
         this.relationQuery = relation;
         this.operandQuery = operand;
     }
-    
-    public void checkVariables(SpanRelationQuery relation, SpanQuery operand, SpanQuery target) {
+
+
+    public void checkVariables (SpanRelationQuery relation, SpanQuery operand,
+            SpanQuery target) {
         checkVariables(relation, operand);
         if (target == null) {
             if (operand == null) {
@@ -96,8 +102,9 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery{
         this.operand2Query = target;
     }
 
+
     @Override
-    public SimpleSpanQuery clone() {
+    public SimpleSpanQuery clone () {
         if (operand2Query != null) {
             return new SpanRelationMatchQuery(
                     (SpanRelationQuery) relationQuery.clone(),
@@ -110,16 +117,18 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery{
                 (SpanQuery) operandQuery.clone(), collectPayloads);
     }
 
+
     @Override
-    public Spans getSpans(AtomicReaderContext context, Bits acceptDocs,
+    public Spans getSpans (AtomicReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
 
         return new FocusSpans((SpanFocusQuery) firstClause, context,
                 acceptDocs, termContexts);
     }
 
+
     @Override
-    public String toString(String field) {
+    public String toString (String field) {
         return getFirstClause().toString();
     }
 }

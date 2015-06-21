@@ -149,13 +149,13 @@ public class TestResult {
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
         assertEquals((long) 7, kr.getTotalResults());
-        
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toJsonString());
 
         assertEquals(7, res.at("/meta/totalResults").asInt());
-        assertEquals("spanOr([tokens:s:a, tokens:s:b])", res.at("/meta/serialQuery")
-                .asText());
+        assertEquals("spanOr([tokens:s:a, tokens:s:b])",
+                res.at("/meta/serialQuery").asText());
         assertEquals(5, res.at("/meta/itemsPerPage").asInt());
         assertEquals(0, res.at("/meta/startIndex").asInt());
 
@@ -175,24 +175,19 @@ public class TestResult {
 
         // Query
         assertEquals("koral:group", res.at("/query/@type").asText());
-        assertEquals("operation:or", res.at("/query/operation")
-                .asText());
+        assertEquals("operation:or", res.at("/query/operation").asText());
 
-        assertEquals("koral:token", res.at("/query/operands/0/@type")
+        assertEquals("koral:token", res.at("/query/operands/0/@type").asText());
+        assertEquals("koral:term", res.at("/query/operands/0/wrap/@type")
                 .asText());
-        assertEquals("koral:term",
-                res.at("/query/operands/0/wrap/@type").asText());
-        assertEquals("orth", res.at("/query/operands/0/wrap/layer")
-                .asText());
+        assertEquals("orth", res.at("/query/operands/0/wrap/layer").asText());
         assertEquals("a", res.at("/query/operands/0/wrap/key").asText());
         assertEquals("match:eq", res.at("/query/operands/0/wrap/match")
                 .asText());
-        assertEquals("koral:token", res.at("/query/operands/1/@type")
+        assertEquals("koral:token", res.at("/query/operands/1/@type").asText());
+        assertEquals("koral:term", res.at("/query/operands/1/wrap/@type")
                 .asText());
-        assertEquals("koral:term",
-                res.at("/query/operands/1/wrap/@type").asText());
-        assertEquals("orth", res.at("/query/operands/1/wrap/layer")
-                .asText());
+        assertEquals("orth", res.at("/query/operands/1/wrap/layer").asText());
         assertEquals("b", res.at("/query/operands/1/wrap/key").asText());
         assertEquals("match:eq", res.at("/query/operands/1/wrap/match")
                 .asText());
@@ -240,8 +235,8 @@ public class TestResult {
         JsonNode res = mapper.readTree(kr.toTokenListJsonString());
 
         assertEquals(3, res.at("/meta/totalResults").asInt());
-        assertEquals("spanNext(base:s:a, base:s:b)", res.at("/meta/serialQuery")
-                .asText());
+        assertEquals("spanNext(base:s:a, base:s:b)", res
+                .at("/meta/serialQuery").asText());
         assertEquals(0, res.at("/meta/startIndex").asInt());
         assertEquals(25, res.at("/meta/itemsPerPage").asInt());
 

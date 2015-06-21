@@ -38,6 +38,7 @@ public class SpanFocusQuery extends SimpleSpanQuery {
     private boolean matchTemporaryClass = false;
     private boolean removeTemporaryClasses = false;
 
+
     /**
      * Construct a new SpanFocusQuery.
      * 
@@ -80,7 +81,7 @@ public class SpanFocusQuery extends SimpleSpanQuery {
     public String toString (String field) {
         StringBuffer buffer = new StringBuffer();
         buffer.append("focus(");
-        if (matchTemporaryClass){
+        if (matchTemporaryClass) {
             buffer.append("#");
         }
         if (classNumbers.size() > 1) {
@@ -188,19 +189,23 @@ public class SpanFocusQuery extends SimpleSpanQuery {
         this.isSorted = isSorted;
     }
 
-    public boolean matchTemporaryClass() {
+
+    public boolean matchTemporaryClass () {
         return matchTemporaryClass;
     }
 
-    public void setMatchTemporaryClass(boolean matchTemporaryClass) {
+
+    public void setMatchTemporaryClass (boolean matchTemporaryClass) {
         this.matchTemporaryClass = matchTemporaryClass;
     }
 
-    public boolean removeTemporaryClasses() {
+
+    public boolean removeTemporaryClasses () {
         return removeTemporaryClasses;
     }
 
-    public void setRemoveTemporaryClasses(boolean rem) {
+
+    public void setRemoveTemporaryClasses (boolean rem) {
         this.removeTemporaryClasses = rem;
     }
 
