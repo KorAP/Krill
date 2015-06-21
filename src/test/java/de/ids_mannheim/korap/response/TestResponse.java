@@ -84,6 +84,7 @@ public class TestResponse {
         assertEquals("Fehler 4", respJson.at("/errors/0/1").asText());
     };
 
+
     // TODO: Skip this for the moment and refactor later
     @Ignore
     public void testResponseDeserialzation () throws IOException {

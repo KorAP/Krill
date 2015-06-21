@@ -62,7 +62,10 @@ public class SpanRelationQuery extends SimpleSpanQuery {
     private byte sourceClass;
     private byte targetClass;
 
-    private List<Byte> tempClassNumbers = Arrays.asList(tempSourceNum, tempTargetNum);
+    private List<Byte> tempClassNumbers = Arrays.asList(tempSourceNum,
+            tempTargetNum);
+
+
     /**
      * Constructs a SpanRelationQuery based on the given span query.
      * 
@@ -83,13 +86,15 @@ public class SpanRelationQuery extends SimpleSpanQuery {
         }
     }
 
+
     public SpanRelationQuery (SpanQuery firstClause, List<Byte> classNumbers,
-            boolean collectPayloads) {
+                              boolean collectPayloads) {
         this(firstClause, collectPayloads);
         this.tempClassNumbers = classNumbers;
         this.tempSourceNum = classNumbers.get(0);
         this.tempTargetNum = classNumbers.get(1);
     }
+
 
     @Override
     public SimpleSpanQuery clone () {
@@ -132,43 +137,53 @@ public class SpanRelationQuery extends SimpleSpanQuery {
         return sb.toString();
     }
 
-    public int getDirection() {
+
+    public int getDirection () {
         return direction;
     }
 
-    public void setDirection(int direction) {
+
+    public void setDirection (int direction) {
         this.direction = direction;
     }
 
-    public List<Byte> getTempClassNumbers() {
+
+    public List<Byte> getTempClassNumbers () {
         return tempClassNumbers;
     }
 
-    public void setTempClassNumbers(List<Byte> classNumbers) {
+
+    public void setTempClassNumbers (List<Byte> classNumbers) {
         this.tempClassNumbers = classNumbers;
     }
 
-    public byte getTempSourceNum() {
+
+    public byte getTempSourceNum () {
         return tempSourceNum;
     }
 
-    public void setTempSourceNum(byte sourceNum) {
+
+    public void setTempSourceNum (byte sourceNum) {
         this.tempSourceNum = sourceNum;
     }
 
-    public byte getTempTargetNum() {
+
+    public byte getTempTargetNum () {
         return tempTargetNum;
     }
 
-    public void setTempTargetNum(byte targetNum) {
+
+    public void setTempTargetNum (byte targetNum) {
         this.tempTargetNum = targetNum;
     }
 
-    public byte getSourceClass() {
+
+    public byte getSourceClass () {
         return sourceClass;
     }
 
-    public void setSourceClass(byte sourceClass)
+
+    public void setSourceClass (byte sourceClass)
             throws IllegalArgumentException {
         if (sourceClass < 1) {
             throw new IllegalArgumentException(
@@ -178,11 +193,13 @@ public class SpanRelationQuery extends SimpleSpanQuery {
         this.sourceClass = sourceClass;
     }
 
-    public byte getTargetClass() {
+
+    public byte getTargetClass () {
         return targetClass;
     }
 
-    public void setTargetClass(byte targetClass)
+
+    public void setTargetClass (byte targetClass)
             throws IllegalArgumentException {
         if (targetClass < 1) {
             throw new IllegalArgumentException(

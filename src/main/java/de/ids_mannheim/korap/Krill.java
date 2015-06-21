@@ -166,7 +166,6 @@ public class Krill extends Response {
         if (json.has("query")) {
             try {
                 KrillQuery kq = new KrillQuery("tokens");
-
                 SpanQueryWrapper qw = kq.fromJson(json.get("query"));
 
                 this.setQuery(kq);
@@ -209,11 +208,13 @@ public class Krill extends Response {
         try {
             if (json.has("collection")) {
                 JsonNode collNode = json.get("collection");
+
                 // TODO: Temporary
-                if (collNode.fieldNames().hasNext())
-                    this.setCollection(
-                        new KrillCollection().fromJson(collNode)
-                    );
+                if (collNode.fieldNames().hasNext()) {
+                    KrillCollection kc = new KrillCollection()
+                            .fromJson(collNode);
+                    this.setCollection(kc);
+                };
             }
 
             // <legacycode>
@@ -303,14 +304,16 @@ public class Krill extends Response {
 
         // Apply search
         else {
+
+            // This contains meta and matches
             kr = this.index.search(this);
-            this.getCollection().setIndex(this.index);
+            // this.getCollection().setIndex(this.index);
             kr.copyNotificationsFrom(this);
         };
 
-        // TODO: Only for development mode
-        kr.setRequest(this.request);
+        // kr.setRequest(this.request);
         kr.setQuery(this.getQuery());
+        kr.setCollection(this.getCollection());
 
         return kr;
     };

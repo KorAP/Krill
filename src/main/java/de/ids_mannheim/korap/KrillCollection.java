@@ -59,6 +59,7 @@ public class KrillCollection extends Notifications {
     private String id;
     private ArrayList<FilterOperation> filter;
     private int filterCount = 0;
+    private JsonNode json;
 
     // Logger
     private final static Logger log = LoggerFactory
@@ -158,6 +159,7 @@ public class KrillCollection extends Notifications {
      * @throws QueryException
      */
     public KrillCollection fromJson (JsonNode json) throws QueryException {
+        this.json = json;
         this.filter(this._fromJson(json));
         return this;
     };
@@ -614,6 +616,22 @@ public class KrillCollection extends Notifications {
         };
         return sb.toString();
     };
+
+
+    /**
+     * Return the associated KoralQuery collection object
+     * as a {@link JsonNode}. This won't work,
+     * if the object was build using a CollectionBuilder,
+     * therefore it is limited to mirror a deserialized KoralQuery
+     * object.
+     * 
+     * @return The {@link JsonNode} representing the collection object
+     *         of a deserialized KoralQuery object.
+     */
+    public JsonNode toJsonNode () {
+        return this.json;
+    };
+
 
 
     /**

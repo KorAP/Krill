@@ -61,6 +61,7 @@ public class RelationSpans extends RelationBaseSpans {
     private byte tempSourceNum, tempTargetNum;
     private byte sourceClass, targetClass;
 
+
     /**
      * Constructs RelationSpans from the given
      * {@link SpanRelationQuery}.
@@ -251,7 +252,8 @@ public class RelationSpans extends RelationBaseSpans {
         cs.setPayloads(payload);
     }
 
-    private byte[] createClassPayload(int start, int end, byte classNumber,
+
+    private byte[] createClassPayload (int start, int end, byte classNumber,
             boolean keep) {
         ByteBuffer buffer = null;
         if (keep) {

@@ -10,8 +10,9 @@ public class SpanReferenceQueryWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subQuery;
     private byte classNum;
 
+
     public SpanReferenceQueryWrapper (SpanQueryWrapper subQueryWrapper,
-            byte classNum) {
+                                      byte classNum) {
         this.subQuery = subQueryWrapper;
         if (subQuery != null) {
             this.isNull = false;
@@ -30,17 +31,19 @@ public class SpanReferenceQueryWrapper extends SpanQueryWrapper {
         }
         this.classNum = classNum;
     }
-    
+
+
     @Override
-    public SpanQuery toQuery() throws QueryException {
+    public SpanQuery toQuery () throws QueryException {
 
         if (this.isNull() || this.isEmpty()) {
             return null;
         }
 
         SpanQuery sq = subQuery.retrieveNode(this.retrieveNode).toQuery();
-        if (sq == null) return null;
-        
+        if (sq == null)
+            return null;
+
         return new SpanReferenceQuery(sq, classNum, true);
     }
 

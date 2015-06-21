@@ -46,6 +46,7 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
         this(firstClause, secondClause, true);
     }
 
+
     /**
      * Constructs a SpanSegmentQuery from the two given SpanQueries.
      * 
@@ -60,7 +61,7 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
      *            <code>false</code>.
      */
     public SpanSegmentQuery (SpanQuery firstClause, SpanQuery secondClause,
-            boolean collectPayloads) {
+                             boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
         if (firstClause instanceof SpanRelationQuery) {
             isRelation = true;

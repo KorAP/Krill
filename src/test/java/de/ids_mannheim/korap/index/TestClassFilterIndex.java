@@ -20,8 +20,9 @@ public class TestClassFilterIndex {
     private KrillIndex ki;
     private Result kr;
 
+
     @Test
-    public void testInclude() throws IOException {
+    public void testInclude () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(TestReferenceIndex.createFieldDoc0());
         ki.commit();
@@ -36,8 +37,7 @@ public class TestClassFilterIndex {
         SpanClassFilterQuery sq = new SpanClassFilterQuery(sdq,
                 ClassOperation.INCLUDE, 2, 1, true);
 
-        assertEquals(
-                sq.toString(),
+        assertEquals(sq.toString(),
                 "spanClassFilter(spanDistance({1: <tokens:np />}, {2: <tokens:vp />}, "
                         + "[(w[0:1], notOrdered, notExcluded)]),INCLUDE,2,1)");
 
@@ -63,7 +63,8 @@ public class TestClassFilterIndex {
                 "Frankenstein, treat my daughter well. She [{2:is {1:the one that "
                         + "saved your master who you hold so dear}}].", kr
                         .getMatch(2).getSnippetBrackets());
-        assertEquals("Frankenstein, treat my daughter well. She [{2:is the one that "
+        assertEquals(
+                "Frankenstein, treat my daughter well. She [{2:is the one that "
                         + "saved {1:your master} who you hold so dear}].", kr
                         .getMatch(3).getSnippetBrackets());
         assertEquals(
@@ -72,8 +73,9 @@ public class TestClassFilterIndex {
 
     }
 
+
     @Test
-    public void testDisjoint() throws IOException {
+    public void testDisjoint () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(TestReferenceIndex.createFieldDoc0());
         ki.commit();
@@ -94,7 +96,7 @@ public class TestClassFilterIndex {
 
         SpanClassFilterQuery sq = new SpanClassFilterQuery(sdq,
                 ClassOperation.DISJOINT, 2, 1, true);
-        
+
         kr = ki.search(sq, (short) 10);
         // for (Match km : kr.getMatches()) {
         // System.out.println(km.getStartPos() + "," + km.getEndPos()
@@ -119,10 +121,11 @@ public class TestClassFilterIndex {
                 kr.getMatch(2).getSnippetBrackets());
     }
 
+
     // Problem with SpanDistanceQuery - unordered distance spans,
     // -> unsorted
     @Test
-    public void testEqual() throws IOException {
+    public void testEqual () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(TestReferenceIndex.createFieldDoc0());
         ki.commit();
@@ -155,8 +158,9 @@ public class TestClassFilterIndex {
 
     }
 
+
     @Test
-    public void testDiffer() throws IOException {
+    public void testDiffer () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(TestReferenceIndex.createFieldDoc0());
         ki.commit();
@@ -194,7 +198,7 @@ public class TestClassFilterIndex {
 
 
     @Test
-    public void testIntersect() throws IOException {
+    public void testIntersect () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(TestReferenceIndex.createFieldDoc0());
         ki.commit();
@@ -217,13 +221,14 @@ public class TestClassFilterIndex {
         SpanClassFilterQuery sq = new SpanClassFilterQuery(sdq3,
                 ClassOperation.INTERSECT, 1, 2, true);
 
-        assertEquals("spanClassFilter(spanDistance({1: spanDistance(<tokens:np />, " +
-        		"{3: <tokens:vb />}, [(w[0:1], notOrdered, notExcluded)])}, " +
-        		"{2: spanDistance(<tokens:prp />, <tokens:vb />, [(w[0:1], " +
-        		"notOrdered, notExcluded)])}, [(w[0:1], notOrdered, notExcluded)]),INTERSECT,1,2)",
+        assertEquals(
+                "spanClassFilter(spanDistance({1: spanDistance(<tokens:np />, "
+                        + "{3: <tokens:vb />}, [(w[0:1], notOrdered, notExcluded)])}, "
+                        + "{2: spanDistance(<tokens:prp />, <tokens:vb />, [(w[0:1], "
+                        + "notOrdered, notExcluded)])}, [(w[0:1], notOrdered, notExcluded)]),INTERSECT,1,2)",
                 sq.toString());
-        
-        
+
+
         kr = ki.search(sq, (short) 20);
 
         // for (Match km : kr.getMatches()) {
@@ -247,7 +252,7 @@ public class TestClassFilterIndex {
 
 
     @Test
-    public void testMultipleSameClasses() throws IOException {
+    public void testMultipleSameClasses () throws IOException {
 
         ki = new KrillIndex();
         ki.addDoc(TestReferenceIndex.createFieldDoc0());
@@ -269,10 +274,10 @@ public class TestClassFilterIndex {
 
         SpanClassFilterQuery sq = new SpanClassFilterQuery(sdq2,
                 ClassOperation.INCLUDE, 2, 1, true);
-        
+
         kr = ki.search(sdq2, (short) 20);
         assertEquals(6, kr.getTotalResults());
-        
+
         // for (Match km : kr.getMatches()) {
         // System.out.println(km.getStartPos() + "," + km.getEndPos()
         // + " "

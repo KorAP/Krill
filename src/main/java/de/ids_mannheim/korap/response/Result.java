@@ -327,9 +327,8 @@ public class Result extends Krill {
 
 
     private void _addMeta (ObjectNode json) {
-        ObjectNode meta = json.has("meta") ?
-            (ObjectNode) json.get("meta") :
-            (ObjectNode) json.putObject("meta");
+        ObjectNode meta = json.has("meta") ? (ObjectNode) json.get("meta")
+                : (ObjectNode) json.putObject("meta");
 
 
         // Relevant context setting

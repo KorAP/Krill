@@ -4,6 +4,12 @@ import java.util.*;
 import java.io.*;
 
 import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.response.Result;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.ids_mannheim.korap.TestSimple.*;
 
@@ -69,6 +75,41 @@ public class TestKrillCollectionJSON {
         KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals("filter with QueryWrapperFilter(+corpusID:WPD); ",
                 kc.toString());
+    };
+
+
+    @Test
+    public void collectionMirror () throws Exception {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
+                "00005", "00006", "02439" }) {
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+        Krill krill = new Krill(_getJSONString("collection_6.jsonld"));
+        Result kr = krill.apply(ki);
+        assertEquals(kr.getTotalResults(), 86);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode res = mapper.readTree(kr.toJsonString());
+        assertTrue(res.at("/collection").isMissingNode());
+
+        krill = new Krill(_getJSONString("collection_6_withCollection.jsonld"));
+
+        kr = krill.apply(ki);
+        assertEquals(kr.getTotalResults(), 57);
+
+        res = mapper.readTree(kr.toJsonString());
+        assertFalse(res.at("/collection").isMissingNode());
+        assertEquals("koral:doc", res.at("/collection/@type").asText());
+        assertEquals("textClass", res.at("/collection/key").asText());
+        assertEquals("reisen", res.at("/collection/value").asText());
+        assertEquals("match:eq", res.at("/collection/match").asText());
     };
 
 

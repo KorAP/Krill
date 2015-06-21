@@ -128,7 +128,7 @@ public class ClassSpans extends SimpleSpans {
     };
 
 
-    protected boolean addClassPayload() throws IOException {
+    protected boolean addClassPayload () throws IOException {
         hasmorespans = true;
 
         classedPayload.clear();
@@ -151,7 +151,7 @@ public class ClassSpans extends SimpleSpans {
 
         // Add highlight information as byte array
         classedPayload.add(bb.array());
-        
+
         if (spans instanceof SimpleSpans) {
             SimpleSpans ss = (SimpleSpans) spans;
             this.hasSpanId = ss.hasSpanId;

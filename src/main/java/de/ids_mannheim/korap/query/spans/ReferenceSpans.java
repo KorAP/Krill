@@ -16,6 +16,7 @@ public class ReferenceSpans extends SimpleSpans {
 
     private byte classNum;
 
+
     public ReferenceSpans (SpanReferenceQuery query,
                            AtomicReaderContext context, Bits acceptDocs,
                            Map<Term, TermContext> termContexts)
@@ -43,7 +44,7 @@ public class ReferenceSpans extends SimpleSpans {
 
 
     private boolean hasSameClassPosition () throws IOException {
-        int start=0, end=0;
+        int start = 0, end = 0;
         boolean isFound = false;
         boolean match = false;
 
@@ -52,7 +53,8 @@ public class ReferenceSpans extends SimpleSpans {
         for (byte[] payload : firstSpans.getPayload()) {
             if (payload.length == 9 && payload[8] == classNum) {
                 if (isFound) {
-                    if (start == byte2int(payload, 0) && end == byte2int(payload, 4)){
+                    if (start == byte2int(payload, 0)
+                            && end == byte2int(payload, 4)) {
                         match = true;
                         continue;
                     }
@@ -86,7 +88,7 @@ public class ReferenceSpans extends SimpleSpans {
 
 
     @Override
-    public long cost() {
+    public long cost () {
         return firstSpans.cost();
     }
 

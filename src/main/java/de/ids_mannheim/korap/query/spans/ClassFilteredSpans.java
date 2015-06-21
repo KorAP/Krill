@@ -20,9 +20,11 @@ public class ClassFilteredSpans extends SimpleSpans {
     private ClassOperation operation;
     private byte classNum1, classNum2;
 
+
     public ClassFilteredSpans (SpanClassFilterQuery query,
-            AtomicReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+                               AtomicReaderContext context, Bits acceptDocs,
+                               Map<Term, TermContext> termContexts)
+            throws IOException {
         super(query, context, acceptDocs, termContexts);
         this.operation = query.getOperation();
         this.classNum1 = query.getClassNum1();
@@ -30,8 +32,9 @@ public class ClassFilteredSpans extends SimpleSpans {
         hasMoreSpans = firstSpans.next();
     }
 
+
     @Override
-    public boolean next() throws IOException {
+    public boolean next () throws IOException {
         while (hasMoreSpans) {
             matchPayload.clear();
             bitset1 = null;
@@ -49,17 +52,21 @@ public class ClassFilteredSpans extends SimpleSpans {
         return false;
     }
 
-    private boolean isClassOperationValid() throws IOException {
+
+    private boolean isClassOperationValid () throws IOException {
         setBitsets();
-        int cardinality = Math.max(bitset1.cardinality(), bitset2.cardinality());
+        int cardinality = Math
+                .max(bitset1.cardinality(), bitset2.cardinality());
         bitset1.and(bitset2);
         // System.out.println("cardinality:" + cardinality);
         switch (operation) {
             case DISJOINT:
-                if (bitset1.cardinality() == 0) return true;
+                if (bitset1.cardinality() == 0)
+                    return true;
                 break;
             case EQUAL:
-                if (cardinality == bitset1.cardinality()) return true;
+                if (cardinality == bitset1.cardinality())
+                    return true;
                 break;
             case DIFFER:
                 if (cardinality == 0 || cardinality != bitset1.cardinality())
@@ -71,19 +78,21 @@ public class ClassFilteredSpans extends SimpleSpans {
                 }
                 break;
             case INTERSECT:
-                if (bitset1.cardinality() > 0) return true;
+                if (bitset1.cardinality() > 0)
+                    return true;
                 break;
         }
 
         return false;
     }
 
-    private void setBitsets() throws IOException {
+
+    private void setBitsets () throws IOException {
         BitSet bs = new BitSet();
         int start, end;
         // System.out.println("------------------------");
         for (byte[] payload : firstSpans.getPayload()) {
-            if (payload.length == 9){
+            if (payload.length == 9) {
                 start = byte2int(payload, 0) + 1;
                 end = byte2int(payload, 4) + 1;
                 if (payload[8] == classNum1) {
@@ -118,14 +127,16 @@ public class ClassFilteredSpans extends SimpleSpans {
 
     }
 
+
     @Override
-    public boolean skipTo(int target) throws IOException {
+    public boolean skipTo (int target) throws IOException {
         // TODO Auto-generated method stub
         return false;
     }
 
+
     @Override
-    public long cost() {
+    public long cost () {
         // TODO Auto-generated method stub
         return 0;
     }

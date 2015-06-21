@@ -14,8 +14,10 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subQuery1;
     private SpanQueryWrapper subQuery2;
 
+
     public SpanRelationWrapper (SpanQueryWrapper relationWrapper,
-            SpanQueryWrapper operand1, SpanQueryWrapper operand2) {
+                                SpanQueryWrapper operand1,
+                                SpanQueryWrapper operand2) {
 
         this.relationQuery = relationWrapper;
         if (relationQuery != null) {
@@ -35,17 +37,17 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
 
 
     @Override
-    public SpanQuery toQuery() throws QueryException {
+    public SpanQuery toQuery () throws QueryException {
 
         if (this.isNull() || this.isEmpty()) {
             return null;
         }
 
-        SpanTermQuery relationTermQuery = (SpanTermQuery) relationQuery.retrieveNode(
-                this.retrieveNode).toQuery();
+        SpanTermQuery relationTermQuery = (SpanTermQuery) relationQuery
+                .retrieveNode(this.retrieveNode).toQuery();
         if (relationTermQuery == null)
             return null;
-        
+
         SpanRelationQuery rq = new SpanRelationQuery(relationTermQuery, true);
         SpanQuery subq1, subq2;
 
