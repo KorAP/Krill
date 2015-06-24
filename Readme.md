@@ -129,11 +129,7 @@ You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) us
 
 Annotation tools and models used in preparation of the test corpora are based on the following work:
 
-<<<<<<< HEAD
-Belica, Cyril (1994): A German Lemmatizer. Final Report MLAP93-21/WP2. Luxemburg.
-=======
 Belica, Cyril (1994): *A German Lemmatizer*. MECOLB Final Report MLAP93-21/WP2. Luxemburg.
->>>>>>> 72430e3ed81e0a18c518fa400fb9f39fe350bf46
 
 Bohnet, Bernd (2010): *Top accuracy and fast dependency parsing is not a contradiction*. In *Proceedings of COLING*, pp 89–97, Beijing, China.
 
