@@ -28,7 +28,7 @@ import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class TestMetaFields {
-
+    
     @Test
     public void searchMetaFields () throws IOException {
 
@@ -56,18 +56,18 @@ public class TestMetaFields {
         JsonNode res = mapper.readTree(kr.toJsonString());
         assertEquals(0, res.at("/matches/0/UID").asInt());
         assertEquals("WPD", res.at("/matches/0/corpusID").asText());
-        assertEquals("", res.at("/matches/0/docID").asText());
-        assertEquals("", res.at("/matches/0/textSigle").asText());
-        assertEquals("", res.at("/matches/0/ID").asText());
-        assertEquals("", res.at("/matches/0/author").asText());
-        assertEquals("", res.at("/matches/0/title").asText());
-        assertEquals("", res.at("/matches/0/subTitle").asText());
-        assertEquals("", res.at("/matches/0/textClass").asText());
-        assertEquals("", res.at("/matches/0/pubPlace").asText());
-        assertEquals("", res.at("/matches/0/pubDate").asText());
-        assertEquals("", res.at("/matches/0/foundries").asText());
-        assertEquals("", res.at("/matches/0/layerInfo").asText());
-        assertEquals("", res.at("/matches/0/tokenization").asText());
+        assertTrue(res.at("/matches/0/docID").isMissingNode());
+        assertTrue(res.at("/matches/0/textSigle").isMissingNode());
+        assertTrue(res.at("/matches/0/ID").isMissingNode());
+        assertTrue(res.at("/matches/0/author").isMissingNode());
+        assertTrue(res.at("/matches/0/title").isMissingNode());
+        assertTrue(res.at("/matches/0/subTitle").isMissingNode());
+        assertTrue(res.at("/matches/0/textClass").isMissingNode());
+        assertTrue(res.at("/matches/0/pubPlace").isMissingNode());
+        assertTrue(res.at("/matches/0/pubDate").isMissingNode());
+        assertTrue(res.at("/matches/0/foundries").isMissingNode());
+        assertTrue(res.at("/matches/0/layerInfos").isMissingNode());
+        assertTrue(res.at("/matches/0/tokenization").isMissingNode());
 
         jsonString = getString(getClass().getResource(
                 "/queries/metas/fields_2.jsonld").getFile());
@@ -80,7 +80,7 @@ public class TestMetaFields {
         mapper = new ObjectMapper();
         res = mapper.readTree(kr.toJsonString());
         assertEquals(0, res.at("/matches/0/UID").asInt());
-        assertEquals("", res.at("/matches/0/corpusID").asText());
+        assertTrue(res.at("/matches/0/corpusID").isMissingNode());
         assertEquals("Ruru,Jens.Ol,Aglarech", res.at("/matches/0/author")
                 .asText());
         assertEquals("A", res.at("/matches/0/title").asText());

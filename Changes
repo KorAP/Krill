@@ -1,4 +1,4 @@
-0.52 2015-06-23
+0.52 2015-06-24
         - [bugfix] Fixed payload filtering in FocusSpans (margaretha)
 	- [workaround] Reintroduced empty collection support,
 	  as Koral still creates them (diewald)
@@ -8,6 +8,7 @@
 	- [bugfix] Fixed sequence deserialization bug for simple unordered
 	  constraint (diewald)
 	- [bugfix] Mirror collection (diewald)
+	- [bugfix] Updated default fields for meta data (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)

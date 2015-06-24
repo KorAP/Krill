@@ -39,11 +39,28 @@ public class KrillMeta extends Notifications {
     {
         fields = new HashSet<String>(16);
 
+        // TODO: Support @all
+
         // Lift following fields per default
         // These fields are chosen for <legacy /> reasons
-        for (String field : new String[] { "ID", "UID", "textSigle",
-                "corpusID", "author", "title", "subTitle", "textClass",
-                "pubPlace", "pubDate", "foundries", "layerInfo", "tokenization" }) {
+        for (String field : new String[] {
+                "ID",
+                "UID",
+                "textSigle",
+                "corpusID",
+                "author",
+                "title",
+                "subTitle",
+                "textClass",
+                "pubPlace",
+                "pubDate",
+                "foundries",
+                "layerInfos",
+                "tokenization",
+                // New:
+                "docSigle",
+                "corpusSigle",
+            }) {
             fields.add(field);
         };
 
