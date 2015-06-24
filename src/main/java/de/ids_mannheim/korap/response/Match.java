@@ -651,11 +651,18 @@ public class Match extends AbstractDocument {
         if (this.localDocID == -1)
             return null;
 
+
         MatchIdentifier id = this.getMatchIdentifier();
 
         // Get prefix string corpus/doc
-        id.setCorpusID(this.getCorpusID());
-        id.setDocID(this.getDocID());
+        if (this.getTextSigle() != null) {
+            id.setTextSigle(this.getTextSigle());            
+        }
+        // LEGACY
+        else {
+            id.setCorpusID(this.getCorpusID());
+            id.setDocID(this.getDocID());
+        };
 
         return (this.identifier = id.toString());
     };

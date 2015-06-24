@@ -1241,9 +1241,12 @@ public class KrillIndex {
         fields.add(field);
 
         // Some initializations ...
-        int i = 0, startIndex = kr.getStartIndex(), count = kr
-                .getItemsPerPage(), hits = kr.getItemsPerPage() + startIndex, limit = meta
-                .getLimit(), itemsPerResourceCounter = 0;
+        int i = 0;
+        int startIndex = kr.getStartIndex();
+        int count = kr.getItemsPerPage();
+        int hits = kr.getItemsPerPage() + startIndex;
+        int limit = meta.getLimit();
+        int itemsPerResourceCounter = 0;
         boolean cutoff = meta.doCutOff();
         short itemsPerResource = meta.getItemsPerResource();
 

@@ -144,5 +144,6 @@ public class TestMetaFields {
         assertEquals("Goethe: Maximen und Reflexionen, (1827-1842)", res.at("/matches/0/docTitle").asText());
         assertEquals("1827", res.at("/matches/0/creationDate").asText());
         assertEquals("372-377", res.at("/matches/0/pages").asText());
+        assertEquals("match-GOE_AGX.00002-p7-8", res.at("/matches/0/ID").asText());
     };
 };

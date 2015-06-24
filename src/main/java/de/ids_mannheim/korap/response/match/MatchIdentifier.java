@@ -8,7 +8,7 @@ public class MatchIdentifier extends DocIdentifier {
 
     private ArrayList<int[]> pos = new ArrayList<>(8);
 
-    Pattern idRegex = Pattern.compile("^match-(?:([^!]+?)!)?"
+    Pattern idRegex = Pattern.compile("^match-(?:([^!]+?)[!\\.])?"
             + "([^!]+)-p([0-9]+)-([0-9]+)"
             + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)" + "(?:c.+?)?$");
     Pattern posRegex = Pattern.compile("\\(([0-9]+)\\)([0-9]+)-([0-9]+)");
@@ -22,6 +22,10 @@ public class MatchIdentifier extends DocIdentifier {
         if (matcher.matches()) {
             this.setCorpusID(matcher.group(1));
             this.setDocID(matcher.group(2));
+            // TODO! FIXME!
+
+            this.setTextSigle(this.getCorpusID() + "." + this.getDocID());
+
             this.setStartPos(Integer.parseInt(matcher.group(3)));
             this.setEndPos(Integer.parseInt(matcher.group(4)));
 
@@ -71,19 +75,26 @@ public class MatchIdentifier extends DocIdentifier {
 
 
     public String toString () {
-        if (this.docID == null)
-            return null;
-
         StringBuilder sb = new StringBuilder("match-");
 
+        if (this.docID == null) {
+            if (this.textSigle == null)
+                return null;
+
+            sb.append(this.textSigle);
+        }
+
         // Get prefix string corpus/doc
-        if (this.corpusID != null)
-            sb.append(this.corpusID).append('!');
+        // LEGACY
+        else if (this.corpusID != null) {
+            sb.append(this.corpusID).append('!').append(this.docID);
+        }
+        else {
+            sb.append(this.docID);
+        };
 
-        sb.append(this.docID);
-
-        sb.append('-');
-        sb.append(this.getPositionString());
+        sb.append('-')
+            .append(this.getPositionString());
         return sb.toString();
     };
 
