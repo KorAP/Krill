@@ -935,6 +935,7 @@ public class KrillIndex {
 
                 HashSet<String> fields = (HashSet<String>) new Krill()
                         .getMeta().getFields().clone();
+
                 fields.add(field);
 
                 // Get terms from the document
@@ -1235,6 +1236,8 @@ public class KrillIndex {
 
         // The following fields should be lifted for matches
         HashSet<String> fields = (HashSet<String>) meta.getFields().clone();
+
+        // Lift primary field
         fields.add(field);
 
         // Some initializations ...

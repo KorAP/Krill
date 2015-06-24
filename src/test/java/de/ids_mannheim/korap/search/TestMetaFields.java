@@ -85,7 +85,7 @@ public class TestMetaFields {
                 .asText());
         assertEquals("A", res.at("/matches/0/title").asText());
         assertEquals("WPD_AAA.00001", res.at("/matches/0/docID").asText());
-        assertEquals("", res.at("/matches/0/textSigle").asText());
+        assertTrue(res.at("/matches/0/textSigle").isMissingNode());
         assertEquals("match-WPD_AAA.00001-p6-7", res.at("/matches/0/ID")
                 .asText());
         assertEquals("", res.at("/matches/0/subTitle").asText());
@@ -95,5 +95,54 @@ public class TestMetaFields {
         assertEquals("", res.at("/matches/0/foundries").asText());
         assertEquals("", res.at("/matches/0/layerInfo").asText());
         assertEquals("", res.at("/matches/0/tokenization").asText());
+    };
+
+    @Test
+    public void searchMetaFieldsNew () throws IOException {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/goe/AGX-00002.json"),false);
+        ki.commit();
+
+        String jsonString = getString(getClass().getResource(
+                "/queries/metas/fields_no.jsonld").getFile());
+
+        Krill ks = new Krill(jsonString);
+        Result kr = ks.apply(ki);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode res = mapper.readTree(kr.toJsonString());
+        assertEquals(0, res.at("/matches/0/UID").asInt());
+        assertEquals("GOE_AGX.00002", res.at("/matches/0/textSigle").asText());
+        assertEquals("Maximen und Reflexionen", res.at("/matches/0/title").asText());
+        assertEquals("1982", res.at("/matches/0/pubDate").asText());
+        assertEquals("Goethe, Johann Wolfgang von", res.at("/matches/0/author").asText());
+        assertEquals("GOE_AGX", res.at("/matches/0/docSigle").asText());
+        assertEquals("GOE", res.at("/matches/0/corpusSigle").asText());
+        assertEquals("Religion und Christentum", res.at("/matches/0/subTitle").asText());
+        assertEquals("München", res.at("/matches/0/pubPlace").asText());
+        assertEquals("base/s=spans cnx/c=spans cnx/l=tokens cnx/m=tokens cnx/p=tokens cnx/s=spans cnx/syn=tokens corenlp/c=spans corenlp/ne=tokens corenlp/p=tokens corenlp/s=spans glemm/l=tokens mate/l=tokens mate/m=tokens mate/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens tt/s=spans xip/c=spans xip/l=tokens xip/p=tokens xip/s=spans", res.at("/matches/0/layerInfos").asText());
+        assertTrue(res.at("/matches/0/textType").isMissingNode());
+
+        // All fields
+        jsonString = getString(getClass().getResource(
+            "/queries/metas/fields_all.jsonld").getFile());
+
+        ks = new Krill(jsonString);
+        kr = ks.apply(ki);
+        mapper = new ObjectMapper();
+        res = mapper.readTree(kr.toJsonString());
+        assertEquals("Verlag C. H. Beck", res.at("/matches/0/publisher").asText());
+        assertEquals("Aphorismus", res.at("/matches/0/textType").asText());
+        assertEquals("Aphorismen", res.at("/matches/0/textTypeRef").asText());
+        assertEquals("Goethe, Johann Wolfgang von: Maximen und Reflexionen. Religion und Christentum, [Aphorismen], (Erstveröffentlichung: Stuttgart ; Tübingen, 1827-1842), In: Goethe, Johann Wolfgang von: Goethes Werke, Bd. 12, Schriften zur Kunst. Schriften zur Literatur. Maximen und Reflexionen, Hrsg.: Trunz, Erich. München: Verlag C. H. Beck, 1982, S. 372-377", res.at("/matches/0/reference").asText());
+        assertEquals("de", res.at("/matches/0/language").asText());
+        assertEquals("opennlp#tokens", res.at("/matches/0/tokenSource").asText());
+        assertEquals("base base/paragraphs base/sentences connexor connexor/morpho connexor/phrase connexor/sentences connexor/syntax corenlp corenlp/constituency corenlp/morpho corenlp/namedentities corenlp/sentences glemm glemm/morpho mate mate/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho treetagger/sentences xip xip/constituency xip/morpho xip/sentences", res.at("/matches/0/foundries").asText());
+        assertEquals("Goethe-Korpus", res.at("/matches/0/corpusTitle").asText());
+        assertEquals("QAO-NC", res.at("/matches/0/license").asText());
+        assertEquals("Goethe: Maximen und Reflexionen, (1827-1842)", res.at("/matches/0/docTitle").asText());
+        assertEquals("1827", res.at("/matches/0/creationDate").asText());
+        assertEquals("372-377", res.at("/matches/0/pages").asText());
     };
 };

@@ -1,0 +1,58 @@
+{
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+  "announcements" : [],
+  "errors" : [],
+  "meta" : {
+    "count":9,
+    "fields": [
+      "UID",
+      "author",
+      "textClass",
+      "title",
+      "subTitle",
+      "pubDate",
+      "pubPlace",
+      "foundries",
+      "textSigle",
+      "docSigle",
+      "corpusSigle",
+      "layerInfos",
+      "tokenSource",
+      "editor",
+      "corpusAuthor",
+      "corpusEditor",
+      "corpusTitle",
+      "corpusSubTitle",
+      "docAuthor",
+      "docEditor",
+      "docTitle",
+      "docSubTitle",
+      "publisher",
+      "reference",
+      "creationDate",
+      "keywords",
+      "textClass",
+      "textColumn",
+      "textDomain",
+      "textType",
+      "textTypeArt",
+      "textTypeRef",
+      "language",
+      "license",
+      "pages",
+      "biblEditionStatement",
+      "fileEditionStatement"
+    ]
+  },
+  "query" : {
+    "@type" : "koral:token",
+    "wrap" : {
+      "@type" : "koral:term",
+      "key" : "VERB",
+      "foundry" : "xip",
+      "layer" : "pos",
+      "match" : "match:eq"
+    }
+  },
+  "warnings" : []
+}

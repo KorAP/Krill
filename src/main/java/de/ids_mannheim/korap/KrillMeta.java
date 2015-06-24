@@ -54,10 +54,10 @@ public class KrillMeta extends Notifications {
                 "textClass",
                 "pubPlace",
                 "pubDate",
-                "foundries",
-                "layerInfos",
-                "tokenization",
+                // "foundries",
+                // "tokenization",
                 // New:
+                "layerInfos",
                 "docSigle",
                 "corpusSigle",
             }) {
