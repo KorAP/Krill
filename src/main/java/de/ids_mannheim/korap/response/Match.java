@@ -656,7 +656,7 @@ public class Match extends AbstractDocument {
 
         // Get prefix string corpus/doc
         if (this.getTextSigle() != null) {
-            id.setTextSigle(this.getTextSigle());            
+            id.setTextSigle(this.getTextSigle());
         }
         // LEGACY
         else {

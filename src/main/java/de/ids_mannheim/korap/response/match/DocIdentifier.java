@@ -7,10 +7,9 @@ import java.util.regex.*;
 // TODO: This should only use textSigle!
 
 public class DocIdentifier {
-    protected String
-        textSigle,
-        corpusID, // LEGACY
-        docID;    // LEGACY
+    protected String textSigle, corpusID, // LEGACY
+            docID;    // LEGACY
+
 
     // Legacy
     public String getCorpusID () {
@@ -37,9 +36,11 @@ public class DocIdentifier {
             this.docID = id;
     };
 
+
     public String getTextSigle () {
         return this.textSigle;
     };
+
 
     public void setTextSigle (String id) {
         if (id != null && !id.contains("!"))

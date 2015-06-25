@@ -93,8 +93,7 @@ public class MatchIdentifier extends DocIdentifier {
             sb.append(this.docID);
         };
 
-        sb.append('-')
-            .append(this.getPositionString());
+        sb.append('-').append(this.getPositionString());
         return sb.toString();
     };
 
