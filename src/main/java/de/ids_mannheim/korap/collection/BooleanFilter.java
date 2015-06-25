@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 
 /*
-  Todo: !not
   THIS IS LIMITED TO PUBDATE AT THE MOMENT AND COMPLETELY LEGACY!
 */
 
@@ -110,6 +109,33 @@ public class BooleanFilter {
             return this;
         }
         bool.add(bf.toQuery(), BooleanClause.Occur.MUST);
+        return this;
+    };
+
+
+    public BooleanFilter andNot (String type, String ... terms) {
+        for (String term : terms) {
+            bool.add(new TermQuery(new Term(type, term)),
+                    BooleanClause.Occur.MUST_NOT);
+        };
+        return this;
+    };
+
+
+    public BooleanFilter andNot (String type, RegexFilter value) {
+        bool.add(value.toQuery(type), BooleanClause.Occur.MUST_NOT);
+        return this;
+    };
+
+
+    public BooleanFilter andNot (BooleanFilter bf) {
+        if (bf.bool.clauses().size() == 1) {
+            BooleanClause bc = bf.bool.getClauses()[0];
+            bc.setOccur(BooleanClause.Occur.MUST_NOT);
+            bool.add(bc);
+            return this;
+        }
+        bool.add(bf.toQuery(), BooleanClause.Occur.MUST_NOT);
         return this;
     };
 

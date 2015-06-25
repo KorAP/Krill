@@ -8,7 +8,8 @@ public class MatchIdentifier extends DocIdentifier {
 
     private ArrayList<int[]> pos = new ArrayList<>(8);
 
-    Pattern idRegex = Pattern.compile("^match-(?:([^!]+?)[!\\.])?"
+    // TODO: "contains" is necessary for a compatibility bug in Kustvakt
+    Pattern idRegex = Pattern.compile("^(?:match-|contains-)(?:([^!]+?)[!\\.])?"
             + "([^!]+)-p([0-9]+)-([0-9]+)"
             + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)" + "(?:c.+?)?$");
     Pattern posRegex = Pattern.compile("\\(([0-9]+)\\)([0-9]+)-([0-9]+)");
@@ -18,13 +19,24 @@ public class MatchIdentifier extends DocIdentifier {
 
 
     public MatchIdentifier (String id) {
+
+        // Replace for legacy reasons with incompatible versions of Kustvakt
+        id = id.replaceAll("^(contains-|match-)([^-!_\\.]+?)!\\2_", "$1$2_");
+
         Matcher matcher = idRegex.matcher(id);
         if (matcher.matches()) {
-            this.setCorpusID(matcher.group(1));
-            this.setDocID(matcher.group(2));
-            // TODO! FIXME!
 
-            this.setTextSigle(this.getCorpusID() + "." + this.getDocID());
+            // <legacy>
+            // and test compatibility
+            if (id.contains("!") || !id.contains("_")) {
+                this.setCorpusID(matcher.group(1));
+                this.setDocID(matcher.group(2));
+            }
+            // </legacy>
+            else {
+                // this.getCorpusID() + "." + this.getDocID()
+                this.setTextSigle(matcher.group(1) + '.' + matcher.group(2));
+            };
 
             this.setStartPos(Integer.parseInt(matcher.group(3)));
             this.setEndPos(Integer.parseInt(matcher.group(4)));

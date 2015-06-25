@@ -7,6 +7,7 @@ import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.collection.BooleanFilter;
+import de.ids_mannheim.korap.collection.RegexFilter;
 import de.ids_mannheim.korap.collection.FilterOperation;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.response.Notifications;
@@ -218,19 +219,54 @@ public class KrillCollection extends Notifications {
                         bfilter.till(dateStr);
                         break;
                 };
+
                 // No good reason for gt or lt
                 return bfilter;
             }
 
+            // Filter based on string
             else if (valtype.equals("type:string")) {
                 if (json.has("match"))
                     match = json.get("match").asText();
 
-                if (match.equals("match:eq"))
+                if (match.equals("match:eq")) {
                     bfilter.and(key, json.get("value").asText());
+                }
+                else if (match.equals("match:ne")) {
+                    bfilter.andNot(key, json.get("value").asText());
+                }
+                else {
+                    // TODO!
+                    throw new QueryException(0,"Unknown match type");
+                };
 
                 return bfilter;
+            }
+
+            // Filter based on regex
+            else if (valtype.equals("type:regex")) {
+                if (json.has("match"))
+                    match = json.get("match").asText();
+
+                if (match.equals("match:eq")) {
+                    return bfilter.and(
+                        key,
+                        new RegexFilter(json.get("value").asText())
+                    );
+                }
+                else if (match.equals("match:ne")) {
+                    return bfilter.andNot(
+                        key,
+                        new RegexFilter(json.get("value").asText())
+                    );
+                };
+
+                // TODO! for excludes and contains
+                throw new QueryException(0,"Unknown document type");
             };
+
+            // TODO!
+            throw new QueryException(0,"Unknown document operation");
         }
 
         // nested group
@@ -264,7 +300,7 @@ public class KrillCollection extends Notifications {
             throw new QueryException(613,
                     "Collection query type has to be doc or docGroup");
 
-        return new BooleanFilter();
+        // return new BooleanFilter();
     };
 
 

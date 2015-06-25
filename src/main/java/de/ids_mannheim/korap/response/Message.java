@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.node.*;
  * @author Nils Diewald
  * @see de.ids_mannheim.korap.response.Messages
  */
+@JsonAutoDetect
 public class Message implements Cloneable {
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();

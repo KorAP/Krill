@@ -86,8 +86,12 @@ public abstract class AbstractDocument extends Response {
      */
     @JsonProperty("pubDate")
     public String getPubDateString () {
-        if (this.pubDate != null)
-            return this.pubDate.toDisplay();
+        if (this.pubDate != null) {
+            String date = this.pubDate.toDisplay();
+            if (date.length() == 0)
+                return null;
+            return date;
+        };
         return null;
     };
 

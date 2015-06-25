@@ -56,12 +56,14 @@ public class SearchContext {
     public SearchContext setSpanContext (String spanContext) {
         this.spanType = true;
 
+        // <LEGACY>
         if (spanContext.equals("sentence")) {
             spanContext = "s";
         }
         else if (spanContext.equals("paragraph")) {
             spanContext = "p";
         };
+        // </LEGACY>
 
         this.spanContext = spanContext;
         return this;

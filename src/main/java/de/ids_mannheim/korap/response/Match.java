@@ -151,8 +151,15 @@ public class Match extends AbstractDocument {
     public Match (String idString, boolean includeHighlights) {
         MatchIdentifier id = new MatchIdentifier(idString);
         if (id.getStartPos() > -1) {
+
+            if (id.getTextSigle() != null)
+                this.setTextSigle(id.getTextSigle());
+
+            // <legacy>
             this.setCorpusID(id.getCorpusID());
             this.setDocID(id.getDocID());
+            // </legacy>
+
             this.setStartPos(id.getStartPos());
             this.setEndPos(id.getEndPos());
 
@@ -640,7 +647,7 @@ public class Match extends AbstractDocument {
      * @see MatchIdentifier
      */
     @Override
-    @JsonProperty("ID")
+    @JsonProperty("matchID")
     public String getID () {
 
         // Identifier already given
@@ -1429,6 +1436,8 @@ public class Match extends AbstractDocument {
 
 
     // Return match as token list
+    // TODO: This will be retrieved in case "tokenList" is
+    //       requested in "fields"
     public ObjectNode toTokenList () {
         ObjectNode json = mapper.createObjectNode();
 

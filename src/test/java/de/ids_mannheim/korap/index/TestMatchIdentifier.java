@@ -20,6 +20,9 @@ import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.util.QueryException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import de.ids_mannheim.korap.index.FieldDocument;
 
 @RunWith(JUnit4.class)
@@ -135,17 +138,15 @@ public class TestMatchIdentifier {
                 "... [{f/m:acht:b}{f/m:neun:a}] ...", km.getSnippetBrackets());
 
 
-        /*
         km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8",
         		     "tokens",
         		     "f",
         		     null,
         		     false,
         		     false);
-
-        System.err.println(km.toJSON());
-        */
-
+        assertEquals("SnippetBrackets (1b)",
+                "... [{f/m:acht:{f/y:eight:b}}{f/m:neun:{f/y:nine:a}}] ...",
+                km.getSnippetBrackets());
 
         km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8", "tokens", "f",
                 "m", false, true);
@@ -180,6 +181,16 @@ public class TestMatchIdentifier {
                 + "</mark>" + "<span class=\"context-right\">"
                 + "<span class=\"more\">" + "</span>" + "</span>",
                 km.getSnippetHTML());
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("tokens", res.at("/field").asText());
+        assertTrue(res.at("/startMore").asBoolean());
+        assertTrue(res.at("/endMore").asBoolean());
+        assertEquals("c1", res.at("/corpusID").asText());
+        assertEquals("d1", res.at("/docID").asText());
+        assertEquals("match-c1!d1-p7-9(4)8-8(2)7-8", res.at("/matchID").asText());
+        assertTrue(res.at("/pubDate").isMissingNode());
     };
 
 

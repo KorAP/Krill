@@ -1,4 +1,4 @@
-0.52 2015-06-24
+0.52 2015-06-25
         - [bugfix] Fixed payload filtering in FocusSpans (margaretha)
 	- [workaround] Reintroduced empty collection support,
 	  as Koral still creates them (diewald)
@@ -10,6 +10,11 @@
 	- [bugfix] Mirror collection (diewald)
 	- [bugfix] Updated default fields for meta data (diewald)
 	- [bugfix] Updated match identifier for "sigle" data (diewald)
+	- [workaround] Support corpusID/docID and textSigle match strings
+	  (diewald)
+	- [workaround] Support matches starting with "contains"
+	  (Kustvakt bug/diewald)
+	- [bugfix] Fixed treatment of several collection types (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)

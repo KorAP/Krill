@@ -24,7 +24,6 @@ public class TestKrillCollectionJSON {
 
     final String path = "/queries/collections/";
 
-
     @Test
     public void collection1 () {
         String metaQuery = _getJSONString("collection_1.jsonld");
@@ -43,7 +42,6 @@ public class TestKrillCollectionJSON {
                         + "[19900000 TO 99999999] +pubDate:[0 TO 20061099])); ");
     };
 
-
     @Test
     public void collection3 () {
         String metaQuery = _getJSONString("collection_3.jsonld");
@@ -59,6 +57,39 @@ public class TestKrillCollectionJSON {
         assertEquals(kc.toString(), "filter with QueryWrapperFilter(+(pubDate:"
                 + "[19900000 TO 99999999] title:Mannheim)); ");
     };
+
+
+    @Test
+    public void collectionWithRegex () {
+        String query = _getJSONString("collection_7.jsonld");
+        Krill ks = new Krill(query);
+        assertFalse(ks.hasErrors());
+        assertFalse(ks.hasWarnings());
+        assertFalse(ks.hasMessages());
+        assertEquals("filter with QueryWrapperFilter(+author:/Goethe/); ", ks.getCollection().toString());
+    };
+
+
+    @Test
+    public void collectionWithNegativeRegex () {
+        String query = _getJSONString("collection_negregex.jsonld");
+        Krill ks = new Krill(query);
+        assertFalse(ks.hasErrors());
+        assertFalse(ks.hasWarnings());
+        assertFalse(ks.hasMessages());
+        assertEquals("filter with QueryWrapperFilter(-author:/Goethe/); ", ks.getCollection().toString());
+    };
+
+    @Test
+    public void collectionWithNegativeString () {
+        String query = _getJSONString("collection_ne.jsonld");
+        Krill ks = new Krill(query);
+        assertFalse(ks.hasErrors());
+        assertFalse(ks.hasWarnings());
+        assertFalse(ks.hasMessages());
+        assertEquals("filter with QueryWrapperFilter(-author:Goethe); ", ks.getCollection().toString());
+    };
+
 
 
     @Ignore

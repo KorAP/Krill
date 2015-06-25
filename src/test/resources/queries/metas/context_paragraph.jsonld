@@ -1,0 +1,1 @@
+{"@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld","errors":[],"warnings":[],"messages":[],"collection":{},"query":{"@type":"koral:token","wrap":{"@type":"koral:term","layer":"orth","key":"frage","match":"match:eq","flags":["flags:caseInsensitive"],"foundry":"opennlp"}},"meta":{"startPage":1,"count":25,"cutOff":true,"context":"base/p"}}

@@ -86,8 +86,8 @@ public class TestMetaFields {
         assertEquals("A", res.at("/matches/0/title").asText());
         assertEquals("WPD_AAA.00001", res.at("/matches/0/docID").asText());
         assertTrue(res.at("/matches/0/textSigle").isMissingNode());
-        assertEquals("match-WPD_AAA.00001-p6-7", res.at("/matches/0/ID")
-                .asText());
+        assertEquals("match-WPD_AAA.00001-p6-7", res.at("/matches/0/matchID").asText());
+        // assertEquals("p6-7", res.at("/matches/0/matchID").asText());
         assertEquals("", res.at("/matches/0/subTitle").asText());
         assertEquals("", res.at("/matches/0/textClass").asText());
         assertEquals("", res.at("/matches/0/pubPlace").asText());
@@ -129,6 +129,9 @@ public class TestMetaFields {
                 "base/s=spans cnx/c=spans cnx/l=tokens cnx/m=tokens cnx/p=tokens cnx/s=spans cnx/syn=tokens corenlp/c=spans corenlp/ne=tokens corenlp/p=tokens corenlp/s=spans glemm/l=tokens mate/l=tokens mate/m=tokens mate/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens tt/s=spans xip/c=spans xip/l=tokens xip/p=tokens xip/s=spans",
                 res.at("/matches/0/layerInfos").asText());
         assertTrue(res.at("/matches/0/textType").isMissingNode());
+        assertEquals("match-GOE_AGX.00002-p7-8", res.at("/matches/0/matchID")
+                .asText());
+
 
         // All fields
         jsonString = getString(getClass().getResource(
@@ -157,7 +160,20 @@ public class TestMetaFields {
                 res.at("/matches/0/docTitle").asText());
         assertEquals("1827", res.at("/matches/0/creationDate").asText());
         assertEquals("372-377", res.at("/matches/0/pages").asText());
-        assertEquals("match-GOE_AGX.00002-p7-8", res.at("/matches/0/ID")
+        assertEquals("match-GOE_AGX.00002-p7-8", res.at("/matches/0/matchID")
                 .asText());
+    };
+
+
+    @Test
+    public void searchMetaContext () throws IOException {
+
+        // All fields
+        String jsonString = getString(getClass().getResource(
+                "/queries/metas/context_paragraph.jsonld").getFile());
+
+        Krill ks = new Krill(jsonString);
+        assertTrue(ks.getMeta().getContext().isSpanDefined());
+        assertEquals("base/p", ks.getMeta().getContext().getSpanContext());
     };
 };

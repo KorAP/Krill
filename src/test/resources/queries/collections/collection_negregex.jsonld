@@ -1,0 +1,26 @@
+{
+  "@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+  "errors":[],
+  "warnings":[],
+  "messages":[],
+  "query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "layer":"orth",
+      "key":"der",
+      "match":"match:eq",	
+      "foundry":"opennlp"
+    }
+  },
+  "collection":{
+    "value":"Goethe",
+    "match":"match:ne",
+    "type":"type:regex",
+    "key":"author",
+    "@type":"koral:doc"
+  },
+  "meta":{
+    "cutOff":null
+  }
+}
