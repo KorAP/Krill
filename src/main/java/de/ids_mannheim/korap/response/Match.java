@@ -44,6 +44,9 @@ import de.ids_mannheim.korap.response.match.Relation;
   Refactor, future-me!
 
   The number based Highlighttype is ugly - UGLY!
+
+  substrings may be out of range - e.g. if snippets are not lifted!
+
 */
 
 /**
