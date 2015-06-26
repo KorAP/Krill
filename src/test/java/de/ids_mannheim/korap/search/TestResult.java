@@ -162,14 +162,12 @@ public class TestResult {
         assertEquals(0, res.at("/meta/startIndex").asInt());
 
         // Request meta
-        // assertEquals(1, res.at("/request/meta/startPage").asInt());
-        // assertEquals(5, res.at("/request/meta/count").asInt());
-        /*
-        assertEquals("token", res.at("/request/meta/context/left/0").asText());
-        assertEquals(3, res.at("/request/meta/context/left/1").asInt());
-        assertEquals("char", res.at("/request/meta/context/right/0").asText());
-        assertEquals(6, res.at("/request/meta/context/right/1").asInt());
-        */
+        // assertEquals(1, res.at("/meta/startPage").asInt());
+        assertEquals(5, res.at("/meta/count").asInt());
+        assertEquals("token", res.at("/meta/context/left/0").asText());
+        assertEquals(3, res.at("/meta/context/left/1").asInt());
+        assertEquals("char", res.at("/meta/context/right/0").asText());
+        assertEquals(6, res.at("/meta/context/right/1").asInt());
         assertEquals("token", res.at("/meta/context/left/0").asText());
         assertEquals(3, res.at("/meta/context/left/1").asInt());
         assertEquals("char", res.at("/meta/context/right/0").asText());

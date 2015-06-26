@@ -17,6 +17,7 @@
 	- [bugfix] Fixed treatment of several collection types (diewald)
 	- [bugfix] Remove legacy error handling in Match (diewald)
 	- [bugfix] JSON-serialization bug in match in case of error messages (diewald)
+	- [bugfix] 'fields' serialization (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)

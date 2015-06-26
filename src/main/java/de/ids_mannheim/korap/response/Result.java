@@ -306,8 +306,22 @@ public class Result extends Krill {
     @Deprecated
     public String toTokenListJsonString () {
         ObjectNode json = (ObjectNode) mapper.valueToTree(super.toJsonNode());
-        // ObjectNode json = (ObjectNode) mapper.valueToTree(this);
-        this._addMeta(json);
+
+        // Meta data for paging
+        ObjectNode meta = json.has("meta") ? (ObjectNode) json.get("meta")
+                : (ObjectNode) json.putObject("meta");
+
+        if (this.context != null)
+            meta.put("context", this.getContext().toJsonNode());
+
+        meta.put("itemsPerPage", this.itemsPerPage);
+        meta.put("startIndex", this.startIndex);
+
+        if (this.itemsPerResource > 0)
+            meta.put("itemsPerResource", this.itemsPerResource);
+
+        if (this.serialQuery != null)
+            meta.put("serialQuery", this.serialQuery);
 
         ArrayNode array = json.putArray("matches");
 
@@ -327,31 +341,20 @@ public class Result extends Krill {
 
 
     private void _addMeta (ObjectNode json) {
-        ObjectNode meta = json.has("meta") ? (ObjectNode) json.get("meta")
-                : (ObjectNode) json.putObject("meta");
+        ObjectNode meta = (ObjectNode) this.getMeta().toJsonNode();
 
-
-        // Relevant context setting
-        if (this.context != null)
-            meta.put("context", this.getContext().toJsonNode());
-
-        // ItemsPerPage
-        meta.put("itemsPerPage", this.itemsPerPage);
-
-        // Relevant itemsPerResource setting
-        if (this.itemsPerResource > 0)
-            meta.put("itemsPerResource", this.itemsPerResource);
-
-        // TODO: <test>
-        /*
-        if (this.request != null)
-            json.put("request", this.request);
-        */
+        // Lucene query for debugging purposes
         if (this.serialQuery != null)
             meta.put("serialQuery", this.serialQuery);
-        // </test>
 
+        // This may override count
+        meta.put("itemsPerPage", this.itemsPerPage);
 
-        meta.put("startIndex", this.startIndex);
+        if (json.has("meta")) {
+            ((ObjectNode) json.get("meta")).putAll(meta);
+        }
+        else {
+            json.put("meta", meta);
+        };
     };
 };

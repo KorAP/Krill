@@ -54,6 +54,19 @@ public class TestMetaFields {
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toJsonString());
+
+        // System.err.println(res.toString());
+        // mirror fields
+        assertEquals(9, res.at("/meta/count").asInt());
+
+        if (res.at("/meta/fields/0").asText().equals("UID")) {
+            assertEquals("corpusID", res.at("/meta/fields/1").asText());
+        }
+        else {
+            assertEquals("corpusID", res.at("/meta/fields/0").asText());
+            assertEquals("UID", res.at("/meta/fields/1").asText());
+        };
+
         assertEquals(0, res.at("/matches/0/UID").asInt());
         assertEquals("WPD", res.at("/matches/0/corpusID").asText());
         assertTrue(res.at("/matches/0/docID").isMissingNode());

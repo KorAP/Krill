@@ -55,7 +55,8 @@ import org.slf4j.LoggerFactory;
  * @see KrillMeta
  * @see KrillIndex
  */
-// Todo: Use a krill.properties configuration file
+// TODO: Use a krill.properties configuration file
+// TODO: Reuse passed JSON object instead of creating a new response!
 public class Krill extends Response {
     private KrillIndex index;
     private SpanQuery spanQuery;
@@ -311,9 +312,9 @@ public class Krill extends Response {
             kr.copyNotificationsFrom(this);
         };
 
-        // kr.setRequest(this.request);
         kr.setQuery(this.getQuery());
         kr.setCollection(this.getCollection());
+        kr.setMeta(this.getMeta());
 
         return kr;
     };

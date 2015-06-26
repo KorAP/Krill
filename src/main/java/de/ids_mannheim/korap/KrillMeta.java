@@ -323,9 +323,6 @@ public class KrillMeta extends Notifications {
         ObjectNode json = mapper.createObjectNode();
         // json.put("@type", "koral:meta");
 
-        ArrayNode fieldNode = mapper.createArrayNode();
-        fieldNode.addPOJO(this.fields);
-
         // <legacy>
         // Add cutOff attribute
         if (this.cutOff)
@@ -349,6 +346,10 @@ public class KrillMeta extends Notifications {
         json.put("context", this.getContext().toJsonNode());
 
         // Add fields attribute
+        ArrayNode fieldNode = mapper.createArrayNode();
+        Iterator<String> field = this.fields.iterator();
+        while (field.hasNext())
+            fieldNode.add(field.next());
         json.put("fields", fieldNode);
 
         // Add itemsPerResource attribute
