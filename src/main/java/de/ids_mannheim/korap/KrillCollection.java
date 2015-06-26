@@ -237,7 +237,7 @@ public class KrillCollection extends Notifications {
                 }
                 else {
                     // TODO!
-                    throw new QueryException(0,"Unknown match type");
+                    throw new QueryException(0, "Unknown match type");
                 };
 
                 return bfilter;
@@ -249,24 +249,20 @@ public class KrillCollection extends Notifications {
                     match = json.get("match").asText();
 
                 if (match.equals("match:eq")) {
-                    return bfilter.and(
-                        key,
-                        new RegexFilter(json.get("value").asText())
-                    );
+                    return bfilter.and(key, new RegexFilter(json.get("value")
+                            .asText()));
                 }
                 else if (match.equals("match:ne")) {
-                    return bfilter.andNot(
-                        key,
-                        new RegexFilter(json.get("value").asText())
-                    );
+                    return bfilter.andNot(key, new RegexFilter(json
+                            .get("value").asText()));
                 };
 
                 // TODO! for excludes and contains
-                throw new QueryException(0,"Unknown document type");
+                throw new QueryException(0, "Unknown document type");
             };
 
             // TODO!
-            throw new QueryException(0,"Unknown document operation");
+            throw new QueryException(0, "Unknown document operation");
         }
 
         // nested group

@@ -86,7 +86,8 @@ public class TestMetaFields {
         assertEquals("A", res.at("/matches/0/title").asText());
         assertEquals("WPD_AAA.00001", res.at("/matches/0/docID").asText());
         assertTrue(res.at("/matches/0/textSigle").isMissingNode());
-        assertEquals("match-WPD_AAA.00001-p6-7", res.at("/matches/0/matchID").asText());
+        assertEquals("match-WPD_AAA.00001-p6-7", res.at("/matches/0/matchID")
+                .asText());
         // assertEquals("p6-7", res.at("/matches/0/matchID").asText());
         assertEquals("", res.at("/matches/0/subTitle").asText());
         assertEquals("", res.at("/matches/0/textClass").asText());

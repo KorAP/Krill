@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -60,7 +61,7 @@ public class Match extends AbstractDocument {
     private final static Logger log = LoggerFactory.getLogger(Match.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
@@ -76,7 +77,6 @@ public class Match extends AbstractDocument {
     @JsonIgnore
     public int potentialStartPosChar = -1, potentialEndPosChar = -1;
 
-    private String error = null;
     private String version;
 
     // TEMPORARILY
@@ -721,26 +721,6 @@ public class Match extends AbstractDocument {
         id.setPos(pos);
 
         return id.toString();
-    };
-
-
-    /**
-     * Get possible error message.
-     */
-    // Identical to Result
-    public String getError () {
-        return this.error;
-    };
-
-
-    /**
-     * Set error message.
-     * 
-     * @param msg
-     *            The error message.
-     */
-    public void setError (String msg) {
-        this.error = msg;
     };
 
 
@@ -1411,12 +1391,9 @@ public class Match extends AbstractDocument {
 
 
     // Identical to Result!
-    public String toJsonString () {
-        ObjectNode json = (ObjectNode) mapper.valueToTree(this);
-
-        // Match was no match
-        if (json.size() == 0)
-            return "{}";
+    public JsonNode toJsonNode () {
+        // ObjectNode json = (ObjectNode) mapper.valueToTree(this);
+        ObjectNode json = (ObjectNode) super.toJsonNode();
 
         if (this.context != null)
             json.put("context", this.getContext().toJsonNode());
@@ -1424,6 +1401,16 @@ public class Match extends AbstractDocument {
         if (this.version != null)
             json.put("version", this.getVersion());
 
+        return json;
+    };
+
+
+    public String toJsonString () {
+        JsonNode json = (JsonNode) this.toJsonNode();
+
+        // Match was no match
+        if (json.size() == 0)
+            return "{}";
         try {
             return mapper.writeValueAsString(json);
         }

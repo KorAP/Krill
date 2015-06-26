@@ -816,17 +816,17 @@ public class KrillIndex {
         // Create a filter based on the corpusID and the docID
         BooleanQuery bool = new BooleanQuery();
         if (match.getTextSigle() != null) {
-            bool.add(new TermQuery(
-                new Term("textSigle", match.getTextSigle())
-            ), BooleanClause.Occur.MUST);
+            bool.add(
+                    new TermQuery(new Term("textSigle", match.getTextSigle())),
+                    BooleanClause.Occur.MUST);
         }
 
         // LEGACY
         else {
             bool.add(new TermQuery(new Term("ID", match.getDocID())),
-                     BooleanClause.Occur.MUST);
+                    BooleanClause.Occur.MUST);
             bool.add(new TermQuery(new Term("corpusID", match.getCorpusID())),
-                     BooleanClause.Occur.MUST);
+                    BooleanClause.Occur.MUST);
         };
 
         Filter filter = (Filter) new QueryWrapperFilter(bool);
@@ -849,21 +849,17 @@ public class KrillIndex {
             if (includeSpans)
                 regex.append("((\">\"|\"<\"\">\")\":\")?");
 
-System.err.println("1 >>>>>>> " + regex);
-
             // There is a foundry given
             if (foundry != null && foundry.size() > 0) {
 
                 // Filter out bad foundries
                 for (i = foundry.size() - 1; i >= 0; i--) {
                     if (!harmlessFoundry.matcher(foundry.get(i)).matches()) {
-                        throw new QueryException("Invalid foundry requested: '"
-                                + foundry.get(i) + "'");
-                        // foundry.remove(i);
+                        match.addError(970, "Invalid foundry requested",
+                                foundry.get(i));
+                        return match;
                     };
                 };
-
-System.err.println("2 >>>>>>> " + regex);
 
                 // Build regex for multiple foundries
                 if (foundry.size() > 0) {
@@ -887,8 +883,6 @@ System.err.println("2 >>>>>>> " + regex);
                                 // layer.remove(i);
                             };
                         };
-
-System.err.println("3 >>>>>>> " + regex);
 
                         // Build regex for multiple layers
                         if (layer.size() > 0) {
@@ -914,20 +908,14 @@ System.err.println("3 >>>>>>> " + regex);
             };
             regex.append("(.){1,}|_[0-9]+");
 
-System.err.println("5 >>>>>>> " + regex);
-
             if (DEBUG)
                 log.trace("The final regexString is {}", regex.toString());
-
-System.err.println("6 >>>>>>> " + regex.toString());
 
             RegExp regexObj = new RegExp(regex.toString(), RegExp.COMPLEMENT);
             fst = new CompiledAutomaton(regexObj.toAutomaton());
             if (DEBUG)
                 log.trace("The final regexObj is {}", regexObj.toString());
         };
-
-        System.err.println("++++++++++++++++++++++++++++++++++++++++++");
 
         try {
             // Iterate over all atomic indices and find the matching document
@@ -1082,8 +1070,8 @@ System.err.println("6 >>>>>>> " + regex.toString());
             };
         }
         catch (IOException e) {
+            match.addError(600, "Unable to read index", e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());
-            match.setError(e.getLocalizedMessage());
         };
 
         return match;

@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.response;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.response.Message;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,6 +25,8 @@ import java.util.*;
  * @see Notifications
  * @see Message
  */
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Messages implements Cloneable, Iterable<Message> {
 
     // Create object mapper for JSON generation
@@ -249,8 +252,12 @@ public class Messages implements Cloneable, Iterable<Message> {
      */
     public JsonNode toJsonNode () {
         ArrayNode messageArray = mapper.createArrayNode();
-        for (Message msg : this.messages)
-            messageArray.add(msg.toJsonNode());
+
+        for (Message msg : this.messages) {
+
+            messageArray.add((JsonNode) msg.toJsonNode());
+        };
+
         return (JsonNode) messageArray;
     };
 

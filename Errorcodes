@@ -80,3 +80,4 @@
 * 900 - 999 - Corpus Data errors
 952: "Given offset information is not numeric"
 953: "Given offset information is incomplete"
+970: "Invalid foundry requested"

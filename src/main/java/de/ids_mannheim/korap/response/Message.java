@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.response;
 
 import java.util.LinkedList;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,7 +22,8 @@ import com.fasterxml.jackson.databind.node.*;
  * @author Nils Diewald
  * @see de.ids_mannheim.korap.response.Messages
  */
-@JsonAutoDetect
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Message implements Cloneable {
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();

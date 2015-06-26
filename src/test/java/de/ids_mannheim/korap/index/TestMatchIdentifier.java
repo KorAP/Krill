@@ -28,6 +28,9 @@ import de.ids_mannheim.korap.index.FieldDocument;
 @RunWith(JUnit4.class)
 public class TestMatchIdentifier {
 
+    ObjectMapper mapper = new ObjectMapper();
+
+
     @Test
     public void identifierExample1 () throws IOException, QueryException {
         MatchIdentifier id = new MatchIdentifier("match-c1!d1-p4-20");
@@ -138,12 +141,8 @@ public class TestMatchIdentifier {
                 "... [{f/m:acht:b}{f/m:neun:a}] ...", km.getSnippetBrackets());
 
 
-        km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8",
-        		     "tokens",
-        		     "f",
-        		     null,
-        		     false,
-        		     false);
+        km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8", "tokens", "f",
+                null, false, false);
         assertEquals("SnippetBrackets (1b)",
                 "... [{f/m:acht:{f/y:eight:b}}{f/m:neun:{f/y:nine:a}}] ...",
                 km.getSnippetBrackets());
@@ -182,14 +181,14 @@ public class TestMatchIdentifier {
                 + "<span class=\"more\">" + "</span>" + "</span>",
                 km.getSnippetHTML());
 
-        ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(km.toJsonString());
         assertEquals("tokens", res.at("/field").asText());
         assertTrue(res.at("/startMore").asBoolean());
         assertTrue(res.at("/endMore").asBoolean());
         assertEquals("c1", res.at("/corpusID").asText());
         assertEquals("d1", res.at("/docID").asText());
-        assertEquals("match-c1!d1-p7-9(4)8-8(2)7-8", res.at("/matchID").asText());
+        assertEquals("match-c1!d1-p7-9(4)8-8(2)7-8", res.at("/matchID")
+                .asText());
         assertTrue(res.at("/pubDate").isMissingNode());
     };
 
@@ -504,6 +503,44 @@ public class TestMatchIdentifier {
                 layerList, false, false, false);
         assertEquals("f|it/is", km.getSnippetBrackets(),
                 "... [{it/is:4:a}] ...");
+    };
+
+
+    @Test
+    public void indexExampleFailingFoundry () throws IOException,
+            QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createSimpleFieldDoc4());
+        ki.commit();
+
+        Match km = ki.getMatchInfo("match-c1!d4-p3-9", "tokens", "*", "m",
+                false, false);
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("c1", res.at("/corpusID").asText());
+        assertEquals("d4", res.at("/docID").asText());
+        assertEquals("Invalid foundry requested", res.at("/errors/0/1")
+                .asText());
+    };
+
+
+    @Test
+    public void indexExampleNullInfo () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createSimpleFieldDoc4());
+        ki.commit();
+        Match km = ki.getMatchInfo("match-c1!d4-p3-9", "tokens", null, null,
+                false, false);
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("tokens", res.at("/field").asText());
+        assertTrue(res.at("/startMore").asBoolean());
+        assertTrue(res.at("/endMore").asBoolean());
+        assertEquals("c1", res.at("/corpusID").asText());
+        assertEquals("d4", res.at("/docID").asText());
+        assertEquals(
+                "<span class=\"context-left\"><span class=\"more\"></span></span><mark><span title=\"f/m:vier\"><span title=\"f/y:four\"><span title=\"it/is:4\"><span title=\"x/o:viertens\">a</span></span></span></span><span title=\"f/m:fuenf\"><span title=\"f/y:five\"><span title=\"it/is:5\"><span title=\"x/o:fünftens\">b</span></span></span></span><span title=\"f/m:sechs\"><span title=\"f/y:six\"><span title=\"it/is:6\"><span title=\"x/o:sechstens\">c</span></span></span></span><span title=\"f/m:sieben\"><span title=\"f/y:seven\"><span title=\"it/is:7\"><span title=\"x/o:siebtens\">a</span></span></span></span><span title=\"f/m:acht\"><span title=\"f/y:eight\"><span title=\"it/is:8\"><span title=\"x/o:achtens\">b</span></span></span></span><span title=\"f/m:neun\"><span title=\"f/y:nine\"><span title=\"it/is:9\"><span title=\"x/o:neuntens\">a</span></span></span></span></mark><span class=\"context-right\"><span class=\"more\"></span></span>",
+                res.at("/snippet").asText());
+        assertEquals("match-c1!d4-p3-9", res.at("/matchID").asText());
+        assertTrue(res.at("/pubDate").isMissingNode());
     };
 
 

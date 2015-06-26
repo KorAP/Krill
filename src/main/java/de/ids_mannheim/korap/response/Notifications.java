@@ -66,6 +66,7 @@ public class Notifications {
      * 
      * @return {@link Messages} representing all warnings
      */
+    @JsonIgnore
     public Messages getWarnings () {
         return this.warnings;
     };
@@ -94,6 +95,7 @@ public class Notifications {
      * @return The message in case it exists, otherwise
      *         <code>null</code>
      */
+    @JsonIgnore
     public Message getWarning (int index) {
         if (this.warnings != null)
             return this.warnings.get(index);
@@ -163,6 +165,7 @@ public class Notifications {
      * 
      * @return The {@link Messages} object representing all errors
      */
+    @JsonIgnore
     public Messages getErrors () {
         return this.errors;
     };
@@ -190,6 +193,7 @@ public class Notifications {
      * @return The message in case it exists, otherwise
      *         <code>null</code>
      */
+    @JsonIgnore
     public Message getError (int index) {
         if (this.errors != null)
             return this.errors.get(index);
@@ -271,6 +275,7 @@ public class Notifications {
      * 
      * @return {@link Messages} representing all messages
      */
+    @JsonIgnore
     public Messages getMessages () {
         return this.messages;
     };
@@ -298,6 +303,7 @@ public class Notifications {
      * @return The message in case it exists, otherwise
      *         <code>null</code>
      */
+    @JsonIgnore
     public Message getMessage (int index) {
         if (this.messages != null)
             return this.messages.get(index);

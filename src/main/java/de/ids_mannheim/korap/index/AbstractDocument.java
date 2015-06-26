@@ -6,8 +6,12 @@ import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.Response;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 
 /*
  * Todo:: Author and textClass may be arrays!
@@ -24,8 +28,11 @@ import com.fasterxml.jackson.annotation.*;
  * 
  * @author diewald
  */
+@JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractDocument extends Response {
+    ObjectMapper mapper = new ObjectMapper();
+
     private String primaryData;
 
     @JsonIgnore
@@ -1049,5 +1056,18 @@ public abstract class AbstractDocument extends Response {
     @Deprecated
     public void setID (String ID) {
         this.ID = ID;
+    };
+
+
+    /**
+     * Serialize response as a {@link JsonNode}.
+     * 
+     * @return {@link JsonNode} representation of the response
+     */
+    @Override
+    public JsonNode toJsonNode () {
+        ObjectNode json = (ObjectNode) super.toJsonNode();
+        json.putAll((ObjectNode) mapper.valueToTree(this));
+        return json;
     };
 };

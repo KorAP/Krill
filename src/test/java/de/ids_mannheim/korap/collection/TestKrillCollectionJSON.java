@@ -24,6 +24,7 @@ public class TestKrillCollectionJSON {
 
     final String path = "/queries/collections/";
 
+
     @Test
     public void collection1 () {
         String metaQuery = _getJSONString("collection_1.jsonld");
@@ -41,6 +42,7 @@ public class TestKrillCollectionJSON {
                 "filter with QueryWrapperFilter(+(+pubDate:"
                         + "[19900000 TO 99999999] +pubDate:[0 TO 20061099])); ");
     };
+
 
     @Test
     public void collection3 () {
@@ -66,7 +68,8 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("filter with QueryWrapperFilter(+author:/Goethe/); ", ks.getCollection().toString());
+        assertEquals("filter with QueryWrapperFilter(+author:/Goethe/); ", ks
+                .getCollection().toString());
     };
 
 
@@ -77,8 +80,10 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("filter with QueryWrapperFilter(-author:/Goethe/); ", ks.getCollection().toString());
+        assertEquals("filter with QueryWrapperFilter(-author:/Goethe/); ", ks
+                .getCollection().toString());
     };
+
 
     @Test
     public void collectionWithNegativeString () {
@@ -87,7 +92,8 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("filter with QueryWrapperFilter(-author:Goethe); ", ks.getCollection().toString());
+        assertEquals("filter with QueryWrapperFilter(-author:Goethe); ", ks
+                .getCollection().toString());
     };
 
 

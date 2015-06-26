@@ -1,4 +1,4 @@
-0.52 2015-06-25
+0.52 2015-06-26
         - [bugfix] Fixed payload filtering in FocusSpans (margaretha)
 	- [workaround] Reintroduced empty collection support,
 	  as Koral still creates them (diewald)
@@ -15,6 +15,8 @@
 	- [workaround] Support matches starting with "contains"
 	  (Kustvakt bug/diewald)
 	- [bugfix] Fixed treatment of several collection types (diewald)
+	- [bugfix] Remove legacy error handling in Match (diewald)
+	- [bugfix] JSON-serialization bug in match in case of error messages (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)
