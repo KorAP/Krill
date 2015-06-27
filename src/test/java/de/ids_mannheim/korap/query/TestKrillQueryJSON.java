@@ -32,6 +32,19 @@ public class TestKrillQueryJSON {
         assertTrue(sqwi.isOptional());
     };
 
+    @Test
+    public void queryJSONBsp1Disjunction () throws QueryException {
+        SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
+                "/queries/bsp1c.jsonld").getFile());
+
+        // There is a repetition in here
+        // ([base=foo]|[base=bar])[base=foobar]
+        assertEquals(
+                sqwi.toQuery().toString(),
+                "spanOr([tokens:base:foo, spanRepetition(spanNext(tokens:base:foo, tokens:base:bar){1,100})])");
+        assertTrue(sqwi.isOptional());
+    };
+
 
     @Test
     public void queryJSONBsp1b () throws QueryException {
