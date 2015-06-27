@@ -476,6 +476,16 @@ public class TestKrillQueryJSON {
 
 
     @Test
+    public void queryJSONspanWrapDeserializationBug () throws QueryException {
+        // contains(<s>, Erde  []* Sonne)
+        SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
+                "/queries/bugs/unspecified_key_bug.jsonld").getFile());
+
+        assertEquals(sqwi.toQuery().toString(), "spanContain(tokens:s, spanDistance(tokens:s:Erde, tokens:s:Sonne, [(w[0:100], ordered, notExcluded)]))");
+    };
+
+
+    @Test
     public void queryJSONflags2 () throws QueryException {
         // buchstabe/i
         try {

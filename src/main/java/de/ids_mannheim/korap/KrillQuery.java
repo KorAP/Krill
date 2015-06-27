@@ -301,7 +301,10 @@ public class KrillQuery extends Notifications {
                 return this._segFromJson(json.get("wrap"));
 
             case "koral:span":
-                return this._termFromJson(json);
+                if (!json.has("wrap"))
+                    return this._termFromJson(json);
+
+                return this._termFromJson(json.get("wrap"));
         };
 
         // Unknown query type
@@ -503,7 +506,6 @@ public class KrillQuery extends Notifications {
     private JsonNode _extractReferentClass (JsonNode node, int classNum) {
         JsonNode referent;
         if (node.has("classOut") && node.get("classOut").asInt() == classNum) {
-            // System.out.println("found: " + node.toString());
             return node;
         }
         else {
@@ -1031,7 +1033,6 @@ public class KrillQuery extends Notifications {
     // Deserialize koral:term
     private SpanQueryWrapper _termFromJson (JsonNode json, String direction)
             throws QueryException {
-
         if (!json.has("key") || json.get("key").asText().length() < 1) {
             if (!json.has("attr"))
                 throw new QueryException(740,
