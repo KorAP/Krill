@@ -481,7 +481,7 @@ public class TestKrillQueryJSON {
         SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
                 "/queries/bugs/unspecified_key_bug.jsonld").getFile());
 
-        assertEquals(sqwi.toQuery().toString(), "spanContain(tokens:s, spanDistance(tokens:s:Erde, tokens:s:Sonne, [(w[0:100], ordered, notExcluded)]))");
+        assertEquals(sqwi.toQuery().toString(), "spanContain(<tokens:s />, spanDistance(tokens:s:Erde, tokens:s:Sonne, [(w[0:100], ordered, notExcluded)]))");
     };
 
 

@@ -304,7 +304,8 @@ public class KrillQuery extends Notifications {
                 if (!json.has("wrap"))
                     return this._termFromJson(json);
 
-                return this._termFromJson(json.get("wrap"));
+                // This is an ugly hack
+                return this._termFromJson(json.get("wrap"), "<>:");
         };
 
         // Unknown query type
@@ -1031,6 +1032,7 @@ public class KrillQuery extends Notifications {
 
 
     // Deserialize koral:term
+    // TODO: Not optimal as it does not respect non-term
     private SpanQueryWrapper _termFromJson (JsonNode json, String direction)
             throws QueryException {
         if (!json.has("key") || json.get("key").asText().length() < 1) {
@@ -1047,6 +1049,13 @@ public class KrillQuery extends Notifications {
         Boolean isTerm = json.get("@type").asText().equals("koral:term") ? true
                 : false;
         Boolean isCaseInsensitive = false;
+
+
+        // Ugly direction hack
+        if (direction != null && direction.equals("<>:")) {
+            isTerm = false;
+            direction = null;
+        };
 
         // <legacy>
         if (json.has("caseInsensitive")

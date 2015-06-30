@@ -1,4 +1,4 @@
-0.52 2015-06-27
+0.52 2015-06-30
         - [bugfix] Fixed payload filtering in FocusSpans (margaretha)
 	- [workaround] Reintroduced empty collection support,
 	  as Koral still creates them (diewald)
@@ -19,7 +19,7 @@
 	- [bugfix] JSON-serialization bug in match in case of error messages (diewald)
 	- [bugfix] 'fields' serialization (diewald)
 	- [bugfix] Deserialization of group:disjunction (diewald)
-	- [bugfix] Deserialization of spn/wrap (diewald)
+	- [bugfix] Deserialization of span/wrap (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)
