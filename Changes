@@ -19,7 +19,7 @@
 	- [bugfix] JSON-serialization bug in match in case of error messages (diewald)
 	- [bugfix] 'fields' serialization (diewald)
 	- [bugfix] Deserialization of group:disjunction (diewald)
-	- [bugfix] Deserialization of span/wrap (diewald)
+	- [bugfix] Deserialization of wrapped spans (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)
