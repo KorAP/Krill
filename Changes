@@ -1,4 +1,4 @@
-0.52 2015-06-30
+0.52 2015-07-02
         - [bugfix] Fixed payload filtering in FocusSpans (margaretha)
 	- [workaround] Reintroduced empty collection support,
 	  as Koral still creates them (diewald)
@@ -16,10 +16,13 @@
 	  (Kustvakt bug/diewald)
 	- [bugfix] Fixed treatment of several collection types (diewald)
 	- [bugfix] Remove legacy error handling in Match (diewald)
-	- [bugfix] JSON-serialization bug in match in case of error messages (diewald)
+	- [bugfix] JSON-serialization bug in match in case of
+	  error messages (diewald)
 	- [bugfix] 'fields' serialization (diewald)
 	- [bugfix] Deserialization of group:disjunction (diewald)
 	- [bugfix] Deserialization of wrapped spans (diewald)
+	- [bugfix] Fix KoralQuery mirroring in case of
+	  parsing failures (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)

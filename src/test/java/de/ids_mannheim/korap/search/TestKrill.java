@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.search;
 
 import static de.ids_mannheim.korap.TestSimple.getString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
@@ -260,6 +261,41 @@ public class TestKrill {
         assertEquals(49950, kr.getStartIndex());
         assertEquals(kr.getTotalResults(), 0);
     };
+
+    /*
+     * Queries should be mirrored correctly for debugging reasons.
+     */
+    @Test
+    public void queryJSONmirrorTestBug () throws IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        String json = getString(getClass().getResource(
+            "/queries/bugs/failing_mirror.jsonld").getFile()
+        );
+        Krill ks = new Krill(json);
+        Result kr = ks.apply(ki);
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode res = mapper.readTree(kr.toJsonString());
+
+        assertEquals("Unable to parse JSON", res.at("/errors/0/1").asText());
+
+        json = getString(getClass().getResource(
+            "/queries/bugs/failing_mirror_2.jsonld").getFile()
+        );
+        ks = new Krill(json);
+        kr = ks.apply(ki);
+
+        res = mapper.readTree(kr.toJsonString());
+
+        assertEquals(23,res.at("/meta/count").asInt());
+        assertEquals(25,res.at("/meta/itemsPerPage").asInt());
+        assertEquals("base/s:p", res.at("/meta/context").asText());
+        assertFalse(res.at("/query").isMissingNode());
+        assertTrue(res.at("/query/@type").isMissingNode());
+        assertTrue(res.at("/collection/@type").isMissingNode());
+    };
+
 
 
     @Test

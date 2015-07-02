@@ -22,6 +22,11 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+/**
+ * These tests are meant to fail in a predictable way - but they describe
+ * temporary behaviour and will be disabled once these features are part of Krill.
+ */
+
 @RunWith(JUnit4.class)
 public class TestTemporaryQueryLimitations {
 
@@ -52,9 +57,9 @@ public class TestTemporaryQueryLimitations {
         assertEquals(kr.getStartIndex(), 0);
 
         assertEquals("This is a warning coming from the serialization", kr
-                .getWarning(1).getMessage());
+                     .getWarning(0).getMessage());
         assertEquals("Class reference checks are currently not supported"
-                + " - results may not be correct", kr.getWarning(0)
-                .getMessage());
+                     + " - results may not be correct", kr.getWarning(1)
+                     .getMessage());
     };
 };

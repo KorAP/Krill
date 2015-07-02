@@ -1,0 +1,23 @@
+{
+  "@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+  "messages":[
+    [303,"Deprecated 2014-07-24: 'min' and 'max' to be supported until 3 months from deprecation date."]
+  ],
+  "query":{
+    "wrap":{
+      "@type":"koral:term",
+      "key":"s"
+    }
+  },
+  "meta":{
+    "startPage":1,
+    "count":25,
+    "cutOff":true,
+    "context":"base/s:p"
+  },
+  "collection": {
+    "value": "Goethe",
+    "match": "match:eq",
+    "key": "author",
+  }
+}

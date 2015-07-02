@@ -1240,7 +1240,7 @@ public class KrillIndex {
         // Todo: Make kr subclassing ks - so ks has a method for a new Result!
         Result kr = new Result(query.toString(), meta.getStartIndex(),
                 meta.getCount(), meta.getContext());
-
+        
         // Set version info to result
         if (this.getVersion() != null)
             kr.setVersion(this.getVersion());

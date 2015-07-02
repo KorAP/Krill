@@ -167,9 +167,9 @@ public class Krill extends Response {
         if (json.has("query")) {
             try {
                 KrillQuery kq = new KrillQuery("tokens");
-                SpanQueryWrapper qw = kq.fromJson(json.get("query"));
-
                 this.setQuery(kq);
+
+                SpanQueryWrapper qw = kq.fromJson(json.get("query"));
 
                 // Throw an error, in case the query matches everywhere
                 if (qw.isEmpty())
@@ -212,20 +212,19 @@ public class Krill extends Response {
 
                 // TODO: Temporary
                 if (collNode.fieldNames().hasNext()) {
-                    KrillCollection kc = new KrillCollection()
-                            .fromJson(collNode);
+                    KrillCollection kc = new KrillCollection();
                     this.setCollection(kc);
+                    kc.fromJson(collNode);
                 };
             }
 
             // <legacycode>
             else if (json.has("collections")) {
                 KrillCollection kc = new KrillCollection();
+                this.setCollection(kc);
                 for (JsonNode collection : json.get("collections")) {
                     kc.fromJsonLegacy(collection);
                 };
-
-                this.setCollection(kc);
             };
             // </legacycode>
         }
@@ -234,7 +233,8 @@ public class Krill extends Response {
         };
 
         // Parse "meta" attribute
-        if (!this.hasErrors() && json.has("meta"))
+        // !this.hasErrors() && 
+        if (json.has("meta"))
             this.setMeta(new KrillMeta(json.get("meta")));
 
         return this;
