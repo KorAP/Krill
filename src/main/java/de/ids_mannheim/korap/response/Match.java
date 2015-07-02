@@ -2,14 +2,7 @@ package de.ids_mannheim.korap.response;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.AtomicReaderContext;
@@ -18,6 +11,7 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
+import org.apache.lucene.index.IndexableField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -380,6 +374,25 @@ public class Match extends AbstractDocument {
         this.addHighlight(new Highlight(target, target, id));
     };
 
+    
+    /**
+     * Populate document meta information with information coming from
+     * the index.
+     * 
+     * @param doc
+     *            Document object.
+     * @param field
+     *            Primary data field.
+     */
+    public void populateDocument (Document doc, String field) {
+        HashSet<String> fieldList = new HashSet<>(32);
+        Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
+        while (fieldIterator.hasNext())
+            fieldList.add(fieldIterator.next().name());
+
+        this.populateDocument(doc, field, fieldList);
+    };
+
 
     /**
      * Populate document meta information with information coming from
@@ -393,9 +406,11 @@ public class Match extends AbstractDocument {
      *            Hash object with all supported fields.
      */
     public void populateDocument (Document doc, String field,
-            HashSet<String> fields) {
+            Collection<String> fields) {
         this.setField(field);
         this.setPrimaryData(doc.get(field));
+
+        // Remember - never serialize "tokens"
 
         // LEGACY
         if (fields.contains("corpusID"))

@@ -944,14 +944,14 @@ public class KrillIndex {
                 if (DEBUG)
                     log.trace("We've found a matching document");
 
-                HashSet<String> fields = (HashSet<String>) new Krill()
-                        .getMeta().getFields().clone();
-
-                fields.add(field);
-
                 // Get terms from the document
                 Terms docTerms = atomic.reader().getTermVector(localDocID,
                         field);
+
+                HashSet<String> fields = (HashSet<String>) new Krill()
+                    .getMeta().getFields().clone();
+
+                fields.add(field);
 
                 // Load the necessary fields of the document
                 Document doc = atomic.reader().document(localDocID, fields);
@@ -1251,6 +1251,11 @@ public class KrillIndex {
         // Lift primary field
         fields.add(field);
 
+        // Lift all fields
+        if (fields.contains("@all")) {
+            fields = null;
+        };
+
         // Some initializations ...
         int i = 0;
         int startIndex = kr.getStartIndex();
@@ -1363,7 +1368,8 @@ public class KrillIndex {
                     int docID = atomic.docBase + localDocID;
 
                     // Do not load all of this, in case the doc is the same!
-                    Document doc = lreader.document(localDocID, fields);
+                    Document doc = (fields != null) ? lreader.document(localDocID, fields) :
+                        lreader.document(localDocID);
 
                     // Create new Match
                     Match match = new Match(pto, localDocID, spans.start(),
@@ -1377,7 +1383,15 @@ public class KrillIndex {
                         match.addPayload((List<byte[]>) spans.getPayload());
 
                     match.internalDocID = docID;
-                    match.populateDocument(doc, field, fields);
+
+                    // Lift certain fields
+                    if (fields != null) {
+                        match.populateDocument(doc, field, fields);
+                    }
+                    // Lift all fields
+                    else {
+                        match.populateDocument(doc, field);
+                    };
 
                     if (DEBUG) {
                         if (match.getDocID() != null)

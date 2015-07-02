@@ -176,6 +176,38 @@ public class TestMetaFields {
         assertEquals("372-377", res.at("/matches/0/pages").asText());
         assertEquals("match-GOE_AGX.00002-p7-8", res.at("/matches/0/matchID")
                 .asText());
+
+
+        // @All fields
+        jsonString = getString(getClass().getResource(
+                "/queries/metas/fields_at_all.jsonld").getFile());
+
+        ks = new Krill(jsonString);
+        kr = ks.apply(ki);
+        mapper = new ObjectMapper();
+        res = mapper.readTree(kr.toJsonString());
+
+        assertEquals("Verlag C. H. Beck", res.at("/matches/0/publisher")
+                .asText());
+        assertEquals("Aphorismus", res.at("/matches/0/textType").asText());
+        assertEquals("Aphorismen", res.at("/matches/0/textTypeRef").asText());
+        assertEquals(
+                "Goethe, Johann Wolfgang von: Maximen und Reflexionen. Religion und Christentum, [Aphorismen], (Erstveröffentlichung: Stuttgart ; Tübingen, 1827-1842), In: Goethe, Johann Wolfgang von: Goethes Werke, Bd. 12, Schriften zur Kunst. Schriften zur Literatur. Maximen und Reflexionen, Hrsg.: Trunz, Erich. München: Verlag C. H. Beck, 1982, S. 372-377",
+                res.at("/matches/0/reference").asText());
+        assertEquals("de", res.at("/matches/0/language").asText());
+        assertEquals("opennlp#tokens", res.at("/matches/0/tokenSource")
+                .asText());
+        assertEquals(
+                "base base/paragraphs base/sentences connexor connexor/morpho connexor/phrase connexor/sentences connexor/syntax corenlp corenlp/constituency corenlp/morpho corenlp/namedentities corenlp/sentences glemm glemm/morpho mate mate/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho treetagger/sentences xip xip/constituency xip/morpho xip/sentences",
+                res.at("/matches/0/foundries").asText());
+        assertEquals("Goethe-Korpus", res.at("/matches/0/corpusTitle").asText());
+        assertEquals("QAO-NC", res.at("/matches/0/license").asText());
+        assertEquals("Goethe: Maximen und Reflexionen, (1827-1842)",
+                res.at("/matches/0/docTitle").asText());
+        assertEquals("1827", res.at("/matches/0/creationDate").asText());
+        assertEquals("372-377", res.at("/matches/0/pages").asText());
+        assertEquals("match-GOE_AGX.00002-p7-8", res.at("/matches/0/matchID")
+                .asText());
     };
 
 
