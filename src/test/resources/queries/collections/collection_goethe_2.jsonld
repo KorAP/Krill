@@ -1,0 +1,24 @@
+{
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.3/context.jsonld",
+  "collection" : {
+    "@type" : "koral:doc",
+    "key" : "author",
+    "type" : "type:string",
+    "value" : "Wolfgang",
+    "match" : "match:contains" 
+  },
+  "meta" : {
+    "fields":["textSigle","author", "title"],
+    "count":2
+  },
+  "query" : {
+    "@type" : "koral:token",
+    "wrap" : {
+      "@type" : "koral:term",
+      "key" : "a",
+      "layer" : "orth",
+      "match" : "match:eq"
+    }
+  },
+  "warnings" : []
+}

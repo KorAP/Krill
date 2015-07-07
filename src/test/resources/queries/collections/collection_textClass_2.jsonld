@@ -1,0 +1,23 @@
+{
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.3/context.jsonld",
+  "collection" : {
+    "value": "reisen",
+    "match": "match:contains",
+    "key": "textClass",
+    "@type": "koral:doc"
+  },
+  "meta" : {
+    "fields":["textSigle","author", "title"],
+    "count":2
+  },
+  "query" : {
+    "@type" : "koral:token",
+    "wrap" : {
+      "@type" : "koral:term",
+      "key" : "a",
+      "layer" : "orth",
+      "match" : "match:eq"
+    }
+  },
+  "warnings" : []
+}

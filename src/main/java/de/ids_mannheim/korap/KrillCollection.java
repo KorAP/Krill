@@ -67,7 +67,7 @@ public class KrillCollection extends Notifications {
             .getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
 
     /**
@@ -235,8 +235,14 @@ public class KrillCollection extends Notifications {
                 else if (match.equals("match:ne")) {
                     bfilter.andNot(key, json.get("value").asText());
                 }
+                // This may change - but for now it means the elements are lowercased
+                else if (match.equals("match:contains")) {
+                    bfilter.and(key, json.get("value").asText().toLowerCase());
+                }
+                else if (match.equals("match:excludes")) {
+                    bfilter.andNot(key, json.get("value").asText().toLowerCase());
+                }
                 else {
-                    // TODO!
                     throw new QueryException(0, "Unknown match type");
                 };
 

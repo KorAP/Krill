@@ -25,6 +25,7 @@
 	  parsing failures (diewald)
 	- [feature] Support '@all' as a 'fields' value for all meta
 	  data fields (diewald)
+	- [bugfix] Fix case sensitivity bug in filters (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)

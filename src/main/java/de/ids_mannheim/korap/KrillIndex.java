@@ -15,9 +15,12 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.store.*;
 import org.apache.lucene.analysis.Analyzer;
+/*
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+*/
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.util.*;
 import org.apache.lucene.util.automaton.*;
 
@@ -209,14 +212,14 @@ public class KrillIndex {
         this.directory = directory;
 
         // Add analyzers
-        // TODO: Should probably not be here
+        // TODO: Should probably not be here - make configurable
         Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
-        analyzerPerField.put("textClass", new WhitespaceAnalyzer(
-                Version.LUCENE_CURRENT));
-        analyzerPerField.put("foundries", new WhitespaceAnalyzer(
-                Version.LUCENE_CURRENT));
+        analyzerPerField.put("textClass", new KeywordAnalyzer());
+        analyzerPerField.put("keywords", new KeywordAnalyzer());
+        analyzerPerField.put("foundries", new KeywordAnalyzer());
         PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(
-                new StandardAnalyzer(Version.LUCENE_CURRENT), analyzerPerField);
+          new TextAnalyzer(), analyzerPerField
+        );
 
         // Create configuration with base analyzer
         this.config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
@@ -1469,6 +1472,18 @@ public class KrillIndex {
         return kr;
     };
 
+    public void getFields () {
+        /*
+         * Return a map of key, value pairs:
+         *
+         * keywords => keywords (contains)
+         * author => text (contains)
+         */
+    };
+
+    public void getValues (String field) {
+
+    };
 
     // Collect matches
     public MatchCollector collect (Krill ks, MatchCollector mc) {

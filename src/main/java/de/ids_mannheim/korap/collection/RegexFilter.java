@@ -9,7 +9,7 @@ import org.apache.lucene.index.Term;
  * @author Nils Diewald
  * 
  *         RegexFilter implements a helper object for
- *         regular expressions used in KorapFilter
+ *         regular expressions used in KrillCollection
  *         constraints.
  */
 

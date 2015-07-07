@@ -17,6 +17,11 @@ import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.nio.ByteBuffer;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -208,6 +213,96 @@ public class TestMetaFields {
         assertEquals("372-377", res.at("/matches/0/pages").asText());
         assertEquals("match-GOE_AGX.00002-p7-8", res.at("/matches/0/matchID")
                 .asText());
+    };
+
+    @Test
+    public void searchCollectionFields () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = new FieldDocument();
+        fd.addString("corpusSigle", "ABC");
+        fd.addString("docSigle", "ABC-123");
+        fd.addString("textSigle", "ABC-123-0001");
+        fd.addText("title", "Die Wahlverwandschaften");
+        fd.addText("author", "Johann Wolfgang von Goethe");
+        fd.addKeyword("textClass", "reisen wissenschaft");
+        fd.addInt("pubDate", 20130617);
+        fd.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]");
+        ki.addDoc(fd);
+
+        FieldDocument fd2 = new FieldDocument();
+        fd2.addString("corpusSigle", "ABC");
+        fd2.addString("docSigle", "ABC-125");
+        fd2.addString("textSigle", "ABC-125-0001");
+        fd2.addText("title", "Die Glocke");
+        fd2.addText("author", "Schiller, Friedrich");
+        fd2.addKeyword("textClass", "Reisen geschichte");
+        fd2.addInt("pubDate", 20130203);
+        fd2.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]");
+        ki.addDoc(fd2);
+        ki.commit();
+
+        // textClass = reisen & wissenschaft
+        String jsonString = getString(getClass().getResource(
+        "/queries/collections/collection_textClass.jsonld").getFile());
+        Krill ks = new Krill(jsonString);
+        KrillCollection kc = ks.getCollection();
+        kc.setIndex(ki);
+        assertEquals(1, kc.getCount()); // 1 filter operation
+        assertEquals(1, kc.numberOf("documents"));
+
+        // textClass = reisen
+        jsonString = getString(getClass().getResource(
+        "/queries/collections/collection_textClass_2.jsonld").getFile());
+        ks = new Krill(jsonString);
+        kc = ks.getCollection();
+        kc.setIndex(ki);
+        assertEquals(1, kc.getCount()); // 1 filter operation
+        assertEquals(2, kc.numberOf("documents"));
+
+        /*
+        System.err.println(StringUtils.join(fd2.doc.getValues("textClass"), ","));
+        System.err.println(StringUtils.join(fd2.doc.getValues("author"), ", "));
+        */
+        /*
+        TokenStream ts = fd2.doc.getField("author").tokenStream(
+            (Analyzer) ki.writer().getAnalyzer(),
+            (TokenStream) null
+                                                                  );
+        // OffsetAttribute offsetAttribute = ts.addAttribute(OffsetAttribute.class);
+        CharTermAttribute charTermAttribute = ts.addAttribute(CharTermAttribute.class);
+
+        ts.reset();
+        while (ts.incrementToken()) {
+            String term = charTermAttribute.toString();
+            System.err.println(">>" + term + "<<");
+        };
+        */
+
+        // author = wolfgang
+        jsonString = getString(getClass().getResource(
+        "/queries/collections/collection_goethe.jsonld").getFile());
+        ks = new Krill(jsonString);
+        kc = ks.getCollection();
+        kc.setIndex(ki);
+        assertEquals(1, kc.getCount()); // 1 filter operation
+        assertEquals(1, kc.numberOf("documents"));
+
+        // author = Wolfgang
+        jsonString = getString(getClass().getResource(
+        "/queries/collections/collection_goethe_2.jsonld").getFile());
+        ks = new Krill(jsonString);
+        kc = ks.getCollection();
+        kc.setIndex(ki);
+        assertEquals(1, kc.getCount()); // 1 filter operation
+        assertEquals(1, kc.numberOf("documents"));
+
+        Result kr = ks.apply(ki);
+        
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode res = mapper.readTree(kr.toJsonString());
+        assertEquals(1, res.at("/meta/totalResults").asInt());
     };
 
 
