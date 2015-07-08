@@ -78,9 +78,22 @@ public class TestMatchIdentifier {
 
         id = new MatchIdentifier(
                 "match-c1!d1-p4-20(5)7-8(-2)9-10(2)3-4(3)-5-6(4)7-8(5)9--10");
+        assertEquals(4, id.getStartPos());
+        assertEquals(20, id.getEndPos());
+        assertEquals("c1", id.getCorpusID());
+        assertEquals("d1", id.getDocID());
+        assertEquals(null, id.getTextSigle());
         assertEquals(id.toString(), "match-c1!d1-p4-20(5)7-8(2)3-4(4)7-8");
-    };
 
+        id = new MatchIdentifier(
+                "match-GOE!GOE_AGF.02286-p2105-2106");
+        assertEquals(2105, id.getStartPos());
+        assertEquals(2106, id.getEndPos());
+        assertEquals(null, id.getCorpusID());
+        assertEquals(null, id.getDocID());
+        assertEquals("GOE_AGF.02286", id.getTextSigle());
+        assertEquals("match-GOE_AGF.02286-p2105-2106", id.toString());
+    };
 
     @Test
     public void posIdentifierExample1 () throws IOException {
@@ -240,6 +253,29 @@ public class TestMatchIdentifier {
                 + "</mark>" + "<span class=\"context-right\">"
                 + "<span class=\"more\">" + "</span>" + "</span>",
                 km.getSnippetHTML());
+    };
+
+    @Test
+    public void indexNewStructure () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/goe/AGX-00002.json"), false);
+        ki.commit();
+
+        Match km = ki.getMatchInfo(
+                                   "match-GOE!GOE_AGX.00002-p210-211",
+                                   "tokens",
+                                   true,
+                                   (String) null,
+                                   (String) null,
+                                   true,
+                                   true,
+                                   true
+                                   );
+
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("tokens", res.at("/field").asText());
+        assertEquals("GOE_AGX.00002", res.at("/textSigle").asText());
+        assertEquals("Goethe, Johann Wolfgang von", res.at("/author").asText());
     };
 
 

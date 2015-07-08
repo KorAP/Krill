@@ -824,13 +824,14 @@ public class KrillIndex {
                     BooleanClause.Occur.MUST);
         }
 
-        // LEGACY
+        // <legacy>
         else {
             bool.add(new TermQuery(new Term("ID", match.getDocID())),
                     BooleanClause.Occur.MUST);
             bool.add(new TermQuery(new Term("corpusID", match.getCorpusID())),
                     BooleanClause.Occur.MUST);
         };
+        // </legacy>
 
         Filter filter = (Filter) new QueryWrapperFilter(bool);
 
@@ -965,18 +966,35 @@ public class KrillIndex {
                 match.setLocalDocID(localDocID);
                 match.populateDocument(doc, field, fields);
                 if (DEBUG)
-                    log.trace("The document has the id '{}'", match.getDocID());
+                    log.trace("The document has the id '{}' or the sigle '{}'",
+                              match.getDocID(),
+                              match.getTextSigle());
 
                 // Todo:
                 SearchContext context = match.getContext();
 
                 // Search for minimal surrounding sentences
                 if (extendToSentence) {
-                    int[] spanContext = match.expandContextToSpan("s");
-                    match.setStartPos(spanContext[0]);
-                    match.setEndPos(spanContext[1]);
-                    match.startMore = false;
-                    match.endMore = false;
+
+                    String element = (match.getTextSigle() == null ? "s" : "base/s:s");
+
+                    // SUPPORT FOR LEGACY ANNOTATIONS
+                    int[] spanContext = match.expandContextToSpan(element);
+
+                    if (DEBUG)
+                        log.trace("Extend to sentence element '{}'", element);
+
+                    // </legacy>
+                    if (spanContext[0] >= 0 &&
+                        spanContext[0] < spanContext[1]) {
+                        match.setStartPos(spanContext[0]);
+                        match.setEndPos(spanContext[1]);
+                        match.startMore = false;
+                        match.endMore = false;
+                    }
+                    else {
+                        match.addWarning(651, "Unable to extend context");
+                    };
                 }
                 else {
                     if (DEBUG)

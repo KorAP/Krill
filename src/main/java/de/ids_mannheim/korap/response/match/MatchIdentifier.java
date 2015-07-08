@@ -10,9 +10,10 @@ public class MatchIdentifier extends DocIdentifier {
 
     // TODO: "contains" is necessary for a compatibility bug in Kustvakt
     Pattern idRegex = Pattern
-            .compile("^(?:match-|contains-)(?:([^!]+?)[!\\.])?"
-                    + "([^!]+)-p([0-9]+)-([0-9]+)"
-                    + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)" + "(?:c.+?)?$");
+        .compile("^(?:match-|contains-)"
+                 + "(?:([^!]+?)[!\\.])?"
+                 + "([^!]+)-p([0-9]+)-([0-9]+)"
+                 + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)" + "(?:c.+?)?$");
     Pattern posRegex = Pattern.compile("\\(([0-9]+)\\)([0-9]+)-([0-9]+)");
 
 

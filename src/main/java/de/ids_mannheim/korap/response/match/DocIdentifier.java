@@ -7,8 +7,9 @@ import java.util.regex.*;
 // TODO: This should only use textSigle!
 
 public class DocIdentifier {
-    protected String textSigle, corpusID, // LEGACY
-            docID;    // LEGACY
+    protected String textSigle, // fine
+        corpusID, // LEGACY
+        docID;    // LEGACY
 
 
     // Legacy
