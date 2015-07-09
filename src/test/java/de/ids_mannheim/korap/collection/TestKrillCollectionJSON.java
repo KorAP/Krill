@@ -97,7 +97,6 @@ public class TestKrillCollectionJSON {
     };
 
 
-
     @Ignore
     public void nocollectiontypegiven () {
         String metaQuery = _getJSONString("multiterm_rewrite_collection.jsonld");

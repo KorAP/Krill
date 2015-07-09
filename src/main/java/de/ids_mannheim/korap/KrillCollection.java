@@ -239,9 +239,14 @@ public class KrillCollection extends Notifications {
                 else if (match.equals("match:contains")) {
                     bfilter.and(key, json.get("value").asText().toLowerCase());
                 }
+                else if (match.equals("match:containsnot")) {
+                    bfilter.andNot(key, json.get("value").asText().toLowerCase());
+                }
+                // <LEGACY>
                 else if (match.equals("match:excludes")) {
                     bfilter.andNot(key, json.get("value").asText().toLowerCase());
                 }
+                // </LEGACY>
                 else {
                     throw new QueryException(0, "Unknown match type");
                 };

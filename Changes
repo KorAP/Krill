@@ -27,6 +27,8 @@
 	  data fields (diewald)
 	- [bugfix] Fix case sensitivity bug in filters (diewald)
 	- [bugfix] Fix sentence expansion bug for new data (diewald)
+	- [bugfix] Deserialization of 'containsnot' instead of 'excludes'
+	  (diewald)
 
 0.51 2015-03-17
         - This is a major version (prepared for the GitHub release)
