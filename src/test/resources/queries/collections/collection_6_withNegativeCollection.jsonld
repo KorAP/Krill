@@ -7,7 +7,7 @@
     "@type":"koral:doc",
     "key":"textClass",
     "value":"reisen",
-    "match":"match:contains"
+    "match":"match:containsnot"
   },
   "query":{
     "@type":"koral:token",

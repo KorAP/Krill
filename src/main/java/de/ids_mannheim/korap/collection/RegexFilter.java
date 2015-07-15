@@ -4,6 +4,8 @@ import java.util.*;
 
 import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.Filter;
 
 /**
  * @author Nils Diewald
@@ -21,8 +23,15 @@ public class RegexFilter {
         this.regex = regex;
     };
 
-
+    @Deprecated
     public RegexpQuery toQuery (String field) {
         return new RegexpQuery(new Term(field, this.regex));
     };
+
+    public Filter toFilter (String field) {
+        return new QueryWrapperFilter(
+            new RegexpQuery(new Term(field, this.regex))
+        );
+    };
+
 };

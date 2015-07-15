@@ -6,7 +6,7 @@ import java.io.IOException;
 import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.collection.BooleanFilter;
+import de.ids_mannheim.korap.collection.BooleanFilterOperation;
 import de.ids_mannheim.korap.collection.RegexFilter;
 import de.ids_mannheim.korap.collection.FilterOperation;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * @author diewald
  */
 /*
+ * TODO: Use CachingWrapperFilter!!!
  * TODO: Clean up for new KoralQuery
  * TODO: Make a cache for the bits
  *       Delete it in case of an extension or a filter
@@ -167,15 +168,15 @@ public class KrillCollection extends Notifications {
 
 
     // Create a boolean filter from JSON
-    private BooleanFilter _fromJson (JsonNode json) throws QueryException {
+    private BooleanFilterOperation _fromJson (JsonNode json) throws QueryException {
         return this._fromJson(json, "tokens");
     };
 
 
     // Create a booleanfilter from JSON
-    private BooleanFilter _fromJson (JsonNode json, String field)
+    private BooleanFilterOperation _fromJson (JsonNode json, String field)
             throws QueryException {
-        BooleanFilter bfilter = new BooleanFilter();
+        BooleanFilterOperation bfilter = new BooleanFilterOperation();
 
         if (!json.has("@type")) {
             throw new QueryException(701,
@@ -285,7 +286,7 @@ public class KrillCollection extends Notifications {
             if (json.has("operation"))
                 operation = json.get("operation").asText();
 
-            BooleanFilter group = new BooleanFilter();
+            BooleanFilterOperation group = new BooleanFilterOperation();
 
             for (JsonNode operand : json.get("operands")) {
                 if (operation.equals("operation:and"))
@@ -307,7 +308,7 @@ public class KrillCollection extends Notifications {
             throw new QueryException(613,
                     "Collection query type has to be doc or docGroup");
 
-        // return new BooleanFilter();
+        // return new BooleanFilterOperation();
     };
 
 
@@ -352,7 +353,7 @@ public class KrillCollection extends Notifications {
         if (!json.has("@value"))
             throw new QueryException(851, "Legacy filter need @value fields");
 
-        BooleanFilter bf = this._fromJsonLegacy(json.get("@value"), "tokens");
+        BooleanFilterOperation bf = this._fromJsonLegacy(json.get("@value"), "tokens");
         String type = json.get("@type").asText();
 
         // Filter the collection
@@ -375,9 +376,9 @@ public class KrillCollection extends Notifications {
 
     // Create a boolean filter from a Json string
     @Deprecated
-    private BooleanFilter _fromJsonLegacy (JsonNode json, String field)
+    private BooleanFilterOperation _fromJsonLegacy (JsonNode json, String field)
             throws QueryException {
-        BooleanFilter bfilter = new BooleanFilter();
+        BooleanFilterOperation bfilter = new BooleanFilterOperation();
 
         if (!json.has("@type"))
             throw new QueryException(612,
@@ -412,7 +413,7 @@ public class KrillCollection extends Notifications {
             if (DEBUG)
                 log.trace("relation found {}", json.get("relation").asText());
 
-            BooleanFilter group = new BooleanFilter();
+            BooleanFilterOperation group = new BooleanFilterOperation();
 
             switch (json.get("relation").asText()) {
                 case "between":
@@ -489,7 +490,7 @@ public class KrillCollection extends Notifications {
 
 
     /**
-     * Add a filter by means of a {@link BooleanFilter}.
+     * Add a filter by means of a {@link BooleanFilterOperation}.
      * 
      * <strong>Warning</strong>: Filters are part of the collections
      * legacy API and may vanish without warning.
@@ -499,7 +500,7 @@ public class KrillCollection extends Notifications {
      * @return The {@link KrillCollection} object for chaining.
      */
     // TODO: The checks may not be necessary
-    public KrillCollection filter (BooleanFilter filter) {
+    public KrillCollection filter (BooleanFilterOperation filter) {
         if (DEBUG)
             log.trace("Added filter: {}", filter.toString());
 
@@ -535,12 +536,12 @@ public class KrillCollection extends Notifications {
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection filter (CollectionBuilder filter) {
-        return this.filter(filter.getBooleanFilter());
+        return this.filter(filter.getBooleanFilterOperation());
     };
 
 
     /**
-     * Add an extension by means of a {@link BooleanFilter}.
+     * Add an extension by means of a {@link BooleanFilterOperation}.
      * 
      * <strong>Warning</strong>: Extensions are part of the
      * collections
@@ -550,7 +551,7 @@ public class KrillCollection extends Notifications {
      *            The extension to add to the collection.
      * @return The {@link KrillCollection} object for chaining.
      */
-    public KrillCollection extend (BooleanFilter extension) {
+    public KrillCollection extend (BooleanFilterOperation extension) {
         if (DEBUG)
             log.trace("Added extension: {}", extension.toString());
 
@@ -574,7 +575,7 @@ public class KrillCollection extends Notifications {
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection extend (CollectionBuilder extension) {
-        return this.extend(extension.getBooleanFilter());
+        return this.extend(extension.getBooleanFilterOperation());
     };
 
 
@@ -589,7 +590,7 @@ public class KrillCollection extends Notifications {
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection filterUIDs (String ... uids) {
-        BooleanFilter filter = new BooleanFilter();
+        BooleanFilterOperation filter = new BooleanFilterOperation();
         filter.or("UID", uids);
         if (DEBUG)
             log.debug("UID based filter: {}", filter.toString());
@@ -721,7 +722,7 @@ public class KrillCollection extends Notifications {
 
             FilterOperation kcInit = filters.remove(0);
             if (DEBUG)
-                log.trace("FILTER: {}", kcInit);
+                log.trace("FILTER: {}", kcInit.filter.toString());
 
             // Init vector
             DocIdSet docids = kcInit.filter.getDocIdSet(atomic, null);
@@ -734,6 +735,9 @@ public class KrillCollection extends Notifications {
                     log.trace("InitFilter has effect");
                 bitset.or(filterIter);
                 noDoc = false;
+            }
+            else if (DEBUG) {
+                log.trace("InitFilter has no effect");
             };
 
             // Apply all filters sequentially

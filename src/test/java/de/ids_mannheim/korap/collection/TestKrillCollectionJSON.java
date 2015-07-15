@@ -127,6 +127,7 @@ public class TestKrillCollectionJSON {
         };
         ki.commit();
 
+        // No collection
         Krill krill = new Krill(_getJSONString("collection_6.jsonld"));
         Result kr = krill.apply(ki);
         assertEquals(kr.getTotalResults(), 86);
@@ -135,6 +136,7 @@ public class TestKrillCollectionJSON {
         JsonNode res = mapper.readTree(kr.toJsonString());
         assertTrue(res.at("/collection").isMissingNode());
 
+        // textClass = reisen
         krill = new Krill(_getJSONString("collection_6_withCollection.jsonld"));
 
         kr = krill.apply(ki);
@@ -145,7 +147,13 @@ public class TestKrillCollectionJSON {
         assertEquals("koral:doc", res.at("/collection/@type").asText());
         assertEquals("textClass", res.at("/collection/key").asText());
         assertEquals("reisen", res.at("/collection/value").asText());
-        assertEquals("match:eq", res.at("/collection/match").asText());
+        assertEquals("match:contains", res.at("/collection/match").asText());
+
+        // textClass = reisen
+        krill = new Krill(_getJSONString("collection_6_withNegativeCollection.jsonld"));
+
+        kr = krill.apply(ki);
+        assertEquals(86 - 57, kr.getTotalResults());
     };
 
 

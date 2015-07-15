@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.collection;
 
-import de.ids_mannheim.korap.collection.BooleanFilter;
+import de.ids_mannheim.korap.collection.BooleanFilterOperation;
 import de.ids_mannheim.korap.collection.RegexFilter;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.KrillDate;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * Todo: Supports foundries
  */
 public class CollectionBuilder {
-    private BooleanFilter filter;
+    private BooleanFilterOperation filter;
     private String field = "tokens";
 
     // Logger
@@ -42,61 +42,61 @@ public class CollectionBuilder {
      * Construct a new CollectionBuilder object.
      */
     public CollectionBuilder () {
-        filter = new BooleanFilter();
+        filter = new BooleanFilterOperation();
     };
 
 
-    public BooleanFilter and (String type, String ... terms) {
-        BooleanFilter bf = new BooleanFilter();
+    public BooleanFilterOperation and (String type, String ... terms) {
+        BooleanFilterOperation bf = new BooleanFilterOperation();
         bf.and(type, terms);
         return bf;
     };
 
 
-    public BooleanFilter or (String type, String ... terms) {
-        BooleanFilter bf = new BooleanFilter();
+    public BooleanFilterOperation or (String type, String ... terms) {
+        BooleanFilterOperation bf = new BooleanFilterOperation();
         bf.or(type, terms);
         return bf;
     };
 
 
-    public BooleanFilter and (String type, RegexFilter re) {
-        BooleanFilter bf = new BooleanFilter();
+    public BooleanFilterOperation and (String type, RegexFilter re) {
+        BooleanFilterOperation bf = new BooleanFilterOperation();
         bf.and(type, re);
         return bf;
     };
 
 
-    public BooleanFilter or (String type, RegexFilter re) {
-        BooleanFilter bf = new BooleanFilter();
+    public BooleanFilterOperation or (String type, RegexFilter re) {
+        BooleanFilterOperation bf = new BooleanFilterOperation();
         bf.or(type, re);
         return bf;
     };
 
 
-    public BooleanFilter since (String date) {
-        BooleanFilter bf = new BooleanFilter();
+    public BooleanFilterOperation since (String date) {
+        BooleanFilterOperation bf = new BooleanFilterOperation();
         bf.since(date);
         return bf;
     };
 
 
-    public BooleanFilter till (String date) {
-        BooleanFilter bf = new BooleanFilter();
+    public BooleanFilterOperation till (String date) {
+        BooleanFilterOperation bf = new BooleanFilterOperation();
         bf.till(date);
         return bf;
     };
 
 
-    public BooleanFilter date (String date) {
-        BooleanFilter bf = new BooleanFilter();
+    public BooleanFilterOperation date (String date) {
+        BooleanFilterOperation bf = new BooleanFilterOperation();
         bf.date(date);
         return bf;
     };
 
 
-    public BooleanFilter between (String date1, String date2) {
-        BooleanFilter bf = new BooleanFilter();
+    public BooleanFilterOperation between (String date1, String date2) {
+        BooleanFilterOperation bf = new BooleanFilterOperation();
         bf.between(date1, date2);
         return bf;
     };
@@ -107,12 +107,12 @@ public class CollectionBuilder {
     };
 
 
-    public BooleanFilter getBooleanFilter () {
+    public BooleanFilterOperation getBooleanFilterOperation () {
         return this.filter;
     };
 
 
-    public void setBooleanFilter (BooleanFilter bf) {
+    public void setBooleanFilterOperation (BooleanFilterOperation bf) {
         this.filter = bf;
     };
 
