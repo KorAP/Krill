@@ -43,6 +43,10 @@ public class CollectionBuilderNew {
         // filter = new BooleanFilter();
     };
 
+    public CollectionBuilderNew create () {
+        return new CollectionBuilderNew();
+    };
+
     // Filter filter
     public CollectionBuilderNew or (CollectionBuilderNew cb) {
         this.isNegative = false;
@@ -64,9 +68,18 @@ public class CollectionBuilderNew {
         return this;
     };
 
-    public CollectionBuilderNew not (CollectionBuilderNew cb) {
+    public CollectionBuilderNew andNot (CollectionBuilderNew cb) {
         cb.isOptional = false;
         cb.isNegative = true;
+        if (this.operands == null)
+            this.operands = new ArrayList<CollectionBuilderNew>(3);
+        this.operands.add(cb);
+        return this;
+    };
+
+    public CollectionBuilderNew orNot (CollectionBuilderNew cb) {
+        cb.isNegative = true;
+        cb.isOptional = true;
         if (this.operands == null)
             this.operands = new ArrayList<CollectionBuilderNew>(3);
         this.operands.add(cb);
