@@ -16,9 +16,10 @@ import org.junit.runners.JUnit4;
 public class TestKrillCollectionNew {
 
     @Test
-    public void builderConstruction () throws IOException {
+    public void builderTerm () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        assertEquals("", kc.toString());
+        assertEquals("author:tree",
+                     kc.term("author", "tree").toString());
     };
 
     @Test
@@ -29,105 +30,115 @@ public class TestKrillCollectionNew {
     };
 
     @Test
-    public void builderTerm () throws IOException {
+    public void builderDate () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        assertEquals("author:tree",
-                     kc.term("author", "tree").toString());
+        assertEquals("pubDate:[20050000 TO 20059999]",
+                     kc.date("pubDate", "2005").toString());
     };
+
+    @Test
+    public void builderSince () throws IOException {
+        CollectionBuilderNew kc = new CollectionBuilderNew();
+        assertEquals("pubDate:[20050000 TO 99999999]",
+                     kc.since("pubDate", "2005").toString());
+    };
+
+
+    @Test
+    public void builderTill () throws IOException {
+        CollectionBuilderNew kc = new CollectionBuilderNew();
+        assertEquals("pubDate:[0 TO 20059999]",
+                     kc.till("pubDate", "2005").toString());
+    };
+
 
     @Test
     public void builderAndSimple () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        kc.and(kc.term("author", "tree"));
-        assertEquals("author:tree", kc.toString());
-    };
-
-    @Test
-    public void builderAndCombined () throws IOException {
-        CollectionBuilderNew kc = new CollectionBuilderNew();
-        kc.and(kc.term("author", "tree")).and(kc.term("title", "name"));
-        assertEquals("BooleanFilter(+author:tree +title:name)", kc.toString());
-    };
-
-    @Test
-    public void builderAndNestedSimple () throws IOException {
-        CollectionBuilderNew kc = new CollectionBuilderNew();
-        kc.and(kc.create().and(kc.term("author", "tree")).and(kc.term("title", "name")));
-        assertEquals("BooleanFilter(+author:tree +title:name)", kc.toString());
+        assertEquals("author:tree", kc.andGroup(kc.term("author", "tree")).toString());
     };
 
     @Test
     public void builderOrSimple () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        kc.or(kc.term("author", "tree"));
-        assertEquals("author:tree", kc.toString());
+        assertEquals("author:tree", kc.orGroup(kc.term("author", "tree")).toString());
+    };
+
+    @Test
+    public void builderAndCombined () throws IOException {
+        CollectionBuilderNew kc = new CollectionBuilderNew();
+        assertEquals("BooleanFilter(+author:tree +title:name)",
+                     kc.andGroup(kc.term("author", "tree"))
+                     .with(kc.term("title", "name")).toString());
+    };
+
+    @Test
+    public void builderAndNestedSimple () throws IOException {
+        CollectionBuilderNew kc = new CollectionBuilderNew();
+        assertEquals("BooleanFilter(+author:tree +title:name)",
+                     kc.andGroup(kc.andGroup(kc.term("author", "tree")).with(kc.term("title", "name"))).toString());
     };
 
 
     @Test
     public void builderOrCombined () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        kc.or(kc.term("author", "tree")).or(kc.term("title", "name"));
-        assertEquals("BooleanFilter(author:tree title:name)", kc.toString());
+        assertEquals("BooleanFilter(author:tree title:name)",
+                     kc.orGroup(kc.term("author", "tree"))
+                     .with(kc.term("title", "name")).toString());
     };
 
     @Test
     public void builderOrNestedSimple () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        kc.or(kc.create().or(kc.term("author", "tree")).or(kc.term("title", "name")));
-        assertEquals("BooleanFilter(author:tree title:name)", kc.toString());
+        assertEquals("BooleanFilter(author:tree title:name)",
+                     kc.orGroup(kc.orGroup(kc.term("author", "tree"))
+                                .with(kc.term("title", "name"))).toString()
+                     );
     };
 
     @Test
     public void builderGroups () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        kc.or(
-              kc.create().or(kc.term("author", "tree1")).or(kc.term("title", "name1"))
-        ).or(
-              kc.create().and(kc.term("author", "tree2")).and(kc.term("title", "name2"))
-        );
-        assertEquals("BooleanFilter(BooleanFilter(author:tree1 title:name1) BooleanFilter(+author:tree2 +title:name2))", kc.toString());
+        String g = kc.orGroup(
+              kc.orGroup(kc.term("author", "tree1")).with(kc.term("title", "name1"))
+        ).with(
+              kc.andGroup(kc.term("author", "tree2")).with(kc.term("title", "name2"))
+               ).toString();
+        assertEquals("BooleanFilter(BooleanFilter(author:tree1 title:name1) BooleanFilter(+author:tree2 +title:name2))", g);
     };
 
     @Test
     public void builderNegationRoot () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        kc.or(kc.term("author", "tree1")).or(kc.term("title", "name1"));
-        assertEquals("BooleanFilter(author:tree1 title:name1)", kc.toString());
-        assertFalse(kc.isNegative());
+        CollectionBuilderNew.CollectionBuilderInterface kbi = kc.orGroup(kc.term("author", "tree1")).with(kc.term("title", "name1"));
+        assertEquals(
+                     "BooleanFilter(author:tree1 title:name1)",
+                     kbi.toString());
+        assertFalse(kbi.isNegative());
 
-        kc = new CollectionBuilderNew();
-        kc.andNot(
-              kc.create().or(kc.term("author", "tree1")).or(kc.term("title", "name1"))
-        );
-        assertEquals("BooleanFilter(author:tree1 title:name1)", kc.toString());
-        assertTrue(kc.isNegative());
+        kbi = kc.andGroup(
+              kc.orGroup(kc.term("author", "tree1")).with(kc.term("title", "name1"))
+              ).not();
+        assertEquals("BooleanFilter(author:tree1 title:name1)", kbi.toString());
+        assertTrue(kbi.isNegative());
     };
+
 
     @Test
     public void builderNegation () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        kc.andNot(kc.term("author", "tree"));
-        assertEquals("author:tree", kc.toString());
-        assertTrue(kc.isNegative());
+        CollectionBuilderNew.CollectionBuilderInterface kbi =
+            kc.term("author", "tree").not();
+        assertEquals("author:tree", kbi.toString());
+        assertTrue(kbi.isNegative());
 
-        kc = kc.create();
-        kc.orNot(kc.term("author", "tree"));
-        assertEquals("author:tree", kc.toString());
-        assertTrue(kc.isNegative());
+        kbi = kc.andGroup(kc.term("author", "tree").not());
+        assertEquals("author:tree", kbi.toString());
+        assertTrue(kbi.isNegative());
 
-        /*
-        kc = kc.create();
-        // and-group of nots!
-        // Todo: Use orNot!!!
-        kc.not(kc.term("author", "tree")).not(kc.term("title", "name1"));
-        assertEquals("BooleanFilter(+author:tree +title:name1)", kc.toString());
-        assertTrue(kc.isNegative());
-
-        kc = kc.create();
-        kc.not(kc.term("author", "tree")).or(kc.term("title", "name1"));
-        assertEquals("BooleanFilter(-author:tree title:name1)", kc.toString());
-        assertFalse(kc.isNegative());
-        */
+        kbi = kc.orGroup(kc.term("author", "tree").not());
+        assertEquals("author:tree", kbi.toString());
+        assertTrue(kbi.isNegative());
     };
 };
