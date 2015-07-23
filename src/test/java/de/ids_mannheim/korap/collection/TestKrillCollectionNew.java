@@ -30,10 +30,38 @@ public class TestKrillCollectionNew {
     };
 
     @Test
-    public void builderDate () throws IOException {
+    public void builderDateYear () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
         assertEquals("pubDate:[20050000 TO 20059999]",
                      kc.date("pubDate", "2005").toString());
+    };
+
+    @Test
+    public void builderDateMonth () throws IOException {
+        CollectionBuilderNew kc = new CollectionBuilderNew();
+        assertEquals("pubDate:[20051000 TO 20051099]",
+                     kc.date("pubDate", "2005-10").toString());
+    };
+
+    @Test
+    public void builderDateDay () throws IOException {
+        CollectionBuilderNew kc = new CollectionBuilderNew();
+        assertEquals("pubDate:20051011",
+                     kc.date("pubDate", "2005-10-11").toString());
+    };
+
+    @Test
+    public void builderDateBorders () throws IOException {
+        CollectionBuilderNew kc = new CollectionBuilderNew();
+        // CollectionBuilderNew.CollectionBuilderInterface kbi = ;
+        assertNull(kc.date("pubDate", ""));
+
+        assertEquals("pubDate:20051580",
+                     kc.date("pubDate", "2005-15-80").toString());
+
+        assertNull(kc.date("pubDate", "2005-15-8"));
+        assertNull(kc.date("pubDate", "2005-5-18"));
+        assertNull(kc.date("pubDate", "200-05-18"));
     };
 
     @Test
@@ -41,6 +69,12 @@ public class TestKrillCollectionNew {
         CollectionBuilderNew kc = new CollectionBuilderNew();
         assertEquals("pubDate:[20050000 TO 99999999]",
                      kc.since("pubDate", "2005").toString());
+
+        assertEquals("pubDate:[20051000 TO 99999999]",
+                     kc.since("pubDate", "2005-10").toString());
+
+        assertEquals("pubDate:[20051012 TO 99999999]",
+                     kc.since("pubDate", "2005-10-12").toString());
     };
 
 
@@ -49,6 +83,12 @@ public class TestKrillCollectionNew {
         CollectionBuilderNew kc = new CollectionBuilderNew();
         assertEquals("pubDate:[0 TO 20059999]",
                      kc.till("pubDate", "2005").toString());
+
+        assertEquals("pubDate:[0 TO 20051299]",
+                     kc.till("pubDate", "2005-12").toString());
+
+        assertEquals("pubDate:[0 TO 20051204]",
+                     kc.till("pubDate", "2005-12-04").toString());
     };
 
 
@@ -141,4 +181,6 @@ public class TestKrillCollectionNew {
         assertEquals("author:tree", kbi.toString());
         assertTrue(kbi.isNegative());
     };
+
+
 };
