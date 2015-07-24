@@ -419,6 +419,51 @@ public class KrillIndex {
 
 
     /**
+     * Delete documents of the index by passing field information.
+     * 
+     * @param field
+     *            The meta field name.
+     * @param term
+     *            The meta field term.
+     */
+    public boolean delDocs (String field, String term) {
+        if (field == null || term == null)
+            return false;
+        try {
+            this.writer().deleteDocuments(
+                new Term(field, term)
+            );
+            if (++commitCounter > autoCommit) {
+                this.commit();
+                commitCounter = 0;
+            };
+
+            return true;
+        }
+
+        // Failed to add document
+        catch (IOException e) {
+            log.error("Unable to delete documents");
+        };
+
+        return false;
+    };
+
+
+    /**
+     * Delete a document of the index by passing a UID.
+     * 
+     * @param uid
+     *            The unique identifier of the document.
+     */
+    public boolean delDoc (Integer uid) {
+        if (uid < 0)
+            return false;
+        return this.delDocs("UID", uid.toString());
+    };
+
+
+    /**
      * Add a document to the index as a JSON string.
      * 
      * @param json
@@ -574,11 +619,11 @@ public class KrillIndex {
             };
 
             long docCount = 0;
-            int i = 1;
+            // int i = 1;
             try {
                 for (AtomicReaderContext atomic : this.reader().leaves()) {
                     docCount += collection.bits(atomic).cardinality();
-                    i++;
+                    // i++;
                 };
             }
             catch (IOException e) {

@@ -107,7 +107,7 @@ public class TestKrillCollectionNew {
     @Test
     public void builderAndCombined () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        assertEquals("BooleanFilter(+author:tree +title:name)",
+        assertEquals("AndGroup(author:tree title:name)",
                      kc.andGroup(kc.term("author", "tree"))
                      .with(kc.term("title", "name")).toString());
     };
@@ -115,7 +115,7 @@ public class TestKrillCollectionNew {
     @Test
     public void builderAndNestedSimple () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        assertEquals("BooleanFilter(+author:tree +title:name)",
+        assertEquals("AndGroup(author:tree title:name)",
                      kc.andGroup(kc.andGroup(kc.term("author", "tree")).with(kc.term("title", "name"))).toString());
     };
 
@@ -123,7 +123,7 @@ public class TestKrillCollectionNew {
     @Test
     public void builderOrCombined () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        assertEquals("BooleanFilter(author:tree title:name)",
+        assertEquals("OrGroup(author:tree title:name)",
                      kc.orGroup(kc.term("author", "tree"))
                      .with(kc.term("title", "name")).toString());
     };
@@ -131,7 +131,7 @@ public class TestKrillCollectionNew {
     @Test
     public void builderOrNestedSimple () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        assertEquals("BooleanFilter(author:tree title:name)",
+        assertEquals("OrGroup(author:tree title:name)",
                      kc.orGroup(kc.orGroup(kc.term("author", "tree"))
                                 .with(kc.term("title", "name"))).toString()
                      );
@@ -145,7 +145,7 @@ public class TestKrillCollectionNew {
         ).with(
               kc.andGroup(kc.term("author", "tree2")).with(kc.term("title", "name2"))
                ).toString();
-        assertEquals("BooleanFilter(BooleanFilter(author:tree1 title:name1) BooleanFilter(+author:tree2 +title:name2))", g);
+        assertEquals("OrGroup(OrGroup(author:tree1 title:name1) AndGroup(author:tree2 title:name2))", g);
     };
 
     @Test
@@ -153,14 +153,14 @@ public class TestKrillCollectionNew {
         CollectionBuilderNew kc = new CollectionBuilderNew();
         CollectionBuilderNew.CollectionBuilderInterface kbi = kc.orGroup(kc.term("author", "tree1")).with(kc.term("title", "name1"));
         assertEquals(
-                     "BooleanFilter(author:tree1 title:name1)",
+                     "OrGroup(author:tree1 title:name1)",
                      kbi.toString());
         assertFalse(kbi.isNegative());
 
         kbi = kc.andGroup(
               kc.orGroup(kc.term("author", "tree1")).with(kc.term("title", "name1"))
               ).not();
-        assertEquals("BooleanFilter(author:tree1 title:name1)", kbi.toString());
+        assertEquals("OrGroup(author:tree1 title:name1)", kbi.toString());
         assertTrue(kbi.isNegative());
     };
 

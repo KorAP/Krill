@@ -2,8 +2,10 @@ package de.ids_mannheim.korap.collection;
 
 import java.util.*;
 import java.io.IOException;
+// TEMPORARY:
 import org.apache.lucene.queries.BooleanFilter;
 import org.apache.lucene.search.BooleanClause;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.*;
@@ -14,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.collection.BooleanGroupFilter;
 
 public class CollectionBuilderNew {
 
@@ -144,7 +147,6 @@ public class CollectionBuilderNew {
             return this.isOptional;
         };
 
-
         private ArrayList<CollectionBuilderInterface> operands;
 
         public CollectionBuilderGroup (boolean optional) {
@@ -159,28 +161,26 @@ public class CollectionBuilderNew {
             return this;
         };
 
-        public Filter toFilter () {
 
+        public Filter toFilter () {
             if (this.operands == null || this.operands.isEmpty())
                 return null;
 
             if (this.operands.size() == 1)
                 return this.operands.get(0).toFilter();
 
-            BooleanFilter bool = new BooleanFilter();
+            // BooleanFilter bool = new BooleanFilter();
+            BooleanGroupFilter bool = new BooleanGroupFilter(this.isOptional);
 
             Iterator<CollectionBuilderInterface> i = this.operands.iterator();
             while (i.hasNext()) {
                 CollectionBuilderInterface cb = i.next();
                 if (cb.isNegative()) {
-                    bool.add(cb.toFilter(), BooleanClause.Occur.MUST_NOT);
-                }
-                else if (this.isOptional()) {
-                    bool.add(cb.toFilter(), BooleanClause.Occur.SHOULD);
+                    bool.without(cb.toFilter());
                 }
                 else {
-                    bool.add(cb.toFilter(), BooleanClause.Occur.MUST);
-                }
+                    bool.with(cb.toFilter());
+                };
             };
 
             return bool;

@@ -67,7 +67,7 @@ public class KrillCollection extends Notifications {
             .getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 
     /**
