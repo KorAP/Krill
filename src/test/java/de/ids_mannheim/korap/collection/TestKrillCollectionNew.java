@@ -46,7 +46,7 @@ public class TestKrillCollectionNew {
     @Test
     public void builderDateDay () throws IOException {
         CollectionBuilderNew kc = new CollectionBuilderNew();
-        assertEquals("pubDate:20051011",
+        assertEquals("pubDate:[20051011 TO 20051011]",
                      kc.date("pubDate", "2005-10-11").toString());
     };
 
@@ -56,7 +56,7 @@ public class TestKrillCollectionNew {
         // CollectionBuilderNew.CollectionBuilderInterface kbi = ;
         assertNull(kc.date("pubDate", ""));
 
-        assertEquals("pubDate:20051580",
+        assertEquals("pubDate:[20051580 TO 20051580]",
                      kc.date("pubDate", "2005-15-80").toString());
 
         assertNull(kc.date("pubDate", "2005-15-8"));

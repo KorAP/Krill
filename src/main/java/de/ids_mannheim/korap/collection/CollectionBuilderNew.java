@@ -73,7 +73,8 @@ public class CollectionBuilderNew {
 
             return new CollectionBuilderRange(field, begin, end);
         };
-        return new CollectionBuilderTerm(field, dateDF.toString());
+
+        return new CollectionBuilderRange(field, dateDF.floor(), dateDF.ceil());
     };
 
 

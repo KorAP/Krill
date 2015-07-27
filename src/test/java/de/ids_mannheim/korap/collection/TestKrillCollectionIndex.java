@@ -91,6 +91,12 @@ public class TestKrillCollectionIndex {
 
         kcn.fromBuilder(cb.andGroup(cb.term("textClass", "finanzen")).with(cb.term("textClass", "kultur")));
         assertEquals(0, kcn.docCount());
+
+        kcn.fromBuilder(cb.term("text", "Mann"));
+        assertEquals(3, kcn.docCount());
+
+        kcn.fromBuilder(cb.term("text", "Frau"));
+        assertEquals(1, kcn.docCount());
     };
 
     @Test
@@ -127,7 +133,7 @@ public class TestKrillCollectionIndex {
     };
 
     @Test
-    public void testIndexWithMultipleCommits () throws IOException {
+    public void testIndexWithMultipleCommitsAndDeletes () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createDoc1());
         ki.addDoc(createDoc2());
@@ -169,11 +175,112 @@ public class TestKrillCollectionIndex {
         assertEquals(1, kcn.docCount());
         kcn.fromBuilder(cb.term("author", "Michael").not());
         assertEquals(2, kcn.docCount());
+
+        // Readd Peter's doc
+        ki.addDoc(createDoc2());
+        ki.commit();
+
+        kcn.fromBuilder(cb.term("author", "Frank"));
+        assertEquals(1, kcn.docCount());
+        kcn.fromBuilder(cb.term("author", "Peter"));
+        assertEquals(1, kcn.docCount());
+        kcn.fromBuilder(cb.term("author", "Sebastian"));
+        assertEquals(1, kcn.docCount());
+        kcn.fromBuilder(cb.term("author", "Michael").not());
+        assertEquals(3, kcn.docCount());
     };
 
-    // Todo: Test index with removes
-    // Todo: Test with dates
-    // Todo: Test with regex
+    @Test
+    public void testIndexWithDateRanges () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc3());
+        ki.commit();
+        CollectionBuilderNew cb = new CollectionBuilderNew();
+        KrillCollectionNew kcn = new KrillCollectionNew(ki);
+
+        kcn.fromBuilder(cb.date("pubDate", "2005"));
+        assertEquals(3, kcn.docCount());
+        kcn.fromBuilder(cb.date("pubDate", "2005-12"));
+        assertEquals(3, kcn.docCount());
+
+        kcn.fromBuilder(cb.date("pubDate", "2005-12-10"));
+        assertEquals(1, kcn.docCount());
+        kcn.fromBuilder(cb.date("pubDate", "2005-12-16"));
+        assertEquals(1, kcn.docCount());
+        kcn.fromBuilder(cb.date("pubDate", "2005-12-07"));
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.since("pubDate", "2005-12-07"));
+        assertEquals(3, kcn.docCount());
+        kcn.fromBuilder(cb.since("pubDate", "2005-12-10"));
+        assertEquals(2, kcn.docCount());
+        kcn.fromBuilder(cb.since("pubDate", "2005-12-16"));
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.till("pubDate", "2005-12-16"));
+        assertEquals(3, kcn.docCount());
+        kcn.fromBuilder(cb.till("pubDate", "2005-12-10"));
+        assertEquals(2, kcn.docCount());
+        kcn.fromBuilder(cb.till("pubDate", "2005-12-07"));
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.date("pubDate", "2005-12-10").not());
+        assertEquals(2, kcn.docCount());
+        kcn.fromBuilder(cb.date("pubDate", "2005-12-16").not());
+        assertEquals(2, kcn.docCount());
+        kcn.fromBuilder(cb.date("pubDate", "2005-12-07").not());
+        assertEquals(2, kcn.docCount());
+        kcn.fromBuilder(cb.date("pubDate", "2005-12-09").not());
+        assertEquals(3, kcn.docCount());
+
+
+        kcn.fromBuilder(cb.till("pubDate", "2005-12-16").not());
+        assertEquals(0, kcn.docCount());
+        kcn.fromBuilder(cb.till("pubDate", "2005-12-15").not());
+        assertEquals(1, kcn.docCount());
+        kcn.fromBuilder(cb.till("pubDate", "2005-12-10").not());
+        assertEquals(1, kcn.docCount());
+        kcn.fromBuilder(cb.till("pubDate", "2005-12-09").not());
+        assertEquals(2, kcn.docCount());
+        kcn.fromBuilder(cb.till("pubDate", "2005-12-07").not());
+        assertEquals(2, kcn.docCount());
+        kcn.fromBuilder(cb.till("pubDate", "2005-12-06").not());
+        assertEquals(3, kcn.docCount());
+    };
+
+
+    @Test
+    public void testIndexWithRegexes () throws IOException {
+        ki = new KrillIndex();
+
+        ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc3());
+        ki.commit();
+
+        CollectionBuilderNew cb = new CollectionBuilderNew();
+        KrillCollectionNew kcn = new KrillCollectionNew(ki);
+
+        kcn.fromBuilder(cb.re("author", "Fran.*"));
+        assertEquals(1, kcn.docCount());
+        kcn.fromBuilder(cb.re("author", "Blin.*"));
+        assertEquals(0, kcn.docCount());
+        kcn.fromBuilder(cb.re("author", "Frank|Peter"));
+        assertEquals(2, kcn.docCount());
+
+        kcn.fromBuilder(cb.term("text", "Frau"));
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.re("text", "Frau"));
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.re("text", "Frau|Mann"));
+        System.err.println(kcn.toString());
+        assertEquals(3, kcn.docCount());
+    };
+
 
     private FieldDocument createDoc1 () {
         FieldDocument fd = new FieldDocument();

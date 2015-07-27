@@ -7,11 +7,13 @@ import de.ids_mannheim.korap.collection.CollectionBuilderNew;
 import de.ids_mannheim.korap.response.Notifications;
 
 import org.apache.lucene.search.*;
+import org.apache.lucene.index.AtomicReader;
 import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.util.FixedBitSet;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.OpenBitSet;
 import org.apache.lucene.util.DocIdBitSet;
+import org.apache.lucene.search.BitsFilteredDocIdSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +60,7 @@ public class KrillCollectionNew extends Notifications {
         return filter.toString();
     };
 
+    /*
     public FixedBitSet bits (AtomicReaderContext atomic) throws IOException {
 
         int maxDoc = atomic.reader().maxDoc();
@@ -68,7 +71,7 @@ public class KrillCollectionNew extends Notifications {
             return null;
 
         // Init vector
-        DocIdSet docids = filter.getDocIdSet(atomic, atomic.reader().getLiveDocs());
+        DocIdSet docids = filter.getDocIdSet(atomic, null);
         DocIdSetIterator filterIter = (docids == null) ? null : docids.iterator();
 
         if (filterIter == null) {
@@ -87,15 +90,58 @@ public class KrillCollectionNew extends Notifications {
         };
 
         // Remove deleted docs
-        /*
-        System.err.println(atomic.reader().getClass());
-        FixedBitSet livedocs = (FixedBitSet) atomic.reader().getLiveDocs();
-        if (livedocs != null) {
-            bitset.and(livedocs);
-        };
-        */
+        return (FixedBitSet) BitsFilteredDocIdSet.wrap(
+            (DocIdSet) bitset,
+            (Bits) atomic.reader().getLiveDocs()
+                                                       ).iterator();
+    };
+    */
 
+
+    public FixedBitSet bits (AtomicReaderContext atomic) throws IOException {
+        AtomicReader r = atomic.reader();
+        FixedBitSet bitset = new FixedBitSet(r.maxDoc());
+        DocIdSet docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
+        if (docids == null)
+            return null;
+        bitset.or(docids.iterator());
         return bitset;
+    };
+
+
+    public DocIdSet getDocIdSet (AtomicReaderContext atomic, Bits acceptDocs) throws IOException {
+
+        int maxDoc = atomic.reader().maxDoc();
+        FixedBitSet bitset = new FixedBitSet(maxDoc);
+
+        Filter filter;
+        if (this.cb == null || (filter = this.cb.toFilter()) == null)
+            return null;
+
+        // Init vector
+        DocIdSet docids = filter.getDocIdSet(atomic, null);
+        DocIdSetIterator filterIter = (docids == null) ? null : docids.iterator();
+
+        if (filterIter == null) {
+            if (!this.cb.isNegative())
+                return null;
+
+            bitset.set(0, maxDoc);
+        }
+        else {
+            // Or bit set
+            bitset.or(filterIter);
+
+            // Revert for negation
+            if (this.cb.isNegative())
+                bitset.flip(0, maxDoc);
+        };
+
+        // Remove deleted docs
+        return (DocIdSet) BitsFilteredDocIdSet.wrap(
+            (DocIdSet) bitset,
+            acceptDocs
+        );
     };
 
     /**
