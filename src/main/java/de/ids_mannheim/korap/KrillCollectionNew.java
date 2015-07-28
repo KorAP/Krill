@@ -27,7 +27,7 @@ public class KrillCollectionNew extends Notifications {
             .getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
 
     /**
@@ -97,13 +97,17 @@ public class KrillCollectionNew extends Notifications {
     };
     */
 
-
+    /**
+     * This will respect deleted documents.
+     */
     public FixedBitSet bits (AtomicReaderContext atomic) throws IOException {
         AtomicReader r = atomic.reader();
         FixedBitSet bitset = new FixedBitSet(r.maxDoc());
         DocIdSet docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
+
         if (docids == null)
             return null;
+
         bitset.or(docids.iterator());
         return bitset;
     };
@@ -143,6 +147,7 @@ public class KrillCollectionNew extends Notifications {
             acceptDocs
         );
     };
+
 
     /**
      * Search for the number of occurrences of different types,

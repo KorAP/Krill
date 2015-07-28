@@ -33,7 +33,7 @@ public class BooleanGroupFilter extends Filter {
     private final static Logger log = LoggerFactory.getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     // Init operands list
     private final List<GroupFilterOperand> operands = new ArrayList<>(3);

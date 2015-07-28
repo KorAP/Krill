@@ -5,6 +5,11 @@ import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillCollectionNew;
 import de.ids_mannheim.korap.collection.CollectionBuilderNew;
 import de.ids_mannheim.korap.index.FieldDocument;
+import de.ids_mannheim.korap.index.TextAnalyzer;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -92,10 +97,10 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.andGroup(cb.term("textClass", "finanzen")).with(cb.term("textClass", "kultur")));
         assertEquals(0, kcn.docCount());
 
-        kcn.fromBuilder(cb.term("text", "Mann"));
+        kcn.fromBuilder(cb.term("text", "mann"));
         assertEquals(3, kcn.docCount());
 
-        kcn.fromBuilder(cb.term("text", "Frau"));
+        kcn.fromBuilder(cb.term("text", "frau"));
         assertEquals(1, kcn.docCount());
     };
 
@@ -191,6 +196,35 @@ public class TestKrillCollectionIndex {
     };
 
     @Test
+    public void testIndexStream () throws IOException {
+        ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(createDoc1());
+        ki.commit();
+
+        Analyzer ana = new TextAnalyzer();
+        TokenStream ts = fd.doc.getField("text").tokenStream(ana, null);
+
+        CharTermAttribute charTermAttribute =
+            ts.addAttribute(CharTermAttribute.class);
+        ts.reset();
+
+        ts.incrementToken();
+        assertEquals("der", charTermAttribute.toString());
+        ts.incrementToken();
+        assertEquals("alte", charTermAttribute.toString());
+        ts.incrementToken();
+        assertEquals("mann", charTermAttribute.toString());
+        ts.incrementToken();
+        assertEquals("ging", charTermAttribute.toString());
+        ts.incrementToken();
+        assertEquals("über", charTermAttribute.toString());
+        ts.incrementToken();
+        assertEquals("die", charTermAttribute.toString());
+        ts.incrementToken();
+        assertEquals("straße", charTermAttribute.toString());
+    };
+
+    @Test
     public void testIndexWithDateRanges () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createDoc1());
@@ -270,14 +304,14 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.re("author", "Frank|Peter"));
         assertEquals(2, kcn.docCount());
 
-        kcn.fromBuilder(cb.term("text", "Frau"));
+        // "Frau" doesn't work!
+        kcn.fromBuilder(cb.term("text", "frau"));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.re("text", "Frau"));
+        kcn.fromBuilder(cb.re("text", "frau"));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.re("text", "Frau|Mann"));
-        System.err.println(kcn.toString());
+        kcn.fromBuilder(cb.re("text", "frau|mann"));
         assertEquals(3, kcn.docCount());
     };
 
