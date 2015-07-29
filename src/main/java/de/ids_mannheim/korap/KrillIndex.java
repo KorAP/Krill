@@ -605,8 +605,19 @@ public class KrillIndex {
      * @see KrillCollection#numberOf
      */
     public long numberOf (KrillCollection collection, String field, String type) {
+
+        collection.setIndex(this);
+        try {
+            return collection.numberOf(field, type);
+        }
+        catch (IOException e) {
+            log.warn(e.getLocalizedMessage());
+        };
+        return (long) -1;
+
         // Short cut for documents
         // This will be only "texts" in the future
+        /*
         if (type.equals("documents") || type.equals("base/texts")) {
             if (collection.getCount() <= 0) {
                 try {
@@ -617,7 +628,6 @@ public class KrillIndex {
                 };
                 return (long) 0;
             };
-
             long docCount = 0;
             // int i = 1;
             try {
@@ -651,6 +661,7 @@ public class KrillIndex {
         };
 
         return occurrences;
+        */
     };
 
 
@@ -707,6 +718,7 @@ public class KrillIndex {
      * @return The number of the occurrences.
      * @throws IOException
      */
+    @Deprecated
     public long numberOf (Bits docvec, String field, String type)
             throws IOException {
         // Shortcut for documents
@@ -735,6 +747,7 @@ public class KrillIndex {
     // Search for meta information in term vectors
     // This will create the sum of all numerical payloads
     // of the term in the document vector
+    @Deprecated
     private long _numberOfAtomic (Bits docvec, AtomicReaderContext atomic,
             Term term) throws IOException {
 
@@ -1141,103 +1154,6 @@ public class KrillIndex {
         };
 
         return match;
-    };
-
-
-    @Deprecated
-    public HashMap getTermRelation (String field) throws Exception {
-        return this.getTermRelation(new KrillCollection(this), field);
-    };
-
-
-    /**
-     * Analyze how terms relate
-     */
-    @Deprecated
-    public HashMap getTermRelation (KrillCollection kc, String field)
-            throws Exception {
-        HashMap<String, Long> map = new HashMap<>(100);
-        long docNumber = 0, checkNumber = 0;
-
-        try {
-            if (kc.getCount() <= 0) {
-                checkNumber = (long) this.reader().numDocs();
-            };
-
-            for (AtomicReaderContext atomic : this.reader().leaves()) {
-                HashMap<String, FixedBitSet> termVector = new HashMap<>(20);
-
-                FixedBitSet docvec = kc.bits(atomic);
-                if (docvec != null) {
-                    docNumber += docvec.cardinality();
-                };
-
-                Terms terms = atomic.reader().fields().terms(field);
-
-                if (terms == null) {
-                    continue;
-                };
-
-                int docLength = atomic.reader().maxDoc();
-                FixedBitSet bitset = new FixedBitSet(docLength);
-
-                // Iterate over all tokens in this field
-                TermsEnum termsEnum = terms.iterator(null);
-
-                while (termsEnum.next() != null) {
-
-                    String termString = termsEnum.term().utf8ToString();
-
-                    bitset.clear(0, docLength);
-
-                    // Get frequency
-                    bitset.or((DocIdSetIterator) termsEnum.docs((Bits) docvec,
-                            null));
-
-                    long value = 0;
-                    if (map.containsKey(termString))
-                        value = map.get(termString);
-
-                    map.put(termString, value + bitset.cardinality());
-
-                    termVector.put(termString, bitset.clone());
-                };
-
-                int keySize = termVector.size();
-                String[] keys = termVector.keySet()
-                        .toArray(new String[keySize]);
-                java.util.Arrays.sort(keys);
-
-                if (keySize > maxTermRelations) {
-                    throw new Exception("termRelations are limited to "
-                            + maxTermRelations + " sets"
-                            + " (requested were at least " + keySize + " sets)");
-                };
-
-                for (int i = 0; i < keySize; i++) {
-                    for (int j = i + 1; j < keySize; j++) {
-                        FixedBitSet comby = termVector.get(keys[i]).clone();
-                        comby.and(termVector.get(keys[j]));
-
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("#__").append(keys[i]).append(":###:")
-                                .append(keys[j]);
-                        String combString = sb.toString();
-
-                        long cap = (long) comby.cardinality();
-                        if (map.containsKey(combString)) {
-                            cap += map.get(combString);
-                        };
-                        map.put(combString, cap);
-                    };
-                };
-            };
-            map.put("-docs", checkNumber != 0 ? checkNumber : docNumber);
-        }
-        catch (IOException e) {
-            log.warn(e.getMessage());
-        };
-        return map;
     };
 
 

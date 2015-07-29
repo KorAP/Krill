@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.collection;
 import java.util.*;
 import java.io.*;
 
-import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.KrillCollectionLegacy;
 
 import static de.ids_mannheim.korap.TestSimple.*;
 
@@ -20,7 +20,7 @@ public class TestKrillCollectionJSONLegacy {
     public void metaQuery1 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery.jsonld").getFile());
-        KrillCollection kc = new KrillCollection(metaQuery);
+        KrillCollectionLegacy kc = new KrillCollectionLegacy(metaQuery);
 
         assertEquals("filter with QueryWrapperFilter(+textClass:wissenschaft)",
                 kc.getFilter(0).toString());
@@ -38,7 +38,7 @@ public class TestKrillCollectionJSONLegacy {
     public void metaQuery2 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery2.jsonld").getFile());
-        KrillCollection kc = new KrillCollection(metaQuery);
+        KrillCollectionLegacy kc = new KrillCollectionLegacy(metaQuery);
         assertEquals(1, kc.getCount());
         assertEquals(
                 "filter with QueryWrapperFilter(+(+author:Hesse +pubDate:[0 TO 20131205]))",
@@ -50,7 +50,7 @@ public class TestKrillCollectionJSONLegacy {
     public void metaQuery3 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery4.jsonld").getFile());
-        KrillCollection kc = new KrillCollection(metaQuery);
+        KrillCollectionLegacy kc = new KrillCollectionLegacy(metaQuery);
         assertEquals(1, kc.getCount());
         assertEquals(
                 "filter with QueryWrapperFilter(+pubDate:[20000101 TO 20131231])",
@@ -62,7 +62,7 @@ public class TestKrillCollectionJSONLegacy {
     public void metaQuery7 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery7.jsonld").getFile());
-        KrillCollection kc = new KrillCollection(metaQuery);
+        KrillCollectionLegacy kc = new KrillCollectionLegacy(metaQuery);
         assertEquals(2, kc.getCount());
         assertEquals(
                 "filter with QueryWrapperFilter(+(corpusID:c-1 corpusID:c-2))",
@@ -77,7 +77,7 @@ public class TestKrillCollectionJSONLegacy {
     public void metaQuery9 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery9.jsonld").getFile());
-        KrillCollection kc = new KrillCollection(metaQuery);
+        KrillCollectionLegacy kc = new KrillCollectionLegacy(metaQuery);
         assertEquals(1, kc.getCount());
         assertEquals("filter with QueryWrapperFilter(+corpusID:WPD)", kc
                 .getFilter(0).toString());

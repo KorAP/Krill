@@ -13,14 +13,14 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.collection.CollectionBuilder;
+import de.ids_mannheim.korap.collection.CollectionBuilderLegacy;
 
 @RunWith(JUnit4.class)
-public class TestCollectionBuilder {
+public class TestCollectionBuilderLegacy {
 
     @Test
     public void filterExample () throws IOException {
-        CollectionBuilder kf = new CollectionBuilder();
+        CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
 
         assertEquals("+textClass:tree", kf.and("textClass", "tree").toString());
         assertEquals("+textClass:tree +textClass:sport",
@@ -40,7 +40,7 @@ public class TestCollectionBuilder {
 
     @Test
     public void rangeExample () throws IOException {
-        CollectionBuilder kf = new CollectionBuilder();
+        CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
         assertEquals("+pubDate:[20030604 TO 20030899]",
                 kf.between("2003-06-04", "2003-08-99").toString());
         assertEquals("+pubDate:[0 TO 20030604]", kf.till("2003-06-04")
@@ -53,7 +53,7 @@ public class TestCollectionBuilder {
 
     @Test
     public void rangeLimited () throws IOException {
-        CollectionBuilder kf = new CollectionBuilder();
+        CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
         assertEquals("+pubDate:[20050000 TO 20099999]",
                 kf.between("2005", "2009").toString());
         assertEquals("+pubDate:[20051000 TO 20090899]",
@@ -97,7 +97,7 @@ public class TestCollectionBuilder {
 
     @Test
     public void rangeFailure () throws IOException {
-        CollectionBuilder kf = new CollectionBuilder();
+        CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
         assertEquals("", kf.between("aaaa-bb-cc", "aaaabbcc").toString());
         assertEquals("", kf.till("aaaa-bb-cc").toString());
         assertEquals("", kf.since("aaaa-bb-cc").toString());

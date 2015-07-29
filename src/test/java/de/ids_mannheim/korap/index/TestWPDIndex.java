@@ -14,6 +14,7 @@ import org.apache.lucene.store.MMapDirectory;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
@@ -167,10 +168,17 @@ public class TestWPDIndex {
         //0.8s
 
         // Check if it includes some results
-        BooleanFilter bf = new BooleanFilter();
+        
+        /*
+BooleanFilter bf = new BooleanFilter();
         bf.or("ID", "WPD_BBB.04463", "WPD_III.00758");
+        */
+        
         KrillCollection kc = new KrillCollection();
-        kc.filter(bf);
+        CollectionBuilder cb = new CollectionBuilder();
+        kc.fromBuilder(cb.orGroup().with(cb.term("ID", "WPD_BBB.04463")).with(cb.term("ID", "WPD_III.00758")));
+
+        // kc.filter(bf);
         ks.setCollection(kc);
         kr = ks.apply(ki);
         assertEquals(1094, kr.getMatch(0).getStartPos());

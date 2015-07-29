@@ -1,42 +1,41 @@
 {
-    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
-    "query": {
-	"@type": "koral:token", 
-	"wrap": {
-	    "@type": "koral:term", 
-	    "foundry": "mate",
-	    "layer" : "lemma",
-	    "key":"der", 
-	    "match": "match:eq"
-	}
-    },
-    "meta":{
-	"startPage":1,
-	"count": 10,
-	"context":{
-	    "left":["char",90],
-	    "right":["char",90]
-	}
-    },
-    "collections": [
-	{
-	    "@type": "koral:meta-filter",
-	    "@id": "korap-filter#id-1223232",
-	    "@value": {
-		"@type": "koral:group",
-		"relation": "or",
-		"@field": "koral:field#ID",
-		"operands": [
-		    {
-			"@type": "koral:term",
-			"@value": "WPD_AAA.00001"
-		    },
-		    {
-			"@type": "koral:term",
-			"@value": "WPD_AAA.00002"
-		    }
-		]
-	    }
-	}
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query": {
+    "@type": "koral:token", 
+    "wrap": {
+      "@type": "koral:term", 
+      "foundry": "mate",
+      "layer" : "lemma",
+      "key":"der", 
+      "match": "match:eq"
+    }
+  },
+  "meta":{
+    "startPage":1,
+    "count": 10,
+    "context":{
+      "left":["char",90],
+      "right":["char",90]
+    }
+  },
+  "collection" : {
+    "@type" : "koral:docGroup",
+    "operation": "operation:or",
+    "operands": [
+      {
+	"@type": "koral:doc",
+	"key": "ID",
+	"match": "match:eq",
+	"value": "WPD_AAA.00001",
+	"type": "type:string"
+      },
+      {
+	"@type": "koral:doc",
+	"key": "ID",
+	"match": "match:eq",
+	"value": "WPD_AAA.00002",
+	"type": "type:string"
+      }
     ]
+  }
 }

@@ -30,7 +30,7 @@ public class TestKrillCollectionJSON {
         String metaQuery = _getJSONString("collection_1.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(kc.toString(),
-                "filter with QueryWrapperFilter(+pubDate:20000101); ");
+                "pubDate:[20000101 TO 20000101]");
     };
 
 
@@ -39,8 +39,7 @@ public class TestKrillCollectionJSON {
         String metaQuery = _getJSONString("collection_2.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(kc.toString(),
-                "filter with QueryWrapperFilter(+(+pubDate:"
-                        + "[19900000 TO 99999999] +pubDate:[0 TO 20061099])); ");
+                "AndGroup(pubDate:[19900000 TO 99999999] pubDate:[0 TO 20061099])");
     };
 
 
@@ -56,8 +55,7 @@ public class TestKrillCollectionJSON {
     public void collection5 () {
         String metaQuery = _getJSONString("collection_5.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(kc.toString(), "filter with QueryWrapperFilter(+(pubDate:"
-                + "[19900000 TO 99999999] title:Mannheim)); ");
+        assertEquals(kc.toString(), "OrGroup(pubDate:[19900000 TO 99999999] title:Mannheim)");
     };
 
 
@@ -68,7 +66,7 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("filter with QueryWrapperFilter(+author:/Goethe/); ", ks
+        assertEquals("author:/Goethe/", ks
                 .getCollection().toString());
     };
 
@@ -80,7 +78,7 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("filter with QueryWrapperFilter(-author:/Goethe/); ", ks
+        assertEquals("-author:/Goethe/", ks
                 .getCollection().toString());
     };
 
@@ -92,12 +90,12 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("filter with QueryWrapperFilter(-author:Goethe); ", ks
+        assertEquals("-author:Goethe", ks
                 .getCollection().toString());
     };
 
 
-    @Ignore
+    @Test
     public void nocollectiontypegiven () {
         String metaQuery = _getJSONString("multiterm_rewrite_collection.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
@@ -109,8 +107,8 @@ public class TestKrillCollectionJSON {
     public void noCollection () {
         String metaQuery = _getJSONString("no_collection.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals("filter with QueryWrapperFilter(+corpusID:WPD); ",
-                kc.toString());
+        assertTrue(kc.hasErrors());
+        assertEquals("", kc.toString());
     };
 
 

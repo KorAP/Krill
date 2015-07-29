@@ -212,21 +212,13 @@ public class Krill extends Response {
 
                 // TODO: Temporary
                 if (collNode.fieldNames().hasNext()) {
-                    KrillCollection kc = new KrillCollection();
-                    this.setCollection(kc);
-                    kc.fromJson(collNode);
+                    this.setCollection(new KrillCollection().fromJson(collNode));
                 };
             }
 
-            // <legacycode>
             else if (json.has("collections")) {
-                KrillCollection kc = new KrillCollection();
-                this.setCollection(kc);
-                for (JsonNode collection : json.get("collections")) {
-                    kc.fromJsonLegacy(collection);
-                };
+                this.addError(899, "Collections are not supported anymore in favour of a single collection");
             };
-            // </legacycode>
         }
         catch (QueryException q) {
             this.addError(q.getErrorCode(), q.getMessage());

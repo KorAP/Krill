@@ -3,27 +3,25 @@ package de.ids_mannheim.korap;
 import java.util.*;
 import java.io.IOException;
 
-import de.ids_mannheim.korap.*;
-import de.ids_mannheim.korap.util.KrillDate;
-import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.collection.BooleanFilter;
-import de.ids_mannheim.korap.collection.RegexFilter;
-import de.ids_mannheim.korap.collection.FilterOperation;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.response.Notifications;
+import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.response.Result;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.*;
-
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.*;
+import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.FixedBitSet;
 import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.OpenBitSet;
+import org.apache.lucene.util.DocIdBitSet;
+import org.apache.lucene.search.BitsFilteredDocIdSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import java.io.StringWriter;
+import java.nio.ByteBuffer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,22 +29,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Create a Virtual Collection of documents by means of a KoralQuery
  * collection object.
- * Alternatively by applying manual filters and extensions on Lucene
- * fields.
  * 
  * <blockquote><pre>
  * KrillCollection kc = new KrillCollection(json);
- * kc.filterUIDS("a1", "a2", "a3");
  * </pre></blockquote>
- * 
- * <strong>Warning</strong>: This API is deprecated and will
- * be replaced in future versions. It supports legacy versions of
- * KoralQuery that will be disabled.
  * 
  * @author diewald
  */
 /*
- * TODO: Clean up for new KoralQuery
  * TODO: Make a cache for the bits
  *       Delete it in case of an extension or a filter
  * TODO: Maybe use randomaccessfilterstrategy
@@ -56,11 +46,10 @@ import org.slf4j.LoggerFactory;
  */
 public class KrillCollection extends Notifications {
     private KrillIndex index;
-    private KrillDate created;
-    private String id;
-    private ArrayList<FilterOperation> filter;
-    private int filterCount = 0;
     private JsonNode json;
+    private CollectionBuilder.CollectionBuilderInterface cb;
+    private byte[] pl = new byte[4];
+    private static ByteBuffer bb = ByteBuffer.allocate(4);
 
     // Logger
     private final static Logger log = LoggerFactory
@@ -71,6 +60,13 @@ public class KrillCollection extends Notifications {
 
 
     /**
+     * Construct a new KrillCollection.
+     * 
+     */
+    public KrillCollection () {};
+
+
+    /**
      * Construct a new KrillCollection by passing a KrillIndex.
      * 
      * @param index
@@ -78,44 +74,33 @@ public class KrillCollection extends Notifications {
      */
     public KrillCollection (KrillIndex index) {
         this.index = index;
-        this.filter = new ArrayList<FilterOperation>(5);
     };
 
 
     /**
      * Construct a new KrillCollection by passing a KoralQuery.
-     * This supports collections with the key "collection" and
-     * legacy collections with the key "collections".
      * 
-     * @param jsonString
-     *            The virtual collection as a KoralQuery.
+     * @param json
+     *            The KoralQuery document as a JSON string.
      */
     public KrillCollection (String jsonString) {
         ObjectMapper mapper = new ObjectMapper();
-        this.filter = new ArrayList<FilterOperation>(5);
-
         try {
             JsonNode json = mapper.readTree(jsonString);
 
-            // Deserialize from recent collections
-            if (json.has("collection")) {
+            if (json.has("collection"))
                 this.fromJson(json.get("collection"));
-            }
 
-            // Legacy collection serialization
-            // This will be removed!
-            else if (json.has("collections")) {
-                this.addMessage(850,
-                        "Collections are deprecated in favour of a single collection");
-                for (JsonNode collection : json.get("collections")) {
-                    this.fromJsonLegacy(collection);
-                };
-            };
+            else if (json.has("collections"))
+                this.addError(899, "Collections are not supported anymore in favour of a single collection");
         }
-        // Some exceptions ...
+
+        // Query Exception
         catch (QueryException qe) {
             this.addError(qe.getErrorCode(), qe.getMessage());
         }
+
+        // JSON exception
         catch (IOException e) {
             this.addError(621, "Unable to parse JSON", "KrillCollection",
                     e.getLocalizedMessage());
@@ -124,10 +109,14 @@ public class KrillCollection extends Notifications {
 
 
     /**
-     * Construct a new KrillCollection.
+     * Set the {@link KrillIndex} the virtual collection refers to.
+     * 
+     * @param index
+     *            The {@link KrillIndex} the virtual collection refers
+     *            to.
      */
-    public KrillCollection () {
-        this.filter = new ArrayList<FilterOperation>(5);
+    public void setIndex (KrillIndex index) {
+        this.index = index;
     };
 
 
@@ -161,21 +150,13 @@ public class KrillCollection extends Notifications {
      */
     public KrillCollection fromJson (JsonNode json) throws QueryException {
         this.json = json;
-        this.filter(this._fromJson(json));
-        return this;
+        return this.fromBuilder(this._fromJson(json));
     };
 
 
-    // Create a boolean filter from JSON
-    private BooleanFilter _fromJson (JsonNode json) throws QueryException {
-        return this._fromJson(json, "tokens");
-    };
+    private CollectionBuilder.CollectionBuilderInterface _fromJson (JsonNode json) throws QueryException {
 
-
-    // Create a booleanfilter from JSON
-    private BooleanFilter _fromJson (JsonNode json, String field)
-            throws QueryException {
-        BooleanFilter bfilter = new BooleanFilter();
+        CollectionBuilder cb = new CollectionBuilder();
 
         if (!json.has("@type")) {
             throw new QueryException(701,
@@ -184,7 +165,6 @@ public class KrillCollection extends Notifications {
 
         String type = json.get("@type").asText();
 
-        // Single filter
         if (type.equals("koral:doc")) {
 
             String key = "tokens";
@@ -201,27 +181,26 @@ public class KrillCollection extends Notifications {
             if (valtype.equals("type:date")) {
 
                 if (!json.has("value"))
-                    throw new QueryException(612, "Dates require value fields");
+                    throw new QueryException(820, "Dates require value fields");
 
                 String dateStr = json.get("value").asText();
+
                 if (json.has("match"))
                     match = json.get("match").asText();
 
                 // TODO: This isn't stable yet
                 switch (match) {
-                    case "match:eq":
-                        bfilter.date(dateStr);
-                        break;
-                    case "match:geq":
-                        bfilter.since(dateStr);
-                        break;
-                    case "match:leq":
-                        bfilter.till(dateStr);
-                        break;
+                case "match:eq":
+                    return cb.date(key, dateStr);
+                case "match:ne":
+                    return cb.date(key, dateStr).not();
+                case "match:geq":
+                    return cb.since(key, dateStr);
+                case "match:leq":
+                    return cb.till(key, dateStr);
                 };
 
-                // No good reason for gt or lt
-                return bfilter;
+                throw new QueryException(841, "Match relation unknown for type");
             }
 
             // Filter based on string
@@ -229,354 +208,106 @@ public class KrillCollection extends Notifications {
                 if (json.has("match"))
                     match = json.get("match").asText();
 
-                if (match.equals("match:eq")) {
-                    bfilter.and(key, json.get("value").asText());
-                }
-                else if (match.equals("match:ne")) {
-                    bfilter.andNot(key, json.get("value").asText());
-                }
+                switch (match) {
+
+                case "match:eq":
+                    return cb.term(key, json.get("value").asText());
+                case "match:ne":
+                    return cb.term(key, json.get("value").asText()).not();
+
                 // This may change - but for now it means the elements are lowercased
-                else if (match.equals("match:contains")) {
-                    bfilter.and(key, json.get("value").asText().toLowerCase());
-                }
-                else if (match.equals("match:containsnot")) {
-                    bfilter.andNot(key, json.get("value").asText().toLowerCase());
-                }
-                // <LEGACY>
-                else if (match.equals("match:excludes")) {
-                    bfilter.andNot(key, json.get("value").asText().toLowerCase());
-                }
-                // </LEGACY>
-                else {
-                    throw new QueryException(0, "Unknown match type");
+                case "match:contains":
+                    return cb.term(key, json.get("value").asText().toLowerCase());
+
+                case "match:containsnot":
+                    return cb.term(key, json.get("value").asText().toLowerCase()).not();
+
+                    // <LEGACY>
+                case "match:excludes":
+                    return cb.term(key, json.get("value").asText().toLowerCase()).not();
+                    // </LEGACY>
                 };
 
-                return bfilter;
+                throw new QueryException(841, "Match relation unknown for type");
             }
 
             // Filter based on regex
             else if (valtype.equals("type:regex")) {
+
                 if (json.has("match"))
                     match = json.get("match").asText();
 
                 if (match.equals("match:eq")) {
-                    return bfilter.and(key, new RegexFilter(json.get("value")
-                            .asText()));
+                    return cb.re(key, json.get("value").asText());
                 }
                 else if (match.equals("match:ne")) {
-                    return bfilter.andNot(key, new RegexFilter(json
-                            .get("value").asText()));
+                    return cb.re(key, json.get("value").asText()).not();
+                }
+                else if (match.equals("match:contains")) {
+                    return cb.re(key, json.get("value").asText());
+                }
+                else if (match.equals("match:excludes")) {
+                    return cb.re(key, json.get("value").asText()).not();
                 };
 
-                // TODO! for excludes and contains
-                throw new QueryException(0, "Unknown document type");
+                throw new QueryException(841, "Match relation unknown for type");
             };
 
-            // TODO!
-            throw new QueryException(0, "Unknown document operation");
+            throw new QueryException(843, "Document type is not supported");
         }
 
         // nested group
         else if (type.equals("koral:docGroup")) {
+
             if (!json.has("operands") || !json.get("operands").isArray())
-                throw new QueryException(612, "Groups need operands");
+                throw new QueryException(842, "Document group needs operand list");
+
+            CollectionBuilder.CollectionBuilderGroup group;
 
             String operation = "operation:and";
             if (json.has("operation"))
-                operation = json.get("operation").asText();
+                operation = json.get("operation").asText();            
 
-            BooleanFilter group = new BooleanFilter();
-
+            if (operation.equals("operation:or"))
+                group = cb.orGroup();
+            else if (operation.equals("operation:and"))
+                group = cb.andGroup();
+            else
+                throw new QueryException(810, "Unknown document group operation");
+    
             for (JsonNode operand : json.get("operands")) {
-                if (operation.equals("operation:and"))
-                    group.and(this._fromJson(operand, field));
-
-                else if (operation.equals("operation:or"))
-                    group.or(this._fromJson(operand, field));
-
-                else
-                    throw new QueryException(613,
-                            "Unknown document group operation");
+                group.with(this._fromJson(operand));
             };
-            bfilter.and(group);
-            return bfilter;
+            return group;
         }
 
         // Unknown type
-        else
-            throw new QueryException(613,
-                    "Collection query type has to be doc or docGroup");
+        throw new QueryException(813, "Collection type is not supported");
+    }; 
 
-        // return new BooleanFilter();
-    };
-
-
-    /**
-     * Import the "collections" part of a KoralQuery.
-     * This method is deprecated and will vanish in future versions.
-     * 
-     * @param jsonString
-     *            The "collections" part of a KoralQuery.
-     * @throws QueryException
-     */
+    // Returns the number of filters - always one!
     @Deprecated
-    public KrillCollection fromJsonLegacy (String jsonString)
-            throws QueryException {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            this.fromJsonLegacy((JsonNode) mapper.readValue(jsonString,
-                    JsonNode.class));
-        }
-        catch (Exception e) {
-            this.addError(621, "Unable to parse JSON", "KrillCollection");
-        };
+    public int getCount () {
+        return 1;
+    };
+
+
+
+
+
+    /**
+     * Set the collection from a {@link CollectionBuilder} object.
+     * 
+     * @param cb The CollectionBuilder object.
+     */
+    public KrillCollection fromBuilder (CollectionBuilder.CollectionBuilderInterface cb) {
+        this.cb = cb;
         return this;
     };
 
-
-    /**
-     * Import the "collections" part of a KoralQuery.
-     * This method is deprecated and will vanish in future versions.
-     * 
-     * @param json
-     *            The "collections" part of a KoralQuery
-     *            as a {@link JsonNode} object.
-     * @throws QueryException
-     */
-    @Deprecated
-    public KrillCollection fromJsonLegacy (JsonNode json) throws QueryException {
-        if (!json.has("@type"))
-            throw new QueryException(701,
-                    "JSON-LD group has no @type attribute");
-
-        if (!json.has("@value"))
-            throw new QueryException(851, "Legacy filter need @value fields");
-
-        BooleanFilter bf = this._fromJsonLegacy(json.get("@value"), "tokens");
-        String type = json.get("@type").asText();
-
-        // Filter the collection
-        if (type.equals("koral:meta-filter")) {
-            if (DEBUG)
-                log.trace("Add Filter LEGACY");
-            this.filter(bf);
-        }
-
-        // Extend the collection
-        else if (type.equals("koral:meta-extend")) {
-            if (DEBUG)
-                log.trace("Add Extend LEGACY");
-            this.extend(bf);
-        };
-
-        return this;
+    public CollectionBuilder.CollectionBuilderInterface getBuilder () {
+        return this.cb;
     };
-
-
-    // Create a boolean filter from a Json string
-    @Deprecated
-    private BooleanFilter _fromJsonLegacy (JsonNode json, String field)
-            throws QueryException {
-        BooleanFilter bfilter = new BooleanFilter();
-
-        if (!json.has("@type"))
-            throw new QueryException(612,
-                    "JSON-LD group has no @type attribute");
-
-        String type = json.get("@type").asText();
-
-        if (DEBUG)
-            log.trace("@type: " + type);
-
-        if (json.has("@field"))
-            field = _getFieldLegacy(json);
-
-        if (type.equals("koral:term")) {
-            if (field != null && json.has("@value"))
-                bfilter.and(field, json.get("@value").asText());
-            return bfilter;
-        }
-        else if (type.equals("koral:group")) {
-            if (!json.has("relation"))
-                throw new QueryException(612, "Group needs relation");
-
-            if (!json.has("operands"))
-                throw new QueryException(612, "Group needs operand list");
-
-            String dateStr, till;
-            JsonNode operands = json.get("operands");
-
-            if (!operands.isArray())
-                throw new QueryException(612, "Group needs operand list");
-
-            if (DEBUG)
-                log.trace("relation found {}", json.get("relation").asText());
-
-            BooleanFilter group = new BooleanFilter();
-
-            switch (json.get("relation").asText()) {
-                case "between":
-                    dateStr = _getDateLegacy(json, 0);
-                    till = _getDateLegacy(json, 1);
-                    if (dateStr != null && till != null)
-                        bfilter.between(dateStr, till);
-                    break;
-
-                case "until":
-                    dateStr = _getDateLegacy(json, 0);
-                    if (dateStr != null)
-                        bfilter.till(dateStr);
-                    break;
-
-                case "since":
-                    dateStr = _getDateLegacy(json, 0);
-                    if (dateStr != null)
-                        bfilter.since(dateStr);
-                    break;
-
-                case "equals":
-                    dateStr = _getDateLegacy(json, 0);
-                    if (dateStr != null)
-                        bfilter.date(dateStr);
-                    break;
-
-                case "and":
-                    if (operands.size() < 1)
-                        throw new QueryException(612,
-                                "Operation needs at least two operands");
-
-                    for (JsonNode operand : operands) {
-                        group.and(this._fromJsonLegacy(operand, field));
-                    }
-                    ;
-                    bfilter.and(group);
-                    break;
-
-                case "or":
-                    if (operands.size() < 1)
-                        throw new QueryException(612,
-                                "Operation needs at least two operands");
-
-                    for (JsonNode operand : operands) {
-                        group.or(this._fromJsonLegacy(operand, field));
-                    }
-                    ;
-                    bfilter.and(group);
-                    break;
-
-                default:
-                    throw new QueryException(613, "Relation is not supported");
-            };
-        }
-        else {
-            throw new QueryException(613,
-                    "Filter type is not a supported group");
-        };
-        return bfilter;
-    };
-
-
-    /**
-     * Set the {@link KrillIndex} the virtual collection refers to.
-     * 
-     * @param index
-     *            The {@link KrillIndex} the virtual collection refers
-     *            to.
-     */
-    public void setIndex (KrillIndex index) {
-        this.index = index;
-    };
-
-
-    /**
-     * Add a filter by means of a {@link BooleanFilter}.
-     * 
-     * <strong>Warning</strong>: Filters are part of the collections
-     * legacy API and may vanish without warning.
-     * 
-     * @param filter
-     *            The filter to add to the collection.
-     * @return The {@link KrillCollection} object for chaining.
-     */
-    // TODO: The checks may not be necessary
-    public KrillCollection filter (BooleanFilter filter) {
-        if (DEBUG)
-            log.trace("Added filter: {}", filter.toString());
-
-        if (filter == null) {
-            this.addWarning(830, "Filter was empty");
-            return this;
-        };
-
-        Filter f = (Filter) new QueryWrapperFilter(filter.toQuery());
-        if (f == null) {
-            this.addWarning(831, "Filter is not wrappable");
-            return this;
-        };
-        FilterOperation fo = new FilterOperation(f, false);
-        if (fo == null) {
-            this.addWarning(832, "Filter operation is invalid");
-            return this;
-        };
-        this.filter.add(fo);
-        this.filterCount++;
-        return this;
-    };
-
-
-    /**
-     * Add a filter by means of a {@link CollectionBuilder} object.
-     * 
-     * <strong>Warning</strong>: Filters are part of the collections
-     * legacy API and may vanish without warning.
-     * 
-     * @param filter
-     *            The filter to add to the collection.
-     * @return The {@link KrillCollection} object for chaining.
-     */
-    public KrillCollection filter (CollectionBuilder filter) {
-        return this.filter(filter.getBooleanFilter());
-    };
-
-
-    /**
-     * Add an extension by means of a {@link BooleanFilter}.
-     * 
-     * <strong>Warning</strong>: Extensions are part of the
-     * collections
-     * legacy API and may vanish without warning.
-     * 
-     * @param extension
-     *            The extension to add to the collection.
-     * @return The {@link KrillCollection} object for chaining.
-     */
-    public KrillCollection extend (BooleanFilter extension) {
-        if (DEBUG)
-            log.trace("Added extension: {}", extension.toString());
-
-        this.filter.add(new FilterOperation((Filter) new QueryWrapperFilter(
-                extension.toQuery()), true));
-        this.filterCount++;
-        return this;
-    };
-
-
-    /**
-     * Add an extension by means of a {@link CollectionBuilder}
-     * object.
-     * 
-     * <strong>Warning</strong>: Extensions are part of the
-     * collections
-     * legacy API and may vanish without warning.
-     * 
-     * @param extension
-     *            The extension to add to the collection.
-     * @return The {@link KrillCollection} object for chaining.
-     */
-    public KrillCollection extend (CollectionBuilder extension) {
-        return this.extend(extension.getBooleanFilter());
-    };
-
 
     /**
      * Add a filter based on a list of unique document identifiers.
@@ -589,57 +320,37 @@ public class KrillCollection extends Notifications {
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection filterUIDs (String ... uids) {
+        /*
         BooleanFilter filter = new BooleanFilter();
         filter.or("UID", uids);
         if (DEBUG)
             log.debug("UID based filter: {}", filter.toString());
         return this.filter(filter);
+        */
+        return this;
     };
 
 
     /**
-     * Get the list of filters constructing the collection.
-     * 
-     * <strong>Warning</strong>: This is part of the collections
-     * legacy API and may vanish without warning.
-     * 
-     * @return The list of filters.
+     * Serialize collection to a {@link Filter} object.
      */
-    public List<FilterOperation> getFilters () {
-        return this.filter;
+    public Filter toFilter () {
+        if (this.cb == null)
+            return null;
+
+        return this.cb.toFilter();
     };
 
 
     /**
-     * Get a certain {@link FilterOperation} from the list of filters
-     * constructing the collection by its numerical index.
-     * 
-     * <strong>Warning</strong>: This is part of the collections
-     * legacy API and may vanish without warning.
-     * 
-     * @param index
-     *            The index position of the requested
-     *            {@link FilterOperation}.
-     * @return The {@link FilterOperation} at the certain list
-     *         position.
+     * Boolean value if the collection should work inverted or
+     * not.
      */
-    public FilterOperation getFilter (int index) {
-        return this.filter.get(index);
-    };
+    public boolean isNegative () {
+        if (this.cb == null)
+            return false;
 
-
-    /**
-     * Get the number of filter operations constructing this
-     * collection.
-     * 
-     * <strong>Warning</strong>: This is part of the collections
-     * legacy API and may vanish without warning.
-     * 
-     * @return The number of filter operations constructing this
-     *         collection.
-     */
-    public int getCount () {
-        return this.filterCount;
+        return this.cb.isNegative();
     };
 
 
@@ -653,11 +364,11 @@ public class KrillCollection extends Notifications {
      * @return A string representation of the virtual collection.
      */
     public String toString () {
-        StringBuilder sb = new StringBuilder();
-        for (FilterOperation fo : this.filter) {
-            sb.append(fo.toString()).append("; ");
-        };
-        return sb.toString();
+        Filter filter = this.toFilter();
+        if (filter == null)
+            return "";
+
+        return (this.isNegative() ? "-" : "") + filter.toString();
     };
 
 
@@ -692,14 +403,15 @@ public class KrillCollection extends Notifications {
      *         result.
      */
     public Result search (SpanQuery query) {
-        return this.index.search(this, query, 0, (short) 20, true, (short) 5,
-                true, (short) 5);
+        // return this.index.search(this, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+        return null;
     };
 
 
     /**
      * Create a bit vector representing the live documents of the
      * virtual collection to be used in searches.
+     * This will respect deleted documents.
      * 
      * @param The
      *            {@link AtomicReaderContext} to search in.
@@ -708,74 +420,67 @@ public class KrillCollection extends Notifications {
      * @throws IOException
      */
     public FixedBitSet bits (AtomicReaderContext atomic) throws IOException {
-        // TODO: Probably use Bits.MatchAllBits(int len)
-        boolean noDoc = true;
-        FixedBitSet bitset;
+        AtomicReader r = atomic.reader();
+        FixedBitSet bitset = new FixedBitSet(r.maxDoc());
+        DocIdSet docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
 
-        // There are filters set
-        if (this.filterCount > 0) {
-            bitset = new FixedBitSet(atomic.reader().maxDoc());
+        if (docids == null)
+            return null;
 
-            ArrayList<FilterOperation> filters = (ArrayList<FilterOperation>) this.filter
-                    .clone();
-
-            FilterOperation kcInit = filters.remove(0);
-            if (DEBUG)
-                log.trace("FILTER: {}", kcInit);
-
-            // Init vector
-            DocIdSet docids = kcInit.filter.getDocIdSet(atomic, null);
-
-            DocIdSetIterator filterIter = docids.iterator();
-
-            // The filter has an effect
-            if (filterIter != null) {
-                if (DEBUG)
-                    log.trace("InitFilter has effect");
-                bitset.or(filterIter);
-                noDoc = false;
-            };
-
-            // Apply all filters sequentially
-            for (FilterOperation kc : filters) {
-                if (DEBUG)
-                    log.trace("FILTER: {}", kc);
-
-                // TODO: BUG???
-                docids = kc.filter.getDocIdSet(atomic, kc.isExtension() ? null
-                        : bitset);
-                filterIter = docids.iterator();
-
-                if (filterIter == null) {
-                    // There must be a better way ...
-                    if (kc.isFilter()) {
-                        // TODO: Check if this is really correct!
-                        // Maybe here is the bug
-                        bitset.clear(0, bitset.length());
-                        noDoc = true;
-                    };
-                    continue;
-                };
-                if (kc.isExtension())
-                    bitset.or(filterIter);
-                else
-                    bitset.and(filterIter);
-            };
-
-            if (!noDoc) {
-                FixedBitSet livedocs = (FixedBitSet) atomic.reader()
-                        .getLiveDocs();
-                if (livedocs != null)
-                    bitset.and(livedocs);
-            };
-        }
-        else {
-            bitset = (FixedBitSet) atomic.reader().getLiveDocs();
-        };
-
+        bitset.or(docids.iterator());
         return bitset;
     };
 
+
+    /**
+     * Return the {@link DocIdSet} representing the documents of the
+     * virtual collection to be used in searches.
+     * This will respect deleted documents.
+     * 
+     * @param atomic
+     *           The {@link AtomicReaderContext} to search in.
+     * @param accepted
+     *            {@link Bits} vector of accepted documents.
+     * @throws IOException
+     */
+    public DocIdSet getDocIdSet (AtomicReaderContext atomic, Bits acceptDocs) throws IOException {
+
+        int maxDoc = atomic.reader().maxDoc();
+        FixedBitSet bitset = new FixedBitSet(maxDoc);
+
+        Filter filter;
+        if (this.cb == null || (filter = this.cb.toFilter()) == null)
+            return null;
+
+        // Init vector
+        DocIdSet docids = filter.getDocIdSet(atomic, null);
+        DocIdSetIterator filterIter = (docids == null) ? null : docids.iterator();
+
+        if (filterIter == null) {
+            if (!this.cb.isNegative())
+                return null;
+
+            bitset.set(0, maxDoc);
+        }
+        else {
+            // Or bit set
+            bitset.or(filterIter);
+
+            // Revert for negation
+            if (this.cb.isNegative())
+                bitset.flip(0, maxDoc);
+        };
+
+        // Remove deleted docs
+        return (DocIdSet) BitsFilteredDocIdSet.wrap(
+            (DocIdSet) bitset,
+            acceptDocs
+        );
+    };
+
+    public long numberOf (String type) throws IOException {
+        return this.numberOf("tokens", type);
+    };
 
     /**
      * Search for the number of occurrences of different types,
@@ -794,136 +499,223 @@ public class KrillCollection extends Notifications {
      * @see KrillIndex#numberOf
      */
     public long numberOf (String field, String type) throws IOException {
+
+        // No index defined
         if (this.index == null)
             return (long) -1;
 
-        return this.index.numberOf(this, field, type);
+        // This is redundant to index stuff
+        if (type.equals("documents") || type.equals("base/texts")) {
+            if (this.cb == null)
+                return (long) this.index.reader().numDocs();
+            else
+                return this.docCount();
+        };
+        
+        // Create search term
+        // This may be prefixed by foundries
+        Term term = new Term(field, "-:" + type);
+
+        long occurrences = 0;
+        try {
+            // Iterate over all atomic readers and collect occurrences
+            for (AtomicReaderContext atomic : this.index.reader().leaves()) {
+                occurrences += this._numberOfAtomic(this.bits(atomic), atomic, term);
+            };
+        }
+        
+        // Something went wrong
+        catch (Exception e) {
+            log.warn(e.getLocalizedMessage());
+        };
+
+        return occurrences;
     };
+
+
+    // Search for meta information in term vectors
+    // This will create the sum of all numerical payloads
+    // of the term in the document vector
+    private long _numberOfAtomic (Bits docvec, AtomicReaderContext atomic,
+            Term term) throws IOException {
+
+        // This reimplements docsAndPositionsEnum with payloads
+        final Terms terms = atomic.reader().fields().terms(term.field());
+
+        // No terms were found
+        if (terms != null) {
+            // Todo: Maybe reuse a termsEnum!
+            final TermsEnum termsEnum = terms.iterator(null);
+
+            // Set the position in the iterator to the term that is seeked
+            if (termsEnum.seekExact(term.bytes())) {
+
+                // Start an iterator to fetch all payloads of the term
+                DocsAndPositionsEnum docs = termsEnum.docsAndPositions(docvec,
+                        null, DocsAndPositionsEnum.FLAG_PAYLOADS);
+
+                // The iterator is empty
+                // This may even be an error, but we return 0
+                if (docs.docID() == DocsAndPositionsEnum.NO_MORE_DOCS)
+                    return 0;
+
+                // Init some variables for data copying
+                long occurrences = 0;
+                BytesRef payload;
+
+                // Init nextDoc()
+                while (docs.nextDoc() != DocsAndPositionsEnum.NO_MORE_DOCS) {
+
+                    // Initialize (go to first term)
+                    docs.nextPosition();
+
+                    // Copy payload with the offset of the BytesRef
+                    payload = docs.getPayload();
+                    System.arraycopy(payload.bytes, payload.offset, pl, 0, 4);
+
+                    // Add payload as integer
+                    occurrences += bb.wrap(pl).getInt();
+                };
+
+                // Return the sum of all occurrences
+                return occurrences;
+            };
+        };
+
+        // Nothing found
+        return 0;
+    };    
 
 
     /**
-     * Search for the number of occurrences of different types,
-     * e.g. <i>documents</i>, <i>sentences</i> etc. in the virtual
-     * collection, in the <i>base</i> foundry.
+     * Return the number of documents in the virtual
+     * collection.
      * 
-     * @param type
-     *            The type of meta information,
-     *            e.g. <i>documents</i> or <i>sentences</i> as a
-     *            string.
      * @return The number of the occurrences.
-     * @throws IOException
-     * @see KrillIndex#numberOf
+     * @see #numberOf
      */
-    public long numberOf (String type) throws IOException {
-        if (this.index == null)
-            return (long) -1;
+    public long docCount () {
 
-        return this.index.numberOf(this, "tokens", type);
+        // No index defined
+        if (this.index == null)
+            return (long) 0;
+
+        // TODO: Caching!
+
+        long docCount = 0;
+        try {
+            FixedBitSet bitset;
+            for (AtomicReaderContext atomic : this.index.reader().leaves()) {
+                if ((bitset = this.bits(atomic)) != null)
+                    docCount += bitset.cardinality();
+            };
+        }
+        catch (IOException e) {
+            log.warn(e.getLocalizedMessage());
+        };
+        return docCount;
     };
 
 
-    // Term relation API is not in use anymore
+
+    /*
     @Deprecated
     public HashMap getTermRelation (String field) throws Exception {
-        if (this.index == null) {
-            HashMap<String, Long> map = new HashMap<>(1);
-            map.put("-docs", (long) 0);
-            return map;
-        };
-
-        return this.index.getTermRelation(this, field);
+        return this.getTermRelation(new KrillCollection(this), field);
     };
+*/
 
-
-    // Term relation API is not in use anymore
+    /**
+     * Analyze how terms relate
+     */
+    /*
     @Deprecated
-    public String getTermRelationJSON (String field) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        StringWriter sw = new StringWriter();
-        sw.append("{\"field\":");
-        mapper.writeValue(sw, field);
-        sw.append(",");
+    public HashMap getTermRelation (KrillCollection kc, String field)
+            throws Exception {
+        HashMap<String, Long> map = new HashMap<>(100);
+        long docNumber = 0, checkNumber = 0;
 
         try {
-            HashMap<String, Long> map = this.getTermRelation(field);
+            if (kc.getCount() <= 0) {
+                checkNumber = (long) this.reader().numDocs();
+            };
 
-            sw.append("\"documents\":");
-            mapper.writeValue(sw, map.remove("-docs"));
-            sw.append(",");
+            for (AtomicReaderContext atomic : this.reader().leaves()) {
+                HashMap<String, FixedBitSet> termVector = new HashMap<>(20);
 
-            String[] keys = map.keySet().toArray(new String[map.size()]);
+                FixedBitSet docvec = kc.bits(atomic);
+                if (docvec != null) {
+                    docNumber += docvec.cardinality();
+                };
 
-            HashMap<String, Integer> setHash = new HashMap<>(20);
-            ArrayList<HashMap<String, Long>> set = new ArrayList<>(20);
-            ArrayList<Long[]> overlap = new ArrayList<>(100);
+                Terms terms = atomic.reader().fields().terms(field);
 
-            int count = 0;
-            for (String key : keys) {
-                if (!key.startsWith("#__")) {
-                    HashMap<String, Long> simpleMap = new HashMap<>();
-                    simpleMap.put(key, map.remove(key));
-                    set.add(simpleMap);
-                    setHash.put(key, count++);
+                if (terms == null) {
+                    continue;
+                };
+
+                int docLength = atomic.reader().maxDoc();
+                FixedBitSet bitset = new FixedBitSet(docLength);
+
+                // Iterate over all tokens in this field
+                TermsEnum termsEnum = terms.iterator(null);
+
+                while (termsEnum.next() != null) {
+
+                    String termString = termsEnum.term().utf8ToString();
+
+                    bitset.clear(0, docLength);
+
+                    // Get frequency
+                    bitset.or((DocIdSetIterator) termsEnum.docs((Bits) docvec,
+                            null));
+
+                    long value = 0;
+                    if (map.containsKey(termString))
+                        value = map.get(termString);
+
+                    map.put(termString, value + bitset.cardinality());
+
+                    termVector.put(termString, bitset.clone());
+                };
+
+                int keySize = termVector.size();
+                String[] keys = termVector.keySet()
+                        .toArray(new String[keySize]);
+                java.util.Arrays.sort(keys);
+
+                if (keySize > maxTermRelations) {
+                    throw new Exception("termRelations are limited to "
+                            + maxTermRelations + " sets"
+                            + " (requested were at least " + keySize + " sets)");
+                };
+
+                for (int i = 0; i < keySize; i++) {
+                    for (int j = i + 1; j < keySize; j++) {
+                        FixedBitSet comby = termVector.get(keys[i]).clone();
+                        comby.and(termVector.get(keys[j]));
+
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("#__").append(keys[i]).append(":###:")
+                                .append(keys[j]);
+                        String combString = sb.toString();
+
+                        long cap = (long) comby.cardinality();
+                        if (map.containsKey(combString)) {
+                            cap += map.get(combString);
+                        };
+                        map.put(combString, cap);
+                    };
                 };
             };
-
-            keys = map.keySet().toArray(new String[map.size()]);
-            for (String key : keys) {
-                String[] comb = key.substring(3).split(":###:");
-                Long[] l = new Long[3];
-                l[0] = (long) setHash.get(comb[0]);
-                l[1] = (long) setHash.get(comb[1]);
-                l[2] = map.remove(key);
-                overlap.add(l);
-            };
-
-            sw.append("\"sets\":");
-            mapper.writeValue(sw, (Object) set);
-            sw.append(",\"overlaps\":");
-            mapper.writeValue(sw, (Object) overlap);
-            sw.append(",\"error\":null");
+            map.put("-docs", checkNumber != 0 ? checkNumber : docNumber);
         }
-        catch (Exception e) {
-            sw.append("\"error\":");
-            mapper.writeValue(sw, e.getMessage());
+        catch (IOException e) {
+            log.warn(e.getMessage());
         };
-
-        sw.append("}");
-        return sw.getBuffer().toString();
+        return map;
     };
+    */
 
 
-    // Get legacy field
-    @Deprecated
-    private static String _getFieldLegacy (JsonNode json) {
-        if (!json.has("@field"))
-            return (String) null;
-
-        String field = json.get("@field").asText();
-        return field.replaceFirst("koral:field#", "");
-    };
-
-
-    // Get legacy date
-    @Deprecated
-    private static String _getDateLegacy (JsonNode json, int index) {
-        if (!json.has("operands"))
-            return (String) null;
-
-        if (!json.get("operands").has(index))
-            return (String) null;
-
-        JsonNode date = json.get("operands").get(index);
-
-        if (!date.has("@type"))
-            return (String) null;
-
-        if (!date.get("@type").asText().equals("koral:date"))
-            return (String) null;
-
-        if (!date.has("@value"))
-            return (String) null;
-
-        return date.get("@value").asText();
-    };
 };

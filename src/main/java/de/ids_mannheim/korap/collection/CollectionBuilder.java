@@ -1,128 +1,231 @@
 package de.ids_mannheim.korap.collection;
 
-import de.ids_mannheim.korap.collection.BooleanFilter;
-import de.ids_mannheim.korap.collection.RegexFilter;
-import de.ids_mannheim.korap.util.QueryException;
+import java.util.*;
+import java.io.IOException;
+// TEMPORARY:
+import org.apache.lucene.queries.BooleanFilter;
+import org.apache.lucene.search.BooleanClause;
+
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queries.TermsFilter;
+import org.apache.lucene.search.*;
+import org.apache.lucene.search.NumericRangeFilter;
 import de.ids_mannheim.korap.util.KrillDate;
-
-import org.apache.lucene.search.Query;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * CollectionBuilder implements a simple API for creating queries
- * constituing Virtual Collections.
- * 
- * <strong>Warning</strong>: The API is likely to change.
- * 
- * @author diewald
- */
-/*
- * Todo: WildCardFilter!
- * Todo: Support delete boolean etc.
- * Todo: Supports foundries
- */
+import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.collection.BooleanGroupFilter;
+
 public class CollectionBuilder {
-    private BooleanFilter filter;
-    private String field = "tokens";
 
     // Logger
-    private final static Logger log = LoggerFactory
-            .getLogger(CollectionBuilder.class);
+    private final static Logger log = LoggerFactory.getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-
-    /**
-     * Construct a new CollectionBuilder object.
-     */
-    public CollectionBuilder () {
-        filter = new BooleanFilter();
+    public CollectionBuilderInterface term (String field, String term) {
+        return new CollectionBuilderTerm(field, term);
     };
 
-
-    public BooleanFilter and (String type, String ... terms) {
-        BooleanFilter bf = new BooleanFilter();
-        bf.and(type, terms);
-        return bf;
+    public CollectionBuilderInterface re (String field, String term) {
+        return new CollectionBuilderTerm(field, term, true);
     };
 
+    public CollectionBuilderInterface since (String field, String date) {
+        int since = new KrillDate(date).floor();
 
-    public BooleanFilter or (String type, String ... terms) {
-        BooleanFilter bf = new BooleanFilter();
-        bf.or(type, terms);
-        return bf;
+        if (since == 0 || since == KrillDate.BEGINNING)
+            return null;
+
+        return new CollectionBuilderRange(field, since, KrillDate.END);
     };
 
+    public CollectionBuilderInterface till (String field, String date) {
+        try {
+            int till = new KrillDate(date).ceil();
+            if (till == 0 || till == KrillDate.END)
+                return null;
 
-    public BooleanFilter and (String type, RegexFilter re) {
-        BooleanFilter bf = new BooleanFilter();
-        bf.and(type, re);
-        return bf;
+            return new CollectionBuilderRange(field, KrillDate.BEGINNING, till);
+        }
+        catch (NumberFormatException e) {
+            log.warn("Parameter of till(date) is invalid");
+        };
+        return null;
     };
 
+    public CollectionBuilderInterface date (String field, String date) {
+        KrillDate dateDF = new KrillDate(date);
 
-    public BooleanFilter or (String type, RegexFilter re) {
-        BooleanFilter bf = new BooleanFilter();
-        bf.or(type, re);
-        return bf;
+        if (dateDF.year == 0)
+            return null;
+
+        if (dateDF.day == 0 || dateDF.month == 0) {
+            int begin = dateDF.floor();
+            int end = dateDF.ceil();
+
+            if (end == 0
+                || (begin == KrillDate.BEGINNING && end == KrillDate.END))
+                return null;
+
+            return new CollectionBuilderRange(field, begin, end);
+        };
+
+        return new CollectionBuilderRange(field, dateDF.floor(), dateDF.ceil());
     };
 
-
-    public BooleanFilter since (String date) {
-        BooleanFilter bf = new BooleanFilter();
-        bf.since(date);
-        return bf;
+    public CollectionBuilderGroup andGroup () {
+        return new CollectionBuilderGroup(false);
     };
 
-
-    public BooleanFilter till (String date) {
-        BooleanFilter bf = new BooleanFilter();
-        bf.till(date);
-        return bf;
+    public CollectionBuilderGroup orGroup () {
+        return new CollectionBuilderGroup(true);
     };
 
-
-    public BooleanFilter date (String date) {
-        BooleanFilter bf = new BooleanFilter();
-        bf.date(date);
-        return bf;
+    public interface CollectionBuilderInterface {
+        public String toString ();
+        public Filter toFilter ();
+        public boolean isNegative ();
+        public CollectionBuilderInterface not ();
     };
 
+    public class CollectionBuilderTerm implements CollectionBuilderInterface {
+        private boolean isNegative = false;
+        private boolean regex = false;
+        private String field;
+        private String term;
 
-    public BooleanFilter between (String date1, String date2) {
-        BooleanFilter bf = new BooleanFilter();
-        bf.between(date1, date2);
-        return bf;
+        public CollectionBuilderTerm (String field, String term) {
+            this.field = field;
+            this.term = term;
+        };
+
+        public CollectionBuilderTerm (String field, String term, boolean regex) {
+            this.field = field;
+            this.term = term;
+            this.regex = regex;
+        };
+
+        public Filter toFilter () {
+            // Regular expression
+            if (this.regex)
+                return new QueryWrapperFilter(
+                    new RegexpQuery(new Term(this.field, this.term))
+                );
+            
+            // Simple term
+            return new TermsFilter(new Term(this.field, this.term));
+        };
+
+        public String toString () {
+            return this.toFilter().toString();
+        };
+
+        public boolean isNegative () {
+            return this.isNegative;
+        };
+
+
+        public CollectionBuilderInterface not () {
+            this.isNegative = true;
+            return this;
+        };
     };
 
+    public class CollectionBuilderGroup implements CollectionBuilderInterface {
+        private boolean isOptional = false;
+        private boolean isNegative = true;
 
-    public RegexFilter re (String regex) {
-        return new RegexFilter(regex);
+        public boolean isNegative () {
+            return this.isNegative;
+        };
+
+        public boolean isOptional () {
+            return this.isOptional;
+        };
+
+        private ArrayList<CollectionBuilderInterface> operands;
+
+        public CollectionBuilderGroup (boolean optional) {
+            this.isOptional = optional;
+            this.operands = new ArrayList<CollectionBuilderInterface>(3);
+        };
+
+        public CollectionBuilderGroup with (CollectionBuilderInterface cb) {
+            if (!cb.isNegative())
+                this.isNegative = false;
+            this.operands.add(cb);
+            return this;
+        };
+
+
+        public Filter toFilter () {
+            if (this.operands == null || this.operands.isEmpty())
+                return null;
+
+            if (this.operands.size() == 1)
+                return this.operands.get(0).toFilter();
+
+            // BooleanFilter bool = new BooleanFilter();
+            BooleanGroupFilter bool = new BooleanGroupFilter(this.isOptional);
+
+            Iterator<CollectionBuilderInterface> i = this.operands.iterator();
+            while (i.hasNext()) {
+                CollectionBuilderInterface cb = i.next();
+                if (cb.isNegative()) {
+                    bool.without(cb.toFilter());
+                }
+                else {
+                    bool.with(cb.toFilter());
+                };
+            };
+
+            return bool;
+        };
+
+        public String toString () {
+            return this.toFilter().toString();
+        };
+
+        public CollectionBuilderInterface not () {
+            this.isNegative = true;
+            return this;
+        };
     };
 
+    public class CollectionBuilderRange implements CollectionBuilderInterface {
+        private boolean isNegative = false;
+        private String field;
+        private int start, end;
 
-    public BooleanFilter getBooleanFilter () {
-        return this.filter;
-    };
+        public CollectionBuilderRange (String field, int start, int end) {
+            this.field = field;
+            this.start = start;
+            this.end = end;
+        };
 
+        public boolean isNegative () {
+            return this.isNegative;
+        };
 
-    public void setBooleanFilter (BooleanFilter bf) {
-        this.filter = bf;
-    };
+        public String toString () {
+            return this.toFilter().toString();
+        };
 
+        public Filter toFilter () {
+            return NumericRangeFilter.newIntRange(this.field,
+                                                  this.start,
+                                                  this.end,
+                                                  true,
+                                                  true);
+        };
 
-    public Query toQuery () {
-        return this.filter.toQuery();
-    };
-
-
-    public String toString () {
-        return this.filter.toQuery().toString();
+        public CollectionBuilderInterface not () {
+            this.isNegative = true;
+            return this;
+        };
     };
 };

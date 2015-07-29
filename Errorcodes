@@ -72,11 +72,16 @@
 813: "Collection type is not supported" (like 713)
 814: "Unknown rewrite operation"
 815: "Rewrite expects source"
+820: "Dates require value fields"
 830: "Filter was empty"
 831: "Filter is not wrappable"
 832: "Filter operation is invalid"
+841: "Match relation unknown for type" (like 741)
+842: "Document group needs operand list"
+843: "Document type is not supported"
 850: "Collections are deprecated in favour of a single collection"
 851: "Legacy filters need @value fields"
+899: "Collections are not supported anymore in favour of a single collection"
 
 * 900 - 999 - Corpus Data errors
 952: "Given offset information is not numeric"

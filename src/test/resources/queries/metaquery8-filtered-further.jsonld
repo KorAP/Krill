@@ -18,6 +18,72 @@
 	    "right":["char",90]
 	}
     },
+  "collection" : {
+    "@type": "koral:docGroup",
+    "operation": "operation:and",
+    "operands": [
+      {
+	"@type": "koral:docGroup",
+	"operation": "operation:or",
+	"operands": [
+          {
+            "@type": "koral:doc",
+            "key": "ID",
+            "match": "match:eq",
+            "value": "WPD_AAA.00001",
+            "type": "type:string"
+          },
+          {
+            "@type": "koral:doc",
+            "key": "ID",
+            "match": "match:eq",
+            "value": "WPD_AAA.00002",
+            "type": "type:string"
+          }
+	]
+      },
+      {
+	"@type": "koral:docGroup",
+	"operation": "operation:or",
+	"operands": [
+          {
+            "@type": "koral:doc",
+            "key": "ID",
+            "match": "match:eq",
+            "value": "WPD_AAA.00003",
+            "type": "type:string"
+          },
+          {
+            "@type": "koral:doc",
+            "key": "ID",
+            "match": "match:eq",
+            "value": "WPD_AAA.00002",
+            "type": "type:string"
+          }
+	]
+      },
+      {
+	"@type": "koral:docGroup",
+	"operation": "operation:or",
+	"operands": [
+          {
+            "@type": "koral:doc",
+            "key": "ID",
+            "match": "match:eq",
+            "value": "WPD_AAA.00001",
+            "type": "type:string"
+          },
+          {
+            "@type": "koral:doc",
+            "key": "ID",
+            "match": "match:eq",
+            "value": "WPD_AAA.00005",
+            "type": "type:string"
+          }
+	]
+      }
+    ]
+  },
     "collections": [
 	{
 	    "@type": "koral:meta-filter",

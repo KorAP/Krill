@@ -2,8 +2,8 @@ package de.ids_mannheim.korap.collection;
 import java.io.IOException;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KrillCollectionNew;
-import de.ids_mannheim.korap.collection.CollectionBuilderNew;
+import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.TextAnalyzer;
 
@@ -28,8 +28,8 @@ public class TestKrillCollectionIndex {
         ki.addDoc(createDoc2());
         ki.addDoc(createDoc3());
         ki.commit();
-        CollectionBuilderNew cb = new CollectionBuilderNew();
-        KrillCollectionNew kcn = new KrillCollectionNew(ki);
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
 
         // Simple string tests
         kcn.fromBuilder(cb.term("author", "Frank"));
@@ -54,47 +54,47 @@ public class TestKrillCollectionIndex {
         assertEquals(1, kcn.docCount());
 
         // Simple orGroup tests
-        kcn.fromBuilder(cb.orGroup(cb.term("author", "Frank")).with(cb.term("author", "Michael")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Frank")).with(cb.term("author", "Michael")));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.orGroup(cb.term("author", "Frank")).with(cb.term("author", "Sebastian")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Frank")).with(cb.term("author", "Sebastian")));
         assertEquals(2, kcn.docCount());
 
-        kcn.fromBuilder(cb.orGroup(cb.term("author", "Frank"))
+        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Frank"))
                         .with(cb.term("author", "Sebastian"))
                         .with(cb.term("author", "Peter")));
         assertEquals(3, kcn.docCount());
 
-        kcn.fromBuilder(cb.orGroup(cb.term("author", "Huhu"))
+        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Huhu"))
                         .with(cb.term("author", "Haha"))
                         .with(cb.term("author", "Hehe")));
         assertEquals(0, kcn.docCount());
 
         // Multi field orGroup tests
-        kcn.fromBuilder(cb.orGroup(cb.term("ID", "doc-1")).with(cb.term("author", "Peter")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("ID", "doc-1")).with(cb.term("author", "Peter")));
         assertEquals(2, kcn.docCount());
 
-        kcn.fromBuilder(cb.orGroup(cb.term("ID", "doc-1")).with(cb.term("author", "Frank")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("ID", "doc-1")).with(cb.term("author", "Frank")));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.orGroup(cb.term("ID", "doc-1")).with(cb.term("author", "Michael")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("ID", "doc-1")).with(cb.term("author", "Michael")));
         assertEquals(1, kcn.docCount());
 
         // Simple andGroup tests
-        kcn.fromBuilder(cb.andGroup(cb.term("author", "Frank")).with(cb.term("author", "Michael")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("author", "Frank")).with(cb.term("author", "Michael")));
         assertEquals(0, kcn.docCount());
 
-        kcn.fromBuilder(cb.andGroup(cb.term("ID", "doc-1")).with(cb.term("author", "Frank")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("ID", "doc-1")).with(cb.term("author", "Frank")));
         assertEquals(1, kcn.docCount());
 
         // andGroup in keyword field test
-        kcn.fromBuilder(cb.andGroup(cb.term("textClass", "reisen")).with(cb.term("textClass", "finanzen")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen")).with(cb.term("textClass", "finanzen")));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.andGroup(cb.term("textClass", "reisen")).with(cb.term("textClass", "kultur")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen")).with(cb.term("textClass", "kultur")));
         assertEquals(2, kcn.docCount());
 
-        kcn.fromBuilder(cb.andGroup(cb.term("textClass", "finanzen")).with(cb.term("textClass", "kultur")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "finanzen")).with(cb.term("textClass", "kultur")));
         assertEquals(0, kcn.docCount());
 
         kcn.fromBuilder(cb.term("text", "mann"));
@@ -111,8 +111,8 @@ public class TestKrillCollectionIndex {
         ki.addDoc(createDoc2());
         ki.addDoc(createDoc3());
         ki.commit();
-        CollectionBuilderNew cb = new CollectionBuilderNew();
-        KrillCollectionNew kcn = new KrillCollectionNew(ki);
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
 
         // Simple negation tests
         kcn.fromBuilder(cb.term("author", "Frank").not());
@@ -126,12 +126,12 @@ public class TestKrillCollectionIndex {
 
         // orGroup with simple Negation
         kcn.fromBuilder(
-          cb.orGroup(cb.term("textClass", "kultur").not()).with(cb.term("author", "Peter"))
+          cb.orGroup().with(cb.term("textClass", "kultur").not()).with(cb.term("author", "Peter"))
         );
         assertEquals(2, kcn.docCount());
 
         kcn.fromBuilder(
-          cb.orGroup(cb.term("textClass", "kultur").not()).with(cb.term("author", "Sebastian"))
+          cb.orGroup().with(cb.term("textClass", "kultur").not()).with(cb.term("author", "Sebastian"))
         );
         assertEquals(1, kcn.docCount());
         
@@ -143,8 +143,8 @@ public class TestKrillCollectionIndex {
         ki.addDoc(createDoc1());
         ki.addDoc(createDoc2());
         ki.commit();
-        CollectionBuilderNew cb = new CollectionBuilderNew();
-        KrillCollectionNew kcn = new KrillCollectionNew(ki);
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
 
         kcn.fromBuilder(cb.term("author", "Frank"));
         assertEquals(1, kcn.docCount());
@@ -231,8 +231,8 @@ public class TestKrillCollectionIndex {
         ki.addDoc(createDoc2());
         ki.addDoc(createDoc3());
         ki.commit();
-        CollectionBuilderNew cb = new CollectionBuilderNew();
-        KrillCollectionNew kcn = new KrillCollectionNew(ki);
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
 
         kcn.fromBuilder(cb.date("pubDate", "2005"));
         assertEquals(3, kcn.docCount());
@@ -294,8 +294,8 @@ public class TestKrillCollectionIndex {
         ki.addDoc(createDoc3());
         ki.commit();
 
-        CollectionBuilderNew cb = new CollectionBuilderNew();
-        KrillCollectionNew kcn = new KrillCollectionNew(ki);
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
 
         kcn.fromBuilder(cb.re("author", "Fran.*"));
         assertEquals(1, kcn.docCount());

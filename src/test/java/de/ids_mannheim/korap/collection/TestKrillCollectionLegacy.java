@@ -4,7 +4,7 @@ import java.io.*;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.KrillCollectionLegacy;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
@@ -38,10 +38,10 @@ public class TestKrillCollectionLegacy {
         };
         ki.commit();
 
-        CollectionBuilder kf = new CollectionBuilder();
+        CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
 
         // Create Virtual collections:
-        KrillCollection kc = new KrillCollection(ki);
+        KrillCollectionLegacy kc = new KrillCollectionLegacy(ki);
 
         assertEquals("Documents", 7, kc.numberOf("documents"));
 
@@ -107,10 +107,10 @@ public class TestKrillCollectionLegacy {
             ki.commit();
         };
 
-        CollectionBuilder kf = new CollectionBuilder();
+        CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
 
         // Create Virtual collections:
-        KrillCollection kc = new KrillCollection(ki);
+        KrillCollectionLegacy kc = new KrillCollectionLegacy(ki);
 
         assertEquals("Documents", 7, kc.numberOf("documents"));
 
@@ -184,10 +184,10 @@ public class TestKrillCollectionLegacy {
 
         ki.commit();
 
-        CollectionBuilder kf = new CollectionBuilder();
+        CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
 
         // Create Virtual collections:
-        KrillCollection kc = new KrillCollection(ki);
+        KrillCollectionLegacy kc = new KrillCollectionLegacy(ki);
         kc.filter(kf.and("textClass", "reisen").and("textClass",
                 "freizeit-unterhaltung"));
         assertEquals("Documents", 5, kc.numberOf("documents"));
@@ -237,7 +237,7 @@ public class TestKrillCollectionLegacy {
         assertEquals(86, kr.getTotalResults());
 
         // Create Virtual collections:
-        KrillCollection kc = new KrillCollection();
+        KrillCollectionLegacy kc = new KrillCollectionLegacy();
         kc.filterUIDs(new String[] { "2", "3", "4" });
         kc.setIndex(ki);
         assertEquals("Documents", 3, kc.numberOf("documents"));

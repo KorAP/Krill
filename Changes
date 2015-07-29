@@ -3,6 +3,7 @@
 	  This should fix a lot of issues with deleted
 	  documents and negation in virtual collections.
 	- [cleanup] REMOVED deprecated collection filtering (diewald)
+	- [cleanup] REMOVED deprecated termRelation API (diewald)
 	- [feature] Added removal methods for documents (diewald)
 
 0.52 2015-07-08
