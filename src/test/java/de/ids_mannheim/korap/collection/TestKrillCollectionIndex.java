@@ -6,10 +6,21 @@ import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.TextAnalyzer;
+import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
+
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanOrQuery;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.search.spans.SpanQuery;
+
+
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -313,6 +324,174 @@ public class TestKrillCollectionIndex {
 
         kcn.fromBuilder(cb.re("text", "frau|mann"));
         assertEquals(3, kcn.docCount());
+    };
+
+
+    @Test
+    public void filterExampleFromLegacy () throws Exception {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
+                "00005", "00006", "02439" }) {
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+        // Create Virtual collections:
+        KrillCollection kc = new KrillCollection(ki);
+
+        assertEquals("Documents", 7, kc.numberOf("documents"));
+
+        // The virtual collection consists of all documents that have
+        // the textClass "reisen" and "freizeit"
+
+        /*        kc.filter(kf.and("textClass", "reisen").and("textClass",
+                "freizeit-unterhaltung"));
+        */
+
+        kc.fromBuilder(kc.build().andGroup().with(kc.build().term("textClass", "reisen")).with(kc.build().term("textClass", "freizeit-unterhaltung")));
+
+        assertEquals("Documents", 5, kc.numberOf("documents"));
+        assertEquals("Tokens", 1678, kc.numberOf("tokens"));
+        assertEquals("Sentences", 194, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 139, kc.numberOf("paragraphs"));
+
+
+        // Subset this to all documents that have also the text
+        // kc.filter(kf.and("textClass", "kultur"));
+        /*
+        kc.fromBuilder(
+          kc.build().andGroup().with(
+            kc.getBuilder()
+          ).with(
+            kc.build().term("textClass", "kultur")
+          )
+        );
+        */
+
+        kc.filter(kc.build().term("textClass", "kultur"));
+
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+        assertEquals("Tokens", 405, kc.numberOf("tokens"));
+        assertEquals("Sentences", 75, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
+
+
+        // kc.filter(kf.and("corpusID", "WPD"));
+        kc.filter(kc.build().term("corpusID", "WPD"));
+
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+        assertEquals("Tokens", 405, kc.numberOf("tokens"));
+        assertEquals("Sentences", 75, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
+
+        // Create a query
+        QueryBuilder kq = new QueryBuilder("tokens");
+        SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
+
+        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+        assertEquals(kr.getTotalResults(), 70);
+
+
+        kc.extend(kc.build().term("textClass", "uninteresting"));
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+
+        kc.extend(kc.build().term("textClass", "wissenschaft"));
+
+        assertEquals("Documents", 3, kc.numberOf("documents"));
+        assertEquals("Tokens", 1669, kc.numberOf("tokens"));
+        assertEquals("Sentences", 188, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
+        // System.err.println(kr.toJSON());
+    };
+
+
+    @Test
+    public void filterExampleAtomicLegacy () throws Exception {
+
+        // That's exactly the same test class, but with multiple atomic indices
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
+                "00005", "00006", "02439" }) {
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+            ki.commit();
+        };
+
+        CollectionBuilder kf = new CollectionBuilder();
+
+        // Create Virtual collections:
+        KrillCollection kc = new KrillCollection(ki);
+
+        assertEquals("Documents", 7, kc.numberOf("documents"));
+
+        // If this is set - everything is fine automatically ...
+        kc.filter(kc.build().term("corpusID", "WPD"));
+
+        assertEquals("Documents", 7, kc.numberOf("documents"));
+
+        // The virtual collection consists of all documents that have the textClass "reisen" and "freizeit"
+
+        /*
+        kc.filter(kf.and("textClass", "reisen").and("textClass",
+                "freizeit-unterhaltung"));
+        */
+        kc.filter(kc.build().andGroup().with(kc.build().term("textClass", "reisen")).with(kc.build().term("textClass", "freizeit-unterhaltung")));
+
+        assertEquals("Documents", 5, kc.numberOf("documents"));
+        assertEquals("Tokens", 1678, kc.numberOf("tokens"));
+        assertEquals("Sentences", 194, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 139, kc.numberOf("paragraphs"));
+
+        // Subset this to all documents that have also the text
+        // kc.filter(kf.and("textClass", "kultur"));
+
+        kc.filter(kc.build().term("textClass", "kultur"));
+
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+        assertEquals("Tokens", 405, kc.numberOf("tokens"));
+        assertEquals("Sentences", 75, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
+
+        // This is already filtered though ...
+        // kc.filter(kf.and("corpusID", "WPD"));
+        kc.filter(kc.build().term("corpusID", "WPD"));
+
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+        assertEquals("Tokens", 405, kc.numberOf("tokens"));
+        assertEquals("Sentences", 75, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
+
+        // Create a query
+        QueryBuilder kq = new QueryBuilder("tokens");
+        SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
+
+        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+        assertEquals(kr.getTotalResults(), 70);
+
+        // kc.extend(kf.and("textClass", "uninteresting"));
+        kc.extend(kc.build().term("textClass", "uninteresting"));
+
+        /*
+
+
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+
+        kc.extend(kf.and("textClass", "wissenschaft"));
+
+        assertEquals("Documents", 3, kc.numberOf("documents"));
+        assertEquals("Tokens", 1669, kc.numberOf("tokens"));
+        assertEquals("Sentences", 188, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
+        */
     };
 
 

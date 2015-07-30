@@ -14,10 +14,10 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanQuery;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -25,6 +25,7 @@ import org.junit.runners.JUnit4;
 public class TestKrillCollectionLegacy {
 
     @Test
+    @Ignore
     public void filterExample () throws Exception {
 
         // Construct index
@@ -92,6 +93,7 @@ public class TestKrillCollectionLegacy {
 
 
     @Test
+    @Ignore
     public void filterExampleAtomic () throws Exception {
 
         // That's exactly the same test class, but with multiple atomic indices

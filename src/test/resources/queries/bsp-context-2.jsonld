@@ -1,29 +1,36 @@
 {
-    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
-    "query":{
-	"@type":"koral:token",
-	"wrap":{
-	    "@type":"koral:term",
-	    "foundry" : "mate",
-	    "layer":"l",
-	    "key":"wert",
-	    "match":"match:eq"
-	}
-    },
-    "collections":[
-	{
-	    "@type":"koral:meta-filter",
-	    "@value":{
-		"@type":"koral:term",
-		"@field":"koral:field#corpusID",
-		"@value":"WPD"
-	    }
-	}
-    ],
-    "meta":{
-	"startPage":1,
-	"count":25,
-	"context":{"left":["char",210],"right":["char",210]},
-	"cutOff":true
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "foundry" : "mate",
+      "layer":"l",
+      "key":"wert",
+      "match":"match:eq"
     }
+  },
+  "collection" : {
+    "@type": "koral:doc",
+    "key": "corpusID",
+    "match": "match:eq",
+    "value": "WPD",
+    "type": "type:string"
+  },
+  "collections":[
+    {
+      "@type":"koral:meta-filter",
+      "@value":{
+	"@type":"koral:term",
+	"@field":"koral:field#corpusID",
+	"@value":"WPD"
+      }
+    }
+  ],
+  "meta":{
+    "startPage":1,
+    "count":25,
+    "context":{"left":["char",210],"right":["char",210]},
+    "cutOff":true
+  }
 }

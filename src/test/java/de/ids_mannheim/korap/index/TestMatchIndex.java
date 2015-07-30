@@ -480,7 +480,7 @@ public class TestMatchIndex {
 
         fail("Skipping may go horribly wrong! (Known issue)");
 
-        kr = kc.search(sq);
+        kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);
         //        System.err.println(kr.getOverview());
 
 

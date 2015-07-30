@@ -944,6 +944,7 @@ public class TestKrill {
         sc.right.setLength((short) 10);
 
         Result kr = ks.apply(ki);
+
         assertEquals(kr.getMatch(1).getSnippetBrackets(),
                 "... dezimalen [Wert] 65 sowohl ...");
         assertEquals(kr.getTotalResults(), 3);

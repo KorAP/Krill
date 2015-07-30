@@ -17,6 +17,32 @@
       "key":"lediglich"
     }
   },
+  "collection" : {
+    "@type": "koral:docGroup",
+    "operation": "operation:and",
+    "operands": [
+      {
+	"@type": "koral:docGroup",
+	"operation": "operation:and",
+	"operands": [
+	  {
+	    "@type": "koral:doc",
+	    "key": "pubDate",
+	    "match": "match:geq",
+	    "value": "2005-01-01",
+	    "type": "type:date"
+	  },
+	  {
+	    "@type": "koral:doc",
+	    "key": "pubDate",
+	    "match": "match:leq",
+	    "value": "2013-12-31",
+	    "type": "type:date"
+	  }
+	]
+      }
+    ]
+  },
   "collections": [
     {
       "@type": "koral:meta-filter",

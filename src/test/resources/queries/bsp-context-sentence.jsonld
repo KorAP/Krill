@@ -10,6 +10,13 @@
 	    "match":"match:eq"
 	}
     },
+  "collection" : {
+    "@type": "koral:doc",
+    "key": "corpusID",
+    "match": "match:eq",
+    "value": "WPD",
+    "type": "type:string"
+  },     
     "collections":[
 	{
 	    "@type":"koral:meta-filter",

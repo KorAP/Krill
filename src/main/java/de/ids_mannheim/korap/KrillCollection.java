@@ -47,7 +47,8 @@ import org.slf4j.LoggerFactory;
 public class KrillCollection extends Notifications {
     private KrillIndex index;
     private JsonNode json;
-    private CollectionBuilder.CollectionBuilderInterface cb;
+    private CollectionBuilder cb = new CollectionBuilder();
+    private CollectionBuilder.CollectionBuilderInterface cbi;
     private byte[] pl = new byte[4];
     private static ByteBuffer bb = ByteBuffer.allocate(4);
 
@@ -156,8 +157,6 @@ public class KrillCollection extends Notifications {
 
     private CollectionBuilder.CollectionBuilderInterface _fromJson (JsonNode json) throws QueryException {
 
-        CollectionBuilder cb = new CollectionBuilder();
-
         if (!json.has("@type")) {
             throw new QueryException(701,
                     "JSON-LD group has no @type attribute");
@@ -191,13 +190,13 @@ public class KrillCollection extends Notifications {
                 // TODO: This isn't stable yet
                 switch (match) {
                 case "match:eq":
-                    return cb.date(key, dateStr);
+                    return this.cb.date(key, dateStr);
                 case "match:ne":
-                    return cb.date(key, dateStr).not();
+                    return this.cb.date(key, dateStr).not();
                 case "match:geq":
-                    return cb.since(key, dateStr);
+                    return this.cb.since(key, dateStr);
                 case "match:leq":
-                    return cb.till(key, dateStr);
+                    return this.cb.till(key, dateStr);
                 };
 
                 throw new QueryException(841, "Match relation unknown for type");
@@ -211,20 +210,20 @@ public class KrillCollection extends Notifications {
                 switch (match) {
 
                 case "match:eq":
-                    return cb.term(key, json.get("value").asText());
+                    return this.cb.term(key, json.get("value").asText());
                 case "match:ne":
-                    return cb.term(key, json.get("value").asText()).not();
+                    return this.cb.term(key, json.get("value").asText()).not();
 
                 // This may change - but for now it means the elements are lowercased
                 case "match:contains":
-                    return cb.term(key, json.get("value").asText().toLowerCase());
+                    return this.cb.term(key, json.get("value").asText().toLowerCase());
 
                 case "match:containsnot":
-                    return cb.term(key, json.get("value").asText().toLowerCase()).not();
+                    return this.cb.term(key, json.get("value").asText().toLowerCase()).not();
 
                     // <LEGACY>
                 case "match:excludes":
-                    return cb.term(key, json.get("value").asText().toLowerCase()).not();
+                    return this.cb.term(key, json.get("value").asText().toLowerCase()).not();
                     // </LEGACY>
                 };
 
@@ -238,16 +237,16 @@ public class KrillCollection extends Notifications {
                     match = json.get("match").asText();
 
                 if (match.equals("match:eq")) {
-                    return cb.re(key, json.get("value").asText());
+                    return this.cb.re(key, json.get("value").asText());
                 }
                 else if (match.equals("match:ne")) {
-                    return cb.re(key, json.get("value").asText()).not();
+                    return this.cb.re(key, json.get("value").asText()).not();
                 }
                 else if (match.equals("match:contains")) {
-                    return cb.re(key, json.get("value").asText());
+                    return this.cb.re(key, json.get("value").asText());
                 }
                 else if (match.equals("match:excludes")) {
-                    return cb.re(key, json.get("value").asText()).not();
+                    return this.cb.re(key, json.get("value").asText()).not();
                 };
 
                 throw new QueryException(841, "Match relation unknown for type");
@@ -269,9 +268,9 @@ public class KrillCollection extends Notifications {
                 operation = json.get("operation").asText();            
 
             if (operation.equals("operation:or"))
-                group = cb.orGroup();
+                group = this.cb.orGroup();
             else if (operation.equals("operation:and"))
-                group = cb.andGroup();
+                group = this.cb.andGroup();
             else
                 throw new QueryException(810, "Unknown document group operation");
     
@@ -292,22 +291,34 @@ public class KrillCollection extends Notifications {
     };
 
 
-
-
-
     /**
      * Set the collection from a {@link CollectionBuilder} object.
      * 
      * @param cb The CollectionBuilder object.
      */
-    public KrillCollection fromBuilder (CollectionBuilder.CollectionBuilderInterface cb) {
-        this.cb = cb;
+    public KrillCollection fromBuilder (CollectionBuilder.CollectionBuilderInterface cbi) {
+        this.cbi = cbi;
         return this;
     };
 
     public CollectionBuilder.CollectionBuilderInterface getBuilder () {
+        return this.cbi;
+    };
+
+
+    public CollectionBuilder build () {
         return this.cb;
     };
+
+    public KrillCollection filter (CollectionBuilder.CollectionBuilderInterface filter) {
+        return this.fromBuilder(this.cb.andGroup().with(this.cbi).with(filter));
+    };
+
+    public KrillCollection extend (CollectionBuilder.CollectionBuilderInterface extension) {
+        return this.fromBuilder(this.cb.orGroup().with(this.cbi).with(extension));
+    };
+
+
 
     /**
      * Add a filter based on a list of unique document identifiers.
@@ -320,6 +331,18 @@ public class KrillCollection extends Notifications {
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection filterUIDs (String ... uids) {
+        CollectionBuilder.CollectionBuilderInterface root = this.getBuilder();
+        CollectionBuilder.CollectionBuilderGroup cbg = this.cb.orGroup();
+        CollectionBuilder.CollectionBuilderGroup filter = this.cb.andGroup();
+        for (String uid : uids) {
+            cbg.with(this.cb.term("UID", uid));
+        };
+        if (this.getBuilder() != null)
+            filter.with(this.getBuilder());
+        filter.with(cbg);
+
+        this.fromBuilder(filter);
+
         /*
         BooleanFilter filter = new BooleanFilter();
         filter.or("UID", uids);
@@ -335,10 +358,10 @@ public class KrillCollection extends Notifications {
      * Serialize collection to a {@link Filter} object.
      */
     public Filter toFilter () {
-        if (this.cb == null)
+        if (this.cbi == null)
             return null;
 
-        return this.cb.toFilter();
+        return this.cbi.toFilter();
     };
 
 
@@ -347,10 +370,10 @@ public class KrillCollection extends Notifications {
      * not.
      */
     public boolean isNegative () {
-        if (this.cb == null)
+        if (this.cbi == null)
             return false;
 
-        return this.cb.isNegative();
+        return this.cbi.isNegative();
     };
 
 
@@ -384,27 +407,6 @@ public class KrillCollection extends Notifications {
      */
     public JsonNode toJsonNode () {
         return this.json;
-    };
-
-
-
-    /**
-     * Search in the virtual collection.
-     * This is mostly used for testing purposes
-     * and <strong>is not recommended</strong>
-     * as a common search API.
-     * 
-     * Please use {@link KrillQuery#run} instead.
-     * 
-     * @param query
-     *            a {@link SpanQuery} to apply on the
-     *            virtual collection.
-     * @return A {@link Result} object representing the search's
-     *         result.
-     */
-    public Result search (SpanQuery query) {
-        // return this.index.search(this, query, 0, (short) 20, true, (short) 5, true, (short) 5);
-        return null;
     };
 
 
@@ -449,7 +451,7 @@ public class KrillCollection extends Notifications {
         FixedBitSet bitset = new FixedBitSet(maxDoc);
 
         Filter filter;
-        if (this.cb == null || (filter = this.cb.toFilter()) == null)
+        if (this.cbi == null || (filter = this.cbi.toFilter()) == null)
             return null;
 
         // Init vector
@@ -457,7 +459,7 @@ public class KrillCollection extends Notifications {
         DocIdSetIterator filterIter = (docids == null) ? null : docids.iterator();
 
         if (filterIter == null) {
-            if (!this.cb.isNegative())
+            if (!this.cbi.isNegative())
                 return null;
 
             bitset.set(0, maxDoc);
@@ -467,7 +469,7 @@ public class KrillCollection extends Notifications {
             bitset.or(filterIter);
 
             // Revert for negation
-            if (this.cb.isNegative())
+            if (this.cbi.isNegative())
                 bitset.flip(0, maxDoc);
         };
 
@@ -506,8 +508,11 @@ public class KrillCollection extends Notifications {
 
         // This is redundant to index stuff
         if (type.equals("documents") || type.equals("base/texts")) {
-            if (this.cb == null)
+            if (this.cbi == null) {
+                if (this.index.reader() == null)
+                    return (long) 0;
                 return (long) this.index.reader().numDocs();
+            }
             else
                 return this.docCount();
         };
@@ -516,11 +521,18 @@ public class KrillCollection extends Notifications {
         // This may be prefixed by foundries
         Term term = new Term(field, "-:" + type);
 
+        if (DEBUG)
+            log.debug("Iterate for {}/{}", field, type);
+
         long occurrences = 0;
         try {
             // Iterate over all atomic readers and collect occurrences
             for (AtomicReaderContext atomic : this.index.reader().leaves()) {
-                occurrences += this._numberOfAtomic(this.bits(atomic), atomic, term);
+                Bits bits = this.bits(atomic);
+                if (bits != null)
+                    occurrences += this._numberOfAtomic(bits, atomic, term);
+                if (DEBUG)
+                    log.debug("Added up to {} for {}/{} with {}", occurrences, field, type, bits);
             };
         }
         

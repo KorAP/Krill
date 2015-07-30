@@ -155,6 +155,9 @@ public class CollectionBuilder {
         };
 
         public CollectionBuilderGroup with (CollectionBuilderInterface cb) {
+            if (cb == null)
+                return this;
+
             if (!cb.isNegative())
                 this.isNegative = false;
             this.operands.add(cb);
