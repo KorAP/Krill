@@ -2,9 +2,6 @@ package de.ids_mannheim.korap.collection;
 
 import java.util.*;
 import java.io.IOException;
-// TEMPORARY:
-import org.apache.lucene.queries.BooleanFilter;
-import org.apache.lucene.search.BooleanClause;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermsFilter;
@@ -17,6 +14,12 @@ import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.collection.BooleanGroupFilter;
+
+/*
+ * TODO: Optimize!
+ * - Remove multiple times the same object in Boolean groups.
+ * - Flatten boolean groups
+ */
 
 public class CollectionBuilder {
 

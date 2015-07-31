@@ -53,7 +53,8 @@ public class TestKrillCollectionJSONLegacy {
         KrillCollectionLegacy kc = new KrillCollectionLegacy(metaQuery);
         assertEquals(1, kc.getCount());
         assertEquals(
-                "filter with QueryWrapperFilter(+pubDate:[20000101 TO 20131231])",
+                     // "filter with QueryWrapperFilter(+pubDate:[20000101 TO 20131231])"
+                     "filter with QueryWrapperFilter(+(+pubDate:[20000101 TO 99999999] +pubDate:[0 TO 20131231]))",
                 kc.getFilter(0).toString());
     };
 

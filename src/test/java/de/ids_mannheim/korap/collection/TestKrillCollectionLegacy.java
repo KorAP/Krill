@@ -168,6 +168,7 @@ public class TestKrillCollectionLegacy {
 
 
     @Test
+    @Ignore
     public void filterExample2 () throws Exception {
 
         // Construct index
@@ -215,6 +216,7 @@ public class TestKrillCollectionLegacy {
 
 
     @Test
+    @Ignore
     public void uidCollection () throws IOException {
 
         // Construct index

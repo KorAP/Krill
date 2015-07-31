@@ -480,18 +480,178 @@ public class TestKrillCollectionIndex {
         // kc.extend(kf.and("textClass", "uninteresting"));
         kc.extend(kc.build().term("textClass", "uninteresting"));
 
-        /*
-
-
         assertEquals("Documents", 1, kc.numberOf("documents"));
 
-        kc.extend(kf.and("textClass", "wissenschaft"));
+        kc.extend(kc.build().term("textClass", "wissenschaft"));
 
         assertEquals("Documents", 3, kc.numberOf("documents"));
         assertEquals("Tokens", 1669, kc.numberOf("tokens"));
         assertEquals("Sentences", 188, kc.numberOf("sentences"));
         assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
+
+        // System.err.println(kc.toString());
+        // Test collectionbuilder simplifier!
+        /*
+        OrGroup(
+                AndGroup(
+                         corpusID:WPD
+                         textClass:reisen
+                         textClass:freizeit-unterhaltung
+                         textClass:kultur
+                         corpusID:WPD
+                         )
+                textClass:uninteresting
+                textClass:wissenschaft
+        )
         */
+
+        assertTrue(ki.delDocs("textClass", "wissenschaft"));
+        ki.commit();
+
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+        assertEquals("Tokens", 405, kc.numberOf("tokens"));
+        assertEquals("Sentences", 75, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
+    };
+
+    @Test
+    public void filterExample2Legacy () throws Exception {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
+                "00005", "00006", "02439" }) {
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+        ki.addDoc(getClass()
+                .getResourceAsStream("/wiki/00012-fakemeta.json.gz"), true);
+
+        ki.commit();
+
+        /*
+        CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
+
+        // Create Virtual collections:
+        KrillCollectionLegacy kc = new KrillCollectionLegacy(ki);
+        kc.filter(kf.and("textClass", "reisen").and("textClass",
+                "freizeit-unterhaltung"));
+        */
+
+        KrillCollection kc = new KrillCollection(ki);
+        CollectionBuilder cb = kc.build();
+        kc.filter(cb.andGroup().with(cb.term("textClass", "reisen")).with(cb.term("textClass","freizeit-unterhaltung")));
+
+        assertEquals("Documents", 5, kc.numberOf("documents"));
+        assertEquals("Tokens", 1678, kc.numberOf("tokens"));
+        assertEquals("Sentences", 194, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 139, kc.numberOf("paragraphs"));
+
+
+        // Create a query
+        QueryBuilder kq = new QueryBuilder("tokens");
+        SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
+
+
+        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+        assertEquals(kr.getTotalResults(), 369);
+
+        // kc.filter(kf.and("corpusID", "QQQ"));
+        kc.filter(cb.term("corpusID", "QQQ"));
+
+        assertEquals("Documents", 0, kc.numberOf("documents"));
+        assertEquals("Tokens", 0, kc.numberOf("tokens"));
+        assertEquals("Sentences", 0, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 0, kc.numberOf("paragraphs"));
+
+        kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+        assertEquals(kr.getTotalResults(), 0);
+    };
+
+
+    @Test
+    public void uidCollectionLegacy () throws IOException {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        int uid = 1;
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
+                "00005", "00006", "02439" }) {
+            FieldDocument fd = ki.addDoc(uid++,
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+        assertEquals("Documents", 7, ki.numberOf("documents"));
+        assertEquals("Paragraphs", 174, ki.numberOf("paragraphs"));
+        assertEquals("Sentences", 281, ki.numberOf("sentences"));
+        assertEquals("Tokens", 2661, ki.numberOf("tokens"));
+
+        SpanQuery sq = new SpanTermQuery(new Term("tokens", "s:der"));
+        Result kr = ki.search(sq, (short) 10);
+        assertEquals(86, kr.getTotalResults());
+
+        // Create Virtual collections:
+        KrillCollection kc = new KrillCollection();
+        kc.filterUIDs(new String[] { "2", "3", "4" });
+        kc.setIndex(ki);
+        assertEquals("Documents", 3, kc.numberOf("documents"));
+
+        assertEquals("Paragraphs", 46, kc.numberOf("paragraphs"));
+        assertEquals("Sentences", 103, kc.numberOf("sentences"));
+        assertEquals("Tokens", 1229, kc.numberOf("tokens"));
+
+        kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);
+
+        assertEquals((long) 39, kr.getTotalResults());
+    };
+
+    @Test
+    public void uidCollectionWithDeletions () throws IOException {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        int uid = 1;
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
+                "00005", "00006", "02439" }) {
+            FieldDocument fd = ki.addDoc(uid++,
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+
+        assertEquals("Documents", 7, ki.numberOf("documents"));
+        assertEquals("Paragraphs", 174, ki.numberOf("paragraphs"));
+        assertEquals("Sentences", 281, ki.numberOf("sentences"));
+        assertEquals("Tokens", 2661, ki.numberOf("tokens"));
+
+        assertTrue(ki.delDoc(3));
+        ki.commit();
+
+        assertEquals("Documents", 6, ki.numberOf("documents"));
+
+        assertEquals("Paragraphs", 146, ki.numberOf("paragraphs"));
+        assertEquals("Sentences", 212, ki.numberOf("sentences"));
+        assertEquals("Tokens", 2019, ki.numberOf("tokens"));
+
+        assertTrue(ki.delDoc(2));
+        assertTrue(ki.delDoc(3));
+        assertTrue(ki.delDoc(4));
+        assertTrue(ki.delDoc(5));
+        assertTrue(ki.delDoc(6));
+        assertTrue(ki.delDoc(7));
+        ki.commit();
+
+        assertEquals("Documents", 1, ki.numberOf("documents"));
+        assertEquals("Paragraphs", 75, ki.numberOf("paragraphs"));
     };
 
 

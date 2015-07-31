@@ -337,12 +337,14 @@ public class KrillCollection extends Notifications {
         for (String uid : uids) {
             cbg.with(this.cb.term("UID", uid));
         };
+        this.filter(cbg);
+        /*
         if (this.getBuilder() != null)
             filter.with(this.getBuilder());
         filter.with(cbg);
 
         this.fromBuilder(filter);
-
+        */
         /*
         BooleanFilter filter = new BooleanFilter();
         filter.or("UID", uids);
@@ -426,10 +428,17 @@ public class KrillCollection extends Notifications {
         FixedBitSet bitset = new FixedBitSet(r.maxDoc());
         DocIdSet docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
 
-        if (docids == null)
-            return null;
+        if (docids == null) {
+            if (this.cbi != null) {
+                bitset.clear(0, bitset.length());
+            }
+            else {
+                bitset.set(0, bitset.length());
+            };
+        }
+        else
+            bitset.or(docids.iterator());
 
-        bitset.or(docids.iterator());
         return bitset;
     };
 
@@ -451,26 +460,37 @@ public class KrillCollection extends Notifications {
         FixedBitSet bitset = new FixedBitSet(maxDoc);
 
         Filter filter;
-        if (this.cbi == null || (filter = this.cbi.toFilter()) == null)
-            return null;
-
-        // Init vector
-        DocIdSet docids = filter.getDocIdSet(atomic, null);
-        DocIdSetIterator filterIter = (docids == null) ? null : docids.iterator();
-
-        if (filterIter == null) {
-            if (!this.cbi.isNegative())
+        if (this.cbi == null || (filter = this.cbi.toFilter()) == null) {
+            if (acceptDocs == null)
                 return null;
 
             bitset.set(0, maxDoc);
         }
         else {
-            // Or bit set
-            bitset.or(filterIter);
 
-            // Revert for negation
-            if (this.cbi.isNegative())
-                bitset.flip(0, maxDoc);
+            // Init vector
+            DocIdSet docids = filter.getDocIdSet(atomic, null);
+            DocIdSetIterator filterIter = (docids == null) ? null : docids.iterator();
+
+            if (filterIter == null) {
+                if (!this.cbi.isNegative())
+                    return null;
+
+                bitset.set(0, maxDoc);
+            }
+            else {
+                // Or bit set
+                bitset.or(filterIter);
+
+                // Revert for negation
+                if (this.cbi.isNegative())
+                    bitset.flip(0, maxDoc);
+            };
+        };
+
+        if (DEBUG) {
+            log.debug("Bit set is  {}", _bits(bitset));
+            log.debug("Livedocs is {}", _bits(acceptDocs));
         };
 
         // Remove deleted docs
@@ -506,6 +526,10 @@ public class KrillCollection extends Notifications {
         if (this.index == null)
             return (long) -1;
 
+        // No reader (inex is empty)
+        if (this.index.reader() == null)
+            return (long) 0;
+
         // This is redundant to index stuff
         if (type.equals("documents") || type.equals("base/texts")) {
             if (this.cbi == null) {
@@ -529,16 +553,19 @@ public class KrillCollection extends Notifications {
             // Iterate over all atomic readers and collect occurrences
             for (AtomicReaderContext atomic : this.index.reader().leaves()) {
                 Bits bits = this.bits(atomic);
-                if (bits != null)
-                    occurrences += this._numberOfAtomic(bits, atomic, term);
+
                 if (DEBUG)
-                    log.debug("Added up to {} for {}/{} with {}", occurrences, field, type, bits);
+                    log.debug("Final bits  {}", _bits(bits));
+
+                occurrences += this._numberOfAtomic(bits, atomic, term);
+                if (DEBUG)
+                    log.debug("Added up to {} for {}/{}", occurrences, field, type);
             };
         }
         
         // Something went wrong
-        catch (Exception e) {
-            log.warn(e.getLocalizedMessage());
+        catch (IOException e) {
+            log.warn(e.getMessage());
         };
 
         return occurrences;
@@ -562,9 +589,15 @@ public class KrillCollection extends Notifications {
             // Set the position in the iterator to the term that is seeked
             if (termsEnum.seekExact(term.bytes())) {
 
+                // TODO: Reuse a DocsAndPositionsEnum!!
+
                 // Start an iterator to fetch all payloads of the term
-                DocsAndPositionsEnum docs = termsEnum.docsAndPositions(docvec,
-                        null, DocsAndPositionsEnum.FLAG_PAYLOADS);
+                DocsAndPositionsEnum docs = termsEnum.docsAndPositions(
+                        docvec,
+                        null,
+                        DocsAndPositionsEnum.FLAG_PAYLOADS
+                );
+
 
                 // The iterator is empty
                 // This may even be an error, but we return 0
@@ -578,15 +611,27 @@ public class KrillCollection extends Notifications {
                 // Init nextDoc()
                 while (docs.nextDoc() != DocsAndPositionsEnum.NO_MORE_DOCS) {
 
+                    if (docs.freq() < 1)
+                        continue;
+
                     // Initialize (go to first term)
                     docs.nextPosition();
 
                     // Copy payload with the offset of the BytesRef
                     payload = docs.getPayload();
-                    System.arraycopy(payload.bytes, payload.offset, pl, 0, 4);
+                    if (payload != null) {
+                        System.arraycopy(payload.bytes, payload.offset, pl, 0, 4);
 
-                    // Add payload as integer
-                    occurrences += bb.wrap(pl).getInt();
+                        // Add payload as integer
+                        occurrences += bb.wrap(pl).getInt();
+
+                        if (DEBUG)
+                            log.debug("Value for {} incremented by {} to {} in {}",
+                                      term,
+                                      bb.wrap(pl).getInt(),
+                                      occurrences,
+                                      docs.docID());                    
+                    };
                 };
 
                 // Return the sum of all occurrences
@@ -628,6 +673,14 @@ public class KrillCollection extends Notifications {
         return docCount;
     };
 
+
+    private static String _bits (Bits bitset) {
+        String str = "";
+        for (int i = 0; i < bitset.length(); i++) {
+            str += bitset.get(i) ? "1" : "0";
+        };
+        return str;
+    };
 
 
     /*
