@@ -17,8 +17,9 @@ import de.ids_mannheim.korap.collection.BooleanGroupFilter;
 
 /*
  * TODO: Optimize!
- * - Remove multiple times the same object in Boolean groups.
+ * - Remove identical object in Boolean groups
  * - Flatten boolean groups
+ * - create "between" ranges for multiple date objects
  */
 
 public class CollectionBuilder {
@@ -29,30 +30,30 @@ public class CollectionBuilder {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    public CollectionBuilderInterface term (String field, String term) {
-        return new CollectionBuilderTerm(field, term);
+    public CollectionBuilder.Interface term (String field, String term) {
+        return new CollectionBuilder.Term(field, term);
     };
 
-    public CollectionBuilderInterface re (String field, String term) {
-        return new CollectionBuilderTerm(field, term, true);
+    public CollectionBuilder.Interface re (String field, String term) {
+        return new CollectionBuilder.Term(field, term, true);
     };
 
-    public CollectionBuilderInterface since (String field, String date) {
+    public CollectionBuilder.Interface since (String field, String date) {
         int since = new KrillDate(date).floor();
 
         if (since == 0 || since == KrillDate.BEGINNING)
             return null;
 
-        return new CollectionBuilderRange(field, since, KrillDate.END);
+        return new CollectionBuilder.Range(field, since, KrillDate.END);
     };
 
-    public CollectionBuilderInterface till (String field, String date) {
+    public CollectionBuilder.Interface till (String field, String date) {
         try {
             int till = new KrillDate(date).ceil();
             if (till == 0 || till == KrillDate.END)
                 return null;
 
-            return new CollectionBuilderRange(field, KrillDate.BEGINNING, till);
+            return new CollectionBuilder.Range(field, KrillDate.BEGINNING, till);
         }
         catch (NumberFormatException e) {
             log.warn("Parameter of till(date) is invalid");
@@ -60,7 +61,20 @@ public class CollectionBuilder {
         return null;
     };
 
-    public CollectionBuilderInterface date (String field, String date) {
+    // This will be optimized away in future versions
+    public CollectionBuilder.Interface between (String field, String start, String end) {
+        CollectionBuilder.Interface startObj = this.since(field, start);
+        if (startObj == null)
+            return null;
+
+        CollectionBuilder.Interface endObj = this.till(field, end);
+        if (endObj == null)
+            return null;
+
+        return this.andGroup().with(startObj).with(endObj);
+    };
+
+    public CollectionBuilder.Interface date (String field, String date) {
         KrillDate dateDF = new KrillDate(date);
 
         if (dateDF.year == 0)
@@ -74,39 +88,39 @@ public class CollectionBuilder {
                 || (begin == KrillDate.BEGINNING && end == KrillDate.END))
                 return null;
 
-            return new CollectionBuilderRange(field, begin, end);
+            return new CollectionBuilder.Range(field, begin, end);
         };
 
-        return new CollectionBuilderRange(field, dateDF.floor(), dateDF.ceil());
+        return new CollectionBuilder.Range(field, dateDF.floor(), dateDF.ceil());
     };
 
-    public CollectionBuilderGroup andGroup () {
-        return new CollectionBuilderGroup(false);
+    public CollectionBuilder.Group andGroup () {
+        return new CollectionBuilder.Group(false);
     };
 
-    public CollectionBuilderGroup orGroup () {
-        return new CollectionBuilderGroup(true);
+    public CollectionBuilder.Group orGroup () {
+        return new CollectionBuilder.Group(true);
     };
 
-    public interface CollectionBuilderInterface {
+    public interface Interface {
         public String toString ();
         public Filter toFilter ();
         public boolean isNegative ();
-        public CollectionBuilderInterface not ();
+        public CollectionBuilder.Interface not ();
     };
 
-    public class CollectionBuilderTerm implements CollectionBuilderInterface {
+    public class Term implements CollectionBuilder.Interface {
         private boolean isNegative = false;
         private boolean regex = false;
         private String field;
         private String term;
 
-        public CollectionBuilderTerm (String field, String term) {
+        public Term (String field, String term) {
             this.field = field;
             this.term = term;
         };
 
-        public CollectionBuilderTerm (String field, String term, boolean regex) {
+        public Term (String field, String term, boolean regex) {
             this.field = field;
             this.term = term;
             this.regex = regex;
@@ -116,15 +130,18 @@ public class CollectionBuilder {
             // Regular expression
             if (this.regex)
                 return new QueryWrapperFilter(
-                    new RegexpQuery(new Term(this.field, this.term))
+                    new RegexpQuery(new org.apache.lucene.index.Term(this.field, this.term))
                 );
             
             // Simple term
-            return new TermsFilter(new Term(this.field, this.term));
+            return new TermsFilter(new org.apache.lucene.index.Term(this.field, this.term));
         };
 
         public String toString () {
-            return this.toFilter().toString();
+            Filter filter = this.toFilter();
+            if (filter == null)
+                return "";
+            return filter.toString();
         };
 
         public boolean isNegative () {
@@ -132,13 +149,13 @@ public class CollectionBuilder {
         };
 
 
-        public CollectionBuilderInterface not () {
+        public CollectionBuilder.Interface not () {
             this.isNegative = true;
             return this;
         };
     };
 
-    public class CollectionBuilderGroup implements CollectionBuilderInterface {
+    public class Group implements CollectionBuilder.Interface {
         private boolean isOptional = false;
         private boolean isNegative = true;
 
@@ -150,14 +167,14 @@ public class CollectionBuilder {
             return this.isOptional;
         };
 
-        private ArrayList<CollectionBuilderInterface> operands;
+        private ArrayList<CollectionBuilder.Interface> operands;
 
-        public CollectionBuilderGroup (boolean optional) {
+        public Group (boolean optional) {
             this.isOptional = optional;
-            this.operands = new ArrayList<CollectionBuilderInterface>(3);
+            this.operands = new ArrayList<CollectionBuilder.Interface>(3);
         };
 
-        public CollectionBuilderGroup with (CollectionBuilderInterface cb) {
+        public Group with (CollectionBuilder.Interface cb) {
             if (cb == null)
                 return this;
 
@@ -167,6 +184,11 @@ public class CollectionBuilder {
             return this;
         };
 
+        public Group with (String field, String term) {
+            if (field == null || term == null)
+                return this;
+            return this.with(new CollectionBuilder.Term(field, term));
+        };
 
         public Filter toFilter () {
             if (this.operands == null || this.operands.isEmpty())
@@ -178,9 +200,9 @@ public class CollectionBuilder {
             // BooleanFilter bool = new BooleanFilter();
             BooleanGroupFilter bool = new BooleanGroupFilter(this.isOptional);
 
-            Iterator<CollectionBuilderInterface> i = this.operands.iterator();
+            Iterator<CollectionBuilder.Interface> i = this.operands.iterator();
             while (i.hasNext()) {
-                CollectionBuilderInterface cb = i.next();
+                CollectionBuilder.Interface cb = i.next();
                 if (cb.isNegative()) {
                     bool.without(cb.toFilter());
                 }
@@ -193,21 +215,24 @@ public class CollectionBuilder {
         };
 
         public String toString () {
-            return this.toFilter().toString();
+            Filter filter = this.toFilter();
+            if (filter == null)
+                return "";
+            return filter.toString();
         };
 
-        public CollectionBuilderInterface not () {
+        public CollectionBuilder.Interface not () {
             this.isNegative = true;
             return this;
         };
     };
 
-    public class CollectionBuilderRange implements CollectionBuilderInterface {
+    public class Range implements CollectionBuilder.Interface {
         private boolean isNegative = false;
         private String field;
         private int start, end;
 
-        public CollectionBuilderRange (String field, int start, int end) {
+        public Range (String field, int start, int end) {
             this.field = field;
             this.start = start;
             this.end = end;
@@ -218,7 +243,10 @@ public class CollectionBuilder {
         };
 
         public String toString () {
-            return this.toFilter().toString();
+            Filter filter = this.toFilter();
+            if (filter == null)
+                return "";
+            return filter.toString();
         };
 
         public Filter toFilter () {
@@ -229,7 +257,7 @@ public class CollectionBuilder {
                                                   true);
         };
 
-        public CollectionBuilderInterface not () {
+        public CollectionBuilder.Interface not () {
             this.isNegative = true;
             return this;
         };

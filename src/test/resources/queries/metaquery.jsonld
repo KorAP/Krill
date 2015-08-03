@@ -1,115 +1,180 @@
 {
-    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
-    "meta" : {
-      "startPage" : 2,
-      "count" : 5,
-      "context" : {
-	"left" : [ "token", 3 ],
-	"right" : [ "char", 6 ]
-      }
-    },
-   "query":{
-      "@type":"koral:group",
-      "operation":"operation:or",
-      "operands":[
-         {
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "meta" : {
+    "startPage" : 2,
+    "count" : 5,
+    "context" : {
+      "left" : [ "token", 3 ],
+      "right" : [ "char", 6 ]
+    }
+  },
+  "query":{
+    "@type":"koral:group",
+    "operation":"operation:or",
+    "operands":[
+      {
+        "@type":"koral:token",
+        "wrap":{
+          "@type":"koral:term",
+          "foundry":"mate",
+	  "layer" : "lemma",
+	  "key" : "Vokal",
+          "match":"match:eq"
+        }
+      },
+      {
+        "@type":"koral:group",
+	"operation": "operation:sequence",
+        "operands":[
+          {
             "@type":"koral:token",
             "wrap":{
-               "@type":"koral:term",
-               "foundry":"mate",
-	      "layer" : "lemma",
-	      "key" : "Vokal",
-               "match":"match:eq"
+              "@type":"koral:term",
+              "foundry":"mate",
+	      "layer" : "base",
+	      "key" : "der",
+              "match":"match:eq"
             }
-         },
-         {
-            "@type":"koral:group",
-	   "operation": "operation:sequence",
-            "operands":[
-               {
-                  "@type":"koral:token",
-                  "wrap":{
-                    "@type":"koral:term",
-                    "foundry":"mate",
-		    "layer" : "base",
-		    "key" : "der",
-                    "match":"match:eq"
-                  }
-               },
-               {
-                  "@type":"koral:token",
-                  "wrap":{
-                     "@type":"koral:term",
-                     "foundry":"mate",
-		      "layer" : "pos",
-		      "key" : "ADJA",
-                     "match":"match:eq"
-                  }
-               }
-            ]
-         }
-      ]
-   },
-    "collections": [
-        {
-            "@type": "koral:meta-filter",
-            "@id": "korap-filter#id-1223232",
-            "@value": {
-                "@type": "koral:term",
-                "@field": "koral:field#textClass",
-                "@value": "wissenschaft"
+          },
+          {
+            "@type":"koral:token",
+            "wrap":{
+              "@type":"koral:term",
+              "foundry":"mate",
+	      "layer" : "pos",
+	      "key" : "ADJA",
+              "match":"match:eq"
             }
-        },
-        {
-            "@type": "koral:meta-filter",
-            "@id": "korap-filter#id-34345454",
-            "@value": {
-                "@type": "koral:group",
-                "relation": "and",
-                "operands": [
-                    {
-                        "@type": "koral:term",
-                        "@field": "koral:field#pubPlace",
-                        "@value": "Erfurt"
-                    },
-                    {
-                        "@type": "koral:term",
-                        "@field": "koral:field#author",
-                        "@value": "Hesse"
-                    }
-                ]
-            }
-        },
-        {
-            "@type": "koral:meta-extend",
-            "@value": {
-                "@type": "koral:group",
-                "relation": "and",
-                "operands": [
-                    {
-                        "@type": "koral:group",
-                        "comment": "other values can be 'since','until' in combination with a simple korap:term",
-                        "relation": "between",
-                        "field": "koral:field#pubDate",
-                        "operands": [
-                            {
-                                "@type": "koral:date",
-                                "comment": "either long value or String representation '2013-04-29'",
-                                "@value": "2011-04-29"
-                            },
-                            {
-                                "@type": "koral:date",
-                                "@value": "2013-12-31"
-                            }
-                        ]
-                    },
-                    {
-                        "@type": "koral:term",
-                        "@field": "koral:field#textClass",
-                        "@value": "freizeit"
-                    }
-                ]
-            }
-        }
+          }
+        ]
+      }
     ]
+  },
+  "collection" : {
+    "@type" : "koral:docGroup",
+    "operation": "operation:or",
+    "operands" : [
+      {
+	"@type" : "koral:docGroup",
+	"operation" : "operation:and",
+	"operands" : [
+	  {
+            "@type": "koral:doc",
+            "key": "textClass",
+            "value": "wissenschaft"
+	  },
+	  {
+	    "@type" : "koral:docGroup",
+	    "operation" : "operation:and",
+	    "operands": [
+              {
+		"@type": "koral:doc",
+		"key": "pubPlace",
+		"value": "Erfurt"
+              },
+              {
+		"@type": "koral:doc",
+		"key": "author",
+		"value": "Hesse"
+              }
+	    ]
+	  }
+	]
+      },
+      {
+	"@type" : "koral:docGroup",
+	"operation" : "operation:and",
+        "operands": [
+          {
+            "@type": "koral:docGroup",
+            "comment": "other values can be 'since','until' in combination with a simple korap:term",
+	    "operation" : "operation:and",
+            "operands": [
+              {
+                "@type": "koral:doc",
+		"type": "type:date",
+                "comment": "either long value or String representation '2013-04-29'",
+		"key" : "pubDate",
+		"match": "match:geq",
+                "value": "2011-04-29"
+              },
+              {
+                "@type": "koral:doc",
+		"type": "type:date",
+		"key" : "pubDate",
+		"match": "match:leq",
+                "value": "2013-12-31"
+              }
+            ]
+          },
+          {
+            "@type": "koral:doc",
+            "key": "textClass",
+            "value": "freizeit"
+          }
+        ]
+      }]
+  },
+  "collections": [
+    {
+      "@type": "koral:meta-filter",
+      "@id": "korap-filter#id-1223232",
+      "@value": {
+        "@type": "koral:term",
+        "@field": "koral:field#textClass",
+        "@value": "wissenschaft"
+      }
+    },
+    {
+      "@type": "koral:meta-filter",
+      "@id": "korap-filter#id-34345454",
+      "@value": {
+        "@type": "koral:group",
+        "relation": "and",
+        "operands": [
+          {
+            "@type": "koral:term",
+            "@field": "koral:field#pubPlace",
+            "@value": "Erfurt"
+          },
+          {
+            "@type": "koral:term",
+            "@field": "koral:field#author",
+            "@value": "Hesse"
+          }
+        ]
+      }
+    },
+    {
+      "@type": "koral:meta-extend",
+      "@value": {
+        "@type": "koral:group",
+        "relation": "and",
+        "operands": [
+          {
+            "@type": "koral:group",
+            "comment": "other values can be 'since','until' in combination with a simple korap:term",
+            "relation": "between",
+            "field": "koral:field#pubDate",
+            "operands": [
+              {
+                "@type": "koral:date",
+                "comment": "either long value or String representation '2013-04-29'",
+                "@value": "2011-04-29"
+              },
+              {
+                "@type": "koral:date",
+                "@value": "2013-12-31"
+              }
+            ]
+          },
+          {
+            "@type": "koral:term",
+            "@field": "koral:field#textClass",
+            "@value": "freizeit"
+          }
+        ]
+      }
+    }
+  ]
 }

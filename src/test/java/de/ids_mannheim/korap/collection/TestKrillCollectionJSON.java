@@ -147,6 +147,92 @@ public class TestKrillCollectionJSON {
     };
 
 
+    @Test
+    public void metaQuery1Legacy () {
+        String metaQuery = getString(getClass().getResource(
+                "/queries/metaquery.jsonld").getFile());
+        KrillCollection kc = new KrillCollection(metaQuery);
+
+        /*
+        assertEquals("filter with QueryWrapperFilter(+textClass:wissenschaft)",
+                kc.getFilter(0).toString());
+        assertEquals(
+                "filter with QueryWrapperFilter(+(+pubPlace:Erfurt +author:Hesse))",
+                kc.getFilter(1).toString());
+        assertEquals(
+                "extend with QueryWrapperFilter(+(+pubDate:[20110429 TO 20131231] +textClass:freizeit))",
+                kc.getFilter(2).toString());
+        assertEquals(3, kc.getCount());
+        */
+
+        // This will and should fail on optimization
+        assertEquals("OrGroup(AndGroup(textClass:wissenschaft AndGroup(pubPlace:Erfurt author:Hesse)) AndGroup(AndGroup(pubDate:[20110429 TO 99999999] pubDate:[0 TO 20131231]) textClass:freizeit))", kc.toString());
+    };
+
+    @Test
+    public void metaQuery2Legacy () {
+        String metaQuery = getString(getClass().getResource(
+                "/queries/metaquery2.jsonld").getFile());
+        KrillCollection kc = new KrillCollection(metaQuery);
+        /*
+        assertEquals(1, kc.getCount());
+        assertEquals(
+                "filter with QueryWrapperFilter(+(+author:Hesse +pubDate:[0 TO 20131205]))",
+                kc.getFilter(0).toString());
+        */
+        assertEquals("AndGroup(author:Hesse pubDate:[0 TO 20131205])", kc.toString());
+    };
+
+
+    @Test
+    public void metaQuery3Legacy () {
+        String metaQuery = getString(getClass().getResource(
+                "/queries/metaquery4.jsonld").getFile());
+        KrillCollection kc = new KrillCollection(metaQuery);
+        /*
+        assertEquals(1, kc.getCount());
+        assertEquals(
+                     // "filter with QueryWrapperFilter(+pubDate:[20000101 TO 20131231])"
+                     "filter with QueryWrapperFilter(+(+pubDate:[20000101 TO 99999999] +pubDate:[0 TO 20131231]))",
+                kc.getFilter(0).toString());
+        */
+        assertEquals("AndGroup(pubDate:[20000101 TO 99999999] pubDate:[0 TO 20131231])", kc.toString());
+    };
+
+
+    @Test
+    public void metaQuery7Legacy () {
+        String metaQuery = getString(getClass().getResource(
+                "/queries/metaquery7.jsonld").getFile());
+        KrillCollection kc = new KrillCollection(metaQuery);
+        /*
+        assertEquals(2, kc.getCount());
+        assertEquals(
+                "filter with QueryWrapperFilter(+(corpusID:c-1 corpusID:c-2))",
+                kc.getFilter(0).toString());
+        assertEquals(
+                "filter with QueryWrapperFilter(+(+corpusID:d-1 +corpusID:d-2))",
+                kc.getFilter(1).toString());
+        */
+        // TODO: This is subject to optimization and may change in further versions
+        assertEquals("AndGroup(OrGroup(corpusID:c-1 corpusID:c-2) AndGroup(corpusID:d-1 corpusID:d-2))", kc.toString());
+    };
+
+
+    @Test
+    public void metaQuery9 () {
+        String metaQuery = getString(getClass().getResource(
+                "/queries/metaquery9.jsonld").getFile());
+        KrillCollection kc = new KrillCollection(metaQuery);
+        /*
+        assertEquals(1, kc.getCount());
+        assertEquals("filter with QueryWrapperFilter(+corpusID:WPD)", kc
+                .getFilter(0).toString());
+        */
+        assertEquals("corpusID:WPD", kc.toString());
+    };
+
+
     private String _getJSONString (String file) {
         return getString(getClass().getResource(path + file).getFile());
     };

@@ -76,5 +76,23 @@
         ]
       }
     }
-  ]
+  ],
+  "collection" : {
+    "@type" : "koral:docGroup",
+    "operation": "operation:and",
+    "operands" : [
+      {
+	"@type" : "koral:doc",
+	"key" : "author",
+	"value" : "Hesse"
+      },
+      {
+	"@type" : "koral:doc",
+	"key" : "pubDate",
+	"type" : "type:date",
+	"match" : "match:leq",
+	"value" : "2013-12-05"
+      }
+    ]
+  }
 }

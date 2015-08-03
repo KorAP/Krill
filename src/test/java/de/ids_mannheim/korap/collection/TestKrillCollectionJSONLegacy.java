@@ -17,6 +17,7 @@ import org.junit.runners.JUnit4;
 public class TestKrillCollectionJSONLegacy {
 
     @Test
+    @Ignore
     public void metaQuery1 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery.jsonld").getFile());
@@ -35,6 +36,7 @@ public class TestKrillCollectionJSONLegacy {
 
 
     @Test
+    @Ignore
     public void metaQuery2 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery2.jsonld").getFile());
@@ -47,6 +49,7 @@ public class TestKrillCollectionJSONLegacy {
 
 
     @Test
+    @Ignore
     public void metaQuery3 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery4.jsonld").getFile());
@@ -60,6 +63,7 @@ public class TestKrillCollectionJSONLegacy {
 
 
     @Test
+    @Ignore
     public void metaQuery7 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery7.jsonld").getFile());
@@ -75,6 +79,7 @@ public class TestKrillCollectionJSONLegacy {
 
 
     @Test
+    @Ignore
     public void metaQuery9 () {
         String metaQuery = getString(getClass().getResource(
                 "/queries/metaquery9.jsonld").getFile());

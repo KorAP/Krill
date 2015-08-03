@@ -19,6 +19,7 @@ import de.ids_mannheim.korap.collection.CollectionBuilderLegacy;
 public class TestCollectionBuilderLegacy {
 
     @Test
+    @Ignore
     public void filterExample () throws IOException {
         CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
 
@@ -39,6 +40,7 @@ public class TestCollectionBuilderLegacy {
 
 
     @Test
+    @Ignore
     public void rangeExample () throws IOException {
         CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
         assertEquals("+pubDate:[20030604 TO 20030899]",
@@ -52,6 +54,7 @@ public class TestCollectionBuilderLegacy {
 
 
     @Test
+    @Ignore
     public void rangeLimited () throws IOException {
         CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
         assertEquals("+pubDate:[20050000 TO 20099999]",
@@ -96,6 +99,7 @@ public class TestCollectionBuilderLegacy {
 
 
     @Test
+    @Ignore
     public void rangeFailure () throws IOException {
         CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
         assertEquals("", kf.between("aaaa-bb-cc", "aaaabbcc").toString());
@@ -103,7 +107,4 @@ public class TestCollectionBuilderLegacy {
         assertEquals("", kf.since("aaaa-bb-cc").toString());
         assertEquals("", kf.date("aaaa-bb-cc").toString());
     };
-
-
-    // TODO: More extensive testing!
 };

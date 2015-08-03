@@ -1,60 +1,98 @@
 {
-    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
-    "meta":{
-	"startPage" : 1,
-	"count" : 5,
-	"context" : {
-	    "left" : [ "token", 3 ],
-	    "right" : [ "char", 6 ]
-	}
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "meta":{
+    "startPage" : 1,
+    "count" : 5,
+    "context" : {
+      "left" : [ "token", 3 ],
+      "right" : [ "char", 6 ]
+    }
+  },
+  "query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "foundry":"mate",
+      "layer":"l",
+      "key":"lediglich"
+    }
+  },
+  "collections": [
+    {
+      "@type": "koral:meta-filter",
+      "@id": "korap-filter#id-1223232",
+      "@value": {
+	"@type": "koral:group",
+	"relation": "or",
+	"@field": "koral:field#corpusID",
+	"operands": [
+	  {
+	    "@type": "koral:term",
+	    "@value": "c-1"
+	  },
+	  {
+	    "@type": "koral:term",
+	    "@value": "c-2"
+	  }
+	]
+      }
     },
-    "query":{
-	"@type":"koral:token",
-	"wrap":{
-	    "@type":"koral:term",
-	    "foundry":"mate",
-	    "layer":"l",
-	    "key":"lediglich"
-	}
-    },
-    "collections": [
-	{
-	    "@type": "koral:meta-filter",
-	    "@id": "korap-filter#id-1223232",
-	    "@value": {
-		"@type": "koral:group",
-		"relation": "or",
-		"@field": "koral:field#corpusID",
-		"operands": [
-		    {
-			"@type": "koral:term",
-			"@value": "c-1"
-		    },
-		    {
-			"@type": "koral:term",
-			"@value": "c-2"
-		    }
-		]
-	    }
-	},
-	{
-	    "@type": "koral:meta-filter",
-	    "@id": "korap-filter#id-1223232",
-	    "@value": {
-		"@type": "koral:group",
-		"relation": "and",
-		"@field": "koral:field#corpusID",
-		"operands": [
-		    {
-			"@type": "koral:term",
-			"@value": "d-1"
-		    },
-		    {
-			"@type": "koral:term",
-			"@value": "d-2"
-		    }
-		]
-	    }
-	}
+    {
+      "@type": "koral:meta-filter",
+      "@id": "korap-filter#id-1223232",
+      "@value": {
+	"@type": "koral:group",
+	"relation": "and",
+	"@field": "koral:field#corpusID",
+	"operands": [
+	  {
+	    "@type": "koral:term",
+	    "@value": "d-1"
+	  },
+	  {
+	    "@type": "koral:term",
+	    "@value": "d-2"
+	  }
+	]
+      }
+    }
+  ],
+  "collection" : {
+    "@type" : "koral:docGroup",
+    "operation" : "operation:and",
+    "operands" : [
+      {
+	"@type" : "koral:docGroup",
+	"operation" : "operation:or",
+	"operands" : [
+	  {
+	    "@type" : "koral:doc",
+	    "key" : "corpusID",
+	    "value" : "c-1"
+	  },
+	  {
+	    "@type" : "koral:doc",
+	    "key" : "corpusID",
+	    "value" : "c-2"
+	  }
+	]
+      },
+      {
+        "@type" : "koral:docGroup",
+	"operation" : "operation:and",
+	"operands" : [
+	  {
+	    "@type" : "koral:doc",
+	    "key" : "corpusID",
+	    "value" : "d-1"
+	  },
+	  {
+	    "@type" : "koral:doc",
+	    "key" : "corpusID",
+	    "value" : "d-2"
+	  }
+	]
+      }
     ]
+  }
 }

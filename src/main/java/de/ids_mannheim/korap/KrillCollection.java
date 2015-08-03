@@ -48,7 +48,7 @@ public class KrillCollection extends Notifications {
     private KrillIndex index;
     private JsonNode json;
     private CollectionBuilder cb = new CollectionBuilder();
-    private CollectionBuilder.CollectionBuilderInterface cbi;
+    private CollectionBuilder.Interface cbi;
     private byte[] pl = new byte[4];
     private static ByteBuffer bb = ByteBuffer.allocate(4);
 
@@ -155,7 +155,7 @@ public class KrillCollection extends Notifications {
     };
 
 
-    private CollectionBuilder.CollectionBuilderInterface _fromJson (JsonNode json) throws QueryException {
+    private CollectionBuilder.Interface _fromJson (JsonNode json) throws QueryException {
 
         if (!json.has("@type")) {
             throw new QueryException(701,
@@ -261,7 +261,7 @@ public class KrillCollection extends Notifications {
             if (!json.has("operands") || !json.get("operands").isArray())
                 throw new QueryException(842, "Document group needs operand list");
 
-            CollectionBuilder.CollectionBuilderGroup group;
+            CollectionBuilder.Group group;
 
             String operation = "operation:and";
             if (json.has("operation"))
@@ -296,12 +296,12 @@ public class KrillCollection extends Notifications {
      * 
      * @param cb The CollectionBuilder object.
      */
-    public KrillCollection fromBuilder (CollectionBuilder.CollectionBuilderInterface cbi) {
+    public KrillCollection fromBuilder (CollectionBuilder.Interface cbi) {
         this.cbi = cbi;
         return this;
     };
 
-    public CollectionBuilder.CollectionBuilderInterface getBuilder () {
+    public CollectionBuilder.Interface getBuilder () {
         return this.cbi;
     };
 
@@ -310,11 +310,11 @@ public class KrillCollection extends Notifications {
         return this.cb;
     };
 
-    public KrillCollection filter (CollectionBuilder.CollectionBuilderInterface filter) {
+    public KrillCollection filter (CollectionBuilder.Interface filter) {
         return this.fromBuilder(this.cb.andGroup().with(this.cbi).with(filter));
     };
 
-    public KrillCollection extend (CollectionBuilder.CollectionBuilderInterface extension) {
+    public KrillCollection extend (CollectionBuilder.Interface extension) {
         return this.fromBuilder(this.cb.orGroup().with(this.cbi).with(extension));
     };
 
@@ -331,28 +331,13 @@ public class KrillCollection extends Notifications {
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection filterUIDs (String ... uids) {
-        CollectionBuilder.CollectionBuilderInterface root = this.getBuilder();
-        CollectionBuilder.CollectionBuilderGroup cbg = this.cb.orGroup();
-        CollectionBuilder.CollectionBuilderGroup filter = this.cb.andGroup();
+        CollectionBuilder.Interface root = this.getBuilder();
+        CollectionBuilder.Group cbg = this.cb.orGroup();
+        CollectionBuilder.Group filter = this.cb.andGroup();
         for (String uid : uids) {
             cbg.with(this.cb.term("UID", uid));
         };
-        this.filter(cbg);
-        /*
-        if (this.getBuilder() != null)
-            filter.with(this.getBuilder());
-        filter.with(cbg);
-
-        this.fromBuilder(filter);
-        */
-        /*
-        BooleanFilter filter = new BooleanFilter();
-        filter.or("UID", uids);
-        if (DEBUG)
-            log.debug("UID based filter: {}", filter.toString());
-        return this.filter(filter);
-        */
-        return this;
+        return this.filter(cbg);
     };
 
 
@@ -684,13 +669,13 @@ public class KrillCollection extends Notifications {
 
 
     /*
-    @Deprecated
-    public HashMap getTermRelation (String field) throws Exception {
-        return this.getTermRelation(new KrillCollection(this), field);
-    };
-*/
+      @Deprecated
+      public HashMap getTermRelation (String field) throws Exception {
+          return this.getTermRelation(new KrillCollection(this), field);
+      };
+    */
 
-    /**
+    /*
      * Analyze how terms relate
      */
     /*

@@ -1,5 +1,5 @@
 {
-    "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
   "meta":{
     "startPage" : 2,
     "count" : 5,
@@ -7,47 +7,47 @@
       "left" : [ "token", 3 ],
       "right" : [ "char", 6 ]
     }
-},
-   "query":{
-      "@type":"koral:group",
-      "operation":"operation:or",
-      "operands":[
-         {
+  },
+  "query":{
+    "@type":"koral:group",
+    "operation":"operation:or",
+    "operands":[
+      {
+        "@type":"koral:token",
+        "wrap":{
+          "@type":"koral:term",
+	  "foundry" : "mate",
+          "layer":"l",
+	  "key":"Vokal",
+          "match":"match:eq"
+        }
+      },
+      {
+        "@type":"koral:group",
+	"operation" : "operation:sequence",
+        "operands":[
+          {
             "@type":"koral:token",
             "wrap":{
-               "@type":"koral:term",
-	        "foundry" : "mate",
-               "layer":"l",
-	       "key":"Vokal",
-               "match":"match:eq"
+              "@type":"koral:term",
+	      "foundry" : "mate",
+              "layer":"l",
+	      "key" : "der",
+              "match":"match:eq"
             }
-         },
-         {
-            "@type":"koral:group",
-	   "operation" : "operation:sequence",
-            "operands":[
-               {
-                  "@type":"koral:token",
-                  "wrap":{
-                     "@type":"koral:term",
-		     "foundry" : "mate",
-                     "layer":"l",
-		     "key" : "der",
-                     "match":"match:eq"
-                  }
-               },
-               {
-                  "@type":"koral:token",
-                  "wrap":{
-                     "@type":"koral:term",
-                     "foundry":"mate",
-		      "layer" : "p",
-		      "key" : "ADJA",
-                     "match":"match:eq"
-                  }
-               }
-            ]
-         }
-      ]
-   }
+          },
+          {
+            "@type":"koral:token",
+            "wrap":{
+              "@type":"koral:term",
+              "foundry":"mate",
+	      "layer" : "p",
+	      "key" : "ADJA",
+              "match":"match:eq"
+            }
+          }
+        ]
+      }
+    ]
+  }
 }
