@@ -8,8 +8,8 @@ import java.util.regex.*;
 
 public class DocIdentifier {
     protected String textSigle, // fine
-        corpusID, // LEGACY
-        docID;    // LEGACY
+            corpusID, // LEGACY
+            docID;    // LEGACY
 
 
     // Legacy

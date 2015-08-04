@@ -10,10 +10,11 @@ import java.io.Reader;
 
 public class TextAnalyzer extends Analyzer {
 
-  @Override
-  protected TokenStreamComponents createComponents (final String fieldName, final Reader reader) {
-    final Tokenizer source = new StandardTokenizer(reader);
-    TokenStream sink = new LowerCaseFilter(source);
-    return new TokenStreamComponents(source, sink);
-  };
+    @Override
+    protected TokenStreamComponents createComponents (final String fieldName,
+            final Reader reader) {
+        final Tokenizer source = new StandardTokenizer(reader);
+        TokenStream sink = new LowerCaseFilter(source);
+        return new TokenStreamComponents(source, sink);
+    };
 };

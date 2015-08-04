@@ -217,7 +217,8 @@ public class Krill extends Response {
             }
 
             else if (json.has("collections")) {
-                this.addError(899, "Collections are not supported anymore in favour of a single collection");
+                this.addError(899,
+                        "Collections are not supported anymore in favour of a single collection");
             };
         }
         catch (QueryException q) {

@@ -399,39 +399,39 @@ public class KrillQuery extends Notifications {
 
         // Branch on operation
         switch (operation) {
-        case "operation:junction":
-            return this._operationJunctionFromJson(operands);
+            case "operation:junction":
+                return this._operationJunctionFromJson(operands);
 
-        case "operation:position":
-            return this._operationPositionFromJson(json, operands);
+            case "operation:position":
+                return this._operationPositionFromJson(json, operands);
 
-        case "operation:sequence":
-            return this._operationSequenceFromJson(json, operands);
+            case "operation:sequence":
+                return this._operationSequenceFromJson(json, operands);
 
-        case "operation:class":
-            return this._operationClassFromJson(json, operands);
+            case "operation:class":
+                return this._operationClassFromJson(json, operands);
 
-        case "operation:repetition":
-            return this._operationRepetitionFromJson(json, operands);
+            case "operation:repetition":
+                return this._operationRepetitionFromJson(json, operands);
 
-        case "operation:relation":
-            if (!json.has("relation")) {
-                throw new QueryException(717, "Missing relation node");
-            }
+            case "operation:relation":
+                if (!json.has("relation")) {
+                    throw new QueryException(717, "Missing relation node");
+                }
 
-            return _operationRelationFromJson(operands,
-                                              json.get("relation"));
-            /*throw new QueryException(765,
-              "Relations are currently not supported");*/
+                return _operationRelationFromJson(operands,
+                        json.get("relation"));
+                /*throw new QueryException(765,
+                  "Relations are currently not supported");*/
 
-        case "operation:or": // Deprecated in favor of operation:junction
-            return this._operationJunctionFromJson(operands);
-            /*
-              case "operation:submatch": // Deprecated in favor of koral:reference
-              return this._operationSubmatchFromJson(json, operands);
-            */
-        case "operation:disjunction":
-            return this._operationJunctionFromJson(operands);
+            case "operation:or": // Deprecated in favor of operation:junction
+                return this._operationJunctionFromJson(operands);
+                /*
+                  case "operation:submatch": // Deprecated in favor of koral:reference
+                  return this._operationSubmatchFromJson(json, operands);
+                */
+            case "operation:disjunction":
+                return this._operationJunctionFromJson(operands);
         };
 
         // Unknown

@@ -85,8 +85,7 @@ public class TestMatchIdentifier {
         assertEquals(null, id.getTextSigle());
         assertEquals(id.toString(), "match-c1!d1-p4-20(5)7-8(2)3-4(4)7-8");
 
-        id = new MatchIdentifier(
-                "match-GOE!GOE_AGF.02286-p2105-2106");
+        id = new MatchIdentifier("match-GOE!GOE_AGF.02286-p2105-2106");
         assertEquals(2105, id.getStartPos());
         assertEquals(2106, id.getEndPos());
         assertEquals(null, id.getCorpusID());
@@ -94,6 +93,7 @@ public class TestMatchIdentifier {
         assertEquals("GOE_AGF.02286", id.getTextSigle());
         assertEquals("match-GOE_AGF.02286-p2105-2106", id.toString());
     };
+
 
     @Test
     public void posIdentifierExample1 () throws IOException {
@@ -255,22 +255,15 @@ public class TestMatchIdentifier {
                 km.getSnippetHTML());
     };
 
+
     @Test
     public void indexNewStructure () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(getClass().getResourceAsStream("/goe/AGX-00002.json"), false);
         ki.commit();
 
-        Match km = ki.getMatchInfo(
-                                   "match-GOE!GOE_AGX.00002-p210-211",
-                                   "tokens",
-                                   true,
-                                   (String) null,
-                                   (String) null,
-                                   true,
-                                   true,
-                                   true
-                                   );
+        Match km = ki.getMatchInfo("match-GOE!GOE_AGX.00002-p210-211",
+                "tokens", true, (String) null, (String) null, true, true, true);
 
         JsonNode res = mapper.readTree(km.toJsonString());
         assertEquals("tokens", res.at("/field").asText());

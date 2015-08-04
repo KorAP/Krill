@@ -19,7 +19,6 @@ import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.collection.BooleanFilter;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -168,15 +167,16 @@ public class TestWPDIndex {
         //0.8s
 
         // Check if it includes some results
-        
+
         /*
-BooleanFilter bf = new BooleanFilter();
+        BooleanFilter bf = new BooleanFilter();
         bf.or("ID", "WPD_BBB.04463", "WPD_III.00758");
         */
-        
+
         KrillCollection kc = new KrillCollection();
         CollectionBuilder cb = new CollectionBuilder();
-        kc.fromBuilder(cb.orGroup().with(cb.term("ID", "WPD_BBB.04463")).with(cb.term("ID", "WPD_III.00758")));
+        kc.fromBuilder(cb.orGroup().with(cb.term("ID", "WPD_BBB.04463"))
+                .with(cb.term("ID", "WPD_III.00758")));
 
         // kc.filter(bf);
         ks.setCollection(kc);

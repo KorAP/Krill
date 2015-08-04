@@ -263,6 +263,7 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 0);
     };
 
+
     /*
      * Queries should be mirrored correctly for debugging reasons.
      */
@@ -271,8 +272,7 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         String json = getString(getClass().getResource(
-            "/queries/bugs/failing_mirror.jsonld").getFile()
-        );
+                "/queries/bugs/failing_mirror.jsonld").getFile());
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
 
@@ -282,15 +282,14 @@ public class TestKrill {
         assertEquals("Unable to parse JSON", res.at("/errors/0/1").asText());
 
         json = getString(getClass().getResource(
-            "/queries/bugs/failing_mirror_2.jsonld").getFile()
-        );
+                "/queries/bugs/failing_mirror_2.jsonld").getFile());
         ks = new Krill(json);
         kr = ks.apply(ki);
 
         res = mapper.readTree(kr.toJsonString());
 
-        assertEquals(23,res.at("/meta/count").asInt());
-        assertEquals(25,res.at("/meta/itemsPerPage").asInt());
+        assertEquals(23, res.at("/meta/count").asInt());
+        assertEquals(25, res.at("/meta/itemsPerPage").asInt());
         assertEquals("base/s:p", res.at("/meta/context").asText());
         assertFalse(res.at("/query").isMissingNode());
         assertTrue(res.at("/query/@type").isMissingNode());
@@ -813,7 +812,8 @@ public class TestKrill {
         kc.extend(new CollectionBuilder().or("corpusSigle", "BZK"));
         */
         CollectionBuilder cb = new CollectionBuilder();
-        kc.fromBuilder(cb.orGroup().with(kc.getBuilder()).with(cb.term("corpusSigle", "BZK")));
+        kc.fromBuilder(cb.orGroup().with(kc.getBuilder())
+                .with(cb.term("corpusSigle", "BZK")));
 
         ks.setCollection(kc);
         assertEquals(1, kc.numberOf("documents"));
@@ -913,7 +913,9 @@ public class TestKrill {
                 + " +tokens:s:Schriftzeichen)))",
                 ks.getCollection().getFilter(1).toString());
         */
-        assertEquals("AndGroup(OrGroup(ID:WPD_AAA.00001 ID:WPD_AAA.00002) OrGroup(ID:WPD_AAA.00003 AndGroup(tokens:s:die tokens:s:Schriftzeichen)))", ks.getCollection().toString());
+        assertEquals(
+                "AndGroup(OrGroup(ID:WPD_AAA.00001 ID:WPD_AAA.00002) OrGroup(ID:WPD_AAA.00003 AndGroup(tokens:s:die tokens:s:Schriftzeichen)))",
+                ks.getCollection().toString());
 
         assertEquals(kr.getTotalResults(), 119);
         assertEquals(0, kr.getStartIndex());

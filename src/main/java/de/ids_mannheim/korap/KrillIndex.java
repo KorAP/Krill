@@ -218,8 +218,7 @@ public class KrillIndex {
         analyzerPerField.put("keywords", new KeywordAnalyzer());
         analyzerPerField.put("foundries", new KeywordAnalyzer());
         PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(
-          new TextAnalyzer(), analyzerPerField
-        );
+                new TextAnalyzer(), analyzerPerField);
 
         // Create configuration with base analyzer
         this.config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
@@ -430,9 +429,7 @@ public class KrillIndex {
         if (field == null || term == null)
             return false;
         try {
-            this.writer().deleteDocuments(
-                new Term(field, term)
-            );
+            this.writer().deleteDocuments(new Term(field, term));
             if (++commitCounter > autoCommit) {
                 this.commit();
                 commitCounter = 0;
@@ -1011,7 +1008,7 @@ public class KrillIndex {
                         field);
 
                 HashSet<String> fields = (HashSet<String>) new Krill()
-                    .getMeta().getFields().clone();
+                        .getMeta().getFields().clone();
 
                 fields.add(field);
 
@@ -1025,8 +1022,7 @@ public class KrillIndex {
                 match.populateDocument(doc, field, fields);
                 if (DEBUG)
                     log.trace("The document has the id '{}' or the sigle '{}'",
-                              match.getDocID(),
-                              match.getTextSigle());
+                            match.getDocID(), match.getTextSigle());
 
                 // Todo:
                 SearchContext context = match.getContext();
@@ -1034,7 +1030,8 @@ public class KrillIndex {
                 // Search for minimal surrounding sentences
                 if (extendToSentence) {
 
-                    String element = (match.getTextSigle() == null ? "s" : "base/s:s");
+                    String element = (match.getTextSigle() == null ? "s"
+                            : "base/s:s");
 
                     // SUPPORT FOR LEGACY ANNOTATIONS
                     int[] spanContext = match.expandContextToSpan(element);
@@ -1043,8 +1040,7 @@ public class KrillIndex {
                         log.trace("Extend to sentence element '{}'", element);
 
                     // </legacy>
-                    if (spanContext[0] >= 0 &&
-                        spanContext[0] < spanContext[1]) {
+                    if (spanContext[0] >= 0 && spanContext[0] < spanContext[1]) {
                         match.setStartPos(spanContext[0]);
                         match.setEndPos(spanContext[1]);
                         match.startMore = false;
@@ -1222,7 +1218,7 @@ public class KrillIndex {
         // Todo: Make kr subclassing ks - so ks has a method for a new Result!
         Result kr = new Result(query.toString(), meta.getStartIndex(),
                 meta.getCount(), meta.getContext());
-        
+
         // Set version info to result
         if (this.getVersion() != null)
             kr.setVersion(this.getVersion());
@@ -1350,8 +1346,8 @@ public class KrillIndex {
                     int docID = atomic.docBase + localDocID;
 
                     // Do not load all of this, in case the doc is the same!
-                    Document doc = (fields != null) ? lreader.document(localDocID, fields) :
-                        lreader.document(localDocID);
+                    Document doc = (fields != null) ? lreader.document(
+                            localDocID, fields) : lreader.document(localDocID);
 
                     // Create new Match
                     Match match = new Match(pto, localDocID, spans.start(),
@@ -1451,6 +1447,7 @@ public class KrillIndex {
         return kr;
     };
 
+
     public void getFields () {
         /*
          * Return a map of key, value pairs:
@@ -1460,9 +1457,11 @@ public class KrillIndex {
          */
     };
 
+
     public void getValues (String field) {
 
     };
+
 
     // Collect matches
     public MatchCollector collect (Krill ks, MatchCollector mc) {

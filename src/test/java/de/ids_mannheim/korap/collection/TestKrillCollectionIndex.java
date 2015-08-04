@@ -1,4 +1,5 @@
 package de.ids_mannheim.korap.collection;
+
 import java.io.IOException;
 
 import de.ids_mannheim.korap.KrillIndex;
@@ -10,7 +11,6 @@ import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -19,8 +19,6 @@ import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
-
-
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -31,6 +29,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestKrillCollectionIndex {
     private KrillIndex ki;
+
 
     @Test
     public void testIndexWithCollectionBuilder () throws IOException {
@@ -65,47 +64,57 @@ public class TestKrillCollectionIndex {
         assertEquals(1, kcn.docCount());
 
         // Simple orGroup tests
-        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Frank")).with(cb.term("author", "Michael")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Frank"))
+                .with(cb.term("author", "Michael")));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Frank")).with(cb.term("author", "Sebastian")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Frank"))
+                .with(cb.term("author", "Sebastian")));
         assertEquals(2, kcn.docCount());
 
         kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Frank"))
-                        .with(cb.term("author", "Sebastian"))
-                        .with(cb.term("author", "Peter")));
+                .with(cb.term("author", "Sebastian"))
+                .with(cb.term("author", "Peter")));
         assertEquals(3, kcn.docCount());
 
         kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Huhu"))
-                        .with(cb.term("author", "Haha"))
-                        .with(cb.term("author", "Hehe")));
+                .with(cb.term("author", "Haha"))
+                .with(cb.term("author", "Hehe")));
         assertEquals(0, kcn.docCount());
 
         // Multi field orGroup tests
-        kcn.fromBuilder(cb.orGroup().with(cb.term("ID", "doc-1")).with(cb.term("author", "Peter")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("ID", "doc-1"))
+                .with(cb.term("author", "Peter")));
         assertEquals(2, kcn.docCount());
 
-        kcn.fromBuilder(cb.orGroup().with(cb.term("ID", "doc-1")).with(cb.term("author", "Frank")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("ID", "doc-1"))
+                .with(cb.term("author", "Frank")));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.orGroup().with(cb.term("ID", "doc-1")).with(cb.term("author", "Michael")));
+        kcn.fromBuilder(cb.orGroup().with(cb.term("ID", "doc-1"))
+                .with(cb.term("author", "Michael")));
         assertEquals(1, kcn.docCount());
 
         // Simple andGroup tests
-        kcn.fromBuilder(cb.andGroup().with(cb.term("author", "Frank")).with(cb.term("author", "Michael")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("author", "Frank"))
+                .with(cb.term("author", "Michael")));
         assertEquals(0, kcn.docCount());
 
-        kcn.fromBuilder(cb.andGroup().with(cb.term("ID", "doc-1")).with(cb.term("author", "Frank")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("ID", "doc-1"))
+                .with(cb.term("author", "Frank")));
         assertEquals(1, kcn.docCount());
 
         // andGroup in keyword field test
-        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen")).with(cb.term("textClass", "finanzen")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen"))
+                .with(cb.term("textClass", "finanzen")));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen")).with(cb.term("textClass", "kultur")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen"))
+                .with(cb.term("textClass", "kultur")));
         assertEquals(2, kcn.docCount());
 
-        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "finanzen")).with(cb.term("textClass", "kultur")));
+        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "finanzen"))
+                .with(cb.term("textClass", "kultur")));
         assertEquals(0, kcn.docCount());
 
         kcn.fromBuilder(cb.term("text", "mann"));
@@ -114,6 +123,7 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.term("text", "frau"));
         assertEquals(1, kcn.docCount());
     };
+
 
     @Test
     public void testIndexWithNegation () throws IOException {
@@ -136,17 +146,16 @@ public class TestKrillCollectionIndex {
         assertEquals(1, kcn.docCount());
 
         // orGroup with simple Negation
-        kcn.fromBuilder(
-          cb.orGroup().with(cb.term("textClass", "kultur").not()).with(cb.term("author", "Peter"))
-        );
+        kcn.fromBuilder(cb.orGroup().with(cb.term("textClass", "kultur").not())
+                .with(cb.term("author", "Peter")));
         assertEquals(2, kcn.docCount());
 
-        kcn.fromBuilder(
-          cb.orGroup().with(cb.term("textClass", "kultur").not()).with(cb.term("author", "Sebastian"))
-        );
+        kcn.fromBuilder(cb.orGroup().with(cb.term("textClass", "kultur").not())
+                .with(cb.term("author", "Sebastian")));
         assertEquals(1, kcn.docCount());
-        
+
     };
+
 
     @Test
     public void testIndexWithMultipleCommitsAndDeletes () throws IOException {
@@ -206,6 +215,7 @@ public class TestKrillCollectionIndex {
         assertEquals(3, kcn.docCount());
     };
 
+
     @Test
     public void testIndexStream () throws IOException {
         ki = new KrillIndex();
@@ -215,8 +225,8 @@ public class TestKrillCollectionIndex {
         Analyzer ana = new TextAnalyzer();
         TokenStream ts = fd.doc.getField("text").tokenStream(ana, null);
 
-        CharTermAttribute charTermAttribute =
-            ts.addAttribute(CharTermAttribute.class);
+        CharTermAttribute charTermAttribute = ts
+                .addAttribute(CharTermAttribute.class);
         ts.reset();
 
         ts.incrementToken();
@@ -234,6 +244,7 @@ public class TestKrillCollectionIndex {
         ts.incrementToken();
         assertEquals("straße", charTermAttribute.toString());
     };
+
 
     @Test
     public void testIndexWithDateRanges () throws IOException {
@@ -353,7 +364,9 @@ public class TestKrillCollectionIndex {
                 "freizeit-unterhaltung"));
         */
 
-        kc.fromBuilder(kc.build().andGroup().with(kc.build().term("textClass", "reisen")).with(kc.build().term("textClass", "freizeit-unterhaltung")));
+        kc.fromBuilder(kc.build().andGroup()
+                .with(kc.build().term("textClass", "reisen"))
+                .with(kc.build().term("textClass", "freizeit-unterhaltung")));
 
         assertEquals("Documents", 5, kc.numberOf("documents"));
         assertEquals("Tokens", 1678, kc.numberOf("tokens"));
@@ -393,7 +406,8 @@ public class TestKrillCollectionIndex {
         QueryBuilder kq = new QueryBuilder("tokens");
         SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
-        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
+                (short) 5);
         assertEquals(kr.getTotalResults(), 70);
 
 
@@ -444,7 +458,9 @@ public class TestKrillCollectionIndex {
         kc.filter(kf.and("textClass", "reisen").and("textClass",
                 "freizeit-unterhaltung"));
         */
-        kc.filter(kc.build().andGroup().with(kc.build().term("textClass", "reisen")).with(kc.build().term("textClass", "freizeit-unterhaltung")));
+        kc.filter(kc.build().andGroup()
+                .with(kc.build().term("textClass", "reisen"))
+                .with(kc.build().term("textClass", "freizeit-unterhaltung")));
 
         assertEquals("Documents", 5, kc.numberOf("documents"));
         assertEquals("Tokens", 1678, kc.numberOf("tokens"));
@@ -474,7 +490,8 @@ public class TestKrillCollectionIndex {
         QueryBuilder kq = new QueryBuilder("tokens");
         SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
-        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
+                (short) 5);
         assertEquals(kr.getTotalResults(), 70);
 
         // kc.extend(kf.and("textClass", "uninteresting"));
@@ -514,6 +531,7 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
     };
 
+
     @Test
     public void filterExample2Legacy () throws Exception {
 
@@ -544,7 +562,8 @@ public class TestKrillCollectionIndex {
 
         KrillCollection kc = new KrillCollection(ki);
         CollectionBuilder cb = kc.build();
-        kc.filter(cb.andGroup().with(cb.term("textClass", "reisen")).with(cb.term("textClass","freizeit-unterhaltung")));
+        kc.filter(cb.andGroup().with(cb.term("textClass", "reisen"))
+                .with(cb.term("textClass", "freizeit-unterhaltung")));
 
         assertEquals("Documents", 5, kc.numberOf("documents"));
         assertEquals("Tokens", 1678, kc.numberOf("tokens"));
@@ -557,7 +576,8 @@ public class TestKrillCollectionIndex {
         SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
 
 
-        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
+                (short) 5);
         assertEquals(kr.getTotalResults(), 369);
 
         // kc.filter(kf.and("corpusID", "QQQ"));
@@ -568,7 +588,8 @@ public class TestKrillCollectionIndex {
         assertEquals("Sentences", 0, kc.numberOf("sentences"));
         assertEquals("Paragraphs", 0, kc.numberOf("paragraphs"));
 
-        kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true, (short) 5);
+        kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
+                (short) 5);
         assertEquals(kr.getTotalResults(), 0);
     };
 
@@ -611,6 +632,7 @@ public class TestKrillCollectionIndex {
 
         assertEquals((long) 39, kr.getTotalResults());
     };
+
 
     @Test
     public void uidCollectionWithDeletions () throws IOException {
@@ -665,6 +687,7 @@ public class TestKrillCollectionIndex {
         return fd;
     };
 
+
     private FieldDocument createDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
@@ -674,6 +697,7 @@ public class TestKrillCollectionIndex {
         fd.addText("text", "Der junge Mann hatte keine andere Wahl");
         return fd;
     };
+
 
     private FieldDocument createDoc3 () {
         FieldDocument fd = new FieldDocument();

@@ -20,17 +20,19 @@ import org.slf4j.LoggerFactory;
 /**
  * A container Filter that allows Boolean composition of Filters
  * in groups (either or-groups or and-groups).
- *
+ * 
  * @author Nils Diewald
- *
- * This filter is roughly based on org.apache.lucene.queries.BooleanFilter.
+ * 
+ *         This filter is roughly based on
+ *         org.apache.lucene.queries.BooleanFilter.
  */
 public class BooleanGroupFilter extends Filter {
     // Group is either an or- or an and-Group
     private boolean isOptional;
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(KrillCollection.class);
+    private final static Logger log = LoggerFactory
+            .getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -43,12 +45,14 @@ public class BooleanGroupFilter extends Filter {
         public Filter filter;
         public boolean isNegative;
 
+
         // Operand has filter and negativity information
         public GroupFilterOperand (Filter filter, boolean negative) {
             this.filter = filter;
             this.isNegative = negative;
         };
     };
+
 
     /**
      * Create a new BooleanGroupFilter.
@@ -82,7 +86,7 @@ public class BooleanGroupFilter extends Filter {
     public boolean equals (Object obj) {
         if (this == obj)
             return true;
-        
+
         if ((obj == null) || (obj.getClass() != this.getClass()))
             return false;
 
@@ -92,16 +96,15 @@ public class BooleanGroupFilter extends Filter {
 
 
     @Override
-    public int hashCode() {
+    public int hashCode () {
         return 657153719 ^ operands.hashCode();
     };
 
-    
+
     @Override
     public String toString () {
-        StringBuilder buffer = new StringBuilder(
-            this.isOptional ? "OrGroup(" : "AndGroup("
-        );
+        StringBuilder buffer = new StringBuilder(this.isOptional ? "OrGroup("
+                : "AndGroup(");
         boolean first = true;
         for (final GroupFilterOperand operand : this.operands) {
             if (first)
@@ -117,12 +120,13 @@ public class BooleanGroupFilter extends Filter {
         return buffer.append(')').toString();
     };
 
-  
+
     @Override
-    public DocIdSet getDocIdSet (AtomicReaderContext context, Bits acceptDocs) throws IOException {
+    public DocIdSet getDocIdSet (AtomicReaderContext context, Bits acceptDocs)
+            throws IOException {
         final AtomicReader reader = context.reader();
         int maxDoc = reader.maxDoc();
-        FixedBitSet bitset     = new FixedBitSet(maxDoc);
+        FixedBitSet bitset = new FixedBitSet(maxDoc);
         FixedBitSet combinator = new FixedBitSet(maxDoc);
         boolean init = true;
 
@@ -131,17 +135,18 @@ public class BooleanGroupFilter extends Filter {
 
         for (final GroupFilterOperand operand : this.operands) {
             final DocIdSet docids = operand.filter.getDocIdSet(context, null);
-            final DocIdSetIterator filterIter = (docids == null) ? null : docids.iterator();
+            final DocIdSetIterator filterIter = (docids == null) ? null
+                    : docids.iterator();
 
             if (DEBUG)
                 log.debug("> Filter to bitset of {} ({} negative)",
-                          operand.filter.toString(),
-                          operand.isNegative);
+                        operand.filter.toString(), operand.isNegative);
 
             // Filter resulted in no docs
             if (filterIter == null) {
 
-                if (DEBUG) log.debug("- Filter is null");
+                if (DEBUG)
+                    log.debug("- Filter is null");
 
                 // Filter matches
                 if (operand.isNegative) {
@@ -150,25 +155,29 @@ public class BooleanGroupFilter extends Filter {
                     if (this.isOptional) {
 
                         // Everything is allowed
-                        if (DEBUG) log.debug("- Filter to allow all documents");
+                        if (DEBUG)
+                            log.debug("- Filter to allow all documents");
 
                         bitset.set(0, maxDoc);
                         return BitsFilteredDocIdSet.wrap(bitset, acceptDocs);
                     };
 
                     // There is no possible match
-                    if (DEBUG) log.debug("- Filter to allow no documents (1)");
+                    if (DEBUG)
+                        log.debug("- Filter to allow no documents (1)");
                     return null;
                 }
 
                 // The result is unimportant
                 else if (this.isOptional) {
-                    if (DEBUG) log.debug("- Filter is ignorable");
+                    if (DEBUG)
+                        log.debug("- Filter is ignorable");
                     continue;
                 };
 
                 // There is no possible match
-                if (DEBUG) log.debug("- Filter to allow no documents (2)");
+                if (DEBUG)
+                    log.debug("- Filter to allow no documents (2)");
                 return null;
             }
 
@@ -177,30 +186,40 @@ public class BooleanGroupFilter extends Filter {
 
                 bitset.or(filterIter);
 
-                if (DEBUG) log.debug("- Filter is inial with card {}", bitset.cardinality());
+                if (DEBUG)
+                    log.debug("- Filter is inial with card {}",
+                            bitset.cardinality());
 
                 // Flip the matching documents
                 if (operand.isNegative) {
                     bitset.flip(0, maxDoc);
-                    if (DEBUG) log.debug("- Filter is negative - so flipped to card {} (1)", bitset.cardinality());
+                    if (DEBUG)
+                        log.debug(
+                                "- Filter is negative - so flipped to card {} (1)",
+                                bitset.cardinality());
                 };
 
                 init = false;
             }
             else {
 
-                if (DEBUG) log.debug("- Filter is fine and operating");
+                if (DEBUG)
+                    log.debug("- Filter is fine and operating");
 
                 // Operator is negative and needs to be flipped
                 if (operand.isNegative) {
                     if (this.isOptional) {
-                    if (DEBUG) log.debug("- Filter is negative optional");
+                        if (DEBUG)
+                            log.debug("- Filter is negative optional");
 
                         // Negative or ... may be slow
                         combinator.or(filterIter);
                         combinator.flip(0, maxDoc);
 
-                        if (DEBUG) log.debug("- Filter is negative - so flipped to card {} (2)", combinator.cardinality());
+                        if (DEBUG)
+                            log.debug(
+                                    "- Filter is negative - so flipped to card {} (2)",
+                                    combinator.cardinality());
 
                         bitset.or(combinator);
                         combinator.clear(0, maxDoc);
@@ -208,22 +227,27 @@ public class BooleanGroupFilter extends Filter {
 
                     // Negative and
                     else {
-                        if (DEBUG) log.debug("- Filter is negative not optional");
+                        if (DEBUG)
+                            log.debug("- Filter is negative not optional");
                         bitset.andNot(filterIter);
-                        if (DEBUG) log.debug("- Filter is negative - so andNotted");
+                        if (DEBUG)
+                            log.debug("- Filter is negative - so andNotted");
                     }
                 }
                 else if (this.isOptional) {
-                    if (DEBUG) log.debug("- Filter is simply optional");
+                    if (DEBUG)
+                        log.debug("- Filter is simply optional");
                     bitset.or(filterIter);
                 }
                 else {
-                    if (DEBUG) log.debug("- Filter is simply not optional");
+                    if (DEBUG)
+                        log.debug("- Filter is simply not optional");
                     bitset.and(filterIter);
                     // TODO: Check with nextSetBit() if the filter is not applicable
                 };
 
-                if (DEBUG) log.debug("- Subresult has card {} ", bitset.cardinality());
+                if (DEBUG)
+                    log.debug("- Subresult has card {} ", bitset.cardinality());
             };
         };
         return BitsFilteredDocIdSet.wrap(bitset, acceptDocs);

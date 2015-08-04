@@ -93,7 +93,8 @@ public class KrillCollection extends Notifications {
                 this.fromJson(json.get("collection"));
 
             else if (json.has("collections"))
-                this.addError(899, "Collections are not supported anymore in favour of a single collection");
+                this.addError(899,
+                        "Collections are not supported anymore in favour of a single collection");
         }
 
         // Query Exception
@@ -155,7 +156,8 @@ public class KrillCollection extends Notifications {
     };
 
 
-    private CollectionBuilder.Interface _fromJson (JsonNode json) throws QueryException {
+    private CollectionBuilder.Interface _fromJson (JsonNode json)
+            throws QueryException {
 
         if (!json.has("@type")) {
             throw new QueryException(701,
@@ -189,14 +191,14 @@ public class KrillCollection extends Notifications {
 
                 // TODO: This isn't stable yet
                 switch (match) {
-                case "match:eq":
-                    return this.cb.date(key, dateStr);
-                case "match:ne":
-                    return this.cb.date(key, dateStr).not();
-                case "match:geq":
-                    return this.cb.since(key, dateStr);
-                case "match:leq":
-                    return this.cb.till(key, dateStr);
+                    case "match:eq":
+                        return this.cb.date(key, dateStr);
+                    case "match:ne":
+                        return this.cb.date(key, dateStr).not();
+                    case "match:geq":
+                        return this.cb.since(key, dateStr);
+                    case "match:leq":
+                        return this.cb.till(key, dateStr);
                 };
 
                 throw new QueryException(841, "Match relation unknown for type");
@@ -209,22 +211,26 @@ public class KrillCollection extends Notifications {
 
                 switch (match) {
 
-                case "match:eq":
-                    return this.cb.term(key, json.get("value").asText());
-                case "match:ne":
-                    return this.cb.term(key, json.get("value").asText()).not();
+                    case "match:eq":
+                        return this.cb.term(key, json.get("value").asText());
+                    case "match:ne":
+                        return this.cb.term(key, json.get("value").asText())
+                                .not();
 
-                // This may change - but for now it means the elements are lowercased
-                case "match:contains":
-                    return this.cb.term(key, json.get("value").asText().toLowerCase());
+                        // This may change - but for now it means the elements are lowercased
+                    case "match:contains":
+                        return this.cb.term(key, json.get("value").asText()
+                                .toLowerCase());
 
-                case "match:containsnot":
-                    return this.cb.term(key, json.get("value").asText().toLowerCase()).not();
+                    case "match:containsnot":
+                        return this.cb.term(key,
+                                json.get("value").asText().toLowerCase()).not();
 
-                    // <LEGACY>
-                case "match:excludes":
-                    return this.cb.term(key, json.get("value").asText().toLowerCase()).not();
-                    // </LEGACY>
+                        // <LEGACY>
+                    case "match:excludes":
+                        return this.cb.term(key,
+                                json.get("value").asText().toLowerCase()).not();
+                        // </LEGACY>
                 };
 
                 throw new QueryException(841, "Match relation unknown for type");
@@ -259,21 +265,23 @@ public class KrillCollection extends Notifications {
         else if (type.equals("koral:docGroup")) {
 
             if (!json.has("operands") || !json.get("operands").isArray())
-                throw new QueryException(842, "Document group needs operand list");
+                throw new QueryException(842,
+                        "Document group needs operand list");
 
             CollectionBuilder.Group group;
 
             String operation = "operation:and";
             if (json.has("operation"))
-                operation = json.get("operation").asText();            
+                operation = json.get("operation").asText();
 
             if (operation.equals("operation:or"))
                 group = this.cb.orGroup();
             else if (operation.equals("operation:and"))
                 group = this.cb.andGroup();
             else
-                throw new QueryException(810, "Unknown document group operation");
-    
+                throw new QueryException(810,
+                        "Unknown document group operation");
+
             for (JsonNode operand : json.get("operands")) {
                 group.with(this._fromJson(operand));
             };
@@ -282,7 +290,8 @@ public class KrillCollection extends Notifications {
 
         // Unknown type
         throw new QueryException(813, "Collection type is not supported");
-    }; 
+    };
+
 
     // Returns the number of filters - always one!
     @Deprecated
@@ -294,12 +303,14 @@ public class KrillCollection extends Notifications {
     /**
      * Set the collection from a {@link CollectionBuilder} object.
      * 
-     * @param cb The CollectionBuilder object.
+     * @param cb
+     *            The CollectionBuilder object.
      */
     public KrillCollection fromBuilder (CollectionBuilder.Interface cbi) {
         this.cbi = cbi;
         return this;
     };
+
 
     public CollectionBuilder.Interface getBuilder () {
         return this.cbi;
@@ -310,12 +321,15 @@ public class KrillCollection extends Notifications {
         return this.cb;
     };
 
+
     public KrillCollection filter (CollectionBuilder.Interface filter) {
         return this.fromBuilder(this.cb.andGroup().with(this.cbi).with(filter));
     };
 
+
     public KrillCollection extend (CollectionBuilder.Interface extension) {
-        return this.fromBuilder(this.cb.orGroup().with(this.cbi).with(extension));
+        return this.fromBuilder(this.cb.orGroup().with(this.cbi)
+                .with(extension));
     };
 
 
@@ -434,12 +448,13 @@ public class KrillCollection extends Notifications {
      * This will respect deleted documents.
      * 
      * @param atomic
-     *           The {@link AtomicReaderContext} to search in.
+     *            The {@link AtomicReaderContext} to search in.
      * @param accepted
      *            {@link Bits} vector of accepted documents.
      * @throws IOException
      */
-    public DocIdSet getDocIdSet (AtomicReaderContext atomic, Bits acceptDocs) throws IOException {
+    public DocIdSet getDocIdSet (AtomicReaderContext atomic, Bits acceptDocs)
+            throws IOException {
 
         int maxDoc = atomic.reader().maxDoc();
         FixedBitSet bitset = new FixedBitSet(maxDoc);
@@ -455,7 +470,8 @@ public class KrillCollection extends Notifications {
 
             // Init vector
             DocIdSet docids = filter.getDocIdSet(atomic, null);
-            DocIdSetIterator filterIter = (docids == null) ? null : docids.iterator();
+            DocIdSetIterator filterIter = (docids == null) ? null : docids
+                    .iterator();
 
             if (filterIter == null) {
                 if (!this.cbi.isNegative())
@@ -479,15 +495,15 @@ public class KrillCollection extends Notifications {
         };
 
         // Remove deleted docs
-        return (DocIdSet) BitsFilteredDocIdSet.wrap(
-            (DocIdSet) bitset,
-            acceptDocs
-        );
+        return (DocIdSet) BitsFilteredDocIdSet.wrap((DocIdSet) bitset,
+                acceptDocs);
     };
+
 
     public long numberOf (String type) throws IOException {
         return this.numberOf("tokens", type);
     };
+
 
     /**
      * Search for the number of occurrences of different types,
@@ -525,7 +541,7 @@ public class KrillCollection extends Notifications {
             else
                 return this.docCount();
         };
-        
+
         // Create search term
         // This may be prefixed by foundries
         Term term = new Term(field, "-:" + type);
@@ -544,10 +560,11 @@ public class KrillCollection extends Notifications {
 
                 occurrences += this._numberOfAtomic(bits, atomic, term);
                 if (DEBUG)
-                    log.debug("Added up to {} for {}/{}", occurrences, field, type);
+                    log.debug("Added up to {} for {}/{}", occurrences, field,
+                            type);
             };
         }
-        
+
         // Something went wrong
         catch (IOException e) {
             log.warn(e.getMessage());
@@ -577,11 +594,8 @@ public class KrillCollection extends Notifications {
                 // TODO: Reuse a DocsAndPositionsEnum!!
 
                 // Start an iterator to fetch all payloads of the term
-                DocsAndPositionsEnum docs = termsEnum.docsAndPositions(
-                        docvec,
-                        null,
-                        DocsAndPositionsEnum.FLAG_PAYLOADS
-                );
+                DocsAndPositionsEnum docs = termsEnum.docsAndPositions(docvec,
+                        null, DocsAndPositionsEnum.FLAG_PAYLOADS);
 
 
                 // The iterator is empty
@@ -605,17 +619,17 @@ public class KrillCollection extends Notifications {
                     // Copy payload with the offset of the BytesRef
                     payload = docs.getPayload();
                     if (payload != null) {
-                        System.arraycopy(payload.bytes, payload.offset, pl, 0, 4);
+                        System.arraycopy(payload.bytes, payload.offset, pl, 0,
+                                4);
 
                         // Add payload as integer
                         occurrences += bb.wrap(pl).getInt();
 
                         if (DEBUG)
-                            log.debug("Value for {} incremented by {} to {} in {}",
-                                      term,
-                                      bb.wrap(pl).getInt(),
-                                      occurrences,
-                                      docs.docID());                    
+                            log.debug(
+                                    "Value for {} incremented by {} to {} in {}",
+                                    term, bb.wrap(pl).getInt(), occurrences,
+                                    docs.docID());
                     };
                 };
 
@@ -626,7 +640,7 @@ public class KrillCollection extends Notifications {
 
         // Nothing found
         return 0;
-    };    
+    };
 
 
     /**

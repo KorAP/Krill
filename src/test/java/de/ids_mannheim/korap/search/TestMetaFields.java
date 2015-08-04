@@ -215,6 +215,7 @@ public class TestMetaFields {
                 .asText());
     };
 
+
     @Test
     public void searchCollectionFields () throws IOException {
         KrillIndex ki = new KrillIndex();
@@ -245,7 +246,7 @@ public class TestMetaFields {
 
         // textClass = reisen & wissenschaft
         String jsonString = getString(getClass().getResource(
-        "/queries/collections/collection_textClass.jsonld").getFile());
+                "/queries/collections/collection_textClass.jsonld").getFile());
         Krill ks = new Krill(jsonString);
         KrillCollection kc = ks.getCollection();
         kc.setIndex(ki);
@@ -254,7 +255,7 @@ public class TestMetaFields {
 
         // textClass = reisen
         jsonString = getString(getClass().getResource(
-        "/queries/collections/collection_textClass_2.jsonld").getFile());
+                "/queries/collections/collection_textClass_2.jsonld").getFile());
         ks = new Krill(jsonString);
         kc = ks.getCollection();
         kc.setIndex(ki);
@@ -282,7 +283,7 @@ public class TestMetaFields {
 
         // author = wolfgang
         jsonString = getString(getClass().getResource(
-        "/queries/collections/collection_goethe.jsonld").getFile());
+                "/queries/collections/collection_goethe.jsonld").getFile());
         ks = new Krill(jsonString);
         kc = ks.getCollection();
         kc.setIndex(ki);
@@ -291,7 +292,7 @@ public class TestMetaFields {
 
         // author = Wolfgang
         jsonString = getString(getClass().getResource(
-        "/queries/collections/collection_goethe_2.jsonld").getFile());
+                "/queries/collections/collection_goethe_2.jsonld").getFile());
         ks = new Krill(jsonString);
         kc = ks.getCollection();
         kc.setIndex(ki);
@@ -299,7 +300,7 @@ public class TestMetaFields {
         assertEquals(1, kc.numberOf("documents"));
 
         Result kr = ks.apply(ki);
-        
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toJsonString());
         assertEquals(1, res.at("/meta/totalResults").asInt());

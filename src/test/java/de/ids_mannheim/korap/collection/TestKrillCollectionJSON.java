@@ -29,8 +29,7 @@ public class TestKrillCollectionJSON {
     public void collection1 () {
         String metaQuery = _getJSONString("collection_1.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(kc.toString(),
-                "pubDate:[20000101 TO 20000101]");
+        assertEquals(kc.toString(), "pubDate:[20000101 TO 20000101]");
     };
 
 
@@ -55,7 +54,8 @@ public class TestKrillCollectionJSON {
     public void collection5 () {
         String metaQuery = _getJSONString("collection_5.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(kc.toString(), "OrGroup(pubDate:[19900000 TO 99999999] title:Mannheim)");
+        assertEquals(kc.toString(),
+                "OrGroup(pubDate:[19900000 TO 99999999] title:Mannheim)");
     };
 
 
@@ -66,8 +66,8 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("QueryWrapperFilter(author:/Goethe/)", ks
-                .getCollection().toString());
+        assertEquals("QueryWrapperFilter(author:/Goethe/)", ks.getCollection()
+                .toString());
     };
 
 
@@ -78,8 +78,8 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("-QueryWrapperFilter(author:/Goethe/)", ks
-                .getCollection().toString());
+        assertEquals("-QueryWrapperFilter(author:/Goethe/)", ks.getCollection()
+                .toString());
     };
 
 
@@ -90,8 +90,7 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("-author:Goethe", ks
-                .getCollection().toString());
+        assertEquals("-author:Goethe", ks.getCollection().toString());
     };
 
 
@@ -166,8 +165,11 @@ public class TestKrillCollectionJSON {
         */
 
         // This will and should fail on optimization
-        assertEquals("OrGroup(AndGroup(textClass:wissenschaft AndGroup(pubPlace:Erfurt author:Hesse)) AndGroup(AndGroup(pubDate:[20110429 TO 99999999] pubDate:[0 TO 20131231]) textClass:freizeit))", kc.toString());
+        assertEquals(
+                "OrGroup(AndGroup(textClass:wissenschaft AndGroup(pubPlace:Erfurt author:Hesse)) AndGroup(AndGroup(pubDate:[20110429 TO 99999999] pubDate:[0 TO 20131231]) textClass:freizeit))",
+                kc.toString());
     };
+
 
     @Test
     public void metaQuery2Legacy () {
@@ -180,7 +182,8 @@ public class TestKrillCollectionJSON {
                 "filter with QueryWrapperFilter(+(+author:Hesse +pubDate:[0 TO 20131205]))",
                 kc.getFilter(0).toString());
         */
-        assertEquals("AndGroup(author:Hesse pubDate:[0 TO 20131205])", kc.toString());
+        assertEquals("AndGroup(author:Hesse pubDate:[0 TO 20131205])",
+                kc.toString());
     };
 
 
@@ -196,7 +199,9 @@ public class TestKrillCollectionJSON {
                      "filter with QueryWrapperFilter(+(+pubDate:[20000101 TO 99999999] +pubDate:[0 TO 20131231]))",
                 kc.getFilter(0).toString());
         */
-        assertEquals("AndGroup(pubDate:[20000101 TO 99999999] pubDate:[0 TO 20131231])", kc.toString());
+        assertEquals(
+                "AndGroup(pubDate:[20000101 TO 99999999] pubDate:[0 TO 20131231])",
+                kc.toString());
     };
 
 
@@ -215,7 +220,9 @@ public class TestKrillCollectionJSON {
                 kc.getFilter(1).toString());
         */
         // TODO: This is subject to optimization and may change in further versions
-        assertEquals("AndGroup(OrGroup(corpusID:c-1 corpusID:c-2) AndGroup(corpusID:d-1 corpusID:d-2))", kc.toString());
+        assertEquals(
+                "AndGroup(OrGroup(corpusID:c-1 corpusID:c-2) AndGroup(corpusID:d-1 corpusID:d-2))",
+                kc.toString());
     };
 
 

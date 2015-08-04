@@ -1,4 +1,4 @@
-0.53 2015-07-31
+0.53 2015-08-04
         - [feature] Implemented new KrillCollection (diewald)
 	  This should fix a lot of issues with deleted
 	  documents and negation in virtual collections.

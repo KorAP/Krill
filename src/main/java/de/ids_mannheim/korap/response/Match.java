@@ -374,7 +374,7 @@ public class Match extends AbstractDocument {
         this.addHighlight(new Highlight(target, target, id));
     };
 
-    
+
     /**
      * Populate document meta information with information coming from
      * the index.
