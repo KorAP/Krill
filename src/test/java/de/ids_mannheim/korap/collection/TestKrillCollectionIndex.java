@@ -153,7 +153,6 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.orGroup().with(cb.term("textClass", "kultur").not())
                 .with(cb.term("author", "Sebastian")));
         assertEquals(1, kcn.docCount());
-
     };
 
 

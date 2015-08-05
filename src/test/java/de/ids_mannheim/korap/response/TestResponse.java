@@ -24,7 +24,11 @@ public class TestResponse {
     @Test
     public void testResponse () throws IOException {
         Response resp = new Response();
-        assertEquals("{\"meta\":{}}", resp.toJsonString());
+        JsonNode respJson = mapper.readTree(resp.toJsonString());
+        assertEquals("http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld",
+                     respJson.at("/@context").asText());
+        assertEquals("", respJson.at("/meta").asText());
+
         resp.setVersion("0.24");
         resp.setNode("Tanja");
         assertEquals("0.24", resp.getVersion());
@@ -34,7 +38,7 @@ public class TestResponse {
         assertFalse(resp.hasMessages());
         assertFalse(resp.hasErrors());
 
-        JsonNode respJson = mapper.readTree(resp.toJsonString());
+        respJson = mapper.readTree(resp.toJsonString());
         assertEquals("0.24", respJson.at("/meta/version").asText());
         assertEquals("Tanja", respJson.at("/meta/node").asText());
 
@@ -54,7 +58,10 @@ public class TestResponse {
     @Test
     public void testResponseNotifications () throws IOException {
         Response resp = new Response();
-        assertEquals("{\"meta\":{}}", resp.toJsonString());
+        JsonNode respJson = mapper.readTree(resp.toJsonString());
+        assertEquals("http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld",
+                     respJson.at("/@context").asText());
+        assertEquals("", respJson.at("/meta").asText());
         resp.setVersion("0.24");
         resp.setNode("Tanja");
         assertEquals("0.24", resp.getVersion());
@@ -64,7 +71,7 @@ public class TestResponse {
         assertFalse(resp.hasMessages());
         assertFalse(resp.hasErrors());
 
-        JsonNode respJson = mapper.readTree(resp.toJsonString());
+        respJson = mapper.readTree(resp.toJsonString());
         assertEquals("0.24", respJson.at("/meta/version").asText());
         assertEquals("Tanja", respJson.at("/meta/node").asText());
 

@@ -49,6 +49,8 @@ public class Response extends Notifications {
     private String benchmark;
     private boolean timeExceeded = false;
 
+    private static final String KORAL_VERSION =
+        "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld";
 
     /**
      * Construct a new Response object.
@@ -450,6 +452,8 @@ public class Response extends Notifications {
 
         // Get notifications json response
         ObjectNode json = (ObjectNode) super.toJsonNode();
+
+        json.put("@context", KORAL_VERSION);
 
         StringBuilder sb = new StringBuilder();
         if (this.getName() != null) {

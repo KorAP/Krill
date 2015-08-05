@@ -95,6 +95,16 @@ public class TestKrillCollectionJSON {
 
 
     @Test
+    public void collectionWithNegativeContainment () {
+        String query = _getJSONString("collection_containsnot.jsonld");
+        Krill ks = new Krill(query);
+        assertFalse(ks.hasErrors());
+        assertFalse(ks.hasWarnings());
+        assertFalse(ks.hasMessages());
+        assertEquals("-author:goethe", ks.getCollection().toString());
+    };
+
+    @Test
     public void nocollectiontypegiven () {
         String metaQuery = _getJSONString("multiterm_rewrite_collection.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
@@ -146,6 +156,9 @@ public class TestKrillCollectionJSON {
     };
 
 
+
+
+    // Legacy collections reflect old tests, that were adopted to the new scheme
     @Test
     public void metaQuery1Legacy () {
         String metaQuery = getString(getClass().getResource(

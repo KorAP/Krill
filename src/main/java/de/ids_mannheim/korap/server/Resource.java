@@ -76,20 +76,12 @@ public class Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
-        Response kresp = new Response();
-        kresp.setNode(Node.getName());
-        kresp.setListener(Node.getListener());
+        Response kresp = _initResponse();
 
-        // Get index
-        KrillIndex index = Node.getIndex();
-        kresp.setName(index.getName());
-        kresp.setVersion(index.getVersion());
-        /*
-        kresp.addMessage(
-          "Number of documents in the index",
-          String.parseLong(index.numberOf("documents"))
-        );
-        */
+        if (kresp.hasErrors())
+            return kresp.toJsonString();
+
+        // TODO: Name the number of documents in the index
         kresp.addMessage(680, "Server is up and running!");
         return kresp.toJsonString();
     };
@@ -104,7 +96,7 @@ public class Resource {
      */
     /*
      * Support GZip:
-     * oR MAYBE IT'S ALREADY SUPPORTED ....
+     * Or maybe it's already supported ...
      * http://stackoverflow.com/questions/19765582/how-to-make-jersey-use-gzip-compression-for-the-response-message-body
     */
     @PUT
@@ -122,19 +114,12 @@ public class Resource {
         if (DEBUG)
             log.trace("Added new document with unique identifier {}", uid);
 
+        Response kresp = _initResponse();
+        if (kresp.hasErrors())
+            return kresp.toJsonString();
+
         // Get index
         KrillIndex index = Node.getIndex();
-
-        Response kresp = new Response();
-        kresp.setNode(Node.getName());
-
-        if (index == null) {
-            kresp.addError(601, "Unable to find index");
-            return kresp.toJsonString();
-        };
-
-        kresp.setVersion(index.getVersion());
-        kresp.setName(index.getName());
 
         FieldDocument fd = index.addDoc(uid, json);
         if (fd == null) {
@@ -165,18 +150,12 @@ public class Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public String commit () {
 
+        Response kresp = _initResponse();
+        if (kresp.hasErrors())
+            return kresp.toJsonString();
+
         // Get index
         KrillIndex index = Node.getIndex();
-        Response kresp = new Response();
-        kresp.setNode(Node.getName());
-
-        if (index == null) {
-            kresp.addError(601, "Unable to find index");
-            return kresp.toJsonString();
-        };
-
-        kresp.setVersion(index.getVersion());
-        kresp.setName(index.getName());
 
         // There are documents to commit
         try {
@@ -206,48 +185,37 @@ public class Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     public String find (String json, @Context UriInfo uri) {
 
-        // Get index
-        KrillIndex index = Node.getIndex();
+        Response kresp = _initResponse();
+        if (kresp.hasErrors())
+            return kresp.toJsonString();
 
         // Search index
-        if (index != null) {
-            Krill ks = new Krill(json);
+        Krill ks = new Krill(json);
 
-            // Get query parameters
-            MultivaluedMap<String, String> qp = uri.getQueryParameters();
+        // Get query parameters
+        MultivaluedMap<String, String> qp = uri.getQueryParameters();
 
-            if (qp.get("uid") != null) {
-
-                // Build Collection based on a list of uids
-                List<String> uids = qp.get("uid");
-                KrillCollection kc = new KrillCollection();
-                kc.filterUIDs(uids.toArray(new String[uids.size()]));
-
-                // TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
-
-                // Override old collection
-                ks.setCollection(kc);
-
-                // Only return the first match per text
-                ks.getMeta().setItemsPerResource(1);
-
-                return ks.apply(index).toJsonString();
-            };
-            Result kr = new Result();
-            kr.setNode(Node.getName());
-            kr.addError(610, "Missing request parameters",
-                    "No unique IDs were given");
-            return kr.toJsonString();
+        if (qp.get("uid") == null) {
+            kresp.addError(610,
+                           "Missing request parameters",
+                           "No unique IDs were given");
+            return kresp.toJsonString();
         };
 
-        Response kresp = new Response();
-        kresp.setNode(Node.getName());
-        kresp.setName(index.getName());
-        kresp.setVersion(index.getVersion());
+        // Build Collection based on a list of uids
+        List<String> uids = qp.get("uid");
+        KrillCollection kc = new KrillCollection();
+        kc.filterUIDs(uids.toArray(new String[uids.size()]));
 
-        kresp.addError(601, "Unable to find index");
+        // TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
 
-        return kresp.toJsonString();
+        // Override old collection
+        ks.setCollection(kc);
+
+        // Only return the first match per text
+        ks.getMeta().setItemsPerResource(1);
+
+        return ks.apply(Node.getIndex()).toJsonString();
     };
 
 
@@ -264,16 +232,9 @@ public class Resource {
     public String collect (String json, @PathParam("resultID") String resultID,
             @Context UriInfo uri) {
 
-        // Get index
-        KrillIndex index = Node.getIndex();
-
-        // No index found
-        if (index == null) {
-            Response kresp = new Response();
-            kresp.setNode(Node.getName());
-            kresp.addError(601, "Unable to find index");
+        Response kresp = _initResponse();
+        if (kresp.hasErrors())
             return kresp.toJsonString();
-        };
 
         // Get the database
         try {
@@ -284,7 +245,8 @@ public class Resource {
             // TODO: Only search in self documents (REPLICATION FTW!)
 
             Krill ks = new Krill(json);
-            MatchCollector result = index.collect(ks, mc);
+            // TODO: Reuse response!
+            MatchCollector result = Node.getIndex().collect(ks, mc);
 
             result.setNode(Node.getName());
             return result.toJsonString();
@@ -292,11 +254,6 @@ public class Resource {
         catch (SQLException e) {
             log.error(e.getLocalizedMessage());
         };
-
-        Response kresp = new Response();
-        kresp.setNode(Node.getName());
-        kresp.setName(index.getName());
-        kresp.setVersion(index.getVersion());
 
         kresp.addError(604, "Unable to connect to database");
         return kresp.toJsonString();
@@ -321,23 +278,14 @@ public class Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     public String search (String json) {
 
-        // Get index
-        KrillIndex index = Node.getIndex();
+        Response kresp = _initResponse();
+        if (kresp.hasErrors())
+            return kresp.toJsonString();
 
         // Search index
-        if (index != null) {
-            Result kr = new Krill(json).apply(index);
-            kr.setNode(Node.getName());
-            return kr.toJsonString();
-        };
-
-        Response kresp = new Response();
-        kresp.setNode(Node.getName());
-        kresp.setName(index.getName());
-        kresp.setVersion(index.getVersion());
-
-        kresp.addError(601, "Unable to find index");
-        return kresp.toJsonString();
+        // Reuse Response
+        Result kr = new Krill(json).apply(Node.getIndex());
+        return kr.toJsonString();
     };
 
 
@@ -346,59 +294,55 @@ public class Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public String match (@PathParam("matchID") String id, @Context UriInfo uri) {
 
+        Response kresp = _initResponse();
+        if (kresp.hasErrors())
+            return kresp.toJsonString();
+
         // Get index
         KrillIndex index = Node.getIndex();
 
-        // Search index
-        if (index != null) {
 
-            // Get query parameters
-            MultivaluedMap<String, String> qp = uri.getQueryParameters();
+        // Get query parameters
+        MultivaluedMap<String, String> qp = uri.getQueryParameters();
 
-            boolean includeSpans = false, includeHighlights = true, extendToSentence = false, info = false;
+        boolean includeSpans = false, includeHighlights = true, extendToSentence = false, info = false;
 
-            // Optional query parameter "info" for more information on the match
-            if (!_isNull(qp.getFirst("info")))
-                info = true;
+        // Optional query parameter "info" for more information on the match
+        if (!_isNull(qp.getFirst("info")))
+            info = true;
 
-            // Optional query parameter "spans" for span information inclusion
-            if (!_isNull(qp.getFirst("spans"))) {
-                includeSpans = true;
-                info = true;
-            };
-
-            // Optional query parameter "highlights" for highlight information inclusion
-            String highlights = qp.getFirst("highlights");
-            if (highlights != null && _isNull(highlights))
-                includeHighlights = false;
-
-            // Optional query parameter "extended" for sentence expansion
-            if (!_isNull(qp.getFirst("extended")))
-                extendToSentence = true;
-
-            List<String> foundries = qp.get("foundry");
-            List<String> layers = qp.get("layer");
-
-            try {
-                // Get match info
-                return index.getMatchInfo(id, "tokens", info, foundries,
-                        layers, includeSpans, includeHighlights,
-                        extendToSentence).toJsonString();
-            }
-
-            // Nothing found
-            catch (QueryException qe) {
-                // Todo: Make Match rely on Response!
-                Match km = new Match();
-                km.addError(qe.getErrorCode(), qe.getMessage());
-                return km.toJsonString();
-            }
+        // Optional query parameter "spans" for span information inclusion
+        if (!_isNull(qp.getFirst("spans"))) {
+            includeSpans = true;
+            info = true;
         };
 
-        // Response with error message
-        Match km = new Match();
-        km.addError(601, "Unable to find index");
-        return km.toJsonString();
+        // Optional query parameter "highlights" for highlight information inclusion
+        String highlights = qp.getFirst("highlights");
+        if (highlights != null && _isNull(highlights))
+            includeHighlights = false;
+
+        // Optional query parameter "extended" for sentence expansion
+        if (!_isNull(qp.getFirst("extended")))
+            extendToSentence = true;
+
+        List<String> foundries = qp.get("foundry");
+        List<String> layers = qp.get("layer");
+
+        try {
+            // Get match info
+            return index.getMatchInfo(id, "tokens", info, foundries,
+                                      layers, includeSpans, includeHighlights,
+                                      extendToSentence).toJsonString();
+        }
+
+        // Nothing found
+        catch (QueryException qe) {
+            // Todo: Make Match rely on Response!
+            kresp.addError(qe.getErrorCode(), qe.getMessage());
+        };
+
+        return kresp.toJsonString();
     };
 
 
@@ -454,6 +398,24 @@ public class Resource {
         };
     };
 
+
+    private Response _initResponse () {
+        Response kresp = new Response();
+        kresp.setNode(Node.getName());
+        kresp.setListener(Node.getListener());
+
+        // Get index
+        KrillIndex index = Node.getIndex();
+
+        if (index == null) {
+            kresp.addError(601, "Unable to find index");
+            return kresp;
+        };
+
+        kresp.setVersion(index.getVersion());
+        kresp.setName(index.getName());
+        return kresp;
+    };
 
     // Check if a string is meant to represent null
     private static boolean _isNull (String value) {
