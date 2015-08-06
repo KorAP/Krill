@@ -41,7 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
-import java.sql.Connection;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 
 /**
@@ -63,11 +63,14 @@ public class Resource {
     private final static Logger log = LoggerFactory.getLogger(Node.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public final static boolean DEBUG = false;
 
     // Slightly based on String::BooleanSimple
-    static Pattern p = Pattern.compile("\\s*(?i:false|no|inactive|disabled|"
+    private final static Pattern p =
+        Pattern.compile("\\s*(?i:false|no|inactive|disabled|"
             + "off|n|neg(?:ative)?|not|null|undef)\\s*");
+
+    private KrillIndex index;
 
 
     /**
@@ -76,7 +79,7 @@ public class Resource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String info () {
-        Response kresp = _initResponse();
+        final Response kresp = _initResponse();
 
         if (kresp.hasErrors())
             return kresp.toJsonString();
@@ -109,17 +112,17 @@ public class Resource {
          * See
          * http://www.mkyong.com/webservices/jax-rs/file-upload-example-in-jersey/
          */
-
         // Todo: Parameter for server node
         if (DEBUG)
             log.trace("Added new document with unique identifier {}", uid);
 
-        Response kresp = _initResponse();
+        final Response kresp = _initResponse();
         if (kresp.hasErrors())
             return kresp.toJsonString();
 
         // Get index
-        KrillIndex index = Node.getIndex();
+        index = Node.getIndex();
+
 
         FieldDocument fd = index.addDoc(uid, json);
         if (fd == null) {
@@ -129,13 +132,12 @@ public class Resource {
             return kresp.toJsonString();
         };
 
-        String ID = "Unknown";
-        ID = fd.getID();
-
         // Set HTTP to 200
-        kresp.addMessage(681, "Document was added successfully", ID);
-
-        // System.err.println(kresp.toJsonString());
+        kresp.addMessage(
+            681,
+            "Document was added successfully",
+            fd.getID() != null ? fd.getID() : "Unknown"
+        );
 
         return kresp.toJsonString();
     };
@@ -150,16 +152,13 @@ public class Resource {
     @Produces(MediaType.APPLICATION_JSON)
     public String commit () {
 
-        Response kresp = _initResponse();
+        final Response kresp = _initResponse();
         if (kresp.hasErrors())
             return kresp.toJsonString();
 
-        // Get index
-        KrillIndex index = Node.getIndex();
-
         // There are documents to commit
         try {
-            index.commit();
+            Node.getIndex().commit();
             kresp.addMessage(683, "Staged data committed");
         }
         catch (IOException e) {
@@ -185,15 +184,15 @@ public class Resource {
     @Consumes(MediaType.APPLICATION_JSON)
     public String find (String json, @Context UriInfo uri) {
 
-        Response kresp = _initResponse();
+        final Response kresp = _initResponse();
         if (kresp.hasErrors())
             return kresp.toJsonString();
 
         // Search index
-        Krill ks = new Krill(json);
+        final Krill ks = new Krill(json);
 
         // Get query parameters
-        MultivaluedMap<String, String> qp = uri.getQueryParameters();
+        final MultivaluedMap<String, String> qp = uri.getQueryParameters();
 
         if (qp.get("uid") == null) {
             kresp.addError(610,
@@ -203,13 +202,13 @@ public class Resource {
         };
 
         // Build Collection based on a list of uids
-        List<String> uids = qp.get("uid");
-        KrillCollection kc = new KrillCollection();
-        kc.filterUIDs(uids.toArray(new String[uids.size()]));
+        final List<String> uids = qp.get("uid");
 
         // TODO: RESTRICT COLLECTION TO ONLY RESPECT SELF DOCS (REPLICATION)
 
-        // Override old collection
+        // Ignore a Collection that may already be established
+        final KrillCollection kc = new KrillCollection();
+        kc.filterUIDs(uids.toArray(new String[uids.size()]));
         ks.setCollection(kc);
 
         // Only return the first match per text
@@ -238,15 +237,16 @@ public class Resource {
 
         // Get the database
         try {
-            MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_" + resultID);
-            Connection conn = Node.getDBPool().getConnection();
-            mc.setDBPool("mysql", Node.getDBPool(), conn);
+            final MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_" + resultID);
+            final ComboPooledDataSource pool = Node.getDBPool();
+            mc.setDBPool("mysql", pool, pool.getConnection());
 
             // TODO: Only search in self documents (REPLICATION FTW!)
 
-            Krill ks = new Krill(json);
+            final Krill ks = new Krill(json);
+
             // TODO: Reuse response!
-            MatchCollector result = Node.getIndex().collect(ks, mc);
+            final MatchCollector result = Node.getIndex().collect(ks, mc);
 
             result.setNode(Node.getName());
             return result.toJsonString();
@@ -422,7 +422,7 @@ public class Resource {
         if (value == null)
             return true;
 
-        Matcher m = p.matcher(value);
+        final Matcher m = p.matcher(value);
         if (m.matches())
             return true;
 

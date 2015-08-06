@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * See http://mail-archives.apache.org/mod_mbox/lucene-java-user/
  *     200805.mbox/%3C17080852.post@talk.nabble.com%3E
  */
-public class KrillCollection extends Notifications {
+public final class KrillCollection extends Notifications {
     private KrillIndex index;
     private JsonNode json;
     private CollectionBuilder cb = new CollectionBuilder();
@@ -345,9 +345,7 @@ public class KrillCollection extends Notifications {
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection filterUIDs (String ... uids) {
-        CollectionBuilder.Interface root = this.getBuilder();
         CollectionBuilder.Group cbg = this.cb.orGroup();
-        CollectionBuilder.Group filter = this.cb.andGroup();
         for (String uid : uids) {
             cbg.with(this.cb.term("UID", uid));
         };

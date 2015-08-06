@@ -63,6 +63,8 @@ public class Krill extends Response {
     private JsonNode request;
     private String spanContext;
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Krill.class);
 
@@ -136,10 +138,9 @@ public class Krill extends Response {
      * @return The {@link Krill} object for chaining.
      * @throws QueryException
      */
-    public Krill fromJson (String query) {
+    public Krill fromJson (final String query) {
         // Parse query string
         try {
-            ObjectMapper mapper = new ObjectMapper();
             this.request = mapper.readTree(query);
             this.fromJson(this.request);
         }
@@ -166,10 +167,10 @@ public class Krill extends Response {
         // Parse "query" attribute
         if (json.has("query")) {
             try {
-                KrillQuery kq = new KrillQuery("tokens");
+                final KrillQuery kq = new KrillQuery("tokens");
                 this.setQuery(kq);
 
-                SpanQueryWrapper qw = kq.fromJson(json.get("query"));
+                final SpanQueryWrapper qw = kq.fromJson(json.get("query"));
 
                 // Throw an error, in case the query matches everywhere
                 if (qw.isEmpty())
@@ -208,7 +209,7 @@ public class Krill extends Response {
         // Parse "collection" or "collections" attribute
         try {
             if (json.has("collection")) {
-                JsonNode collNode = json.get("collection");
+                final JsonNode collNode = json.get("collection");
 
                 // TODO: Temporary
                 if (collNode.fieldNames().hasNext()) {

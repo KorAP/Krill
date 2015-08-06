@@ -35,15 +35,19 @@ public class TestResource {
     private HttpServer server;
     private WebTarget target;
 
-    ObjectMapper mapper = new ObjectMapper();
+    final ObjectMapper mapper = new ObjectMapper();
+    long t1 = 0, t2 = 0, t3 = 0, t4 = 0;
 
 
     @Before
     public void setUp () throws Exception {
         // start the server
+        t1 = System.nanoTime();
         server = Node.startServer("milena", (String) null);
         // create the client
         Client c = ClientBuilder.newClient();
+
+        t2 = System.nanoTime();
 
         // uncomment the following line if you want to enable
         // support for JSON in the client (you also have to uncomment
@@ -66,8 +70,20 @@ public class TestResource {
 
     @After
     public void tearDown () throws Exception {
+        t3 = System.nanoTime();
         server.stop();
         Node.closeDBPool();
+        t4 = System.nanoTime();
+
+        double startup  = (double) (t2 - t1) / 1000000000.0;
+        double action   = (double) (t3 - t2) / 1000000000.0;
+        double shutdown = (double) (t4 - t3) / 1000000000.0;
+
+        /*
+        System.err.println("Startup:  " + startup + ", " +
+                           "Action:   " + action  + ", " +
+                           "Shutdown: " + shutdown);
+        */
     };
 
 
@@ -92,11 +108,12 @@ public class TestResource {
     };
 
     @Test
-    public void testResource () throws IOException {
+    public void testIndexing () throws IOException {
         String resp;
         JsonNode res;
 
-        for (String i : new String[] { "00001", "00002", "00003", "00004",
+        for (String i : new String[] {
+                "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
 
             String json = StringfromFile(getClass().getResource(
@@ -119,6 +136,7 @@ public class TestResource {
             }
         };
 
+        // Commit!
         resp = target.path("/index").request("application/json")
                 .post(Entity.text(""), String.class);
         res = mapper.readTree(resp);
@@ -130,6 +148,7 @@ public class TestResource {
     @Test
     public void testCollection () throws IOException {
 
+        // mate/l:sein
         String json = getString(getClass().getResource(
                 "/queries/bsp-uid-example.jsonld").getFile());
 

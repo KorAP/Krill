@@ -13,7 +13,7 @@ public class MatchCollector extends Response {
       private long totalTexts;
     */
 
-    public void add (int uniqueDocID, int matchcount) {
+    public void add (final int uniqueDocID, final int matchcount) {
         this.totalResultDocs++;
         this.incrTotalResults(matchcount);
     };

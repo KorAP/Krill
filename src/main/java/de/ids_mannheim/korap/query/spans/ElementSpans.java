@@ -27,14 +27,15 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
  * @author margaretha
  * @author diewald
  */
-public class ElementSpans extends SimpleSpans {
-    private TermSpans termSpans;
+public final class ElementSpans extends SimpleSpans {
+    private final TermSpans termSpans;
     private boolean lazyLoaded = false;
 
     private final Logger log = LoggerFactory.getLogger(ElementSpans.class);
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-
+    
+    private byte[] b = new byte[8];
 
     /**
      * Constructs ElementSpans for the given {@link SpanElementQuery}.
@@ -112,8 +113,8 @@ public class ElementSpans extends SimpleSpans {
         if (!payload.isEmpty()) {
 
             // Get payload one by one
-            int length = payload.get(0).length;
-            ByteBuffer bb = ByteBuffer.allocate(length);
+            final int length = payload.get(0).length;
+            final ByteBuffer bb = ByteBuffer.allocate(length);
             bb.put(payload.get(0));
 
             // set element end position from payload
@@ -129,7 +130,6 @@ public class ElementSpans extends SimpleSpans {
             }
 
             // Copy the start and end character offsets
-            byte[] b = new byte[8];
             b = Arrays.copyOfRange(bb.array(), 0, 8);
             this.matchPayload = Collections.singletonList(b);
             return;

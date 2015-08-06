@@ -36,7 +36,7 @@ import java.util.List;
  */
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Result extends Krill {
+public final class Result extends Krill {
     ObjectMapper mapper = new ObjectMapper();
 
     @JsonIgnore

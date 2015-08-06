@@ -66,7 +66,7 @@ import de.ids_mannheim.korap.util.QueryException;
   [base=Der]([base=alte]|[base=junge])[base=Mann & p!=ADJA]![base=war | base=lag]
   Search for all documents containing "s:Der" and ("s:alte" or "s:junge") and "s:Mann"
 */
-public class KrillQuery extends Notifications {
+public final class KrillQuery extends Notifications {
     private QueryBuilder builder;
     private String field;
     private JsonNode json;

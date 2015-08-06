@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 //  Todo: Set timeout default value per config file
-public class KrillMeta extends Notifications {
+public final class KrillMeta extends Notifications {
     // <legacy>
     private boolean cutOff = false;
     // </legacy>

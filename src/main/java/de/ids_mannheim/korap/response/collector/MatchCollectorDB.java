@@ -13,7 +13,7 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MatchCollectorDB extends MatchCollector {
+public final class MatchCollectorDB extends MatchCollector {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Node.class);
@@ -23,9 +23,10 @@ public class MatchCollectorDB extends MatchCollector {
      * the list should be synchrinized Collections.synchronizedList()
      */
     private String databaseType;
-    private List matchCollector;
-    private int bufferSize, docCollect;
-    private String resultID;
+    private final List matchCollector;
+    private final int bufferSize;
+    private int docCollect;
+    private final String resultID;
 
     // private Connection connection;
     private DataSource pool;
@@ -186,7 +187,7 @@ public class MatchCollectorDB extends MatchCollector {
     public void close (boolean close) {
         if (close)
             this.close();
-        else
-            this.commit();
+
+        this.commit();
     };
 };

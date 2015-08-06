@@ -339,7 +339,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
             throws IOException {
 
         for (int i = 0; i < spanQueries.size(); i++) {
-            SpanQuery query = (SpanQuery) spanQueries.get(i).rewrite(reader);
+            final SpanQuery query = (SpanQuery) spanQueries.get(i).rewrite(reader);
             if (!query.equals(spanQueries.get(i))) {
                 if (clone == null)
                     clone = clone();
@@ -365,7 +365,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
     private SimpleSpanQuery updateClone (IndexReader reader,
             SimpleSpanQuery clone, SpanQuery sq, int clauseNumber)
             throws IOException {
-        SpanQuery query = (SpanQuery) sq.rewrite(reader);
+        final SpanQuery query = (SpanQuery) sq.rewrite(reader);
         if (!query.equals(sq)) {
             if (clone == null)
                 clone = clone();
@@ -399,8 +399,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
         }
         else if (clauseList != null) {
             for (int i = 0; i < clauseList.size(); i++) {
-                SpanQuery query = (SpanQuery) clauseList.get(i);
-                if (!query.equals(q.getClauseList().get(i))) {
+                if (!clauseList.get(i).equals(q.getClauseList().get(i))) {
                     return false;
                 }
             }

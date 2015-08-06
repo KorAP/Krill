@@ -107,7 +107,7 @@ import java.nio.ByteBuffer;
   -> search for frequencies of VVFIN/gehen
   -> c:VVFIN:[^:]*?:gehen:past:...
 */
-public class KrillIndex {
+public final class KrillIndex {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KrillIndex.class);
@@ -1162,7 +1162,7 @@ public class KrillIndex {
 
 
     public Result search (SpanQuery query, short count) {
-        Krill krill = new Krill(query);
+        final Krill krill = new Krill(query);
         krill.getMeta().setCount(count);
         return this.search(krill);
     };
@@ -1204,19 +1204,19 @@ public class KrillIndex {
 
         this.termContexts = new HashMap<Term, TermContext>();
 
-        KrillCollection collection = ks.getCollection();
+        final KrillCollection collection = ks.getCollection();
         collection.setIndex(this);
 
         // Get the spanquery from the Krill object
         SpanQuery query = ks.getSpanQuery();
 
         // Get the field of textual data and annotations ("tokens")
-        String field = query.getField();
+        final String field = query.getField();
 
-        KrillMeta meta = ks.getMeta();
+        final KrillMeta meta = ks.getMeta();
 
         // Todo: Make kr subclassing ks - so ks has a method for a new Result!
-        Result kr = new Result(query.toString(), meta.getStartIndex(),
+        final Result kr = new Result(query.toString(), meta.getStartIndex(),
                 meta.getCount(), meta.getContext());
 
         // Set version info to result
@@ -1230,9 +1230,8 @@ public class KrillIndex {
         fields.add(field);
 
         // Lift all fields
-        if (fields.contains("@all")) {
+        if (fields.contains("@all"))
             fields = null;
-        };
 
         // Some initializations ...
         int i = 0;
@@ -1256,13 +1255,13 @@ public class KrillIndex {
         };
 
         // Collect matches from atomic readers
-        ArrayList<Match> atomicMatches = new ArrayList<Match>(
+        final ArrayList<Match> atomicMatches = new ArrayList<Match>(
                 kr.getItemsPerPage());
 
         // Start time out thread
-        TimeOutThread tthread = new TimeOutThread();
+        final TimeOutThread tthread = new TimeOutThread();
         tthread.start();
-        long timeout = meta.getTimeOut();
+        final long timeout = meta.getTimeOut();
 
         // See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
         long t1 = System.nanoTime();
@@ -1288,15 +1287,15 @@ public class KrillIndex {
                  * Todo: There may be a way to know early if the bitset is emty
                  * by using OpenBitSet - but this may not be as fast as I think.
                  */
-                Bits bitset = collection.bits(atomic);
-
-                PositionsToOffset pto = new PositionsToOffset(atomic, field);
+                final Bits bitset = collection.bits(atomic);
+                final PositionsToOffset pto = new PositionsToOffset(atomic, field);
 
                 // Spans spans = NearSpansOrdered();
-                Spans spans = query.getSpans(atomic, (Bits) bitset,
-                        termContexts);
+                final Spans spans = query.getSpans(atomic, (Bits) bitset,
+                                                   termContexts);
 
-                IndexReader lreader = atomic.reader();
+                final IndexReader lreader = atomic.reader();
+                int localDocID, docID;
 
                 // TODO: Get document information from Cache! Fieldcache?
                 for (; i < hits; i++) {
@@ -1314,7 +1313,7 @@ public class KrillIndex {
                         break;
                     };
 
-                    int localDocID = spans.doc();
+                    localDocID = spans.doc();
 
                     // Count hits per resource
                     if (itemsPerResource > 0) {
@@ -1343,14 +1342,14 @@ public class KrillIndex {
                     if (startIndex > i)
                         continue;
 
-                    int docID = atomic.docBase + localDocID;
+                    docID = atomic.docBase + localDocID;
 
                     // Do not load all of this, in case the doc is the same!
-                    Document doc = (fields != null) ? lreader.document(
+                    final Document doc = (fields != null) ? lreader.document(
                             localDocID, fields) : lreader.document(localDocID);
 
                     // Create new Match
-                    Match match = new Match(pto, localDocID, spans.start(),
+                    final Match match = new Match(pto, localDocID, spans.start(),
                             spans.end());
                     match.setContext(kr.getContext());
 
@@ -1398,7 +1397,7 @@ public class KrillIndex {
 
                     // Count hits per resource
                     if (itemsPerResource > 0) {
-                        int localDocID = spans.doc();
+                        localDocID = spans.doc();
 
                         if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
                             break;
