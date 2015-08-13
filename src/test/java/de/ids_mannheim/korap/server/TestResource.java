@@ -75,8 +75,8 @@ public class TestResource {
         Node.closeDBPool();
         t4 = System.nanoTime();
 
-        double startup  = (double) (t2 - t1) / 1000000000.0;
-        double action   = (double) (t3 - t2) / 1000000000.0;
+        double startup = (double) (t2 - t1) / 1000000000.0;
+        double action = (double) (t3 - t2) / 1000000000.0;
         double shutdown = (double) (t4 - t3) / 1000000000.0;
 
         /*
@@ -107,13 +107,13 @@ public class TestResource {
         assertEquals(680, res.at("/messages/0/0").asInt());
     };
 
+
     @Test
     public void testIndexing () throws IOException {
         String resp;
         JsonNode res;
 
-        for (String i : new String[] {
-                "00001", "00002", "00003", "00004",
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
 
             String json = StringfromFile(getClass().getResource(

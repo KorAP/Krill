@@ -28,6 +28,7 @@ public class TestBenchmarkSamples {
     private final int rounds = 1000;
     private long t1 = 0, t2 = 0;
 
+
     @Test
     public void simpleSegmentQuery () throws Exception {
         // Construct index
@@ -36,10 +37,10 @@ public class TestBenchmarkSamples {
 
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
-                                           "00005", "00006", "02439" }) {
+                "00005", "00006", "02439" }) {
             ki.addDoc(
-                      getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
-                      true);
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
         };
         ki.commit();
 

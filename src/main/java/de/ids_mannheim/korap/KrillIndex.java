@@ -6,6 +6,7 @@ import de.ids_mannheim.korap.index.*;
 import de.ids_mannheim.korap.response.*;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.util.QueryException;
+import static de.ids_mannheim.korap.util.KrillProperties.*;
 
 // Lucene classes
 import org.apache.lucene.search.*;
@@ -120,7 +121,7 @@ public final class KrillIndex {
     private int maxTermRelations = 100;
     private int autoCommit = 500;
     private String version = "unknown";
-    private String name = "Krill";
+    private String name = "Unknown";
 
     // Temp:
     private IndexReader reader;
@@ -144,47 +145,30 @@ public final class KrillIndex {
             bbTerm = ByteBuffer.allocate(16);
 
     // Some initializations ...
-    // TODO: This should probably happen at a more central point
     {
-        Properties prop = new Properties();
-        URL file = getClass().getClassLoader().getResource("krill.properties");
+        Properties prop = loadProperties();
+        this.version = prop.getProperty("krill.version");
+        this.name = prop.getProperty("krill.name");
 
-        // File found
-        if (file != null) {
-            String f = file.getFile();
-            // Read property file
+        // Check for auto commit value
+        String stringProp = prop.getProperty("krill.index.commit.auto");
+        if (stringProp != null) {
             try {
-                InputStream fr = new FileInputStream(f);
-                prop.load(fr);
-                this.version = prop.getProperty("krill.version");
-                this.name = prop.getProperty("krill.name");
-
-                // Check for auto commit value
-                String stringProp = prop.getProperty("krill.index.commit.auto");
-                if (stringProp != null) {
-                    try {
-                        this.autoCommit = Integer.parseInt(stringProp);
-                    }
-                    catch (NumberFormatException e) {
-                        log.error("krill.index.commit.auto expected to be a numerical value");
-                    };
-                };
-
-                // Check for maximum term relations
-                stringProp = prop.getProperty("krill.index.relations.max");
-                if (stringProp != null) {
-                    try {
-                        this.maxTermRelations = Integer.parseInt(stringProp);
-                    }
-                    catch (NumberFormatException e) {
-                        log.error("krill.index.commit.auto expected to be a numerical value");
-                    };
-                };
+                this.autoCommit = Integer.parseInt(stringProp);
             }
+            catch (NumberFormatException e) {
+                log.error("krill.index.commit.auto expected to be a numerical value");
+            };
+        };
 
-            // Unable to read property file
-            catch (FileNotFoundException e) {
-                log.warn(e.getLocalizedMessage());
+        // Check for maximum term relations
+        stringProp = prop.getProperty("krill.index.relations.max");
+        if (stringProp != null) {
+            try {
+                this.maxTermRelations = Integer.parseInt(stringProp);
+            }
+            catch (NumberFormatException e) {
+                log.error("krill.index.commit.auto expected to be a numerical value");
             };
         };
     };
@@ -1288,11 +1272,12 @@ public final class KrillIndex {
                  * by using OpenBitSet - but this may not be as fast as I think.
                  */
                 final Bits bitset = collection.bits(atomic);
-                final PositionsToOffset pto = new PositionsToOffset(atomic, field);
+                final PositionsToOffset pto = new PositionsToOffset(atomic,
+                        field);
 
                 // Spans spans = NearSpansOrdered();
                 final Spans spans = query.getSpans(atomic, (Bits) bitset,
-                                                   termContexts);
+                        termContexts);
 
                 final IndexReader lreader = atomic.reader();
                 int localDocID, docID;
@@ -1349,8 +1334,8 @@ public final class KrillIndex {
                             localDocID, fields) : lreader.document(localDocID);
 
                     // Create new Match
-                    final Match match = new Match(pto, localDocID, spans.start(),
-                            spans.end());
+                    final Match match = new Match(pto, localDocID,
+                            spans.start(), spans.end());
                     match.setContext(kr.getContext());
 
                     // Add match to Result

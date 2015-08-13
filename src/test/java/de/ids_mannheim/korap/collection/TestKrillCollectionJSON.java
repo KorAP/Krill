@@ -104,6 +104,7 @@ public class TestKrillCollectionJSON {
         assertEquals("-author:goethe", ks.getCollection().toString());
     };
 
+
     @Test
     public void nocollectiontypegiven () {
         String metaQuery = _getJSONString("multiterm_rewrite_collection.jsonld");
@@ -154,7 +155,6 @@ public class TestKrillCollectionJSON {
         assertEquals("reisen", res.at("/collection/value").asText());
         assertEquals("match:eq", res.at("/collection/match").asText());
     };
-
 
 
 

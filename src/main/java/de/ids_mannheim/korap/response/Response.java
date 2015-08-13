@@ -49,8 +49,8 @@ public class Response extends Notifications {
     private String benchmark;
     private boolean timeExceeded = false;
 
-    private static final String KORAL_VERSION =
-        "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld";
+    private static final String KORAL_VERSION = "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld";
+
 
     /**
      * Construct a new Response object.

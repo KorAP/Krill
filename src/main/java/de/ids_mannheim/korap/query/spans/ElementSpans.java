@@ -34,8 +34,9 @@ public final class ElementSpans extends SimpleSpans {
     private final Logger log = LoggerFactory.getLogger(ElementSpans.class);
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-    
+
     private byte[] b = new byte[8];
+
 
     /**
      * Constructs ElementSpans for the given {@link SpanElementQuery}.

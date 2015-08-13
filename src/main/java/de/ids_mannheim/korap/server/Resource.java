@@ -66,9 +66,9 @@ public class Resource {
     public final static boolean DEBUG = false;
 
     // Slightly based on String::BooleanSimple
-    private final static Pattern p =
-        Pattern.compile("\\s*(?i:false|no|inactive|disabled|"
-            + "off|n|neg(?:ative)?|not|null|undef)\\s*");
+    private final static Pattern p = Pattern
+            .compile("\\s*(?i:false|no|inactive|disabled|"
+                    + "off|n|neg(?:ative)?|not|null|undef)\\s*");
 
     private KrillIndex index;
 
@@ -133,11 +133,8 @@ public class Resource {
         };
 
         // Set HTTP to 200
-        kresp.addMessage(
-            681,
-            "Document was added successfully",
-            fd.getID() != null ? fd.getID() : "Unknown"
-        );
+        kresp.addMessage(681, "Document was added successfully",
+                fd.getID() != null ? fd.getID() : "Unknown");
 
         return kresp.toJsonString();
     };
@@ -195,9 +192,8 @@ public class Resource {
         final MultivaluedMap<String, String> qp = uri.getQueryParameters();
 
         if (qp.get("uid") == null) {
-            kresp.addError(610,
-                           "Missing request parameters",
-                           "No unique IDs were given");
+            kresp.addError(610, "Missing request parameters",
+                    "No unique IDs were given");
             return kresp.toJsonString();
         };
 
@@ -237,7 +233,8 @@ public class Resource {
 
         // Get the database
         try {
-            final MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_" + resultID);
+            final MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_"
+                    + resultID);
             final ComboPooledDataSource pool = Node.getDBPool();
             mc.setDBPool("mysql", pool, pool.getConnection());
 
@@ -331,9 +328,9 @@ public class Resource {
 
         try {
             // Get match info
-            return index.getMatchInfo(id, "tokens", info, foundries,
-                                      layers, includeSpans, includeHighlights,
-                                      extendToSentence).toJsonString();
+            return index.getMatchInfo(id, "tokens", info, foundries, layers,
+                    includeSpans, includeHighlights, extendToSentence)
+                    .toJsonString();
         }
 
         // Nothing found
@@ -416,6 +413,7 @@ public class Resource {
         kresp.setName(index.getName());
         return kresp;
     };
+
 
     // Check if a string is meant to represent null
     private static boolean _isNull (String value) {

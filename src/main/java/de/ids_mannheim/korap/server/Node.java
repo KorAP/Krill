@@ -19,6 +19,8 @@ import java.beans.PropertyVetoException;
 import de.ids_mannheim.korap.KrillIndex;
 import org.apache.lucene.store.MMapDirectory;
 
+import static de.ids_mannheim.korap.util.KrillProperties.*;
+
 import com.mchange.v2.c3p0.*;
 
 /**
@@ -65,7 +67,18 @@ public class Node {
      * @return Grizzly HTTP server.
      */
     public static HttpServer startServer () {
-        _loadResourceProperties();
+        Properties prop = loadProperties(propFile);
+
+        // Node properties
+        path = prop.getProperty("krill.indexDir", path);
+        name = prop.getProperty("krill.server.name", name);
+        BASE_URI = prop.getProperty("krill.server.baseURI", BASE_URI);
+
+        // Database properties
+        dbUser = prop.getProperty("krill.db.user", dbUser);
+        dbPwd = prop.getProperty("krill.db.pwd", dbPwd);
+        dbClass = prop.getProperty("krill.db.class", dbClass);
+        dbURL = prop.getProperty("krill.db.jdbcURL", dbURL);
 
         // create a resource config that scans for JAX-RS resources and providers
         // in de.ids_mannheim.korap.server package
@@ -250,47 +263,5 @@ public class Node {
             log.error("Index not loadable at {}: {}", path, e.getMessage());
         };
         return null;
-    };
-
-
-    // Load properties from file
-    private static Properties _loadProperties (String propFile) {
-        try {
-            InputStream file = new FileInputStream(propFile);
-            Properties prop = new Properties();
-            prop.load(file);
-
-            // Node properties
-            path = prop.getProperty("krill.indexDir", path);
-            name = prop.getProperty("krill.server.name", name);
-            BASE_URI = prop.getProperty("krill.server.baseURI", BASE_URI);
-
-            // Database properties
-            dbUser = prop.getProperty("krill.db.user", dbUser);
-            dbPwd = prop.getProperty("krill.db.pwd", dbPwd);
-            dbClass = prop.getProperty("krill.db.class", dbClass);
-            dbURL = prop.getProperty("krill.db.jdbcURL", dbURL);
-            return prop;
-        }
-        catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-        };
-        return null;
-    };
-
-
-    // Load properties from resource file
-    private static Properties _loadResourceProperties () {
-
-        // Load configuration
-        URL resUrl = Node.class.getClassLoader().getResource(propFile);
-        if (resUrl == null) {
-            log.error(
-                    "Cannot find {}. Please create it using \"{}.info\" as template.",
-                    propFile, propFile);
-            return null;
-        };
-
-        return _loadProperties(resUrl.getFile());
     };
 };

@@ -20,4 +20,5 @@
 /src/main/resources/server.properties
 /src/main/resources/krill.properties
 /src/main/resources/korap.conf
+/dependency-reduced-pom.xml
 /bin

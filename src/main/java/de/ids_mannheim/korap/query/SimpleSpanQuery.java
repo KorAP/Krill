@@ -339,7 +339,8 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
             throws IOException {
 
         for (int i = 0; i < spanQueries.size(); i++) {
-            final SpanQuery query = (SpanQuery) spanQueries.get(i).rewrite(reader);
+            final SpanQuery query = (SpanQuery) spanQueries.get(i).rewrite(
+                    reader);
             if (!query.equals(spanQueries.get(i))) {
                 if (clone == null)
                     clone = clone();

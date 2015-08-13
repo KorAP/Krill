@@ -7,17 +7,18 @@
       # Start the server with
       $ mvn clean compile exec:java
 
+      # Or after packaging
+      $ mvn clean package
+      # with
+      $ java -jar target/Krill-Server.jar
+
+
       ** Formatter
       # Format the code with
       $ mvn java-formatter:format
 
-      ** Indexer
-         (This is not the preferred way to index new data!)
-      # install the indexer
-      $ mvn clean compile assembly:single
-
-      # Then run e.g.
-      $ java -jar target/Krill-X.XX.jar
+      ** Indexer after packaging (see above)
+      $ java -jar target/Krill-Indexer.jar
              src/main/resources/krill.properties
              /data/hdd/lucene-new/WPD/
   -->
@@ -237,39 +238,47 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-beta-5</version>
-        <configuration>	    
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <mainClass>de.ids_mannheim.korap.index.Indexer</mainClass>
-            </manifest>
-          </archive>
-          <appendAssemblyId>false</appendAssemblyId>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-        </configuration>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.4.1</version>
         <executions>
           <execution>
-            <id>Indexer</id>
+	    <id>indexer</id>
             <phase>package</phase>
             <goals>
-              <goal>single</goal>
+              <goal>shade</goal>
             </goals>
             <configuration>
-              <finalName>Indexer</finalName>
-              <archive>
-                <manifest>
-		  <mainClass>de.ids_mannheim.korap.index.Indexer</mainClass>
-                </manifest>
-              </archive>
+              <transformers>
+                <transformer
+		    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>de.ids_mannheim.korap.index.Indexer</mainClass>
+                </transformer>
+              </transformers>
+	      <finalName>${project.artifactId}-Indexer</finalName>
             </configuration>
           </execution>
-	</executions>
+          <execution>
+	    <id>server</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer
+		    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>de.ids_mannheim.korap.server.Node</mainClass>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>krill.properties</resource>
+                </transformer>
+              </transformers>
+	      <finalName>${project.name}-Server</finalName>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
- 
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
