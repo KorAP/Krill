@@ -14,6 +14,7 @@ import java.util.logging.LogManager;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
 import java.beans.PropertyVetoException;
 
 import de.ids_mannheim.korap.KrillIndex;
@@ -34,9 +35,12 @@ import com.mchange.v2.c3p0.*;
 public class Node {
 
     // Base URI the Grizzly HTTP server will listen on
-    public static String BASE_URI = "http://localhost:9876/";
+    private static UriBuilder BASE_URI;
     private static String propFile = "krill.properties";
 
+    private static int port = -1;
+    private static String path = null;
+    private static String name = "unknown";
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Node.class);
@@ -46,8 +50,6 @@ public class Node {
 
     // Database
     private static ComboPooledDataSource cpds;
-    private static String path = null;
-    private static String name = "unknown";
     private static String dbUser, dbPwd;
     private static String dbClass = "org.sqlite.JDBC";
     private static String dbURL = "jdbc:sqlite:";
@@ -66,13 +68,50 @@ public class Node {
      * 
      * @return Grizzly HTTP server.
      */
-    public static HttpServer startServer () {
+    public static HttpServer startServer (String[] args) {
+        LogManager.getLogManager().reset();
+        SLF4JBridgeHandler.install();
+
+
+        for (int i = 0; i < args.length; i += 2) {
+            switch (args[i]) {
+                case "--config":
+                case "-cfg":
+                    propFile = args[i + 1];
+                    break;
+                case "--port":
+                case "-p":
+                    port = Integer.valueOf(args[i + 1]);
+                    break;
+                case "--name":
+                case "-n":
+                    name = args[i + 1];
+                    break;
+                case "--dir":
+                case "-d":
+                    path = args[i + 1];
+                    break;
+            };
+        };
+
         Properties prop = loadProperties(propFile);
 
         // Node properties
-        path = prop.getProperty("krill.indexDir", path);
-        name = prop.getProperty("krill.server.name", name);
-        BASE_URI = prop.getProperty("krill.server.baseURI", BASE_URI);
+        if (path != null && path.equals(":memory:")) {
+            path = null;
+        }
+        else {
+            path = prop.getProperty("krill.indexDir", path);
+        };
+
+        if (name.equals("unknown"))
+            name = prop.getProperty("krill.server.name", name);
+
+        BASE_URI = UriBuilder.fromUri(prop.getProperty("krill.server.baseURI",
+                "http://localhost:9876/"));
+
+        if (port != -1)
+            BASE_URI.port(port);
 
         // Database properties
         dbUser = prop.getProperty("krill.db.user", dbUser);
@@ -87,61 +126,47 @@ public class Node {
 
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
-        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI),
-                rc);
-    };
-
-
-    /**
-     * Starts Grizzly HTTP server exposing JAX-RS
-     * resources defined in this application.
-     * Mainly used for testing.
-     * 
-     * @param nodeName
-     *            The name of the node.
-     * @param indexPath
-     *            The path of the Lucene index.
-     * 
-     * @return Grizzly {@link HttpServer} server.
-     */
-    public static HttpServer startServer (String nodeName, String indexPath) {
-        LogManager.getLogManager().reset();
-        SLF4JBridgeHandler.install();
-
-        // create a resource config that scans for JAX-RS resources and providers
-        // in de.ids_mannheim.korap.server package
-        final ResourceConfig rc = new ResourceConfig()
-                .packages("de.ids_mannheim.korap.server");
-
-        name = nodeName;
-        path = indexPath;
-
-        // create and start a new instance of grizzly http server
-        // exposing the Jersey application at BASE_URI
-        return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI),
-                rc);
+        return GrizzlyHttpServerFactory.createHttpServer(BASE_URI.build(), rc);
     };
 
 
     /**
      * Runner method for Krill node.
+     * Accepts various parameters:
+     * 
+     * <dl>
+     * <dt>--config</dt>
+     * <dd>Pass a configuration file overriding krill.properties</dd>
+     * 
+     * <dt>--port</dt>
+     * <dd>Set the port for listener URI</dd>
+     * 
+     * <dt>--name</dt>
+     * <dd>Set the name for the Krill node</dd>
+     * 
+     * <dt>--dir</dt>
+     * <dd>Set the index directory for the Krill node</dd>
+     * 
+     * </dl>
      * 
      * @param args
-     *            No special arguments required.
+     *            No special arguments required. Supported arguments
+     *            are listed above.
      * @throws IOException
      */
     public static void main (String[] args) throws IOException {
 
+
         // WADL available at BASE_URI + application.wadl
         // Start the server with krill properties or given defaults
-        final HttpServer server = startServer();
+        final HttpServer server = startServer(args);
 
         // Establish shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 
             @Override
             public void run () {
-                log.info("Stop Server");
+                System.out.println("Stop Server");
                 server.stop();
                 if (cpds != null)
                     cpds.close();
@@ -152,7 +177,9 @@ public class Node {
         // Start server
         try {
             server.start();
-            log.info("You may kill me gently with Ctrl+C");
+            System.out.println("\nHello. My name is " + getName()
+                    + " and I am a Krill node");
+            System.out.println("listening on " + getListener() + ".");
             Thread.currentThread().join();
         }
         catch (Exception e) {
@@ -178,7 +205,12 @@ public class Node {
      * @return The URI the node is listening on.
      */
     public static String getListener () {
-        return BASE_URI;
+        return getBaseURI().toString();
+    };
+
+
+    public static URI getBaseURI () {
+        return BASE_URI.build();
     };
 
 

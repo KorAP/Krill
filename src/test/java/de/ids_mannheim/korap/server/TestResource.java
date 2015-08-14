@@ -43,7 +43,8 @@ public class TestResource {
     public void setUp () throws Exception {
         // start the server
         t1 = System.nanoTime();
-        server = Node.startServer("milena", (String) null);
+        server = Node.startServer(new String[] { "--name", "milena", "--dir",
+                ":memory:", "--port", "9157" });
         // create the client
         Client c = ClientBuilder.newClient();
 
@@ -64,7 +65,7 @@ public class TestResource {
         clientConfig.getFeatures().put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
         Client c = Client.create(clientConfig);
         */
-        target = c.target(Node.BASE_URI);
+        target = c.target(Node.getBaseURI());
     };
 
 

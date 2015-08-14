@@ -1,4 +1,4 @@
-0.53 2015-08-04
+0.53 2015-08-14
         - [feature] Implemented new KrillCollection (diewald)
 	  This should fix a lot of issues with deleted
 	  documents and negation in virtual collections.
@@ -7,6 +7,8 @@
 	- [feature] Added removal methods for documents (diewald)
 	- [cleanup] REMOVED search method in KrillCollection (diewald)
         - [bugfix] Fixed collection statistics (diewald)
+	- [feature] Improved packaging (diewald)
+	- [feature] Introduced cmd options for server (diewald)
 
 0.52 2015-07-08
         - [bugfix] Fixed payload filtering in FocusSpans (margaretha)
