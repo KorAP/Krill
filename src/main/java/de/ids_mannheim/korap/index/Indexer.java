@@ -4,12 +4,13 @@ import java.util.*;
 import java.io.*;
 import org.apache.lucene.store.MMapDirectory;
 import de.ids_mannheim.korap.KrillIndex;
+import static de.ids_mannheim.korap.util.KrillProperties.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is a runnable indexer tool for
- * Krill. Although the preferred index method
+ * Standalone indexer tool for Krill.
+ * Although the preferred index method
  * is using the standalone server system,
  * this tool may be more suitable for your needs
  * (especially as it is way faster).
@@ -18,9 +19,11 @@ import org.slf4j.LoggerFactory;
  */
 public class Indexer {
     KrillIndex index;
-    String indexDir;
     int count;
     int commitCount;
+
+    private static String propFile = "krill.properties";
+    private static String path = null;
 
     // Init logger
     private final static Logger log = LoggerFactory.getLogger(KrillIndex.class);
@@ -30,22 +33,22 @@ public class Indexer {
      * Construct a new indexer object.
      * 
      * @param prop
-     *            A {@link Properties} object with
-     *            at least the following information:
-     *            <tt>krill.indexDir</tt>.
+     *            A {@link Properties} object.
      * @throws IOException
      */
     public Indexer (Properties prop) throws IOException {
-        this.indexDir = prop.getProperty("krill.indexDir");
+        if (this.path == null) {
+            this.path = prop.getProperty("krill.indexDir");
+        };
 
-        System.out.println("Index to " + this.indexDir);
+        System.out.println("Index to " + this.path);
 
         // Default to 1000 documents till the next commit
         String commitCount = prop.getProperty("krill.index.commit.count",
                 "1000");
 
         // Create a new index object based on the directory
-        this.index = new KrillIndex(new MMapDirectory(new File(indexDir)));
+        this.index = new KrillIndex(new MMapDirectory(new File(this.path)));
         this.count = 0;
         this.commitCount = Integer.parseInt(commitCount);
     };
@@ -95,7 +98,7 @@ public class Indexer {
             this.index.commit();
         }
         catch (IOException e) {
-            System.err.println("Unable to commit to index " + this.indexDir);
+            System.err.println("Unable to commit to index " + this.path);
         };
         System.out.println("done.");
     };
@@ -111,21 +114,42 @@ public class Indexer {
      * @throws IOException
      */
     public static void main (String[] argv) throws IOException {
-        Properties prop = new Properties();
 
-        // Needed at least 2 parameters
-        if (argv.length < 2) {
+        int i = 0;
+        boolean last = false;
+        for (i = 0; i < argv.length; i += 2) {
+            switch (argv[i]) {
+                case "--config":
+                case "-cfg":
+                    propFile = argv[i + 1];
+                    break;
+                case "--dir":
+                case "-d":
+                    path = argv[i + 1];
+                    break;
+            default:
+                last = true;
+                break;
+            };
 
-            String jar = new File(Indexer.class.getProtectionDomain()
-                    .getCodeSource().getLocation().getPath()).getName();
-            System.out.println("Usage: java -jar " + jar
-                    + " [propfile] [directories]*");
-            return;
+            if (last)
+                break;
         };
 
+        /*
+          String jar = new File(Indexer.class.getProtectionDomain()
+          .getCodeSource().getLocation().getPath()).getName();
+          System.out.println("Usage: java -jar " + jar
+          + "--config [propfile] [directories]*");
+          return;
+        */
+
         // Load properties
-        InputStream fr = new FileInputStream(argv[0]);
-        prop.load(fr);
+        /*
+          InputStream fr = new FileInputStream(argv[0]);
+          prop.load(fr);
+        */
+        Properties prop = loadProperties(propFile);
 
         // Get indexer object
         Indexer ki = new Indexer(prop);
@@ -134,7 +158,7 @@ public class Indexer {
         System.out.println();
 
         // Iterate over list of directories
-        for (String arg : Arrays.copyOfRange(argv, 1, argv.length)) {
+        for (String arg : Arrays.copyOfRange(argv, i, argv.length)) {
             File f = new File(arg);
             if (f.isDirectory())
                 ki.parse(f);

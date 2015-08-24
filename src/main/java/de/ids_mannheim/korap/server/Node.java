@@ -68,28 +68,28 @@ public class Node {
      * 
      * @return Grizzly HTTP server.
      */
-    public static HttpServer startServer (String[] args) {
+    public static HttpServer startServer (String[] argv) {
         LogManager.getLogManager().reset();
         SLF4JBridgeHandler.install();
 
 
-        for (int i = 0; i < args.length; i += 2) {
-            switch (args[i]) {
+        for (int i = 0; i < argv.length; i += 2) {
+            switch (argv[i]) {
                 case "--config":
                 case "-cfg":
-                    propFile = args[i + 1];
+                    propFile = argv[i + 1];
                     break;
                 case "--port":
                 case "-p":
-                    port = Integer.valueOf(args[i + 1]);
+                    port = Integer.valueOf(argv[i + 1]);
                     break;
                 case "--name":
                 case "-n":
-                    name = args[i + 1];
+                    name = argv[i + 1];
                     break;
                 case "--dir":
                 case "-d":
-                    path = args[i + 1];
+                    path = argv[i + 1];
                     break;
             };
         };
@@ -149,17 +149,17 @@ public class Node {
      * 
      * </dl>
      * 
-     * @param args
+     * @param argv
      *            No special arguments required. Supported arguments
      *            are listed above.
      * @throws IOException
      */
-    public static void main (String[] args) throws IOException {
+    public static void main (String[] argv) throws IOException {
 
 
         // WADL available at BASE_URI + application.wadl
         // Start the server with krill properties or given defaults
-        final HttpServer server = startServer(args);
+        final HttpServer server = startServer(argv);
 
         // Establish shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

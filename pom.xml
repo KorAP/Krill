@@ -5,7 +5,7 @@
   <!--
       ** Server
       # Start the server with
-      $ mvn exec:java
+      $ mvn compile exec:java
 
       # Or after packaging
       $ mvn clean package
