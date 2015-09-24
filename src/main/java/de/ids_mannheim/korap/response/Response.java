@@ -49,7 +49,10 @@ public class Response extends Notifications {
     private String benchmark;
     private boolean timeExceeded = false;
 
-    private static final String KORAL_VERSION = "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld";
+    private HashMap<String, ObjectNode> jsonFields;
+
+    private static final String KORAL_VERSION =
+        "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld";
 
 
     /**
@@ -441,6 +444,12 @@ public class Response extends Notifications {
         return (Response) this.moveNotificationsFrom(meta);
     };
 
+    public void addJsonNode (String key, ObjectNode value) {
+        if (this.jsonFields == null)
+            this.jsonFields = new HashMap<String, ObjectNode>(4);
+        this.jsonFields.put(key, value);
+    };
+
 
     /**
      * Serialize response as a {@link JsonNode}.
@@ -499,6 +508,11 @@ public class Response extends Notifications {
         // totalResults is set
         if (this.totalResults != -2)
             meta.put("totalResults", this.totalResults);
+
+        // Add json fields as passed to the object
+        if (this.jsonFields != null) {
+            json.putAll(this.jsonFields);
+        };
 
         // KoralQuery query object
         if (this.query != null) {

@@ -201,6 +201,7 @@ public class TestFieldDocument {
             FieldDocument fd = ki.addDoc(
                     getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
+
         };
         ki.commit();
 

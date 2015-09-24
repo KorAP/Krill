@@ -115,7 +115,7 @@ public class TestResource {
         JsonNode res;
 
         for (String i : new String[] { "00001", "00002", "00003", "00004",
-                "00005", "00006", "02439" }) {
+                "00005", "00006" }) {
 
             String json = StringfromFile(getClass().getResource(
                     "/wiki/" + i + ".json").getFile());
@@ -129,12 +129,30 @@ public class TestResource {
 
                 res = mapper.readTree(resp);
                 assertEquals("milena", res.at("/meta/node").asText());
-                // System.err.println(res.toString());
             }
             catch (Exception e) {
                 fail("Server response failed " + e.getMessage()
                         + " (Known issue)");
             }
+        };
+
+        String json = StringfromFile(getClass().getResource("/wiki/02439.json").getFile());
+        Entity jsonE = Entity.json(json);
+
+        try {
+            // Put new documents to the index
+            resp = target.path("/index/02439").request("application/json")
+                .put(jsonE, String.class);
+
+            res = mapper.readTree(resp);
+
+            // Check mirroring
+            assertEquals(2439, res.at("/text/UID").asInt());
+            assertEquals("milena", res.at("/meta/node").asText());
+        }
+        catch (Exception e) {
+            fail("Server response failed " + e.getMessage()
+                 + " (Known issue)");
         };
 
         // Commit!
@@ -144,7 +162,6 @@ public class TestResource {
         assertEquals("milena", res.at("/meta/node").asText());
         assertEquals(683, res.at("/messages/0/0").asInt());
     };
-
 
     @Test
     public void testCollection () throws IOException {

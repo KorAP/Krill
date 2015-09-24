@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Root resource (exposed at root path) of the Krill node.
@@ -135,6 +136,9 @@ public class Resource {
         // Set HTTP to 200
         kresp.addMessage(681, "Document was added successfully",
                 fd.getID() != null ? fd.getID() : "Unknown");
+
+        // Mirror meta data
+        kresp.addJsonNode("text", (ObjectNode) fd.toJsonNode());
 
         return kresp.toJsonString();
     };

@@ -8,6 +8,7 @@ import de.ids_mannheim.korap.response.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -168,5 +169,19 @@ public class TestResponse {
         assertEquals("10.0.10.14:678", kresp.getListener());
         assertEquals("tanja", kresp.getNode());
         assertTrue(kresp.hasTimeExceeded());
+    };
+
+    @Test
+    public void testResponseJSONadd () throws IOException {
+        Response resp = new Response();
+        ObjectNode jNode = mapper.createObjectNode();
+        jNode.put("Hui", "works");
+        resp.addJsonNode("test", jNode);
+        JsonNode respJson = mapper.readTree(resp.toJsonString());
+
+        assertEquals(
+                "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld",
+                respJson.at("/@context").asText());
+        assertEquals("works", respJson.at("/test/Hui").asText());
     };
 };

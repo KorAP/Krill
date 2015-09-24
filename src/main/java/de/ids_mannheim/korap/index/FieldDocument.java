@@ -9,6 +9,7 @@ import de.ids_mannheim.korap.util.CorpusDataException;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.TextField;
@@ -38,8 +39,8 @@ import java.util.*;
 public class FieldDocument extends AbstractDocument {
     ObjectMapper mapper = new ObjectMapper();
 
+    @JsonIgnore
     public Document doc = new Document();
-
     private FieldType tvField = new FieldType(TextField.TYPE_STORED);
     private FieldType tvNoField = new FieldType(TextField.TYPE_NOT_STORED);
     private FieldType keywords = new FieldType(TextField.TYPE_STORED);
