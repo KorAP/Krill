@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.TermState;
@@ -64,7 +64,7 @@ public class FocusSpans extends SimpleSpans {
      * @param query
      *            A {@link SpanQuery}.
      * @param context
-     *            The {@link AtomicReaderContext}.
+     *            The {@link LeafReaderContext}.
      * @param acceptDocs
      *            Bit vector representing the documents
      *            to be searched in.
@@ -74,7 +74,7 @@ public class FocusSpans extends SimpleSpans {
      *            The class number to focus on.
      * @throws IOException
      */
-    public FocusSpans (SpanFocusQuery query, AtomicReaderContext context,
+    public FocusSpans (SpanFocusQuery query, LeafReaderContext context,
                        Bits acceptDocs, Map<Term, TermContext> termContexts)
             throws IOException {
         super(query, context, acceptDocs, termContexts);

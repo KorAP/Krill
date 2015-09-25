@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.index;
 import static de.ids_mannheim.korap.util.KrillByte.*;
 import de.ids_mannheim.korap.util.CorpusDataException;
 import org.apache.lucene.util.BytesRef;
+import java.nio.ByteBuffer;
 
 import java.util.*;
 import java.util.regex.*;
@@ -47,13 +48,15 @@ public class MultiTermTokenStream extends TokenStream {
             .compile("\\[(?:\\([0-9]+-[0-9]+\\))?([^\\]]+?)\\]");
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     private final Logger log = LoggerFactory
             .getLogger(MultiTermTokenStream.class);
 
     private List<MultiTermToken> multiTermTokens;
     private int mttIndex = 0, mtIndex = 0;
     private short i = 0;
+
+    private ByteBuffer payload = ByteBuffer.allocate(36);
 
 
     /**
@@ -398,7 +401,7 @@ public class MultiTermTokenStream extends TokenStream {
         charTermAttr.setEmpty();
         charTermAttr.append(mt.term);
 
-        BytesRef payload = new BytesRef();
+        payload.rewind();
 
         // There is offset information
         if (mt.start != mt.end) {
@@ -407,20 +410,41 @@ public class MultiTermTokenStream extends TokenStream {
                         mt.end);
 
             // Add offsets to BytesRef payload
-            payload.append(new BytesRef(int2byte(mt.start)));
-            payload.append(new BytesRef(int2byte(mt.end)));
+            payload.putInt(mt.start);
+            payload.putInt(mt.end);
         };
 
         // There is payload in the MultiTerm
         if (mt.payload != null) {
-            payload.append(mt.payload);
+            
+            payload.put(mt.payload.bytes);
+
+            if (payload.position() > 18) {
+                System.err.println(mt.toString() + " has " + payload.toString());
+            };
+
             if (DEBUG)
                 log.trace("Create payload[1] {}", payload.toString());
         };
 
         // There is payload in the current token to index
-        if (payload.length > 0) {
-            payloadAttr.setPayload(payload);
+        // This seems to be heavily risky!
+        if (payload.position() > 0) {
+
+            if (payload.hasArray()) {
+                payloadAttr.setPayload(
+                                       new BytesRef(
+                                                    Arrays.copyOfRange(payload.array(),
+                                                                       payload.arrayOffset(),
+                                                                       payload.arrayOffset() + payload.position()
+                                                                       )
+                                                    )
+                                       );
+            }
+            else {
+                log.error("This should never happen!");
+            };
+
             if (DEBUG)
                 log.trace("Set payload[2] {}", payload.toString());
         };
@@ -429,7 +453,7 @@ public class MultiTermTokenStream extends TokenStream {
         if (DEBUG) {
             StringBuilder sb = new StringBuilder("Index: [");
             sb.append(mt.term);
-            if (payload.length > 0)
+            if (payload.position() > 0)
                 sb.append('$').append(payload.toString());
             sb.append(']');
             sb.append(" with increment ").append(this.mtIndex == 0 ? 1 : 0);

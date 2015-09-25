@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
@@ -763,7 +763,7 @@ public class Match extends AbstractDocument {
 
         if (this.positionsToOffset != null)
             return this.expandContextToSpan(
-                    this.positionsToOffset.getAtomicReader(), (Bits) null,
+                    this.positionsToOffset.getLeafReader(), (Bits) null,
                     "tokens", element);
         return new int[] { 0, 0, 0, 0 };
     };
@@ -771,7 +771,7 @@ public class Match extends AbstractDocument {
 
     // Expand the context to a span
     // THIS IS NOT VERY CLEVER - MAKE IT MORE CLEVER!
-    public int[] expandContextToSpan (AtomicReaderContext atomic, Bits bitset,
+    public int[] expandContextToSpan (LeafReaderContext atomic, Bits bitset,
             String field, String element) {
 
         try {
@@ -1307,7 +1307,7 @@ public class Match extends AbstractDocument {
             this.endMore = false;
 
             int[] spanContext = this.expandContextToSpan(
-                    this.positionsToOffset.getAtomicReader(), (Bits) null,
+                    this.positionsToOffset.getLeafReader(), (Bits) null,
                     "tokens", this.context.getSpanContext());
             startOffset = spanContext[0];
             endOffset = spanContext[1];

@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.query.spans;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
@@ -42,7 +42,7 @@ public class DistanceExclusionSpans extends DistanceSpans {
      * @throws IOException
      */
     public DistanceExclusionSpans (SpanDistanceQuery query,
-                                   AtomicReaderContext context,
+                                   LeafReaderContext context,
                                    Bits acceptDocs,
                                    Map<Term, TermContext> termContexts)
             throws IOException {
