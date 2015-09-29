@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
@@ -38,7 +38,7 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
      * @throws IOException
      */
     public TokenDistanceSpans (SpanDistanceQuery query,
-                               AtomicReaderContext context, Bits acceptDocs,
+                               LeafReaderContext context, Bits acceptDocs,
                                Map<Term, TermContext> termContexts)
             throws IOException {
         super(query, context, acceptDocs, termContexts);

@@ -6,7 +6,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 
 import org.apache.lucene.index.DocsAndPositionsEnum;
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermsEnum;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class PositionsToOffset {
     private String field;
-    private AtomicReaderContext atomic;
+    private LeafReaderContext atomic;
     private boolean processed = false;
     private Integer[] pair;
     private static ByteBuffer bbOffset = ByteBuffer.allocate(8);
@@ -59,7 +59,7 @@ public class PositionsToOffset {
     };
 
 
-    public PositionsToOffset (AtomicReaderContext atomic, String field) {
+    public PositionsToOffset (LeafReaderContext atomic, String field) {
         this.field = field;
         this.atomic = atomic;
         this.positions = new HashSet<>(64);
@@ -252,7 +252,7 @@ public class PositionsToOffset {
     };
 
 
-    public AtomicReaderContext getAtomicReader () {
+    public LeafReaderContext getLeafReader () {
         return this.atomic;
     };
 };

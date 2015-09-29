@@ -130,7 +130,7 @@ public class TestSimple {
         Map<Term, TermContext> termContexts = new HashMap<>();
         List<String> spanArray = new ArrayList<>();
 
-        for (AtomicReaderContext atomic : reader.leaves()) {
+        for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
             Spans spans = query.getSpans(atomic, bitset, termContexts);

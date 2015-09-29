@@ -11,9 +11,8 @@ import java.io.Reader;
 public class KeywordAnalyzer extends Analyzer {
 
     @Override
-    protected TokenStreamComponents createComponents (final String fieldName,
-            final Reader reader) {
-        final Tokenizer source = new WhitespaceTokenizer(reader);
+    protected TokenStreamComponents createComponents (final String fieldName) {
+        final Tokenizer source = new WhitespaceTokenizer();
         TokenStream sink = new LowerCaseFilter(source);
         return new TokenStreamComponents(source, sink);
     };

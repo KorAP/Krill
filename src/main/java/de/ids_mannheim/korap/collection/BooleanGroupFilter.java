@@ -8,8 +8,8 @@ import org.apache.lucene.util.FixedBitSet;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.BitsFilteredDocIdSet;
-import org.apache.lucene.index.AtomicReaderContext;
-import org.apache.lucene.index.AtomicReader;
+import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.KrillCollection;
@@ -122,9 +122,9 @@ public class BooleanGroupFilter extends Filter {
 
 
     @Override
-    public DocIdSet getDocIdSet (AtomicReaderContext context, Bits acceptDocs)
+    public DocIdSet getDocIdSet (LeafReaderContext context, Bits acceptDocs)
             throws IOException {
-        final AtomicReader reader = context.reader();
+        final LeafReader reader = context.reader();
         int maxDoc = reader.maxDoc();
         FixedBitSet bitset = new FixedBitSet(maxDoc);
         FixedBitSet combinator = new FixedBitSet(maxDoc);

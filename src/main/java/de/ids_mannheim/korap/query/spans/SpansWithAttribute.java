@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -57,7 +57,7 @@ public class SpansWithAttribute extends SimpleSpans {
      */
     public SpansWithAttribute (SpanWithAttributeQuery spanWithAttributeQuery,
                                SimpleSpans referentSpans,
-                               AtomicReaderContext context, Bits acceptDocs,
+                               LeafReaderContext context, Bits acceptDocs,
                                Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanWithAttributeQuery, context, acceptDocs, termContexts);
@@ -75,7 +75,7 @@ public class SpansWithAttribute extends SimpleSpans {
     // if there is no (positive) attributes, but there are *not attributes*
     // hasmorespan = true
     public SpansWithAttribute (SpanWithAttributeQuery spanWithAttributeQuery,
-                               AtomicReaderContext context, Bits acceptDocs,
+                               LeafReaderContext context, Bits acceptDocs,
                                Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanWithAttributeQuery, context, acceptDocs, termContexts);
@@ -94,7 +94,7 @@ public class SpansWithAttribute extends SimpleSpans {
 
 
     public void setAttributeList (SpanWithAttributeQuery swaq,
-            AtomicReaderContext context, Bits acceptDocs,
+            LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
 
         attributeList = new ArrayList<AttributeSpans>();
@@ -141,7 +141,7 @@ public class SpansWithAttribute extends SimpleSpans {
      * @throws IOException
      */
     private void addAttributes (SpanAttributeQuery sq,
-            AtomicReaderContext context, Bits acceptDocs,
+            LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
 
         AttributeSpans as = (AttributeSpans) sq.getSpans(context, acceptDocs,

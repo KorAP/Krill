@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
@@ -105,7 +105,7 @@ public class SpanFocusQuery extends SimpleSpanQuery {
 
 
     @Override
-    public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
+    public Spans getSpans (final LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
         return new FocusSpans(this, context, acceptDocs, termContexts);
     };

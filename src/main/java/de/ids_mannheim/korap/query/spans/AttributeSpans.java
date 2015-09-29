@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
@@ -65,7 +65,7 @@ public class AttributeSpans extends SimpleSpans {
      * @throws IOException
      */
     public AttributeSpans (SpanAttributeQuery spanAttributeQuery,
-                           AtomicReaderContext context, Bits acceptDocs,
+                           LeafReaderContext context, Bits acceptDocs,
                            Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanAttributeQuery, context, acceptDocs, termContexts);
