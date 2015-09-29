@@ -11,6 +11,7 @@ import org.apache.lucene.search.BitsFilteredDocIdSet;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BitDocIdSet;
 
 import de.ids_mannheim.korap.KrillCollection;
 
@@ -159,7 +160,7 @@ public class BooleanGroupFilter extends Filter {
                             log.debug("- Filter to allow all documents");
 
                         bitset.set(0, maxDoc);
-                        return BitsFilteredDocIdSet.wrap(bitset, acceptDocs);
+                        return BitsFilteredDocIdSet.wrap(new BitDocIdSet(bitset), acceptDocs);
                     };
 
                     // There is no possible match
@@ -250,6 +251,6 @@ public class BooleanGroupFilter extends Filter {
                     log.debug("- Subresult has card {} ", bitset.cardinality());
             };
         };
-        return BitsFilteredDocIdSet.wrap(bitset, acceptDocs);
+        return BitsFilteredDocIdSet.wrap(new BitDocIdSet(bitset), acceptDocs);
     };
 };

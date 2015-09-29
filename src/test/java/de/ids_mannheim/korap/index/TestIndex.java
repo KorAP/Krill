@@ -196,15 +196,14 @@ public class TestIndex { // extends LuceneTestCase {
     public void indexLucene () throws Exception {
 
         // Base analyzer for searching and indexing
-        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
+        StandardAnalyzer analyzer = new StandardAnalyzer();
 
         // Based on
         // http://lucene.apache.org/core/4_0_0/core/org/apache/lucene/
         // analysis/Analyzer.html?is-external=true
 
         // Create configuration with base analyzer
-        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43,
-                analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
 
         // Add a document 1 with the correct fields
         IndexWriter w = new IndexWriter(index, config);
