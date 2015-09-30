@@ -110,7 +110,7 @@
       <artifactId>lucene-core</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
-      <version>5.3.1</version>
+      <version>5.0.0</version>
     </dependency>
 
     <!-- Lucene queryparser dependency -->
@@ -118,7 +118,7 @@
       <artifactId>lucene-queryparser</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
-      <version>5.3.1</version>
+      <version>5.0.0</version>
     </dependency>
 
     <!-- Lucene analyzers dependency -->
@@ -126,7 +126,7 @@
       <artifactId>lucene-analyzers-common</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
-      <version>5.3.1</version>
+      <version>5.0.0</version>
     </dependency>
 
     <dependency>
