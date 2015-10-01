@@ -1,5 +1,8 @@
-0.54 2015-09-25
-   	- [performance] Updated Lucene dependency from 4.10.3 to 5.0.0 (diewald)
+0.54 2015-09-30
+   	- [performance] Updated Lucene dependency from 4.10.3
+	  to 5.0.0 (diewald)
+        - [bugfix] Minor fixes regarding invalid tokens in the
+	  test suite (diewald)
 
 0.53 2015-09-25
         - [feature] Implemented new KrillCollection (diewald)
