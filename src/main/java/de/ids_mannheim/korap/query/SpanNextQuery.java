@@ -88,7 +88,8 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
 
 
     @Override
-    public Spans getSpans (final AtomicReaderContext context, Bits acceptDocs,
+    // TODO: 5.3 removes getSpans fro SpanQuery ... oh, well ...
+    public Spans getSpans (final LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
         return (Spans) new NextSpans(this, context, acceptDocs, termContexts);
     };

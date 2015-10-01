@@ -120,6 +120,13 @@ public class BooleanGroupFilter extends Filter {
         return buffer.append(')').toString();
     };
 
+    /*
+    @Override
+    public String toString (String str) {
+        return this.toString();
+    };
+    */
+
 
     @Override
     public DocIdSet getDocIdSet (AtomicReaderContext context, Bits acceptDocs)
