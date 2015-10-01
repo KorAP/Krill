@@ -25,6 +25,8 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
+import java.nio.file.Paths;
+
 public class TestWPDIndex {
     long start, end;
     KrillIndex ki;
@@ -60,7 +62,7 @@ public class TestWPDIndex {
         prop.load(is);
 
         String indexPath = prop.getProperty("lucene.indexDir");
-        MMapDirectory md = new MMapDirectory(new File(indexPath));
+        MMapDirectory md = new MMapDirectory(Paths.get(indexPath));
         ki = new KrillIndex(md);
     }
 

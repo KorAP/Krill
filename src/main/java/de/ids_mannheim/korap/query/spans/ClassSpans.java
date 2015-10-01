@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.TermState;
@@ -47,7 +47,7 @@ public class ClassSpans extends SimpleSpans {
      * @param operand
      *            An arbitrary nested {@link SpanQuery}.
      * @param context
-     *            The {@link AtomicReaderContext}.
+     *            The {@link LeafReaderContext}.
      * @param acceptDocs
      *            Bit vector representing the documents
      *            to be searched in.
@@ -56,7 +56,7 @@ public class ClassSpans extends SimpleSpans {
      * @param number
      *            The identifying class number.
      */
-    public ClassSpans (SpanQuery operand, AtomicReaderContext context,
+    public ClassSpans (SpanQuery operand, LeafReaderContext context,
                        Bits acceptDocs, Map<Term, TermContext> termContexts,
                        byte number) throws IOException {
         spans = operand.getSpans(context, acceptDocs, termContexts);

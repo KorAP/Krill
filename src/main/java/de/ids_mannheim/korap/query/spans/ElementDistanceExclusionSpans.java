@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
@@ -63,7 +63,7 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
      * @throws IOException
      */
     public ElementDistanceExclusionSpans (SpanDistanceQuery query,
-                                          AtomicReaderContext context,
+                                          LeafReaderContext context,
                                           Bits acceptDocs,
                                           Map<Term, TermContext> termContexts)
             throws IOException {

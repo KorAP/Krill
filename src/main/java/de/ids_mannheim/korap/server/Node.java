@@ -3,6 +3,8 @@ package de.ids_mannheim.korap.server;
 import java.util.*;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
@@ -278,10 +280,10 @@ public class Node {
 
             // Get a MMap directory index
             else {
-                File file = new File(path);
+                Path file = Paths.get(path);
 
                 log.info("Loading index from {}", path);
-                if (!file.exists()) {
+                if (!file.toFile().exists()) {
                     log.error("Index not found at {}", path);
                     return null;
                 };

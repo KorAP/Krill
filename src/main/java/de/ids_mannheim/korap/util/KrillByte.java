@@ -19,6 +19,7 @@ public class KrillByte {
      */
     // Based on
     // http://www.tutorials.de/java/228129-konvertierung-von-integer-byte-array.html
+    // CHECK: int2byte may be out of use
     public static byte[] int2byte (int number) {
         byte[] data = new byte[4];
         for (int i = 0; i < 4; ++i) {

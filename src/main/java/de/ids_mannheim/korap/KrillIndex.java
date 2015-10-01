@@ -205,7 +205,7 @@ public final class KrillIndex {
                 new TextAnalyzer(), analyzerPerField);
 
         // Create configuration with base analyzer
-        this.config = new IndexWriterConfig(Version.LUCENE_CURRENT, analyzer);
+        this.config = new IndexWriterConfig(analyzer);
     };
 
 
@@ -612,7 +612,7 @@ public final class KrillIndex {
             long docCount = 0;
             // int i = 1;
             try {
-                for (AtomicReaderContext atomic : this.reader().leaves()) {
+                for (LeafReaderContext atomic : this.reader().leaves()) {
                     docCount += collection.bits(atomic).cardinality();
                     // i++;
                 };
@@ -630,7 +630,7 @@ public final class KrillIndex {
         long occurrences = 0;
         try {
             // Iterate over all atomic readers and collect occurrences
-            for (AtomicReaderContext atomic : this.reader().leaves()) {
+            for (LeafReaderContext atomic : this.reader().leaves()) {
                 occurrences += this._numberOfAtomic(collection.bits(atomic),
                         atomic, term);
             };
@@ -699,12 +699,13 @@ public final class KrillIndex {
      * @return The number of the occurrences.
      * @throws IOException
      */
+        /*
     @Deprecated
     public long numberOf (Bits docvec, String field, String type)
             throws IOException {
         // Shortcut for documents
         if (type.equals("documents")) {
-            OpenBitSet os = (OpenBitSet) docvec;
+            FixedBitSet os = (FixedBitSet) docvec;
             return os.cardinality();
         };
 
@@ -712,7 +713,7 @@ public final class KrillIndex {
 
         int occurrences = 0;
         try {
-            for (AtomicReaderContext atomic : this.reader().leaves()) {
+            for (LeafReaderContext atomic : this.reader().leaves()) {
                 occurrences += this._numberOfAtomic(docvec, atomic, term);
             };
         }
@@ -722,14 +723,14 @@ public final class KrillIndex {
 
         return occurrences;
     };
-
+*/
 
 
     // Search for meta information in term vectors
     // This will create the sum of all numerical payloads
     // of the term in the document vector
     @Deprecated
-    private long _numberOfAtomic (Bits docvec, AtomicReaderContext atomic,
+    private long _numberOfAtomic (Bits docvec, LeafReaderContext atomic,
             Term term) throws IOException {
 
         // This reimplements docsAndPositionsEnum with payloads
@@ -962,7 +963,7 @@ public final class KrillIndex {
 
         try {
             // Iterate over all atomic indices and find the matching document
-            for (AtomicReaderContext atomic : this.reader().leaves()) {
+            for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 // Retrieve the single document of interest
                 DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
@@ -1263,13 +1264,13 @@ public final class KrillIndex {
 
 
             // Todo: run this in a separated thread
-            for (AtomicReaderContext atomic : this.reader().leaves()) {
+            for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 int oldLocalDocID = -1;
 
                 /*
                  * Todo: There may be a way to know early if the bitset is emty
-                 * by using OpenBitSet - but this may not be as fast as I think.
+                 * by using LongBitSet - but this may not be as fast as I think.
                  */
                 final Bits bitset = collection.bits(atomic);
                 final PositionsToOffset pto = new PositionsToOffset(atomic,
@@ -1486,12 +1487,12 @@ public final class KrillIndex {
             int uniqueDocID = -1;
 
             // start thread:
-            for (AtomicReaderContext atomic : this.reader().leaves()) {
+            for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 int previousDocID = -1;
                 int oldLocalDocID = -1;
 
-                // Use OpenBitSet;
+                // Use LongBitSet;
                 Bits bitset = collection.bits(atomic);
 
                 // PositionsToOffset pto = new PositionsToOffset(atomic, field);

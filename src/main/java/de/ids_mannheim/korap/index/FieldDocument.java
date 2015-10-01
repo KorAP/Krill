@@ -18,7 +18,7 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
-import org.apache.lucene.index.FieldInfo.IndexOptions;
+import org.apache.lucene.index.IndexOptions;
 
 import java.util.*;
 
@@ -60,7 +60,7 @@ public class FieldDocument extends AbstractDocument {
         keywords.setStoreTermVectorPositions(false);
         keywords.setStoreTermVectorPayloads(false);
         keywords.setStoreTermVectorOffsets(false);
-        keywords.setIndexOptions(IndexOptions.DOCS_ONLY);
+        keywords.setIndexOptions(IndexOptions.DOCS);
     };
 
 

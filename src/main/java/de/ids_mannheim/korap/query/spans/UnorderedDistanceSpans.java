@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
@@ -47,7 +47,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
      * @throws IOException
      */
     public UnorderedDistanceSpans (SpanDistanceQuery query,
-                                   AtomicReaderContext context,
+                                   LeafReaderContext context,
                                    Bits acceptDocs,
                                    Map<Term, TermContext> termContexts)
             throws IOException {

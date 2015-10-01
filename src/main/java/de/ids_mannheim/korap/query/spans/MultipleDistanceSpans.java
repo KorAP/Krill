@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.query.spans;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
@@ -61,7 +61,7 @@ public class MultipleDistanceSpans extends DistanceSpans {
      * @throws IOException
      */
     public MultipleDistanceSpans (SpanMultipleDistanceQuery query,
-                                  AtomicReaderContext context, Bits acceptDocs,
+                                  LeafReaderContext context, Bits acceptDocs,
                                   Map<Term, TermContext> termContexts,
                                   Spans firstSpans, Spans secondSpans,
                                   boolean isOrdered, boolean exclusion)

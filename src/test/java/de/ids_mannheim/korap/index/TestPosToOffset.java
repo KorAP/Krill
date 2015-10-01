@@ -20,13 +20,10 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.MultiTermTokenStream;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.util.OpenBitSet;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.util.DocIdBitSet;
 import org.apache.lucene.util.Bits;
 
 import java.nio.ByteBuffer;
@@ -51,7 +48,7 @@ public class TestPosToOffset {
         ki.commit();
 
         String field = "base";
-        for (AtomicReaderContext atomic : ki.reader().leaves()) {
+        for (LeafReaderContext atomic : ki.reader().leaves()) {
             PositionsToOffset pto = new PositionsToOffset(atomic, field);
 
             pto.add(0, 1);
