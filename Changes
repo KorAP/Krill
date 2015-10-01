@@ -1,4 +1,4 @@
-0.54 2015-09-30
+0.54 2015-10-01
    	- [performance] Updated Lucene dependency from 4.10.3
 	  to 5.0.0 (diewald)
         - [bugfix] Minor fixes regarding invalid tokens in the
