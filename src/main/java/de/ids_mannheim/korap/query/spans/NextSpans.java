@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
@@ -46,7 +46,7 @@ public class NextSpans extends SimpleSpans {
      * @param termContexts
      * @throws IOException
      */
-    public NextSpans (SpanNextQuery spanNextQuery, AtomicReaderContext context,
+    public NextSpans (SpanNextQuery spanNextQuery, LeafReaderContext context,
                       Bits acceptDocs, Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanNextQuery, context, acceptDocs, termContexts);

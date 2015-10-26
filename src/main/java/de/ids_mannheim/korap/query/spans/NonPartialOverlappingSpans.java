@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
@@ -38,7 +38,7 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
      * @throws IOException
      */
     public NonPartialOverlappingSpans (SimpleSpanQuery simpleSpanQuery,
-                                       AtomicReaderContext context,
+                                       LeafReaderContext context,
                                        Bits acceptDocs,
                                        Map<Term, TermContext> termContexts)
             throws IOException {

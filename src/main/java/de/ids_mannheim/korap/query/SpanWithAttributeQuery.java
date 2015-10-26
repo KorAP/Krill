@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -185,7 +185,7 @@ public class SpanWithAttributeQuery extends SimpleSpanQuery {
 
 
     @Override
-    public Spans getSpans (AtomicReaderContext context, Bits acceptDocs,
+    public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
 
         if (type.equals("spanWithAttribute")) {

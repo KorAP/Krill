@@ -21,6 +21,8 @@ import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.nio.file.Paths;
+
 @RunWith(JUnit4.class)
 public class TestBenchmarkSpans {
 
@@ -32,7 +34,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
                 prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
@@ -86,7 +88,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
                 prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
@@ -132,7 +134,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
                 prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
@@ -178,7 +180,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
                 prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
@@ -324,7 +326,7 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(new File(
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
                 prop.getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:

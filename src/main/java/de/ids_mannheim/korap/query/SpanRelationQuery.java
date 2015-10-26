@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -105,7 +105,7 @@ public class SpanRelationQuery extends SimpleSpanQuery {
 
 
     @Override
-    public Spans getSpans (AtomicReaderContext context, Bits acceptDocs,
+    public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
         return new RelationSpans(this, context, acceptDocs, termContexts);
     }

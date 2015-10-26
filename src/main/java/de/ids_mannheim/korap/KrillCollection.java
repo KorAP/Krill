@@ -13,9 +13,8 @@ import org.apache.lucene.search.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.FixedBitSet;
+import org.apache.lucene.util.BitDocIdSet;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.OpenBitSet;
-import org.apache.lucene.util.DocIdBitSet;
 import org.apache.lucene.search.BitsFilteredDocIdSet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -415,13 +414,13 @@ public final class KrillCollection extends Notifications {
      * This will respect deleted documents.
      * 
      * @param The
-     *            {@link AtomicReaderContext} to search in.
+     *            {@link LeafReaderContext} to search in.
      * @return A bit vector representing the live documents of the
      *         virtual collection.
      * @throws IOException
      */
-    public FixedBitSet bits (AtomicReaderContext atomic) throws IOException {
-        AtomicReader r = atomic.reader();
+    public FixedBitSet bits (LeafReaderContext atomic) throws IOException {
+        LeafReader r = atomic.reader();
         FixedBitSet bitset = new FixedBitSet(r.maxDoc());
         DocIdSet docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
 
@@ -446,12 +445,12 @@ public final class KrillCollection extends Notifications {
      * This will respect deleted documents.
      * 
      * @param atomic
-     *            The {@link AtomicReaderContext} to search in.
+     *            The {@link LeafReaderContext} to search in.
      * @param accepted
      *            {@link Bits} vector of accepted documents.
      * @throws IOException
      */
-    public DocIdSet getDocIdSet (AtomicReaderContext atomic, Bits acceptDocs)
+    public DocIdSet getDocIdSet (LeafReaderContext atomic, Bits acceptDocs)
             throws IOException {
 
         int maxDoc = atomic.reader().maxDoc();
@@ -493,7 +492,7 @@ public final class KrillCollection extends Notifications {
         };
 
         // Remove deleted docs
-        return (DocIdSet) BitsFilteredDocIdSet.wrap((DocIdSet) bitset,
+        return (DocIdSet) BitsFilteredDocIdSet.wrap((DocIdSet) new BitDocIdSet(bitset),
                 acceptDocs);
     };
 
@@ -550,7 +549,7 @@ public final class KrillCollection extends Notifications {
         long occurrences = 0;
         try {
             // Iterate over all atomic readers and collect occurrences
-            for (AtomicReaderContext atomic : this.index.reader().leaves()) {
+            for (LeafReaderContext atomic : this.index.reader().leaves()) {
                 Bits bits = this.bits(atomic);
 
                 if (DEBUG)
@@ -575,7 +574,7 @@ public final class KrillCollection extends Notifications {
     // Search for meta information in term vectors
     // This will create the sum of all numerical payloads
     // of the term in the document vector
-    private long _numberOfAtomic (Bits docvec, AtomicReaderContext atomic,
+    private long _numberOfAtomic (Bits docvec, LeafReaderContext atomic,
             Term term) throws IOException {
 
         // This reimplements docsAndPositionsEnum with payloads
@@ -659,7 +658,7 @@ public final class KrillCollection extends Notifications {
         long docCount = 0;
         try {
             FixedBitSet bitset;
-            for (AtomicReaderContext atomic : this.index.reader().leaves()) {
+            for (LeafReaderContext atomic : this.index.reader().leaves()) {
                 if ((bitset = this.bits(atomic)) != null)
                     docCount += bitset.cardinality();
             };
@@ -702,7 +701,7 @@ public final class KrillCollection extends Notifications {
                 checkNumber = (long) this.reader().numDocs();
             };
 
-            for (AtomicReaderContext atomic : this.reader().leaves()) {
+            for (LeafReaderContext atomic : this.reader().leaves()) {
                 HashMap<String, FixedBitSet> termVector = new HashMap<>(20);
 
                 FixedBitSet docvec = kc.bits(atomic);

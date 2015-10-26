@@ -7,6 +7,7 @@ import de.ids_mannheim.korap.KrillIndex;
 import static de.ids_mannheim.korap.util.KrillProperties.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.nio.file.Paths;
 
 /**
  * Standalone indexer tool for Krill.
@@ -48,7 +49,7 @@ public class Indexer {
                 "1000");
 
         // Create a new index object based on the directory
-        this.index = new KrillIndex(new MMapDirectory(new File(this.path)));
+        this.index = new KrillIndex(new MMapDirectory(Paths.get(this.path)));
         this.count = 0;
         this.commitCount = Integer.parseInt(commitCount);
     };

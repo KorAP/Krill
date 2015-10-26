@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.TermSpans;
@@ -40,7 +40,7 @@ public class TermSpansWithId extends SimpleSpans {
      * @throws IOException
      */
     public TermSpansWithId (SpanTermWithIdQuery spanTermWithIdQuery,
-                            AtomicReaderContext context, Bits acceptDocs,
+                            LeafReaderContext context, Bits acceptDocs,
                             Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanTermWithIdQuery, context, acceptDocs, termContexts);

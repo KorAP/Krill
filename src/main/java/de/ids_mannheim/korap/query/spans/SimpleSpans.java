@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -48,7 +48,7 @@ public abstract class SimpleSpans extends Spans {
 
 
     public SimpleSpans (SimpleSpanQuery simpleSpanQuery,
-                        AtomicReaderContext context, Bits acceptDocs,
+                        LeafReaderContext context, Bits acceptDocs,
                         Map<Term, TermContext> termContexts) throws IOException {
         this();
         query = simpleSpanQuery;

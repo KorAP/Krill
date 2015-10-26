@@ -28,7 +28,7 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.index.AtomicReaderContext;
+import org.apache.lucene.index.LeafReaderContext;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -196,15 +196,14 @@ public class TestIndex { // extends LuceneTestCase {
     public void indexLucene () throws Exception {
 
         // Base analyzer for searching and indexing
-        StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_43);
+        StandardAnalyzer analyzer = new StandardAnalyzer();
 
         // Based on
         // http://lucene.apache.org/core/4_0_0/core/org/apache/lucene/
         // analysis/Analyzer.html?is-external=true
 
         // Create configuration with base analyzer
-        IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_43,
-                analyzer);
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
 
         // Add a document 1 with the correct fields
         IndexWriter w = new IndexWriter(index, config);
@@ -512,7 +511,7 @@ public class TestIndex { // extends LuceneTestCase {
 
         StringBuilder payloadString = new StringBuilder();
         Map<Term, TermContext> termContexts = new HashMap<>();
-        for (AtomicReaderContext atomic : reader.leaves()) {
+        for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             //	    Spans spans = NearSpansOrdered();
             Spans spans = snquery.getSpans(atomic, bitset, termContexts);
@@ -547,7 +546,7 @@ public class TestIndex { // extends LuceneTestCase {
 
         payloadString = new StringBuilder();
         termContexts = new HashMap<>();
-        for (AtomicReaderContext atomic : reader.leaves()) {
+        for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             //	    Spans spans = NearSpansOrdered();
             Spans spans = snquery.getSpans(atomic, bitset, termContexts);
@@ -576,7 +575,7 @@ public class TestIndex { // extends LuceneTestCase {
 
         payloadString = new StringBuilder();
         termContexts = new HashMap<>();
-        for (AtomicReaderContext atomic : reader.leaves()) {
+        for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
             Spans spans = ssequery.toQuery().getSpans(atomic, bitset, termContexts);
@@ -601,7 +600,7 @@ public class TestIndex { // extends LuceneTestCase {
 
         payloadString = new StringBuilder();
         termContexts = new HashMap<>();
-        for (AtomicReaderContext atomic : reader.leaves()) {
+        for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
             Spans spans = ssequery.toQuery().getSpans(atomic, bitset, termContexts);

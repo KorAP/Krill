@@ -95,7 +95,7 @@ public class TestRelationIndex {
         fd.addTV(
                 "base",
                 "ceccecdeed",
-                "[(0-1)s:c$<s>2|<>:p$#0-3$<i>3<s>1|_0#0-1|"
+                "[(0-1)s:c$<s>2|<>:p#0-3$<i>3<s>1|_0#0-1|"
                         + ">:xip/syntax-dep_rel$<i>3<i>6<i>9<s>2<s>1<s>1|"
                         + ">:xip/syntax-dep_rel$<i>6<i>9<s>1<s>2<s>1|"
                         + "r@:func=subj$<s>2]"
@@ -104,7 +104,7 @@ public class TestRelationIndex {
                         + "[(3-4)s:c|s:b|_3#3-4]"
                         + "[(4-5)s:e|s:d|_4#4-5]"
                         + "[(5-6)s:c|_5#5-6]"
-                        + "[(6-7)s:d$<s>2|<>:p$#6-9$<i>9<s>1|_6#6-7|"
+                        + "[(6-7)s:d$<s>2|<>:p#6-9$<i>9<s>1|_6#6-7|"
                         + "<:xip/syntax-dep_rel$<i>9<b>0<i>1<s>1<s>1<s>2|"
                         + ">:xip/syntax-dep_rel$<i>9<b>0<i>9<s>3<s>1<s>1|"
                         + "<:xip/syntax-dep_rel$<i>9<i>1<i>3<s>2<s>1<s>1|"
@@ -634,5 +634,4 @@ public class TestRelationIndex {
         assertEquals(4, kr.getMatch(3).getStartPos());
         assertEquals(7, kr.getMatch(3).getEndPos());
     }
-
 }
