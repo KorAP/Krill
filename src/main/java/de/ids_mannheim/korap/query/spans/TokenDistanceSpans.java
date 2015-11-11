@@ -125,8 +125,16 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
 
     @Override
     public long cost () {
-        CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
-        return candidateSpan.getCost() + secondSpans.cost();
+		if (candidateList.size() > 0) {
+			long cost = 0;
+			for (CandidateSpan candidateSpan : candidateList) {
+				cost += candidateSpan.getCost();
+			}
+			return cost + secondSpans.cost();
+        }
+        else {
+			return firstSpans.cost() + secondSpans.cost();
+		}
     }
 
 
