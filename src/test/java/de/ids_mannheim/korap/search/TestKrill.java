@@ -848,6 +848,29 @@ public class TestKrill {
 
 
     @Test
+    public void searchJSONtokenDistanceSpanBug () throws IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(1, getClass().getResourceAsStream("/goe/AGX-00002.json"),
+                  false);
+        ki.addDoc(2, getClass().getResourceAsStream("/bzk/D59-00089.json.gz"),
+                  true);
+        ki.commit();
+        
+        // ({1:Sonne []* Erde} | {2: Erde []* Sonne})
+        String json = getString(getClass().getResource(
+            "/queries/bugs/tokendistancespan_bug.jsonld").getFile()
+        );
+
+        Krill ks = new Krill(json);
+        Result kr = ks.apply(ki);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode res = mapper.readTree(kr.toJsonString());
+        assertTrue(res.at("/errors").isMissingNode());
+    };
+
+
+    @Test
     public void searchJSONCollection () throws IOException {
         // Construct index
         KrillIndex ki = new KrillIndex();

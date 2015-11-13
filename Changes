@@ -1,9 +1,11 @@
-0.54 2015-10-26
+0.54 2015-11-13
    	- [performance] Updated Lucene dependency from 4.10.3
 	  to 5.0.0 (diewald)
         - [bugfix] Minor fixes regarding invalid tokens in the
 	  test suite (diewald)
 	- Fixed krill.properties test (diewald)
+	- Fixed multiple distances in disjunction query
+	  (GitHub issue #2; margaretha)
 
 0.53 2015-09-25
         - [feature] Implemented new KrillCollection (diewald)
