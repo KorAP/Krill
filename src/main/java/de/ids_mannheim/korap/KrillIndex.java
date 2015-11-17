@@ -118,7 +118,6 @@ public final class KrillIndex {
 
     // TODO: Use configuration instead.
     // Last line of defense against DOS
-    private int maxTermRelations = 100;
     private int autoCommit = 500;
     private String version = "unknown";
     private String name = "Unknown";
@@ -155,17 +154,6 @@ public final class KrillIndex {
         if (stringProp != null) {
             try {
                 this.autoCommit = Integer.parseInt(stringProp);
-            }
-            catch (NumberFormatException e) {
-                log.error("krill.index.commit.auto expected to be a numerical value");
-            };
-        };
-
-        // Check for maximum term relations
-        stringProp = prop.getProperty("krill.index.relations.max");
-        if (stringProp != null) {
-            try {
-                this.maxTermRelations = Integer.parseInt(stringProp);
             }
             catch (NumberFormatException e) {
                 log.error("krill.index.commit.auto expected to be a numerical value");
