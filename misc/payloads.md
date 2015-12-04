@@ -45,22 +45,22 @@ ends to character offset position 38. The element ends at token
 position 7 which is stored in integer. It is a root element or no
 further information on a tree level is given (depth=0).
 
-    <>:s$<b>65<i>0<i>38<i>7<b>0<s>1
+    <>:s$<b>64<i>0<i>38<i>7<b>0<s>1
 
 means <s> has an additional TUI.
 
-    <>:s$<b>66<i>0<i>38<i>7<b>0<b>166
+    <>:s$<b>64<i>0<i>38<i>7<b>0<b>166
 
 means <s> has an additional certainty value.
 
-    <>:s$<b>67<i>0<i>38<i>7<b>0<s>1<b>166
+    <>:s$<b>64<i>0<i>38<i>7<b>0<s>1<b>166
 
 means <s> has an additional TUI and a certainty value.
 
 Elements may also be empty - meaning they behave as milestones.
 In that case, character offsets are only given once.
 
-    <>:s$<b>68<i>38<b>0
+    <>:s$<b>65<i>38<b>0
 
 means <s> is a milestone at position 38 in root.
 
