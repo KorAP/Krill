@@ -66,8 +66,7 @@ means <s> is a milestone at position 38 in root.
 
 *PTIs* (It’s an element payload if the second bit is set):
 64. Element (with optional TUI and certainty)
-65. Element with a parent reference (with optional TUI and certainty)
-66. Milestone
+65. Milestone (with optional TUI and certainty)
 
 ### Relation payloads
 Each relation are indexed with two instances for both directions.
