@@ -16,11 +16,12 @@ Token payloads are not retrieved via SpanQueries and therefore do not have a PTI
 ### Term payloads
 Some terms are indexed with a TUI in their payloads, if they take part in a relation.
 Terms may also have a certainty value attached, expressed as a byte (with a ranging certainty value from probably incorrect to probably correct (0-255)). For example:
+
     pos:NN$<b>128<s>1
     pos:NN$<b>129<b>34
     pos:NN$<b>130<s>1<b>34
 
-PTIs (it’s a term payload, if the first bit is set):
+*PTIs* (it’s a term payload, if the first bit is set):
 128: Term with a TUI
 129: Term with certainty value
 130: Term with TUI and certainty value
@@ -64,11 +65,9 @@ In that case, character offsets are only given once.
 means <s> is a milestone at position 38 in root.
 
 *PTIs* (It’s an element payload if the second bit is set):
-64. Element
-65. Element with a TUI
-66. Element with certainty value
-67. Element with a TUI and certainty Value
-68. Milestone
+64. Element (with optional TUI and certainty)
+65. Element with a parent reference (with optional TUI and certainty)
+66. Milestone
 
 ### Relation payloads
 Each relation are indexed with two instances for both directions.
