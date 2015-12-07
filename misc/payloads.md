@@ -103,7 +103,7 @@ has 1 integer for the right part token position, 1 short for the
 relation TUI, 1 short for the left-part TUI, and 1 short for
 right-part TUI. For example:
 
-    \>:dependency$<b>32<i>3<s>3<s>5<s>4
+    \>:dependency$\<b\>32\<i\>3\<s\>3\<s\>5\<s\>4
 
 has a token as the right part at (end) position 3, the relation
 TUI 3, the source TUI 5 and the target TUI 4.
@@ -112,7 +112,7 @@ TUI 3, the source TUI 5 and the target TUI 4.
 has 1 integer for the start position of the right part, 1 integer
 or the end position of the right part, and 3 TUIs as above.
 
-    \>:dependency$<b>33<i>1<i>3<s>3<s>5<s>4
+    \>:dependency$\<b\>33\<i\>1\<i\>3\<s\>3\<s\>5\<s\>4
 
 means the right part starts at token position 1 and ends at token
 position 3.
@@ -122,7 +122,7 @@ has 1 integer for end position of the left part, 1 byte as a dummy
 to differentiate payload length, 1 integer for end position of the
 right part, and 3 TUIs as above.
 
-    \>:dependency$<b>34<i>2<b>0<i>3<s>3<s>5<s>4
+    \>:dependency$\<b\>34\<i\>2\<b\>0\<i\>3\<s\>3\<s\>5\<s\>4
 
 means the left part ends at token position 2, and right part is a
 term ending at position 3.
@@ -132,7 +132,7 @@ has 1 integer for end position of the left part, 1 integer for the
 start position of the right part, 1 integer for end position of the
 right part, and 3 TUIs as above.
 
-    \>:dependency$<b>35<i>2<i>3<i>4<s>3<s>5<s>4
+    \>:dependency$\<b\>35\<i\>2\<i\>3\<i\>4\<s\>3\<s\>5\<s\>4
 
 means the left part ends at token position 2, the right part is an
 element starting at position 3 and ending at position 4.
@@ -149,6 +149,7 @@ element starting at position 3 and ending at position 4.
 
 ### Attribute payloads
 Each attribute has two payloads: 
+
 * the TUI of the term, element or relation to which the attribute
   belongs to (stored in short)
 * for elements: the corresponding element end position (stored in integer)
