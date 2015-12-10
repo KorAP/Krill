@@ -98,7 +98,7 @@ refers to it. It is necessary to have different length in payloads
 for each of the following relations, so that the start and the end
 ositions of the left and right parts can be determined. 
 
-1. Term to term relation
+1) Term to term relation
 has 1 integer for the right part token position, 1 short for the
 relation TUI, 1 short for the left-part TUI, and 1 short for
 right-part TUI. For example:
@@ -108,7 +108,7 @@ right-part TUI. For example:
 has a token as the right part at (end) position 3, the relation
 TUI 3, the source TUI 5 and the target TUI 4.
 
-2. Term to element relation
+2) Term to element relation
 has 1 integer for the start position of the right part, 1 integer
 or the end position of the right part, and 3 TUIs as above.
 
@@ -117,7 +117,7 @@ or the end position of the right part, and 3 TUIs as above.
 means the right part starts at token position 1 and ends at token
 position 3.
 
-3. Element to term relation
+3) Element to term relation
 has 1 integer for end position of the left part, 1 byte as a dummy
 to differentiate payload length, 1 integer for end position of the
 right part, and 3 TUIs as above.
@@ -127,7 +127,7 @@ right part, and 3 TUIs as above.
 means the left part ends at token position 2, and right part is a
 term ending at position 3.
 
-4. Element to element relation
+4) Element to element relation
 has 1 integer for end position of the left part, 1 integer for the
 start position of the right part, 1 integer for end position of the
 right part, and 3 TUIs as above.
@@ -138,14 +138,15 @@ means the left part ends at token position 2, the right part is an
 element starting at position 3 and ending at position 4.
 
 *PTIs* (it’s a relation payload if the third bit is set):
-32. \>, term to term (with optional TUI and certainty)
-33. \>, term to element (with optional TUI and certainty)
-34. \>, element to term (with optional TUI and certainty)
-35. \>, element to element (with optional TUI and certainty)
-40. \<, term to term (with optional TUI and certainty)
-41. \<, term to element (with optional TUI and certainty)
-42. \<, element to term (with optional TUI and certainty)
-43. \<, element to element (with optional TUI and certainty)
+
+    32) \>, term to term (with optional TUI and certainty)
+    33) \>, term to element (with optional TUI and certainty)
+    34) \>, element to term (with optional TUI and certainty)
+    35) \>, element to element (with optional TUI and certainty)
+    40) \<, term to term (with optional TUI and certainty)
+    41) \<, term to element (with optional TUI and certainty)
+    42) \<, element to term (with optional TUI and certainty)
+    43) \<, element to element (with optional TUI and certainty)
 
 ### Attribute payloads
 Each attribute has two payloads: 
