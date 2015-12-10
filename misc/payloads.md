@@ -157,7 +157,7 @@ Each attribute has two payloads:
 
 For example:
 
-    @:class=header$<b>17<s>1<i>6
+    @:class=header$<b>17<i>6<s>1
 
 means the attribute belongs to the term, element, or relation in the
 same token position whose TUI is 1 and end position is 6.
