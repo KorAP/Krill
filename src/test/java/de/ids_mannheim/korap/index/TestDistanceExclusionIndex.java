@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.index;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
@@ -10,11 +10,11 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.response.Result;
 
 public class TestDistanceExclusionIndex {
 
@@ -122,6 +122,7 @@ public class TestDistanceExclusionIndex {
                         false, true), true);
 
         kr = ki.search(sq, (short) 10);
+
         assertEquals((long) 1, kr.getTotalResults());
         assertEquals(9, kr.getMatch(0).getStartPos());
         assertEquals(10, kr.getMatch(0).getEndPos());
@@ -178,12 +179,14 @@ public class TestDistanceExclusionIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base", "text", "[(0-1)s:c|_1#0-1]" + "[(1-2)s:e|_2#1-2]"
-                + "[(2-3)s:c|_3#2-3|<>:y#2-4$<i>4]"
-                + "[(3-4)s:c|_4#3-4|<>:x#3-7$<i>7]"
-                + "[(4-5)s:d|_5#4-5|<>:y#4-6$<i>6]"
-                + "[(5-6)s:c|_6#5-6|<>:y#5-8$<i>8]" + "[(6-7)s:d|_7#6-7]"
-                + "[(7-8)s:e|_8#7-8|<>:x#7-9$<i>9]" + "[(8-9)s:e|_9#8-9]"
-                + "[(9-10)s:d|_10#9-10|<>:x#9-10$<i>10]");
+				+ "[(2-3)s:c|_3#2-3|<>:y$<b>64<i>2<i>4<i>4]"
+				+ "[(3-4)s:c|_4#3-4|<>:x$<b>64<i>3<i>7<i>7]"
+				+ "[(4-5)s:d|_5#4-5|<>:y$<b>64<i>4<i>6<i>6]"
+				+ "[(5-6)s:c|_6#5-6|<>:y$<b>64<i>5<i>8<i>8]"
+				+ "[(6-7)s:d|_7#6-7]"
+				+ "[(7-8)s:e|_8#7-8|<>:x$<b>64<i>7<i>9<i>9]"
+				+ "[(8-9)s:e|_9#8-9]"
+				+ "[(9-10)s:d|_10#9-10|<>:x$<b>64<i>9<i>10<i>10]");
         return fd;
     }
 
