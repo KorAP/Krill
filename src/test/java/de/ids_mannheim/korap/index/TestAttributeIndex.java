@@ -36,33 +36,33 @@ public class TestAttributeIndex {
         fd.addTV(
                 "base",
                 "bcbabd",
-				"[(0-1)s:a|_1#0-1|"						
+				"[(0-1)s:a|_1$<i>0<i>1|"
 				+ "<>:div$<b>65<i>0<i>2<i>2<b>0<s>2|"
 				+ "<>:div$<b>65<i>0<i>3<i>3<b>0<s>1|"
 				+ "<>:s$<b>65<i>0<i>5<i>5<b>0<s>3|"
-				+ "@:class=header$<i>3<s>1|@:class=header$<i>2<s>2]"
+						+ "@:class=header$<b>17<i>3<s>1|@:class=header$<b>17<i>2<s>2]"
 
-				+ "[(1-2)s:e|_2#1-2|"
-				+ "<>:a$<b>65<i>1<i>2<i>2<b>0<s>1|@:class=header$<i>2<s>1]"
+						+ "[(1-2)s:e|_2$<i>1<i>2|"
+						+ "<>:a$<b>65<i>1<i>2<i>2<b>0<s>1|@:class=header$<b>17<i>2<s>1]"
   
-				+ "[(2-3)s:e|_3#2-3|"
-				+ "<>:div$<b>65<i>2<i>5<i>5<b>0<s>1|@:class=time$<i>5<s>1]"
+						+ "[(2-3)s:e|_3$<i>2<i>3|"
+						+ "<>:div$<b>65<i>2<i>5<i>5<b>0<s>1|@:class=time$<b>17<i>5<s>1]"
   
-				+ "[(3-4)s:a|_4#3-4|"
-				+ "<>:div$<b>65<i>3<i>5<i>5<b>0<s>1|@:class=header$<i>5<s>1]"
+						+ "[(3-4)s:a|_4$<i>3<i>4|"
+						+ "<>:div$<b>65<i>3<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1]"
   
-				+ "[(4-5)s:b|_5#4-5|"
+						+ "[(4-5)s:b|_5$<i>4<i>5|"
 				+ "<>:div$<b>65<i>4<i>5<i>5<b>0<s>1|"
-				+ "<>:a$<b>65<i>4<i>5<i>5<b>0<s>2|@:class=header$<i>5<s>2]"
+						+ "<>:a$<b>65<i>4<i>5<i>5<b>0<s>2|@:class=header$<b>17<i>5<s>2]"
 		  
-				+ "[(5-6)s:d|_6#5-6|"
+						+ "[(5-6)s:d|_6$<i>5<i>6|"
 				+ "<>:s$<b>65<i>5<i>6<i>6<b>0<s>1|"
-				+ "<>:div$<b>65<i>5<i>6<i>6<b>0<s>2|@:class=header$<i>6<s>1]"
+						+ "<>:div$<b>65<i>5<i>6<i>6<b>0<s>2|@:class=header$<b>17<i>6<s>1]"
   
-				+ "[(6-7)s:d|_7#6-7|"
+						+ "[(6-7)s:d|_7$<i>6<i>7|"
 				+ "<>:div$<b>65<i>6<i>7<i>7<b>0<s>1"
 				+ "<>:s$<b>65<i>6<i>7<i>7<b>0<s>2|"
-				+ "|@:class=header$<i>7<s>1|@:class=header$<i>7<s>2]");
+						+ "|@:class=header$<b>17<i>7<s>1|@:class=header$<b>17<i>7<s>2]");
 
         return fd;
     }
@@ -74,24 +74,27 @@ public class TestAttributeIndex {
         fd.addTV(
                 "base",
                 "bcbabd",
-				"[(0-1)s:b|_1#0-1|"
-						+ "<>:div$<b>65<i>0<i>3<i>3<b>0<s>1|@:class=header$<i>3<s>1|@:class=title$<i>3<s>1|@:class=book$<i>3<s>1]"
+				"[(0-1)s:b|_1$<i>0<i>1|"
+						+ "<>:div$<b>65<i>0<i>3<i>3<b>0<s>1|"
 						+ "<>:s<b>65<i>0<i>5<i>5<b>0<s>2|"
-						+ "[(1-2)s:c|_2#1-2|"
-						+ "<>:div$<b>65<i>1<i>2<i>2<b>0<s>1|@:class=header$<i>2<s>1|@:class=title$<i>2<s>1]"
-						+ "[(2-3)s:b|_3#2-3|"
-						+ "<>:div$<b>65<i>2<i>3<i>5<b>0<s>1|@:class=book$<i>5<s>1]"
-						+ "[(3-4)s:a|_4#3-4|"
-						+ "<>:div$<b>65<i>3<i>5<i>5<b>0<s>1|@:class=title$<i>5<s>1]"
-						+ "[(4-5)s:b|_5#4-5|"
-						+ "<>:div$<b>65<i>4<i>5<i>5<b>0<s>1|@:class=header$<i>5<s>1|@:class=book$<i>5<s>1|@:class=title$<i>5<s>1]"
-						+ "[(5-6)s:d|_6#5-6|"						
-						+ "<>:div$<b>65<i>5<i>6<i>6<b>0<s>1|@:class=header$<i>6<s>1]"
+						+ "@:class=header$<b>17<i>3<s>1|@:class=title$<b>17<i>3<s>1|@:class=book$<b>17<i>3<s>1]"
+						+ "[(1-2)s:c|_2$<i>1<i>2|"
+						+ "<>:div$<b>65<i>1<i>2<i>2<b>0<s>1|"
+						+ "@:class=header$<b>17<i>2<s>1|@:class=title$<b>17<i>2<s>1]"
+						+ "[(2-3)s:b|_3$<i>2<i>3|"
+						+ "<>:div$<b>65<i>2<i>5<i>5<b>0<s>1|@:class=book$<b>17<i>5<s>1]"
+						+ "[(3-4)s:a|_4$<i>3<i>4|"
+						+ "<>:div$<b>65<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
+						+ "[(4-5)s:b|_5$<i>4<i>5|"
+						+ "<>:div$<b>65<i>4<i>5<i>5<b>0<s>1|"
+						+ "@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1|@:class=title$<b>17<i>5<s>1]"
+						+ "[(5-6)s:d|_6$<i>5<i>6|"
+						+ "<>:div$<b>65<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
 						+ "<>:s$<b>65<i>5<i>6<i>6<b>0<s>2|"
-						+ "[(6-7)s:d|_7#6-7|"
+						+ "[(6-7)s:d|_7$<i>6<i>7|"
 						+ "<>:div$<b>65<i>6<i>7<i>7<b>0<s>1|"
 						+ "<>:s$<b>65<i>6<i>7<i>7<b>0<s>2|"
-						+ "@:class=header$<i>7<s>1|@:class=title$<i>7<s>1]");
+						+ "@:class=header$<b>17<i>7<s>1|@:class=title$<b>17<i>7<s>1]");
 
         return fd;
     }
@@ -103,26 +106,27 @@ public class TestAttributeIndex {
         fd.addTV(
                 "base",
                 "bcbabd",
-				"[(0-1)s:b|_1#0-1|"
+				"[(0-1)s:b|_1$<i>0<i>1|"
 						+ "<>:s$<b>65<i>0<i>5<i>5<b>0<s>1|"
-						+ "<>:div$<b>65<i>0<i>3<i>3<b>0<s>2|@:class=header$<i>3<s>2|@:class=book$<i>5<s>1|@:class=book$<i>3<s>2]"
-						+ "[(1-2)s:e|_2#1-2|"
+						+ "<>:div$<b>65<i>0<i>3<i>3<b>0<s>2|"
+						+ "@:class=header$<b>17<i>3<s>2|@:class=book$<b>17<i>5<s>1|@:class=book$<b>17<i>3<s>2]"
+						+ "[(1-2)s:e|_2$<i>1<i>2|"
 						+ "<>:div$<b>65<i>1<i>2<i>2<b>0<s>1|"
-						+ "<>:a$<b>65<i>1<i>2<i>2<b>0<s>2|@:class=book$<i>2<s>2|@:class=header$<i>2<s>1]"
-						+ "[(2-3)s:b|_3#2-3|"
+						+ "<>:a$<b>65<i>1<i>2<i>2<b>0<s>2|@:class=book$<b>17<i>2<s>2|@:class=header$<b>17<i>2<s>1]"
+						+ "[(2-3)s:b|_3$<i>2<i>3|"
 						+ "<>:div$<b>65<i>2<i>3<i>5<b>0<s>1|"
-						+ "<>:a$<b>65<i>1<i>2<i>2<b>0<s>2|@:class=header$<i>2<s>2|@:class=book$<i>5<s>1]"
-						+ "[(3-4)s:a|_4#3-4|"
-						+ "<>:div$<b>65<i>3<i>5<i>5<b>0<s>1|@:class=title$<i>5<s>1]"
-						+ "[(4-5)s:b|_5#4-5|"
-						+ "<>:div$<b>65<i>4<i>5<i>5<b>0<s>1|@:class=header$<i>5<s>1|@:class=book$<i>5<s>1]"
-						+ "[(5-6)s:d|_6#5-6|"
+						+ "<>:a$<b>65<i>1<i>2<i>2<b>0<s>2|@:class=header$<b>17<i>2<s>2|@:class=book$<b>17<i>5<s>1]"
+						+ "[(3-4)s:a|_4$<i>3<i>4|"
+						+ "<>:div$<b>65<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
+						+ "[(4-5)s:b|_5$<i>4<i>5|"
+						+ "<>:div$<b>65<i>4<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1]"
+						+ "[(5-6)s:d|_6$<i>5<i>6|"
 						+ "<>:s$<b>65<i>5<i>6<i>6<b>0<s>1|"
-						+ "<>:div$<b>65<i>5<i>6<i>6<b>0<s>1|@:class=header$<i>6<s>1]"
-						+ "[(6-7)s:d|_7#6-7|"
+						+ "<>:div$<b>65<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
+						+ "[(6-7)s:d|_7$<i>6<i>7|"
 						+ "<>:div$<b>65<i>6<i>7<i>7<b>0<s>1|"
 						+ "<>:s$<b>65<i>6<i>7<i>7<b>0<s>2|"
-						+ "@:class=header$<i>7<s>1|@:class=book$<i>7<s>2]");
+						+ "@:class=header$<b>17<i>7<s>1|@:class=book$<b>17<i>7<s>2]");
 
         return fd;
     }
@@ -317,7 +321,13 @@ public class TestAttributeIndex {
                 new SpanElementQuery("base", "div"), sql, true);
 
         kr = ki.search(sq, (short) 10);
-        assertEquals((long) 6, kr.getTotalResults());
+
+        // for (int i = 0; i < kr.getTotalResults(); i++) {
+        // System.out.println(kr.getMatch(i).getLocalDocID() + " "
+        // + kr.getMatch(i).startPos + " " + kr.getMatch(i).endPos);
+        // }
+
+		assertEquals((long) 6, kr.getTotalResults());
 
         SpanNextQuery snq = new SpanNextQuery(new SpanTermQuery(new Term(
                 "base", "s:e")), sq);
@@ -383,10 +393,6 @@ public class TestAttributeIndex {
         assertEquals(4, kr.getMatch(1).getStartPos());
         assertEquals(5, kr.getMatch(1).getEndPos());
 
-        //		for (int i = 0; i < kr.getTotalResults(); i++) {
-        //			System.out.println(kr.getMatch(i).getLocalDocID() + " "
-        //					+ kr.getMatch(i).startPos + " " + kr.getMatch(i).endPos);
-        //		}
     }
 
 

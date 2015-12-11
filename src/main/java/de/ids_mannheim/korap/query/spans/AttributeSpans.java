@@ -50,6 +50,16 @@ public class AttributeSpans extends SimpleSpans {
     private int currentDoc, currentPosition;
     private boolean isFinish;
 
+	public static enum PayloadTypeIdentifier {
+		TERM_ATTRIBUTE(16), ELEMENT_ATTRIBUTE(17), RELATION_ATTRIBUTE(18);
+
+		private int value;
+
+		private PayloadTypeIdentifier(int value) {
+			this.value = value;
+		}
+	}
+
     protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
 
 
@@ -154,24 +164,25 @@ public class AttributeSpans extends SimpleSpans {
      */
     private CandidateAttributeSpan createCandidateSpan () throws IOException {
         List<byte[]> payload = (List<byte[]>) firstSpans.getPayload();
-        ByteBuffer wrapper = ByteBuffer.wrap(payload.get(0));
+		ByteBuffer payloadBuffer = ByteBuffer.wrap(payload.get(0));
 
-        short spanId;
-        int start = 0, end;
+		byte payloadTypeIdentifier = payloadBuffer.get(0);
+		short spanId = payloadBuffer.getShort(5);
+		// if (payload.get(0).length == 6) {
+		int end = payloadBuffer.getInt(1);
 
-        if (payload.get(0).length == 6) {
-            end = wrapper.getInt(0);
-            spanId = wrapper.getShort(4);
-            return new CandidateAttributeSpan(firstSpans, spanId, end);
-        }
-        else if (payload.get(0).length == 10) {
-            start = wrapper.getInt(0);
-            end = wrapper.getInt(4);
-            spanId = wrapper.getShort(8);
-            return new CandidateAttributeSpan(firstSpans, spanId, start, end);
-        }
+		return new CandidateAttributeSpan(firstSpans, payloadTypeIdentifier,
+				spanId, end);
 
-        throw new NullPointerException("Missing element end in payloads.");
+		// }
+		// else if (payload.get(0).length == 10) {
+		// start = wrapper.getInt(0);
+		// end = wrapper.getInt(4);
+		// spanId = wrapper.getShort(8);
+		// return new CandidateAttributeSpan(firstSpans, spanId, start, end);
+		// }
+
+		// throw new NullPointerException("Missing element end in payloads.");
     }
 
 
@@ -235,9 +246,6 @@ public class AttributeSpans extends SimpleSpans {
     class CandidateAttributeSpan extends CandidateSpan implements
             Comparable<CandidateSpan> {
 
-        private short spanId;
-
-
         /**
          * Construct a CandidateAttributeSpan based on the given span,
          * spanId,
@@ -258,32 +266,23 @@ public class AttributeSpans extends SimpleSpans {
          *            belongs to.
          * @throws IOException
          */
-        public CandidateAttributeSpan (Spans span, short spanId, int elementEnd)
+		public CandidateAttributeSpan(Spans span, byte payloadTypeIdenfitier,
+				short spanId, int elementEnd)
                 throws IOException {
             super(span);
-            setSpanId(spanId);
+			this.spanId = spanId;
             this.end = elementEnd;
+			this.payloadTypeIdentifier = payloadTypeIdenfitier;
         }
 
 
-        public CandidateAttributeSpan (Spans span, short spanId, int start,
-                                       int end) throws IOException {
-            super(span);
-            setSpanId(spanId);
-            this.start = start;
-            this.end = end;
-        }
-
-
-        public void setSpanId (short spanId) {
-            this.spanId = spanId;
-        }
-
-
-        public short getSpanId () {
-            return spanId;
-        }
-
+		// public CandidateAttributeSpan (Spans span, short spanId, int start,
+		// int end) throws IOException {
+		// super(span);
+		// setSpanId(spanId);
+		// this.start = start;
+		// this.end = end;
+		// }
 
         @Override
         public int compareTo (CandidateSpan o) {

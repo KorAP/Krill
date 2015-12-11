@@ -80,6 +80,9 @@ public final class ElementSpans extends SimpleSpans {
 
     @Override
     public boolean next () throws IOException {
+        if (!hasMoreSpans || !(hasMoreSpans = termSpans.next()))
+            return false;
+        
 		isStartEnumeration = false;
 		this.matchPayload = null;
 		matchEndPosition = -1;
@@ -87,8 +90,7 @@ public final class ElementSpans extends SimpleSpans {
 	};
 
 	private boolean advance() throws IOException {
-		if (!hasMoreSpans || !(hasMoreSpans = termSpans.next()))
-			return false;
+		
 
 		this.matchStartPosition = termSpans.start();
 		this.matchDocNumber = termSpans.doc();		

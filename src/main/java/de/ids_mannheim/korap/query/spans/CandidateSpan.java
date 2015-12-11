@@ -28,6 +28,7 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
     private int leftStart, leftEnd;
     private int rightStart, rightEnd;
 
+	protected byte payloadTypeIdentifier;
 
     /**
      * Constructs a CandidateSpan for the given Span.
@@ -359,7 +360,15 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
     }
 
 
-    @Override
+	public byte getPayloadTypeIdentifier() {
+		return payloadTypeIdentifier;
+	}
+
+	public void setPayloadTypeIdentifier(byte payloadTypeIdentifier) {
+		this.payloadTypeIdentifier = payloadTypeIdentifier;
+	}
+
+	@Override
     public int compareTo (CandidateSpan o) {
         if (this.doc == o.doc) {
             if (this.getStart() == o.getStart()) {
