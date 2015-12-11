@@ -22,9 +22,10 @@ Terms may also have a certainty value attached, expressed as a byte (with a rang
     pos:NN$<b>130<s>1<b>34
 
 *PTIs* (it’s a term payload, if the first bit is set):
-128: Term with a TUI
-129: Term with certainty value
-130: Term with TUI and certainty value
+
+    128: Term with a TUI
+    129: Term with certainty value
+    130: Term with TUI and certainty value
 
 ### Element payloads
 Each element has payloads consisting of start and end character
@@ -65,15 +66,16 @@ In that case, character offsets are only given once.
 means \<s\> is a milestone at position 38 in root.
 
 *PTIs* (It’s an element payload if the second bit is set):
-64. Element (with optional TUI and certainty)
-65. Milestone (with optional TUI and certainty)
+
+    64  Element (with optional TUI and certainty)
+    65  Milestone (with optional TUI and certainty)
 
 ### Relation payloads
 Each relation are indexed with two instances for both directions.
 he direction of a relation is determined by the following symbols: 
 
     > source to target
-	< target to source
+    < target to source
 
 Each relation comprises two parts: a left part and a right part.
 The positions of a relation instance always refer to the positions
@@ -103,7 +105,7 @@ has 1 integer for the right part token position, 1 short for the
 relation TUI, 1 short for the left-part TUI, and 1 short for
 right-part TUI. For example:
 
-    \>:dependency$\<b\>32\<i\>3\<s\>3\<s\>5\<s\>4
+    >:dependency$\<b\>32\<i\>3\<s\>3\<s\>5\<s\>4
 
 has a token as the right part at (end) position 3, the relation
 TUI 3, the source TUI 5 and the target TUI 4.
@@ -112,7 +114,7 @@ TUI 3, the source TUI 5 and the target TUI 4.
 has 1 integer for the start position of the right part, 1 integer
 or the end position of the right part, and 3 TUIs as above.
 
-    \>:dependency$\<b\>33\<i\>1\<i\>3\<s\>3\<s\>5\<s\>4
+    >:dependency$\<b\>33\<i\>1\<i\>3\<s\>3\<s\>5\<s\>4
 
 means the right part starts at token position 1 and ends at token
 position 3.
@@ -122,7 +124,7 @@ has 1 integer for end position of the left part, 1 byte as a dummy
 to differentiate payload length, 1 integer for end position of the
 right part, and 3 TUIs as above.
 
-    \>:dependency$\<b\>34\<i\>2\<b\>0\<i\>3\<s\>3\<s\>5\<s\>4
+    >:dependency$\<b\>34\<i\>2\<b\>0\<i\>3\<s\>3\<s\>5\<s\>4
 
 means the left part ends at token position 2, and right part is a
 term ending at position 3.
@@ -132,21 +134,21 @@ has 1 integer for end position of the left part, 1 integer for the
 start position of the right part, 1 integer for end position of the
 right part, and 3 TUIs as above.
 
-    \>:dependency$\<b\>35\<i\>2\<i\>3\<i\>4\<s\>3\<s\>5\<s\>4
+    >:dependency$\<b\>35\<i\>2\<i\>3\<i\>4\<s\>3\<s\>5\<s\>4
 
 means the left part ends at token position 2, the right part is an
 element starting at position 3 and ending at position 4.
 
 *PTIs* (it’s a relation payload if the third bit is set):
 
-    32) \>, term to term (with optional TUI and certainty)
-    33) \>, term to element (with optional TUI and certainty)
-    34) \>, element to term (with optional TUI and certainty)
-    35) \>, element to element (with optional TUI and certainty)
-    40) \<, term to term (with optional TUI and certainty)
-    41) \<, term to element (with optional TUI and certainty)
-    42) \<, element to term (with optional TUI and certainty)
-    43) \<, element to element (with optional TUI and certainty)
+    32 >, term to term (with optional TUI and certainty)
+    33 >, term to element (with optional TUI and certainty)
+    34 >, element to term (with optional TUI and certainty)
+    35 >, element to element (with optional TUI and certainty)
+    40 <, term to term (with optional TUI and certainty)
+    41 <, term to element (with optional TUI and certainty)
+    42 <, element to term (with optional TUI and certainty)
+    43 <, element to element (with optional TUI and certainty)
 
 ### Attribute payloads
 Each attribute has two payloads: 
@@ -164,9 +166,9 @@ same token position whose TUI is 1 and end position is 6.
 
 *PTIs* (it’s an attribute payload, if the fourth bit is set):
 
-16. Attribute for Terms
-17. Attribute for Elements
-18. Attribute for Relations
+    16. Attribute for Terms
+    17. Attribute for Elements
+    18. Attribute for Relations
 
 ## Computed Payloads
 ### Class payloads
@@ -178,4 +180,12 @@ a class number as a byte.
 
 Classes start with 1.
 Class payloads always have the length 10.
-The **PTI** is 0 (no bit is set).
+
+The *PTI* is 
+
+    0 (no bit is set).
+
+
+
+
+
