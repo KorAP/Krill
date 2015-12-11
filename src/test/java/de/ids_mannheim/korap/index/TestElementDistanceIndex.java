@@ -16,15 +16,14 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.response.Result;
-import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.DistanceConstraint;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
@@ -37,11 +36,13 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "text", "[(0-1)s:b|s:c|_1#0-1|<>:s#0-1$<i>1]"
-                + "[(1-2)s:b|_2#1-2]" + "[(2-3)s:c|_3#2-3|<>:s#2-3$<i>3]"
-                + "[(3-4)s:b|_4#3-4|<>:s#3-4$<i>4]"
-                + "[(4-5)s:b|_5#4-5|<>:s#4-5$<i>5]" + "[(5-6)s:b|_6#5-6]"
-                + "[(6-7)s:c|_7#6-7]");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1]"
+                        + "[(1-2)s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:c|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3]"
+                        + "[(3-4)s:b|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4]"
+                        + "[(4-5)s:b|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5]"
+                        + "[(5-6)s:b|_6$<i>5<i>6]" + "[(6-7)s:c|_7$<i>6<i>7]");
         return fd;
     }
 
@@ -49,12 +50,13 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "text", "[(0-1)s:e|_1#0-1|<>:s#0-2$<i>1]"
-                + "[(1-2)s:c|s:b|_2#1-2|<>:s#1-2$<i>2]"
-                + "[(2-3)s:e|_3#2-3|<>:s#2-3$<i>3]"
-                + "[(3-4)s:b|_4#3-4|<>:s#3-4$<i>4]"
-                + "[(4-5)s:d|_5#4-5|<>:s#4-5$<i>5]"
-                + "[(5-6)s:c|_6#5-6|<>:s#5-6$<i>6]");
+        fd.addTV("base", "text",
+                "[(0-1)s:e|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1]"
+                        + "[(1-2)s:c|s:b|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2]"
+                        + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3]"
+                        + "[(3-4)s:b|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5]"
+                        + "[(5-6)s:c|_6$<i>5<i>6|<>:s$<b>64<i>5<i>6<i>6]");
         return fd;
     }
 
@@ -62,10 +64,13 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "text", "[(0-1)s:b|_1#0-1|<>:p#0-2$<i>1]"
-                + "[(1-2)s:b|_2#1-2]" + "[(2-3)s:b|_3#2-3|<>:p#2-3$<i>3]"
-                + "[(3-4)s:d|_4#3-4|<>:p#3-4$<i>4]"
-                + "[(4-5)s:d|_5#4-5|<>:p#4-5$<i>5]" + "[(5-6)s:d|_6#5-6]");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|_1$<i>0<i>1|<>:p$<b>64<i>0<i>2<i>1]"
+                        + "[(1-2)s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:b|_3$<i>2<i>3|<>:p$<b>64<i>2<i>3<i>3]"
+                        + "[(3-4)s:d|_4$<i>3<i>4|<>:p$<b>64<i>3<i>4<i>4]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:p$<b>64<i>4<i>5<i>5]"
+                        + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
 
@@ -73,10 +78,13 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
-        fd.addTV("base", "text", "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>1]"
-                + "[(1-2)s:d|_2#1-2]" + "[(2-3)s:b|_3#2-3|<>:s#2-3$<i>3]"
-                + "[(3-4)s:c|_4#3-4|<>:s#3-4$<i>4]"
-                + "[(4-5)s:d|_5#4-5|<>:s#4-5$<i>5]" + "[(5-6)s:d|_6#5-6]");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1]"
+                        + "[(1-2)s:d|_2$<i>1<i>2]"
+                        + "[(2-3)s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3]"
+                        + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5]"
+                        + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
 

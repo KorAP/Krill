@@ -12,11 +12,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.response.Result;
 
 @RunWith(JUnit4.class)
 public class TestUnorderedElementDistanceIndex {
@@ -28,11 +28,14 @@ public class TestUnorderedElementDistanceIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "text", "[(0-1)s:b|s:c|_1#0-1|<>:s#0-2$<i>1]"
-                + "[(1-2)s:b|_2#1-2]" + "[(2-3)s:b|_3#2-3|<>:s#2-3$<i>3]"
-                + "[(3-4)s:c|_4#3-4|<>:s#3-4$<i>4]"
-                + "[(4-5)s:b|_5#4-5|<>:s#4-5$<i>5]" + "[(5-6)s:b|_6#5-6]"
-                + "[(6-7)s:c|_7#6-7|<>:s#6-7$<i>7]");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1]"
+                        + "[(1-2)s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3]"
+                        + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4]"
+                        + "[(4-5)s:b|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5]"
+                        + "[(5-6)s:b|_6$<i>5<i>6]"
+                        + "[(6-7)s:c|_7$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>7]");
         return fd;
     }
 
@@ -40,10 +43,12 @@ public class TestUnorderedElementDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "text", "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>1]"
-                + "[(1-2)s:c|_2#1-2|<>:s#1-2$<i>4]" + "[(2-3)s:e|_3#2-3]"
-                + "[(3-4)s:c|_4#3-4]" + "[(4-5)s:b|_5#4-5|<>:s#4-5$<i>7]"
-                + "[(5-6)s:e|_6#5-6]" + "[(6-7)s:e|_7#6-7]");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1]"
+                        + "[(1-2)s:c|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>4]"
+                        + "[(2-3)s:e|_3$<i>2<i>3]" + "[(3-4)s:c|_4$<i>3<i>4]"
+                        + "[(4-5)s:b|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>7]"
+                        + "[(5-6)s:e|_6$<i>5<i>6]" + "[(6-7)s:e|_7$<i>6<i>7]");
         return fd;
     }
 
@@ -51,14 +56,15 @@ public class TestUnorderedElementDistanceIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "text", "[(0-1)s:e|_1#0-1|<>:p#0-2$<i>1]"
-                + "[(1-2)s:e|_2#1-2|<>:p#1-2$<i>2]"
-                + "[(2-3)s:c|_3#2-3|<>:p#2-3$<i>3]"
-                + "[(3-4)s:e|_4#3-4|<>:p#3-4$<i>4]"
-                + "[(4-5)s:b|_5#4-5|<>:p#4-5$<i>5]"
-                + "[(5-6)s:c|_6#5-6|<>:p#5-6$<i>6]"
-                + "[(6-7)s:e|_7#6-7|<>:p#6-7$<i>7]"
-                + "[(7-8)s:b|_8#7-8|<>:p#7-8$<i>8]");
+        fd.addTV("base", "text",
+                "[(0-1)s:e|_1$<i>0<i>1|<>:p$<b>64<i>0<i>2<i>1]"
+                        + "[(1-2)s:e|_2$<i>1<i>2|<>:p$<b>64<i>1<i>2<i>2]"
+                        + "[(2-3)s:c|_3$<i>2<i>3|<>:p$<b>64<i>2<i>3<i>3]"
+                        + "[(3-4)s:e|_4$<i>3<i>4|<>:p$<b>64<i>3<i>4<i>4]"
+                        + "[(4-5)s:b|_5$<i>4<i>5|<>:p$<b>64<i>4<i>5<i>5]"
+                        + "[(5-6)s:c|_6$<i>5<i>6|<>:p$<b>64<i>5<i>6<i>6]"
+                        + "[(6-7)s:e|_7$<i>6<i>7|<>:p$<b>64<i>6<i>7<i>7]"
+                        + "[(7-8)s:b|_8$<i>7<i>8|<>:p$<b>64<i>7<i>8<i>8]");
         return fd;
     }
 
@@ -66,8 +72,10 @@ public class TestUnorderedElementDistanceIndex {
     private FieldDocument createFieldDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
-        fd.addTV("base", "text", "[(0-1)s:a|_1#0-1|<>:s#0-2$<i>1]"
-                + "[(1-2)s:d|_2#1-2|<>:s#1-2$<i>3]" + "[(2-3)s:e|_3#2-3]");
+        fd.addTV("base", "text",
+                "[(0-1)s:a|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1]"
+                        + "[(1-2)s:d|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>3]"
+                        + "[(2-3)s:e|_3$<i>2<i>3]");
         return fd;
     }
 
@@ -75,9 +83,11 @@ public class TestUnorderedElementDistanceIndex {
     private FieldDocument createFieldDoc4 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-4");
-        fd.addTV("base", "text", "[(0-1)s:c|_1#0-1|<>:s#0-2$<i>2]"
-                + "[(1-2)s:e|_2#1-2]" + "[(2-3)s:b|_3#2-3|<>:s#2-3$<i>3]"
-                + "[(3-4)s:e|_4#3-4|<>:s#3-4$<i>4]");
+        fd.addTV("base", "text",
+                "[(0-1)s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2]"
+                        + "[(1-2)s:e|_2$<i>1<i>2]"
+                        + "[(2-3)s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3]"
+                        + "[(3-4)s:e|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4]");
         return fd;
     }
 

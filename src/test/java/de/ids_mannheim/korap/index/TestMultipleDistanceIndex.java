@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.index;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.response.Result;
 
 @RunWith(JUnit4.class)
 public class TestMultipleDistanceIndex {
@@ -54,11 +54,11 @@ public class TestMultipleDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base", "text",
-                "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>2|<>:p#0-4$<i>4]"
+                "[(0-1)s:b|_1#0-1|<>:s$<b>64<i>0<i>2<i>2|<>:p$<b>64<i>0<i>4<i>4]"
                         + "[(1-2)s:b|s:c|_2#1-2]"
-                        + "[(2-3)s:c|_3#2-3|<>:s#2-3$<i>4]"
+                        + "[(2-3)s:c|_3#2-3|<>:s$<b>64<i>2<i>3<i>4]"
                         + "[(3-4)s:b|_4#3-4]"
-                        + "[(4-5)s:c|_5#4-5|<>:s#4-6$<i>6|<>:p#4-6$<i>6]"
+                        + "[(4-5)s:c|_5#4-5|<>:s$<b>64<i>4<i>6<i>6|<>:p$<b>64<i>4<i>6<i>6]"
                         + "[(5-6)s:e|_6#5-6]");
         return fd;
     }
@@ -68,11 +68,11 @@ public class TestMultipleDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("base", "text",
-                "[(0-1)s:c|_1#0-1|<>:s#0-2$<i>2|<>:p#0-4$<i>4]"
+                "[(0-1)s:c|_1#0-1|<>:s$<b>64<i>0<i>2<i>2|<>:p$<b>64<i>0<i>4<i>4]"
                         + "[(1-2)s:c|s:e|_2#1-2]"
-                        + "[(2-3)s:e|_3#2-3|<>:s#2-3$<i>4]"
+                        + "[(2-3)s:e|_3#2-3|<>:s$<b>64<i>2<i>3<i>4]"
                         + "[(3-4)s:c|_4#3-4]"
-                        + "[(4-5)s:e|_5#4-5|<>:s#4-6$<i>6|<>:p#4-6$<i>6]"
+                        + "[(4-5)s:e|_5#4-5|<>:s$<b>64<i>4<i>6<i>6|<>:p$<b>64<i>4<i>6<i>6]"
                         + "[(5-6)s:c|_6#5-6]");
         return fd;
     }
@@ -82,13 +82,13 @@ public class TestMultipleDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV("base", "text",
-                "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>2|<>:p#0-4$<i>4]"
+                "[(0-1)s:b|_1#0-1|<>:s$<b>64<i>0<i>2<i>2|<>:p$<b>64<i>0<i>4<i>4]"
                         + "[(1-2)s:b|s:e|_2#1-2]"
-                        + "[(2-3)s:e|_3#2-3|<>:s#2-3$<i>4]"
+                        + "[(2-3)s:e|_3#2-3|<>:s$<b>64<i>2<i>3<i>4]"
                         + "[(3-4)s:b|s:c|_4#3-4]"
-                        + "[(4-5)s:e|_5#4-5|<>:s#4-6$<i>6|<>:p#4-6$<i>6]"
+                        + "[(4-5)s:e|_5#4-5|<>:s$<b>64<i>4<i>6<i>6|<>:p$<b>64<i>4<i>6<i>6]"
                         + "[(5-6)s:d|_6#5-6]"
-                        + "[(6-7)s:b|_7#6-7|<>:s#6-7$<i>7|<>:p#6-7$<i>7]");
+                        + "[(6-7)s:b|_7#6-7|<>:s$<b>64<i>6<i>7<i>7|<>:p$<b>64<i>6<i>7<i>7]");
         return fd;
     }
 
@@ -97,12 +97,12 @@ public class TestMultipleDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base", "text",
-                "[(0-1)s:b|_1#0-1|<>:s#0-2$<i>2|<>:p#0-4$<i>4]"
+                "[(0-1)s:b|_1#0-1|<>:s$<b>64<i>0<i>2<i>2|<>:p$<b>64<i>0<i>4<i>4]"
                         + "[(1-2)s:b|s:c|_2#1-2]"
-                        + "[(2-3)s:c|_3#2-3|<>:s#2-3$<i>5]"
+                        + "[(2-3)s:c|_3#2-3|<>:s$<b>64<i>2<i>3<i>5]"
                         + "[(3-4)s:b|_4#3-4]" + "[(4-5)s:b|_5#4-5]"
                         + "[(5-6)s:b|_6#5-6]" + // gap
-                        "[(6-7)s:c|_7#6-7|<>:s#6-7$<i>7|<>:p#6-7$<i>7]");
+                        "[(6-7)s:c|_7#6-7|<>:s$<b>64<i>6<i>7<i>7|<>:p$<b>64<i>6<i>7<i>7]");
         return fd;
     }
 

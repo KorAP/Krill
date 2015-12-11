@@ -37,31 +37,31 @@ public class TestAttributeIndex {
                 "base",
                 "bcbabd",
 				"[(0-1)s:a|_1$<i>0<i>1|"
-				+ "<>:div$<b>65<i>0<i>2<i>2<b>0<s>2|"
-				+ "<>:div$<b>65<i>0<i>3<i>3<b>0<s>1|"
-				+ "<>:s$<b>65<i>0<i>5<i>5<b>0<s>3|"
-						+ "@:class=header$<b>17<i>3<s>1|@:class=header$<b>17<i>2<s>2]"
+                        + "<>:div$<b>64<i>0<i>2<i>2<b>0<s>2|"
+                        + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>1|"
+                        + "<>:s$<b>64<i>0<i>5<i>5<b>0<s>3|"
+                        + "@:class=header$<b>17<i>3<s>1|@:class=header$<b>17<i>2<s>2]"
 
-						+ "[(1-2)s:e|_2$<i>1<i>2|"
-						+ "<>:a$<b>65<i>1<i>2<i>2<b>0<s>1|@:class=header$<b>17<i>2<s>1]"
+                        + "[(1-2)s:e|_2$<i>1<i>2|"
+                        + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>1|@:class=header$<b>17<i>2<s>1]"
   
 						+ "[(2-3)s:e|_3$<i>2<i>3|"
-						+ "<>:div$<b>65<i>2<i>5<i>5<b>0<s>1|@:class=time$<b>17<i>5<s>1]"
+                        + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=time$<b>17<i>5<s>1]"
   
 						+ "[(3-4)s:a|_4$<i>3<i>4|"
-						+ "<>:div$<b>65<i>3<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1]"
+                        + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1]"
   
 						+ "[(4-5)s:b|_5$<i>4<i>5|"
-				+ "<>:div$<b>65<i>4<i>5<i>5<b>0<s>1|"
-						+ "<>:a$<b>65<i>4<i>5<i>5<b>0<s>2|@:class=header$<b>17<i>5<s>2]"
+                        + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|"
+                        + "<>:a$<b>64<i>4<i>5<i>5<b>0<s>2|@:class=header$<b>17<i>5<s>2]"
 		  
 						+ "[(5-6)s:d|_6$<i>5<i>6|"
-				+ "<>:s$<b>65<i>5<i>6<i>6<b>0<s>1|"
-						+ "<>:div$<b>65<i>5<i>6<i>6<b>0<s>2|@:class=header$<b>17<i>6<s>1]"
+                        + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>1|"
+                        + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>2|@:class=header$<b>17<i>6<s>1]"
   
 						+ "[(6-7)s:d|_7$<i>6<i>7|"
-				+ "<>:div$<b>65<i>6<i>7<i>7<b>0<s>1"
-				+ "<>:s$<b>65<i>6<i>7<i>7<b>0<s>2|"
+                        + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1"
+                        + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
 						+ "|@:class=header$<b>17<i>7<s>1|@:class=header$<b>17<i>7<s>2]");
 
         return fd;
@@ -75,25 +75,25 @@ public class TestAttributeIndex {
                 "base",
                 "bcbabd",
 				"[(0-1)s:b|_1$<i>0<i>1|"
-						+ "<>:div$<b>65<i>0<i>3<i>3<b>0<s>1|"
-						+ "<>:s<b>65<i>0<i>5<i>5<b>0<s>2|"
+                        + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>1|"
+                        + "<>:s<b>64<i>0<i>5<i>5<b>0<s>2|"
 						+ "@:class=header$<b>17<i>3<s>1|@:class=title$<b>17<i>3<s>1|@:class=book$<b>17<i>3<s>1]"
 						+ "[(1-2)s:c|_2$<i>1<i>2|"
-						+ "<>:div$<b>65<i>1<i>2<i>2<b>0<s>1|"
+                        + "<>:div$<b>64<i>1<i>2<i>2<b>0<s>1|"
 						+ "@:class=header$<b>17<i>2<s>1|@:class=title$<b>17<i>2<s>1]"
 						+ "[(2-3)s:b|_3$<i>2<i>3|"
-						+ "<>:div$<b>65<i>2<i>5<i>5<b>0<s>1|@:class=book$<b>17<i>5<s>1]"
+                        + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=book$<b>17<i>5<s>1]"
 						+ "[(3-4)s:a|_4$<i>3<i>4|"
-						+ "<>:div$<b>65<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
+                        + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
 						+ "[(4-5)s:b|_5$<i>4<i>5|"
-						+ "<>:div$<b>65<i>4<i>5<i>5<b>0<s>1|"
+                        + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|"
 						+ "@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1|@:class=title$<b>17<i>5<s>1]"
 						+ "[(5-6)s:d|_6$<i>5<i>6|"
-						+ "<>:div$<b>65<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
-						+ "<>:s$<b>65<i>5<i>6<i>6<b>0<s>2|"
+                        + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
+                        + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>2|"
 						+ "[(6-7)s:d|_7$<i>6<i>7|"
-						+ "<>:div$<b>65<i>6<i>7<i>7<b>0<s>1|"
-						+ "<>:s$<b>65<i>6<i>7<i>7<b>0<s>2|"
+                        + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1|"
+                        + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
 						+ "@:class=header$<b>17<i>7<s>1|@:class=title$<b>17<i>7<s>1]");
 
         return fd;
@@ -107,25 +107,25 @@ public class TestAttributeIndex {
                 "base",
                 "bcbabd",
 				"[(0-1)s:b|_1$<i>0<i>1|"
-						+ "<>:s$<b>65<i>0<i>5<i>5<b>0<s>1|"
-						+ "<>:div$<b>65<i>0<i>3<i>3<b>0<s>2|"
+                        + "<>:s$<b>64<i>0<i>5<i>5<b>0<s>1|"
+                        + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>2|"
 						+ "@:class=header$<b>17<i>3<s>2|@:class=book$<b>17<i>5<s>1|@:class=book$<b>17<i>3<s>2]"
 						+ "[(1-2)s:e|_2$<i>1<i>2|"
-						+ "<>:div$<b>65<i>1<i>2<i>2<b>0<s>1|"
-						+ "<>:a$<b>65<i>1<i>2<i>2<b>0<s>2|@:class=book$<b>17<i>2<s>2|@:class=header$<b>17<i>2<s>1]"
+                        + "<>:div$<b>64<i>1<i>2<i>2<b>0<s>1|"
+                        + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>2|@:class=book$<b>17<i>2<s>2|@:class=header$<b>17<i>2<s>1]"
 						+ "[(2-3)s:b|_3$<i>2<i>3|"
-						+ "<>:div$<b>65<i>2<i>3<i>5<b>0<s>1|"
-						+ "<>:a$<b>65<i>1<i>2<i>2<b>0<s>2|@:class=header$<b>17<i>2<s>2|@:class=book$<b>17<i>5<s>1]"
+                        + "<>:div$<b>64<i>2<i>3<i>5<b>0<s>1|"
+                        + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>2|@:class=header$<b>17<i>2<s>2|@:class=book$<b>17<i>5<s>1]"
 						+ "[(3-4)s:a|_4$<i>3<i>4|"
-						+ "<>:div$<b>65<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
+                        + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
 						+ "[(4-5)s:b|_5$<i>4<i>5|"
-						+ "<>:div$<b>65<i>4<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1]"
+                        + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1]"
 						+ "[(5-6)s:d|_6$<i>5<i>6|"
-						+ "<>:s$<b>65<i>5<i>6<i>6<b>0<s>1|"
-						+ "<>:div$<b>65<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
+                        + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>1|"
+                        + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
 						+ "[(6-7)s:d|_7$<i>6<i>7|"
-						+ "<>:div$<b>65<i>6<i>7<i>7<b>0<s>1|"
-						+ "<>:s$<b>65<i>6<i>7<i>7<b>0<s>2|"
+                        + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1|"
+                        + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
 						+ "@:class=header$<b>17<i>7<s>1|@:class=book$<b>17<i>7<s>2]");
 
         return fd;

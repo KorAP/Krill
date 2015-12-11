@@ -14,12 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
-import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.response.Result;
 
 
 @RunWith(JUnit4.class)
@@ -181,12 +179,12 @@ public class TestSegmentIndex {
     private FieldDocument createFieldDoc0 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "bcbabd", "[(0-1)s:b|i:b|_1#0-1]"
-                + "[(1-2)s:c|i:c|s:b|_2#1-2]"
-                + "[(2-3)s:b|i:b|_3#2-3|<>:e#2-4$<i>4]"
-                + "[(3-4)s:a|i:a|_4#3-4|<>:e#3-5$<i>5|<>:e2#3-5$<i>5]"
-                + "[(4-5)s:b|i:b|s:c|_5#4-5]"
-                + "[(5-6)s:d|i:d|_6#5-6|<>:e2#5-6$<i>6]");
+        fd.addTV("base", "bcbabd", "[(0-1)s:b|i:b|_1$<i>0<i>1]"
+                + "[(1-2)s:c|i:c|s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:b|i:b|_3$<i>2<i>3|<>:e$<b>64<i>2<i>4<i>4]"
+                        + "[(3-4)s:a|i:a|_4$<i>3<i>4|<>:e$<b>64<i>3<i>5<i>5|<>:e2$<b>64<i>3<i>5<i>5]"
+                + "[(4-5)s:b|i:b|s:c|_5$<i>4<i>5]"
+                        + "[(5-6)s:d|i:d|_6$<i>5<i>6|<>:e2$<b>64<i>5<i>6<i>6]");
         return fd;
     }
 
@@ -194,10 +192,10 @@ public class TestSegmentIndex {
     private FieldDocument createFieldDoc1 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "babaa", "[(0-1)s:b|i:b|s:c|_1#0-1]"
-                + "[(1-2)s:a|i:a|s:b|_2#1-2|<>:e#1-3$<i>3]"
-                + "[(2-3)s:b|i:b|s:a|_3#2-3]" + "[(3-4)s:a|i:a|_4#3-4]"
-                + "[(4-5)s:a|i:a|_5#4-5]");
+        fd.addTV("base", "babaa", "[(0-1)s:b|i:b|s:c|_1$<i>0<i>1]"
+                + "[(1-2)s:a|i:a|s:b|_2$<i>1<i>2|<>:e$<b>64<i>1<i>3<i>3]"
+                + "[(2-3)s:b|i:b|s:a|_3$<i>2<i>3]"
+                + "[(3-4)s:a|i:a|_4$<i>3<i>4]" + "[(4-5)s:a|i:a|_5$<i>4<i>5]");
         return fd;
     }
 
@@ -205,8 +203,9 @@ public class TestSegmentIndex {
     private FieldDocument createFieldDoc2 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "bdb", "[(0-1)s:b|i:b|_1#0-1]"
-                + "[(1-2)s:d|i:d|s:b|_2#1-2]" + "[(2-3)s:b|i:b|s:a|_3#2-3]");
+        fd.addTV("base", "bdb", "[(0-1)s:b|i:b|_1$<i>0<i>1]"
+                + "[(1-2)s:d|i:d|s:b|_2$<i>1<i>2]"
+                + "[(2-3)s:b|i:b|s:a|_3$<i>2<i>3]");
         return fd;
     }
 
@@ -214,8 +213,8 @@ public class TestSegmentIndex {
     private FieldDocument createFieldDoc4 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-4");
-        fd.addTV("base", "bdb", "[(0-1)s:b|i:b|s:c|_1#0-1]"
-                + "[(1-2)s:d|_2#1-2]" + "[(2-3)s:d|i:d|_3#2-3]");
+        fd.addTV("base", "bdb", "[(0-1)s:b|i:b|s:c|_1$<i>0<i>1]"
+                + "[(1-2)s:d|_2$<i>1<i>2]" + "[(2-3)s:d|i:d|_3$<i>2<i>3]");
         return fd;
     }
 }

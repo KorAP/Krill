@@ -40,10 +40,10 @@ public final class ElementSpans extends SimpleSpans {
     
 	public static enum PayloadTypeIdentifier {
 		ELEMENT(64), 
-		ELEMENT_WITH_TUI(65), 
-		ELEMENT_WITH_CERTAINTY_VALUE (66), 
-		ELEMENT_WITH_TUI_AND_CERTAINTY_VALUE (67), 
-		MILESTONE (68);
+        // ELEMENT_WITH_TUI(65),
+        // ELEMENT_WITH_CERTAINTY_VALUE (66),
+        // ELEMENT_WITH_TUI_AND_CERTAINTY_VALUE (67),
+        MILESTONE(65);
 		
 		private int value;
 
@@ -136,13 +136,12 @@ public final class ElementSpans extends SimpleSpans {
 			this.payloadTypeIdentifier = bb.get(0);
 			this.matchEndPosition = bb.getInt(9);
 
-			if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_WITH_TUI.value
-					|| payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_WITH_TUI_AND_CERTAINTY_VALUE.value) {
+            if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT.value
+                    && length > 15) {
 				this.setSpanId(bb.getShort(14));
 				this.hasSpanId = true;
 			}
             else {
-				// System.out.println(payloadTypeIdentifier);
                 this.setSpanId((short) -1);
             }
 

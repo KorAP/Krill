@@ -10,11 +10,11 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.response.Result;
 
 public class TestElementDistanceExclusionIndex {
 
@@ -36,13 +36,17 @@ public class TestElementDistanceExclusionIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "ceccdcdecd", "[(0-1)s:c|_1#0-1|<>:s#0-1$<i>1]"
-                + "[(1-2)s:e|_2#1-2|<>:s#1-2$<i>2]"
-                + "[(2-3)s:c|_3#2-3|<>:s#2-4$<i>4]" + "[(3-4)s:c|_4#3-4]"
-                + "[(4-5)s:d|_5#4-5|<>:s#4-6$<i>6]" + "[(5-6)s:c|_6#5-6]"
-                + "[(6-7)s:d|_7#6-7|<>:s#6-7$<i>7]"
-                + "[(7-8)s:e|_8#7-8|<>:s#7-9$<i>9]" + "[(8-9)s:c|_9#8-9]"
-                + "[(9-10)s:d|_10#9-10]");
+        fd.addTV("base", "ceccdcdecd",
+                "[(0-1)s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1]"
+                        + "[(1-2)s:e|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2]"
+                        + "[(2-3)s:c|_3$<i>2<i>3|<>:s$<b>64<i>2<i>4<i>4]"
+                        + "[(3-4)s:c|_4$<i>3<i>4]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>6<i>6]"
+                        + "[(5-6)s:c|_6$<i>5<i>6]"
+                        + "[(6-7)s:d|_7$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>7]"
+                        + "[(7-8)s:e|_8$<i>7<i>8|<>:s$<b>64<i>7<i>9<i>9]"
+                        + "[(8-9)s:c|_9$<i>8<i>9]"
+                        + "[(9-10)s:d|_10$<i>9<i>10]");
         return fd;
     }
 
@@ -50,12 +54,15 @@ public class TestElementDistanceExclusionIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "eedadaeed", "[(0-1)s:e|_1#0-1|<>:s#0-1$<i>1]"
-                + "[(1-2)s:e|_2#1-2|<>:s#1-2$<i>2]"
-                + "[(2-3)s:d|_3#2-3|<>:s#2-4$<i>4]" + "[(3-4)s:a|_4#3-4]"
-                + "[(4-5)s:d|_5#4-5|<>:s#4-7$<i>6]" + "[(5-6)s:a|_6#5-6]"
-                + "[(6-7)s:e|_7#6-7|<>:s#6-7$<i>9]" + "[(7-8)s:e|_8#7-8]"
-                + "[(8-9)s:d|_9#8-9]");
+        fd.addTV("base", "eedadaeed",
+                "[(0-1)s:e|_1$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1]"
+                        + "[(1-2)s:e|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2]"
+                        + "[(2-3)s:d|_3$<i>2<i>3|<>:s$<b>64<i>2<i>4<i>4]"
+                        + "[(3-4)s:a|_4$<i>3<i>4]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>7<i>6]"
+                        + "[(5-6)s:a|_6$<i>5<i>6]"
+                        + "[(6-7)s:e|_7$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>9]"
+                        + "[(7-8)s:e|_8$<i>7<i>8]" + "[(8-9)s:d|_9$<i>8<i>9]");
         return fd;
     }
 
@@ -63,12 +70,16 @@ public class TestElementDistanceExclusionIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-");
-        fd.addTV("base", "dcacacdac", "[(0-1)s:d|_1#0-1|<>:s#0-1$<i>1]"
-                + "[(1-2)s:c|_2#1-2|<>:s#1-2$<i>2]"
-                + "[(2-3)s:a|_3#2-3|<>:s#2-4$<i>4]" + "[(3-4)s:c|_4#3-4]"
-                + "[(4-5)s:a|_5#4-5|<>:s#4-6$<i>6]" + "[(5-6)s:c|_6#5-6]"
-                + "[(6-7)s:d|_7#6-7|<>:s#6-7$<i>7]"
-                + "[(7-8)s:a|_8#7-8|<>:s#7-9$<i>9]" + "[(8-9)s:c|_9#8-9]");
+        fd.addTV("base", "dcacacdac",
+                "[(0-1)s:d|_1$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1]"
+                        + "[(1-2)s:c|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2]"
+                        + "[(2-3)s:a|_3$<i>2<i>3|<>:s$<b>64<i>2<i>4<i>4]"
+                        + "[(3-4)s:c|_4$<i>3<i>4]"
+                        + "[(4-5)s:a|_5$<i>4<i>5|<>:s$<b>64<i>4<i>6<i>6]"
+                        + "[(5-6)s:c|_6$<i>5<i>6]"
+                        + "[(6-7)s:d|_7$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>7]"
+                        + "[(7-8)s:a|_8$<i>7<i>8|<>:s$<b>64<i>7<i>9<i>9]"
+                        + "[(8-9)s:c|_9$<i>8<i>9]");
         return fd;
     }
 
