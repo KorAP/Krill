@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
@@ -57,10 +56,20 @@ public class RelationSpans extends RelationBaseSpans {
     private TermSpans relationTermSpan;
 
     protected Logger logger = LoggerFactory.getLogger(RelationSpans.class);
-    private List<CandidateRelationSpan> candidateList;
+    private List<CandidateSpan> candidateList;
     private byte tempSourceNum, tempTargetNum;
     private byte sourceClass, targetClass;
 
+    public static enum PayloadTypeIdentifier {
+        TERM_TO_TERM(32), TERM_TO_ELEMENT(33), ELEMENT_TO_TERM(34), ELEMENT_TO_ELEMENT(
+                35);
+
+        private byte value;
+
+        private PayloadTypeIdentifier (int value) {
+            this.value = (byte) value;
+        }
+    }
 
     /**
      * Constructs RelationSpans from the given
@@ -112,7 +121,7 @@ public class RelationSpans extends RelationBaseSpans {
     private boolean advance () throws IOException {
         while (hasMoreSpans || !candidateList.isEmpty()) {
             if (!candidateList.isEmpty()) {
-                CandidateRelationSpan cs = candidateList.get(0);
+                CandidateSpan cs = candidateList.get(0);
                 this.matchDocNumber = cs.getDoc();
                 this.matchStartPosition = cs.getStart();
                 this.matchEndPosition = cs.getEnd();
@@ -146,7 +155,8 @@ public class RelationSpans extends RelationBaseSpans {
     private void setCandidateList () throws IOException {
         while (hasMoreSpans && relationTermSpan.doc() == currentDoc
                 && relationTermSpan.start() == currentPosition) {
-            CandidateRelationSpan cs = new CandidateRelationSpan(
+
+            CandidateSpan cs = new CandidateSpan(
                     relationTermSpan);
             readPayload(cs);
             setPayload(cs);
@@ -167,7 +177,7 @@ public class RelationSpans extends RelationBaseSpans {
      * @param cs
      *            a CandidateRelationSpan
      */
-    private void readPayload (CandidateRelationSpan cs) {
+    private void readPayload(CandidateSpan cs) {
         List<byte[]> payload = (List<byte[]>) cs.getPayloads();
         int length = payload.get(0).length;
         ByteBuffer bb = ByteBuffer.allocate(length);
@@ -176,34 +186,33 @@ public class RelationSpans extends RelationBaseSpans {
         cs.setLeftStart(cs.start);
 
         int i;
-        switch (length) {
-            case 10: // Token to token
-                i = bb.getInt(0);
-                cs.setLeftEnd(cs.start + 1);
-                cs.setRightStart(i);
-                cs.setRightEnd(i + 1);
-                break;
-
-            case 14: // Token to span
-                cs.setLeftEnd(cs.start + 1);
-                cs.setRightStart(bb.getInt(0));
-                cs.setRightEnd(bb.getInt(4));
-                break;
-
-            case 15: // Span to token
-                cs.setEnd(bb.getInt(0));
-                cs.setLeftEnd(cs.end);
-                i = bb.getInt(5);
-                cs.setRightStart(i);
-                cs.setRightEnd(i + 1);
-                break;
-
-            case 18: // Span to span
-                cs.setEnd(bb.getInt(0));
-                cs.setLeftEnd(cs.end);
-                cs.setRightStart(bb.getInt(4));
-                cs.setRightEnd(bb.getInt(8));
-                break;
+        this.payloadTypeIdentifier = bb.get(0);
+        
+        if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_TERM.value){ // length 11            
+            i = bb.getInt(1);
+            cs.setLeftEnd(cs.start + 1);
+            cs.setRightStart(i);
+            cs.setRightEnd(i + 1);
+        }
+        else if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_ELEMENT.value) { // length
+            // 15
+            cs.setLeftEnd(cs.start + 1);
+            cs.setRightStart(bb.getInt(1));
+            cs.setRightEnd(bb.getInt(5));
+        }
+        else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_TERM.value) { // length
+            // 15
+            cs.setEnd(bb.getInt(1));
+            cs.setLeftEnd(cs.end);
+            i = bb.getInt(5);
+            cs.setRightStart(i);
+            cs.setRightEnd(i + 1);
+        }
+        else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_ELEMENT.value) {
+            cs.setEnd(bb.getInt(1));
+            cs.setLeftEnd(cs.end);
+            cs.setRightStart(bb.getInt(5));
+            cs.setRightEnd(bb.getInt(9));
         }
 
         cs.setRightId(bb.getShort(length - 2)); //right id
@@ -213,7 +222,7 @@ public class RelationSpans extends RelationBaseSpans {
     }
 
 
-    private void setPayload (CandidateRelationSpan cs) throws IOException {
+    private void setPayload(CandidateSpan cs) throws IOException {
         ArrayList<byte[]> payload = new ArrayList<byte[]>();
         if (relationTermSpan.isPayloadAvailable()) {
             payload.addAll(relationTermSpan.getPayload());
@@ -329,65 +338,6 @@ public class RelationSpans extends RelationBaseSpans {
      */
     public void setRightEnd (int rightEnd) {
         this.rightEnd = rightEnd;
-    }
-
-    /**
-     * CandidateRelationSpan stores a state of RelationSpans. In a
-     * list,
-     * CandidateRelationSpans are ordered first by the position of the
-     * relation
-     * left side.
-     */
-    class CandidateRelationSpan extends CandidateSpan {
-
-        private int rightStart, rightEnd;
-        private short leftId, rightId;
-
-
-        public CandidateRelationSpan (Spans span) throws IOException {
-            super(span);
-        }
-
-
-        public int getRightEnd () {
-            return rightEnd;
-        }
-
-
-        public void setRightEnd (int rightEnd) {
-            this.rightEnd = rightEnd;
-        }
-
-
-        public int getRightStart () {
-            return rightStart;
-        }
-
-
-        public void setRightStart (int rightStart) {
-            this.rightStart = rightStart;
-        }
-
-
-        public short getLeftId () {
-            return leftId;
-        }
-
-
-        public void setLeftId (short leftId) {
-            this.leftId = leftId;
-        }
-
-
-        public short getRightId () {
-            return rightId;
-        }
-
-
-        public void setRightId (short rightId) {
-            this.rightId = rightId;
-        }
-
     }
 
 }

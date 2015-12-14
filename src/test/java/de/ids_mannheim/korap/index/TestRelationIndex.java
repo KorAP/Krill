@@ -75,16 +75,19 @@ public class TestRelationIndex {
         fd.addTV(
                 "base",
                 "ceccecdeed",
-                "[(0-1)s:c$<s>1|_0#0-1|>:xip/syntax-dep_rel$<i>6<s>1<s>1<s>1]"
-                        + "[(1-2)s:e$<s>1|_1#1-2|<:xip/syntax-dep_rel$<i>9<s>1<s>1<s>1|>:xip/syntax-dep_rel$<i>4<s>1<s>1<s>1]"
-                        + "[(2-3)s:c|_2#2-3]"
-                        + "[(3-4)s:c$<s>1|s:b$<s>2|_3#3-4|<:xip/syntax-dep_rel$<i>9<s>1<s>1<s>1]"
-                        + "[(4-5)s:e$<s>1|s:d$<s>2|_4#4-5|<:xip/syntax-dep_rel$<i>1<s>1<s>1<s>1]"
-                        + "[(5-6)s:c|_5#5-6]"
-                        + "[(6-7)s:d$<s>1|_6#6-7|<:xip/syntax-dep_rel$<i>1<s>1<s>1<s>1]"
-                        + "[(7-8)s:e|_7#7-8]"
-                        + "[(8-9)s:e|s:b|_8#8-9]"
-                        + "[(9-10)s:d$<s>1|_9#9-10|>:xip/syntax-dep_rel$<i>1<s>2<s>1<s>1|>:xip/syntax-dep_rel$<i>3<s>1<s>1<s>1]");
+                "[(0-1)s:c$<s>1|_0$<i>0<i>1"
+                        + "|>:xip/syntax-dep_rel$<b>32<i>6<s>1<s>1<s>1]"
+                        + "[(1-2)s:e$<s>1|_1$<i>1<i>2|"
+                        + "<:xip/syntax-dep_rel$<b>32<i>9<s>1<s>1<s>1|"
+                        + ">:xip/syntax-dep_rel$<b>32<i>4<s>1<s>1<s>1]"
+                        + "[(2-3)s:c|_2$<i>2<i>3]"
+                        + "[(3-4)s:c$<s>1|s:b$<s>2|_3$<i>3<i>4|<:xip/syntax-dep_rel$<b>32<i>9<s>1<s>1<s>1]"
+                        + "[(4-5)s:e$<s>1|s:d$<s>2|_4$<i>4<i>5|<:xip/syntax-dep_rel$<b>32<i>1<s>1<s>1<s>1]"
+                        + "[(5-6)s:c|_5$<i>5<i>6]"
+                        + "[(6-7)s:d$<s>1|_6$<i>6<i>7|<:xip/syntax-dep_rel$<b>32<i>1<s>1<s>1<s>1]"
+                        + "[(7-8)s:e|_7$<i>7<i>8]"
+                        + "[(8-9)s:e|s:b|_8$<i>8<i>9]"
+                        + "[(9-10)s:d$<s>1|_9$<i>9<i>10|>:xip/syntax-dep_rel$<b>32<i>1<s>2<s>1<s>1|>:xip/syntax-dep_rel$<b>32<i>3<s>1<s>1<s>1]");
         return fd;
     }
 
@@ -95,23 +98,23 @@ public class TestRelationIndex {
         fd.addTV(
                 "base",
                 "ceccecdeed",
-                "[(0-1)s:c$<s>2|<>:p#0-3$<i>3<s>1|_0#0-1|"
-                        + ">:xip/syntax-dep_rel$<i>3<i>6<i>9<s>2<s>1<s>1|"
-                        + ">:xip/syntax-dep_rel$<i>6<i>9<s>1<s>2<s>1|"
-                        + "r@:func=subj$<s>2]"
-                        + "[(1-2)s:e|_1#1-2|<>:p#1-3$<i>3<s>1]"
-                        + "[(2-3)s:c|_2#2-3]"
-                        + "[(3-4)s:c|s:b|_3#3-4]"
-                        + "[(4-5)s:e|s:d|_4#4-5]"
-                        + "[(5-6)s:c|_5#5-6]"
-                        + "[(6-7)s:d$<s>2|<>:p#6-9$<i>9<s>1|_6#6-7|"
-                        + "<:xip/syntax-dep_rel$<i>9<b>0<i>1<s>1<s>1<s>2|"
-                        + ">:xip/syntax-dep_rel$<i>9<b>0<i>9<s>3<s>1<s>1|"
-                        + "<:xip/syntax-dep_rel$<i>9<i>1<i>3<s>2<s>1<s>1|"
-                        + "r@:func=obj$<s>2]"
-                        + "[(7-8)s:e|_7#7-8]"
-                        + "[(8-9)s:e|s:b|_8#8-9]"
-                        + "[(9-10)s:d$<s>1|_9#9-10|<:xip/syntax-dep_rel$<i>6<i>9<s>2<s>1<s>1]");
+                "[(0-1)s:c$<s>2|<>:p$<b>64<i>0<i>3<i>3<b>0<s>1|_0$<i>0<i>1|"
+                        + ">:xip/syntax-dep_rel$<b>35<i>3<i>6<i>9<s>2<s>1<s>1|"
+                        + ">:xip/syntax-dep_rel$<b>33<i>6<i>9<s>1<s>2<s>1|"
+                        + "@:func=subj$<b>18<s>2]"
+                        + "[(1-2)s:e|_1$<i>1<i>2|<>:p$<b>64<i>1<i>3<i>3<b>0<s>1]"
+                        + "[(2-3)s:c|_2$<i>2<i>3]"
+                        + "[(3-4)s:c|s:b|_3$<i>3<i>4]"
+                        + "[(4-5)s:e|s:d|_4$<i>4<i>5]"
+                        + "[(5-6)s:c|_5$<i>5<i>6]"
+                        + "[(6-7)s:d$<s>2|<>:p$<b>64<i>6<i>9<i>9<b>0<s>1|_6$<i>6<i>7|"
+                        + "<:xip/syntax-dep_rel$<b>34<i>9<i>1<s>1<s>1<s>2|"
+                        + ">:xip/syntax-dep_rel$<b>34<i>9<i>9<s>3<s>1<s>1|"
+                        + "<:xip/syntax-dep_rel$<b>35<i>9<i>1<i>3<s>2<s>1<s>1|"
+                        + "@:func=obj$<b>18<s>2]"
+                        + "[(7-8)s:e|_7$<i>7<i>8]"
+                        + "[(8-9)s:e|s:b|_8$<i>8<i>9]"
+                        + "[(9-10)s:d$<s>1|_9$<i>9<i>10|<:xip/syntax-dep_rel$<b>33<i>6<i>9<s>2<s>1<s>1]");
         return fd;
     }
 
@@ -122,62 +125,67 @@ public class TestRelationIndex {
         fd.addTV(
                 "base",
                 "Ich kaufe die Blümen für meine Mutter.",
-                "[(0-3)s:Ich|_0#0-3|pos:NN$<s>1|<>:s#0-38$<i>7<s>2|<>:np#0-3$<i>1<s>3|"
-                        + ">:child-of$<i>0<i>7<s>1<s>3<s>2|"
-                        + ">:child-of$<i>0<i>1<s>2<s>1<s>3|"
-                        + "<:child-of$<i>0<s>3<s>3<s>1|"
-                        + "<:child-of$<i>7<i>0<i>1<s>4<s>2<s>3|"
-                        + "<:child-of$<i>7<i>1<i>7<s>5<s>2<s>2|"
-                        + "<:dep$<i>0<s>2<s>1<s>1|"
-                        + "r@:func=sbj$<i>0<i>7<s>1]"
+                "[(0-3)s:Ich|_0$<i>0<i>3|pos:NN$<s>1|<>:s$<b>64<i>0<i>38<i>7<b>0<s>2|<>:np$<b>64<i>0<i>3<i>1<b>0<s>3|"
+                        + ">:child-of$<b>33<i>0<i>7<s>4<s>3<s>2|"
+                        + ">:child-of$<b>33<i>0<i>1<s>5<s>1<s>3|"
+                        + "<:child-of$<b>32<i>0<s>6<s>3<s>1|"
+                        + "<:child-of$<b>35<i>7<i>0<i>1<s>7<s>2<s>3|"
+                        + "<:child-of$<b>35<i>7<i>1<i>7<s>8<s>2<s>2|"
+                        + "<:dep$<b>32<i>0<s>9<s>1<s>1|"
+                        + "@:func=sbj$<b>18<i>7<s>4]"
                         +
 
-                        "[(1-2)s:kaufe|_1#4-9|pos:V$<s>1|<>:vp#4-38$<i>7<s>2|"
-                        + ">:child-of$<i>7<i>0<i>7<s>6<s>2<s>2|"
-                        + ">:child-of$<i>1<i>7<s>2<s>7<s>2|"
-                        + "<:child-of$<i>7<b>0<i>2<s>8<s>2<s>1|"
-                        + "<:child-of$<i>7<i>2<i>7<s>9<s>2<s>4|"
-                        + ">:dep$<i>0<s>3<s>1<s>1|"
-                        + ">:dep$<i>3<s>4<s>1<s>1]"
+                        "[(1-2)s:kaufe|_1$<i>4<i>9|pos:V$<s>1|<>:vp$<b>64<i>4<i>38<i>7<b>0<s>2|"
+                        + ">:child-of$<b>35<i>7<i>0<i>7<s>6<s>2<s>2|"
+                        + ">:child-of$<b>33<i>1<i>7<s>2<s>7<s>2|"
+                        + "<:child-of$<b>34<i>7<i>2<s>8<s>2<s>1|"
+                        + "<:child-of$<b>35<i>7<i>2<i>7<s>9<s>2<s>4|"
+                        + ">:dep$<b>32<i>0<s>3<s>1<s>1|"
+                        + ">:dep$<b>32<i>3<s>4<s>1<s>1]"
                         +
 
-                        "[(2-3)s:die|_2#10-13|pos:ART$<s>1|tt:DET$<s>2|<>:np#10-20$<i>4<s>3|<>:np#10-38$<i>7<s>4|"
-                        + ">:child-of$<i>4<i>2<i>7<s>10<s>3<s>4|"
-                        + ">:child-of$<i>2<i>4<s>11<s>1<s>3|"
-                        + ">:child-of$<i>7<i>1<i>7<s>12<s>4<s>2|"
-                        + "<:child-of$<i>4<b>0<i>2<s>13<s>3<s>1|"
-                        + "<:child-of$<i>4<b>0<i>3<s>14<s>3<s>1|"
-                        + "<:child-of$<i>7<i>2<i>4<s>15<s>4<s>3|"
-                        + "<:child-of$<i>7<i>4<i>7<s>16<s>4<s>2|"
-                        + ">:parent-of$<i>7<i>4<i>7<s>17<s>4<s>2|"
-                        + "<:dep$<i>3<s>3<s>1<s>1]" +
+                        "[(2-3)s:die|_2$<i>10<i>13|pos:ART$<s>1|tt:DET$<s>2|<>:np$<b>64<i>10<i>20<i>4<b>0<s>3|<>:np$<b>64<i>10<i>38<i>7<b>0<s>4|"
+                        + ">:child-of$<b>35<i>4<i>2<i>7<s>10<s>3<s>4|"
+                        + ">:child-of$<b>33<i>2<i>4<s>11<s>1<s>3|"
+                        + ">:child-of$<b>35<i>7<i>1<i>7<s>12<s>4<s>2|"
+                        + "<:child-of$<b>34<i>4<i>2<s>13<s>3<s>1|"
+                        + "<:child-of$<b>34<i>4<i>3<s>14<s>3<s>1|"
+                        + "<:child-of$<b>35<i>7<i>2<i>4<s>15<s>4<s>3|"
+                        + "<:child-of$<b>35<i>7<i>4<i>7<s>16<s>4<s>2|"
+                        + ">:parent-of$<b>35<i>7<i>4<i>7<s>17<s>4<s>2|"
+                        + "<:dep$<b>32<i>3<s>3<s>1<s>1|" 
+                        + "@:func=head$<b>18<i>4<s>3]"
 
-                        "[(3-4)s:Blümen|_3#14-20|pos:NN$<s>1|"
-                        + ">:child-of$<i>2<i>4<s>17<s>1<s>3|"
-                        + "<:dep$<i>1<s>2<s>1<s>1|" + ">:dep$<i>2<s>3<s>1<s>1|"
-                        + ">:dep$<i>4<s>4<s>1<s>1|"
-                        + "r@:func=head$<i>2<i>4<s>3|"
-                        + "r@:func=obj$<i>2<i>4<s>3]" +
+                        + "[(3-4)s:Blümen|_3$<i>14<i>20|pos:NN$<s>1|"
+                        + ">:child-of$<b>33<i>2<i>4<s>17<s>1<s>3|"
+                        + "<:dep$<b>32<i>1<s>2<s>1<s>1|"
+                        + ">:dep$<b>32<i>2<s>3<s>1<s>1|"
+                        + ">:dep$<b>32<i>4<s>4<s>1<s>1|"                        
+                        + "@:func=obj$<b>18<i>4<s>3]"
 
-                        "[(4-5)s:für|_4#21-24|pos:PREP$<s>1|<>:pp#21-38$<i>7<s>2|"
-                        + ">:child-of$<i>4<i>7<s>18<s>1<s>2|"
-                        + ">:child-of$<i>7<i>2<i>7<s>19<s>2<s>4|"
-                        + "<:child-of$<i>7<b>0<i>5<s>20<s>2<s>1|"
-                        + "<:child-of$<i>7<i>5<i>7<s>21<s>2<s>2|"
-                        + "<:dep$<i>3<s>1<s>1<s>1|" + ">:dep$<i>6<s>3<s>1<s>1]"
+
+                        + "[(4-5)s:für|_4$<i>21<i>24|pos:PREP$<s>1|<>:pp$<b>64<i>21<i>38<i>7<b>0<s>2|"
+                        + ">:child-of$<b>33<i>4<i>7<s>18<s>1<s>2|"
+                        + ">:child-of$<b>35<i>7<i>2<i>7<s>19<s>2<s>4|"
+                        + "<:child-of$<b>34<i>7<i>5<s>20<s>2<s>1|"
+                        + "<:child-of$<b>35<i>7<i>5<i>7<s>21<s>2<s>2|"
+                        + "<:dep$<b>32<i>3<s>1<s>1<s>1|"
+                        + ">:dep$<b>32<i>6<s>3<s>1<s>1]"
                         +
 
-                        "[(5-6)s:meine|_5#25-30|pos:ART$<s>1|<>:np#25-38$<i>7<s>2|"
-                        + ">:child-of$<i>5<i>7<s>22<s>1<s>2|"
-                        + ">:child-of$<i>7<i>4<i>7<s>23<s>2<s>2|"
-                        + "<:child-of$<i>7<b>0<i>5<s>24<s>2<s>1|"
-                        + "<:child-of$<i>7<b>0<i>6<s>25<s>2<s>1|"
-                        + "<:dep$<i>6<s>3<s>1<s>1]" +
-
-                        "[(6-7)s:Mutter.|_6#31-38|pos:NN$<s>1|"
-                        + ">:child-of$<i>5<i>7<s>26<s>1<s>2|"
-                        + ">:dep$<i>5<s>2<s>1<s>1|" + "<:dep$<i>4<s>3<s>1<s>1|"
-                        + "r@:func=head$<i>5<i>7<s>3]");
+                        "[(5-6)s:meine|_5$<i>25<i>30|pos:ART$<s>1|<>:np$<b>64<i>25<i>38<i>7<b>0<s>2|"
+                        + ">:child-of$<b>33<i>5<i>7<s>22<s>1<s>2|"
+                        + ">:child-of$<b>35<i>7<i>4<i>7<s>23<s>2<s>2|"
+                        + "<:child-of$<b>34<i>7<i>5<s>24<s>2<s>1|"
+                        + "<:child-of$<b>34<i>7<i>6<s>25<s>2<s>1|"
+                        + "<:dep$<b>32<i>6<s>3<s>1<s>1|" 
+                        + "@:func=head$<b>18<i>7<s>3]"
+        
+                        + "[(6-7)s:Mutter.|_6$<i>31<i>38|pos:NN$<s>1|"
+                        + ">:child-of$<b>33<i>5<i>7<s>26<s>1<s>2|"
+                        + ">:dep$<b>32<i>5<s>2<s>1<s>1|"
+                        + "<:dep$<b>32<i>4<s>3<s>1<s>1]");
+                        
 
         return fd;
     }
@@ -197,6 +205,7 @@ public class TestRelationIndex {
         kr = ki.search(sq, (short) 10);
 
         assertEquals((long) 7, kr.getTotalResults());
+
         // token to token
         assertEquals(0, kr.getMatch(0).getLocalDocID());
         assertEquals(0, kr.getMatch(0).getStartPos());
@@ -306,10 +315,13 @@ public class TestRelationIndex {
         fq.setRemoveTemporaryClasses(true);
         fq.setSorted(false);
 
+        SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
+                new Term("base", "@:func=sbj")), true);
+
+        kr = ki.search(saq, (short) 20);
+
         // child-of with attr func=sbj
-        SpanWithAttributeQuery wq = new SpanWithAttributeQuery(fq,
-                new SpanAttributeQuery(new SpanTermQuery(new Term("base",
-                        "r@:func=sbj")), true), true);
+        SpanWithAttributeQuery wq = new SpanWithAttributeQuery(fq, saq, true);
 
         kr = ki.search(wq, (short) 20);
         assertEquals((long) 1, kr.getTotalResults());
@@ -319,7 +331,8 @@ public class TestRelationIndex {
         // child-of without attr func=sbj
         wq = new SpanWithAttributeQuery(fq,
                 new SpanAttributeQuery(new SpanTermQuery(new Term("base",
-                        "r@:func=sbj")), true, true), true);
+ "@:func=sbj")), true, true),
+                true);
         kr = ki.search(wq, (short) 20);
         assertEquals((long) 12, kr.getTotalResults());
     }
@@ -407,19 +420,13 @@ public class TestRelationIndex {
 
         kr = ki.search(fq, (short) 10);
         assertEquals((long) 6, kr.getTotalResults());
-        // for (Match km : kr.getMatches()) {
-        // System.out.println(km.getStartPos() + "," + km.getEndPos()
-        // + " "
-        // + km.getSnippetBrackets());
-        // }
+
         SpanAttributeQuery aq = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "r@:func=head")), true);
+                new Term("base", "@:func=head")), true);
         kr = ki.search(aq, (short) 10);
 
         // dependency relation, which is also a head
-        SpanWithAttributeQuery wq = new SpanWithAttributeQuery(fq,
-                new SpanAttributeQuery(new SpanTermQuery(new Term("base",
-                        "r@:func=head")), true), true);
+        SpanWithAttributeQuery wq = new SpanWithAttributeQuery(fq, aq, true);
 
         kr = ki.search(wq, (short) 20);
 

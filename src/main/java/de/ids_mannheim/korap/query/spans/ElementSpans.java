@@ -45,10 +45,10 @@ public final class ElementSpans extends SimpleSpans {
         // ELEMENT_WITH_TUI_AND_CERTAINTY_VALUE (67),
         MILESTONE(65);
 		
-		private int value;
+        private byte value;
 
-		private PayloadTypeIdentifier(int value) {
-			this.value = value;
+        private PayloadTypeIdentifier (int value) {
+            this.value = (byte) value;
 		}
     }
     
@@ -125,8 +125,6 @@ public final class ElementSpans extends SimpleSpans {
             return;
 		}
 
-
-
 		if (!payload.isEmpty()) {
             // Get payload one by one
             final int length = payload.get(0).length;
@@ -147,8 +145,8 @@ public final class ElementSpans extends SimpleSpans {
 
 			// FIX ME
 			// Copy the start and end character offsets
-			b = Arrays.copyOfRange(bb.array(), 1, 9);
-			this.matchPayload = Collections.singletonList(b);
+            b = Arrays.copyOfRange(bb.array(), 1, 9);
+            this.matchPayload = Collections.singletonList(b);
             return;
         }
 

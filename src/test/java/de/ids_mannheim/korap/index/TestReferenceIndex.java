@@ -245,20 +245,22 @@ public class TestReferenceIndex {
                 "[(0-12)s:Frankenstein|_0$<i>0<i>12|<>:nn$<b>64<i>0<i>12<i>1<b>0<s>18|"
                         + "<>:s$<b>64<i>0<i>37<i>4<b>0<s>1|"
                         + "<>:np$<b>64<i>0<i>13<i>1<b>0<s>2|"
-                        + "<:stanford/d:tag$<i>1<s>1<s>18<s>19]"
+                        + "<:stanford/d:tag$<b>32<i>1<s>1<s>18<s>19]"
 
                         + "[(14-19)s:treat|_1$<i>14<i>19|<>:vb$<b>64<i>14<i>19<i>2<b>0<s>19|"
                         + "<>:vp$<b>64<i>14<i>36<i>4<b>0<s>3|"
-                        + ">:stanford/d:tag$<i>0<s>2<s>19<s>18|"
-                        + ">:stanford/d:tag$<i>3<s>3<s>19<s>21|"
-                        + ">:stanford/d:tag$<i>4<s>4<s>19<s>22]"
+                        + ">:stanford/d:tag$<b>32<i>0<s>2<s>19<s>18|"
+                        + ">:stanford/d:tag$<b>32<i>3<s>3<s>19<s>21|"
+                        + ">:stanford/d:tag$<b>32<i>4<s>4<s>19<s>22]"
 
-                        + "[(20-22)s:my|_2$<i>20<i>22|<>:prp$<b>64<i>20<i>22<i>3<s>20|<>:np$<b>64<i>20<i>31<i>3<s>4]"
+                        + "[(20-22)s:my|_2$<i>20<i>22|<>:prp$<b>64<i>20<i>22<i>3<b>0<s>20|"
+                        + "<>:np$<b>64<i>20<i>31<i>3<b>0<s>4]"
 
-                        + "[(23-31)s:daughter|_3$<i>23<i>31|<>:nn$<b>64<i>23<i>31<i>4<s>21|"
-                        + ">:stanford/d:tag$<i>2<s>5<s>21<s>20]"
+                        + "[(23-31)s:daughter|_3$<i>23<i>31|<>:nn$<b>64<i>23<i>31<i>4<b>0<s>21|"
+                        + ">:stanford/d:tag$<b>32<i>2<s>5<s>21<s>20]"
 
-                        + "[(32-36)s:well|_4$<i>32<i>36|<>:rb$<b>64<i>32<i>36<i>5<s>22|<>:advp$<b>64<i>32<i>36<i>4<s>5]");
+                        + "[(32-36)s:well|_4$<i>32<i>36|<>:rb$<b>64<i>32<i>36<i>5<b>0<s>22|"
+                        + "<>:advp$<b>64<i>32<i>36<i>4<b>0<s>5]");
         return fd;
     }
 
@@ -273,20 +275,24 @@ public class TestReferenceIndex {
                 "[(0-12)s:Frankenstein|_0$<i>0<i>12|<>:nn$<b>64<i>0<i>12<i>1<b>0<s>18|"
                         + "<>:s$<b>64<i>0<i>37<i>5<b>0<s>1|"
                         + "<>:np$<b>64<i>0<i>13<i>1<b>0<s>2|"
-                        + "<:stanford/d:tag$<i>1<s>1<s>18<s>19]"
+                        + "<:stanford/d:tag$<b>32<i>1<s>1<s>18<s>19]"
 
                         + "[(14-19)s:treat|_1$<i>14<i>19|<>:vb$<b>64<i>14<i>19<i>2<b>0<s>19|"
                         + "<>:vp$<b>64<i>14<i>36<i>5<b>0<s>3|"
-                        + ">:stanford/d:tag$<i>0<s>2<s>19<s>18|"
-                        + ">:stanford/d:tag$<i>3<s>3<s>19<s>21|"
-                        + ">:stanford/d:tag$<i>4<s>4<s>19<s>22]"
+                        + ">:stanford/d:tag$<b>32<i>0<s>2<s>19<s>18|"
+                        + ">:stanford/d:tag$<b>32<i>3<s>3<s>19<s>21|"
+                        + ">:stanford/d:tag$<b>32<i>4<s>4<s>19<s>22]"
 
-                        + "[(20-22)s:my|_2$<i>20<i>22|<>:prp$<b>64<i>20<i>22<i>3<b>0<s>20|<>:np$<b>64<i>20<i>31<i>4<b>0<s>4]"
+                        + "[(20-22)s:my|_2$<i>20<i>22|"
+                        + "<>:prp$<b>64<i>20<i>22<i>3<b>0<s>20|"
+                        + "<>:np$<b>64<i>20<i>31<i>4<b>0<s>4]"
 
                         + "[(23-31)s:daughter|_3$<i>23<i>31|<>:nn$<b>64<i>23<i>31<i>4<b>0<s>21|"
-                        + ">:stanford/d:tag$<i>2<s>5<s>21<s>20]"
+                        + ">:stanford/d:tag$<b>32<i>2<s>5<s>21<s>20]"
 
-                        + "[(32-36)s:well|_4$<i>32<i>36|<>:rb$<b>64<i>32<i>36<i>5<b>0<s>22|<>:advp$<b>64<i>32<i>36<i>5<b>0<s>5]"
+                        + "[(32-36)s:well|_4$<i>32<i>36|"
+                        + "<>:rb$<b>64<i>32<i>36<i>5<b>0<s>22|"
+                        + "<>:advp$<b>64<i>32<i>36<i>5<b>0<s>5]"
 
                         + "[(38-41)s:She|_5$<i>38<i>41|<>:prp$<b>64<i>38<i>41<i>6<b>0<s>23|"
                         + "<>:np$<b>64<i>38<i>41<i>6<b>0<s>36|"
@@ -299,10 +305,10 @@ public class TestReferenceIndex {
                         + "<>:np$<b>64<i>45<i>96<i>18<b>0<s>9]"
 
                         + "[(49-52)s:one|_8$<i>49<i>52|<>:nn$<b>64<i>49<i>52<i>9<b>0<s>26|"
-                        + ">:stanford/d:tag$<i>5<s>6<s>26<s>23|"
-                        + ">:stanford/d:tag$<i>6<s>7<s>26<s>24|"
-                        + ">:stanford/d:tag$<i>7<s>8<s>26<s>25|"
-                        + ">:stanford/d:tag$<i>10<s>9<s>26<s>28]"
+                        + ">:stanford/d:tag$<b>32<i>5<s>6<s>26<s>23|"
+                        + ">:stanford/d:tag$<b>32<i>6<s>7<s>26<s>24|"
+                        + ">:stanford/d:tag$<b>32<i>7<s>8<s>26<s>25|"
+                        + ">:stanford/d:tag$<b>32<i>10<s>9<s>26<s>28]"
 
                         + "[(53-57)s:that|_9$<i>53<i>57|<>:rp$<b>64<i>53<i>57<i>10<b>0<s>27|"
                         + "<>:sb$<b>64<i>53<i>96<i>18<b>0<s>10]"
@@ -310,15 +316,15 @@ public class TestReferenceIndex {
                         + "[(58-63)s:saved|_10$<i>58<i>63|<>:vb$<b>64<i>58<i>63<i>11<b>0<s>28|"
                         + "<>:s$<b>64<i>58<i>96<i>18<b>0<s>11|"
                         + "<>:vp$<b>64<i>58<i>96<i>18<b>0<s>12|"
-                        + ">:stanford/d:tag$<i>9<s>10<s>28<s>27|"
-                        + ">:stanford/d:tag$<i>12<s>11<s>28<s>30|"
-                        + ">:stanford/d:tag$<i>15<s>12<s>28<s>33]"
+                        + ">:stanford/d:tag$<b>32<i>9<s>10<s>28<s>27|"
+                        + ">:stanford/d:tag$<b>32<i>12<s>11<s>28<s>30|"
+                        + ">:stanford/d:tag$<b>32<i>15<s>12<s>28<s>33]"
 
                         + "[(64-68)s:your|_11$<i>64<i>68|<>:prp$<b>64<i>64<i>68<i>12<b>0<s>29|"
                         + "<>:np$<b>64<i>64<i>75<i>13<b>0<s>13]"
 
                         + "[(69-75)s:master|_12$<i>69<i>75|<>:nn$<b>64<i>69<i>75<i>13<b>0<s>30|"
-                        + ">:stanford/d:tag$<i>11<s>13<s>30<s>29]"
+                        + ">:stanford/d:tag$<b>32<i>11<s>13<s>30<s>29]"
 
                         + "[(76-79)s:who|_13$<i>76<i>79|<>:rp$<b>64<i>76<i>79<i>14<b>0<s>31|"
                         + "<>:sb$<b>64<i>76<i>96<i>18<b>0<s>14]"
@@ -329,15 +335,15 @@ public class TestReferenceIndex {
 
                         + "[(84-88)s:hold|_15$<i>84<i>88|<>:vb$<b>64<i>84<i>88<i>16<b>0<s>33|"
                         + "<>:vp$<b>64<i>84<i>96<i>18<b>0<s>16|"
-                        + ">:stanford/d:tag$<i>13<s>14<s>33<s>31|"
-                        + ">:stanford/d:tag$<i>14<s>15<s>33<s>32|"
-                        + ">:stanford/d:tag$<i>17<s>16<s>33<s>35]"
+                        + ">:stanford/d:tag$<b>32<i>13<s>14<s>33<s>31|"
+                        + ">:stanford/d:tag$<b>32<i>14<s>15<s>33<s>32|"
+                        + ">:stanford/d:tag$<b>32<i>17<s>16<s>33<s>35]"
 
                         + "[(89-91)s:so|_16$<i>89<i>91|<>:rb$<b>64<i>89<i>91<i>17<b>0<s>341|"
                         + "<>:adjp$<b>64<i>89<i>96<i>18<b>0<s>17]"
 
                         + "[(92-96)s:dear|_17$<i>92<i>96|<>:jj$<b>64<i>92<i>96<i>18<b>0<s>35|"
-                        + ">:stanford/d:tag$<i>16<s>17<s>35<s>34]");
+                        + ">:stanford/d:tag$<b>32<i>16<s>17<s>35<s>34]");
 
         return fd;
     }
