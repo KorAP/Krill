@@ -1,28 +1,16 @@
 package de.ids_mannheim.korap.index;
 
-import java.util.*;
-import java.io.*;
+import static org.junit.Assert.assertEquals;
 
-import org.apache.lucene.util.Version;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.Bits;
-
-import static org.junit.Assert.*;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.index.MultiTermTokenStream;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
+import de.ids_mannheim.korap.response.Result;
 
 @RunWith(JUnit4.class)
 public class TestRegexWildcardIndex {
@@ -36,15 +24,16 @@ public class TestRegexWildcardIndex {
         fd.addTV(
                 "base",
                 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
-                "[(0-4)s:affe|_0#0-4|-:t$<i>10]" + "[(5-10)s:afffe|_1#5-10]"
-                        + "[(11-15)s:baum|_2#11-15]"
-                        + "[(16-26)s:baumgarten|_3#16-26]"
-                        + "[(27-38)s:steingarten|_4#27-38]"
-                        + "[(39-44)s:franz|_5#39-44]"
-                        + "[(45-49)s:hans|_6#45-49]"
-                        + "[(50-54)s:haus|_7#50-54]"
-                        + "[(55-59)s:efeu|_8#55-59]"
-                        + "[(60-64)s:effe|_9#60-64]");
+                "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10]"
+                        + "[(5-10)s:afffe|_1$<i>5<i>10]"
+                        + "[(11-15)s:baum|_2$<i>11<i>15]"
+                        + "[(16-26)s:baumgarten|_3$<i>16<i>26]"
+                        + "[(27-38)s:steingarten|_4$<i>27<i>38]"
+                        + "[(39-44)s:franz|_5$<i>39<i>44]"
+                        + "[(45-49)s:hans|_6$<i>45<i>49]"
+                        + "[(50-54)s:haus|_7$<i>50<i>54]"
+                        + "[(55-59)s:efeu|_8$<i>55<i>59]"
+                        + "[(60-64)s:effe|_9$<i>60<i>64]");
         ki.addDoc(fd);
 
         ki.commit();
@@ -106,15 +95,16 @@ public class TestRegexWildcardIndex {
         fd.addTV(
                 "base",
                 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
-                "[(0-4)s:affe|_0#0-4|-:t$<i>10]" + "[(5-10)s:afffe|_1#5-10]"
-                        + "[(11-15)s:baum|_2#11-15]"
-                        + "[(16-26)s:baumgarten|_3#16-26]"
-                        + "[(27-38)s:steingarten|_4#27-38]"
-                        + "[(39-44)s:franz|_5#39-44]"
-                        + "[(45-49)s:hans|_6#45-49]"
-                        + "[(50-54)s:haus|_7#50-54]"
-                        + "[(55-59)s:efeu|_8#55-59]"
-                        + "[(60-64)s:effe|_9#60-64]");
+                "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10]"
+                        + "[(5-10)s:afffe|_1$<i>5<i>10]"
+                        + "[(11-15)s:baum|_2$<i>11<i>15]"
+                        + "[(16-26)s:baumgarten|_3$<i>16<i>26]"
+                        + "[(27-38)s:steingarten|_4$<i>27<i>38]"
+                        + "[(39-44)s:franz|_5$<i>39<i>44]"
+                        + "[(45-49)s:hans|_6$<i>45<i>49]"
+                        + "[(50-54)s:haus|_7$<i>50<i>54]"
+                        + "[(55-59)s:efeu|_8$<i>55<i>59]"
+                        + "[(60-64)s:effe|_9$<i>60<i>64]");
         ki.addDoc(fd);
 
         ki.commit();
@@ -178,16 +168,16 @@ public class TestRegexWildcardIndex {
         fd.addTV(
                 "base",
                 "AfFe aFfFE Baum Baumgarten SteinGarten franZ HaNs Haus Efeu effe",
-                "[(0-4)s:AfFe|i:affe|_0#0-4|-:t$<i>10]"
-                        + "[(5-10)s:aFfFE|i:afffe|_1#5-10]"
-                        + "[(11-15)s:Baum|i:baum|_2#11-15]"
-                        + "[(16-26)s:Baumgarten|i:baumgarten|_3#16-26]"
-                        + "[(27-38)s:SteinGarten|i:steingarten|_4#27-38]"
-                        + "[(39-44)s:franZ|i:franz|_5#39-44]"
-                        + "[(45-49)s:HaNs|i:hans|_6#45-49]"
-                        + "[(50-54)s:Haus|i:haus|_7#50-54]"
-                        + "[(55-59)s:Efeu|i:efeu|_8#55-59]"
-                        + "[(60-64)s:effe|i:effe|_9#60-64]");
+                "[(0-4)s:AfFe|i:affe|_0$<i>0<i>4|-:t$<i>10]"
+                        + "[(5-10)s:aFfFE|i:afffe|_1$<i>5<i>10]"
+                        + "[(11-15)s:Baum|i:baum|_2$<i>11<i>15]"
+                        + "[(16-26)s:Baumgarten|i:baumgarten|_3$<i>16<i>26]"
+                        + "[(27-38)s:SteinGarten|i:steingarten|_4$<i>27<i>38]"
+                        + "[(39-44)s:franZ|i:franz|_5$<i>39<i>44]"
+                        + "[(45-49)s:HaNs|i:hans|_6$<i>45<i>49]"
+                        + "[(50-54)s:Haus|i:haus|_7$<i>50<i>54]"
+                        + "[(55-59)s:Efeu|i:efeu|_8$<i>55<i>59]"
+                        + "[(60-64)s:effe|i:effe|_9$<i>60<i>64]");
         ki.addDoc(fd);
 
         ki.commit();
@@ -260,15 +250,16 @@ public class TestRegexWildcardIndex {
         fd.addTV(
                 "base",
                 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
-                "[(0-4)s:affe|_0#0-4|-:t$<i>10]" + "[(5-10)s:afffe|_1#5-10]"
-                        + "[(11-15)s:baum|_2#11-15]"
-                        + "[(16-26)s:baumgarten|_3#16-26]"
-                        + "[(27-38)s:steingarten|_4#27-38]"
-                        + "[(39-44)s:franz|_5#39-44]"
-                        + "[(45-49)s:hans|_6#45-49]"
-                        + "[(50-54)s:haus|_7#50-54]"
-                        + "[(55-59)s:efeu|_8#55-59]"
-                        + "[(60-64)s:effe|_9#60-64]");
+                "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10]"
+                        + "[(5-10)s:afffe|_1$<i>5<i>10]"
+                        + "[(11-15)s:baum|_2$<i>11<i>15]"
+                        + "[(16-26)s:baumgarten|_3$<i>16<i>26]"
+                        + "[(27-38)s:steingarten|_4$<i>27<i>38]"
+                        + "[(39-44)s:franz|_5$<i>39<i>44]"
+                        + "[(45-49)s:hans|_6$<i>45<i>49]"
+                        + "[(50-54)s:haus|_7$<i>50<i>54]"
+                        + "[(55-59)s:efeu|_8$<i>55<i>59]"
+                        + "[(60-64)s:effe|_9$<i>60<i>64]");
         ki.addDoc(fd);
 
         ki.commit();
@@ -300,15 +291,16 @@ public class TestRegexWildcardIndex {
         fd.addTV(
                 "base",
                 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
-                "[(0-4)s:affe|_0#0-4|-:t$<i>10]" + "[(5-10)s:afffe|_1#5-10]"
-                        + "[(11-15)s:baum|_2#11-15]"
-                        + "[(16-26)s:baumgarten|_3#16-26]"
-                        + "[(27-38)s:steingarten|_4#27-38]"
-                        + "[(39-44)s:franz|_5#39-44]"
-                        + "[(45-49)s:hans|_6#45-49]"
-                        + "[(50-54)s:haus|_7#50-54]"
-                        + "[(55-59)s:efeu|_8#55-59]"
-                        + "[(60-64)s:effe|_9#60-64]");
+                "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10]"
+                        + "[(5-10)s:afffe|_1$<i>5<i>10]"
+                        + "[(11-15)s:baum|_2$<i>11<i>15]"
+                        + "[(16-26)s:baumgarten|_3$<i>16<i>26]"
+                        + "[(27-38)s:steingarten|_4$<i>27<i>38]"
+                        + "[(39-44)s:franz|_5$<i>39<i>44]"
+                        + "[(45-49)s:hans|_6$<i>45<i>49]"
+                        + "[(50-54)s:haus|_7$<i>50<i>54]"
+                        + "[(55-59)s:efeu|_8$<i>55<i>59]"
+                        + "[(60-64)s:effe|_9$<i>60<i>64]");
         ki.addDoc(fd);
 
         ki.commit();

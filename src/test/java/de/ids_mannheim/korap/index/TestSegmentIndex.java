@@ -181,10 +181,11 @@ public class TestSegmentIndex {
         fd.addString("ID", "doc-0");
         fd.addTV("base", "bcbabd", "[(0-1)s:b|i:b|_1$<i>0<i>1]"
                 + "[(1-2)s:c|i:c|s:b|_2$<i>1<i>2]"
-                        + "[(2-3)s:b|i:b|_3$<i>2<i>3|<>:e$<b>64<i>2<i>4<i>4]"
-                        + "[(3-4)s:a|i:a|_4$<i>3<i>4|<>:e$<b>64<i>3<i>5<i>5|<>:e2$<b>64<i>3<i>5<i>5]"
+                + "[(2-3)s:b|i:b|_3$<i>2<i>3|<>:e$<b>64<i>2<i>4<i>4<b>0]"
+                + "[(3-4)s:a|i:a|_4$<i>3<i>4|<>:e$<b>64<i>3<i>5<i>5<b>0|"
+                + "<>:e2$<b>64<i>3<i>5<i>5<b>0]"
                 + "[(4-5)s:b|i:b|s:c|_5$<i>4<i>5]"
-                        + "[(5-6)s:d|i:d|_6$<i>5<i>6|<>:e2$<b>64<i>5<i>6<i>6]");
+                + "[(5-6)s:d|i:d|_6$<i>5<i>6|<>:e2$<b>64<i>5<i>6<i>6<b>0]");
         return fd;
     }
 
@@ -193,7 +194,7 @@ public class TestSegmentIndex {
         fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("base", "babaa", "[(0-1)s:b|i:b|s:c|_1$<i>0<i>1]"
-                + "[(1-2)s:a|i:a|s:b|_2$<i>1<i>2|<>:e$<b>64<i>1<i>3<i>3]"
+                + "[(1-2)s:a|i:a|s:b|_2$<i>1<i>2|<>:e$<b>64<i>1<i>3<i>3<b>0]"
                 + "[(2-3)s:b|i:b|s:a|_3$<i>2<i>3]"
                 + "[(3-4)s:a|i:a|_4$<i>3<i>4]" + "[(4-5)s:a|i:a|_5$<i>4<i>5]");
         return fd;

@@ -1,32 +1,15 @@
 package de.ids_mannheim.korap.index;
 
-import java.util.*;
-import java.io.*;
+import static org.junit.Assert.assertEquals;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+
+import org.apache.lucene.index.LeafReaderContext;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.response.Result;
-import de.ids_mannheim.korap.query.SpanElementQuery;
-import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.query.SpanClassQuery;
-import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.index.MultiTermTokenStream;
-import de.ids_mannheim.korap.index.PositionsToOffset;
-
-import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.index.TermContext;
-import org.apache.lucene.util.Bits;
-
-import java.nio.ByteBuffer;
 
 
 @RunWith(JUnit4.class)
@@ -37,13 +20,13 @@ public class TestPosToOffset {
         KrillIndex ki = new KrillIndex();
 
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "a b c", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>3]"
-                + "[(2-3)s:b|i:b|_1#2-3]" + "[(4-5)s:c|i:c|_2#4-5]");
+        fd.addTV("base", "a b c", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
+                + "[(2-3)s:b|i:b|_1$<i>2<i>3]" + "[(4-5)s:c|i:c|_2$<i>4<i>5]");
         ki.addDoc(fd);
 
         fd = new FieldDocument();
-        fd.addTV("base", "x  y  z", "[(0-1)s:x|i:x|_0#0-2|-:t$<i>3]"
-                + "[(3-4)s:y|i:y|_1#3-4]" + "[(6-7)s:z|i:z|_2#6-7]");  // 3
+        fd.addTV("base", "x  y  z", "[(0-1)s:x|i:x|_0$<i>0<i>2|-:t$<i>3]"
+                + "[(3-4)s:y|i:y|_1$<i>3<i>4]" + "[(6-7)s:z|i:z|_2$<i>6<i>7]"); // 3
         ki.addDoc(fd);
         ki.commit();
 

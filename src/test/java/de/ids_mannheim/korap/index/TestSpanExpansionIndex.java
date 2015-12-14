@@ -17,11 +17,11 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSpanExpansionIndex {
@@ -352,12 +352,12 @@ public class TestSpanExpansionIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "ceccecdeec", "[(0-1)s:c|_0#0-1]"
-                + "[(1-2)s:e|_1#1-2]" + "[(2-3)s:c|_2#2-3]"
-                + "[(3-4)s:c|s:d|_3#3-4]" + "[(4-5)s:e|_4#4-5]"
-                + "[(5-6)s:c|_5#5-6]" + "[(6-7)s:d|_6#6-7]"
-                + "[(7-8)s:e|_7#7-8]" + "[(8-9)s:e|_8#8-9]"
-                + "[(9-10)s:c|_9#9-10]");
+        fd.addTV("base", "ceccecdeec", "[(0-1)s:c|_0$<i>0<i>1]"
+                + "[(1-2)s:e|_1$<i>1<i>2]" + "[(2-3)s:c|_2$<i>2<i>3]"
+                + "[(3-4)s:c|s:d|_3$<i>3<i>4]" + "[(4-5)s:e|_4$<i>4<i>5]"
+                + "[(5-6)s:c|_5$<i>5<i>6]" + "[(6-7)s:d|_6$<i>6<i>7]"
+                + "[(7-8)s:e|_7$<i>7<i>8]" + "[(8-9)s:e|_8$<i>8<i>9]"
+                + "[(9-10)s:c|_9$<i>9<i>10]");
         return fd;
     }
 
@@ -365,10 +365,10 @@ public class TestSpanExpansionIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "bbccdd", "[(0-1)s:b|s:c|_0#0-1]"
-                + "[(1-2)s:b|_1#1-2]" + "[(2-3)s:c|_2#2-3]"
-                + "[(3-4)s:c|_3#3-4]" + "[(4-5)s:d|_4#4-5]"
-                + "[(5-6)s:d|_5#5-6]");
+        fd.addTV("base", "bbccdd", "[(0-1)s:b|s:c|_0$<i>0<i>1]"
+                + "[(1-2)s:b|_1$<i>1<i>2]" + "[(2-3)s:c|_2$<i>2<i>3]"
+                + "[(3-4)s:c|_3$<i>3<i>4]" + "[(4-5)s:d|_4$<i>4<i>5]"
+                + "[(5-6)s:d|_5$<i>5<i>6]");
         return fd;
     }
 
@@ -376,10 +376,10 @@ public class TestSpanExpansionIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "beccea", "[(0-1)s:b|s:c|_0#0-1]"
-                + "[(1-2)s:e|_1#1-2]" + "[(2-3)s:c|_2#2-3]"
-                + "[(3-4)s:c|_3#3-4]" + "[(4-5)s:e|_4#4-5]"
-                + "[(5-6)s:a|_5#5-6]");
+        fd.addTV("base", "beccea", "[(0-1)s:b|s:c|_0$<i>0<i>1]"
+                + "[(1-2)s:e|_1$<i>1<i>2]" + "[(2-3)s:c|_2$<i>2<i>3]"
+                + "[(3-4)s:c|_3$<i>3<i>4]" + "[(4-5)s:e|_4$<i>4<i>5]"
+                + "[(5-6)s:a|_5$<i>5<i>6]");
         return fd;
     }
 

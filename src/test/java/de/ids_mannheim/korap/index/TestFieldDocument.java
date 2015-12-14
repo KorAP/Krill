@@ -1,40 +1,26 @@
 package de.ids_mannheim.korap.index;
 
-import java.util.*;
-import java.io.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import org.apache.lucene.util.Version;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.Bits;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
-import static org.junit.Assert.*;
+import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillMeta;
-import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.query.SpanClassQuery;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.index.MultiTermTokenStream;
-
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-
+import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
-
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.index.Term;
 
 // mvn -Dtest=TestWithinIndex#indexExample1 test
 
@@ -55,8 +41,8 @@ public class TestFieldDocument {
         fd.addStored("layerInfo", "opennlp/p=pos");
         fd.addString("pubPlace", "Bochum");
         fd.addInt("lastModified", 20130717);
-        fd.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
-                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]");
+        fd.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
+                + "[(1-2)s:b|i:b|_1$<i>1<i>2]" + "[(2-3)s:c|i:c|_2$<i>2<i>3]");
 
         assertEquals(fd.doc.getField("title").name(), "title");
         assertEquals(fd.doc.getField("title").stringValue(), "Wikipedia");
@@ -100,9 +86,10 @@ public class TestFieldDocument {
         String json = new String("{" + "  \"fields\" : [" + "    { "
                 + "      \"primaryData\" : \"abc\"" + "    }," + "    {"
                 + "      \"name\" : \"tokens\"," + "      \"data\" : ["
-                + "         [ \"s:a\", \"i:a\", \"_0#0-1\", \"-:t$<i>3\"],"
-                + "         [ \"s:b\", \"i:b\", \"_1#1-2\" ],"
-                + "         [ \"s:c\", \"i:c\", \"_2#2-3\" ]" + "      ]"
+                        + "         [ \"s:a\", \"i:a\", \"_0$<i>0<i>1\", \"-:t$<i>3\"],"
+                        + "         [ \"s:b\", \"i:b\", \"_1$<i>1<i>2\" ],"
+                        + "         [ \"s:c\", \"i:c\", \"_2$<i>2<i>3\" ]"
+                        + "      ]"
                 + "    }" + "  ]," + "  \"corpusID\"  : \"WPD\","
                 + "  \"ID\"        : \"WPD-AAA-00001\","
                 + "  \"textClass\" : \"music entertainment\","

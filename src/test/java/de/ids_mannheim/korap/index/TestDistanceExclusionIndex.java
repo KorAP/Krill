@@ -178,15 +178,16 @@ public class TestDistanceExclusionIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "text", "[(0-1)s:c|_1#0-1]" + "[(1-2)s:e|_2#1-2]"
-				+ "[(2-3)s:c|_3#2-3|<>:y$<b>64<i>2<i>4<i>4]"
-				+ "[(3-4)s:c|_4#3-4|<>:x$<b>64<i>3<i>7<i>7]"
-				+ "[(4-5)s:d|_5#4-5|<>:y$<b>64<i>4<i>6<i>6]"
-				+ "[(5-6)s:c|_6#5-6|<>:y$<b>64<i>5<i>8<i>8]"
-				+ "[(6-7)s:d|_7#6-7]"
-				+ "[(7-8)s:e|_8#7-8|<>:x$<b>64<i>7<i>9<i>9]"
-				+ "[(8-9)s:e|_9#8-9]"
-				+ "[(9-10)s:d|_10#9-10|<>:x$<b>64<i>9<i>10<i>10]");
+        fd.addTV("base", "text", "[(0-1)s:c|_1$<i>0<i>1]"
+                + "[(1-2)s:e|_2$<i>1<i>2]"
+                + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
+                + "[(3-4)s:c|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
+                + "[(4-5)s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
+                + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8<b>0]"
+                + "[(6-7)s:d|_7$<i>6<i>7]"
+                + "[(7-8)s:e|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
+                + "[(8-9)s:e|_9$<i>8<i>9]"
+                + "[(9-10)s:d|_10$<i>9<i>10|<>:x$<b>64<i>9<i>10<i>10<b>0]");
         return fd;
     }
 
@@ -194,9 +195,10 @@ public class TestDistanceExclusionIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "text", "[(0-1)s:b|s:c|_1#0-1]" + "[(1-2)s:b|_2#1-2]"
-                + "[(2-3)s:c|_3#2-3]" + "[(3-4)s:c|_4#3-4]"
-                + "[(4-5)s:d|_5#4-5]" + "[(5-6)s:d|_6#5-6]");
+        fd.addTV("base", "text", "[(0-1)s:b|s:c|_1$<i>0<i>1]"
+                + "[(1-2)s:b|_2$<i>1<i>2]" + "[(2-3)s:c|_3$<i>2<i>3]"
+                + "[(3-4)s:c|_4$<i>3<i>4]" + "[(4-5)s:d|_5$<i>4<i>5]"
+                + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
 
@@ -204,11 +206,12 @@ public class TestDistanceExclusionIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "text", "[(0-1)s:b|_1#0-1]" + "[(1-2)s:b|_2#1-2]"
-                + "[(2-3)s:c|_3#2-3]" + "[(3-4)s:c|_4#3-4]"
-                + "[(4-5)s:b|_5#4-5]" + "[(5-6)s:d|_6#5-6]"
-                + "[(6-7)s:b|_7#6-7]" + "[(7-8)s:d|_8#7-8]"
-                + "[(8-9)s:c|_9#8-9]" + "[(9-10)s:d|_10#9-10]");
+        fd.addTV("base", "text", "[(0-1)s:b|_1$<i>0<i>1]"
+                + "[(1-2)s:b|_2$<i>1<i>2]" + "[(2-3)s:c|_3$<i>2<i>3]"
+                + "[(3-4)s:c|_4$<i>3<i>4]" + "[(4-5)s:b|_5$<i>4<i>5]"
+                + "[(5-6)s:d|_6$<i>5<i>6]" + "[(6-7)s:b|_7$<i>6<i>7]"
+                + "[(7-8)s:d|_8$<i>7<i>8]" + "[(8-9)s:c|_9$<i>8<i>9]"
+                + "[(9-10)s:d|_10$<i>9<i>10]");
         return fd;
     }
 

@@ -1,31 +1,20 @@
 package de.ids_mannheim.korap.index;
 
-import java.util.*;
-import java.io.*;
+import static org.junit.Assert.assertEquals;
 
-import org.apache.lucene.util.Version;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.Bits;
+import java.io.IOException;
 
-import static org.junit.Assert.*;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.response.Result;
-import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
-import de.ids_mannheim.korap.query.SpanElementQuery;
-import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.index.MultiTermTokenStream;
-
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.index.Term;
+import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.response.Result;
 
 // mvn -Dtest=TestWithinIndex#indexExample1 test
 
@@ -38,12 +27,12 @@ public class TestClassIndex {
 
         // abcabcabac
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "abcabcabac", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
-                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]"
-                + "[(3-4)s:a|i:a|_3#3-4]" + "[(4-5)s:b|i:b|_4#4-5]"
-                + "[(5-6)s:c|i:c|_5#5-6]" + "[(6-7)s:a|i:a|_6#6-7]"
-                + "[(7-8)s:b|i:b|_7#7-8]" + "[(8-9)s:a|i:a|_8#8-9]"
-                + "[(9-10)s:c|i:c|_9#9-10]");
+        fd.addTV("base", "abcabcabac", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
+                + "[(1-2)s:b|i:b|_1$<i>1<i>2]" + "[(2-3)s:c|i:c|_2$<i>2<i>3]"
+                + "[(3-4)s:a|i:a|_3$<i>3<i>4]" + "[(4-5)s:b|i:b|_4$<i>4<i>5]"
+                + "[(5-6)s:c|i:c|_5$<i>5<i>6]" + "[(6-7)s:a|i:a|_6$<i>6<i>7]"
+                + "[(7-8)s:b|i:b|_7$<i>7<i>8]" + "[(8-9)s:a|i:a|_8$<i>8<i>9]"
+                + "[(9-10)s:c|i:c|_9$<i>9<i>10]");
         ki.addDoc(fd);
 
         ki.commit();
@@ -244,12 +233,12 @@ public class TestClassIndex {
 
         // abcabcabac
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "abcabcabac", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
-                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]"
-                + "[(3-4)s:a|i:a|_3#3-4|<>:x#3-7$<i>7]"
-                + "[(4-5)s:b|i:b|_4#4-5]" + "[(5-6)s:c|i:c|_5#5-6]"
-                + "[(6-7)s:a|i:a|_6#6-7]" + "[(7-8)s:b|i:b|_7#7-8]"
-                + "[(8-9)s:a|i:a|_8#8-9]" + "[(9-10)s:c|i:c|_9#9-10]");
+        fd.addTV("base", "abcabcabac", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
+                + "[(1-2)s:b|i:b|_1$<i>1<i>2]" + "[(2-3)s:c|i:c|_2$<i>2<i>3]"
+                + "[(3-4)s:a|i:a|_3$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7]"
+                + "[(4-5)s:b|i:b|_4$<i>4<i>5]" + "[(5-6)s:c|i:c|_5$<i>5<i>6]"
+                + "[(6-7)s:a|i:a|_6$<i>6<i>7]" + "[(7-8)s:b|i:b|_7$<i>7<i>8]"
+                + "[(8-9)s:a|i:a|_8$<i>8<i>9]" + "[(9-10)s:c|i:c|_9$<i>9<i>10]");
         ki.addDoc(fd);
 
         ki.commit();

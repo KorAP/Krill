@@ -37,11 +37,11 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base", "text",
-                "[(0-1)s:b|s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1]"
+                "[(0-1)s:b|s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1<b>0]"
                         + "[(1-2)s:b|_2$<i>1<i>2]"
-                        + "[(2-3)s:c|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3]"
-                        + "[(3-4)s:b|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4]"
-                        + "[(4-5)s:b|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5]"
+                        + "[(2-3)s:c|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
+                        + "[(3-4)s:b|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4<b>0]"
+                        + "[(4-5)s:b|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
                         + "[(5-6)s:b|_6$<i>5<i>6]" + "[(6-7)s:c|_7$<i>6<i>7]");
         return fd;
     }
@@ -51,12 +51,12 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("base", "text",
-                "[(0-1)s:e|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1]"
-                        + "[(1-2)s:c|s:b|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2]"
-                        + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3]"
-                        + "[(3-4)s:b|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4]"
-                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5]"
-                        + "[(5-6)s:c|_6$<i>5<i>6|<>:s$<b>64<i>5<i>6<i>6]");
+                "[(0-1)s:e|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
+                        + "[(1-2)s:c|s:b|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2<b>0]"
+                        + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
+                        + "[(3-4)s:b|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4<b>0]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
+                        + "[(5-6)s:c|_6$<i>5<i>6|<>:s$<b>64<i>5<i>6<i>6<b>0]");
         return fd;
     }
 
@@ -65,11 +65,11 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV("base", "text",
-                "[(0-1)s:b|_1$<i>0<i>1|<>:p$<b>64<i>0<i>2<i>1]"
+                "[(0-1)s:b|_1$<i>0<i>1|<>:p$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:b|_2$<i>1<i>2]"
-                        + "[(2-3)s:b|_3$<i>2<i>3|<>:p$<b>64<i>2<i>3<i>3]"
-                        + "[(3-4)s:d|_4$<i>3<i>4|<>:p$<b>64<i>3<i>4<i>4]"
-                        + "[(4-5)s:d|_5$<i>4<i>5|<>:p$<b>64<i>4<i>5<i>5]"
+                        + "[(2-3)s:b|_3$<i>2<i>3|<>:p$<b>64<i>2<i>3<i>3<b>0]"
+                        + "[(3-4)s:d|_4$<i>3<i>4|<>:p$<b>64<i>3<i>4<i>4<b>0]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:p$<b>64<i>4<i>5<i>5<b>0]"
                         + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
@@ -79,11 +79,11 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
         fd.addTV("base", "text",
-                "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1]"
+                "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:d|_2$<i>1<i>2]"
-                        + "[(2-3)s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3]"
-                        + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4]"
-                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5]"
+                        + "[(2-3)s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
+                        + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4<b>0]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
                         + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
