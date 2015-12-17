@@ -36,7 +36,7 @@ public final class ElementSpans extends SimpleSpans {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    private byte[] b = new byte[8];
+    private byte[] b = new byte[10];
     
 	public static enum PayloadTypeIdentifier {
 		ELEMENT(64), 
@@ -112,8 +112,9 @@ public final class ElementSpans extends SimpleSpans {
 		else{
 			this.isPayloadLoaded = true;
 		}
-		
+
 		List<byte[]> payload;
+
         try {
 			payload = (List<byte[]>) termSpans.getPayload();
         }

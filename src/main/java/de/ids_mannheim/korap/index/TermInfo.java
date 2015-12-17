@@ -89,6 +89,9 @@ public class TermInfo implements Comparable<TermInfo> {
 
         // Analyze term value
         if (ttype != 1) {
+
+            this.payload.get(); // Ignore PTI
+
             if (DEBUG)
                 log.trace("Check {} for {}", tterm, prefixRegex.toString());
             matcher = prefixRegex.matcher(tterm);
@@ -117,9 +120,12 @@ public class TermInfo implements Comparable<TermInfo> {
         };
 
         // for spans and relations
-        if (ttype > 1)
+        if (ttype > 1) {
             // Unsure if this is correct
             this.endPos = this.payload.getInt() - 1;
+        };
+
+        // Ignore link id for the moment
 
         if (ttype == 2 && this.payload.position() < lastPos) {
             this.depth = this.payload.get();

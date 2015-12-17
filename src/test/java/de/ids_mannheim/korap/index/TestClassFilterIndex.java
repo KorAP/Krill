@@ -155,7 +155,6 @@ public class TestClassFilterIndex {
         assertEquals(6, kr.getMatch(0).getEndPos());
         assertEquals(14, kr.getMatch(1).getStartPos());
         assertEquals(15, kr.getMatch(1).getEndPos());
-
     }
 
 

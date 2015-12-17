@@ -435,7 +435,6 @@ public class TestMatchIdentifier {
         Match km = ki.getMatchInfo("match-c1!d1-p0-4", "tokens", null, null,
                 true, true);
 
-
         assertEquals(
                 "SnippetHTML (2)",
                 "<span class=\"context-left\">"
@@ -578,14 +577,14 @@ public class TestMatchIdentifier {
         fd.addTV(
                 "tokens",
                 "abcabcabac",
-                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<i>4|_0$<i>0<i>1|-:t$<i>10]"
+                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<b>32<i>4<s>0<s>0<s>0|_0$<i>0<i>1|-:t$<i>10]"
                         + "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1$<i>1<i>2]"
-                        + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:s#2-5$<i>5]"
-                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<i>1|_3$<i>3<i>4]"
+                        + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:s$<b>64<i>2<i>5<i>5]"
+                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<b>40<i>1<s>0<s>0<s>0|_3$<i>3<i>4]"
                         + "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4$<i>4<i>5]"
                         + "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>5<i>6]"
                         + "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6$<i>6<i>7]"
-                        + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag#7-10$<i>10|_7$<i>7<i>8]"
+                        + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag$<b>64<i>7<i>10<i>10|_7$<i>7<i>8]"
                         + "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8$<i>8<i>9]"
                         + "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>9<i>10]");
         return fd;
@@ -599,14 +598,14 @@ public class TestMatchIdentifier {
         fd.addTV(
                 "tokens",
                 "abcabcabac",
-                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<i>4|_0$<i>0<i>1|-:t$<i>10]"
-                        + "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|>:x/rel:b$<i>4|_1$<i>1<i>2]"
-                        + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:s#2-5$<i>5]"
-                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<i>1|_3$<i>3<i>4]"
+                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<b>32<i>4<s>0<s>0<s>0|_0$<i>0<i>1|-:t$<i>10]"
+                        + "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|>:x/rel:b$<b>32<i>4<s>0<s>0<s>0|_1$<i>1<i>2]"
+                        + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:s$<b>64<i>2<i>5<i>5]"
+                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<b>40<i>1<s>0<s>0<s>0|_3$<i>3<i>4]"
                         + "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4$<i>4<i>5]"
                         + "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>5<i>6]"
                         + "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6$<i>6<i>7]"
-                        + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag#7-10$<i>10|_7$<i>7<i>8]"
+                        + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag$<b>64<i>7<i>10<i>10|_7$<i>7<i>8]"
                         + "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8$<i>8<i>9]"
                         + "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>9<i>10]");
         return fd;
@@ -620,14 +619,14 @@ public class TestMatchIdentifier {
         fd.addTV(
                 "tokens",
                 "aa bb cc aa bb cc aa bb aa cc ",
-                "[(0-2)s:aa|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<i>4|_0$<i>0<i>2|-:t$<i>10]"
+                "[(0-2)s:aa|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<b>32<i>4<s>0<s>0<s>0|_0$<i>0<i>2|-:t$<i>10]"
                         + "[(3-5)s:bb|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1$<i>3<i>5]"
-                        + "[(6-8)s:cc|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>6<i>8|<>:s#6-14$<i>5]"
-                        + "[(9-11)s:aa|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<i>1|_3$<i>9<i>11]"
+                        + "[(6-8)s:cc|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>6<i>8|<>:s$<b>64<i>6<i>14<i>5]"
+                        + "[(9-11)s:aa|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<b>40<i>1<s>0<s>0<s>0|_3$<i>9<i>11]"
                         + "[(12-14)s:bb|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4$<i>12<i>14]"
                         + "[(15-17)s:cc|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>15<i>17]"
                         + "[(18-20)s:aa|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6$<i>18<i>20]"
-                        + "[(21-23)s:bb|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag#7-10$<i>10|_7$<i>21<i>23]"
+                        + "[(21-23)s:bb|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag$<b>64<i>7<i>10<i>10|_7$<i>21<i>23]"
                         + "[(24-26)s:aa|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8$<i>24<i>26]"
                         + "[(27-29)s:cc|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>27<i>29]");
         return fd;
@@ -641,14 +640,14 @@ public class TestMatchIdentifier {
         fd.addTV(
                 "tokens",
                 "abcabcabac",
-                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<i>4|_0$<i>0<i>1|-:t$<i>10]"
+                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<b>32<i>4<s>0<s>0<s>0|_0$<i>0<i>1|-:t$<i>10]"
                         + "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1$<i>1<i>2]"
-                        + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:s#2-5$<i>5]"
-                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<i>1|_3$<i>3<i>4]"
+                        + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:s$<b>64<i>2<i>5<i>5]"
+                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<b>40<i>1<s>0<s>0<s>0|_3$<i>3<i>4]"
                         + "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4$<i>4<i>5]"
-                        + "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>5<i>6|<>:s#5-7$<i>7]"
+                        + "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>5<i>6|<>:s$<b>64<i>5<i>7<i>7]"
                         + "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6$<i>6<i>7]"
-                        + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag#7-10$<i>10|_7$<i>7<i>8]"
+                        + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag$<b>64<i>7<i>10<i>10|_7$<i>7<i>8]"
                         + "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8$<i>8<i>9]"
                         + "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>9<i>10]");
         return fd;

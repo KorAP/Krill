@@ -70,7 +70,7 @@ public class ClassSpans extends SimpleSpans {
         // The highlighted payload
         this.classedPayload = new ArrayList<byte[]>(3);
 
-        this.bb = ByteBuffer.allocate(9);
+        this.bb = ByteBuffer.allocate(10);
     };
 
 
@@ -147,7 +147,7 @@ public class ClassSpans extends SimpleSpans {
 
         // Todo: Better allocate using a Factory!
         bb.clear();
-        bb.putInt(spans.start()).putInt(spans.end()).put(number);
+        bb.put((byte) 0).putInt(spans.start()).putInt(spans.end()).put(number);
 
         // Add highlight information as byte array
         classedPayload.add(bb.array());

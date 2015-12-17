@@ -232,9 +232,9 @@ public class Match extends AbstractDocument {
                 // Todo element searches!
 
                 // Highlights!
-                if (b.length == 9) {
+                if (b[0] == 0) {
                     bb.put(b);
-                    bb.rewind();
+                    bb.position(1); // Ignore PTI
 
                     int start = bb.getInt();
                     int end = bb.getInt();
@@ -247,6 +247,7 @@ public class Match extends AbstractDocument {
                                 this.getEndPos());
 
                     // Ignore classes out of match range and set by the system
+                    // TODO: This may be decidable by PT!!
                     if ((number & 0xFF) <= 128 && start >= this.getStartPos()
                             && end <= this.getEndPos())
                         this.addHighlight(start, end - 1, number);
@@ -254,9 +255,9 @@ public class Match extends AbstractDocument {
 
                 // Element payload for match!
                 // This MAY BE the correct match
-                else if (b.length == 8) {
+                else if (b[0] == 64) {
                     bb.put(b);
-                    bb.rewind();
+                    bb.position(1);
 
                     if (this.potentialStartPosChar == -1) {
                         this.potentialStartPosChar = bb.getInt(0);
