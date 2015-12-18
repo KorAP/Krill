@@ -238,8 +238,12 @@ public class SpansWithAttribute extends SimpleSpans {
      */
     private boolean searchSpanPosition () throws IOException {
         while (hasMoreSpans) {
-            if (referentSpans.getSpanId() < 1) { // the element does not have an attribute
-                hasMoreSpans = referentSpans.next();
+			// the element does not have an attribute
+			if (referentSpans.getSpanId() < 1) {
+				if (attributeList.size() == 0 || notAttributeList.size() > 0) {
+					return true;
+				}
+				hasMoreSpans = referentSpans.next();
                 continue;
             }
             if (checkAttributeListPosition()) {

@@ -121,6 +121,7 @@ public final class ElementSpans extends SimpleSpans {
 			// silently setting empty element and payload
             this.matchEndPosition = this.matchStartPosition;
             this.setSpanId((short) -1);
+			this.hasSpanId = false;
             this.matchPayload = null;
             return;
 		}
@@ -141,6 +142,7 @@ public final class ElementSpans extends SimpleSpans {
 			}
             else {
                 this.setSpanId((short) -1);
+				this.hasSpanId = false;
             }
 
 			// FIX ME
@@ -152,6 +154,7 @@ public final class ElementSpans extends SimpleSpans {
 
         this.matchEndPosition = this.matchStartPosition;
         this.setSpanId((short) -1);
+		this.hasSpanId = false;
         this.matchPayload = null;
     };
 

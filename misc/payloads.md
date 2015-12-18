@@ -119,11 +119,10 @@ means the right part starts at token position 1 and ends at token
 position 3.
 
 3) Element to term relation
-has 1 integer for end position of the left part, 1 byte as a dummy
-to differentiate payload length, 1 integer for end position of the
+has 1 integer for end position of the left part, 1 integer for end position of the
 right part, and 3 TUIs as above.
 
-    >:dependency$\<b\>34\<i\>2\<b\>0\<i\>3\<s\>5\<s\>4\<s\>3
+    >:dependency$\<b\>34\<i\>2\<i\>3\<s\>5\<s\>4\<s\>3
 
 means the left part ends at token position 2, and right part is a
 term ending at position 3.
