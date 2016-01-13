@@ -23,7 +23,9 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
     private int position;
     private CandidateSpan childSpan; // used for example for multiple distance
                                      // with unordered constraint
-    protected short spanId;
+	protected short spanId;
+	protected boolean hasSpanId;
+
     private short leftId, rightId;
     private int leftStart, leftEnd;
     private int rightStart, rightEnd;
@@ -50,9 +52,11 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
         if (span instanceof SimpleSpans) {
             SimpleSpans temp = (SimpleSpans) span;
             this.spanId = temp.getSpanId();
+			this.hasSpanId = temp.hasSpanId;
         }
         else if (span instanceof ClassSpans) {
             this.spanId = ((ClassSpans) span).getNumber();
+			this.hasSpanId = true;
         }
     }
 
@@ -297,6 +301,8 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
      */
     public void setSpanId (short spanId) {
         this.spanId = spanId;
+		if (spanId > 0)
+			this.hasSpanId = true;
     }
 
 
