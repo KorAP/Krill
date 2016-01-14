@@ -19,7 +19,7 @@
 
       ** Indexer after packaging (see above)
       $ java -jar target/Krill-Indexer.jar
-             src/main/resources/krill.properties
+             -cfg src/main/resources/krill.properties
              /data/hdd/lucene-new/WPD/
   -->
 

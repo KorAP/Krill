@@ -148,8 +148,9 @@ public final class ElementSpans extends SimpleSpans {
 
 			// FIX ME
 			// Copy the start and end character offsets
-            b = Arrays.copyOfRange(bb.array(), 1, 9);
-            this.matchPayload = Collections.singletonList(b);
+            // b = Arrays.copyOfRange(bb.array(), 1, 9);
+            // this.matchPayload = Collections.singletonList(b);
+            this.matchPayload = Collections.singletonList(bb.array());
             return;
         }
 

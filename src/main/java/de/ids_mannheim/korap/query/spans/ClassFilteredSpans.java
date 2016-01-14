@@ -55,8 +55,9 @@ public class ClassFilteredSpans extends SimpleSpans {
 
     private boolean isClassOperationValid () throws IOException {
         setBitsets();
-        int cardinality = Math
-                .max(bitset1.cardinality(), bitset2.cardinality());
+
+        int cardinality = Math.max(bitset1.cardinality(), bitset2.cardinality());
+
         bitset1.and(bitset2);
         // System.out.println("cardinality:" + cardinality);
         switch (operation) {
@@ -92,10 +93,20 @@ public class ClassFilteredSpans extends SimpleSpans {
         int start, end;
         // System.out.println("------------------------");
         for (byte[] payload : firstSpans.getPayload()) {
-            if (payload.length == 9) {
-                start = byte2int(payload, 0) + 1;
-                end = byte2int(payload, 4) + 1;
-                if (payload[8] == classNum1) {
+            System.err.println(
+                               "** " +
+                               payload[0] +
+                               "|" +
+                               byte2int(payload, 1) +
+                               "|" +
+                               byte2int(payload, 5) +
+                               "|" +
+                               payload[8] +
+                               " **");
+            if (payload[0] == 0) {
+                start = byte2int(payload, 1) + 1;
+                end = byte2int(payload, 5) + 1;
+                if (payload[9] == classNum1) {
                     // System.out.println("bitset1 " + start + " " +
                     // end);
                     if (bitset1 == null) {
@@ -108,7 +119,7 @@ public class ClassFilteredSpans extends SimpleSpans {
                     }
                     // System.out.println(bitset1);
                 }
-                else if (payload[8] == classNum2) {
+                else if (payload[9] == classNum2) {
                     // System.out.println("#bitset2 " + start + " " +
                     // end);
                     if (bitset2 == null) {
