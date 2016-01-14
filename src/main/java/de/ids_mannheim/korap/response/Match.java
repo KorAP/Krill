@@ -221,7 +221,8 @@ public class Match extends AbstractDocument {
         // Reverse to make embedding of highlights correct
         Collections.reverse(payload);
         try {
-            ByteBuffer bb = ByteBuffer.allocate(10);
+
+            ByteBuffer bb = ByteBuffer.allocate(24);
 
             // TODO: REVERSE ITERATOR!
             for (byte[] b : payload) {
@@ -255,20 +256,21 @@ public class Match extends AbstractDocument {
 
                 // Element payload for match!
                 // This MAY BE the correct match
-                else if (b[0] == 64) {
+                else if (b[0] == (byte) 64) {
+
                     bb.put(b);
-                    bb.position(1);
+
 
                     if (this.potentialStartPosChar == -1) {
-                        this.potentialStartPosChar = bb.getInt(0);
+                        this.potentialStartPosChar = bb.getInt(1);
                     }
                     else {
                         if (bb.getInt(0) < this.potentialStartPosChar)
-                            this.potentialStartPosChar = bb.getInt(0);
+                            this.potentialStartPosChar = bb.getInt(1);
                     };
 
                     if (bb.getInt(4) > this.potentialEndPosChar)
-                        this.potentialEndPosChar = bb.getInt(4);
+                        this.potentialEndPosChar = bb.getInt(5);
 
                     if (DEBUG)
                         log.trace("Element payload from {} to {}",
@@ -903,6 +905,7 @@ public class Match extends AbstractDocument {
         if (processed)
             return true;
 
+
         // Relevant details are missing
         if (this.positionsToOffset == null || this.localDocID == -1) {
             log.warn("You have to define "
@@ -1138,6 +1141,7 @@ public class Match extends AbstractDocument {
             sb.append("... ");
 
         for (HighlightCombinatorElement hce : this.snippetArray.list()) {
+
             sb.append(hce.toBrackets(this));
         };
 

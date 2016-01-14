@@ -414,6 +414,10 @@ public class TestMatchIndex {
         kr = ki.search(sq, (short) 10);
         assertEquals(kr.getSerialQuery(),
                 "focus(3: spanContain({2: <base:s />}, {3: base:s:b}))");
+
+        System.err.println(kr.getMatch(0).getSnippetBrackets());
+
+
         assertEquals(kr.getMatch(0).getSnippetBrackets(), "a[{3:b}]cabcab ...");
     };
 

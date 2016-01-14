@@ -148,6 +148,7 @@ public class ClassSpans extends SimpleSpans {
         // Todo: Better allocate using a Factory!
         bb.clear();
         bb.put((byte) 0).putInt(spans.start()).putInt(spans.end()).put(number);
+        /*
         System.err.println(
                            "####################### " + 
                            spans.start() +
@@ -156,6 +157,7 @@ public class ClassSpans extends SimpleSpans {
                            ":" +
                            number
                            );
+        */
 
         // Add highlight information as byte array
         classedPayload.add(bb.array());

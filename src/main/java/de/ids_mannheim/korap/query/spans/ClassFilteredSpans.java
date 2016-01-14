@@ -93,6 +93,7 @@ public class ClassFilteredSpans extends SimpleSpans {
         int start, end;
         // System.out.println("------------------------");
         for (byte[] payload : firstSpans.getPayload()) {
+            /*
             System.err.println(
                                "** " +
                                payload[0] +
@@ -103,6 +104,7 @@ public class ClassFilteredSpans extends SimpleSpans {
                                "|" +
                                payload[8] +
                                " **");
+            */
             if (payload[0] == 0) {
                 start = byte2int(payload, 1) + 1;
                 end = byte2int(payload, 5) + 1;

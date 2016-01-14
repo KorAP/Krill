@@ -105,9 +105,11 @@ public class TestClassFilterIndex {
         // }
         assertEquals(0, kr.getMatch(0).getStartPos());
         assertEquals(5, kr.getMatch(0).getEndPos());
+
         assertEquals(
                 "[{1:Frankenstein}, {2:treat my daughter well}]. She is the one that saved ...",
                 kr.getMatch(0).getSnippetBrackets());
+
         assertEquals(1, kr.getMatch(1).getStartPos());
         assertEquals(6, kr.getMatch(1).getEndPos());
         assertEquals(
