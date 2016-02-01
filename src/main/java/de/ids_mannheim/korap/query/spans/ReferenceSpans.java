@@ -51,10 +51,10 @@ public class ReferenceSpans extends SimpleSpans {
         matchPayload.clear();
 
         for (byte[] payload : firstSpans.getPayload()) {
-            if (payload.length == 9 && payload[8] == classNum) {
+			if (payload.length == 10 && payload[9] == classNum) {
                 if (isFound) {
-                    if (start == byte2int(payload, 0)
-                            && end == byte2int(payload, 4)) {
+					if (start == byte2int(payload, 1)
+							&& end == byte2int(payload, 5)) {
                         match = true;
                         continue;
                     }
@@ -62,8 +62,8 @@ public class ReferenceSpans extends SimpleSpans {
                     break;
                 }
 
-                start = byte2int(payload, 0);
-                end = byte2int(payload, 4);
+				start = byte2int(payload, 1);
+				end = byte2int(payload, 5);
                 isFound = true;
                 matchPayload.add(payload);
             }

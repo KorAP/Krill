@@ -332,7 +332,9 @@ public class ExpandedExclusionSpans extends SimpleSpans {
      * @return a byte array of extension offsets and class number
      */
     private byte[] createExtensionPayloads (int start, int end) {
-        ByteBuffer buffer = ByteBuffer.allocate(9);
+		ByteBuffer buffer = ByteBuffer.allocate(10);
+		Byte classPTI = 0;
+		buffer.put(classPTI);
         buffer.putInt(start);
         buffer.putInt(end);
         buffer.put(classNumber);

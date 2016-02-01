@@ -165,37 +165,35 @@ public class FocusSpans extends SimpleSpans {
         for (byte[] payload : firstSpans.getPayload()) {
             // No class payload - ignore
             // this may be problematic for other calculated payloads!
-            /*
-            if ((!matchTemporaryClass && payload.length == 9)
-                    || (matchTemporaryClass && payload.length == 10)) {
-            */
 
-            if (payload[0] == 0) {
-                if (classNumbers.contains(payload[9])) {
-                    isClassFound = true;
-                    classStart = byte2int(payload, 1);
-                    classEnd = byte2int(payload, 5);
+            if ((!matchTemporaryClass && payload.length == 10)
+                    || (matchTemporaryClass && payload.length == 11)) {
 
-                    if (isStart || classStart < minPos) {
-                        minPos = classStart;
-                        isStart = false;
+                if (payload[0] == 0) {
+                    if (classNumbers.contains(payload[9])) {
+                        isClassFound = true;
+                        classStart = byte2int(payload, 1);
+                        classEnd = byte2int(payload, 5);
+
+                        if (isStart || classStart < minPos) {
+                            minPos = classStart;
+                            isStart = false;
+                        }
+                        if (classEnd > maxPos) {
+                            maxPos = classEnd;
+                        }
                     }
-                    if (classEnd > maxPos) {
-                        maxPos = classEnd;
-                    }
+
+                    if (removeTemporaryClasses) {
+                        continue;
+                    };
                 }
+			}
 
-                if (removeTemporaryClasses) {
-                    continue;
-                };
-            }
-        
-            /*
-            if (payload.length == 8
-                    || (removeTemporaryClasses && payload.length == 10)) {
+            if (//payload.length == 8 || 
+                    (removeTemporaryClasses && payload.length == 11)) {
                 continue;
             }
-            */
 
             candidateSpan.getPayloads().add(payload.clone());
         }

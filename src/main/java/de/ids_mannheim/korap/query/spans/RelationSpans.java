@@ -285,11 +285,13 @@ public class RelationSpans extends RelationBaseSpans {
             boolean keep) {
         ByteBuffer buffer = null;
         if (keep) {
-            buffer = ByteBuffer.allocate(9);
+			buffer = ByteBuffer.allocate(10);
         }
         else {
-            buffer = ByteBuffer.allocate(10);
+			buffer = ByteBuffer.allocate(11);
         }
+		Byte classPTI = 0;
+		buffer.put(classPTI);
         buffer.putInt(start);
         buffer.putInt(end);
         buffer.put(classNumber);

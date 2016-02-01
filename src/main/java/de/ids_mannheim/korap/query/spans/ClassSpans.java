@@ -33,8 +33,6 @@ public class ClassSpans extends SimpleSpans {
     protected SpanQuery operand;
     protected Boolean hasmorespans = false;
 
-    protected ByteBuffer bb;
-
     private final Logger log = LoggerFactory.getLogger(ClassSpans.class);
 
     // This advices the java compiler to ignore all loggings
@@ -70,7 +68,6 @@ public class ClassSpans extends SimpleSpans {
         // The highlighted payload
         this.classedPayload = new ArrayList<byte[]>(3);
 
-        this.bb = ByteBuffer.allocate(10);
     };
 
 
@@ -146,8 +143,11 @@ public class ClassSpans extends SimpleSpans {
         };
 
         // Todo: Better allocate using a Factory!
-        bb.clear();
-        bb.put((byte) 0).putInt(spans.start()).putInt(spans.end()).put(number);
+		ByteBuffer bb = ByteBuffer.allocate(10);
+		bb.put((byte) 0);
+		bb.putInt(spans.start());
+		bb.putInt(spans.end());
+		bb.put(number);
         /*
         System.err.println(
                            "####################### " + 
