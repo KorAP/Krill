@@ -167,7 +167,7 @@ public class FocusSpans extends SimpleSpans {
             // this may be problematic for other calculated payloads!
 
             if ((!matchTemporaryClass && payload.length == 10)
-                    || (matchTemporaryClass && payload.length == 11)) {
+                || (matchTemporaryClass && payload.length == 11)) {
 
                 if (payload[0] == 0) {
                     if (classNumbers.contains(payload[9])) {
@@ -189,6 +189,11 @@ public class FocusSpans extends SimpleSpans {
                     };
                 }
 			}
+
+            // Remove span elements
+            else if (payload[0] == (byte) 64) {
+                continue;
+            };
 
             if (//payload.length == 8 || 
                     (removeTemporaryClasses && payload.length == 11)) {

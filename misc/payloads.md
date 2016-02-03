@@ -71,8 +71,8 @@ means \<s\> is a milestone at position 38 in root.
     65  Milestone (with optional TUI and certainty)
 
 ### Relation payloads
-Each relation are indexed with two instances for both directions.
-he direction of a relation is determined by the following symbols: 
+Each relation is indexed with two instances for both directions.
+The direction of a relation is determined by the following symbols: 
 
     > source to target
     < target to source
@@ -84,7 +84,7 @@ of the left part, that are:
 * the target token/span positions for \< relation.
 
 Relation payloads are varied based on the types of their left and
-ight parts, which again can be either a source or a target of the
+right parts, which again can be either a source or a target of the
 relation. 
 
 * If the left part of a relation is an element, the end position

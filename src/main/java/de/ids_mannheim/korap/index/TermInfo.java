@@ -17,6 +17,8 @@ public class TermInfo implements Comparable<TermInfo> {
     public static final boolean DEBUG = false;
 
 
+    // TODO: Support various terms - including relations!
+
     private String foundry, layer, value, term, type, annotation;
     // type can be "term", "pos", "span", "rel-src", "rel-target"
 
@@ -29,7 +31,7 @@ public class TermInfo implements Comparable<TermInfo> {
     private byte depth = (byte) 0;
 
     private Pattern prefixRegex = Pattern
-            .compile("(?:([^/]+)/)?([^:/]+)(?::(.+?))?");
+        .compile("(?:([^/]+)/)?([^:/]+)(?::(.+?))?");
     private Matcher matcher;
 
 
@@ -50,47 +52,48 @@ public class TermInfo implements Comparable<TermInfo> {
         int lastPos = this.payload.position();
         this.payload.rewind();
 
+        // TODO: Use PTI!
         switch (tterm.charAt(0)) {
-            case '<':
-                // "<>:mate/l:..."
-                if (tterm.charAt(1) == '>') {
-                    // span
-                    this.type = "span";
-                    tterm = tterm.substring(3);
-                    ttype = 2;
-                }
-                // rel-target
-                else {
-                    this.type = "relTarget";
-                    tterm = tterm.substring(2);
-                    ttype = 3;
-                }
-                ;
-                break;
-
-            case '>':
-                // rel-src
-                this.type = "relSrc";
+        case '<':
+            // "<>:mate/l:..."
+            if (tterm.charAt(1) == '>') {
+                // span
+                this.type = "span";
+                tterm = tterm.substring(3);
+                ttype = 2;
+            }
+            // rel-target
+            else {
+                this.type = "relTarget";
                 tterm = tterm.substring(2);
                 ttype = 3;
-                break;
+            }
+            ;
+            break;
 
-            case '_':
-                // pos
-                this.type = "pos";
-                ttype = 1;
-                tterm = tterm.substring(1);
-                break;
+        case '>':
+            // rel-src
+            this.type = "relSrc";
+            tterm = tterm.substring(2);
+            ttype = 3;
+            break;
 
-            default:
-                // term
-                this.type = "term";
+        case '_':
+            // pos
+            this.type = "pos";
+            ttype = 1;
+            tterm = tterm.substring(1);
+            break;
+
+        default:
+            // term
+            this.type = "term";
         };
 
         // Analyze term value
         if (ttype != 1) {
 
-            this.payload.get(); // Ignore PTI
+            this.payload.get(); // Ignore PTI - temporary!!!
 
             if (DEBUG)
                 log.trace("Check {} for {}", tterm, prefixRegex.toString());
@@ -121,12 +124,16 @@ public class TermInfo implements Comparable<TermInfo> {
 
         // for spans and relations
         if (ttype > 1) {
-            // Unsure if this is correct
-            this.endPos = this.payload.getInt() - 1;
+            if (this.type.equals("relTarget")) {
+                this.endPos = this.startPos;
+                this.startPos = this.payload.getInt() - 1;
+            }
+            else {
+                this.endPos = this.payload.getInt() - 1;
+            };
         };
 
         // Ignore link id for the moment
-
         if (ttype == 2 && this.payload.position() < lastPos) {
             this.depth = this.payload.get();
         };
@@ -220,7 +227,7 @@ public class TermInfo implements Comparable<TermInfo> {
 
 
     @Override
-    public int compareTo (TermInfo obj) {
+        public int compareTo (TermInfo obj) {
         this.analyze();
         obj.analyze();
 

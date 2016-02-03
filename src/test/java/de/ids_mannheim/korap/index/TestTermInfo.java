@@ -21,10 +21,11 @@ public class TestTermInfo {
 
         byte[] b = new byte[16];
         ByteBuffer bb = ByteBuffer.allocate(16);
+        bb.put((byte) 64);   // span PTI
         bb.putInt(20); // startOffset
         bb.putInt(25); // endOffset
         bb.putInt(7);  // endPos
-        bb.put((byte) 4);
+        bb.put((byte) 4); // depth
 
         TermInfo term = new TermInfo("<>:mate/p:NN", 4, bb).analyze();
         assertEquals("type", term.getType(), "span");
@@ -50,7 +51,10 @@ public class TestTermInfo {
         assertEquals("depth", term.getDepth(), 0);
 
         bb.clear();
-        bb.putInt(17).put((byte) 2);
+        bb.put((byte) 32); // term-to-term
+        bb.putInt(17); // right-part-token-position
+        bb.putShort((short) 1); // left-part-tui
+        bb.putShort((short) 1); // right-part-tui
         term = new TermInfo(">:xip/p:ADJ", 11, bb).analyze();
         assertEquals("type", term.getType(), "relSrc");
         assertEquals("value", term.getValue(), "ADJ");
@@ -63,14 +67,15 @@ public class TestTermInfo {
         assertEquals("depth", term.getDepth(), 0);
 
         bb.clear();
+        bb.put((byte) 32); // term-to-term
         bb.putInt(24);
-        term = new TermInfo("<:xip/m:number:pl", 20, bb).analyze();
+        term = new TermInfo("<:xip/m:number:pl", 40, bb).analyze();
         assertEquals("type", term.getType(), "relTarget");
         assertEquals("value", term.getValue(), "number:pl");
         assertEquals("foundry", term.getFoundry(), "xip");
         assertEquals("layer", term.getLayer(), "m");
-        assertEquals("startPos", term.getStartPos(), 20);
-        assertEquals("endPos", term.getEndPos(), 23);
+        assertEquals("startPos", term.getStartPos(), 23);
+        assertEquals("endPos", term.getEndPos(), 40);
         assertEquals("startChar", term.getStartChar(), -1);
         assertEquals("endChar", term.getEndChar(), -1);
         assertEquals("depth", term.getDepth(), 0);
@@ -89,6 +94,7 @@ public class TestTermInfo {
         assertEquals("depth", term.getDepth(), 0);
 
         bb.clear();
+        bb.put((byte) 64);   // span PTI
         bb.putInt(20); // startOffset
         bb.putInt(25); // endOffset
         bb.putInt(24); // endPos
@@ -104,6 +110,7 @@ public class TestTermInfo {
         assertEquals("depth", term.getDepth(), 0);
 
         bb.clear();
+        bb.put((byte) 64);   // span PTI
         bb.putInt(20); // startOffset
         bb.putInt(25); // endOffset
         bb.putInt(24); // endPos

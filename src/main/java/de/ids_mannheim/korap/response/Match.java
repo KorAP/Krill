@@ -228,7 +228,7 @@ public class Match extends AbstractDocument {
             for (byte[] b : payload) {
 
                 if (DEBUG)
-                    log.trace("Found a payload with length {}", b.length);
+                    log.trace("Found a payload of pti {}", b[0]);
 
                 // Todo element searches!
 
@@ -244,14 +244,20 @@ public class Match extends AbstractDocument {
                     if (DEBUG)
                         log.trace(
                                 "Have a highlight of class {} in {}-{} inside of {}-{}",
-                                number, start, end, this.getStartPos(),
+                                number, start, end,
+                                this.getStartPos(),
                                 this.getEndPos());
 
                     // Ignore classes out of match range and set by the system
-                    // TODO: This may be decidable by PT!!
+                    // TODO: This may be decidable by PTI!
                     if ((number & 0xFF) <= 128 && start >= this.getStartPos()
-                            && end <= this.getEndPos())
+                        && end <= this.getEndPos()) {
+                        log.trace("Add highlight of class {}!", number);
                         this.addHighlight(start, end - 1, number);
+                    }
+                    else if (DEBUG) {
+                        log.trace("Don't add highlight of class {}!", number);
+                    };
                 }
 
                 // Element payload for match!
@@ -259,8 +265,9 @@ public class Match extends AbstractDocument {
                 else if (b[0] == (byte) 64) {
 
                     bb.put(b);
+                    bb.position(1); // Ignore pti
 
-
+                    // Wasn't set before
                     if (this.potentialStartPosChar == -1) {
                         this.potentialStartPosChar = bb.getInt(1);
                     }
@@ -905,11 +912,10 @@ public class Match extends AbstractDocument {
         if (processed)
             return true;
 
-
         // Relevant details are missing
         if (this.positionsToOffset == null || this.localDocID == -1) {
             log.warn("You have to define "
-                    + "positionsToOffset and localDocID first " + "before");
+                     + "positionsToOffset and localDocID first before");
             return false;
         };
 
@@ -1140,10 +1146,8 @@ public class Match extends AbstractDocument {
         if (this.startMore)
             sb.append("... ");
 
-        for (HighlightCombinatorElement hce : this.snippetArray.list()) {
-
+        for (HighlightCombinatorElement hce : this.snippetArray.list())
             sb.append(hce.toBrackets(this));
-        };
 
         if (this.endMore)
             sb.append(" ...");
