@@ -23,14 +23,15 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
     private int position;
     private CandidateSpan childSpan; // used for example for multiple distance
                                      // with unordered constraint
-	protected short spanId;
-	protected boolean hasSpanId;
+    protected short spanId;
+    protected boolean hasSpanId;
 
     private short leftId, rightId;
     private int leftStart, leftEnd;
     private int rightStart, rightEnd;
 
-	protected byte payloadTypeIdentifier;
+    protected byte payloadTypeIdentifier;
+
 
     /**
      * Constructs a CandidateSpan for the given Span.
@@ -52,11 +53,11 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
         if (span instanceof SimpleSpans) {
             SimpleSpans temp = (SimpleSpans) span;
             this.spanId = temp.getSpanId();
-			this.hasSpanId = temp.hasSpanId;
+            this.hasSpanId = temp.hasSpanId;
         }
         else if (span instanceof ClassSpans) {
             this.spanId = ((ClassSpans) span).getNumber();
-			this.hasSpanId = true;
+            this.hasSpanId = true;
         }
     }
 
@@ -301,8 +302,8 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
      */
     public void setSpanId (short spanId) {
         this.spanId = spanId;
-		if (spanId > 0)
-			this.hasSpanId = true;
+        if (spanId > 0)
+            this.hasSpanId = true;
     }
 
 
@@ -366,15 +367,17 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
     }
 
 
-	public byte getPayloadTypeIdentifier() {
-		return payloadTypeIdentifier;
-	}
+    public byte getPayloadTypeIdentifier () {
+        return payloadTypeIdentifier;
+    }
 
-	public void setPayloadTypeIdentifier(byte payloadTypeIdentifier) {
-		this.payloadTypeIdentifier = payloadTypeIdentifier;
-	}
 
-	@Override
+    public void setPayloadTypeIdentifier (byte payloadTypeIdentifier) {
+        this.payloadTypeIdentifier = payloadTypeIdentifier;
+    }
+
+
+    @Override
     public int compareTo (CandidateSpan o) {
         if (this.doc == o.doc) {
             if (this.getStart() == o.getStart()) {

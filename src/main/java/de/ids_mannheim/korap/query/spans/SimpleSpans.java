@@ -36,7 +36,8 @@ public abstract class SimpleSpans extends Spans {
     protected short spanId;
     protected boolean hasSpanId = false;
 
-	protected byte payloadTypeIdentifier;
+    protected byte payloadTypeIdentifier;
+
 
     public SimpleSpans () {
         collectPayloads = true;
@@ -127,10 +128,10 @@ public abstract class SimpleSpans extends Spans {
     }
 
 
-	@Override
+    @Override
     public int end () {
         return matchEndPosition;
-	}
+    }
 
 
     @Override
@@ -177,22 +178,24 @@ public abstract class SimpleSpans extends Spans {
         this.spanId = spanId;
     }
 
-	/**
-	 * Gets the payload type identifier (PTI) of the current span
-	 * 
-	 * @return a payload type identifier
-	 */
-	public byte getPayloadTypeIdentifier() {
-		return payloadTypeIdentifier;
-	}
 
-	/**
-	 * Sets the payload type identifier (PTI) of the current span
-	 * 
-	 * @param payloadTypeIdentifier
-	 */
-	public void setPayloadTypeIdentifier(byte payloadTypeIdentifier) {
-		this.payloadTypeIdentifier = payloadTypeIdentifier;
-	}
+    /**
+     * Gets the payload type identifier (PTI) of the current span
+     * 
+     * @return a payload type identifier
+     */
+    public byte getPayloadTypeIdentifier () {
+        return payloadTypeIdentifier;
+    }
+
+
+    /**
+     * Sets the payload type identifier (PTI) of the current span
+     * 
+     * @param payloadTypeIdentifier
+     */
+    public void setPayloadTypeIdentifier (byte payloadTypeIdentifier) {
+        this.payloadTypeIdentifier = payloadTypeIdentifier;
+    }
 
 }

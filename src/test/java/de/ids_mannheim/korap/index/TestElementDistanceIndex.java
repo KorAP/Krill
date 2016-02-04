@@ -50,7 +50,9 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "text",
+        fd.addTV(
+                "base",
+                "text",
                 "[(0-1)s:e|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:c|s:b|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2<b>0]"
                         + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"

@@ -47,8 +47,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
      * @throws IOException
      */
     public UnorderedDistanceSpans (SpanDistanceQuery query,
-                                   LeafReaderContext context,
-                                   Bits acceptDocs,
+                                   LeafReaderContext context, Bits acceptDocs,
                                    Map<Term, TermContext> termContexts)
             throws IOException {
         super(query, context, acceptDocs, termContexts);

@@ -51,8 +51,7 @@ public class Response extends Notifications {
 
     private HashMap<String, ObjectNode> jsonFields;
 
-    private static final String KORAL_VERSION =
-        "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld";
+    private static final String KORAL_VERSION = "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld";
 
 
     /**
@@ -443,6 +442,7 @@ public class Response extends Notifications {
         // Move messages from the collection
         return (Response) this.moveNotificationsFrom(meta);
     };
+
 
     public void addJsonNode (String key, ObjectNode value) {
         if (this.jsonFields == null)

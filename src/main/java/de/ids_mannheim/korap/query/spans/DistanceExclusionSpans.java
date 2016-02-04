@@ -42,8 +42,7 @@ public class DistanceExclusionSpans extends DistanceSpans {
      * @throws IOException
      */
     public DistanceExclusionSpans (SpanDistanceQuery query,
-                                   LeafReaderContext context,
-                                   Bits acceptDocs,
+                                   LeafReaderContext context, Bits acceptDocs,
                                    Map<Term, TermContext> termContexts)
             throws IOException {
         super(query, context, acceptDocs, termContexts);

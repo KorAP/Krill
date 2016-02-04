@@ -416,7 +416,7 @@ public class MultiTermTokenStream extends TokenStream {
 
         // There is payload in the MultiTerm
         if (mt.payload != null) {
-            
+
             payload.put(mt.payload.bytes);
 
             if (DEBUG)
@@ -428,14 +428,9 @@ public class MultiTermTokenStream extends TokenStream {
         if (payload.position() > 0) {
 
             if (payload.hasArray()) {
-                payloadAttr.setPayload(
-                                       new BytesRef(
-                                                    Arrays.copyOfRange(payload.array(),
-                                                                       payload.arrayOffset(),
-                                                                       payload.arrayOffset() + payload.position()
-                                                                       )
-                                                    )
-                                       );
+                payloadAttr.setPayload(new BytesRef(Arrays.copyOfRange(
+                        payload.array(), payload.arrayOffset(),
+                        payload.arrayOffset() + payload.position())));
             }
             else {
                 log.error("This should never happen!");

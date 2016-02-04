@@ -62,8 +62,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
      * @throws IOException
      */
     public ExpandedExclusionSpans (SpanExpansionQuery spanExpansionQuery,
-                                   LeafReaderContext context,
-                                   Bits acceptDocs,
+                                   LeafReaderContext context, Bits acceptDocs,
                                    Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanExpansionQuery, context, acceptDocs, termContexts);
@@ -332,9 +331,9 @@ public class ExpandedExclusionSpans extends SimpleSpans {
      * @return a byte array of extension offsets and class number
      */
     private byte[] createExtensionPayloads (int start, int end) {
-		ByteBuffer buffer = ByteBuffer.allocate(10);
-		Byte classPTI = 0;
-		buffer.put(classPTI);
+        ByteBuffer buffer = ByteBuffer.allocate(10);
+        Byte classPTI = 0;
+        buffer.put(classPTI);
         buffer.putInt(start);
         buffer.putInt(end);
         buffer.put(classNumber);

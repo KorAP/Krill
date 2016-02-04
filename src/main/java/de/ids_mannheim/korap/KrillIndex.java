@@ -687,31 +687,31 @@ public final class KrillIndex {
      * @return The number of the occurrences.
      * @throws IOException
      */
-        /*
+    /*
     @Deprecated
     public long numberOf (Bits docvec, String field, String type)
-            throws IOException {
-        // Shortcut for documents
-        if (type.equals("documents")) {
-            FixedBitSet os = (FixedBitSet) docvec;
-            return os.cardinality();
-        };
-
-        Term term = new Term(field, "-:" + type);
-
-        int occurrences = 0;
-        try {
-            for (LeafReaderContext atomic : this.reader().leaves()) {
-                occurrences += this._numberOfAtomic(docvec, atomic, term);
-            };
-        }
-        catch (IOException e) {
-            log.warn(e.getLocalizedMessage());
-        };
-
-        return occurrences;
+        throws IOException {
+    // Shortcut for documents
+    if (type.equals("documents")) {
+        FixedBitSet os = (FixedBitSet) docvec;
+        return os.cardinality();
     };
-*/
+
+    Term term = new Term(field, "-:" + type);
+
+    int occurrences = 0;
+    try {
+        for (LeafReaderContext atomic : this.reader().leaves()) {
+            occurrences += this._numberOfAtomic(docvec, atomic, term);
+        };
+    }
+    catch (IOException e) {
+        log.warn(e.getLocalizedMessage());
+    };
+
+    return occurrences;
+    };
+    */
 
 
     // Search for meta information in term vectors

@@ -17,9 +17,8 @@ public class ReferenceSpans extends SimpleSpans {
     private byte classNum;
 
 
-    public ReferenceSpans (SpanReferenceQuery query,
-                           LeafReaderContext context, Bits acceptDocs,
-                           Map<Term, TermContext> termContexts)
+    public ReferenceSpans (SpanReferenceQuery query, LeafReaderContext context,
+                           Bits acceptDocs, Map<Term, TermContext> termContexts)
             throws IOException {
         super(query, context, acceptDocs, termContexts);
         this.classNum = query.getClassNum();
@@ -51,10 +50,10 @@ public class ReferenceSpans extends SimpleSpans {
         matchPayload.clear();
 
         for (byte[] payload : firstSpans.getPayload()) {
-			if (payload.length == 10 && payload[9] == classNum) {
+            if (payload.length == 10 && payload[9] == classNum) {
                 if (isFound) {
-					if (start == byte2int(payload, 1)
-							&& end == byte2int(payload, 5)) {
+                    if (start == byte2int(payload, 1)
+                            && end == byte2int(payload, 5)) {
                         match = true;
                         continue;
                     }
@@ -62,8 +61,8 @@ public class ReferenceSpans extends SimpleSpans {
                     break;
                 }
 
-				start = byte2int(payload, 1);
-				end = byte2int(payload, 5);
+                start = byte2int(payload, 1);
+                end = byte2int(payload, 5);
                 isFound = true;
                 matchPayload.add(payload);
             }

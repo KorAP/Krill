@@ -35,9 +35,9 @@ public class SubSpans extends SimpleSpans {
      * @param termContexts
      * @throws IOException
      */
-    public SubSpans (SpanSubspanQuery subspanQuery,
-                     LeafReaderContext context, Bits acceptDocs,
-                     Map<Term, TermContext> termContexts) throws IOException {
+    public SubSpans (SpanSubspanQuery subspanQuery, LeafReaderContext context,
+                     Bits acceptDocs, Map<Term, TermContext> termContexts)
+            throws IOException {
         super(subspanQuery, context, acceptDocs, termContexts);
         this.startOffset = subspanQuery.getStartOffset();
         this.length = subspanQuery.getLength();

@@ -66,10 +66,12 @@ public class RelationSpans extends RelationBaseSpans {
 
         private byte value;
 
+
         private PayloadTypeIdentifier (int value) {
             this.value = (byte) value;
         }
     }
+
 
     /**
      * Constructs RelationSpans from the given
@@ -127,8 +129,8 @@ public class RelationSpans extends RelationBaseSpans {
                 this.matchEndPosition = cs.getEnd();
                 this.matchPayload = cs.getPayloads();
                 this.setRightStart(cs.getRightStart());
-				this.setRightEnd(cs.getRightEnd());
-				this.spanId = cs.getSpanId(); // relation id
+                this.setRightEnd(cs.getRightEnd());
+                this.spanId = cs.getSpanId(); // relation id
                 this.leftId = cs.getLeftId();
                 this.rightId = cs.getRightId();
                 candidateList.remove(0);
@@ -156,8 +158,7 @@ public class RelationSpans extends RelationBaseSpans {
         while (hasMoreSpans && relationTermSpan.doc() == currentDoc
                 && relationTermSpan.start() == currentPosition) {
 
-            CandidateSpan cs = new CandidateSpan(
-                    relationTermSpan);
+            CandidateSpan cs = new CandidateSpan(relationTermSpan);
             readPayload(cs);
             setPayload(cs);
             candidateList.add(cs);
@@ -177,7 +178,7 @@ public class RelationSpans extends RelationBaseSpans {
      * @param cs
      *            a CandidateRelationSpan
      */
-    private void readPayload(CandidateSpan cs) {
+    private void readPayload (CandidateSpan cs) {
         List<byte[]> payload = (List<byte[]>) cs.getPayloads();
         int length = payload.get(0).length;
         ByteBuffer bb = ByteBuffer.allocate(length);
@@ -187,28 +188,28 @@ public class RelationSpans extends RelationBaseSpans {
 
         int i;
         this.payloadTypeIdentifier = bb.get(0);
-        
-        if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_TERM.value){ // length 11            
+
+        if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_TERM.value) { // length 11            
             i = bb.getInt(1);
             cs.setLeftEnd(cs.start + 1);
             cs.setRightStart(i);
             cs.setRightEnd(i + 1);
-			cs.setLeftId(bb.getShort(5)); // left id
-			cs.setRightId(bb.getShort(7)); // right id
-			if (length > 9) {
-				cs.setSpanId(bb.getShort(9)); // relation id
-			}
+            cs.setLeftId(bb.getShort(5)); // left id
+            cs.setRightId(bb.getShort(7)); // right id
+            if (length > 9) {
+                cs.setSpanId(bb.getShort(9)); // relation id
+            }
         }
         else if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_ELEMENT.value) { // length
             // 15
             cs.setLeftEnd(cs.start + 1);
             cs.setRightStart(bb.getInt(1));
             cs.setRightEnd(bb.getInt(5));
-			cs.setLeftId(bb.getShort(9)); // left id
-			cs.setRightId(bb.getShort(11)); // right id
-			if (length > 13) {
-				cs.setSpanId(bb.getShort(13)); // relation id
-			}
+            cs.setLeftId(bb.getShort(9)); // left id
+            cs.setRightId(bb.getShort(11)); // right id
+            if (length > 13) {
+                cs.setSpanId(bb.getShort(13)); // relation id
+            }
         }
         else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_TERM.value) { // length
             // 15
@@ -217,31 +218,31 @@ public class RelationSpans extends RelationBaseSpans {
             i = bb.getInt(5);
             cs.setRightStart(i);
             cs.setRightEnd(i + 1);
-			cs.setLeftId(bb.getShort(9)); // left id
-			cs.setRightId(bb.getShort(11)); // right id
-			if (length > 13) {
-				cs.setSpanId(bb.getShort(13)); // relation id
-			}
+            cs.setLeftId(bb.getShort(9)); // left id
+            cs.setRightId(bb.getShort(11)); // right id
+            if (length > 13) {
+                cs.setSpanId(bb.getShort(13)); // relation id
+            }
         }
         else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_ELEMENT.value) {
-			// length 19
+            // length 19
             cs.setEnd(bb.getInt(1));
             cs.setLeftEnd(cs.end);
             cs.setRightStart(bb.getInt(5));
             cs.setRightEnd(bb.getInt(9));
-			cs.setLeftId(bb.getShort(13)); // left id
-			cs.setRightId(bb.getShort(15)); // right id
-			if (length > 17) {
-				cs.setSpanId(bb.getShort(17)); // relation id
-			}
-		}
+            cs.setLeftId(bb.getShort(13)); // left id
+            cs.setRightId(bb.getShort(15)); // right id
+            if (length > 17) {
+                cs.setSpanId(bb.getShort(17)); // relation id
+            }
+        }
 
 
         // Payload is cleared.
     }
 
 
-    private void setPayload(CandidateSpan cs) throws IOException {
+    private void setPayload (CandidateSpan cs) throws IOException {
         ArrayList<byte[]> payload = new ArrayList<byte[]>();
         if (relationTermSpan.isPayloadAvailable()) {
             payload.addAll(relationTermSpan.getPayload());
@@ -285,13 +286,13 @@ public class RelationSpans extends RelationBaseSpans {
             boolean keep) {
         ByteBuffer buffer = null;
         if (keep) {
-			buffer = ByteBuffer.allocate(10);
+            buffer = ByteBuffer.allocate(10);
         }
         else {
-			buffer = ByteBuffer.allocate(11);
+            buffer = ByteBuffer.allocate(11);
         }
-		Byte classPTI = 0;
-		buffer.put(classPTI);
+        Byte classPTI = 0;
+        buffer.put(classPTI);
         buffer.putInt(start);
         buffer.putInt(end);
         buffer.put(classNumber);

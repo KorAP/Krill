@@ -50,15 +50,16 @@ public class AttributeSpans extends SimpleSpans {
     private int currentDoc, currentPosition;
     private boolean isFinish;
 
-	public static enum PayloadTypeIdentifier {
-		TERM_ATTRIBUTE(16), ELEMENT_ATTRIBUTE(17), RELATION_ATTRIBUTE(18);
+    public static enum PayloadTypeIdentifier {
+        TERM_ATTRIBUTE(16), ELEMENT_ATTRIBUTE(17), RELATION_ATTRIBUTE(18);
 
-		private int value;
+        private int value;
 
-		private PayloadTypeIdentifier(int value) {
-			this.value = value;
-		}
-	}
+
+        private PayloadTypeIdentifier (int value) {
+            this.value = value;
+        }
+    }
 
     protected Logger logger = LoggerFactory.getLogger(AttributeSpans.class);
 
@@ -164,25 +165,25 @@ public class AttributeSpans extends SimpleSpans {
      */
     private CandidateAttributeSpan createCandidateSpan () throws IOException {
         List<byte[]> payload = (List<byte[]>) firstSpans.getPayload();
-		ByteBuffer payloadBuffer = ByteBuffer.wrap(payload.get(0));
+        ByteBuffer payloadBuffer = ByteBuffer.wrap(payload.get(0));
 
-		byte payloadTypeIdentifier = payloadBuffer.get(0);
-		short spanId = payloadBuffer.getShort(5);
-		// if (payload.get(0).length == 6) {
-		int end = payloadBuffer.getInt(1);
+        byte payloadTypeIdentifier = payloadBuffer.get(0);
+        short spanId = payloadBuffer.getShort(5);
+        // if (payload.get(0).length == 6) {
+        int end = payloadBuffer.getInt(1);
 
-		return new CandidateAttributeSpan(firstSpans, payloadTypeIdentifier,
-				spanId, end);
+        return new CandidateAttributeSpan(firstSpans, payloadTypeIdentifier,
+                spanId, end);
 
-		// }
-		// else if (payload.get(0).length == 10) {
-		// start = wrapper.getInt(0);
-		// end = wrapper.getInt(4);
-		// spanId = wrapper.getShort(8);
-		// return new CandidateAttributeSpan(firstSpans, spanId, start, end);
-		// }
+        // }
+        // else if (payload.get(0).length == 10) {
+        // start = wrapper.getInt(0);
+        // end = wrapper.getInt(4);
+        // spanId = wrapper.getShort(8);
+        // return new CandidateAttributeSpan(firstSpans, spanId, start, end);
+        // }
 
-		// throw new NullPointerException("Missing element end in payloads.");
+        // throw new NullPointerException("Missing element end in payloads.");
     }
 
 
@@ -266,23 +267,23 @@ public class AttributeSpans extends SimpleSpans {
          *            belongs to.
          * @throws IOException
          */
-		public CandidateAttributeSpan(Spans span, byte payloadTypeIdenfitier,
-				short spanId, int elementEnd)
+        public CandidateAttributeSpan (Spans span, byte payloadTypeIdenfitier,
+                                       short spanId, int elementEnd)
                 throws IOException {
             super(span);
-			this.spanId = spanId;
+            this.spanId = spanId;
             this.end = elementEnd;
-			this.payloadTypeIdentifier = payloadTypeIdenfitier;
+            this.payloadTypeIdentifier = payloadTypeIdenfitier;
         }
 
 
-		// public CandidateAttributeSpan (Spans span, short spanId, int start,
-		// int end) throws IOException {
-		// super(span);
-		// setSpanId(spanId);
-		// this.start = start;
-		// this.end = end;
-		// }
+        // public CandidateAttributeSpan (Spans span, short spanId, int start,
+        // int end) throws IOException {
+        // super(span);
+        // setSpanId(spanId);
+        // this.start = start;
+        // this.end = end;
+        // }
 
         @Override
         public int compareTo (CandidateSpan o) {

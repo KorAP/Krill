@@ -128,9 +128,9 @@ public class Indexer {
                 case "-d":
                     path = argv[i + 1];
                     break;
-            default:
-                last = true;
-                break;
+                default:
+                    last = true;
+                    break;
             };
 
             if (last)

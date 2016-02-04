@@ -121,6 +121,7 @@ public class BooleanGroupFilter extends Filter {
         return buffer.append(')').toString();
     };
 
+
     /*
     @Override
     public String toString (String str) {
@@ -167,7 +168,8 @@ public class BooleanGroupFilter extends Filter {
                             log.debug("- Filter to allow all documents");
 
                         bitset.set(0, maxDoc);
-                        return BitsFilteredDocIdSet.wrap(new BitDocIdSet(bitset), acceptDocs);
+                        return BitsFilteredDocIdSet.wrap(
+                                new BitDocIdSet(bitset), acceptDocs);
                     };
 
                     // There is no possible match

@@ -20,38 +20,41 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 
 /**
- * Enumeration of spans representing elements such as phrases, sentences and
+ * Enumeration of spans representing elements such as phrases,
+ * sentences and
  * paragraphs. Span length is stored as a payload.
  * 
- * Depth and certainty value payloads have not been loaded and handled yet.
+ * Depth and certainty value payloads have not been loaded and handled
+ * yet.
  * 
  * @author margaretha
  * @author diewald
  */
 public final class ElementSpans extends SimpleSpans {
     private final TermSpans termSpans;
-	private boolean isPayloadLoaded;
+    private boolean isPayloadLoaded;
 
     private final Logger log = LoggerFactory.getLogger(ElementSpans.class);
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
     private byte[] b = new byte[10];
-    
-	public static enum PayloadTypeIdentifier {
-		ELEMENT(64), 
+
+    public static enum PayloadTypeIdentifier {
+        ELEMENT(64),
         // ELEMENT_WITH_TUI(65),
         // ELEMENT_WITH_CERTAINTY_VALUE (66),
         // ELEMENT_WITH_TUI_AND_CERTAINTY_VALUE (67),
         MILESTONE(65);
-		
+
         private byte value;
+
 
         private PayloadTypeIdentifier (int value) {
             this.value = (byte) value;
-		}
+        }
     }
-    
+
 
     /**
      * Constructs ElementSpans for the given {@link SpanElementQuery}.
@@ -73,8 +76,8 @@ public final class ElementSpans extends SimpleSpans {
             throws IOException {
         super(spanElementQuery, context, acceptDocs, termContexts);
         termSpans = (TermSpans) this.firstSpans;
-		hasMoreSpans = true;
-		// termSpans.next();
+        hasMoreSpans = true;
+        // termSpans.next();
     };
 
 
@@ -82,21 +85,22 @@ public final class ElementSpans extends SimpleSpans {
     public boolean next () throws IOException {
         if (!hasMoreSpans || !(hasMoreSpans = termSpans.next()))
             return false;
-        
-		isStartEnumeration = false;
-		this.matchPayload = null;
-		matchEndPosition = -1;
-		return advance();
-	};
 
-	private boolean advance() throws IOException {
-		
+        isStartEnumeration = false;
+        this.matchPayload = null;
+        matchEndPosition = -1;
+        return advance();
+    };
 
-		this.matchStartPosition = termSpans.start();
-		this.matchDocNumber = termSpans.doc();		
-		isPayloadLoaded = false;
-		return true;
-	};
+
+    private boolean advance () throws IOException {
+
+
+        this.matchStartPosition = termSpans.start();
+        this.matchDocNumber = termSpans.doc();
+        isPayloadLoaded = false;
+        return true;
+    };
 
 
     /*
@@ -106,48 +110,48 @@ public final class ElementSpans extends SimpleSpans {
      * solely based on their starting and doc position.
      */
     private void loadPayload () {
-		if (this.isPayloadLoaded) {
+        if (this.isPayloadLoaded) {
             return;
-		} 
-		else{
-			this.isPayloadLoaded = true;
-		}
+        }
+        else {
+            this.isPayloadLoaded = true;
+        }
 
-		List<byte[]> payload;
+        List<byte[]> payload;
 
         try {
-			payload = (List<byte[]>) termSpans.getPayload();
+            payload = (List<byte[]>) termSpans.getPayload();
         }
         catch (IOException e) {
-			// silently setting empty element and payload
+            // silently setting empty element and payload
             this.matchEndPosition = this.matchStartPosition;
             this.setSpanId((short) -1);
-			this.hasSpanId = false;
+            this.hasSpanId = false;
             this.matchPayload = null;
             return;
-		}
+        }
 
-		if (!payload.isEmpty()) {
+        if (!payload.isEmpty()) {
             // Get payload one by one
             final int length = payload.get(0).length;
             final ByteBuffer bb = ByteBuffer.allocate(length);
             bb.put(payload.get(0));
-			
-			this.payloadTypeIdentifier = bb.get(0);
-			this.matchEndPosition = bb.getInt(9);
+
+            this.payloadTypeIdentifier = bb.get(0);
+            this.matchEndPosition = bb.getInt(9);
 
             if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT.value
                     && length > 15) {
-				this.setSpanId(bb.getShort(14));
-				this.hasSpanId = true;
-			}
+                this.setSpanId(bb.getShort(14));
+                this.hasSpanId = true;
+            }
             else {
                 this.setSpanId((short) -1);
-				this.hasSpanId = false;
+                this.hasSpanId = false;
             }
 
-			// FIX ME
-			// Copy the start and end character offsets
+            // FIX ME
+            // Copy the start and end character offsets
             // b = Arrays.copyOfRange(bb.array(), 1, 9);
             // this.matchPayload = Collections.singletonList(b);
             this.matchPayload = Collections.singletonList(bb.array());
@@ -156,7 +160,7 @@ public final class ElementSpans extends SimpleSpans {
 
         this.matchEndPosition = this.matchStartPosition;
         this.setSpanId((short) -1);
-		this.hasSpanId = false;
+        this.hasSpanId = false;
         this.matchPayload = null;
     };
 
@@ -197,7 +201,7 @@ public final class ElementSpans extends SimpleSpans {
 
         if (hasMoreSpans && firstSpans.doc() < target
                 && firstSpans.skipTo(target)) {
-			return this.advance();
+            return this.advance();
         };
 
         hasMoreSpans = false;

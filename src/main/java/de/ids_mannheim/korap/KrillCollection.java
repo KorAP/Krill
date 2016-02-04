@@ -492,8 +492,8 @@ public final class KrillCollection extends Notifications {
         };
 
         // Remove deleted docs
-        return (DocIdSet) BitsFilteredDocIdSet.wrap((DocIdSet) new BitDocIdSet(bitset),
-                acceptDocs);
+        return (DocIdSet) BitsFilteredDocIdSet.wrap((DocIdSet) new BitDocIdSet(
+                bitset), acceptDocs);
     };
 
 

@@ -244,14 +244,13 @@ public class Match extends AbstractDocument {
                     if (DEBUG)
                         log.trace(
                                 "Have a highlight of class {} in {}-{} inside of {}-{}",
-                                number, start, end,
-                                this.getStartPos(),
+                                number, start, end, this.getStartPos(),
                                 this.getEndPos());
 
                     // Ignore classes out of match range and set by the system
                     // TODO: This may be decidable by PTI!
                     if ((number & 0xFF) <= 128 && start >= this.getStartPos()
-                        && end <= this.getEndPos()) {
+                            && end <= this.getEndPos()) {
                         log.trace("Add highlight of class {}!", number);
                         this.addHighlight(start, end - 1, number);
                     }
@@ -797,7 +796,8 @@ public class Match extends AbstractDocument {
             int newStartChar = -1, newEndChar = -1;
 
             if (DEBUG)
-                log.trace("Extend match to context boundary with {} in docID {}",
+                log.trace(
+                        "Extend match to context boundary with {} in docID {}",
                         cquery.toString(), this.localDocID);
 
             while (true) {
@@ -843,7 +843,8 @@ public class Match extends AbstractDocument {
                             };
                         }
                         catch (Exception e) {
-                            log.warn("Some problems with ByteBuffer: " + e.getMessage());
+                            log.warn("Some problems with ByteBuffer: "
+                                    + e.getMessage());
                         };
                     };
                 }
@@ -917,7 +918,7 @@ public class Match extends AbstractDocument {
         // Relevant details are missing
         if (this.positionsToOffset == null || this.localDocID == -1) {
             log.warn("You have to define "
-                     + "positionsToOffset and localDocID first before");
+                    + "positionsToOffset and localDocID first before");
             return false;
         };
 

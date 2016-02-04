@@ -359,8 +359,7 @@ public class TestWithinIndex {
                 "h  h  i  j  h  i  j  h  i  j        ",
                 "[s:h|_0$<i>0<i>3|<>:a$<b>64<i>0<i>12<i>3<b>0|"
                         + "<>:a$<b>64<i>0<i>24<i>7<b>0|"
-                        + "<>:a$<b>64<i>0<i>30<i>9<b>0]"
-                        + // 1
+                        + "<>:a$<b>64<i>0<i>30<i>9<b>0]" + // 1
                         "[s:h|_1$<i>3<i>6]" + // 2
                         "[s:i|_2$<i>6<i>9]" + // 3
                         "[s:j|_3$<i>9<i>12]" + // 4
@@ -433,8 +432,7 @@ public class TestWithinIndex {
         fd.addTV("base", "h  h  i  j  h  i  j  h  i  j  h  ",
                 "[(0-3)s:h|<>:a$<b>64<i>0<i>12<i>3<b>0|"
                         + "<>:a$<b>64<i>0<i>21<i>6<b>0|"
-                        + "<>:a$<b>64<i>0<i>30<i>9<b>0]"
-                        + // 1
+                        + "<>:a$<b>64<i>0<i>30<i>9<b>0]" + // 1
                         "[(3-6)s:h]" +    // 2
                         "[(6-9)s:i]" +    // 3
                         "[(9-12)s:j]" +   // 4
@@ -500,8 +498,7 @@ public class TestWithinIndex {
         fd.addTV("base", "h  h  i  j  h  i  j  h  i  j  h  i  ",
                 "[(0-3)s:h|<>:a$<b>64<i>0<i>15<i>4<b>0|"
                         + "<>:a$<b>64<i>0<i>21<i>7<b>0|"
-                        + "<>:a$<b>64<i>0<i>30<i>10<b>0]"
-                        + // 1
+                        + "<>:a$<b>64<i>0<i>30<i>10<b>0]" + // 1
                         "[(3-6)s:h]" +    // 2
                         "[(6-9)s:i]" +  // 3
                         "[(9-12)s:j]" +  // 4
@@ -667,8 +664,7 @@ public class TestWithinIndex {
 
         // <a><a><a>u</a></a></a>
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "xyz",
-                "[(0-3)s:xyz|<>:a$<b>64<i>0<i>3<i>0<b>0|"
+        fd.addTV("base", "xyz", "[(0-3)s:xyz|<>:a$<b>64<i>0<i>3<i>0<b>0|"
                 + "<>:a$<b>64<i>0<i>3<i>0<b>0|" + "<>:a$<b>64<i>0<i>3<i>0<b>0|"
                 + "<>:b$<b>64<i>0<i>3<i>0<b>0]");
         ki.addDoc(fd);
@@ -680,10 +676,9 @@ public class TestWithinIndex {
                         + "<>:b$<b>64<i>0<i>36<i>12<b>0]"
                         + "[(3-6)s:y|<>:a$<b>64<i>3<i>27<i>9<b>0]"
                         + "[(6-9)s:z|<>:a$<b>64<i>6<i>18<i>6<b>0]"
-                        + "[(9-12)s:c]"
-                        + "[(12-15)s:d]" + "[(15-18)s:e]" + "[(18-21)s:c]"
-                        + "[(21-24)s:d]" + "[(24-27)s:e]" + "[(27-30)s:c]"
-                        + "[(30-33)s:d]" + "[(33-36)s:e]");
+                        + "[(9-12)s:c]" + "[(12-15)s:d]" + "[(15-18)s:e]"
+                        + "[(18-21)s:c]" + "[(21-24)s:d]" + "[(24-27)s:e]"
+                        + "[(27-30)s:c]" + "[(30-33)s:d]" + "[(33-36)s:e]");
         ki.addDoc(fd);
 
         // xyz
@@ -699,22 +694,20 @@ public class TestWithinIndex {
                         + "[(3-6)s:y|<>:a$<b>64<i>3<i>6<i>9<b>0|"
                         + "<>:b$<b>64<i>3<i>6<i>9<b>0]"
                         + "[(6-9)s:z|<>:a$<b>64<i>6<i>9<i>6<b>0]"
-                        + "[(9-12)s:k]"
-                        + "[(12-15)s:l]" + "[(15-18)s:m]" + "[(18-21)s:k]"
-                        + "[(21-24)s:l]" + "[(24-27)s:m]" + "[(27-30)s:k]"
-                        + "[(30-33)s:l]" + "[(33-36)s:m]");
+                        + "[(9-12)s:k]" + "[(12-15)s:l]" + "[(15-18)s:m]"
+                        + "[(18-21)s:k]" + "[(21-24)s:l]" + "[(24-27)s:m]"
+                        + "[(27-30)s:k]" + "[(30-33)s:l]" + "[(33-36)s:m]");
         ki.addDoc(fd);
 
         // <a><a><a>h</a>hhij</a>hij</a>hij</a>
         fd = new FieldDocument();
-        fd.addTV("base", "h   i   j   h   i   j   h   i   j   ",
-                "[(0-3)s:h|"
+        fd.addTV("base", "h   i   j   h   i   j   h   i   j   ", "[(0-3)s:h|"
                 + "<>:a$<b>64<i>0<i>18<i>3<b>0|"
                 + "<>:a$<b>64<i>0<i>27<i>6<b>0|"
-                + "<>:a$<b>64<i>0<i>36<i>9<b>0]"
-                        + "[(3-6)s:h]" + "[(12-15)s:i]" + "[(15-18)s:j]"
-                        + "[(18-21)s:h]" + "[(21-24)s:i]" + "[(24-27)s:j]"
-                        + "[(27-30)s:h]" + "[(30-33)s:i]" + "[(33-36)s:j]");
+                + "<>:a$<b>64<i>0<i>36<i>9<b>0]" + "[(3-6)s:h]"
+                + "[(12-15)s:i]" + "[(15-18)s:j]" + "[(18-21)s:h]"
+                + "[(21-24)s:i]" + "[(24-27)s:j]" + "[(27-30)s:h]"
+                + "[(30-33)s:i]" + "[(33-36)s:j]");
         ki.addDoc(fd);
 
         // xyz
@@ -769,7 +762,9 @@ public class TestWithinIndex {
         // Er schrie: <s>"Das war ich!"</s>
         FieldDocument fd = new FieldDocument();
         fd = new FieldDocument();
-        fd.addTV("base", "Er schrie: \"Das war ich!\" und ging.",
+        fd.addTV(
+                "base",
+                "Er schrie: \"Das war ich!\" und ging.",
                 "[(0-2)s:Er|_0$<i>0<i>3]"
                         + "[(3-9)s:schrie|_1$<i>3<i>9]"
                         + "[(12-15)s:Das|_2$<i>12<i>15|<>:sentence$<b>64<i>11<i>25<i>5<b>0]"
@@ -859,16 +854,12 @@ public class TestWithinIndex {
         // Case 1, 6, 7, 13
         // xy<a><a>x</a>b<a>c</a></a>x
         FieldDocument fd = new FieldDocument();
-        fd.addTV(
-                "base",
-                "x  y  x  b  c  x  ",
-                "[(0-3)s:x|_0$<i>0<i>3]"
-                        + "[(3-6)s:y|_1$<i>3<i>6]"
+        fd.addTV("base", "x  y  x  b  c  x  ", "[(0-3)s:x|_0$<i>0<i>3]"
+                + "[(3-6)s:y|_1$<i>3<i>6]"
                 + "[(6-9)s:x|_2$<i>6<i>9|<>:a$<b>64<i>6<i>9<i>3<b>0|"
-                + "<>:a$<b>64<i>6<i>15<i>5<b>0]"
-                        + "[(9-12)s:b|_3$<i>9<i>12]"
+                + "<>:a$<b>64<i>6<i>15<i>5<b>0]" + "[(9-12)s:b|_3$<i>9<i>12]"
                 + "[(12-15)s:c|_4$<i>12<i>15|<>:a$<b>64<i>12<i>15<i>5<b>0]"
-                        + "[(15-18)s:x|_5$<i>15<i>18]");
+                + "[(15-18)s:x|_5$<i>15<i>18]");
         ki.addDoc(fd);
 
         // Save documents
@@ -896,7 +887,9 @@ public class TestWithinIndex {
 
         // hij<a>hi<a>h<a>ij</a></a>hi</a>
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "hijhihijhi",
+        fd.addTV(
+                "base",
+                "hijhihijhi",
                 "[(0-1)s:h|i:h|_0$<i>0<i>1|-:a$<i>3|-:t$<i>10]"
                         + "[(1-2)s:i|i:i|_1$<i>1<i>2]"
                         + "[(2-3)s:j|i:j|_2$<i>2<i>3]"
@@ -939,7 +932,9 @@ public class TestWithinIndex {
         // 2,5,8,12,13
         // h<a><a>i</a>j</a><a>h</a>i j<a>h i</a>j
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "hijhi jh ij",
+        fd.addTV(
+                "base",
+                "hijhi jh ij",
                 "[(0-1)s:h|i:h|_0$<i>0<i>1|-:a$<i>4|-:t$<i>9]"
                         + "[(1-2)s:i|i:i|_1$<i>1<i>2|<>:a$<b>64<i>1<i>2<i>2<b>0|"
                         + "<>:a$<b>64<i>1<i>3<i>3<b>0]"
@@ -974,7 +969,9 @@ public class TestWithinIndex {
         // 4,5,11,13
         // x<a>x h</a>i j h<a>i j</a>
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "xx hi j hi j",
+        fd.addTV(
+                "base",
+                "xx hi j hi j",
                 "[(0-1)s:x|i:x|_0$<i>0<i>1|-:a$<i>2|-:t$<i>8]"
                         + "[(1-2)s:x|i:x|_1$<i>1<i>2|<>:a$<b>64<i>1<i>4<i>3<b>0]"
                         + "[(3-4)s:h|i:h|_2$<i>3<i>4]"
@@ -1008,7 +1005,9 @@ public class TestWithinIndex {
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         // <a>xx <e>hi j <e>hi j</e></e></a>
-        fd.addTV("base", "xx hi j hi j",
+        fd.addTV(
+                "base",
+                "xx hi j hi j",
                 "[(0-1)s:x|i:x|_0$<i>0<i>1|<>:a$<b>64<i>1<i>12<i>8<b>0]"
                         + "[(1-2)s:x|i:x|_1$<i>1<i>2]"
                         + "[(3-4)s:h|i:h|_2$<i>3<i>4|<>:e$<b>64<i>3<i>12<i>8<b>0]"

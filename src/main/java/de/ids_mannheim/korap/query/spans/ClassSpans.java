@@ -143,11 +143,11 @@ public class ClassSpans extends SimpleSpans {
         };
 
         // Todo: Better allocate using a Factory!
-		ByteBuffer bb = ByteBuffer.allocate(10);
-		bb.put((byte) 0);
-		bb.putInt(spans.start());
-		bb.putInt(spans.end());
-		bb.put(number);
+        ByteBuffer bb = ByteBuffer.allocate(10);
+        bb.put((byte) 0);
+        bb.putInt(spans.start());
+        bb.putInt(spans.end());
+        bb.put(number);
         /*
         System.err.println(
                            "####################### " + 

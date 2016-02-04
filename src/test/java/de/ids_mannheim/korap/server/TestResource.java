@@ -136,13 +136,14 @@ public class TestResource {
             }
         };
 
-        String json = StringfromFile(getClass().getResource("/wiki/02439.json").getFile());
+        String json = StringfromFile(getClass().getResource("/wiki/02439.json")
+                .getFile());
         Entity jsonE = Entity.json(json);
 
         try {
             // Put new documents to the index
             resp = target.path("/index/02439").request("application/json")
-                .put(jsonE, String.class);
+                    .put(jsonE, String.class);
 
             res = mapper.readTree(resp);
 
@@ -151,8 +152,7 @@ public class TestResource {
             assertEquals("milena", res.at("/meta/node").asText());
         }
         catch (Exception e) {
-            fail("Server response failed " + e.getMessage()
-                 + " (Known issue)");
+            fail("Server response failed " + e.getMessage() + " (Known issue)");
         };
 
         // Commit!
@@ -162,6 +162,7 @@ public class TestResource {
         assertEquals("milena", res.at("/meta/node").asText());
         assertEquals(683, res.at("/messages/0/0").asInt());
     };
+
 
     @Test
     public void testCollection () throws IOException {

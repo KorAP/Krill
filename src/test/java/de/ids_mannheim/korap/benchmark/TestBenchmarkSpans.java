@@ -34,8 +34,8 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
-                prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
@@ -88,8 +88,8 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
-                prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
@@ -134,8 +134,8 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
-                prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
@@ -180,8 +180,8 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
-                prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
@@ -326,8 +326,8 @@ public class TestBenchmarkSpans {
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(
-                prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);

@@ -852,15 +852,14 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         ki.addDoc(1, getClass().getResourceAsStream("/goe/AGX-00002.json"),
-                  false);
+                false);
         ki.addDoc(2, getClass().getResourceAsStream("/bzk/D59-00089.json.gz"),
-                  true);
+                true);
         ki.commit();
-        
+
         // ({1:Sonne []* Erde} | {2: Erde []* Sonne})
         String json = getString(getClass().getResource(
-            "/queries/bugs/tokendistancespan_bug.jsonld").getFile()
-        );
+                "/queries/bugs/tokendistancespan_bug.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -951,8 +950,7 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        for (String i : new String[] { "00001",
-                                       "00002", "00003", "00004",
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
             ki.addDoc(
                     getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),

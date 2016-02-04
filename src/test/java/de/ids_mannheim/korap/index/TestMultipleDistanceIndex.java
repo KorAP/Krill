@@ -53,7 +53,9 @@ public class TestMultipleDistanceIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "text",
+        fd.addTV(
+                "base",
+                "text",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
                         + "[(1-2)s:b|s:c|_2$<i>1<i>2]"
                         + "[(2-3)s:c|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>4<b>0]"
@@ -67,7 +69,9 @@ public class TestMultipleDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "text",
+        fd.addTV(
+                "base",
+                "text",
                 "[(0-1)s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
                         + "[(1-2)s:c|s:e|_2$<i>1<i>2]"
                         + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>4<b>0]"
@@ -81,7 +85,9 @@ public class TestMultipleDistanceIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "text",
+        fd.addTV(
+                "base",
+                "text",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
                         + "[(1-2)s:b|s:e|_2$<i>1<i>2]"
                         + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>4<b>0]"

@@ -31,7 +31,7 @@ public class TermInfo implements Comparable<TermInfo> {
     private byte depth = (byte) 0;
 
     private Pattern prefixRegex = Pattern
-        .compile("(?:([^/]+)/)?([^:/]+)(?::(.+?))?");
+            .compile("(?:([^/]+)/)?([^:/]+)(?::(.+?))?");
     private Matcher matcher;
 
 
@@ -54,40 +54,40 @@ public class TermInfo implements Comparable<TermInfo> {
 
         // TODO: Use PTI!
         switch (tterm.charAt(0)) {
-        case '<':
-            // "<>:mate/l:..."
-            if (tterm.charAt(1) == '>') {
-                // span
-                this.type = "span";
-                tterm = tterm.substring(3);
-                ttype = 2;
-            }
-            // rel-target
-            else {
-                this.type = "relTarget";
+            case '<':
+                // "<>:mate/l:..."
+                if (tterm.charAt(1) == '>') {
+                    // span
+                    this.type = "span";
+                    tterm = tterm.substring(3);
+                    ttype = 2;
+                }
+                // rel-target
+                else {
+                    this.type = "relTarget";
+                    tterm = tterm.substring(2);
+                    ttype = 3;
+                }
+                ;
+                break;
+
+            case '>':
+                // rel-src
+                this.type = "relSrc";
                 tterm = tterm.substring(2);
                 ttype = 3;
-            }
-            ;
-            break;
+                break;
 
-        case '>':
-            // rel-src
-            this.type = "relSrc";
-            tterm = tterm.substring(2);
-            ttype = 3;
-            break;
+            case '_':
+                // pos
+                this.type = "pos";
+                ttype = 1;
+                tterm = tterm.substring(1);
+                break;
 
-        case '_':
-            // pos
-            this.type = "pos";
-            ttype = 1;
-            tterm = tterm.substring(1);
-            break;
-
-        default:
-            // term
-            this.type = "term";
+            default:
+                // term
+                this.type = "term";
         };
 
         // Analyze term value
@@ -227,7 +227,7 @@ public class TermInfo implements Comparable<TermInfo> {
 
 
     @Override
-        public int compareTo (TermInfo obj) {
+    public int compareTo (TermInfo obj) {
         this.analyze();
         obj.analyze();
 
