@@ -419,10 +419,6 @@ public class MultiTermTokenStream extends TokenStream {
             
             payload.put(mt.payload.bytes);
 
-            if (payload.position() > 18) {
-                System.err.println(mt.toString() + " has " + payload.toString());
-            };
-
             if (DEBUG)
                 log.trace("Create payload[1] {}", payload.toString());
         };

@@ -233,7 +233,6 @@ public class TestRelationIndex {
         assertEquals(9, kr.getMatch(6).getEndPos());
 
         // check target
-
     }
 
 

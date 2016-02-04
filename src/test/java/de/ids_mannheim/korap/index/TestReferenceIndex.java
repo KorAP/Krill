@@ -72,11 +72,14 @@ public class TestReferenceIndex {
         // System.out.println(ref.toString());
 
 		kr = ki.search(ref, (short) 10);
+        /*
 		for (Match km : kr.getMatches()) {
+
 			System.out.println(km.getStartPos() + "," + km.getEndPos() + " "
 					+ km.getSnippetBrackets());
 		}
 		System.out.println(kr.getTotalResults());
+        */
         assertEquals(
                 "spanReference(spanDistance(focus(1: focus(#[1,2]spanSegment("
                         + "focus(#1: spanSegment(spanRelation(base:<:child-of), focus(2: spanNext("

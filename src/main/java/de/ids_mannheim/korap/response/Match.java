@@ -786,7 +786,7 @@ public class Match extends AbstractDocument {
 
         try {
             // Store character offsets in ByteBuffer
-            ByteBuffer bb = ByteBuffer.allocate(8);
+            ByteBuffer bb = ByteBuffer.allocate(24);
 
             SpanElementQuery cquery = new SpanElementQuery(field, element);
 
@@ -797,7 +797,7 @@ public class Match extends AbstractDocument {
             int newStartChar = -1, newEndChar = -1;
 
             if (DEBUG)
-                log.trace("Extend match to context boundary with {} in {}",
+                log.trace("Extend match to context boundary with {} in docID {}",
                         cquery.toString(), this.localDocID);
 
             while (true) {
@@ -831,18 +831,19 @@ public class Match extends AbstractDocument {
                             for (byte[] b : contextSpans.getPayload()) {
 
                                 // Not an element span
-                                if (b.length != 8)
+                                if (b[0] != (byte) 64)
                                     continue;
 
-                                bb.put(b);
                                 bb.rewind();
+                                bb.put(b);
+                                bb.position(1);
                                 newStartChar = bb.getInt();
                                 newEndChar = bb.getInt();
                                 break;
                             };
                         }
                         catch (Exception e) {
-                            log.warn(e.getMessage());
+                            log.warn("Some problems with ByteBuffer: " + e.getMessage());
                         };
                     };
                 }
@@ -862,11 +863,12 @@ public class Match extends AbstractDocument {
                             for (byte[] b : contextSpans.getPayload()) {
 
                                 // Not an element span
-                                if (b.length != 8)
+                                if (b[0] != (byte) 64)
                                     continue;
 
-                                bb.put(b);
                                 bb.rewind();
+                                bb.put(b);
+                                bb.position(1);
                                 newEndChar = bb.getInt(1);
                                 break;
                             };

@@ -1,5 +1,6 @@
-0.55 2015-12-02
-        - Introducing payload ids to the index structure
+0.55 2016-02-04
+        - [feature] Introducing payload identifiers to the index
+	  structure (diewald, margaretha)
 
 0.54 2015-11-13
    	- [performance] Updated Lucene dependency from 4.10.3

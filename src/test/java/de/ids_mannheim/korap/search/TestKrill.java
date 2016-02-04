@@ -951,7 +951,8 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        for (String i : new String[] { "00001", "00002", "00003", "00004",
+        for (String i : new String[] { "00001",
+                                       "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
             ki.addDoc(
                     getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
@@ -975,12 +976,15 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 3);
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
+
         assertFalse(kr.getContext().toJsonNode().toString().equals("\"s\""));
 
         json = getString(getClass().getResource(
                 "/queries/bsp-context-sentence.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
+        assertEquals(kr.getContext().toJsonNode().toString(), "\"s\"");
+
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
                 "steht a für den dezimalen [Wert] 97 sowohl im ASCII-"
                         + " als auch im Unicode-Zeichensatz");
@@ -991,8 +995,6 @@ public class TestKrill {
                 "In einem Zahlensystem mit einer Basis größer "
                         + "als 10 steht A oder a häufig für den dezimalen"
                         + " [Wert] 10, siehe auch Hexadezimalsystem.");
-
-        assertEquals(kr.getContext().toJsonNode().toString(), "\"s\"");
     };
 
 
