@@ -61,7 +61,7 @@ $ git clone https://github.com/KorAP/Krill
 $ cd Krill
 ```
 
-To run the test suite ...
+To run the test suite (you will need Java SDK and Maven 3) ...
 
 ```
 $ mvn clean test
@@ -82,7 +82,7 @@ index, but this is likely to change.
 **Authors**: [Nils Diewald](http://nils-diewald.de/),
 	     [Eliza Margaretha](http://www1.ids-mannheim.de/direktion/personal/margaretha.html)
 
-Copyright (c) 2013-2015, [IDS Mannheim](http://ids-mannheim.de/), Germany
+Copyright (c) 2013-2016, [IDS Mannheim](http://ids-mannheim.de/), Germany
 
 Krill is developed as part of the [KorAP](http://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Institute for German Language

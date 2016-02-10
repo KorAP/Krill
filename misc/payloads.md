@@ -155,7 +155,7 @@ For example:
 
     @:class=header$<b>17<i>6<s>1
 
-means the attribute belongs to the term, element, or relation in the
+means the attribute belongs to the element in the
 same token position whose TUI is 1 and end position is 6.
 
 *PTIs* (it’s an attribute payload, if the fourth bit is set):

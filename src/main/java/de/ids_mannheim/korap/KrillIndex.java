@@ -1003,6 +1003,7 @@ public final class KrillIndex {
                 // Search for minimal surrounding sentences
                 if (extendToSentence) {
 
+                    // <legacy>
                     String element = (match.getTextSigle() == null ? "s"
                             : "base/s:s");
 
@@ -1055,18 +1056,15 @@ public final class KrillIndex {
                     // Init document iterator
                     docs.nextDoc();
 
-                    // Should never happen ... but hell.
+                    // Should never happen ... but hell!
                     if (docs.docID() == DocIdSetIterator.NO_MORE_DOCS)
                         continue;
-
-                    // How often does this term occur in the document?
-                    int termOccurrences = docs.freq();
 
                     // String representation of the term
                     String termString = termsEnum.term().utf8ToString();
 
                     // Iterate over all occurrences
-                    for (int i = 0; i < termOccurrences; i++) {
+                    for (int i = 0; i < docs.freq(); i++) {
 
                         // Init positions and get the current
                         int pos = docs.nextPosition();

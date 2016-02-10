@@ -570,6 +570,57 @@ public class TestMatchIdentifier {
     };
 
 
+    @Test
+    public void indexAttributeInfo () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createAttributeFieldDoc());
+        ki.commit();
+        Match km = ki.getMatchInfo("match-ca1!da1-p7-10",
+                                   "tokens",
+                                   null,
+                                   null,
+                                   false,
+                                   false);
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("tokens", res.at("/field").asText());
+        assertTrue(res.at("/startMore").asBoolean());
+        assertTrue(res.at("/endMore").asBoolean());
+        assertEquals("ca1", res.at("/corpusID").asText());
+        assertEquals("da1", res.at("/docID").asText());
+        assertEquals("<span class=\"context-left\">"+
+                     "<span class=\"more\">"+
+                     "</span>"+
+                     "</span>"+
+                     "<mark>"+
+                     //                     "<span title=\"@:x/s:key:value\">"+
+                     "<span title=\"f/m:acht\">"+
+                     "<span title=\"f/y:eight\">"+
+                     "<span title=\"it/is:8\">"+
+                     "<span title=\"x/o:achtens\">b</span>"+
+                     //                     "</span>"+
+                     "</span>"+
+                     "</span>"+
+                     "</span>"+
+                     "<span title=\"f/m:neun\">"+
+                     "<span title=\"f/y:nine\">"+
+                     "<span title=\"it/is:9\">"+
+                     "<span title=\"x/o:neuntens\">a</span>"+
+                     "</span>"+
+                     "</span>"+
+                     "</span>"+
+                     "<span title=\"f/m:zehn\">"+
+                     "<span title=\"f/y:ten\">"+
+                     "<span title=\"it/is:10\">"+
+                     "<span title=\"x/o:zehntens\">c</span>"+
+                     "</span>"+
+                     "</span>"+
+                     "</span>"+
+                     "</mark>"+
+                     "<span class=\"context-right\">"+
+                     "</span>", res.at("/snippet").asText());
+    };
+
+
     private FieldDocument createSimpleFieldDoc () {
         FieldDocument fd = new FieldDocument();
         fd.addString("corpusID", "c1");
@@ -648,6 +699,29 @@ public class TestMatchIdentifier {
                         + "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>5<i>6|<>:s$<b>64<i>5<i>7<i>7]"
                         + "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6$<i>6<i>7]"
                         + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag$<b>64<i>7<i>10<i>10|_7$<i>7<i>8]"
+                        + "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8$<i>8<i>9]"
+                        + "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>9<i>10]");
+        return fd;
+    };
+
+    /*
+      Check for terms|spans|rels ...
+     */
+    private FieldDocument createAttributeFieldDoc () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("corpusID", "ca1");
+        fd.addString("ID", "da1");
+        fd.addTV(
+                "tokens",
+                "abcabcabac",
+                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|_0$<i>0<i>1|-:t$<i>10]"
+                        + "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1$<i>1<i>2]"
+                        + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:s$<b>64<i>2<i>5<i>5]"
+                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|_3$<i>3<i>4]"
+                        + "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4$<i>4<i>5]"
+                        + "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>5<i>6]"
+                        + "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6$<i>6<i>7]"
+                        + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/s:tag$<b>64<i>7<i>10<i>10<b>0<s>1|@:x/s:key:value$<b>17<i>10<s>1|_7$<i>7<i>8]"
                         + "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8$<i>8<i>9]"
                         + "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>9<i>10]");
         return fd;
