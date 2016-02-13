@@ -1035,6 +1035,7 @@ public final class KrillQuery extends Notifications {
     // TODO: Not optimal as it does not respect non-term
     private SpanQueryWrapper _termFromJson (JsonNode json, String direction)
             throws QueryException {
+
         if (!json.has("key") || json.get("key").asText().length() < 1) {
             if (!json.has("attr"))
                 throw new QueryException(740,
@@ -1105,8 +1106,8 @@ public final class KrillQuery extends Notifications {
                     break;
 
                 case "orth":
-                    // TODO: THIS IS A BUG! AND SHOULD BE NAMED "SURFACE" or . OR *
-                    layer = "s";
+                    // TODO: THIS IS AN UGLY HACK! AND SHOULD BE NAMED "SURFACE" or . OR *
+                    layer = ".";
                     break;
 
                 case "struct":
@@ -1119,7 +1120,7 @@ public final class KrillQuery extends Notifications {
             };
 
             if (isCaseInsensitive && isTerm) {
-                if (layer.equals("s"))
+                if (layer.equals("."))
                     layer = "i";
                 else {
                     this.addWarning(767,
@@ -1128,8 +1129,13 @@ public final class KrillQuery extends Notifications {
             };
 
             // Ignore foundry for orth layer
-            if (layer.equals("s") || layer.equals("i"))
+            if (layer.equals(".")) {
+                layer = "s"; 
                 value.setLength(0);
+            }
+            else if (layer.equals("i")) {
+                value.setLength(0);
+            };
 
             value.append(layer).append(':');
         };

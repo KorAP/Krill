@@ -520,6 +520,23 @@ public class TestKrillQueryJSON {
     };
 
 
+    @Test
+    public void queryJSONelement () throws QueryException {
+        // <base/s=s>
+        try {
+            String json = getString(getClass().getResource(
+                    "/queries/element/simple-element.jsonld").getFile());
+            KrillQuery kq = new KrillQuery("tokens");
+
+            assertEquals(kq.fromJson(json).toQuery().toString(),
+                    "<tokens:base/s:s />");
+        }
+        catch (QueryException e) {
+            fail(e.getMessage());
+        };
+    };
+
+
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {

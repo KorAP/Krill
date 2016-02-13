@@ -1,0 +1,13 @@
+{
+  "@context":"http://ids-mannheim.de/ns/KorAP/json-ld/v0.3/context.jsonld",
+  "collection":null,
+  "query":{
+    "wrap": {
+      "layer": "s",
+      "foundry": "base",
+      "key": "s",
+      "@type": "koral:term"
+    },
+    "@type": "koral:span"
+  }
+}
