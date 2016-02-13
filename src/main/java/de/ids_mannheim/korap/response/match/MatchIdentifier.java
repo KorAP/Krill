@@ -10,8 +10,10 @@ public class MatchIdentifier extends DocIdentifier {
 
     // TODO: "contains" is necessary for a compatibility bug in Kustvakt
     Pattern idRegex = Pattern.compile("^(?:match-|contains-)"
-            + "(?:([^!]+?)[!\\.])?" + "([^!]+)-p([0-9]+)-([0-9]+)"
-            + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)" + "(?:c.+?)?$");
+                                      + "(?:([^!]+?)[!\\.])?" +
+                                      "([^!]+)-p([0-9]+)-([0-9]+)" +
+                                      "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)" +
+                                      "(?:c.+?)?$");
     Pattern posRegex = Pattern.compile("\\(([0-9]+)\\)([0-9]+)-([0-9]+)");
 
 
@@ -21,7 +23,7 @@ public class MatchIdentifier extends DocIdentifier {
     public MatchIdentifier (String id) {
 
         // Replace for legacy reasons with incompatible versions of Kustvakt
-        id = id.replaceAll("^(contains-|match-)([^-!_\\.]+?)!\\2_", "$1$2_");
+        id = id.replaceAll("^(contains-|match-)([^!_\\.]+?)!\\2_", "$1$2_");
 
         Matcher matcher = idRegex.matcher(id);
         if (matcher.matches()) {

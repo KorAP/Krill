@@ -28,7 +28,6 @@ public class TestMatchIdentifier {
 
     ObjectMapper mapper = new ObjectMapper();
 
-
     @Test
     public void identifierExample1 () throws IOException, QueryException {
         MatchIdentifier id = new MatchIdentifier("match-c1!d1-p4-20");
@@ -548,6 +547,17 @@ public class TestMatchIdentifier {
                 .asText());
     };
 
+
+    @Test
+    public void indexFailingMatchID () throws IOException,
+            QueryException {
+        KrillIndex ki = new KrillIndex();
+        Match km = ki.getMatchInfo("match-PRO-DUD!PRO-DUD_KSTA-2013-01.7483-2013-01",
+                                   "tokens", "*", "m",
+                                   false, false);
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("730", res.at("/errors/0/0").asText());
+    };
 
     @Test
     public void indexExampleNullInfo () throws IOException, QueryException {

@@ -833,6 +833,9 @@ public final class KrillIndex {
             boolean includeHighlights, boolean extendToSentence)
             throws QueryException {
 
+        if (DEBUG)
+            log.trace("Get info on {}", idString);
+
         Match match = new Match(idString, includeHighlights);
 
         if (this.getVersion() != null)
@@ -853,13 +856,23 @@ public final class KrillIndex {
         }
 
         // <legacy>
-        else {
+        else if (match.getDocID() != null) {
             bool.add(new TermQuery(new Term("ID", match.getDocID())),
                     BooleanClause.Occur.MUST);
             bool.add(new TermQuery(new Term("corpusID", match.getCorpusID())),
                     BooleanClause.Occur.MUST);
-        };
+        }
         // </legacy>
+
+        // Invalid
+        else {
+            match.addError(730, "Invalid match identifier", idString);
+            return match;
+        };
+
+        if (DEBUG)
+            log.trace("The bool query is {}", bool.toString());
+
 
         Filter filter = (Filter) new QueryWrapperFilter(bool);
 
@@ -950,17 +963,21 @@ public final class KrillIndex {
         };
 
         try {
+
             // Iterate over all atomic indices and find the matching document
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 // Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
-                        .getLiveDocs());
+                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader().getLiveDocs());
+
 
                 // Create a bitset for the correct document
                 Bits bitset = filterSet.bits();
 
                 DocIdSetIterator filterIterator = filterSet.iterator();
+
+                if (DEBUG)
+                    log.trace("Checking document in {} with {}", filterSet, bitset);
 
                 // No document found
                 if (filterIterator == null)
@@ -968,6 +985,9 @@ public final class KrillIndex {
 
                 // Go to the matching doc - and remember its ID
                 int localDocID = filterIterator.nextDoc();
+
+                if (DEBUG)
+                    log.trace("localDocID is {}", localDocID);
 
                 if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
                     continue;

@@ -1092,4 +1092,29 @@ public class TestKrill {
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
         assertEquals(kr.getTotalResults(), 1);
     };
+
+    /**
+     * This is a Schreibgebrauch ressource that didn't work for element queries.
+     */
+    @Test
+    public void searchSchreibgebrauchData () throws IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        ki.addDoc(getClass().getResourceAsStream("/sgbr/BSP-2013-01-32.json.gz"), true);
+        ki.commit();
+
+        Krill k = new Krill(new QueryBuilder("tokens").tag("base/s:s"));
+
+        assertEquals(k.getSpanQuery().toString(),
+                "<tokens:base/s:s />");
+
+        Result kr = k.apply(ki);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+                "[Selbst ist der Jeck]");
+
+        assertEquals(kr.getMatch(0).getTextSigle(), "PRO-DUD_BSP-2013-01.32");
+    };
+
 };
