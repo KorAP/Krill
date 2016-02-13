@@ -117,6 +117,7 @@ public class TestElementDistanceIndex {
 
         SpanQuery sq;
         sq = createQuery("s", "s:b", "s:c", 0, 2, true);
+
         kr = ki.search(sq, (short) 10);
 
         assertEquals(kr.getTotalResults(), 4);
@@ -228,6 +229,9 @@ public class TestElementDistanceIndex {
 
         SpanQuery sq;
         sq = sqwi.toQuery();
+
+        System.err.println(sq.toString());
+
         kr = ki.search(sq, (short) 10);
 
         assertEquals((long) 3, kr.getTotalResults());

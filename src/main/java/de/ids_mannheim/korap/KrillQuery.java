@@ -903,6 +903,12 @@ public final class KrillQuery extends Notifications {
                     value.append(constraint.get("layer").asText());
                     value.append(':').append(unit);
                     unit = value.toString();
+                }
+
+                // Use default foundry and layer - currently only base is supported!
+                else if (unit.equals("s") || unit.equals("p")) {
+                    StringBuilder value = new StringBuilder();
+                    unit = value.append("base/s:").append(unit).toString();
                 };
 
                 // Sanitize boundary
