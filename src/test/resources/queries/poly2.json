@@ -24,6 +24,8 @@
       "operands" : [
          {
             "@type" : "koral:span",
+            "foundry" : "base",
+            "layer" : "s",
             "key" : "s"
          },
          {

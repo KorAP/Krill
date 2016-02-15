@@ -58,10 +58,10 @@ public class SearchContext {
 
         // <LEGACY>
         if (spanContext.equals("sentence")) {
-            spanContext = "s";
+            spanContext = "base/s:s";
         }
         else if (spanContext.equals("paragraph")) {
-            spanContext = "p";
+            spanContext = "base/s:p";
         };
         // </LEGACY>
 

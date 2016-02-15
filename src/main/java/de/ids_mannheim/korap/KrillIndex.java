@@ -1022,18 +1022,12 @@ public final class KrillIndex {
 
                 // Search for minimal surrounding sentences
                 if (extendToSentence) {
-
-                    // <legacy>
-                    String element = (match.getTextSigle() == null ? "s"
-                            : "base/s:s");
-
-                    // SUPPORT FOR LEGACY ANNOTATIONS
+                    String element = "base/s:s";
                     int[] spanContext = match.expandContextToSpan(element);
 
                     if (DEBUG)
                         log.trace("Extend to sentence element '{}'", element);
 
-                    // </legacy>
                     if (spanContext[0] >= 0 && spanContext[0] < spanContext[1]) {
                         match.setStartPos(spanContext[0]);
                         match.setEndPos(spanContext[1]);

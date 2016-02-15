@@ -7,7 +7,7 @@
   ],
   "meta":{
     "startPage":1,
-    "context":"paragraph"
+    "-context":"paragraph"
   },
   "query":{
     "@type":"koral:group",

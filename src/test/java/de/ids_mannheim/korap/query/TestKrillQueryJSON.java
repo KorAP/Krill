@@ -290,7 +290,7 @@ public class TestKrillQueryJSON {
         // "das /+w1:3,s1:1 Buch"
         assertEquals(
                 sqwi.toQuery().toString(),
-                "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (s[1:1], ordered, notExcluded)])");
+                "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (base/s:s[1:1], ordered, notExcluded)])");
     };
 
 
@@ -302,7 +302,7 @@ public class TestKrillQueryJSON {
         // "das /+w1:3,s1 Buch"
         assertEquals(
                 sqwi.toQuery().toString(),
-                "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (s[0:1], ordered, notExcluded)])");
+                "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (base/s:s[0:1], ordered, notExcluded)])");
     };
 
 

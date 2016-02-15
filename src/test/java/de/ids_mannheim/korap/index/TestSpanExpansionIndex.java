@@ -109,7 +109,7 @@ public class TestSpanExpansionIndex {
          */
 
         // add expansion offsets to the existing payload
-        SpanElementQuery seq = new SpanElementQuery("tokens", "s");
+        SpanElementQuery seq = new SpanElementQuery("tokens", "base/s:s");
         sq = new SpanExpansionQuery(seq, 1, 2, 0, classNumber, true);
         kr = ki.search(sq, (short) 10);
 

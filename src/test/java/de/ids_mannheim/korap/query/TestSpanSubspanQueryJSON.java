@@ -118,7 +118,7 @@ public class TestSpanSubspanQueryJSON {
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "focus(129: spanElementDistance({129: tokens:s:der}, {129: subspan"
-                        + "(<tokens:s />, 0, 1)}, [(s[0:0], ordered, notExcluded)]))",
+                        + "(<tokens:s />, 0, 1)}, [(base/s:s[0:0], ordered, notExcluded)]))",
                 sq.toString());
     }
 

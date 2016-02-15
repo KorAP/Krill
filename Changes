@@ -1,3 +1,7 @@
+0.55.3 2016-02-15
+	- [bugfix] use base foundry for default sentences and paragraphs
+	  (diewald)
+
 0.55.2 2016-02-13
         - [bugfix] Fixed support for corpus and doc IDs containing
 	  dashes (diewald)

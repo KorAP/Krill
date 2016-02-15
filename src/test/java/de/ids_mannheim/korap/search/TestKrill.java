@@ -830,20 +830,19 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
 
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "[Saragat-Partei] zerfällt Rom (ADN) die von dem");
+                "[Saragat-Partei] zerfällt Rom (ADN) die von dem ...");
         assertEquals(kr.getMatch(1).getSnippetBrackets(),
-                "[Saragat-Partei] zerfällt Rom (ADN) die von dem");
+                "[Saragat-Partei] zerfällt Rom (ADN) die von dem ...");
         assertEquals(kr.getMatch(2).getSnippetBrackets(),
                 "Saragat-Partei zerfällt [Rom] (ADN) "
-                        + "die von dem Rechtssozialisten Saragat");
+                        + "die von dem Rechtssozialisten Saragat ...");
         assertEquals(kr.getMatch(3).getSnippetBrackets(),
                 "Saragat-Partei zerfällt Rom ([ADN]) "
-                        + "die von dem Rechtssozialisten Saragat geführte");
-
+                        + "die von dem Rechtssozialisten Saragat geführte ...");
         assertEquals(kr.getMatch(23).getSnippetBrackets(),
-                "dem Namen \"Einheitsbewegung der sozialistischen "
+                "... dem Namen \"Einheitsbewegung der sozialistischen "
                         + "Initiative\" [eine neue politische Gruppierung] "
-                        + "ins Leben gerufen hatten. Pressemeldungen zufolge");
+                        + "ins Leben gerufen hatten. Pressemeldungen zufolge ...");
     };
 
 
@@ -975,13 +974,13 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
 
-        assertFalse(kr.getContext().toJsonNode().toString().equals("\"s\""));
+        assertFalse(kr.getContext().toJsonNode().toString().equals("\"base/s:s\""));
 
         json = getString(getClass().getResource(
                 "/queries/bsp-context-sentence.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
-        assertEquals(kr.getContext().toJsonNode().toString(), "\"s\"");
+        assertEquals(kr.getContext().toJsonNode().toString(), "\"base/s:s\"");
 
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
                 "steht a für den dezimalen [Wert] 97 sowohl im ASCII-"
