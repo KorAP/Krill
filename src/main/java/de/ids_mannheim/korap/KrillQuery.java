@@ -911,6 +911,11 @@ public final class KrillQuery extends Notifications {
                     unit = value.append("base/s:").append(unit).toString();
                 };
 
+                // Set distance exclusion
+                Boolean exclusion = false;
+                if (constraint.has("exclude"))
+                    exclusion = constraint.get("exclude").asBoolean();
+
                 // Sanitize boundary
                 if (max < min)
                     max = min;
@@ -919,7 +924,7 @@ public final class KrillQuery extends Notifications {
                     log.trace("Add distance constraint of '{}': {}-{}", unit,
                             min, max);
 
-                sseqqw.withConstraint(min, max, unit);
+                sseqqw.withConstraint(min, max, unit, exclusion);
             };
         };
 
