@@ -382,7 +382,7 @@ public class TestKrillQueryJSON {
 
         // Tal []{1,} Wald
         assertEquals(sqwi.toQuery().toString(),
-                "spanDistance(tokens:s:Tal, tokens:s:Wald, [(w[2:100], ordered, notExcluded)])");
+                "spanDistance(tokens:s:Tal, tokens:s:Wald, [(w[2:101], ordered, notExcluded)])");
     };
 
 
@@ -484,7 +484,7 @@ public class TestKrillQueryJSON {
 
         assertEquals(
                 sqwi.toQuery().toString(),
-                "spanContain(<tokens:s />, spanDistance(tokens:s:Erde, tokens:s:Sonne, [(w[0:100], ordered, notExcluded)]))");
+                "spanContain(<tokens:s />, spanDistance(tokens:s:Erde, tokens:s:Sonne, [(w[1:101], ordered, notExcluded)]))");
     };
 
 

@@ -326,6 +326,14 @@ public class TestSpanSequenceQueryJSON {
     };
 
 
+    @Test
+    public void queryJSONkoralSimpleDistanceBug () throws QueryException {
+        SpanQueryWrapper sqwi = jsonQueryFile("distance-simple.jsonld");
+
+        assertEquals("spanDistance(tokens:s:der, tokens:s:Baum, [(w[2:2], ordered, notExcluded)])",sqwi.toQuery().toString());
+    };
+
+
     // get query wrapper based on json file
     public SpanQueryWrapper jsonQueryFile (String filename) {
         return getJSONQuery(getClass().getResource(path + filename).getFile());

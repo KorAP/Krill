@@ -107,8 +107,8 @@ public class TestReferenceIndex {
                 "spanReference(focus(#[1,2]spanSegment(focus(#2: "
                         + "spanSegment(spanRelation(tokens:>:stanford/d:tag), "
                         + "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, "
-                        + "{2: <tokens:prp />}, [(w[0:1], notOrdered, notExcluded)])), "
-                        + "{3: <tokens:nn />}, [(w[0:2], notOrdered, notExcluded)])))), "
+                        + "{2: <tokens:prp />}, [(w[1:2], notOrdered, notExcluded)])), "
+                        + "{3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)])))), "
                         + "{2: <tokens:prp />})), 2)", sq.toString());
 
         SpanElementQuery seq1 = new SpanElementQuery("tokens", "vb");
@@ -122,11 +122,13 @@ public class TestReferenceIndex {
         SpanClassQuery scq3 = new SpanClassQuery(seq3, (byte) 3);
 
         // vb .{0,1} prp
+        // ND: I don't know if this is correct
         SpanDistanceQuery sdq1 = new SpanDistanceQuery(scq1, scq2,
                 new DistanceConstraint(0, 1, false, false), true);
         SpanFocusQuery sfq1 = new SpanFocusQuery(sdq1, (byte) 1);
 
         // vb .{0,2} nn
+        // ND: I don't know if this is correct
         SpanDistanceQuery sdq2 = new SpanDistanceQuery(sfq1, scq3,
                 new DistanceConstraint(0, 2, false, false), true);
         SpanFocusQuery sfq2 = new SpanFocusQuery(sdq2, (byte) 3);

@@ -1,1 +1,56 @@
-{"@context":"http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld","errors":[],"warnings":[],"announcements":["Deprecated 2014-07-24: 'min' and 'max' to be supported until 3 months from deprecation date."],"query":{"@type":"koral:group","operation":"operation:sequence","operands":[{"@type":"koral:token","wrap":{"@type":"koral:term","layer":"orth","key":"Tal","match":"match:eq"}},{"@type":"koral:token","wrap":{"@type":"koral:term","layer":"orth","key":"Wald","match":"match:eq"}}],"inOrder":true,"distances":[{"@type":"koral:distance","key":"w","boundary":{"@type":"koral:boundary","min":2},"min":2}]},"collections":[{"@type":"koral:meta-filter","@value":{"@type":"koral:term","@field":"koral:field#corpusID","@value":"WPD"}}],"meta":{"startPage":1,"itemsPerResource":1,"context":"paragraph"}}
+{
+  "@context":"http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "errors":[],
+  "warnings":[],
+  "announcements":["Deprecated 2014-07-24: 'min' and 'max' to be supported until 3 months from deprecation date."],
+  "query":{
+    "@type":"koral:group",
+    "operation":"operation:sequence",
+    "operands":[
+      {
+	"@type":"koral:token",
+	"wrap":{
+	  "@type":"koral:term",
+	  "layer":"orth",
+	  "key":"Tal",
+	  "match":"match:eq"
+	}
+      },{
+	"@type":"koral:token",
+	"wrap":{
+	  "@type":"koral:term",
+	  "layer":"orth",
+	  "key":"Wald",
+	  "match":"match:eq"
+	}
+      }
+    ],
+    "inOrder":true,
+    "distances":[
+      {
+	"@type":"koral:distance",
+	"key":"w",
+	"boundary":{
+	  "@type":"koral:boundary",
+	  "min":1
+	},
+	"min":1
+      }
+    ]
+  },
+  "collections":[
+    {
+      "@type":"koral:meta-filter",
+      "@value":{
+	"@type":"koral:term",
+	"@field":"koral:field#corpusID",
+	"@value":"WPD"
+      }
+    }
+  ],
+  "meta":{
+    "startPage":1,
+    "itemsPerResource":1,
+    "context":"paragraph"
+  }
+}

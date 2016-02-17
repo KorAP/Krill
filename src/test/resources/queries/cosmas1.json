@@ -5,7 +5,7 @@
     "operation" : "operation:sequence",
     "inOrder" : false,
     "distances" : [ {
-      "@type" : "koral:distance",
+      "@type" : "cosmas:distance",
       "key" : "s",
       "min" : 0,
       "max" : 0

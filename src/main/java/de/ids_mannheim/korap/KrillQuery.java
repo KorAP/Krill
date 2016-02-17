@@ -911,6 +911,12 @@ public final class KrillQuery extends Notifications {
                     unit = value.append("base/s:").append(unit).toString();
                 };
 
+                // Workaround for koral:distance vs cosmas:distance
+                if (constraint.get("@type").asText().equals("koral:distance")) {
+                    min++;
+                    max++;
+                };
+
                 // Set distance exclusion
                 Boolean exclusion = false;
                 if (constraint.has("exclude"))

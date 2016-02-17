@@ -8,12 +8,12 @@
       "@type" : "koral:group",
       "operation" : "operation:and",
       "operands" : [ {
-        "@type" : "koral:distance",
+        "@type" : "cosmas:distance",
         "key" : "w",
         "min" : 1,
         "max" : 3
       }, {
-        "@type" : "koral:distance",
+        "@type" : "cosmas:distance",
         "key" : "s",
         "min" : 1,
         "max" : 1

@@ -65,9 +65,10 @@ public class TestSpanReferenceQueryJSON {
                         + "{1: <tokens:c:VP />})), 1)", sq.toString());
     }
 
-
     @Test
     public void testDistanceReferences () throws QueryException {
+
+        // ND: I don't understand what this query should be about ...
         String filepath = getClass().getResource(
                 "/queries/reference/bug-multiple-distance-simple.jsonld")
                 .getFile();
@@ -92,7 +93,7 @@ public class TestSpanReferenceQueryJSON {
                 + "2: spanDistance(" + "focus(" + "1: spanDistance("
                 + "<tokens:c:vb />, " + "{1: <tokens:c:prp />}, "
                 + "[(w[1:1], notOrdered, notExcluded)]" + ")" + "), "
-                + "{2: <tokens:c:nn />}, " + "[(w[0:2], ordered, notExcluded)]"
+                + "{2: <tokens:c:nn />}, " + "[(w[1:3], ordered, notExcluded)]"
                 + ")" + ")" + ")" + "), " + "{1: <tokens:c:prp />}" + ")"
                 + "), 1" + ")", sq.toString());
     }
