@@ -106,6 +106,30 @@ public class TestKrillCollectionJSON {
 
 
     @Test
+    public void collectionWithSpecialcharacter () {
+        String query = _getJSONString("collection_with_special_char.jsonld");
+        Krill ks = new Krill(query);
+        assertFalse(ks.hasErrors());
+        assertFalse(ks.hasWarnings());
+        assertFalse(ks.hasMessages());
+        assertEquals("QueryWrapperFilter(author:/Goe:th=e/)", ks.getCollection().toString());
+    };
+
+
+    @Test
+    public void collectionWithWorkaroundSharp () {
+
+        // This test should fail, when a ugly workaround is in charge!
+        String query = _getJSONString("collection_with_sharp.jsonld");
+        Krill ks = new Krill(query);
+        assertFalse(ks.hasErrors());
+        assertFalse(ks.hasWarnings());
+        assertFalse(ks.hasMessages());
+        assertEquals("QueryWrapperFilter(author:/Goe#the/)", ks.getCollection().toString());
+    };
+
+
+    @Test
     public void nocollectiontypegiven () {
         String metaQuery = _getJSONString("multiterm_rewrite_collection.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
