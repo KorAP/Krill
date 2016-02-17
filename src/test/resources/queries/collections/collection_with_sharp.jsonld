@@ -16,8 +16,7 @@
   "collection":{
     "value":"Goe#the",
     "match":"match:eq",
-    "type":"type:regex",
-    "key":"author",
+    "key":"keywords",
     "@type":"koral:doc"
   },
   "meta":{

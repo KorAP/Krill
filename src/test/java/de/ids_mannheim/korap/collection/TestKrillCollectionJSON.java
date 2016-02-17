@@ -125,7 +125,7 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("QueryWrapperFilter(author:/Goe#the/)", ks.getCollection().toString());
+        assertEquals("keywords:Goe#the", ks.getCollection().toString());
     };
 
 
