@@ -62,7 +62,7 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
             this.isEmpty = true;
 
         // Subquery may be an empty token
-        if (this.subquery.isNull()) {
+        if (subquery.isNull()) {
             this.isNull = true;
             return;
         }
