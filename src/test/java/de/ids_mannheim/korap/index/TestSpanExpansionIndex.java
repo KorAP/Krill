@@ -17,11 +17,13 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSpanExpansionIndex {
@@ -347,6 +349,47 @@ public class TestSpanExpansionIndex {
          * +km.getSnippetBrackets() ); }
          */
     }
+
+
+
+
+    /**
+     * Query rewrite bug
+     * 
+     * @throws IOException
+     * */
+    @Test
+    public void testExpansionQueryBug3 () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createFieldDoc0()); // same doc
+        ki.addDoc(createFieldDoc1()); // only not clause
+        ki.addDoc(createFieldDoc2()); // only main clause
+        ki.commit();
+
+        String json = readFile(getClass().getResource(
+            "/queries/bugs/expansion_bug_3.jsonld").getFile()
+        );
+        KrillQuery kq = new KrillQuery("base");
+        SpanQuery sq = kq.fromJson(json).toQuery();
+        /*
+        assertEquals(sq.toString(),
+                     "spanExpansion(base:s:a, []{0, 100}, right)");
+        */
+        kr = ki.search(sq, (short) 11);
+        assertEquals((long) 1111, kr.getTotalResults());
+
+        assertEquals("[c]eccecd ...",kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[ce]ccecde ...",kr.getMatch(1).getSnippetBrackets());
+        assertEquals("",kr.getMatch(10).getSnippetBrackets());
+        assertEquals("",kr.getMatch(11).getSnippetBrackets());
+        /*
+        assertEquals("[ce]cceecde",kr.getMatch(1).getSnippetBrackets());
+        assertEquals("[cecceecde]",kr.getMatch(10).getSnippetBrackets());
+        assertEquals("[bb]ccdd",kr.getMatch(11).getSnippetBrackets());
+        */
+    }
+
+
 
 
     private FieldDocument createFieldDoc0 () {

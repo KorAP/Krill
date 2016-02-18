@@ -20,6 +20,8 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestKrillQuery {
 
+    // TODO: Better rename this to Builder
+
     @Test
     public void korapQuerySegment () throws QueryException {
         SpanQuery sq = new QueryBuilder("field1").seg("a").with("b").toQuery();
@@ -301,6 +303,15 @@ public class TestKrillQuery {
                 "spanMultipleDistance(spanMultipleDistance(field:try1, field:try2, [(w[5:6], ordered, notExcluded), (s[2:3], ordered, excluded)]), field:try3, [(w[5:6], ordered, notExcluded), (s[2:3], ordered, excluded)])",
                 sq.toString());
     };
+
+
+    @Test
+    public void KorapSequenceWithEmptyRepetitionQuery () throws QueryException {
+        QueryBuilder kq = new QueryBuilder("field");
+        SpanQuery sq = kq.seq(kq.seg("try")).append(kq.repeat(kq.empty(),0,100)).toQuery();
+        assertEquals("spanExpansion(field:try, []{0, 100}, right)",sq.toString());
+    };
+
 
 
     @Test

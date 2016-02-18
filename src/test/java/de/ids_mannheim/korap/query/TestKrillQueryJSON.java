@@ -537,6 +537,23 @@ public class TestKrillQueryJSON {
     };
 
 
+    @Test
+    public void queryJSONinfiniteExpansion () throws QueryException {
+        // der []*
+        try {
+            String json = getString(getClass().getResource(
+                    "/queries/bugs/expansion_bug_3.jsonld").getFile());
+            KrillQuery kq = new KrillQuery("tokens");
+
+            assertEquals(kq.fromJson(json).toQuery().toString(),
+                    "spanExpansion(tokens:s:c, []{0, 100}, right)");
+        }
+        catch (QueryException e) {
+            fail(e.getMessage());
+        };
+    };
+
+
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
