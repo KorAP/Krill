@@ -537,6 +537,23 @@ public class TestKrillQueryJSON {
     };
 
 
+    @Test
+    public void queryJSONcomplexSpanOrTerm () throws QueryException {
+        // startsWith(<base/s=s>, { lassen | laufen })
+        try {
+            String json = getString(getClass().getResource("/queries/bugs/span_or_bug.jsonld").getFile());
+            KrillQuery kq = new KrillQuery("tokens");
+
+            assertEquals(
+                         kq.fromJson(json).toQuery().toString(),
+                         "spanStartsWith(<tokens:base/s:s />, spanOr([tokens:s:Er, tokens:s:Sie]))");
+        }
+        catch (QueryException e) {
+            fail(e.getMessage());
+        };
+    };
+
+
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
