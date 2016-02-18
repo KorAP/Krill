@@ -1101,14 +1101,40 @@ public class TestWithinIndex {
         assertEquals(1, kr.getMatch(1).getLocalDocID());
         assertEquals(237, kr.getMatch(1).getStartPos());
         assertEquals(252, kr.getMatch(1).getEndPos());
-
-        /*
-        for (Match km : kr.getMatches()){		
-        	System.out.println(km.getStartPos() +","+km.getEndPos()+" "
-                               +km.getSnippetBrackets());
-        };	
-        */
     };
+
+
+    @Test
+    public void queryJSONcomplexSpanOrTerm () throws QueryException, IOException {
+        /*
+          at org.apache.lucene.search.spans.SpanOrQuery$1.doc(SpanOrQuery.java:234)
+          at de.ids_mannheim.korap.query.spans.WithinSpans.toSameDoc(WithinSpans.java:423)
+          at de.ids_mannheim.korap.query.spans.WithinSpans.next(WithinSpans.java:375)
+          at de.ids_mannheim.korap.KrillIndex.search(KrillIndex.java:1293)
+          at de.ids_mannheim.korap.Krill.apply(Krill.java:304)
+        */
+        // startsWith(<base/s=s>, { lassen | laufen })
+        String jsonPath = getClass().getResource("/queries/bugs/span_or_bug.jsonld")
+            .getFile();
+        String jsonPQuery = readFile(jsonPath);
+        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(jsonPQuery);
+
+        SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
+
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(getClass().getResourceAsStream("/wiki/PPP-02924.json.gz"),
+                  true);
+        ki.addDoc(getClass().getResourceAsStream("/wiki/DDD-08370.json.gz"),
+                  true);
+        ki.addDoc(getClass().getResourceAsStream("/wiki/SSS-09803.json.gz"),
+                  true);
+        ki.commit();
+        Result kr = ki.search(sq, (short) 10);
+        assertEquals(2, kr.getTotalResults());
+
+    }
+
 
 
     private String readFile (String path) {
