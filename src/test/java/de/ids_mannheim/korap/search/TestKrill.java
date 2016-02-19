@@ -839,7 +839,8 @@ public class TestKrill {
         assertEquals(kr.getMatch(3).getSnippetBrackets(),
                 "Saragat-Partei zerfällt Rom ([ADN]) "
                         + "die von dem Rechtssozialisten Saragat geführte ...");
-        assertEquals(kr.getMatch(23).getSnippetBrackets(),
+        assertEquals(
+                kr.getMatch(23).getSnippetBrackets(),
                 "... dem Namen \"Einheitsbewegung der sozialistischen "
                         + "Initiative\" [eine neue politische Gruppierung] "
                         + "ins Leben gerufen hatten. Pressemeldungen zufolge ...");
@@ -974,7 +975,8 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
 
-        assertFalse(kr.getContext().toJsonNode().toString().equals("\"base/s:s\""));
+        assertFalse(kr.getContext().toJsonNode().toString()
+                .equals("\"base/s:s\""));
 
         json = getString(getClass().getResource(
                 "/queries/bsp-context-sentence.jsonld").getFile());
@@ -1092,21 +1094,23 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 1);
     };
 
+
     /**
-     * This is a Schreibgebrauch ressource that didn't work for element queries.
+     * This is a Schreibgebrauch ressource that didn't work for
+     * element queries.
      */
     @Test
     public void searchSchreibgebrauchData () throws IOException {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        ki.addDoc(getClass().getResourceAsStream("/sgbr/BSP-2013-01-32.json.gz"), true);
+        ki.addDoc(getClass()
+                .getResourceAsStream("/sgbr/BSP-2013-01-32.json.gz"), true);
         ki.commit();
 
         Krill k = new Krill(new QueryBuilder("tokens").tag("base/s:s"));
 
-        assertEquals(k.getSpanQuery().toString(),
-                "<tokens:base/s:s />");
+        assertEquals(k.getSpanQuery().toString(), "<tokens:base/s:s />");
 
         Result kr = k.apply(ki);
         assertEquals(kr.getTotalResults(), 1);

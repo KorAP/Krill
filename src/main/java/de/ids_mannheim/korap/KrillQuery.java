@@ -1147,7 +1147,7 @@ public final class KrillQuery extends Notifications {
 
             // Ignore foundry for orth layer
             if (layer.equals(".")) {
-                layer = "s"; 
+                layer = "s";
                 value.setLength(0);
             }
             else if (layer.equals("i")) {

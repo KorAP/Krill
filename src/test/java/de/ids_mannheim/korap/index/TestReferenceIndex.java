@@ -102,13 +102,13 @@ public class TestReferenceIndex {
         // cat="vb" & cat="prp" & cat="nn" & #1 .notordered #2 & #1
         // .{0,2} #3 & #3 -> #2
 
-		assertEquals(
-				"spanReference(focus(#[1,2]spanSegment(focus(#2: "
-						+ "spanSegment(spanRelation(tokens:>:stanford/d:tag), "
-						+ "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, "
-						+ "{2: <tokens:prp />}, [(w[1:2], notOrdered, notExcluded)])), "
-						+ "{3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)])))), "
-						+ "{2: <tokens:prp />})), 2)", sq.toString());
+        assertEquals(
+                "spanReference(focus(#[1,2]spanSegment(focus(#2: "
+                        + "spanSegment(spanRelation(tokens:>:stanford/d:tag), "
+                        + "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, "
+                        + "{2: <tokens:prp />}, [(w[1:2], notOrdered, notExcluded)])), "
+                        + "{3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)])))), "
+                        + "{2: <tokens:prp />})), 2)", sq.toString());
 
         SpanElementQuery seq1 = new SpanElementQuery("tokens", "vb");
         // new SpanTermQuery(new Term("tokens", "c:vb"));
@@ -121,11 +121,11 @@ public class TestReferenceIndex {
         SpanClassQuery scq3 = new SpanClassQuery(seq3, (byte) 3);
 
         SpanDistanceQuery sdq1 = new SpanDistanceQuery(scq1, scq2,
-				new DistanceConstraint(1, 2, false, false), true);
+                new DistanceConstraint(1, 2, false, false), true);
         SpanFocusQuery sfq1 = new SpanFocusQuery(sdq1, (byte) 1);
 
         SpanDistanceQuery sdq2 = new SpanDistanceQuery(sfq1, scq3,
-				new DistanceConstraint(1, 3, false, false), true);
+                new DistanceConstraint(1, 3, false, false), true);
         SpanFocusQuery sfq2 = new SpanFocusQuery(sdq2, (byte) 3);
 
         // nn -> prp
@@ -198,7 +198,7 @@ public class TestReferenceIndex {
                 "spanReference(focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:stanford/d:tag), "
                         + "focus(1: spanReference(focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:stanford/d:tag), "
                         + "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, {2: <tokens:prp />}, "
-						+ "[(w[1:2], notOrdered, notExcluded)])), {3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)])))), "
+                        + "[(w[1:2], notOrdered, notExcluded)])), {3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)])))), "
                         + "{2: <tokens:prp />})), 2)))), {3: <tokens:nn />})), 3)",
                 sq.toString());
         kr = ki.search(sq, (short) 10);

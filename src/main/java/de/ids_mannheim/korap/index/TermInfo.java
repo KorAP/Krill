@@ -42,6 +42,7 @@ public class TermInfo implements Comparable<TermInfo> {
         this.payload = payload;
     };
 
+
     public TermInfo analyze () {
         if (analyzed)
             return this;
@@ -78,19 +79,19 @@ public class TermInfo implements Comparable<TermInfo> {
                 ttype = 3;
                 break;
 
-        case '_':
-            // pos
-            this.type = "pos";
-            ttype = 1;
-            tterm = tterm.substring(1);
-            break;
+            case '_':
+                // pos
+                this.type = "pos";
+                ttype = 1;
+                tterm = tterm.substring(1);
+                break;
 
-        case '@':
-            // pos
-            this.type = "attr";
-            ttype = 4;
-            tterm = tterm.substring(1);
-            break;
+            case '@':
+                // pos
+                this.type = "attr";
+                ttype = 4;
+                tterm = tterm.substring(1);
+                break;
 
             default:
                 // term

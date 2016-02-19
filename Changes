@@ -1,6 +1,6 @@
-0.55.3 2016-02-15
+0.55.3 2016-02-19
 	- [bugfix] Use base foundry for default sentences and paragraphs
-	  (diewald)
+	  (diewald, margaretha)
 	- [bugfix] Distance constraint exclusion serialized (diewald)
 
 0.55.2 2016-02-13

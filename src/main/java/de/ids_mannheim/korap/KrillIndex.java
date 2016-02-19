@@ -968,7 +968,8 @@ public final class KrillIndex {
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 // Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader().getLiveDocs());
+                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
+                        .getLiveDocs());
 
 
                 // Create a bitset for the correct document
@@ -977,7 +978,8 @@ public final class KrillIndex {
                 DocIdSetIterator filterIterator = filterSet.iterator();
 
                 if (DEBUG)
-                    log.trace("Checking document in {} with {}", filterSet, bitset);
+                    log.trace("Checking document in {} with {}", filterSet,
+                            bitset);
 
                 // No document found
                 if (filterIterator == null)

@@ -65,6 +65,7 @@ public class TestSpanReferenceQueryJSON {
                         + "{1: <tokens:c:VP />})), 1)", sq.toString());
     }
 
+
     @Test
     public void testDistanceReferences () throws QueryException {
 

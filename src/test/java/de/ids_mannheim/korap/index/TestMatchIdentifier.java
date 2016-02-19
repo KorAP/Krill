@@ -28,6 +28,7 @@ public class TestMatchIdentifier {
 
     ObjectMapper mapper = new ObjectMapper();
 
+
     @Test
     public void identifierExample1 () throws IOException, QueryException {
         MatchIdentifier id = new MatchIdentifier("match-c1!d1-p4-20");
@@ -549,15 +550,15 @@ public class TestMatchIdentifier {
 
 
     @Test
-    public void indexFailingMatchID () throws IOException,
-            QueryException {
+    public void indexFailingMatchID () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
-        Match km = ki.getMatchInfo("match-PRO-DUD!PRO-DUD_KSTA-2013-01.7483-2013-01",
-                                   "tokens", "*", "m",
-                                   false, false);
+        Match km = ki.getMatchInfo(
+                "match-PRO-DUD!PRO-DUD_KSTA-2013-01.7483-2013-01", "tokens",
+                "*", "m", false, false);
         JsonNode res = mapper.readTree(km.toJsonString());
         assertEquals("730", res.at("/errors/0/0").asText());
     };
+
 
     @Test
     public void indexExampleNullInfo () throws IOException, QueryException {
@@ -585,49 +586,36 @@ public class TestMatchIdentifier {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createAttributeFieldDoc());
         ki.commit();
-        Match km = ki.getMatchInfo("match-ca1!da1-p7-10",
-                                   "tokens",
-                                   null,
-                                   null,
-                                   false,
-                                   false);
+        Match km = ki.getMatchInfo("match-ca1!da1-p7-10", "tokens", null, null,
+                false, false);
         JsonNode res = mapper.readTree(km.toJsonString());
         assertEquals("tokens", res.at("/field").asText());
         assertTrue(res.at("/startMore").asBoolean());
         assertTrue(res.at("/endMore").asBoolean());
         assertEquals("ca1", res.at("/corpusID").asText());
         assertEquals("da1", res.at("/docID").asText());
-        assertEquals("<span class=\"context-left\">"+
-                     "<span class=\"more\">"+
-                     "</span>"+
-                     "</span>"+
-                     "<mark>"+
-                     //                     "<span title=\"@:x/s:key:value\">"+
-                     "<span title=\"f/m:acht\">"+
-                     "<span title=\"f/y:eight\">"+
-                     "<span title=\"it/is:8\">"+
-                     "<span title=\"x/o:achtens\">b</span>"+
-                     //                     "</span>"+
-                     "</span>"+
-                     "</span>"+
-                     "</span>"+
-                     "<span title=\"f/m:neun\">"+
-                     "<span title=\"f/y:nine\">"+
-                     "<span title=\"it/is:9\">"+
-                     "<span title=\"x/o:neuntens\">a</span>"+
-                     "</span>"+
-                     "</span>"+
-                     "</span>"+
-                     "<span title=\"f/m:zehn\">"+
-                     "<span title=\"f/y:ten\">"+
-                     "<span title=\"it/is:10\">"+
-                     "<span title=\"x/o:zehntens\">c</span>"+
-                     "</span>"+
-                     "</span>"+
-                     "</span>"+
-                     "</mark>"+
-                     "<span class=\"context-right\">"+
-                     "</span>", res.at("/snippet").asText());
+        assertEquals("<span class=\"context-left\">"
+                + "<span class=\"more\">"
+                + "</span>"
+                + "</span>"
+                + "<mark>"
+                +
+                //                     "<span title=\"@:x/s:key:value\">"+
+                "<span title=\"f/m:acht\">"
+                + "<span title=\"f/y:eight\">"
+                + "<span title=\"it/is:8\">"
+                + "<span title=\"x/o:achtens\">b</span>"
+                +
+                //                     "</span>"+
+                "</span>" + "</span>" + "</span>" + "<span title=\"f/m:neun\">"
+                + "<span title=\"f/y:nine\">" + "<span title=\"it/is:9\">"
+                + "<span title=\"x/o:neuntens\">a</span>" + "</span>"
+                + "</span>" + "</span>" + "<span title=\"f/m:zehn\">"
+                + "<span title=\"f/y:ten\">" + "<span title=\"it/is:10\">"
+                + "<span title=\"x/o:zehntens\">c</span>" + "</span>"
+                + "</span>" + "</span>" + "</mark>"
+                + "<span class=\"context-right\">" + "</span>",
+                res.at("/snippet").asText());
     };
 
 
@@ -713,6 +701,7 @@ public class TestMatchIdentifier {
                         + "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>9<i>10]");
         return fd;
     };
+
 
     /*
       Check for terms|spans|rels ...

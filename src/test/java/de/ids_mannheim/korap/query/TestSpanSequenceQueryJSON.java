@@ -311,18 +311,24 @@ public class TestSpanSequenceQueryJSON {
                 sqwi.toQuery().toString());
     };
 
+
     @Test
     public void queryJSONseqSentenceDistance () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("distance-sentence.jsonld");
 
-        assertEquals("spanElementDistance({129: tokens:s:der}, {129: tokens:s:Baum}, [(base/s:s[0:0], notOrdered, notExcluded)])",sqwi.toQuery().toString());
+        assertEquals(
+                "spanElementDistance({129: tokens:s:der}, {129: tokens:s:Baum}, [(base/s:s[0:0], notOrdered, notExcluded)])",
+                sqwi.toQuery().toString());
     };
+
 
     @Test
     public void queryJSONseqSentenceDistanceExcluded () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("distance-sentence-excluded.jsonld");
 
-        assertEquals("spanElementDistance({129: tokens:s:der}, {129: tokens:s:Baum}, [(base/s:s[0:0], notOrdered, excluded)])",sqwi.toQuery().toString());
+        assertEquals(
+                "spanElementDistance({129: tokens:s:der}, {129: tokens:s:Baum}, [(base/s:s[0:0], notOrdered, excluded)])",
+                sqwi.toQuery().toString());
     };
 
 
@@ -330,7 +336,9 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONkoralSimpleDistanceBug () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("distance-simple.jsonld");
 
-        assertEquals("spanDistance(tokens:s:der, tokens:s:Baum, [(w[2:2], ordered, notExcluded)])",sqwi.toQuery().toString());
+        assertEquals(
+                "spanDistance(tokens:s:der, tokens:s:Baum, [(w[2:2], ordered, notExcluded)])",
+                sqwi.toQuery().toString());
     };
 
 
