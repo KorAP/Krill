@@ -23,7 +23,7 @@ public class Indexer {
     int count;
     int commitCount;
 
-    private static String propFile = "krill.properties";
+    // private static String propFile = "krill.properties";
     private static String path = null;
 
     // Init logger
@@ -116,15 +116,37 @@ public class Indexer {
      */
     public static void main (String[] argv) throws IOException {
 
+        if (argv.length == 0) {
+            /*
+          String jar = new File(Indexer.class.getProtectionDomain()
+          .getCodeSource().getLocation().getPath()).getName();
+          System.out.println("Usage: java -jar " + jar
+          + "--config [propfile] [directories]*");
+          return;
+            */
+
+            System.err.println("Call with parameters:");
+            System.err.println("--config|-c      Configuration file (defaults to " +
+                               de.ids_mannheim.korap.util.KrillProperties.file +
+                               ")");
+            System.err.println("--indexDir|-d    Index directory "+
+                               "(defaults to krill.indexDir in configuration)");
+            System.err.println();
+            return;
+        };
+
         int i = 0;
         boolean last = false;
+        String propFile = null;
+
         for (i = 0; i < argv.length; i += 2) {
             switch (argv[i]) {
                 case "--config":
                 case "-cfg":
+                case "-c":
                     propFile = argv[i + 1];
                     break;
-                case "--dir":
+                case "--indexDir":
                 case "-d":
                     path = argv[i + 1];
                     break;
@@ -136,14 +158,6 @@ public class Indexer {
             if (last)
                 break;
         };
-
-        /*
-          String jar = new File(Indexer.class.getProtectionDomain()
-          .getCodeSource().getLocation().getPath()).getName();
-          System.out.println("Usage: java -jar " + jar
-          + "--config [propfile] [directories]*");
-          return;
-        */
 
         // Load properties
         /*

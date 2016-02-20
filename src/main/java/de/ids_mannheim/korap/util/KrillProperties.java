@@ -9,44 +9,70 @@ import de.ids_mannheim.korap.Krill;
 // Todo: Properties may be loaded twice - althogh Java may cache automatically
 public class KrillProperties {
 
+    public static String file = "krill.properties";
+    private static String info = "krill.info";
+    private static Properties prop;
+
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Krill.class);
 
 
     // Load properties from file
     public static Properties loadProperties () {
-        return loadProperties("krill.properties");
+        if (prop != null)
+            return prop;
+
+        prop = loadProperties(file);
+        return prop;
     };
 
 
     // Load properties from file
     public static Properties loadProperties (String propFile) {
-        InputStream file;
-        Properties prop;
+        if (propFile == null)
+            return loadProperties();
+
+        InputStream iFile;
         try {
-            file = new FileInputStream(propFile);
+            iFile = new FileInputStream(propFile);
             prop = new Properties();
-            prop.load(file);
+            prop.load(iFile);
         }
         catch (IOException t) {
             try {
-                file = KrillProperties.class.getClassLoader()
-                        .getResourceAsStream(propFile);
+                iFile = KrillProperties.class.getClassLoader()
+                    .getResourceAsStream(propFile);
 
-                if (file == null) {
+                if (iFile == null) {
                     log.error(
-                            "Cannot find {}. Please create it using \"{}.info\" as template.",
-                            propFile, propFile);
+                              "Cannot find {}. Please create it using \"{}.info\" as template.",
+                              propFile, propFile);
                     return null;
                 };
 
                 prop = new Properties();
-                prop.load(file);
+                prop.load(iFile);
             }
             catch (IOException e) {
                 log.error(e.getLocalizedMessage());
                 return null;
             };
+        };
+        return prop;
+    };
+
+
+    // Load version info from file
+    public static Properties loadInfo () {
+        try {
+            InputStream iFile = KrillProperties.class.getClassLoader()
+                .getResourceAsStream(info);
+            Properties prop = new Properties();
+            prop.load(iFile);
+        }
+        catch (IOException e) {
+            log.error(e.getLocalizedMessage());
+            return null;
         };
         return prop;
     };

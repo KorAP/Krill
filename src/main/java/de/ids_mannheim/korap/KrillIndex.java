@@ -145,9 +145,10 @@ public final class KrillIndex {
 
     // Some initializations ...
     {
-        Properties prop = loadProperties();
-        this.version = prop.getProperty("krill.version");
-        this.name = prop.getProperty("krill.name");
+        Properties prop    = loadProperties();
+        Properties version = loadInfo();
+        this.version = version.getProperty("krill.version");
+        this.name = version.getProperty("krill.name");
 
         // Check for auto commit value
         String stringProp = prop.getProperty("krill.index.commit.auto");
