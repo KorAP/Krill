@@ -123,7 +123,7 @@ public class Indexer {
             System.out.println("Add documents from a directory to the Krill index.");
             System.out.println("Usage: java -jar " + jar
                                + " [--config propfile] [directories]*");
-            Syste.out.println();
+            System.out.println();
             System.err.println("  --config|-c    Configuration file");
             System.err.println("                 (defaults to " +
                                de.ids_mannheim.korap.util.KrillProperties.file +
