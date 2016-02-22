@@ -1,4 +1,7 @@
-* 600 - 699 - Krill server error codes
+# Error Codes in Krill
+
+## 600 - 699 - Krill server error codes
+```
 600: "Unable to read index"
 601: "Unable to find index"
 602: "Unable to add document to index"
@@ -12,8 +15,10 @@
 681: "Document was added successfully", document id
 682: "Response time exceeded"
 683: "Staged data committed"
+```
 
-* 700 - 799 - KoralQuery Deserialization errors
+## 700 - 799 - KoralQuery Deserialization errors
+```
 700: "No Query given"
 701: "JSON-LD group has no @type attribute"
 702: "Boundary definition is invalid"
@@ -60,8 +65,10 @@
 781: "Optionality of query is ignored"
 782: "Exclusivity of query is ignored"
 799: Unknown query serialization message (Arbitrary string)
+```
 
-* 800 - 899 - Virtual Collection Messages
+## 800 - 899 - Virtual Collection Messages
+```
 802: "Match type is not supported by value type"
 804: "Unknown value type"
 805: "Value is invalid"
@@ -83,8 +90,11 @@
 850: "Collections are deprecated in favour of a single collection"
 851: "Legacy filters need @value fields"
 899: "Collections are not supported anymore in favour of a single collection"
+```
 
-* 900 - 999 - Corpus Data errors
+## 900 - 999 - Corpus Data errors
+```
 952: "Given offset information is not numeric"
 953: "Given offset information is incomplete"
 970: "Invalid foundry requested"
+```
