@@ -938,7 +938,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                         problem.getClassNumber());
 
             query = new SpanExpansionQuery(anchor.retrieveNode(
-                    this.retrieveNode).toQuery(), problem.getMin(),
+                                                               this.retrieveNode).toQuery(), problem.isOptional() ? 0 : problem.getMin(),
                     problem.getMax(), direction,
                     problem.hasClass() ? problem.getClassNumber() : (byte) 0,
                     true);

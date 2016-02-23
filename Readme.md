@@ -46,9 +46,9 @@ most of the protocols features, including ...
 
 ## Prerequisites
 
-At least Java 7,
+Java 7 SDK,
 [Git](http://git-scm.com/),
-[Maven](https://maven.apache.org/).
+[Maven 3](https://maven.apache.org/).
 Further dependencies are resolved using Maven.
 
 
@@ -61,7 +61,7 @@ $ git clone https://github.com/KorAP/Krill
 $ cd Krill
 ```
 
-To run the test suite (you will need Java SDK and Maven 3) ...
+To run the test suite ...
 
 ```
 $ mvn clean test
