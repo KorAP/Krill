@@ -92,47 +92,75 @@ relation.
   nothing has to be stored additionally.
 * The same applies for the right part of a relation. 
 
-These positions are always stored in integer. 
+These positions are always stored in integer. Besides token position, 
+character offsets of relations with element parts 
+are also stored in integer.
 
-Left-part TUI, right-part TUI, and relation TUI are also stored in
-payloads. Relation TUIs are only necessary, in case an attribute
-refers to it. It is necessary to have different length in payloads
-for each of the following relations, so that the start and the end
-ositions of the left and right parts can be determined. 
+Left-part TUI, right-part TUI, and relation TUI can be optionally stored in
+payloads. A TUI is only necessary when an attribute refers to it, for example
+to match a relation span with a specific attribute.
 
-1) Term to term relation
-has 1 integer for the right part token position, 1 short for the left-part TUI, 1 short for
-right-part TUI and 1 short for the
-relation TUI. For example:
+1) Term to term relation has
+ 
+* 1 byte for PTI, 
+* 1 integer for the right part token position, 
+* 1 short for the left-part TUI, 
+* 1 short for right-part TUI and 
+* 1 short for the relation TUI. 
 
-    >:dependency$\<b\>32\<i\>3\<s\>5\<s\>4\<s\>3
+For example:
+
+    >:dependency$<b>32<i>3<s>5<s>4<s>3
 
 has a token as the right part at (end) position 3, the source TUI 5, the target TUI 4 and the relation TUI 3.
 
-2) Term to element relation
-has 1 integer for the start position of the right part, 1 integer
-or the end position of the right part, and 3 TUIs as above.
+2) Term to element relation has
 
-    >:dependency$\<b\>33\<i\>1\<i\>3\<s\>5\<s\>4\<s\>3
+* 1 byte for PTI, 
+* 1 integer for the start element offset of the right part, 
+* 1 integer for the end element offset of the right part, 
+* 1 integer for the start position of the right part, 
+* 1 integer for the end position of the right part, 
+* and 3 TUIs as above.
+
+For example:
+
+    >:dependency$<b>33<i>27<i>34<i>1<i>3<s>5<s>4<s>3
 
 means the right part starts at token position 1 and ends at token
 position 3.
 
-3) Element to term relation
-has 1 integer for end position of the left part, 1 integer for end position of the
-right part, and 3 TUIs as above.
+3) Element to term relation has 
 
-    >:dependency$\<b\>34\<i\>2\<i\>3\<s\>5\<s\>4\<s\>3
+* 1 byte for PTI, 
+* 1 integer for the start element offset of the left part, 
+* 1 integer for the end element offset of the left part, 
+* 1 integer for end position of the left part, 
+* 1 integer for end position of the right part, and 
+* 3 TUIs as above.
+
+For example:
+
+    >:dependency$<b>34<i>2<i>3<s>5<s>4<s>3
 
 means the left part ends at token position 2, and right part is a
 term ending at position 3.
 
-4) Element to element relation
-has 1 integer for end position of the left part, 1 integer for the
-start position of the right part, 1 integer for end position of the
-right part, and 3 TUIs as above.
+4) Element to element relation has 
 
-    >:dependency$\<b\>35\<i\>2\<i\>3\<i\>4\<s\>5\<s\>4\<s\>3
+* 1 byte for PTI, 
+* 1 integer for the start element offset of the left part, 
+* 1 integer for the end element offset of the left part, 
+* 1 integer for the start element offset of the right part, 
+* 1 integer for the end element offset of the right part, 
+* 1 integer for end position of the left part, 
+* 1 integer for the start position of the right part, 
+* 1 integer for end position of the right part, 
+* and 3 TUIs as above.
+
+For example:
+
+    >:dependency$<b>35<i>2<i>3<i>4<s>5<s>4<s>3
 
 means the left part ends at token position 2, the right part is an
 element starting at position 3 and ending at position 4.
