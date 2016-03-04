@@ -26,13 +26,8 @@ public class SpanSimpleQueryWrapper extends SpanQueryWrapper {
     };
 
 
-    public SpanQuery toQuery () {
+    @Override
+    public SpanQuery toFragmentQuery () {
         return this.query;
-    };
-
-
-    public SpanSimpleQueryWrapper isExtended (boolean extended) {
-        this.isExtended = true;
-        return this;
     };
 };

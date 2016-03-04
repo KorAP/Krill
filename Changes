@@ -1,3 +1,8 @@
+0.55.4 2016-02-25
+        - [bugfix] Wrap <base/s=t> boundaries around right extended queries
+	  (diewald)
+	- [bugfix] Lazy loading bug in WithinSpans (diewald)
+
 0.55.3 2016-02-22
 	- [bugfix] Use base foundry for default sentences and paragraphs
 	  (diewald, margaretha)

@@ -24,6 +24,8 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
  *
  * TODO: Support exclusivity
  * TODO: Use the term "queue" and implement it similar to SpanOrQuery
+ * TODO: Implement a incrStartPos() method to forward an embedded span
+ *       until the start position is higher than the current start position.
  */
 
 /**
@@ -282,13 +284,14 @@ public class WithinSpans extends Spans {
                     this.more = true;
                     this.inSameDoc = true;
                     this.tryMatch = true;
-
+                    
                     this.nextSpanB();
                     continue;
                 }
 
                 // Fetch from second store?
                 else {
+
                     /** TODO: Change this to a single embedded object! */
                     this.embeddedStart = current.start;
                     this.embeddedEnd = current.end;
@@ -658,6 +661,8 @@ public class WithinSpans extends Spans {
         this.wrapEnd = -1;
 
         // Shortcut to prevent lazyloading of .end()
+        //   [---
+        // [---
         if (this.wrapStart > this.embeddedStart) {
             // Can't match for in, rin, ew, sw, and m
             // and will always lead to next_b
@@ -669,6 +674,8 @@ public class WithinSpans extends Spans {
             };
         }
 
+        // [---
+        //   [---
         else if (this.wrapStart < this.embeddedStart) {
             // Can't match for sw and m and will always
             // lead to next_a
@@ -973,6 +980,7 @@ public class WithinSpans extends Spans {
 
             // Load wrapEnd
             this.wrapEnd = this.wrapSpans.end();
+            // this.embeddedEnd = this.embeddedSpans.end();
 
             // Case 6
             // |---|
@@ -1137,7 +1145,6 @@ public class WithinSpans extends Spans {
         public Collection<byte[]> payload;
 
         public short elementRef = -1;
-
 
         public void clear () {
             this.start = -1;

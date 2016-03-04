@@ -30,7 +30,7 @@ public class SpanWildcardQueryWrapper extends SpanQueryWrapper {
     };
 
 
-    public SpanQuery toQuery () {
+    public SpanQuery toFragmentQuery () {
         return this.query;
     };
 

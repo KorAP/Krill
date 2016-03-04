@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import static de.ids_mannheim.korap.util.KrillByte.*;
 import de.ids_mannheim.korap.index.AbstractDocument;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -232,11 +233,10 @@ public class Match extends AbstractDocument {
 
                 // Todo element searches!
 
-                // Highlights!
+                // Highlights! This is a class PTI
                 if (b[0] == 0) {
                     bb.put(b);
                     bb.position(1); // Ignore PTI
-
                     int start = bb.getInt();
                     int end = bb.getInt();
                     byte number = bb.get();
@@ -244,18 +244,18 @@ public class Match extends AbstractDocument {
                     if (DEBUG)
                         log.trace(
                                 "Have a highlight of class {} in {}-{} inside of {}-{}",
-                                number, start, end, this.getStartPos(),
+                                unsignedByte(number), start, end, this.getStartPos(),
                                 this.getEndPos());
 
                     // Ignore classes out of match range and set by the system
                     // TODO: This may be decidable by PTI!
-                    if ((number & 0xFF) <= 128 && start >= this.getStartPos()
+                    if (unsignedByte(number) <= 128 && start >= this.getStartPos()
                             && end <= this.getEndPos()) {
-                        log.trace("Add highlight of class {}!", number);
+                        log.trace("Add highlight of class {}!", unsignedByte(number));
                         this.addHighlight(start, end - 1, number);
                     }
                     else if (DEBUG) {
-                        log.trace("Don't add highlight of class {}!", number);
+                        log.trace("Don't add highlight of class {}!", unsignedByte(number));
                     };
                 }
 
@@ -1027,7 +1027,10 @@ public class Match extends AbstractDocument {
     };
 
 
-
+    /*
+     * This takes a clean string and the tag stack
+     * to decorate the string with annotations.
+     */
     private void _processHighlightSnippet (String clean, ArrayList<int[]> stack) {
 
         if (DEBUG)
@@ -1037,7 +1040,10 @@ public class Match extends AbstractDocument {
 
         this.snippetArray = new HighlightCombinator();
 
+        // Iterate over all elements of the stack
         for (int[] element : stack) {
+
+            // The position
             pos = element[3] != 0 ? element[0] : element[1];
 
             if (pos > oldPos) {

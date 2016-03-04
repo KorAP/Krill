@@ -62,4 +62,15 @@ public class KrillByte {
             number |= (data[offset - i] & 0xff) << (i << 3);
         return number;
     };
+
+
+    /**
+     * Return the unsigned value of a byte.
+     * 
+     * @param data
+     *            The byte.
+     */ 
+    public static int unsignedByte (byte data) {
+        return (int) data & 0xFF;
+    };
 };

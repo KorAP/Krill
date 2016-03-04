@@ -66,12 +66,12 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
     };
 
 
-    public SpanQuery toQuery () throws QueryException {
+    public SpanQuery toFragmentQuery () throws QueryException {
         if (this.subquery.isNull())
             return (SpanQuery) null;
 
         SpanQuery sq = (SpanQuery) this.subquery
-                .retrieveNode(this.retrieveNode).toQuery();
+                .retrieveNode(this.retrieveNode).toFragmentQuery();
 
         if (sq == null)
             return (SpanQuery) null;

@@ -154,7 +154,7 @@ public class TestSpanSubspanQueryJSON {
                 "/queries/submatch/embedded-valid-empty.jsonld").getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
-        assertEquals("spanExpansion(tokens:s:die, []{2, 5}, right)",
+        assertEquals("focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:die, []{2, 5}, right)}))",
                 sq.toString());
     }
 
@@ -178,7 +178,7 @@ public class TestSpanSubspanQueryJSON {
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right)",
+                "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right)}))",
                 sq.toString());
     }
 
@@ -191,7 +191,7 @@ public class TestSpanSubspanQueryJSON {
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right, class:1)",
+                "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right, class:1)}))",
                 sq.toString());
     }
 
@@ -245,7 +245,7 @@ public class TestSpanSubspanQueryJSON {
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanExpansion(tokens:s:das, !tokens:l:Baum{2, 2}, right)",
+                "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:das, !tokens:l:Baum{2, 2}, right)}))",
                 sq.toString());
     }
 }

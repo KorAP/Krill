@@ -854,12 +854,14 @@ public class TestWithinIndex {
         // Case 1, 6, 7, 13
         // xy<a><a>x</a>b<a>c</a></a>x
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "x  y  x  b  c  x  ", "[(0-3)s:x|_0$<i>0<i>3]"
-                + "[(3-6)s:y|_1$<i>3<i>6]"
-                + "[(6-9)s:x|_2$<i>6<i>9|<>:a$<b>64<i>6<i>9<i>3<b>0|"
-                + "<>:a$<b>64<i>6<i>15<i>5<b>0]" + "[(9-12)s:b|_3$<i>9<i>12]"
-                + "[(12-15)s:c|_4$<i>12<i>15|<>:a$<b>64<i>12<i>15<i>5<b>0]"
-                + "[(15-18)s:x|_5$<i>15<i>18]");
+        fd.addTV("base", "x  y  x  b  c  x  ",
+                 "[(0-3)s:x|_0$<i>0<i>3]"
+                 + "[(3-6)s:y|_1$<i>3<i>6]"
+                 + "[(6-9)s:x|_2$<i>6<i>9|<>:a$<b>64<i>6<i>9<i>3<b>0|"
+                 + "<>:a$<b>64<i>6<i>15<i>5<b>0]" +
+                 "[(9-12)s:b|_3$<i>9<i>12]"
+                 + "[(12-15)s:c|_4$<i>12<i>15|<>:a$<b>64<i>12<i>15<i>5<b>0]"
+                 + "[(15-18)s:x|_5$<i>15<i>18]");
         ki.addDoc(fd);
 
         // Save documents
@@ -870,9 +872,14 @@ public class TestWithinIndex {
         SpanQuery sq = new SpanWithinQuery(new SpanElementQuery("base", "a"),
                 new SpanTermQuery(new Term("base", "s:x")));
 
+        assertEquals("spanContain(<base:a />, base:s:x)", sq.toString());
         Result kr = ki.search(sq, (short) 10);
 
         assertEquals("totalResults", kr.getTotalResults(), 2);
+
+        assertEquals("x  y  [x  ]b  c  x  ", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("x  y  [x  b  c  ]x  ", kr.getMatch(1).getSnippetBrackets());
+
         assertEquals("StartPos (0)", 2, kr.getMatch(0).startPos);
         assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
         assertEquals("StartPos (1)", 2, kr.getMatch(1).startPos);

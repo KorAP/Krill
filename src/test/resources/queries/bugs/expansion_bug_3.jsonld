@@ -23,9 +23,11 @@
 	],
 	"boundary":{
 	  "@type":"koral:boundary",
-	  "min":0
+	  "min":0,
+	  "max":4
 	},
-	"min":0
+	"min":0,
+	"max":4
       }
     ]
   },

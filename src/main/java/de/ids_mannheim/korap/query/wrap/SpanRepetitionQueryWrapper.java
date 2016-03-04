@@ -83,7 +83,8 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
 
 
     // Serialize to Lucene SpanQuery
-    public SpanQuery toQuery () throws QueryException {
+    @Override
+    public SpanQuery toFragmentQuery () throws QueryException {
 
         // The query is null
         if (this.isNull)
@@ -96,11 +97,11 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
 
         // The query is not a repetition query at all, but may be optional
         if (this.min == 1 && this.max == 1)
-            return this.subquery.retrieveNode(this.retrieveNode).toQuery();
+            return this.subquery.retrieveNode(this.retrieveNode).toFragmentQuery();
 
         // That's a fine repetition query
         return new SpanRepetitionQuery(this.subquery.retrieveNode(
-                this.retrieveNode).toQuery(), this.min, this.max, true);
+                this.retrieveNode).toFragmentQuery(), this.min, this.max, true);
     };
 
 

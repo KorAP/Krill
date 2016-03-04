@@ -546,7 +546,7 @@ public class TestKrillQueryJSON {
             KrillQuery kq = new KrillQuery("tokens");
 
             assertEquals(kq.fromJson(json).toQuery().toString(),
-                    "spanExpansion(tokens:s:c, []{0, 100}, right)");
+                    "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:c, []{0, 100}, right)}))");
         }
         catch (QueryException e) {
             fail(e.getMessage());

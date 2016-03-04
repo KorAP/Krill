@@ -181,7 +181,7 @@ public class Krill extends Response {
                     // Serialize a Lucene SpanQuery based on the SpanQueryWrapper
                     this.spanQuery = qw.toQuery();
 
-                    // TODO: Make these information query rewrites in toFinalQuery()
+                    // TODO: Make these information query rewrites
 
                     // Throw a warning in case the root object is optional
                     if (qw.isOptional())

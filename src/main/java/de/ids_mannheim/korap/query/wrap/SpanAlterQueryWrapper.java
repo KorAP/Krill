@@ -103,22 +103,39 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
     };
 
 
+    /*
+     * The query is extended to right in case one alternative is extended to the right.
+     */
     @Override
-    public SpanQuery toQuery () throws QueryException {
+    public boolean isExtendedToTheRight () {
+        if (this.alternatives.size() == 0)
+            return this.alternatives.get(0).isExtendedToTheRight();
+        Iterator<SpanQueryWrapper> clause = this.alternatives.iterator();
+        while (clause.hasNext()) {
+            if (clause.next().isExtendedToTheRight()) {
+                return true;
+            };
+        };
+        return false;
+    };
+
+
+    @Override
+    public SpanQuery toFragmentQuery () throws QueryException {
         if (this.isNull || this.alternatives.size() == 0)
             return (SpanQuery) null;
 
         if (this.alternatives.size() == 1) {
             return (SpanQuery) this.alternatives.get(0)
-                    .retrieveNode(this.retrieveNode).toQuery();
+                    .retrieveNode(this.retrieveNode).toFragmentQuery();
         };
 
         Iterator<SpanQueryWrapper> clause = this.alternatives.iterator();
         SpanOrQuery soquery = new SpanOrQuery(clause.next()
-                .retrieveNode(this.retrieveNode).toQuery());
+                .retrieveNode(this.retrieveNode).toFragmentQuery());
         while (clause.hasNext()) {
             soquery.addClause(clause.next().retrieveNode(this.retrieveNode)
-                    .toQuery());
+                    .toFragmentQuery());
         };
         return (SpanQuery) soquery;
     };

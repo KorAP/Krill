@@ -118,7 +118,7 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 
 
     @Override
-    public SpanQuery toQuery () throws QueryException {
+    public SpanQuery toFragmentQuery () throws QueryException {
 
         if (isNull || isEmpty)
             return null;
@@ -134,7 +134,7 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
     private SpanQuery createSpecificSpanWithAttributeQuery ()
             throws QueryException {
         SimpleSpanQuery withIdQuery = (SimpleSpanQuery) withIdQueryWrapper
-                .toQuery();
+                .toFragmentQuery();
         if (withIdQuery == null) {
             isNull = true;
             return null;
@@ -169,7 +169,7 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
 
     private SpanAttributeQuery createSpanAttributeQuery (
             SpanQueryWrapper attrQueryWrapper) throws QueryException {
-        SpanQuery sq = attrQueryWrapper.toQuery();
+        SpanQuery sq = attrQueryWrapper.toFragmentQuery();
         if (sq != null) {
             if (sq instanceof SpanAttributeQuery)
                 return (SpanAttributeQuery) sq;

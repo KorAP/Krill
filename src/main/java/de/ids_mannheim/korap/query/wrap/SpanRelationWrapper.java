@@ -37,14 +37,14 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
 
 
     @Override
-    public SpanQuery toQuery () throws QueryException {
+    public SpanQuery toFragmentQuery () throws QueryException {
 
         if (this.isNull() || this.isEmpty()) {
             return null;
         }
 
         SpanTermQuery relationTermQuery = (SpanTermQuery) relationQuery
-                .retrieveNode(this.retrieveNode).toQuery();
+                .retrieveNode(this.retrieveNode).toFragmentQuery();
         if (relationTermQuery == null)
             return null;
 
@@ -54,7 +54,7 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         if (subQuery1.isEmpty) {
             if (!subQuery2.isEmpty) {
                 // match target
-                subq2 = subQuery2.retrieveNode(this.retrieveNode).toQuery();
+                subq2 = subQuery2.retrieveNode(this.retrieveNode).toFragmentQuery();
                 if (subQuery1.hasClass) {
                     rq.setSourceClass(subQuery1.getClassNumber());
                 }
@@ -65,7 +65,7 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         else if (subQuery2.isEmpty) {
             if (!subQuery1.isEmpty) {
                 // match source
-                subq1 = subQuery1.retrieveNode(this.retrieveNode).toQuery();
+                subq1 = subQuery1.retrieveNode(this.retrieveNode).toFragmentQuery();
                 if (subQuery2.hasClass) {
                     rq.setTargetClass(subQuery2.getClassNumber());
                 }
@@ -74,8 +74,8 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         }
         else {
             // match both
-            subq1 = subQuery1.retrieveNode(this.retrieveNode).toQuery();
-            subq2 = subQuery2.retrieveNode(this.retrieveNode).toQuery();
+            subq1 = subQuery1.retrieveNode(this.retrieveNode).toFragmentQuery();
+            subq2 = subQuery2.retrieveNode(this.retrieveNode).toFragmentQuery();
             return new SpanRelationMatchQuery(rq, subq1, subq2, true);
         }
 

@@ -47,7 +47,7 @@ public class SpanRegexQueryWrapper extends SpanQueryWrapper {
     };
 
 
-    public SpanQuery toQuery () {
+    public SpanQuery toFragmentQuery () {
         return this.query;
     };
 

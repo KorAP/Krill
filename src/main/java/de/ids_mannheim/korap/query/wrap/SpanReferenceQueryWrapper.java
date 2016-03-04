@@ -34,13 +34,13 @@ public class SpanReferenceQueryWrapper extends SpanQueryWrapper {
 
 
     @Override
-    public SpanQuery toQuery () throws QueryException {
+    public SpanQuery toFragmentQuery () throws QueryException {
 
         if (this.isNull() || this.isEmpty()) {
             return null;
         }
 
-        SpanQuery sq = subQuery.retrieveNode(this.retrieveNode).toQuery();
+        SpanQuery sq = subQuery.retrieveNode(this.retrieveNode).toFragmentQuery();
         if (sq == null)
             return null;
 

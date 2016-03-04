@@ -37,11 +37,11 @@ public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
 
 
     @Override
-    public SpanQuery toQuery () throws QueryException {
+    public SpanQuery toFragmentQuery () throws QueryException {
         if (isNull || isEmpty)
             return null;
 
-        SpanQuery sq = subquery.retrieveNode(this.retrieveNode).toQuery();
+        SpanQuery sq = subquery.retrieveNode(this.retrieveNode).toFragmentQuery();
         if (sq == null) {
             isNull = true;
             return null;

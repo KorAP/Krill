@@ -26,7 +26,7 @@ public class SpanElementQueryWrapper extends SpanQueryWrapper {
 
 
     @Override
-    public SpanQuery toQuery () throws QueryException {
+    public SpanQuery toFragmentQuery () throws QueryException {
         // Todo: Respect request for retrieving node data (i.e. depth information)
         return (SpanQuery) new SpanElementQuery(this.field, this.element);
     };

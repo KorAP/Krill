@@ -195,7 +195,7 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
     };
 
 
-    public SpanQuery toQuery () throws QueryException {
+    public SpanQuery toFragmentQuery () throws QueryException {
         if (this.isNull || (this.inclusive.size() + this.exclusive.size() == 0)) {
             return (SpanQuery) null;
         }
@@ -219,10 +219,10 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 
     private SpanQuery _listToQuery (ArrayList<SpanQueryWrapper> list)
             throws QueryException {
-        SpanQuery query = list.get(0).toQuery();
+        SpanQuery query = list.get(0).toFragmentQuery();
 
         for (int i = 1; i < list.size(); i++) {
-            query = new SpanSegmentQuery(query, list.get(i).toQuery());
+            query = new SpanSegmentQuery(query, list.get(i).toFragmentQuery());
         };
 
         return (SpanQuery) query;
@@ -232,13 +232,13 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
     private SpanQuery _listToOrQuery (ArrayList<SpanQueryWrapper> list)
             throws QueryException {
         if (list.size() == 1) {
-            return (SpanQuery) list.get(0).toQuery();
+            return (SpanQuery) list.get(0).toFragmentQuery();
         };
 
         Iterator<SpanQueryWrapper> clause = list.iterator();
-        SpanOrQuery soquery = new SpanOrQuery(clause.next().toQuery());
+        SpanOrQuery soquery = new SpanOrQuery(clause.next().toFragmentQuery());
         while (clause.hasNext()) {
-            soquery.addClause(clause.next().toQuery());
+            soquery.addClause(clause.next().toFragmentQuery());
         };
         return (SpanQuery) soquery;
     };

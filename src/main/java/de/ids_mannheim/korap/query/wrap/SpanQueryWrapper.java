@@ -1,8 +1,10 @@
 package de.ids_mannheim.korap.query.wrap;
 
 import org.apache.lucene.search.spans.SpanQuery;
-
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.query.SpanFocusQuery;
+import de.ids_mannheim.korap.query.SpanClassQuery;
+import de.ids_mannheim.korap.query.SpanWithinQuery;
 
 // TODO: Add warnings and errors - using KrillQuery
 
@@ -43,10 +45,36 @@ public class SpanQueryWrapper {
      * @return A {@link SpanQuery} object.
      * @throws QueryException
      */
-    public SpanQuery toQuery () throws QueryException {
+    public SpanQuery toFragmentQuery () throws QueryException {
+        System.err.println("||||||||||||||||||||||||||");
         return (SpanQuery) null;
     };
 
+
+
+    /**
+     * Serialize the wrapped query and return a SpanQuery.
+     * This will be the final query and may be rewritten.
+     * 
+     * @return A {@link SpanQuery} object.
+     * @throws QueryException
+     */
+    public SpanQuery toQuery () throws QueryException {
+
+        if (this.isNull() || this.isEmpty())
+            return null;
+
+        // Wrap the query in a <base/s=t>, if it's extended to the right
+        if (this.isExtendedToTheRight()) {
+            return new SpanFocusQuery(
+                new SpanWithinQuery(
+                    "base/s:t",
+                    new SpanClassQuery(this.toFragmentQuery(), (byte) 254)), (byte) 254
+            );
+        };
+
+        return this.toFragmentQuery();
+    };
 
     /**
      * Boolean value indicating that the wrapped query
@@ -149,6 +177,13 @@ public class SpanQueryWrapper {
     };
 
 
+    public SpanQueryWrapper isExtended (boolean extended) {
+        this.isExtended = extended;
+        return this;
+    };
+
+
+
     /**
      * Boolean value indicating that the wrapped query
      * is extended by a subquery to the right.
@@ -169,6 +204,12 @@ public class SpanQueryWrapper {
      */
     public boolean isExtendedToTheRight () {
         return this.isExtendedToTheRight;
+    };
+
+
+    public SpanQueryWrapper isExtendedToTheRight (boolean extended) {
+        this.isExtendedToTheRight = extended;
+        return this;
     };
 
 
