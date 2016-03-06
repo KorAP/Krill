@@ -141,7 +141,7 @@ position 3.
 
 For example:
 
-    >:dependency$<b>34<i>2<i>3<s>5<s>4<s>3
+    >:dependency$<b>34<i>27<i>34<i>2<i>3<s>5<s>4<s>3
 
 means the left part ends at token position 2, and right part is a
 term ending at position 3.
@@ -160,7 +160,7 @@ term ending at position 3.
 
 For example:
 
-    >:dependency$<b>35<i>2<i>3<i>4<s>5<s>4<s>3
+    >:dependency$<b>35<i>27<i>34<i>35<i>40<i>2<i>3<i>4<s>5<s>4<s>3
 
 means the left part ends at token position 2, the right part is an
 element starting at position 3 and ending at position 4.
