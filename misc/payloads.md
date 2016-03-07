@@ -96,9 +96,14 @@ These positions are always stored in integer. Besides token position,
 character offsets of relations with element parts 
 are also stored in integer.
 
-Left-part TUI, right-part TUI, and relation TUI can be optionally stored in
+Left-part TUI reference, right-part TUI reference, and relation TUI can
+e optionally stored in
 payloads. A TUI is only necessary when an attribute refers to it, for example
 to match a relation span with a specific attribute.
+
+If at least one TUI is set (either the left-part TUI reference,
+he right-part TUI reference, or the relation TUI), all TUIs have to be set.
+If the TUIs do not refer to anything, they have to be set to ```0```.
 
 1) Term to term relation has
  
@@ -110,9 +115,10 @@ to match a relation span with a specific attribute.
 
 For example:
 
-    >:dependency$<b>32<i>3<s>5<s>4<s>3
+    >:dependency$<b>32<i>3<s>5<s>0<s>3
 
-has a token as the right part at (end) position 3, the source TUI 5, the target TUI 4 and the relation TUI 3.
+has a token as the right part at (end) position 3, the source TUI reference 5,
+no target TUI reference and the relation TUI 3.
 
 2) Term to element relation has
 
@@ -121,7 +127,7 @@ has a token as the right part at (end) position 3, the source TUI 5, the target 
 * 1 integer for the end element offset of the right part, 
 * 1 integer for the start position of the right part, 
 * 1 integer for the end position of the right part, 
-* and 3 TUIs as above.
+* and 0-3 TUIs as above.
 
 For example:
 
@@ -137,7 +143,7 @@ position 3.
 * 1 integer for the end element offset of the left part, 
 * 1 integer for end position of the left part, 
 * 1 integer for end position of the right part, and 
-* 3 TUIs as above.
+* and 0-3 TUIs as above.
 
 For example:
 
@@ -156,7 +162,7 @@ term ending at position 3.
 * 1 integer for end position of the left part, 
 * 1 integer for the start position of the right part, 
 * 1 integer for end position of the right part, 
-* and 3 TUIs as above.
+* and 0-3 TUIs as above.
 
 For example:
 
