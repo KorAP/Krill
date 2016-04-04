@@ -23,7 +23,7 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  * prefix "<" or
  * ">". The direction of the angle bracket represents the direction of
  * the
- * corresponding relation. <br/><br/>
+ * corresponding relation. By default, the relation is set ">". <br/><br/>
  * 
  * This class provides two types of query:
  * <ol>
@@ -56,7 +56,7 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  * */
 public class SpanRelationQuery extends SimpleSpanQuery {
 
-    private int direction = 0;
+    private int direction = 0; // >
     private byte tempSourceNum = 1;
     private byte tempTargetNum = 2;
     private byte sourceClass;

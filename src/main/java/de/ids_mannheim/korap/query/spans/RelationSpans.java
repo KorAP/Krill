@@ -194,46 +194,56 @@ public class RelationSpans extends RelationBaseSpans {
             cs.setLeftEnd(cs.start + 1);
             cs.setRightStart(i);
             cs.setRightEnd(i + 1);
-            cs.setLeftId(bb.getShort(5)); // left id
-            cs.setRightId(bb.getShort(7)); // right id
-            if (length > 9) {
+            if (length > 5) {
+                cs.setLeftId(bb.getShort(5)); // left id
+                cs.setRightId(bb.getShort(7)); // right id
                 cs.setSpanId(bb.getShort(9)); // relation id
             }
         }
         else if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_ELEMENT.value) { // length
             // 15
             cs.setLeftEnd(cs.start + 1);
-            cs.setRightStart(bb.getInt(1));
-            cs.setRightEnd(bb.getInt(5));
-            cs.setLeftId(bb.getShort(9)); // left id
-            cs.setRightId(bb.getShort(11)); // right id
-            if (length > 13) {
-                cs.setSpanId(bb.getShort(13)); // relation id
+            // 1-4 start element offset
+            // 5-8 end element offset
+            cs.setRightStart(bb.getInt(9));
+            cs.setRightEnd(bb.getInt(13));
+            if (length > 17) {
+                cs.setLeftId(bb.getShort(17)); // left id
+                cs.setRightId(bb.getShort(19)); // right id
+                cs.setSpanId(bb.getShort(21)); // relation id
             }
         }
         else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_TERM.value) { // length
             // 15
-            cs.setEnd(bb.getInt(1));
+            // 1-4 start element offset
+            // 5-8 end element offset
+            cs.setEnd(bb.getInt(9));
             cs.setLeftEnd(cs.end);
-            i = bb.getInt(5);
+            i = bb.getInt(13);
             cs.setRightStart(i);
             cs.setRightEnd(i + 1);
-            cs.setLeftId(bb.getShort(9)); // left id
-            cs.setRightId(bb.getShort(11)); // right id
             if (length > 13) {
-                cs.setSpanId(bb.getShort(13)); // relation id
+                cs.setLeftId(bb.getShort(17)); // left id
+                cs.setRightId(bb.getShort(19)); // right id
+                cs.setSpanId(bb.getShort(21)); // relation id
             }
         }
         else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_ELEMENT.value) {
             // length 19
-            cs.setEnd(bb.getInt(1));
+
+            // 1-4 start left-element offset
+            // 5-8 end left-element offset
+            // 9-12 start right-element offset
+            // 13-16 end right-element offset
+
+            cs.setEnd(bb.getInt(17));
             cs.setLeftEnd(cs.end);
-            cs.setRightStart(bb.getInt(5));
-            cs.setRightEnd(bb.getInt(9));
-            cs.setLeftId(bb.getShort(13)); // left id
-            cs.setRightId(bb.getShort(15)); // right id
+            cs.setRightStart(bb.getInt(21));
+            cs.setRightEnd(bb.getInt(25));
             if (length > 17) {
-                cs.setSpanId(bb.getShort(17)); // relation id
+                cs.setLeftId(bb.getShort(29)); // left id
+                cs.setRightId(bb.getShort(31)); // right id
+                cs.setSpanId(bb.getShort(33)); // relation id
             }
         }
 
@@ -360,6 +370,30 @@ public class RelationSpans extends RelationBaseSpans {
      */
     public void setRightEnd (int rightEnd) {
         this.rightEnd = rightEnd;
+    }
+
+    public byte getTempSourceNum() {
+        return tempSourceNum;
+    }
+
+    public void setTempSourceNum(byte tempSourceNum) {
+        this.tempSourceNum = tempSourceNum;
+    }
+
+    public byte getTempTargetNum() {
+        return tempTargetNum;
+    }
+
+    public void setTempTargetNum(byte tempTargetNum) {
+        this.tempTargetNum = tempTargetNum;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 
 }
