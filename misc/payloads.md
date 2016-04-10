@@ -64,7 +64,7 @@ In that case, character offsets are only given once.
 
     <>:s$<b>65<i>38<b>0
 
-means \<s\> is a milestone at position 38 in root.
+means \<s\> is empty at position 38 in root.
 
 *PTIs* (It is a span payload if the second bit is set):
 

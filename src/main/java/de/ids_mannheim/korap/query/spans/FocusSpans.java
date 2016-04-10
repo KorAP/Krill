@@ -19,11 +19,10 @@ import de.ids_mannheim.korap.query.SpanFocusQuery;
 
 
 /**
- * originalSpans, that can focus on the span boundaries of classed
+ * Spans, that can focus on the span boundaries of classed
  * subqueries.
  * The boundaries of the classed subquery may exceed the boundaries of
- * the
- * nested query.
+ * the nested query.
  * 
  * In case multiple classes are found with the very same number, the
  * span is
@@ -32,12 +31,10 @@ import de.ids_mannheim.korap.query.SpanFocusQuery;
  * occurrence on the right.
  * 
  * In case the class to focus on is not found in the payloads, the
- * match is
- * ignored.
+ * match is ignored.
  * 
  * <strong>Warning</strong>: Payloads other than class payloads won't
- * bubble up
- * currently. That behaviour may change in the futures
+ * bubble up currently. That behaviour may change in the futures
  * 
  * @author diewald
  */
