@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.query;
 import java.util.*;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
+import de.ids_mannheim.korap.query.SpanElementQuery;
 
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -32,4 +33,20 @@ public class TestSpanWithinQuery {
 
     };
 
+    @Test
+    public void spanSegmentStartsWithQuery () throws QueryException {
+
+        SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper(
+                "field", "a", "b", "c");
+        SpanWithinQuery ssequery = new SpanWithinQuery(
+                                                       new SpanElementQuery("field", "s"),
+                                                       ssquery.toQuery(),
+                                                       SpanWithinQuery.STARTSWITH,
+                                                       true
+                                                       );
+
+        assertEquals(
+                "spanStartsWith(<field:s />, spanNext(spanNext(field:a, field:b), field:c))",
+                ssequery.toString());
+    };
 };
