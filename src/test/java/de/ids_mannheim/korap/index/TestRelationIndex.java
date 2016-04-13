@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.index;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -114,7 +115,8 @@ public class TestRelationIndex {
                         + ">:xip/syntax-dep_rel$<b>34<i>3<i>4<i>9<i>9<s>1<s>1<s>0|"
                         + "<:xip/syntax-dep_rel$<b>35<i>3<i>4<i>4<i>5<i>9<i>1<i>3<s>1<s>1<s>2|"
                         + "<:xip/syntax-dep_rel$<b>34<i>5<i>6<i>9<i>1<s>1<s>2<s>0|"
-                        + "@:func=obj$<b>18<s>2]" + "[(7-8)s:e|_7$<i>7<i>8]"
+                        + "@:func=obj$<b>18<s>2]"
+                        + "[(7-8)s:e|_7$<i>7<i>8]"
                         + "[(8-9)s:e|s:b|_8$<i>8<i>9]"
                         + "[(9-10)s:d$<s>1|_9$<i>9<i>10|<"
                         + ":xip/syntax-dep_rel$<b>33<i>6<i>7<i>6<i>9<s>2<s>1<s>0]");
@@ -135,19 +137,18 @@ public class TestRelationIndex {
                         + "<:child-of$<b>35<i>0<i>38<i>0<i>3<i>7<i>0<i>1<s>2<s>3<s>0|"
                         + "<:child-of$<b>35<i>0<i>38<i>4<i>9<i>7<i>1<i>7<s>2<s>2<s>0|"
                         + "<:dep$<b>32<i>0<s>1<s>1<s>0|"
-                        + "@:func=sbj$<b>18<i>7<s>4]" // attribute belongs to a relation
-                        +
+                        + "@:func=sbj$<b>18<i>7<s>4|" // attribute belongs to a relation
+                        + "@:case=nominative$<b>18<i>4<s>3]" // attribute belongs to a relation node
 
-                        "[(1-2)s:kaufe|_1$<i>4<i>9|pos:V$<s>1|<>:vp$<b>64<i>4<i>38<i>7<b>0<s>2|"
+                        + "[(1-2)s:kaufe|_1$<i>4<i>9|pos:V$<s>1|<>:vp$<b>64<i>4<i>38<i>7<b>0<s>2|"
                         + ">:child-of$<b>35<i>4<i>38<i>0<i>38<i>7<i>0<i>7<s>2<s>2<s>0|"
                         + ">:child-of$<b>33<i>4<i>9<i>1<i>7<s>2<s>7<s>0|"
                         + "<:child-of$<b>34<i>4<i>38<i>7<i>2<s>2<s>1<s>0|"
                         + "<:child-of$<b>35<i>4<i>38<i>10<i>38<i>7<i>2<i>7<s>2<s>4<s>0|"
                         + ">:dep$<b>32<i>0<s>1<s>1<s>0|"
                         + ">:dep$<b>32<i>3<s>1<s>1<s>0]"
-                        +
 
-                        "[(2-3)s:die|_2$<i>10<i>13|pos:ART$<s>1|tt:DET$<s>2|"
+                        + "[(2-3)s:die|_2$<i>10<i>13|pos:ART$<s>1|tt:DET$<s>2|"
                         + "<>:np$<b>64<i>10<i>20<i>4<b>0<s>3|<>:np$<b>64<i>10<i>38<i>7<b>0<s>4|"
                         + ">:child-of$<b>35<i>10<i>24<i>10<i>38<i>4<i>2<i>7<s>3<s>4<s>0|"
                         + ">:child-of$<b>33<i>10<i>24<i>2<i>4<s>1<s>3<s>0|"
@@ -158,7 +159,8 @@ public class TestRelationIndex {
                         + "<:child-of$<b>35<i>10<i>38<i>21<i>38<i>7<i>4<i>7<s>4<s>2<s>0|"
                         + ">:parent-of$<b>35<i>10<i>38<i>21<i>38<i>7<i>4<i>7<s>4<s>2<s>0|"
                         + "<:dep$<b>32<i>3<s>1<s>1<s>3|"
-                        + "@:func=head$<b>18<i>4<s>3]"
+                        + "@:func=head$<b>18<i>4<s>3|"
+                        + "@:case=accusative$<b>18<i>4<s>3]" // attribute belongs to a relation node
 
                         + "[(3-4)s:Blümen|_3$<i>14<i>20|pos:NN$<s>1|"
                         + ">:child-of$<b>33<i>10<i>24<i>2<i>4<s>1<s>3<s>0|"
@@ -167,7 +169,6 @@ public class TestRelationIndex {
                         + ">:dep$<b>32<i>4<s>1<s>1<s>0|"
                         + "@:func=obj$<b>18<i>4<s>2]"
 
-
                         + "[(4-5)s:für|_4$<i>21<i>24|pos:PREP$<s>1|<>:pp$<b>64<i>21<i>38<i>7<b>0<s>2|"
                         + ">:child-of$<b>33<i>21<i>38<i>4<i>7<s>1<s>2<s>0|"
                         + ">:child-of$<b>35<i>21<i>38<i>10<i>38<i>7<i>2<i>7<s>2<s>4<s>0|"
@@ -175,21 +176,20 @@ public class TestRelationIndex {
                         + "<:child-of$<b>35<i>21<i>38<i>25<i>38<i>7<i>5<i>7<s>2<s>2<s>0|"
                         + "<:dep$<b>32<i>3<s>1<s>1<s>0|"
                         + ">:dep$<b>32<i>6<s>1<s>1<s>0]"
-                        +
 
-                        "[(5-6)s:meine|_5$<i>25<i>30|pos:ART$<s>1|<>:np$<b>64<i>25<i>38<i>7<b>0<s>2|"
+                        + "[(5-6)s:meine|_5$<i>25<i>30|pos:ART$<s>1|<>:np$<b>64<i>25<i>38<i>7<b>0<s>2|"
                         + ">:child-of$<b>33<i>25<i>38<i>5<i>7<s>1<s>2<s>0|"
                         + ">:child-of$<b>35<i>25<i>38<i>21<i>38<i>7<i>4<i>7<s>2<s>2<s>0|"
                         + "<:child-of$<b>34<i>25<i>38<i>7<i>5<s>2<s>1<s>0|"
                         + "<:child-of$<b>34<i>25<i>38<i>7<i>6<s>2<s>1<s>0|"
                         + "<:dep$<b>32<i>6<s>1<s>1<s>3<s>0|"
-                        + "@:func=head$<b>18<i>7<s>3]"
+                        + "@:func=head$<b>18<i>7<s>3|"
+                        + "@:case=accusative$<b>18<i>7<s>2]" // attribute belongs to a relation node
 
                         + "[(6-7)s:Mutter.|_6$<i>31<i>38|pos:NN$<s>1|"
                         + ">:child-of$<b>33<i>25<i>38<i>5<i>7<s>1<s>2<s>0|"
                         + ">:dep$<b>32<i>5<s>1<s>1<s>0|"
                         + "<:dep$<b>32<i>4<s>1<s>1<s>0]");
-
 
         return fd;
     }
@@ -620,30 +620,72 @@ public class TestRelationIndex {
 
     }
 
-
+    /**
+     * Relation whose nodes have a specific attribute.
+     * 
+     * */
     @Test
     public void testCase10 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
-        SpanElementQuery seq1 = new SpanElementQuery("base", "np");
-        SpanElementQuery seq2 = new SpanElementQuery("base", "np");
-        SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
-        SpanClassQuery scq2 = new SpanClassQuery(seq2, (byte) 2);
+
+        SpanAttributeQuery aq = new SpanAttributeQuery(new SpanTermQuery(
+                new Term("base", "@:case=accusative")), true);
+        kr = ki.search(aq, (short) 10);
+        assertEquals((long) 2, kr.getTotalResults());
 
         SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
                 new Term("base", ">:child-of")), true);
-        SpanRelationMatchQuery rq = new SpanRelationMatchQuery(srq, scq2, true);
+        srq.setSourceClass((byte) 1);
+        srq.setTargetClass((byte) 2);
+        kr = ki.search(srq, (short) 20);
+        assertEquals((long) 13, kr.getTotalResults());
 
-        kr = ki.search(rq, (short) 10);
-
-        assertEquals((long) 4, kr.getTotalResults());
-        assertEquals(0, kr.getMatch(0).getStartPos());
-        assertEquals(7, kr.getMatch(0).getEndPos());
-        assertEquals(1, kr.getMatch(1).getStartPos());
+        // Matching relation source node with an attribute
+        SpanFocusQuery sfq1 = new SpanFocusQuery(srq, (byte) 1);
+        SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sfq1, aq, true);
+        
+        kr = ki.search(swaq, (short) 10);
+        assertEquals((long) 2, kr.getTotalResults());
+        assertEquals(2, kr.getMatch(0).getStartPos());
+        assertEquals(4, kr.getMatch(0).getEndPos());
+        assertEquals(5, kr.getMatch(1).getStartPos());
         assertEquals(7, kr.getMatch(1).getEndPos());
-        assertEquals(2, kr.getMatch(2).getStartPos());
-        assertEquals(7, kr.getMatch(2).getEndPos());
-        assertEquals(4, kr.getMatch(3).getStartPos());
-        assertEquals(7, kr.getMatch(3).getEndPos());
+
+        // Returning relations whose source has a specific attribute
+        SpanFocusQuery fqr = new SpanFocusQuery(swaq,
+                srq.getTempClassNumbers());
+        fqr.setMatchTemporaryClass(true);
+        fqr.setRemoveTemporaryClasses(true);
+
+        kr = ki.search(fqr, (short) 10);
+        assertEquals((long) 2, kr.getTotalResults());
+        assertEquals(2, kr.getMatch(0).getStartPos());
+        assertEquals(7, kr.getMatch(0).getEndPos());
+        assertEquals(4, kr.getMatch(1).getStartPos());
+        assertEquals(7, kr.getMatch(1).getEndPos());
+
+        // Matching relation target nodes with an attribute
+        SpanFocusQuery sfq2 = new SpanFocusQuery(srq, (byte) 2);
+        SpanWithAttributeQuery swaq2 = new SpanWithAttributeQuery(sfq2, aq,
+                true);
+
+        // Returning relations whose target has a specific attribute
+        SpanFocusQuery fqr2 = new SpanFocusQuery(swaq2,
+                srq.getTempClassNumbers());
+        fqr2.setMatchTemporaryClass(true);
+        fqr2.setRemoveTemporaryClasses(true);
+
+        kr = ki.search(fqr2, (short) 10);
+
+        // for (Match m : kr.getMatches()) {
+        // System.out.println(m.getStartPos() + " " + m.getEndPos());
+        // }
+
+        assertEquals((long) 2, kr.getTotalResults());
+        assertEquals(2, kr.getMatch(0).getStartPos());
+        assertEquals(4, kr.getMatch(0).getEndPos());
+        assertEquals(5, kr.getMatch(1).getStartPos());
+        assertEquals(7, kr.getMatch(1).getEndPos());
     }
 }
