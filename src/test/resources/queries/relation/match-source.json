@@ -12,7 +12,7 @@
                 "@type": "koral:token"             
             }
         ],
-        "relation": {
+        "relType": {
             "@type": "koral:relation",
             "wrap": {
                 "@type": "koral:term",

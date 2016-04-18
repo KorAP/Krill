@@ -415,12 +415,20 @@ public final class KrillQuery extends Notifications {
                 return this._operationRepetitionFromJson(json, operands);
 
             case "operation:relation":
-                if (!json.has("relation")) {
+                // if (!json.has("relType")) {
+                // throw new QueryException(717,
+                // "Missing relation node");
+                // }
+                if (json.has("relType"))
+                    return _operationRelationFromJson(operands,
+                            json.get("relType"));
+                else if (json.has("relation")) {
+                    return _operationRelationFromJson(operands,
+                            json.get("relation"));
+                }
+                else {
                     throw new QueryException(717, "Missing relation node");
                 }
-
-                return _operationRelationFromJson(operands,
-                        json.get("relation"));
                 /*throw new QueryException(765,
                   "Relations are currently not supported");*/
 
@@ -1339,6 +1347,7 @@ public final class KrillQuery extends Notifications {
             if (rootValue.equals("true") || rootValue.equals("false")) {
 
                 // TODO: Here do not refer to 'tokens'!!!
+                // EM: what should it be? property?
                 return new SpanAttributeQueryWrapper(
                         new SpanSimpleQueryWrapper("tokens", "@root",
                                 Boolean.valueOf(rootValue)));
