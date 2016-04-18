@@ -12,6 +12,47 @@ import de.ids_mannheim.korap.util.QueryException;
 public class TestSpanRelationQueryJSON {
 
     @Test
+    public void testMatchAnyRelationSourceWithAttribute() throws QueryException {
+        String filepath = getClass().getResource(
+                "/queries/relation/any-source-with-attribute.json").getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                        + "spanElementWithAttribute(<tokens:c: />, spanAttribute(tokens:type:case:accusative)))), "
+                        + "<tokens:c:vp />))", sq.toString());
+    }
+
+    @Test
+    public void testMatchSpecificRelationSourceWithAttribute()
+            throws QueryException {
+        String filepath = getClass().getResource(
+                "/queries/relation/specific-source-with-attribute.json")
+                .getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                        + "spanElementWithAttribute(<tokens:c:np />, spanAttribute(tokens:type:case:accusative)))), "
+                        + "<tokens:c:vp />))", sq.toString());
+    }
+
+    @Test
+    public void testMatchAnyRelationNodeWithAttribute() throws QueryException {
+        String filepath = getClass().getResource(
+                "/queries/relation/any-node-with-attribute.json").getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                        + "spanElementWithAttribute(<tokens:c: />, spanAttribute(tokens:type:case:accusative)))), "
+                        + "spanElementWithAttribute(<tokens:c: />, spanAttribute(tokens:type:case:accusative))))",
+                sq.toString());
+
+        System.out.println(sq.toString());
+    }
+
+    @Test
     public void testMatchRelationSource () throws QueryException {
         //
         String filepath = getClass().getResource(
