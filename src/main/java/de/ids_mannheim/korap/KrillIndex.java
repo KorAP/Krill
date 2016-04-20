@@ -114,7 +114,7 @@ public final class KrillIndex {
     private final static Logger log = LoggerFactory.getLogger(KrillIndex.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     // TODO: Use configuration instead.
     // Last line of defense against DOS
