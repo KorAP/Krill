@@ -114,7 +114,7 @@ public final class KrillIndex {
     private final static Logger log = LoggerFactory.getLogger(KrillIndex.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     // TODO: Use configuration instead.
     // Last line of defense against DOS
@@ -1361,11 +1361,11 @@ public final class KrillIndex {
 
                     if (DEBUG) {
                         if (match.getDocID() != null)
-                            log.trace("I've got a match in {} of {}",
-                                    match.getDocID(), count);
+                            log.trace("With DocID: I've got 1 match of {} in {}",
+                                      count, match.getDocID());
                         else
-                            log.trace("I've got a match in {} of {}",
-                                    match.getUID(), count);
+                            log.trace("With UID: I've got 1 match of {} in {}",
+                                      count, match.getUID());
                     };
 
                     atomicMatches.add(match);

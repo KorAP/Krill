@@ -31,13 +31,11 @@ public class TestSpanExpansionIndex {
     Result kr;
     KrillIndex ki;
 
-
     public TestSpanExpansionIndex () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
     }
-
 
     /**
      * Left and right expansions
@@ -385,10 +383,10 @@ public class TestSpanExpansionIndex {
         assertEquals("[ca]b",kr.getMatch(1).getSnippetBrackets());
         assertEquals("[cab]",kr.getMatch(2).getSnippetBrackets());
         assertEquals("[c]e",kr.getMatch(3).getSnippetBrackets());
-        /*
+
         assertEquals("[ce]",kr.getMatch(4).getSnippetBrackets());
         assertEquals(5, kr.getTotalResults());
-        */
+
         sq = kq.builder().tag("base/s:t").toQuery();
         assertEquals(sq.toString(),"<base:base/s:t />");
         kr = ki.search(sq, (short) 5);

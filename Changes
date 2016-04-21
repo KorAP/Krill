@@ -1,4 +1,4 @@
-0.55.4 2016-02-25
+0.55.4 2016-04-21
         - [bugfix] Wrap <base/s=t> boundaries around right extended queries
 	  (diewald)
 	- [bugfix] Lazy loading bug in WithinSpans (diewald)

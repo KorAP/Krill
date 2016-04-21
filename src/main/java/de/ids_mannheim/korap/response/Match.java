@@ -251,7 +251,11 @@ public class Match extends AbstractDocument {
                     // TODO: This may be decidable by PTI!
                     if (unsignedByte(number) <= 128 && start >= this.getStartPos()
                             && end <= this.getEndPos()) {
-                        log.trace("Add highlight of class {}!", unsignedByte(number));
+
+                        if (DEBUG) {
+                            log.trace("Add highlight of class {}!", unsignedByte(number));
+                        };
+
                         this.addHighlight(start, end - 1, number);
                     }
                     else if (DEBUG) {

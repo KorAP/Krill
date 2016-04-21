@@ -655,7 +655,6 @@ public class WithinSpans extends Spans {
 
         if (this.embeddedStart == -1) {
             this.embeddedStart = this.embeddedSpans.start();
-            this.embeddedEnd = this.embeddedSpans.end();
         };
 
         this.wrapEnd = -1;
@@ -685,6 +684,10 @@ public class WithinSpans extends Spans {
                     _logCurrentCase((byte) 15);
                 return false;
             };
+        };
+
+        if (this.embeddedEnd == -1) {
+            this.embeddedEnd = this.embeddedSpans.end();
         };
 
         // Now check correctly
@@ -934,6 +937,15 @@ public class WithinSpans extends Spans {
 
     // Return case number
     private byte withinCase () {
+
+        if (DEBUG) {
+            log.trace(">>>>>>>>>>>>>> {}-{}|{}-{}",
+                      this.wrapStart,
+                      this.wrapSpans.end(),
+                      this.embeddedStart,
+                      this.embeddedSpans.end()
+                      );
+        };
 
         // case 1-5
         if (this.wrapStart > this.embeddedStart) {
