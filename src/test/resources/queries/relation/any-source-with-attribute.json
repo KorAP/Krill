@@ -5,11 +5,18 @@
         "operands": [
             {
                 "@type": "koral:span",
-                "layer": "c",
-                "key": "s"                                
+                "match": "match:eq",
+                "attr": {
+		            "@type": "koral:term",
+		            "layer": "type",
+		            "key": "case:accusative",
+		            "match": "match:eq"
+		        }           
             },
             {
-                "@type": "koral:token"             
+                "@type": "koral:span",
+                "layer": "c",
+                "key": "vp"
             }
         ],
         "relType": {

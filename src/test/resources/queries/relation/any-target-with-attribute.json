@@ -6,10 +6,17 @@
             {
                 "@type": "koral:span",
                 "layer": "c",
-                "key": "s"                                
+                "key": "vp"
             },
             {
-                "@type": "koral:token"             
+                "@type": "koral:span",
+                "match": "match:eq",
+                "attr": {
+		            "@type": "koral:term",
+		            "layer": "type",
+		            "key": "case:accusative",
+		            "match": "match:eq"
+		        }           
             }
         ],
         "relType": {

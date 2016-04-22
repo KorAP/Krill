@@ -12,6 +12,71 @@ import de.ids_mannheim.korap.util.QueryException;
 public class TestSpanRelationQueryJSON {
 
     @Test
+    public void testMatchAnyRelationSourceWithAttribute() throws QueryException {
+        String filepath = getClass().getResource(
+                "/queries/relation/any-source-with-attribute.json").getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+
+        assertEquals(
+                "focus(#[1,2]spanSegment(<tokens:c:vp />, "
+                        + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                        + "spanWithAttribute(spanAttribute(tokens:type:case:accusative))))))",
+                sq.toString());
+    }
+
+    @Test
+    public void testMatchAnyRelationTargetWithAttribute() throws QueryException {
+        String filepath = getClass().getResource(
+                "/queries/relation/any-target-with-attribute.json").getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+        // "focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+        // +
+        // "<tokens:c:vp />)), spanWithAttribute(spanAttribute(tokens:type:case:accusative))))",
+        //
+                "focus(#[1,2]spanSegment(spanWithAttribute(spanAttribute(tokens:type:case:accusative)), " +
+                "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                        + "<tokens:c:vp />))))",
+                sq.toString());
+
+        // System.out.println(sq.toString());
+    }
+
+    @Test
+    public void testMatchSpecificRelationSourceWithAttribute()
+            throws QueryException {
+        String filepath = getClass().getResource(
+                "/queries/relation/specific-source-with-attribute.json")
+                .getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+
+        assertEquals("focus(#[1,2]spanSegment(<tokens:c:vp />, "
+                + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                + "spanElementWithAttribute(<tokens:c:np />, "
+                + "spanAttribute(tokens:type:case:accusative))))))",
+                sq.toString());
+    }
+
+    @Test
+    public void testMatchBothRelationNodeWithAttribute() throws QueryException {
+        String filepath = getClass().getResource(
+                "/queries/relation/both-operands-with-attribute.json")
+                .getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "focus(#[1,2]spanSegment(spanElementWithAttribute(<tokens:c: />, "
+                        + "spanAttribute(tokens:type:case:accusative)), "
+                        + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                        + "spanElementWithAttribute(<tokens:c: />, "
+                        + "spanAttribute(tokens:type:case:accusative))))))",
+                sq.toString());
+    }
+
+    @Test
     public void testMatchRelationSource () throws QueryException {
         //
         String filepath = getClass().getResource(
@@ -45,7 +110,8 @@ public class TestSpanRelationQueryJSON {
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), <tokens:c:s />)), <tokens:c:vp />))",
+                "focus(#[1,2]spanSegment(<tokens:c:vp />, "
+                        + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), <tokens:c:s />))))",
                 sq.toString());
     }
 
@@ -58,8 +124,8 @@ public class TestSpanRelationQueryJSON {
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
-                        + "spanElementWithAttribute(<tokens:c:s />, spanAttribute(tokens:@root)))), <tokens:c:vp />))",
+                "focus(#[1,2]spanSegment(<tokens:c:vp />, focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                        + "spanElementWithAttribute(<tokens:c:s />, spanAttribute(tokens:@root))))))",
                 sq.toString());
     }
 
@@ -72,8 +138,8 @@ public class TestSpanRelationQueryJSON {
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
-                        + "spanElementWithAttribute(<tokens:c:s />, spanAttribute(tokens:type:top)))), <tokens:c:vp />))",
+                "focus(#[1,2]spanSegment(<tokens:c:vp />, focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                        + "spanElementWithAttribute(<tokens:c:s />, spanAttribute(tokens:type:top))))))",
                 sq.toString());
     }
 
@@ -110,8 +176,8 @@ public class TestSpanRelationQueryJSON {
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "focus(2: focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation("
-                        + "tokens:>:mate/d:HEAD), {1: <tokens:c:s />})), {2: <tokens:c:np />})))",
+                "focus(2: focus(#[1,2]spanSegment({2: <tokens:c:np />}, "
+                        + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), {1: <tokens:c:s />})))))",
                 sq.toString());
     }
 

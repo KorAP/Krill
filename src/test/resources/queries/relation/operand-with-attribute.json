@@ -21,7 +21,7 @@
                 "key": "vp"
             }
         ],
-        "relation": {
+        "relType": {
             "@type": "koral:relation",
             "wrap": {
                 "@type": "koral:term",

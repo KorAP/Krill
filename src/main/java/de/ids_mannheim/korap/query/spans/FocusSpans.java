@@ -91,15 +91,13 @@ public class FocusSpans extends SimpleSpans {
         currentDoc = firstSpans.doc();
 
         this.query = query;
-        if (getSpanId() > 0) {
-            hasSpanId = true;
-        }
     }
 
 
     @Override
     public boolean next () throws IOException {
         matchPayload.clear();
+        spanId = 0;
         CandidateSpan cs;
         while (hasMoreSpans || candidateSpans.size() > 0) {
             if (isSorted) {
@@ -148,7 +146,38 @@ public class FocusSpans extends SimpleSpans {
         matchEndPosition = cs.getEnd();
         matchDocNumber = cs.getDoc();
         matchPayload.addAll(cs.getPayloads());
-        setSpanId(cs.getSpanId());
+
+        if (firstSpans instanceof RelationSpans && classNumbers.size() == 1) {
+            RelationSpans relationSpans = (RelationSpans) firstSpans;
+            int direction = relationSpans.getDirection();
+
+            if (classNumbers.get(0) == relationSpans.getTempSourceNum()) {
+                if (direction == 0) {
+                    setSpanId(relationSpans.getLeftId());
+                }
+                else {
+                    setSpanId(relationSpans.getRightId());
+                }
+            }
+            else if (classNumbers.get(0) == relationSpans.getTempTargetNum()) {
+                if (direction == 0) {
+                    setSpanId(relationSpans.getRightId());
+                }
+                else {
+                    setSpanId(relationSpans.getLeftId());
+                }
+            }
+            // else {
+            // throw new
+            // IllegalArgumentException("Classnumber is not found.");
+            // }
+            if (spanId > 0) hasSpanId = true;
+         }
+        else if (cs.getSpanId() > 0) {
+            setSpanId(cs.getSpanId());
+            hasSpanId = true;
+         }
+
     }
 
 

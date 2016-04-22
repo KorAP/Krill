@@ -93,7 +93,7 @@
                             "classRef": [2]
                         }
                     ],
-                    "relation": {
+                    "relType": {
                         "@type": "koral:relation",
                         "wrap": {
                             "@type": "koral:term",
@@ -110,7 +110,7 @@
                 "classRef": [3]
             }
         ],
-        "relation": {
+        "relType": {
             "@type": "koral:relation",
             "wrap": {
                 "@type": "koral:term",
