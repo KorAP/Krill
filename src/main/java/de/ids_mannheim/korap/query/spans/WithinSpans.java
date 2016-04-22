@@ -417,13 +417,32 @@ public class WithinSpans extends Spans {
             this.inSameDoc = false;
             return false;
         };
-        */
+*/
 
         this.more = true;
         this.inSameDoc = true;
 
         this.wrapDoc = this.wrapSpans.doc();
-        this.embeddedDoc = this.embeddedSpans.doc();
+
+        // Last doc was reached
+        if (this.wrapDoc == DocIdSetIterator.NO_MORE_DOCS) {
+            this.more = false;
+            this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
+            this.inSameDoc = false;
+            return false;
+        };
+
+        // This is just a workaround for an issue that seems to be a bug in Lucene's core code.
+        try {
+            this.embeddedDoc = this.embeddedSpans.doc();
+        }
+        catch (NullPointerException e) {
+            this.more = false;
+            this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
+            this.inSameDoc = false;
+            return false;
+        };
+        
 
         // Clear all spanStores
         if (this.wrapDoc != this.embeddedDoc) {
@@ -436,13 +455,6 @@ public class WithinSpans extends Spans {
             */
         }
 
-        // Last doc was reached
-        else if (this.wrapDoc == DocIdSetIterator.NO_MORE_DOCS) {
-            this.more = false;
-            this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
-            this.inSameDoc = false;
-            return false;
-        }
         else {
             if (DEBUG) {
                 log.trace("Current position already is in the same doc");

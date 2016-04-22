@@ -1113,7 +1113,7 @@ public class TestWithinIndex {
           at de.ids_mannheim.korap.KrillIndex.search(KrillIndex.java:1293)
           at de.ids_mannheim.korap.Krill.apply(Krill.java:304)
         */
-        // startsWith(<base/s=s>, { lassen | laufen })
+
         String jsonPath = getClass().getResource("/queries/bugs/span_or_bug.jsonld")
             .getFile();
         String jsonPQuery = readFile(jsonPath);
@@ -1121,18 +1121,18 @@ public class TestWithinIndex {
 
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
 
+        assertEquals("spanStartsWith(<tokens:base/s:s />, " +
+                     "spanOr([tokens:s:Er, tokens:s:Sie]))", sq.toString());
+
         KrillIndex ki = new KrillIndex();
 
-        ki.addDoc(getClass().getResourceAsStream("/wiki/PPP-02924.json.gz"),
-                  true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/DDD-08370.json.gz"),
                   true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/SSS-09803.json.gz"),
                   true);
         ki.commit();
-        Result kr = ki.search(sq, (short) 10);
-        assertEquals(2, kr.getTotalResults());
-
+        Result kr = ki.search(sq, (short) 1);
+        assertEquals(1, kr.getTotalResults());
     }
 
 
