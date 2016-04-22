@@ -316,32 +316,42 @@ public class TestSpanExpansionIndex {
 
     /**
      * Query rewrite bug
+     *
+     * Warning: This is not armoured by <base/s=t>!
      * 
      * @throws IOException
      * */
     @Test
     public void testQueryRewriteBug () throws IOException {
         KrillIndex ki = new KrillIndex();
-        ki.addDoc(createFieldDoc0()); // same doc
-        ki.addDoc(createFieldDoc1()); // only not clause
-        ki.addDoc(createFieldDoc2()); // only main clause
+        ki.addDoc(createFieldDoc0()); // ceccecdeec
+        /*
+        ki.addDoc(createFieldDoc1()); // bbccdd || only not clause
+        ki.addDoc(createFieldDoc2()); // beccea | only main clause
+        */
         ki.commit();
 
-        // Warning: This is not armoured by <base/s=t>!
-
         // See /queries/bugs/repetition_group_rewrite
-        // spanRepetition(spanExpansion(
-        //     SpanMultiTermQueryWrapper(tokens:/cnx/p:A/), []{1, 1}, right){2,2}
-        // )
-        RegexpQuery requery = new RegexpQuery(new Term("base", "s:[ac]"),
-                RegExp.ALL);
+        RegexpQuery requery = new RegexpQuery(
+                                              new Term("base", "s:[ac]"),
+                                              RegExp.ALL
+                                              );
         SpanMultiTermQueryWrapper<RegexpQuery> query = new SpanMultiTermQueryWrapper<RegexpQuery>(
                 requery);
         SpanExpansionQuery seq = new SpanExpansionQuery(query, 1, 1, 1, true);
         SpanRepetitionQuery rep = new SpanRepetitionQuery(seq, 2, 2, true);
 
+        // spanRepetition(
+        //   spanExpansion(
+        //     SpanMultiTermQueryWrapper(base:/s:[ac]/),
+        //     []{1, 1},
+        //     right
+        //   ){2,2}
+        // )
+
         kr = ki.search(rep, (short) 20);
 
+        /*
         for (Match km : kr.getMatches()){
             System.out.println(
                                km.getStartPos() +
@@ -351,9 +361,11 @@ public class TestSpanExpansionIndex {
                                km.getSnippetBrackets()
                                );
         };
+        */
 
-        assertEquals((long) 3, kr.getTotalResults());
-
+        assertEquals("[cecc]ecdeec", kr.getMatch(0).getSnippetBrackets());
+        // assertEquals("cec[cecd]eec", kr.getMatch(1).getSnippetBrackets());
+        assertEquals((long) 2, kr.getTotalResults());
     }
 
 

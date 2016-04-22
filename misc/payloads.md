@@ -42,8 +42,9 @@ byte (1 byte). For example:
     <>:s$<b>64<i>0<i>38<i>7<b>0
 
 means that element \<s\> starts from character offset position 0 and
-ends to character offset position 38. The element ends at token
-position 7 which is stored in integer. It is a root element or no
+ends at character offset position 38. The element ends at token
+position 7 (i.e. it includes the 7th token) which is stored in integer.
+It is a root element or no
 further information on a tree level is given (depth=0).
 
     <>:s$<b>64<i>0<i>38<i>7<b>0<s>1

@@ -14,6 +14,9 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Enumeration of spans occurring multiple times in a sequence. The
  * number of
@@ -23,10 +26,15 @@ import de.ids_mannheim.korap.query.SpanRepetitionQuery;
  * */
 public class RepetitionSpans extends SimpleSpans {
 
+    // Logger
+    private final Logger log = LoggerFactory.getLogger(RepetitionSpans.class);
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
     private int min, max;
     private long matchCost;
     private List<CandidateSpan> matchList;
-
 
     /**
      * Constructs RepetitionSpans from the given
@@ -105,6 +113,15 @@ public class RepetitionSpans extends SimpleSpans {
 
         while ((hasMoreSpans = firstSpans.next())
                 && startSpan.getDoc() == firstSpans.doc()) {
+
+            if (DEBUG) {
+                log.debug("Check adjacency at {}-{}|{}-{} in {}",
+                          prevSpan.getStart(),
+                          prevSpan.getEnd(),
+                          firstSpans.start(),
+                          firstSpans.end(),
+                          startSpan.getDoc());
+            };
 
             if (firstSpans.start() > prevSpan.getEnd()) {
                 break;

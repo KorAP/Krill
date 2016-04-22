@@ -1048,7 +1048,6 @@ public class TestKrill {
         // TODO: base/s:t needs to be defined!!!
         QueryBuilder qb = new QueryBuilder("tokens");
         kr = new Krill(qb.tag("base/s:t")).apply(ki);
-        System.err.println(kr.toJsonString());
         assertEquals(kr.getTotalResults(), 1);
 
 
@@ -1057,13 +1056,9 @@ public class TestKrill {
         json = getString(getClass().getResource(
                 "/queries/bugs/expansion_bug.jsonld").getFile());
 
-        System.err.println("----------------------------");
-
         kr = new Krill(json).apply(ki);
 
         // focus(254: spanContain(<tokens:base/s:t />, {254: spanNext(spanNext(spanNext(spanNext(tokens:s:der, tokens:s:alte), tokens:s:Digraph), tokens:s:Aa), spanExpansion(tokens:s:durch, []{1, 1}, right))}))
-
-        System.err.println(kr.toJsonString());
 
         assertEquals("... Buchstabe des Alphabetes. In Dänemark ist "
                 + "[der alte Digraph Aa durch Å] ersetzt worden, "
