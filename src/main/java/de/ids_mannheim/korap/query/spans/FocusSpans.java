@@ -173,10 +173,11 @@ public class FocusSpans extends SimpleSpans {
             // }
             if (spanId > 0) hasSpanId = true;
          }
-         else if (cs.getSpanId() > 0) {
-             hasSpanId = true;
-             setSpanId(cs.getSpanId());
+        else if (cs.getSpanId() > 0) {
+            setSpanId(cs.getSpanId());
+            hasSpanId = true;
          }
+
     }
 
 

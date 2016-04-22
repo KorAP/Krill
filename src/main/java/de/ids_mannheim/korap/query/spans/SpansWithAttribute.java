@@ -180,6 +180,9 @@ public class SpansWithAttribute extends SimpleSpans {
                 this.matchEndPosition = referentSpans.end();
                 this.matchPayload = referentSpans.getPayload();
                 this.spanId = referentSpans.getSpanId();
+                if (this.spanId > 0) {
+                    hasSpanId = true;
+                }
                 hasMoreSpans = referentSpans.next();
                 return true;
             }
@@ -418,7 +421,12 @@ public class SpansWithAttribute extends SimpleSpans {
         for (AttributeSpans as : notAttributeList) {
             cost += as.cost();
         }
-        return referentSpans.cost() + cost;
+
+        if (referentSpans != null)
+            return referentSpans.cost() + cost;
+        else
+            return cost;
+
     }
 
 }

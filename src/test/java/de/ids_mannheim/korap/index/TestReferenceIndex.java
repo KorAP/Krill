@@ -72,13 +72,13 @@ public class TestReferenceIndex {
 
         kr = ki.search(ref, (short) 10);
         /*
-        for (Match km : kr.getMatches()) {
+         * for (Match km : kr.getMatches()) {
+         * 
+         * System.out.println(km.getStartPos() + "," + km.getEndPos()
+         * + " " + km.getSnippetBrackets()); }
+         * System.out.println(kr.getTotalResults());
+         */
 
-        	System.out.println(km.getStartPos() + "," + km.getEndPos() + " "
-        			+ km.getSnippetBrackets());
-        }
-        System.out.println(kr.getTotalResults());
-        */
         assertEquals(
                 "spanReference(spanDistance(focus(1: focus(#[1,2]spanSegment("
                         + "focus(#1: spanSegment(spanRelation(base:<:child-of), focus(2: spanNext("
@@ -103,12 +103,12 @@ public class TestReferenceIndex {
         // .{0,2} #3 & #3 -> #2
 
         assertEquals(
-                "spanReference(focus(#[1,2]spanSegment(focus(#2: "
+                "spanReference(focus(#[1,2]spanSegment({2: <tokens:prp />}, focus(#2: "
                         + "spanSegment(spanRelation(tokens:>:stanford/d:tag), "
                         + "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, "
                         + "{2: <tokens:prp />}, [(w[1:2], notOrdered, notExcluded)])), "
-                        + "{3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)])))), "
-                        + "{2: <tokens:prp />})), 2)", sq.toString());
+                        + "{3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)]))))"
+                        + ")), 2)", sq.toString());
 
         SpanElementQuery seq1 = new SpanElementQuery("tokens", "vb");
         // new SpanTermQuery(new Term("tokens", "c:vb"));
@@ -195,11 +195,13 @@ public class TestReferenceIndex {
         // #3 & #3 ->stanford/d #2 & #1 ->stanford #3' annis
         // without layer=c and + relation key
         assertEquals(
-                "spanReference(focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:stanford/d:tag), "
-                        + "focus(1: spanReference(focus(#[1,2]spanSegment(focus(#2: spanSegment(spanRelation(tokens:>:stanford/d:tag), "
-                        + "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, {2: <tokens:prp />}, "
-                        + "[(w[1:2], notOrdered, notExcluded)])), {3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)])))), "
-                        + "{2: <tokens:prp />})), 2)))), {3: <tokens:nn />})), 3)",
+                "spanReference(focus(#[1,2]spanSegment({3: <tokens:nn />}, "
+                        + "focus(#2: spanSegment(spanRelation(tokens:>:stanford/d:tag), "
+                        + "focus(1: spanReference(focus(#[1,2]spanSegment({2: <tokens:prp />}, "
+                        + "focus(#2: spanSegment(spanRelation(tokens:>:stanford/d:tag), "
+                        + "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, "
+                        + "{2: <tokens:prp />}, [(w[1:2], notOrdered, notExcluded)])), "
+                        + "{3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)])))))), 2)))))), 3)",
                 sq.toString());
         kr = ki.search(sq, (short) 10);
         // for (Match km : kr.getMatches()) {

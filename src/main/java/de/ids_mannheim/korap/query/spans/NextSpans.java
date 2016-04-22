@@ -82,6 +82,7 @@ public class NextSpans extends SimpleSpans {
                 matchDocNumber = firstSpans.doc();
                 matchStartPosition = firstSpans.start();
                 matchEndPosition = matchList.get(0).getEnd();
+                spanId = matchList.get(0).getSpanId();
                 if (collectPayloads)
                     matchPayload.addAll(matchList.get(0).getPayloads());
                 matchList.remove(0);
