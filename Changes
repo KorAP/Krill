@@ -2,6 +2,7 @@
         - [bugfix] Wrap <base/s=t> boundaries around right extended queries
 	  (diewald)
 	- [bugfix] Lazy loading bug in WithinSpans (diewald)
+	- [bugfix] Workaround for Nullpointers in SpanOrQuery (diewald)
 
 0.55.3 2016-02-22
 	- [bugfix] Use base foundry for default sentences and paragraphs
