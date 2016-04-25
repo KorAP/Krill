@@ -130,14 +130,13 @@ public class TestRepetitionIndex {
 
         SpanQuery sq;
         // c{2,2}
-        sq = new SpanRepetitionQuery(
-                new SpanTermQuery(new Term("base", "s:c")), 2, 2, true);
-        kr = ki.search(sq, (short) 10);
-        // doc1 2-4, 3-5, 4-6
-        assertEquals((long) 6, kr.getTotalResults());
+        // sq = new SpanRepetitionQuery(
+        // new SpanTermQuery(new Term("base", "s:c")), 2, 2, true);
+        // kr = ki.search(sq, (short) 10);
+        // // doc1 2-4, 3-5, 4-6
+        // assertEquals((long) 6, kr.getTotalResults());
 
         // ec{2,2}
-        kr = ki.search(sq, (short) 10);
         sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:e")),
                 new SpanRepetitionQuery(new SpanTermQuery(new Term("base",
                         "s:c")), 2, 2, true));

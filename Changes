@@ -1,7 +1,13 @@
+0.55.5 2016-04-25
+	- [bugfix] store skipped spans in Repetitionspans as candidates
 0.55.4 2016-04-22
-        - [bugfix] Wrap <base/s=t> boundaries around right extended queries
+    - [bugfix] Wrap <base/s=t> boundaries around right extended queries
 	  (diewald)
 	- [bugfix] Lazy loading bug in WithinSpans (diewald)
+	- [feature] Matching relation nodes with attributes
+	- [bugfix and update] Removed span id in SegmentSpans, added in NextSpans
+	Updated relation deserialization
+	Added tests for relation queries and relation deserialization 
 	- [bugfix] Workaround for Nullpointers in SpanOrQuery (diewald)
 
 0.55.3 2016-02-22

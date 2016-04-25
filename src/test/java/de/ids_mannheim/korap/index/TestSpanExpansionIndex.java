@@ -349,22 +349,46 @@ public class TestSpanExpansionIndex {
         //   ){2,2}
         // )
 
+        kr = ki.search(query, (short) 20);
+        assertEquals(5, kr.getTotalResults());
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(1, kr.getMatch(0).getEndPos());
+        assertEquals(2, kr.getMatch(1).getStartPos());
+        assertEquals(3, kr.getMatch(1).getEndPos());
+        assertEquals(3, kr.getMatch(2).getStartPos());
+        assertEquals(4, kr.getMatch(2).getEndPos());
+        assertEquals(5, kr.getMatch(3).getStartPos());
+        assertEquals(6, kr.getMatch(3).getEndPos());
+        assertEquals(9, kr.getMatch(4).getStartPos());
+        assertEquals(10, kr.getMatch(4).getEndPos());
+        
+        kr = ki.search(seq, (short) 20);
+        assertEquals(5, kr.getTotalResults());
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(2, kr.getMatch(0).getEndPos());
+        assertEquals(2, kr.getMatch(1).getStartPos());
+        assertEquals(4, kr.getMatch(1).getEndPos());
+        assertEquals(3, kr.getMatch(2).getStartPos());
+        assertEquals(5, kr.getMatch(2).getEndPos());
+        assertEquals(5, kr.getMatch(3).getStartPos());
+        assertEquals(7, kr.getMatch(3).getEndPos());
+        assertEquals(9, kr.getMatch(4).getStartPos());
+        assertEquals(11, kr.getMatch(4).getEndPos());
+
         kr = ki.search(rep, (short) 20);
 
-        /*
-        for (Match km : kr.getMatches()){
-            System.out.println(
-                               km.getStartPos() +
-                               "," +
-                               km.getEndPos() +
-                               " " +
-                               km.getSnippetBrackets()
-                               );
-        };
-        */
+        // for (Match km : kr.getMatches()){
+        // System.out.println(
+        // km.getStartPos() +
+        // "," +
+        // km.getEndPos() +
+        // " " +
+        // km.getSnippetBrackets()
+        // );
+        // };
 
         assertEquals("[cecc]ecdeec", kr.getMatch(0).getSnippetBrackets());
-        // assertEquals("cec[cecd]eec", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("cec[cecd]eec", kr.getMatch(1).getSnippetBrackets());
         assertEquals((long) 2, kr.getTotalResults());
     }
 

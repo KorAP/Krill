@@ -87,7 +87,7 @@ public class TestClass {
         	);
         }
         */
-        assertEquals((long) 495, kr.getTotalResults());
+        assertEquals((long) 5315, kr.getTotalResults());
         assertEquals(3, kr.getMatch(0).getStartPos());
         assertEquals(5, kr.getMatch(0).getEndPos());
 

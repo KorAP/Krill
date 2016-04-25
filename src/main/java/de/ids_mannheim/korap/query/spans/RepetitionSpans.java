@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ public class RepetitionSpans extends SimpleSpans {
     private int min, max;
     private long matchCost;
     private List<CandidateSpan> matchList;
+    private List<CandidateSpan> candidates;
 
     /**
      * Constructs RepetitionSpans from the given
@@ -55,6 +57,7 @@ public class RepetitionSpans extends SimpleSpans {
         this.min = query.getMin();
         this.max = query.getMax();
         matchList = new ArrayList<CandidateSpan>();
+        candidates = new ArrayList<CandidateSpan>();
         hasMoreSpans = firstSpans.next();
     }
 
@@ -104,13 +107,33 @@ public class RepetitionSpans extends SimpleSpans {
      */
     private List<CandidateSpan> collectAdjacentSpans () throws IOException {
 
-        CandidateSpan startSpan = new CandidateSpan(firstSpans);
+        CandidateSpan startSpan;
+        if (!candidates.isEmpty()) {
+            startSpan = candidates.get(0);
+            candidates.remove(0);
+        }
+        else {
+            startSpan = new CandidateSpan(firstSpans);
+        }
 
         List<CandidateSpan> adjacentSpans = new ArrayList<CandidateSpan>();
         adjacentSpans.add(startSpan);
 
         CandidateSpan prevSpan = startSpan;
 
+        int i = 0;
+        while (i < candidates.size()) {
+            CandidateSpan cs = candidates.get(i);
+            if (cs.getStart() > prevSpan.getEnd()) {
+                break;
+            }
+            else if (startSpan.getDoc() == cs.getDoc()
+                    && cs.getStart() == prevSpan.getEnd()) {
+                prevSpan = cs;
+                adjacentSpans.add(prevSpan);
+            }
+            i++;
+        }
         while ((hasMoreSpans = firstSpans.next())
                 && startSpan.getDoc() == firstSpans.doc()) {
 
@@ -124,16 +147,19 @@ public class RepetitionSpans extends SimpleSpans {
             };
 
             if (firstSpans.start() > prevSpan.getEnd()) {
+                candidates.add(new CandidateSpan(firstSpans));
                 break;
             }
             else if (firstSpans.start() == prevSpan.getEnd()) {
                 prevSpan = new CandidateSpan(firstSpans);
                 adjacentSpans.add(prevSpan);
             }
+            else {
+                candidates.add(new CandidateSpan(firstSpans));
+            }
         }
         return adjacentSpans;
     }
-
 
     /**
      * Generates all possible repetition match spans from the given
@@ -149,16 +175,17 @@ public class RepetitionSpans extends SimpleSpans {
             int endIndex;
             while ((endIndex = j + i - 1) < adjacentSpans.size()) {
                 startSpan = adjacentSpans.get(j);
+                
                 if (i == 1) {
                     try {
-                        matchSpan = startSpan.clone();
-                        matchSpan.setPayloads(computeMatchPayload(
-                                adjacentSpans, 0, endIndex - 1));
-                        matchList.add(matchSpan);
+                         matchSpan = startSpan.clone();
+                         matchSpan.setPayloads(computeMatchPayload(
+                                 adjacentSpans, 0, endIndex - 1));
+                         matchList.add(matchSpan);
                     }
                     catch (CloneNotSupportedException e) {
-                        e.printStackTrace();
-                    }
+                            e.printStackTrace();
+                        }
                 }
                 else {
                     endSpan = adjacentSpans.get(endIndex);
@@ -172,8 +199,11 @@ public class RepetitionSpans extends SimpleSpans {
                 }
                 j++;
             }
-        }
 
+            if (j + i == adjacentSpans.size()) {
+
+            }
+        }
         Collections.sort(matchList);
     }
 
@@ -251,6 +281,19 @@ public class RepetitionSpans extends SimpleSpans {
 
     @Override
     public boolean skipTo (int target) throws IOException {
+        if (!candidates.isEmpty()) {
+            Iterator<CandidateSpan> i = candidates.iterator();
+            while (i.hasNext()) {
+                CandidateSpan cs = i.next();
+                if (cs.getDoc() < target) {
+                    i.remove();
+                }
+                else if (cs.getDoc() == target) {
+                    matchList.clear();
+                    return advance();
+                }
+            }
+        }
         if (hasMoreSpans && firstSpans.doc() < target) {
             if (!firstSpans.skipTo(target)) {
                 hasMoreSpans = false;
