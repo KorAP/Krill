@@ -3,10 +3,10 @@ package de.ids_mannheim.korap.query.spans;
 import static de.ids_mannheim.korap.util.KrillByte.byte2int;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
@@ -53,10 +53,13 @@ public class FocusSpans extends SimpleSpans {
     public static final boolean DEBUG = false;
 
     private boolean isSorted, matchTemporaryClass, removeTemporaryClasses;
-    private List<CandidateSpan> candidateSpans;
+    // private List<CandidateSpan> candidateSpans;
     private int windowSize = 10;
     private int currentDoc;
-
+    private int prevStart;
+    private int prevDoc;
+    private PriorityQueue<CandidateSpan> candidates;
+    private FocusSpanComparator comparator;
 
     /**
      * Construct a FocusSpan for the given {@link SpanQuery}.
@@ -86,7 +89,8 @@ public class FocusSpans extends SimpleSpans {
         isSorted = query.isSorted();
         matchTemporaryClass = query.matchTemporaryClass();
         removeTemporaryClasses = query.removeTemporaryClasses();
-        candidateSpans = new ArrayList<CandidateSpan>();
+        // candidateSpans = new ArrayList<CandidateSpan>();
+        candidates = new PriorityQueue<>(windowSize, comparator);
         hasMoreSpans = firstSpans.next();
         currentDoc = firstSpans.doc();
 
@@ -99,7 +103,7 @@ public class FocusSpans extends SimpleSpans {
         matchPayload.clear();
         spanId = 0;
         CandidateSpan cs;
-        while (hasMoreSpans || candidateSpans.size() > 0) {
+        while (hasMoreSpans || candidates.size() > 0) {
             if (isSorted) {
 
                 if (firstSpans.isPayloadAvailable()
@@ -111,14 +115,13 @@ public class FocusSpans extends SimpleSpans {
                 }
                 hasMoreSpans = firstSpans.next();
             }
-            else if (candidateSpans.isEmpty()) {
+            else if (candidates.isEmpty()) {
                 currentDoc = firstSpans.doc();
                 collectCandidates();
-                Collections.sort(candidateSpans);
             }
             else {
-                setMatch(candidateSpans.get(0));
-                candidateSpans.remove(0);
+                setMatch(candidates.poll());
+                collectCandidates();
                 return true;
             }
         }
@@ -129,22 +132,29 @@ public class FocusSpans extends SimpleSpans {
 
     private void collectCandidates () throws IOException {
         CandidateSpan cs = null;
-        while (hasMoreSpans && candidateSpans.size() < windowSize
+        while (hasMoreSpans && candidates.size() < windowSize
                 && firstSpans.doc() == currentDoc) {
 
             if (firstSpans.isPayloadAvailable()
                     && updateSpanPositions(cs = new CandidateSpan(firstSpans))) {
-                candidateSpans.add(cs);
+                if (cs.getDoc() == prevDoc && cs.getStart() < prevStart) {
+                    log.warn("Span (" + cs.getStart() + ", "
+                            + cs.getEnd() + ") is out of order and skipped.");
+                }
+                else {
+                    candidates.add(cs);
+                }
             }
             hasMoreSpans = firstSpans.next();
         }
     }
 
-
     private void setMatch (CandidateSpan cs) {
         matchStartPosition = cs.getStart();
+        prevStart = matchStartPosition;
         matchEndPosition = cs.getEnd();
         matchDocNumber = cs.getDoc();
+        prevDoc = matchDocNumber;
         matchPayload.addAll(cs.getPayloads());
 
         if (firstSpans instanceof RelationSpans && classNumbers.size() == 1) {
@@ -244,7 +254,18 @@ public class FocusSpans extends SimpleSpans {
     // Todo: Check for this on document boundaries!
     @Override
     public boolean skipTo (int target) throws IOException {
-        if (this.doc() < target && firstSpans.skipTo(target)) {
+        if (candidates.size() > 0) {
+            CandidateSpan cs;
+            while ((cs = candidates.poll()) != null) {
+                if (cs.getDoc() == target) {
+                    return next();
+                }
+            }
+        }
+        if (firstSpans.doc() == target) {
+            return next();
+        }
+        if (firstSpans.doc() < target && firstSpans.skipTo(target)) {
             return next();
         }
         return false;
@@ -262,4 +283,28 @@ public class FocusSpans extends SimpleSpans {
     public long cost () {
         return firstSpans.cost();
     };
+    
+    class FocusSpanComparator implements Comparator<CandidateSpan> {
+
+        @Override
+        public int compare(CandidateSpan o1, CandidateSpan o2) {
+            if (o1.doc == o2.doc) {
+                if (o1.getStart() == o2.getStart()) {
+                    if (o1.getEnd() == o2.getEnd()) return 0;
+                    if (o1.getEnd() > o2.getEnd())
+                        return 1;
+                    else
+                        return -1;
+                }
+                else if (o1.getStart() < o2.getStart())
+                    return -1;
+                else
+                    return 1;
+            }
+            else if (o1.doc < o2.doc)
+                return -1;
+            else
+                return 1;
+        }
+    }
 };

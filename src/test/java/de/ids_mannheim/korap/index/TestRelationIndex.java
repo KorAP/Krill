@@ -14,6 +14,7 @@ import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
+import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRelationMatchQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
@@ -71,7 +72,7 @@ public class TestRelationIndex {
     }
 
 
-    private FieldDocument createFieldDoc0 () {
+    public static FieldDocument createFieldDoc0() {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV(
@@ -96,7 +97,7 @@ public class TestRelationIndex {
     }
 
 
-    private FieldDocument createFieldDoc1 () {
+    public static FieldDocument createFieldDoc1() {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV(
@@ -903,9 +904,6 @@ public class TestRelationIndex {
         assertEquals((long) 1, kr.getTotalResults());
         assertEquals(2, kr.getMatch(0).getStartPos());
         assertEquals(7, kr.getMatch(0).getEndPos());
-
-        // for (Match m : kr.getMatches()) {
-        // System.out.println(m.getStartPos() + " " + m.getEndPos());
-        // }
     }
+
 }

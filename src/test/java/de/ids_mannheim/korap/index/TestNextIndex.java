@@ -13,9 +13,12 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 
 @RunWith(JUnit4.class)
@@ -262,6 +265,23 @@ public class TestNextIndex {
         assertEquals("StartPos", 0, kr.getMatch(0).startPos);
         assertEquals("EndPos", 3, kr.getMatch(0).endPos);
 
+        sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:c")),
+                new SpanNextQuery(new SpanFocusQuery(new SpanClassQuery(
+                        new SpanTermQuery(new Term("base", "s:d")), (byte) 1),
+                        (byte) 1), new SpanFocusQuery(new SpanClassQuery(
+                        new SpanTermQuery(new Term("base", "s:b")), (byte) 2),
+                        (byte) 2)));
+
+        kr = ki.search(sq, (short) 10);
+        assertEquals("doc-number", 2, kr.getMatch(0).getLocalDocID());
+        assertEquals("StartPos", 0, kr.getMatch(0).startPos);
+        assertEquals("EndPos", 3, kr.getMatch(0).endPos);
+
+        // for (Match km : kr.getMatches()) {
+        // System.out.println(km.getStartPos() + "," + km.getEndPos()
+        // + " "
+        // + km.getSnippetBrackets());
+        // }
     }
 
 
