@@ -181,12 +181,13 @@ public class FocusSpans extends SimpleSpans {
             // throw new
             // IllegalArgumentException("Classnumber is not found.");
             // }
-            if (spanId > 0) hasSpanId = true;
-         }
+            if (spanId > 0)
+                hasSpanId = true;
+        }
         else if (cs.getSpanId() > 0) {
             setSpanId(cs.getSpanId());
             hasSpanId = true;
-         }
+        }
 
     }
 

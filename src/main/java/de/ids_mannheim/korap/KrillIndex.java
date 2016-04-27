@@ -1365,11 +1365,12 @@ public final class KrillIndex {
 
                     if (DEBUG) {
                         if (match.getDocID() != null)
-                            log.trace("With DocID: I've got 1 match of {} in {}",
-                                      count, match.getDocID());
+                            log.trace(
+                                    "With DocID: I've got 1 match of {} in {}",
+                                    count, match.getDocID());
                         else
                             log.trace("With UID: I've got 1 match of {} in {}",
-                                      count, match.getUID());
+                                    count, match.getUID());
                     };
 
                     atomicMatches.add(match);

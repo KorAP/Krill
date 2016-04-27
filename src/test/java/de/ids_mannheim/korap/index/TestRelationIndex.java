@@ -147,7 +147,7 @@ public class TestRelationIndex {
                         + "<:child-of$<b>34<i>4<i>38<i>7<i>2<s>2<s>1<s>0|"
                         + "<:child-of$<b>35<i>4<i>38<i>10<i>38<i>7<i>2<i>7<s>2<s>4<s>0|"
                         + ">:dep$<b>32<i>0<s>1<s>1<s>0|"
-                        + ">:dep$<b>32<i>3<s>1<s>1<s>0]"                        
+                        + ">:dep$<b>32<i>3<s>1<s>1<s>0]"
 
                         + "[(2-3)s:die|_2$<i>10<i>13|pos:ART$<s>1|tt:DET$<s>2|"
                         + "<>:np$<b>64<i>10<i>20<i>4<b>0<s>3|<>:np$<b>64<i>10<i>38<i>7<b>0<s>4|"
@@ -327,7 +327,7 @@ public class TestRelationIndex {
         // for (Match m : kr.getMatches()) {
         // System.out.println(m.getStartPos() + " " + m.getEndPos());
         // }
-        
+
         SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
                 new Term("base", "@:func=sbj")), true);
         // kr = ki.search(saq, (short) 20);
@@ -588,8 +588,9 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(6).getEndPos());
     }
 
+
     @Test
-    public void testCase9b() throws IOException {
+    public void testCase9b () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
@@ -623,8 +624,9 @@ public class TestRelationIndex {
         // }
     }
 
+
     @Test
-    public void testCase9c() throws IOException {
+    public void testCase9c () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
@@ -715,12 +717,13 @@ public class TestRelationIndex {
         // }
     }
 
+
     /**
      * Relation whose nodes have a specific attribute.
      * 
      * */
     @Test
-    public void testCase10a() throws IOException {
+    public void testCase10a () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
@@ -739,29 +742,28 @@ public class TestRelationIndex {
         // Matching relation source node with an attribute
         SpanFocusQuery sfq1 = new SpanFocusQuery(srq, (byte) 1);
         SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sfq1, aq, true);
-        
+
         kr = ki.search(swaq, (short) 10);
         assertEquals((long) 2, kr.getTotalResults());
         assertEquals(2, kr.getMatch(0).getStartPos());
         assertEquals(4, kr.getMatch(0).getEndPos());
         assertEquals(5, kr.getMatch(1).getStartPos());
         assertEquals(7, kr.getMatch(1).getEndPos());
-        
-         // Returning relations whose source has a specific attribute
-         SpanFocusQuery fqr = new SpanFocusQuery(swaq,
-         srq.getTempClassNumbers());
-         fqr.setMatchTemporaryClass(true);
-         fqr.setRemoveTemporaryClasses(true);
-         assertEquals("focus(#[1,2]spanRelationWithAttribute(focus(1: "
+
+        // Returning relations whose source has a specific attribute
+        SpanFocusQuery fqr = new SpanFocusQuery(swaq, srq.getTempClassNumbers());
+        fqr.setMatchTemporaryClass(true);
+        fqr.setRemoveTemporaryClasses(true);
+        assertEquals("focus(#[1,2]spanRelationWithAttribute(focus(1: "
                 + "{1: source:{2: target:spanRelation(base:>:child-of)}}), "
                 + "spanAttribute(base:@:case=accusative)))", fqr.toString());
-        
-         kr = ki.search(fqr, (short) 10);
-         assertEquals((long) 2, kr.getTotalResults());
-         assertEquals(2, kr.getMatch(0).getStartPos());
-         assertEquals(7, kr.getMatch(0).getEndPos());
-         assertEquals(4, kr.getMatch(1).getStartPos());
-         assertEquals(7, kr.getMatch(1).getEndPos());
+
+        kr = ki.search(fqr, (short) 10);
+        assertEquals((long) 2, kr.getTotalResults());
+        assertEquals(2, kr.getMatch(0).getStartPos());
+        assertEquals(7, kr.getMatch(0).getEndPos());
+        assertEquals(4, kr.getMatch(1).getStartPos());
+        assertEquals(7, kr.getMatch(1).getEndPos());
 
         // Matching relation target nodes with an attribute
         SpanFocusQuery sfq2 = new SpanFocusQuery(srq, (byte) 2);
@@ -793,12 +795,13 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(1).getEndPos());
     }
 
+
     /**
      * Relation whose nodes have a specific attribute. Alternative
      * query (actually used in serialization)
      * */
     @Test
-    public void testCase10b() throws IOException {
+    public void testCase10b () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
@@ -862,11 +865,12 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(1).getEndPos());
     }
 
+
     /**
      * Matching both relation nodes whose a specific attribute
      * */
     @Test
-    public void testCase11() throws IOException {
+    public void testCase11 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
@@ -886,7 +890,7 @@ public class TestRelationIndex {
         srq.setTargetClass((byte) 2);
         kr = ki.search(srq, (short) 20);
         assertEquals((long) 13, kr.getTotalResults());
-        
+
         SpanWithAttributeQuery swaq1 = new SpanWithAttributeQuery(aq, true);
         SpanWithAttributeQuery swaq2 = new SpanWithAttributeQuery(aq2, true);
 

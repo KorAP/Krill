@@ -392,6 +392,7 @@ public class TestWithinIndex {
 
     };
 
+
     @Test
     public void indexExample2e () throws IOException {
         KrillIndex ki = new KrillIndex();
@@ -432,29 +433,29 @@ public class TestWithinIndex {
 
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
         assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
-        assertEquals("Snippet (0)", "[h  h  i  j  ]h  i  j  h  i  j   ...",
-                     kr.getMatch(0).getSnippetBrackets());
+        assertEquals("Snippet (0)", "[h  h  i  j  ]h  i  j  h  i  j   ...", kr
+                .getMatch(0).getSnippetBrackets());
         assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
         assertEquals("EndPos (1)", 4, kr.getMatch(1).endPos);
-        assertEquals("Snippet (1)", "[h  h  i  j  ]h  i  j  h  i  j   ...",
-                     kr.getMatch(1).getSnippetBrackets());
+        assertEquals("Snippet (1)", "[h  h  i  j  ]h  i  j  h  i  j   ...", kr
+                .getMatch(1).getSnippetBrackets());
 
         assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
         assertEquals("EndPos (2)", 8, kr.getMatch(2).endPos);
         assertEquals("Snippet (2)", "[h  h  i  j  h  i  j  h  ]i  j        ",
-                     kr.getMatch(2).getSnippetBrackets());
+                kr.getMatch(2).getSnippetBrackets());
         assertEquals("StartPos (3)", 0, kr.getMatch(3).startPos);
         assertEquals("EndPos (3)", 8, kr.getMatch(3).endPos);
         assertEquals("Snippet (3)", "[h  h  i  j  h  i  j  h  ]i  j        ",
-                     kr.getMatch(3).getSnippetBrackets());
+                kr.getMatch(3).getSnippetBrackets());
         assertEquals("StartPos (4)", 0, kr.getMatch(4).startPos);
         assertEquals("EndPos (4)", 8, kr.getMatch(4).endPos);
         assertEquals("Snippet (4)", "[h  h  i  j  h  i  j  h  ]i  j        ",
-                     kr.getMatch(4).getSnippetBrackets());
+                kr.getMatch(4).getSnippetBrackets());
         assertEquals("StartPos (5)", 0, kr.getMatch(5).startPos);
         assertEquals("EndPos (5)", 8, kr.getMatch(5).endPos);
         assertEquals("Snippet (5)", "[h  h  i  j  h  i  j  h  ]i  j        ",
-                     kr.getMatch(5).getSnippetBrackets());
+                kr.getMatch(5).getSnippetBrackets());
 
 
         assertEquals("StartPos (6)", 0, kr.getMatch(6).startPos);
@@ -900,14 +901,12 @@ public class TestWithinIndex {
         // Case 1, 6, 7, 13
         // xy<a><a>x</a>b<a>c</a></a>x
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "x  y  x  b  c  x  ",
-                 "[(0-3)s:x|_0$<i>0<i>3]"
-                 + "[(3-6)s:y|_1$<i>3<i>6]"
-                 + "[(6-9)s:x|_2$<i>6<i>9|<>:a$<b>64<i>6<i>9<i>3<b>0|"
-                 + "<>:a$<b>64<i>6<i>15<i>5<b>0]" +
-                 "[(9-12)s:b|_3$<i>9<i>12]"
-                 + "[(12-15)s:c|_4$<i>12<i>15|<>:a$<b>64<i>12<i>15<i>5<b>0]"
-                 + "[(15-18)s:x|_5$<i>15<i>18]");
+        fd.addTV("base", "x  y  x  b  c  x  ", "[(0-3)s:x|_0$<i>0<i>3]"
+                + "[(3-6)s:y|_1$<i>3<i>6]"
+                + "[(6-9)s:x|_2$<i>6<i>9|<>:a$<b>64<i>6<i>9<i>3<b>0|"
+                + "<>:a$<b>64<i>6<i>15<i>5<b>0]" + "[(9-12)s:b|_3$<i>9<i>12]"
+                + "[(12-15)s:c|_4$<i>12<i>15|<>:a$<b>64<i>12<i>15<i>5<b>0]"
+                + "[(15-18)s:x|_5$<i>15<i>18]");
         ki.addDoc(fd);
 
         // Save documents
@@ -923,8 +922,10 @@ public class TestWithinIndex {
 
         assertEquals("totalResults", kr.getTotalResults(), 2);
 
-        assertEquals("x  y  [x  ]b  c  x  ", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("x  y  [x  b  c  ]x  ", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("x  y  [x  ]b  c  x  ", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("x  y  [x  b  c  ]x  ", kr.getMatch(1)
+                .getSnippetBrackets());
 
         assertEquals("StartPos (0)", 2, kr.getMatch(0).startPos);
         assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
@@ -1105,7 +1106,8 @@ public class TestWithinIndex {
 
 
     @Test
-    public void queryJSONcomplexSpanOrTerm () throws QueryException, IOException {
+    public void queryJSONcomplexSpanOrTerm () throws QueryException,
+            IOException {
         /*
           at org.apache.lucene.search.spans.SpanOrQuery$1.doc(SpanOrQuery.java:234)
           at de.ids_mannheim.korap.query.spans.WithinSpans.toSameDoc(WithinSpans.java:423)
@@ -1114,22 +1116,22 @@ public class TestWithinIndex {
           at de.ids_mannheim.korap.Krill.apply(Krill.java:304)
         */
 
-        String jsonPath = getClass().getResource("/queries/bugs/span_or_bug.jsonld")
-            .getFile();
+        String jsonPath = getClass().getResource(
+                "/queries/bugs/span_or_bug.jsonld").getFile();
         String jsonPQuery = readFile(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(jsonPQuery);
 
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
 
-        assertEquals("spanStartsWith(<tokens:base/s:s />, " +
-                     "spanOr([tokens:s:Er, tokens:s:Sie]))", sq.toString());
+        assertEquals("spanStartsWith(<tokens:base/s:s />, "
+                + "spanOr([tokens:s:Er, tokens:s:Sie]))", sq.toString());
 
         KrillIndex ki = new KrillIndex();
 
         ki.addDoc(getClass().getResourceAsStream("/wiki/DDD-08370.json.gz"),
-                  true);
+                true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/SSS-09803.json.gz"),
-                  true);
+                true);
         ki.commit();
         Result kr = ki.search(sq, (short) 1);
         assertEquals(1, kr.getTotalResults());

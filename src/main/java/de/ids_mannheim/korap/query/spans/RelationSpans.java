@@ -372,27 +372,33 @@ public class RelationSpans extends RelationBaseSpans {
         this.rightEnd = rightEnd;
     }
 
-    public byte getTempSourceNum() {
+
+    public byte getTempSourceNum () {
         return tempSourceNum;
     }
 
-    public void setTempSourceNum(byte tempSourceNum) {
+
+    public void setTempSourceNum (byte tempSourceNum) {
         this.tempSourceNum = tempSourceNum;
     }
 
-    public byte getTempTargetNum() {
+
+    public byte getTempTargetNum () {
         return tempTargetNum;
     }
 
-    public void setTempTargetNum(byte tempTargetNum) {
+
+    public void setTempTargetNum (byte tempTargetNum) {
         this.tempTargetNum = tempTargetNum;
     }
 
-    public int getDirection() {
+
+    public int getDirection () {
         return direction;
     }
 
-    public void setDirection(int direction) {
+
+    public void setDirection (int direction) {
         this.direction = direction;
     }
 

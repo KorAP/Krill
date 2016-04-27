@@ -244,22 +244,25 @@ public class Match extends AbstractDocument {
                     if (DEBUG)
                         log.trace(
                                 "Have a highlight of class {} in {}-{} inside of {}-{}",
-                                unsignedByte(number), start, end, this.getStartPos(),
-                                this.getEndPos());
+                                unsignedByte(number), start, end,
+                                this.getStartPos(), this.getEndPos());
 
                     // Ignore classes out of match range and set by the system
                     // TODO: This may be decidable by PTI!
-                    if (unsignedByte(number) <= 128 && start >= this.getStartPos()
+                    if (unsignedByte(number) <= 128
+                            && start >= this.getStartPos()
                             && end <= this.getEndPos()) {
 
                         if (DEBUG) {
-                            log.trace("Add highlight of class {}!", unsignedByte(number));
+                            log.trace("Add highlight of class {}!",
+                                    unsignedByte(number));
                         };
 
                         this.addHighlight(start, end - 1, number);
                     }
                     else if (DEBUG) {
-                        log.trace("Don't add highlight of class {}!", unsignedByte(number));
+                        log.trace("Don't add highlight of class {}!",
+                                unsignedByte(number));
                     };
                 }
 

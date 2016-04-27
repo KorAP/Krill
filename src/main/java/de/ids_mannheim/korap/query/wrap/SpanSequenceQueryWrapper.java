@@ -134,7 +134,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         if (DEBUG) {
             if (!sswq.isEmpty()) {
                 try {
-                    log.trace("New span sequence {}", sswq.toFragmentQuery().toString());
+                    log.trace("New span sequence {}", sswq.toFragmentQuery()
+                            .toString());
                 }
                 catch (QueryException qe) {
                     log.trace("Unable to serialize query {}", qe.getMessage());
@@ -546,8 +547,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         // Todo: This should possibly be evaluated to a query later on!
         try {
             this.constraints.add(new DistanceConstraint((SpanElementQuery) unit
-                    .retrieveNode(this.retrieveNode).toFragmentQuery(), min, max,
-                    isInOrder, exclusion));
+                    .retrieveNode(this.retrieveNode).toFragmentQuery(), min,
+                    max, isInOrder, exclusion));
         }
         catch (QueryException qe) {
             this.constraintException = qe;
@@ -636,6 +637,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             _solveProblematicSequence();
         return super.isNegative();
     };
+
 
     public boolean isExtendedToTheRight () {
         if (!this.isSolved)
@@ -943,11 +945,13 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                         problem.getClassNumber());
 
             query = new SpanExpansionQuery(anchor.retrieveNode(
-                                                               this.retrieveNode).toFragmentQuery(), problem.isOptional() ? 0 : problem.getMin(),
+                    this.retrieveNode).toFragmentQuery(),
+                    problem.isOptional() ? 0 : problem.getMin(),
                     problem.getMax(), direction,
                     problem.hasClass() ? problem.getClassNumber() : (byte) 0,
                     true);
-            SpanQueryWrapper sqw = new SpanSimpleQueryWrapper(query).isExtended(true);
+            SpanQueryWrapper sqw = new SpanSimpleQueryWrapper(query)
+                    .isExtended(true);
 
             // Set right extension
             if (direction >= 0)
@@ -972,7 +976,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     problem.hasClass() ? problem.getClassNumber() : (byte) 0,
                     true);
 
-            SpanQueryWrapper sqw = new SpanSimpleQueryWrapper(query).isExtended(true);
+            SpanQueryWrapper sqw = new SpanSimpleQueryWrapper(query)
+                    .isExtended(true);
 
             // Set right extension
             if (direction >= 0)

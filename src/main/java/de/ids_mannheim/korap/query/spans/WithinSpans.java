@@ -284,7 +284,7 @@ public class WithinSpans extends Spans {
                     this.more = true;
                     this.inSameDoc = true;
                     this.tryMatch = true;
-                    
+
                     this.nextSpanB();
                     continue;
                 }
@@ -417,7 +417,7 @@ public class WithinSpans extends Spans {
             this.inSameDoc = false;
             return false;
         };
-*/
+        */
 
         this.more = true;
         this.inSameDoc = true;
@@ -442,7 +442,7 @@ public class WithinSpans extends Spans {
             this.inSameDoc = false;
             return false;
         };
-        
+
 
         // Clear all spanStores
         if (this.wrapDoc != this.embeddedDoc) {
@@ -951,12 +951,9 @@ public class WithinSpans extends Spans {
     private byte withinCase () {
 
         if (DEBUG) {
-            log.trace(">>>>>>>>>>>>>> {}-{}|{}-{}",
-                      this.wrapStart,
-                      this.wrapSpans.end(),
-                      this.embeddedStart,
-                      this.embeddedSpans.end()
-                      );
+            log.trace(">>>>>>>>>>>>>> {}-{}|{}-{}", this.wrapStart,
+                    this.wrapSpans.end(), this.embeddedStart,
+                    this.embeddedSpans.end());
         };
 
         // case 1-5
@@ -1169,6 +1166,7 @@ public class WithinSpans extends Spans {
         public Collection<byte[]> payload;
 
         public short elementRef = -1;
+
 
         public void clear () {
             this.start = -1;

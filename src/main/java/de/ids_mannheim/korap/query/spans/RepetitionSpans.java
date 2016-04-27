@@ -38,6 +38,7 @@ public class RepetitionSpans extends SimpleSpans {
     private List<CandidateSpan> matchList;
     private List<CandidateSpan> candidates;
 
+
     /**
      * Constructs RepetitionSpans from the given
      * {@link SpanRepetitionQuery}.
@@ -139,11 +140,9 @@ public class RepetitionSpans extends SimpleSpans {
 
             if (DEBUG) {
                 log.debug("Check adjacency at {}-{}|{}-{} in {}",
-                          prevSpan.getStart(),
-                          prevSpan.getEnd(),
-                          firstSpans.start(),
-                          firstSpans.end(),
-                          startSpan.getDoc());
+                        prevSpan.getStart(), prevSpan.getEnd(),
+                        firstSpans.start(), firstSpans.end(),
+                        startSpan.getDoc());
             };
 
             if (firstSpans.start() > prevSpan.getEnd()) {
@@ -161,6 +160,7 @@ public class RepetitionSpans extends SimpleSpans {
         return adjacentSpans;
     }
 
+
     /**
      * Generates all possible repetition match spans from the given
      * list of
@@ -175,17 +175,17 @@ public class RepetitionSpans extends SimpleSpans {
             int endIndex;
             while ((endIndex = j + i - 1) < adjacentSpans.size()) {
                 startSpan = adjacentSpans.get(j);
-                
+
                 if (i == 1) {
                     try {
-                         matchSpan = startSpan.clone();
-                         matchSpan.setPayloads(computeMatchPayload(
-                                 adjacentSpans, 0, endIndex - 1));
-                         matchList.add(matchSpan);
+                        matchSpan = startSpan.clone();
+                        matchSpan.setPayloads(computeMatchPayload(
+                                adjacentSpans, 0, endIndex - 1));
+                        matchList.add(matchSpan);
                     }
                     catch (CloneNotSupportedException e) {
-                            e.printStackTrace();
-                        }
+                        e.printStackTrace();
+                    }
                 }
                 else {
                     endSpan = adjacentSpans.get(endIndex);

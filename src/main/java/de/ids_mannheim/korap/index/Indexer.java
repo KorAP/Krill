@@ -16,7 +16,8 @@ import java.nio.file.Paths;
  * this tool may be more suitable for your needs
  * (especially as it is way faster).
  * 
- * Usage: java -jar Krill-Indexer.jar [--config propfile] [directories]*
+ * Usage: java -jar Krill-Indexer.jar [--config propfile]
+ * [directories]*
  */
 public class Indexer {
     KrillIndex index;
@@ -118,19 +119,19 @@ public class Indexer {
 
         if (argv.length == 0) {
             String jar = new File(Indexer.class.getProtectionDomain()
-                                  .getCodeSource().getLocation().getPath()).getName();
-            
-            System.out.println("Add documents from a directory to the Krill index.");
+                    .getCodeSource().getLocation().getPath()).getName();
+
+            System.out
+                    .println("Add documents from a directory to the Krill index.");
             System.out.println("Usage: java -jar " + jar
-                               + " [--config propfile] [directories]*");
+                    + " [--config propfile] [directories]*");
             System.out.println();
             System.err.println("  --config|-c    Configuration file");
-            System.err.println("                 (defaults to " +
-                               de.ids_mannheim.korap.util.KrillProperties.file +
-                               ")");
+            System.err.println("                 (defaults to "
+                    + de.ids_mannheim.korap.util.KrillProperties.file + ")");
             System.err.println("  --indexDir|-d  Index directory");
-            System.err.println("                 (defaults to krill.indexDir"+
-                               " in configuration)");
+            System.err.println("                 (defaults to krill.indexDir"
+                    + " in configuration)");
             System.err.println();
             return;
         };

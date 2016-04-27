@@ -9,7 +9,7 @@ import de.ids_mannheim.korap.Krill;
 // Todo: Properties may be loaded twice - althogh Java may cache automatically
 public class KrillProperties {
 
-    public static String file  = "krill.properties";
+    public static String file = "krill.properties";
     private static String info = "krill.info";
     private static Properties prop;
 
@@ -41,12 +41,12 @@ public class KrillProperties {
         catch (IOException t) {
             try {
                 iFile = KrillProperties.class.getClassLoader()
-                    .getResourceAsStream(propFile);
+                        .getResourceAsStream(propFile);
 
                 if (iFile == null) {
                     log.warn(
-                              "Cannot find {}. Please create it using \"{}.info\" as template.",
-                              propFile, propFile);
+                            "Cannot find {}. Please create it using \"{}.info\" as template.",
+                            propFile, propFile);
                     return null;
                 };
 
@@ -67,7 +67,7 @@ public class KrillProperties {
     public static Properties loadInfo () {
         try {
             InputStream iFile = KrillProperties.class.getClassLoader()
-                .getResourceAsStream(info);
+                    .getResourceAsStream(info);
 
             if (iFile == null) {
                 log.error("Cannot find {}.", info);

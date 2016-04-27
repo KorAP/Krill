@@ -41,7 +41,8 @@ public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
         if (isNull || isEmpty)
             return null;
 
-        SpanQuery sq = subquery.retrieveNode(this.retrieveNode).toFragmentQuery();
+        SpanQuery sq = subquery.retrieveNode(this.retrieveNode)
+                .toFragmentQuery();
         if (sq == null) {
             isNull = true;
             return null;
