@@ -545,7 +545,8 @@ public class TestKrillQueryJSON {
                     "/queries/bugs/expansion_bug_3.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(kq.fromJson(json).toQuery().toString(),
+            assertEquals(
+                    kq.fromJson(json).toQuery().toString(),
                     "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:c, []{0, 4}, right)}))");
         }
         catch (QueryException e) {
@@ -558,12 +559,12 @@ public class TestKrillQueryJSON {
     public void queryJSONcomplexSpanOrTerm () throws QueryException {
         // startsWith(<base/s=s>, { lassen | laufen })
         try {
-            String json = getString(getClass().getResource("/queries/bugs/span_or_bug.jsonld").getFile());
+            String json = getString(getClass().getResource(
+                    "/queries/bugs/span_or_bug.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(
-                         kq.fromJson(json).toQuery().toString(),
-                         "spanStartsWith(<tokens:base/s:s />, spanOr([tokens:s:Er, tokens:s:Sie]))");
+            assertEquals(kq.fromJson(json).toQuery().toString(),
+                    "spanStartsWith(<tokens:base/s:s />, spanOr([tokens:s:Er, tokens:s:Sie]))");
         }
         catch (QueryException e) {
             fail(e.getMessage());

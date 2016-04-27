@@ -31,11 +31,13 @@ public class TestSpanExpansionIndex {
     Result kr;
     KrillIndex ki;
 
+
     public TestSpanExpansionIndex () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
     }
+
 
     /**
      * Left and right expansions
@@ -316,7 +318,7 @@ public class TestSpanExpansionIndex {
 
     /**
      * Query rewrite bug
-     *
+     * 
      * Warning: This is not armoured by <base/s=t>!
      * 
      * @throws IOException
@@ -332,10 +334,8 @@ public class TestSpanExpansionIndex {
         ki.commit();
 
         // See /queries/bugs/repetition_group_rewrite
-        RegexpQuery requery = new RegexpQuery(
-                                              new Term("base", "s:[ac]"),
-                                              RegExp.ALL
-                                              );
+        RegexpQuery requery = new RegexpQuery(new Term("base", "s:[ac]"),
+                RegExp.ALL);
         SpanMultiTermQueryWrapper<RegexpQuery> query = new SpanMultiTermQueryWrapper<RegexpQuery>(
                 requery);
         SpanExpansionQuery seq = new SpanExpansionQuery(query, 1, 1, 1, true);
@@ -361,7 +361,7 @@ public class TestSpanExpansionIndex {
         assertEquals(6, kr.getMatch(3).getEndPos());
         assertEquals(9, kr.getMatch(4).getStartPos());
         assertEquals(10, kr.getMatch(4).getEndPos());
-        
+
         kr = ki.search(seq, (short) 20);
         assertEquals(5, kr.getTotalResults());
         assertEquals(0, kr.getMatch(0).getStartPos());
@@ -394,7 +394,6 @@ public class TestSpanExpansionIndex {
 
 
 
-
     /**
      * Query rewrite bug
      * 
@@ -408,23 +407,24 @@ public class TestSpanExpansionIndex {
         ki.commit();
 
         String json = readFile(getClass().getResource(
-            "/queries/bugs/expansion_bug_3.jsonld").getFile()
-        );
+                "/queries/bugs/expansion_bug_3.jsonld").getFile());
         KrillQuery kq = new KrillQuery("base");
         SpanQuery sq = kq.fromJson(json).toQuery();
-        assertEquals(sq.toString(),"focus(254: spanContain(<base:base/s:t />, {254: spanExpansion(base:s:c, []{0, 4}, right)}))");
+        assertEquals(
+                sq.toString(),
+                "focus(254: spanContain(<base:base/s:t />, {254: spanExpansion(base:s:c, []{0, 4}, right)}))");
 
         kr = ki.search(sq, (short) 10);
-        assertEquals("[c]ab",kr.getMatch(0).getSnippetBrackets());
-        assertEquals("[ca]b",kr.getMatch(1).getSnippetBrackets());
-        assertEquals("[cab]",kr.getMatch(2).getSnippetBrackets());
-        assertEquals("[c]e",kr.getMatch(3).getSnippetBrackets());
+        assertEquals("[c]ab", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[ca]b", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("[cab]", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("[c]e", kr.getMatch(3).getSnippetBrackets());
 
-        assertEquals("[ce]",kr.getMatch(4).getSnippetBrackets());
+        assertEquals("[ce]", kr.getMatch(4).getSnippetBrackets());
         assertEquals(5, kr.getTotalResults());
 
         sq = kq.builder().tag("base/s:t").toQuery();
-        assertEquals(sq.toString(),"<base:base/s:t />");
+        assertEquals(sq.toString(), "<base:base/s:t />");
         kr = ki.search(sq, (short) 5);
         assertEquals("[cab]", kr.getMatch(0).getSnippetBrackets());
         assertEquals("[ce]", kr.getMatch(1).getSnippetBrackets());
@@ -433,21 +433,16 @@ public class TestSpanExpansionIndex {
 
 
 
-
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base", "ceccecdeec",
-                 "[(0-1)s:c|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>10<i>10<b>0]"
-                 + "[(1-2)s:e|_1$<i>1<i>2]"
-                 + "[(2-3)s:c|_2$<i>2<i>3]"
-                 + "[(3-4)s:c|s:d|_3$<i>3<i>4]"
-                 + "[(4-5)s:e|_4$<i>4<i>5]"
-                 + "[(5-6)s:c|_5$<i>5<i>6]"
-                 + "[(6-7)s:d|_6$<i>6<i>7]"
-                 + "[(7-8)s:e|_7$<i>7<i>8]"
-                 + "[(8-9)s:e|_8$<i>8<i>9]"
-                 + "[(9-10)s:c|_9$<i>9<i>10]");
+                "[(0-1)s:c|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>10<i>10<b>0]"
+                        + "[(1-2)s:e|_1$<i>1<i>2]" + "[(2-3)s:c|_2$<i>2<i>3]"
+                        + "[(3-4)s:c|s:d|_3$<i>3<i>4]"
+                        + "[(4-5)s:e|_4$<i>4<i>5]" + "[(5-6)s:c|_5$<i>5<i>6]"
+                        + "[(6-7)s:d|_6$<i>6<i>7]" + "[(7-8)s:e|_7$<i>7<i>8]"
+                        + "[(8-9)s:e|_8$<i>8<i>9]" + "[(9-10)s:c|_9$<i>9<i>10]");
         return fd;
     }
 
@@ -456,12 +451,10 @@ public class TestSpanExpansionIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("base", "bbccdd",
-                 "[(0-1)s:b|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>6<i>6<b>0]]"
-                 + "[(1-2)s:b|_1$<i>1<i>2]"
-                 + "[(2-3)s:c|_2$<i>2<i>3]"
-                 + "[(3-4)s:c|_3$<i>3<i>4]"
-                 + "[(4-5)s:d|_4$<i>4<i>5]"
-                 + "[(5-6)s:d|_5$<i>5<i>6]");
+                "[(0-1)s:b|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>6<i>6<b>0]]"
+                        + "[(1-2)s:b|_1$<i>1<i>2]" + "[(2-3)s:c|_2$<i>2<i>3]"
+                        + "[(3-4)s:c|_3$<i>3<i>4]" + "[(4-5)s:d|_4$<i>4<i>5]"
+                        + "[(5-6)s:d|_5$<i>5<i>6]");
         return fd;
     }
 
@@ -470,12 +463,10 @@ public class TestSpanExpansionIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV("base", "beccea",
-                 "[(0-1)s:b|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>6<i>6<b>0]]"
-                 + "[(1-2)s:e|_1$<i>1<i>2]"
-                 + "[(2-3)s:c|_2$<i>2<i>3]"
-                 + "[(3-4)s:c|_3$<i>3<i>4]"
-                 + "[(4-5)s:e|_4$<i>4<i>5]"
-                 + "[(5-6)s:a|_5$<i>5<i>6]");
+                "[(0-1)s:b|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>6<i>6<b>0]]"
+                        + "[(1-2)s:e|_1$<i>1<i>2]" + "[(2-3)s:c|_2$<i>2<i>3]"
+                        + "[(3-4)s:c|_3$<i>3<i>4]" + "[(4-5)s:e|_4$<i>4<i>5]"
+                        + "[(5-6)s:a|_5$<i>5<i>6]");
         return fd;
     }
 
@@ -484,9 +475,8 @@ public class TestSpanExpansionIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
         fd.addTV("base", "cab",
-                 "[(0-1)s:c|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0]]"
-                 + "[(1-2)s:a|_1$<i>1<i>2]"
-                 + "[(2-3)s:b|_2$<i>2<i>3]");
+                "[(0-1)s:c|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0]]"
+                        + "[(1-2)s:a|_1$<i>1<i>2]" + "[(2-3)s:b|_2$<i>2<i>3]");
         return fd;
     }
 
@@ -495,8 +485,8 @@ public class TestSpanExpansionIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
         fd.addTV("base", "ce",
-                 "[(0-1)s:c|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>2<i>2<b>0]]"
-                 + "[(1-2)s:e|_1$<i>1<i>2]");
+                "[(0-1)s:c|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>2<i>2<b>0]]"
+                        + "[(1-2)s:e|_1$<i>1<i>2]");
         return fd;
     }
 

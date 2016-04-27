@@ -37,7 +37,8 @@ public class TestSpanSequenceQueryJSON {
     @Test
     public void queryJSONseqEmptyEnd () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("empty-last.jsonld");
-        assertEquals(sqwi.toQuery().toString(),
+        assertEquals(
+                sqwi.toQuery().toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 1}, right)}))");
     };
 
@@ -46,7 +47,8 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONseqEmptyEndClass () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("empty-last-class.jsonld");
         // der{3:[]}
-        assertEquals(sqwi.toQuery().toString(),
+        assertEquals(
+                sqwi.toQuery().toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 1}, right, class:3)}))");
     };
 
@@ -55,7 +57,8 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONseqEmptyEndRepetition () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("empty-last-repetition.jsonld");
         // der[]{3,5}
-        assertEquals(sqwi.toQuery().toString(),
+        assertEquals(
+                sqwi.toQuery().toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{3, 5}, right)}))");
     };
 
@@ -127,7 +130,8 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONseqEmptySurround () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("empty-surround.jsonld");
         // [][tt/p=NN][]
-        assertEquals(sqwi.toQuery().toString(),
+        assertEquals(
+                sqwi.toQuery().toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(spanExpansion(tokens:tt/p:NN, []{1, 1}, left), []{1, 1}, right)}))");
     };
 
@@ -156,7 +160,8 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONseqEmptySurroundRepetition () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("empty-surround-repetition.jsonld");
         // [][tt/p=NN][]{2,7}
-        assertEquals(sqwi.toQuery().toString(),
+        assertEquals(
+                sqwi.toQuery().toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(spanExpansion(tokens:tt/p:NN, []{1, 1}, left), []{2, 7}, right)}))");
     };
 
@@ -165,7 +170,8 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONseqEmptySurroundRepetition2 () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("empty-surround-repetition-2.jsonld");
         // []{3,5}[tt/p=NN][]{2,7}
-        assertEquals(sqwi.toQuery().toString(),
+        assertEquals(
+                sqwi.toQuery().toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(spanExpansion(tokens:tt/p:NN, []{3, 5}, left), []{2, 7}, right)}))");
     };
 
@@ -204,7 +210,8 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONseqNegativeEnd () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("negative-last.jsonld");
         // [tt/p=NN][tt/p!=NN]
-        assertEquals(sqwi.toQuery().toString(),
+        assertEquals(
+                sqwi.toQuery().toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{1, 1}, right)}))");
     };
 
@@ -240,7 +247,8 @@ public class TestSpanSequenceQueryJSON {
         SpanQueryWrapper sqwi = jsonQueryFile("negative-last-class.jsonld");
         // [tt/p=NN]{2:[tt/p!=NN]}
         SpanQuery sq = sqwi.toQuery();
-        assertEquals(sq.toString(),
+        assertEquals(
+                sq.toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{1, 1}, right, class:2)}))");
     };
 
@@ -249,7 +257,8 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONseqNegativeEndRepetitionClass () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("negative-last-class-repetition.jsonld");
         // [tt/p=NN]{2:[tt/p!=NN]{4,5}}
-        assertEquals(sqwi.toQuery().toString(),
+        assertEquals(
+                sqwi.toQuery().toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{4, 5}, right, class:2)}))");
     };
 
@@ -259,7 +268,8 @@ public class TestSpanSequenceQueryJSON {
             throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile("negative-last-class-repetition-2.jsonld");
         // [tt/p=NN]{2:[tt/p!=NN]}{4,5}
-        assertEquals(sqwi.toQuery().toString(),
+        assertEquals(
+                sqwi.toQuery().toString(),
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:tt/p:NN, !tokens:tt/p:NN{4, 5}, right, class:2)}))");
     };
 

@@ -308,8 +308,11 @@ public class TestKrillQuery {
     @Test
     public void KorapSequenceWithEmptyRepetitionQuery () throws QueryException {
         QueryBuilder kq = new QueryBuilder("field");
-        SpanQuery sq = kq.seq(kq.seg("try")).append(kq.repeat(kq.empty(),0,100)).toQuery();
-        assertEquals("focus(254: spanContain(<field:base/s:t />, {254: spanExpansion(field:try, []{0, 100}, right)}))",sq.toString());
+        SpanQuery sq = kq.seq(kq.seg("try"))
+                .append(kq.repeat(kq.empty(), 0, 100)).toQuery();
+        assertEquals(
+                "focus(254: spanContain(<field:base/s:t />, {254: spanExpansion(field:try, []{0, 100}, right)}))",
+                sq.toString());
     };
 
 

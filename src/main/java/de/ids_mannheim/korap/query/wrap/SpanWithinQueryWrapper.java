@@ -88,6 +88,7 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
             this.isNull = false;
     };
 
+
     @Override
     public SpanQuery toFragmentQuery () throws QueryException {
         if (this.isNull)
@@ -96,8 +97,8 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
         // TODO: if (wrap.isNegative())
 
         return new SpanWithinQuery(this.element.retrieveNode(this.retrieveNode)
-                .toFragmentQuery(),
-                this.wrap.retrieveNode(this.retrieveNode).toFragmentQuery(), this.flag);
+                .toFragmentQuery(), this.wrap.retrieveNode(this.retrieveNode)
+                .toFragmentQuery(), this.flag);
     };
 
 

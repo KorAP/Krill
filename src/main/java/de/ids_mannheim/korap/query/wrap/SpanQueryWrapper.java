@@ -66,15 +66,14 @@ public class SpanQueryWrapper {
 
         // Wrap the query in a <base/s=t>, if it's extended to the right
         if (this.isExtendedToTheRight()) {
-            return new SpanFocusQuery(
-                new SpanWithinQuery(
-                    "base/s:t",
-                    new SpanClassQuery(this.toFragmentQuery(), (byte) 254)), (byte) 254
-            );
+            return new SpanFocusQuery(new SpanWithinQuery("base/s:t",
+                    new SpanClassQuery(this.toFragmentQuery(), (byte) 254)),
+                    (byte) 254);
         };
 
         return this.toFragmentQuery();
     };
+
 
     /**
      * Boolean value indicating that the wrapped query

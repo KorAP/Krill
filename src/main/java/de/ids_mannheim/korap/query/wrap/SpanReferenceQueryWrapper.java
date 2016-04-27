@@ -40,7 +40,8 @@ public class SpanReferenceQueryWrapper extends SpanQueryWrapper {
             return null;
         }
 
-        SpanQuery sq = subQuery.retrieveNode(this.retrieveNode).toFragmentQuery();
+        SpanQuery sq = subQuery.retrieveNode(this.retrieveNode)
+                .toFragmentQuery();
         if (sq == null)
             return null;
 

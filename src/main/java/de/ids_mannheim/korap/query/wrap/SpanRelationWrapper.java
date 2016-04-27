@@ -54,7 +54,8 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         if (subQuery1.isEmpty) {
             if (!subQuery2.isEmpty) {
                 // match target
-                subq2 = subQuery2.retrieveNode(this.retrieveNode).toFragmentQuery();
+                subq2 = subQuery2.retrieveNode(this.retrieveNode)
+                        .toFragmentQuery();
                 if (subQuery1.hasClass) {
                     rq.setSourceClass(subQuery1.getClassNumber());
                 }
@@ -65,7 +66,8 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         else if (subQuery2.isEmpty) {
             if (!subQuery1.isEmpty) {
                 // match source
-                subq1 = subQuery1.retrieveNode(this.retrieveNode).toFragmentQuery();
+                subq1 = subQuery1.retrieveNode(this.retrieveNode)
+                        .toFragmentQuery();
                 if (subQuery2.hasClass) {
                     rq.setTargetClass(subQuery2.getClassNumber());
                 }

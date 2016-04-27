@@ -69,7 +69,7 @@ public class KrillByte {
      * 
      * @param data
      *            The byte.
-     */ 
+     */
     public static int unsignedByte (byte data) {
         return (int) data & 0xFF;
     };

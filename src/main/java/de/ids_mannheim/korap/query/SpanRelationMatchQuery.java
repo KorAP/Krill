@@ -49,7 +49,7 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
                     operandQuery, true), relation.getTempTargetNum());
             sq.setSorted(false);
             sq.setMatchTemporaryClass(true);
-            
+
             sq2 = new SpanFocusQuery(new SpanSegmentQuery(operand2Query, sq,
                     true), relation.getTempClassNumbers());
         }
@@ -58,11 +58,11 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
             sq = new SpanFocusQuery(new SpanSegmentQuery(relationQuery,
                     operandQuery, true), relation.getTempSourceNum());
             sq.setMatchTemporaryClass(true);
-            
-            sq2 = new SpanFocusQuery(new SpanSegmentQuery(sq,
-                    operand2Query, true), relation.getTempClassNumbers());
+
+            sq2 = new SpanFocusQuery(new SpanSegmentQuery(sq, operand2Query,
+                    true), relation.getTempClassNumbers());
         }
-        
+
         sq2.setMatchTemporaryClass(true);
         sq2.setRemoveTemporaryClasses(true);
         sq2.setSorted(false);
@@ -91,7 +91,8 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
         this.operandQuery = operand;
     }
 
-    public void checkVariables(SpanRelationQuery relation, SpanQuery operand,
+
+    public void checkVariables (SpanRelationQuery relation, SpanQuery operand,
             SpanQuery target) {
         checkVariables(relation, operand);
         if (target == null) {

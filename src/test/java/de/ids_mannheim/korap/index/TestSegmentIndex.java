@@ -175,6 +175,7 @@ public class TestSegmentIndex {
         assertEquals("EndPos (0)", 2, kr.getMatch(1).endPos);
     }
 
+
     private FieldDocument createFieldDoc0 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-0");

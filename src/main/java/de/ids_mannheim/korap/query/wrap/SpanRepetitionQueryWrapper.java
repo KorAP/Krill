@@ -97,7 +97,8 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
 
         // The query is not a repetition query at all, but may be optional
         if (this.min == 1 && this.max == 1)
-            return this.subquery.retrieveNode(this.retrieveNode).toFragmentQuery();
+            return this.subquery.retrieveNode(this.retrieveNode)
+                    .toFragmentQuery();
 
         // That's a fine repetition query
         return new SpanRepetitionQuery(this.subquery.retrieveNode(

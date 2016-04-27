@@ -32,11 +32,13 @@ import de.ids_mannheim.korap.query.spans.SpansWithAttribute;
  * <br/>
  * 
  * <pre>
- * SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(new Term(
- *         &quot;tokens&quot;, &quot;@:class=header&quot;)), true);
+ * SpanAttributeQuery saq = new SpanAttributeQuery(new
+ * SpanTermQuery(new Term(
+ * &quot;tokens&quot;, &quot;@:class=header&quot;)), true);
  * <br/>
- * SpanWithAttributeQuery sq = new SpanWithAttributeQuery(new SpanElementQuery(
- *         &quot;tokens&quot;, &quot;div&quot;), saq, true);
+ * SpanWithAttributeQuery sq = new SpanWithAttributeQuery(new
+ * SpanElementQuery(
+ * &quot;tokens&quot;, &quot;div&quot;), saq, true);
  * </pre>
  * 
  * 

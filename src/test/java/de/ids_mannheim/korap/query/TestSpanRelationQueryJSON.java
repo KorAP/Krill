@@ -12,7 +12,8 @@ import de.ids_mannheim.korap.util.QueryException;
 public class TestSpanRelationQueryJSON {
 
     @Test
-    public void testMatchAnyRelationSourceWithAttribute() throws QueryException {
+    public void testMatchAnyRelationSourceWithAttribute ()
+            throws QueryException {
         String filepath = getClass().getResource(
                 "/queries/relation/any-source-with-attribute.json").getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
@@ -25,8 +26,10 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testMatchAnyRelationTargetWithAttribute() throws QueryException {
+    public void testMatchAnyRelationTargetWithAttribute ()
+            throws QueryException {
         String filepath = getClass().getResource(
                 "/queries/relation/any-target-with-attribute.json").getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
@@ -36,16 +39,16 @@ public class TestSpanRelationQueryJSON {
         // +
         // "<tokens:c:vp />)), spanWithAttribute(spanAttribute(tokens:type:case:accusative))))",
         //
-                "focus(#[1,2]spanSegment(spanWithAttribute(spanAttribute(tokens:type:case:accusative)), " +
-                "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
-                        + "<tokens:c:vp />))))",
-                sq.toString());
+                "focus(#[1,2]spanSegment(spanWithAttribute(spanAttribute(tokens:type:case:accusative)), "
+                        + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
+                        + "<tokens:c:vp />))))", sq.toString());
 
         // System.out.println(sq.toString());
     }
 
+
     @Test
-    public void testMatchSpecificRelationSourceWithAttribute()
+    public void testMatchSpecificRelationSourceWithAttribute ()
             throws QueryException {
         String filepath = getClass().getResource(
                 "/queries/relation/specific-source-with-attribute.json")
@@ -60,8 +63,9 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+
     @Test
-    public void testMatchBothRelationNodeWithAttribute() throws QueryException {
+    public void testMatchBothRelationNodeWithAttribute () throws QueryException {
         String filepath = getClass().getResource(
                 "/queries/relation/both-operands-with-attribute.json")
                 .getFile();
@@ -75,6 +79,7 @@ public class TestSpanRelationQueryJSON {
                         + "spanAttribute(tokens:type:case:accusative))))))",
                 sq.toString());
     }
+
 
     @Test
     public void testMatchRelationSource () throws QueryException {

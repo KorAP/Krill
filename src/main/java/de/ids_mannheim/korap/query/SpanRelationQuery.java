@@ -23,7 +23,8 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  * prefix "<" or
  * ">". The direction of the angle bracket represents the direction of
  * the
- * corresponding relation. By default, the relation is set ">". <br/><br/>
+ * corresponding relation. By default, the relation is set ">".
+ * <br/><br/>
  * 
  * This class provides two types of query:
  * <ol>
