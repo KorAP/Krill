@@ -65,8 +65,7 @@ import java.nio.ByteBuffer;
  * </pre></blockquote>
  * 
  * <p>Properties can be stored in a properies file called
- * <tt>krill.properties</tt>. Relevant properties are
- * <tt>krill.version</tt> and <tt>krill.name</tt>.</p>
+ * <tt>krill.properties</tt>.
  * 
  * @author diewald
  */
@@ -145,16 +144,21 @@ public final class KrillIndex {
 
     // Some initializations ...
     {
-        Properties prop    = loadProperties();
-        Properties version = loadInfo();
-        this.version = version.getProperty("krill.version");
-        this.name = version.getProperty("krill.name");
+        Properties prop = loadProperties();
+        Properties info = loadInfo();
+        if (info != null) {
+            this.version = info.getProperty("krill.version");
+            this.name = info.getProperty("krill.name");
+        };
 
         // Check for auto commit value
-        String stringProp = prop.getProperty("krill.index.commit.auto");
-        if (stringProp != null) {
+        String autoCommitStr = null;
+        if (prop != null)
+            autoCommitStr = prop.getProperty("krill.index.commit.auto");
+
+        if (autoCommitStr != null) {
             try {
-                this.autoCommit = Integer.parseInt(stringProp);
+                this.autoCommit = Integer.parseInt(autoCommitStr);
             }
             catch (NumberFormatException e) {
                 log.error("krill.index.commit.auto expected to be a numerical value");
