@@ -309,14 +309,14 @@
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
 	<includes>
-	  <include>krill.properties</include>
+	  <include>krill.info</include>
 	</includes>
       </resource>
       <resource>
         <directory>src/main/resources</directory>
         <filtering>false</filtering>
 	<excludes>
-	  <exclude>krill.properties</exclude>
+	  <exclude>krill.info</exclude>
 	</excludes>
       </resource>
     </resources> 

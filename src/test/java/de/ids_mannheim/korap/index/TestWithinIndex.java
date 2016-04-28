@@ -16,8 +16,10 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
@@ -1055,14 +1057,14 @@ public class TestWithinIndex {
 
     /** SpanElementQueries */
     @Test
-    public void indexExample8 () throws IOException {
+    public void indexExample8 () throws QueryException, IOException {
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         // <a>xx <e>hi j <e>hi j</e></e></a>
         fd.addTV(
                 "base",
                 "xx hi j hi j",
-                "[(0-1)s:x|i:x|_0$<i>0<i>1|<>:a$<b>64<i>1<i>12<i>8<b>0]"
+                "[(0-1)s:x|i:x|_0$<i>0<i>1|<>:a$<b>64<i>0<i>12<i>8<b>0]"
                         + "[(1-2)s:x|i:x|_1$<i>1<i>2]"
                         + "[(3-4)s:h|i:h|_2$<i>3<i>4|<>:e$<b>64<i>3<i>12<i>8<b>0]"
                         + "[(4-5)s:i|i:i|_3$<i>4<i>5]"
@@ -1071,8 +1073,30 @@ public class TestWithinIndex {
                         + "[(9-10)s:i|i:i|_6$<i>9<i>10]"
                         + "[(11-12)s:j|i:j|_7$<i>11<i>12]");
         ki.addDoc(fd);
+        ki.commit();
 
-        // TODO!!
+        assertEquals(1, ki.numberOf("documents"));
+
+        QueryBuilder qb = new KrillQuery("base").builder();
+        SpanQueryWrapper sqw = qb.seg("i:x");
+        Result kr = ki.search(sqw.toQuery(), (short) 10);
+        assertEquals(2, kr.getTotalResults());
+
+        sqw = qb.tag("a");
+        kr = ki.search(sqw.toQuery(), (short) 10);
+        assertEquals(1, kr.getTotalResults());
+
+        sqw = qb.startswith(qb.tag("a"), qb.seg("i:x"));
+        assertEquals("spanStartsWith(<base:a />, base:i:x)",
+                     sqw.toQuery().toString());
+        kr = ki.search(sqw.toQuery(), (short) 10);
+        assertEquals(1, kr.getTotalResults());
+
+        sqw = qb.startswith(qb.tag("e"), qb.seg("i:h"));
+        assertEquals("spanStartsWith(<base:e />, base:i:h)",
+                     sqw.toQuery().toString());
+        kr = ki.search(sqw.toQuery(), (short) 10);
+        assertEquals(2, kr.getTotalResults());
     };
 
 

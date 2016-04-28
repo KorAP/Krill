@@ -118,7 +118,7 @@ public final class KrillIndex {
     // TODO: Use configuration instead.
     // Last line of defense against DOS
     private int autoCommit = 500;
-    private String version = "unknown";
+    private String version = "Unknown";
     private String name = "Unknown";
 
     // Temp:

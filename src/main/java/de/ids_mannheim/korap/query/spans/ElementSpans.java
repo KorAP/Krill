@@ -77,12 +77,17 @@ public final class ElementSpans extends SimpleSpans {
         super(spanElementQuery, context, acceptDocs, termContexts);
         termSpans = (TermSpans) this.firstSpans;
         hasMoreSpans = true;
-        // termSpans.next();
+        if (DEBUG)
+            log.trace("Create ElementSpan");
     };
 
 
     @Override
     public boolean next () throws IOException {
+
+        if (DEBUG)
+            log.trace("Next element span for element");
+
         if (!hasMoreSpans || !(hasMoreSpans = termSpans.next()))
             return false;
 
@@ -94,8 +99,6 @@ public final class ElementSpans extends SimpleSpans {
 
 
     private boolean advance () throws IOException {
-
-
         this.matchStartPosition = termSpans.start();
         this.matchDocNumber = termSpans.doc();
         isPayloadLoaded = false;
