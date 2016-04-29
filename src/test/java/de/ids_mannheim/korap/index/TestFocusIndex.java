@@ -39,6 +39,7 @@ public class TestFocusIndex {
         SpanNextQuery snq = new SpanNextQuery(stq, sfq);
 
         kr = ki.search(snq, (short) 20);
+
         for (Match m : kr.getMatches()) {
             System.out.println(m.getStartPos() + " " + m.getEndPos());
         }
