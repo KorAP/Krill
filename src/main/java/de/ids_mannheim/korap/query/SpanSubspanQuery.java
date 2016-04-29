@@ -34,8 +34,7 @@ import de.ids_mannheim.korap.query.spans.SubSpans;
  * 
  * In this example, the SpanSubspanQuery creates subspans, that are
  * the first
- * two tokens of all sentences. It also collects all payloads from the
- * {@link ElementSpans} for the SubSpans.
+ * two tokens of all sentences.
  * 
  * @author margaretha
  * */
