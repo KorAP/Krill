@@ -231,7 +231,7 @@ public class FocusSpans extends SimpleSpans {
             }
 
             // Remove span elements
-            else if (payload[0] == (byte) 64) {
+            else if ((payload[0] & (byte) 64) != 0) {
                 continue;
             };
 

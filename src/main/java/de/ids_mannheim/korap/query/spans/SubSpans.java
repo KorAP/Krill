@@ -123,10 +123,9 @@ public class SubSpans extends SimpleSpans {
 
         // Remove element payloads
         for (byte[] payload : firstSpans.getPayload()) {
-            if (payload[0] == (byte) 64) {
+            if ((payload[0] & ((byte) 64)) != 0) {
                 continue;
             };
-            
             matchPayload.add(payload.clone());
         };
 
