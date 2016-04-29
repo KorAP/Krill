@@ -162,6 +162,7 @@ public class WithinSpans extends Spans {
         while (this.more && (wrapDoc == embeddedDoc ||
         // this.inSameDoc ||
                 this.toSameDoc())) {
+
             if (DEBUG)
                 log.trace("We are in the same doc: {}, {}", wrapDoc,
                         embeddedDoc);
@@ -219,6 +220,8 @@ public class WithinSpans extends Spans {
 
                     // Forward with embedding
                     if (!this.embeddedSpans.next()) {
+
+                        // TODO: May need storeEmpdedded
                         this.nextSpanA();
                         continue;
                     }
@@ -235,7 +238,7 @@ public class WithinSpans extends Spans {
                     if (this.embeddedDoc != this.wrapDoc) {
 
                         if (DEBUG) {
-                            log.trace("Embedded span is in a new document {}",
+                            log.trace("(A) Embedded span is in a new document {}",
                                     _currentEmbedded().toString());
                             log.trace("Reset current embedded doc");
                         };
@@ -263,6 +266,12 @@ public class WithinSpans extends Spans {
                                 _currentEmbedded().toString());
 
                     if (this.embeddedDoc != this.wrapDoc) {
+
+                        if (DEBUG) {
+                            log.trace("(B) Embedded span is in a new document {}",
+                                    _currentEmbedded().toString());
+                            log.trace("Reset current embedded doc");
+                        };
 
                         // Is this always a good idea?
                         /*
@@ -658,7 +667,7 @@ public class WithinSpans extends Spans {
 
     // Check if the current span constellation does match
     // Store backtracking relevant data and say, how to proceed
-    private boolean doesMatch () {
+    private boolean doesMatch () throws IOException {
         if (DEBUG)
             log.trace("In the match test branch");
 
@@ -690,8 +699,14 @@ public class WithinSpans extends Spans {
         else if (this.wrapStart < this.embeddedStart) {
             // Can't match for sw and m and will always
             // lead to next_a
+
             if (flag >= STARTSWITH) {
+                if (DEBUG)
+                    log.trace("Shortcut for lazy loading");
+
+                this.storeEmbedded();
                 this.nextSpanA();
+                
                 if (DEBUG)
                     _logCurrentCase((byte) 15);
                 return false;
@@ -846,6 +861,10 @@ public class WithinSpans extends Spans {
 
 
     private void todo (byte currentCase) throws IOException {
+        if (DEBUG) {
+            log.trace("Check what to do next ...");
+        };
+
         /*
           Check what to do next with the spans.
           
@@ -881,6 +900,9 @@ public class WithinSpans extends Spans {
                 this.nextSpanB();
             }
             else if (this.flag >= STARTSWITH) {
+
+                // TODO: May need storeEmbedded
+
                 this.nextSpanA();
             }
             else {
@@ -903,6 +925,7 @@ public class WithinSpans extends Spans {
                     // Case 9, 10
                     (currentCase >= (byte) 9 && this.flag >= STARTSWITH)) {
 
+                // TODO: May need storeEmbedded
                 this.nextSpanA();
             }
             else {

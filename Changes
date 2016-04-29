@@ -1,8 +1,9 @@
-0.55.5 2016-04-26
+0.55.5 2016-04-29
 	- [performance] Changed to a dynamic window for sorting in FocusSpans (margaretha)
-0.55.5 2016-04-25
 	- [bugfix] store skipped spans in Repetitionspans as candidates
 	  (margaretha)
+	- [bugfix] Store lazy loading embedded spans for startsWith in
+	  WithinSpans (diewald)
 
 0.55.4 2016-04-22
 	- [bugfix] Wrap <base/s=t> boundaries around right extended queries

@@ -1075,11 +1075,15 @@ public class TestWithinIndex {
         ki.addDoc(fd);
         ki.commit();
 
+
         assertEquals(1, ki.numberOf("documents"));
 
         QueryBuilder qb = new KrillQuery("base").builder();
-        SpanQueryWrapper sqw = qb.seg("i:x");
-        Result kr = ki.search(sqw.toQuery(), (short) 10);
+        SpanQueryWrapper sqw;
+        Result kr;
+        /*
+        sqw = qb.seg("i:x");
+        kr = ki.search(sqw.toQuery(), (short) 10);
         assertEquals(2, kr.getTotalResults());
 
         sqw = qb.tag("a");
@@ -1091,7 +1095,7 @@ public class TestWithinIndex {
                      sqw.toQuery().toString());
         kr = ki.search(sqw.toQuery(), (short) 10);
         assertEquals(1, kr.getTotalResults());
-
+        */
         sqw = qb.startswith(qb.tag("e"), qb.seg("i:h"));
         assertEquals("spanStartsWith(<base:e />, base:i:h)",
                      sqw.toQuery().toString());
