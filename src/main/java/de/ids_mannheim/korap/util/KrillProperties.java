@@ -9,9 +9,9 @@ import de.ids_mannheim.korap.Krill;
 // Todo: Properties may be loaded twice - althogh Java may cache automatically
 public class KrillProperties {
 
-    public static String file = "krill.properties";
-    private static String info = "krill.info";
-    private static Properties prop;
+    public static String propStr = "krill.properties";
+    private static String infoStr = "krill.info";
+    private static Properties prop, info;
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Krill.class);
@@ -22,7 +22,7 @@ public class KrillProperties {
         if (prop != null)
             return prop;
 
-        prop = loadProperties(file);
+        prop = loadProperties(propStr);
         return prop;
     };
 
@@ -66,22 +66,22 @@ public class KrillProperties {
     // Load version info from file
     public static Properties loadInfo () {
         try {
+            info = new Properties();
             InputStream iFile = KrillProperties.class.getClassLoader()
-                    .getResourceAsStream(info);
+                    .getResourceAsStream(infoStr);
 
             if (iFile == null) {
-                log.error("Cannot find {}.", info);
+                log.error("Cannot find {}.", infoStr);
                 return null;
             };
 
-            Properties prop = new Properties();
-            prop.load(iFile);
+            info.load(iFile);
             iFile.close();
         }
         catch (IOException e) {
             log.error(e.getLocalizedMessage());
             return null;
         };
-        return prop;
+        return info;
     };
 };

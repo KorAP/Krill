@@ -128,7 +128,7 @@ public class Indexer {
             System.out.println();
             System.err.println("  --config|-c    Configuration file");
             System.err.println("                 (defaults to "
-                    + de.ids_mannheim.korap.util.KrillProperties.file + ")");
+                    + de.ids_mannheim.korap.util.KrillProperties.propStr + ")");
             System.err.println("  --indexDir|-d  Index directory");
             System.err.println("                 (defaults to krill.indexDir"
                     + " in configuration)");
