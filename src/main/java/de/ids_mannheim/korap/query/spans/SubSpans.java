@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.ArrayList;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
@@ -10,6 +11,9 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SpanSubspanQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Enumeration of SubSpans, which are parts of another Spans. The
  * SubSpans are specified with a start offset relative to the original
@@ -17,12 +21,18 @@ import de.ids_mannheim.korap.query.SpanSubspanQuery;
  * position of the subspans is the same as that of the original spans.
  * 
  * @author margaretha
+ * @author diewald
  * 
  */
 public class SubSpans extends SimpleSpans {
 
-    private int startOffset, length;
+    // Logger
+    private final Logger log = LoggerFactory.getLogger(SubSpans.class);
 
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
+    private int startOffset, length;
 
     /**
      * Constructs SubSpans for the given {@link SpanSubspanQuery}
@@ -41,6 +51,11 @@ public class SubSpans extends SimpleSpans {
         super(subspanQuery, context, acceptDocs, termContexts);
         this.startOffset = subspanQuery.getStartOffset();
         this.length = subspanQuery.getLength();
+        this.matchPayload = new ArrayList<byte[]>(6);
+
+        if (DEBUG) {
+            log.trace("Init SubSpan at {} with length {}", this.startOffset, this.length);
+        };
         hasMoreSpans = firstSpans.next();
     }
 
@@ -77,12 +92,15 @@ public class SubSpans extends SimpleSpans {
      * @throws IOException
      */
     public boolean findMatch () throws IOException {
+
+        // Check at span ending
         if (this.startOffset < 0) {
             matchStartPosition = firstSpans.end() + startOffset;
             if (matchStartPosition < firstSpans.start()) {
                 matchStartPosition = firstSpans.start();
-            }
+            };
         }
+        // Check at span beginning
         else {
             matchStartPosition = firstSpans.start() + startOffset;
             if (matchStartPosition >= firstSpans.end()) {
@@ -90,6 +108,7 @@ public class SubSpans extends SimpleSpans {
             }
         }
 
+        // Find end position of span
         if (this.length > 0) {
             matchEndPosition = matchStartPosition + this.length;
             if (matchEndPosition > firstSpans.end()) {
@@ -99,8 +118,27 @@ public class SubSpans extends SimpleSpans {
         else {
             matchEndPosition = firstSpans.end();
         }
-        matchPayload = firstSpans.getPayload();
+
+        matchPayload.clear();
+
+        // Remove element payloads
+        for (byte[] payload : firstSpans.getPayload()) {
+            if (payload[0] == (byte) 64) {
+                continue;
+            };
+            
+            matchPayload.add(payload.clone());
+        };
+
         matchDocNumber = firstSpans.doc();
+
+        if (DEBUG) {
+            log.trace("Start at absolute position {} " +
+                      "and end at absolute position {}",
+                      matchStartPosition,
+                      matchEndPosition);
+        };
+
         return true;
     }
 
