@@ -141,13 +141,21 @@ public class TestSubSpanIndex {
         ki.commit();
         SpanSubspanQuery ssq = new SpanSubspanQuery(new SpanElementQuery("base", "x"), -1, 1, true);
         kr = ki.search(ssq, (short) 10);
-        
+
+        /*        
         for (Match km : kr.getMatches()) {
             System.out.println(km.getStartPos() + "," + km.getEndPos()
                     + km.getSnippetBrackets());
         }
+        */
+
         assertEquals(2, kr.getTotalResults());
+        assertEquals(1, kr.getMatch(0).getStartPos());
+        assertEquals(2, kr.getMatch(0).getEndPos());
         assertEquals("a [b ]c ", kr.getMatch(0).getSnippetBrackets());
+
+        assertEquals(2, kr.getMatch(1).getStartPos());
+        assertEquals(3, kr.getMatch(1).getEndPos());
         assertEquals("a b [c ]", kr.getMatch(1).getSnippetBrackets());
     };
 };

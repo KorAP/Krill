@@ -15,6 +15,8 @@ import de.ids_mannheim.korap.query.SpanSubspanQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// Todo: Sort candidate spans only for negative start offsets!
+
 /**
  * Enumeration of SubSpans, which are parts of another Spans. The
  * SubSpans are specified with a start offset relative to the original
@@ -158,7 +160,8 @@ public class SubSpans extends SimpleSpans {
             cs.setEnd(firstSpans.end());
         }
 
-        // matchPayload.clear();
+        // Claer payloads of candidatespan
+        cs.getPayloads().clear();
 
         // Remove element payloads
         for (byte[] payload : firstSpans.getPayload()) {
