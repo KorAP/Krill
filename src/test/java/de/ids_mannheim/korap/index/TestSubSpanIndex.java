@@ -9,10 +9,13 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.DistanceConstraint;
+import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanSubspanQuery;
 
 /*
@@ -139,6 +142,10 @@ public class TestSubSpanIndex {
         SpanSubspanQuery ssq = new SpanSubspanQuery(new SpanElementQuery("base", "x"), -1, 1, true);
         kr = ki.search(ssq, (short) 10);
         
+        for (Match km : kr.getMatches()) {
+            System.out.println(km.getStartPos() + "," + km.getEndPos()
+                    + km.getSnippetBrackets());
+        }
         assertEquals(2, kr.getTotalResults());
         assertEquals("a [b ]c ", kr.getMatch(0).getSnippetBrackets());
         assertEquals("a b [c ]", kr.getMatch(1).getSnippetBrackets());

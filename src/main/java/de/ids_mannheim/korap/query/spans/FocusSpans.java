@@ -54,12 +54,12 @@ public class FocusSpans extends SimpleSpans {
 
     private boolean isSorted, matchTemporaryClass, removeTemporaryClasses;
     // private List<CandidateSpan> candidateSpans;
-    private int windowSize = 10;
+    private int windowSize;
     private int currentDoc;
     private int prevStart;
     private int prevDoc;
     private PriorityQueue<CandidateSpan> candidates;
-    private FocusSpanComparator comparator;
+    private CandidateSpanComparator comparator;
 
     /**
      * Construct a FocusSpan for the given {@link SpanQuery}.
@@ -86,10 +86,11 @@ public class FocusSpans extends SimpleSpans {
                     "At least one class number must be specified.");
         }
         classNumbers = query.getClassNumbers();
+        windowSize = query.getWindowSize();
         isSorted = query.isSorted();
         matchTemporaryClass = query.matchTemporaryClass();
         removeTemporaryClasses = query.removeTemporaryClasses();
-        // candidateSpans = new ArrayList<CandidateSpan>();
+
         candidates = new PriorityQueue<>(windowSize, comparator);
         hasMoreSpans = firstSpans.next();
         currentDoc = firstSpans.doc();
@@ -284,28 +285,4 @@ public class FocusSpans extends SimpleSpans {
     public long cost () {
         return firstSpans.cost();
     };
-    
-    class FocusSpanComparator implements Comparator<CandidateSpan> {
-
-        @Override
-        public int compare(CandidateSpan o1, CandidateSpan o2) {
-            if (o1.doc == o2.doc) {
-                if (o1.getStart() == o2.getStart()) {
-                    if (o1.getEnd() == o2.getEnd()) return 0;
-                    if (o1.getEnd() > o2.getEnd())
-                        return 1;
-                    else
-                        return -1;
-                }
-                else if (o1.getStart() < o2.getStart())
-                    return -1;
-                else
-                    return 1;
-            }
-            else if (o1.doc < o2.doc)
-                return -1;
-            else
-                return 1;
-        }
-    }
 };
