@@ -1,4 +1,4 @@
-0.55.5 2016-04-29
+0.55.5 2016-05-02
 	- [performance] Changed to a dynamic window for sorting in FocusSpans (margaretha)
 	- [bugfix] store skipped spans in Repetitionspans as candidates
 	  (margaretha)
