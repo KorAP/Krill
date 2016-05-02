@@ -10,7 +10,6 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
-import de.ids_mannheim.korap.query.spans.ElementSpans;
 import de.ids_mannheim.korap.query.spans.SubSpans;
 
 /**
@@ -41,6 +40,7 @@ import de.ids_mannheim.korap.query.spans.SubSpans;
 public class SpanSubspanQuery extends SimpleSpanQuery {
 
     private int startOffset, length;
+    private int windowSize = 10;
 
 
     /**
@@ -137,5 +137,14 @@ public class SpanSubspanQuery extends SimpleSpanQuery {
      */
     public void setLength (int length) {
         this.length = length;
+    }
+
+
+    public int getWindowSize() {
+        return windowSize;
+    }
+
+    public void setWindowSize(int windowSize) {
+        this.windowSize = windowSize;
     }
 }
