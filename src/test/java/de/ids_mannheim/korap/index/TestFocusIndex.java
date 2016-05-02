@@ -1,5 +1,8 @@
 package de.ids_mannheim.korap.index;
 
+
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
 import org.apache.lucene.index.Term;
@@ -40,8 +43,12 @@ public class TestFocusIndex {
 
         kr = ki.search(snq, (short) 20);
 
-        for (Match m : kr.getMatches()) {
-            System.out.println(m.getStartPos() + " " + m.getEndPos());
-        }
+		assertEquals(0, kr.getMatch(0).getStartPos());
+		assertEquals(2, kr.getMatch(0).getEndPos());
+		assertEquals(5, kr.getMatch(1).getStartPos());
+		assertEquals(9, kr.getMatch(1).getEndPos());
+		// for (Match m : kr.getMatches()) {
+		// System.out.println(m.getStartPos() + " " + m.getEndPos());
+		// }
     }
 }
