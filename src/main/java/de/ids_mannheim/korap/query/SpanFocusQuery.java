@@ -37,7 +37,7 @@ public class SpanFocusQuery extends SimpleSpanQuery {
     private boolean isSorted = true;
     private boolean matchTemporaryClass = false;
     private boolean removeTemporaryClasses = false;
-
+    private int windowSize = 10;
 
     /**
      * Construct a new SpanFocusQuery.
@@ -59,7 +59,6 @@ public class SpanFocusQuery extends SimpleSpanQuery {
         super(sq, true);
         this.classNumbers = classNumbers;
     };
-
 
     /**
      * Construct a new SpanFocusQuery. The class to focus on defaults
@@ -207,6 +206,16 @@ public class SpanFocusQuery extends SimpleSpanQuery {
 
     public void setRemoveTemporaryClasses (boolean rem) {
         this.removeTemporaryClasses = rem;
+    }
+
+
+    public int getWindowSize() {
+        return windowSize;
+    }
+
+
+    public void setWindowSize(int windowSize) {
+        this.windowSize = windowSize;
     }
 
 };

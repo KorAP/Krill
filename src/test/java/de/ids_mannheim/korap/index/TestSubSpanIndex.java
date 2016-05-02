@@ -9,23 +9,29 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.query.DistanceConstraint;
+import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
+import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanSubspanQuery;
 
+/*
+ * @author margaretha
+ * @author diewald
+ */
 public class TestSubSpanIndex {
 
     Result kr;
     KrillIndex ki;
-
 
     public TestSubSpanIndex () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
     }
-
 
     @Test
     public void testCase1 () throws IOException {
@@ -118,4 +124,38 @@ public class TestSubSpanIndex {
         // }
     }
 
-}
+    // Negative SubSpanQuery
+    @Test
+    public void testCaseNegativeSubSpan () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = new FieldDocument();
+
+        fd.addTV(
+                "base",
+                // <x>a <x>b </x>c </x>
+                "a b c ",
+                "[(0-1)s:a|i:a|_0$<i>0<i>2|<>:x$<b>64<i>0<i>6<i>3<b>0]" +
+                "[(1-2)s:b|i:b|_1$<i>2<i>4|<>:x$<b>64<i>2<i>4<i>2<b>1]" +
+                "[(3-4)s:c|i:c|_2$<i>4<i>6]");
+        ki.addDoc(fd);
+        ki.commit();
+        SpanSubspanQuery ssq = new SpanSubspanQuery(new SpanElementQuery("base", "x"), -1, 1, true);
+        kr = ki.search(ssq, (short) 10);
+
+        /*        
+        for (Match km : kr.getMatches()) {
+            System.out.println(km.getStartPos() + "," + km.getEndPos()
+                    + km.getSnippetBrackets());
+        }
+        */
+
+        assertEquals(2, kr.getTotalResults());
+        assertEquals(1, kr.getMatch(0).getStartPos());
+        assertEquals(2, kr.getMatch(0).getEndPos());
+        assertEquals("a [b ]c ", kr.getMatch(0).getSnippetBrackets());
+
+        assertEquals(2, kr.getMatch(1).getStartPos());
+        assertEquals(3, kr.getMatch(1).getEndPos());
+        assertEquals("a b [c ]", kr.getMatch(1).getSnippetBrackets());
+    };
+};
