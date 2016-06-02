@@ -43,6 +43,7 @@ public class SubSpans extends SimpleSpans {
     private PriorityQueue<CandidateSpan> candidates;
     private CandidateSpanComparator comparator;
 
+
     /**
      * Constructs SubSpans for the given {@link SpanSubspanQuery}
      * specifiying the start offset and the length of the subspans.
@@ -65,7 +66,8 @@ public class SubSpans extends SimpleSpans {
         candidates = new PriorityQueue<>(windowSize, comparator);
 
         if (DEBUG) {
-            log.trace("Init SubSpan at {} with length {}", this.startOffset, this.length);
+            log.trace("Init SubSpan at {} with length {}", this.startOffset,
+                    this.length);
         };
         hasMoreSpans = firstSpans.next();
     }
@@ -109,7 +111,8 @@ public class SubSpans extends SimpleSpans {
         return false;
     }
 
-    private void collectCandidates() throws IOException {
+
+    private void collectCandidates () throws IOException {
 
         while (hasMoreSpans && candidates.size() < windowSize
                 && firstSpans.doc() == currentDoc) {
@@ -127,12 +130,13 @@ public class SubSpans extends SimpleSpans {
         }
     }
 
+
     /**
      * Sets the properties of the current match/subspan.
      * 
      * @throws IOException
      */
-    public boolean findMatch(CandidateSpan cs) throws IOException {
+    public boolean findMatch (CandidateSpan cs) throws IOException {
 
         // Check at span ending
         if (this.startOffset < 0) {
@@ -174,16 +178,16 @@ public class SubSpans extends SimpleSpans {
         cs.setDoc(firstSpans.doc());
 
         if (DEBUG) {
-            log.trace("Start at absolute position {} " +
-                      "and end at absolute position {}",
-                    cs.getStart(),
+            log.trace("Start at absolute position {} "
+                    + "and end at absolute position {}", cs.getStart(),
                     cs.getEnd());
         };
 
         return true;
     }
 
-    private void setMatch(CandidateSpan cs) {
+
+    private void setMatch (CandidateSpan cs) {
         matchStartPosition = cs.getStart();
         prevStart = matchStartPosition;
         matchEndPosition = cs.getEnd();
@@ -192,6 +196,7 @@ public class SubSpans extends SimpleSpans {
         matchPayload.clear();
         matchPayload.addAll(cs.getPayloads());
     }
+
 
     @Override
     public boolean skipTo (int target) throws IOException {

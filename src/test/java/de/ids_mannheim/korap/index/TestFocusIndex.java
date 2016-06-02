@@ -20,15 +20,17 @@ public class TestFocusIndex {
     private KrillIndex ki;
     private Result kr;
 
+
     public TestFocusIndex () throws IOException {
         ki = new KrillIndex();
     }
+
 
     /**
      * Check Skipto focus spans
      * */
     @Test
-    public void testCase12() throws IOException {
+    public void testCase12 () throws IOException {
         ki.addDoc(TestRelationIndex.createFieldDoc0());
         ki.addDoc(TestRelationIndex.createFieldDoc1());
         ki.commit();
@@ -43,12 +45,12 @@ public class TestFocusIndex {
 
         kr = ki.search(snq, (short) 20);
 
-		assertEquals(0, kr.getMatch(0).getStartPos());
-		assertEquals(2, kr.getMatch(0).getEndPos());
-		assertEquals(5, kr.getMatch(1).getStartPos());
-		assertEquals(9, kr.getMatch(1).getEndPos());
-		// for (Match m : kr.getMatches()) {
-		// System.out.println(m.getStartPos() + " " + m.getEndPos());
-		// }
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(2, kr.getMatch(0).getEndPos());
+        assertEquals(5, kr.getMatch(1).getStartPos());
+        assertEquals(9, kr.getMatch(1).getEndPos());
+        // for (Match m : kr.getMatches()) {
+        // System.out.println(m.getStartPos() + " " + m.getEndPos());
+        // }
     }
 }

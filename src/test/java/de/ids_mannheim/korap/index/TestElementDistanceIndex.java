@@ -3,10 +3,8 @@ package de.ids_mannheim.korap.index;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.*;
+import java.io.*;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -36,7 +34,7 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "text",
+        fd.addTV("tokens", "text",
                 "[(0-1)s:b|s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1<b>0]"
                         + "[(1-2)s:b|_2$<i>1<i>2]"
                         + "[(2-3)s:c|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
@@ -51,9 +49,9 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV(
-                "base",
-                "text",
-                "[(0-1)s:e|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
+                "tokens",
+                "ecebdc",
+                "[(0-1)s:e|_1$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>6<i>0<i>6<b>0|<>:s$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:c|s:b|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2<b>0]"
                         + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
                         + "[(3-4)s:b|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4<b>0]"
@@ -66,7 +64,7 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "text",
+        fd.addTV("tokens", "text",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:p$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:b|_2$<i>1<i>2]"
                         + "[(2-3)s:b|_3$<i>2<i>3|<>:p$<b>64<i>2<i>3<i>3<b>0]"
@@ -80,7 +78,7 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
-        fd.addTV("base", "text",
+        fd.addTV("tokens", "text",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:d|_2$<i>1<i>2]"
                         + "[(2-3)s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
@@ -94,10 +92,10 @@ public class TestElementDistanceIndex {
     public SpanQuery createQuery (String elementType, String x, String y,
             int min, int max, boolean isOrdered) {
 
-        SpanElementQuery e = new SpanElementQuery("base", elementType);
-        return new SpanDistanceQuery(new SpanTermQuery(new Term("base", x)),
-                new SpanTermQuery(new Term("base", y)), new DistanceConstraint(
-                        e, min, max, isOrdered, false), true);
+        SpanElementQuery e = new SpanElementQuery("tokens", elementType);
+        return new SpanDistanceQuery(new SpanTermQuery(new Term("tokens", x)),
+                new SpanTermQuery(new Term("tokens", y)),
+                new DistanceConstraint(e, min, max, isOrdered, false), true);
     }
 
 
@@ -165,7 +163,8 @@ public class TestElementDistanceIndex {
         SpanQuery sq, edq;
         edq = createQuery("s", "s:b", "s:c", 1, 1, true);
 
-        sq = new SpanNextQuery(edq, new SpanTermQuery(new Term("base", "s:d")));
+        sq = new SpanNextQuery(edq,
+                new SpanTermQuery(new Term("tokens", "s:d")));
 
         kr = ki.search(sq, (short) 10);
 
@@ -206,43 +205,76 @@ public class TestElementDistanceIndex {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
 
-        InputStream is = getClass()
-                .getResourceAsStream("/queries/cosmas1.json");
-        BufferedReader bufferedReader = new BufferedReader(
-                new InputStreamReader(is, "UTF-8"));
-        StringBuilder sb = new StringBuilder();
-        String json;
-        while ((json = bufferedReader.readLine()) != null) {
-            sb.append(json);
-        }
-        json = sb.toString();
-
-        SpanQueryWrapper sqwi;
-        try {
-            sqwi = new KrillQuery("tokens").fromJson(json);
-        }
-        catch (QueryException e) {
-            fail(e.getMessage());
-            sqwi = new QueryBuilder("tokens").seg("???");
-        };
-
-
-        SpanQuery sq;
-        sq = sqwi.toQuery();
-
-        kr = ki.search(sq, (short) 10);
+        SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
+                "/queries/cosmas1.json").getFile());
+        kr = ki.search(sqwi.toQuery(), (short) 10);
 
         assertEquals((long) 3, kr.getTotalResults());
         assertEquals(14, kr.getMatch(0).startPos);
         assertEquals(19, kr.getMatch(0).endPos);
         assertEquals(30, kr.getMatch(1).startPos);
         assertEquals(33, kr.getMatch(1).endPos);
-
-        /*  for (Match km : kr.getMatches()){		
-          	System.out.println(km.getStartPos() +","+km.getEndPos()+" "
-          			+km.getSnippetBrackets());
-          }*/
     }
 
 
-}
+    /** Test query from json (2) */
+    @Test
+    public void testCase6 () throws Exception {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc0());
+        ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc2());
+        ki.commit();
+
+        SpanQueryWrapper sqwi;
+        sqwi = new QueryBuilder("tokens").tag("base/s:t");
+
+        kr = ki.search(sqwi.toQuery(), (short) 10);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals("[ecebdc]", kr.getMatch(0).getSnippetBrackets());
+
+        sqwi = jsonQuery(getClass().getResource(
+                "/queries/distances/in-same-t.jsonld").getFile());
+
+        assertEquals(
+                "spanElementDistance(tokens:s:c, tokens:s:e, [(base/s:t[0:0], ordered, notExcluded)])",
+                sqwi.toQuery().toString());
+
+        /*
+        kr = ki.search(sqwi.toQuery(), (short) 10);
+        assertEquals(1, kr.getTotalResults()); // Is 1 correct or should it not be ordered?
+        */
+    };
+
+
+    public static String getString (String path) {
+        StringBuilder contentBuilder = new StringBuilder();
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(path));
+            String str;
+            while ((str = in.readLine()) != null) {
+                contentBuilder.append(str);
+            };
+            in.close();
+        }
+        catch (IOException e) {
+            fail(e.getMessage());
+        }
+        return contentBuilder.toString();
+    };
+
+
+    public static SpanQueryWrapper jsonQuery (String jsonFile) {
+        SpanQueryWrapper sqwi;
+
+        try {
+            String json = getString(jsonFile);
+            sqwi = new KrillQuery("tokens").fromJson(json);
+        }
+        catch (QueryException e) {
+            fail(e.getMessage());
+            sqwi = new QueryBuilder("tokens").seg("???");
+        };
+        return sqwi;
+    };
+};

@@ -25,7 +25,7 @@
 
   <groupId>de.ids_mannheim.korap</groupId>
   <artifactId>Krill</artifactId>
-  <version>0.55.5</version>
+  <version>0.55.6</version>
   <packaging>jar</packaging>
 
   <name>Krill</name>

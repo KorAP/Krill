@@ -1097,8 +1097,8 @@ public class TestWithinIndex {
         assertEquals(1, kr.getTotalResults());
         */
         sqw = qb.startswith(qb.tag("e"), qb.seg("i:h"));
-        assertEquals("spanStartsWith(<base:e />, base:i:h)",
-                     sqw.toQuery().toString());
+        assertEquals("spanStartsWith(<base:e />, base:i:h)", sqw.toQuery()
+                .toString());
         kr = ki.search(sqw.toQuery(), (short) 10);
         assertEquals(2, kr.getTotalResults());
     };

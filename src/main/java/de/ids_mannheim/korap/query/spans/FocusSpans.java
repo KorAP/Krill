@@ -61,6 +61,7 @@ public class FocusSpans extends SimpleSpans {
     private PriorityQueue<CandidateSpan> candidates;
     private CandidateSpanComparator comparator;
 
+
     /**
      * Construct a FocusSpan for the given {@link SpanQuery}.
      * 
@@ -139,8 +140,8 @@ public class FocusSpans extends SimpleSpans {
             if (firstSpans.isPayloadAvailable()
                     && updateSpanPositions(cs = new CandidateSpan(firstSpans))) {
                 if (cs.getDoc() == prevDoc && cs.getStart() < prevStart) {
-                    log.warn("Span (" + cs.getStart() + ", "
-                            + cs.getEnd() + ") is out of order and skipped.");
+                    log.warn("Span (" + cs.getStart() + ", " + cs.getEnd()
+                            + ") is out of order and skipped.");
                 }
                 else {
                     candidates.add(cs);
@@ -149,6 +150,7 @@ public class FocusSpans extends SimpleSpans {
             hasMoreSpans = firstSpans.next();
         }
     }
+
 
     private void setMatch (CandidateSpan cs) {
         matchStartPosition = cs.getStart();

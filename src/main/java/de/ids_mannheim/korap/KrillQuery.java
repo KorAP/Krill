@@ -914,7 +914,8 @@ public final class KrillQuery extends Notifications {
                 }
 
                 // Use default foundry and layer - currently only base is supported!
-                else if (unit.equals("s") || unit.equals("p")) {
+                else if (unit.equals("s") || unit.equals("p")
+                        || unit.equals("t")) {
                     StringBuilder value = new StringBuilder();
                     unit = value.append("base/s:").append(unit).toString();
                 };
