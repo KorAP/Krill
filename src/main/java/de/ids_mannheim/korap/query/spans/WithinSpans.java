@@ -238,7 +238,8 @@ public class WithinSpans extends Spans {
                     if (this.embeddedDoc != this.wrapDoc) {
 
                         if (DEBUG) {
-                            log.trace("(A) Embedded span is in a new document {}",
+                            log.trace(
+                                    "(A) Embedded span is in a new document {}",
                                     _currentEmbedded().toString());
                             log.trace("Reset current embedded doc");
                         };
@@ -268,7 +269,8 @@ public class WithinSpans extends Spans {
                     if (this.embeddedDoc != this.wrapDoc) {
 
                         if (DEBUG) {
-                            log.trace("(B) Embedded span is in a new document {}",
+                            log.trace(
+                                    "(B) Embedded span is in a new document {}",
                                     _currentEmbedded().toString());
                             log.trace("Reset current embedded doc");
                         };
@@ -706,7 +708,7 @@ public class WithinSpans extends Spans {
 
                 this.storeEmbedded();
                 this.nextSpanA();
-                
+
                 if (DEBUG)
                     _logCurrentCase((byte) 15);
                 return false;

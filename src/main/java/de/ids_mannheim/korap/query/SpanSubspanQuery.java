@@ -140,11 +140,12 @@ public class SpanSubspanQuery extends SimpleSpanQuery {
     }
 
 
-    public int getWindowSize() {
+    public int getWindowSize () {
         return windowSize;
     }
 
-    public void setWindowSize(int windowSize) {
+
+    public void setWindowSize (int windowSize) {
         this.windowSize = windowSize;
     }
 }

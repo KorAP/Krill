@@ -72,7 +72,7 @@ public class TestRelationIndex {
     }
 
 
-    public static FieldDocument createFieldDoc0() {
+    public static FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV(
@@ -97,7 +97,7 @@ public class TestRelationIndex {
     }
 
 
-    public static FieldDocument createFieldDoc1() {
+    public static FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV(

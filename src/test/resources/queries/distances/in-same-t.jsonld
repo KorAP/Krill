@@ -1,0 +1,40 @@
+{
+  "@context": "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld",
+  "query": {
+    "operands": [
+      {
+        "wrap": {
+          "layer": "orth",
+          "match": "match:eq",
+          "key": "c",
+          "@type": "koral:term"
+        },
+        "@type": "koral:token"
+      },
+      {
+        "wrap": {
+          "layer": "orth",
+          "match": "match:eq",
+          "key": "e",
+          "@type": "koral:term"
+        },
+        "@type": "koral:token"
+      }
+    ],
+    "operation": "operation:sequence",
+    "distances": [
+      {
+        "min": 0,
+        "boundary": {
+          "min": 0,
+          "max": 0,
+          "@type": "koral:boundary"
+        },
+        "max": 0,
+        "key": "t",
+        "@type": "cosmas:distance"
+      }
+    ],
+    "@type": "koral:group"
+  }
+}
