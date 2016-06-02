@@ -240,10 +240,8 @@ public class TestElementDistanceIndex {
                 "spanElementDistance(tokens:s:c, tokens:s:e, [(base/s:t[0:0], ordered, notExcluded)])",
                 sqwi.toQuery().toString());
 
-        /*
         kr = ki.search(sqwi.toQuery(), (short) 10);
         assertEquals(1, kr.getTotalResults()); // Is 1 correct or should it not be ordered?
-        */
     };
 
 
