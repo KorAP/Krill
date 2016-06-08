@@ -231,7 +231,7 @@ public class TestFieldDocument {
 
         try {
             String json = getString(jsonFile);
-            sqwi = new KrillQuery("tokens").fromJson(json);
+            sqwi = new KrillQuery("tokens").fromKoral(json);
         }
         catch (QueryException e) {
             fail(e.getMessage());

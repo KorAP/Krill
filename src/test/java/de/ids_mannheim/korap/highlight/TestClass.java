@@ -32,7 +32,7 @@ public class TestClass {
         String jsonPath = getClass().getResource("/queries/poly1.json")
                 .getFile();
         String jsonQuery = readFile(jsonPath);
-        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(jsonQuery);
+        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
         SpanNextQuery sq = (SpanNextQuery) sqwi.toQuery();
         //System.out.println(sq.toString());
@@ -67,7 +67,7 @@ public class TestClass {
         String jsonPath = getClass().getResource("/queries/poly4.json")
                 .getFile();
         String jsonQuery = readFile(jsonPath);
-        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(jsonQuery);
+        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
         SpanQuery sq = sqwi.toQuery();
 
         // System.out.println(sq.toString());

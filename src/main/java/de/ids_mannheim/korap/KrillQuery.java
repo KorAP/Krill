@@ -44,7 +44,7 @@ import de.ids_mannheim.korap.util.QueryException;
  * String koral = "{\"@type\":"koral:group", ... }";
  * 
  * SpanQueryWrapper sqw = new
- * KrillQuery("tokens").fromJson("{... JsonString ...}");
+ * KrillQuery("tokens").fromKoral("{... JsonString ...}");
  * </pre></blockquote>
  * 
  * @author diewald
@@ -142,7 +142,7 @@ public final class KrillQuery extends Notifications {
      * 
      * <blockquote><pre>
      * KrillQuery kq = new KrillQuery("tokens");
-     * SpanQueryWrapper sqw = kq.fromJson(
+     * SpanQueryWrapper sqw = kq.fromKoral(
      * "{\"@type\" : \"koral:token\","+
      * "\"wrap\" : {" +
      * "\"@type\" :   \"koral:term\"," +
@@ -159,7 +159,7 @@ public final class KrillQuery extends Notifications {
      * @return {@link SpanQueryWrapper} object.
      * @throws QueryException
      */
-    public SpanQueryWrapper fromJson (String json) throws QueryException {
+    public SpanQueryWrapper fromKoral (String json) throws QueryException {
         JsonNode jsonN;
         try {
             // Read Json string
@@ -178,7 +178,7 @@ public final class KrillQuery extends Notifications {
             jsonN = jsonN.get("query");
 
         // Deserialize from node
-        return this.fromJson(jsonN);
+        return this.fromKoral(jsonN);
     };
 
 
@@ -195,15 +195,15 @@ public final class KrillQuery extends Notifications {
     // TODO: Use the shortcuts implemented in the builder
     //       instead of the wrapper constructors
     // TODO: Rename this span context!
-    public SpanQueryWrapper fromJson (JsonNode json) throws QueryException {
+    public SpanQueryWrapper fromKoral (JsonNode json) throws QueryException {
 
         // Set this for reserialization - may be changed later on
         this.json = json;
-        return this._fromJson(json);
+        return this._fromKoral(json);
     };
 
 
-    private SpanQueryWrapper _fromJson (JsonNode json) throws QueryException {
+    private SpanQueryWrapper _fromKoral (JsonNode json) throws QueryException {
         int number = 0;
 
         // Only accept @typed objects for the moment
@@ -278,7 +278,7 @@ public final class KrillQuery extends Notifications {
                         log.trace("Wrap span reference {},{}", startOffset,
                                 length);
 
-                    SpanQueryWrapper sqw = this._fromJson(operands.get(0));
+                    SpanQueryWrapper sqw = this._fromKoral(operands.get(0));
                     SpanSubspanQueryWrapper ssqw = new SpanSubspanQueryWrapper(
                             sqw, startOffset, length);
                     return ssqw;
@@ -289,7 +289,7 @@ public final class KrillQuery extends Notifications {
                     log.trace("Wrap class reference {}", number);
 
                 return new SpanFocusQueryWrapper(
-                        this._fromJson(operands.get(0)), number);
+                        this._fromKoral(operands.get(0)), number);
 
             case "koral:token":
 
@@ -476,7 +476,7 @@ public final class KrillQuery extends Notifications {
         if (isReference) {
             JsonNode resolvedNode = _resolveReference(node, operands,
                     refOperandNum, classNum);
-            return new SpanReferenceQueryWrapper(this._fromJson(resolvedNode),
+            return new SpanReferenceQueryWrapper(this._fromKoral(resolvedNode),
                     (byte) classNum);
         }
 
@@ -539,8 +539,8 @@ public final class KrillQuery extends Notifications {
                     "Number of operands is not acceptable");
         }
 
-        SpanQueryWrapper operand1 = this._fromJson(operands.get(0));
-        SpanQueryWrapper operand2 = this._fromJson(operands.get(1));
+        SpanQueryWrapper operand1 = this._fromKoral(operands.get(0));
+        SpanQueryWrapper operand2 = this._fromKoral(operands.get(1));
 
         String direction = ">:";
         if (operand1.isEmpty() && !operand2.isEmpty()) {
@@ -570,7 +570,7 @@ public final class KrillQuery extends Notifications {
             throws QueryException {
         SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(this.field);
         for (JsonNode operand : operands) {
-            ssaq.or(this._fromJson(operand));
+            ssaq.or(this._fromKoral(operand));
         };
         return ssaq;
     };
@@ -662,8 +662,8 @@ public final class KrillQuery extends Notifications {
         // </legacyCode>
 
         // Create SpanWithin Query
-        return new SpanWithinQueryWrapper(this._fromJson(operands.get(0)),
-                this._fromJson(operands.get(1)), flag);
+        return new SpanWithinQueryWrapper(this._fromKoral(operands.get(0)),
+                this._fromKoral(operands.get(1)), flag);
     };
 
 
@@ -712,7 +712,7 @@ public final class KrillQuery extends Notifications {
         if (min > max)
             max = max;
 
-        SpanQueryWrapper sqw = this._fromJson(operands.get(0));
+        SpanQueryWrapper sqw = this._fromKoral(operands.get(0));
 
         if (sqw.maybeExtension())
             return sqw.setMin(min).setMax(max);
@@ -750,7 +750,7 @@ public final class KrillQuery extends Notifications {
                     "Span references are currently not supported");
         };
 
-        return new SpanFocusQueryWrapper(this._fromJson(operands.get(0)),
+        return new SpanFocusQueryWrapper(this._fromKoral(operands.get(0)),
                 number);
     };
 
@@ -804,7 +804,7 @@ public final class KrillQuery extends Notifications {
             };
 
             // Serialize operand
-            SpanQueryWrapper sqw = this._fromJson(operands.get(0));
+            SpanQueryWrapper sqw = this._fromKoral(operands.get(0));
 
             // Problematic
             if (sqw.maybeExtension())
@@ -823,7 +823,7 @@ public final class KrillQuery extends Notifications {
 
         // Sequence with only one operand
         if (operands.size() == 1)
-            return this._fromJson(operands.get(0));
+            return this._fromKoral(operands.get(0));
 
         SpanSequenceQueryWrapper sseqqw = this.builder().seq();
 
@@ -945,7 +945,7 @@ public final class KrillQuery extends Notifications {
 
         // Add segments to sequence
         for (JsonNode operand : operands) {
-            sseqqw.append(this._fromJson(operand));
+            sseqqw.append(this._fromKoral(operand));
         };
 
         // inOrder was set to false without a distance constraint

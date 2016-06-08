@@ -83,7 +83,7 @@ public class Krill extends Response {
      *            The KoralQuery json string.
      */
     public Krill (String query) {
-        this.fromJson(query);
+        this.fromKoral(query);
     };
 
 
@@ -95,7 +95,7 @@ public class Krill extends Response {
      *            The KoralQuery {@link JsonNode} object.
      */
     public Krill (JsonNode query) {
-        this.fromJson(query);
+        this.fromKoral(query);
     };
 
 
@@ -138,11 +138,11 @@ public class Krill extends Response {
      * @return The {@link Krill} object for chaining.
      * @throws QueryException
      */
-    public Krill fromJson (final String query) {
+    public Krill fromKoral (final String query) {
         // Parse query string
         try {
             this.request = mapper.readTree(query);
-            this.fromJson(this.request);
+            this.fromKoral(this.request);
         }
 
         // Unable to parse JSON
@@ -162,7 +162,7 @@ public class Krill extends Response {
      * @return The {@link Krill} object for chaining.
      * @throws QueryException
      */
-    public Krill fromJson (JsonNode json) {
+    public Krill fromKoral (JsonNode json) {
 
         // Parse "query" attribute
         if (json.has("query")) {
@@ -170,7 +170,7 @@ public class Krill extends Response {
                 final KrillQuery kq = new KrillQuery("tokens");
                 this.setQuery(kq);
 
-                final SpanQueryWrapper qw = kq.fromJson(json.get("query"));
+                final SpanQueryWrapper qw = kq.fromKoral(json.get("query"));
 
                 // Throw an error, in case the query matches everywhere
                 if (qw.isEmpty())
@@ -215,7 +215,7 @@ public class Krill extends Response {
 
                 // TODO: Temporary
                 if (collNode.fieldNames().hasNext()) {
-                    this.setCollection(new KrillCollection().fromJson(collNode));
+                    this.setCollection(new KrillCollection().fromKoral(collNode));
                 };
             }
 

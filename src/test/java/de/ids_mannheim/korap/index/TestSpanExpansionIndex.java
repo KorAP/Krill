@@ -299,7 +299,7 @@ public class TestSpanExpansionIndex {
         String jsonPath = getClass().getResource("/queries/poly3.json")
                 .getFile();
         String jsonQuery = readFile(jsonPath);
-        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(jsonQuery);
+        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
         SpanQuery sq = sqwi.toQuery();
         //System.out.println(sq.toString());
@@ -409,7 +409,7 @@ public class TestSpanExpansionIndex {
         String json = readFile(getClass().getResource(
                 "/queries/bugs/expansion_bug_3.jsonld").getFile());
         KrillQuery kq = new KrillQuery("base");
-        SpanQuery sq = kq.fromJson(json).toQuery();
+        SpanQuery sq = kq.fromKoral(json).toQuery();
         assertEquals(
                 sq.toString(),
                 "focus(254: spanContain(<base:base/s:t />, {254: spanExpansion(base:s:c, []{0, 4}, right)}))");

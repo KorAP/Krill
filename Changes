@@ -1,5 +1,6 @@
-0.55.6 2016-06-03
+0.55.6 2016-06-08
         - [bugfix] distance with key "t" uses default foundry (diewald)
+	- [cleanup] Renamed fromJson() to fromKoral() (diewald)
 
 0.55.5 2016-05-02
 	- [performance] Changed to a dynamic window for sorting in FocusSpans (margaretha)

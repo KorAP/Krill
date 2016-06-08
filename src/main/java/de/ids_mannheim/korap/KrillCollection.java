@@ -89,7 +89,7 @@ public final class KrillCollection extends Notifications {
             JsonNode json = mapper.readTree(jsonString);
 
             if (json.has("collection"))
-                this.fromJson(json.get("collection"));
+                this.fromKoral(json.get("collection"));
 
             else if (json.has("collections"))
                 this.addError(899,
@@ -128,10 +128,10 @@ public final class KrillCollection extends Notifications {
      *            The "collection" part of a KoralQuery.
      * @throws QueryException
      */
-    public KrillCollection fromJson (String jsonString) throws QueryException {
+    public KrillCollection fromKoral (String jsonString) throws QueryException {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            this.fromJson((JsonNode) mapper.readTree(jsonString));
+            this.fromKoral((JsonNode) mapper.readTree(jsonString));
         }
         catch (Exception e) {
             this.addError(621, "Unable to parse JSON", "KrillCollection");
@@ -149,13 +149,13 @@ public final class KrillCollection extends Notifications {
      *            as a {@link JsonNode} object.
      * @throws QueryException
      */
-    public KrillCollection fromJson (JsonNode json) throws QueryException {
+    public KrillCollection fromKoral (JsonNode json) throws QueryException {
         this.json = json;
-        return this.fromBuilder(this._fromJson(json));
+        return this.fromBuilder(this._fromKoral(json));
     };
 
 
-    private CollectionBuilder.Interface _fromJson (JsonNode json)
+    private CollectionBuilder.Interface _fromKoral (JsonNode json)
             throws QueryException {
 
         if (!json.has("@type")) {
@@ -282,7 +282,7 @@ public final class KrillCollection extends Notifications {
                         "Unknown document group operation");
 
             for (JsonNode operand : json.get("operands")) {
-                group.with(this._fromJson(operand));
+                group.with(this._fromKoral(operand));
             };
             return group;
         }
