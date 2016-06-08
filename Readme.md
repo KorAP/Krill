@@ -14,7 +14,7 @@ used as a backend component of the [KorAP Corpus Analysis Platform](http://korap
 ## Features
 
 Krill is the reference implementation for
-[KoralQuery](https://github.com/KorAP/Koral), covering
+[KoralQuery](https://korap.github.io/Koral), covering
 most of the protocols features, including ...
 
 - **Fulltext search**<br>
