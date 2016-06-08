@@ -1174,19 +1174,6 @@ public final class KrillIndex {
     };
 
 
-    @Deprecated
-    public Result search (KrillCollection collection, SpanQuery query,
-            int startIndex, short count, boolean leftTokenContext,
-            short leftContext, boolean rightTokenContext, short rightContext) {
-        Krill ks = new Krill(query);
-        ks.getMeta().setContext(
-                new SearchContext(leftTokenContext, leftContext,
-                        rightTokenContext, rightContext));
-        ks.setCollection(collection);
-        return this.search(ks);
-    };
-
-
     /**
      * Search the endpoint.
      */
