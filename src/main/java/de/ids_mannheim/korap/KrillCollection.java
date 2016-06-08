@@ -155,6 +155,7 @@ public final class KrillCollection extends Notifications {
     };
 
 
+    // Create collection from KoralQuery
     private CollectionBuilder.Interface _fromKoral (JsonNode json)
             throws QueryException {
 
@@ -290,14 +291,6 @@ public final class KrillCollection extends Notifications {
         // Unknown type
         throw new QueryException(813, "Collection type is not supported");
     };
-
-
-    // Returns the number of filters - always one!
-    @Deprecated
-    public int getCount () {
-        return 1;
-    };
-
 
     /**
      * Set the collection from a {@link CollectionBuilder} object.
@@ -678,13 +671,6 @@ public final class KrillCollection extends Notifications {
         return str;
     };
 
-
-    /*
-      @Deprecated
-      public HashMap getTermRelation (String field) throws Exception {
-          return this.getTermRelation(new KrillCollection(this), field);
-      };
-    */
 
     /*
      * Analyze how terms relate

@@ -250,7 +250,6 @@ public class TestMetaFields {
         Krill ks = new Krill(jsonString);
         KrillCollection kc = ks.getCollection();
         kc.setIndex(ki);
-        assertEquals(1, kc.getCount()); // 1 filter operation
         assertEquals(1, kc.numberOf("documents"));
 
         // textClass = reisen
@@ -259,13 +258,8 @@ public class TestMetaFields {
         ks = new Krill(jsonString);
         kc = ks.getCollection();
         kc.setIndex(ki);
-        assertEquals(1, kc.getCount()); // 1 filter operation
         assertEquals(2, kc.numberOf("documents"));
 
-        /*
-        System.err.println(StringUtils.join(fd2.doc.getValues("textClass"), ","));
-        System.err.println(StringUtils.join(fd2.doc.getValues("author"), ", "));
-        */
         /*
         TokenStream ts = fd2.doc.getField("author").tokenStream(
             (Analyzer) ki.writer().getAnalyzer(),
@@ -287,7 +281,6 @@ public class TestMetaFields {
         ks = new Krill(jsonString);
         kc = ks.getCollection();
         kc.setIndex(ki);
-        assertEquals(1, kc.getCount()); // 1 filter operation
         assertEquals(1, kc.numberOf("documents"));
 
         // author = Wolfgang
@@ -296,7 +289,6 @@ public class TestMetaFields {
         ks = new Krill(jsonString);
         kc = ks.getCollection();
         kc.setIndex(ki);
-        assertEquals(1, kc.getCount()); // 1 filter operation
         assertEquals(1, kc.numberOf("documents"));
 
         Result kr = ks.apply(ki);

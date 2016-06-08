@@ -443,7 +443,8 @@ public final class KrillQuery extends Notifications {
                 /*throw new QueryException(765,
                   "Relations are currently not supported");*/
 
-            case "operation:or": // Deprecated in favor of operation:junction
+                // Deprecated in favor of operation:junction
+            case "operation:or":
                 return this._operationJunctionFromJson(operands);
                 /*
                   case "operation:submatch": // Deprecated in favor of koral:reference
