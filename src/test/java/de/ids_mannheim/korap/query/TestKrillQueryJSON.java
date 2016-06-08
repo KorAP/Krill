@@ -254,7 +254,7 @@ public class TestKrillQueryJSON {
     @Test
     public void queryJSONDemo () throws QueryException {
         SpanQueryWrapper sqwi = new KrillQuery("tokens")
-                .fromJson("{ \"query\" : { \"@type\" : \"koral:token\", \"wrap\" : { \"@type\" : \"koral:term\", \"foundry\" : \"base\", \"layer\" : \"p\", \"key\" : \"foo\", \"match\" : \"match:eq\" }}}");
+                .fromKoral("{ \"query\" : { \"@type\" : \"koral:token\", \"wrap\" : { \"@type\" : \"koral:term\", \"foundry\" : \"base\", \"layer\" : \"p\", \"key\" : \"foo\", \"match\" : \"match:eq\" }}}");
 
         assertEquals(sqwi.toQuery().toString(), "tokens:base/p:foo");
     };
@@ -424,7 +424,7 @@ public class TestKrillQueryJSON {
         try {
             String json = getString(getClass().getResource(
                     "/queries/bugs/underspecified_token.jsonld").getFile());
-            new KrillQuery("tokens").fromJson(json);
+            new KrillQuery("tokens").fromKoral(json);
         }
         catch (QueryException e) {
             assertEquals(701, e.getErrorCode());
@@ -495,21 +495,21 @@ public class TestKrillQueryJSON {
             String json = getString(getClass().getResource(
                     "/queries/flags/unknown1.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
-            assertEquals(kq.fromJson(json).toQuery().toString(),
+            assertEquals(kq.fromKoral(json).toQuery().toString(),
                     "tokens:s:buchstabe");
             assertEquals(kq.getWarning(0).getCode(), 748);
 
             json = getString(getClass().getResource(
                     "/queries/flags/unknown2.jsonld").getFile());
             kq = new KrillQuery("tokens");
-            assertEquals(kq.fromJson(json).toQuery().toString(),
+            assertEquals(kq.fromKoral(json).toQuery().toString(),
                     "tokens:i:buchstabe");
             assertEquals(kq.getWarning(0).getCode(), 748);
 
             json = getString(getClass().getResource(
                     "/queries/flags/unknown3.jsonld").getFile());
             kq = new KrillQuery("tokens");
-            assertEquals(kq.fromJson(json).toQuery().toString(),
+            assertEquals(kq.fromKoral(json).toQuery().toString(),
                     "tokens:i:buchstabe");
             assertEquals(kq.getWarning(0).getCode(), 748);
 
@@ -528,7 +528,7 @@ public class TestKrillQueryJSON {
                     "/queries/element/simple-element.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(kq.fromJson(json).toQuery().toString(),
+            assertEquals(kq.fromKoral(json).toQuery().toString(),
                     "<tokens:base/s:s />");
         }
         catch (QueryException e) {
@@ -546,7 +546,7 @@ public class TestKrillQueryJSON {
             KrillQuery kq = new KrillQuery("tokens");
 
             assertEquals(
-                    kq.fromJson(json).toQuery().toString(),
+                    kq.fromKoral(json).toQuery().toString(),
                     "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:c, []{0, 4}, right)}))");
         }
         catch (QueryException e) {
@@ -563,7 +563,7 @@ public class TestKrillQueryJSON {
                     "/queries/bugs/span_or_bug.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(kq.fromJson(json).toQuery().toString(),
+            assertEquals(kq.fromKoral(json).toQuery().toString(),
                     "spanStartsWith(<tokens:base/s:s />, spanOr([tokens:s:Er, tokens:s:Sie]))");
         }
         catch (QueryException e) {
@@ -594,7 +594,7 @@ public class TestKrillQueryJSON {
 
         try {
             String json = getString(jsonFile);
-            sqwi = new KrillQuery("tokens").fromJson(json);
+            sqwi = new KrillQuery("tokens").fromKoral(json);
         }
         catch (QueryException e) {
             fail(e.getMessage());

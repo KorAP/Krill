@@ -1110,7 +1110,7 @@ public class TestWithinIndex {
         String jsonPath = getClass().getResource("/queries/poly2.json")
                 .getFile();
         String jsonPQuery = readFile(jsonPath);
-        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(jsonPQuery);
+        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonPQuery);
 
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
 
@@ -1147,7 +1147,7 @@ public class TestWithinIndex {
         String jsonPath = getClass().getResource(
                 "/queries/bugs/span_or_bug.jsonld").getFile();
         String jsonPQuery = readFile(jsonPath);
-        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromJson(jsonPQuery);
+        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonPQuery);
 
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
 

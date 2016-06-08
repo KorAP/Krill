@@ -245,7 +245,6 @@ public class TestElementDistanceIndex {
         assertEquals("[ec]ebdc", kr.getMatch(0).getSnippetBrackets());
     };
 
-
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
@@ -268,7 +267,7 @@ public class TestElementDistanceIndex {
 
         try {
             String json = getString(jsonFile);
-            sqwi = new KrillQuery("tokens").fromJson(json);
+            sqwi = new KrillQuery("tokens").fromKoral(json);
         }
         catch (QueryException e) {
             fail(e.getMessage());
