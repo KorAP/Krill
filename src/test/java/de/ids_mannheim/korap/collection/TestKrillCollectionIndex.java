@@ -8,6 +8,9 @@ import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.TextAnalyzer;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.SearchContext;
+
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 
@@ -402,11 +405,20 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
         // Create a query
-        QueryBuilder kq = new QueryBuilder("tokens");
-        SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
+        ks.setCollection(kc)
+            .getMeta()
+            .setStartIndex(0)
+            .setCount((short) 20)
+            .setContext(new SearchContext(true, (short) 5, true, (short) 5))
+            ;
 
+        Result kr = ks.apply(ki);
+
+        /*
         Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
                 (short) 5);
+        */
         assertEquals(kr.getTotalResults(), 70);
 
 
@@ -419,7 +431,6 @@ public class TestKrillCollectionIndex {
         assertEquals("Tokens", 1669, kc.numberOf("tokens"));
         assertEquals("Sentences", 188, kc.numberOf("sentences"));
         assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
-        // System.err.println(kr.toJSON());
     };
 
 
@@ -486,11 +497,19 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
         // Create a query
-        QueryBuilder kq = new QueryBuilder("tokens");
-        SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
+        ks.setCollection(kc)
+            .getMeta()
+            .setStartIndex(0)
+            .setCount((short) 20)
+            .setContext(new SearchContext(true, (short) 5, true, (short) 5))
+            ;
 
+        Result kr = ks.apply(ki);
+        /*
         Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
                 (short) 5);
+        */
         assertEquals(kr.getTotalResults(), 70);
 
         // kc.extend(kf.and("textClass", "uninteresting"));
@@ -571,12 +590,15 @@ public class TestKrillCollectionIndex {
 
 
         // Create a query
-        QueryBuilder kq = new QueryBuilder("tokens");
-        SpanQuery query = kq.seg("opennlp/p:NN").with("tt/p:NN").toQuery();
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
+        ks.setCollection(kc)
+            .getMeta()
+            .setStartIndex(0)
+            .setCount((short) 20)
+            .setContext(new SearchContext(true, (short) 5, true, (short) 5));
 
+        Result kr = ks.apply(ki);
 
-        Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
-                (short) 5);
         assertEquals(kr.getTotalResults(), 369);
 
         // kc.filter(kf.and("corpusID", "QQQ"));
@@ -587,8 +609,14 @@ public class TestKrillCollectionIndex {
         assertEquals("Sentences", 0, kc.numberOf("sentences"));
         assertEquals("Paragraphs", 0, kc.numberOf("paragraphs"));
 
+        ks.setCollection(kc);
+
+        // Create a query        
+        kr = ks.apply(ki);
+        /*
         kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
                 (short) 5);
+        */
         assertEquals(kr.getTotalResults(), 0);
     };
 
@@ -627,7 +655,17 @@ public class TestKrillCollectionIndex {
         assertEquals("Sentences", 103, kc.numberOf("sentences"));
         assertEquals("Tokens", 1229, kc.numberOf("tokens"));
 
-        kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);
+        
+        Krill ks = new Krill(sq);
+        ks.setCollection(kc)
+            .getMeta()
+            .setStartIndex(0)
+            .setCount((short) 20)
+            .setContext(new SearchContext(true, (short) 5, true, (short) 5))
+            ;
+        kr = ks.apply(ki);
+
+        // kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);
 
         assertEquals((long) 39, kr.getTotalResults());
     };

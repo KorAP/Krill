@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanClassQuery;
@@ -24,6 +25,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.SearchContext;
 
 // mvn -Dtest=TestWithinIndex#indexExample1 test
 
@@ -488,14 +490,21 @@ public class TestMatchIndex {
                         new SpanClassQuery(new SpanTermQuery(new Term("base",
                                 "s:a")), (byte) 3)), (byte) 3));
 
-        fail("Skipping may go horribly wrong! (Known issue)");
+        // fail("Skipping may go horribly wrong! (Known issue)");
 
-        kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);
-        //        System.err.println(kr.getOverview());
+        Krill ks = new Krill(sq);
+        ks.getMeta()
+            .setStartIndex(0)
+            .setCount((short) 20)
+            .setContext(new SearchContext(true, (short) 5, true, (short) 5))
+            // .setCollection(kc)
+            ;
 
+        kr = ks.apply(ki);
+        // kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);
 
         assertEquals(
-                kr.getSerialQuery(),
+                     kr.getSerialQuery(),
                 "spanContain(<base:p />, focus(3: spanContain({2: <base:s />}, {3: base:s:a})))");
         assertEquals(12, kr.getTotalResults());
         assertEquals("[a{2:bc{3:a}b}cabac]", kr.getMatch(0)
