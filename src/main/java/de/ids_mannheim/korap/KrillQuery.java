@@ -137,6 +137,17 @@ public final class KrillQuery extends Notifications {
 
 
     /**
+     * The index field associated with
+     * the token stream.
+     */
+    public String getField () {
+        if (field == null)
+            return "tokens";
+        return this.field;
+    };
+
+
+    /**
      * <p>Deserialize JSON-LD query to a {@link SpanQueryWrapper}
      * object.</p>
      * 
