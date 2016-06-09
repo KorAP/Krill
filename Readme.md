@@ -105,11 +105,15 @@ Parts of the test corpus by courtesy of the
 [DeReKo](http://ids-mannheim.de/kl/projekte/korpora/) project.
 
 **To cite this work, please refer to:**<br>
+Diewald, Nils, Michael Hanl, Eliza Margaretha, Joachim Bingel, Marc Kupietz, Piotr Bański, and Andreas Witt (2016):
+*KorAP Architecture - Diving in the Deep Sea of Corpus Data*.
+In: Proceedings of the Tenth International Conference on Language Resources and Evaluation (LREC 2016).
+Portorož: ELRA. 3586-3591.
+
 Bański, Piotr, Joachim Bingel, Nils Diewald, Elena Frick, Michael Hanl, Marc Kupietz, Piotr Pęzik, Carsten Schnober, and Andreas Witt (2013):
 *KorAP: the new corpus analysis platform at IDS Mannheim*. In: Z. Vetulani and H. Uszkoreit (eds):
 *Human Language Technologies as a Challenge for Computer Science and Linguistics.*
 Proceedings of the 6th Language and Technology Conference. Poznań: Fundacja Uniwersytetu im. A. Mickiewicza. 
-
 
 ## Contributions
 
