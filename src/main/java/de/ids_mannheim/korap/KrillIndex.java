@@ -774,6 +774,68 @@ public final class KrillIndex {
     };
 
 
+    public Text getDoc (String uid) {
+        // This is very similar to getMatchInfo
+
+        Text text = new Text();
+
+        Filter filter = (Filter) new QueryWrapperFilter(new TermQuery(new Term("UID", uid)));
+
+        try {
+
+            // Iterate over all atomic indices and find the matching document
+            for (LeafReaderContext atomic : this.reader().leaves()) {
+
+                // Retrieve the single document of interest
+                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
+                                                        .getLiveDocs());
+
+                // Create a bitset for the correct document
+                Bits bitset = filterSet.bits();
+
+                DocIdSetIterator filterIterator = filterSet.iterator();
+
+                if (DEBUG)
+                    log.trace("Checking document in {} with {}", filterSet,
+                            bitset);
+
+                // No document found
+                if (filterIterator == null)
+                    continue;
+
+                // Go to the matching doc - and remember its ID
+                int localDocID = filterIterator.nextDoc();
+
+                if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+                    continue;
+
+                // We've found the correct document! Hurray!
+                if (DEBUG)
+                    log.trace("We've found a matching document");
+
+                // HashSet<String> fields = (HashSet<String>) new Krill()
+                //    .getMeta().getFields().clone();
+                // fields.add(field);
+
+                // Load the necessary fields of the document
+
+                // TODO: Probably use
+                // document(int docID, StoredFieldVisitor visitor)
+                Document doc = atomic.reader().document(localDocID);
+                text.populateFields(doc);
+
+                return text;
+            };
+        }
+        catch (IOException e) {
+            text.addError(600, "Unable to read index", e.getLocalizedMessage());
+            log.warn(e.getLocalizedMessage());
+        };
+
+        text.addError(830, "Filter was empty");
+
+        return text;
+    };
 
     public String getMatchIDWithContext (String id) {
         /* No includeHighlights */

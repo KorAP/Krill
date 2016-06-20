@@ -76,15 +76,9 @@ public class TestResource {
         Node.closeDBPool();
         t4 = System.nanoTime();
 
-        double startup = (double) (t2 - t1) / 1000000000.0;
-        double action = (double) (t3 - t2) / 1000000000.0;
+        double startup  = (double) (t2 - t1) / 1000000000.0;
+        double action   = (double) (t3 - t2) / 1000000000.0;
         double shutdown = (double) (t4 - t3) / 1000000000.0;
-
-        /*
-        System.err.println("Startup:  " + startup + ", " +
-                           "Action:   " + action  + ", " +
-                           "Shutdown: " + shutdown);
-        */
     };
 
 
@@ -129,6 +123,7 @@ public class TestResource {
 
                 res = mapper.readTree(resp);
                 assertEquals("milena", res.at("/meta/node").asText());
+                assertEquals(681, res.at("/messages/0/0").asInt());
             }
             catch (Exception e) {
                 fail("Server response failed " + e.getMessage()
@@ -150,6 +145,7 @@ public class TestResource {
             // Check mirroring
             assertEquals(2439, res.at("/text/UID").asInt());
             assertEquals("milena", res.at("/meta/node").asText());
+            assertEquals(681, res.at("/messages/0/0").asInt());
         }
         catch (Exception e) {
             fail("Server response failed " + e.getMessage() + " (Known issue)");
@@ -160,9 +156,18 @@ public class TestResource {
                 .post(Entity.text(""), String.class);
         res = mapper.readTree(resp);
         assertEquals("milena", res.at("/meta/node").asText());
+
+        // Staged data committed
         assertEquals(683, res.at("/messages/0/0").asInt());
     };
 
+    /*
+    @Test
+    public void testRemoving () throws IOException {
+                resp = target.path("/index/" + i).request("application/json")
+                        .put(jsonE, String.class);
+    };
+    */
 
     @Test
     public void testCollection () throws IOException {

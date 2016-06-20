@@ -8,6 +8,7 @@
         - [documentation] Refer to KoralQuery instead of Koral (diewald)
 	- [cleanup] Removed deprecated method in KrillCollection:
 	  getCount() (diewald)
+	- [feature] Added getDoc() method to KrillIndex (diewald)
 
 0.55.5 2016-05-02
 	- [performance] Changed to a dynamic window for sorting in FocusSpans (margaretha)

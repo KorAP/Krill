@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
-import org.apache.lucene.index.IndexableField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +44,7 @@ import de.ids_mannheim.korap.response.match.Relation;
 
 /**
  * Representation of Matches in a Result.
- * <strong>Warning:</strong> This is currently highliy dependent
+ * <strong>Warning:</strong> This is currently highly dependent
  * on DeReKo data and will change in the future.
  * 
  * @author Nils Diewald
@@ -388,139 +386,6 @@ public class Match extends AbstractDocument {
         int id = identifierNumberCounter--;
         identifierNumber.put(id, target);
         this.addHighlight(new Highlight(target, target, id));
-    };
-
-
-    /**
-     * Populate document meta information with information coming from
-     * the index.
-     * 
-     * @param doc
-     *            Document object.
-     * @param field
-     *            Primary data field.
-     */
-    public void populateDocument (Document doc, String field) {
-        HashSet<String> fieldList = new HashSet<>(32);
-        Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
-        while (fieldIterator.hasNext())
-            fieldList.add(fieldIterator.next().name());
-
-        this.populateDocument(doc, field, fieldList);
-    };
-
-
-    /**
-     * Populate document meta information with information coming from
-     * the index.
-     * 
-     * @param doc
-     *            Document object.
-     * @param field
-     *            Primary data field.
-     * @param fields
-     *            Hash object with all supported fields.
-     */
-    public void populateDocument (Document doc, String field,
-            Collection<String> fields) {
-        this.setField(field);
-        this.setPrimaryData(doc.get(field));
-
-        // Remember - never serialize "tokens"
-
-        // LEGACY
-        if (fields.contains("corpusID"))
-            this.setCorpusID(doc.get("corpusID"));
-        if (fields.contains("ID"))
-            this.setDocID(doc.get("ID"));
-        if (fields.contains("tokenization"))
-            this.setTokenization(doc.get("tokenization"));
-        if (fields.contains("layerInfo"))
-            this.setLayerInfo(doc.get("layerInfo"));
-
-        // valid
-        if (fields.contains("UID"))
-            this.setUID(doc.get("UID"));
-        if (fields.contains("author"))
-            this.setAuthor(doc.get("author"));
-        if (fields.contains("textClass"))
-            this.setTextClass(doc.get("textClass"));
-        if (fields.contains("title"))
-            this.setTitle(doc.get("title"));
-        if (fields.contains("subTitle"))
-            this.setSubTitle(doc.get("subTitle"));
-        if (fields.contains("pubDate"))
-            this.setPubDate(doc.get("pubDate"));
-        if (fields.contains("pubPlace"))
-            this.setPubPlace(doc.get("pubPlace"));
-
-        // Temporary (later meta fields in term vector)
-        if (fields.contains("foundries"))
-            this.setFoundries(doc.get("foundries"));
-
-        // New fields
-        if (fields.contains("textSigle"))
-            this.setTextSigle(doc.get("textSigle"));
-        if (fields.contains("docSigle"))
-            this.setDocSigle(doc.get("docSigle"));
-        if (fields.contains("corpusSigle"))
-            this.setCorpusSigle(doc.get("corpusSigle"));
-        if (fields.contains("layerInfos"))
-            this.setLayerInfos(doc.get("layerInfos"));
-        if (fields.contains("tokenSource"))
-            this.setTokenSource(doc.get("tokenSource"));
-        if (fields.contains("editor"))
-            this.setEditor(doc.get("editor"));
-
-        if (fields.contains("corpusAuthor"))
-            this.setCorpusAuthor(doc.get("corpusAuthor"));
-        if (fields.contains("corpusEditor"))
-            this.setCorpusEditor(doc.get("corpusEditor"));
-        if (fields.contains("corpusTitle"))
-            this.setCorpusTitle(doc.get("corpusTitle"));
-        if (fields.contains("corpusSubTitle"))
-            this.setCorpusSubTitle(doc.get("corpusSubTitle"));
-
-        if (fields.contains("docAuthor"))
-            this.setDocAuthor(doc.get("docAuthor"));
-        if (fields.contains("docEditor"))
-            this.setDocEditor(doc.get("docEditor"));
-        if (fields.contains("docTitle"))
-            this.setDocTitle(doc.get("docTitle"));
-        if (fields.contains("docSubTitle"))
-            this.setDocSubTitle(doc.get("docSubTitle"));
-
-        if (fields.contains("publisher"))
-            this.setPublisher(doc.get("publisher"));
-        if (fields.contains("reference"))
-            this.setReference(doc.get("reference"));
-        if (fields.contains("creationDate"))
-            this.setCreationDate(doc.get("creationDate"));
-        if (fields.contains("keywords"))
-            this.setKeywords(doc.get("keywords"));
-        if (fields.contains("textClass"))
-            this.setTextClass(doc.get("textClass"));
-        if (fields.contains("textColumn"))
-            this.setTextColumn(doc.get("textColumn"));
-        if (fields.contains("textDomain"))
-            this.setTextDomain(doc.get("textDomain"));
-        if (fields.contains("textType"))
-            this.setTextType(doc.get("textType"));
-        if (fields.contains("textTypeArt"))
-            this.setTextTypeArt(doc.get("textTypeArt"));
-        if (fields.contains("textTypeRef"))
-            this.setTextTypeRef(doc.get("textTypeRef"));
-        if (fields.contains("language"))
-            this.setLanguage(doc.get("language"));
-        if (fields.contains("license"))
-            this.setLicense(doc.get("license"));
-        if (fields.contains("pages"))
-            this.setPages(doc.get("pages"));
-
-        if (fields.contains("biblEditionStatement"))
-            this.setBiblEditionStatement(doc.get("biblEditionStatement"));
-        if (fields.contains("fileEditionStatement"))
-            this.setFileEditionStatement(doc.get("fileEditionStatement"));
     };
 
 

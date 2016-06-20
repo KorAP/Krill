@@ -106,4 +106,20 @@ public class TestKrillIndex {
 
         // hasDeletions, hasPendingMerges
     };
+
+    @Test
+    public void indexFieldInfo () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.setTitle("Peter");
+        fd.setUID(22);
+        ki.addDoc(fd);
+        ki.commit();
+
+        assertEquals(1, ki.numberOf("base", "documents"));
+
+        assertEquals("Peter", ki.getDoc("22").getTitle());
+        assertEquals(22, ki.getDoc("22").getUID());
+    };
 };

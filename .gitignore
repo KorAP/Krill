@@ -13,6 +13,7 @@
 /.classpath
 /todo.org
 /wiki.org
+/misc/web-api.md
 *~
 .*
 !.gitignore
