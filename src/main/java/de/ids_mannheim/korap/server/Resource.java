@@ -144,6 +144,25 @@ public class Resource {
     };
 
 
+    @GET
+    @Path("/index/{textID}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String get (@PathParam("textID") String uid, @Context UriInfo uri) {
+
+        if (DEBUG)
+            log.trace("Get document with unique identifier {}", uid);
+
+        final Response kresp = _initResponse();
+        if (kresp.hasErrors())
+            return kresp.toJsonString();
+
+        // Get index
+        index = Node.getIndex();
+
+        return index.getDoc(uid).toJsonString();
+    };
+
+
     // TODO: Commit changes to the index before the server dies!
     /**
      * Commit data changes to the index

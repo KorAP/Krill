@@ -21,6 +21,13 @@ import de.ids_mannheim.korap.index.MultiTermTokenStream;
 @RunWith(JUnit4.class)
 public class TestKrillIndex {
 
+
+    /*
+     * Todo: Currently fields can only be set if they are
+     * part of the general field set.
+     * this will change soon!
+     */
+
     @Test
     public void indexExample () throws IOException {
         KrillIndex ki = new KrillIndex();
@@ -35,6 +42,8 @@ public class TestKrillIndex {
         fd.addString("name", "Peter");
         fd.addInt("zahl1", 56);
         fd.addInt("zahl2", "58");
+        fd.addInt("zahl3", "059");
+        fd.addInt("UID", 1);
         fd.addText("teaser", "Das ist der Name der Rose");
         fd.addTV("base", "ich bau",
                 "[(0-3)s:ich|l:ich|p:PPER|-:sentences$<i>2]"
@@ -46,6 +55,7 @@ public class TestKrillIndex {
         fd.addString("name", "Hans");
         fd.addInt("zahl1", 14);
         fd.addText("teaser", "Das Sein");
+        fd.addInt("UID", 2);
 
         MultiTermTokenStream mtts = fd.newMultiTermTokenStream();
         mtts.addMultiTermToken("s:wir#0-3", "l:wir", "p:PPER");
@@ -66,6 +76,7 @@ public class TestKrillIndex {
         fd.addString("name", "Frank");
         fd.addInt("zahl1", 59);
         fd.addInt("zahl2", 65);
+        fd.addInt("UID", 3);
         fd.addText("teaser", "Noch ein Versuch");
         fd.addTV("base", "ich bau", "[(0-3)s:der|l:der|p:DET|-:sentences$<i>3]"
                 + "[(4-8)s:baum|l:baum|p:NN]");
@@ -79,6 +90,8 @@ public class TestKrillIndex {
 
         // KrillQuery kq = new KrillQuery("text");
         // ki.search();
+
+        ki.getDoc("1");
     };
 
 
@@ -115,11 +128,23 @@ public class TestKrillIndex {
         fd.setTitle("Peter");
         fd.setUID(22);
         ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.setTitle("Akron");
+        fd.setUID("05678");
+        ki.addDoc(fd);
+
         ki.commit();
 
-        assertEquals(1, ki.numberOf("base", "documents"));
+        assertEquals(2, ki.numberOf("base", "documents"));
 
         assertEquals("Peter", ki.getDoc("22").getTitle());
         assertEquals(22, ki.getDoc("22").getUID());
+
+        assertEquals("Akron", ki.getDoc("5678").getTitle());
+        assertEquals(5678, ki.getDoc("5678").getUID());
+
+        assertEquals("Akron", ki.getDoc("05678").getTitle());
+        assertEquals(5678, ki.getDoc("05678").getUID());
     };
 };

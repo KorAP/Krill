@@ -111,6 +111,8 @@ public class TestResource {
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006" }) {
 
+            
+
             String json = StringfromFile(getClass().getResource(
                     "/wiki/" + i + ".json").getFile());
 
@@ -159,7 +161,30 @@ public class TestResource {
 
         // Staged data committed
         assertEquals(683, res.at("/messages/0/0").asInt());
+
+
+        // Get document by UID
+        resp = target.path("/index/00005").request().get(String.class);
+        res = mapper.readTree(resp);
+
+        assertEquals("freizeit-unterhaltung reisen schrott tabellen", res.at("/textClass").asText());
+        assertEquals("Å (Orte in Norwegen)", res.at("/title").asText());
+        assertEquals("WPD", res.at("/corpusID").asText());
+        assertEquals(5, res.at("/UID").asInt());
+        assertEquals("WPD_AAA.00005", res.at("/ID").asText());
+
+
+        // Get document by UID
+        resp = target.path("/index/5").request().get(String.class);
+        res = mapper.readTree(resp);
+
+        assertEquals("freizeit-unterhaltung reisen schrott tabellen", res.at("/textClass").asText());
+        assertEquals("Å (Orte in Norwegen)", res.at("/title").asText());
+        assertEquals("WPD", res.at("/corpusID").asText());
+        assertEquals(5, res.at("/UID").asInt());
+        assertEquals("WPD_AAA.00005", res.at("/ID").asText());
     };
+
 
     /*
     @Test

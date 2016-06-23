@@ -25,9 +25,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * Krill index.
  * 
  * This model is rather specific to DeReKo data and
- * should be considered experimental. It may be replaced
+ * should be considered experimental. It will be replaced
  * by a more agnostic model.
- * string fields, e.g. may be combined with a prefix.
+ * string fields, e.g. will be combined with a prefix.
+ * For example d:pubDate will mean: A field with the key "pubDate"
+ * of type date.
  * 
  * @author diewald
  */
@@ -44,6 +46,8 @@ public abstract class AbstractDocument extends Response {
     private KrillDate pubDate,
     // newly added
             creationDate;
+
+    private HashMap<String, String> fieldMap;
 
     private String
 
@@ -104,7 +108,6 @@ public abstract class AbstractDocument extends Response {
     };
 
     public void populateFields (Document doc, Collection<String> fields) {
-
         // Remember - never serialize "tokens"
 
         // LEGACY

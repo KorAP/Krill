@@ -192,7 +192,6 @@ public class FieldDocument extends AbstractDocument {
      * Deserialize token stream data (LEGACY).
      */
     public void setFields (ArrayList<Map<String, Object>> fields) {
-
         Map<String, Object> primary = fields.remove(0);
         this.setPrimaryData((String) primary.get("primaryData"));
 
@@ -307,13 +306,20 @@ public class FieldDocument extends AbstractDocument {
         this.addString("ID", ID);
     };
 
-
     @Override
+    @JsonIgnore
     public void setUID (int ID) {
         super.setUID(ID);
         this.addString("UID", new Integer(ID).toString());
     };
 
+    @Override
+    public void setUID (String ID) {
+        if (ID != null) {
+            super.setUID(ID);
+            this.addString("UID", new Integer(this.UID).toString());
+        };
+    };
 
     // No longer supported
     @Override

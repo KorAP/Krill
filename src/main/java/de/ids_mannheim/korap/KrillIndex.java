@@ -534,7 +534,8 @@ public final class KrillIndex {
             return fd;
         }
         catch (IOException e) {
-            log.error("File json not found");
+            log.error("File json not found or unmappable: {}",
+                      e.getLocalizedMessage());
         };
         return (FieldDocument) null;
     };
@@ -778,6 +779,9 @@ public final class KrillIndex {
         // This is very similar to getMatchInfo
 
         Text text = new Text();
+
+        // Rewrite parse ID
+        uid = new Integer(Integer.parseInt(uid)).toString();
 
         Filter filter = (Filter) new QueryWrapperFilter(new TermQuery(new Term("UID", uid)));
 

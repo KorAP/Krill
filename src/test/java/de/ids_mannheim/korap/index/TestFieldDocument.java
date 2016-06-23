@@ -198,14 +198,15 @@ public class TestFieldDocument {
         };
         ki.commit();
 
+        // {1:der} \w0:5 nicht
         SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
                 "/queries/bsp18.jsonld").getFile());
 
         Result kr = ki.search(sqwi.toQuery(), 0, (short) 5, true, (short) 2,
                 false, (short) 5);
 
-        // Bug:
-        // System.err.println(kr.toJSON());
+        assertEquals(1, kr.getTotalResults());
+        assertEquals("... bezeichnen, sofern [{1:der} schwedische Buchstabe „Å“ nicht] verfügbar ist im SI-Einheitensystem ist ...", kr.getMatch(0).getSnippetBrackets());
     };
 
 
