@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.KrillStats;
 import de.ids_mannheim.korap.response.Notifications;
 
 /**
@@ -41,6 +42,7 @@ public class Response extends Notifications {
     private KrillMeta meta;
     private KrillCollection collection;
     private KrillQuery query;
+    private KrillStats stats;
 
     private String version, name, node, listener;
 
@@ -441,6 +443,37 @@ public class Response extends Notifications {
 
         // Move messages from the collection
         return (Response) this.moveNotificationsFrom(meta);
+    };
+
+
+    /**
+     * Get the associated statistics object.
+     * In case no statistics information was defined yet,
+     * a new {@link KrillStats} object will be created.
+     * 
+     * @return The attached {@link KrillStats} object.
+     */
+    @JsonIgnore
+    public KrillStats getStats () {
+        if (this.stats == null)
+            this.stats = new KrillStats();
+        return this.stats;
+    };
+
+
+    /**
+     * Set a new {@link KrillStats} object.
+     * 
+     * @param stats
+     *            A {@link KrillStats} object.
+     * @return The {@link Response} object for chaining
+     */
+    @JsonIgnore
+    public Response setStats (KrillStats stats) {
+        this.stats = stats;
+
+        // Move messages from the stats
+        return (Response) this.moveNotificationsFrom(stats);
     };
 
 

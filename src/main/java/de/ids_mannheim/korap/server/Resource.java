@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.SQLException;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -191,6 +192,40 @@ public class Resource {
         return kresp.toJsonString();
     };
 
+
+    // Return corpus info
+    @GET
+    @Path("/corpus")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String getCorpus (@Context UriInfo uri) {
+        ObjectMapper mapper = new ObjectMapper();
+
+        // TODO: Accept fields!!!!
+
+        final Response kresp = _initResponse();
+        if (kresp.hasErrors())
+            return kresp.toJsonString();
+
+        // TODO: Statistics should be node fields - not annotations!
+        // TODO: This is just temporary
+        KrillIndex ki = Node.getIndex();
+
+        ObjectNode obj = mapper.createObjectNode();
+        obj.put("tokens", ki.numberOf("tokens"));
+        obj.put("base/texts", ki.numberOf("base/texts"));
+        obj.put("base/sentences", ki.numberOf("base/sentences"));
+        obj.put("base/paragraphs", ki.numberOf("base/paragraphs"));
+
+        // <legacy>
+        obj.put("sentences", ki.numberOf("sentences"));
+        obj.put("paragraphs", ki.numberOf("paragraphs"));
+        // </legacy>
+
+        kresp.addJsonNode("stats", obj);
+        return kresp.toJsonString();
+    };
+
+    // PUT: Return corpus info for virtual corpus
 
 
     /**

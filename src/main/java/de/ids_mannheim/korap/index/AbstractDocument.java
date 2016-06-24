@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * 
  * @author diewald
  */
-@JsonInclude(Include.NON_NULL)
+@JsonInclude(Include.NON_EMPTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractDocument extends Response {
     ObjectMapper mapper = new ObjectMapper();
@@ -428,8 +428,9 @@ public abstract class AbstractDocument extends Response {
      * @throws NumberFormatException
      */
     public void setUID (String UID) throws NumberFormatException {
-        if (UID != null)
+        if (UID != null) {
             this.UID = Integer.parseInt(UID);
+        };
     };
 
 
@@ -1216,6 +1217,10 @@ public abstract class AbstractDocument extends Response {
     public JsonNode toJsonNode () {
         ObjectNode json = (ObjectNode) super.toJsonNode();
         json.putAll((ObjectNode) mapper.valueToTree(this));
+
+        if (this.getUID() == 0)
+            json.remove("UID");
+
         return json;
     };
 };

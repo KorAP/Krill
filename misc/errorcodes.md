@@ -10,6 +10,7 @@
 610: "Missing request parameters"
 620: "Unable to generate JSON"
 621: "Unable to parse JSON"
+630: "Document not found"
 651: "Unable to extend context"
 680: "Server is up and running!"
 681: "Document was added successfully", document id

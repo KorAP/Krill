@@ -836,7 +836,7 @@ public final class KrillIndex {
             log.warn(e.getLocalizedMessage());
         };
 
-        text.addError(830, "Filter was empty");
+        text.addError(630, "Document not found");
 
         return text;
     };

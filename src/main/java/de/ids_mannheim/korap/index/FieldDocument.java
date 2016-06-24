@@ -35,7 +35,6 @@ import java.util.*;
  * @author diewald
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-// @JsonDeserialize(using = FieldDocumentDeserializer.class)
 public class FieldDocument extends AbstractDocument {
     ObjectMapper mapper = new ObjectMapper();
 
@@ -309,8 +308,10 @@ public class FieldDocument extends AbstractDocument {
     @Override
     @JsonIgnore
     public void setUID (int ID) {
-        super.setUID(ID);
-        this.addString("UID", new Integer(ID).toString());
+        if (ID != 0) {
+            super.setUID(ID);
+            this.addString("UID", new Integer(ID).toString());
+        }
     };
 
     @Override

@@ -270,6 +270,7 @@ public final class Result extends Krill {
      */
     public JsonNode toJsonNode () {
         ObjectNode json = (ObjectNode) mapper.valueToTree(super.toJsonNode());
+
         this._addMeta(json);
 
         // Add matches

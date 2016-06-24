@@ -183,16 +183,63 @@ public class TestResource {
         assertEquals("WPD", res.at("/corpusID").asText());
         assertEquals(5, res.at("/UID").asInt());
         assertEquals("WPD_AAA.00005", res.at("/ID").asText());
+
+        // Get document by UID
+        resp = target.path("/index/17").request().get(String.class);
+        res = mapper.readTree(resp);
+
+        assertEquals(630, res.at("/errors/0/0").asInt());
+        assertTrue(res.at("/UID").isMissingNode());
+
+        // Get corpus statistics
+        resp = target.path("/corpus").request().get(String.class);
+        res = mapper.readTree(resp);
+
+        assertEquals(281, res.at("/stats/sentences").asInt());
+        assertEquals(174, res.at("/stats/paragraphs").asInt());
+        assertEquals(2661, res.at("/stats/tokens").asInt());
+
+        assertEquals(7, res.at("/stats/base~1texts").asInt());
     };
 
 
     /*
     @Test
     public void testRemoving () throws IOException {
-                resp = target.path("/index/" + i).request("application/json")
-                        .put(jsonE, String.class);
+        String resp;
+        JsonNode res;
+
+        String json = StringfromFile(getClass().getResource("/wiki/02439.json")
+                .getFile());
+        Entity jsonE = Entity.json(json);
+
+        try {
+            // Put new documents to the index
+            resp = target.path("/index/02439").request("application/json")
+                    .put(jsonE, String.class);
+
+            res = mapper.readTree(resp);
+
+            // Check mirroring
+            assertEquals(2439, res.at("/text/UID").asInt());
+            assertEquals("milena", res.at("/meta/node").asText());
+            assertEquals(681, res.at("/messages/0/0").asInt());
+        }
+        catch (Exception e) {
+            fail("Server response failed " + e.getMessage() + " (Known issue)");
+        };
+
+        // Commit!
+        resp = target.path("/index").request("application/json")
+                .post(Entity.text(""), String.class);
+        res = mapper.readTree(resp);
+        assertEquals("milena", res.at("/meta/node").asText());
+
+        // Staged data committed
+        assertEquals(683, res.at("/messages/0/0").asInt());
     };
     */
+
 
     @Test
     public void testCollection () throws IOException {
