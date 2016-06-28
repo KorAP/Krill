@@ -15,8 +15,11 @@ import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.MultiTermTokenStream;
+import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
 public class TestKrillIndex {
@@ -118,6 +121,37 @@ public class TestKrillIndex {
         assertEquals(2, ki.numberOf("base", "documents"));
 
         // hasDeletions, hasPendingMerges
+    };
+
+    /*
+     * This test demonstrates the behaviour
+     */
+    @Test
+    public void indexUnicode () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("name", "Peter");
+
+        // These values are canonically equivalent
+        // But indexed as byte sequences
+        fd.addTV("base",
+                 new String("ju" + "\u006E" + "\u0303" + "o") +
+                 " " +
+                 new String("ju" + "\u00F1" + "o"),
+                 "[(0-5)s:ju" + "\u006E" + "\u0303" + "o|_0$<i>0<i>5|-:t$<i>2]"
+                 + "[(6-10)s:ju" + "\u00F1" + "o|_1$<i>6<i>10]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        assertEquals(1, ki.numberOf("base", "documents"));
+
+        QueryBuilder kq = new QueryBuilder("base");
+        Result kr = ki.search(kq.seg("s:ju" + "\u00F1" + "o").toQuery());
+        assertEquals(1, kr.getTotalResults());
+
+        kr = ki.search(kq.seg("s:ju" + "\u006E" + "\u0303" + "o").toQuery());
+        assertEquals(1, kr.getTotalResults());
     };
 
     @Test

@@ -60,7 +60,7 @@ public class QueryBuilder {
      * Create a query object based on a regular expression.
      * 
      * <blockquote><pre>
-     * KrillQuery kq = new KrillQuery("tokens");
+     * QueryBuilder kq = new QueryBuilder("tokens");
      * SpanRegexQueryWrapper re = kq.re(".+?");
      * </pre></blockquote>
      * 
@@ -95,7 +95,7 @@ public class QueryBuilder {
      * </ul>
      * 
      * <blockquote><pre>
-     * KrillQuery kq = new KrillQuery("tokens");
+     * QueryBuilder kq = new QueryBuilder("tokens");
      * SpanRegexQueryWrapper re = kq.re("[Aa]lternatives?",
      * RegExp.NONE);
      * </pre></blockquote>
@@ -117,7 +117,7 @@ public class QueryBuilder {
      * Supports flags (see above) and case insensitivity.
      * 
      * <blockquote><pre>
-     * KrillQuery kq = new KrillQuery("tokens");
+     * QueryBuilder kq = new QueryBuilder("tokens");
      * SpanRegexQueryWrapper re = kq.re("alternatives?", RegExp.NONE,
      * true);
      * </pre></blockquote>
@@ -142,7 +142,7 @@ public class QueryBuilder {
      * Supports case insensitivity.
      * 
      * <blockquote><pre>
-     * KrillQuery kq = new KrillQuery("tokens");
+     * QueryBuilder kq = new QueryBuilder("tokens");
      * SpanRegexQueryWrapper re = kq.re("alternatives?", true);
      * </pre></blockquote>
      * 
@@ -184,7 +184,7 @@ public class QueryBuilder {
      * Supports case insensitivity.
      * 
      * <blockquote><pre>
-     * KrillQuery kq = new KrillQuery("tokens");
+     * QueryBuilder kq = new QueryBuilder("tokens");
      * SpanWildcardQueryWrapper wc = kq.wc("wall*", true);
      * </pre></blockquote>
      * 
@@ -203,7 +203,7 @@ public class QueryBuilder {
      * Create a segment query object.
      * 
      * <blockquote><pre>
-     * KrillQuery kq = new KrillQuery("tokens");
+     * QueryBuilder kq = new QueryBuilder("tokens");
      * SpanSegmentQueryWrapper seg = kq.seg();
      * </pre></blockquote>
      * 
@@ -220,7 +220,7 @@ public class QueryBuilder {
      * and {@link SpanAlterQueryWrapper} objects.
      * 
      * <blockquote><pre>
-     * KrillQuery kq = new KrillQuery("tokens");
+     * QueryBuilder kq = new QueryBuilder("tokens");
      * SpanSegmentQueryWrapper seg = kq.seg(
      * kq.re("mate/p=.*?"),
      * kq.re("opennlp/p=.*?")
@@ -262,7 +262,7 @@ public class QueryBuilder {
      * Create an empty query segment.
      * 
      * <blockquote><pre>
-     * KrillQuery kq = new KrillQuery("tokens");
+     * QueryBuilder kq = new QueryBuilder("tokens");
      * SpanRepetitionQueryWrapper seg = kq.empty();
      * </pre></blockquote>
      */

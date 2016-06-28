@@ -1,5 +1,7 @@
 package de.ids_mannheim.korap.response;
 
+import static de.ids_mannheim.korap.util.KrillString.quote;
+
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -517,7 +519,7 @@ public class Notifications {
         }
         catch (Exception e) {
             // Bad in case the message contains quotes!
-            msg = ", \"" + e.getLocalizedMessage() + "\"";
+            msg = ", " + quote(e.getLocalizedMessage());
         };
 
         return "{\"errors\" : [" + "[620, " + "\"Unable to generate JSON\""

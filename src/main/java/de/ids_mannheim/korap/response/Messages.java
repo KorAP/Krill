@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.response;
 
 import de.ids_mannheim.korap.util.QueryException;
+import static de.ids_mannheim.korap.util.KrillString.quote;
 import de.ids_mannheim.korap.response.Message;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -280,8 +281,7 @@ public class Messages implements Cloneable, Iterable<Message> {
             return mapper.writeValueAsString(this.toJsonNode());
         }
         catch (Exception e) {
-            // Bad in case the message contains quotes!
-            msg = ", \"" + e.getLocalizedMessage() + "\"";
+            msg = ", " + quote(e.getLocalizedMessage());
         };
 
         return "[620, " + "\"Unable to generate JSON\"" + msg + "]";

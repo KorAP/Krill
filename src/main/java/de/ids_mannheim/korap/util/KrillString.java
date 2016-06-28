@@ -55,4 +55,16 @@ public class KrillString {
         return text.replace("&", "&amp;").replace("<", "&lt;")
                 .replace(">", "&gt;").replace("\"", "&quot;");
     };
+
+
+    /**
+     * Add surrounding double quotes.
+     * 
+     * @param text
+     *            The string to escape.
+     * @return The secured string.
+     */
+    public static String quote (String text) {
+        return '"' + text.replaceAll("([\"\\\\])", "\\\\$1") + '"';
+    };
 };

@@ -103,12 +103,12 @@ payloads. A TUI is only necessary when an attribute refers to it, for example
 to match a relation span with a specific attribute.
 
 If at least one TUI is set (either the left-part TUI reference,
-he right-part TUI reference, or the relation TUI), all TUIs have to be set.
+the right-part TUI reference, or the relation TUI), all TUIs have to be set.
 If the TUIs do not refer to anything, they have to be set to ```0```.
 
 1) Term to term relation has
  
-* 1 byte for PTI, 
+* 1 byte for PTI (32), 
 * 1 integer for the right part token position, 
 * 1 short for the left-part TUI, 
 * 1 short for right-part TUI and 
@@ -123,7 +123,7 @@ no target TUI reference and the relation TUI 3.
 
 2) Term to element relation has
 
-* 1 byte for PTI, 
+* 1 byte for PTI (33), 
 * 1 integer for the start element offset of the right part, 
 * 1 integer for the end element offset of the right part, 
 * 1 integer for the start position of the right part, 
@@ -139,7 +139,7 @@ position 3.
 
 3) Element to term relation has 
 
-* 1 byte for PTI, 
+* 1 byte for PTI (34), 
 * 1 integer for the start element offset of the left part, 
 * 1 integer for the end element offset of the left part, 
 * 1 integer for end position of the left part, 
@@ -155,7 +155,7 @@ term ending at position 3.
 
 4) Element to element relation has 
 
-* 1 byte for PTI, 
+* 1 byte for PTI (35), 
 * 1 integer for the start element offset of the left part, 
 * 1 integer for the end element offset of the left part, 
 * 1 integer for the start element offset of the right part, 

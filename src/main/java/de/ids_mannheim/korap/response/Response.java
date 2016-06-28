@@ -14,6 +14,7 @@ import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KrillStats;
 import de.ids_mannheim.korap.response.Notifications;
+import static de.ids_mannheim.korap.util.KrillString.quote;
 
 /**
  * Base class for objects meant to be responded by the server.
@@ -595,7 +596,7 @@ public class Response extends Notifications {
         }
         catch (Exception e) {
             // Bad in case the message contains quotes!
-            msg = ", \"" + e.getLocalizedMessage() + "\"";
+            msg = ", " + quote(e.getLocalizedMessage());
         };
 
         return "{\"errors\":[" + "[620, " + "\"Unable to generate JSON\"" + msg
