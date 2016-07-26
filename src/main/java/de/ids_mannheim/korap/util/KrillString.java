@@ -58,6 +58,17 @@ public class KrillString {
 
 
     /**
+     * Escape Bracket relevant characters.
+     * 
+     * @param text
+     *            The string to escape.
+     * @return The secured string.
+     */
+    public static String escapeBrackets (String text) {
+        return text.replaceAll("([\\{\\}\\[\\]\\\\])", "\\\\$1");
+    };
+
+    /**
      * Add surrounding double quotes.
      * 
      * @param text

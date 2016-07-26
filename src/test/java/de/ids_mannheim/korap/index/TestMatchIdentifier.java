@@ -90,6 +90,16 @@ public class TestMatchIdentifier {
         assertEquals(null, id.getDocID());
         assertEquals("GOE_AGF.02286", id.getTextSigle());
         assertEquals("match-GOE_AGF.02286-p2105-2106", id.toString());
+
+        id = new MatchIdentifier("match-corpus-1/doc-1/text-1/p2105-2106");
+        assertEquals("match-corpus-1/doc-1/text-1-p2105-2106", id.toString());
+        assertEquals("corpus-1/doc-1/text-1", id.getTextSigle());
+        /*
+        assertEquals(2105, id.getStartPos());
+        assertEquals(2106, id.getEndPos());
+        assertEquals(null, id.getCorpusID());
+        assertEquals(null, id.getDocID());
+        */
     };
 
 

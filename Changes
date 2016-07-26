@@ -1,4 +1,4 @@
-0.55.6 2016-06-29
+0.55.6 2016-07-27
         - [bugfix] distance with key "t" uses default foundry (diewald)
 	- [cleanup] Renamed fromJson() to fromKoral() (diewald)
 	- [cleanup] Removed deprecated methods in Krill:
@@ -13,6 +13,7 @@
 	- [feature] Added document method to Web-API (diewald)
 	- [feature] Added experimental KrillStats class (diewald)
 	- [bugfix] Escape quotes in JSON strings (diewald)
+	- [bugfix] Escape XML and Brackets in snippets correctly (diewald)
 
 0.55.5 2016-05-02
 	- [performance] Changed to a dynamic window for sorting in FocusSpans (margaretha)

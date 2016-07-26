@@ -8,9 +8,10 @@ public class MatchIdentifier extends DocIdentifier {
 
     private ArrayList<int[]> pos = new ArrayList<>(8);
 
-    // TODO: "contains" is necessary for a compatibility bug in Kustvakt
-    Pattern idRegex = Pattern.compile("^(?:match-|contains-)"
-            + "(?:([^!]+?)[!\\.])?" + "([^!]+)-p([0-9]+)-([0-9]+)"
+    // Remember: "contains" is necessary for a compatibility bug in Kustvakt
+    Pattern idRegex = Pattern.compile("^(?:match-|contains-)" +
+                                      "(?:([^!]+?)[!\\.])?" +
+                                      "([^!]+)[-/]p([0-9]+)-([0-9]+)"
             + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)" + "(?:c.+?)?$");
     Pattern posRegex = Pattern.compile("\\(([0-9]+)\\)([0-9]+)-([0-9]+)");
 
@@ -18,6 +19,12 @@ public class MatchIdentifier extends DocIdentifier {
     public MatchIdentifier () {};
 
 
+    /**
+     * Construct a new MatchIdentifier.
+     * Due to lots of internal changes and compatibility reasons,
+     * the structure of the identifier has changed a lot.
+     * The constructor supports different legacy structures for test compatibility.
+     */
     public MatchIdentifier (String id) {
 
         // Replace for legacy reasons with incompatible versions of Kustvakt
@@ -26,17 +33,25 @@ public class MatchIdentifier extends DocIdentifier {
         Matcher matcher = idRegex.matcher(id);
         if (matcher.matches()) {
 
+            // textSigle is provided directly
+            if (matcher.group(1) == null && id.contains("/")) {
+                // Todo: potentially use UID!
+                this.setTextSigle(matcher.group(2));
+            }
+
             // <legacy>
-            // and test compatibility
-            if (id.contains("!") || !id.contains("_")) {
+            else if (id.contains("!") || !id.contains("_")) {
                 this.setCorpusID(matcher.group(1));
                 this.setDocID(matcher.group(2));
             }
-            // </legacy>
+            // </legacy>     
+
+            // textSigle is provided indirectly
+            // <legacy>
             else {
-                // this.getCorpusID() + "." + this.getDocID()
                 this.setTextSigle(matcher.group(1) + '.' + matcher.group(2));
             };
+            // </legacy>
 
             this.setStartPos(Integer.parseInt(matcher.group(3)));
             this.setEndPos(Integer.parseInt(matcher.group(4)));

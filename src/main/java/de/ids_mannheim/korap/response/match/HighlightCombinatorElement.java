@@ -58,7 +58,7 @@ public class HighlightCombinatorElement {
 
             else if (this.number < -1) {
                 sb.append("<span xml:id=\"")
-                        .append(match.getPosID(match.getClassID(this.number)))
+                    .append(escapeHTML(match.getPosID(match.getClassID(this.number))))
                         .append("\">");
             }
 
@@ -66,14 +66,14 @@ public class HighlightCombinatorElement {
                 sb.append("<span ");
                 if (this.number < 2048) {
                     sb.append("title=\"")
-                            .append(match.getAnnotationID(this.number))
+                        .append(escapeHTML(match.getAnnotationID(this.number)))
                             .append('"');
                 }
                 else {
                     Relation rel = match.getRelationID(this.number);
-                    sb.append("xlink:title=\"").append(rel.annotation)
+                    sb.append("xlink:title=\"").append(escapeHTML(rel.annotation))
                             .append("\" xlink:type=\"simple\" xlink:href=\"#")
-                            .append(match.getPosID(rel.ref)).append('"');
+                        .append(escapeHTML(match.getPosID(rel.ref))).append('"');
                 };
                 sb.append('>');
             }
@@ -146,6 +146,7 @@ public class HighlightCombinatorElement {
                 else if (this.number != 0)
                     sb.append(this.number).append(':');
             };
+
             return sb.toString();
         }
         else if (this.type == 2) {
@@ -153,6 +154,6 @@ public class HighlightCombinatorElement {
                 return "]";
             return "}";
         };
-        return this.characters;
+        return escapeBrackets(this.characters);
     };
 };
