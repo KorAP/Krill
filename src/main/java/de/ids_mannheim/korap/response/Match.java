@@ -192,6 +192,7 @@ public class Match extends AbstractDocument {
         public Highlight (int start, int end, String annotation) {
             this.start = start;
             this.end = end;
+
             // TODO: This can overflow!
             if (annotationNumberCounter < 2048) {
                 this.number = annotationNumberCounter++;

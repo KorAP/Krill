@@ -94,12 +94,6 @@ public class TestMatchIdentifier {
         id = new MatchIdentifier("match-corpus-1/doc-1/text-1/p2105-2106");
         assertEquals("match-corpus-1/doc-1/text-1-p2105-2106", id.toString());
         assertEquals("corpus-1/doc-1/text-1", id.getTextSigle());
-        /*
-        assertEquals(2105, id.getStartPos());
-        assertEquals(2106, id.getEndPos());
-        assertEquals(null, id.getCorpusID());
-        assertEquals(null, id.getDocID());
-        */
     };
 
 
@@ -415,9 +409,45 @@ public class TestMatchIdentifier {
         km = ki.getMatchInfo("match-c1!d1-p3-4", "tokens", null, null, false,
                 false, true); // extendToSentence
 
+        // This will
+        // [{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:c}}}}{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}{f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:b}}}}]
         assertEquals(
-                "[{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:c}}}}{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}{f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:b}}}}]",
+                "[{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:c}}}}[{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}]{f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:b}}}}]",
                 km.getSnippetBrackets());
+
+        assertEquals(
+                "<span class=\"context-left\"></span>"+
+                "<mark>"+
+                "<span title=\"f/m:drei\">"+
+                "<span title=\"f/y:three\">"+
+                "<span title=\"it/is:3\">"+
+                "<span title=\"x/o:drittens\">c</span>"+
+                "</span>"+
+                "</span>"+
+                "</span>"+
+                "<mark>"+
+                "<span title=\"f/m:vier\">"+
+                "<span title=\"f/y:four\">"+
+                "<span title=\"it/is:4\">"+
+                "<span title=\"x/o:viertens\">a</span>"+
+                "</span>"+
+                "</span>"+
+                "</span>"+
+                "</mark>"+
+                "<span title=\"f/m:fuenf\">"+
+                "<span title=\"f/y:five\">"+
+                "<span title=\"it/is:5\">"+
+                "<span title=\"x/o:fünftens\">b</span>"+
+                "</span>"+
+                "</span>"+
+                "</span>"+
+                "</mark>"+
+                "<span class=\"context-right\"></span>",
+                km.getSnippetHTML());
+
+
+
+
         /*
         km = ki.getMatchInfo("match-c1!d3-p3-4", "tokens", null, null, false,
                 false, true); // extendToSentence

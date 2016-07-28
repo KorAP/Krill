@@ -14,6 +14,8 @@
 	- [feature] Added experimental KrillStats class (diewald)
 	- [bugfix] Escape quotes in JSON strings (diewald)
 	- [bugfix] Escape XML and Brackets in snippets correctly (diewald)
+	- [feature] Added match highlight to match API,
+	  in case the match was extended to the sentence scope (diewald)
 
 0.55.5 2016-05-02
 	- [performance] Changed to a dynamic window for sorting in FocusSpans (margaretha)

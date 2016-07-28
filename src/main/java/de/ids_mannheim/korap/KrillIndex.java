@@ -918,6 +918,8 @@ public final class KrillIndex {
         if (match.getStartPos() == -1)
             return match;
 
+        // Todo: add match-highlight
+
         // Create a filter based on the corpusID and the docID
         BooleanQuery bool = new BooleanQuery();
         if (match.getTextSigle() != null) {
@@ -943,7 +945,6 @@ public final class KrillIndex {
 
         if (DEBUG)
             log.trace("The bool query is {}", bool.toString());
-
 
         Filter filter = (Filter) new QueryWrapperFilter(bool);
 
@@ -1097,6 +1098,11 @@ public final class KrillIndex {
                 if (extendToSentence) {
                     String element = "base/s:s";
                     int[] spanContext = match.expandContextToSpan(element);
+
+                    // Add match highlight with class number -1
+                    // TODO: This is very specific behaviour here and should probably
+                    // be added elsewhere, too.
+                    match.addHighlight(match.getStartPos(), match.getEndPos() - 1, -1);
 
                     if (DEBUG)
                         log.trace("Extend to sentence element '{}'", element);
