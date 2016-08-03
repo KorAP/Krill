@@ -299,8 +299,8 @@ public final class KrillQuery extends Notifications {
                 if (DEBUG)
                     log.trace("Wrap class reference {}", number);
 
-                return new SpanFocusQueryWrapper(
-                        this._fromKoral(operands.get(0)), number);
+                return new SpanFocusQueryWrapper(this._fromKoral(operands
+                        .get(0)), number);
 
             case "koral:token":
 

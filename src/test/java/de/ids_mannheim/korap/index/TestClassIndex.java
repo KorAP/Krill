@@ -97,13 +97,13 @@ public class TestClassIndex {
 
         assertEquals("StartPos (1)", 4, kr.getMatch(1).startPos);
         assertEquals("EndPos (1)", 5, kr.getMatch(1).endPos);
-        assertEquals("snippetBrackets (1)", "abca[[{1:b}]]cabac", kr.getMatch(1)
-                .getSnippetBrackets());
+        assertEquals("snippetBrackets (1)", "abca[[{1:b}]]cabac", kr
+                .getMatch(1).getSnippetBrackets());
 
         assertEquals("StartPos (2)", 7, kr.getMatch(2).startPos);
         assertEquals("EndPos (2)", 8, kr.getMatch(2).endPos);
-        assertEquals("snippetBrackets (2)", "... bcabca[[{1:b}]]ac",
-                kr.getMatch(2).getSnippetBrackets());
+        assertEquals("snippetBrackets (2)", "... bcabca[[{1:b}]]ac", kr
+                .getMatch(2).getSnippetBrackets());
 
 
         sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:a")),
@@ -125,12 +125,12 @@ public class TestClassIndex {
 
         assertEquals("StartPos (1)", 3, kr.getMatch(1).startPos);
         assertEquals("EndPos (1)", 5, kr.getMatch(1).endPos);
-        assertEquals("SnippetBrackets (1)", "abc[[a{1:b}]]cabac", kr.getMatch(1)
-                .getSnippetBrackets());
+        assertEquals("SnippetBrackets (1)", "abc[[a{1:b}]]cabac", kr
+                .getMatch(1).getSnippetBrackets());
         assertEquals("StartPos (2)", 6, kr.getMatch(2).startPos);
         assertEquals("EndPos (2)", 8, kr.getMatch(2).endPos);
-        assertEquals("SnippetBrackets (2)", "abcabc[[a{1:b}]]ac", kr.getMatch(2)
-                .getSnippetBrackets());
+        assertEquals("SnippetBrackets (2)", "abcabc[[a{1:b}]]ac", kr
+                .getMatch(2).getSnippetBrackets());
 
 
         // abcabcabac
@@ -245,17 +245,17 @@ public class TestClassIndex {
 
         SpanQuery sq;
         Result kr;
-/*
-        sq = new SpanNextQuery(
-               new SpanTermQuery(new Term("base", "s:c")),
-               new SpanElementQuery("base", "x")
-        );
-        
-        kr = ki.search(sq, (short) 10);
-        assertEquals("ab[cabca]bac", kr.getMatch(0).getSnippetBrackets());
-*/
         /*
-     System.err.println();
+                sq = new SpanNextQuery(
+                       new SpanTermQuery(new Term("base", "s:c")),
+                       new SpanElementQuery("base", "x")
+                );
+                
+                kr = ki.search(sq, (short) 10);
+                assertEquals("ab[cabca]bac", kr.getMatch(0).getSnippetBrackets());
+        */
+        /*
+        System.err.println();
         sq = new SpanNextQuery(
                new SpanElementQuery("base", "x"),
                new SpanTermQuery(new Term("base", "s:b"))

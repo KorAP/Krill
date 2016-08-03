@@ -249,12 +249,14 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals((long) 10, kr.getTotalResults());
 
         assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... [[{3:{2:a}}]] ...", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... [[{3:{2:a}}]] ...", kr.getMatch(1)
+                .getSnippetBrackets());
         assertEquals("... [[{3:{1:b}}]]", kr.getMatch(2).getSnippetBrackets());
         assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(3).getSnippetBrackets());
         assertEquals("... [[{3:{2:a}}]]", kr.getMatch(4).getSnippetBrackets());
         assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(5).getSnippetBrackets());
-        assertEquals("... [[{3:{2:a}}]] ...", kr.getMatch(6).getSnippetBrackets());
+        assertEquals("... [[{3:{2:a}}]] ...", kr.getMatch(6)
+                .getSnippetBrackets());
         assertEquals("... [[{3:{1:b}}]]", kr.getMatch(7).getSnippetBrackets());
         assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(8).getSnippetBrackets());
         assertEquals("... [[{3:{2:a}}]]", kr.getMatch(9).getSnippetBrackets());
@@ -352,6 +354,7 @@ public class TestHighlight { // extends LuceneTestCase {
                 "Valid class numbers exceeded");
     };
 
+
     @Test
     public void highlightEscapes () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
@@ -362,11 +365,13 @@ public class TestHighlight { // extends LuceneTestCase {
 
         // Make this clean for HTML and Brackets!
 
-        fd.addTV("base", "Mit \"Mann\" & {Ma\\us}",
-                 "[(0-3)s:Mit|i:mit|_0#0-3|-:t$<i>4|<>:base/t:t$<b>64<i>0<i>20<i>4<b>0]" +
-                 "[(4-10)s:\"Mann\"|i:\"mann\"|base/l:\"Mann\"|_1#4-10]" +
-                 "[(11-12)s:&|i:&|base/l:&|_2#11-12]" +
-                 "[(13-20)s:{Ma\\us}|i:{ma\\us}|_3#13-20]");
+        fd.addTV(
+                "base",
+                "Mit \"Mann\" & {Ma\\us}",
+                "[(0-3)s:Mit|i:mit|_0#0-3|-:t$<i>4|<>:base/t:t$<b>64<i>0<i>20<i>4<b>0]"
+                        + "[(4-10)s:\"Mann\"|i:\"mann\"|base/l:\"Mann\"|_1#4-10]"
+                        + "[(11-12)s:&|i:&|base/l:&|_2#11-12]"
+                        + "[(13-20)s:{Ma\\us}|i:{ma\\us}|_3#13-20]");
         ki.addDoc(fd);
 
         // Commit!
@@ -380,25 +385,22 @@ public class TestHighlight { // extends LuceneTestCase {
 
         Result kr = ki.search(qs);
         assertEquals((long) 1, kr.getTotalResults());
-        assertEquals("[[Mit \"Mann\" & \\{Ma\\\\us\\}]]", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><mark>Mit &quot;Mann&quot; &amp; {Ma\\us}</mark></span><span class=\"context-right\"></span>", kr.getMatch(0).getSnippetHTML());
+        assertEquals("[[Mit \"Mann\" & \\{Ma\\\\us\\}]]", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals(
+                "<span class=\"context-left\"></span><span class=\"match\"><mark>Mit &quot;Mann&quot; &amp; {Ma\\us}</mark></span><span class=\"context-right\"></span>",
+                kr.getMatch(0).getSnippetHTML());
         assertEquals("match-c1/d1/1-p0-4", kr.getMatch(0).getID());
 
-        Match km = ki.getMatchInfo("match-c1/d1/1-p0-4", "base", true, (ArrayList) null, (ArrayList) null, true, true, false);
+        Match km = ki.getMatchInfo("match-c1/d1/1-p0-4", "base", true,
+                (ArrayList) null, (ArrayList) null, true, true, false);
         assertEquals(0, km.getStartPos());
-        assertEquals("<span class=\"context-left\"></span>"+
-                     "<span class=\"match\"><mark><span title=\"base/t:t\">"+
-                     "Mit "+
-                     "<span title=\"base/l:&quot;Mann&quot;\">"+
-                     "&quot;Mann&quot;"+
-                     "</span>"+
-                     " "+
-                     "<span title=\"base/l:&amp;\">&amp;</span>"+
-                     " "+
-                     "{Ma\\us}"+
-                     "</span>"+
-                     "</mark></span>"+
-                     "<span class=\"context-right\"></span>",
-                     km.getSnippetHTML());
+        assertEquals("<span class=\"context-left\"></span>"
+                + "<span class=\"match\"><mark><span title=\"base/t:t\">"
+                + "Mit " + "<span title=\"base/l:&quot;Mann&quot;\">"
+                + "&quot;Mann&quot;" + "</span>" + " "
+                + "<span title=\"base/l:&amp;\">&amp;</span>" + " "
+                + "{Ma\\us}" + "</span>" + "</mark></span>"
+                + "<span class=\"context-right\"></span>", km.getSnippetHTML());
     };
 };

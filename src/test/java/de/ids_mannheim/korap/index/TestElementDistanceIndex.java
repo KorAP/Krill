@@ -245,6 +245,7 @@ public class TestElementDistanceIndex {
         assertEquals("[[ec]]ebdc", kr.getMatch(0).getSnippetBrackets());
     };
 
+
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {

@@ -19,31 +19,31 @@ import org.slf4j.LoggerFactory;
  * Create a Statistics object.
  * 
  * This is early work and highliy experimental!
- *
+ * 
  * <blockquote><pre>
  * KrillStats ks = new KrillStats(json);
  * </pre></blockquote>
- *
+ * 
  * Should serialize to something like
- *
+ * 
  * "stats" : {
- *   "@type" : "koral:stats",
- *   "collection" : [
- *     {
- *       "@type" : "stats:collection",
- *       "foundry" : "base",
- *       "layer" : "s",
- *       "key" : "s",
- *       "value" : 450
- *     },
- *     {
- *       "@type" : "stats:collection",
- *       "key" : "texts",
- *       "value" : 2
- *     }
- *   ]
+ * "@type" : "koral:stats",
+ * "collection" : [
+ * {
+ * "@type" : "stats:collection",
+ * "foundry" : "base",
+ * "layer" : "s",
+ * "key" : "s",
+ * "value" : 450
+ * },
+ * {
+ * "@type" : "stats:collection",
+ * "key" : "texts",
+ * "value" : 2
  * }
- *
+ * ]
+ * }
+ * 
  * 
  * @author diewald
  */
@@ -53,8 +53,7 @@ import org.slf4j.LoggerFactory;
 public final class KrillStats extends Notifications {
 
     // Logger
-    private final static Logger log = LoggerFactory
-            .getLogger(KrillStats.class);
+    private final static Logger log = LoggerFactory.getLogger(KrillStats.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -66,6 +65,7 @@ public final class KrillStats extends Notifications {
      */
     public KrillStats () {};
 
+
     @Override
     public JsonNode toJsonNode () {
         ObjectMapper mapper = new ObjectMapper();
@@ -74,5 +74,5 @@ public final class KrillStats extends Notifications {
         json.put("@type", "koral:stats");
 
         return (JsonNode) json;
-    }    
+    }
 };

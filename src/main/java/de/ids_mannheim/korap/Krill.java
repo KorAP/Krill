@@ -215,7 +215,8 @@ public class Krill extends Response {
 
                 // TODO: Temporary
                 if (collNode.fieldNames().hasNext()) {
-                    this.setCollection(new KrillCollection().fromKoral(collNode));
+                    this.setCollection(new KrillCollection()
+                            .fromKoral(collNode));
                 };
             }
 

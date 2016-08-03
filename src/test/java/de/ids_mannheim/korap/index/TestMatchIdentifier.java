@@ -185,15 +185,15 @@ public class TestMatchIdentifier {
                 km.getSnippetBrackets());
 
         assertEquals("SnippetHTML (4)", "<span class=\"context-left\">"
-                + "<span class=\"more\">" + "</span>" + "</span>" +
-		     "<span class=\"match\">" + "<mark>"
+                + "<span class=\"more\">" + "</span>" + "</span>"
+                + "<span class=\"match\">" + "<mark>"
                 + "<mark class=\"class-2 level-0\">"
                 + "<span title=\"f/m:acht\">" + "<span title=\"f/y:eight\">"
                 + "b" + "</span>" + "</span>"
                 + "<mark class=\"class-4 level-1\">"
                 + "<span title=\"f/m:neun\">" + "<span title=\"f/y:nine\">"
                 + "a" + "</span>" + "</span>" + "</mark>" + "</mark>"
-		     + "</mark>" + "</span>" + "<span class=\"context-right\">"
+                + "</mark>" + "</span>" + "<span class=\"context-right\">"
                 + "<span class=\"more\">" + "</span>" + "</span>",
                 km.getSnippetHTML());
 
@@ -220,7 +220,8 @@ public class TestMatchIdentifier {
 
 
         assertEquals("SnippetHTML (1)", "<span class=\"context-left\">"
-                + "<span class=\"more\">" + "</span>" + "</span>" + "<span class=\"match\">" + "<mark>"
+                + "<span class=\"more\">" + "</span>" + "</span>"
+                + "<span class=\"match\">" + "<mark>"
                 + "<mark class=\"class-2 level-0\">"
                 + "<span title=\"f/m:acht\">" + "<span title=\"f/y:eight\">"
                 + "<span title=\"it/is:8\">" + "<span title=\"x/o:achtens\">"
@@ -229,7 +230,7 @@ public class TestMatchIdentifier {
                 + "<span title=\"f/m:neun\">" + "<span title=\"f/y:nine\">"
                 + "<span title=\"it/is:9\">" + "<span title=\"x/o:neuntens\">"
                 + "a" + "</span>" + "</span>" + "</span>" + "</span>"
-                + "</mark>" + "</mark>"  + "</mark>" + "</span>"
+                + "</mark>" + "</mark>" + "</mark>" + "</span>"
                 + "<span class=\"context-right\">" + "<span class=\"more\">"
                 + "</span>" + "</span>", km.getSnippetHTML());
     };
@@ -246,7 +247,8 @@ public class TestMatchIdentifier {
 
 
         assertEquals("SnippetHTML (1)", "<span class=\"context-left\">"
-                + "<span class=\"more\">" + "</span>" + "</span>" + "<span class=\"match\">" + "<mark>"
+                + "<span class=\"more\">" + "</span>" + "</span>"
+                + "<span class=\"match\">" + "<mark>"
                 + "<span title=\"f/m:acht\">" + "<span title=\"f/y:eight\">"
                 + "<span title=\"it/is:8\">" + "<span title=\"x/o:achtens\">"
                 + "b" + "</span>" + "</span>" + "</span>" + "</span>"
@@ -325,8 +327,8 @@ public class TestMatchIdentifier {
                 km.getSnippetBrackets());
 
         assertEquals("SnippetHTML (1)", "<span class=\"context-left\">"
-                + "<span class=\"more\">" + "</span>" + "</span>" +
-		     "<span class=\"match\">" +"<mark>"
+                + "<span class=\"more\">" + "</span>" + "</span>"
+                + "<span class=\"match\">" + "<mark>"
                 + "<span title=\"x/tag\">" + "<mark class=\"class-2 level-0\">"
                 + "<span title=\"f/m:acht\">" + "<span title=\"f/y:eight\">"
                 + "<span title=\"it/is:8\">" + "<span title=\"x/o:achtens\">"
@@ -338,8 +340,7 @@ public class TestMatchIdentifier {
                 + "</mark>" + "</mark>" + "<span title=\"f/m:zehn\">"
                 + "<span title=\"f/y:ten\">" + "<span title=\"it/is:10\">"
                 + "<span title=\"x/o:zehntens\">" + "c" + "</span>" + "</span>"
-                + "</span>" + "</span>" + "</span>" + "</mark>"
-		     + "</span>"
+                + "</span>" + "</span>" + "</span>" + "</mark>" + "</span>"
                 + "<span class=\"context-right\">" + "</span>",
                 km.getSnippetHTML());
     };
@@ -359,34 +360,27 @@ public class TestMatchIdentifier {
                 "[[{x/rel:a>3:{x/o:erstens:a}}{x/o:zweitens:b}{x/o:drittens:c}{#3:{x/o:viertens:a}}{x/o:fünftens:b}]] ...",
                 km.getSnippetBrackets());
 
-        assertEquals("SnippetBrackets (1)",
-		     "<span class=\"context-left\">"
-		     + "</span>"
-		     + "<span class=\"match\">"
-		     + "<mark>"
-		     + "<span xlink:title=\"x/rel:a\" "
-		     + "xlink:type=\"simple\" " + "xlink:href=\"#word-c1!d1-p3\">"
-		     + "<span title=\"x/o:erstens\">" + "a" + "</span>" + "</span>"
-		     + "<span title=\"x/o:zweitens\">" + "b" + "</span>"
-		     + "<span title=\"x/o:drittens\">" + "c" + "</span>"
-		     + "<span xml:id=\"word-c1!d1-p3\">"
-		     + "<span title=\"x/o:viertens\">" + "a" + "</span>"
-		     + "</span>"
-		     + "<span title=\"x/o:fünftens\">" + "b" + "</span>"
-		     + "</mark>"
-		     + "</span>"
-		     + "<span class=\"context-right\">" + "<span class=\"more\">"
-		     + "</span>" +
-		     "</span>", km.getSnippetHTML());
+        assertEquals("SnippetBrackets (1)", "<span class=\"context-left\">"
+                + "</span>" + "<span class=\"match\">" + "<mark>"
+                + "<span xlink:title=\"x/rel:a\" " + "xlink:type=\"simple\" "
+                + "xlink:href=\"#word-c1!d1-p3\">"
+                + "<span title=\"x/o:erstens\">" + "a" + "</span>" + "</span>"
+                + "<span title=\"x/o:zweitens\">" + "b" + "</span>"
+                + "<span title=\"x/o:drittens\">" + "c" + "</span>"
+                + "<span xml:id=\"word-c1!d1-p3\">"
+                + "<span title=\"x/o:viertens\">" + "a" + "</span>" + "</span>"
+                + "<span title=\"x/o:fünftens\">" + "b" + "</span>" + "</mark>"
+                + "</span>" + "<span class=\"context-right\">"
+                + "<span class=\"more\">" + "</span>" + "</span>",
+                km.getSnippetHTML());
 
         km = ki.getMatchInfo("match-c1!d1-p0-5(7)2-3(4)8-8(2)7-8", "tokens",
                 "x", null, true, true);
 
         assertEquals("SnippetBrackets (1)", "<span class=\"context-left\">"
-                + "</span>" +
-		     "<span class=\"match\">" +
-		     "<mark>" + "<span xlink:title=\"x/rel:a\" "
-                + "xlink:type=\"simple\" " + "xlink:href=\"#word-c1!d1-p3\">"
+                + "</span>" + "<span class=\"match\">" + "<mark>"
+                + "<span xlink:title=\"x/rel:a\" " + "xlink:type=\"simple\" "
+                + "xlink:href=\"#word-c1!d1-p3\">"
                 + "<span title=\"x/o:erstens\">" + "a" + "</span>" + "</span>"
                 + "<span title=\"x/o:zweitens\">" + "b" + "</span>"
                 + "<mark class=\"class-7 level-0\">"
@@ -394,9 +388,7 @@ public class TestMatchIdentifier {
                 + "<span xml:id=\"word-c1!d1-p3\">"
                 + "<span title=\"x/o:viertens\">" + "a" + "</span>" + "</span>"
                 + "</mark>" + "<span title=\"x/o:fünftens\">" + "b" + "</span>"
-                + "</mark>" +
-"</span>" +
-		     "<span class=\"context-right\">"
+                + "</mark>" + "</span>" + "<span class=\"context-right\">"
                 + "<span class=\"more\">" + "</span>" + "</span>",
                 km.getSnippetHTML());
     };
@@ -430,36 +422,20 @@ public class TestMatchIdentifier {
                 "[{f/m:drei:{f/y:three:{it/is:3:{x/o:drittens:c}}}}[{f/m:vier:{f/y:four:{it/is:4:{x/o:viertens:a}}}}]{f/m:fuenf:{f/y:five:{it/is:5:{x/o:fünftens:b}}}}]",
                 km.getSnippetBrackets());
 
-        assertEquals(
-                "<span class=\"context-left\"></span>"+
-		"<span class=\"match\">" +
-                "<span title=\"f/m:drei\">"+
-                "<span title=\"f/y:three\">"+
-                "<span title=\"it/is:3\">"+
-                "<span title=\"x/o:drittens\">c</span>"+
-                "</span>"+
-                "</span>"+
-                "</span>"+
-                "<mark>"+
-                "<span title=\"f/m:vier\">"+
-                "<span title=\"f/y:four\">"+
-                "<span title=\"it/is:4\">"+
-                "<span title=\"x/o:viertens\">a</span>"+
-                "</span>"+
-                "</span>"+
-                "</span>"+
-                "</mark>"+
-                "<span title=\"f/m:fuenf\">"+
-                "<span title=\"f/y:five\">"+
-                "<span title=\"it/is:5\">"+
-                "<span title=\"x/o:fünftens\">b</span>"+
-                "</span>"+
-                "</span>"+
-                "</span>"+
-		"</span>" +
-                "<span class=\"context-right\"></span>",
-                km.getSnippetHTML());
-
+        assertEquals("<span class=\"context-left\"></span>"
+                + "<span class=\"match\">" + "<span title=\"f/m:drei\">"
+                + "<span title=\"f/y:three\">" + "<span title=\"it/is:3\">"
+                + "<span title=\"x/o:drittens\">c</span>" + "</span>"
+                + "</span>" + "</span>" + "<mark>"
+                + "<span title=\"f/m:vier\">" + "<span title=\"f/y:four\">"
+                + "<span title=\"it/is:4\">"
+                + "<span title=\"x/o:viertens\">a</span>" + "</span>"
+                + "</span>" + "</span>" + "</mark>"
+                + "<span title=\"f/m:fuenf\">" + "<span title=\"f/y:five\">"
+                + "<span title=\"it/is:5\">"
+                + "<span title=\"x/o:fünftens\">b</span>" + "</span>"
+                + "</span>" + "</span>" + "</span>"
+                + "<span class=\"context-right\"></span>", km.getSnippetHTML());
 
 
 
@@ -494,7 +470,7 @@ public class TestMatchIdentifier {
                 "SnippetHTML (2)",
                 "<span class=\"context-left\">"
                         + "</span>"
-		+ "<span class=\"match\">"
+                        + "<span class=\"match\">"
                         + "<mark>"
                         + "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" xlink:href=\"#word-c1!d1-p3\">"
                         + "<span title=\"f/m:eins\">"
@@ -521,9 +497,8 @@ public class TestMatchIdentifier {
                         + "<span title=\"f/y:four\">"
                         + "<span title=\"it/is:4\">"
                         + "<span title=\"x/o:viertens\">a</span>" + "</span>"
-                        + "</span>" + "</span>"  + "</span>" + "</mark>"
-		+ "</span>"
-                        + "<span class=\"context-right\">"
+                        + "</span>" + "</span>" + "</span>" + "</mark>"
+                        + "</span>" + "<span class=\"context-right\">"
                         + "<span class=\"more\">" + "</span>" + "</span>",
                 km.getSnippetHTML());
     };
@@ -670,8 +645,7 @@ public class TestMatchIdentifier {
                 + "</span>" + "</span>" + "<span title=\"f/m:zehn\">"
                 + "<span title=\"f/y:ten\">" + "<span title=\"it/is:10\">"
                 + "<span title=\"x/o:zehntens\">c</span>" + "</span>"
-                + "</span>" + "</span>" + "</mark>"
-		     + "</span>"
+                + "</span>" + "</span>" + "</mark>" + "</span>"
                 + "<span class=\"context-right\">" + "</span>",
                 res.at("/snippet").asText());
     };

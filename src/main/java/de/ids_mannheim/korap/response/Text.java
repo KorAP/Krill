@@ -33,7 +33,9 @@ public class Text extends AbstractDocument {
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
 
+
     public Text () {};
+
 
     public String toJsonString () {
         JsonNode json = (JsonNode) this.toJsonNode();

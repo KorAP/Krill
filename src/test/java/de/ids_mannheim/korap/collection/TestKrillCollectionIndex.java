@@ -405,13 +405,13 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
         // Create a query
-        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN")
+                .with("tt/p:NN"));
         ks.setCollection(kc)
-            .getMeta()
-            .setStartIndex(0)
-            .setCount((short) 20)
-            .setContext(new SearchContext(true, (short) 5, true, (short) 5))
-            ;
+                .getMeta()
+                .setStartIndex(0)
+                .setCount((short) 20)
+                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
 
         Result kr = ks.apply(ki);
 
@@ -497,13 +497,13 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
         // Create a query
-        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN")
+                .with("tt/p:NN"));
         ks.setCollection(kc)
-            .getMeta()
-            .setStartIndex(0)
-            .setCount((short) 20)
-            .setContext(new SearchContext(true, (short) 5, true, (short) 5))
-            ;
+                .getMeta()
+                .setStartIndex(0)
+                .setCount((short) 20)
+                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
 
         Result kr = ks.apply(ki);
         /*
@@ -590,12 +590,13 @@ public class TestKrillCollectionIndex {
 
 
         // Create a query
-        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN")
+                .with("tt/p:NN"));
         ks.setCollection(kc)
-            .getMeta()
-            .setStartIndex(0)
-            .setCount((short) 20)
-            .setContext(new SearchContext(true, (short) 5, true, (short) 5));
+                .getMeta()
+                .setStartIndex(0)
+                .setCount((short) 20)
+                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
 
         Result kr = ks.apply(ki);
 
@@ -655,14 +656,13 @@ public class TestKrillCollectionIndex {
         assertEquals("Sentences", 103, kc.numberOf("sentences"));
         assertEquals("Tokens", 1229, kc.numberOf("tokens"));
 
-        
+
         Krill ks = new Krill(sq);
         ks.setCollection(kc)
-            .getMeta()
-            .setStartIndex(0)
-            .setCount((short) 20)
-            .setContext(new SearchContext(true, (short) 5, true, (short) 5))
-            ;
+                .getMeta()
+                .setStartIndex(0)
+                .setCount((short) 20)
+                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
         kr = ks.apply(ki);
 
         // kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);

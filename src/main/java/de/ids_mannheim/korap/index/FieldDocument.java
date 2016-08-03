@@ -305,6 +305,7 @@ public class FieldDocument extends AbstractDocument {
         this.addString("ID", ID);
     };
 
+
     @Override
     @JsonIgnore
     public void setUID (int ID) {
@@ -314,6 +315,7 @@ public class FieldDocument extends AbstractDocument {
         }
     };
 
+
     @Override
     public void setUID (String ID) {
         if (ID != null) {
@@ -321,6 +323,7 @@ public class FieldDocument extends AbstractDocument {
             this.addString("UID", new Integer(this.UID).toString());
         };
     };
+
 
     // No longer supported
     @Override

@@ -137,8 +137,8 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 66);
         assertEquals(5, kr.getItemsPerPage());
         assertEquals(5, kr.getStartIndex());
-        assertEquals("... a: A ist [[der klangreichste]] der V ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... a: A ist [[der klangreichste]] der V ...", kr
+                .getMatch(0).getSnippetBrackets());
     };
 
 

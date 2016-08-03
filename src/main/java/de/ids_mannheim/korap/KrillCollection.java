@@ -292,6 +292,7 @@ public final class KrillCollection extends Notifications {
         throw new QueryException(813, "Collection type is not supported");
     };
 
+
     /**
      * Set the collection from a {@link CollectionBuilder} object.
      * 

@@ -9,9 +9,8 @@ public class MatchIdentifier extends DocIdentifier {
     private ArrayList<int[]> pos = new ArrayList<>(8);
 
     // Remember: "contains" is necessary for a compatibility bug in Kustvakt
-    Pattern idRegex = Pattern.compile("^(?:match-|contains-)" +
-                                      "(?:([^!]+?)[!\\.])?" +
-                                      "([^!]+)[-/]p([0-9]+)-([0-9]+)"
+    Pattern idRegex = Pattern.compile("^(?:match-|contains-)"
+            + "(?:([^!]+?)[!\\.])?" + "([^!]+)[-/]p([0-9]+)-([0-9]+)"
             + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)" + "(?:c.+?)?$");
     Pattern posRegex = Pattern.compile("\\(([0-9]+)\\)([0-9]+)-([0-9]+)");
 
@@ -23,7 +22,8 @@ public class MatchIdentifier extends DocIdentifier {
      * Construct a new MatchIdentifier.
      * Due to lots of internal changes and compatibility reasons,
      * the structure of the identifier has changed a lot.
-     * The constructor supports different legacy structures for test compatibility.
+     * The constructor supports different legacy structures for test
+     * compatibility.
      */
     public MatchIdentifier (String id) {
 

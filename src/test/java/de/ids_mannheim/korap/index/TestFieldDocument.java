@@ -206,7 +206,9 @@ public class TestFieldDocument {
                 false, (short) 5);
 
         assertEquals(1, kr.getTotalResults());
-        assertEquals("... bezeichnen, sofern [[{1:der} schwedische Buchstabe „Å“ nicht]] verfügbar ist im SI-Einheitensystem ist ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+                "... bezeichnen, sofern [[{1:der} schwedische Buchstabe „Å“ nicht]] verfügbar ist im SI-Einheitensystem ist ...",
+                kr.getMatch(0).getSnippetBrackets());
     };
 
 

@@ -57,8 +57,8 @@ public class TestClassFilterIndex {
         assertEquals(18, kr.getMatch(1).getEndPos());
         assertEquals(
                 "Frankenstein, treat my daughter well. She [[{2:is {1:the one} that saved "
-                        + "your master who you hold so dear}]].", kr.getMatch(1)
-                        .getSnippetBrackets());
+                        + "your master who you hold so dear}]].", kr
+                        .getMatch(1).getSnippetBrackets());
         assertEquals(
                 "Frankenstein, treat my daughter well. She [[{2:is {1:the one that "
                         + "saved your master who you hold so dear}}]].", kr

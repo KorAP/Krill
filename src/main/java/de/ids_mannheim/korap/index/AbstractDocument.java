@@ -79,6 +79,7 @@ public abstract class AbstractDocument extends Response {
             // Meta information regarding annotations
             tokenSource, layerInfos;
 
+
     /**
      * Populate document meta information with information coming from
      * the index.
@@ -97,6 +98,7 @@ public abstract class AbstractDocument extends Response {
         this.populateDocument(doc, field, fieldList);
     };
 
+
     public void populateFields (Document doc) {
 
         HashSet<String> fieldList = new HashSet<>(32);
@@ -106,6 +108,7 @@ public abstract class AbstractDocument extends Response {
 
         this.populateFields(doc, fieldList);
     };
+
 
     public void populateFields (Document doc, Collection<String> fields) {
         // Remember - never serialize "tokens"
@@ -204,6 +207,7 @@ public abstract class AbstractDocument extends Response {
         if (fields.contains("fileEditionStatement"))
             this.setFileEditionStatement(doc.get("fileEditionStatement"));
     };
+
 
     /**
      * Populate document meta information with information coming from
@@ -1184,11 +1188,13 @@ public abstract class AbstractDocument extends Response {
         return this.field;
     };
 
+
     @Deprecated
     @JsonProperty("corpusID")
     public String getCorpusID () {
         return this.corpusID;
     };
+
 
     @Deprecated
     public void setCorpusID (String corpusID) {
@@ -1207,6 +1213,7 @@ public abstract class AbstractDocument extends Response {
     public void setID (String ID) {
         this.ID = ID;
     };
+
 
     /**
      * Serialize response as a {@link JsonNode}.

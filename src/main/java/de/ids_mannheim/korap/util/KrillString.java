@@ -68,6 +68,7 @@ public class KrillString {
         return text.replaceAll("([\\{\\}\\[\\]\\\\])", "\\\\$1");
     };
 
+
     /**
      * Add surrounding double quotes.
      * 

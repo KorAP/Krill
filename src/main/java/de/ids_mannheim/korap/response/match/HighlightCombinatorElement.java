@@ -53,29 +53,31 @@ public class HighlightCombinatorElement {
         if (this.type == 1) {
             StringBuilder sb = new StringBuilder();
 
-	    // This is the surrounding match mark
+            // This is the surrounding match mark
             if (this.number == -1) {
                 sb.append("<mark>");
             }
 
             else if (this.number < -1) {
                 sb.append("<span xml:id=\"")
-                    .append(escapeHTML(match.getPosID(match.getClassID(this.number))))
-                        .append("\">");
+                        .append(escapeHTML(match.getPosID(match
+                                .getClassID(this.number)))).append("\">");
             }
 
             else if (this.number >= 256) {
                 sb.append("<span ");
                 if (this.number < 2048) {
                     sb.append("title=\"")
-                        .append(escapeHTML(match.getAnnotationID(this.number)))
-                            .append('"');
+                            .append(escapeHTML(match
+                                    .getAnnotationID(this.number))).append('"');
                 }
                 else {
                     Relation rel = match.getRelationID(this.number);
-                    sb.append("xlink:title=\"").append(escapeHTML(rel.annotation))
+                    sb.append("xlink:title=\"")
+                            .append(escapeHTML(rel.annotation))
                             .append("\" xlink:type=\"simple\" xlink:href=\"#")
-                        .append(escapeHTML(match.getPosID(rel.ref))).append('"');
+                            .append(escapeHTML(match.getPosID(rel.ref)))
+                            .append('"');
                 };
                 sb.append('>');
             }

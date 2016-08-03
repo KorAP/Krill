@@ -535,7 +535,7 @@ public final class KrillIndex {
         }
         catch (IOException e) {
             log.error("File json not found or unmappable: {}",
-                      e.getLocalizedMessage());
+                    e.getLocalizedMessage());
         };
         return (FieldDocument) null;
     };
@@ -783,7 +783,8 @@ public final class KrillIndex {
         // Rewrite parse ID
         uid = new Integer(Integer.parseInt(uid)).toString();
 
-        Filter filter = (Filter) new QueryWrapperFilter(new TermQuery(new Term("UID", uid)));
+        Filter filter = (Filter) new QueryWrapperFilter(new TermQuery(new Term(
+                "UID", uid)));
 
         try {
 
@@ -792,7 +793,7 @@ public final class KrillIndex {
 
                 // Retrieve the single document of interest
                 DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
-                                                        .getLiveDocs());
+                        .getLiveDocs());
 
                 // Create a bitset for the correct document
                 Bits bitset = filterSet.bits();
@@ -840,6 +841,7 @@ public final class KrillIndex {
 
         return text;
     };
+
 
     public String getMatchIDWithContext (String id) {
         /* No includeHighlights */
@@ -1031,7 +1033,7 @@ public final class KrillIndex {
             if (DEBUG)
                 log.trace("The final regexObj is {}", regexObj.toString());
         };
-	
+
         try {
 
             // Iterate over all atomic indices and find the matching document
@@ -1092,14 +1094,12 @@ public final class KrillIndex {
                 // Todo:
                 SearchContext context = match.getContext();
 
-		// Override the normal match marking
-		// to have an inner match
-		match.overrideMatchPosition(
-		  match.getStartPos(),
-		  match.getEndPos() - 1
-		);
+                // Override the normal match marking
+                // to have an inner match
+                match.overrideMatchPosition(match.getStartPos(),
+                        match.getEndPos() - 1);
 
-		
+
                 // Search for minimal surrounding sentences
                 if (extendToSentence) {
                     String element = "base/s:s";

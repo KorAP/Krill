@@ -20,11 +20,13 @@ public class TestKrillString {
                 escapeHTML("Er sagte: \"Das ist ja toll!\""));
     };
 
+
     @Test
     public void testQuote () {
         assertEquals("\"hallo\"", quote("hallo"));
         assertEquals("\"h'all'o\"", quote("h'all'o"));
-        assertEquals("\"er sagte: \\\"Hallo!\\\"\"", quote("er sagte: \"Hallo!\""));
+        assertEquals("\"er sagte: \\\"Hallo!\\\"\"",
+                quote("er sagte: \"Hallo!\""));
         assertEquals("\"a \\\\\\\" b\"", quote("a \\\" b"));
     };
 };

@@ -123,6 +123,7 @@ public class TestKrillIndex {
         // hasDeletions, hasPendingMerges
     };
 
+
     /*
      * This test demonstrates the behaviour
      */
@@ -135,12 +136,10 @@ public class TestKrillIndex {
 
         // These values are canonically equivalent
         // But indexed as byte sequences
-        fd.addTV("base",
-                 new String("ju" + "\u006E" + "\u0303" + "o") +
-                 " " +
-                 new String("ju" + "\u00F1" + "o"),
-                 "[(0-5)s:ju" + "\u006E" + "\u0303" + "o|_0$<i>0<i>5|-:t$<i>2]"
-                 + "[(6-10)s:ju" + "\u00F1" + "o|_1$<i>6<i>10]");
+        fd.addTV("base", new String("ju" + "\u006E" + "\u0303" + "o") + " "
+                + new String("ju" + "\u00F1" + "o"), "[(0-5)s:ju" + "\u006E"
+                + "\u0303" + "o|_0$<i>0<i>5|-:t$<i>2]" + "[(6-10)s:ju"
+                + "\u00F1" + "o|_1$<i>6<i>10]");
         ki.addDoc(fd);
         ki.commit();
 
@@ -153,6 +152,7 @@ public class TestKrillIndex {
         kr = ki.search(kq.seg("s:ju" + "\u006E" + "\u0303" + "o").toQuery());
         assertEquals(1, kr.getTotalResults());
     };
+
 
     @Test
     public void indexFieldInfo () throws IOException {

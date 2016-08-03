@@ -76,8 +76,8 @@ public class TestResource {
         Node.closeDBPool();
         t4 = System.nanoTime();
 
-        double startup  = (double) (t2 - t1) / 1000000000.0;
-        double action   = (double) (t3 - t2) / 1000000000.0;
+        double startup = (double) (t2 - t1) / 1000000000.0;
+        double action = (double) (t3 - t2) / 1000000000.0;
         double shutdown = (double) (t4 - t3) / 1000000000.0;
     };
 
@@ -111,7 +111,7 @@ public class TestResource {
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006" }) {
 
-            
+
 
             String json = StringfromFile(getClass().getResource(
                     "/wiki/" + i + ".json").getFile());
@@ -167,7 +167,8 @@ public class TestResource {
         resp = target.path("/index/00005").request().get(String.class);
         res = mapper.readTree(resp);
 
-        assertEquals("freizeit-unterhaltung reisen schrott tabellen", res.at("/textClass").asText());
+        assertEquals("freizeit-unterhaltung reisen schrott tabellen",
+                res.at("/textClass").asText());
         assertEquals("Å (Orte in Norwegen)", res.at("/title").asText());
         assertEquals("WPD", res.at("/corpusID").asText());
         assertEquals(5, res.at("/UID").asInt());
@@ -178,7 +179,8 @@ public class TestResource {
         resp = target.path("/index/5").request().get(String.class);
         res = mapper.readTree(resp);
 
-        assertEquals("freizeit-unterhaltung reisen schrott tabellen", res.at("/textClass").asText());
+        assertEquals("freizeit-unterhaltung reisen schrott tabellen",
+                res.at("/textClass").asText());
         assertEquals("Å (Orte in Norwegen)", res.at("/title").asText());
         assertEquals("WPD", res.at("/corpusID").asText());
         assertEquals(5, res.at("/UID").asInt());
