@@ -1,4 +1,4 @@
-0.55.6 2016-07-27
+0.55.6 2016-08-03
         - [bugfix] distance with key "t" uses default foundry (diewald)
 	- [cleanup] Renamed fromJson() to fromKoral() (diewald)
 	- [cleanup] Removed deprecated methods in Krill:
@@ -14,7 +14,7 @@
 	- [feature] Added experimental KrillStats class (diewald)
 	- [bugfix] Escape quotes in JSON strings (diewald)
 	- [bugfix] Escape XML and Brackets in snippets correctly (diewald)
-	- [feature] Added match highlight to match API,
+	- [feature] Differ between matching scope and match highlighting,
 	  in case the match was extended to the sentence scope (diewald)
 
 0.55.5 2016-05-02

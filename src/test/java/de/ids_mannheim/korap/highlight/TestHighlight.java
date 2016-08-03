@@ -51,7 +51,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(km.getStartPos(1), 1);
         assertEquals(km.getEndPos(1), 2);
         assertEquals(
-                "<span class=\"context-left\">a</span><mark><mark class=\"class-1 level-0\">b</mark></mark><span class=\"context-right\">c</span>",
+                "<span class=\"context-left\">a</span><span class=\"match\"><mark><mark class=\"class-1 level-0\">b</mark></mark></span><span class=\"context-right\">c</span>",
                 km.getSnippetHTML());
 
         kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seg("s:b")))
@@ -64,7 +64,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(km.getStartPos(2), 2);
         assertEquals(km.getEndPos(2), 3);
         assertEquals(
-                "<span class=\"context-left\">a</span><mark><mark class=\"class-1 level-0\">b</mark><mark class=\"class-2 level-0\">c</mark></mark><span class=\"context-right\"></span>",
+                "<span class=\"context-left\">a</span><span class=\"match\"><mark><mark class=\"class-1 level-0\">b</mark><mark class=\"class-2 level-0\">c</mark></mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
 
 
@@ -79,7 +79,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(km.getStartPos(2), 2);
         assertEquals(km.getEndPos(2), 3);
         assertEquals(
-                "<span class=\"context-left\"></span><mark><mark class=\"class-1 level-0\">ab</mark><mark class=\"class-2 level-0\">c</mark></mark><span class=\"context-right\"></span>",
+                "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-1 level-0\">ab</mark><mark class=\"class-2 level-0\">c</mark></mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
 
 
@@ -97,7 +97,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(km.getStartPos(3), 0);
         assertEquals(km.getEndPos(3), 3);
         assertEquals(
-                "<span class=\"context-left\"></span><mark><mark class=\"class-3 level-0\"><mark class=\"class-1 level-1\">ab</mark><mark class=\"class-2 level-1\">c</mark></mark></mark><span class=\"context-right\"></span>",
+                "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-3 level-0\"><mark class=\"class-1 level-1\">ab</mark><mark class=\"class-2 level-1\">c</mark></mark></mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
     };
 
@@ -124,18 +124,18 @@ public class TestHighlight { // extends LuceneTestCase {
         Match km = kr.getMatch(0);
         km.addHighlight(0, 1, (short) 7);
         assertEquals(
-                "<span class=\"context-left\"></span><mark><mark class=\"class-7 level-0\">ab</mark>c</mark><span class=\"context-right\"></span>",
+                "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-7 level-0\">ab</mark>c</mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
 
         km.addHighlight(1, 2, (short) 6);
         assertEquals(
-                "<span class=\"context-left\"></span><mark><mark class=\"class-7 level-0\">a<mark class=\"class-6 level-1\">b</mark></mark><mark class=\"class-6 level-1\">c</mark></mark><span class=\"context-right\"></span>",
+                "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-7 level-0\">a<mark class=\"class-6 level-1\">b</mark></mark><mark class=\"class-6 level-1\">c</mark></mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
 
         km.addHighlight(0, 1, (short) 5);
-        assertEquals("[{7:{5:a{6:b}}}{6:c}]", km.getSnippetBrackets());
+        assertEquals("[[{7:{5:a{6:b}}}{6:c}]]", km.getSnippetBrackets());
         assertEquals(
-                "<span class=\"context-left\"></span><mark><mark class=\"class-7 level-0\"><mark class=\"class-5 level-1\">a<mark class=\"class-6 level-2\">b</mark></mark></mark><mark class=\"class-6 level-2\">c</mark></mark><span class=\"context-right\"></span>",
+                "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-7 level-0\"><mark class=\"class-5 level-1\">a<mark class=\"class-6 level-2\">b</mark></mark></mark><mark class=\"class-6 level-2\">c</mark></mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
 
     };
@@ -185,23 +185,23 @@ public class TestHighlight { // extends LuceneTestCase {
                 .or(kq._(2, kq.seg("s:b"))).toQuery();
         Result kr = ki.search(q);
         assertEquals((long) 14, kr.getTotalResults());
-        assertEquals("[{1:a}]bab", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("a[{2:b}]ab", kr.getMatch(1).getSnippetBrackets());
-        assertEquals("ab[{1:a}]b", kr.getMatch(2).getSnippetBrackets());
-        assertEquals("aba[{2:b}]", kr.getMatch(3).getSnippetBrackets());
+        assertEquals("[[{1:a}]]bab", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("a[[{2:b}]]ab", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("ab[[{1:a}]]b", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("aba[[{2:b}]]", kr.getMatch(3).getSnippetBrackets());
 
-        assertEquals("[{1:a}]ba", kr.getMatch(4).getSnippetBrackets());
-        assertEquals("a[{2:b}]a", kr.getMatch(5).getSnippetBrackets());
-        assertEquals("ab[{1:a}]", kr.getMatch(6).getSnippetBrackets());
+        assertEquals("[[{1:a}]]ba", kr.getMatch(4).getSnippetBrackets());
+        assertEquals("a[[{2:b}]]a", kr.getMatch(5).getSnippetBrackets());
+        assertEquals("ab[[{1:a}]]", kr.getMatch(6).getSnippetBrackets());
 
-        assertEquals("[{1:a}]bab", kr.getMatch(7).getSnippetBrackets());
-        assertEquals("a[{2:b}]ab", kr.getMatch(8).getSnippetBrackets());
-        assertEquals("ab[{1:a}]b", kr.getMatch(9).getSnippetBrackets());
-        assertEquals("aba[{2:b}]", kr.getMatch(10).getSnippetBrackets());
+        assertEquals("[[{1:a}]]bab", kr.getMatch(7).getSnippetBrackets());
+        assertEquals("a[[{2:b}]]ab", kr.getMatch(8).getSnippetBrackets());
+        assertEquals("ab[[{1:a}]]b", kr.getMatch(9).getSnippetBrackets());
+        assertEquals("aba[[{2:b}]]", kr.getMatch(10).getSnippetBrackets());
 
-        assertEquals("[{1:a}]ba", kr.getMatch(11).getSnippetBrackets());
-        assertEquals("a[{2:b}]a", kr.getMatch(12).getSnippetBrackets());
-        assertEquals("ab[{1:a}]", kr.getMatch(13).getSnippetBrackets());
+        assertEquals("[[{1:a}]]ba", kr.getMatch(11).getSnippetBrackets());
+        assertEquals("a[[{2:b}]]a", kr.getMatch(12).getSnippetBrackets());
+        assertEquals("ab[[{1:a}]]", kr.getMatch(13).getSnippetBrackets());
 
         kq = new QueryBuilder("base");
         q = (SpanQuery) kq.or(kq._(1, kq.seg("i:a")))
@@ -212,32 +212,32 @@ public class TestHighlight { // extends LuceneTestCase {
         kr = ki.search(qs);
         assertEquals((long) 10, kr.getTotalResults());
 
-        assertEquals("[{1:a}]b ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... b[{2:a}]b", kr.getMatch(1).getSnippetBrackets());
-        assertEquals("... a[{1:b}]", kr.getMatch(2).getSnippetBrackets());
-        assertEquals("[{1:a}]b ...", kr.getMatch(3).getSnippetBrackets());
-        assertEquals("... b[{2:a}]", kr.getMatch(4).getSnippetBrackets());
-        assertEquals("[{1:a}]b ...", kr.getMatch(5).getSnippetBrackets());
-        assertEquals("... b[{2:a}]b", kr.getMatch(6).getSnippetBrackets());
-        assertEquals("... a[{1:b}]", kr.getMatch(7).getSnippetBrackets());
-        assertEquals("[{1:a}]b ...", kr.getMatch(8).getSnippetBrackets());
-        assertEquals("... b[{2:a}]", kr.getMatch(9).getSnippetBrackets());
+        assertEquals("[[{1:a}]]b ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... b[[{2:a}]]b", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... a[[{1:b}]]", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("[[{1:a}]]b ...", kr.getMatch(3).getSnippetBrackets());
+        assertEquals("... b[[{2:a}]]", kr.getMatch(4).getSnippetBrackets());
+        assertEquals("[[{1:a}]]b ...", kr.getMatch(5).getSnippetBrackets());
+        assertEquals("... b[[{2:a}]]b", kr.getMatch(6).getSnippetBrackets());
+        assertEquals("... a[[{1:b}]]", kr.getMatch(7).getSnippetBrackets());
+        assertEquals("[[{1:a}]]b ...", kr.getMatch(8).getSnippetBrackets());
+        assertEquals("... b[[{2:a}]]", kr.getMatch(9).getSnippetBrackets());
 
         qs.getMeta().getContext().left.setToken(true).setLength((short) 0);
         qs.getMeta().getContext().right.setToken(true).setLength((short) 0);
         kr = ki.search(qs);
         assertEquals((long) 10, kr.getTotalResults());
 
-        assertEquals("[{1:a}] ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... [{2:a}] ...", kr.getMatch(1).getSnippetBrackets());
-        assertEquals("... [{1:b}]", kr.getMatch(2).getSnippetBrackets());
-        assertEquals("[{1:a}] ...", kr.getMatch(3).getSnippetBrackets());
-        assertEquals("... [{2:a}]", kr.getMatch(4).getSnippetBrackets());
-        assertEquals("[{1:a}] ...", kr.getMatch(5).getSnippetBrackets());
-        assertEquals("... [{2:a}] ...", kr.getMatch(6).getSnippetBrackets());
-        assertEquals("... [{1:b}]", kr.getMatch(7).getSnippetBrackets());
-        assertEquals("[{1:a}] ...", kr.getMatch(8).getSnippetBrackets());
-        assertEquals("... [{2:a}]", kr.getMatch(9).getSnippetBrackets());
+        assertEquals("[[{1:a}]] ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... [[{2:a}]] ...", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... [[{1:b}]]", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("[[{1:a}]] ...", kr.getMatch(3).getSnippetBrackets());
+        assertEquals("... [[{2:a}]]", kr.getMatch(4).getSnippetBrackets());
+        assertEquals("[[{1:a}]] ...", kr.getMatch(5).getSnippetBrackets());
+        assertEquals("... [[{2:a}]] ...", kr.getMatch(6).getSnippetBrackets());
+        assertEquals("... [[{1:b}]]", kr.getMatch(7).getSnippetBrackets());
+        assertEquals("[[{1:a}]] ...", kr.getMatch(8).getSnippetBrackets());
+        assertEquals("... [[{2:a}]]", kr.getMatch(9).getSnippetBrackets());
 
         q = (SpanQuery) kq._(3,
                 kq.or(kq._(1, kq.seg("i:a"))).or(kq._(2, kq.seg("i:c"))))
@@ -248,16 +248,16 @@ public class TestHighlight { // extends LuceneTestCase {
         kr = ki.search(qs);
         assertEquals((long) 10, kr.getTotalResults());
 
-        assertEquals("[{3:{1:a}}] ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... [{3:{2:a}}] ...", kr.getMatch(1).getSnippetBrackets());
-        assertEquals("... [{3:{1:b}}]", kr.getMatch(2).getSnippetBrackets());
-        assertEquals("[{3:{1:a}}] ...", kr.getMatch(3).getSnippetBrackets());
-        assertEquals("... [{3:{2:a}}]", kr.getMatch(4).getSnippetBrackets());
-        assertEquals("[{3:{1:a}}] ...", kr.getMatch(5).getSnippetBrackets());
-        assertEquals("... [{3:{2:a}}] ...", kr.getMatch(6).getSnippetBrackets());
-        assertEquals("... [{3:{1:b}}]", kr.getMatch(7).getSnippetBrackets());
-        assertEquals("[{3:{1:a}}] ...", kr.getMatch(8).getSnippetBrackets());
-        assertEquals("... [{3:{2:a}}]", kr.getMatch(9).getSnippetBrackets());
+        assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... [[{3:{2:a}}]] ...", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... [[{3:{1:b}}]]", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(3).getSnippetBrackets());
+        assertEquals("... [[{3:{2:a}}]]", kr.getMatch(4).getSnippetBrackets());
+        assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(5).getSnippetBrackets());
+        assertEquals("... [[{3:{2:a}}]] ...", kr.getMatch(6).getSnippetBrackets());
+        assertEquals("... [[{3:{1:b}}]]", kr.getMatch(7).getSnippetBrackets());
+        assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(8).getSnippetBrackets());
+        assertEquals("... [[{3:{2:a}}]]", kr.getMatch(9).getSnippetBrackets());
     };
 
 
@@ -285,10 +285,10 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(kr.getStartIndex(), 0);
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
-                "... 2. Herkunft Die aus dem proto-semitischen [{15:Alphabet}] stammende Urform des Buchstaben ist wahrscheinlich ...");
+                "... 2. Herkunft Die aus dem proto-semitischen [[{15:Alphabet}]] stammende Urform des Buchstaben ist wahrscheinlich ...");
         assertEquals(
                 kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><mark><mark class=\"class-15 level-0\">Alphabet</mark></mark><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-15 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         json = getString(getClass().getResource(
                 "/queries/bugs/greater_highlights_16.jsonld").getFile());
@@ -301,10 +301,10 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(kr.getStartIndex(), 0);
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
-                "... 2. Herkunft Die aus dem proto-semitischen [{16:Alphabet}] stammende Urform des Buchstaben ist wahrscheinlich ...");
+                "... 2. Herkunft Die aus dem proto-semitischen [[{16:Alphabet}]] stammende Urform des Buchstaben ist wahrscheinlich ...");
         assertEquals(
                 kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><mark><mark class=\"class-16 level-0\">Alphabet</mark></mark><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-16 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         // 127
         json = getString(getClass().getResource(
@@ -317,10 +317,10 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(kr.getStartIndex(), 0);
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
-                "... 2. Herkunft Die aus dem proto-semitischen [{127:Alphabet}] stammende Urform des Buchstaben ist wahrscheinlich ...");
+                "... 2. Herkunft Die aus dem proto-semitischen [[{127:Alphabet}]] stammende Urform des Buchstaben ist wahrscheinlich ...");
         assertEquals(
                 kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><mark><mark class=\"class-127 level-0\">Alphabet</mark></mark><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-127 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         // 255
         json = getString(getClass().getResource(
@@ -333,10 +333,10 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals(kr.getStartIndex(), 0);
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
-                "... 2. Herkunft Die aus dem proto-semitischen [Alphabet] stammende Urform des Buchstaben ist wahrscheinlich ...");
+                "... 2. Herkunft Die aus dem proto-semitischen [[Alphabet]] stammende Urform des Buchstaben ist wahrscheinlich ...");
         assertEquals(
                 kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><mark>Alphabet</mark><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark>Alphabet</mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         // 300
         json = getString(getClass().getResource(
@@ -380,14 +380,14 @@ public class TestHighlight { // extends LuceneTestCase {
 
         Result kr = ki.search(qs);
         assertEquals((long) 1, kr.getTotalResults());
-        assertEquals("[Mit \"Mann\" & \\{Ma\\\\us\\}]", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("<span class=\"context-left\"></span><mark>Mit &quot;Mann&quot; &amp; {Ma\\us}</mark><span class=\"context-right\"></span>", kr.getMatch(0).getSnippetHTML());
+        assertEquals("[[Mit \"Mann\" & \\{Ma\\\\us\\}]]", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><mark>Mit &quot;Mann&quot; &amp; {Ma\\us}</mark></span><span class=\"context-right\"></span>", kr.getMatch(0).getSnippetHTML());
         assertEquals("match-c1/d1/1-p0-4", kr.getMatch(0).getID());
 
         Match km = ki.getMatchInfo("match-c1/d1/1-p0-4", "base", true, (ArrayList) null, (ArrayList) null, true, true, false);
         assertEquals(0, km.getStartPos());
         assertEquals("<span class=\"context-left\"></span>"+
-                     "<mark><span title=\"base/t:t\">"+
+                     "<span class=\"match\"><mark><span title=\"base/t:t\">"+
                      "Mit "+
                      "<span title=\"base/l:&quot;Mann&quot;\">"+
                      "&quot;Mann&quot;"+
@@ -397,7 +397,7 @@ public class TestHighlight { // extends LuceneTestCase {
                      " "+
                      "{Ma\\us}"+
                      "</span>"+
-                     "</mark>"+
+                     "</mark></span>"+
                      "<span class=\"context-right\"></span>",
                      km.getSnippetHTML());
     };

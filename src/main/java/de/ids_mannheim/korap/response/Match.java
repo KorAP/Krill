@@ -71,6 +71,9 @@ public class Match extends AbstractDocument {
     public int startPos, endPos = -1;
 
     @JsonIgnore
+    private int innerMatchStartPos, innerMatchEndPos = -1;
+
+    @JsonIgnore
     public int potentialStartPosChar = -1, potentialEndPosChar = -1;
 
     private String version;
@@ -163,7 +166,6 @@ public class Match extends AbstractDocument {
                 for (int[] pos : id.getPos()) {
                     if (pos[0] < id.getStartPos() || pos[1] > id.getEndPos())
                         continue;
-
                     this.addHighlight(pos[0], pos[1], pos[2]);
                 };
         };
@@ -785,7 +787,8 @@ public class Match extends AbstractDocument {
 
     // Start building highlighted snippets
     private boolean _processHighlight () {
-        if (processed)
+
+      if (processed)
             return true;
 
         // Relevant details are missing
@@ -807,6 +810,10 @@ public class Match extends AbstractDocument {
             log.trace("PTO will retrieve {} & {} (Match boundary)",
                     this.getStartPos(), this.getEndPos());
 
+	// Set inner match
+	if (this.innerMatchEndPos != 1)
+	  this.addHighlight(this.innerMatchStartPos, this.innerMatchEndPos, -1);
+	
         // Add all highlights for character retrieval
         if (this.highlight != null) {
             for (Highlight hl : this.highlight) {
@@ -867,7 +874,14 @@ public class Match extends AbstractDocument {
                     return -1;
                 }
                 else if (arg0[1] == arg1[1]) {
-                    return 0;
+
+		    // Compare class number
+		    if (arg0[2] > arg1[2])
+		      return 1;
+		    else if (arg0[2] < arg1[1])
+		      return -1;
+		    return 0;
+
                 }
                 return 1;
             };
@@ -876,7 +890,7 @@ public class Match extends AbstractDocument {
     };
 
     /*
-      Comparator class for closing tags
+     * Comparator class for closing tags
      */
     private class ClosingTagComparator implements Comparator<int[]> {
         @Override
@@ -886,14 +900,15 @@ public class Match extends AbstractDocument {
                 return 1;
             }
             else if (arg0[1] == arg1[1]) {
-                // Check start positions
-                if (arg0[0] < arg1[0]) {
-                    return 1;
-                }
-                else if (arg0[0] == arg1[0]) {
-                    return 0;
-                };
-                return -1;
+
+	      // Check start positions
+	      if (arg0[0] < arg1[0]) {
+		return 1;
+	      }
+	      else if (arg0[0] == arg1[0]) {
+		return 0;
+	      };
+	      return -1;
             };
             return -1;
         };
@@ -1004,10 +1019,11 @@ public class Match extends AbstractDocument {
         rightContext.append("</span>");
 
         // Iterate through all remaining elements
+	sb.append("<span class=\"match\">");
         for (short i = start; i <= end; i++) {
             sb.append(this.snippetArray.get(i).toHTML(this, level, levelCache));
         };
-
+	sb.append("</span>");
         sb.append(rightContext);
 
         return (this.snippetHTML = sb.toString());
@@ -1023,14 +1039,43 @@ public class Match extends AbstractDocument {
         if (this.processed && this.snippetBrackets != null)
             return this.snippetBrackets;
 
+        // Snippet stack sizes
+        short start = (short) 0;
+        short end = this.snippetArray.size();
+        end--;
+	
         StringBuilder sb = new StringBuilder();
 
         if (this.startMore)
             sb.append("... ");
 
-        for (HighlightCombinatorElement hce : this.snippetArray.list())
-            sb.append(hce.toBrackets(this));
+	// First element of sorted array
+        HighlightCombinatorElement elem = this.snippetArray.getFirst();
+	if (elem.type == 0) {
+	  sb.append(elem.toBrackets(this));
+	  start++;
+	};
 
+	sb.append("[");
+	
+	// Last element of sorted array
+        elem = this.snippetArray.getLast();
+        StringBuilder rightContext = new StringBuilder();
+
+	// Last element is textual
+        if (elem != null && elem.type == 0) {
+            rightContext.append(elem.toBrackets(this));
+            // decrement end
+            end--;
+        };
+
+	for (short i = start; i <= end; i++) {
+	  sb.append(this.snippetArray.get(i).toBrackets(this));
+	};
+
+	sb.append("]");
+	sb.append(rightContext);
+	
         if (this.endMore)
             sb.append(" ...");
 
@@ -1087,6 +1132,20 @@ public class Match extends AbstractDocument {
         };
         return stack;
     };
+
+  /**
+   * Sometimes the match start and end positions are inside the
+   * matching region, e.g. when the match was expanded.
+   * This will override the original matching positions
+   * And matrk the real matching.
+   */
+  public void overrideMatchPosition (int start, int end) {
+    if (DEBUG)
+      log.trace("--- Override match position");
+
+    this.innerMatchStartPos = start;
+    this.innerMatchEndPos = end;
+  }; 
 
 
     /**
@@ -1145,8 +1204,9 @@ public class Match extends AbstractDocument {
         // Recalculate startOffsetChar
         int startOffsetChar = startPosChar - intArray[0];
 
-        // Add match span
-        this.span.add(intArray);
+        // Add match span, in case no inner match is defined
+	if (this.innerMatchEndPos == -1)
+	  this.span.add(intArray);
 
         // highlights
         // -- I'm not sure about this.

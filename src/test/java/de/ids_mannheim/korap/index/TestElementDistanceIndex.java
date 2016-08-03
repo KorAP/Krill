@@ -231,7 +231,7 @@ public class TestElementDistanceIndex {
 
         kr = ki.search(sqwi.toQuery(), (short) 10);
         assertEquals(kr.getTotalResults(), 1);
-        assertEquals("[ecebdc]", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[[ecebdc]]", kr.getMatch(0).getSnippetBrackets());
 
         sqwi = jsonQuery(getClass().getResource(
                 "/queries/distances/in-same-t.jsonld").getFile());
@@ -242,7 +242,7 @@ public class TestElementDistanceIndex {
 
         kr = ki.search(sqwi.toQuery(), (short) 10);
         assertEquals(1, kr.getTotalResults()); // Is 1 correct or should it not be ordered?
-        assertEquals("[ec]ebdc", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[[ec]]ebdc", kr.getMatch(0).getSnippetBrackets());
     };
 
     public static String getString (String path) {

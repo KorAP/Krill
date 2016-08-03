@@ -387,8 +387,8 @@ public class TestSpanExpansionIndex {
         // );
         // };
 
-        assertEquals("[cecc]ecdeec", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("cec[cecd]eec", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("[[cecc]]ecdeec", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("cec[[cecd]]eec", kr.getMatch(1).getSnippetBrackets());
         assertEquals((long) 2, kr.getTotalResults());
     }
 
@@ -415,19 +415,19 @@ public class TestSpanExpansionIndex {
                 "focus(254: spanContain(<base:base/s:t />, {254: spanExpansion(base:s:c, []{0, 4}, right)}))");
 
         kr = ki.search(sq, (short) 10);
-        assertEquals("[c]ab", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("[ca]b", kr.getMatch(1).getSnippetBrackets());
-        assertEquals("[cab]", kr.getMatch(2).getSnippetBrackets());
-        assertEquals("[c]e", kr.getMatch(3).getSnippetBrackets());
+        assertEquals("[[c]]ab", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[[ca]]b", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("[[cab]]", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("[[c]]e", kr.getMatch(3).getSnippetBrackets());
 
-        assertEquals("[ce]", kr.getMatch(4).getSnippetBrackets());
+        assertEquals("[[ce]]", kr.getMatch(4).getSnippetBrackets());
         assertEquals(5, kr.getTotalResults());
 
         sq = kq.builder().tag("base/s:t").toQuery();
         assertEquals(sq.toString(), "<base:base/s:t />");
         kr = ki.search(sq, (short) 5);
-        assertEquals("[cab]", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("[ce]", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("[[cab]]", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[[ce]]", kr.getMatch(1).getSnippetBrackets());
         assertEquals(2, kr.getTotalResults());
     }
 

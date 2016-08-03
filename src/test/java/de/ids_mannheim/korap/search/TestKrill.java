@@ -104,7 +104,7 @@ public class TestKrill {
         Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 6);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... dem [Buchstaben] A ...");
+                "... dem [[Buchstaben]] A ...");
 
         JsonNode res = ks.toJsonNode();
         assertEquals(3, res.at("/meta/count").asInt());
@@ -137,7 +137,7 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 66);
         assertEquals(5, kr.getItemsPerPage());
         assertEquals(5, kr.getStartIndex());
-        assertEquals("... a: A ist [der klangreichste] der V ...",
+        assertEquals("... a: A ist [[der klangreichste]] der V ...",
                 kr.getMatch(0).getSnippetBrackets());
     };
 
@@ -318,7 +318,7 @@ public class TestKrill {
         Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
         assertEquals("A bzw. a ist der erste Buchstabe des"
-                + " lateinischen [Alphabets] und ein Vokal."
+                + " lateinischen [[Alphabets]] und ein Vokal."
                 + " Der Buchstabe A hat in deutschen Texten"
                 + " eine durchschnittliche Häufigkeit  ...", kr.getMatch(0)
                 .getSnippetBrackets());
@@ -341,7 +341,7 @@ public class TestKrill {
                 + " das Nukleosid Adenosin steht A die Base"
                 + " Adenin steht A für die Aminosäure Alanin"
                 + " in der Informatik steht a für den dezimalen"
-                + " [Wert] 97 sowohl im ASCII- als auch im"
+                + " [[Wert]] 97 sowohl im ASCII- als auch im"
                 + " Unicode-Zeichensatz steht A für den dezimalen"
                 + " Wert 65 sowohl im ASCII- als auch im"
                 + " Unicode-Zeichensatz als Kfz-Kennzeichen"
@@ -681,7 +681,7 @@ public class TestKrill {
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
                 "... Initiative\" eine neue politische Gruppierung ins "
-                        + "[{1:Leben}] gerufen hatten. Pressemeldungen zufolge haben sich ...");
+                        + "[[{1:Leben}]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
 
         // Try with high class - don't highlight
         ks = new Krill(kq.focus(129,
@@ -693,7 +693,7 @@ public class TestKrill {
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
                 "... Initiative\" eine neue politische Gruppierung ins "
-                        + "[Leben] gerufen hatten. Pressemeldungen zufolge haben sich ...");
+                        + "[[Leben]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
 
         ks = new Krill(json);
         kr = ks.apply(ki);
@@ -703,9 +703,9 @@ public class TestKrill {
                         + "{129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]))");
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
-                "... ihren Austritt erklärt und unter dem [Namen \"Einheitsbewegung "
+                "... ihren Austritt erklärt und unter dem [[Namen \"Einheitsbewegung "
                         + "der sozialistischen Initiative\" eine neue politische Gruppierung "
-                        + "ins Leben] gerufen hatten. Pressemeldungen zufolge haben sich ...");
+                        + "ins Leben]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
         assertEquals(kr.getTotalResults(), 1);
         assertEquals(0, kr.getStartIndex());
     };
@@ -734,7 +734,7 @@ public class TestKrill {
         assertEquals(
                 kr.getMatch(0).getSnippetBrackets(),
                 "... sozialistischen Initiative\" eine neue politische"
-                        + " Gruppierung [{4:{1:{2:ins} {3:Leben}} gerufen}] hatten. "
+                        + " Gruppierung [[{4:{1:{2:ins} {3:Leben}} gerufen}]] hatten. "
                         + "Pressemeldungen zufolge haben sich in ...");
         assertEquals(kr.getTotalResults(), 2);
         assertEquals(0, kr.getStartIndex());
@@ -830,19 +830,19 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
 
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "[Saragat-Partei] zerfällt Rom (ADN) die von dem ...");
+                "[[Saragat-Partei]] zerfällt Rom (ADN) die von dem ...");
         assertEquals(kr.getMatch(1).getSnippetBrackets(),
-                "[Saragat-Partei] zerfällt Rom (ADN) die von dem ...");
+                "[[Saragat-Partei]] zerfällt Rom (ADN) die von dem ...");
         assertEquals(kr.getMatch(2).getSnippetBrackets(),
-                "Saragat-Partei zerfällt [Rom] (ADN) "
+                "Saragat-Partei zerfällt [[Rom]] (ADN) "
                         + "die von dem Rechtssozialisten Saragat ...");
         assertEquals(kr.getMatch(3).getSnippetBrackets(),
-                "Saragat-Partei zerfällt Rom ([ADN]) "
+                "Saragat-Partei zerfällt Rom ([[ADN]]) "
                         + "die von dem Rechtssozialisten Saragat geführte ...");
         assertEquals(
                 kr.getMatch(23).getSnippetBrackets(),
                 "... dem Namen \"Einheitsbewegung der sozialistischen "
-                        + "Initiative\" [eine neue politische Gruppierung] "
+                        + "Initiative\" [[eine neue politische Gruppierung]] "
                         + "ins Leben gerufen hatten. Pressemeldungen zufolge ...");
     };
 
@@ -970,7 +970,7 @@ public class TestKrill {
         Result kr = ks.apply(ki);
 
         assertEquals(kr.getMatch(1).getSnippetBrackets(),
-                "... dezimalen [Wert] 65 sowohl ...");
+                "... dezimalen [[Wert]] 65 sowohl ...");
         assertEquals(kr.getTotalResults(), 3);
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
@@ -985,15 +985,15 @@ public class TestKrill {
         assertEquals(kr.getContext().toJsonNode().toString(), "\"base/s:s\"");
 
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "steht a für den dezimalen [Wert] 97 sowohl im ASCII-"
+                "steht a für den dezimalen [[Wert]] 97 sowohl im ASCII-"
                         + " als auch im Unicode-Zeichensatz");
         assertEquals(kr.getMatch(1).getSnippetBrackets(),
-                "steht A für den dezimalen [Wert] 65 sowohl im ASCII-"
+                "steht A für den dezimalen [[Wert]] 65 sowohl im ASCII-"
                         + " als auch im Unicode-Zeichensatz");
         assertEquals(kr.getMatch(2).getSnippetBrackets(),
                 "In einem Zahlensystem mit einer Basis größer "
                         + "als 10 steht A oder a häufig für den dezimalen"
-                        + " [Wert] 10, siehe auch Hexadezimalsystem.");
+                        + " [[Wert]] 10, siehe auch Hexadezimalsystem.");
     };
 
 
@@ -1038,7 +1038,7 @@ public class TestKrill {
 
         Result kr = new Krill(json).apply(ki);
         assertEquals("... Buchstabe des Alphabetes. In Dänemark ist "
-                + "[der alte Digraph Aa durch Å] ersetzt worden, "
+                + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
                 + "in Eigennamen und Ortsnamen ...", kr.getMatch(0)
                 .getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
@@ -1061,7 +1061,7 @@ public class TestKrill {
         // focus(254: spanContain(<tokens:base/s:t />, {254: spanNext(spanNext(spanNext(spanNext(tokens:s:der, tokens:s:alte), tokens:s:Digraph), tokens:s:Aa), spanExpansion(tokens:s:durch, []{1, 1}, right))}))
 
         assertEquals("... Buchstabe des Alphabetes. In Dänemark ist "
-                + "[der alte Digraph Aa durch Å] ersetzt worden, "
+                + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
                 + "in Eigennamen und Ortsnamen ...", kr.getMatch(0)
                 .getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
@@ -1084,7 +1084,7 @@ public class TestKrill {
         kr = new Krill(json).apply(ki);
 
         assertEquals("... Buchstabe des Alphabetes. In Dänemark ist "
-                + "[der alte Digraph Aa durch Å] ersetzt worden, "
+                + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
                 + "in Eigennamen und Ortsnamen ...", kr.getMatch(0)
                 .getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
@@ -1096,7 +1096,7 @@ public class TestKrill {
 
         kr = new Krill(json).apply(ki);
         assertEquals("... Buchstabe des Alphabetes. In Dänemark ist "
-                + "[der alte Digraph Aa durch Å] ersetzt worden, "
+                + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
                 + "in Eigennamen und Ortsnamen ...", kr.getMatch(0)
                 .getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
@@ -1124,7 +1124,7 @@ public class TestKrill {
         Result kr = k.apply(ki);
         assertEquals(kr.getTotalResults(), 1);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "[Selbst ist der Jeck]");
+                "[[Selbst ist der Jeck]]");
 
         assertEquals(kr.getMatch(0).getTextSigle(), "PRO-DUD_BSP-2013-01.32");
     };

@@ -52,6 +52,8 @@ public class HighlightCombinatorElement {
         // Opening
         if (this.type == 1) {
             StringBuilder sb = new StringBuilder();
+
+	    // This is the surrounding match mark
             if (this.number == -1) {
                 sb.append("<mark>");
             }

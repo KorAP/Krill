@@ -239,9 +239,9 @@ public class TestElementIndex {
         Result kr = ki.search(sq, 0, (short) 15, false, (short) 3, false,
                 (short) 3);
 
-        assertEquals("... ccc[222222]fff ...", kr.getMatch(0)
+        assertEquals("... ccc[[222222]]fff ...", kr.getMatch(0)
                 .getSnippetBrackets());
-        assertEquals("... fff[333333]iii ...", kr.getMatch(1)
+        assertEquals("... fff[[333333]]iii ...", kr.getMatch(1)
                 .getSnippetBrackets());
     };
 
@@ -276,10 +276,10 @@ public class TestElementIndex {
         Result kr = ki.search(sq, 0, (short) 15, false, (short) 3, false,
                 (short) 3);
 
-        assertEquals("[111111]ccc ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... ccc[222222]fff ...", kr.getMatch(1)
+        assertEquals("[[111111]]ccc ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... ccc[[222222]]fff ...", kr.getMatch(1)
                 .getSnippetBrackets());
-        assertEquals("... fff[333333]iii ...", kr.getMatch(2)
+        assertEquals("... fff[[333333]]iii ...", kr.getMatch(2)
                 .getSnippetBrackets());
     };
 

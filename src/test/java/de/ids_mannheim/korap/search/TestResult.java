@@ -78,7 +78,7 @@ public class TestResult {
         assertEquals("match-doc-1-p0-1(1)0-0", res.at("/matches/0/matchID")
                 .asText());
         assertEquals(
-                "<span class=\"context-left\"></span><mark><mark class=\"class-1 level-0\">a</mark></mark><span class=\"context-right\">bab</span>",
+                "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-1 level-0\">a</mark></mark></span><span class=\"context-right\">bab</span>",
                 res.at("/matches/0/snippet").asText());
 
         assertEquals("base", res.at("/matches/6/field").asText());
@@ -92,7 +92,7 @@ public class TestResult {
         assertEquals("match-doc-2-p2-3(1)2-2", res.at("/matches/6/matchID")
                 .asText());
         assertEquals(
-                "<span class=\"context-left\">ab</span><mark><mark class=\"class-1 level-0\">a</mark></mark><span class=\"context-right\"></span>",
+                "<span class=\"context-left\">ab</span><span class=\"match\"><mark><mark class=\"class-1 level-0\">a</mark></mark></span><span class=\"context-right\"></span>",
                 res.at("/matches/6/snippet").asText());
     };
 
@@ -197,7 +197,7 @@ public class TestResult {
         assertEquals("doc-1", res.at("/matches/0/docID").asText());
         assertEquals("match-doc-1-p0-1", res.at("/matches/0/matchID").asText());
         assertEquals(
-                "<span class=\"context-left\"></span><mark>a</mark><span class=\"context-right\">bab</span>",
+                "<span class=\"context-left\"></span><span class=\"match\"><mark>a</mark></span><span class=\"context-right\">bab</span>",
                 res.at("/matches/0/snippet").asText());
 
         // No primaryData serialization

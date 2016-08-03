@@ -47,42 +47,42 @@ public class TestRegexWildcardIndex {
        
         Result kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("affe [afffe] baum ...", kr.getMatch(1)
+        assertEquals("[[affe]] afffe ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("affe [[afffe]] baum ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:baum.*"));
         kr = ki.search(ks);
 
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... afffe [baum] baumgarten ...", kr.getMatch(0)
+        assertEquals("... afffe [[baum]] baumgarten ...", kr.getMatch(0)
                      .getSnippetBrackets());
-        assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(1)
+        assertEquals("... baum [[baumgarten]] steingarten ...", kr.getMatch(1)
                      .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:.....?garten"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(0)
+        assertEquals("... baum [[baumgarten]] steingarten ...", kr.getMatch(0)
                      .getSnippetBrackets());
-        assertEquals("... baumgarten [steingarten] franz ...", kr.getMatch(1)
+        assertEquals("... baumgarten [[steingarten]] franz ...", kr.getMatch(1)
                      .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:ha.s"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... franz [hans] haus ...", kr.getMatch(0)
+        assertEquals("... franz [[hans]] haus ...", kr.getMatch(0)
                 .getSnippetBrackets());
-        assertEquals("... hans [haus] efeu ...", kr.getMatch(1)
+        assertEquals("... hans [[haus]] efeu ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:.*ff.*"));
         kr = ki.search(ks);
         assertEquals((long) 3, kr.getTotalResults());
-        assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("affe [afffe] baum ...", kr.getMatch(1)
+        assertEquals("[[affe]] afffe ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("affe [[afffe]] baum ...", kr.getMatch(1)
                 .getSnippetBrackets());
-        assertEquals("... efeu [effe]", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("... efeu [[effe]]", kr.getMatch(2).getSnippetBrackets());
     };
 
     @Test
@@ -116,8 +116,8 @@ public class TestRegexWildcardIndex {
 
         Result kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("affe [afffe] baum ...", kr.getMatch(1)
+        assertEquals("[[affe]] afffe ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("affe [[afffe]] baum ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").wc("s:baum.*"));
@@ -128,32 +128,32 @@ public class TestRegexWildcardIndex {
         ks = _newKrill(new QueryBuilder("base").wc("s:baum*"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... afffe [baum] baumgarten ...", kr.getMatch(0)
+        assertEquals("... afffe [[baum]] baumgarten ...", kr.getMatch(0)
                 .getSnippetBrackets());
-        assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(1)
+        assertEquals("... baum [[baumgarten]] steingarten ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").wc("s:*garten"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... baum [baumgarten] steingarten ...", kr.getMatch(0)
+        assertEquals("... baum [[baumgarten]] steingarten ...", kr.getMatch(0)
                 .getSnippetBrackets());
-        assertEquals("... baumgarten [steingarten] franz ...", kr.getMatch(1)
+        assertEquals("... baumgarten [[steingarten]] franz ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").wc("s:ha?s"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... franz [hans] haus ...", kr.getMatch(0)
+        assertEquals("... franz [[hans]] haus ...", kr.getMatch(0)
                 .getSnippetBrackets());
-        assertEquals("... hans [haus] efeu ...", kr.getMatch(1)
+        assertEquals("... hans [[haus]] efeu ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").wc("s:?ff?"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("[affe] afffe ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... efeu [effe]", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("[[affe]] afffe ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... efeu [[effe]]", kr.getMatch(1).getSnippetBrackets());
     };
 
 
@@ -187,56 +187,56 @@ public class TestRegexWildcardIndex {
         Krill ks = _newKrill(sqw);
         Result kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("AfFe [aFfFE] Baum ...", kr.getMatch(1)
+        assertEquals("[[AfFe]] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("AfFe [[aFfFE]] Baum ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:Af.*e"));
         kr = ki.search(ks);
         assertEquals((long) 1, kr.getTotalResults());
-        assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[[AfFe]] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:baum.*",
                                                    true));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... aFfFE [Baum] Baumgarten ...", kr.getMatch(0)
+        assertEquals("... aFfFE [[Baum]] Baumgarten ...", kr.getMatch(0)
                 .getSnippetBrackets());
-        assertEquals("... Baum [Baumgarten] SteinGarten ...", kr.getMatch(1)
+        assertEquals("... Baum [[Baumgarten]] SteinGarten ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re(
                                                    "s:.*garten", true));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... Baum [Baumgarten] SteinGarten ...", kr.getMatch(0)
+        assertEquals("... Baum [[Baumgarten]] SteinGarten ...", kr.getMatch(0)
                 .getSnippetBrackets());
-        assertEquals("... Baumgarten [SteinGarten] franZ ...", kr.getMatch(1)
+        assertEquals("... Baumgarten [[SteinGarten]] franZ ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:.*garten", false));
         kr = ki.search(ks);
         assertEquals((long) 1, kr.getTotalResults());
-        assertEquals("... Baum [Baumgarten] SteinGarten ...", kr.getMatch(0)
+        assertEquals("... Baum [[Baumgarten]] SteinGarten ...", kr.getMatch(0)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:ha.s",
                                                    true));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... franZ [HaNs] Haus ...", kr.getMatch(0)
+        assertEquals("... franZ [[HaNs]] Haus ...", kr.getMatch(0)
                 .getSnippetBrackets());
-        assertEquals("... HaNs [Haus] Efeu ...", kr.getMatch(1)
+        assertEquals("... HaNs [[Haus]] Efeu ...", kr.getMatch(1)
                 .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:.*f*e",
                                                    true));
         kr = ki.search(ks);
         assertEquals((long) 3, kr.getTotalResults());
-        assertEquals("[AfFe] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("AfFe [aFfFE] Baum ...", kr.getMatch(1)
+        assertEquals("[[AfFe]] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("AfFe [[aFfFE]] Baum ...", kr.getMatch(1)
                 .getSnippetBrackets());
-        assertEquals("... Efeu [effe]", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("... Efeu [[effe]]", kr.getMatch(2).getSnippetBrackets());
     };
 
 
@@ -276,7 +276,7 @@ public class TestRegexWildcardIndex {
 
         Result kr = ki.search(ks);
         assertEquals((long) 1, kr.getTotalResults());
-        assertEquals("[affe afffe] baum ...", kr.getMatch(0)
+        assertEquals("[[affe afffe]] baum ...", kr.getMatch(0)
                 .getSnippetBrackets());
     };
 
@@ -316,7 +316,7 @@ public class TestRegexWildcardIndex {
 
         Result kr = ki.search(ks);
         assertEquals((long) 1, kr.getTotalResults());
-        assertEquals("[affe afffe] baum ...", kr.getMatch(0)
+        assertEquals("[[affe afffe]] baum ...", kr.getMatch(0)
                 .getSnippetBrackets());
     };
 

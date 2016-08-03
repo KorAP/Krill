@@ -48,15 +48,15 @@ public class TestClass {
         assertEquals(61, kr.getMatch(0).getStartPos());
         assertEquals(64, kr.getMatch(0).getEndPos());
         assertEquals(
-                "... Bruckner (Wien) und Mathis Lussy (Paris). [{1:Inspiriert} "
-                        + "{2:durch die}] additiven Modelle arabischer Rhythmik (er half ...",
+                "... Bruckner (Wien) und Mathis Lussy (Paris). [[{1:Inspiriert} "
+                        + "{2:durch die}]] additiven Modelle arabischer Rhythmik (er half ...",
                 kr.getMatch(0).getSnippetBrackets());
 
         assertEquals(31, kr.getMatch(1).getStartPos());
         assertEquals(34, kr.getMatch(1).getEndPos());
         assertEquals(
-                "... des Sendens wird ein unhörbarer Unterton [{1:mitgesendet}, "
-                        + "{2:auf den}] das angesprochene Funkgerät reagiert. Die Abkürzung ...",
+                "... des Sendens wird ein unhörbarer Unterton [[{1:mitgesendet}, "
+                        + "{2:auf den}]] das angesprochene Funkgerät reagiert. Die Abkürzung ...",
                 kr.getMatch(1).getSnippetBrackets());
     }
 

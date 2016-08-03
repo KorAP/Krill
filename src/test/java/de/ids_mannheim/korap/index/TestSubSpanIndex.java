@@ -155,10 +155,10 @@ public class TestSubSpanIndex {
         assertEquals(2, kr.getTotalResults());
         assertEquals(1, kr.getMatch(0).getStartPos());
         assertEquals(2, kr.getMatch(0).getEndPos());
-        assertEquals("a [b ]c ", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("a [[b ]]c ", kr.getMatch(0).getSnippetBrackets());
 
         assertEquals(2, kr.getMatch(1).getStartPos());
         assertEquals(3, kr.getMatch(1).getEndPos());
-        assertEquals("a b [c ]", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("a b [[c ]]", kr.getMatch(1).getSnippetBrackets());
     };
 };

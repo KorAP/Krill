@@ -51,24 +51,24 @@ public class TestClassFilterIndex {
         assertEquals(1, kr.getMatch(0).getStartPos());
         assertEquals(5, kr.getMatch(0).getEndPos());
         assertEquals(
-                "Frankenstein, [{2:treat {1:my daughter} well}]. She is the one that saved ...",
+                "Frankenstein, [[{2:treat {1:my daughter} well}]]. She is the one that saved ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals(6, kr.getMatch(1).getStartPos());
         assertEquals(18, kr.getMatch(1).getEndPos());
         assertEquals(
-                "Frankenstein, treat my daughter well. She [{2:is {1:the one} that saved "
-                        + "your master who you hold so dear}].", kr.getMatch(1)
+                "Frankenstein, treat my daughter well. She [[{2:is {1:the one} that saved "
+                        + "your master who you hold so dear}]].", kr.getMatch(1)
                         .getSnippetBrackets());
         assertEquals(
-                "Frankenstein, treat my daughter well. She [{2:is {1:the one that "
-                        + "saved your master who you hold so dear}}].", kr
+                "Frankenstein, treat my daughter well. She [[{2:is {1:the one that "
+                        + "saved your master who you hold so dear}}]].", kr
                         .getMatch(2).getSnippetBrackets());
         assertEquals(
-                "Frankenstein, treat my daughter well. She [{2:is the one that "
-                        + "saved {1:your master} who you hold so dear}].", kr
+                "Frankenstein, treat my daughter well. She [[{2:is the one that "
+                        + "saved {1:your master} who you hold so dear}]].", kr
                         .getMatch(3).getSnippetBrackets());
         assertEquals(
-                "Frankenstein, treat my daughter well. She [{2:is the one that saved your master who {1:you} hold so dear}].",
+                "Frankenstein, treat my daughter well. She [[{2:is the one that saved your master who {1:you} hold so dear}]].",
                 kr.getMatch(4).getSnippetBrackets());
 
     }
@@ -107,19 +107,19 @@ public class TestClassFilterIndex {
         assertEquals(5, kr.getMatch(0).getEndPos());
 
         assertEquals(
-                "[{1:Frankenstein}, {2:treat my daughter well}]. She is the one that saved ...",
+                "[[{1:Frankenstein}, {2:treat my daughter well}]]. She is the one that saved ...",
                 kr.getMatch(0).getSnippetBrackets());
 
         assertEquals(1, kr.getMatch(1).getStartPos());
         assertEquals(6, kr.getMatch(1).getEndPos());
         assertEquals(
-                "Frankenstein, [{2:treat my daughter well}. {1:She}] is the one that saved your ...",
+                "Frankenstein, [[{2:treat my daughter well}. {1:She}]] is the one that saved your ...",
                 kr.getMatch(1).getSnippetBrackets());
 
         assertEquals(5, kr.getMatch(2).getStartPos());
         assertEquals(18, kr.getMatch(2).getEndPos());
         assertEquals(
-                "Frankenstein, treat my daughter well. [{1:She} {2:is the one that saved your master who you hold so dear}].",
+                "Frankenstein, treat my daughter well. [[{1:She} {2:is the one that saved your master who you hold so dear}]].",
                 kr.getMatch(2).getSnippetBrackets());
     }
 
@@ -186,13 +186,13 @@ public class TestClassFilterIndex {
         assertEquals(0, kr.getMatch(0).getStartPos());
         assertEquals(3, kr.getMatch(0).getEndPos());
         assertEquals(
-                "[{1:Frankenstein}, treat {2:my}] daughter well. She is the one ...",
+                "[[{1:Frankenstein}, treat {2:my}]] daughter well. She is the one ...",
                 kr.getMatch(0).getSnippetBrackets());
 
         assertEquals(5, kr.getMatch(3).getStartPos());
         assertEquals(9, kr.getMatch(3).getEndPos());
         assertEquals(
-                "Frankenstein, treat my daughter well. [{2:She} is {1:the one}] that saved your master who you ...",
+                "Frankenstein, treat my daughter well. [[{2:She} is {1:the one}]] that saved your master who you ...",
                 kr.getMatch(3).getSnippetBrackets());
         // she is both prp and np
     }
@@ -242,12 +242,12 @@ public class TestClassFilterIndex {
         assertEquals(0, kr.getMatch(0).getStartPos());
         assertEquals(3, kr.getMatch(0).getEndPos());
         assertEquals(
-                "[{1:Frankenstein, {2:{3:treat}}}{2: my}] daughter well. She is the one ...",
+                "[[{1:Frankenstein, {2:{3:treat}}}{2: my}]] daughter well. She is the one ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals(1, kr.getMatch(1).getStartPos());
         assertEquals(4, kr.getMatch(1).getEndPos());
         assertEquals(
-                "Frankenstein, [{1:{2:{3:treat} my} daughter}] well. She is the one that ...",
+                "Frankenstein, [[{1:{2:{3:treat} my} daughter}]] well. She is the one that ...",
                 kr.getMatch(1).getSnippetBrackets());
     }
 
@@ -296,7 +296,7 @@ public class TestClassFilterIndex {
         assertEquals(6, kr.getMatch(0).getStartPos());
         assertEquals(18, kr.getMatch(0).getEndPos());
         assertEquals(
-                "Frankenstein, treat my daughter well. She [{2:is the {1:one} that saved {1:your} master who you hold so dear}].",
+                "Frankenstein, treat my daughter well. She [[{2:is the {1:one} that saved {1:your} master who you hold so dear}]].",
                 kr.getMatch(0).getSnippetBrackets());
     }
 

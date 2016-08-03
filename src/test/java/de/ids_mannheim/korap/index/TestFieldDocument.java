@@ -136,7 +136,7 @@ public class TestFieldDocument {
         assertEquals(km.getPubPlace(), "Bochum");
         assertEquals(km.getPubDate().toDisplay(), "2013-06-17");
 
-        assertEquals(km.getSnippetBrackets(), "a[{3:b}]c");
+        assertEquals(km.getSnippetBrackets(), "a[[{3:b}]]c");
     };
 
 
@@ -177,7 +177,7 @@ public class TestFieldDocument {
         meta.getContext().right.setToken(true).setLength(6);
 
         assertEquals(
-                "... okal. [Der Buchstabe A hat in {1:deutschen Texten} eine durchschnittliche Häufigkeit von 6,51 %.] Er ist damit der sechsthäufigste Buchstabe ...",
+                "... okal. [[Der Buchstabe A hat in {1:deutschen Texten} eine durchschnittliche Häufigkeit von 6,51 %.]] Er ist damit der sechsthäufigste Buchstabe ...",
                 ks.apply(ki).getMatch(0).getSnippetBrackets());
     };
 
@@ -206,7 +206,7 @@ public class TestFieldDocument {
                 false, (short) 5);
 
         assertEquals(1, kr.getTotalResults());
-        assertEquals("... bezeichnen, sofern [{1:der} schwedische Buchstabe „Å“ nicht] verfügbar ist im SI-Einheitensystem ist ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... bezeichnen, sofern [[{1:der} schwedische Buchstabe „Å“ nicht]] verfügbar ist im SI-Einheitensystem ist ...", kr.getMatch(0).getSnippetBrackets());
     };
 
 

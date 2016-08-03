@@ -435,28 +435,28 @@ public class TestWithinIndex {
 
         assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
         assertEquals("EndPos (0)", 4, kr.getMatch(0).endPos);
-        assertEquals("Snippet (0)", "[h  h  i  j  ]h  i  j  h  i  j   ...", kr
+        assertEquals("Snippet (0)", "[[h  h  i  j  ]]h  i  j  h  i  j   ...", kr
                 .getMatch(0).getSnippetBrackets());
         assertEquals("StartPos (1)", 0, kr.getMatch(1).startPos);
         assertEquals("EndPos (1)", 4, kr.getMatch(1).endPos);
-        assertEquals("Snippet (1)", "[h  h  i  j  ]h  i  j  h  i  j   ...", kr
+        assertEquals("Snippet (1)", "[[h  h  i  j  ]]h  i  j  h  i  j   ...", kr
                 .getMatch(1).getSnippetBrackets());
 
         assertEquals("StartPos (2)", 0, kr.getMatch(2).startPos);
         assertEquals("EndPos (2)", 8, kr.getMatch(2).endPos);
-        assertEquals("Snippet (2)", "[h  h  i  j  h  i  j  h  ]i  j        ",
+        assertEquals("Snippet (2)", "[[h  h  i  j  h  i  j  h  ]]i  j        ",
                 kr.getMatch(2).getSnippetBrackets());
         assertEquals("StartPos (3)", 0, kr.getMatch(3).startPos);
         assertEquals("EndPos (3)", 8, kr.getMatch(3).endPos);
-        assertEquals("Snippet (3)", "[h  h  i  j  h  i  j  h  ]i  j        ",
+        assertEquals("Snippet (3)", "[[h  h  i  j  h  i  j  h  ]]i  j        ",
                 kr.getMatch(3).getSnippetBrackets());
         assertEquals("StartPos (4)", 0, kr.getMatch(4).startPos);
         assertEquals("EndPos (4)", 8, kr.getMatch(4).endPos);
-        assertEquals("Snippet (4)", "[h  h  i  j  h  i  j  h  ]i  j        ",
+        assertEquals("Snippet (4)", "[[h  h  i  j  h  i  j  h  ]]i  j        ",
                 kr.getMatch(4).getSnippetBrackets());
         assertEquals("StartPos (5)", 0, kr.getMatch(5).startPos);
         assertEquals("EndPos (5)", 8, kr.getMatch(5).endPos);
-        assertEquals("Snippet (5)", "[h  h  i  j  h  i  j  h  ]i  j        ",
+        assertEquals("Snippet (5)", "[[h  h  i  j  h  i  j  h  ]]i  j        ",
                 kr.getMatch(5).getSnippetBrackets());
 
 
@@ -832,24 +832,24 @@ public class TestWithinIndex {
         kr = ki.search(sq, 0, (short) 15, true, (short) 1, true, (short) 1);
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
-        assertEquals("... schrie: [\"{3:Das war ich}!\"] und ...",
+        assertEquals("... schrie: [[\"{3:Das war ich}!\"]] und ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals(
-                "<span class=\"context-left\"><span class=\"more\"></span>schrie: </span><mark>&quot;<mark class=\"class-3 level-0\">Das war ich</mark>!&quot;</mark><span class=\"context-right\"> und<span class=\"more\"></span></span>",
+                "<span class=\"context-left\"><span class=\"more\"></span>schrie: </span><span class=\"match\"><mark>&quot;<mark class=\"class-3 level-0\">Das war ich</mark>!&quot;</mark></span><span class=\"context-right\"> und<span class=\"more\"></span></span>",
                 kr.getMatch(0).getSnippetHTML());
 
         kr = ki.search(sq, 0, (short) 15, true, (short) 0, true, (short) 0);
-        assertEquals("... [\"{3:Das war ich}!\"] ...", kr.getMatch(0)
+        assertEquals("... [[\"{3:Das war ich}!\"]] ...", kr.getMatch(0)
                 .getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
         kr = ki.search(sq, 0, (short) 15, true, (short) 6, true, (short) 6);
-        assertEquals("Er schrie: [\"{3:Das war ich}!\"] und ging.", kr
+        assertEquals("Er schrie: [[\"{3:Das war ich}!\"]] und ging.", kr
                 .getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
         kr = ki.search(sq, 0, (short) 15, true, (short) 2, true, (short) 2);
-        assertEquals("Er schrie: [\"{3:Das war ich}!\"] und ging ...", kr
+        assertEquals("Er schrie: [[\"{3:Das war ich}!\"]] und ging ...", kr
                 .getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
@@ -858,7 +858,7 @@ public class TestWithinIndex {
                 new Term("base", "s:Das")), (byte) 2)), (byte) 1);
 
         kr = ki.search(sq, (short) 15);
-        assertEquals("Er schrie: [\"{1:{2:Das} war ich}!\"] und ging.", kr
+        assertEquals("Er schrie: [[\"{1:{2:Das} war ich}!\"]] und ging.", kr
                 .getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
@@ -867,7 +867,7 @@ public class TestWithinIndex {
                 new Term("base", "s:war")), (byte) 2)), (byte) 1);
 
         kr = ki.search(sq, (short) 15);
-        assertEquals("Er schrie: [\"{1:Das {2:war} ich}!\"] und ging.", kr
+        assertEquals("Er schrie: [[\"{1:Das {2:war} ich}!\"]] und ging.", kr
                 .getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
@@ -876,7 +876,7 @@ public class TestWithinIndex {
                 new Term("base", "s:ich")), (byte) 2)), (byte) 1);
 
         kr = ki.search(sq, (short) 15);
-        assertEquals("Er schrie: [\"{1:Das war {2:ich}}!\"] und ging.", kr
+        assertEquals("Er schrie: [[\"{1:Das war {2:ich}}!\"]] und ging.", kr
                 .getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
@@ -924,9 +924,9 @@ public class TestWithinIndex {
 
         assertEquals("totalResults", kr.getTotalResults(), 2);
 
-        assertEquals("x  y  [x  ]b  c  x  ", kr.getMatch(0)
+        assertEquals("x  y  [[x  ]]b  c  x  ", kr.getMatch(0)
                 .getSnippetBrackets());
-        assertEquals("x  y  [x  b  c  ]x  ", kr.getMatch(1)
+        assertEquals("x  y  [[x  b  c  ]]x  ", kr.getMatch(1)
                 .getSnippetBrackets());
 
         assertEquals("StartPos (0)", 2, kr.getMatch(0).startPos);
