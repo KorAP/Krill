@@ -1268,8 +1268,12 @@ public final class KrillIndex {
         final KrillMeta meta = ks.getMeta();
 
         // Todo: Make kr subclassing ks - so ks has a method for a new Result!
+        // Or allow passing of Krill object
         final Result kr = new Result(query.toString(), meta.getStartIndex(),
                 meta.getCount(), meta.getContext());
+
+        // Copy notification info
+        kr.moveNotificationsFrom(ks);
 
         // Set version info to result
         if (this.getVersion() != null)

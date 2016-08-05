@@ -117,9 +117,13 @@ public class Notifications {
      * @return Notification object for chaining
      */
     public Notifications addWarning (int code, String msg, String ... terms) {
-        if (this.warnings == null)
+
+        if (this.warnings == null) {
             this.warnings = new Messages();
+        };
+
         this.warnings.add(code, msg, terms);
+
         return this;
     };
 

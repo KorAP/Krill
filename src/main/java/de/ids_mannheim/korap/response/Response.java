@@ -492,7 +492,6 @@ public class Response extends Notifications {
      */
     @Override
     public JsonNode toJsonNode () {
-
         // Get notifications json response
         ObjectNode json = (ObjectNode) super.toJsonNode();
 

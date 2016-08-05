@@ -172,6 +172,9 @@ public class Krill extends Response {
 
                 final SpanQueryWrapper qw = kq.fromKoral(json.get("query"));
 
+                // Koral messages are moved to the Krill object
+                this.moveNotificationsFrom(kq);
+
                 // Throw an error, in case the query matches everywhere
                 if (qw.isEmpty())
                     this.addError(780, "This query matches everywhere");

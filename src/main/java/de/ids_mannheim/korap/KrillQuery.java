@@ -1065,7 +1065,7 @@ public final class KrillQuery extends Notifications {
 
     private SpanQueryWrapper _termFromJson (JsonNode json)
             throws QueryException {
-        return _termFromJson(json, null);
+        return this._termFromJson(json, null);
     }
 
 
