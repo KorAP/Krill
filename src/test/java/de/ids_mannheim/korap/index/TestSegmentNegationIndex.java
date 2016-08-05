@@ -91,6 +91,8 @@ public class TestSegmentNegationIndex {
         assertEquals("Warning", kr.hasWarnings(), true);
         assertEquals("Warning text", kr.getWarning(0).getMessage(),
                 "Flag is unknown");
+        assertEquals("Warning text", kr.getWarning(0).toJsonString(),
+                "[748,\"Flag is unknown\",\"caseInsensitive\"]");
 
         // Negation of segment
         kr = ki.search(new Krill(
@@ -100,6 +102,17 @@ public class TestSegmentNegationIndex {
         assertEquals("Warning", kr.hasWarnings(), true);
         assertEquals("Warning text", kr.getWarning(0).getMessage(),
                 "Exclusivity of query is ignored");
+
+	// Flag parameter injection
+        kr = ki.search(new Krill(
+                "{\"query\" : { \"@type\" : \"koral:token\", \"wrap\" : { \"@type\" : \"koral:term\", \"key\" : \"a\", \"flags\" : [{ \"injection\" : true }], \"layer\" : \"orth\", \"match\" : \"match:ne\" }}}"));
+
+        assertEquals("totalResults", kr.getTotalResults(), 6);
+        assertEquals("Warning", kr.hasWarnings(), true);
+        assertEquals("Warning text", kr.getWarning(0).getMessage(),
+                "Flag is unknown");
+        assertEquals("Warning text", kr.getWarning(0).toJsonString(),
+                "[748,\"Flag is unknown\"]");
     };
 
 
