@@ -116,8 +116,12 @@ public class Message implements Cloneable {
      * @return Message object for chaining
      */
     public Message addParameter (String param) {
+        if (param == null || param.length() == 0)
+            return this;
+
         if (this.parameters == null)
             this.parameters = new LinkedList<String>();
+
         this.parameters.add(param);
         return this;
     };

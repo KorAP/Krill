@@ -103,7 +103,7 @@ public class TestSegmentNegationIndex {
         assertEquals("Warning text", kr.getWarning(0).getMessage(),
                 "Exclusivity of query is ignored");
 
-	// Flag parameter injection
+        // Flag parameter injection
         kr = ki.search(new Krill(
                 "{\"query\" : { \"@type\" : \"koral:token\", \"wrap\" : { \"@type\" : \"koral:term\", \"key\" : \"a\", \"flags\" : [{ \"injection\" : true }], \"layer\" : \"orth\", \"match\" : \"match:ne\" }}}"));
 

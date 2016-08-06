@@ -1,4 +1,4 @@
-0.55.6 2016-08-05
+0.55.6 2016-08-06
         - [bugfix] distance with key "t" uses default foundry (diewald)
 	- [cleanup] Renamed fromJson() to fromKoral() (diewald)
 	- [cleanup] Removed deprecated methods in Krill:
@@ -17,6 +17,7 @@
 	- [feature] Differ between matching scope and match highlighting,
 	  in case the match was extended to the sentence scope (diewald)
 	- [bugfix] KoralQuery bugs are now correctly moved to responses (diewald)
+	- [security] Do not mirror arbitrary JSON objects (diewald)
 
 0.55.5 2016-05-02
 	- [performance] Changed to a dynamic window for sorting in FocusSpans (margaretha)
