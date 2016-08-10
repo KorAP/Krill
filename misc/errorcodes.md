@@ -65,6 +65,7 @@
 780: "This query matches everywhere"
 781: "Optionality of query is ignored"
 782: "Exclusivity of query is ignored"
+783: "This query can't match anywhere"
 799: Unknown query serialization message (Arbitrary string)
 ```
 

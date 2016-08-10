@@ -1128,6 +1128,22 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 1);
     };
 
+	
+	@Test
+    public void queryJSONzeroRepetitionBug () throws IOException {
+		// der{0}
+		KrillIndex ki = new KrillIndex();
+		ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
+		ki.commit();
+			
+		String json = getString(getClass().getResource(
+									"/queries/bugs/zero_repetition_bug.jsonld").getFile());
+
+		Result kr = new Krill(json).apply(ki);
+
+		assertEquals(783, kr.getError(0).getCode());
+		assertEquals("This query can't match anywhere", kr.getError(0).getMessage());
+	};
 
     /**
      * This is a Schreibgebrauch ressource that didn't work for

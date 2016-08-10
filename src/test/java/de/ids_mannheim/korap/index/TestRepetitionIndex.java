@@ -204,7 +204,6 @@ public class TestRepetitionIndex {
         //		}
     }
 
-
     @Test
     public void testCase5 () throws IOException {
         ki = new KrillIndex();
@@ -240,5 +239,5 @@ public class TestRepetitionIndex {
         	System.out.println(km.getSnippetBrackets());
         	System.out.println(km.getStartPos() +","+km.getEndPos());
         }*/
-    }
+    };
 }

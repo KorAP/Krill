@@ -587,8 +587,6 @@ public class TestKrillQueryJSON {
         };
     };
 
-	
-
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {

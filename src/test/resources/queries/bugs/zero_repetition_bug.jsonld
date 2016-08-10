@@ -1,0 +1,31 @@
+{
+  "@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+  "query":{
+    "@type":"koral:group",
+    "operation":"operation:repetition",
+    "operands":[
+      {
+        "@type":"koral:token",
+        "wrap":{
+          "@type":"koral:term",
+          "layer":"orth",
+          "key":"der",
+          "match":"match:eq"
+        }
+      }
+    ],
+    "boundary":{
+      "@type":"koral:boundary",
+      "min":0,
+      "max":0
+    }
+  },
+  "meta":{
+    "startPage":1,
+    "count":25,
+    "context":{
+      "left":["t",40],
+      "right":["t",40]
+    }
+  }
+}
