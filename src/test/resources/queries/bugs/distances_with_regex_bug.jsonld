@@ -1,0 +1,46 @@
+{
+    "@context": "http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+    "query": {
+        "@type": "koral:group",
+        "operation": "operation:sequence",
+        "inOrder": true,
+        "distances": [{
+            "@type": "koral:distance",
+            "key": "w",
+            "boundary": {
+                "@type": "koral:boundary",
+                "min": 2,
+                "max": 3
+            }
+        }],
+        "operands": [
+            {
+                "@type": "koral:token",
+                "wrap": {
+                    "@type": "koral:term",
+                    "key": "der",
+                    "foundry": "opennlp",
+                    "layer": "orth",
+                    "type": "type:regex",
+                    "match": "match:eq"
+                }
+            },
+            {
+                "@type": "koral:token",
+                "wrap": {
+                    "@type": "koral:term",
+                    "key": "NN",
+                    "foundry": "opennlp",
+                    "layer": "p",
+                    "type": "type:regex",
+                    "match": "match:eq"
+                }
+            }
+        ]
+    },
+    "meta": {
+        "startIndex": 0,
+        "count": 5,
+        "context": "sentence"
+    }
+}

@@ -1019,6 +1019,31 @@ public class TestKrill {
                 "Operation needs operand list");
     };
 
+	
+	@Test
+    public void searchJSONdistanceWithRegexesBug () throws IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        for (String i : new String[] { "00001" }) {
+			// , "00002", "00003", "00004", "00005", "00006", "02439"
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+		// "der" []{2,3} [opennlp/p="NN"]
+       String json = getString(getClass().getResource(
+                "/queries/bugs/distances_with_regex_bug.jsonld").getFile());
+
+        Result kr = new Krill(json).apply(ki);
+
+		assertEquals(kr.getMatch(0).getSnippetBrackets(),
+					 "Mit Ausnahme von Fremdwörtern und Namen ist das A der einzige Buchstabe im Deutschen, [[der zweifach am Anfang]] eines Wortes stehen darf, etwa im Wort Aal.");
+
+    };
+
 
     /**
      * This is a breaking test for #179
