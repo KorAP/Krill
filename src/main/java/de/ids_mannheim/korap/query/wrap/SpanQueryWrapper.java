@@ -7,6 +7,7 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 
 // TODO: Add warnings and errors - using KrillQuery
+// TODO: Rename isEmpty to isAny!
 
 /**
  * A wrapper base class for Lucene SpanQueries,
@@ -98,7 +99,7 @@ public class SpanQueryWrapper {
     /**
      * Boolean value indicating that the wrapped query is
      * <tt>null</tt>, meaning it doesn't match anything at
-     * all.
+     * all (i.e. a zero-width assertion).
      * 
      * For example the segment denoting an adjective
      * in the following Poliqarp expression doen't match
