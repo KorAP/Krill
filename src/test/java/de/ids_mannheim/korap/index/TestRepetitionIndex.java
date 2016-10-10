@@ -13,6 +13,7 @@ import org.junit.Test;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 
 public class TestRepetitionIndex {
@@ -76,22 +77,38 @@ public class TestRepetitionIndex {
         return fd;
     }
 
-
+    @Test    
+    public void testTermQuery () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc0());
+        ki.commit();
+        
+        // Quantifier only
+        // c{1,2}
+        SpanQuery sq = new SpanRepetitionQuery(
+                new SpanTermQuery(new Term("base", "s:c")), 1, 2, true);
+        kr = ki.search(sq, (short) 10);
+        // 0-1, 2-3, 2-4, 3-4, 5-6
+        assertEquals((long) 5, kr.getTotalResults());
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(1, kr.getMatch(0).getEndPos());
+        assertEquals(2, kr.getMatch(1).getStartPos());
+        assertEquals(3, kr.getMatch(1).getEndPos());
+        assertEquals(2, kr.getMatch(2).getStartPos());
+        assertEquals(4, kr.getMatch(2).getEndPos());
+        assertEquals(3, kr.getMatch(3).getStartPos());
+        assertEquals(4, kr.getMatch(3).getEndPos());
+        assertEquals(5, kr.getMatch(4).getStartPos());
+        assertEquals(6, kr.getMatch(4).getEndPos());
+    }
+    
     @Test
-    public void testCase1 () throws IOException {
+    public void testRepetitionInSequences() throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.commit();
 
         SpanQuery sq, sq2;
-        // Quantifier only
-        // c{1,2}
-        sq = new SpanRepetitionQuery(
-                new SpanTermQuery(new Term("base", "s:c")), 1, 2, true);
-        kr = ki.search(sq, (short) 10);
-        // 0-1, 2-3, 2-4, 3-4, 5-6
-        assertEquals((long) 5, kr.getTotalResults());
-
         // ec{1,2}
         sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:e")),
                 new SpanRepetitionQuery(new SpanTermQuery(new Term("base",
@@ -100,6 +117,12 @@ public class TestRepetitionIndex {
         kr = ki.search(sq, (short) 10);
         // 1-3, 1-4, 4-6
         assertEquals((long) 3, kr.getTotalResults());
+        assertEquals(1, kr.getMatch(0).getStartPos());
+        assertEquals(3, kr.getMatch(0).getEndPos());
+        assertEquals(1, kr.getMatch(1).getStartPos());
+        assertEquals(4, kr.getMatch(1).getEndPos());
+        assertEquals(4, kr.getMatch(2).getStartPos());
+        assertEquals(6, kr.getMatch(2).getEndPos());
 
         // ec{1,2}d
         sq2 = new SpanNextQuery(sq, new SpanTermQuery(new Term("base", "s:d")));
@@ -117,6 +140,36 @@ public class TestRepetitionIndex {
         assertEquals((long) 5, kr.getTotalResults());
     }
 
+    @Test
+    public void testMinZeroRepetition() throws IOException {
+    	ki = new KrillIndex();
+        ki.addDoc(createFieldDoc0());
+        ki.commit();
+    	
+        SpanQuery sq, sq2;    	
+    	sq = new SpanTermQuery(new Term("base", "s:e"));
+    	kr = ki.search(sq, (short) 10);
+    	
+    	assertEquals((long) 4, kr.getTotalResults());
+        assertEquals(1, kr.getMatch(0).getStartPos());
+        assertEquals(2, kr.getMatch(0).getEndPos());
+        assertEquals(4, kr.getMatch(1).getStartPos());
+        assertEquals(5, kr.getMatch(1).getEndPos());
+        assertEquals(7, kr.getMatch(2).getStartPos());
+        assertEquals(8, kr.getMatch(2).getEndPos());
+        assertEquals(8, kr.getMatch(3).getStartPos());
+        assertEquals(9, kr.getMatch(3).getEndPos());
+
+        sq2 = new SpanNextQuery(sq,
+                new SpanRepetitionQuery(new SpanTermQuery(new Term("base",
+                        "s:c")), 0, 1, true));
+
+        kr = ki.search(sq2, (short) 10);
+        for (Match km : kr.getMatches()){
+	     	//System.out.println(km.getSnippetBrackets());
+	     	System.out.println(km.getStartPos() +","+km.getEndPos());
+	     }
+    }
 
     /** Skip to */
     @Test
@@ -222,10 +275,7 @@ public class TestRepetitionIndex {
         assertEquals(77, kr.getMatch(0).getEndPos());
         assertEquals(74, kr.getMatch(1).getStartPos());
         assertEquals(77, kr.getMatch(1).getEndPos());
-        /* for (Match km : kr.getMatches()){
-         	System.out.println(km.getSnippetBrackets());
-         	System.out.println(km.getStartPos() +","+km.getEndPos());
-         }*/
+        
 
         sq2 = new SpanNextQuery(new SpanTermQuery(new Term("tokens",
                 "s:offenen")), sq2);
