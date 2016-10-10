@@ -612,6 +612,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
 
     public boolean isEmpty () {
+
         if (this.segments.size() == 1)
             return this.segments.get(0).isEmpty();
 
@@ -741,6 +742,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             return (SpanQuery) query;
         };
 
+        if (this.hasConstraints() && this.isProblematic) {
+            throw new QueryException(613,
+                    "Distance constraints not supported with empty, optional or negative operands");
+        };
+
         // DistanceQueries
         if (this.constraints.size() == 1) {
             DistanceConstraint constraint = this.constraints.get(0);
@@ -752,6 +758,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     // No support for extended spans in constraints
                     if (this.segments.get(i).isExtended())
                         throw new QueryException(613, limitationError);
+
+                    /* Maybe important
+                    if (this.segments.get(i).isOptional())
+                        throw new QueryException(613, limitationError);
+                    */
 
                     SpanQuery sq = (SpanQuery) this.segments.get(i)
                             .retrieveNode(this.retrieveNode).toFragmentQuery();
@@ -771,6 +782,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     // No support for extended spans in constraints
                     if (this.segments.get(i).isExtended())
                         throw new QueryException(613, limitationError);
+
+                    /* May be necessary
+                    if (this.segments.get(i).isOptional())
+                        throw new QueryException(613, limitationError);
+                    */
 
                     SpanQuery sq = (SpanQuery) this.segments.get(i)
                             .retrieveNode(this.retrieveNode).toFragmentQuery();
@@ -817,6 +833,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
       - look for an anchor next to it
       - merge the problematic segment with the anchor
       - go on
+
+      - This does not work for distance constraints!
     */
     private boolean _solveProblematicSequence () {
         int size = this.segments.size();
@@ -838,6 +856,18 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                 if (DEBUG)
                     log.trace("segment {} is problematic", i);
 
+                // Sequences with distance constraints do not support empty or optional
+                // elemets
+                if (this.hasConstraints()) {
+                    if (DEBUG) {
+                        log.trace("Sequence has constraints, "
+                                + "that do not allow empty or optional elements");
+                    };
+                    this.isSolved = true;
+                    this.isProblematic = true;
+                    return false;
+                };
+
                 // [problem][anchor]
                 if (i < (size - 1) && this.segments.get(i + 1).maybeAnchor()) {
                     if (DEBUG)
@@ -853,6 +883,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
                     // An error occurred while solving the problem
                     catch (QueryException e) {
+                        this.isSolved = true;
+                        this.isProblematic = true;
                         return false;
                     };
 
@@ -880,6 +912,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                                         true));
                     }
                     catch (QueryException e) {
+                        this.isSolved = true;
+                        this.isProblematic = true;
                         return false;
                     };
 
@@ -916,10 +950,12 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                 return _solveProblematicSequence();
 
             this.isSolved = true;
-            return true;
+            this.isProblematic = true;
+            return false; // true;
         };
 
         this.isSolved = true;
+        this.isProblematic = false;
         return false;
     };
 

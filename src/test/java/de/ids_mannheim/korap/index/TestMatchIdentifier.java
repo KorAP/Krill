@@ -277,10 +277,10 @@ public class TestMatchIdentifier {
 
         /*
         km = ki.getMatchInfo(
-			"match-GOE!GOE_AGX.00002-p10-20",
-							 "tokens", true, (String) null, (String) null, true, true, false);	
+        	"match-GOE!GOE_AGX.00002-p10-20",
+        					 "tokens", true, (String) null, (String) null, true, true, false);	
         assertEquals("", km.toJsonString());
-		*/		
+        */
     };
 
 

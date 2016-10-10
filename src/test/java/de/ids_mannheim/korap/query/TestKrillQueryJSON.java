@@ -571,21 +571,24 @@ public class TestKrillQueryJSON {
         };
     };
 
-	@Test
+
+    @Test
     public void queryJSONdistancesWithRegexes () throws QueryException {
-		// "der" []{2,3} [opennlp/p="NN"]
+        // "der" []{2,3} [opennlp/p="NN"]
         try {
             String json = getString(getClass().getResource(
                     "/queries/bugs/distances_with_regex_bug.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(kq.fromKoral(json).toQuery().toString(),
+            assertEquals(
+                    kq.fromKoral(json).toQuery().toString(),
                     "spanDistance(SpanMultiTermQueryWrapper(tokens:/s:der/), SpanMultiTermQueryWrapper(tokens:/opennlp/p:NN/), [(w[3:4], ordered, notExcluded)])");
         }
         catch (QueryException e) {
             fail(e.getMessage());
         };
     };
+
 
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();

@@ -204,6 +204,7 @@ public class TestRepetitionIndex {
         //		}
     }
 
+
     @Test
     public void testCase5 () throws IOException {
         ki = new KrillIndex();

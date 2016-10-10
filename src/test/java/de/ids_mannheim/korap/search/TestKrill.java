@@ -1019,28 +1019,29 @@ public class TestKrill {
                 "Operation needs operand list");
     };
 
-	
-	@Test
+
+    @Test
     public void searchJSONdistanceWithRegexesBug () throws IOException {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] { "00001" }) {
-			// , "00002", "00003", "00004", "00005", "00006", "02439"
+            // , "00002", "00003", "00004", "00005", "00006", "02439"
             ki.addDoc(
                     getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-		// "der" []{2,3} [opennlp/p="NN"]
-       String json = getString(getClass().getResource(
+        // "der" []{2,3} [opennlp/p="NN"]
+        String json = getString(getClass().getResource(
                 "/queries/bugs/distances_with_regex_bug.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
 
-		assertEquals(kr.getMatch(0).getSnippetBrackets(),
-					 "Mit Ausnahme von Fremdwörtern und Namen ist das A der einzige Buchstabe im Deutschen, [[der zweifach am Anfang]] eines Wortes stehen darf, etwa im Wort Aal.");
+        assertEquals(
+                kr.getMatch(0).getSnippetBrackets(),
+                "Mit Ausnahme von Fremdwörtern und Namen ist das A der einzige Buchstabe im Deutschen, [[der zweifach am Anfang]] eines Wortes stehen darf, etwa im Wort Aal.");
 
     };
 
@@ -1128,22 +1129,24 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 1);
     };
 
-	
-	@Test
+
+    @Test
     public void queryJSONzeroRepetitionBug () throws IOException {
-		// der{0}
-		KrillIndex ki = new KrillIndex();
-		ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
-		ki.commit();
-			
-		String json = getString(getClass().getResource(
-									"/queries/bugs/zero_repetition_bug.jsonld").getFile());
+        // der{0}
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
+        ki.commit();
 
-		Result kr = new Krill(json).apply(ki);
+        String json = getString(getClass().getResource(
+                "/queries/bugs/zero_repetition_bug.jsonld").getFile());
 
-		assertEquals(783, kr.getError(0).getCode());
-		assertEquals("This query can't match anywhere", kr.getError(0).getMessage());
-	};
+        Result kr = new Krill(json).apply(ki);
+
+        assertEquals(783, kr.getError(0).getCode());
+        assertEquals("This query can't match anywhere", kr.getError(0)
+                .getMessage());
+    };
+
 
     /**
      * This is a Schreibgebrauch ressource that didn't work for

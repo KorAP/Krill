@@ -283,7 +283,7 @@ public class TestSpanSequenceQueryJSON {
         }
         catch (QueryException qe) {
             assertEquals(
-                    "Distance constraints not supported with empty or negative operands",
+                    "Distance constraints not supported with empty, optional or negative operands",
                     qe.getMessage());
         };
     };
@@ -351,27 +351,34 @@ public class TestSpanSequenceQueryJSON {
                 sqwi.toQuery().toString());
     };
 
+
     @Test
-    public void queryJSONkoralOptionalityInDistanceBug () throws QueryException {
-		// Sonne [] Mond?
-        SpanQueryWrapper sqwi = jsonQueryFile("distance-with-optionality.jsonld");
-        assertEquals(
-			"focus(254: spanContain(<tokens:base/s:t />, {254: spanOr([spanExpansion(tokens:s:Sonne, []{1, 1}, right), spanNext(spanExpansion(tokens:s:Sonne, []{1, 1}, right), tokens:s:Mond)])}))",
-			sqwi.toQuery().toString());
-		// Could also be a distance at the end ... that's a query planner thing.
+    public void queryJSONkoralOptionalityInDistanceBug () {
+        try {
+            // Sonne [] Mond?
+            SpanQueryWrapper sqwi = jsonQueryFile("distance-with-optionality.jsonld");
+            sqwi.toQuery().toString();
+        }
+        catch (QueryException qe) {
+            assertEquals(
+                    "Distance constraints not supported with empty, optional or negative operands",
+                    qe.getMessage());
+        }
+        // Could also be a distance at the end ... that's a query planner thing.
     };
 
-	@Test
+
+    @Test
     public void queryJSONkoralOptionalityAfterEmptyBug () throws QueryException {
-		// Sonne [] Mond?
+        // Sonne [] Mond?
         SpanQueryWrapper sqwi = jsonQueryFile("empty-followed-by-optionality.jsonld");
         assertEquals(
-			"focus(254: spanContain(<tokens:base/s:t />, {254: spanOr([spanExpansion(tokens:s:Sonne, []{1, 1}, right), spanNext(spanExpansion(tokens:s:Sonne, []{1, 1}, right), tokens:s:Mond)])}))",
-			sqwi.toQuery().toString());
-		// Could also be a distance at the end ... that's a query planner thing.
+                "focus(254: spanContain(<tokens:base/s:t />, {254: spanOr([spanExpansion(tokens:s:Sonne, []{1, 1}, right), spanNext(spanExpansion(tokens:s:Sonne, []{1, 1}, right), tokens:s:Mond)])}))",
+                sqwi.toQuery().toString());
+        // Could also be a distance at the end ... that's a query planner thing.
     };
 
-	
+
 
     // get query wrapper based on json file
     public SpanQueryWrapper jsonQueryFile (String filename) {

@@ -115,7 +115,7 @@ public final class KrillQuery extends Notifications {
             // Set max boundary
             this.max = json.has("max") ? json.get("max").asInt(defaultMax)
                     : defaultMax;
-			
+
             if (DEBUG)
                 log.trace("Found koral:boundary with {}:{}", min, max);
         };
@@ -723,12 +723,12 @@ public final class KrillQuery extends Notifications {
         // Check relation between min and max
         if (min > max)
             max = max;
-		
+
         SpanQueryWrapper sqw = this._fromKoral(operands.get(0));
 
         if (sqw.maybeExtension())
             return sqw.setMin(min).setMax(max);
-		
+
         return new SpanRepetitionQueryWrapper(sqw, min, max);
     };
 

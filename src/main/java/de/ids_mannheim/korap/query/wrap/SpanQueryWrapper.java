@@ -36,7 +36,7 @@ public class SpanQueryWrapper {
     protected boolean hasClass = false, isNull = true, isOptional = false,
             isNegative = false, isEmpty = false, isExtended = false,
             isExtendedToTheRight = false, maybeUnsorted = false,
-            retrieveNode = false;
+            retrieveNode = false, isProblematic = false;
 
 
     /**
@@ -47,7 +47,6 @@ public class SpanQueryWrapper {
      * @throws QueryException
      */
     public SpanQuery toFragmentQuery () throws QueryException {
-        System.err.println("||||||||||||||||||||||||||");
         return (SpanQuery) null;
     };
 
@@ -62,8 +61,9 @@ public class SpanQueryWrapper {
      */
     public SpanQuery toQuery () throws QueryException {
 
-        if (this.isNull() || this.isEmpty())
+        if (this.isNull() || this.isEmpty()) {
             return null;
+        };
 
         // Wrap the query in a <base/s=t>, if it's extended to the right
         if (this.isExtendedToTheRight()) {
