@@ -1,8 +1,10 @@
-0.55.7 2016-10-10
+0.55.7 2016-10-11
         - [bugfix] Throw error on optional operands in distance
           queries (diewald)
         - [performance] Remember solved problematic queries in the
           query planner (diewald)
+        - [performance] Treat term queries like ".+?", ".+", ".*?", and ".*"
+          as any-terms (diewald)
 
 0.55.6 2016-08-10
         - [bugfix] distance with key "t" uses default foundry (diewald)

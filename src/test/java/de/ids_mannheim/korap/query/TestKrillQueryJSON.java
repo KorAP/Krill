@@ -589,6 +589,30 @@ public class TestKrillQueryJSON {
         };
     };
 
+	@Test
+    public void queryJSONregexRewrite1 () throws QueryException {
+        // "der" [.+?]
+		String json = getString(getClass().getResource(
+									"/queries/sequence/regex-rewrite-1.jsonld").getFile());
+		KrillQuery kq = new KrillQuery("tokens");
+
+		assertEquals(
+			kq.fromKoral(json).toQuery().toString(),
+			"focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 1}, right)}))");
+    };
+
+	@Ignore
+    public void queryJSONregexRewrite2 () throws QueryException {
+        // "der" [.+?]
+		String json = getString(getClass().getResource(
+									"/queries/sequence/regex-rewrite-2.jsonld").getFile());
+		KrillQuery kq = new KrillQuery("tokens");
+
+		assertEquals(
+			kq.fromKoral(json).toQuery().toString(),
+			"focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 4}, right)}))");
+    };
+
 
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
