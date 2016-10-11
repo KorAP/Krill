@@ -373,8 +373,8 @@ public class TestSpanSequenceQueryJSON {
         // Sonne [] Mond?
         SpanQueryWrapper sqwi = jsonQueryFile("empty-followed-by-optionality.jsonld");
         assertEquals(
-                "focus(254: spanContain(<tokens:base/s:t />, {254: spanOr([spanExpansion(tokens:s:Sonne, []{1, 1}, right), spanNext(spanExpansion(tokens:s:Sonne, []{1, 1}, right), tokens:s:Mond)])}))",
-                sqwi.toQuery().toString());
+			"focus(254: spanContain(<tokens:base/s:t />, {254: spanOr([spanExpansion(tokens:s:Sonne, []{1, 1}, right), spanNext(spanExpansion(tokens:s:Sonne, []{1, 1}, right), tokens:s:Mond)])}))",
+			sqwi.toQuery().toString());
         // Could also be a distance at the end ... that's a query planner thing.
     };
 

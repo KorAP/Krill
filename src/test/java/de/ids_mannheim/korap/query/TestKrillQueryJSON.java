@@ -601,16 +601,16 @@ public class TestKrillQueryJSON {
 			"focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 1}, right)}))");
     };
 
-	@Ignore
+	@Test
     public void queryJSONregexRewrite2 () throws QueryException {
-        // "der" [.+?]
+        // "der" [.*] [.*?] [.+] [.+?]
 		String json = getString(getClass().getResource(
 									"/queries/sequence/regex-rewrite-2.jsonld").getFile());
 		KrillQuery kq = new KrillQuery("tokens");
 
 		assertEquals(
 			kq.fromKoral(json).toQuery().toString(),
-			"focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 4}, right)}))");
+			"focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{4, 4}, right)}))");
     };
 
 

@@ -257,7 +257,7 @@ public class QueryBuilder {
         return ssq;
     };
 
-
+	
     /**
      * Create an empty query segment.
      * 
