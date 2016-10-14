@@ -18,7 +18,6 @@ import de.ids_mannheim.korap.util.QueryException;
 
 /*
   TODO: Make isNegative work!
-  TODO: Make isEmpty work!
   TODO: Evaluate if spanNext(spanNext(a,b),spanNext(c,d)) is faster
         than spanNext(spanNext(spanNext(a,b),c),d)
   TODO: Improve support for SpanElementQueryWrapper in constraints!
@@ -612,6 +611,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
 
     public boolean isEmpty () {
+
         if (this.segments.size() == 1)
             return this.segments.get(0).isEmpty();
 
@@ -727,7 +727,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         if (query == null)
             return (SpanQuery) null;
 
-        // NextQueries:
+        // NextQueries
         if (!this.hasConstraints() && this.isInOrder()) {
             for (; i < this.segments.size(); i++) {
 
@@ -741,6 +741,12 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             return (SpanQuery) query;
         };
 
+		// DistanceQueries with problems
+        if (this.hasConstraints() && this.isProblematic) {
+            throw new QueryException(613,
+                    "Distance constraints not supported with empty, optional or negative operands");
+        };
+
         // DistanceQueries
         if (this.constraints.size() == 1) {
             DistanceConstraint constraint = this.constraints.get(0);
@@ -752,6 +758,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     // No support for extended spans in constraints
                     if (this.segments.get(i).isExtended())
                         throw new QueryException(613, limitationError);
+
+                    /* Maybe important
+                    if (this.segments.get(i).isOptional())
+                        throw new QueryException(613, limitationError);
+                    */
 
                     SpanQuery sq = (SpanQuery) this.segments.get(i)
                             .retrieveNode(this.retrieveNode).toFragmentQuery();
@@ -771,6 +782,11 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     // No support for extended spans in constraints
                     if (this.segments.get(i).isExtended())
                         throw new QueryException(613, limitationError);
+
+                    /* May be necessary
+                    if (this.segments.get(i).isOptional())
+                        throw new QueryException(613, limitationError);
+                    */
 
                     SpanQuery sq = (SpanQuery) this.segments.get(i)
                             .retrieveNode(this.retrieveNode).toFragmentQuery();
@@ -817,6 +833,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
       - look for an anchor next to it
       - merge the problematic segment with the anchor
       - go on
+
+      - This does not work for distance constraints!
     */
     private boolean _solveProblematicSequence () {
         int size = this.segments.size();
@@ -838,6 +856,18 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                 if (DEBUG)
                     log.trace("segment {} is problematic", i);
 
+                // Sequences with distance constraints do not support empty or optional
+                // elemets
+                if (this.hasConstraints()) {
+                    if (DEBUG) {
+                        log.trace("Sequence has constraints, "
+                                + "that do not allow empty or optional elements");
+                    };
+                    this.isSolved = true;
+                    this.isProblematic = true;
+                    return false;
+                };
+
                 // [problem][anchor]
                 if (i < (size - 1) && this.segments.get(i + 1).maybeAnchor()) {
                     if (DEBUG)
@@ -853,6 +883,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
                     // An error occurred while solving the problem
                     catch (QueryException e) {
+                        this.isSolved = true;
+                        this.isProblematic = true;
                         return false;
                     };
 
@@ -880,6 +912,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                                         true));
                     }
                     catch (QueryException e) {
+                        this.isSolved = true;
+                        this.isProblematic = true;
                         return false;
                     };
 
@@ -916,15 +950,17 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                 return _solveProblematicSequence();
 
             this.isSolved = true;
-            return true;
+            this.isProblematic = true;
+            return false; // true;
         };
 
         this.isSolved = true;
+        this.isProblematic = false;
         return false;
     };
 
 
-    // Todo: Deal with negative and optional!
+    // Todo: Deal with negative, empty and optional!
     // [base=der][base!=Baum]?
     private SpanQueryWrapper _merge (SpanQueryWrapper anchor,
             SpanQueryWrapper problem, boolean mergeLeft) throws QueryException {
@@ -944,15 +980,46 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                 log.trace("Problem is empty with class {}",
                         problem.getClassNumber());
 
-            query = new SpanExpansionQuery(anchor.retrieveNode(
-                    this.retrieveNode).toFragmentQuery(),
-                    problem.isOptional() ? 0 : problem.getMin(),
-                    problem.getMax(), direction,
-                    problem.hasClass() ? problem.getClassNumber() : (byte) 0,
-                    true);
-            SpanQueryWrapper sqw = new SpanSimpleQueryWrapper(query)
-                    .isExtended(true);
+			// Merge extensions!
+			if (!problem.hasClass() &&
+				!anchor.hasClass() &&
+				anchor.isExtended()) {
 
+				if (DEBUG)
+					log.trace("It may be possible to extend anchor with problem");
+				
+				if (
+					// Further extend to the right ...
+					(direction >= 0 && anchor.isExtendedToTheRight) ||
+
+					// or the left
+					(direction < 0 && !anchor.isExtendedToTheRight)) {
+
+					if (DEBUG)
+						log.trace("Readjust min and max");
+
+					// Readjust the anchor
+					anchor.setMin(anchor.getMin() + problem.getMin());
+					anchor.setMax(anchor.getMax() + problem.getMax());
+
+					/*
+					 * This is wrong - min is only relevant for extensions
+					if (anchor.getMin() > 0)
+						anchor.isOptional = false;
+					*/					
+					return anchor;
+				};
+			};
+
+			// Can't merge extensions
+			SpanQueryWrapper sqw = new SpanExpansionQueryWrapper(
+				anchor,
+				problem.isOptional() ? 0 : problem.getMin(),
+				problem.getMax(),
+				direction,
+				problem.hasClass() ? problem.getClassNumber() : (byte) 0
+				).isExtended(true);
+				
             // Set right extension
             if (direction >= 0)
                 sqw.isExtendedToTheRight(true);
@@ -969,15 +1036,17 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                 log.trace("Problem is negative with class {}",
                         problem.getClassNumber());
 
-            query = new SpanExpansionQuery(anchor.retrieveNode(
-                    this.retrieveNode).toFragmentQuery(), problem.retrieveNode(
-                    this.retrieveNode).toFragmentQuery(), problem.getMin(),
-                    problem.getMax(), direction,
-                    problem.hasClass() ? problem.getClassNumber() : (byte) 0,
-                    true);
+			// TODO: Should probably wrapped as well!
+			// A sequence of negative tokens may expand jointly!
+			query = new SpanExpansionQuery(anchor.retrieveNode(
+											   this.retrieveNode).toFragmentQuery(), problem.retrieveNode(
+												   this.retrieveNode).toFragmentQuery(), problem.getMin(),
+										   problem.getMax(), direction,
+										   problem.hasClass() ? problem.getClassNumber() : (byte) 0,
+										   true);
 
             SpanQueryWrapper sqw = new SpanSimpleQueryWrapper(query)
-                    .isExtended(true);
+				.isExtended(true);
 
             // Set right extension
             if (direction >= 0)
@@ -989,24 +1058,29 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         if (DEBUG)
             log.trace("Problem is optional");
 
+		// [base=der][][base=Baum]?
         // [base=der][base=baum]?
 
         // [base=der]
-        SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(this.field,
-                anchor);
+        SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(
+			this.field,
+			anchor
+			);
 
         // [base=der]
         SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(
-                this.field, anchor);
+			this.field,
+			anchor
+			);
 
         // [base=der][base=baum]
-        if (mergeLeft)
-            ssqw.append(new SpanSimpleQueryWrapper(problem.retrieveNode(
-                    this.retrieveNode).toFragmentQuery()));
+	    if (mergeLeft) {
+            ssqw.append(problem.isOptional(false));
+		}
         // [base=baum][base=der]
-        else
-            ssqw.prepend(new SpanSimpleQueryWrapper(problem.retrieveNode(
-                    this.retrieveNode).toFragmentQuery()));
+        else {
+            ssqw.prepend(problem.isOptional(false));
+		}
 
         saqw.or(ssqw);
 

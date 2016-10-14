@@ -23,8 +23,14 @@ import org.apache.lucene.index.IndexOptions;
 import java.util.*;
 
 /*
-  Todo: Store primary data at base/cons field.
+  TODO: Store primary data at base/cons field.
   All other Termvectors should have no stored field!
+
+  TODO: Currently Character offsets are stored with positional
+  information in the token stream. This is bad!
+  The character offset may need a special encoding in Lucene
+  To store the character offsets directly (not in the payloads),
+  to make this less messy and speed things up.
 */
 
 /**

@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.RegexpQuery;
@@ -295,9 +296,8 @@ public class TestSpanExpansionIndex {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.commit();
-
-        String jsonPath = getClass().getResource("/queries/poly3.json")
-                .getFile();
+        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/poly3.json")
+                .getFile(),"UTF-8");
         String jsonQuery = readFile(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
@@ -405,9 +405,9 @@ public class TestSpanExpansionIndex {
         ki.addDoc(createFieldDoc3());
         ki.addDoc(createFieldDoc4());
         ki.commit();
-
-        String json = readFile(getClass().getResource(
-                "/queries/bugs/expansion_bug_3.jsonld").getFile());
+        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/bugs/expansion_bug_3.jsonld")
+                .getFile(),"UTF-8");
+        String json = readFile(jsonPath);
         KrillQuery kq = new KrillQuery("base");
         SpanQuery sq = kq.fromKoral(json).toQuery();
         assertEquals(

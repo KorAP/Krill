@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -1107,8 +1108,8 @@ public class TestWithinIndex {
     // contains(<s>, (es wird | wird es))
     @Test
     public void queryJSONpoly2 () throws QueryException, IOException {
-        String jsonPath = getClass().getResource("/queries/poly2.json")
-                .getFile();
+        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/poly2.json")
+                .getFile(),"UTF-8");
         String jsonPQuery = readFile(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonPQuery);
 
@@ -1144,8 +1145,8 @@ public class TestWithinIndex {
           at de.ids_mannheim.korap.Krill.apply(Krill.java:304)
         */
 
-        String jsonPath = getClass().getResource(
-                "/queries/bugs/span_or_bug.jsonld").getFile();
+        String jsonPath = URLDecoder.decode(getClass().getResource(
+                "/queries/bugs/span_or_bug.jsonld").getFile(),"UTF-8");
         String jsonPQuery = readFile(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonPQuery);
 

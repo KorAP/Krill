@@ -1,0 +1,42 @@
+{
+  "@context": "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld",
+  "query": {
+    "@type": "koral:group",
+    "inOrder": true,
+    "operation": "operation:sequence",
+    "operands": [
+      {
+        "@type": "koral:token",
+        "wrap": {
+          "@type": "koral:term",
+          "key": "Sonne",
+          "layer": "orth",
+          "match": "match:eq"
+        }
+      },
+      {
+        "@type": "koral:token"
+      },
+      {
+        "@type": "koral:group",
+        "boundary": {
+          "@type": "koral:boundary",
+          "max": 1,
+          "min": 0
+        },
+        "operands": [
+          {
+            "@type": "koral:token",
+            "wrap": {
+              "@type": "koral:term",
+              "key": "Mond",
+              "layer": "orth",
+              "match": "match:eq"
+            }
+          }
+        ],
+        "operation": "operation:repetition"
+      }
+    ]
+  }
+}

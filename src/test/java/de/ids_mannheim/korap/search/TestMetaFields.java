@@ -47,7 +47,7 @@ public class TestMetaFields {
         };
         ki.commit();
 
-        String jsonString = getString(getClass().getResource(
+        String jsonString = getJsonString(getClass().getResource(
                 "/queries/metas/fields.jsonld").getFile());
 
         Krill ks = new Krill(jsonString);
@@ -87,7 +87,7 @@ public class TestMetaFields {
         assertTrue(res.at("/matches/0/layerInfos").isMissingNode());
         assertTrue(res.at("/matches/0/tokenization").isMissingNode());
 
-        jsonString = getString(getClass().getResource(
+        jsonString = getJsonString(getClass().getResource(
                 "/queries/metas/fields_2.jsonld").getFile());
         ks = new Krill(jsonString);
         kr = ks.apply(ki);
@@ -125,7 +125,7 @@ public class TestMetaFields {
         ki.addDoc(getClass().getResourceAsStream("/goe/AGX-00002.json"), false);
         ki.commit();
 
-        String jsonString = getString(getClass().getResource(
+        String jsonString = getJsonString(getClass().getResource(
                 "/queries/metas/fields_no.jsonld").getFile());
 
         Krill ks = new Krill(jsonString);
@@ -153,7 +153,7 @@ public class TestMetaFields {
 
 
         // All fields
-        jsonString = getString(getClass().getResource(
+        jsonString = getJsonString(getClass().getResource(
                 "/queries/metas/fields_all.jsonld").getFile());
 
         ks = new Krill(jsonString);
@@ -184,7 +184,7 @@ public class TestMetaFields {
 
 
         // @All fields
-        jsonString = getString(getClass().getResource(
+        jsonString = getJsonString(getClass().getResource(
                 "/queries/metas/fields_at_all.jsonld").getFile());
 
         ks = new Krill(jsonString);
@@ -245,7 +245,7 @@ public class TestMetaFields {
         ki.commit();
 
         // textClass = reisen & wissenschaft
-        String jsonString = getString(getClass().getResource(
+        String jsonString = getJsonString(getClass().getResource(
                 "/queries/collections/collection_textClass.jsonld").getFile());
         Krill ks = new Krill(jsonString);
         KrillCollection kc = ks.getCollection();
@@ -253,7 +253,7 @@ public class TestMetaFields {
         assertEquals(1, kc.numberOf("documents"));
 
         // textClass = reisen
-        jsonString = getString(getClass().getResource(
+        jsonString = getJsonString(getClass().getResource(
                 "/queries/collections/collection_textClass_2.jsonld").getFile());
         ks = new Krill(jsonString);
         kc = ks.getCollection();
@@ -276,7 +276,7 @@ public class TestMetaFields {
         */
 
         // author = wolfgang
-        jsonString = getString(getClass().getResource(
+        jsonString = getJsonString(getClass().getResource(
                 "/queries/collections/collection_goethe.jsonld").getFile());
         ks = new Krill(jsonString);
         kc = ks.getCollection();
@@ -284,7 +284,7 @@ public class TestMetaFields {
         assertEquals(1, kc.numberOf("documents"));
 
         // author = Wolfgang
-        jsonString = getString(getClass().getResource(
+        jsonString = getJsonString(getClass().getResource(
                 "/queries/collections/collection_goethe_2.jsonld").getFile());
         ks = new Krill(jsonString);
         kc = ks.getCollection();
@@ -303,7 +303,7 @@ public class TestMetaFields {
     public void searchMetaContext () throws IOException {
 
         // All fields
-        String jsonString = getString(getClass().getResource(
+        String jsonString = getJsonString(getClass().getResource(
                 "/queries/metas/context_paragraph.jsonld").getFile());
 
         Krill ks = new Krill(jsonString);

@@ -277,7 +277,7 @@ public class TestHighlight { // extends LuceneTestCase {
         ki.commit();
 
         // 15
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/greater_highlights_15.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -292,7 +292,7 @@ public class TestHighlight { // extends LuceneTestCase {
                 kr.getMatch(0).getSnippetHTML(),
                 "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-15 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bugs/greater_highlights_16.jsonld").getFile());
 
         // 16
@@ -309,7 +309,7 @@ public class TestHighlight { // extends LuceneTestCase {
                 "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-16 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         // 127
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bugs/greater_highlights_127.jsonld").getFile());
 
         ks = new Krill(json);
@@ -325,7 +325,7 @@ public class TestHighlight { // extends LuceneTestCase {
                 "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-127 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         // 255
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bugs/greater_highlights_255.jsonld").getFile());
 
         ks = new Krill(json);
@@ -341,7 +341,7 @@ public class TestHighlight { // extends LuceneTestCase {
                 "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark>Alphabet</mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
 
         // 300
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bugs/greater_highlights_300.jsonld").getFile());
 
         ks = new Krill(json);

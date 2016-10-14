@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
@@ -198,9 +199,11 @@ public class TestFieldDocument {
         };
         ki.commit();
 
+        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/bsp18.jsonld")
+                .getFile(),"UTF-8");
+        
         // {1:der} \w0:5 nicht
-        SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
-                "/queries/bsp18.jsonld").getFile());
+        SpanQueryWrapper sqwi = jsonQuery(jsonPath);
 
         Result kr = ki.search(sqwi.toQuery(), 0, (short) 5, true, (short) 2,
                 false, (short) 5);

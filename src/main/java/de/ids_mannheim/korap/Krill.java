@@ -178,10 +178,10 @@ public class Krill extends Response {
                 // Throw an error, in case the query matches everywhere
                 if (qw.isEmpty()) {
                     this.addError(780, "This query matches everywhere");
-				}
-				else if (qw.isNull()) {
-					this.addError(783, "This query can't match anywhere");
-				}
+                }
+                else if (qw.isNull()) {
+                    this.addError(783, "This query can't match anywhere");
+                }
 
                 else {
 

@@ -274,6 +274,13 @@ public class TestMatchIdentifier {
         assertEquals("tokens", res.at("/field").asText());
         assertEquals("GOE_AGX.00002", res.at("/textSigle").asText());
         assertEquals("Goethe, Johann Wolfgang von", res.at("/author").asText());
+
+        /*
+        km = ki.getMatchInfo(
+        	"match-GOE!GOE_AGX.00002-p10-20",
+        					 "tokens", true, (String) null, (String) null, true, true, false);	
+        assertEquals("", km.toJsonString());
+        */
     };
 
 

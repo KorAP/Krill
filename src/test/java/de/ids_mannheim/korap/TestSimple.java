@@ -2,6 +2,7 @@ package de.ids_mannheim.korap;
 
 import java.util.*;
 import java.io.*;
+import java.net.URLDecoder;
 
 import static org.junit.Assert.*;
 
@@ -95,7 +96,7 @@ public class TestSimple {
         SpanQueryWrapper sqwi;
 
         try {
-            String json = getString(jsonFile);
+            String json = getJsonString(jsonFile);
             sqwi = new KrillQuery("tokens").fromKoral(json);
         }
         catch (QueryException e) {
@@ -107,9 +108,11 @@ public class TestSimple {
 
 
     // Get string
-    public static String getString (String path) {
+    public static String getJsonString (String path) {
+        
         StringBuilder contentBuilder = new StringBuilder();
         try {
+            path = URLDecoder.decode(path, "UTF-8");
             BufferedReader in = new BufferedReader(new FileReader(path));
             String str;
             while ((str = in.readLine()) != null) {

@@ -115,7 +115,7 @@ public final class KrillQuery extends Notifications {
             // Set max boundary
             this.max = json.has("max") ? json.get("max").asInt(defaultMax)
                     : defaultMax;
-			
+
             if (DEBUG)
                 log.trace("Found koral:boundary with {}:{}", min, max);
         };
@@ -723,12 +723,12 @@ public final class KrillQuery extends Notifications {
         // Check relation between min and max
         if (min > max)
             max = max;
-		
+
         SpanQueryWrapper sqw = this._fromKoral(operands.get(0));
 
         if (sqw.maybeExtension())
             return sqw.setMin(min).setMax(max);
-		
+
         return new SpanRepetitionQueryWrapper(sqw, min, max);
     };
 
@@ -1193,18 +1193,23 @@ public final class KrillQuery extends Notifications {
 
             // Branch on type
             switch (json.get("type").asText()) {
-                case "type:regex":
-                    return qb.seg(qb.re(value.toString(), isCaseInsensitive));
+			case "type:regex": {
 
-                case "type:wildcard":
-                    return qb.seq(qb.wc(value.toString(), isCaseInsensitive));
+				// The regex can be rewritten to an any token
+				if (value.toString().matches("^[si]:\\.[\\+\\*]\\??$")) {
+					return new SpanRepetitionQueryWrapper();
+				};
+				return qb.seg(qb.re(value.toString(), isCaseInsensitive));
+			}
+			case "type:wildcard":
+				return qb.seq(qb.wc(value.toString(), isCaseInsensitive));
 
-                case "type:string":
-                    break;
+			case "type:string":
+				break;
 
-                default:
-                    this.addWarning(746,
-                            "Term type is not supported - treated as a string");
+			default:
+				this.addWarning(746,
+								"Term type is not supported - treated as a string");
             };
         };
 

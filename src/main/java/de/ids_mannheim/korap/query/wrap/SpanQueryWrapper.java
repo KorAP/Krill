@@ -7,6 +7,7 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 
 // TODO: Add warnings and errors - using KrillQuery
+// TODO: Rename isEmpty to isAny!
 
 /**
  * A wrapper base class for Lucene SpanQueries,
@@ -35,7 +36,7 @@ public class SpanQueryWrapper {
     protected boolean hasClass = false, isNull = true, isOptional = false,
             isNegative = false, isEmpty = false, isExtended = false,
             isExtendedToTheRight = false, maybeUnsorted = false,
-            retrieveNode = false;
+            retrieveNode = false, isProblematic = false;
 
 
     /**
@@ -46,7 +47,6 @@ public class SpanQueryWrapper {
      * @throws QueryException
      */
     public SpanQuery toFragmentQuery () throws QueryException {
-        System.err.println("||||||||||||||||||||||||||");
         return (SpanQuery) null;
     };
 
@@ -61,8 +61,9 @@ public class SpanQueryWrapper {
      */
     public SpanQuery toQuery () throws QueryException {
 
-        if (this.isNull() || this.isEmpty())
+        if (this.isNull() || this.isEmpty()) {
             return null;
+        };
 
         // Wrap the query in a <base/s=t>, if it's extended to the right
         if (this.isExtendedToTheRight()) {
@@ -94,11 +95,18 @@ public class SpanQueryWrapper {
         return this.isOptional;
     };
 
+	
+	public SpanQueryWrapper isOptional (boolean opt) {
+        this.isOptional = opt;
+        return this;
+    };
+
+
 
     /**
      * Boolean value indicating that the wrapped query is
      * <tt>null</tt>, meaning it doesn't match anything at
-     * all.
+     * all (i.e. a zero-width assertion).
      * 
      * For example the segment denoting an adjective
      * in the following Poliqarp expression doen't match
@@ -210,7 +218,6 @@ public class SpanQueryWrapper {
         this.isExtendedToTheRight = extended;
         return this;
     };
-
 
     /**
      * Check, if the wrapped query can be used as an
@@ -412,8 +419,10 @@ public class SpanQueryWrapper {
      */
     public String toString () {
         String string = "" + (this.isNull() ? "isNull" : "notNull") + "-"
-                + (this.isEmpty() ? "isEmpty" : "notEmpty") + "-"
-                + (this.isOptional() ? "isOptional" : "notOptional");
+			+ (this.isEmpty() ? "isEmpty" : "notEmpty") + "-"
+			+ (this.isOptional() ? "isOptional" : "notOptional") + "-"
+			+ (this.isExtendedToTheRight() ? "isExtendedToTheRight" : "notExtendedToTheRight");
+		;
         return string;
     };
 };

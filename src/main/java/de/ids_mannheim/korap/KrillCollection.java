@@ -8,7 +8,6 @@ import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.response.Result;
 
-import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.util.BytesRef;

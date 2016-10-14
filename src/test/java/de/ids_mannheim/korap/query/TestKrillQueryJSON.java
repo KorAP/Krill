@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.query;
 
 import java.util.*;
 import java.io.*;
+import java.net.URLDecoder;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
@@ -571,15 +572,17 @@ public class TestKrillQueryJSON {
         };
     };
 
-	@Test
+
+    @Test
     public void queryJSONdistancesWithRegexes () throws QueryException {
-		// "der" []{2,3} [opennlp/p="NN"]
+        // "der" []{2,3} [opennlp/p="NN"]
         try {
             String json = getString(getClass().getResource(
                     "/queries/bugs/distances_with_regex_bug.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(kq.fromKoral(json).toQuery().toString(),
+            assertEquals(
+                    kq.fromKoral(json).toQuery().toString(),
                     "spanDistance(SpanMultiTermQueryWrapper(tokens:/s:der/), SpanMultiTermQueryWrapper(tokens:/opennlp/p:NN/), [(w[3:4], ordered, notExcluded)])");
         }
         catch (QueryException e) {
@@ -587,10 +590,35 @@ public class TestKrillQueryJSON {
         };
     };
 
+	@Test
+    public void queryJSONregexRewrite1 () throws QueryException {
+        // "der" [.+?]
+		String json = getString(getClass().getResource(
+									"/queries/sequence/regex-rewrite-1.jsonld").getFile());
+		KrillQuery kq = new KrillQuery("tokens");
+
+		assertEquals(
+			kq.fromKoral(json).toQuery().toString(),
+			"focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 1}, right)}))");
+    };
+
+	@Test
+    public void queryJSONregexRewrite2 () throws QueryException {
+        // "der" [.*] [.*?] [.+] [.+?]
+		String json = getString(getClass().getResource(
+									"/queries/sequence/regex-rewrite-2.jsonld").getFile());
+		KrillQuery kq = new KrillQuery("tokens");
+
+		assertEquals(
+			kq.fromKoral(json).toQuery().toString(),
+			"focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{4, 4}, right)}))");
+    };
+
+
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(path));
+            BufferedReader in = new BufferedReader(new FileReader(URLDecoder.decode(path,"UTF-8")));
             String str;
             while ((str = in.readLine()) != null) {
                 contentBuilder.append(str);

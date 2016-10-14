@@ -186,7 +186,7 @@ public class TestKrillCollectionJSON {
     // Legacy collections reflect old tests, that were adopted to the new scheme
     @Test
     public void metaQuery1Legacy () {
-        String metaQuery = getString(getClass().getResource(
+        String metaQuery = getJsonString(getClass().getResource(
                 "/queries/metaquery.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
 
@@ -211,7 +211,7 @@ public class TestKrillCollectionJSON {
 
     @Test
     public void metaQuery2Legacy () {
-        String metaQuery = getString(getClass().getResource(
+        String metaQuery = getJsonString(getClass().getResource(
                 "/queries/metaquery2.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
         /*
@@ -227,7 +227,7 @@ public class TestKrillCollectionJSON {
 
     @Test
     public void metaQuery3Legacy () {
-        String metaQuery = getString(getClass().getResource(
+        String metaQuery = getJsonString(getClass().getResource(
                 "/queries/metaquery4.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
         /*
@@ -245,7 +245,7 @@ public class TestKrillCollectionJSON {
 
     @Test
     public void metaQuery7Legacy () {
-        String metaQuery = getString(getClass().getResource(
+        String metaQuery = getJsonString(getClass().getResource(
                 "/queries/metaquery7.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
         /*
@@ -266,7 +266,7 @@ public class TestKrillCollectionJSON {
 
     @Test
     public void metaQuery9 () {
-        String metaQuery = getString(getClass().getResource(
+        String metaQuery = getJsonString(getClass().getResource(
                 "/queries/metaquery9.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
         /*
@@ -279,6 +279,6 @@ public class TestKrillCollectionJSON {
 
 
     private String _getJSONString (String file) {
-        return getString(getClass().getResource(path + file).getFile());
+        return getJsonString(getClass().getResource(path + file).getFile());
     };
 };

@@ -83,7 +83,6 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
         if (term.maybeUnsorted())
             this.maybeUnsorted = true;
 
-
         this.isNull = false;
         return this;
     };
