@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
@@ -29,8 +30,8 @@ public class TestClass {
     @Test
     public void queryJSONpoly1 () throws QueryException, IOException {
 
-        String jsonPath = getClass().getResource("/queries/poly1.json")
-                .getFile();
+        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/poly1.json")
+                .getFile(),"UTF-8");
         String jsonQuery = readFile(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
@@ -64,8 +65,8 @@ public class TestClass {
     @Test
     public void queryJSONpoly4 () throws QueryException, IOException {
 
-        String jsonPath = getClass().getResource("/queries/poly4.json")
-                .getFile();
+        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/poly4.json")
+                .getFile(),"UTF-8");
         String jsonQuery = readFile(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
         SpanQuery sq = sqwi.toQuery();

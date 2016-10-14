@@ -1,7 +1,9 @@
 package de.ids_mannheim.korap.util;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -26,7 +28,10 @@ public class KrillString {
      */
     public static String StringfromFile (String path, Charset encoding)
             throws IOException {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        path = URLDecoder.decode(path,"UTF-8");
+        path = path.replaceFirst("^/(.:/)", "$1");
+        Path p = Paths.get(path);
+        byte[] encoded = Files.readAllBytes(p);
         return new String(encoded, encoding);
     };
 

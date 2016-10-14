@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 
 import java.util.*;
 import java.io.*;
+import java.net.URLDecoder;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -205,8 +206,9 @@ public class TestElementDistanceIndex {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
 
-        SpanQueryWrapper sqwi = jsonQuery(getClass().getResource(
-                "/queries/cosmas1.json").getFile());
+        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/cosmas1.json")
+                .getFile(),"UTF-8");
+        SpanQueryWrapper sqwi = jsonQuery(jsonPath);
         kr = ki.search(sqwi.toQuery(), (short) 10);
 
         assertEquals((long) 3, kr.getTotalResults());
@@ -233,8 +235,9 @@ public class TestElementDistanceIndex {
         assertEquals(kr.getTotalResults(), 1);
         assertEquals("[[ecebdc]]", kr.getMatch(0).getSnippetBrackets());
 
-        sqwi = jsonQuery(getClass().getResource(
-                "/queries/distances/in-same-t.jsonld").getFile());
+        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/distances/in-same-t.jsonld")
+                .getFile(),"UTF-8");
+        sqwi = jsonQuery(jsonPath);
 
         assertEquals(
                 "spanElementDistance(tokens:s:c, tokens:s:e, [(base/s:t[0:0], ordered, notExcluded)])",

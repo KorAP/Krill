@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.search;
 
-import static de.ids_mannheim.korap.TestSimple.getString;
+import static de.ids_mannheim.korap.TestSimple.getJsonString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -129,7 +129,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/metaquery3.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -161,7 +161,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/metaquery4.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -176,14 +176,14 @@ public class TestKrill {
 
         assertEquals(kr.getTotalResults(), 5);
 
-        json = getString(getClass().getResource("/queries/metaquery5.jsonld")
+        json = getJsonString(getClass().getResource("/queries/metaquery5.jsonld")
                 .getFile());
 
         ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 1);
 
-        json = getString(getClass().getResource("/queries/metaquery6.jsonld")
+        json = getJsonString(getClass().getResource("/queries/metaquery6.jsonld")
                 .getFile());
         ks = new Krill(json);
         kr = ks.apply(ki);
@@ -231,7 +231,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bsp-fail1.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
@@ -254,7 +254,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bsp-fail2.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
@@ -271,7 +271,7 @@ public class TestKrill {
     public void queryJSONmirrorTestBug () throws IOException {
         // Construct index
         KrillIndex ki = new KrillIndex();
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/failing_mirror.jsonld").getFile());
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -281,7 +281,7 @@ public class TestKrill {
 
         assertEquals("Unable to parse JSON", res.at("/errors/0/1").asText());
 
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bugs/failing_mirror_2.jsonld").getFile());
         ks = new Krill(json);
         kr = ks.apply(ki);
@@ -311,7 +311,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bsp-context.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -330,7 +330,7 @@ public class TestKrill {
         assertEquals(5, kr.getStartIndex());
         assertEquals(5, kr.getItemsPerPage());
 
-        json = getString(getClass()
+        json = getJsonString(getClass()
                 .getResource("/queries/bsp-context-2.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
@@ -363,7 +363,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bsp-paging.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -372,7 +372,7 @@ public class TestKrill {
         assertEquals(5, kr.getStartIndex());
         assertEquals(5, kr.getItemsPerPage());
 
-        json = getString(getClass().getResource("/queries/bsp-cutoff.jsonld")
+        json = getJsonString(getClass().getResource("/queries/bsp-cutoff.jsonld")
                 .getFile());
         ks = ks = new Krill(json);
         kr = ks.apply(ki);
@@ -380,7 +380,7 @@ public class TestKrill {
         assertEquals(2, kr.getStartIndex());
         assertEquals(2, kr.getItemsPerPage());
 
-        json = getString(getClass().getResource("/queries/metaquery9.jsonld")
+        json = getJsonString(getClass().getResource("/queries/metaquery9.jsonld")
                 .getFile());
         KrillCollection kc = new KrillCollection(json);
         kc.setIndex(ki);
@@ -400,7 +400,7 @@ public class TestKrill {
                     true);
         };
         ki.commit();
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bsp-itemsPerResource.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -480,7 +480,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bsp-uid-example.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -665,7 +665,7 @@ public class TestKrill {
                 getClass().getResourceAsStream("/bzk/D59-00089.json.gz"), true);
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/cosmas_boundary.jsonld").getFile());
 
         QueryBuilder kq = new QueryBuilder("tokens");
@@ -723,7 +723,7 @@ public class TestKrill {
 
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/multiple_classes.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -753,7 +753,7 @@ public class TestKrill {
 
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/multiple_classes.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -795,7 +795,7 @@ public class TestKrill {
         assertEquals("BZK", fd.getCorpusSigle());
 
         // [tt/p="A.*"]{0,3}[tt/p="N.*"]
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/multiterm_rewrite.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -858,7 +858,7 @@ public class TestKrill {
         ki.commit();
 
         // ({1:Sonne []* Erde} | {2: Erde []* Sonne})
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/tokendistancespan_bug.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -881,7 +881,7 @@ public class TestKrill {
                     true);
         };
         ki.commit();
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/metaquery8-nocollection.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -890,7 +890,7 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
 
-        json = getString(getClass().getResource("/queries/metaquery8.jsonld")
+        json = getJsonString(getClass().getResource("/queries/metaquery8.jsonld")
                 .getFile());
 
         ks = new Krill(json);
@@ -901,7 +901,7 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
 
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/metaquery8-filtered.jsonld").getFile());
 
         ks = new Krill(json);
@@ -912,7 +912,7 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
 
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/metaquery8-filtered-further.jsonld").getFile());
 
         ks = new Krill(json);
@@ -923,7 +923,7 @@ public class TestKrill {
         assertEquals(10, kr.getItemsPerPage());
 
 
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/metaquery8-filtered-nested.jsonld").getFile());
 
         ks = new Krill(json);
@@ -958,7 +958,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bsp-context-2.jsonld").getFile());
 
         Krill ks = new Krill(json);
@@ -978,7 +978,7 @@ public class TestKrill {
         assertFalse(kr.getContext().toJsonNode().toString()
                 .equals("\"base/s:s\""));
 
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bsp-context-sentence.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
@@ -1010,7 +1010,7 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bsp-bug.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
@@ -1034,7 +1034,7 @@ public class TestKrill {
         ki.commit();
 
         // "der" []{2,3} [opennlp/p="NN"]
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/distances_with_regex_bug.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
@@ -1059,7 +1059,7 @@ public class TestKrill {
 
         // Expansion bug
         // der alte Digraph Aa durch Å
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/expansion_bug_2.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
@@ -1079,7 +1079,7 @@ public class TestKrill {
 
         // der alte Digraph Aa durch []
         // Works with one document
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bugs/expansion_bug.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
@@ -1104,7 +1104,7 @@ public class TestKrill {
 
         // Expansion bug
         // der alte Digraph Aa durch Å
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bugs/expansion_bug_2.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
@@ -1117,7 +1117,7 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 1);
 
         // der alte Digraph Aa durch []
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bugs/expansion_bug.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
@@ -1137,7 +1137,7 @@ public class TestKrill {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
 
-        String json = getString(getClass().getResource(
+        String json = getJsonString(getClass().getResource(
                 "/queries/bugs/zero_repetition_bug.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);

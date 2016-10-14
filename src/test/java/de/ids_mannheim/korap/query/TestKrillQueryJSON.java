@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.query;
 
 import java.util.*;
 import java.io.*;
+import java.net.URLDecoder;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
@@ -617,7 +618,7 @@ public class TestKrillQueryJSON {
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(path));
+            BufferedReader in = new BufferedReader(new FileReader(URLDecoder.decode(path,"UTF-8")));
             String str;
             while ((str = in.readLine()) != null) {
                 contentBuilder.append(str);

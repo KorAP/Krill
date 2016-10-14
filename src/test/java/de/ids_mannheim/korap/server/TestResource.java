@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileInputStream;
+import java.net.URLDecoder;
 
 import de.ids_mannheim.korap.server.Node;
 import de.ids_mannheim.korap.response.Result;
@@ -267,7 +268,7 @@ public class TestResource {
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(path));
+            BufferedReader in = new BufferedReader(new FileReader(URLDecoder.decode(path,"UTF-8")));
             String str;
             while ((str = in.readLine()) != null) {
                 contentBuilder.append(str);

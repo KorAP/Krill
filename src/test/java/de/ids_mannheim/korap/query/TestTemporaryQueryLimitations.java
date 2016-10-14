@@ -48,7 +48,7 @@ public class TestTemporaryQueryLimitations {
         FieldDocument fd = ki.addDoc(json);
         ki.commit();
 
-        json = getString(getClass().getResource(
+        json = getJsonString(getClass().getResource(
                 "/queries/bugs/cosmas_classrefcheck.jsonld").getFile());
 
         Krill ks = new Krill(json);
