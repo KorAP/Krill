@@ -103,7 +103,7 @@ public class TestSegmentIndex {
     /**
      * Matching a SpanElementQuery and a SpanNextQuery
      * Multiple atomic indices
-     * */
+     */
     @Test
     public void testCase4 () throws IOException {
         //		log.trace("Testcase4");
@@ -157,8 +157,9 @@ public class TestSegmentIndex {
     public void testcase6 () throws IOException {
         ki.addDoc(createFieldDoc4());
         ki.commit();
-        sq = new SpanNextQuery(new SpanSegmentQuery(new SpanTermQuery(new Term(
-                "base", "s:b")), new SpanTermQuery(new Term("base", "s:c"))),
+        sq = new SpanNextQuery(
+                new SpanSegmentQuery(new SpanTermQuery(new Term("base", "s:b")),
+                        new SpanTermQuery(new Term("base", "s:c"))),
                 new SpanTermQuery(new Term("base", "s:d")));
 
         kr = ki.search(sq, (short) 10);
@@ -204,9 +205,9 @@ public class TestSegmentIndex {
     private FieldDocument createFieldDoc2 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "bdb", "[(0-1)s:b|i:b|_1$<i>0<i>1]"
-                + "[(1-2)s:d|i:d|s:b|_2$<i>1<i>2]"
-                + "[(2-3)s:b|i:b|s:a|_3$<i>2<i>3]");
+        fd.addTV("base", "bdb",
+                "[(0-1)s:b|i:b|_1$<i>0<i>1]" + "[(1-2)s:d|i:d|s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:b|i:b|s:a|_3$<i>2<i>3]");
         return fd;
     }
 

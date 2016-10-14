@@ -57,16 +57,16 @@ public class TestClassFilterIndex {
         assertEquals(18, kr.getMatch(1).getEndPos());
         assertEquals(
                 "Frankenstein, treat my daughter well. She [[{2:is {1:the one} that saved "
-                        + "your master who you hold so dear}]].", kr
-                        .getMatch(1).getSnippetBrackets());
+                        + "your master who you hold so dear}]].",
+                kr.getMatch(1).getSnippetBrackets());
         assertEquals(
                 "Frankenstein, treat my daughter well. She [[{2:is {1:the one that "
-                        + "saved your master who you hold so dear}}]].", kr
-                        .getMatch(2).getSnippetBrackets());
+                        + "saved your master who you hold so dear}}]].",
+                kr.getMatch(2).getSnippetBrackets());
         assertEquals(
                 "Frankenstein, treat my daughter well. She [[{2:is the one that "
-                        + "saved {1:your master} who you hold so dear}]].", kr
-                        .getMatch(3).getSnippetBrackets());
+                        + "saved {1:your master} who you hold so dear}]].",
+                kr.getMatch(3).getSnippetBrackets());
         assertEquals(
                 "Frankenstein, treat my daughter well. She [[{2:is the one that saved your master who {1:you} hold so dear}]].",
                 kr.getMatch(4).getSnippetBrackets());

@@ -17,7 +17,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * distance.
  * 
  * @author margaretha
- * */
+ */
 public class DistanceExclusionSpans extends DistanceSpans {
 
     private int minDistance, maxDistance;
@@ -105,7 +105,7 @@ public class DistanceExclusionSpans extends DistanceSpans {
      * @return distance the difference between the positions of a
      *         firstspan and
      *         a secondspan.
-     * */
+     */
     private int calculateActualDistance () {
         // right secondSpan
         if (firstSpans.end() <= secondSpans.start())

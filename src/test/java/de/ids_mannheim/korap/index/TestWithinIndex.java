@@ -289,10 +289,11 @@ public class TestWithinIndex {
         ki.addDoc(fd);
 
         fd = new FieldDocument();
-        fd.addTV("base", "x   y   z   h   ", "[(0-3)s:x]" +  // 1
-                "[(3-6)s:y]" +  // 2
-                "[(6-9)s:z]" +  // 3
-                "[(9-12)s:h]"); // 4
+        fd.addTV("base", "x   y   z   h   ",
+                "[(0-3)s:x]" +  // 1
+                        "[(3-6)s:y]" +  // 2
+                        "[(6-9)s:z]" +  // 3
+                        "[(9-12)s:h]"); // 4
         ki.addDoc(fd);
 
         // <a>x<a>y<a>zabc</a>abc</a>abc</a>
@@ -621,26 +622,16 @@ public class TestWithinIndex {
         fd.addTV("base", "h  h  i  j  h  i  j  h  i  j  h  h  ",
                 "[(0-3)s:h|<>:a$<b>64<i>0<i>15<i>4<b>0|"
                         + "<>:a$<b>64<i>0<i>18<i>6<b>0|"
-                        + "<>:a$<b>64<i>0<i>27<i>8<b>0|_0$<i>0<i>3]"
-                        + // 1
-                        "[(3-6)s:h|_1$<i>3<i>6]"
-                        + // 2
-                        "[(6-9)s:i|_2$<i>6<i>9]"
-                        + // 3
-                        "[(9-12)s:j|_3$<i>9<i>12]"
-                        + // 4
-                        "[(12-15)s:h|_4$<i>12<i>15]"
-                        + // 5
-                        "[(15-18)s:i|_5$<i>15<i>18]"
-                        + // 6
-                        "[(18-21)s:j|_6$<i>18<i>21]"
-                        + // 7
-                        "[(21-24)s:h|_7$<i>21<i>24]"
-                        + // 8
-                        "[(24-27)s:i|_8$<i>24<i>27]"
-                        + // 9
-                        "[(27-30)s:j|_9$<i>27<i>30]"
-                        + // 10
+                        + "<>:a$<b>64<i>0<i>27<i>8<b>0|_0$<i>0<i>3]" + // 1
+                        "[(3-6)s:h|_1$<i>3<i>6]" + // 2
+                        "[(6-9)s:i|_2$<i>6<i>9]" + // 3
+                        "[(9-12)s:j|_3$<i>9<i>12]" + // 4
+                        "[(12-15)s:h|_4$<i>12<i>15]" + // 5
+                        "[(15-18)s:i|_5$<i>15<i>18]" + // 6
+                        "[(18-21)s:j|_6$<i>18<i>21]" + // 7
+                        "[(21-24)s:h|_7$<i>21<i>24]" + // 8
+                        "[(24-27)s:i|_8$<i>24<i>27]" + // 9
+                        "[(27-30)s:j|_9$<i>27<i>30]" + // 10
                         "[(30-33)s:h|_10$<i>30<i>33|<>:a$<b>64<i>30<i>36<i>12<b>0]"
                         + // 11
                         "[(33-36)s:h|_11$<i>33<i>36|<>:a$<b>64<i>33<i>36<i>12<b>0]"); // 12
@@ -733,8 +724,8 @@ public class TestWithinIndex {
 
         // xyz
         fd = new FieldDocument();
-        fd.addTV("base", "x   y   z   ", "[(0-3)s:x]" + "[(3-6)s:y]"
-                + "[(6-9)s:z]");
+        fd.addTV("base", "x   y   z   ",
+                "[(0-3)s:x]" + "[(3-6)s:y]" + "[(6-9)s:z]");
         ki.addDoc(fd);
 
         // <a>x<a><b>y<a>zcde</a>cde</b></a>cde</a>
@@ -751,19 +742,19 @@ public class TestWithinIndex {
 
         // <a><a><a>h</a>hhij</a>hij</a>hij</a>
         fd = new FieldDocument();
-        fd.addTV("base", "h   i   j   h   i   j   h   i   j   ", "[(0-3)s:h|"
-                + "<>:a$<b>64<i>0<i>18<i>3<b>0|"
-                + "<>:a$<b>64<i>0<i>27<i>6<b>0|"
-                + "<>:a$<b>64<i>0<i>36<i>9<b>0]" + "[(3-6)s:h]"
-                + "[(12-15)s:i]" + "[(15-18)s:j]" + "[(18-21)s:h]"
-                + "[(21-24)s:i]" + "[(24-27)s:j]" + "[(27-30)s:h]"
-                + "[(30-33)s:i]" + "[(33-36)s:j]");
+        fd.addTV("base", "h   i   j   h   i   j   h   i   j   ",
+                "[(0-3)s:h|" + "<>:a$<b>64<i>0<i>18<i>3<b>0|"
+                        + "<>:a$<b>64<i>0<i>27<i>6<b>0|"
+                        + "<>:a$<b>64<i>0<i>36<i>9<b>0]" + "[(3-6)s:h]"
+                        + "[(12-15)s:i]" + "[(15-18)s:j]" + "[(18-21)s:h]"
+                        + "[(21-24)s:i]" + "[(24-27)s:j]" + "[(27-30)s:h]"
+                        + "[(30-33)s:i]" + "[(33-36)s:j]");
         ki.addDoc(fd);
 
         // xyz
         fd = new FieldDocument();
-        fd.addTV("base", "a  b  c  ", "[(0-3)s:a]" + "[(3-6)s:b]"
-                + "[(6-9)s:c]");
+        fd.addTV("base", "a  b  c  ",
+                "[(0-3)s:a]" + "[(3-6)s:b]" + "[(6-9)s:c]");
         ki.addDoc(fd);
 
         // Save documents
@@ -812,11 +803,8 @@ public class TestWithinIndex {
         // Er schrie: <s>"Das war ich!"</s>
         FieldDocument fd = new FieldDocument();
         fd = new FieldDocument();
-        fd.addTV(
-                "base",
-                "Er schrie: \"Das war ich!\" und ging.",
-                "[(0-2)s:Er|_0$<i>0<i>3]"
-                        + "[(3-9)s:schrie|_1$<i>3<i>9]"
+        fd.addTV("base", "Er schrie: \"Das war ich!\" und ging.",
+                "[(0-2)s:Er|_0$<i>0<i>3]" + "[(3-9)s:schrie|_1$<i>3<i>9]"
                         + "[(12-15)s:Das|_2$<i>12<i>15|<>:sentence$<b>64<i>11<i>25<i>5<b>0]"
                         + "[(16-19)s:war|_3$<i>16<i>19]"
                         + "[(20-23)s:ich|_4$<i>20<i>23]"
@@ -827,70 +815,85 @@ public class TestWithinIndex {
         // Save documents
         ki.commit();
 
-        SpanQuery sq = new SpanClassQuery(new SpanElementQuery("base",
-                "sentence"), (byte) 3);
+        SpanQuery sq = new SpanClassQuery(
+                new SpanElementQuery("base", "sentence"), (byte) 3);
         Result kr;
         kr = ki.search(sq, 0, (short) 15, true, (short) 1, true, (short) 1);
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
-        assertEquals("... schrie: [[\"{3:Das war ich}!\"]] und ...", kr
-                .getMatch(0).getSnippetBrackets());
+        assertEquals("... schrie: [[\"{3:Das war ich}!\"]] und ...",
+                kr.getMatch(0).getSnippetBrackets());
         assertEquals(
                 "<span class=\"context-left\"><span class=\"more\"></span>schrie: </span><span class=\"match\"><mark>&quot;<mark class=\"class-3 level-0\">Das war ich</mark>!&quot;</mark></span><span class=\"context-right\"> und<span class=\"more\"></span></span>",
                 kr.getMatch(0).getSnippetHTML());
 
         kr = ki.search(sq, 0, (short) 15, true, (short) 0, true, (short) 0);
-        assertEquals("... [[\"{3:Das war ich}!\"]] ...", kr.getMatch(0)
-                .getSnippetBrackets());
+        assertEquals("... [[\"{3:Das war ich}!\"]] ...",
+                kr.getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
         kr = ki.search(sq, 0, (short) 15, true, (short) 6, true, (short) 6);
-        assertEquals("Er schrie: [[\"{3:Das war ich}!\"]] und ging.", kr
-                .getMatch(0).getSnippetBrackets());
+        assertEquals("Er schrie: [[\"{3:Das war ich}!\"]] und ging.",
+                kr.getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
         kr = ki.search(sq, 0, (short) 15, true, (short) 2, true, (short) 2);
-        assertEquals("Er schrie: [[\"{3:Das war ich}!\"]] und ging ...", kr
-                .getMatch(0).getSnippetBrackets());
+        assertEquals("Er schrie: [[\"{3:Das war ich}!\"]] und ging ...",
+                kr.getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
-        sq = new SpanClassQuery(new SpanWithinQuery(new SpanElementQuery(
-                "base", "sentence"), new SpanClassQuery(new SpanTermQuery(
-                new Term("base", "s:Das")), (byte) 2)), (byte) 1);
+        sq = new SpanClassQuery(
+                new SpanWithinQuery(new SpanElementQuery("base", "sentence"),
+                        new SpanClassQuery(
+                                new SpanTermQuery(new Term("base", "s:Das")),
+                                (byte) 2)),
+                (byte) 1);
 
         kr = ki.search(sq, (short) 15);
-        assertEquals("Er schrie: [[\"{1:{2:Das} war ich}!\"]] und ging.", kr
-                .getMatch(0).getSnippetBrackets());
+        assertEquals("Er schrie: [[\"{1:{2:Das} war ich}!\"]] und ging.",
+                kr.getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
-        sq = new SpanClassQuery(new SpanWithinQuery(new SpanElementQuery(
-                "base", "sentence"), new SpanClassQuery(new SpanTermQuery(
-                new Term("base", "s:war")), (byte) 2)), (byte) 1);
+        sq = new SpanClassQuery(
+                new SpanWithinQuery(new SpanElementQuery("base", "sentence"),
+                        new SpanClassQuery(
+                                new SpanTermQuery(new Term("base", "s:war")),
+                                (byte) 2)),
+                (byte) 1);
 
         kr = ki.search(sq, (short) 15);
-        assertEquals("Er schrie: [[\"{1:Das {2:war} ich}!\"]] und ging.", kr
-                .getMatch(0).getSnippetBrackets());
+        assertEquals("Er schrie: [[\"{1:Das {2:war} ich}!\"]] und ging.",
+                kr.getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
-        sq = new SpanClassQuery(new SpanWithinQuery(new SpanElementQuery(
-                "base", "sentence"), new SpanClassQuery(new SpanTermQuery(
-                new Term("base", "s:ich")), (byte) 2)), (byte) 1);
+        sq = new SpanClassQuery(
+                new SpanWithinQuery(new SpanElementQuery("base", "sentence"),
+                        new SpanClassQuery(
+                                new SpanTermQuery(new Term("base", "s:ich")),
+                                (byte) 2)),
+                (byte) 1);
 
         kr = ki.search(sq, (short) 15);
-        assertEquals("Er schrie: [[\"{1:Das war {2:ich}}!\"]] und ging.", kr
-                .getMatch(0).getSnippetBrackets());
+        assertEquals("Er schrie: [[\"{1:Das war {2:ich}}!\"]] und ging.",
+                kr.getMatch(0).getSnippetBrackets());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
-        sq = new SpanClassQuery(new SpanWithinQuery(new SpanElementQuery(
-                "base", "sentence"), new SpanClassQuery(new SpanTermQuery(
-                new Term("base", "s:und")), (byte) 2)), (byte) 1);
+        sq = new SpanClassQuery(
+                new SpanWithinQuery(new SpanElementQuery("base", "sentence"),
+                        new SpanClassQuery(
+                                new SpanTermQuery(new Term("base", "s:und")),
+                                (byte) 2)),
+                (byte) 1);
 
         kr = ki.search(sq, (short) 15);
         assertEquals("totalResults", kr.getTotalResults(), 0);
 
-        sq = new SpanClassQuery(new SpanWithinQuery(new SpanElementQuery(
-                "base", "sentence"), new SpanClassQuery(new SpanTermQuery(
-                new Term("base", "s:schrie")), (byte) 2)), (byte) 1);
+        sq = new SpanClassQuery(
+                new SpanWithinQuery(new SpanElementQuery("base", "sentence"),
+                        new SpanClassQuery(
+                                new SpanTermQuery(new Term("base", "s:schrie")),
+                                (byte) 2)),
+                (byte) 1);
 
         kr = ki.search(sq, (short) 15);
         assertEquals("totalResults", kr.getTotalResults(), 0);
@@ -904,12 +907,13 @@ public class TestWithinIndex {
         // Case 1, 6, 7, 13
         // xy<a><a>x</a>b<a>c</a></a>x
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "x  y  x  b  c  x  ", "[(0-3)s:x|_0$<i>0<i>3]"
-                + "[(3-6)s:y|_1$<i>3<i>6]"
-                + "[(6-9)s:x|_2$<i>6<i>9|<>:a$<b>64<i>6<i>9<i>3<b>0|"
-                + "<>:a$<b>64<i>6<i>15<i>5<b>0]" + "[(9-12)s:b|_3$<i>9<i>12]"
-                + "[(12-15)s:c|_4$<i>12<i>15|<>:a$<b>64<i>12<i>15<i>5<b>0]"
-                + "[(15-18)s:x|_5$<i>15<i>18]");
+        fd.addTV("base", "x  y  x  b  c  x  ",
+                "[(0-3)s:x|_0$<i>0<i>3]" + "[(3-6)s:y|_1$<i>3<i>6]"
+                        + "[(6-9)s:x|_2$<i>6<i>9|<>:a$<b>64<i>6<i>9<i>3<b>0|"
+                        + "<>:a$<b>64<i>6<i>15<i>5<b>0]"
+                        + "[(9-12)s:b|_3$<i>9<i>12]"
+                        + "[(12-15)s:c|_4$<i>12<i>15|<>:a$<b>64<i>12<i>15<i>5<b>0]"
+                        + "[(15-18)s:x|_5$<i>15<i>18]");
         ki.addDoc(fd);
 
         // Save documents
@@ -925,10 +929,10 @@ public class TestWithinIndex {
 
         assertEquals("totalResults", kr.getTotalResults(), 2);
 
-        assertEquals("x  y  [[x  ]]b  c  x  ", kr.getMatch(0)
-                .getSnippetBrackets());
-        assertEquals("x  y  [[x  b  c  ]]x  ", kr.getMatch(1)
-                .getSnippetBrackets());
+        assertEquals("x  y  [[x  ]]b  c  x  ",
+                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("x  y  [[x  b  c  ]]x  ",
+                kr.getMatch(1).getSnippetBrackets());
 
         assertEquals("StartPos (0)", 2, kr.getMatch(0).startPos);
         assertEquals("EndPos (0)", 3, kr.getMatch(0).endPos);
@@ -944,9 +948,7 @@ public class TestWithinIndex {
 
         // hij<a>hi<a>h<a>ij</a></a>hi</a>
         FieldDocument fd = new FieldDocument();
-        fd.addTV(
-                "base",
-                "hijhihijhi",
+        fd.addTV("base", "hijhihijhi",
                 "[(0-1)s:h|i:h|_0$<i>0<i>1|-:a$<i>3|-:t$<i>10]"
                         + "[(1-2)s:i|i:i|_1$<i>1<i>2]"
                         + "[(2-3)s:j|i:j|_2$<i>2<i>3]"
@@ -989,9 +991,7 @@ public class TestWithinIndex {
         // 2,5,8,12,13
         // h<a><a>i</a>j</a><a>h</a>i j<a>h i</a>j
         FieldDocument fd = new FieldDocument();
-        fd.addTV(
-                "base",
-                "hijhi jh ij",
+        fd.addTV("base", "hijhi jh ij",
                 "[(0-1)s:h|i:h|_0$<i>0<i>1|-:a$<i>4|-:t$<i>9]"
                         + "[(1-2)s:i|i:i|_1$<i>1<i>2|<>:a$<b>64<i>1<i>2<i>2<b>0|"
                         + "<>:a$<b>64<i>1<i>3<i>3<b>0]"
@@ -1011,9 +1011,9 @@ public class TestWithinIndex {
 
         SpanQuery sq = new SpanWithinQuery(new SpanElementQuery("base", "a"),
                 new SpanNextQuery(new SpanTermQuery(new Term("base", "s:h")),
-                        new SpanNextQuery(new SpanTermQuery(new Term("base",
-                                "s:i")), new SpanTermQuery(new Term("base",
-                                "s:j")))));
+                        new SpanNextQuery(
+                                new SpanTermQuery(new Term("base", "s:i")),
+                                new SpanTermQuery(new Term("base", "s:j")))));
 
         Result kr = ki.search(sq, (short) 10);
         assertEquals("totalResults", kr.getTotalResults(), 0);
@@ -1026,9 +1026,7 @@ public class TestWithinIndex {
         // 4,5,11,13
         // x<a>x h</a>i j h<a>i j</a>
         FieldDocument fd = new FieldDocument();
-        fd.addTV(
-                "base",
-                "xx hi j hi j",
+        fd.addTV("base", "xx hi j hi j",
                 "[(0-1)s:x|i:x|_0$<i>0<i>1|-:a$<i>2|-:t$<i>8]"
                         + "[(1-2)s:x|i:x|_1$<i>1<i>2|<>:a$<b>64<i>1<i>4<i>3<b>0]"
                         + "[(3-4)s:h|i:h|_2$<i>3<i>4]"
@@ -1046,9 +1044,9 @@ public class TestWithinIndex {
 
         SpanQuery sq = new SpanWithinQuery(new SpanElementQuery("base", "a"),
                 new SpanNextQuery(new SpanTermQuery(new Term("base", "s:h")),
-                        new SpanNextQuery(new SpanTermQuery(new Term("base",
-                                "s:i")), new SpanTermQuery(new Term("base",
-                                "s:j")))));
+                        new SpanNextQuery(
+                                new SpanTermQuery(new Term("base", "s:i")),
+                                new SpanTermQuery(new Term("base", "s:j")))));
 
         Result kr = ki.search(sq, (short) 10);
 
@@ -1062,9 +1060,7 @@ public class TestWithinIndex {
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         // <a>xx <e>hi j <e>hi j</e></e></a>
-        fd.addTV(
-                "base",
-                "xx hi j hi j",
+        fd.addTV("base", "xx hi j hi j",
                 "[(0-1)s:x|i:x|_0$<i>0<i>1|<>:a$<b>64<i>0<i>12<i>8<b>0]"
                         + "[(1-2)s:x|i:x|_1$<i>1<i>2]"
                         + "[(3-4)s:h|i:h|_2$<i>3<i>4|<>:e$<b>64<i>3<i>12<i>8<b>0]"
@@ -1086,11 +1082,11 @@ public class TestWithinIndex {
         sqw = qb.seg("i:x");
         kr = ki.search(sqw.toQuery(), (short) 10);
         assertEquals(2, kr.getTotalResults());
-
+        
         sqw = qb.tag("a");
         kr = ki.search(sqw.toQuery(), (short) 10);
         assertEquals(1, kr.getTotalResults());
-
+        
         sqw = qb.startswith(qb.tag("a"), qb.seg("i:x"));
         assertEquals("spanStartsWith(<base:a />, base:i:x)",
                      sqw.toQuery().toString());
@@ -1098,8 +1094,8 @@ public class TestWithinIndex {
         assertEquals(1, kr.getTotalResults());
         */
         sqw = qb.startswith(qb.tag("e"), qb.seg("i:h"));
-        assertEquals("spanStartsWith(<base:e />, base:i:h)", sqw.toQuery()
-                .toString());
+        assertEquals("spanStartsWith(<base:e />, base:i:h)",
+                sqw.toQuery().toString());
         kr = ki.search(sqw.toQuery(), (short) 10);
         assertEquals(2, kr.getTotalResults());
     };
@@ -1108,8 +1104,9 @@ public class TestWithinIndex {
     // contains(<s>, (es wird | wird es))
     @Test
     public void queryJSONpoly2 () throws QueryException, IOException {
-        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/poly2.json")
-                .getFile(),"UTF-8");
+        String jsonPath = URLDecoder.decode(
+                getClass().getResource("/queries/poly2.json").getFile(),
+                "UTF-8");
         String jsonPQuery = readFile(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonPQuery);
 
@@ -1135,8 +1132,8 @@ public class TestWithinIndex {
 
 
     @Test
-    public void queryJSONcomplexSpanOrTerm () throws QueryException,
-            IOException {
+    public void queryJSONcomplexSpanOrTerm ()
+            throws QueryException, IOException {
         /*
           at org.apache.lucene.search.spans.SpanOrQuery$1.doc(SpanOrQuery.java:234)
           at de.ids_mannheim.korap.query.spans.WithinSpans.toSameDoc(WithinSpans.java:423)
@@ -1145,15 +1142,18 @@ public class TestWithinIndex {
           at de.ids_mannheim.korap.Krill.apply(Krill.java:304)
         */
 
-        String jsonPath = URLDecoder.decode(getClass().getResource(
-                "/queries/bugs/span_or_bug.jsonld").getFile(),"UTF-8");
+        String jsonPath = URLDecoder.decode(getClass()
+                .getResource("/queries/bugs/span_or_bug.jsonld").getFile(),
+                "UTF-8");
         String jsonPQuery = readFile(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonPQuery);
 
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
 
-        assertEquals("spanStartsWith(<tokens:base/s:s />, "
-                + "spanOr([tokens:s:Er, tokens:s:Sie]))", sq.toString());
+        assertEquals(
+                "spanStartsWith(<tokens:base/s:s />, "
+                        + "spanOr([tokens:s:Er, tokens:s:Sie]))",
+                sq.toString());
 
         KrillIndex ki = new KrillIndex();
 

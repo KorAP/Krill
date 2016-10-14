@@ -158,7 +158,8 @@ public class MultiTerm implements Comparable<MultiTerm> {
      * @return The {@link MultiTerm} object for chaining.
      */
     public MultiTerm setPayload (short pl) {
-        this.payload = new BytesRef(ByteBuffer.allocate(2).putShort(pl).array());
+        this.payload = new BytesRef(
+                ByteBuffer.allocate(2).putShort(pl).array());
         return this;
     };
 
@@ -321,8 +322,8 @@ public class MultiTerm implements Comparable<MultiTerm> {
                 sb.append(this.payload.utf8ToString());
             }
             catch (AssertionError e) {
-                sb.append("<?>").append(
-                        this.payload.toString().replace(' ', ','));
+                sb.append("<?>")
+                        .append(this.payload.toString().replace(' ', ','));
             };
         };
 
@@ -364,8 +365,8 @@ public class MultiTerm implements Comparable<MultiTerm> {
                 sb.append(this.payload.utf8ToString());
             }
             catch (AssertionError e) {
-                sb.append("<?>").append(
-                        this.payload.toString().replace(' ', ','));
+                sb.append("<?>")
+                        .append(this.payload.toString().replace(' ', ','));
             };
         };
         return sb.toString();
@@ -398,8 +399,8 @@ public class MultiTerm implements Comparable<MultiTerm> {
 
                         // Resize the bytebuffer
                         if ((bb.capacity() - l) < 8) {
-                            bb = ByteBuffer.allocate(bb.capacity() + 8).put(
-                                    bb.array());
+                            bb = ByteBuffer.allocate(bb.capacity() + 8)
+                                    .put(bb.array());
                             bb.position(l);
                         };
 
@@ -479,7 +480,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
 
     // Unescape the term
     private String _unescape (String term) {
-        return term.replace("\\\\", "\\").replace("\\#", "#")
-                .replace("\\$", "$");
+        return term.replace("\\\\", "\\").replace("\\#", "#").replace("\\$",
+                "$");
     };
 };

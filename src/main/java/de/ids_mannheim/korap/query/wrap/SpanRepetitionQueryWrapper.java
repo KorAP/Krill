@@ -101,8 +101,9 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
                     .toFragmentQuery();
 
         // That's a fine repetition query
-        return new SpanRepetitionQuery(this.subquery.retrieveNode(
-                this.retrieveNode).toFragmentQuery(), this.min, this.max, true);
+        return new SpanRepetitionQuery(
+                this.subquery.retrieveNode(this.retrieveNode).toFragmentQuery(),
+                this.min, this.max, true);
     };
 
 

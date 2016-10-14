@@ -56,7 +56,8 @@ public class ClassSpans extends SimpleSpans {
      */
     public ClassSpans (SpanQuery operand, LeafReaderContext context,
                        Bits acceptDocs, Map<Term, TermContext> termContexts,
-                       byte number) throws IOException {
+                       byte number)
+            throws IOException {
         spans = operand.getSpans(context, acceptDocs, termContexts);
 
         // The number of the class

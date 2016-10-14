@@ -67,7 +67,7 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  * @see SpanQuery
  * 
  * @author margaretha
- * */
+ */
 public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
 
     protected SpanQuery firstClause = null, secondClause = null;
@@ -91,7 +91,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
      *            <code>true</code> if payloads are to be collected,
      *            otherwise
      *            <code>false</code>.
-     * */
+     */
     public SimpleSpanQuery (SpanQuery firstClause, boolean collectPayloads) {
         if (firstClause == null) {
             throw new IllegalArgumentException(
@@ -117,7 +117,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
      *            <code>true</code> if payloads are to be collected,
      *            otherwise
      *            <code>false</code>.
-     * */
+     */
     public SimpleSpanQuery (SpanQuery firstClause, SpanQuery secondClause,
                             boolean collectPayloads) {
         this(firstClause, collectPayloads);
@@ -144,7 +144,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
      *            <code>true</code> if payloads are to be collected,
      *            otherwise
      *            <code>false</code>.
-     * */
+     */
     public SimpleSpanQuery (SpanQuery firstClause,
                             List<SpanQuery> secondClauses,
                             boolean collectPayloads) {
@@ -209,7 +209,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     @Override
     public String getField () {
         return field;
@@ -339,8 +339,8 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
             throws IOException {
 
         for (int i = 0; i < spanQueries.size(); i++) {
-            final SpanQuery query = (SpanQuery) spanQueries.get(i).rewrite(
-                    reader);
+            final SpanQuery query = (SpanQuery) spanQueries.get(i)
+                    .rewrite(reader);
             if (!query.equals(spanQueries.get(i))) {
                 if (clone == null)
                     clone = clone();
@@ -381,7 +381,7 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
 
     /**
      * {@inheritDoc}
-     * */
+     */
     // Used in rewriting query
     @Override
     public boolean equals (Object o) {

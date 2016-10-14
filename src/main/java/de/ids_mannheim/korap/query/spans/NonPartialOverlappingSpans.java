@@ -19,7 +19,7 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
  * their positions and do not have a partial overlap.
  * 
  * @author margaretha
- * */
+ */
 public abstract class NonPartialOverlappingSpans extends SimpleSpans {
 
     private Logger log = LoggerFactory
@@ -97,7 +97,7 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
      * @return 0 iff match is found, -1 to advance the firstspan, 1 to
      *         advance
      *         the secondspan
-     * */
+     */
     protected abstract int findMatch ();
 
 

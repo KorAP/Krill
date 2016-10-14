@@ -32,8 +32,8 @@ public class TestSpanSequenceQuery {
         assertFalse(sssq.hasConstraints());
 
         sssq.append("c");
-        assertEquals("spanNext(spanNext(field:a, field:b), field:c)", sssq
-                .toQuery().toString());
+        assertEquals("spanNext(spanNext(field:a, field:b), field:c)",
+                sssq.toQuery().toString());
         assertFalse(sssq.hasConstraints());
 
         sssq = new SpanSequenceQueryWrapper("field");
@@ -74,14 +74,14 @@ public class TestSpanSequenceQuery {
 
         // Synopsis 1
         ssqw = new SpanSequenceQueryWrapper("tokens", "der", "Baum");
-        assertEquals("spanNext(tokens:der, tokens:Baum)", ssqw.toQuery()
-                .toString());
+        assertEquals("spanNext(tokens:der, tokens:Baum)",
+                ssqw.toQuery().toString());
 
         // Synopsis 2
         ssqw = new SpanSequenceQueryWrapper("tokens");
         ssqw.append("der").append("Baum");
-        assertEquals("spanNext(tokens:der, tokens:Baum)", ssqw.toQuery()
-                .toString());
+        assertEquals("spanNext(tokens:der, tokens:Baum)",
+                ssqw.toQuery().toString());
 
         // Append a sequence
         ssqw = new SpanSequenceQueryWrapper("tokens");
@@ -97,8 +97,8 @@ public class TestSpanSequenceQuery {
         // Synopsis 3
         ssqw = new SpanSequenceQueryWrapper("tokens", "Baum");
         ssqw.prepend("der");
-        assertEquals("spanNext(tokens:der, tokens:Baum)", ssqw.toQuery()
-                .toString());
+        assertEquals("spanNext(tokens:der, tokens:Baum)",
+                ssqw.toQuery().toString());
 
         // Prepend a sequence
         ssqw = new SpanSequenceQueryWrapper("tokens");
@@ -115,16 +115,17 @@ public class TestSpanSequenceQuery {
         // Add constraint
         ssqw.withConstraint(2, 4);
         // This may change
-        assertEquals("spanDistance(spanDistance(spanDistance(tokens:der, "
-                + "tokens:Baum, [(w[2:4], ordered, notExcluded)]), "
-                + "tokens:fiel, [(w[2:4], ordered, notExcluded)]), "
-                + "tokens:still, [(w[2:4], ordered, notExcluded)])", ssqw
-                .toQuery().toString());
+        assertEquals(
+                "spanDistance(spanDistance(spanDistance(tokens:der, "
+                        + "tokens:Baum, [(w[2:4], ordered, notExcluded)]), "
+                        + "tokens:fiel, [(w[2:4], ordered, notExcluded)]), "
+                        + "tokens:still, [(w[2:4], ordered, notExcluded)])",
+                ssqw.toQuery().toString());
 
         ssqw = new SpanSequenceQueryWrapper("tokens", "der", "Baum")
                 .withConstraint(1, 1);
-        assertEquals("spanNext(tokens:der, tokens:Baum)", ssqw.toQuery()
-                .toString());
+        assertEquals("spanNext(tokens:der, tokens:Baum)",
+                ssqw.toQuery().toString());
 
         ssqw = new SpanSequenceQueryWrapper("tokens", "der", "Baum")
                 .withConstraint(1, 2, "s");
@@ -134,16 +135,20 @@ public class TestSpanSequenceQuery {
 
         ssqw = new SpanSequenceQueryWrapper("tokens", "der", "Baum")
                 .withConstraint(1, 2, "s").withConstraint(2, 3, "x");
-        assertEquals("spanMultipleDistance(tokens:der, tokens:Baum, "
-                + "[(s[1:2], ordered, notExcluded), "
-                + "(x[2:3], ordered, notExcluded)])", ssqw.toQuery().toString());
+        assertEquals(
+                "spanMultipleDistance(tokens:der, tokens:Baum, "
+                        + "[(s[1:2], ordered, notExcluded), "
+                        + "(x[2:3], ordered, notExcluded)])",
+                ssqw.toQuery().toString());
 
         ssqw = new SpanSequenceQueryWrapper("tokens").append("Baum")
                 .prepend("der").withConstraint(1, 2, "s", true)
                 .withConstraint(2, 3, "x");
-        assertEquals("spanMultipleDistance(tokens:der, "
-                + "tokens:Baum, [(s[1:2], ordered, excluded), "
-                + "(x[2:3], ordered, notExcluded)])", ssqw.toQuery().toString());
+        assertEquals(
+                "spanMultipleDistance(tokens:der, "
+                        + "tokens:Baum, [(s[1:2], ordered, excluded), "
+                        + "(x[2:3], ordered, notExcluded)])",
+                ssqw.toQuery().toString());
 
 
         // Support empty class ins sequence 
@@ -151,8 +156,8 @@ public class TestSpanSequenceQuery {
         srqw = new SpanRepetitionQueryWrapper();
         scqw = new SpanClassQueryWrapper(srqw, (short) 3);
         ssqw.append(scqw);
-        assertEquals("spanExpansion(field:Der, []{1, 1}, right, class:3)", ssqw
-                .toQuery().toString());
+        assertEquals("spanExpansion(field:Der, []{1, 1}, right, class:3)",
+                ssqw.toQuery().toString());
 
         // Support empty class ins sequence 
         ssqw = new SpanSequenceQueryWrapper("field");

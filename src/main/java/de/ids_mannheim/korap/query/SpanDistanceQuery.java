@@ -106,14 +106,14 @@ import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
  * 
  * 
  * @author margaretha
- * */
+ */
 public class SpanDistanceQuery extends SimpleSpanQuery {
 
     private boolean exclusion;
     private boolean isOrdered;
     private int minDistance, maxDistance;
     private SpanElementQuery elementQuery; // element distance unit (sentence or
-                                           // paragraph)
+                                          // paragraph)
     private String distanceUnit;
     private String spanName;
     private DistanceConstraint constraint;

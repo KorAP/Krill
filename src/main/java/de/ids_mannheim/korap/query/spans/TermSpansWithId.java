@@ -23,7 +23,7 @@ import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
  * payload.
  * 
  * @author margaretha
- * */
+ */
 public class TermSpansWithId extends SimpleSpans {
 
     private TermSpans termSpans;

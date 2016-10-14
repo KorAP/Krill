@@ -33,7 +33,8 @@ import org.junit.runners.JUnit4;
 public class TestTemporaryQueryLimitations {
 
     @Test
-    public void classRefCheckNotSupported () throws IOException, QueryException {
+    public void classRefCheckNotSupported ()
+            throws IOException, QueryException {
 
         // Construct index
         KrillIndex ki = new KrillIndex();
@@ -48,8 +49,9 @@ public class TestTemporaryQueryLimitations {
         FieldDocument fd = ki.addDoc(json);
         ki.commit();
 
-        json = getJsonString(getClass().getResource(
-                "/queries/bugs/cosmas_classrefcheck.jsonld").getFile());
+        json = getJsonString(getClass()
+                .getResource("/queries/bugs/cosmas_classrefcheck.jsonld")
+                .getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -58,12 +60,13 @@ public class TestTemporaryQueryLimitations {
         assertEquals(kr.getTotalResults(), 0);
         assertEquals(kr.getStartIndex(), 0);
 
-        assertEquals("This is a warning coming from the serialization", kr
-                .getWarning(1).getMessage());
+        assertEquals("This is a warning coming from the serialization",
+                kr.getWarning(1).getMessage());
 
-        assertEquals("Class reference checks are currently not supported"
-                + " - results may not be correct", kr.getWarning(0)
-                .getMessage());
+        assertEquals(
+                "Class reference checks are currently not supported"
+                        + " - results may not be correct",
+                kr.getWarning(0).getMessage());
 
         assertEquals(2, kr.getWarnings().size());
     };

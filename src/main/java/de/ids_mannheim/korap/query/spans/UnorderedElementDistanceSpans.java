@@ -26,7 +26,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * the spans.
  * 
  * @author margaretha
- * */
+ */
 public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
     private Spans elements;
@@ -147,9 +147,8 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      */
     private int findElementPosition (Spans span) throws IOException {
         // Check in the element list
-        if (!elementList.isEmpty()
-                && span.end() <= elementList.get(elementList.size() - 1)
-                        .getEnd()) {
+        if (!elementList.isEmpty() && span.end() <= elementList
+                .get(elementList.size() - 1).getEnd()) {
 
             for (CandidateSpan e : elementList)
                 if (e.getEnd() >= span.end() && e.getStart() <= span.start()) {
@@ -223,18 +222,20 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      * @return <code>true</code> if the target and candidate spans are
      *         within
      *         the maximum distance, <code>false</code> otherwise.
-     * */
+     */
     protected boolean isWithinMaxDistance (CandidateSpan target,
             CandidateSpan candidate) {
         int candidatePos = candidate.getPosition();
         int targetPos = target.getPosition();
 
         // left candidate
-        if (candidatePos < targetPos && candidatePos + maxDistance < targetPos) {
+        if (candidatePos < targetPos
+                && candidatePos + maxDistance < targetPos) {
             return false;
         }
         // right candidate
-        if (candidatePos > targetPos && targetPos + maxDistance < candidatePos) {
+        if (candidatePos > targetPos
+                && targetPos + maxDistance < candidatePos) {
             return false;
         }
         return true;

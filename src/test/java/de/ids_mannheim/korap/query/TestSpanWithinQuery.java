@@ -18,8 +18,8 @@ public class TestSpanWithinQuery {
     @Test
     public void spanSegmentWithinQuery () throws QueryException {
 
-        SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper(
-                "field", "a", "b", "c");
+        SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper("field",
+                "a", "b", "c");
         SpanWithinQuery ssequery = new SpanWithinQuery("s", ssquery.toQuery());
 
         assertEquals(
@@ -37,11 +37,11 @@ public class TestSpanWithinQuery {
     @Test
     public void spanSegmentStartsWithQuery () throws QueryException {
 
-        SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper(
-                "field", "a", "b", "c");
-        SpanWithinQuery ssequery = new SpanWithinQuery(new SpanElementQuery(
-                "field", "s"), ssquery.toQuery(), SpanWithinQuery.STARTSWITH,
-                true);
+        SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper("field",
+                "a", "b", "c");
+        SpanWithinQuery ssequery = new SpanWithinQuery(
+                new SpanElementQuery("field", "s"), ssquery.toQuery(),
+                SpanWithinQuery.STARTSWITH, true);
 
         assertEquals(
                 "spanStartsWith(<field:s />, spanNext(spanNext(field:a, field:b), field:c))",

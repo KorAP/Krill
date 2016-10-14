@@ -48,9 +48,8 @@ public class TestKrillIndex {
         fd.addInt("zahl3", "059");
         fd.addInt("UID", 1);
         fd.addText("teaser", "Das ist der Name der Rose");
-        fd.addTV("base", "ich bau",
-                "[(0-3)s:ich|l:ich|p:PPER|-:sentences$<i>2]"
-                        + "[(4-7)s:bau|l:bauen|p:VVFIN]");
+        fd.addTV("base", "ich bau", "[(0-3)s:ich|l:ich|p:PPER|-:sentences$<i>2]"
+                + "[(4-7)s:bau|l:bauen|p:VVFIN]");
         ki.addDoc(fd);
 
         fd = new FieldDocument();
@@ -136,10 +135,11 @@ public class TestKrillIndex {
 
         // These values are canonically equivalent
         // But indexed as byte sequences
-        fd.addTV("base", new String("ju" + "\u006E" + "\u0303" + "o") + " "
-                + new String("ju" + "\u00F1" + "o"), "[(0-5)s:ju" + "\u006E"
-                + "\u0303" + "o|_0$<i>0<i>5|-:t$<i>2]" + "[(6-10)s:ju"
-                + "\u00F1" + "o|_1$<i>6<i>10]");
+        fd.addTV("base",
+                new String("ju" + "\u006E" + "\u0303" + "o") + " "
+                        + new String("ju" + "\u00F1" + "o"),
+                "[(0-5)s:ju" + "\u006E" + "\u0303" + "o|_0$<i>0<i>5|-:t$<i>2]"
+                        + "[(6-10)s:ju" + "\u00F1" + "o|_1$<i>6<i>10]");
         ki.addDoc(fd);
         ki.commit();
 

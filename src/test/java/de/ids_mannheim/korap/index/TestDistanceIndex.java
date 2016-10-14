@@ -27,10 +27,10 @@ public class TestDistanceIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "text", "[(0-1)s:b|s:c|_1$<i>0<i>1]"
-                + "[(1-2)s:b|_2$<i>1<i>2]" + "[(2-3)s:c|_3$<i>2<i>3]"
-                + "[(3-4)s:c|_4$<i>3<i>4]" + "[(4-5)s:d|_5$<i>4<i>5]"
-                + "[(5-6)s:d|_6$<i>5<i>6]");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|s:c|_1$<i>0<i>1]" + "[(1-2)s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:c|_3$<i>2<i>3]" + "[(3-4)s:c|_4$<i>3<i>4]"
+                        + "[(4-5)s:d|_5$<i>4<i>5]" + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
 
@@ -38,16 +38,16 @@ public class TestDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "text", "[(0-1)s:c|_1$<i>0<i>1]"
-                + "[(1-2)s:e|_2$<i>1<i>2]"
-                + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
-                + "[(3-4)s:c|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
-                + "[(4-5)s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
-                + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8<b>0]"
-                + "[(6-7)s:d|_7$<i>6<i>7]"
-                + "[(7-8)s:e|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
-                + "[(8-9)s:e|_9$<i>8<i>9|<>:x$<b>64<i>8<i>10<i>10<b>0]"
-                + "[(9-10)s:d|_10$<i>9<i>10]");
+        fd.addTV("base", "text",
+                "[(0-1)s:c|_1$<i>0<i>1]" + "[(1-2)s:e|_2$<i>1<i>2]"
+                        + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
+                        + "[(3-4)s:c|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
+                        + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8<b>0]"
+                        + "[(6-7)s:d|_7$<i>6<i>7]"
+                        + "[(7-8)s:e|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
+                        + "[(8-9)s:e|_9$<i>8<i>9|<>:x$<b>64<i>8<i>10<i>10<b>0]"
+                        + "[(9-10)s:d|_10$<i>9<i>10]");
         return fd;
     }
 
@@ -55,18 +55,19 @@ public class TestDistanceIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "text", "[(0-1)s:b|_1$<i>0<i>1]"
-                + "[(1-2)s:b|_2$<i>1<i>2]" + "[(2-3)s:d|_3$<i>2<i>3]"
-                + "[(3-4)s:e|_4$<i>3<i>4]" + "[(4-5)s:d|_5$<i>4<i>5]"
-                + "[(5-6)s:e|_6$<i>5<i>6]");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|_1$<i>0<i>1]" + "[(1-2)s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:d|_3$<i>2<i>3]" + "[(3-4)s:e|_4$<i>3<i>4]"
+                        + "[(4-5)s:d|_5$<i>4<i>5]" + "[(5-6)s:e|_6$<i>5<i>6]");
         return fd;
     }
 
 
     private SpanQuery createQuery (String x, String y, int min, int max,
             boolean isOrdered) {
-        SpanQuery sq = new SpanDistanceQuery(new SpanTermQuery(new Term("base",
-                x)), new SpanTermQuery(new Term("base", y)),
+        SpanQuery sq = new SpanDistanceQuery(
+                new SpanTermQuery(new Term("base", x)),
+                new SpanTermQuery(new Term("base", y)),
                 new DistanceConstraint(min, max, isOrdered, false), true);
         return sq;
     }
@@ -75,8 +76,8 @@ public class TestDistanceIndex {
     private SpanQuery createElementQuery (String x, String y, int min, int max,
             boolean isOrdered) {
         SpanQuery sq = new SpanDistanceQuery(new SpanElementQuery("base", x),
-                new SpanElementQuery("base", y), new DistanceConstraint(min,
-                        max, isOrdered, false), true);
+                new SpanElementQuery("base", y),
+                new DistanceConstraint(min, max, isOrdered, false), true);
         return sq;
     }
 
@@ -85,7 +86,7 @@ public class TestDistanceIndex {
      * - Intersection
      * - Multiple occurrences in the same doc
      * - hasMoreFirstSpans = false for the current secondspan
-     * */
+     */
     @Test
     public void testCase1 () throws IOException {
         ki = new KrillIndex();
@@ -128,7 +129,7 @@ public class TestDistanceIndex {
      * from
      * the current secondspan
      * - Add new candidates
-     * */
+     */
     @Test
     public void testCase2 () throws IOException {
         ki = new KrillIndex();
@@ -162,7 +163,7 @@ public class TestDistanceIndex {
     /**
      * - Ensure the same document
      * - Multiple matches in multiple documents and atomic indices
-     * */
+     */
     @Test
     public void testCase3 () throws IOException {
         ki = new KrillIndex();
@@ -185,7 +186,7 @@ public class TestDistanceIndex {
      * still a secondspans in the same doc
      * - hasMoreFirstSpan and secondspans.next() are true,
      * but ensureSameDoc() = false
-     * */
+     */
     @Test
     public void testCase4 () throws IOException {
         ki = new KrillIndex();
@@ -277,8 +278,9 @@ public class TestDistanceIndex {
         assertEquals(9, kr.getMatch(2).endPos);
 
         // The secondspans is skipped to doc# of the current firstspans
-        SpanQuery sq = new SpanSegmentQuery(createQuery("s:d", "s:e", 3, 4,
-                true), createElementQuery("y", "x", 1, 2, true));
+        SpanQuery sq = new SpanSegmentQuery(
+                createQuery("s:d", "s:e", 3, 4, true),
+                createElementQuery("y", "x", 1, 2, true));
         kr = ki.search(sq, (short) 10);
 
         assertEquals(kr.getTotalResults(), 1);

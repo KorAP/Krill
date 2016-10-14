@@ -31,7 +31,7 @@ import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
  * constraints have to be formulated in Conjunctive Normal Form (CNF).
  * 
  * @author margaretha
- * */
+ */
 public class SpansWithAttribute extends SimpleSpans {
 
     private SimpleSpans referentSpans;
@@ -298,7 +298,7 @@ public class SpansWithAttribute extends SimpleSpans {
      * Advances the element or attribute spans to be in the same
      * document and
      * start position.
-     * */
+     */
     private boolean ensureSamePosition (SimpleSpans spans,
             AttributeSpans attributes) throws IOException {
 

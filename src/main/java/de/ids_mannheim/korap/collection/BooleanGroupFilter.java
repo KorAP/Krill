@@ -104,8 +104,8 @@ public class BooleanGroupFilter extends Filter {
 
     @Override
     public String toString () {
-        StringBuilder buffer = new StringBuilder(this.isOptional ? "OrGroup("
-                : "AndGroup(");
+        StringBuilder buffer = new StringBuilder(
+                this.isOptional ? "OrGroup(" : "AndGroup(");
         boolean first = true;
         for (final GroupFilterOperand operand : this.operands) {
             if (first)
@@ -168,8 +168,8 @@ public class BooleanGroupFilter extends Filter {
                             log.debug("- Filter to allow all documents");
 
                         bitset.set(0, maxDoc);
-                        return BitsFilteredDocIdSet.wrap(
-                                new BitDocIdSet(bitset), acceptDocs);
+                        return BitsFilteredDocIdSet
+                                .wrap(new BitDocIdSet(bitset), acceptDocs);
                     };
 
                     // There is no possible match

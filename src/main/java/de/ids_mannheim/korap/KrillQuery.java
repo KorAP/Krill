@@ -156,11 +156,11 @@ public final class KrillQuery extends Notifications {
      * SpanQueryWrapper sqw = kq.fromKoral(
      * "{\"@type\" : \"koral:token\","+
      * "\"wrap\" : {" +
-     * "\"@type\" :   \"koral:term\"," +
+     * "\"@type\" : \"koral:term\"," +
      * "\"foundry\" : \"opennlp\"," +
-     * "\"key\" :     \"tree\"," +
-     * "\"layer\" :   \"orth\"," +
-     * "\"match\" :   \"match:eq\""+
+     * "\"key\" : \"tree\"," +
+     * "\"layer\" : \"orth\"," +
+     * "\"match\" : \"match:eq\""+
      * "}}"
      * );
      * </pre></blockquote>
@@ -231,10 +231,10 @@ public final class KrillQuery extends Notifications {
                 return this._groupFromJson(json);
 
             case "koral:reference":
-                if (json.has("operation")
-                        && !json.get("operation").asText()
-                                .equals("operation:focus"))
-                    throw new QueryException(712, "Unknown reference operation");
+                if (json.has("operation") && !json.get("operation").asText()
+                        .equals("operation:focus"))
+                    throw new QueryException(712,
+                            "Unknown reference operation");
 
                 if (!json.has("operands")) {
                     throw new QueryException(766,
@@ -293,14 +293,13 @@ public final class KrillQuery extends Notifications {
                     SpanSubspanQueryWrapper ssqw = new SpanSubspanQueryWrapper(
                             sqw, startOffset, length);
                     return ssqw;
-                }
-                ;
+                };
 
                 if (DEBUG)
                     log.trace("Wrap class reference {}", number);
 
-                return new SpanFocusQueryWrapper(this._fromKoral(operands
-                        .get(0)), number);
+                return new SpanFocusQueryWrapper(
+                        this._fromKoral(operands.get(0)), number);
 
             case "koral:token":
 
@@ -446,10 +445,10 @@ public final class KrillQuery extends Notifications {
                 // Deprecated in favor of operation:junction
             case "operation:or":
                 return this._operationJunctionFromJson(operands);
-                /*
-                  case "operation:submatch": // Deprecated in favor of koral:reference
-                  return this._operationSubmatchFromJson(json, operands);
-                */
+            /*
+              case "operation:submatch": // Deprecated in favor of koral:reference
+              return this._operationSubmatchFromJson(json, operands);
+            */
             case "operation:disjunction":
                 return this._operationJunctionFromJson(operands);
         };
@@ -469,11 +468,9 @@ public final class KrillQuery extends Notifications {
         for (int i = 0; i < operands.size(); i++) {
             childNode = operands.get(i);
             if (childNode.has("@type")
-                    && childNode.get("@type").asText()
-                            .equals("koral:reference")
-                    && childNode.has("operation")
-                    && childNode.get("operation").asText()
-                            .equals("operation:focus")
+                    && childNode.get("@type").asText().equals("koral:reference")
+                    && childNode.has("operation") && childNode.get("operation")
+                            .asText().equals("operation:focus")
                     && !childNode.has("operands")) {
 
                 if (childNode.has("classRef")) {
@@ -963,7 +960,8 @@ public final class KrillQuery extends Notifications {
         // inOrder was set to false without a distance constraint
         if (!sseqqw.isInOrder() && !sseqqw.hasConstraints()) {
             if (DEBUG)
-                log.trace("Add distance constraint - for the normal inorder case");
+                log.trace(
+                        "Add distance constraint - for the normal inorder case");
 
             sseqqw.withConstraint(1, 1, "w");
         };
@@ -973,7 +971,8 @@ public final class KrillQuery extends Notifications {
 
 
     // Deserialize koral:token
-    private SpanQueryWrapper _segFromJson (JsonNode json) throws QueryException {
+    private SpanQueryWrapper _segFromJson (JsonNode json)
+            throws QueryException {
 
         if (!json.has("@type"))
             throw new QueryException(701,
@@ -1006,9 +1005,9 @@ public final class KrillQuery extends Notifications {
                 //
                 //            case "match:eq":
                 return this._termFromJson(json);
-                //            };
-                //
-                //            throw new QueryException(741, "Match relation unknown");
+            //            };
+            //
+            //            throw new QueryException(741, "Match relation unknown");
 
             case "koral:termGroup":
 
@@ -1043,8 +1042,7 @@ public final class KrillQuery extends Notifications {
                                 throw new QueryException(744,
                                         "Operand not supported in term group");
                             };
-                        }
-                        ;
+                        };
                         return ssegqw;
 
                     case "relation:or":
@@ -1053,11 +1051,9 @@ public final class KrillQuery extends Notifications {
                                 this.field);
                         for (JsonNode operand : operands) {
                             ssaq.or(this._segFromJson(operand));
-                        }
-                        ;
+                        };
                         return ssaq;
-                }
-                ;
+                };
         };
         throw new QueryException(745, "Token type is not supported");
     };
@@ -1193,23 +1189,23 @@ public final class KrillQuery extends Notifications {
 
             // Branch on type
             switch (json.get("type").asText()) {
-			case "type:regex": {
+                case "type:regex": {
 
-				// The regex can be rewritten to an any token
-				if (value.toString().matches("^[si]:\\.[\\+\\*]\\??$")) {
-					return new SpanRepetitionQueryWrapper();
-				};
-				return qb.seg(qb.re(value.toString(), isCaseInsensitive));
-			}
-			case "type:wildcard":
-				return qb.seq(qb.wc(value.toString(), isCaseInsensitive));
+                    // The regex can be rewritten to an any token
+                    if (value.toString().matches("^[si]:\\.[\\+\\*]\\??$")) {
+                        return new SpanRepetitionQueryWrapper();
+                    };
+                    return qb.seg(qb.re(value.toString(), isCaseInsensitive));
+                }
+                case "type:wildcard":
+                    return qb.seq(qb.wc(value.toString(), isCaseInsensitive));
 
-			case "type:string":
-				break;
+                case "type:string":
+                    break;
 
-			default:
-				this.addWarning(746,
-								"Term type is not supported - treated as a string");
+                default:
+                    this.addWarning(746,
+                            "Term type is not supported - treated as a string");
             };
         };
 
@@ -1248,8 +1244,8 @@ public final class KrillQuery extends Notifications {
                 // "Arbitraty elements with attributes are currently not supported.");
             }
             else {
-                SpanQueryWrapper elementWithIdWrapper = this.builder().tag(
-                        value.toString());
+                SpanQueryWrapper elementWithIdWrapper = this.builder()
+                        .tag(value.toString());
                 if (elementWithIdWrapper == null) {
                     return null;
                 }
@@ -1366,9 +1362,8 @@ public final class KrillQuery extends Notifications {
 
                 // TODO: Here do not refer to 'tokens'!!!
                 // EM: what should it be? property?
-                return new SpanAttributeQueryWrapper(
-                        new SpanSimpleQueryWrapper("tokens", "@root",
-                                Boolean.valueOf(rootValue)));
+                return new SpanAttributeQueryWrapper(new SpanSimpleQueryWrapper(
+                        "tokens", "@root", Boolean.valueOf(rootValue)));
             }
         }
         return null;

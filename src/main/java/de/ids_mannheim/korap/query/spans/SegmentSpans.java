@@ -17,7 +17,7 @@ import de.ids_mannheim.korap.query.SpanSegmentQuery;
  * have exactly the same start and end positions.
  * 
  * @author margaretha
- * */
+ */
 public class SegmentSpans extends SimpleSpans {
 
     private boolean isRelation;
@@ -90,7 +90,7 @@ public class SegmentSpans extends SimpleSpans {
      * firstspan and
      * secondspan are identical.
      * 
-     * */
+     */
     protected int findMatch () {
         if (firstSpans.start() == secondSpans.start()
                 && firstSpans.end() == secondSpans.end()) {

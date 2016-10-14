@@ -42,7 +42,7 @@ public class TestSpanExpansionIndex {
 
     /**
      * Left and right expansions
-     * */
+     */
     @Test
     public void testCase1 () throws IOException {
 
@@ -83,7 +83,7 @@ public class TestSpanExpansionIndex {
     /**
      * Classnumber
      * Check the expansion offsets
-     * */
+     */
     @Test
     public void testCase2 () {
         byte classNumber = 1;
@@ -141,13 +141,13 @@ public class TestSpanExpansionIndex {
 
     /**
      * Right expansion with exclusion
-     * */
+     */
     @Test
     public void testCase3 () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
-        SpanTermQuery notQuery = new SpanTermQuery(new Term("tokens",
-                "s:Buchstabe"));
+        SpanTermQuery notQuery = new SpanTermQuery(
+                new Term("tokens", "s:Buchstabe"));
 
         SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 2, 3, 0,
                 classNumber, true);
@@ -177,16 +177,16 @@ public class TestSpanExpansionIndex {
     /**
      * Left expansion with exclusion
      * No expansion
-     * */
+     */
     @Test
     public void testCase4 () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
-        SpanTermQuery notQuery = new SpanTermQuery(new Term("tokens",
-                "tt/p:ADJA"));
+        SpanTermQuery notQuery = new SpanTermQuery(
+                new Term("tokens", "tt/p:ADJA"));
 
-        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 0, 2,
-                -1, classNumber, true);
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 0, 2, -1,
+                classNumber, true);
         kr = ki.search(seq, (short) 10);
 
         assertEquals(6, kr.getMatch(0).getStartPos());
@@ -221,7 +221,7 @@ public class TestSpanExpansionIndex {
      * TODO: end => to be handled in rendering process
      * 
      * @throws IOException
-     * */
+     */
     @Test
     public void testCase5 () throws IOException {
         KrillIndex ki = new KrillIndex();
@@ -259,7 +259,7 @@ public class TestSpanExpansionIndex {
      * Expansion exclusion : multiple documents
      * 
      * @throws IOException
-     * */
+     */
     @Test
     public void testCase6 () throws IOException {
         KrillIndex ki = new KrillIndex();
@@ -289,15 +289,16 @@ public class TestSpanExpansionIndex {
 
     /**
      * Skip to
-     * */
+     */
     @Test
     public void testCase7 () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.commit();
-        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/poly3.json")
-                .getFile(),"UTF-8");
+        String jsonPath = URLDecoder.decode(
+                getClass().getResource("/queries/poly3.json").getFile(),
+                "UTF-8");
         String jsonQuery = readFile(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
@@ -322,7 +323,7 @@ public class TestSpanExpansionIndex {
      * Warning: This is not armoured by <base/s=t>!
      * 
      * @throws IOException
-     * */
+     */
     @Test
     public void testQueryRewriteBug () throws IOException {
         KrillIndex ki = new KrillIndex();
@@ -398,20 +399,20 @@ public class TestSpanExpansionIndex {
      * Query rewrite bug
      * 
      * @throws IOException
-     * */
+     */
     @Test
     public void testExpansionQueryBug3 () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc3());
         ki.addDoc(createFieldDoc4());
         ki.commit();
-        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/bugs/expansion_bug_3.jsonld")
-                .getFile(),"UTF-8");
+        String jsonPath = URLDecoder.decode(getClass()
+                .getResource("/queries/bugs/expansion_bug_3.jsonld").getFile(),
+                "UTF-8");
         String json = readFile(jsonPath);
         KrillQuery kq = new KrillQuery("base");
         SpanQuery sq = kq.fromKoral(json).toQuery();
-        assertEquals(
-                sq.toString(),
+        assertEquals(sq.toString(),
                 "focus(254: spanContain(<base:base/s:t />, {254: spanExpansion(base:s:c, []{0, 4}, right)}))");
 
         kr = ki.search(sq, (short) 10);
@@ -442,7 +443,8 @@ public class TestSpanExpansionIndex {
                         + "[(3-4)s:c|s:d|_3$<i>3<i>4]"
                         + "[(4-5)s:e|_4$<i>4<i>5]" + "[(5-6)s:c|_5$<i>5<i>6]"
                         + "[(6-7)s:d|_6$<i>6<i>7]" + "[(7-8)s:e|_7$<i>7<i>8]"
-                        + "[(8-9)s:e|_8$<i>8<i>9]" + "[(9-10)s:c|_9$<i>9<i>10]");
+                        + "[(8-9)s:e|_8$<i>8<i>9]"
+                        + "[(9-10)s:c|_9$<i>9<i>10]");
         return fd;
     }
 

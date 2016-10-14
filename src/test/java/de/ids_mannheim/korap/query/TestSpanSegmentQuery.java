@@ -23,8 +23,8 @@ public class TestSpanSegmentQuery {
         assertEquals("field:a", ssquery.toQuery().toString());
 
         ssquery = new SpanSegmentQueryWrapper("field", "a", "b");
-        assertEquals("spanSegment(field:a, field:b)", ssquery.toQuery()
-                .toString());
+        assertEquals("spanSegment(field:a, field:b)",
+                ssquery.toQuery().toString());
 
         ssquery = new SpanSegmentQueryWrapper("field", "a", "b", "c");
         assertEquals("spanSegment(spanSegment(field:a, field:b), field:c)",
@@ -40,8 +40,8 @@ public class TestSpanSegmentQuery {
         assertEquals("field:a", ssquery.toQuery().toString());
 
         ssquery = new SpanSegmentQueryWrapper("field", "a", "b");
-        assertEquals("spanSegment(field:a, field:b)", ssquery.toQuery()
-                .toString());
+        assertEquals("spanSegment(field:a, field:b)",
+                ssquery.toQuery().toString());
 
         ssquery.without("c");
         assertEquals("spanNot(spanSegment(field:a, field:b), field:c, 0, 0)",
@@ -114,18 +114,18 @@ public class TestSpanSegmentQuery {
     public void spanSegmentCloneQuery () throws QueryException {
         SpanSegmentQueryWrapper ssquery = new SpanSegmentQueryWrapper("field",
                 "a", "b");
-        assertEquals("spanSegment(field:a, field:b)", ssquery.toQuery()
-                .toString());
+        assertEquals("spanSegment(field:a, field:b)",
+                ssquery.toQuery().toString());
 
         SpanSegmentQueryWrapper ssquery2 = new SpanSegmentQueryWrapper("field",
                 ssquery);
-        assertEquals(ssquery.toQuery().toString(), ssquery2.toQuery()
-                .toString());
+        assertEquals(ssquery.toQuery().toString(),
+                ssquery2.toQuery().toString());
 
         SpanSegmentQueryWrapper ssquery3 = ssquery2.clone();
-        assertEquals(ssquery.toQuery().toString(), ssquery3.toQuery()
-                .toString());
-        assertEquals(ssquery2.toQuery().toString(), ssquery3.toQuery()
-                .toString());
+        assertEquals(ssquery.toQuery().toString(),
+                ssquery3.toQuery().toString());
+        assertEquals(ssquery2.toQuery().toString(),
+                ssquery3.toQuery().toString());
     };
 };

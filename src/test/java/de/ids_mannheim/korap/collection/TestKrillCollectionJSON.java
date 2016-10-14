@@ -66,8 +66,8 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("QueryWrapperFilter(author:/Goethe/)", ks.getCollection()
-                .toString());
+        assertEquals("QueryWrapperFilter(author:/Goethe/)",
+                ks.getCollection().toString());
     };
 
 
@@ -78,8 +78,8 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("-QueryWrapperFilter(author:/Goethe/)", ks.getCollection()
-                .toString());
+        assertEquals("-QueryWrapperFilter(author:/Goethe/)",
+                ks.getCollection().toString());
     };
 
 
@@ -112,8 +112,8 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("QueryWrapperFilter(author:/Goe:th=e/)", ks
-                .getCollection().toString());
+        assertEquals("QueryWrapperFilter(author:/Goe:th=e/)",
+                ks.getCollection().toString());
     };
 
 
@@ -132,7 +132,8 @@ public class TestKrillCollectionJSON {
 
     @Test
     public void nocollectiontypegiven () {
-        String metaQuery = _getJSONString("multiterm_rewrite_collection.jsonld");
+        String metaQuery = _getJSONString(
+                "multiterm_rewrite_collection.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(701, kc.getError(0).getCode());
     };
@@ -154,8 +155,7 @@ public class TestKrillCollectionJSON {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(
-                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
@@ -186,8 +186,8 @@ public class TestKrillCollectionJSON {
     // Legacy collections reflect old tests, that were adopted to the new scheme
     @Test
     public void metaQuery1Legacy () {
-        String metaQuery = getJsonString(getClass().getResource(
-                "/queries/metaquery.jsonld").getFile());
+        String metaQuery = getJsonString(
+                getClass().getResource("/queries/metaquery.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
 
         /*
@@ -211,8 +211,8 @@ public class TestKrillCollectionJSON {
 
     @Test
     public void metaQuery2Legacy () {
-        String metaQuery = getJsonString(getClass().getResource(
-                "/queries/metaquery2.jsonld").getFile());
+        String metaQuery = getJsonString(
+                getClass().getResource("/queries/metaquery2.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
         /*
         assertEquals(1, kc.getCount());
@@ -227,8 +227,8 @@ public class TestKrillCollectionJSON {
 
     @Test
     public void metaQuery3Legacy () {
-        String metaQuery = getJsonString(getClass().getResource(
-                "/queries/metaquery4.jsonld").getFile());
+        String metaQuery = getJsonString(
+                getClass().getResource("/queries/metaquery4.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
         /*
         assertEquals(1, kc.getCount());
@@ -245,8 +245,8 @@ public class TestKrillCollectionJSON {
 
     @Test
     public void metaQuery7Legacy () {
-        String metaQuery = getJsonString(getClass().getResource(
-                "/queries/metaquery7.jsonld").getFile());
+        String metaQuery = getJsonString(
+                getClass().getResource("/queries/metaquery7.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
         /*
         assertEquals(2, kc.getCount());
@@ -266,8 +266,8 @@ public class TestKrillCollectionJSON {
 
     @Test
     public void metaQuery9 () {
-        String metaQuery = getJsonString(getClass().getResource(
-                "/queries/metaquery9.jsonld").getFile());
+        String metaQuery = getJsonString(
+                getClass().getResource("/queries/metaquery9.jsonld").getFile());
         KrillCollection kc = new KrillCollection(metaQuery);
         /*
         assertEquals(1, kc.getCount());

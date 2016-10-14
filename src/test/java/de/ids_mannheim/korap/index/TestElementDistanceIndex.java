@@ -49,9 +49,7 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV(
-                "tokens",
-                "ecebdc",
+        fd.addTV("tokens", "ecebdc",
                 "[(0-1)s:e|_1$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>6<i>6<b>0|<>:s$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:c|s:b|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2<b>0]"
                         + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
@@ -105,7 +103,7 @@ public class TestElementDistanceIndex {
      * Ensure terms and elements are in the same doc
      * Ensure terms are in elements
      * Check filter candidate list
-     * */
+     */
     @Test
     public void testCase1 () throws IOException {
         //System.out.println("testCase1");
@@ -129,7 +127,7 @@ public class TestElementDistanceIndex {
 
     /**
      * Ensure terms and elements are in the same doc
-     * */
+     */
     @Test
     public void testCase2 () throws IOException {
         //System.out.println("testCase2");
@@ -206,8 +204,9 @@ public class TestElementDistanceIndex {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
 
-        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/cosmas1.json")
-                .getFile(),"UTF-8");
+        String jsonPath = URLDecoder.decode(
+                getClass().getResource("/queries/cosmas1.json").getFile(),
+                "UTF-8");
         SpanQueryWrapper sqwi = jsonQuery(jsonPath);
         kr = ki.search(sqwi.toQuery(), (short) 10);
 
@@ -235,8 +234,9 @@ public class TestElementDistanceIndex {
         assertEquals(kr.getTotalResults(), 1);
         assertEquals("[[ecebdc]]", kr.getMatch(0).getSnippetBrackets());
 
-        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/distances/in-same-t.jsonld")
-                .getFile(),"UTF-8");
+        String jsonPath = URLDecoder.decode(getClass()
+                .getResource("/queries/distances/in-same-t.jsonld").getFile(),
+                "UTF-8");
         sqwi = jsonQuery(jsonPath);
 
         assertEquals(

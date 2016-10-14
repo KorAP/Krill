@@ -58,7 +58,8 @@ public class CollectionBuilder {
             if (till == 0 || till == KrillDate.END)
                 return null;
 
-            return new CollectionBuilder.Range(field, KrillDate.BEGINNING, till);
+            return new CollectionBuilder.Range(field, KrillDate.BEGINNING,
+                    till);
         }
         catch (NumberFormatException e) {
             log.warn("Parameter of till(date) is invalid");
@@ -99,7 +100,8 @@ public class CollectionBuilder {
             return new CollectionBuilder.Range(field, begin, end);
         };
 
-        return new CollectionBuilder.Range(field, dateDF.floor(), dateDF.ceil());
+        return new CollectionBuilder.Range(field, dateDF.floor(),
+                dateDF.ceil());
     };
 
 
@@ -153,8 +155,8 @@ public class CollectionBuilder {
                                 this.field, this.term)));
 
             // Simple term
-            return new TermsFilter(new org.apache.lucene.index.Term(this.field,
-                    this.term));
+            return new TermsFilter(
+                    new org.apache.lucene.index.Term(this.field, this.term));
         };
 
 

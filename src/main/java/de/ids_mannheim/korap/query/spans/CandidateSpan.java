@@ -15,14 +15,14 @@ import org.apache.lucene.search.spans.Spans;
  * matching.
  * 
  * @author margaretha
- * */
+ */
 public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
     protected int doc, start, end;
     private long cost;
     private Collection<byte[]> payloads;
     private int position;
     private CandidateSpan childSpan; // used for example for multiple distance
-                                     // with unordered constraint
+                                    // with unordered constraint
     protected short spanId;
     protected boolean hasSpanId;
 

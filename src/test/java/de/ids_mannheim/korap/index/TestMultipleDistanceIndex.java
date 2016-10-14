@@ -53,9 +53,7 @@ public class TestMultipleDistanceIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV(
-                "base",
-                "text",
+        fd.addTV("base", "text",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
                         + "[(1-2)s:b|s:c|_2$<i>1<i>2]"
                         + "[(2-3)s:c|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>4<b>0]"
@@ -69,9 +67,7 @@ public class TestMultipleDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV(
-                "base",
-                "text",
+        fd.addTV("base", "text",
                 "[(0-1)s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
                         + "[(1-2)s:c|s:e|_2$<i>1<i>2]"
                         + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>4<b>0]"
@@ -85,9 +81,7 @@ public class TestMultipleDistanceIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV(
-                "base",
-                "text",
+        fd.addTV("base", "text",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
                         + "[(1-2)s:b|s:e|_2$<i>1<i>2]"
                         + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>4<b>0]"
@@ -115,7 +109,7 @@ public class TestMultipleDistanceIndex {
 
     /**
      * Unordered, same sentence
-     * */
+     */
     @Test
     public void testCase1 () throws IOException {
         ki = new KrillIndex();
@@ -146,7 +140,7 @@ public class TestMultipleDistanceIndex {
      * Unordered
      * Two constraints
      * Three constraints
-     * */
+     */
     @Test
     public void testCase2 () throws IOException {
         ki = new KrillIndex();
@@ -199,7 +193,7 @@ public class TestMultipleDistanceIndex {
     /**
      * Multiple documents
      * Ensure same doc (inner term span)
-     * */
+     */
     @Test
     public void testCase3 () throws IOException {
         ki = new KrillIndex();
@@ -241,7 +235,7 @@ public class TestMultipleDistanceIndex {
 
     /**
      * Skip to
-     * */
+     */
     @Test
     public void testCase4 () throws IOException {
         ki = new KrillIndex();
@@ -258,8 +252,8 @@ public class TestMultipleDistanceIndex {
         SpanQuery mdq;
         mdq = createQuery("s:b", "s:c", constraints, false);
 
-        SpanQuery sq = new SpanNextQuery(mdq, new SpanTermQuery(new Term(
-                "base", "s:e")));
+        SpanQuery sq = new SpanNextQuery(mdq,
+                new SpanTermQuery(new Term("base", "s:e")));
         kr = ki.search(sq, (short) 10);
 
         assertEquals((long) 2, kr.getTotalResults());
@@ -274,7 +268,7 @@ public class TestMultipleDistanceIndex {
 
     /**
      * Same tokens: ordered and unordered yield the same results
-     * */
+     */
     @Test
     public void testCase5 () throws IOException {
         ki = new KrillIndex();
@@ -307,7 +301,7 @@ public class TestMultipleDistanceIndex {
     /**
      * Exclusion
      * Gaps
-     * */
+     */
     @Test
     public void testCase6 () throws IOException {
         ki = new KrillIndex();
@@ -351,7 +345,7 @@ public class TestMultipleDistanceIndex {
 
     /**
      * Exclusion, multiple documents
-     * */
+     */
     @Test
     public void testCase7 () throws IOException {
         ki = new KrillIndex();
@@ -361,8 +355,8 @@ public class TestMultipleDistanceIndex {
         SpanQuery sx = new SpanTermQuery(new Term("base", "s:b"));
         SpanQuery sy = new SpanTermQuery(new Term("base", "s:c"));
         // Second constraint
-        SpanDistanceQuery sq = new SpanDistanceQuery(sx, sy, createConstraint(
-                "s", 0, 0, false, true), true);
+        SpanDistanceQuery sq = new SpanDistanceQuery(sx, sy,
+                createConstraint("s", 0, 0, false, true), true);
         kr = ki.search(sq, (short) 10);
         assertEquals((long) 3, kr.getTotalResults());
         // 0-1, 1-2, 6-7
@@ -383,8 +377,8 @@ public class TestMultipleDistanceIndex {
 
 
         // Third constraint
-        sq = new SpanDistanceQuery(sx, sy, createConstraint("p", 0, 0, false,
-                true), true);
+        sq = new SpanDistanceQuery(sx, sy,
+                createConstraint("p", 0, 0, false, true), true);
         kr = ki.search(sq, (short) 10);
         assertEquals((long) 1, kr.getTotalResults());
         // 6-7

@@ -44,7 +44,7 @@ public abstract class AbstractDocument extends Response {
     public int internalDocID, localDocID, UID;
 
     private KrillDate pubDate,
-    // newly added
+            // newly added
             creationDate;
 
     private HashMap<String, String> fieldMap;
@@ -52,28 +52,17 @@ public abstract class AbstractDocument extends Response {
     private String
 
     // No longer supported
-            ID,
-            corpusID,
-            field,
-            layerInfo,
-            tokenization,
+    ID, corpusID, field, layerInfo, tokenization,
 
             // Still supported
-            foundries,
-            textClass,
-            pubPlace,
+            foundries, textClass, pubPlace,
 
             // Newly added for the corpus/doc/text distinction of DeReKo
-            textSigle, docSigle, corpusSigle, title, subTitle, author,
-            editor,
-            docTitle, docSubTitle, docAuthor, docEditor,
-            corpusTitle,
-            corpusSubTitle, corpusAuthor, corpusEditor, textType,
-            textTypeArt,
-            textTypeRef, textColumn, textDomain,
-            fileEditionStatement,
-            biblEditionStatement, publisher, reference, language,
-            license,
+            textSigle, docSigle, corpusSigle, title, subTitle, author, editor,
+            docTitle, docSubTitle, docAuthor, docEditor, corpusTitle,
+            corpusSubTitle, corpusAuthor, corpusEditor, textType, textTypeArt,
+            textTypeRef, textColumn, textDomain, fileEditionStatement,
+            biblEditionStatement, publisher, reference, language, license,
             pages, keywords,
 
             // Meta information regarding annotations

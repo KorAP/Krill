@@ -196,7 +196,8 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 
 
     public SpanQuery toFragmentQuery () throws QueryException {
-        if (this.isNull || (this.inclusive.size() + this.exclusive.size() == 0)) {
+        if (this.isNull
+                || (this.inclusive.size() + this.exclusive.size() == 0)) {
             return (SpanQuery) null;
         }
         else if (this.inclusive.size() >= 1 && this.exclusive.size() >= 1) {

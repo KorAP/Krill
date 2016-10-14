@@ -97,13 +97,14 @@ public class TestUnorderedElementDistanceIndex {
         SpanElementQuery e = new SpanElementQuery("base", elementType);
         return new SpanDistanceQuery(new SpanTermQuery(new Term("base", x)),
                 new SpanTermQuery(new Term("base", y)), new DistanceConstraint(
-                        e, minDistance, maxDistance, isOrdered, false), true);
+                        e, minDistance, maxDistance, isOrdered, false),
+                true);
     }
 
 
     /**
      * Only terms within an element are matched.
-     * */
+     */
     @Test
     public void testCase1 () throws IOException {
         //System.out.println("testCase1");
@@ -135,7 +136,7 @@ public class TestUnorderedElementDistanceIndex {
      * In the beginning, first and second spans are already too far
      * from each other
      * (one-list-empty case, both-list-empty-case).
-     * */
+     */
     @Test
     public void testCase2 () throws IOException {
         //System.out.println("testCase2");
@@ -162,7 +163,7 @@ public class TestUnorderedElementDistanceIndex {
 
     /**
      * Multiple occurrences in an element.
-     * */
+     */
     @Test
     public void testCase3 () throws IOException {
         //System.out.println("testCase3");

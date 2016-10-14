@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * distance is a token position.
  * 
  * @author margaretha
- * */
+ */
 public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
 
     /**
@@ -105,7 +105,8 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
      *         within
      *         the maximum distance, <code>false</code> otherwise.
      */
-    protected boolean isWithinMaxDistance (CandidateSpan target, Spans candidate) {
+    protected boolean isWithinMaxDistance (CandidateSpan target,
+            Spans candidate) {
         // left candidate
         if (candidate.end() < target.getStart()
                 && candidate.end() + maxDistance <= target.getStart()) {
@@ -127,9 +128,8 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
         List<CandidateSpan> matches = new ArrayList<>();
         int actualDistance;
         for (CandidateSpan cs : candidateList) {
-            if (minDistance == 0
-                    &&
-                    // intersection
+            if (minDistance == 0 &&
+            // intersection
                     target.getStart() < cs.getEnd()
                     && cs.getStart() < target.getEnd()) {
                 matches.add(createMatchCandidate(target, cs, true));
@@ -144,7 +144,8 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
                 // right candidate
                 actualDistance = cs.getStart() - target.getEnd() + 1;
             }
-            if (minDistance <= actualDistance && actualDistance <= maxDistance) {
+            if (minDistance <= actualDistance
+                    && actualDistance <= maxDistance) {
                 matches.add(createMatchCandidate(target, cs, false));
             }
         }

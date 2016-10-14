@@ -16,8 +16,10 @@ public class TestSpanReferenceQueryJSON {
     @Test
     public void testFirstOperandRef () throws IOException, QueryException {
 
-        String filepath = getClass().getResource(
-                "/queries/reference/first-operand-reference.jsonld").getFile();
+        String filepath = getClass()
+                .getResource(
+                        "/queries/reference/first-operand-reference.jsonld")
+                .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
@@ -36,8 +38,10 @@ public class TestSpanReferenceQueryJSON {
     @Test
     public void testSecondOperandRef () throws QueryException {
 
-        String filepath = getClass().getResource(
-                "/queries/reference/second-operand-reference.jsonld").getFile();
+        String filepath = getClass()
+                .getResource(
+                        "/queries/reference/second-operand-reference.jsonld")
+                .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
@@ -47,14 +51,16 @@ public class TestSpanReferenceQueryJSON {
                 "spanReference(spanNext(focus(2: focus(#[1,2]spanSegment({3: tokens:p:P}, "
                         + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
                         + "focus(1: spanNext({2: tokens:p:V}, {1: <tokens:c:NP />}))))))), "
-                        + "{3: tokens:p:P}), 3)", sq.toString());
+                        + "{3: tokens:p:P}), 3)",
+                sq.toString());
     }
 
 
     @Test
     public void testMultipleReferences () throws QueryException {
-        String filepath = getClass().getResource(
-                "/queries/reference/multiple-references.jsonld").getFile();
+        String filepath = getClass()
+                .getResource("/queries/reference/multiple-references.jsonld")
+                .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
@@ -74,8 +80,9 @@ public class TestSpanReferenceQueryJSON {
 
         // ND: I don't understand what this query should be about ...
         // EM: There was just a bug with multiple distance
-        String filepath = getClass().getResource(
-                "/queries/reference/bug-multiple-distance-simple.jsonld")
+        String filepath = getClass()
+                .getResource(
+                        "/queries/reference/bug-multiple-distance-simple.jsonld")
                 .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
@@ -85,8 +92,9 @@ public class TestSpanReferenceQueryJSON {
                 sq.toString());
 
         // "/queries/reference/distance-reference.jsonld").getFile();
-        filepath = getClass().getResource(
-                "/queries/reference/bug-multiple-distance.jsonld").getFile();
+        filepath = getClass()
+                .getResource("/queries/reference/bug-multiple-distance.jsonld")
+                .getFile();
         sqwi = getJSONQuery(filepath);
         sq = sqwi.toQuery();
 

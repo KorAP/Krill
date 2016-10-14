@@ -43,9 +43,9 @@ public final class KrillMeta extends Notifications {
 
         // Lift following fields per default
         // These fields are chosen for <legacy /> reasons
-        for (String field : new String[] { "ID", "UID", "textSigle",
-                "corpusID", "author", "title", "subTitle", "textClass",
-                "pubPlace", "pubDate",
+        for (String field : new String[] { "ID", "UID", "textSigle", "corpusID",
+                "author", "title", "subTitle", "textClass", "pubPlace",
+                "pubDate",
                 // "foundries",
                 // "tokenization",
                 // New:

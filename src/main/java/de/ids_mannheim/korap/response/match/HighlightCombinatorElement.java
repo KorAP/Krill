@@ -33,7 +33,8 @@ public class HighlightCombinatorElement {
     // Constructor for highlighting elements,
     // that may not be terminal, i.e. they were closed and will
     // be reopened for overlapping issues.
-    public HighlightCombinatorElement (byte type, int number, boolean terminal) {
+    public HighlightCombinatorElement (byte type, int number,
+                                       boolean terminal) {
         this.type = type;
         this.number = number;
         this.terminal = terminal;
@@ -60,16 +61,18 @@ public class HighlightCombinatorElement {
 
             else if (this.number < -1) {
                 sb.append("<span xml:id=\"")
-                        .append(escapeHTML(match.getPosID(match
-                                .getClassID(this.number)))).append("\">");
+                        .append(escapeHTML(
+                                match.getPosID(match.getClassID(this.number))))
+                        .append("\">");
             }
 
             else if (this.number >= 256) {
                 sb.append("<span ");
                 if (this.number < 2048) {
                     sb.append("title=\"")
-                            .append(escapeHTML(match
-                                    .getAnnotationID(this.number))).append('"');
+                            .append(escapeHTML(
+                                    match.getAnnotationID(this.number)))
+                            .append('"');
                 }
                 else {
                     Relation rel = match.getRelationID(this.number);

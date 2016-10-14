@@ -28,7 +28,7 @@ public class KrillString {
      */
     public static String StringfromFile (String path, Charset encoding)
             throws IOException {
-        path = URLDecoder.decode(path,"UTF-8");
+        path = URLDecoder.decode(path, "UTF-8");
         path = path.replaceFirst("^/(.:/)", "$1");
         Path p = Paths.get(path);
         byte[] encoded = Files.readAllBytes(p);

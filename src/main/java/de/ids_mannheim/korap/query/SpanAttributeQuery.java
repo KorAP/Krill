@@ -42,7 +42,7 @@ import de.ids_mannheim.korap.query.spans.AttributeSpans;
  * </pre>
  * 
  * @author margaretha
- * */
+ */
 public class SpanAttributeQuery extends SimpleSpanQuery {
 
     boolean negation;

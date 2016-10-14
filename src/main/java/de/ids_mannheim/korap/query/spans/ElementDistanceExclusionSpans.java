@@ -30,7 +30,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * Note: The element distance unit does not overlap to each other.
  * 
  * @author margaretha
- * */
+ */
 public class ElementDistanceExclusionSpans extends DistanceSpans {
 
     private Spans elements;
@@ -154,8 +154,8 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
 
         if (candidateList.isEmpty()) {
             if (isFirstSpanInElement()) {
-                setMatchProperties(new CandidateSpan(firstSpans,
-                        elementPosition));
+                setMatchProperties(
+                        new CandidateSpan(firstSpans, elementPosition));
                 hasMoreSpans = firstSpans.next();
                 return true;
             }
@@ -273,16 +273,16 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
             if (hasMoreSpans && firstSpans.start() < secondSpans.start()
                     && firstSpans.doc() == currentDocNum) {
                 if (advanceElementTo(firstSpans)) {
-                    targetList.add(new CandidateSpan(firstSpans,
-                            elementPosition));
+                    targetList.add(
+                            new CandidateSpan(firstSpans, elementPosition));
                 }
                 hasMoreSpans = firstSpans.next();
                 continue;
             }
             // collects only second spans occurring inside an element
             if (advanceElementTo(secondSpans)) {
-                candidateList.add(new CandidateSpan(secondSpans,
-                        elementPosition));
+                candidateList
+                        .add(new CandidateSpan(secondSpans, elementPosition));
             }
             hasMoreSecondSpans = secondSpans.next();
         }
@@ -300,8 +300,8 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
         while (hasMoreSecondSpans && secondSpans.doc() == firstSpans.doc()
                 && secondSpans.start() < firstSpans.end()) {
             if (advanceElementTo(secondSpans)) {
-                candidateList.add(new CandidateSpan(secondSpans,
-                        elementPosition));
+                candidateList
+                        .add(new CandidateSpan(secondSpans, elementPosition));
                 filterCandidateList(elementPosition);
             }
             hasMoreSecondSpans = secondSpans.next();

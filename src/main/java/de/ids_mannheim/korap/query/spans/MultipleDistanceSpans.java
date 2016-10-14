@@ -31,7 +31,7 @@ import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
  * </ol>
  * 
  * @author margaretha
- * */
+ */
 public class MultipleDistanceSpans extends DistanceSpans {
 
     private DistanceSpans x, y;
@@ -85,7 +85,7 @@ public class MultipleDistanceSpans extends DistanceSpans {
 
     /**
      * Finds the next match.
-     * */
+     */
     protected boolean advance () throws IOException {
         while (hasMoreSpans && ensureSameDoc(x, y)) {
             if (findMatch()) {
@@ -159,7 +159,8 @@ public class MultipleDistanceSpans extends DistanceSpans {
             }
         }
         else if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()
-                && xs.getStart() == ys.getStart() && xs.getEnd() == ys.getEnd()) {
+                && xs.getStart() == ys.getStart()
+                && xs.getEnd() == ys.getEnd()) {
             setMatchProperties(x, false);
             return true;
         }

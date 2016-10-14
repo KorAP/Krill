@@ -24,7 +24,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * Note: elements cannot overlap with each other.
  * 
  * @author margaretha
- * */
+ */
 public class ElementDistanceSpans extends OrderedDistanceSpans {
 
     private Spans elements;

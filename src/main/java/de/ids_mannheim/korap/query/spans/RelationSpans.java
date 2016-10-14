@@ -48,7 +48,7 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
  * relation target is always 2 regardless of the relation direction.
  * 
  * @author margaretha
- * */
+ */
 public class RelationSpans extends RelationBaseSpans {
 
     private int currentDoc, currentPosition;
@@ -61,8 +61,8 @@ public class RelationSpans extends RelationBaseSpans {
     private byte sourceClass, targetClass;
 
     public static enum PayloadTypeIdentifier {
-        TERM_TO_TERM(32), TERM_TO_ELEMENT(33), ELEMENT_TO_TERM(34), ELEMENT_TO_ELEMENT(
-                35);
+        TERM_TO_TERM(32), TERM_TO_ELEMENT(33), ELEMENT_TO_TERM(
+                34), ELEMENT_TO_ELEMENT(35);
 
         private byte value;
 
@@ -260,8 +260,8 @@ public class RelationSpans extends RelationBaseSpans {
         if (direction == 0) {
             payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
                     tempSourceNum, false));
-            payload.add(createClassPayload(cs.getRightStart(),
-                    cs.getRightEnd(), tempTargetNum, false));
+            payload.add(createClassPayload(cs.getRightStart(), cs.getRightEnd(),
+                    tempTargetNum, false));
 
             if (sourceClass > 0) {
                 payload.add(createClassPayload(cs.getLeftStart(),
@@ -274,8 +274,8 @@ public class RelationSpans extends RelationBaseSpans {
 
         }
         else {
-            payload.add(createClassPayload(cs.getRightStart(),
-                    cs.getRightEnd(), tempSourceNum, false));
+            payload.add(createClassPayload(cs.getRightStart(), cs.getRightEnd(),
+                    tempSourceNum, false));
             payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
                     tempTargetNum, false));
 

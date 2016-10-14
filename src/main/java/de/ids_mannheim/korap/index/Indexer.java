@@ -71,7 +71,8 @@ public class Indexer {
 
                 // Add file to the index
                 try {
-                    if (this.index.addDoc(new FileInputStream(found), true) == null) {
+                    if (this.index.addDoc(new FileInputStream(found),
+                            true) == null) {
                         System.out.println("fail.");
                         continue;
                     };
@@ -121,8 +122,8 @@ public class Indexer {
             String jar = new File(Indexer.class.getProtectionDomain()
                     .getCodeSource().getLocation().getPath()).getName();
 
-            System.out
-                    .println("Add documents from a directory to the Krill index.");
+            System.out.println(
+                    "Add documents from a directory to the Krill index.");
             System.out.println("Usage: java -jar " + jar
                     + " [--config propfile] [directories]*");
             System.out.println();

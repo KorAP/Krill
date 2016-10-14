@@ -43,7 +43,8 @@ public class Test {
 
         // Integer fields
         for (String s : strInt) {
-            doc.add(new IntField(s, Integer.parseInt(m.get(s)), Field.Store.YES));
+            doc.add(new IntField(s, Integer.parseInt(m.get(s)),
+                    Field.Store.YES));
         };
 
         FieldType textFieldWithTermVectors = new FieldType(

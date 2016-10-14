@@ -60,9 +60,8 @@ public class FrameConstraint {
     public static final int PRECEDES = 1, PRECEDES_DIRECTLY = 1 << 1,
             OVERLAPS_LEFT = 1 << 2, ALIGNS_LEFT = 1 << 3, STARTS_WITH = 1 << 4,
             MATCHES = 1 << 5, IS_WITHIN = 1 << 6, IS_AROUND = 1 << 7,
-            ENDS_WITH = 1 << 8, ALIGNS_RIGHT = 1 << 9,
-            OVERLAPS_RIGHT = 1 << 10, SUCCEEDS_DIRECTLY = 1 << 11,
-            SUCCEEDS = 1 << 12, ALL = 1024 * 8 - 1;
+            ENDS_WITH = 1 << 8, ALIGNS_RIGHT = 1 << 9, OVERLAPS_RIGHT = 1 << 10,
+            SUCCEEDS_DIRECTLY = 1 << 11, SUCCEEDS = 1 << 12, ALL = 1024 * 8 - 1;
 
 
     private static final Map<String, Integer> FRAME;
@@ -113,7 +112,8 @@ public class FrameConstraint {
          * a.end < b.end && a.start == b.start
          */
         FRAME_t.put("alignsLeft", ALIGNS_LEFT);
-        NEXT_B_t.add(PRECEDES | PRECEDES_DIRECTLY | OVERLAPS_LEFT | ALIGNS_LEFT);
+        NEXT_B_t.add(
+                PRECEDES | PRECEDES_DIRECTLY | OVERLAPS_LEFT | ALIGNS_LEFT);
 
         /*
          * A starts with B
@@ -337,6 +337,7 @@ public class FrameConstraint {
 
     // Todo: create nextB arraymatrix by adding all combinations of constellation precomputed
     // NEXTB[SUCCEEDS_DIRECTLY | SUCCEEDS] = NEXTB[SUCEEDS_DIRECTLY] | NEXTB[SUCCEEDS];
+
 
     // NextB
     // Integer.numberOfTrailingZeros();

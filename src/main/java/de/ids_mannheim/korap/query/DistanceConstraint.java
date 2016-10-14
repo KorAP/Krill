@@ -53,7 +53,7 @@ package de.ids_mannheim.korap.query;
  * </ol>
  * 
  * @author margaretha
- * */
+ */
 
 public class DistanceConstraint {
     private int minDistance, maxDistance;

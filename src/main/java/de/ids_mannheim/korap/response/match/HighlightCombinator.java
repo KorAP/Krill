@@ -109,9 +109,11 @@ public class HighlightCombinator {
             lastComb = this.combine.peekLast();
 
             if (DEBUG)
-                log.trace("Closing element is unbalanced - {} "
-                        + "!= {} with lastComb {}|{}|{}", eold, number,
-                        lastComb.type, lastComb.number, lastComb.characters);
+                log.trace(
+                        "Closing element is unbalanced - {} "
+                                + "!= {} with lastComb {}|{}|{}",
+                        eold, number, lastComb.type, lastComb.number,
+                        lastComb.characters);
 
             // combinator is opening and the number is not equal to the last
             // element on the balanceStack
@@ -128,8 +130,8 @@ public class HighlightCombinator {
                     log.trace("close element a) {}", eold);
 
                 // Add a closer for the old element (this has following elements)
-                this.combine.add(new HighlightCombinatorElement((byte) 2, eold,
-                        false));
+                this.combine.add(
+                        new HighlightCombinatorElement((byte) 2, eold, false));
             };
 
             // add this element number temporarily on the stack
@@ -143,8 +145,8 @@ public class HighlightCombinator {
         lastComb = this.combine.peekLast();
 
         if (DEBUG) {
-            log.trace("LastComb: " + lastComb.type + '|' + lastComb.number
-                    + '|' + lastComb.characters + " for " + number);
+            log.trace("LastComb: " + lastComb.type + '|' + lastComb.number + '|'
+                    + lastComb.characters + " for " + number);
             log.trace("Stack for checking 2: {}|{}|{}|{}", lastComb.type,
                     lastComb.number, lastComb.characters, number);
         };

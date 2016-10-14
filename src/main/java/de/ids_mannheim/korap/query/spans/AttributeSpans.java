@@ -43,7 +43,7 @@ import de.ids_mannheim.korap.query.SpanAttributeQuery;
  * "any element having a specific attribute".
  * 
  * @author margaretha
- * */
+ */
 public class AttributeSpans extends SimpleSpans {
 
     private List<CandidateAttributeSpan> candidateList;
@@ -243,9 +243,9 @@ public class AttributeSpans extends SimpleSpans {
      * The
      * attributes with smaller spanIds come first on the list.
      * 
-     * */
-    class CandidateAttributeSpan extends CandidateSpan implements
-            Comparable<CandidateSpan> {
+     */
+    class CandidateAttributeSpan extends CandidateSpan
+            implements Comparable<CandidateSpan> {
 
         /**
          * Construct a CandidateAttributeSpan based on the given span,

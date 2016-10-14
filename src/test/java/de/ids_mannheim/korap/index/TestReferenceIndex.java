@@ -43,8 +43,8 @@ public class TestReferenceIndex {
 
         SpanFocusQuery sfq1 = new SpanFocusQuery(snq1, (byte) 2);
 
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", "<:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", "<:child-of")), true);
         // SpanSegmentQuery ssq = new SpanSegmentQuery(srq, sfq1,
         // true);
         // SpanFocusQuery sfq2 = new SpanFocusQuery(ssq, (byte) 1);
@@ -94,8 +94,9 @@ public class TestReferenceIndex {
     @Test
     public void testCase2 () throws IOException, QueryException {
 
-        String filepath = getClass().getResource(
-                "/queries/reference/distance-reference.jsonld").getFile();
+        String filepath = getClass()
+                .getResource("/queries/reference/distance-reference.jsonld")
+                .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
@@ -108,7 +109,8 @@ public class TestReferenceIndex {
                         + "focus(3: spanDistance(focus(1: spanDistance({1: <tokens:vb />}, "
                         + "{2: <tokens:prp />}, [(w[1:2], notOrdered, notExcluded)])), "
                         + "{3: <tokens:nn />}, [(w[1:3], notOrdered, notExcluded)]))))"
-                        + ")), 2)", sq.toString());
+                        + ")), 2)",
+                sq.toString());
 
         SpanElementQuery seq1 = new SpanElementQuery("tokens", "vb");
         // new SpanTermQuery(new Term("tokens", "c:vb"));
@@ -129,8 +131,9 @@ public class TestReferenceIndex {
         SpanFocusQuery sfq2 = new SpanFocusQuery(sdq2, (byte) 3);
 
         // nn -> prp
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("tokens", ">:stanford/d:tag")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("tokens", ">:stanford/d:tag")),
+                true);
         SpanRelationMatchQuery rq = new SpanRelationMatchQuery(srq, sfq2, scq2,
                 true);
 
@@ -159,8 +162,8 @@ public class TestReferenceIndex {
 
         SpanFocusQuery sfq3 = new SpanFocusQuery(ref, (byte) 1);
         // vp -> nn
-        SpanRelationMatchQuery rq2 = new SpanRelationMatchQuery(srq, sfq3,
-                scq3, true);
+        SpanRelationMatchQuery rq2 = new SpanRelationMatchQuery(srq, sfq3, scq3,
+                true);
 
         SpanReferenceQuery ref2 = new SpanReferenceQuery(rq2, (byte) 3, true);
 
@@ -185,8 +188,9 @@ public class TestReferenceIndex {
         ki.addDoc(createFieldDoc0());
         ki.commit();
 
-        String filepath = getClass().getResource(
-                "/queries/reference/distance-multiple-references.jsonld")
+        String filepath = getClass()
+                .getResource(
+                        "/queries/reference/distance-multiple-references.jsonld")
                 .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
@@ -224,8 +228,9 @@ public class TestReferenceIndex {
         ki.addDoc(createFieldDoc1());
         ki.commit();
 
-        String filepath = getClass().getResource(
-                "/queries/reference/distance-reference.jsonld").getFile();
+        String filepath = getClass()
+                .getResource("/queries/reference/distance-reference.jsonld")
+                .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
@@ -241,8 +246,7 @@ public class TestReferenceIndex {
     public static FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV(
-                "tokens",
+        fd.addTV("tokens",
                 "Frankenstein, treat my daughter well. She is the one that saved your master who you hold so dear.",
 
                 "[(0-12)s:Frankenstein|_0$<i>0<i>12|"
@@ -276,8 +280,7 @@ public class TestReferenceIndex {
     public static FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV(
-                "tokens",
+        fd.addTV("tokens",
                 "Frankenstein, treat my daughter well. She is the one that saved your master who you hold so dear.",
 
                 "[(0-12)s:Frankenstein|_0$<i>0<i>12|"

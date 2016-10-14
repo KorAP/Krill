@@ -8,7 +8,7 @@ import de.ids_mannheim.korap.util.QueryException;
 
 /**
  * @author margaretha
- * */
+ */
 public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
 
     private SpanQueryWrapper subquery;

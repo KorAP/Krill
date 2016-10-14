@@ -56,8 +56,8 @@ public class ClassFilteredSpans extends SimpleSpans {
     private boolean isClassOperationValid () throws IOException {
         setBitsets();
 
-        int cardinality = Math
-                .max(bitset1.cardinality(), bitset2.cardinality());
+        int cardinality = Math.max(bitset1.cardinality(),
+                bitset2.cardinality());
 
         bitset1.and(bitset2);
         // System.out.println("cardinality:" + cardinality);

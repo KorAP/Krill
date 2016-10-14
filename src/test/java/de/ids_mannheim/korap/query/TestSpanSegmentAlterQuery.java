@@ -29,8 +29,8 @@ public class TestSpanSegmentAlterQuery {
 
         SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
         ssaquery.or("b").or("c");
-        assertEquals("spanOr([field:b, field:c])", ssaquery.toQuery()
-                .toString());
+        assertEquals("spanOr([field:b, field:c])",
+                ssaquery.toQuery().toString());
     };
 
 
@@ -38,8 +38,8 @@ public class TestSpanSegmentAlterQuery {
     public void spanAlterQuery3 () throws QueryException {
         SpanAlterQueryWrapper ssaquery = new SpanAlterQueryWrapper("field");
         ssaquery.or("b").or("c").or("d");
-        assertEquals("spanOr([field:b, field:c, field:d])", ssaquery.toQuery()
-                .toString());
+        assertEquals("spanOr([field:b, field:c, field:d])",
+                ssaquery.toQuery().toString());
     };
 
 

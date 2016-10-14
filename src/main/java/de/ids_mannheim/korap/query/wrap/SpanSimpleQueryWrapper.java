@@ -26,18 +26,20 @@ public class SpanSimpleQueryWrapper extends SpanQueryWrapper {
         this.query = query;
     };
 
-	// This is similar to a clone
-	public SpanSimpleQueryWrapper (SpanQueryWrapper query) throws QueryException {
-		this.hasClass = query.hasClass();
-		this.isOptional = query.isOptional();
-		this.isNegative = query.isNegative();
-		this.isEmpty = query.isEmpty();
-		this.isExtended = query.isExtended();
-		this.isExtendedToTheRight = query.isExtendedToTheRight();
-		this.maybeUnsorted = query.maybeUnsorted();
-		this.retrieveNode = query.retrieveNode;
-		this.query = query.toFragmentQuery();
-		this.isNull = query.isNull();
+
+    // This is similar to a clone
+    public SpanSimpleQueryWrapper (SpanQueryWrapper query)
+            throws QueryException {
+        this.hasClass = query.hasClass();
+        this.isOptional = query.isOptional();
+        this.isNegative = query.isNegative();
+        this.isEmpty = query.isEmpty();
+        this.isExtended = query.isExtended();
+        this.isExtendedToTheRight = query.isExtendedToTheRight();
+        this.maybeUnsorted = query.maybeUnsorted();
+        this.retrieveNode = query.retrieveNode;
+        this.query = query.toFragmentQuery();
+        this.isNull = query.isNull();
     };
 
 

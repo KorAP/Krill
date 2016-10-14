@@ -68,8 +68,7 @@ public class TermInfo implements Comparable<TermInfo> {
                     this.type = "relTarget";
                     tterm = tterm.substring(2);
                     ttype = 3;
-                }
-                ;
+                };
                 break;
 
             case '>':

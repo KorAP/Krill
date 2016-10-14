@@ -602,7 +602,8 @@ public class Match extends AbstractDocument {
     /**
      * Get identifier for a specific position.
      * 
-     * @param int Position to get identifier on.
+     * @param int
+     *            Position to get identifier on.
      */
     @JsonIgnore
     public String getPosID (int pos) {
@@ -693,8 +694,8 @@ public class Match extends AbstractDocument {
                         && contextSpans.end() >= this.getStartPos()) {
 
                     // Set as newStart
-                    newStart = contextSpans.start() > newStart ? contextSpans
-                            .start() : newStart;
+                    newStart = contextSpans.start() > newStart
+                            ? contextSpans.start() : newStart;
 
                     if (DEBUG)
                         log.trace("NewStart is at {}", newStart);
@@ -920,7 +921,8 @@ public class Match extends AbstractDocument {
      * This takes a clean string and the tag stack
      * to decorate the string with annotations.
      */
-    private void _processHighlightSnippet (String clean, ArrayList<int[]> stack) {
+    private void _processHighlightSnippet (String clean,
+            ArrayList<int[]> stack) {
 
         if (DEBUG)
             log.trace("--- Process Highlight snippet");
@@ -1294,15 +1296,16 @@ public class Match extends AbstractDocument {
             if (this.context.right.isToken()) {
                 endOffset = this.endPos + this.context.right.getLength() - 1;
                 if (DEBUG)
-                    log.trace("PTO will retrieve {} (Right context)", endOffset);
+                    log.trace("PTO will retrieve {} (Right context)",
+                            endOffset);
                 pto.add(ldid, endOffset);
 
             }
 
             // The right context is defined by characters
             else {
-                endOffsetChar = (endPosChar == -1) ? -1 : endPosChar
-                        + this.context.right.getLength();
+                endOffsetChar = (endPosChar == -1) ? -1
+                        : endPosChar + this.context.right.getLength();
             };
 
             if (startOffset != -1)
@@ -1336,7 +1339,8 @@ public class Match extends AbstractDocument {
                     endOffsetChar);
 
         // Get snippet information from the primary data
-        if (endOffsetChar > -1 && (endOffsetChar < this.getPrimaryDataLength())) {
+        if (endOffsetChar > -1
+                && (endOffsetChar < this.getPrimaryDataLength())) {
             this.tempSnippet = this.getPrimaryData(startOffsetChar,
                     endOffsetChar);
         }
@@ -1351,8 +1355,8 @@ public class Match extends AbstractDocument {
         if (DEBUG)
             log.trace(
                     "The match entry is {}-{} ({}-{}) with absolute offsetChars {}-{}",
-                    startPosChar - startOffsetChar, endPosChar
-                            - startOffsetChar, startPosChar, endPosChar,
+                    startPosChar - startOffsetChar,
+                    endPosChar - startOffsetChar, startPosChar, endPosChar,
                     startOffsetChar, endOffsetChar);
 
         // TODO: Simplify

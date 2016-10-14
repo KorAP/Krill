@@ -25,8 +25,9 @@ public class TestElementDistanceExclusionIndex {
     private SpanQuery createQuery (String e, String x, String y, int min,
             int max, boolean isOrdered, boolean exclusion) {
         SpanElementQuery eq = new SpanElementQuery("base", e);
-        SpanDistanceQuery sq = new SpanDistanceQuery(new SpanTermQuery(
-                new Term("base", x)), new SpanTermQuery(new Term("base", y)),
+        SpanDistanceQuery sq = new SpanDistanceQuery(
+                new SpanTermQuery(new Term("base", x)),
+                new SpanTermQuery(new Term("base", y)),
                 new DistanceConstraint(eq, min, max, isOrdered, exclusion),
                 true);
         return sq;
@@ -87,7 +88,7 @@ public class TestElementDistanceExclusionIndex {
     /**
      * Distance Zero, unordered
      * There is a secondspan on the right side
-     * */
+     */
     @Test
     public void testCase1 () throws IOException {
         ki = new KrillIndex();
@@ -105,7 +106,7 @@ public class TestElementDistanceExclusionIndex {
     /**
      * There is another firstspan within max distance
      * Unordered
-     * */
+     */
     @Test
     public void testCase2 () throws IOException {
         ki = new KrillIndex();
@@ -130,7 +131,7 @@ public class TestElementDistanceExclusionIndex {
 
     /**
      * Distance 0-1, ordered, unordered
-     * */
+     */
     @Test
     public void testCase3 () throws IOException {
         ki = new KrillIndex();
@@ -158,7 +159,7 @@ public class TestElementDistanceExclusionIndex {
     /**
      * Multiple documents, ordered
      * No more secondspans, but there is still a firstspan
-     * */
+     */
     @Test
     public void testCase4 () throws IOException {
         ki = new KrillIndex();
@@ -183,7 +184,7 @@ public class TestElementDistanceExclusionIndex {
 
     /**
      * Skip to
-     * */
+     */
     @Test
     public void testCase5 () throws IOException {
         ki = new KrillIndex();

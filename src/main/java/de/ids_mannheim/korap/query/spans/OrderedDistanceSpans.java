@@ -16,7 +16,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * Base class for calculating a distance between two ordered spans.
  * 
  * @author margaretha
- * */
+ */
 public abstract class OrderedDistanceSpans extends DistanceSpans {
 
     protected boolean hasMoreFirstSpans;
@@ -57,7 +57,7 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
 
     /**
      * Finds a span match in the candidate list.
-     * */
+     */
     @Override
     protected boolean advance () throws IOException {
         while (hasMoreSpans && candidateListIndex < candidateList.size()) {

@@ -23,44 +23,47 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
                                    SpanQuery operand, boolean collectPayloads) {
 
         checkVariables(relation, operand);
-        SpanFocusQuery sq = new SpanFocusQuery(new SpanSegmentQuery(
-                relationQuery, operandQuery, true),
+        SpanFocusQuery sq = new SpanFocusQuery(
+                new SpanSegmentQuery(relationQuery, operandQuery, true),
                 relation.getTempClassNumbers());
         sq.setMatchTemporaryClass(true);
         sq.setRemoveTemporaryClasses(true);
         sq.setSorted(false); // which operand to focus might be
-                             // different from that to match
+                            // different from that to match
 
         this.setFirstClause(sq);
         this.collectPayloads = collectPayloads;
     }
 
 
-    public SpanRelationMatchQuery (SpanRelationQuery relation,
-                                   SpanQuery source, SpanQuery target,
-                                   boolean collectPayloads) {
+    public SpanRelationMatchQuery (SpanRelationQuery relation, SpanQuery source,
+                                   SpanQuery target, boolean collectPayloads) {
 
         checkVariables(relation, source, target);
         SpanFocusQuery sq = null;
         SpanFocusQuery sq2 = null;
         // match source and then target
         if (relationQuery.getDirection() == 0) {
-            sq = new SpanFocusQuery(new SpanSegmentQuery(relationQuery,
-                    operandQuery, true), relation.getTempTargetNum());
+            sq = new SpanFocusQuery(
+                    new SpanSegmentQuery(relationQuery, operandQuery, true),
+                    relation.getTempTargetNum());
             sq.setSorted(false);
             sq.setMatchTemporaryClass(true);
 
-            sq2 = new SpanFocusQuery(new SpanSegmentQuery(operand2Query, sq,
-                    true), relation.getTempClassNumbers());
+            sq2 = new SpanFocusQuery(
+                    new SpanSegmentQuery(operand2Query, sq, true),
+                    relation.getTempClassNumbers());
         }
         // match target and then source
         else {
-            sq = new SpanFocusQuery(new SpanSegmentQuery(relationQuery,
-                    operandQuery, true), relation.getTempSourceNum());
+            sq = new SpanFocusQuery(
+                    new SpanSegmentQuery(relationQuery, operandQuery, true),
+                    relation.getTempSourceNum());
             sq.setMatchTemporaryClass(true);
 
-            sq2 = new SpanFocusQuery(new SpanSegmentQuery(sq, operand2Query,
-                    true), relation.getTempClassNumbers());
+            sq2 = new SpanFocusQuery(
+                    new SpanSegmentQuery(sq, operand2Query, true),
+                    relation.getTempClassNumbers());
         }
 
         sq2.setMatchTemporaryClass(true);
@@ -128,8 +131,8 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
 
-        return new FocusSpans((SpanFocusQuery) firstClause, context,
-                acceptDocs, termContexts);
+        return new FocusSpans((SpanFocusQuery) firstClause, context, acceptDocs,
+                termContexts);
     }
 
 

@@ -24,7 +24,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * maximum end positions of the child spans.
  * 
  * @author margaretha
- * */
+ */
 public class TokenDistanceSpans extends OrderedDistanceSpans {
 
     /**
@@ -71,7 +71,7 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
      * list
      * prepared for the previous second spans.
      * 
-     * */
+     */
     private void copyPossibleCandidates () {
         List<CandidateSpan> temp = new ArrayList<>();
         for (CandidateSpan cs : candidateList) {
@@ -85,7 +85,7 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
     /**
      * Add new possible firstspan candidates for the current
      * secondspan.
-     * */
+     */
     private void addNewCandidates () throws IOException {
         while (hasMoreFirstSpans && firstSpans.doc() == candidateListDocNum
                 && firstSpans.start() < secondSpans.end()) {
@@ -101,9 +101,8 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
     @Override
     protected boolean findMatch () throws IOException {
         CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
-        if (minDistance == 0
-                &&
-                // intersection
+        if (minDistance == 0 &&
+        // intersection
                 candidateSpan.getStart() < secondSpans.end()
                 && secondSpans.start() < candidateSpan.getEnd()) {
 

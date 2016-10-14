@@ -109,7 +109,7 @@ public class TestSimple {
 
     // Get string
     public static String getJsonString (String path) {
-        
+
         StringBuilder contentBuilder = new StringBuilder();
         try {
             path = URLDecoder.decode(path, "UTF-8");

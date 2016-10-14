@@ -96,9 +96,10 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
 
         // TODO: if (wrap.isNegative())
 
-        return new SpanWithinQuery(this.element.retrieveNode(this.retrieveNode)
-                .toFragmentQuery(), this.wrap.retrieveNode(this.retrieveNode)
-                .toFragmentQuery(), this.flag);
+        return new SpanWithinQuery(
+                this.element.retrieveNode(this.retrieveNode).toFragmentQuery(),
+                this.wrap.retrieveNode(this.retrieveNode).toFragmentQuery(),
+                this.flag);
     };
 
 

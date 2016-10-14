@@ -139,8 +139,7 @@ public final class KrillIndex {
 
     private byte[] pl = new byte[4];
     private static ByteBuffer bb = ByteBuffer.allocate(4),
-            bbOffset = ByteBuffer.allocate(8),
-            bbTerm = ByteBuffer.allocate(16);
+            bbOffset = ByteBuffer.allocate(8), bbTerm = ByteBuffer.allocate(16);
 
     // Some initializations ...
     {
@@ -161,7 +160,8 @@ public final class KrillIndex {
                 this.autoCommit = Integer.parseInt(autoCommitStr);
             }
             catch (NumberFormatException e) {
-                log.error("krill.index.commit.auto expected to be a numerical value");
+                log.error(
+                        "krill.index.commit.auto expected to be a numerical value");
             };
         };
     };
@@ -547,8 +547,8 @@ public final class KrillIndex {
             if (gzip) {
 
                 // Create json field document
-                FieldDocument fd = this.mapper.readValue(new GZIPInputStream(
-                        json), FieldDocument.class);
+                FieldDocument fd = this.mapper.readValue(
+                        new GZIPInputStream(json), FieldDocument.class);
                 return fd;
             };
             return this.mapper.readValue(json, FieldDocument.class);
@@ -579,7 +579,8 @@ public final class KrillIndex {
      * @return The number of the occurrences.
      * @see KrillCollection#numberOf
      */
-    public long numberOf (KrillCollection collection, String field, String type) {
+    public long numberOf (KrillCollection collection, String field,
+            String type) {
 
         collection.setIndex(this);
         try {
@@ -616,11 +617,11 @@ public final class KrillIndex {
             };
             return docCount;
         };
-
+        
         // Create search term
         // This may be prefixed by foundries
         Term term = new Term(field, "-:" + type);
-
+        
         long occurrences = 0;
         try {
             // Iterate over all atomic readers and collect occurrences
@@ -629,12 +630,12 @@ public final class KrillIndex {
                         atomic, term);
             };
         }
-
+        
         // Something went wrong
         catch (Exception e) {
             log.warn(e.getLocalizedMessage());
         };
-
+        
         return occurrences;
         */
     };
@@ -702,9 +703,9 @@ public final class KrillIndex {
         FixedBitSet os = (FixedBitSet) docvec;
         return os.cardinality();
     };
-
+    
     Term term = new Term(field, "-:" + type);
-
+    
     int occurrences = 0;
     try {
         for (LeafReaderContext atomic : this.reader().leaves()) {
@@ -714,7 +715,7 @@ public final class KrillIndex {
     catch (IOException e) {
         log.warn(e.getLocalizedMessage());
     };
-
+    
     return occurrences;
     };
     */
@@ -783,8 +784,8 @@ public final class KrillIndex {
         // Rewrite parse ID
         uid = new Integer(Integer.parseInt(uid)).toString();
 
-        Filter filter = (Filter) new QueryWrapperFilter(new TermQuery(new Term(
-                "UID", uid)));
+        Filter filter = (Filter) new QueryWrapperFilter(
+                new TermQuery(new Term("UID", uid)));
 
         try {
 
@@ -792,8 +793,8 @@ public final class KrillIndex {
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 // Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
-                        .getLiveDocs());
+                DocIdSet filterSet = filter.getDocIdSet(atomic,
+                        atomic.reader().getLiveDocs());
 
                 // Create a bitset for the correct document
                 Bits bitset = filterSet.bits();
@@ -858,7 +859,7 @@ public final class KrillIndex {
                 false,    // includeSpans
                 true,     // includeHighlights
                 false     // extendToSentence
-                );
+        );
     };
 
 
@@ -923,8 +924,7 @@ public final class KrillIndex {
         // Create a filter based on the corpusID and the docID
         BooleanQuery bool = new BooleanQuery();
         if (match.getTextSigle() != null) {
-            bool.add(
-                    new TermQuery(new Term("textSigle", match.getTextSigle())),
+            bool.add(new TermQuery(new Term("textSigle", match.getTextSigle())),
                     BooleanClause.Occur.MUST);
         }
 
@@ -993,7 +993,8 @@ public final class KrillIndex {
 
                         // Filter out bad layers
                         for (i = layer.size() - 1; i >= 0; i--) {
-                            if (!harmlessLayer.matcher(layer.get(i)).matches()) {
+                            if (!harmlessLayer.matcher(layer.get(i))
+                                    .matches()) {
                                 throw new QueryException(
                                         "Invalid layer requested: "
                                                 + layer.get(i));
@@ -1040,8 +1041,8 @@ public final class KrillIndex {
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 // Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
-                        .getLiveDocs());
+                DocIdSet filterSet = filter.getDocIdSet(atomic,
+                        atomic.reader().getLiveDocs());
 
 
                 // Create a bitset for the correct document
@@ -1074,8 +1075,8 @@ public final class KrillIndex {
                 Terms docTerms = atomic.reader().getTermVector(localDocID,
                         field);
 
-                HashSet<String> fields = (HashSet<String>) new Krill()
-                        .getMeta().getFields().clone();
+                HashSet<String> fields = (HashSet<String>) new Krill().getMeta()
+                        .getFields().clone();
 
                 fields.add(field);
 
@@ -1108,7 +1109,8 @@ public final class KrillIndex {
                     if (DEBUG)
                         log.trace("Extend to sentence element '{}'", element);
 
-                    if (spanContext[0] >= 0 && spanContext[0] < spanContext[1]) {
+                    if (spanContext[0] >= 0
+                            && spanContext[0] < spanContext[1]) {
                         match.setStartPos(spanContext[0]);
                         match.setEndPos(spanContext[1]);
                         match.startMore = false;
@@ -1210,7 +1212,8 @@ public final class KrillIndex {
             };
         }
         catch (IOException e) {
-            match.addError(600, "Unable to read index", e.getLocalizedMessage());
+            match.addError(600, "Unable to read index",
+                    e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());
         };
 
@@ -1327,9 +1330,10 @@ public final class KrillIndex {
             // Revise!
             // Based on core/src/java/org/apache/lucene/search/IndexSearcher.java
             // and highlighter/src/java/org/apache/lucene/search/postingshighlight/PostingsHighlighter.java
-            for (Query rewrittenQuery = query.rewrite(this.reader()); !rewrittenQuery
-                    .equals(query); rewrittenQuery = query.rewrite(this
-                    .reader())) {
+            for (Query rewrittenQuery = query
+                    .rewrite(this.reader()); !rewrittenQuery
+                            .equals(query); rewrittenQuery = query
+                                    .rewrite(this.reader())) {
                 query = (SpanQuery) rewrittenQuery;
             };
 
@@ -1376,7 +1380,8 @@ public final class KrillIndex {
                     if (itemsPerResource > 0) {
 
                         // IDS are identical
-                        if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
+                        if (localDocID == oldLocalDocID
+                                || oldLocalDocID == -1) {
                             if (itemsPerResourceCounter++ >= itemsPerResource) {
                                 if (spans.skipTo(localDocID + 1) != true) {
                                     break;
@@ -1402,8 +1407,9 @@ public final class KrillIndex {
                     docID = atomic.docBase + localDocID;
 
                     // Do not load all of this, in case the doc is the same!
-                    final Document doc = (fields != null) ? lreader.document(
-                            localDocID, fields) : lreader.document(localDocID);
+                    final Document doc = (fields != null)
+                            ? lreader.document(localDocID, fields)
+                            : lreader.document(localDocID);
 
                     // Create new Match
                     final Match match = new Match(pto, localDocID,
@@ -1461,7 +1467,8 @@ public final class KrillIndex {
                             break;
 
                         // IDS are identical
-                        if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
+                        if (localDocID == oldLocalDocID
+                                || oldLocalDocID == -1) {
                             if (localDocID == -1)
                                 break;
 
@@ -1549,8 +1556,9 @@ public final class KrillIndex {
         try {
 
             // Rewrite query (for regex and wildcard queries)
-            for (Query rewrittenQuery = query.rewrite(this.reader()); rewrittenQuery != (Query) query; rewrittenQuery = query
-                    .rewrite(this.reader())) {
+            for (Query rewrittenQuery = query.rewrite(
+                    this.reader()); rewrittenQuery != (Query) query; rewrittenQuery = query
+                            .rewrite(this.reader())) {
                 query = (SpanQuery) rewrittenQuery;
             };
 
@@ -1596,8 +1604,8 @@ public final class KrillIndex {
                         };
 
                         // Read document id from index
-                        uniqueDocIDString = lreader
-                                .document(localDocID, fields).get("UID");
+                        uniqueDocIDString = lreader.document(localDocID, fields)
+                                .get("UID");
 
                         if (uniqueDocIDString != null)
                             uniqueDocID = Integer.parseInt(uniqueDocIDString);

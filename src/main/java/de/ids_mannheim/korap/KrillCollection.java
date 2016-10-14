@@ -200,7 +200,8 @@ public final class KrillCollection extends Notifications {
                         return this.cb.till(key, dateStr);
                 };
 
-                throw new QueryException(841, "Match relation unknown for type");
+                throw new QueryException(841,
+                        "Match relation unknown for type");
             }
 
             // Filter based on string
@@ -216,23 +217,24 @@ public final class KrillCollection extends Notifications {
                         return this.cb.term(key, json.get("value").asText())
                                 .not();
 
-                        // This may change - but for now it means the elements are lowercased
+                    // This may change - but for now it means the elements are lowercased
                     case "match:contains":
-                        return this.cb.term(key, json.get("value").asText()
-                                .toLowerCase());
+                        return this.cb.term(key,
+                                json.get("value").asText().toLowerCase());
 
                     case "match:containsnot":
                         return this.cb.term(key,
                                 json.get("value").asText().toLowerCase()).not();
 
-                        // <LEGACY>
+                    // <LEGACY>
                     case "match:excludes":
                         return this.cb.term(key,
                                 json.get("value").asText().toLowerCase()).not();
-                        // </LEGACY>
+                    // </LEGACY>
                 };
 
-                throw new QueryException(841, "Match relation unknown for type");
+                throw new QueryException(841,
+                        "Match relation unknown for type");
             }
 
             // Filter based on regex
@@ -254,7 +256,8 @@ public final class KrillCollection extends Notifications {
                     return this.cb.re(key, json.get("value").asText()).not();
                 };
 
-                throw new QueryException(841, "Match relation unknown for type");
+                throw new QueryException(841,
+                        "Match relation unknown for type");
             };
 
             throw new QueryException(843, "Document type is not supported");
@@ -320,8 +323,8 @@ public final class KrillCollection extends Notifications {
 
 
     public KrillCollection extend (CollectionBuilder.Interface extension) {
-        return this.fromBuilder(this.cb.orGroup().with(this.cbi)
-                .with(extension));
+        return this
+                .fromBuilder(this.cb.orGroup().with(this.cbi).with(extension));
     };
 
 
@@ -460,8 +463,8 @@ public final class KrillCollection extends Notifications {
 
             // Init vector
             DocIdSet docids = filter.getDocIdSet(atomic, null);
-            DocIdSetIterator filterIter = (docids == null) ? null : docids
-                    .iterator();
+            DocIdSetIterator filterIter = (docids == null) ? null
+                    : docids.iterator();
 
             if (filterIter == null) {
                 if (!this.cbi.isNegative())
@@ -485,8 +488,8 @@ public final class KrillCollection extends Notifications {
         };
 
         // Remove deleted docs
-        return (DocIdSet) BitsFilteredDocIdSet.wrap((DocIdSet) new BitDocIdSet(
-                bitset), acceptDocs);
+        return (DocIdSet) BitsFilteredDocIdSet
+                .wrap((DocIdSet) new BitDocIdSet(bitset), acceptDocs);
     };
 
 
@@ -681,72 +684,72 @@ public final class KrillCollection extends Notifications {
             throws Exception {
         HashMap<String, Long> map = new HashMap<>(100);
         long docNumber = 0, checkNumber = 0;
-
+    
         try {
             if (kc.getCount() <= 0) {
                 checkNumber = (long) this.reader().numDocs();
             };
-
+    
             for (LeafReaderContext atomic : this.reader().leaves()) {
                 HashMap<String, FixedBitSet> termVector = new HashMap<>(20);
-
+    
                 FixedBitSet docvec = kc.bits(atomic);
                 if (docvec != null) {
                     docNumber += docvec.cardinality();
                 };
-
+    
                 Terms terms = atomic.reader().fields().terms(field);
-
+    
                 if (terms == null) {
                     continue;
                 };
-
+    
                 int docLength = atomic.reader().maxDoc();
                 FixedBitSet bitset = new FixedBitSet(docLength);
-
+    
                 // Iterate over all tokens in this field
                 TermsEnum termsEnum = terms.iterator(null);
-
+    
                 while (termsEnum.next() != null) {
-
+    
                     String termString = termsEnum.term().utf8ToString();
-
+    
                     bitset.clear(0, docLength);
-
+    
                     // Get frequency
                     bitset.or((DocIdSetIterator) termsEnum.docs((Bits) docvec,
                             null));
-
+    
                     long value = 0;
                     if (map.containsKey(termString))
                         value = map.get(termString);
-
+    
                     map.put(termString, value + bitset.cardinality());
-
+    
                     termVector.put(termString, bitset.clone());
                 };
-
+    
                 int keySize = termVector.size();
                 String[] keys = termVector.keySet()
                         .toArray(new String[keySize]);
                 java.util.Arrays.sort(keys);
-
+    
                 if (keySize > maxTermRelations) {
                     throw new Exception("termRelations are limited to "
                             + maxTermRelations + " sets"
                             + " (requested were at least " + keySize + " sets)");
                 };
-
+    
                 for (int i = 0; i < keySize; i++) {
                     for (int j = i + 1; j < keySize; j++) {
                         FixedBitSet comby = termVector.get(keys[i]).clone();
                         comby.and(termVector.get(keys[j]));
-
+    
                         StringBuilder sb = new StringBuilder();
                         sb.append("#__").append(keys[i]).append(":###:")
                                 .append(keys[j]);
                         String combString = sb.toString();
-
+    
                         long cap = (long) comby.cardinality();
                         if (map.containsKey(combString)) {
                             cap += map.get(combString);

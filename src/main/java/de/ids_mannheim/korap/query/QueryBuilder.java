@@ -132,7 +132,8 @@ public class QueryBuilder {
      */
     public SpanRegexQueryWrapper re (String re, int flags,
             boolean caseinsensitive) {
-        return new SpanRegexQueryWrapper(this.field, re, flags, caseinsensitive);
+        return new SpanRegexQueryWrapper(this.field, re, flags,
+                caseinsensitive);
     };
 
 
@@ -257,7 +258,7 @@ public class QueryBuilder {
         return ssq;
     };
 
-	
+
     /**
      * Create an empty query segment.
      * 
@@ -312,7 +313,8 @@ public class QueryBuilder {
      *            [] An array of segment defining terms.
      */
     public SpanSequenceQueryWrapper seq (SpanQueryWrapper ... terms) {
-        SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper(this.field);
+        SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper(
+                this.field);
         for (SpanQueryWrapper t : terms)
             sssq.append(t);
         return sssq;
@@ -431,7 +433,8 @@ public class QueryBuilder {
     };
 
 
-    public SpanFocusQueryWrapper focus (short number, SpanQueryWrapper element) {
+    public SpanFocusQueryWrapper focus (short number,
+            SpanQueryWrapper element) {
         return new SpanFocusQueryWrapper(element, number);
     };
 
@@ -448,8 +451,8 @@ public class QueryBuilder {
     };
 
 
-    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapper element,
-            int min, int max) {
+    public SpanRepetitionQueryWrapper repeat (SpanQueryWrapper element, int min,
+            int max) {
         return new SpanRepetitionQueryWrapper(element, min, max);
     };
 };

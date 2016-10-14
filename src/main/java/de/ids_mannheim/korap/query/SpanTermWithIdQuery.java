@@ -30,7 +30,7 @@ import de.ids_mannheim.korap.query.spans.TermSpansWithId;
  * the Term "tt:p/NN".
  * 
  * @author margaretha
- * */
+ */
 public class SpanTermWithIdQuery extends SimpleSpanQuery {
 
     /**

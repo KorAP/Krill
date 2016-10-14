@@ -54,7 +54,7 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  * </ol>
  * 
  * @author margaretha
- * */
+ */
 public class SpanRelationQuery extends SimpleSpanQuery {
 
     private int direction = 0; // >

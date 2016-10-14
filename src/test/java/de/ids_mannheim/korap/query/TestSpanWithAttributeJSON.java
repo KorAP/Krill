@@ -13,8 +13,10 @@ public class TestSpanWithAttributeJSON {
 
     @Test
     public void testElementSingleAttribute () throws QueryException {
-        String filepath = getClass().getResource(
-                "/queries/attribute/element-single-attribute.jsonld").getFile();
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-single-attribute.jsonld")
+                .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
@@ -25,8 +27,9 @@ public class TestSpanWithAttributeJSON {
 
     @Test
     public void testElementSingleNotAttribute () throws QueryException {
-        String filepath = getClass().getResource(
-                "/queries/attribute/element-single-not-attribute.jsonld")
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-single-not-attribute.jsonld")
                 .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
@@ -53,8 +56,9 @@ public class TestSpanWithAttributeJSON {
 
     @Test
     public void testElementMultipleOrAttributes () throws QueryException {
-        String filepath = getClass().getResource(
-                "/queries/attribute/element-multiple-or-attributes.jsonld")
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-multiple-or-attributes.jsonld")
                 .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
@@ -68,8 +72,9 @@ public class TestSpanWithAttributeJSON {
 
     @Test
     public void testAnyElementWithAttribute () throws QueryException {
-        String filepath = getClass().getResource(
-                "/queries/attribute/any-element-with-attribute.jsonld")
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/any-element-with-attribute.jsonld")
                 .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
@@ -79,7 +84,8 @@ public class TestSpanWithAttributeJSON {
 
 
     @Test
-    public void testAnyElementWithMultipleOrAttributes () throws QueryException {
+    public void testAnyElementWithMultipleOrAttributes ()
+            throws QueryException {
         String filepath = getClass()
                 .getResource(
                         "/queries/attribute/any-element-with-multiple-or-attributes.jsonld")
@@ -95,7 +101,8 @@ public class TestSpanWithAttributeJSON {
 
 
     @Test
-    public void testAnyElementMultipleAndNotAttributes () throws QueryException {
+    public void testAnyElementMultipleAndNotAttributes ()
+            throws QueryException {
         String filepath = getClass()
                 .getResource(
                         "/queries/attribute/any-element-with-multiple-and-not-attributes.jsonld")

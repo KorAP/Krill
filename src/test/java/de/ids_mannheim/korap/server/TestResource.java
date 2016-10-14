@@ -114,8 +114,8 @@ public class TestResource {
 
 
 
-            String json = StringfromFile(getClass().getResource(
-                    "/wiki/" + i + ".json").getFile());
+            String json = StringfromFile(
+                    getClass().getResource("/wiki/" + i + ".json").getFile());
 
             Entity jsonE = Entity.json(json);
 
@@ -134,8 +134,8 @@ public class TestResource {
             }
         };
 
-        String json = StringfromFile(getClass().getResource("/wiki/02439.json")
-                .getFile());
+        String json = StringfromFile(
+                getClass().getResource("/wiki/02439.json").getFile());
         Entity jsonE = Entity.json(json);
 
         try {
@@ -211,18 +211,18 @@ public class TestResource {
     public void testRemoving () throws IOException {
         String resp;
         JsonNode res;
-
+    
         String json = StringfromFile(getClass().getResource("/wiki/02439.json")
                 .getFile());
         Entity jsonE = Entity.json(json);
-
+    
         try {
             // Put new documents to the index
             resp = target.path("/index/02439").request("application/json")
                     .put(jsonE, String.class);
-
+    
             res = mapper.readTree(resp);
-
+    
             // Check mirroring
             assertEquals(2439, res.at("/text/UID").asInt());
             assertEquals("milena", res.at("/meta/node").asText());
@@ -231,13 +231,13 @@ public class TestResource {
         catch (Exception e) {
             fail("Server response failed " + e.getMessage() + " (Known issue)");
         };
-
+    
         // Commit!
         resp = target.path("/index").request("application/json")
                 .post(Entity.text(""), String.class);
         res = mapper.readTree(resp);
         assertEquals("milena", res.at("/meta/node").asText());
-
+    
         // Staged data committed
         assertEquals(683, res.at("/messages/0/0").asInt());
     };
@@ -248,8 +248,8 @@ public class TestResource {
     public void testCollection () throws IOException {
 
         // mate/l:sein
-        String json = getString(getClass().getResource(
-                "/queries/bsp-uid-example.jsonld").getFile());
+        String json = getString(getClass()
+                .getResource("/queries/bsp-uid-example.jsonld").getFile());
 
         try {
             String resp = target.path("/").queryParam("uid", "1")
@@ -259,7 +259,8 @@ public class TestResource {
             assertEquals(2, res.at("/meta/totalResults").asInt());
         }
         catch (Exception e) {
-            fail("Server response failed: " + e.getMessage() + " (Known issue)");
+            fail("Server response failed: " + e.getMessage()
+                    + " (Known issue)");
         };
 
     };
@@ -268,7 +269,8 @@ public class TestResource {
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(URLDecoder.decode(path,"UTF-8")));
+            BufferedReader in = new BufferedReader(
+                    new FileReader(URLDecoder.decode(path, "UTF-8")));
             String str;
             while ((str = in.readLine()) != null) {
                 contentBuilder.append(str);

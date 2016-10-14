@@ -52,8 +52,9 @@ public class SpanFocusQueryWrapper extends SpanQueryWrapper {
     public SpanQuery toFragmentQuery () throws QueryException {
         if (this.subquery.isNull())
             return (SpanQuery) null;
-        return new SpanFocusQuery(this.subquery.retrieveNode(this.retrieveNode)
-                .toFragmentQuery(), this.number);
+        return new SpanFocusQuery(
+                this.subquery.retrieveNode(this.retrieveNode).toFragmentQuery(),
+                this.number);
     };
 
 

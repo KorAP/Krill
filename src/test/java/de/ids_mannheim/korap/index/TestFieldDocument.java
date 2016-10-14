@@ -84,27 +84,20 @@ public class TestFieldDocument {
     @Test
     public void indexExample2 () throws Exception {
 
-        String json = new String(
-                "{"
-                        + "  \"fields\" : ["
-                        + "    { "
-                        + "      \"primaryData\" : \"abc\""
-                        + "    },"
-                        + "    {"
-                        + "      \"name\" : \"tokens\","
-                        + "      \"data\" : ["
-                        + "         [ \"s:a\", \"i:a\", \"_0$<i>0<i>1\", \"-:t$<i>3\"],"
-                        + "         [ \"s:b\", \"i:b\", \"_1$<i>1<i>2\" ],"
-                        + "         [ \"s:c\", \"i:c\", \"_2$<i>2<i>3\" ]"
-                        + "      ]" + "    }" + "  ],"
-                        + "  \"corpusID\"  : \"WPD\","
-                        + "  \"ID\"        : \"WPD-AAA-00001\","
-                        + "  \"textClass\" : \"music entertainment\","
-                        + "  \"author\"    : \"Peter Frankenfeld\","
-                        + "  \"pubDate\"   : 20130617,"
-                        + "  \"title\"     : \"Wikipedia\","
-                        + "  \"subTitle\"  : \"Die freie Enzyklopädie\","
-                        + "  \"pubPlace\"  : \"Bochum\"" + "}");
+        String json = new String("{" + "  \"fields\" : [" + "    { "
+                + "      \"primaryData\" : \"abc\"" + "    }," + "    {"
+                + "      \"name\" : \"tokens\"," + "      \"data\" : ["
+                + "         [ \"s:a\", \"i:a\", \"_0$<i>0<i>1\", \"-:t$<i>3\"],"
+                + "         [ \"s:b\", \"i:b\", \"_1$<i>1<i>2\" ],"
+                + "         [ \"s:c\", \"i:c\", \"_2$<i>2<i>3\" ]" + "      ]"
+                + "    }" + "  ]," + "  \"corpusID\"  : \"WPD\","
+                + "  \"ID\"        : \"WPD-AAA-00001\","
+                + "  \"textClass\" : \"music entertainment\","
+                + "  \"author\"    : \"Peter Frankenfeld\","
+                + "  \"pubDate\"   : 20130617,"
+                + "  \"title\"     : \"Wikipedia\","
+                + "  \"subTitle\"  : \"Die freie Enzyklopädie\","
+                + "  \"pubPlace\"  : \"Bochum\"" + "}");
 
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = ki.addDoc(json);
@@ -122,8 +115,8 @@ public class TestFieldDocument {
         assertEquals(fd.getPubDate().toDisplay(), "2013-06-17");
 
         QueryBuilder kq = new QueryBuilder("tokens");
-        Result kr = ki.search((SpanQuery) kq.seq(kq._(3, kq.seg("s:b")))
-                .toQuery());
+        Result kr = ki
+                .search((SpanQuery) kq.seq(kq._(3, kq.seg("s:b"))).toQuery());
 
         Match km = kr.getMatch(0);
 
@@ -164,11 +157,8 @@ public class TestFieldDocument {
         // Start creating query
         // within(<s>, {1: {2: [mate/p=ADJA & mate/m=number:sg]}[opennlp/p=NN & tt/p=NN]})
 
-        ks = new Krill(kq.within(
-                kq.tag("base/s:s"),
-                kq._(1,
-                        kq.seq(kq.seg("mate/p:ADJA")).append(
-                                kq.seg("opennlp/p:NN")))));
+        ks = new Krill(kq.within(kq.tag("base/s:s"), kq._(1,
+                kq.seq(kq.seg("mate/p:ADJA")).append(kq.seg("opennlp/p:NN")))));
 
         KrillMeta meta = ks.getMeta();
         meta.setCount(1);
@@ -199,9 +189,10 @@ public class TestFieldDocument {
         };
         ki.commit();
 
-        String jsonPath = URLDecoder.decode(getClass().getResource("/queries/bsp18.jsonld")
-                .getFile(),"UTF-8");
-        
+        String jsonPath = URLDecoder.decode(
+                getClass().getResource("/queries/bsp18.jsonld").getFile(),
+                "UTF-8");
+
         // {1:der} \w0:5 nicht
         SpanQueryWrapper sqwi = jsonQuery(jsonPath);
 

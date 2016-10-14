@@ -23,7 +23,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  * order.
  * 
  * @author margaretha
- * */
+ */
 public abstract class UnorderedDistanceSpans extends DistanceSpans {
 
     protected int minDistance, maxDistance;
@@ -260,7 +260,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
      * to the match list.
      * 
      * @return a candidate span match
-     * */
+     */
     protected CandidateSpan createMatchCandidate (CandidateSpan target,
             CandidateSpan cs, boolean isDistanceZero) {
 
@@ -278,7 +278,8 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
                 payloads.addAll(cs.getPayloads());
             }
         }
-        CandidateSpan match = new CandidateSpan(start, end, doc, cost, payloads);
+        CandidateSpan match = new CandidateSpan(start, end, doc, cost,
+                payloads);
         match.setChildSpan(cs);
         return match;
     }
@@ -288,7 +289,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
      * Assigns the first candidate span in the match list as the
      * current span
      * match, and removes it from the matchList.
-     * */
+     */
     private void setMatchProperties () {
         CandidateSpan cs = matchList.get(0);
         matchDocNumber = cs.getDoc();

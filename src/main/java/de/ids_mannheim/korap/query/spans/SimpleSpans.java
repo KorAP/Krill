@@ -20,7 +20,7 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
  * and basic methods.
  * 
  * @author margaretha
- * */
+ */
 public abstract class SimpleSpans extends Spans {
     private SimpleSpanQuery query;
     protected boolean isStartEnumeration;
@@ -51,7 +51,8 @@ public abstract class SimpleSpans extends Spans {
 
     public SimpleSpans (SimpleSpanQuery simpleSpanQuery,
                         LeafReaderContext context, Bits acceptDocs,
-                        Map<Term, TermContext> termContexts) throws IOException {
+                        Map<Term, TermContext> termContexts)
+            throws IOException {
         this();
         query = simpleSpanQuery;
         collectPayloads = query.isCollectPayloads();
@@ -76,7 +77,7 @@ public abstract class SimpleSpans extends Spans {
      * document.
      * 
      * @return true iff such a document exists.
-     * */
+     */
     protected boolean ensureSameDoc (Spans x, Spans y) throws IOException {
         while (x.doc() != y.doc()) {
             if (x.doc() < y.doc()) {
@@ -100,7 +101,7 @@ public abstract class SimpleSpans extends Spans {
      * Find the same doc shared by element, firstspan and secondspan.
      * 
      * @return true iff such a doc is found.
-     * */
+     */
     protected boolean findSameDoc (Spans x, Spans y, Spans e)
             throws IOException {
 
@@ -148,12 +149,10 @@ public abstract class SimpleSpans extends Spans {
 
     @Override
     public String toString () {
-        return getClass().getName()
-                + "("
-                + query.toString()
-                + ")@"
-                + (isStartEnumeration ? "START" : (hasMoreSpans ? (doc() + ":"
-                        + start() + "-" + end()) : "END"));
+        return getClass().getName() + "(" + query.toString() + ")@"
+                + (isStartEnumeration ? "START"
+                        : (hasMoreSpans ? (doc() + ":" + start() + "-" + end())
+                                : "END"));
     }
 
 

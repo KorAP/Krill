@@ -48,8 +48,8 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
         this.alternatives = new ArrayList<>();
         for (String term : terms) {
             this.isNull = false;
-            this.alternatives.add(new SpanSimpleQueryWrapper(new SpanTermQuery(
-                    new Term(this.field, term))));
+            this.alternatives.add(new SpanSimpleQueryWrapper(
+                    new SpanTermQuery(new Term(this.field, term))));
         };
     };
 

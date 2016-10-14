@@ -348,8 +348,7 @@ public class TestKrillCollectionIndex {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(
-                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
@@ -405,13 +404,11 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
         // Create a query
-        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN")
-                .with("tt/p:NN"));
-        ks.setCollection(kc)
-                .getMeta()
-                .setStartIndex(0)
-                .setCount((short) 20)
-                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
+        Krill ks = new Krill(
+                new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
+        ks.setCollection(kc).getMeta().setStartIndex(0).setCount((short) 20)
+                .setContext(
+                        new SearchContext(true, (short) 5, true, (short) 5));
 
         Result kr = ks.apply(ki);
 
@@ -444,8 +441,7 @@ public class TestKrillCollectionIndex {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(
-                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
             ki.commit();
         };
@@ -497,13 +493,11 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
         // Create a query
-        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN")
-                .with("tt/p:NN"));
-        ks.setCollection(kc)
-                .getMeta()
-                .setStartIndex(0)
-                .setCount((short) 20)
-                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
+        Krill ks = new Krill(
+                new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
+        ks.setCollection(kc).getMeta().setStartIndex(0).setCount((short) 20)
+                .setContext(
+                        new SearchContext(true, (short) 5, true, (short) 5));
 
         Result kr = ks.apply(ki);
         /*
@@ -558,20 +552,20 @@ public class TestKrillCollectionIndex {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(
-                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        ki.addDoc(getClass()
-                .getResourceAsStream("/wiki/00012-fakemeta.json.gz"), true);
+        ki.addDoc(
+                getClass().getResourceAsStream("/wiki/00012-fakemeta.json.gz"),
+                true);
 
         ki.commit();
 
         /*
         CollectionBuilderLegacy kf = new CollectionBuilderLegacy();
-
+        
         // Create Virtual collections:
         KrillCollectionLegacy kc = new KrillCollectionLegacy(ki);
         kc.filter(kf.and("textClass", "reisen").and("textClass",
@@ -590,13 +584,11 @@ public class TestKrillCollectionIndex {
 
 
         // Create a query
-        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN")
-                .with("tt/p:NN"));
-        ks.setCollection(kc)
-                .getMeta()
-                .setStartIndex(0)
-                .setCount((short) 20)
-                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
+        Krill ks = new Krill(
+                new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
+        ks.setCollection(kc).getMeta().setStartIndex(0).setCount((short) 20)
+                .setContext(
+                        new SearchContext(true, (short) 5, true, (short) 5));
 
         Result kr = ks.apply(ki);
 
@@ -658,11 +650,9 @@ public class TestKrillCollectionIndex {
 
 
         Krill ks = new Krill(sq);
-        ks.setCollection(kc)
-                .getMeta()
-                .setStartIndex(0)
-                .setCount((short) 20)
-                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
+        ks.setCollection(kc).getMeta().setStartIndex(0).setCount((short) 20)
+                .setContext(
+                        new SearchContext(true, (short) 5, true, (short) 5));
         kr = ks.apply(ki);
 
         // kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);

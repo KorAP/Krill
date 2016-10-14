@@ -89,8 +89,8 @@ public final class Result extends Krill {
         this.matches = new ArrayList<>(itemsPerPage);
         this.serialQuery = query;
         this.startIndex = startIndex;
-        this.itemsPerPage = (itemsPerPage > ITEMS_PER_PAGE_MAX || itemsPerPage < 1) ? ITEMS_PER_PAGE
-                : itemsPerPage;
+        this.itemsPerPage = (itemsPerPage > ITEMS_PER_PAGE_MAX
+                || itemsPerPage < 1) ? ITEMS_PER_PAGE : itemsPerPage;
         this.context = context;
     };
 

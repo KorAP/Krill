@@ -24,7 +24,7 @@ public class TestDistanceExclusionIndex {
 
     /**
      * Ordered, unordered
-     * */
+     */
     @Test
     public void testCase1 () throws IOException {
         ki = new KrillIndex();
@@ -52,7 +52,7 @@ public class TestDistanceExclusionIndex {
     /**
      * Multiple docs, unordered
      * No more secondSpans
-     * */
+     */
     @Test
     public void testCase2 () throws IOException {
         ki = new KrillIndex();
@@ -71,7 +71,7 @@ public class TestDistanceExclusionIndex {
     /**
      * Secondspans' document number is bigger than firstspans'
      * Actual distance is smaller than min distance.
-     * */
+     */
     @Test
     public void testCase3 () throws IOException {
         ki = new KrillIndex();
@@ -90,7 +90,7 @@ public class TestDistanceExclusionIndex {
     /**
      * Unordered: firstspan in on the right side of the secondspan,
      * but within max distance.
-     * */
+     */
     @Test
     public void testCase4 () throws IOException {
         ki = new KrillIndex();
@@ -109,7 +109,7 @@ public class TestDistanceExclusionIndex {
 
     /**
      * Element queries
-     * */
+     */
     @Test
     public void testCase5 () throws IOException {
         ki = new KrillIndex();
@@ -118,8 +118,8 @@ public class TestDistanceExclusionIndex {
 
         SpanDistanceQuery sq;
         sq = new SpanDistanceQuery(new SpanElementQuery("base", "x"),
-                new SpanElementQuery("base", "y"), new DistanceConstraint(0, 1,
-                        false, true), true);
+                new SpanElementQuery("base", "y"),
+                new DistanceConstraint(0, 1, false, true), true);
 
         kr = ki.search(sq, (short) 10);
 
@@ -168,8 +168,9 @@ public class TestDistanceExclusionIndex {
 
     private SpanQuery createQuery (String x, String y, int min, int max,
             boolean isOrdered) {
-        SpanDistanceQuery sq = new SpanDistanceQuery(new SpanTermQuery(
-                new Term("base", x)), new SpanTermQuery(new Term("base", y)),
+        SpanDistanceQuery sq = new SpanDistanceQuery(
+                new SpanTermQuery(new Term("base", x)),
+                new SpanTermQuery(new Term("base", y)),
                 new DistanceConstraint(min, max, isOrdered, true), true);
         return sq;
     }
@@ -195,10 +196,10 @@ public class TestDistanceExclusionIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "text", "[(0-1)s:b|s:c|_1$<i>0<i>1]"
-                + "[(1-2)s:b|_2$<i>1<i>2]" + "[(2-3)s:c|_3$<i>2<i>3]"
-                + "[(3-4)s:c|_4$<i>3<i>4]" + "[(4-5)s:d|_5$<i>4<i>5]"
-                + "[(5-6)s:d|_6$<i>5<i>6]");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|s:c|_1$<i>0<i>1]" + "[(1-2)s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:c|_3$<i>2<i>3]" + "[(3-4)s:c|_4$<i>3<i>4]"
+                        + "[(4-5)s:d|_5$<i>4<i>5]" + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
 
@@ -206,12 +207,13 @@ public class TestDistanceExclusionIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "text", "[(0-1)s:b|_1$<i>0<i>1]"
-                + "[(1-2)s:b|_2$<i>1<i>2]" + "[(2-3)s:c|_3$<i>2<i>3]"
-                + "[(3-4)s:c|_4$<i>3<i>4]" + "[(4-5)s:b|_5$<i>4<i>5]"
-                + "[(5-6)s:d|_6$<i>5<i>6]" + "[(6-7)s:b|_7$<i>6<i>7]"
-                + "[(7-8)s:d|_8$<i>7<i>8]" + "[(8-9)s:c|_9$<i>8<i>9]"
-                + "[(9-10)s:d|_10$<i>9<i>10]");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|_1$<i>0<i>1]" + "[(1-2)s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:c|_3$<i>2<i>3]" + "[(3-4)s:c|_4$<i>3<i>4]"
+                        + "[(4-5)s:b|_5$<i>4<i>5]" + "[(5-6)s:d|_6$<i>5<i>6]"
+                        + "[(6-7)s:b|_7$<i>6<i>7]" + "[(7-8)s:d|_8$<i>7<i>8]"
+                        + "[(8-9)s:c|_9$<i>8<i>9]"
+                        + "[(9-10)s:d|_10$<i>9<i>10]");
         return fd;
     }
 

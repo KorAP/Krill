@@ -29,15 +29,15 @@ public class TestSpanSegmentSequenceQuery {
 
         sssq.append("c");
 
-        assertEquals("spanNext(spanNext(field:a, field:b), field:c)", sssq
-                .toQuery().toString());
+        assertEquals("spanNext(spanNext(field:a, field:b), field:c)",
+                sssq.toQuery().toString());
     };
 
 
     @Test
     public void spanSegmentSequenceQuery2 () throws QueryException {
-        SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field",
-                "-c", "-d", "-e");
+        SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field", "-c",
+                "-d", "-e");
         SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field",
                 "a", "b");
 
@@ -54,7 +54,8 @@ public class TestSpanSegmentSequenceQuery {
     public void spanSegmentSequenceQuery3 () throws QueryException {
         SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field",
                 "a", "b");
-        SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field", "c.?d");
+        SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field",
+                "c.?d");
 
         sssq.append(ssreq);
 
@@ -71,8 +72,8 @@ public class TestSpanSegmentSequenceQuery {
 
         sssq.prepend("a");
 
-        assertEquals("spanNext(spanNext(field:a, field:b), field:c)", sssq
-                .toQuery().toString());
+        assertEquals("spanNext(spanNext(field:a, field:b), field:c)",
+                sssq.toQuery().toString());
     };
 
 
@@ -80,8 +81,8 @@ public class TestSpanSegmentSequenceQuery {
     public void spanSegmentSequenceQueryPrepend2 () throws QueryException {
         SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field",
                 "d", "e");
-        SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field",
-                "-a", "-b", "-c");
+        SpanSegmentQueryWrapper ssq = new SpanSegmentQueryWrapper("field", "-a",
+                "-b", "-c");
 
         sssq.prepend(ssq);
 
@@ -95,7 +96,8 @@ public class TestSpanSegmentSequenceQuery {
     public void spanSegmentSequenceQueryPrepend3 () throws QueryException {
         SpanSequenceQueryWrapper sssq = new SpanSequenceQueryWrapper("field",
                 "c", "d");
-        SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field", "a.?b");
+        SpanRegexQueryWrapper ssreq = new SpanRegexQueryWrapper("field",
+                "a.?b");
 
         sssq.prepend(ssreq);
 

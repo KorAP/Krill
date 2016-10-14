@@ -75,24 +75,20 @@ public class TestRelationIndex {
     public static FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV(
-                "base",
-                "ceccecdeed",
-                "[(0-1)s:c$<s>1|_0$<i>0<i>1"
-                        + "|>:xip/syntax-dep_rel$<b>32<i>6<s>1<s>1<s>0]"
-                        + "[(1-2)s:e$<s>1|_1$<i>1<i>2|"
-                        + "<:xip/syntax-dep_rel$<b>32<i>9<s>1<s>1<s>0|"
-                        + ">:xip/syntax-dep_rel$<b>32<i>4<s>1<s>1<s>0]"
-                        + "[(2-3)s:c|_2$<i>2<i>3]"
-                        + "[(3-4)s:c$<s>1|s:b$<s>2|_3$<i>3<i>4|<:xip/syntax-dep_rel$<b>32<i>9<s>1<s>1<s>0]"
-                        + "[(4-5)s:e$<s>1|s:d$<s>2|_4$<i>4<i>5|<:xip/syntax-dep_rel$<b>32<i>1<s>1<s>1<s>0]"
-                        + "[(5-6)s:c|_5$<i>5<i>6]"
-                        + "[(6-7)s:d$<s>1|_6$<i>6<i>7|<:xip/syntax-dep_rel$<b>32<i>1<s>1<s>1<s>0]"
-                        + "[(7-8)s:e|_7$<i>7<i>8]"
-                        + "[(8-9)s:e|s:b|_8$<i>8<i>9]"
-                        + "[(9-10)s:d$<s>1|_9$<i>9<i>10|"
-                        + ">:xip/syntax-dep_rel$<b>32<i>1<s>1<s>1<s>0|"
-                        + ">:xip/syntax-dep_rel$<b>32<i>3<s>1<s>1<s>0]");
+        fd.addTV("base", "ceccecdeed", "[(0-1)s:c$<s>1|_0$<i>0<i>1"
+                + "|>:xip/syntax-dep_rel$<b>32<i>6<s>1<s>1<s>0]"
+                + "[(1-2)s:e$<s>1|_1$<i>1<i>2|"
+                + "<:xip/syntax-dep_rel$<b>32<i>9<s>1<s>1<s>0|"
+                + ">:xip/syntax-dep_rel$<b>32<i>4<s>1<s>1<s>0]"
+                + "[(2-3)s:c|_2$<i>2<i>3]"
+                + "[(3-4)s:c$<s>1|s:b$<s>2|_3$<i>3<i>4|<:xip/syntax-dep_rel$<b>32<i>9<s>1<s>1<s>0]"
+                + "[(4-5)s:e$<s>1|s:d$<s>2|_4$<i>4<i>5|<:xip/syntax-dep_rel$<b>32<i>1<s>1<s>1<s>0]"
+                + "[(5-6)s:c|_5$<i>5<i>6]"
+                + "[(6-7)s:d$<s>1|_6$<i>6<i>7|<:xip/syntax-dep_rel$<b>32<i>1<s>1<s>1<s>0]"
+                + "[(7-8)s:e|_7$<i>7<i>8]" + "[(8-9)s:e|s:b|_8$<i>8<i>9]"
+                + "[(9-10)s:d$<s>1|_9$<i>9<i>10|"
+                + ">:xip/syntax-dep_rel$<b>32<i>1<s>1<s>1<s>0|"
+                + ">:xip/syntax-dep_rel$<b>32<i>3<s>1<s>1<s>0]");
         return fd;
     }
 
@@ -100,9 +96,7 @@ public class TestRelationIndex {
     public static FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV(
-                "base",
-                "ceccecdeed",
+        fd.addTV("base", "ceccecdeed",
                 "[(0-1)s:c$<s>2|<>:p$<b>64<i>0<i>3<i>3<b>0<s>1|_0$<i>0<i>1|"
                         + ">:xip/syntax-dep_rel$<b>35<i>0<i>1<i>1<i>2<i>3<i>6<i>9<s>1<s>1<s>2|"
                         + ">:xip/syntax-dep_rel$<b>33<i>1<i>2<i>6<i>9<s>2<s>1<s>0|"
@@ -116,8 +110,7 @@ public class TestRelationIndex {
                         + ">:xip/syntax-dep_rel$<b>34<i>3<i>4<i>9<i>9<s>1<s>1<s>0|"
                         + "<:xip/syntax-dep_rel$<b>35<i>3<i>4<i>4<i>5<i>9<i>1<i>3<s>1<s>1<s>2|"
                         + "<:xip/syntax-dep_rel$<b>34<i>5<i>6<i>9<i>1<s>1<s>2<s>0|"
-                        + "@:func=obj$<b>18<s>2]"
-                        + "[(7-8)s:e|_7$<i>7<i>8]"
+                        + "@:func=obj$<b>18<s>2]" + "[(7-8)s:e|_7$<i>7<i>8]"
                         + "[(8-9)s:e|s:b|_8$<i>8<i>9]"
                         + "[(9-10)s:d$<s>1|_9$<i>9<i>10|<"
                         + ":xip/syntax-dep_rel$<b>33<i>6<i>7<i>6<i>9<s>2<s>1<s>0]");
@@ -128,9 +121,7 @@ public class TestRelationIndex {
     public static FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV(
-                "base",
-                "Ich kaufe die Blümen für meine Mutter.",
+        fd.addTV("base", "Ich kaufe die Blümen für meine Mutter.",
                 "[(0-3)s:Ich|_0$<i>0<i>3|pos:NN$<s>1|<>:s$<b>64<i>0<i>38<i>7<b>0<s>2|<>:np$<b>64<i>0<i>3<i>1<b>0<s>3|"
                         + ">:child-of$<b>33<i>0<i>38<i>0<i>7<s>3<s>2<s>4|"
                         + ">:child-of$<b>33<i>0<i>3<i>0<i>1<s>1<s>3<s>0|"
@@ -203,15 +194,16 @@ public class TestRelationIndex {
 
     /**
      * Relations: token to token, token to span, span to span
-     * */
+     */
     @Test
     public void testCase1 () throws IOException {
         ki.addDoc(createFieldDoc0());
         ki.addDoc(createFieldDoc1());
         ki.commit();
 
-        SpanRelationQuery sq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:xip/syntax-dep_rel")), true);
+        SpanRelationQuery sq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:xip/syntax-dep_rel")),
+                true);
         kr = ki.search(sq, (short) 10);
 
         assertEquals((long) 7, kr.getTotalResults());
@@ -244,15 +236,16 @@ public class TestRelationIndex {
 
     /**
      * Relation span to token
-     * */
+     */
     @Test
     public void testCase2 () throws IOException {
         ki.addDoc(createFieldDoc0());
         ki.addDoc(createFieldDoc1());
         ki.commit();
 
-        SpanRelationQuery sq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", "<:xip/syntax-dep_rel")), true);
+        SpanRelationQuery sq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", "<:xip/syntax-dep_rel")),
+                true);
         kr = ki.search(sq, (short) 10);
 
         assertEquals((long) 7, kr.getTotalResults());
@@ -281,15 +274,15 @@ public class TestRelationIndex {
 
     /**
      * Relations only
-     * */
+     */
     @Test
     public void testCase3 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
         // child-of relations
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:child-of")), true);
         kr = ki.search(srq, (short) 20);
 
         assertEquals((long) 13, kr.getTotalResults());
@@ -310,14 +303,14 @@ public class TestRelationIndex {
 
     /**
      * Relations only with/out attribute
-     * */
+     */
     @Test
     public void testCase4 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:child-of")), true);
 
         SpanFocusQuery fq = new SpanFocusQuery(srq, srq.getTempClassNumbers());
         fq.setMatchTemporaryClass(true);
@@ -328,8 +321,8 @@ public class TestRelationIndex {
         // System.out.println(m.getStartPos() + " " + m.getEndPos());
         // }
 
-        SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "@:func=sbj")), true);
+        SpanAttributeQuery saq = new SpanAttributeQuery(
+                new SpanTermQuery(new Term("base", "@:func=sbj")), true);
         // kr = ki.search(saq, (short) 20);
 
         // child-of with attr func=sbj
@@ -341,8 +334,10 @@ public class TestRelationIndex {
         // assertEquals(7, kr.getMatch(0).getEndPos());
 
         // child-of without attr func=sbj
-        wq = new SpanWithAttributeQuery(fq, new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:func=sbj")), true, true),
+        wq = new SpanWithAttributeQuery(fq,
+                new SpanAttributeQuery(
+                        new SpanTermQuery(new Term("base", "@:func=sbj")), true,
+                        true),
                 true);
         kr = ki.search(wq, (short) 20);
         assertEquals((long) 12, kr.getTotalResults());
@@ -352,7 +347,7 @@ public class TestRelationIndex {
     /**
      * Relation directions <br/>
      * Relation with specific sources, return the sources
-     * */
+     */
     @Test
     public void testCase6 () throws IOException {
         ki.addDoc(createFieldDoc2());
@@ -362,8 +357,8 @@ public class TestRelationIndex {
         SpanElementQuery seq1 = new SpanElementQuery("base", "np");
         SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
 
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:child-of")), true);
 
         SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, scq1, true);
         SpanFocusQuery rv = new SpanFocusQuery(rm, (byte) 1);
@@ -386,8 +381,8 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(3).getEndPos());
 
         // return all parents that are NP
-        srq = new SpanRelationQuery(new SpanTermQuery(new Term("base",
-                "<:child-of")), true);
+        srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", "<:child-of")), true);
         rm = new SpanRelationMatchQuery(srq, scq1, true);
         rv = new SpanFocusQuery(rm, (byte) 1);
         kr = ki.search(rv, (short) 10);
@@ -412,15 +407,15 @@ public class TestRelationIndex {
 
     /**
      * Dependency relations with attribute
-     * */
+     */
     @Test
     public void testCase5 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
         // target of a dependency relation
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", "<:dep")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", "<:dep")), true);
         kr = ki.search(srq, (short) 10);
         assertEquals((long) 6, kr.getTotalResults());
 
@@ -432,8 +427,8 @@ public class TestRelationIndex {
         kr = ki.search(fq, (short) 10);
         assertEquals((long) 6, kr.getTotalResults());
 
-        SpanAttributeQuery aq = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "@:func=head")), true);
+        SpanAttributeQuery aq = new SpanAttributeQuery(
+                new SpanTermQuery(new Term("base", "@:func=head")), true);
         kr = ki.search(aq, (short) 10);
 
         // dependency relation, which is also a head
@@ -452,7 +447,7 @@ public class TestRelationIndex {
 
     /**
      * Relation with specific sources, return any targets
-     * */
+     */
     @Test
     public void testCase7 () throws IOException {
         ki.addDoc(createFieldDoc2());
@@ -462,8 +457,8 @@ public class TestRelationIndex {
         SpanElementQuery seq1 = new SpanElementQuery("base", "np");
         SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
 
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:child-of")), true);
         srq.setTargetClass((byte) 2);
 
         SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, scq1, true);
@@ -498,7 +493,7 @@ public class TestRelationIndex {
     /**
      * Relations whose source/target do not embed
      * its counterparts.
-     * */
+     */
     @Test
     public void testCase8 () throws IOException {
         ki.addDoc(createFieldDoc2());
@@ -506,10 +501,10 @@ public class TestRelationIndex {
 
         //return source of dep relations to pos:NN
 
-        SpanTermWithIdQuery tq = new SpanTermWithIdQuery(new Term("base",
-                "pos:NN"), true);
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", "<:dep")), true);
+        SpanTermWithIdQuery tq = new SpanTermWithIdQuery(
+                new Term("base", "pos:NN"), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", "<:dep")), true);
         srq.setSourceClass((byte) 1);
         SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, tq, true);
         SpanQuery rv = new SpanFocusQuery(rm, (byte) 1);
@@ -549,7 +544,7 @@ public class TestRelationIndex {
      * Relation with specific sources and targets, return the sources
      * 
      * @throws IOException
-     * */
+     */
     @Test
     public void testCase9 () throws IOException {
         ki.addDoc(createFieldDoc2());
@@ -558,8 +553,8 @@ public class TestRelationIndex {
         // return all children of np
         SpanElementQuery seq1 = new SpanElementQuery("base", "np");
         SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", "<:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", "<:child-of")), true);
         srq.setSourceClass((byte) 2);
         SpanRelationMatchQuery rm = new SpanRelationMatchQuery(srq, scq1, true);
         SpanFocusQuery rv = new SpanFocusQuery(rm, (byte) 2);
@@ -594,14 +589,14 @@ public class TestRelationIndex {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        SpanTermWithIdQuery tiq = new SpanTermWithIdQuery(new Term("base",
-                "pos:ART"), true);
+        SpanTermWithIdQuery tiq = new SpanTermWithIdQuery(
+                new Term("base", "pos:ART"), true);
         SpanClassQuery scq1 = new SpanClassQuery(tiq, (byte) 1);
         SpanElementQuery seq = new SpanElementQuery("base", "np");
         SpanClassQuery scq2 = new SpanClassQuery(seq, (byte) 2);
 
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:child-of")), true);
         srq.setSourceClass((byte) 1);
         srq.setTargetClass((byte) 2);
 
@@ -630,8 +625,8 @@ public class TestRelationIndex {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        SpanTermWithIdQuery tiq = new SpanTermWithIdQuery(new Term("base",
-                "pos:ART"), true);
+        SpanTermWithIdQuery tiq = new SpanTermWithIdQuery(
+                new Term("base", "pos:ART"), true);
         SpanClassQuery scq1 = new SpanClassQuery(tiq, (byte) 1);
 
         kr = ki.search(scq1, (short) 10);
@@ -641,8 +636,8 @@ public class TestRelationIndex {
         assertEquals(5, kr.getMatch(1).getStartPos());
         assertEquals(6, kr.getMatch(1).getEndPos());
 
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:child-of")), true);
         srq.setSourceClass((byte) 1);
         srq.setTargetClass((byte) 2);
 
@@ -721,19 +716,19 @@ public class TestRelationIndex {
     /**
      * Relation whose nodes have a specific attribute.
      * 
-     * */
+     */
     @Test
     public void testCase10a () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        SpanAttributeQuery aq = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "@:case=accusative")), true);
+        SpanAttributeQuery aq = new SpanAttributeQuery(
+                new SpanTermQuery(new Term("base", "@:case=accusative")), true);
         kr = ki.search(aq, (short) 10);
         assertEquals((long) 3, kr.getTotalResults());
 
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:child-of")), true);
         srq.setSourceClass((byte) 1);
         srq.setTargetClass((byte) 2);
         kr = ki.search(srq, (short) 20);
@@ -741,7 +736,8 @@ public class TestRelationIndex {
 
         // Matching relation source node with an attribute
         SpanFocusQuery sfq1 = new SpanFocusQuery(srq, (byte) 1);
-        SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sfq1, aq, true);
+        SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sfq1, aq,
+                true);
 
         kr = ki.search(swaq, (short) 10);
         assertEquals((long) 2, kr.getTotalResults());
@@ -751,12 +747,15 @@ public class TestRelationIndex {
         assertEquals(7, kr.getMatch(1).getEndPos());
 
         // Returning relations whose source has a specific attribute
-        SpanFocusQuery fqr = new SpanFocusQuery(swaq, srq.getTempClassNumbers());
+        SpanFocusQuery fqr = new SpanFocusQuery(swaq,
+                srq.getTempClassNumbers());
         fqr.setMatchTemporaryClass(true);
         fqr.setRemoveTemporaryClasses(true);
-        assertEquals("focus(#[1,2]spanRelationWithAttribute(focus(1: "
-                + "{1: source:{2: target:spanRelation(base:>:child-of)}}), "
-                + "spanAttribute(base:@:case=accusative)))", fqr.toString());
+        assertEquals(
+                "focus(#[1,2]spanRelationWithAttribute(focus(1: "
+                        + "{1: source:{2: target:spanRelation(base:>:child-of)}}), "
+                        + "spanAttribute(base:@:case=accusative)))",
+                fqr.toString());
 
         kr = ki.search(fqr, (short) 10);
         assertEquals((long) 2, kr.getTotalResults());
@@ -799,19 +798,19 @@ public class TestRelationIndex {
     /**
      * Relation whose nodes have a specific attribute. Alternative
      * query (actually used in serialization)
-     * */
+     */
     @Test
     public void testCase10b () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        SpanAttributeQuery aq = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "@:case=accusative")), true);
+        SpanAttributeQuery aq = new SpanAttributeQuery(
+                new SpanTermQuery(new Term("base", "@:case=accusative")), true);
         kr = ki.search(aq, (short) 10);
         assertEquals((long) 3, kr.getTotalResults());
 
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:child-of")), true);
         srq.setSourceClass((byte) 1);
         srq.setTargetClass((byte) 2);
         kr = ki.search(srq, (short) 20);
@@ -868,24 +867,24 @@ public class TestRelationIndex {
 
     /**
      * Matching both relation nodes whose a specific attribute
-     * */
+     */
     @Test
     public void testCase11 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        SpanAttributeQuery aq = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "@:case=accusative")), true);
+        SpanAttributeQuery aq = new SpanAttributeQuery(
+                new SpanTermQuery(new Term("base", "@:case=accusative")), true);
         kr = ki.search(aq, (short) 10);
         assertEquals((long) 3, kr.getTotalResults());
 
-        SpanAttributeQuery aq2 = new SpanAttributeQuery(new SpanTermQuery(
-                new Term("base", "@:case=accusative")), true);
+        SpanAttributeQuery aq2 = new SpanAttributeQuery(
+                new SpanTermQuery(new Term("base", "@:case=accusative")), true);
         kr = ki.search(aq2, (short) 10);
         assertEquals((long) 3, kr.getTotalResults());
 
-        SpanRelationQuery srq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:child-of")), true);
+        SpanRelationQuery srq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:child-of")), true);
         srq.setSourceClass((byte) 1);
         srq.setTargetClass((byte) 2);
         kr = ki.search(srq, (short) 20);

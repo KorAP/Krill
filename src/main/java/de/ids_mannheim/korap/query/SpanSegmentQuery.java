@@ -26,7 +26,7 @@ import de.ids_mannheim.korap.query.spans.SegmentSpans;
  * </pre>
  * 
  * @author margaretha
- * */
+ */
 public class SpanSegmentQuery extends SimpleSpanQuery {
 
     private boolean isRelation;
@@ -72,7 +72,8 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
-        return (Spans) new SegmentSpans(this, context, acceptDocs, termContexts);
+        return (Spans) new SegmentSpans(this, context, acceptDocs,
+                termContexts);
     }
 
 

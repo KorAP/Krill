@@ -47,7 +47,7 @@ import de.ids_mannheim.korap.query.spans.RepetitionSpans;
  * </pre>
  * 
  * @author margaretha
- * */
+ */
 public class SpanRepetitionQuery extends SimpleSpanQuery {
 
     private int min, max;
@@ -72,6 +72,10 @@ public class SpanRepetitionQuery extends SimpleSpanQuery {
     public SpanRepetitionQuery (SpanQuery sq, int min, int max,
                                 boolean collectPayloads) {
         super(sq, collectPayloads);
+        if (min < 1) {
+            throw new IllegalArgumentException(
+                    "Minimum repetition must not lower than 1.");
+        }
         this.min = min;
         this.max = max;
     }

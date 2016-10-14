@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * repetition depends on the min and max parameters.
  * 
  * @author margaretha
- * */
+ */
 public class RepetitionSpans extends SimpleSpans {
 
     // Logger
@@ -179,8 +179,8 @@ public class RepetitionSpans extends SimpleSpans {
                 if (i == 1) {
                     try {
                         matchSpan = startSpan.clone();
-                        matchSpan.setPayloads(computeMatchPayload(
-                                adjacentSpans, 0, endIndex - 1));
+                        matchSpan.setPayloads(computeMatchPayload(adjacentSpans,
+                                0, endIndex - 1));
                         matchList.add(matchSpan);
                     }
                     catch (CloneNotSupportedException e) {
@@ -250,8 +250,8 @@ public class RepetitionSpans extends SimpleSpans {
      *            the end index
      * @return
      */
-    private long computeMatchCost (List<CandidateSpan> adjacentSpans,
-            int start, int end) {
+    private long computeMatchCost (List<CandidateSpan> adjacentSpans, int start,
+            int end) {
         long matchCost = 0;
         for (int i = start; i <= end; i++) {
             matchCost += adjacentSpans.get(i).getCost();

@@ -96,19 +96,13 @@ public class TestNextIndex {
 
         // abcabcabac
         FieldDocument fd = new FieldDocument();
-        fd.addTV(
-                "base",
-                "abcabcabac",
-                "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
-                        + "[(1-2)s:b|i:b|_1$<i>1<i>2]"
-                        + "[(2-3)s:c|i:c|_2$<i>2<i>3]"
-                        + "[(3-4)s:a|i:a|_3$<i>3<i>4|<>:x$<b>64<i>3<i>4<i>4<b>0|<>:x$<b>64<i>3<i>7<i>7<b>0]"
-                        + "[(4-5)s:b|i:b|_4$<i>4<i>5]"
-                        + "[(5-6)s:c|i:c|_5$<i>5<i>6]"
-                        + "[(6-7)s:a|i:a|_6$<i>6<i>7]"
-                        + "[(7-8)s:b|i:b|_7$<i>7<i>8]"
-                        + "[(8-9)s:a|i:a|_8$<i>8<i>9]"
-                        + "[(9-10)s:c|i:c|_9$<i>9<i>10]");
+        fd.addTV("base", "abcabcabac", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
+                + "[(1-2)s:b|i:b|_1$<i>1<i>2]" + "[(2-3)s:c|i:c|_2$<i>2<i>3]"
+                + "[(3-4)s:a|i:a|_3$<i>3<i>4|<>:x$<b>64<i>3<i>4<i>4<b>0|<>:x$<b>64<i>3<i>7<i>7<b>0]"
+                + "[(4-5)s:b|i:b|_4$<i>4<i>5]" + "[(5-6)s:c|i:c|_5$<i>5<i>6]"
+                + "[(6-7)s:a|i:a|_6$<i>6<i>7]" + "[(7-8)s:b|i:b|_7$<i>7<i>8]"
+                + "[(8-9)s:a|i:a|_8$<i>8<i>9]"
+                + "[(9-10)s:c|i:c|_9$<i>9<i>10]");
         ki.addDoc(fd);
 
         ki.commit();
@@ -136,7 +130,8 @@ public class TestNextIndex {
                 + "[(3-4)s:a|i:a|_3$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
                 + "[(4-5)s:b|i:b|_4$<i>4<i>5]" + "[(5-6)s:c|i:c|_5$<i>5<i>6]"
                 + "[(6-7)s:a|i:a|_6$<i>6<i>7]" + "[(7-8)s:b|i:b|_7$<i>7<i>8]"
-                + "[(8-9)s:a|i:a|_8$<i>8<i>9]" + "[(9-10)s:c|i:c|_9$<i>9<i>10]");
+                + "[(8-9)s:a|i:a|_8$<i>8<i>9]"
+                + "[(9-10)s:c|i:c|_9$<i>9<i>10]");
         ki.addDoc(fd);
 
         ki.commit();
@@ -177,7 +172,8 @@ public class TestNextIndex {
                 + "[(3-4)s:x|i:x|_3$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
                 + "[(4-5)s:b|i:b|_4$<i>4<i>5]" + "[(5-6)s:z|i:z|_5$<i>5<i>6]"
                 + "[(6-7)s:x|i:x|_6$<i>6<i>7]" + "[(7-8)s:b|i:b|_7$<i>7<i>8]"
-                + "[(8-9)s:x|i:x|_8$<i>8<i>9]" + "[(9-10)s:z|i:z|_9$<i>9<i>10]");
+                + "[(8-9)s:x|i:x|_8$<i>8<i>9]"
+                + "[(9-10)s:z|i:z|_9$<i>9<i>10]");
         ki.addDoc(fd);
         ki.commit();
 
@@ -211,7 +207,7 @@ public class TestNextIndex {
     /**
      * Multiple atomic indices
      * Skip to a greater doc#
-     * */
+     */
     @Test
     public void indexExample5 () throws IOException {
         KrillIndex ki = new KrillIndex();
@@ -221,8 +217,9 @@ public class TestNextIndex {
         ki.addDoc(createFieldDoc3());
         ki.commit();
 
-        SpanQuery sq = new SpanNextQuery(new SpanTermQuery(new Term("base",
-                "s:d")), new SpanTermQuery(new Term("base", "s:b")));
+        SpanQuery sq = new SpanNextQuery(
+                new SpanTermQuery(new Term("base", "s:d")),
+                new SpanTermQuery(new Term("base", "s:b")));
         Result kr = ki.search(sq, (short) 10);
 
         assertEquals("totalResults", kr.getTotalResults(), 2);
@@ -255,9 +252,10 @@ public class TestNextIndex {
         ki.addDoc(createFieldDoc3());
         ki.commit();
 
-        SpanQuery sq = new SpanNextQuery(new SpanTermQuery(new Term("base",
-                "s:c")), new SpanNextQuery(new SpanTermQuery(new Term("base",
-                "s:d")), new SpanTermQuery(new Term("base", "s:b"))));
+        SpanQuery sq = new SpanNextQuery(
+                new SpanTermQuery(new Term("base", "s:c")),
+                new SpanNextQuery(new SpanTermQuery(new Term("base", "s:d")),
+                        new SpanTermQuery(new Term("base", "s:b"))));
 
         Result kr = ki.search(sq, (short) 10);
         assertEquals("totalResults", kr.getTotalResults(), 1);
@@ -265,12 +263,16 @@ public class TestNextIndex {
         assertEquals("StartPos", 0, kr.getMatch(0).startPos);
         assertEquals("EndPos", 3, kr.getMatch(0).endPos);
 
-        sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:c")),
-                new SpanNextQuery(new SpanFocusQuery(new SpanClassQuery(
-                        new SpanTermQuery(new Term("base", "s:d")), (byte) 1),
-                        (byte) 1), new SpanFocusQuery(new SpanClassQuery(
-                        new SpanTermQuery(new Term("base", "s:b")), (byte) 2),
-                        (byte) 2)));
+        sq = new SpanNextQuery(
+                new SpanTermQuery(
+                        new Term("base", "s:c")),
+                new SpanNextQuery(
+                        new SpanFocusQuery(new SpanClassQuery(
+                                new SpanTermQuery(new Term("base", "s:d")),
+                                (byte) 1), (byte) 1),
+                        new SpanFocusQuery(new SpanClassQuery(
+                                new SpanTermQuery(new Term("base", "s:b")),
+                                (byte) 2), (byte) 2)));
 
         kr = ki.search(sq, (short) 10);
         assertEquals("doc-number", 2, kr.getMatch(0).getLocalDocID());
@@ -333,9 +335,10 @@ public class TestNextIndex {
         ki.addDoc(createFieldDoc1());
         ki.commit();
 
-        SpanQuery sq = new SpanNextQuery(new SpanOrQuery(new SpanTermQuery(
-                new Term("base", "s:a")), new SpanTermQuery(new Term("base",
-                "s:b"))), new SpanTermQuery(new Term("base", "s:c")));
+        SpanQuery sq = new SpanNextQuery(
+                new SpanOrQuery(new SpanTermQuery(new Term("base", "s:a")),
+                        new SpanTermQuery(new Term("base", "s:b"))),
+                new SpanTermQuery(new Term("base", "s:c")));
 
         Result kr = ki.search(sq, (short) 10);
 
@@ -349,12 +352,12 @@ public class TestNextIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "bcbadb", "[(0-1)s:b|i:b|_0$<i>0<i>1]"
-                + "[(1-2)s:c|i:c|s:b|_1$<i>1<i>2]"
-                + "[(2-3)s:b|i:b|_2$<i>2<i>3]"
-                + "[(3-4)s:a|i:a|_3$<i>3<i>4|<>:e$<b>64<i>3<i>6<i>6<b>0]"
-                + "[(4-5)s:d|i:d|s:c|_4$<i>4<i>5]"
-                + "[(5-6)s:b|i:b|_5$<i>5<i>6]");
+        fd.addTV("base", "bcbadb",
+                "[(0-1)s:b|i:b|_0$<i>0<i>1]" + "[(1-2)s:c|i:c|s:b|_1$<i>1<i>2]"
+                        + "[(2-3)s:b|i:b|_2$<i>2<i>3]"
+                        + "[(3-4)s:a|i:a|_3$<i>3<i>4|<>:e$<b>64<i>3<i>6<i>6<b>0]"
+                        + "[(4-5)s:d|i:d|s:c|_4$<i>4<i>5]"
+                        + "[(5-6)s:b|i:b|_5$<i>5<i>6]");
         return fd;
     }
 
@@ -362,10 +365,11 @@ public class TestNextIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "caba", "[(0-1)s:c|i:c|_0$<i>0<i>1]"
-                + "[(1-2)s:a|i:a|s:c|_1$<i>1<i>2|<>:e$<b>64<i>1<i>3<i>3<b>0]"
-                + "[(2-3)s:b|i:b|s:a|_2$<i>2<i>3]"
-                + "[(3-4)s:a|i:a|_3$<i>3<i>4]");
+        fd.addTV("base", "caba",
+                "[(0-1)s:c|i:c|_0$<i>0<i>1]"
+                        + "[(1-2)s:a|i:a|s:c|_1$<i>1<i>2|<>:e$<b>64<i>1<i>3<i>3<b>0]"
+                        + "[(2-3)s:b|i:b|s:a|_2$<i>2<i>3]"
+                        + "[(3-4)s:a|i:a|_3$<i>3<i>4]");
         return fd;
     }
 
@@ -373,10 +377,10 @@ public class TestNextIndex {
     private FieldDocument createFieldDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "cdbd", "[(0-1)s:c|i:c|_0$<i>0<i>1]"
-                + "[(1-2)s:d|i:d|_1$<i>1<i>2]"
-                + "[(2-3)s:b|i:b|s:a|_2$<i>2<i>3]"
-                + "[(3-4)s:d|i:d|_3$<i>3<i>4]");
+        fd.addTV("base", "cdbd",
+                "[(0-1)s:c|i:c|_0$<i>0<i>1]" + "[(1-2)s:d|i:d|_1$<i>1<i>2]"
+                        + "[(2-3)s:b|i:b|s:a|_2$<i>2<i>3]"
+                        + "[(3-4)s:d|i:d|_3$<i>3<i>4]");
 
         return fd;
     }
@@ -385,9 +389,7 @@ public class TestNextIndex {
     private FieldDocument createFieldDoc4 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
-        fd.addTV(
-                "base",
-                "bcbadb",
+        fd.addTV("base", "bcbadb",
                 "[(0-1)s:b|i:b|_0$<i>0<i>1]"
                         + "[(1-2)s:c|i:c|s:b|<>:s$<b>64<i>1<i>3<i>3<b>0|_1$<i>1<i>2<b>0]"
                         + "[(2-3)s:b|i:b|_2$<i>2<i>3]"

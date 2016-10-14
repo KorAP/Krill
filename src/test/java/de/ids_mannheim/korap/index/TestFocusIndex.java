@@ -28,14 +28,15 @@ public class TestFocusIndex {
 
     /**
      * Check Skipto focus spans
-     * */
+     */
     @Test
     public void testCase12 () throws IOException {
         ki.addDoc(TestRelationIndex.createFieldDoc0());
         ki.addDoc(TestRelationIndex.createFieldDoc1());
         ki.commit();
-        SpanRelationQuery sq = new SpanRelationQuery(new SpanTermQuery(
-                new Term("base", ">:xip/syntax-dep_rel")), true);
+        SpanRelationQuery sq = new SpanRelationQuery(
+                new SpanTermQuery(new Term("base", ">:xip/syntax-dep_rel")),
+                true);
         sq.setSourceClass((byte) 1);
 
         SpanFocusQuery sfq = new SpanFocusQuery(sq, (byte) 1);

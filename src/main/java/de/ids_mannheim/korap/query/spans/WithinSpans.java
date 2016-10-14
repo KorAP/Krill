@@ -303,7 +303,9 @@ public class WithinSpans extends Spans {
                 // Fetch from second store?
                 else {
 
-                    /** TODO: Change this to a single embedded object! */
+                    /**
+                     * TODO: Change this to a single embedded object!
+                     */
                     this.embeddedStart = current.start;
                     this.embeddedEnd = current.end;
                     this.embeddedDoc = current.doc;
@@ -338,7 +340,8 @@ public class WithinSpans extends Spans {
             // shift the stored spans
             if (!this.spanStore1.isEmpty()) {
                 if (DEBUG) {
-                    log.trace("Move everything from SpanStore 1 to SpanStore 2:");
+                    log.trace(
+                            "Move everything from SpanStore 1 to SpanStore 2:");
                     for (WithinSpan i : this.spanStore1) {
                         log.trace("     | {}", i.toString());
                     };
@@ -372,8 +375,8 @@ public class WithinSpans extends Spans {
                 this.wrapDoc = this.wrapSpans.doc();
 
                 if (DEBUG)
-                    log.trace("   Forward wrap span to {}", _currentWrap()
-                            .toString());
+                    log.trace("   Forward wrap span to {}",
+                            _currentWrap().toString());
 
                 if (this.embeddedDoc != this.wrapDoc) {
                     if (DEBUG)
@@ -842,8 +845,8 @@ public class WithinSpans extends Spans {
 
     private WithinSpan _currentWrap () {
         WithinSpan _wrap = new WithinSpan();
-        _wrap.start = this.wrapStart != -1 ? this.wrapStart : this.wrapSpans
-                .start();
+        _wrap.start = this.wrapStart != -1 ? this.wrapStart
+                : this.wrapSpans.start();
         _wrap.end = this.wrapEnd != -1 ? this.wrapEnd : this.wrapSpans.end();
         _wrap.doc = this.wrapDoc != -1 ? this.wrapDoc : this.wrapSpans.doc();
         return _wrap;
@@ -874,7 +877,7 @@ public class WithinSpans extends Spans {
           - storeEmbedded -> store span B for later checks
           - nextSpanA     -> forward a
           - nextSpanB     -> forward b
-
+        
           These rules were automatically generated
         */
 
@@ -1174,12 +1177,10 @@ public class WithinSpans extends Spans {
 
     @Override
     public String toString () {
-        return getClass().getName()
-                + "("
-                + query.toString()
-                + ")@"
-                + (embeddedDoc <= 0 ? "START" : (more ? (doc() + ":" + start()
-                        + "-" + end()) : "END"));
+        return getClass().getName() + "(" + query.toString() + ")@"
+                + (embeddedDoc <= 0 ? "START"
+                        : (more ? (doc() + ":" + start() + "-" + end())
+                                : "END"));
     };
 
 

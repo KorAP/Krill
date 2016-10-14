@@ -97,7 +97,7 @@ import de.ids_mannheim.korap.query.spans.ExpandedSpans;
  * together with a class number.
  * 
  * @author margaretha
- * */
+ */
 public class SpanExpansionQuery extends SimpleSpanQuery {
 
     private int min, max; // min, max expansion position

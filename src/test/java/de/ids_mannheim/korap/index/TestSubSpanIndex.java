@@ -37,10 +37,10 @@ public class TestSubSpanIndex {
 
     @Test
     public void testCase1 () throws IOException {
-        SpanDistanceQuery sdq = new SpanDistanceQuery(new SpanTermQuery(
-                new Term("tokens", "tt/p:NN")), new SpanTermQuery(new Term(
-                "tokens", "tt/p:VAFIN")), new DistanceConstraint(5, 5, true,
-                false), true);
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+                new SpanTermQuery(new Term("tokens", "tt/p:NN")),
+                new SpanTermQuery(new Term("tokens", "tt/p:VAFIN")),
+                new DistanceConstraint(5, 5, true, false), true);
 
         SpanSubspanQuery ssq = new SpanSubspanQuery(sdq, 0, 2, true);
         kr = ki.search(ssq, (short) 10);
@@ -69,10 +69,10 @@ public class TestSubSpanIndex {
 
     @Test
     public void testCase2 () {
-        SpanDistanceQuery sdq = new SpanDistanceQuery(new SpanTermQuery(
-                new Term("tokens", "tt/p:NN")), new SpanTermQuery(new Term(
-                "tokens", "tt/p:VAFIN")), new DistanceConstraint(5, 5, true,
-                false), true);
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+                new SpanTermQuery(new Term("tokens", "tt/p:NN")),
+                new SpanTermQuery(new Term("tokens", "tt/p:VAFIN")),
+                new DistanceConstraint(5, 5, true, false), true);
 
         // the subspan length is longer than the span length
         SpanSubspanQuery ssq = new SpanSubspanQuery(sdq, 0, 7, true);
@@ -99,10 +99,10 @@ public class TestSubSpanIndex {
     // Length 0
     @Test
     public void testCase3 () {
-        SpanDistanceQuery sdq = new SpanDistanceQuery(new SpanTermQuery(
-                new Term("tokens", "tt/p:NN")), new SpanTermQuery(new Term(
-                "tokens", "tt/p:VAFIN")), new DistanceConstraint(5, 5, true,
-                false), true);
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+                new SpanTermQuery(new Term("tokens", "tt/p:NN")),
+                new SpanTermQuery(new Term("tokens", "tt/p:VAFIN")),
+                new DistanceConstraint(5, 5, true, false), true);
 
         SpanSubspanQuery ssq = new SpanSubspanQuery(sdq, 3, 0, true);
         kr = ki.search(ssq, (short) 10);
@@ -141,8 +141,8 @@ public class TestSubSpanIndex {
                         + "[(3-4)s:c|i:c|_2$<i>4<i>6]");
         ki.addDoc(fd);
         ki.commit();
-        SpanSubspanQuery ssq = new SpanSubspanQuery(new SpanElementQuery(
-                "base", "x"), -1, 1, true);
+        SpanSubspanQuery ssq = new SpanSubspanQuery(
+                new SpanElementQuery("base", "x"), -1, 1, true);
         kr = ki.search(ssq, (short) 10);
 
         /*        

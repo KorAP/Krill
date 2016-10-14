@@ -95,8 +95,8 @@ public class SpanQueryWrapper {
         return this.isOptional;
     };
 
-	
-	public SpanQueryWrapper isOptional (boolean opt) {
+
+    public SpanQueryWrapper isOptional (boolean opt) {
         this.isOptional = opt;
         return this;
     };
@@ -218,6 +218,7 @@ public class SpanQueryWrapper {
         this.isExtendedToTheRight = extended;
         return this;
     };
+
 
     /**
      * Check, if the wrapped query can be used as an
@@ -419,10 +420,10 @@ public class SpanQueryWrapper {
      */
     public String toString () {
         String string = "" + (this.isNull() ? "isNull" : "notNull") + "-"
-			+ (this.isEmpty() ? "isEmpty" : "notEmpty") + "-"
-			+ (this.isOptional() ? "isOptional" : "notOptional") + "-"
-			+ (this.isExtendedToTheRight() ? "isExtendedToTheRight" : "notExtendedToTheRight");
-		;
+                + (this.isEmpty() ? "isEmpty" : "notEmpty") + "-"
+                + (this.isOptional() ? "isOptional" : "notOptional") + "-"
+                + (this.isExtendedToTheRight() ? "isExtendedToTheRight"
+                        : "notExtendedToTheRight");;
         return string;
     };
 };

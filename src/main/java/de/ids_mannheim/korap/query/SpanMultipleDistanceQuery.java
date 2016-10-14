@@ -73,7 +73,7 @@ import de.ids_mannheim.korap.query.spans.MultipleDistanceSpans;
  * </ul>
  * 
  * @author margaretha
- * */
+ */
 public class SpanMultipleDistanceQuery extends SimpleSpanQuery {
 
     private List<DistanceConstraint> constraints;
@@ -106,7 +106,8 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery {
     public SpanMultipleDistanceQuery (SpanQuery firstClause,
                                       SpanQuery secondClause,
                                       List<DistanceConstraint> constraints,
-                                      boolean isOrdered, boolean collectPayloads) {
+                                      boolean isOrdered,
+                                      boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
         this.constraints = constraints;
         this.isOrdered = isOrdered;
@@ -165,7 +166,7 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery {
      * meeting all the constraints.
      * 
      * @return only the span matches meeting all the constraints.
-     * */
+     */
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {

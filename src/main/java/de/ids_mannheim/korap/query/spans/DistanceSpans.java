@@ -29,7 +29,7 @@ import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
  * @see MultipleDistanceSpans
  * 
  * @author margaretha
- * */
+ */
 public abstract class DistanceSpans extends SimpleSpans {
 
     protected CandidateSpan matchFirstSpan, matchSecondSpan;
@@ -88,7 +88,7 @@ public abstract class DistanceSpans extends SimpleSpans {
      * 
      * @return <code>true</code> if a span match is available,
      *         <code>false</code> otherwise.
-     * */
+     */
     protected abstract boolean advance () throws IOException;
 
 
