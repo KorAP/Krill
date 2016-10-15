@@ -1,4 +1,4 @@
-0.55.7 2016-10-11
+0.55.7 2016-10-14
         - [bugfix] Throw error on optional operands in distance
           queries (diewald)
         - [performance] Remember solved problematic queries in the
@@ -8,6 +8,8 @@
         - [feature] Introduced SpanExpansionQueryWrapper (diewald)
         - [performance] Sequences of empty tokens will now be merged into
           a single extension, if possible (diewald)
+        - [bugfix] Fixed paths in test suite for supporting
+          spaces (margaretha)
 
 0.55.6 2016-08-10
         - [bugfix] distance with key "t" uses default foundry (diewald)
