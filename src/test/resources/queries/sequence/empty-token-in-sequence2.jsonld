@@ -1,0 +1,45 @@
+{
+    "@type": "koral:group",
+    "operation": "operation:sequence",
+    "operands": [
+        {
+            "@type": "koral:token",
+            "wrap": {
+                "@type": "koral:term",
+                "key": "der",
+                "layer": "lemma",
+                "match": "match:eq"
+            }
+        },
+        {
+            "@type": "koral:group",
+            "operation": "operation:repetition",
+            "operands": [{"@type": "koral:token"}],
+            "boundary": {
+                "@type": "koral:boundary",
+                "min": 2,
+                "max": 2
+            },
+            "min": 2,
+            "max": 2
+        },
+        {
+            "@type": "koral:group",
+            "operation": "operation:repetition",
+            "operands": [{
+                "@type": "koral:token",
+                "wrap": {
+                    "@type": "koral:term",
+                    "key": "Mann",
+                    "layer": "lemma",
+                    "match": "match:eq"
+                }
+            }],
+            "boundary": {
+                "@type": "koral:boundary",
+                "min": 0,
+                "max": 1
+            }
+        }
+    ]
+}

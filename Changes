@@ -1,4 +1,4 @@
-0.55.7 2016-10-14
+0.55.7 2016-10-28
         - [bugfix] Throw error on optional operands in distance
           queries (diewald)
         - [performance] Remember solved problematic queries in the
@@ -10,6 +10,8 @@
           a single extension, if possible (diewald)
         - [bugfix] Fixed paths in test suite for supporting
           spaces (margaretha)
+        - Added check for minimum repetition (margaretha)
+        - Added deserialization tests for query with empty token (margaretha)
 
 0.55.6 2016-08-10
         - [bugfix] distance with key "t" uses default foundry (diewald)

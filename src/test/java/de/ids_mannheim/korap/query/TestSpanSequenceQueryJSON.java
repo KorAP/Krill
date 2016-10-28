@@ -1,6 +1,5 @@
 package de.ids_mannheim.korap.query;
 
-import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -18,10 +17,11 @@ import de.ids_mannheim.korap.util.QueryException;
  */
 
 @RunWith(JUnit4.class)
-public class TestSpanSequenceQueryJSON {
-
-    static String path = "/queries/sequence/";
-
+public class TestSpanSequenceQueryJSON extends BaseTest{
+    
+    public TestSpanSequenceQueryJSON () {
+        path = "/queries/sequence/";
+    }
 
     // Test Extensions
 
@@ -378,12 +378,5 @@ public class TestSpanSequenceQueryJSON {
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanOr([spanExpansion(tokens:s:Sonne, []{1, 1}, right), spanNext(spanExpansion(tokens:s:Sonne, []{1, 1}, right), tokens:s:Mond)])}))",
                 sqwi.toQuery().toString());
         // Could also be a distance at the end ... that's a query planner thing.
-    };
-
-
-
-    // get query wrapper based on json file
-    public SpanQueryWrapper jsonQueryFile (String filename) {
-        return getJSONQuery(getClass().getResource(path + filename).getFile());
     };
 };
