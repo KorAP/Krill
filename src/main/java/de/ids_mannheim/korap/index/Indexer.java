@@ -1,7 +1,19 @@
 package de.ids_mannheim.korap.index;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.*;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.MissingOptionException;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.store.MMapDirectory;
 import de.ids_mannheim.korap.KrillIndex;
 import static de.ids_mannheim.korap.util.KrillProperties.*;
@@ -18,6 +30,9 @@ import java.nio.file.Paths;
  * 
  * Usage: java -jar Krill-Indexer.jar [--config propfile]
  * [directories]*
+ * 
+ * @author diewald, margaretha
+ *
  */
 public class Indexer {
     KrillIndex index;
@@ -26,9 +41,10 @@ public class Indexer {
 
     // private static String propFile = "krill.properties";
     private static String path = null;
+    private static Pattern jsonFilePattern;
 
     // Init logger
-    private final static Logger log = LoggerFactory.getLogger(KrillIndex.class);
+    private final static Logger log = LoggerFactory.getLogger(Indexer.class);
 
 
     /**
@@ -41,9 +57,9 @@ public class Indexer {
     public Indexer (Properties prop) throws IOException {
         if (this.path == null) {
             this.path = prop.getProperty("krill.indexDir");
-        };
+        }
 
-        System.out.println("Index to " + this.path);
+        log.info("Output directory: " + this.path);
 
         // Default to 1000 documents till the next commit
         String commitCount = prop.getProperty("krill.index.commit.count",
@@ -53,7 +69,9 @@ public class Indexer {
         this.index = new KrillIndex(new MMapDirectory(Paths.get(this.path)));
         this.count = 0;
         this.commitCount = Integer.parseInt(commitCount);
-    };
+
+        jsonFilePattern = Pattern.compile(".*\\.json\\.gz$");
+    }
 
 
     /**
@@ -64,47 +82,51 @@ public class Indexer {
      *            documents to index.
      */
     public void parse (File dir) {
+        Matcher matcher;
         for (String file : dir.list()) {
-            if (file.matches("^[^\\.].+?\\.json\\.gz$")) {
-                String found = dir.getPath() + '/' + file;
-                System.out.print("  Index " + found + " ... ");
+            //log.info("Json file: "+file);
+            matcher = jsonFilePattern.matcher(file);
+            if (matcher.find()) {
+                file = dir.getPath() + '/' + file;
+                log.info("Adding " + file + " to the index. ");
 
                 // Add file to the index
                 try {
-                    if (this.index.addDoc(new FileInputStream(found),
+                    if (this.index.addDoc(new FileInputStream(file),
                             true) == null) {
-                        System.out.println("fail.");
+                        log.warn("fail.");
                         continue;
-                    };
-                    System.out.println("done (" + count + ").");
+                    }
                     this.count++;
+                    log.debug("Finished adding files. (" + count + ").");
 
                     // Commit in case the commit count is reached
                     if ((this.count % this.commitCount) == 0)
                         this.commit();
                 }
                 catch (FileNotFoundException e) {
-                    System.out.println("not found!");
-                };
-            };
-        };
-    };
+                    log.error("File " + file + " is not found!");
+                }
+            }
+            else {
+                log.warn(file + " does not have json.gz format.");
+            }
+        }
+    }
 
 
     /**
      * Commit changes to the index.
      */
     public void commit () {
-        System.out.println("-----");
-        System.out.print("  Commit ... ");
+        log.info("Committing index ... ");
         try {
             this.index.commit();
         }
         catch (IOException e) {
-            System.err.println("Unable to commit to index " + this.path);
-        };
-        System.out.println("done.");
-    };
+            log.error("Unable to commit to index " + this.path);
+        }
+    }
 
 
     /**
@@ -118,75 +140,71 @@ public class Indexer {
      */
     public static void main (String[] argv) throws IOException {
 
-        if (argv.length == 0) {
-            String jar = new File(Indexer.class.getProtectionDomain()
-                    .getCodeSource().getLocation().getPath()).getName();
+        Options options = new Options();
+        options.addOption(Option.builder("c").longOpt("config")
+                .desc("configuration file (defaults to "
+                        + de.ids_mannheim.korap.util.KrillProperties.propStr
+                        + ").")
+                .hasArg().argName("properties file").required().build());
+        options.addOption(Option.builder("i").longOpt("inputDir")
+                .desc("input directories separated by semicolons. The input files "
+                        + "have to be in <filename>.json.gz format. ")
+                .hasArgs().argName("input directories").required()
+                .valueSeparator(new Character(';')).build());
+        options.addOption(Option.builder("o").longOpt("outputDir")
+                .desc("index output directory (defaults to "
+                        + "krill.indexDir in the configuration.")
+                .hasArg().argName("output directory").build());
 
-            System.out.println(
-                    "Add documents from a directory to the Krill index.");
-            System.out.println("Usage: java -jar " + jar
-                    + " [--config propfile] [directories]*");
-            System.out.println();
-            System.err.println("  --config|-c    Configuration file");
-            System.err.println("                 (defaults to "
-                    + de.ids_mannheim.korap.util.KrillProperties.propStr + ")");
-            System.err.println("  --indexDir|-d  Index directory");
-            System.err.println("                 (defaults to krill.indexDir"
-                    + " in configuration)");
-            System.err.println();
-            return;
-        };
+        CommandLineParser parser = new DefaultParser();
 
-        int i = 0;
-        boolean last = false;
         String propFile = null;
+        String[] inputDirectories = null;
+        try {
+            CommandLine cmd = parser.parse(options, argv);
 
-        for (i = 0; i < argv.length; i += 2) {
-            switch (argv[i]) {
-                case "--config":
-                case "-cfg":
-                case "-c":
-                    propFile = argv[i + 1];
-                    break;
-                case "--indexDir":
-                case "-d":
-                    path = argv[i + 1];
-                    break;
-                default:
-                    last = true;
-                    break;
-            };
+            log.info("Configuration file: " + cmd.getOptionValue("c"));
+            propFile = cmd.getOptionValue("c");
+            log.info("Input directories: "
+                    + StringUtils.join(cmd.getOptionValues("i"), ";"));
+            inputDirectories = cmd.getOptionValues("i");
 
-            if (last)
-                break;
-        };
+            if (cmd.hasOption("o")) {
+                log.info("Output directory: " + cmd.getOptionValue("o"));
+                path = cmd.getOptionValue("o");
+            }
+        }
+        catch (MissingOptionException e) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp(
+                    "Krill indexer\n java -jar -c <properties file> -i <input directories> "
+                            + "[-o <output directory>]",
+                    options);
+            System.exit(0);
+        }
+        catch (ParseException e) {
+            log.error("Unexpected error: " + e);
+            e.printStackTrace();
+        }
 
         // Load properties
-        /*
-          InputStream fr = new FileInputStream(argv[0]);
-          prop.load(fr);
-        */
         Properties prop = loadProperties(propFile);
 
         // Get indexer object
         Indexer ki = new Indexer(prop);
 
-        // Empty line
-        System.out.println();
-
         // Iterate over list of directories
-        for (String arg : Arrays.copyOfRange(argv, i, argv.length)) {
+        for (String arg : inputDirectories) {
+            log.info("Indexing files in"+arg);
             File f = new File(arg);
             if (f.isDirectory())
                 ki.parse(f);
-        };
+        }
 
         // Final commit
         ki.commit();
-
+        log.info("Finished indexing.");
         // Finish indexing
-        System.out.println("-----");
-        System.out.println("  Indexed " + ki.count + " files.");
-        System.out.println();
-    };
-};
+        System.out.println("Indexed " + ki.count + " files.");
+    }
+}

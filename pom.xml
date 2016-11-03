@@ -1,341 +1,319 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <!--
-      ** Server
-      # Start the server with
-      $ mvn compile exec:java
+	<!-- ** Server # Start the server with $ mvn compile exec:java # Or after 
+		packaging $ mvn clean package # with $ java -jar target/Krill-Server.jar 
+		** Formatter # Format the code with $ mvn java-formatter:format ** Indexer 
+		after packaging (see above) $ java -jar target/Krill-Indexer.jar -cfg src/main/resources/krill.properties 
+		/data/hdd/lucene-new/WPD/ -->
 
-      # Or after packaging
-      $ mvn clean package
-      # with
-      $ java -jar target/Krill-Server.jar
+	<groupId>de.ids_mannheim.korap</groupId>
+	<artifactId>Krill</artifactId>
+	<version>0.55.7</version>
+	<packaging>jar</packaging>
 
+	<name>Krill</name>
+	<url>http://www.ids-mannheim.de/</url>
 
-      ** Formatter
-      # Format the code with
-      $ mvn java-formatter:format
+	<organization>
+		<name>IDS Mannheim</name>
+		<url>http://www.ids-mannheim.de/</url>
+	</organization>
 
-      ** Indexer after packaging (see above)
-      $ java -jar target/Krill-Indexer.jar
-             -cfg src/main/resources/krill.properties
-             /data/hdd/lucene-new/WPD/
-  -->
+	<developers>
+		<developer>
+			<name>Nils Diewald</name>
+			<email>diewald@ids-mannheim.de</email>
+			<url>http://nils-diewald.de</url>
+		</developer>
+		<developer>
+			<name>Eliza Margaretha</name>
+			<email>margaretha@ids-mannheim.de</email>
+		</developer>
+	</developers>
 
-  <groupId>de.ids_mannheim.korap</groupId>
-  <artifactId>Krill</artifactId>
-  <version>0.55.7</version>
-  <packaging>jar</packaging>
+	<properties>
+		<jersey.version>2.15</jersey.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-  <name>Krill</name>
-  <url>http://www.ids-mannheim.de/</url>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.glassfish.jersey</groupId>
+				<artifactId>jersey-bom</artifactId>
+				<version>${jersey.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
-  <organization>
-    <name>IDS Mannheim</name>
-    <url>http://www.ids-mannheim.de/</url>
-  </organization>
+	<dependencies>
+		<!-- junit dependency -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
 
-  <developers>
-    <developer>
-      <name>Nils Diewald</name>
-      <email>diewald@ids-mannheim.de</email>
-      <url>http://nils-diewald.de</url>
-    </developer>
-    <developer>
-      <name>Eliza Margaretha</name>
-      <email>margaretha@ids-mannheim.de</email>
-    </developer>
-  </developers>
+		<!-- log4j dependency -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+			<version>1.7.5</version>
+		</dependency>
 
-  <properties>
-    <jersey.version>2.15</jersey.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+		<!-- SQLite for database connection tests -->
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.7.2</version>
+		</dependency>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.glassfish.jersey</groupId>
-        <artifactId>jersey-bom</artifactId>
-        <version>${jersey.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+		<!-- Database Connection Pool Manager -->
+		<dependency>
+			<groupId>c3p0</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.1.2</version>
+		</dependency>
 
-  <dependencies>	
-    <!-- junit dependency -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
-    </dependency>
+		<!-- Lucene core dependency -->
+		<dependency>
+			<artifactId>lucene-core</artifactId>
+			<groupId>org.apache.lucene</groupId>
+			<type>jar</type>
+			<version>5.0.0</version>
+		</dependency>
 
-    <!-- log4j dependency -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>jul-to-slf4j</artifactId>
-      <version>1.7.5</version>
-    </dependency>
+		<!-- Lucene queryparser dependency -->
+		<dependency>
+			<artifactId>lucene-queryparser</artifactId>
+			<groupId>org.apache.lucene</groupId>
+			<type>jar</type>
+			<version>5.0.0</version>
+		</dependency>
 
-    <!-- SQLite for database connection tests -->
-    <dependency>
-      <groupId>org.xerial</groupId>
-      <artifactId>sqlite-jdbc</artifactId>
-      <version>3.7.2</version>
-    </dependency>
+		<!-- Lucene analyzers dependency -->
+		<dependency>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<groupId>org.apache.lucene</groupId>
+			<type>jar</type>
+			<version>5.0.0</version>
+		</dependency>
 
-    <!-- Database Connection Pool Manager -->
-    <dependency>
-      <groupId>c3p0</groupId>
-      <artifactId>c3p0</artifactId>
-      <version>0.9.1.2</version>
-    </dependency>
-    
-    <!-- Lucene core dependency -->
-    <dependency>
-      <artifactId>lucene-core</artifactId>
-      <groupId>org.apache.lucene</groupId>
-      <type>jar</type>
-      <version>5.0.0</version>
-    </dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>1.3</version>
+		</dependency>
 
-    <!-- Lucene queryparser dependency -->
-    <dependency>
-      <artifactId>lucene-queryparser</artifactId>
-      <groupId>org.apache.lucene</groupId>
-      <type>jar</type>
-      <version>5.0.0</version>
-    </dependency>
+		<!-- JCache -->
+		<dependency>
+			<groupId>net.sf.jsr107cache</groupId>
+			<artifactId>jsr107cache</artifactId>
+			<version>1.0</version>
+		</dependency>
 
-    <!-- Lucene analyzers dependency -->
-    <dependency>
-      <artifactId>lucene-analyzers-common</artifactId>
-      <groupId>org.apache.lucene</groupId>
-      <type>jar</type>
-      <version>5.0.0</version>
-    </dependency>
+		<!-- Jersey -->
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-grizzly2-http</artifactId>
+		</dependency>
 
-    <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest-core</artifactId>
-      <version>1.3</version>
-    </dependency>
+		<!-- JSON support in Jersey -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+			<version>2.4.4</version>
+		</dependency>
 
-    <!-- JCache -->
-    <dependency>
-      <groupId>net.sf.jsr107cache</groupId>
-      <artifactId>jsr107cache</artifactId>
-      <version>1.0</version>
-    </dependency>
+		<!-- JSON support using Jackson -->
+		<!-- see https://github.com/FasterXML/jackson-core -->
+		<!-- https://github.com/FasterXML/jackson-databind -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.4.4</version>
+		</dependency>
 
-    <!-- Jersey -->
-    <dependency>
-      <groupId>org.glassfish.jersey.containers</groupId>
-      <artifactId>jersey-container-grizzly2-http</artifactId>
-    </dependency>
+		<!-- JSON-LD support -->
+		<!-- <dependency> <groupId>com.github.jsonld-java</groupId> <artifactId>jsonld-java</artifactId> 
+			<version>0.5.2-SNAPSHOT</version> </dependency> Temporarily disable @Experimental 
+			annotation <dependency> <groupId>KorapAnnotationProcessor</groupId> <artifactId>KorapAnnotationProcessor</artifactId> 
+			<version>0.0.1-SNAPSHOT</version> <scope>compile</scope> </dependency> -->
 
-    <!-- JSON support in Jersey -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>2.4.4</version>
-    </dependency>
+		<!-- Some language extensions like StringUtil -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
+		</dependency>
 
-    <!-- JSON support using Jackson -->
-    <!-- see https://github.com/FasterXML/jackson-core -->
-    <!-- https://github.com/FasterXML/jackson-databind -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.4.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.4.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.4.4</version>
-    </dependency>
+		<dependency>
+			<groupId>commons-cli</groupId>
+			<artifactId>commons-cli</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+	</dependencies>
 
-    <!-- JSON-LD support -->
-    <!--
-    <dependency>
-      <groupId>com.github.jsonld-java</groupId>
-      <artifactId>jsonld-java</artifactId>
-      <version>0.5.2-SNAPSHOT</version>
-    </dependency>
+	<build>
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<outputDirectory>${basedir}/bin</outputDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<inherited>true</inherited>
+				<configuration>
+					<showWarnings>true</showWarnings>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
 
-    Temporarily disable @Experimental annotation
-    <dependency>
-      <groupId>KorapAnnotationProcessor</groupId>
-      <artifactId>KorapAnnotationProcessor</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.4.1</version>
+				<executions>
+					<execution>
+						<id>indexer</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>de.ids_mannheim.korap.index.Indexer</mainClass>
+								</transformer>
+							</transformers>
+							<finalName>${project.artifactId}-Indexer</finalName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>server</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>de.ids_mannheim.korap.server.Node</mainClass>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>krill.properties</resource>
+								</transformer>
+							</transformers>
+							<finalName>${project.name}-Server</finalName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
-    <!-- Some language extensions like StringUtil -->
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.3</version>
-    </dependency>
-  </dependencies>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.16</version>
+				<configuration>
+					<excludes>
+						<exclude>**/benchmark/*</exclude>
+						<exclude>**/TestWPDIndex.java</exclude>
+						<exclude>**/TestRealIndex.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
 
-  <build>
-    <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
-    <outputDirectory>${basedir}/bin</outputDirectory>
-    <plugins>
-      <plugin>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<version>2.5.1</version>
-	<inherited>true</inherited>
-	<configuration>
-	  <showWarnings>true</showWarnings>
-	  <source>1.7</source>
-	  <target>1.7</target>
-	</configuration>
-      </plugin>
+			<!-- Formatter plugin for Eclipse based coding conventions http://maven-java-formatter-plugin.googlecode.com/svn/site/0.4/usage.html -->
+			<plugin>
+				<groupId>com.googlecode.maven-java-formatter-plugin</groupId>
+				<artifactId>maven-java-formatter-plugin</artifactId>
+				<version>0.4</version>
+				<configuration>
+					<configFile>${project.basedir}/Format.xml</configFile>
+					<overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
+					<compilerSource>1.7</compilerSource>
+					<compilerCompliance>1.7</compilerCompliance>
+					<compilerTargetPlatform>1.7</compilerTargetPlatform>
+				</configuration>
+			</plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4.1</version>
-        <executions>
-          <execution>
-	    <id>indexer</id>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <transformers>
-                <transformer
-		    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>de.ids_mannheim.korap.index.Indexer</mainClass>
-                </transformer>
-              </transformers>
-	      <finalName>${project.artifactId}-Indexer</finalName>
-            </configuration>
-          </execution>
-          <execution>
-	    <id>server</id>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <transformers>
-                <transformer
-		    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>de.ids_mannheim.korap.server.Node</mainClass>
-                </transformer>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                  <resource>krill.properties</resource>
-                </transformer>
-              </transformers>
-	      <finalName>${project.name}-Server</finalName>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.2.1</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>java</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>de.ids_mannheim.korap.server.Node</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.16</version>
-        <configuration>
-          <excludes>
-            <exclude>**/benchmark/*</exclude>
-            <exclude>**/TestWPDIndex.java</exclude>
-            <exclude>**/TestRealIndex.java</exclude>
-	  </excludes>
-        </configuration>
-      </plugin> 
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>krill.info</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>krill.info</exclude>
+				</excludes>
+			</resource>
+		</resources>
 
-      <!--
-	  Formatter plugin for Eclipse based coding conventions
-	  http://maven-java-formatter-plugin.googlecode.com/svn/site/0.4/usage.html
-      -->
-      <plugin>
-        <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
-        <artifactId>maven-java-formatter-plugin</artifactId>
-        <version>0.4</version>
-	<configuration>
-	  <configFile>${project.basedir}/Format.xml</configFile>
-	  <overrideConfigCompilerVersion>true</overrideConfigCompilerVersion>
-	  <compilerSource>1.7</compilerSource>
-	  <compilerCompliance>1.7</compilerCompliance>
-	  <compilerTargetPlatform>1.7</compilerTargetPlatform>
-	</configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>java</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <mainClass>de.ids_mannheim.korap.server.Node</mainClass>
-        </configuration>
-      </plugin>
-    </plugins>
-
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-	<includes>
-	  <include>krill.info</include>
-	</includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>false</filtering>
-	<excludes>
-	  <exclude>krill.info</exclude>
-	</excludes>
-      </resource>
-    </resources> 
-
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-	<includes>
-	  <include>krill.properties</include>
-	</includes>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>false</filtering>
-	<excludes>
-	  <exclude>krill.properties</exclude>
-	</excludes>
-      </testResource>
-    </testResources> 
-  </build>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>krill.properties</include>
+				</includes>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>krill.properties</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
+	</build>
 </project>
