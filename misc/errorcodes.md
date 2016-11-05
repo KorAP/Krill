@@ -8,6 +8,7 @@
 603: "Unable to commit staged data to index"
 604: "Unable to connect to database"
 610: "Missing request parameters"
+613: Arbitrary deserialization error
 620: "Unable to generate JSON"
 621: "Unable to parse JSON"
 630: "Document not found"
@@ -62,6 +63,8 @@
 769: "Overlap variant currently interpreted as overlap"
 770: "Arity attributes are currently not supported - results may not be correct"
 771: "Arbitrary elements with attributes are currently not supported"
+772: "'Any' elements are currently not supported in position operations"
+773: "Negative elements are currently not supported in position operations"
 780: "This query matches everywhere"
 781: "Optionality of query is ignored"
 782: "Exclusivity of query is ignored"

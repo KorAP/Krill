@@ -96,6 +96,15 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
 
         // TODO: if (wrap.isNegative())
 
+		if (this.element.isEmpty() || this.wrap.isEmpty()) {
+			throw new QueryException(772, "'Any' elements are currently not supported in position operations");
+		};
+
+		if (this.element.isNegative() || this.wrap.isNegative()) {
+			throw new QueryException(773, "Negative elements are currently not supported in position operations");
+		};
+		
+		
         return new SpanWithinQuery(
                 this.element.retrieveNode(this.retrieveNode).toFragmentQuery(),
                 this.wrap.retrieveNode(this.retrieveNode).toFragmentQuery(),
@@ -118,7 +127,7 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
 
     @Override
     public boolean isNegative () {
-        if (this.element.isNegative())
+        if (this.element.isNegative() || this.wrap.isNegative())
             return true;
         return false;
     };

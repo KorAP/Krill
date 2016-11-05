@@ -10,6 +10,7 @@
           a single extension, if possible (diewald)
         - [bugfix] Fixed paths in test suite for supporting
           spaces (margaretha)
+        - [bugfix] Warn on empty elements in positional queries (diewald)
 
 0.55.6 2016-08-10
         - [bugfix] distance with key "t" uses default foundry (diewald)

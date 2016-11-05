@@ -4,7 +4,9 @@ import java.util.*;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
 
+import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
 import static org.junit.Assert.*;
@@ -46,5 +48,18 @@ public class TestSpanWithinQuery {
         assertEquals(
                 "spanStartsWith(<field:s />, spanNext(spanNext(field:a, field:b), field:c))",
                 ssequery.toString());
+    };
+
+	@Test
+    public void spanSegmentStartsWithEmptyQuery () {
+
+		QueryBuilder qb = new QueryBuilder("field1");
+		
+		try {
+			SpanQuery sq = qb.startswith(qb.tag("base/s"), qb.empty()).toQuery();
+		}
+		catch (QueryException qe) {
+			assertEquals(qe.getErrorCode(), 772);
+		};
     };
 };
