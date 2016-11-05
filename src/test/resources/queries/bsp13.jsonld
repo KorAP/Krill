@@ -15,7 +15,7 @@
           "@type": "koral:term", 
           "layer": "pos",
           "key" : "Det", 
-          "match" : "match:ne"
+          "match" : "match:eq"
         }
       }
     ]
