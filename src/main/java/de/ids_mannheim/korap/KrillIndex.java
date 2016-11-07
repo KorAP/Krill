@@ -556,7 +556,7 @@ public final class KrillIndex {
 
         // Fail to add json object
         catch (IOException e) {
-            log.error("File {} not found", json);
+            log.error("File {} not found", json, e);
         };
         return (FieldDocument) null;
     };
