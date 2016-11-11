@@ -141,7 +141,10 @@ public final class ElementSpans extends SimpleSpans {
             bb.put(payload.get(0));
 
             this.payloadTypeIdentifier = bb.get(0);
-            this.matchEndPosition = bb.getInt(9);
+
+            if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT.value) {
+				this.matchEndPosition = bb.getInt(9);
+			};
 
             if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT.value
                     && length > 15) {
@@ -161,7 +164,7 @@ public final class ElementSpans extends SimpleSpans {
             return;
         }
 
-        this.matchEndPosition = this.matchStartPosition;
+		this.matchEndPosition = this.matchStartPosition;
         this.setSpanId((short) -1);
         this.hasSpanId = false;
         this.matchPayload = null;

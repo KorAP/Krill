@@ -403,4 +403,50 @@ public class TestHighlight { // extends LuceneTestCase {
                         + "<span class=\"context-right\"></span>",
                 km.getSnippetHTML());
     };
+
+	
+    @Test
+    public void highlightEmptySpan () throws IOException, QueryException {
+
+        KrillIndex ki = new KrillIndex();
+
+		// <>:s$<b>65<i>38<b>0
+        // <a>x<a>y<a>zhij</a>hij</a>hij</a>hij</a>
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base", "x  y  z  h  i  j  h  i  j  h  i  j  ",
+                "[(0-3)s:x|<>:a$<b>64<i>0<i>3<i>12<b>0]"
+                        + "[(3-6)s:y|<>:a$<b>64<i>3<i>6<i>9<b>0]"
+                        + "[(6-9)s:z|<>:a$<b>64<i>6<i>9<i>6|<>:a$<b>65<i>6]"
+                        + "[(9-12)s:h<b>0]" + "[(12-15)s:i]" + "[(15-18)s:j]"
+                        + "[(18-21)s:h]" + "[(21-24)s:i]" + "[(24-27)s:j]"
+                        + "[(27-30)s:h]" + "[(30-33)s:i]" + "[(33-36)s:j]");
+        ki.addDoc(fd);
+
+        // Commit!
+        ki.commit();
+        QueryBuilder kq = new QueryBuilder("base");
+        SpanQuery q = (SpanQuery) kq.tag("a").toQuery();
+
+		Krill qs = new Krill(q);
+        qs.getMeta().getContext().left.setToken(true).setLength((short) 5);
+        qs.getMeta().getContext().right.setToken(true).setLength((short) 5);
+
+        Result kr = ki.search(qs);
+        assertEquals((long) 4, kr.getTotalResults());
+
+		Match km = kr.getMatch(2);
+		assertEquals(
+			"<span class=\"context-left\">"+
+			"</span>"+
+			"<span class=\"match\">"+
+			"<mark>x  y  z  </mark>"+
+			"</span><span class=\"context-right\">h  i  j  h  i  j  h  i  j  </span>",
+			km.getSnippetHTML());
+
+		km = kr.getMatch(3);
+		assertEquals(
+			"",
+			km.getSnippetHTML());
+
+	};
 };

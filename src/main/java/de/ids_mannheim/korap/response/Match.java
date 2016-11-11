@@ -57,7 +57,7 @@ public class Match extends AbstractDocument {
     private final static Logger log = LoggerFactory.getLogger(Match.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
@@ -989,6 +989,10 @@ public class Match extends AbstractDocument {
         // First element of sorted array
         HighlightCombinatorElement elem = this.snippetArray.getFirst();
 
+		// Untested
+		if (elem == null)
+			return null;
+		
         // Create context
         sb.append("<span class=\"context-left\">");
         if (this.startMore)
@@ -1017,14 +1021,19 @@ public class Match extends AbstractDocument {
             // decrement end
             end--;
         };
-        if (this.endMore)
+
+		if (this.endMore)
             rightContext.append("<span class=\"more\"></span>");
+
         rightContext.append("</span>");
 
         // Iterate through all remaining elements
         sb.append("<span class=\"match\">");
         for (short i = start; i <= end; i++) {
-            sb.append(this.snippetArray.get(i).toHTML(this, level, levelCache));
+			elem = this.snippetArray.get(i);
+			// UNTESTED
+			if (elem != null)
+				sb.append(elem.toHTML(this, level, levelCache));
         };
         sb.append("</span>");
         sb.append(rightContext);
