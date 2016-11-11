@@ -142,7 +142,7 @@ public final class ElementSpans extends SimpleSpans {
 
             this.payloadTypeIdentifier = bb.get(0);
 
-            if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT.value) {
+			if (payloadTypeIdentifier != PayloadTypeIdentifier.MILESTONE.value) {
 				this.matchEndPosition = bb.getInt(9);
 			};
 

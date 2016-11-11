@@ -445,7 +445,7 @@ public class TestHighlight { // extends LuceneTestCase {
 
 		km = kr.getMatch(3);
 		assertEquals(
-			"",
+			"<span class=\"context-left\"><span class=\"match\"></span></span>",
 			km.getSnippetHTML());
 
 	};

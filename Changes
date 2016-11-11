@@ -1,4 +1,4 @@
-0.55.7 2016-11-06
+0.55.7 2016-11-11
         - [bugfix] Throw error on optional operands in distance
           queries (diewald)
         - [performance] Remember solved problematic queries in the
@@ -13,6 +13,7 @@
         - [bugfix] Warn on empty elements in positional queries (diewald)
         - [bugfix] Fix wrong deserialization test with negative element in
           positional queries (diewald)
+        - [bugfix] Fix empty element match visualizations (diewald)
 
 0.55.6 2016-08-10
         - [bugfix] distance with key "t" uses default foundry (diewald)

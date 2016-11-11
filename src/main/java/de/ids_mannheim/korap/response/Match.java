@@ -943,7 +943,7 @@ public class Match extends AbstractDocument {
                     pos = clean.length() - 1;
                 };
 
-                snippetArray.addString(clean.substring(oldPos, pos));
+				snippetArray.addString(clean.substring(oldPos, pos));
 
                 oldPos = pos;
             };
@@ -956,7 +956,7 @@ public class Match extends AbstractDocument {
             };
         };
 
-        if (clean.length() > pos) {
+        if (clean.length() > pos && pos >= 0) {
             snippetArray.addString(clean.substring(pos));
         };
     };
@@ -975,52 +975,52 @@ public class Match extends AbstractDocument {
             log.trace("Create HTML Snippet");
 
         StringBuilder sb = new StringBuilder();
+		StringBuilder rightContext = new StringBuilder();
 
         // Snippet stack sizes
         short start = (short) 0;
         short end = this.snippetArray.size();
-        end--;
 
-        // Set levels for highlights 
-        FixedBitSet level = new FixedBitSet(255);
-        level.set(0, 255);
-        byte[] levelCache = new byte[255];
-
-        // First element of sorted array
-        HighlightCombinatorElement elem = this.snippetArray.getFirst();
-
-		// Untested
-		if (elem == null)
-			return null;
-		
-        // Create context
+		// Create context
         sb.append("<span class=\"context-left\">");
         if (this.startMore)
             sb.append("<span class=\"more\"></span>");
 
-        // First element is textual
-        if (elem.type == 0) {
-            sb.append(elem.toHTML(this, level, levelCache));
-            // Move start position
-            start++;
-        };
-        sb.append("</span>");
+		// Set levels for highlights 
+		FixedBitSet level = new FixedBitSet(255);
+		level.set(0, 255);
+		byte[] levelCache = new byte[255];
 
-        // Last element of sorted array
-        elem = this.snippetArray.getLast();
+		HighlightCombinatorElement elem;
 
-        StringBuilder rightContext = new StringBuilder();
+		end--;
+		if (end > 0) {
 
-        // Create right context, if there is any
-        rightContext.append("<span class=\"context-right\">");
+			// First element of sorted array
+			elem = this.snippetArray.getFirst();
 
-        // Last element is textual
-        if (elem != null && elem.type == 0) {
-            rightContext.append(elem.toHTML(this, level, levelCache));
+			// First element is textual
+			if (elem.type == 0) {
+				sb.append(elem.toHTML(this, level, levelCache));
+				// Move start position
+				start++;
+			};
+			sb.append("</span>");
 
-            // decrement end
-            end--;
-        };
+			// Last element of sorted array
+			elem = this.snippetArray.getLast();
+
+			// Create right context, if there is any
+			rightContext.append("<span class=\"context-right\">");
+
+			// Last element is textual
+			if (elem != null && elem.type == 0) {
+				rightContext.append(elem.toHTML(this, level, levelCache));
+
+				// decrement end
+				end--;
+			};
+		};
 
 		if (this.endMore)
             rightContext.append("<span class=\"more\"></span>");
