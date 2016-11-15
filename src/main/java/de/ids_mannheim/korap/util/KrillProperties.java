@@ -2,27 +2,33 @@ package de.ids_mannheim.korap.util;
 
 import java.util.*;
 import java.io.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import de.ids_mannheim.korap.Krill;
 
-// Todo: Properties may be loaded twice - althogh Java may cache automatically
+/**
+ * 
+ * Todo: Properties may be loaded twice - although Java may cache automatically
+ * 
+ * @author diewald, margaretha
+ *
+ */
 public class KrillProperties {
 
-    public static String propStr = "krill.properties";
-    private static String infoStr = "krill.info";
+    public static final String defaultPropertiesLocation = "krill.properties";
+    public static final String defaultInfoLocation = "krill.info";
     private static Properties prop, info;
 
     // Logger
-    private final static Logger log = LoggerFactory.getLogger(Krill.class);
-
+    private final static Logger log = LoggerFactory
+            .getLogger(KrillProperties.class);
 
     // Load properties from file
-    public static Properties loadProperties () {
+    public static Properties loadDefaultProperties () {
         if (prop != null)
             return prop;
 
-        prop = loadProperties(propStr);
+        prop = loadProperties(defaultPropertiesLocation);
         return prop;
     };
 
@@ -30,22 +36,23 @@ public class KrillProperties {
     // Load properties from file
     public static Properties loadProperties (String propFile) {
         if (propFile == null)
-            return loadProperties();
+            return loadDefaultProperties();
 
         InputStream iFile;
         try {
             iFile = new FileInputStream(propFile);
             prop = new Properties();
             prop.load(iFile);
+
         }
         catch (IOException t) {
             try {
                 iFile = KrillProperties.class.getClassLoader()
                         .getResourceAsStream(propFile);
-
                 if (iFile == null) {
                     log.warn(
-                            "Cannot find {}. Please create it using \"{}.info\" as template.",
+                            "Cannot find {}. Please create it using "
+                            + "\"src/main/resources/krill.properties.info\" as template.",
                             propFile, propFile);
                     return null;
                 };
@@ -68,10 +75,10 @@ public class KrillProperties {
         try {
             info = new Properties();
             InputStream iFile = KrillProperties.class.getClassLoader()
-                    .getResourceAsStream(infoStr);
+                    .getResourceAsStream(defaultInfoLocation);
 
             if (iFile == null) {
-                log.error("Cannot find {}.", infoStr);
+                log.error("Cannot find {}.", defaultInfoLocation);
                 return null;
             };
 

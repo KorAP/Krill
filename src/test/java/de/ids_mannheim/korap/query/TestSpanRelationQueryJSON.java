@@ -70,7 +70,7 @@ public class TestSpanRelationQueryJSON {
 
 
     @Test
-    public void testMatchBothRelationNodeWithAttribute ()
+    public void testMatchBothRelationNodesWithAttribute ()
             throws QueryException {
         String filepath = getClass()
                 .getResource(

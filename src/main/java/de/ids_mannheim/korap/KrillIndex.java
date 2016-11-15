@@ -1,12 +1,11 @@
 package de.ids_mannheim.korap;
 
 // Krill classes
-import de.ids_mannheim.korap.*;
 import de.ids_mannheim.korap.index.*;
 import de.ids_mannheim.korap.response.*;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
-import static de.ids_mannheim.korap.util.KrillProperties.*;
 
 // Lucene classes
 import org.apache.lucene.search.*;
@@ -143,8 +142,8 @@ public final class KrillIndex {
 
     // Some initializations ...
     {
-        Properties prop = loadProperties();
-        Properties info = loadInfo();
+        Properties prop = KrillProperties.loadDefaultProperties();
+        Properties info = KrillProperties.loadInfo();
         if (info != null) {
             this.version = info.getProperty("krill.version");
             this.name = info.getProperty("krill.name");

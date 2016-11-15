@@ -20,6 +20,8 @@ import javax.ws.rs.core.UriBuilder;
 import java.beans.PropertyVetoException;
 
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.util.KrillProperties;
+
 import org.apache.lucene.store.MMapDirectory;
 
 import static de.ids_mannheim.korap.util.KrillProperties.*;
@@ -96,7 +98,7 @@ public class Node {
             };
         };
 
-        Properties prop = loadProperties(propFile);
+        Properties prop = KrillProperties.loadProperties(propFile);
 
         // Node properties
         if (path != null && path.equals(":memory:")) {
