@@ -390,7 +390,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
                 bb.rewind();
 
                 // Split payload at type marker boundaries
-                String[] pls = payloadStr.split("(?=<)|(?<=>)");
+                String[] pls = payloadStr.split("((?=<)|(?<=>))(?!\\A)");
 
                 l = 0; // Bytearray length
 
@@ -404,21 +404,21 @@ public class MultiTerm implements Comparable<MultiTerm> {
                             bb.position(l);
                         };
 
-                        switch (pls[i]) {
+                        switch (pls[i-1]) {
                             case "<b>": // byte
-                                bb.put(Byte.parseByte(pls[i + 1]));
+                                bb.put(Byte.parseByte(pls[i]));
                                 l++;
                                 break;
                             case "<s>": // short
-                                bb.putShort(Short.parseShort(pls[i + 1]));
+                                bb.putShort(Short.parseShort(pls[i]));
                                 l += 2;
                                 break;
                             case "<i>": // integer
-                                bb.putInt(Integer.parseInt(pls[i + 1]));
+                                bb.putInt(Integer.parseInt(pls[i]));
                                 l += 4;
                                 break;
                             case "<l>": // long
-                                bb.putLong(Long.parseLong(pls[i + 1]));
+                                bb.putLong(Long.parseLong(pls[i]));
                                 l += 8;
                                 break;
                         };
