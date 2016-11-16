@@ -16,14 +16,10 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /**
  * Enumeration of span matches, whose two child spans have a specific
- * range of
- * distance (within a min and a max distance) and can be in any order.
- * The unit
- * distance is an element, which can be a sentence or a paragraph for
- * instance.
- * The distance is the difference between the positions of elements
- * containing
- * the spans.
+ * range of distance (within a min and a max distance) and can be in
+ * any order. The unit distance is an element, which can be a sentence
+ * or a paragraph for instance. The distance is the difference between
+ * the positions of elements containing the spans.
  * 
  * @author margaretha
  */

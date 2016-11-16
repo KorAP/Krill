@@ -37,7 +37,7 @@ public class SpanFocusQuery extends SimpleSpanQuery {
     private boolean isSorted = true;
     private boolean matchTemporaryClass = false;
     private boolean removeTemporaryClasses = false;
-    private int windowSize = 10;
+    private int windowSize = 10; // default
 
 
     /**

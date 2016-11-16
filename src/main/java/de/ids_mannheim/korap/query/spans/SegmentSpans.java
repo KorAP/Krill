@@ -13,8 +13,7 @@ import de.ids_mannheim.korap.query.SpanSegmentQuery;
 
 /**
  * SegmentSpans is an enumeration of Span matches in which that two
- * child spans
- * have exactly the same start and end positions.
+ * child spans have exactly the same start and end positions.
  * 
  * @author margaretha
  */

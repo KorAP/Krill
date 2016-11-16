@@ -16,23 +16,18 @@ import de.ids_mannheim.korap.query.spans.MultipleDistanceSpans;
 
 /**
  * SpanMultipleDistanceQuery matches two spans with respect to a list
- * of
- * distance constraints. No repetition of constraints of the same unit
- * type
- * (e.g. word, sentence, paragraph) is allowed. For example, there
- * must only
- * exactly one constraint for word/token-based distance. A
- * SpanDistanceQuery is
- * created for each constraint.<br />
+ * of distance constraints. No repetition of constraints of the same
+ * unit type (e.g. word, sentence, paragraph) is allowed. For example,
+ * there must only exactly one constraint for word/token-based
+ * distance. A SpanDistanceQuery is created for each constraint.<br />
  * <br />
  * Examples:
  * <ul>
  * 
  * <li>
  * Search two terms x and y which are separated by minimum two and
- * maximum three
- * other words within the same sentence. The order of x and y does not
- * matter.
+ * maximum three other words within the same sentence. The order of x
+ * and y does not matter.
  * 
  * <pre>
  * List&lt;DistanceConstraint&gt; constraints = new
@@ -51,10 +46,8 @@ import de.ids_mannheim.korap.query.spans.MultipleDistanceSpans;
  * 
  * <li>
  * Search term x which do <em>not</em> occur with term y in minimum
- * two and
- * maximum three other words and <em>not</em> in the same sentence. X
- * must
- * precede y.
+ * two and maximum three other words and <em>not</em> in the same
+ * sentence. X must precede y.
  * 
  * <pre>
  * List&lt;DistanceConstraint&gt; constraints = new

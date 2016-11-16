@@ -11,23 +11,25 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 
 /**
  * An abstract class for Span enumeration including span match
- * properties
- * and basic methods.
+ * properties and basic methods.
  * 
  * @author margaretha
  */
 public abstract class SimpleSpans extends Spans {
+    protected final Logger log = LoggerFactory.getLogger(SimpleSpans.class);
     private SimpleSpanQuery query;
     protected boolean isStartEnumeration;
     protected boolean collectPayloads;
 
     protected boolean hasMoreSpans;
-    // Warning: enumeration of Spans
+    // Enumeration of Spans
     protected Spans firstSpans, secondSpans;
 
     protected int matchDocNumber, matchStartPosition, matchEndPosition;
@@ -46,7 +48,7 @@ public abstract class SimpleSpans extends Spans {
         matchEndPosition = -1;
         matchPayload = new ArrayList<byte[]>();
         isStartEnumeration = true;
-    };
+    }
 
 
     public SimpleSpans (SimpleSpanQuery simpleSpanQuery,

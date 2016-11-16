@@ -14,11 +14,9 @@ import de.ids_mannheim.korap.query.spans.TermSpansWithId;
 
 /**
  * SpanTermWithIdQuery wraps a SpanTermQuery retrieving TermSpans and
- * add a
- * spanid to the TermSpans. It is used in other spanqueries requiring
- * spans with
- * id as their child spans, for example in span relation with variable
- * query ( {@link SpanRelationPartQuery}).
+ * add a spanid to the TermSpans. It is used in other spanqueries
+ * requiring spans with id as their child spans, for example in span
+ * relation with variable query ( {@link SpanRelationPartQuery}).
  * 
  * <pre>
  * SpanTermWithIdQuery sq = new SpanTermWithIdQuery(new

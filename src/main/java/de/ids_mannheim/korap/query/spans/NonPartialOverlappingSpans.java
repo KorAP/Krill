@@ -8,23 +8,16 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 
 /**
  * An abstract class for Span enumeration whose two child spans are
- * matched by
- * their positions and do not have a partial overlap.
+ * matched by their positions and do not have a partial overlap.
  * 
  * @author margaretha
  */
 public abstract class NonPartialOverlappingSpans extends SimpleSpans {
-
-    private Logger log = LoggerFactory
-            .getLogger(NonPartialOverlappingSpans.class);
-
 
     /**
      * Constructs NonPartialOverlappingSpans from the given

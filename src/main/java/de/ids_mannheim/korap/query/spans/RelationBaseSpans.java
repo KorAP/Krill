@@ -14,12 +14,10 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
 
 /**
  * RelationBaseSpans is a base class for relation spans containing
- * properties
- * about the start and end positions of right side of the relation. It
- * can also
- * store information about the id of the left/right side, for
- * instance, when it
- * is an element or another relation.
+ * properties about the start and end positions of right side of the
+ * relation. It can also store information about the id of the
+ * left/right side, for instance, when it is an element or another
+ * relation.
  * 
  * @author margaretha
  * 
@@ -33,7 +31,7 @@ public abstract class RelationBaseSpans extends SimpleSpans {
 
     public RelationBaseSpans () {
         this.hasSpanId = true;
-    };
+    }
 
 
     /**

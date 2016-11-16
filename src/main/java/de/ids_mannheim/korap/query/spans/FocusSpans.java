@@ -3,7 +3,6 @@ package de.ids_mannheim.korap.query.spans;
 import static de.ids_mannheim.korap.util.KrillByte.byte2int;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -14,8 +13,6 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.TermState;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.Bits;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 
@@ -47,7 +44,6 @@ import de.ids_mannheim.korap.query.SpanFocusQuery;
 public class FocusSpans extends SimpleSpans {
     private List<Byte> classNumbers;
     private SpanQuery query;
-    private final Logger log = LoggerFactory.getLogger(FocusSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;

@@ -10,8 +10,6 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanNextQuery;
 
@@ -32,9 +30,6 @@ public class NextSpans extends SimpleSpans {
     private List<CandidateSpan> candidateList;
     private int candidateListDocNum;
     private boolean hasMoreFirstSpan;
-
-    private Logger log = LoggerFactory.getLogger(NextSpans.class);
-
 
     /**
      * Constructs NextSpans for the given {@link SpanNextQuery}.

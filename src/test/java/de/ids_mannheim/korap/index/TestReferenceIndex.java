@@ -35,40 +35,32 @@ public class TestReferenceIndex {
         ki.addDoc(TestRelationIndex.createFieldDoc2());
         ki.commit();
 
-        SpanTermQuery seq1 = new SpanTermQuery(new Term("base", "pos:V"));
-        SpanElementQuery seq2 = new SpanElementQuery("base", "np");
-        SpanClassQuery scq1 = new SpanClassQuery(seq1, (byte) 1);
-        SpanClassQuery scq2 = new SpanClassQuery(seq2, (byte) 2);
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "pos:V"));
+        SpanElementQuery seq = new SpanElementQuery("base", "np");
+        SpanClassQuery scq1 = new SpanClassQuery(stq, (byte) 1);
+        SpanClassQuery scq2 = new SpanClassQuery(seq, (byte) 2);
         SpanNextQuery snq1 = new SpanNextQuery(scq1, scq2);
 
         SpanFocusQuery sfq1 = new SpanFocusQuery(snq1, (byte) 2);
 
         SpanRelationQuery srq = new SpanRelationQuery(
                 new SpanTermQuery(new Term("base", "<:child-of")), true);
-        // SpanSegmentQuery ssq = new SpanSegmentQuery(srq, sfq1,
-        // true);
-        // SpanFocusQuery sfq2 = new SpanFocusQuery(ssq, (byte) 1);
-        // sfq2.setSorted(false);
-        // sfq2.setMatchTemporaryClass(false);
 
-        SpanElementQuery seq3 = new SpanElementQuery("base", "pp");
-        SpanClassQuery scq3 = new SpanClassQuery(seq3, (byte) 3);
-        // SpanSegmentQuery ssq2 = new SpanSegmentQuery(sfq2, scq3,
-        // true);
+        SpanElementQuery seq2 = new SpanElementQuery("base", "pp");
+        SpanClassQuery scq3 = new SpanClassQuery(seq2, (byte) 3);
 
         SpanRelationMatchQuery rq = new SpanRelationMatchQuery(srq, sfq1, scq3,
                 true);
-
-        // System.out.println(rq.toString());
-        SpanFocusQuery sfq3 = new SpanFocusQuery(rq, (byte) 1);
+        
+        // focus on np
+        SpanFocusQuery sfq2 = new SpanFocusQuery(rq, (byte) 1);
 
         DistanceConstraint constraint = new DistanceConstraint(3, 3, true,
                 false);
-        SpanDistanceQuery sdq = new SpanDistanceQuery(sfq3, scq3, constraint,
+        SpanDistanceQuery sdq = new SpanDistanceQuery(sfq2, scq3, constraint,
                 true);
 
         SpanReferenceQuery ref = new SpanReferenceQuery(sdq, (byte) 3, true);
-        // System.out.println(ref.toString());
 
         kr = ki.search(ref, (short) 10);
         /*
@@ -78,7 +70,8 @@ public class TestReferenceIndex {
          * + " " + km.getSnippetBrackets()); }
          * System.out.println(kr.getTotalResults());
          */
-
+        
+        // cat=V & cat=np & cat=pp & #1 . #2 & #3 ->child-of #2 & #1 .{3,3} #3
         assertEquals(
                 "spanReference(spanDistance(focus(1: focus(#[1,2]spanSegment("
                         + "focus(#1: spanSegment(spanRelation(base:<:child-of), focus(2: spanNext("
@@ -100,7 +93,7 @@ public class TestReferenceIndex {
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
-        // cat="vb" & cat="prp" & cat="nn" & #1 .notordered #2 & #1
+        // cat="vb" & cat="prp" & cat="nn" & #1 .{0,1} #2 & #1
         // .{0,2} #3 & #3 -> #2
 
         assertEquals(

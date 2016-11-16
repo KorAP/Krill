@@ -14,12 +14,9 @@ import de.ids_mannheim.korap.query.spans.SubSpans;
 
 /**
  * This query extracts a subspan from another span. The subspan starts
- * from a
- * startOffset until startOffset + length. A positive startOffset is
- * counted
- * from the start of the span, while a negative startOffset is
- * calculated from
- * the end of the span. <br />
+ * from a startOffset until startOffset + length. A positive
+ * startOffset is counted from the start of the span, while a negative
+ * startOffset is calculated from the end of the span. <br />
  * <br />
  * SpanSubspanQuery takes a SpanQuery as its input and creates
  * subspans from the

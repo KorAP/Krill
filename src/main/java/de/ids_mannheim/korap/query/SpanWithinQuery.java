@@ -2,27 +2,20 @@ package de.ids_mannheim.korap.query;
 
 // Based on SpanNearQuery
 import java.io.IOException;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.WithinSpans;
-import de.ids_mannheim.korap.query.SpanElementQuery;
 
 
 /**

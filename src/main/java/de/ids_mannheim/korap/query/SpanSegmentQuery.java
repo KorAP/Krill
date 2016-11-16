@@ -117,7 +117,7 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
             return false;
 
         return getBoost() == spanSegmentQuery.getBoost();
-    };
+    }
 
 
     @Override
@@ -137,6 +137,5 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
 
     public void setRelation (boolean isRelation) {
         this.isRelation = isRelation;
-    };
-
+    }
 }

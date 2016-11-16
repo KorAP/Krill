@@ -14,13 +14,11 @@ import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
-import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRelationMatchQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
-import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 
 /*

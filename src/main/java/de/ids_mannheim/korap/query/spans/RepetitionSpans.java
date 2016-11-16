@@ -20,8 +20,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Enumeration of spans occurring multiple times in a sequence. The
- * number of
- * repetition depends on the min and max parameters.
+ * number of repetition depends on the min and max parameters.
  * 
  * @author margaretha
  */

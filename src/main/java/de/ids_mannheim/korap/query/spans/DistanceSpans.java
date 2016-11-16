@@ -7,20 +7,16 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 
 /**
  * DistanceSpan is a base class for enumeration of span matches, whose
- * two child
- * spans have a specific range of distance (within a min and a max
- * distance) and
- * other constraints (i.e. order and co-occurrence) depending on the
- * {@link SpanDistanceQuery}. All distance related spans extends this
- * class.
+ * two child spans have a specific range of distance (within a min and
+ * a max distance) and other constraints (i.e. order and
+ * co-occurrence) depending on the {@link SpanDistanceQuery}. All
+ * distance related spans extends this class.
  * 
  * @see DistanceExclusionSpans
  * @see ElementDistanceExclusionSpans
@@ -33,7 +29,6 @@ import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 public abstract class DistanceSpans extends SimpleSpans {
 
     protected CandidateSpan matchFirstSpan, matchSecondSpan;
-    protected Logger log = LoggerFactory.getLogger(DistanceSpans.class);
     protected boolean exclusion; // for MultipleDistanceQuery
 
 

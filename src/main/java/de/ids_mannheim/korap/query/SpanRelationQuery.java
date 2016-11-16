@@ -18,12 +18,10 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
 
 /**
  * SpanRelationQuery retrieves spans representing a relation between
- * tokens,
- * elements, or a-token-and-an-element. Relation are marked with
- * prefix "<" or
- * ">". The direction of the angle bracket represents the direction of
- * the
- * corresponding relation. By default, the relation is set ">".
+ * tokens, elements, or a-token-and-an-element. Relation are marked
+ * with prefix "<" or ">". The direction of the angle bracket
+ * represents the direction of the corresponding relation. By default,
+ * the relation is set ">".
  * <br/><br/>
  * 
  * This class provides two types of query:
@@ -38,11 +36,10 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  * </pre>
  * </li>
  * <li>querying relations matching a certain type of sources/targets,
- * that are the
- * left or the right sides of the relations. This query is used within
- * {@link SpanRelationPartQuery}, for instance, to retrieve all
- * dependency relations
- * "<:xip/syntax-dep_rel" whose sources (right side) are noun phrases.
+ * that are the left or the right sides of the relations. This query
+ * is used within {@link SpanRelationPartQuery}, for instance, to
+ * retrieve all dependency relations "<:xip/syntax-dep_rel" whose
+ * sources (right side) are noun phrases.
  * <pre>
  * SpanRelationPartQuery rv =
  * new SpanRelationPartQuery(sq, new SpanElementQuery("tokens","np"),

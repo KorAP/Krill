@@ -23,15 +23,12 @@ import de.ids_mannheim.korap.query.spans.NextSpans;
 
 /**
  * SpanNextQuery matches two spans which are directly next to each
- * other. It is
- * identical to a phrase query with exactly two clauses.
+ * other. It is identical to a phrase query with exactly two clauses.
  * 
  * In the example below, the SpanNextQuery retrieves {@link NextSpans}
- * starting
- * from the start position of {@link TermSpans} "turn" and ending at
- * the end
- * position of {@link TermSpans} "off" occurring immediately after the
- * {@link TermSpans} "turn".
+ * starting from the start position of {@link TermSpans} "turn" and
+ * ending at the end position of {@link TermSpans} "off" occurring
+ * immediately after the {@link TermSpans} "turn".
  * 
  * <pre>
  * SpanNextQuery sq = new SpanNextQuery(
@@ -61,7 +58,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
      */
     public SpanNextQuery (SpanQuery firstClause, SpanQuery secondClause) {
         this(firstClause, secondClause, true);
-    };
+    }
 
 
     /**
@@ -84,7 +81,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
     public SpanNextQuery (SpanQuery firstClause, SpanQuery secondClause,
                           boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
-    };
+    }
 
 
     @Override
@@ -92,7 +89,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
     public Spans getSpans (final LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
         return (Spans) new NextSpans(this, context, acceptDocs, termContexts);
-    };
+    }
 
 
     @Override
@@ -102,7 +99,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
                 (SpanQuery) secondClause.clone(), collectPayloads);
         spanNextQuery.setBoost(getBoost());
         return spanNextQuery;
-    };
+    }
 
 
     /*
@@ -133,7 +130,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
             return clone;
 
         return this;
-    };
+    }
 
 
     @Override
@@ -167,10 +164,9 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
             return false;
 
         return getBoost() == spanNextQuery.getBoost();
-    };
+    }
 
 
-    // I don't know what I am doing here
     @Override
     public int hashCode () {
         int result;
@@ -178,5 +174,5 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
         result ^= (result << 31) | (result >>> 2); // reversible
         result += Float.floatToRawIntBits(getBoost());
         return result;
-    };
-};
+    }
+}

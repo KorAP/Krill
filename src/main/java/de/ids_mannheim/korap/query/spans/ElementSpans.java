@@ -2,7 +2,6 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -21,8 +20,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 
 /**
  * Enumeration of spans representing elements such as phrases,
- * sentences and
- * paragraphs. Span length is stored as a payload.
+ * sentences and paragraphs. Span length is stored as a payload.
  * 
  * Depth and certainty value payloads have not been loaded and handled
  * yet.
@@ -38,8 +36,6 @@ public final class ElementSpans extends SimpleSpans {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    private byte[] b = new byte[10];
-
     public static enum PayloadTypeIdentifier {
         ELEMENT(64),
         // ELEMENT_WITH_TUI(65),
@@ -48,7 +44,6 @@ public final class ElementSpans extends SimpleSpans {
         MILESTONE(65);
 
         private byte value;
-
 
         private PayloadTypeIdentifier (int value) {
             this.value = (byte) value;
@@ -142,9 +137,9 @@ public final class ElementSpans extends SimpleSpans {
 
             this.payloadTypeIdentifier = bb.get(0);
 
-			if (payloadTypeIdentifier != PayloadTypeIdentifier.MILESTONE.value) {
-				this.matchEndPosition = bb.getInt(9);
-			};
+            if (payloadTypeIdentifier != PayloadTypeIdentifier.MILESTONE.value) {
+                this.matchEndPosition = bb.getInt(9);
+            };
 
             if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT.value
                     && length > 15) {
@@ -164,7 +159,7 @@ public final class ElementSpans extends SimpleSpans {
             return;
         }
 
-		this.matchEndPosition = this.matchStartPosition;
+        this.matchEndPosition = this.matchStartPosition;
         this.setSpanId((short) -1);
         this.hasSpanId = false;
         this.matchPayload = null;

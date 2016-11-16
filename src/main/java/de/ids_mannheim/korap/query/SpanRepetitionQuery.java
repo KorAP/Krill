@@ -15,18 +15,15 @@ import de.ids_mannheim.korap.query.spans.RepetitionSpans;
 
 /**
  * SpanRepetitionQuery means that the given SpanQuery must appears
- * multiple
- * times in a sequence. The number of repetition depends on the
- * minimum and the
- * maximum number parameters. <br />
+ * multiple times in a sequence. The number of repetition depends on
+ * the minimum and the maximum number parameters. <br />
  * <br />
  * 
  * In the example below, SpanRepetitionQuery retrieves
  * {@link RepetitionSpans} consisting of the TermSpans "tt:p/ADJ" that
- * must appear at least once or
- * consecutively two times. What appears after the RepetitionSpans is
- * not
- * considered, so it is possible that it is another "tt:p/ADJ". <br />
+ * must appear at least once or consecutively two times. What appears
+ * after the RepetitionSpans is not considered, so it is possible that
+ * it is another "tt:p/ADJ". <br />
  * <br />
  * 
  * <pre>
@@ -51,7 +48,6 @@ import de.ids_mannheim.korap.query.spans.RepetitionSpans;
 public class SpanRepetitionQuery extends SimpleSpanQuery {
 
     private int min, max;
-
 
     /**
      * Constructs a SpanRepetitionQuery for the given

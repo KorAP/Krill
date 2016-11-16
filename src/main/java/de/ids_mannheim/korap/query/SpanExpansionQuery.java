@@ -16,18 +16,13 @@ import de.ids_mannheim.korap.query.spans.ExpandedSpans;
 
 /**
  * SpanExpansionQuery makes a span longer by stretching out the start
- * or the end
- * position of the span. The constraints of the expansion, such as how
- * large the
- * expansion should be (min and max position) and the direction of the
- * expansion
- * with respect to the original span, are specified in
- * ExpansionConstraint. The
- * direction is designated with the sign of a number, namely a
- * negative number
+ * or the end position of the span. The constraints of the expansion,
+ * such as how large the expansion should be (min and max position)
+ * and the direction of the expansion with respect to the original
+ * span, are specified in ExpansionConstraint. The direction is
+ * designated with the sign of a number, namely a negative number
  * signifies the left direction, and a positive number (including 0)
- * signifies
- * the right direction.
+ * signifies the right direction.
  * 
  * <pre>
  * SpanTermQuery stq = new SpanTermQuery(new Term(&quot;tokens&quot;,

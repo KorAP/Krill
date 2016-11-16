@@ -12,6 +12,14 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SpanReferenceQuery;
 
+/**
+ * Resolves a reference to some class by searching for the class
+ * payload
+ * in the payloads of the subspans (firstspans).
+ * 
+ * @author margaretha
+ *
+ */
 public class ReferenceSpans extends SimpleSpans {
 
     private byte classNum;
@@ -42,6 +50,16 @@ public class ReferenceSpans extends SimpleSpans {
     }
 
 
+    /**
+     * Iterates over the payloads of the firstspans and looks for a
+     * payload having the same class number as referenced spans. If
+     * there are more than one payloads with the same class number,
+     * but different start and end positions, the method will return
+     * false.
+     * 
+     * @return true, if such a payload is found, false, otherwise.
+     * @throws IOException
+     */
     private boolean hasSameClassPosition () throws IOException {
         int start = 0, end = 0;
         boolean isFound = false;
