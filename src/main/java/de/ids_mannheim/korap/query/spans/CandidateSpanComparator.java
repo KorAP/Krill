@@ -2,6 +2,14 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.util.Comparator;
 
+/**
+ * Compares the positions of two CandidateSpans. The CandidateSpan
+ * with lower document number, start position and end position is
+ * ordered before the other CandidateSpan.
+ * 
+ * @author margaretha
+ *
+ */
 public class CandidateSpanComparator implements Comparator<CandidateSpan> {
 
     @Override

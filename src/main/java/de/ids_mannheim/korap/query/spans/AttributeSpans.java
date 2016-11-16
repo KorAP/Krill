@@ -19,28 +19,22 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 
 /**
- * UPDATE THIS!
  * Span enumeration of attributes which are term spans with special
- * payload
- * assignments referring to another span (e.g. element/relation span)
- * to which
- * an attribute span belongs. The class is basically a wrapper of
- * Lucene {@link TermSpans} with additional functionality regarding
- * element/relation
+ * payload assignments referring to another span (e.g.
+ * element/relation span) to which an attribute span belongs. The
+ * class is basically a wrapper of Lucene {@link TermSpans} with
+ * additional functionality regarding element/relation
  * reference. Element/relation id is annotated ascendingly starting
- * from the
- * left side. <br/>
- * <br/>
+ * from the left side.
+ * <br/><br/>
  * The enumeration is ordered firstly by the start position of the
- * attribute and
- * secondly by the element/relation id descendingly. This order helps
- * to match
- * element and attributes faster.
+ * attribute and secondly by the element/relation id descendingly.
+ * This order helps to match element and attributes faster.
  * 
- * AttributeSpans contain information about the elements they belongs
- * to, thus
- * querying them alone is sufficient to get
- * "any element having a specific attribute".
+ * AttributeSpans have the same start and end positions of the
+ * element/relations they belongs to, thus querying them alone
+ * is sufficient to get "any element having a specific
+ * attribute".
  * 
  * @author margaretha
  */
@@ -58,6 +52,11 @@ public class AttributeSpans extends SimpleSpans {
 
         private PayloadTypeIdentifier (int value) {
             this.value = value;
+        }
+
+
+        public int getValue () {
+            return value;
         }
     }
 
@@ -101,8 +100,7 @@ public class AttributeSpans extends SimpleSpans {
 
     /**
      * Moves to the next match by checking the candidate match list or
-     * setting
-     * the list first when it is empty.
+     * setting the list first when it is empty.
      * 
      * @return true if a match is found
      * @throws IOException
@@ -132,10 +130,9 @@ public class AttributeSpans extends SimpleSpans {
 
     /**
      * Collects all the attributes in the same start position and sort
-     * them by
-     * element/relation Id in a reverse order (the ones with the
-     * bigger
-     * element/relation Id first).
+     * them by element/relation Id in a reverse order (the ones with
+     * the
+     * bigger element/relation Id first).
      * 
      * @throws IOException
      */
@@ -155,8 +152,7 @@ public class AttributeSpans extends SimpleSpans {
 
     /**
      * Creates a CandidateAttributeSpan based on the child span and
-     * set the
-     * spanId and elementEnd from its payloads.
+     * set the spanId and elementEnd from its payloads.
      * 
      * @param firstSpans
      *            an AttributeSpans
@@ -169,21 +165,10 @@ public class AttributeSpans extends SimpleSpans {
 
         byte payloadTypeIdentifier = payloadBuffer.get(0);
         short spanId = payloadBuffer.getShort(5);
-        // if (payload.get(0).length == 6) {
         int end = payloadBuffer.getInt(1);
 
         return new CandidateAttributeSpan(firstSpans, payloadTypeIdentifier,
                 spanId, end);
-
-        // }
-        // else if (payload.get(0).length == 10) {
-        // start = wrapper.getInt(0);
-        // end = wrapper.getInt(4);
-        // spanId = wrapper.getShort(8);
-        // return new CandidateAttributeSpan(firstSpans, spanId, start, end);
-        // }
-
-        // throw new NullPointerException("Missing element end in payloads.");
     }
 
 
@@ -234,14 +219,11 @@ public class AttributeSpans extends SimpleSpans {
 
     /**
      * CandidateAttributeSpan contains information about an Attribute
-     * span. All
-     * attribute spans occurring in an identical position are
-     * collected as
-     * CandidateAttributeSpans. The list of these
-     * CandidateAttributeSpans are
-     * sorted based on the span ids to which the attributes belong to.
-     * The
-     * attributes with smaller spanIds come first on the list.
+     * span. All attribute spans occurring in an identical position
+     * are collected as CandidateAttributeSpans. The list of these
+     * CandidateAttributeSpans are sorted based on the span ids to
+     * which the attributes belong to. The attributes with smaller
+     * spanIds come first on the list.
      * 
      */
     class CandidateAttributeSpan extends CandidateSpan
@@ -276,14 +258,6 @@ public class AttributeSpans extends SimpleSpans {
             this.payloadTypeIdentifier = payloadTypeIdenfitier;
         }
 
-
-        // public CandidateAttributeSpan (Spans span, short spanId, int start,
-        // int end) throws IOException {
-        // super(span);
-        // setSpanId(spanId);
-        // this.start = start;
-        // this.end = end;
-        // }
 
         @Override
         public int compareTo (CandidateSpan o) {

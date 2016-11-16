@@ -12,6 +12,13 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.FocusSpans;
 
+/**
+ * Matches the source and/or target of a SpanRelationQuery to specific
+ * SpanQueries.
+ * 
+ * @author margaretha
+ *
+ */
 public class SpanRelationMatchQuery extends SimpleSpanQuery {
 
     private SpanQuery operandQuery;
@@ -19,10 +26,25 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
     private SpanRelationQuery relationQuery;
 
 
+    /**
+     * Matches the left node of the given relation with the given
+     * SpanQuery.
+     * 
+     * @param relation
+     *            a SpanRelationQuery
+     * @param spanQuery
+     *            a SpanQuery
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise
+     *            <code>false</code>.
+     */
     public SpanRelationMatchQuery (SpanRelationQuery relation,
-                                   SpanQuery operand, boolean collectPayloads) {
+                                   SpanQuery spanQuery,
+                                   boolean collectPayloads) {
 
-        checkVariables(relation, operand);
+        checkArguments(relation, spanQuery);
         SpanFocusQuery sq = new SpanFocusQuery(
                 new SpanSegmentQuery(relationQuery, operandQuery, true),
                 relation.getTempClassNumbers());
@@ -36,10 +58,26 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
     }
 
 
+    /**
+     * Matches both the source and target of the given relations with
+     * the given operands.
+     * 
+     * @param relation
+     *            a SpanRelationQuery
+     * @param source
+     *            a SpanQuery
+     * @param target
+     *            a SpanQuery
+     * @param collectPayloads
+     *            a boolean flag representing the value
+     *            <code>true</code> if payloads are to be collected,
+     *            otherwise
+     *            <code>false</code>.
+     */
     public SpanRelationMatchQuery (SpanRelationQuery relation, SpanQuery source,
                                    SpanQuery target, boolean collectPayloads) {
 
-        checkVariables(relation, source, target);
+        checkArguments(relation, source, target);
         SpanFocusQuery sq = null;
         SpanFocusQuery sq2 = null;
         // match source and then target
@@ -76,30 +114,53 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
     }
 
 
-    public void checkVariables (SpanRelationQuery relation, SpanQuery operand) {
+    /**
+     * Checks if the SpanRelationQuery and the SpanQuery are not null
+     * and if the SpanQuery has the same field as the
+     * SpanRelationQuery.
+     * 
+     * @param relation
+     *            SpanRelationQery
+     * @param spanQuery
+     *            SpanQuery
+     */
+    public void checkArguments (SpanRelationQuery relation,
+            SpanQuery spanQuery) {
         if (relation == null) {
             throw new IllegalArgumentException(
                     "The relation query cannot be null.");
         }
-        if (operand == null) {
+        if (spanQuery == null) {
             throw new IllegalArgumentException(
                     "The operand query cannot be null.");
         }
         this.field = relation.getField();
-        if (!operand.getField().equals(field)) {
+        if (!spanQuery.getField().equals(field)) {
             throw new IllegalArgumentException(
                     "Clauses must have the same field.");
         }
         this.relationQuery = relation;
-        this.operandQuery = operand;
+        this.operandQuery = spanQuery;
     }
 
 
-    public void checkVariables (SpanRelationQuery relation, SpanQuery operand,
+    /**
+     * Checks if the SpanRelationQuery and the source and target
+     * SpanQuery are not null and if the SpanQueries have the same
+     * field as the SpanRelationQuery.
+     * 
+     * @param relation
+     *            SpanRelationQery
+     * @param source
+     *            SpanQuery
+     * @param target
+     *            SpanQuery
+     */
+    public void checkArguments (SpanRelationQuery relation, SpanQuery source,
             SpanQuery target) {
-        checkVariables(relation, operand);
+        checkArguments(relation, source);
         if (target == null) {
-            if (operand == null) {
+            if (source == null) {
                 throw new IllegalArgumentException(
                         "The target query cannot be null.");
             }
