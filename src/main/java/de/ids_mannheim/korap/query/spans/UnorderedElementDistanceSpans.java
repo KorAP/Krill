@@ -98,10 +98,8 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
     /**
      * Adds all the spans occurring in the current document, as
-     * CandidateSpans
-     * to the specified candidate list, and tells if the enumeration
-     * of the
-     * spans has finished, or not.
+     * CandidateSpans to the specified candidate list, and tells if
+     * the enumeration of the spans has finished, or not.
      * 
      * @param span
      *            a Span
@@ -133,8 +131,8 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
     /**
      * Finds the element position of the specified span in the element
-     * list or
-     * by advancing the element spans until encountering the span.
+     * list or by advancing the element spans until encountering the
+     * span.
      * 
      * @param span
      *            a Span
@@ -161,6 +159,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      * Advances the element spans until encountering the given span.
      * 
      * @param span
+     *            a span
      * @return <code>true</code> if such an element is found,
      *         <code>false</code>
      *         if the span is not in an element.
@@ -212,8 +211,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
     /**
      * Tells if the target and candidate spans are not too far from
-     * each other
-     * (within the maximum distance).
+     * each other (within the maximum distance).
      * 
      * @return <code>true</code> if the target and candidate spans are
      *         within
@@ -240,7 +238,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
     @Override
     protected List<CandidateSpan> findMatches (CandidateSpan target,
-            List<CandidateSpan> candidateList) {
+            List<CandidateSpan> candidateList, boolean isTargetFirstSpan) {
 
         List<CandidateSpan> matches = new ArrayList<>();
 
@@ -251,14 +249,47 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
             actualDistance = Math.abs(targetPos - cs.getPosition());
 
             if (minDistance == 0 && actualDistance == 0) {
-                matches.add(createMatchCandidate(target, cs, true));
+                matches.add(createMatchCandidate(target, cs, true,
+                        isTargetFirstSpan));
                 continue;
             }
 
             if (minDistance <= actualDistance && actualDistance <= maxDistance)
-                matches.add(createMatchCandidate(target, cs, false));
+                matches.add(createMatchCandidate(target, cs, false,
+                        isTargetFirstSpan));
         }
         return matches;
+    }
+
+
+    /**
+     * Creates a match from the two given spans (target and candidate)
+     * 
+     * @param target
+     *            the target span
+     * @param cs
+     *            the candidate span
+     * @param isDistanceZero
+     *            true if the distance between the two spans are zero,
+     *            false otherwise
+     * @param isTargetFirstSpan
+     *            true is the target span is of the first span, false
+     *            otherwise
+     * @return a match
+     */
+    private CandidateSpan createMatchCandidate (CandidateSpan target,
+            CandidateSpan cs, boolean isDistanceZero,
+            boolean isTargetFirstSpan) {
+        CandidateSpan match = createMatchCandidate(target, cs, isDistanceZero);
+        if (isTargetFirstSpan) {
+            match.setChildSpan(target);
+            match.setSecondChildSpan(cs);
+        }
+        else {
+            match.setChildSpan(cs);
+            match.setSecondChildSpan(target);
+        }
+        return match;
     }
 
 
@@ -271,10 +302,8 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
     /**
      * Reduces the number of elements kept in the element list by
-     * removing the
-     * elements whose position is smaller than or identical to the
-     * position of
-     * the last target span.
+     * removing the elements whose position is smaller than or
+     * identical to the position of the last target span.
      * 
      * @param position
      *            the last target span position
