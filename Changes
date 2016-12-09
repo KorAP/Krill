@@ -1,4 +1,5 @@
 0.55.7 2016-11-24
+        - [bugfix] Sorted results in unordered element distance query results
         - [bugfix] Throw error on optional operands in distance
           queries (diewald)
         - [performance] Remember solved problematic queries in the
