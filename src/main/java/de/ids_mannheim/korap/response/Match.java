@@ -57,7 +57,7 @@ public class Match extends AbstractDocument {
     private final static Logger log = LoggerFactory.getLogger(Match.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();

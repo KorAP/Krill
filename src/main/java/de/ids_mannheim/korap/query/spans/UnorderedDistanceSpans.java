@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.query.spans;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +18,8 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
 /**
  * Enumeration of span matches, whose two child spans have a specific
- * range of
- * distance (within a minimum and a maximum distance) and can occur in
- * any
- * order.
+ * range of distance (within a minimum and a maximum distance) and can
+ * occur in any order.
  * 
  * @author margaretha
  */
@@ -31,7 +30,6 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
     protected List<CandidateSpan> firstSpanList, secondSpanList;
     protected List<CandidateSpan> matchList;
     private long matchCost;
-    private int matchListSpanNum;
     protected int currentDocNum;
 
 
@@ -80,14 +78,10 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
 
     /**
      * Updates the firstSpanList and secondSpanList by adding the next
-     * possible
-     * first and second spans. Both the spans must be in the same
-     * document. In
-     * UnorderedElementDistanceSpans, a span that is not in an element
-     * (distance
-     * unit), is not added to its candidate list. The element must
-     * also be in
-     * the same document.
+     * possible first and second spans. Both the spans must be in the
+     * same document. In UnorderedElementDistanceSpans, a span that is
+     * not in an element (distance unit), is not added to its
+     * candidate list. The element must also be in the same document.
      * 
      * @return <code>true</code> if at least one of the candidate
      *         lists can be
@@ -112,16 +106,16 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
                 hasMoreFirstSpans, secondSpanList);
         hasMoreSecondSpans = setCandidateList(secondSpanList, secondSpans,
                 hasMoreSecondSpans, firstSpanList);
-        // System.out.println("--------------------");
-        // System.out.println("firstSpanList:");
-        // for (CandidateSpan cs : firstSpanList) {
-        // System.out.println(cs.getStart() + " " + cs.getEnd());
-        // }
-        //
-        // System.out.println("secondSpanList:");
-        // for (CandidateSpan cs : secondSpanList) {
-        // System.out.println(cs.getStart() + " " + cs.getEnd());
-        // }
+        //         System.out.println("--------------------");
+        //         System.out.println("firstSpanList:");
+        //         for (CandidateSpan cs : firstSpanList) {
+        //         System.out.println(cs.getStart() + " " + cs.getEnd());
+        //         }
+        //        
+        //         System.out.println("secondSpanList:");
+        //         for (CandidateSpan cs : secondSpanList) {
+        //         System.out.println(cs.getStart() + " " + cs.getEnd());
+        //         }
 
         CandidateSpan currentFirstSpan, currentSecondSpan;
         if (!firstSpanList.isEmpty() && !secondSpanList.isEmpty()) {
@@ -140,9 +134,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
                 // System.out.println(cs.getStart() +" "+ cs.getEnd());
                 // }
 
-                matchList = findMatches(currentFirstSpan, secondSpanList);
-                setMatchFirstSpan(currentFirstSpan);
-                matchListSpanNum = 2;
+                matchList = findMatches(currentFirstSpan, secondSpanList, true);
                 updateList(firstSpanList);
             }
             else {
@@ -154,10 +146,18 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
                 // System.out.println(cs.getStart() +" "+ cs.getEnd());
                 // }
 
-                matchList = findMatches(currentSecondSpan, firstSpanList);
-                setMatchSecondSpan(currentSecondSpan);
-                matchListSpanNum = 1;
+                matchList = findMatches(currentSecondSpan, firstSpanList,
+                        false);
                 updateList(secondSpanList);
+
+                if (currentFirstSpan.getStart() == currentSecondSpan.getStart()
+                        && currentFirstSpan.getEnd() == currentSecondSpan
+                                .getEnd()) {
+                    matchList.addAll(findMatches(currentFirstSpan,
+                            secondSpanList, false));
+                    Collections.sort(matchList);
+                    updateList(firstSpanList);
+                }
             }
         }
         else if (firstSpanList.isEmpty()) {
@@ -248,16 +248,18 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
      *            a target span
      * @param candidateList
      *            a candidate list
+     * @param isTargetFirstSpan
+     *            true is the target span is of the first span, false
+     *            otherwise
      * @return the matches in a list
      */
     protected abstract List<CandidateSpan> findMatches (CandidateSpan target,
-            List<CandidateSpan> candidateList);
+            List<CandidateSpan> candidateList, boolean isTargetFirstSpan);
 
 
     /**
      * Computes match properties and creates a candidate span match to
-     * be added
-     * to the match list.
+     * be added to the match list.
      * 
      * @return a candidate span match
      */
@@ -280,15 +282,14 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         }
         CandidateSpan match = new CandidateSpan(start, end, doc, cost,
                 payloads);
-        match.setChildSpan(cs);
+        //match.setChildSpan(cs);
         return match;
     }
 
 
     /**
      * Assigns the first candidate span in the match list as the
-     * current span
-     * match, and removes it from the matchList.
+     * current span match, and removes it from the matchList.
      */
     private void setMatchProperties () {
         CandidateSpan cs = matchList.get(0);
@@ -299,10 +300,8 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         matchPayload.addAll(cs.getPayloads());
         matchList.remove(0);
 
-        if (matchListSpanNum == 1)
-            setMatchFirstSpan(cs.getChildSpan());
-        else
-            setMatchSecondSpan(cs.getChildSpan());
+        setMatchFirstSpan(cs.getChildSpan());
+        setMatchSecondSpan(cs.getSecondChildSpan());
 
         // log.trace("Match doc#={} start={} end={}", matchDocNumber,
         // matchStartPosition, matchEndPosition);

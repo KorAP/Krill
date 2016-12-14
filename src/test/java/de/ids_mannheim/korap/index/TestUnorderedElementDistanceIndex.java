@@ -91,6 +91,19 @@ public class TestUnorderedElementDistanceIndex {
         return fd;
     }
 
+    private FieldDocument createFieldDoc5 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
+                        + "[(1-2)s:b|s:e|_2$<i>1<i>2]"
+                        + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>4<b>0]"
+                        + "[(3-4)s:b|s:c|_4$<i>3<i>4]"
+                        + "[(4-5)s:e|_5$<i>4<i>5|<>:s$<b>64<i>4<i>6<i>6<b>0|<>:p$<b>64<i>4<i>6<i>6<b>0]"
+                        + "[(5-6)s:d|_6$<i>5<i>6]"
+                        + "[(6-7)s:b|_7$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>7<b>0|<>:p$<b>64<i>6<i>7<i>7<b>0]");
+        return fd;
+    }
 
     public SpanQuery createQuery (String elementType, String x, String y,
             int minDistance, int maxDistance, boolean isOrdered) {
@@ -250,5 +263,38 @@ public class TestUnorderedElementDistanceIndex {
         //				kr.match(i).endPos
         //		    );
         //		}
+    }
+    
+
+
+    /**
+     * Subspans occurrences are in the same positions.
+     */
+    @Test
+    public void testCase6 () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc5());
+        ki.commit();
+
+        SpanQuery sq = createQuery("s", "s:b", "s:e", 1, 2, false);
+        kr = ki.search(sq, (short) 10);
+
+        assertEquals(8, kr.getTotalResults());
+        assertEquals(0, kr.getMatch(0).startPos);
+        assertEquals(3, kr.getMatch(0).endPos);
+        assertEquals(0, kr.getMatch(1).startPos);
+        assertEquals(5, kr.getMatch(1).endPos);
+        assertEquals(1, kr.getMatch(2).startPos);
+        assertEquals(3, kr.getMatch(2).endPos);
+        assertEquals(1, kr.getMatch(3).startPos);
+        assertEquals(4, kr.getMatch(3).endPos);
+        assertEquals(1, kr.getMatch(4).startPos);
+        assertEquals(5, kr.getMatch(4).endPos);
+        assertEquals(2, kr.getMatch(5).startPos);
+        assertEquals(7, kr.getMatch(5).endPos);
+        assertEquals(3, kr.getMatch(6).startPos);
+        assertEquals(5, kr.getMatch(6).endPos);
+        assertEquals(4, kr.getMatch(7).startPos);
+        assertEquals(7, kr.getMatch(7).endPos);
     }
 }

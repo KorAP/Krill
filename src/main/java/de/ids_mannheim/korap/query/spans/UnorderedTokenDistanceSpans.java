@@ -123,7 +123,7 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
 
     @Override
     protected List<CandidateSpan> findMatches (CandidateSpan target,
-            List<CandidateSpan> candidateList) {
+            List<CandidateSpan> candidateList, boolean isTargetFirstSpan) {
 
         List<CandidateSpan> matches = new ArrayList<>();
         int actualDistance;
