@@ -8,11 +8,9 @@ import org.apache.lucene.search.spans.Spans;
 
 /**
  * CandidateSpan stores the current state of a Lucene {@link Spans},
- * which is an
- * enumeration. CandidateSpan is used for various purposes, such as
- * for
- * collecting spans which will be used in a latter process or next
- * matching.
+ * which is an enumeration. CandidateSpan is used for various
+ * purposes, such as for collecting spans which will be used in a
+ * latter process or next matching.
  * 
  * @author margaretha
  */
@@ -21,8 +19,11 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
     private long cost;
     private Collection<byte[]> payloads;
     private int position;
-    private CandidateSpan childSpan; // used for example for multiple distance
-                                    // with unordered constraint
+
+    // Child spans are used in multiple distance queries with unordered constraint
+    private CandidateSpan childSpan;
+    private CandidateSpan secondChildSpan;
+
     protected short spanId;
     protected boolean hasSpanId;
 
@@ -267,6 +268,16 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
      */
     public void setChildSpan (CandidateSpan childSpan) {
         this.childSpan = childSpan;
+    }
+
+
+    public CandidateSpan getSecondChildSpan () {
+        return secondChildSpan;
+    }
+
+
+    public void setSecondChildSpan (CandidateSpan secondChildSpan) {
+        this.secondChildSpan = secondChildSpan;
     }
 
 

@@ -22,9 +22,14 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
+/**
+ * @author margaretha
+ *
+ */
 @RunWith(JUnit4.class)
 public class TestElementDistanceIndex {
 
@@ -86,7 +91,6 @@ public class TestElementDistanceIndex {
                         + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
-
 
     public SpanQuery createQuery (String elementType, String x, String y,
             int min, int max, boolean isOrdered) {
@@ -246,8 +250,7 @@ public class TestElementDistanceIndex {
         kr = ki.search(sqwi.toQuery(), (short) 10);
         assertEquals(1, kr.getTotalResults()); // Is 1 correct or should it not be ordered?
         assertEquals("[[ec]]ebdc", kr.getMatch(0).getSnippetBrackets());
-    };
-
+    }
 
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
@@ -256,14 +259,14 @@ public class TestElementDistanceIndex {
             String str;
             while ((str = in.readLine()) != null) {
                 contentBuilder.append(str);
-            };
+            }
             in.close();
         }
         catch (IOException e) {
             fail(e.getMessage());
         }
         return contentBuilder.toString();
-    };
+    }
 
 
     public static SpanQueryWrapper jsonQuery (String jsonFile) {
@@ -276,7 +279,7 @@ public class TestElementDistanceIndex {
         catch (QueryException e) {
             fail(e.getMessage());
             sqwi = new QueryBuilder("tokens").seg("???");
-        };
+        }
         return sqwi;
-    };
-};
+    }
+}
