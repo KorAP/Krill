@@ -123,7 +123,6 @@ public class TestMultipleDistanceIndex {
         SpanQuery mdq;
         mdq = createQuery("s:b", "s:c", constraints, false);
         kr = ki.search(mdq, (short) 10);
-        // System.out.println(mdq);
 
         assertEquals((long) 3, kr.getTotalResults());
         assertEquals(0, kr.getMatch(0).getStartPos());
@@ -267,7 +266,7 @@ public class TestMultipleDistanceIndex {
 
 
     /**
-     * Same tokens: ordered and unordered yield the same results
+     * Same tokens: unordered yields twice the same results as ordered
      */
     @Test
     public void testCase5 () throws IOException {
@@ -276,14 +275,15 @@ public class TestMultipleDistanceIndex {
         ki.addDoc(createFieldDoc1());
         ki.commit();
 
+        // ordered
         List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-        constraints.add(createConstraint("w", 1, 2, false, false));
-        constraints.add(createConstraint("s", 1, 2, false, false));
+        constraints.add(createConstraint("w", 1, 2, true, false));
+        constraints.add(createConstraint("s", 1, 2, true, false));
 
         SpanQuery mdq;
         mdq = createQuery("s:c", "s:c", constraints, false);
         kr = ki.search(mdq, (short) 10);
-
+        
         assertEquals((long) 4, kr.getTotalResults());
         assertEquals(1, kr.getMatch(0).getStartPos());
         assertEquals(3, kr.getMatch(0).getEndPos());
@@ -294,6 +294,15 @@ public class TestMultipleDistanceIndex {
         assertEquals(4, kr.getMatch(2).getEndPos());
         assertEquals(3, kr.getMatch(3).getStartPos());
         assertEquals(6, kr.getMatch(3).getEndPos());
+        
+        //unordered
+        constraints = new ArrayList<DistanceConstraint>();
+        constraints.add(createConstraint("w", 1, 2, false, false));
+        constraints.add(createConstraint("s", 1, 2, false, false));
+
+        mdq = createQuery("s:c", "s:c", constraints, false);
+        kr = ki.search(mdq, (short) 10);
+        assertEquals((long) 8, kr.getTotalResults());
 
     }
 

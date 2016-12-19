@@ -127,12 +127,14 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
 
         List<CandidateSpan> matches = new ArrayList<>();
         int actualDistance;
+        CandidateSpan match;
         for (CandidateSpan cs : candidateList) {
             if (minDistance == 0 &&
             // intersection
                     target.getStart() < cs.getEnd()
                     && cs.getStart() < target.getEnd()) {
-                matches.add(createMatchCandidate(target, cs, true));
+                match = createMatchCandidate(target, cs, true, isTargetFirstSpan);
+                matches.add(match);
                 continue;
             }
 
@@ -146,7 +148,8 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
             }
             if (minDistance <= actualDistance
                     && actualDistance <= maxDistance) {
-                matches.add(createMatchCandidate(target, cs, false));
+                match = createMatchCandidate(target, cs, false, isTargetFirstSpan);
+                matches.add(match);
             }
         }
         return matches;

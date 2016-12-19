@@ -261,38 +261,6 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         return matches;
     }
 
-
-    /**
-     * Creates a match from the two given spans (target and candidate)
-     * 
-     * @param target
-     *            the target span
-     * @param cs
-     *            the candidate span
-     * @param isDistanceZero
-     *            true if the distance between the two spans are zero,
-     *            false otherwise
-     * @param isTargetFirstSpan
-     *            true is the target span is of the first span, false
-     *            otherwise
-     * @return a match
-     */
-    private CandidateSpan createMatchCandidate (CandidateSpan target,
-            CandidateSpan cs, boolean isDistanceZero,
-            boolean isTargetFirstSpan) {
-        CandidateSpan match = createMatchCandidate(target, cs, isDistanceZero);
-        if (isTargetFirstSpan) {
-            match.setChildSpan(target);
-            match.setSecondChildSpan(cs);
-        }
-        else {
-            match.setChildSpan(cs);
-            match.setSecondChildSpan(target);
-        }
-        return match;
-    }
-
-
     @Override
     protected void updateList (List<CandidateSpan> candidateList) {
         updateElementList(candidateList.get(0).getPosition());
