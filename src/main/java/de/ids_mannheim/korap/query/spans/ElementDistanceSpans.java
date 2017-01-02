@@ -108,7 +108,6 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
     private void addNewCandidates () throws IOException {
         while (hasMoreFirstSpans && firstSpans.doc() == candidateListDocNum
                 && firstSpans.start() < secondSpans.end()) {
-
             if (advanceElementTo(firstSpans)) {
                 candidateList
                         .add(new CandidateSpan(firstSpans, elementPosition));
@@ -161,9 +160,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
             }
             i.remove();
         }
-        // System.out.println("pos "+position+" " +candidateList.size());
     }
-
 
     @Override
     protected boolean isSecondSpanValid () throws IOException {
@@ -176,6 +173,26 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         return false;
     }
 
+    @Override
+    public boolean skipTo (int target) throws IOException {
+        if (hasMoreSpans && (secondSpans.doc() < target)) {
+            if (!secondSpans.skipTo(target)) {
+                candidateList.clear();
+                return false;
+            }
+        }
+
+        setCandidateList();
+       
+        while (hasMoreSpans && !isSecondSpanValid()){
+            hasMoreSpans = secondSpans.next();
+            setCandidateList();
+        }
+        
+        matchPayload.clear();
+        isStartEnumeration = false;
+        return advance();
+    }
 
     @Override
     public long cost () {
