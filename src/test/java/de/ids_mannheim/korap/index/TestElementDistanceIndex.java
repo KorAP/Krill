@@ -92,6 +92,19 @@ public class TestElementDistanceIndex {
                         + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
+    
+    private FieldDocument createFieldDoc4 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-4");
+        fd.addTV("tokens", "bdbcdd",
+                "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
+                        + "[(1-2)s:d|_2$<i>1<i>2]"
+                        + "[(2-3)s:c|s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>5<i>3<b>0]"
+                        + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>5<i>4<b>0]"
+                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
+                        + "[(5-6)s:d|_6$<i>5<i>6]");
+        return fd;
+    }
 
 
     public SpanQuery createQuery (String elementType, String x, String y,
@@ -134,7 +147,28 @@ public class TestElementDistanceIndex {
         assertEquals(4, kr.getMatch(3).endPos);
     }
 
+    /**
+     * Ignore nested element distance unit
+     * */
+    @Test
+    public void testCase1b () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc4());
+        ki.commit();
 
+        SpanQuery sq;
+        sq = createQuery("s", "s:b", "s:c", 1, 1, true);
+
+        kr = ki.search(sq, (short) 10);
+
+        assertEquals(2, kr.getTotalResults());
+        assertEquals(0, kr.getMatch(0).startPos);
+        assertEquals(3, kr.getMatch(0).endPos);
+        assertEquals(2, kr.getMatch(1).startPos);
+        assertEquals(4, kr.getMatch(1).endPos);
+    }
+
+    
     /**
      * Ensure terms and elements are in the same doc
      */
