@@ -1,4 +1,4 @@
-0.55.7 2016-11-24
+0.55.7 2017-01-13
         - [bugfix] Sorted results in unordered element distance query results (margaretha)
         - [bugfix] Throw error on optional operands in distance
           queries (diewald)
@@ -18,6 +18,10 @@
         - [cleanup] Test indexer (margaretha)
         - [feature] Improve indexer flags (margaretha)
         - [bugfix] Improved Java8 compatibility (thomaskrause)
+        - [cleanup] Improved test suite for nested element distances
+          (margaretha)
+        - [bugfix] issue #16 (added skipTo in ElementDistanceSpan)
+          (margaretha)
 
 0.55.6 2016-08-10
         - [bugfix] distance with key "t" uses default foundry (diewald)
