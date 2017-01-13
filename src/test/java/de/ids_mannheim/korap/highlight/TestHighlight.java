@@ -137,9 +137,9 @@ public class TestHighlight { // extends LuceneTestCase {
                 km.getSnippetHTML());
 
         km.addHighlight(0, 1, (short) 5);
-        assertEquals("[[{7:{5:a{6:b}}}{6:c}]]", km.getSnippetBrackets());
+        assertEquals("[[{5:{7:a{6:b}}}{6:c}]]", km.getSnippetBrackets());
         assertEquals(
-                "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-7 level-0\"><mark class=\"class-5 level-1\">a<mark class=\"class-6 level-2\">b</mark></mark></mark><mark class=\"class-6 level-2\">c</mark></mark></span><span class=\"context-right\"></span>",
+                "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-5 level-0\"><mark class=\"class-7 level-1\">a<mark class=\"class-6 level-2\">b</mark></mark></mark><mark class=\"class-6 level-2\">c</mark></mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
 
     };
@@ -252,18 +252,18 @@ public class TestHighlight { // extends LuceneTestCase {
         kr = ki.search(qs);
         assertEquals((long) 10, kr.getTotalResults());
 
-        assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... [[{3:{2:a}}]] ...",
+        assertEquals("[[{1:{3:a}}]] ...", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... [[{2:{3:a}}]] ...",
                 kr.getMatch(1).getSnippetBrackets());
-        assertEquals("... [[{3:{1:b}}]]", kr.getMatch(2).getSnippetBrackets());
-        assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(3).getSnippetBrackets());
-        assertEquals("... [[{3:{2:a}}]]", kr.getMatch(4).getSnippetBrackets());
-        assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(5).getSnippetBrackets());
-        assertEquals("... [[{3:{2:a}}]] ...",
+        assertEquals("... [[{1:{3:b}}]]", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("[[{1:{3:a}}]] ...", kr.getMatch(3).getSnippetBrackets());
+        assertEquals("... [[{2:{3:a}}]]", kr.getMatch(4).getSnippetBrackets());
+        assertEquals("[[{1:{3:a}}]] ...", kr.getMatch(5).getSnippetBrackets());
+        assertEquals("... [[{2:{3:a}}]] ...",
                 kr.getMatch(6).getSnippetBrackets());
-        assertEquals("... [[{3:{1:b}}]]", kr.getMatch(7).getSnippetBrackets());
-        assertEquals("[[{3:{1:a}}]] ...", kr.getMatch(8).getSnippetBrackets());
-        assertEquals("... [[{3:{2:a}}]]", kr.getMatch(9).getSnippetBrackets());
+        assertEquals("... [[{1:{3:b}}]]", kr.getMatch(7).getSnippetBrackets());
+        assertEquals("[[{1:{3:a}}]] ...", kr.getMatch(8).getSnippetBrackets());
+        assertEquals("... [[{2:{3:a}}]]", kr.getMatch(9).getSnippetBrackets());
     };
 
 

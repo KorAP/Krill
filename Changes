@@ -22,6 +22,7 @@
           (margaretha)
         - [bugfix] issue #16 (added skipTo in ElementDistanceSpan)
           (margaretha)
+        - [bugfix] Fixed class ordering of highlights (diewald)
 
 0.55.6 2016-08-10
         - [bugfix] distance with key "t" uses default foundry (diewald)

@@ -880,7 +880,7 @@ public class Match extends AbstractDocument {
                     // Compare class number
                     if (arg0[2] > arg1[2])
                         return 1;
-                    else if (arg0[2] < arg1[1])
+                    else if (arg0[2] < arg1[2])
                         return -1;
                     return 0;
 

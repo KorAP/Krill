@@ -362,40 +362,55 @@ public class TestMatchIdentifier {
                 "x", null, true, false);
 
         assertEquals("SnippetBrackets (1)",
-                "[[{x/rel:a>3:{x/o:erstens:a}}{x/o:zweitens:b}{x/o:drittens:c}{#3:{x/o:viertens:a}}{x/o:fünftens:b}]] ...",
+                "[[{x/o:erstens:{x/rel:a>3:a}}{x/o:zweitens:b}{x/o:drittens:c}{#3:{x/o:viertens:a}}{x/o:fünftens:b}]] ...",
                 km.getSnippetBrackets());
 
-        assertEquals("SnippetBrackets (1)", "<span class=\"context-left\">"
-                + "</span>" + "<span class=\"match\">" + "<mark>"
-                + "<span xlink:title=\"x/rel:a\" " + "xlink:type=\"simple\" "
-                + "xlink:href=\"#word-c1!d1-p3\">"
-                + "<span title=\"x/o:erstens\">" + "a" + "</span>" + "</span>"
-                + "<span title=\"x/o:zweitens\">" + "b" + "</span>"
-                + "<span title=\"x/o:drittens\">" + "c" + "</span>"
-                + "<span xml:id=\"word-c1!d1-p3\">"
-                + "<span title=\"x/o:viertens\">" + "a" + "</span>" + "</span>"
-                + "<span title=\"x/o:fünftens\">" + "b" + "</span>" + "</mark>"
-                + "</span>" + "<span class=\"context-right\">"
-                + "<span class=\"more\">" + "</span>" + "</span>",
+		assertEquals("SnippetHTML (1)", "<span class=\"context-left\">"
+					 + "</span>" + "<span class=\"match\">"
+					 + "<mark>"
+					 + "<span title=\"x/o:erstens\">"
+					 + "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" "
+					    + "xlink:href=\"#word-c1!d1-p3\">"
+					 + "a" + "</span>"
+					 + "</span>"
+					 + "<span title=\"x/o:zweitens\">" + "b" + "</span>"
+					 + "<span title=\"x/o:drittens\">" + "c" + "</span>"
+					 + "<span xml:id=\"word-c1!d1-p3\">"
+					 + "<span title=\"x/o:viertens\">" + "a" + "</span>"
+					 + "</span>"
+					 + "<span title=\"x/o:fünftens\">" + "b" + "</span>"
+					 + "</mark>"
+					 + "</span>"
+					 + "<span class=\"context-right\">"
+					 + "<span class=\"more\">"
+					 + "</span>"
+					 + "</span>",
                 km.getSnippetHTML());
 
         km = ki.getMatchInfo("match-c1!d1-p0-5(7)2-3(4)8-8(2)7-8", "tokens",
                 "x", null, true, true);
 
-        assertEquals("SnippetBrackets (1)", "<span class=\"context-left\">"
-                + "</span>" + "<span class=\"match\">" + "<mark>"
-                + "<span xlink:title=\"x/rel:a\" " + "xlink:type=\"simple\" "
-                + "xlink:href=\"#word-c1!d1-p3\">"
-                + "<span title=\"x/o:erstens\">" + "a" + "</span>" + "</span>"
-                + "<span title=\"x/o:zweitens\">" + "b" + "</span>"
-                + "<mark class=\"class-7 level-0\">"
-                + "<span title=\"x/o:drittens\">" + "c" + "</span>"
-                + "<span xml:id=\"word-c1!d1-p3\">"
-                + "<span title=\"x/o:viertens\">" + "a" + "</span>" + "</span>"
-                + "</mark>" + "<span title=\"x/o:fünftens\">" + "b" + "</span>"
-                + "</mark>" + "</span>" + "<span class=\"context-right\">"
-                + "<span class=\"more\">" + "</span>" + "</span>",
-                km.getSnippetHTML());
+        assertEquals("SnippetHTML (2)",
+					 "<span class=\"context-left\">"
+					 + "</span>" + "<span class=\"match\">"+"<mark>"
+					 +"<span title=\"x/o:erstens\">"
+					 +"<span xlink:title=\"x/rel:a\" " + "xlink:type=\"simple\" "
+					 +"xlink:href=\"#word-c1!d1-p3\">a</span>"
+					 +"</span>"
+					 +"<span title=\"x/o:zweitens\">b</span>"
+					 +"<mark class=\"class-7 level-0\">"
+					 +"<span title=\"x/o:drittens\">c</span>"
+					 +"<span xml:id=\"word-c1!d1-p3\">"
+					 +"<span title=\"x/o:viertens\">a</span>"
+					 +"</span>"
+					 +"</mark>"
+					 +"<span title=\"x/o:fünftens\">b</span>"
+					 +"</mark>"
+					 +"</span>"
+					 +"<span class=\"context-right\">"
+					 +"<span class=\"more\"></span>"
+					 +"</span>",
+					 km.getSnippetHTML());
     };
 
 
@@ -469,30 +484,32 @@ public class TestMatchIdentifier {
         ki.commit();
 
         Match km = ki.getMatchInfo("match-c1!d1-p0-4", "tokens", null, null,
-                true, true);
+								   true, true);
 
         assertEquals("SnippetHTML (2)", "<span class=\"context-left\">"
-                + "</span>" + "<span class=\"match\">" + "<mark>"
-                + "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" xlink:href=\"#word-c1!d1-p3\">"
-                + "<span title=\"f/m:eins\">" + "<span title=\"f/y:one\">"
-                + "<span title=\"it/is:1\">"
-                + "<span title=\"x/o:erstens\">a</span>" + "</span>" + "</span>"
-                + "</span>" + "</span>"
-                + "<span xlink:title=\"x/rel:b\" xlink:type=\"simple\" xlink:href=\"#word-c1!d1-p3\">"
-                + "<span title=\"f/m:zwei\">" + "<span title=\"f/y:two\">"
-                + "<span title=\"it/is:2\">"
-                + "<span title=\"x/o:zweitens\">b</span>" + "</span>"
-                + "</span>" + "</span>" + "</span>"
-                + "<span title=\"f/m:drei\">" + "<span title=\"f/y:three\">"
-                + "<span title=\"it/is:3\">"
-                + "<span title=\"x/o:drittens\">c</span>" + "</span>"
-                + "</span>" + "</span>" + "<span xml:id=\"word-c1!d1-p3\">"
-                + "<span title=\"f/m:vier\">" + "<span title=\"f/y:four\">"
-                + "<span title=\"it/is:4\">"
-                + "<span title=\"x/o:viertens\">a</span>" + "</span>"
-                + "</span>" + "</span>" + "</span>" + "</mark>" + "</span>"
-                + "<span class=\"context-right\">" + "<span class=\"more\">"
-                + "</span>" + "</span>", km.getSnippetHTML());
+					 + "</span>" + "<span class=\"match\">" + "<mark>"
+					 + "<span title=\"f/m:eins\">" + "<span title=\"f/y:one\">"
+					 + "<span title=\"it/is:1\">"
+					 + "<span title=\"x/o:erstens\">"
+					 + "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" xlink:href=\"#word-c1!d1-p3\">"
+					 + "a</span>" + "</span>" + "</span>"
+					 + "</span>" + "</span>"
+					 + "<span title=\"f/m:zwei\">" + "<span title=\"f/y:two\">"
+					 + "<span title=\"it/is:2\">"
+					 + "<span title=\"x/o:zweitens\">"
+					 + "<span xlink:title=\"x/rel:b\" xlink:type=\"simple\" xlink:href=\"#word-c1!d1-p3\">"
+					 + "b</span>" + "</span>"
+					 + "</span>" + "</span>" + "</span>"
+					 + "<span title=\"f/m:drei\">" + "<span title=\"f/y:three\">"
+					 + "<span title=\"it/is:3\">"
+					 + "<span title=\"x/o:drittens\">c</span>" + "</span>"
+					 + "</span>" + "</span>" + "<span xml:id=\"word-c1!d1-p3\">"
+					 + "<span title=\"f/m:vier\">" + "<span title=\"f/y:four\">"
+					 + "<span title=\"it/is:4\">"
+					 + "<span title=\"x/o:viertens\">a</span>" + "</span>"
+					 + "</span>" + "</span>" + "</span>" + "</mark>" + "</span>"
+					 + "<span class=\"context-right\">" + "<span class=\"more\">"
+					 + "</span>" + "</span>", km.getSnippetHTML());
     };
 
 

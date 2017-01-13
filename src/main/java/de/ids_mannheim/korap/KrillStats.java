@@ -49,6 +49,9 @@ import org.slf4j.LoggerFactory;
  */
 /*
  * TODO: THIS IS CURRENTLY HIGHLY EXPERIMENTAL
+ * TODO: Stats may use Column Stride fields (or DocValues)
+ * (or similiar concepts) https://issues.apache.org/jira/browse/LUCENE-1231
+ * https://issues.apache.org/jira/browse/LUCENE-3108
  */
 public final class KrillStats extends Notifications {
 
