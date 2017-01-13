@@ -65,7 +65,7 @@ public class TestSpanSequenceQuery {
     };
 
 
-    @Ignore
+    @Test
     public void spanSequenceQueryWrapper () throws QueryException {
 
         SpanSequenceQueryWrapper ssqw, ssqw2;
@@ -150,14 +150,13 @@ public class TestSpanSequenceQuery {
                         + "(x[2:3], ordered, notExcluded)])",
                 ssqw.toQuery().toString());
 
-
         // Support empty class ins sequence 
         ssqw = new SpanSequenceQueryWrapper("field", "Der");
         srqw = new SpanRepetitionQueryWrapper();
         scqw = new SpanClassQueryWrapper(srqw, (short) 3);
         ssqw.append(scqw);
-        assertEquals("spanExpansion(field:Der, []{1, 1}, right, class:3)",
-                ssqw.toQuery().toString());
+		assertEquals("focus(254: spanContain(<field:base/s:t />, {254: spanExpansion(field:Der, []{1, 1}, right, class:3)}))",
+					 ssqw.toQuery().toString());
 
         // Support empty class ins sequence 
         ssqw = new SpanSequenceQueryWrapper("field");
@@ -170,14 +169,5 @@ public class TestSpanSequenceQuery {
         catch (Exception e) {
             fail(e.getMessage() + " (Known issue)");
         };
-        // assertEquals("", scqw.toQuery().toString());
-
-        /*
-        sssq = new SpanSequenceQueryWrapper("field");
-        sssc = new SpanClassQueryWrapper(sssq, (short) 2);
-        SpanSequenceQueryWrapper sssq2 = new SpanSequenceQueryWrapper("field");
-        sssq2.append("hui").append(sssc);
-        assertEquals("", sssq2.toQuery().toString());
-        */
     };
 };

@@ -719,21 +719,29 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         // Create the initial query
         SpanQuery query = null;
         int i = 0;
+
+		// Get the first valid segment
         while (query == null && i < this.segments.size()) {
             query = this.segments.get(i).retrieveNode(this.retrieveNode)
-                    .toFragmentQuery();
+				.toFragmentQuery();
             i++;
         };
 
+		// No valid segment found
         if (query == null)
             return (SpanQuery) null;
-
+	
         // NextQueries
         if (!this.hasConstraints() && this.isInOrder()) {
+
+			// TODO: Optimize:
+			// Join identicals to repetition, so spanNext(a,a) -> a{2}
+			
             for (; i < this.segments.size(); i++) {
 
+				// Get the first query for next sequence
                 SpanQuery second = this.segments.get(i)
-                        .retrieveNode(this.retrieveNode).toFragmentQuery();
+					.retrieveNode(this.retrieveNode).toFragmentQuery();
                 if (second == null)
                     continue;
 
