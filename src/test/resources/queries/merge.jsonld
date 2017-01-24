@@ -1,0 +1,34 @@
+{
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+  "query": {
+    "@type": "koral:group",
+    "operation":"operation:merge",
+    "operands": [
+      {
+        "@type": "koral:group",
+        "operation": "operation:sequence",
+        "inOrder": true,
+        "operands": [
+          {
+            "@type": "koral:token",
+            "wrap": {
+              "match": "match:eq",
+              "layer": "orth",
+              "key": "der",
+              "@type": "koral:term"
+            }
+          },
+          {
+            "wrap": {
+              "match": "match:eq",
+              "layer": "orth",
+              "key": "Baum",
+              "@type": "koral:term"
+            },
+            "@type": "koral:token"
+          }
+        ]
+      }
+    ]
+  }
+}

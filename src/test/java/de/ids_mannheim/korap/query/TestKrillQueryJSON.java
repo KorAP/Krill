@@ -601,17 +601,19 @@ public class TestKrillQueryJSON {
 
 
     @Test
-    public void queryJSONregexRewrite2 () throws QueryException {
-        // "der" [.*] [.*?] [.+] [.+?]
+    public void queryJSONmerge () throws QueryException {
+        // treat merging gracefully
         String json = getString(getClass()
-                .getResource("/queries/sequence/regex-rewrite-2.jsonld")
+                .getResource("/queries/merge.jsonld")
                 .getFile());
         KrillQuery kq = new KrillQuery("tokens");
-
         assertEquals(kq.fromKoral(json).toQuery().toString(),
-                "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{4, 4}, right)}))");
+                "spanNext(tokens:s:der, tokens:s:Baum)");
+		assertEquals(kq.getWarning(0).getCode(), 774);
     };
 
+
+	
 
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();

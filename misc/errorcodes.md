@@ -65,6 +65,7 @@
 771: "Arbitrary elements with attributes are currently not supported"
 772: "'Any' elements are currently not supported in position operations"
 773: "Negative elements are currently not supported in position operations"
+774: "Merge operation is currently not supported"
 780: "This query matches everywhere"
 781: "Optionality of query is ignored"
 782: "Exclusivity of query is ignored"

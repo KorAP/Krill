@@ -442,6 +442,11 @@ public final class KrillQuery extends Notifications {
                 /*throw new QueryException(765,
                   "Relations are currently not supported");*/
 
+			// Gracefully warn on merge support
+			case "operation:merge":
+				this.addWarning(774, "Merge operation is currently not supported");
+				return _fromKoral(operands.get(0));
+				
                 // Deprecated in favor of operation:junction
             case "operation:or":
                 return this._operationJunctionFromJson(operands);

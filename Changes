@@ -1,4 +1,4 @@
-0.55.7 2017-01-13
+0.55.7 2017-01-24
         - [bugfix] Sorted results in unordered element distance query results (margaretha)
         - [bugfix] Throw error on optional operands in distance
           queries (diewald)
@@ -23,6 +23,7 @@
         - [bugfix] issue #16 (added skipTo in ElementDistanceSpan)
           (margaretha)
         - [bugfix] Fixed class ordering of highlights (diewald)
+        - [feature] warn on use of "operation:merge" (diewald)
 
 0.55.6 2016-08-10
         - [bugfix] distance with key "t" uses default foundry (diewald)
