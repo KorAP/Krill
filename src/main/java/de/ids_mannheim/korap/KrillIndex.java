@@ -1415,6 +1415,11 @@ public final class KrillIndex {
                             spans.start(), spans.end());
                     match.setContext(kr.getContext());
 
+					match.retrievePagebreaks("~:base/s:pb");
+
+					if (DEBUG)
+						log.trace("Retrieve pagebreaks from index");
+
                     // Add match to Result
                     kr.add(match);
 

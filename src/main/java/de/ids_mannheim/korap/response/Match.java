@@ -8,6 +8,7 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
 import org.slf4j.Logger;
@@ -641,6 +642,107 @@ public class Match extends AbstractDocument {
     };
 
 
+	
+	// Retrieve pagebreaks in a certain area
+	public List<int[]> retrievePagebreaks (String pb) {
+		if (this.positionsToOffset != null)
+			return this.retrievePagebreaks(
+				this.positionsToOffset.getLeafReader(),
+				(Bits) null,
+				"tokens", pb
+				);
+
+		return null;
+	};
+
+	// Retrieve pagebreaks in a certain area
+    // THIS IS NOT VERY CLEVER - MAKE IT MORE CLEVER!
+    public List<int[]> retrievePagebreaks (LeafReaderContext atomic,
+										   Bits bitset,
+										   String field,
+										   String pb) {
+
+		// List of relevant pagebreaks
+		List<int[]> pagebreaks = new ArrayList<>(24);
+		
+		try {
+
+            // Store character offsets in ByteBuffer
+            ByteBuffer bb = ByteBuffer.allocate(4);
+
+			// Store last relevant pagebreak in byte array
+			byte[] b = null;
+			
+			Spans pagebreakSpans = new SpanTermQuery(new Term(field, pb)).getSpans(
+				atomic, bitset, new HashMap<Term, TermContext>()
+				);
+
+			// Iterate over all pagebreaks
+			while (pagebreakSpans.next()) {
+
+				// Current pagebreak is not in the correct document
+				if (pagebreakSpans.doc() != this.localDocID) {
+					pagebreakSpans.skipTo(this.localDocID);
+
+					// No pagebreaks in this document
+					if (pagebreakSpans.doc() != this.localDocID)
+						break;
+				};
+
+				// There is a pagebreak found - check,
+				// if it is in the correct area
+				if (pagebreakSpans.start() <= this.getStartPos()) {
+
+					// Only the first payload is relevant
+					b = pagebreakSpans.getPayload().iterator().next();
+				}
+
+				// This is the first pagebreak!
+				else {
+
+					// b is already defined!
+					if (b != null) {
+						bb.rewind();
+						bb.put(b);
+							
+						// This is the first pagebreak!
+						pagebreaks.add(
+							new int[]{
+								bb.getInt(),
+								bb.getInt()
+							});
+					};
+
+					// Set new pagebreak
+					// Only the first payload is relevant
+					b = pagebreakSpans.getPayload().iterator().next();
+					bb.rewind();
+					bb.put(b);
+							
+					// This is the first pagebreak!
+					pagebreaks.add(
+						new int[]{
+							bb.getInt(),
+							bb.getInt()
+						});
+
+					// Reset byte
+					b = null;
+
+					// Pagebreak beyond the current position
+					if (pagebreakSpans.start() > this.getEndPos())
+						break;
+				};
+			};
+		}
+		catch (Exception e) {
+			log.warn("Some problems with ByteBuffer: {}", e.getMessage());
+		};
+
+		return pagebreaks;
+	};
+
+
     // Expand the context to a span
     public int[] expandContextToSpan (String element) {
 
@@ -653,6 +755,7 @@ public class Match extends AbstractDocument {
         return new int[] { 0, 0, 0, 0 };
     };
 
+	
 
     // Expand the context to a span
     // THIS IS NOT VERY CLEVER - MAKE IT MORE CLEVER!
@@ -719,8 +822,8 @@ public class Match extends AbstractDocument {
                             };
                         }
                         catch (Exception e) {
-                            log.warn("Some problems with ByteBuffer: "
-                                    + e.getMessage());
+                            log.warn("Some problems with ByteBuffer: {}",
+                                     e.getMessage());
                         };
                     };
                 }
