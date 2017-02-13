@@ -40,7 +40,6 @@ import de.ids_mannheim.korap.response.match.Relation;
   The number based Highlighttype is ugly - UGLY!
 
   substrings may be out of range - e.g. if snippets are not lifted!
-
 */
 
 /**
@@ -92,6 +91,9 @@ public class Match extends AbstractDocument {
     int relationNumberCounter = 2048;
     int identifierNumberCounter = -2;
 
+	private int startPage = -1;
+	private int endPage = -1;
+	
     private String tempSnippet, snippetHTML, snippetBrackets, identifier;
 
     private HighlightCombinator snippetArray;
@@ -402,6 +404,24 @@ public class Match extends AbstractDocument {
     };
 
 
+	/**
+	 * Get start page.
+	 */
+    @JsonIgnore
+	public int getStartPage () {
+		return this.startPage;
+	};
+
+	
+	/**
+	 * Get end page.
+	 */
+    @JsonIgnore
+	public int getEndPage () {
+		return this.endPage;
+	};
+
+	
     /**
      * Set document id.
      * 
@@ -645,12 +665,13 @@ public class Match extends AbstractDocument {
 	
 	// Retrieve pagebreaks in a certain area
 	public List<int[]> retrievePagebreaks (String pb) {
-		if (this.positionsToOffset != null)
+		if (this.positionsToOffset != null) {
 			return this.retrievePagebreaks(
 				this.positionsToOffset.getLeafReader(),
 				(Bits) null,
 				"tokens", pb
 				);
+		};
 
 		return null;
 	};
@@ -668,18 +689,27 @@ public class Match extends AbstractDocument {
 		try {
 
             // Store character offsets in ByteBuffer
-            ByteBuffer bb = ByteBuffer.allocate(4);
+            ByteBuffer bb = ByteBuffer.allocate(16);
 
 			// Store last relevant pagebreak in byte array
 			byte[] b = null;
-			
-			Spans pagebreakSpans = new SpanTermQuery(new Term(field, pb)).getSpans(
+
+			SpanTermQuery stq = new SpanTermQuery(new Term(field, pb));
+
+			if (DEBUG)
+				log.trace("Check pagebreaks with {}", stq.toString());
+
+			Spans pagebreakSpans = stq.getSpans(
 				atomic, bitset, new HashMap<Term, TermContext>()
 				);
 
 			// Iterate over all pagebreaks
-			while (pagebreakSpans.next()) {
+			while (pagebreakSpans.next() == true) {
 
+				if (DEBUG) {
+					log.debug("There is a pagebreak at {}", pagebreakSpans.doc());
+				};
+				
 				// Current pagebreak is not in the correct document
 				if (pagebreakSpans.doc() != this.localDocID) {
 					pagebreakSpans.skipTo(this.localDocID);
@@ -689,10 +719,16 @@ public class Match extends AbstractDocument {
 						break;
 				};
 
+				if (DEBUG)
+					log.debug("The pagebreak occurs in the document");
+				
 				// There is a pagebreak found - check,
 				// if it is in the correct area
 				if (pagebreakSpans.start() <= this.getStartPos()) {
 
+					if (DEBUG)
+						log.debug("PB start position is before at {}", pagebreakSpans.start());
+					
 					// Only the first payload is relevant
 					b = pagebreakSpans.getPayload().iterator().next();
 				}
@@ -704,6 +740,28 @@ public class Match extends AbstractDocument {
 					if (b != null) {
 						bb.rewind();
 						bb.put(b);
+						bb.rewind();
+
+						if (DEBUG)
+							log.debug("Add pagebreak to list");
+						
+						// This is the first pagebreak!
+						pagebreaks.add(
+							new int[]{
+								bb.getInt(),
+								bb.getInt()
+							});
+					}
+
+					// b wasn't used yet
+					else if (pagebreakSpans.start() <= this.getEndPos()) {
+
+						// Set new pagebreak
+						// Only the first payload is relevant
+						b = pagebreakSpans.getPayload().iterator().next();
+						bb.rewind();
+						bb.put(b);
+						bb.rewind();
 							
 						// This is the first pagebreak!
 						pagebreaks.add(
@@ -711,27 +769,16 @@ public class Match extends AbstractDocument {
 								bb.getInt(),
 								bb.getInt()
 							});
-					};
 
-					// Set new pagebreak
-					// Only the first payload is relevant
-					b = pagebreakSpans.getPayload().iterator().next();
-					bb.rewind();
-					bb.put(b);
-							
-					// This is the first pagebreak!
-					pagebreaks.add(
-						new int[]{
-							bb.getInt(),
-							bb.getInt()
-						});
+					}
+
+					// Pagebreak beyond the current position
+					else {
+						break;
+					};
 
 					// Reset byte
 					b = null;
-
-					// Pagebreak beyond the current position
-					if (pagebreakSpans.start() > this.getEndPos())
-						break;
 				};
 			};
 		}
@@ -739,6 +786,12 @@ public class Match extends AbstractDocument {
 			log.warn("Some problems with ByteBuffer: {}", e.getMessage());
 		};
 
+		if (pagebreaks.size() > 0) {
+			this.startPage = pagebreaks.get(0)[0];
+			if (pagebreaks.size() > 1 && pagebreaks.get(pagebreaks.size()-1) != null)
+				this.endPage = pagebreaks.get(pagebreaks.size()-1)[0];
+		}
+		
 		return pagebreaks;
 	};
 
@@ -1487,6 +1540,15 @@ public class Match extends AbstractDocument {
 
         if (this.version != null)
             json.put("version", this.getVersion());
+
+		if (this.startPage != -1) {
+			ArrayNode pages = mapper.createArrayNode();
+			pages.add(this.startPage);
+			if (this.endPage != -1 && this.endPage != this.startPage)
+				pages.add(this.endPage);
+
+			json.put("pages", pages);
+		};
 
         return json;
     };

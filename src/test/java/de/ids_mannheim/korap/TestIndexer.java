@@ -52,7 +52,7 @@ public class TestIndexer {
                 "-i",
                 "src/test/resources/bzk;src/test/resources/goe;src/test/resources/sgbr",
                 "-o", "test-index" });
-        assertEquals("Indexed 3 files.", outputStream.toString());
+        assertEquals("Indexed 4 files.", outputStream.toString());
     }
 
     @Test
