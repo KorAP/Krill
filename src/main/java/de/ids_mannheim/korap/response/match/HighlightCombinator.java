@@ -72,7 +72,6 @@ public class HighlightCombinator {
         this.balanceStack.push(number);
     };
 
-
     // Add closing highlight combinator to the stack
     public void addClose (int number) {
         HighlightCombinatorElement lastComb;

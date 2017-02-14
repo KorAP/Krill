@@ -190,6 +190,7 @@ public class TestHighlight { // extends LuceneTestCase {
         Result kr = ki.search(q);
         assertEquals((long) 14, kr.getTotalResults());
         assertEquals("[[{1:a}]]bab", kr.getMatch(0).getSnippetBrackets());
+		
         assertEquals("a[[{2:b}]]ab", kr.getMatch(1).getSnippetBrackets());
         assertEquals("ab[[{1:a}]]b", kr.getMatch(2).getSnippetBrackets());
         assertEquals("aba[[{2:b}]]", kr.getMatch(3).getSnippetBrackets());
