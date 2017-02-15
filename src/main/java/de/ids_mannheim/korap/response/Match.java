@@ -50,12 +50,15 @@ import de.ids_mannheim.korap.response.match.Relation;
  *    closing tags (pretty much clones of the initial span list),
  *    sorted for opening resp. closing, and processed in parallel
  *    to form an open/close stack. The new structure on the stack is
- *    [startchar, endchar, highlightclass, open=1/close=0]
+ *    [startchar, endchar, highlightclass, close=0/open=1/empty=2]
  *    (processHighlightStack)
  *    3.1. If the element is a relation with an identifier, this may
  *         be removed if duplicate (filterMultipleIdentifiers)
  * 4. Based on the stack and the primary data the snippet is created.
  *    (processHighlightSnippet)
+ *    4.1. To avoid unbalanced elements, all open/close/empty tags
+ *         are balanced (i.e. closed and reopened if overlaps occur).
+ *         (Highlightcombinator)
  */
 
 /*
@@ -785,11 +788,11 @@ public class Match extends AbstractDocument {
 						bb.put(b);
 						bb.rewind();
 
-						if (DEBUG)
-							log.debug("Add pagebreak to list");
-
 						pagenumber = bb.getInt();
 						charOffset = bb.getInt();
+
+						if (DEBUG)
+							log.debug("Add pagebreak to list: {}-{}", charOffset, pagenumber);
 						
 						// This is the first pagebreak!
 						pagebreaks.add(new int[]{charOffset, pagenumber});
@@ -1140,7 +1143,8 @@ public class Match extends AbstractDocument {
         // Iterate over all elements of the stack
         for (int[] element : stack) {
 
-            // The position
+            // The position is the start position for opening and
+			// empty elements and the end position for closing elements
             pos = element[3] != 0 ? element[0] : element[1];
 
 			// The new position is behind the old position
@@ -1163,8 +1167,17 @@ public class Match extends AbstractDocument {
 
 			// close tag
             if (element[3] == 0) {
+
+				// Add close
                 snippetArray.addClose(element[2]);
             }
+
+			else if (element[3] == 2) {
+
+				// Add Empty (pagebreak)
+                snippetArray.addEmpty(element[2]);
+			}
+			
 
 			// open tag
             else {
@@ -1341,8 +1354,19 @@ public class Match extends AbstractDocument {
 
 			// Nothing more to open -- close all
             if (openList.isEmpty()) {
-                stack.addAll(closeList);
-                break;
+
+				if (DEBUG)
+					log.debug("No more open tags -- close all non pagebreaks");
+
+				if (closeList.peekFirst()[1] != PB_MARKER) {
+					stack.add(closeList.removeFirst());
+				}
+				else if (DEBUG) {
+					if (DEBUG)
+						log.debug("Close is pagebreak -- ignore (1)");
+				};
+
+                continue;
             }
 
             // Not sure about this, but it can happen
@@ -1350,9 +1374,37 @@ public class Match extends AbstractDocument {
                 break;
             };
 
+			// Closener is pagebreak
+			if (closeList.peekFirst()[1] == PB_MARKER) {
+
+				if (DEBUG)
+					log.debug("Close is pagebreak -- ignore (2)");
+
+				// Remove closing pagebreak
+				closeList.removeFirst();
+			}
+
+			// Opener is pagebreak
+			else if (openList.peekFirst()[1] == PB_MARKER) {
+				int[] e = openList.removeFirst().clone();
+
+				if (DEBUG)
+					log.debug("Open is pagebreak");
+
+				// Mark as empty
+                e[1] = e[0]; // Remove pagebreak marker
+                e[3] = 2;
+
+				// Add empty pagebreak
+				stack.add(e);
+			}
+
 			// check if the opener is smaller than the closener
-            if (openList.peekFirst()[0] < closeList.peekFirst()[1]) {
-				
+			else if (openList.peekFirst()[0] < closeList.peekFirst()[1]) {
+
+				if (DEBUG)
+					log.debug("Open starts before close ends");
+
                 int[] e = openList.removeFirst().clone();
 
 				// Mark as opener
@@ -1361,7 +1413,11 @@ public class Match extends AbstractDocument {
 				// Add opener to stack
                 stack.add(e);
             }
+
 			else {
+				if (DEBUG)
+					log.debug("Close ends before open");
+
 				// Add closener to stack
                 stack.add(closeList.removeFirst());
             };
@@ -1471,6 +1527,7 @@ public class Match extends AbstractDocument {
 					// In pagebreak highlights
 					// there is already a character
 					start = highlight.start;
+					end = highlight.end;
 				};
 
                 if (DEBUG)
@@ -1482,6 +1539,9 @@ public class Match extends AbstractDocument {
 				// Keep end equal -1
 				if (end != PB_MARKER) {
 					end -= startOffsetChar;
+				}
+				else if (DEBUG) {
+					log.debug("Pagebreak keeps end position");
 				};
 
                 if (start < 0 || (end < 0 && end != PB_MARKER))

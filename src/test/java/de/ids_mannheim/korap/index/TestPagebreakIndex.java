@@ -56,8 +56,11 @@ public class TestPagebreakIndex {
         ki.addDoc(fd);
         ki.commit();
 
-		SpanQuery sq = new SpanTermQuery(new Term("tokens", "s:c"));
-        Result kr = ki.search(sq, (short) 10);
+		SpanQuery sq;
+		Result kr;
+		/*
+		  sq = new SpanTermQuery(new Term("tokens", "s:c"));
+        kr = ki.search(sq, (short) 10);
 		
 		assertEquals(528, kr.getMatch(0).getStartPage());
 		assertEquals(-1, kr.getMatch(0).getEndPage());
@@ -82,7 +85,7 @@ public class TestPagebreakIndex {
 			"</span>"+
 			"</span>",
 			kr.getMatch(0).getSnippetHTML());
-
+*/
 
 		QueryBuilder qb = new QueryBuilder("tokens");
 		sq = qb.seq().append(
@@ -94,5 +97,26 @@ public class TestPagebreakIndex {
 			.toQuery();
 
 		assertEquals(sq.toString(), "spanNext(spanRepetition(spanNext(spanNext(tokens:s:a, tokens:s:b), tokens:s:c){2,2}), tokens:s:a)");
+
+
+		kr = ki.search(sq, (short) 10);
+		
+		assertEquals(528, kr.getMatch(0).getStartPage());
+		assertEquals(-1, kr.getMatch(0).getEndPage());
+		assertEquals(
+			"snippetHTML",
+			"<span class=\"context-left\"></span>"+
+			"<span class=\"match\">"+
+			"<mark>"+
+			"<span class=\"pb\" data-after=\"528\"></span>"+
+			"abcab"+
+			// "<span class=\"pb\" data-after=\"529\"></span>"+
+			"ca"+
+			"</mark>"+
+			"</span>"+
+			"<span class=\"context-right\">"+
+			"bac"+
+			"</span>",
+			kr.getMatch(0).getSnippetHTML());
 	};
 };

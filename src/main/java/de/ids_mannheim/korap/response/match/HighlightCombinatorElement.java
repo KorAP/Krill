@@ -15,6 +15,7 @@ public class HighlightCombinatorElement {
     // Type 0: Textual data
     // Type 1: Opening
     // Type 2: Closing
+	// Type 3: Empty
     public byte type;
 
     public int number = 0;
@@ -50,6 +51,7 @@ public class HighlightCombinatorElement {
 
     // Return html fragment for this combinator element
     public String toHTML (Match match, FixedBitSet level, byte[] levelCache) {
+
         // Opening
         if (this.type == 1) {
             StringBuilder sb = new StringBuilder();
@@ -102,6 +104,7 @@ public class HighlightCombinatorElement {
             };
             return sb.toString();
         }
+
         // Closing
         else if (this.type == 2) {
             if (this.number < -1 || this.number >= 256)
@@ -113,7 +116,12 @@ public class HighlightCombinatorElement {
             if (this.terminal)
                 level.set((int) levelCache[this.number]);
             return "</mark>";
-        };
+        }
+
+		// Empty element
+		else if (this.type == 3) {
+			return "<span class=\"pb\" data-after=\"" + number + "\"></span>";
+		};
 
         // HTML encode primary data
         return escapeHTML(this.characters);

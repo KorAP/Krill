@@ -17,7 +17,7 @@ public class HighlightCombinator {
     private final static Logger log = LoggerFactory.getLogger(Match.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     private LinkedList<HighlightCombinatorElement> combine;
     private Stack<Integer> balanceStack = new Stack<>();
@@ -63,6 +63,9 @@ public class HighlightCombinator {
     // Add primary data to the stack
     public void addString (String characters) {
         this.combine.add(new HighlightCombinatorElement(characters));
+		if (DEBUG) {
+			log.trace("Add string \"{}\" to stack", characters);
+		};
     };
 
 
@@ -70,6 +73,13 @@ public class HighlightCombinator {
     public void addOpen (int number) {
         this.combine.add(new HighlightCombinatorElement((byte) 1, number));
         this.balanceStack.push(number);
+		if (DEBUG)
+			log.trace("Add opening {} to stack", number);
+    };
+
+	// Add empty highlight to the stack
+    public void addEmpty (int pagenumber) {
+        this.combine.add(new HighlightCombinatorElement((byte) 3, pagenumber));
     };
 
     // Add closing highlight combinator to the stack
@@ -111,7 +121,10 @@ public class HighlightCombinator {
                 log.trace(
                         "Closing element is unbalanced - {} "
                                 + "!= {} with lastComb {}|{}|{}",
-                        eold, number, lastComb.type, lastComb.number,
+                        eold,
+						number,
+						lastComb.type,
+						lastComb.number,
                         lastComb.characters);
 
             // combinator is opening and the number is not equal to the last
@@ -121,6 +134,11 @@ public class HighlightCombinator {
                 // Remove the last element - it's empty and uninteresting!
                 this.combine.removeLast();
             }
+
+			// Last element is empty
+			else if (lastComb.type == 3) {
+				System.err.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			}
 
             // combinator is either closing (??) or another opener
             else {
@@ -144,8 +162,6 @@ public class HighlightCombinator {
         lastComb = this.combine.peekLast();
 
         if (DEBUG) {
-            log.trace("LastComb: " + lastComb.type + '|' + lastComb.number + '|'
-                    + lastComb.characters + " for " + number);
             log.trace("Stack for checking 2: {}|{}|{}|{}", lastComb.type,
                     lastComb.number, lastComb.characters, number);
         };
@@ -157,6 +173,9 @@ public class HighlightCombinator {
                 lastComb = this.combine.peekLast();
             };
         }
+		else if (lastComb.type == 3) {
+			System.err.println("öööööööööööööööööööööööö");
+		}
         else {
             if (DEBUG)
                 log.trace("close element b) {}", number);
