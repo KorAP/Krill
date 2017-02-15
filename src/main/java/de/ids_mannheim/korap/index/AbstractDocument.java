@@ -63,7 +63,8 @@ public abstract class AbstractDocument extends Response {
             corpusSubTitle, corpusAuthor, corpusEditor, textType, textTypeArt,
             textTypeRef, textColumn, textDomain, fileEditionStatement,
             biblEditionStatement, publisher, reference, language, license,
-            pages, keywords,
+	// pages,
+		keywords,
 
             // Meta information regarding annotations
             tokenSource, layerInfos;
@@ -188,9 +189,10 @@ public abstract class AbstractDocument extends Response {
             this.setLanguage(doc.get("language"));
         if (fields.contains("license"))
             this.setLicense(doc.get("license"));
+		/*
         if (fields.contains("pages"))
             this.setPages(doc.get("pages"));
-
+		*/
         if (fields.contains("biblEditionStatement"))
             this.setBiblEditionStatement(doc.get("biblEditionStatement"));
         if (fields.contains("fileEditionStatement"))
@@ -821,26 +823,26 @@ public abstract class AbstractDocument extends Response {
     };
 
 
-    /**
+    /*
      * Get the page numbers of the text as a string.
      * 
      * @return The page numbers of the text as a string.
-     */
     public String getPages () {
         return this.pages;
     };
+     */
 
 
-    /**
+    /*
      * Set the page numbers of the text as a string.
      * 
      * @param pages
      *            The page numbers of the text as a string.
-     */
+     *
     public void setPages (String pages) {
         this.pages = pages;
     };
-
+	*/
 
     /**
      * Get the file edition statement of the text as a string.

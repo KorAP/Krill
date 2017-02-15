@@ -31,6 +31,8 @@ import java.util.*;
   The character offset may need a special encoding in Lucene
   To store the character offsets directly (not in the payloads),
   to make this less messy and speed things up.
+
+  TODO: license is now called "availability"!
 */
 
 /**
@@ -422,12 +424,13 @@ public class FieldDocument extends AbstractDocument {
         this.addString("license", license);
     };
 
-
+	/*
     @Override
     public void setPages (String pages) {
         super.setPages(pages);
         this.addStored("pages", pages);
     };
+	*/
 
 
     @Override

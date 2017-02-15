@@ -25,6 +25,7 @@ import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.SearchContext;
 
 @RunWith(JUnit4.class)
@@ -514,7 +515,7 @@ public class TestKrill {
         assertNull(fd.getTextTypeRef());
         assertNull(fd.getTextColumn());
         assertNull(fd.getTextDomain());
-        assertEquals(fd.getPages(), "529-547");
+        // assertEquals(fd.getPages(), "529-547");
         assertEquals(fd.getLicense(), "QAO-NC");
         assertEquals(fd.getCreationDate().toString(), "18200000");
         assertEquals(fd.getPubDate().toString(), "19820000");
@@ -571,6 +572,80 @@ public class TestKrill {
         assertEquals(25, kr.getItemsPerPage());
     };
 
+	
+    @Test
+    public void searchJSONwithPagebreaks () throws IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        FieldDocument fd = ki.addDoc(1,
+                getClass().getResourceAsStream("/goe/AGA-03828-pb.json.gz"), true);
+        ki.commit();
+
+        assertEquals(fd.getUID(), 1);
+        assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
+        assertEquals(fd.getDocSigle(), "GOE/AGA");
+        assertEquals(fd.getCorpusSigle(), "GOE");
+        assertEquals(fd.getTitle(), "Autobiographische Einzelheiten");
+        assertNull(fd.getSubTitle());
+        assertEquals(fd.getTextType(), "Autobiographie");
+        assertNull(fd.getTextTypeArt());
+        assertNull(fd.getTextTypeRef());
+        assertNull(fd.getTextColumn());
+        assertNull(fd.getTextDomain());
+        // assertEquals(fd.getPages(), "529-547");
+		// assertEquals(fd.getAvailability(), "QAO-NC");
+        assertEquals(fd.getCreationDate().toString(), "18200000");
+        assertEquals(fd.getPubDate().toString(), "19820000");
+        assertEquals(fd.getAuthor(), "Goethe, Johann Wolfgang von");
+        assertNull(fd.getTextClass());
+        assertEquals(fd.getLanguage(), "de");
+        assertEquals(fd.getPubPlace(), "München");
+        assertEquals(fd.getReference(),
+                "Goethe, Johann Wolfgang von:"
+                        + " Autobiographische Einzelheiten,"
+                        + " (Geschrieben bis 1832), In: Goethe,"
+                        + " Johann Wolfgang von: Goethes Werke,"
+                        + " Bd. 10, Autobiographische Schriften"
+                        + " II, Hrsg.: Trunz, Erich. München: "
+                        + "Verlag C. H. Beck, 1982, S. 529-547");
+        assertEquals(fd.getPublisher(), "Verlag C. H. Beck");
+        assertNull(fd.getEditor());
+        assertNull(fd.getFileEditionStatement());
+        assertNull(fd.getBiblEditionStatement());
+        assertNull(fd.getKeywords());
+
+        assertEquals(fd.getTokenSource(), "base#tokens_aggr");
+        assertEquals(fd.getFoundries(),
+                "dereko dereko/structure "+
+					 "dereko/structure/base-sentences-paragraphs-pagebreaks");
+        assertEquals(fd.getLayerInfos(), "dereko/s=spans");
+
+        assertEquals(fd.getCorpusTitle(), "Goethes Werke");
+        assertNull(fd.getCorpusSubTitle());
+        assertEquals(fd.getCorpusAuthor(), "Goethe, Johann Wolfgang von");
+        assertEquals(fd.getCorpusEditor(), "Trunz, Erich");
+        assertEquals(fd.getDocTitle(),
+                "Goethe: Autobiographische Schriften II, (1817-1825, 1832)");
+        assertNull(fd.getDocSubTitle());
+        assertNull(fd.getDocEditor());
+        assertNull(fd.getDocAuthor());
+
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("s:der"));
+        Result kr = ks.apply(ki);
+
+        assertEquals(kr.getTotalResults(), 97);
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(25, kr.getItemsPerPage());
+
+		Match m = kr.getMatch(5);
+		assertEquals("Start page", m.getStartPage(), 529);
+
+		ObjectMapper mapper = new ObjectMapper();
+        JsonNode res = mapper.readTree(m.toJsonString());
+		assertEquals(529, res.at("/pages/0").asInt());
+    };
+
 
     @Test
     public void searchJSONnewJSON2 () throws IOException {
@@ -600,7 +675,7 @@ public class TestKrill {
         assertEquals(fd.getCreationDate().toString(), "19590219");
         assertEquals(fd.getLicense(), "ACA-NC-LC");
         assertEquals(fd.getTextColumn(), "POLITIK");
-        assertNull(fd.getPages());
+        // assertNull(fd.getPages());
         assertEquals(fd.getTextClass(), "politik ausland");
         assertNull(fd.getFileEditionStatement());
         assertNull(fd.getBiblEditionStatement());

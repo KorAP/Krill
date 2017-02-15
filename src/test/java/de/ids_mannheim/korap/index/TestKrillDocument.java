@@ -102,8 +102,10 @@ public class TestKrillDocument {
         krd.setLicense("cc");
         assertEquals("cc", krd.getLicense());
 
-        krd.setPages("56-78");
-        assertEquals("56-78", krd.getPages());
+        /*
+		  krd.setPages("56-78");
+		  assertEquals("56-78", krd.getPages());
+		*/
 
         krd.setFileEditionStatement("no problemo 1");
         assertEquals("no problemo 1", krd.getFileEditionStatement());
