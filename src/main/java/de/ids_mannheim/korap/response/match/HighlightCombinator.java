@@ -17,7 +17,7 @@ public class HighlightCombinator {
     private final static Logger log = LoggerFactory.getLogger(Match.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private LinkedList<HighlightCombinatorElement> combine;
     private Stack<Integer> balanceStack = new Stack<>();
@@ -137,7 +137,9 @@ public class HighlightCombinator {
 
 			// Last element is empty
 			else if (lastComb.type == 3) {
-				System.err.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				log.error(
+					"The last element was empty -- and this is not correctly handled yet"
+					);
 			}
 
             // combinator is either closing (??) or another opener

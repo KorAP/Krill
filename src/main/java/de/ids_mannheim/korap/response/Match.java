@@ -88,7 +88,7 @@ public class Match extends AbstractDocument {
 	private static final int PB_MARKER = -99999;
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
@@ -712,7 +712,8 @@ public class Match extends AbstractDocument {
 			return this.retrievePagebreaks(
 				this.positionsToOffset.getLeafReader(),
 				(Bits) null,
-				"tokens", pb
+				"tokens",
+				pb
 				);
 		};
 
@@ -729,8 +730,13 @@ public class Match extends AbstractDocument {
 		// List of relevant pagebreaks
 		List<int[]> pagebreaks = new ArrayList<>(24);
 
-		int charOffset = 0, pagenumber = 0;
-		
+		int charOffset = 0, pagenumber = 0, start = 0;
+
+		if (DEBUG)
+			log.debug("Retrieve pagebreaks between {}-{}",
+					  this.getStartPos(),
+					  this.getEndPos());
+
 		try {
 
             // Store character offsets in ByteBuffer
@@ -752,7 +758,9 @@ public class Match extends AbstractDocument {
 			while (pagebreakSpans.next() == true) {
 
 				if (DEBUG) {
-					log.debug("There is a pagebreak at {}", pagebreakSpans.doc());
+					log.debug("There is a pagebreak at {}/{}",
+							  pagebreakSpans.doc(),
+							  pagebreakSpans.start());
 				};
 				
 				// Current pagebreak is not in the correct document
@@ -772,11 +780,12 @@ public class Match extends AbstractDocument {
 				if (pagebreakSpans.start() <= this.getStartPos()) {
 
 					if (DEBUG)
-						log.debug("PB start position is before at {}",
+						log.debug("PB start position is before match at {}",
 								  pagebreakSpans.start());
 					
 					// Only the first payload is relevant
 					b = pagebreakSpans.getPayload().iterator().next();
+					start = pagebreakSpans.start();
 				}
 
 				// This is the first pagebreak!
@@ -796,11 +805,18 @@ public class Match extends AbstractDocument {
 						
 						// This is the first pagebreak!
 						pagebreaks.add(new int[]{charOffset, pagenumber});
-						this.addPagebreak(charOffset, pagenumber);
+						if (start >= this.getStartPos()) {
+
+							if (DEBUG)
+								log.debug("Add pagebreak to rendering: {}-{}",
+										  charOffset,
+										  pagenumber);
+							this.addPagebreak(charOffset, pagenumber);
+						};
 					}
 
 					// b wasn't used yet
-					else if (pagebreakSpans.start() <= this.getEndPos()) {
+					if (pagebreakSpans.start() <= this.getEndPos()) {
 
 						// Set new pagebreak
 						// Only the first payload is relevant
