@@ -675,7 +675,6 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
         // No real sequence - only one element
         if (size == 1) {
-
             // But the element may be expanded
             if (this.segments.get(0).isExtended()
                     && (this.hasConstraints() || !this.isInOrder())) {

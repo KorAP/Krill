@@ -23,6 +23,8 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
@@ -35,7 +37,7 @@ import de.ids_mannheim.korap.response.SearchContext;
 public class TestPagebreakIndex {
 
     @Test
-    public void indexExample1 () throws IOException {
+    public void indexExample1 () throws Exception {
 		KrillIndex ki = new KrillIndex();
 
 		// abcabcabac
@@ -55,15 +57,14 @@ public class TestPagebreakIndex {
         ki.commit();
 
 		SpanQuery sq = new SpanTermQuery(new Term("tokens", "s:c"));
-
         Result kr = ki.search(sq, (short) 10);
-
+		
 		assertEquals(528, kr.getMatch(0).getStartPage());
 		assertEquals(-1, kr.getMatch(0).getEndPage());
 		assertEquals(
 			"snippetHTML",
 			"<span class=\"context-left\">"+
-			"<span class=\"pb\" data-after=\"528\"></span>"+
+			// "<span class=\"pb\" data-after=\"528\"></span>"+
 			"ab"+
 			"</span>"+
 			"<span class=\"match\">"+
@@ -73,13 +74,25 @@ public class TestPagebreakIndex {
 			"</span>"+
 			"<span class=\"context-right\">"+
 			"ab"+
-			"<span class=\"pb\" data-after=\"528\"></span>"+
+			// "<span class=\"pb\" data-after=\"528\"></span>"+
 			"cab"+
-			"<span class=\"pb\" data-after=\"528\"></span>"+
+			// "<span class=\"pb\" data-after=\"528\"></span>"+
 			"a"+
 			"<span class=\"more\">"+
 			"</span>"+
 			"</span>",
 			kr.getMatch(0).getSnippetHTML());
+
+
+		QueryBuilder qb = new QueryBuilder("tokens");
+		sq = qb.seq().append(
+			qb.repeat(
+				qb.seq().append(qb.seg("s:a")).append(qb.seg("s:b")).append(qb.seg("s:c")),
+				2
+				)
+			).append(qb.seg("s:a"))
+			.toQuery();
+
+		assertEquals(sq.toString(), "spanNext(spanRepetition(spanNext(spanNext(tokens:s:a, tokens:s:b), tokens:s:c){2,2}), tokens:s:a)");
 	};
 };

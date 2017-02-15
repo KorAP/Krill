@@ -34,13 +34,38 @@ import de.ids_mannheim.korap.response.match.PosIdentifier;
 import de.ids_mannheim.korap.response.match.Relation;
 
 /*
-  Todo: The implemented classes and private names are horrible!
-  Refactor, future-me!
+ * The snippet building algorithm is quite complicated for now
+ * and should probably be refactored.
+ * It works like this:
+ *
+ * 1. For all spans and highlights, pagebreaks etc. all necessary
+ *    positions are collected (processHighlight)
+ * 2. For all collected positions the character offsets are retrieved
+ *    and based on that for all spans and highlights a list
+ *    is created with arrays of the spans with the structure
+ *    [startchar, endchar, highlightClass] (processHighlightSpans)
+ *    2.1 The primary data and optional context information is retrieved
+ *        (processOffsetChars)
+ * 3. Based on the collected spans 2 lists are created for opening and
+ *    closing tags (pretty much clones of the initial span list),
+ *    sorted for opening resp. closing, and processed in parallel
+ *    to form an open/close stack. The new structure on the stack is
+ *    [startchar, endchar, highlightclass, open=1/close=0]
+ *    (processHighlightStack)
+ *    3.1. If the element is a relation with an identifier, this may
+ *         be removed if duplicate (filterMultipleIdentifiers)
+ * 4. Based on the stack and the primary data the snippet is created.
+ *    (processHighlightSnippet)
+ */
 
-  The number based Highlighttype is ugly - UGLY!
-
-  substrings may be out of range - e.g. if snippets are not lifted!
-*/
+/*
+ * Todo: The implemented classes and private names are horrible!
+ * Refactor, future-me!
+ *
+ * The number based Highlighttype is ugly - UGLY!
+ *
+ * substrings may be out of range - e.g. if snippets are not lifted!
+ */
 
 /**
  * Representation of Matches in a Result.
@@ -406,8 +431,8 @@ public class Match extends AbstractDocument {
     };
 
 
-	public void addPagebreak (int start, int number) {
-		this.addHighlight(new Highlight(start, number));
+	public void addPagebreak (int start, int pagenumber) {
+		this.addHighlight(new Highlight(start, pagenumber));
 	};
 
     /**
@@ -763,8 +788,8 @@ public class Match extends AbstractDocument {
 						if (DEBUG)
 							log.debug("Add pagebreak to list");
 
-						charOffset = bb.getInt();
 						pagenumber = bb.getInt();
+						charOffset = bb.getInt();
 						
 						// This is the first pagebreak!
 						pagebreaks.add(new int[]{charOffset, pagenumber});
@@ -781,8 +806,8 @@ public class Match extends AbstractDocument {
 						bb.put(b);
 						bb.rewind();
 							
-						charOffset = bb.getInt();
 						pagenumber = bb.getInt();
+						charOffset = bb.getInt();
 						
 						// This is the first pagebreak!
 						pagebreaks.add(new int[]{charOffset, pagenumber});
@@ -804,9 +829,9 @@ public class Match extends AbstractDocument {
 		};
 
 		if (pagebreaks.size() > 0) {
-			this.startPage = pagebreaks.get(0)[0];
+			this.startPage = pagebreaks.get(0)[1];
 			if (pagebreaks.size() > 1 && pagebreaks.get(pagebreaks.size()-1) != null)
-				this.endPage = pagebreaks.get(pagebreaks.size()-1)[0];
+				this.endPage = pagebreaks.get(pagebreaks.size()-1)[1];
 		}
 		
 		return pagebreaks;
@@ -1327,6 +1352,7 @@ public class Match extends AbstractDocument {
 
 			// check if the opener is smaller than the closener
             if (openList.peekFirst()[0] < closeList.peekFirst()[1]) {
+				
                 int[] e = openList.removeFirst().clone();
 
 				// Mark as opener
@@ -1335,8 +1361,7 @@ public class Match extends AbstractDocument {
 				// Add opener to stack
                 stack.add(e);
             }
-            else {
-
+			else {
 				// Add closener to stack
                 stack.add(closeList.removeFirst());
             };
@@ -1417,8 +1442,11 @@ public class Match extends AbstractDocument {
         int startOffsetChar = startPosChar - intArray[0];
 
         // Add match span, in case no inner match is defined
-        if (this.innerMatchEndPos == -1)
+        if (this.innerMatchEndPos == -1) {
+			if (DEBUG)
+				log.debug("Added array to span with {} (1)", intArray);
             this.span.add(intArray);
+		};
 
         // highlights
         // -- I'm not sure about this.
@@ -1466,6 +1494,9 @@ public class Match extends AbstractDocument {
 					highlight.number,
 					0 // Dummy value for later use
                 };
+
+				if (DEBUG)
+					log.debug("Added array to span with {} (2)", intArray);
 
                 this.span.add(intArray);
             };

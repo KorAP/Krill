@@ -27,10 +27,12 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
 
     // This is for exact enumbered repetition, like in a{3}
     public SpanRepetitionQueryWrapper (SpanQueryWrapper subquery, int exact) {
+
         if (!subquery.isEmpty()) {
             this.subquery = subquery;
             if (subquery.maybeUnsorted())
                 this.maybeUnsorted = true;
+			this.isEmpty = false;
         }
         else
             this.isEmpty = true;
@@ -43,6 +45,7 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
             return;
         };
 
+		this.isNull = false;
         this.min = exact;
         this.max = exact;
     };
