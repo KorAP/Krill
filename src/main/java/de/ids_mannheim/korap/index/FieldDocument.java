@@ -79,7 +79,8 @@ public class FieldDocument extends AbstractDocument {
 
 
     public void addInt (String key, String value) {
-        this.addInt(key, Integer.parseInt(value));
+		if (value != null)
+			this.addInt(key, Integer.parseInt(value));
     };
 
 
@@ -284,7 +285,9 @@ public class FieldDocument extends AbstractDocument {
     @Override
     public KrillDate setPubDate (String pubDate) {
         KrillDate date = super.setPubDate(pubDate);
-        this.addInt("pubDate", date.toString());
+		if (date != null) {
+			this.addInt("pubDate", date.toString());
+		};
         return date;
     };
 
@@ -293,7 +296,9 @@ public class FieldDocument extends AbstractDocument {
     @Override
     public KrillDate setCreationDate (String creationDate) {
         KrillDate date = super.setCreationDate(creationDate);
-        this.addInt("creationDate", date.toString());
+		if (date != null) {
+			this.addInt("creationDate", date.toString());
+		};
         return date;
     };
 

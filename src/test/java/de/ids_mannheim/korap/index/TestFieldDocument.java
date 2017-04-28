@@ -206,6 +206,40 @@ public class TestFieldDocument {
     };
 
 
+    @Test
+    public void indexNoValidDate () throws Exception {
+
+        String json = new String("{" + "  \"fields\" : [" + "    { "
+                + "      \"primaryData\" : \"abc\"" + "    }," + "    {"
+                + "      \"name\" : \"tokens\"," + "      \"data\" : ["
+                + "         [ \"s:a\", \"i:a\", \"_0$<i>0<i>1\", \"-:t$<i>3\"],"
+                + "         [ \"s:b\", \"i:b\", \"_1$<i>1<i>2\" ],"
+                + "         [ \"s:c\", \"i:c\", \"_2$<i>2<i>3\" ]" + "      ]"
+                + "    }" + "  ]," + "  \"corpusID\"  : \"WPD\","
+                + "  \"ID\"        : \"WPD-AAA-00001\","
+                + "  \"textClass\" : \"music entertainment\","
+                + "  \"author\"    : \"Peter Frankenfeld\","
+                + "  \"pubDate\"   : \"00000000\","
+                + "  \"title\"     : \"Wikipedia\","
+                + "  \"subTitle\"  : \"Die freie Enzyklopädie\","
+                + "  \"pubPlace\"  : \"Bochum\"" + "}");
+
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(json);
+
+        ki.commit();
+
+        assertEquals(fd.getPrimaryData(), "abc");
+        assertEquals(fd.getCorpusID(), "WPD");
+        assertEquals(fd.getID(), "WPD-AAA-00001");
+        assertEquals(fd.getTextClass(), "music entertainment");
+        assertEquals(fd.getAuthor(), "Peter Frankenfeld");
+        assertEquals(fd.getTitle(), "Wikipedia");
+        assertEquals(fd.getSubTitle(), "Die freie Enzyklopädie");
+        assertEquals(fd.getPubPlace(), "Bochum");
+        assertEquals(fd.getPubDate().toDisplay(), "");
+	};
+	
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
