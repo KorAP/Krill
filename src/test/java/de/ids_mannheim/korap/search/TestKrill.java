@@ -1246,4 +1246,78 @@ public class TestKrill {
         assertEquals(kr.getMatch(0).getTextSigle(), "PRO-DUD_BSP-2013-01.32");
     };
 
+
+	/**
+	 * This is a Schreibgebrauch ressource that didn't work for
+     * element queries.
+     */
+    @Test
+    public void searchNewDeReKoData () throws IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        // Indexing test files
+        FieldDocument fd = ki.addDoc(1,
+                getClass().getResourceAsStream("/goe/AGA-03828-new.json.gz"),
+                true);
+        ki.commit();
+
+        assertEquals(fd.getUID(), 1);
+        assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
+        assertEquals(fd.getDocSigle(), "GOE/AGA");
+        assertEquals(fd.getCorpusSigle(), "GOE");
+        assertEquals(fd.getTitle(), "Autobiographische Einzelheiten");
+        assertNull(fd.getSubTitle());
+        assertEquals(fd.getTextType(), "Autobiographie");
+        assertNull(fd.getTextTypeArt());
+        assertNull(fd.getTextTypeRef());
+        assertNull(fd.getTextColumn());
+        assertNull(fd.getTextDomain());
+        // assertEquals(fd.getPages(), "529-547");
+        assertEquals(fd.getLicense(), null);
+        assertEquals(fd.getCreationDate().toString(), "18200000");
+        assertEquals(fd.getPubDate().toString(), "19820000");
+        assertEquals(fd.getAuthor(), "Goethe, Johann Wolfgang von");
+        assertNull(fd.getTextClass());
+        assertEquals(fd.getLanguage(), "de");
+        assertEquals(fd.getPubPlace(), "München");
+        assertEquals(fd.getReference(),
+                "Goethe, Johann Wolfgang von:"
+                        + " Autobiographische Einzelheiten,"
+                        + " (Geschrieben bis 1832), In: Goethe,"
+                        + " Johann Wolfgang von: Goethes Werke,"
+                        + " Bd. 10, Autobiographische Schriften"
+                        + " II, Hrsg.: Trunz, Erich. München: "
+                        + "Verlag C. H. Beck, 1982, S. 529-547");
+        assertEquals(fd.getPublisher(), "Verlag C. H. Beck");
+        assertNull(fd.getEditor());
+        assertNull(fd.getFileEditionStatement());
+        assertNull(fd.getBiblEditionStatement());
+        assertNull(fd.getKeywords());
+
+        assertEquals(fd.getTokenSource(), "base#tokens");
+        assertEquals(fd.getFoundries(),
+                "corenlp corenlp/constituency corenlp/morpho corenlp/sentences dereko dereko/structure dereko/structure/base-sentences-paragraphs-pagebreaks malt malt/dependency marmot marmot/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho");
+        assertEquals(fd.getLayerInfos(),
+                "corenlp/c=spans corenlp/p=tokens corenlp/s=spans dereko/s=spans malt/d=rels marmot/m=tokens marmot/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens");
+
+        assertEquals(fd.getCorpusTitle(), "Goethes Werke");
+        assertNull(fd.getCorpusSubTitle());
+        assertEquals(fd.getCorpusAuthor(), "Goethe, Johann Wolfgang von");
+        assertEquals(fd.getCorpusEditor(), "Trunz, Erich");
+        assertEquals(fd.getDocTitle(),
+                "Goethe: Autobiographische Schriften II, (1817-1825, 1832)");
+        assertNull(fd.getDocSubTitle());
+        assertNull(fd.getDocEditor());
+        assertNull(fd.getDocAuthor());
+
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("marmot/m:case:nom")
+                .with("marmot/m:number:pl"));
+        Result kr = ks.apply(ki);
+
+        assertEquals(kr.getTotalResults(), 141);
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(25, kr.getItemsPerPage());
+    };
+
 };
