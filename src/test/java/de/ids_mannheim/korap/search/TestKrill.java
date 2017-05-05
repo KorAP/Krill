@@ -1274,7 +1274,7 @@ public class TestKrill {
         assertNull(fd.getTextColumn());
         assertNull(fd.getTextDomain());
         // assertEquals(fd.getPages(), "529-547");
-        assertEquals(fd.getLicense(), null);
+        assertEquals(fd.getLicense(), "QAO-NC");
         assertEquals(fd.getCreationDate().toString(), "18200000");
         assertEquals(fd.getPubDate().toString(), "19820000");
         assertEquals(fd.getAuthor(), "Goethe, Johann Wolfgang von");

@@ -62,7 +62,7 @@ public abstract class AbstractDocument extends Response {
             docTitle, docSubTitle, docAuthor, docEditor, corpusTitle,
             corpusSubTitle, corpusAuthor, corpusEditor, textType, textTypeArt,
             textTypeRef, textColumn, textDomain, fileEditionStatement,
-            biblEditionStatement, publisher, reference, language, license,
+            biblEditionStatement, publisher, reference, language, availability,
 	// pages,
 		keywords,
 
@@ -187,8 +187,12 @@ public abstract class AbstractDocument extends Response {
             this.setTextTypeRef(doc.get("textTypeRef"));
         if (fields.contains("language"))
             this.setLanguage(doc.get("language"));
+
+		// Deprecated
         if (fields.contains("license"))
-            this.setLicense(doc.get("license"));
+            this.setAvailability(doc.get("license"));
+		else if (fields.contains("availability"))
+            this.setAvailability(doc.get("availability"));
 		/*
         if (fields.contains("pages"))
             this.setPages(doc.get("pages"));
@@ -807,8 +811,9 @@ public abstract class AbstractDocument extends Response {
      * 
      * @return The license of the text as a string.
      */
+	@Deprecated
     public String getLicense () {
-        return this.license;
+        return this.availability;
     };
 
 
@@ -818,8 +823,29 @@ public abstract class AbstractDocument extends Response {
      * @param license
      *            The license of the text as a string.
      */
+	@Deprecated
     public void setLicense (String license) {
-        this.license = license;
+        this.availability = license;
+    };
+
+	/**
+     * Get the availability of the text as a string.
+     * 
+     * @return The availability of the text as a string.
+     */
+    public String getAvailability () {
+        return this.availability;
+    };
+
+
+    /**
+     * Set the availability of the text as a string.
+     * 
+     * @param availability
+     *            The availability of the text as a string.
+     */
+    public void setAvailability (String availability) {
+        this.availability = availability;
     };
 
 
