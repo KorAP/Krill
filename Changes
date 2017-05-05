@@ -1,9 +1,11 @@
-0.55.8 2017-04-28
+0.55.8 2017-05-05
         - [feature] Retrieve and display pagebreaks (diewald)
         - [bugfix] Handle invalid dates in input (diewald)
+        - [feature] Support availability meta data (diewald)
 
 0.55.7 2017-01-24
-        - [bugfix] Sorted results in unordered element distance query results (margaretha)
+        - [bugfix] Sorted results in unordered element distance query
+          results (margaretha)
         - [bugfix] Throw error on optional operands in distance
           queries (diewald)
         - [performance] Remember solved problematic queries in the
