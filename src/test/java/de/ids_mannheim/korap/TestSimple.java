@@ -20,6 +20,8 @@ import org.apache.lucene.document.*;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.Bits;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Helper class for testing the KrillIndex framework (Simple).
@@ -28,6 +30,8 @@ import org.apache.lucene.util.Bits;
  */
 public class TestSimple {
 
+    private static Logger log  = LoggerFactory.getLogger(TestSimple.class);
+    
     // Add document
     public static void addDoc (IndexWriter w, Map<String, String> m)
             throws IOException {
@@ -92,17 +96,18 @@ public class TestSimple {
 
 
     // Get query wrapper based on json file
-    public static SpanQueryWrapper getJSONQuery (String jsonFile) {
+    public static SpanQueryWrapper getJSONQuery (String jsonFile) throws QueryException {
         SpanQueryWrapper sqwi;
 
-        try {
+//        try {
             String json = getJsonString(jsonFile);
             sqwi = new KrillQuery("tokens").fromKoral(json);
-        }
-        catch (QueryException e) {
-            fail(e.getMessage());
-            sqwi = new QueryBuilder("tokens").seg("???");
-        };
+//        }
+//        catch (QueryException e) {
+//            //fail(e.getMessage());
+//            log.error(e.getMessage());
+//            sqwi = new QueryBuilder("tokens").seg("???");
+//        };        
         return sqwi;
     };
 

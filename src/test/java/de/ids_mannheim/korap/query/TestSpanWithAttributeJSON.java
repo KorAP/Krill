@@ -4,12 +4,17 @@ import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.lucene.search.spans.SpanQuery;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSpanWithAttributeJSON {
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
 
     @Test
     public void testElementSingleAttribute () throws QueryException {
@@ -116,13 +121,17 @@ public class TestSpanWithAttributeJSON {
     }
 
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void testAnyElementSingleNotAttribute () throws QueryException {
+
+        exception.expectMessage("The query requires a positive attribute.");
         String filepath = getClass()
                 .getResource(
                         "/queries/attribute/any-element-with-single-not-attribute.jsonld")
                 .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        //        assertEquals("tokens:???", sq.toString());
     }
 
 }

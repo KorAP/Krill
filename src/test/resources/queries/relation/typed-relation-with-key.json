@@ -1,0 +1,21 @@
+{
+    "@context": "http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+    "query": {
+        "operation": "operation:relation",
+        "operands": [
+            {"@type": "koral:span"},
+            {"@type": "koral:span"}
+        ],
+        "@type": "koral:group",
+        "relType": {
+            "wrap": {
+                "@type": "koral:term",
+                "layer": "d",
+                "foundry": "malt",
+                "match": "match:eq",
+                "key": "PP"
+            },
+            "@type": "koral:relation"
+        }
+    }
+}

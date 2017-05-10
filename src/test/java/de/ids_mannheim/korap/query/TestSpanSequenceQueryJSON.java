@@ -271,7 +271,7 @@ public class TestSpanSequenceQueryJSON {
 
 
     @Test
-    public void queryJSONseqNegativelastConstraint () {
+    public void queryJSONseqNegativelastConstraint () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile(
                 "negative-last-constraint.jsonld");
         try {
@@ -383,7 +383,7 @@ public class TestSpanSequenceQueryJSON {
 
 
     // get query wrapper based on json file
-    public SpanQueryWrapper jsonQueryFile (String filename) {
+    public SpanQueryWrapper jsonQueryFile (String filename) throws QueryException {
         return getJSONQuery(getClass().getResource(path + filename).getFile());
     };
 };

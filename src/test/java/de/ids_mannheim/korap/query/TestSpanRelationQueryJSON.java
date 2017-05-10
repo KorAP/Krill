@@ -4,12 +4,18 @@ import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.lucene.search.spans.SpanQuery;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSpanRelationQueryJSON {
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
 
     @Test
     public void testMatchAnyRelationSourceWithAttribute ()
@@ -221,4 +227,52 @@ public class TestSpanRelationQueryJSON {
                 "focus(2: focus(#[1,2]{1: source:{2: target:spanRelation(tokens:>:mate/d:HEAD)}}))",
                 sq.toString());
     }
+
+
+    // EM: should relation term allow empty key?
+    @Test
+    public void testTypedRelationWithoutKey () throws QueryException {
+
+        exception.expectMessage("Key definition is missing in term or span");
+
+        String filepath = getClass()
+                .getResource(
+                        "/queries/relation/typed-relation-without-key.json")
+                .getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals("tokens:???", sq.toString());
+    }
+
+    @Test
+    public void testTypedRelationWithKey () throws QueryException {
+        String filepath = getClass()
+                .getResource("/queries/relation/typed-relation-with-key.json")
+                .getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+
+        assertEquals("focus(#[1,2]spanRelation(tokens:>:malt/d:PP))",
+                sq.toString());
+    }
+
+
+    @Test
+    public void testTypedRelationWithAnnotationNodes () throws QueryException {
+        // query = "corenlp/c=\"VP\" & corenlp/c=\"NP\" & #1 ->malt/d[func=\"PP\"] #2";
+        String filepath = getClass()
+                .getResource(
+                        "/queries/relation/typed-relation-with-annotation-nodes.json")
+                .getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "focus(#[1,2]spanSegment(<tokens:corenlp/c:NP />, "
+                        + "focus(#2: spanSegment("
+                        + "spanRelation(tokens:>:malt/d:PP), <tokens:corenlp/c:VP />))))",
+                sq.toString());
+
+    }
+
+    // EM: handle empty koral:span
 }

@@ -1,6 +1,9 @@
 package de.ids_mannheim.korap.query.wrap;
 
 import org.apache.lucene.search.spans.SpanQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanClassQuery;
@@ -26,6 +29,8 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
  */
 public class SpanQueryWrapper {
 
+    private static Logger log = LoggerFactory.getLogger(SpanQueryWrapper.class);
+    
     // Boundaries, e.g. for repetitions
     protected int min = 1, max = 1;
 
@@ -71,8 +76,10 @@ public class SpanQueryWrapper {
                     new SpanClassQuery(this.toFragmentQuery(), (byte) 254)),
                     (byte) 254);
         };
-
-        return this.toFragmentQuery();
+        
+        SpanQuery sq = this.toFragmentQuery();
+        log.info(sq.toString());
+        return sq;
     };
 
 
