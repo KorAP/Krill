@@ -105,8 +105,20 @@ public class TestSpanRelationQueryJSON {
                 "focus(#[1,2]spanSegment(spanRelation(tokens:>:mate/d:HEAD), <tokens:c:s />))",
                 sq.toString());
     }
+    
+    @Test
+    public void testMatchRelationSourceToken () throws QueryException {
+        //
+        String filepath = getClass()
+                .getResource("/queries/relation/match-source-token.json").getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "focus(#[1,2]spanSegment(spanRelation(tokens:>:malt/d:KONJ), tokens:tt/l:um))",
+                sq.toString());
+    }
 
-
+    
     @Test
     public void testMatchRelationTarget () throws QueryException {
         //
@@ -274,5 +286,22 @@ public class TestSpanRelationQueryJSON {
 
     }
 
+    @Test
+    public void testTypedRelationWithWrapTokenNodes () throws QueryException {
+        // query = "corenlp/c=\"VP\" & corenlp/c=\"NP\" & #1 ->malt/d[func=\"PP\"] #2";
+        String filepath = getClass()
+                .getResource(
+                        "/queries/relation/typed-relation-with-wrap-token-nodes.json")
+                .getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "focus(#[1,2]spanSegment(tokens:tt/p:VVINF, "
+                + "focus(#2: spanSegment("
+                + "spanRelation(tokens:>:malt/d:KONJ), tokens:tt/p:KOUI))))",
+                sq.toString());
+
+    }
+    
     // EM: handle empty koral:span
 }

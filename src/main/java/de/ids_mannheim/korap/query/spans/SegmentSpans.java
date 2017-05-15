@@ -96,11 +96,17 @@ public class SegmentSpans extends SimpleSpans {
 
             if (isRelation) {
                 RelationSpans s1 = (RelationSpans) firstSpans;
-                SimpleSpans s2 = (SimpleSpans) secondSpans;
+                if (secondSpans instanceof SimpleSpans) {
+                    SimpleSpans s2 = (SimpleSpans) secondSpans;
 
-                if (s2.hasSpanId) {
-                    if (s1.getLeftId() == s2.getSpanId()) {
-                        // setSpanId(s2.getSpanId());
+                    if (s2.hasSpanId) {
+                        if (s1.getLeftId() == s2.getSpanId()) {
+                            // setSpanId(s2.getSpanId());
+                            setMatch();
+                            return 0;
+                        }
+                    }
+                    else {
                         setMatch();
                         return 0;
                     }
@@ -109,7 +115,6 @@ public class SegmentSpans extends SimpleSpans {
                     setMatch();
                     return 0;
                 }
-
             }
             else if (firstSpans instanceof FocusSpans
                     && secondSpans instanceof SimpleSpans) {

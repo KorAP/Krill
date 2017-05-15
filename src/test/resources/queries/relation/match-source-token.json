@@ -1,0 +1,27 @@
+{"query": {
+    "@type": "koral:group",
+    "operands": [
+        {
+            "@type": "koral:token",
+            "wrap": {
+            	"@type": "koral:term",
+                "foundry": "tt",
+                "key": "um",
+                "layer": "l",
+                "match": "match:eq"
+            }
+        },
+        {"@type": "koral:span"}
+    ],
+    "operation": "operation:relation",
+    "relType": {
+        "@type": "koral:relation",
+        "wrap": {
+            "@type": "koral:term",
+            "foundry": "malt",
+            "key": "KONJ",
+            "layer": "d",
+            "match": "match:eq"
+        }
+    }
+}}
