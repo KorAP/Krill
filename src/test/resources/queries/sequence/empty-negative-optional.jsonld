@@ -1,0 +1,80 @@
+{
+  "@context": "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld",
+  "query": {
+    "@type": "koral:group",
+    "operands": [
+      {
+        "@type": "koral:token",
+        "wrap": {
+          "@type": "koral:term",
+          "foundry": "opennlp",
+          "key": "der",
+          "layer": "orth",
+          "match": "match:eq",
+          "rewrites": [
+            {
+              "@type": "koral:rewrite",
+              "operation": "operation:injection",
+              "scope": "foundry",
+              "src": "Kustvakt"
+            }
+          ]
+        }
+      },
+      {
+        "@type": "koral:group",
+        "boundary": {
+          "@type": "koral:boundary",
+          "min": 0
+        },
+        "operands": [
+          {
+            "@type": "koral:group",
+            "classOut": 1,
+            "operation": "operation:class",
+            "operands": [
+              {
+                "@type": "koral:token",
+                "wrap": {
+                  "@type": "koral:term",
+                  "foundry": "tt",
+                  "key": "ADJA",
+                  "layer": "pos",
+                  "match": "match:ne",
+                  "rewrites": [
+                    {
+                      "@type": "koral:rewrite",
+                      "operation": "operation:injection",
+                      "scope": "foundry",
+                      "src": "Kustvakt"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "operation": "operation:repetition"
+      },
+      {
+        "@type": "koral:token",
+        "wrap": {
+          "@type": "koral:term",
+          "foundry": "opennlp",
+          "key": "Mann",
+          "layer": "orth",
+          "match": "match:eq",
+          "rewrites": [
+            {
+              "@type": "koral:rewrite",
+              "operation": "operation:injection",
+              "scope": "foundry",
+              "src": "Kustvakt"
+            }
+          ]
+        }
+      }
+    ],
+    "operation": "operation:sequence"
+  }
+}

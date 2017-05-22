@@ -381,6 +381,13 @@ public class TestSpanSequenceQueryJSON {
     };
 
 
+	@Test
+    public void queryJSONseqEmptyNegativeOptionalClass () throws QueryException {
+        SpanQueryWrapper sqwi = jsonQueryFile("empty-negative-optional.jsonld");
+        // der {[pos!=ADJA]*} Mann
+        assertEquals(sqwi.toQuery().toString(),"spanNext(tokens:s:der, spanExpansion(tokens:s:Mann, !tokens:tt/p:ADJA{0, 100}, left, class:1))");
+    };
+
 
     // get query wrapper based on json file
     public SpanQueryWrapper jsonQueryFile (String filename) throws QueryException {
