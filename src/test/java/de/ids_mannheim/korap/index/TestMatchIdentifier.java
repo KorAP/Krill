@@ -649,11 +649,23 @@ public class TestMatchIdentifier {
                 res.at("/snippet").asText());
     };
 
+	@Test
+    public void indexWithFieldInfo () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createSimpleFieldDoc());
+        ki.commit();
+
+        Match km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8", "tokens",
+                null, null, false, false);
+		assertEquals(km.getAvailability(), "CC-BY-SA");
+    };
+
 
     private FieldDocument createSimpleFieldDoc () {
         FieldDocument fd = new FieldDocument();
         fd.addString("corpusID", "c1");
         fd.addString("ID", "d1");
+        fd.addString("availability", "CC-BY-SA");
         fd.addTV("tokens", "abcabcabac",
                 "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<b>32<i>4<s>0<s>0<s>0|_0$<i>0<i>1|-:t$<i>10]"
                         + "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1$<i>1<i>2]"

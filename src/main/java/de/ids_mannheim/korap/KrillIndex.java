@@ -1074,10 +1074,16 @@ public final class KrillIndex {
                 Terms docTerms = atomic.reader().getTermVector(localDocID,
                         field);
 
+				// The following fields should be lifted for the match
                 HashSet<String> fields = (HashSet<String>) new Krill().getMeta()
                         .getFields().clone();
 
+				// Lift primary field
                 fields.add(field);
+
+				// Lift all fields
+				if (fields.contains("@all"))
+					fields = null;
 
                 // Load the necessary fields of the document
                 Document doc = atomic.reader().document(localDocID, fields);
