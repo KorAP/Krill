@@ -1,4 +1,4 @@
-0.55.8 2017-05-05
+0.55.8 2017-05-29
         - [feature] Retrieve and display pagebreaks (diewald)
         - [bugfix] Handle invalid dates in input (diewald)
         - [feature] Support availability meta data (diewald)
