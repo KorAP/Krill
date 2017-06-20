@@ -19,6 +19,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 
 @RunWith(JUnit4.class)
@@ -95,7 +96,7 @@ public class TestMultipleDistanceIndex {
 
     private FieldDocument createFieldDoc3 () {
         FieldDocument fd = new FieldDocument();
-        fd.addString("ID", "doc-0");
+        fd.addString("ID", "doc-3");
         fd.addTV("base", "text",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
                         + "[(1-2)s:b|s:c|_2$<i>1<i>2]"
@@ -105,7 +106,49 @@ public class TestMultipleDistanceIndex {
                         "[(6-7)s:c|_7$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>7<b>0|<>:p$<b>64<i>6<i>7<i>7<b>0]");
         return fd;
     }
+    
+    private FieldDocument createFieldDoc4 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-4");
+        fd.addTV("base", "text",
+                "[(0-1)s:Zum|_1$<i>0<i>1|<>:s$<b>64<i>0<i>9<i>9<b>0]"
+                        + "[(1-2)s:Begin|_2$<i>1<i>2]"
+                        + "[(2-3)s:der|_3$<i>2<i>3]"
+                        + "[(3-4)s:Veranstaltung|_4$<i>3<i>4]" 
+                        + "[(4-5)s:ruft|_5$<i>4<i>5]"
+                        + "[(5-6)s:der|_6$<i>5<i>6]" 
+                        + "[(6-7)s:Moderator|_7$<i>6<i>7]"
+                        + "[(7-8)s:die|_8$<i>7<i>8]"
+                        + "[(8-9)s:Gäste|_9$<i>8<i>9]");
+        return fd;
+    }
 
+    @Test
+    public void testUnorderedTokenDistance () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc4());
+        ki.commit();
+
+        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        constraints.add(createConstraint("w", 0, 5, true, false));
+        constraints.add(createConstraint("s", 0, 0, true, false));
+
+        SpanQuery mdq;
+        mdq = createQuery("s:Begin", "s:Moderator", constraints, false);
+        kr = ki.search(mdq, (short) 10);
+        assertEquals(1, kr.getMatch(0).getStartPos());
+        assertEquals(7, kr.getMatch(0).getEndPos());
+        
+        SpanQuery sq = new SpanDistanceQuery(
+                mdq,
+                new SpanTermQuery(new Term("base", "s:ruft")),
+                new DistanceConstraint(0, 0, false, false), true);
+        
+        kr = ki.search(sq, (short) 10);
+        assertEquals(1, kr.getMatch(0).getStartPos());
+        assertEquals(7, kr.getMatch(0).getEndPos());
+    }
+    
 
     /**
      * Unordered, same sentence

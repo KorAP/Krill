@@ -188,8 +188,34 @@ public class TestRelationIndex {
 
         return fd;
     }
-
-
+    
+//    @Test
+//    public void testRelationWithRealIndex () throws IOException, QueryException {
+//        ki = new KrillIndex();
+//        ki.addDoc(getClass().getResourceAsStream("/BRZ08-AUG-10489.json.gz"), true);
+//        ki.commit();
+//
+//        SpanQuery sq = new SpanRelationQuery(
+//                new SpanTermQuery(new Term("tokens", ">:malt/d:KONJ")),
+//                true);
+//        kr = ki.search(sq, (short) 10);
+//        System.out.println(kr.getMatches().size());
+//        System.out.println(kr.getMatch(0).getSnippetBrackets());
+//        System.out.println(kr.getMatch(0).getStartPos() +","+ kr.getMatch(0).getEndPos());
+//        
+//        String filepath = getClass()
+//                .getResource("/queries/relation/typed-relation-with-wrap-token-nodes.json").getFile();
+//        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+//        sq = sqwi.toQuery();
+//        
+//        kr = ki.search(sq, (short) 10);
+//        System.out.println(kr.getMatches().size());
+//        for (Match m : kr.getMatches()){
+//            System.out.println(m.getSnippetBrackets());
+//        }
+//
+//    }
+    
     /**
      * Relations: token to token, token to span, span to span
      */

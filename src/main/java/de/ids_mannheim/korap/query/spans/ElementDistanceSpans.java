@@ -196,7 +196,12 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
 
     @Override
     public long cost () {
-        CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
-        return elements.cost() + candidateSpan.getCost() + secondSpans.cost();
+        if (!candidateList.isEmpty()){
+            CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
+            return elements.cost() + candidateSpan.getCost() + secondSpans.cost();
+        }
+        else{
+            return elements.cost() + secondSpans.cost();
+        }
     }
 }
