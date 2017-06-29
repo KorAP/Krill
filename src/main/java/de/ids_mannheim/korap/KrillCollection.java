@@ -86,7 +86,7 @@ public final class KrillCollection extends Notifications {
         try {
             JsonNode json = mapper.readTree(jsonString);
  
-            if (json.has("errors") & json.get("errors").size()>0){
+            if (json.has("errors") && json.get("errors").size()>0){
                 this.addError(StatusCode.INVALID_QUERY,"Json has errors.");
             }
             else if (json.has("collection")){
