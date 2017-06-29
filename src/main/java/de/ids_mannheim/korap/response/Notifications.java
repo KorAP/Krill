@@ -13,7 +13,7 @@ import java.io.*;
 import de.ids_mannheim.korap.response.Message;
 import de.ids_mannheim.korap.response.Messages;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.util.StatusCode;
+import de.ids_mannheim.korap.util.StatusCodes;
 
 /**
  * A unified notification class for KorAP related errors,
@@ -246,7 +246,7 @@ public class Notifications {
         return this;
     }
     
-    public Notifications addError (StatusCode status, String msg, String ... terms) {
+    public Notifications addError (StatusCodes status, String msg, String ... terms) {
         if (this.errors == null)
             this.errors = new Messages();
         this.errors.add(status.getCode(), msg, terms);

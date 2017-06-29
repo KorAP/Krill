@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.util;
 
-public enum StatusCode {
+public enum StatusCodes {
     // 600 - 699 - Krill server error codes
     UNABLE_TO_READ_INDEX(600), 
     UNABLE_TO_FIND_INDEX(601),
@@ -80,7 +80,7 @@ public enum StatusCode {
     INVALID_FOUNDRY(970);
 
     private int code;
-    StatusCode (int code) {
+    StatusCodes (int code) {
         this.code = code;
     }
    

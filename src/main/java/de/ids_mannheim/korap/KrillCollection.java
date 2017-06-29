@@ -5,7 +5,7 @@ import java.io.IOException;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.util.StatusCode;
+import de.ids_mannheim.korap.util.StatusCodes;
 
 import org.apache.lucene.search.*;
 import org.apache.lucene.index.*;
@@ -87,7 +87,7 @@ public final class KrillCollection extends Notifications {
             JsonNode json = mapper.readTree(jsonString);
  
             if (json.has("errors") && json.get("errors").size()>0){
-                this.addError(StatusCode.INVALID_QUERY,"Json has errors.");
+                this.addError(StatusCodes.INVALID_QUERY,"Json has errors.");
             }
             else if (json.has("collection")){
                 this.fromKoral(json.get("collection"));
@@ -97,7 +97,7 @@ public final class KrillCollection extends Notifications {
                         "Collections are not supported anymore in favour of a single collection");
             }
             else{
-                this.addError(StatusCode.MISSING_COLLECTION, "Collection is not found.");
+                this.addError(StatusCodes.MISSING_COLLECTION, "Collection is not found.");
             }
         }
 
