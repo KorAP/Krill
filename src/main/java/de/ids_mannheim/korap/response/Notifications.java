@@ -239,6 +239,13 @@ public class Notifications {
         return this;
     };
     
+    public Notifications addError (int code, String[] terms) {
+        if (this.errors == null)
+            this.errors = new Messages();
+        this.errors.add(code, terms[0], Arrays.copyOfRange(terms, 1, terms.length));
+        return this;
+    }
+    
     public Notifications addError (StatusCode status, String msg, String ... terms) {
         if (this.errors == null)
             this.errors = new Messages();
