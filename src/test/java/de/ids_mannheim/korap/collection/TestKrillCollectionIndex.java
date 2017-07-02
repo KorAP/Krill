@@ -57,6 +57,9 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.term("author", "Michael"));
         assertEquals(0, kcn.docCount());
 
+		kcn.fromBuilder(cb.term("nothing", "nothing"));
+        assertEquals(0, kcn.docCount());
+
         kcn.fromBuilder(cb.term("textClass", "reisen"));
         assertEquals(3, kcn.docCount());
 
@@ -430,6 +433,30 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
     };
 
+	@Test
+    public void filterExampleWithNullresult () throws Exception {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        for (String i : new String[] { "00001", "00002" }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+					  true);
+        };
+        ki.commit();
+
+        // Create Virtual collections:
+        KrillCollection kc = new KrillCollection(ki);
+
+        assertEquals("Documents", 2, kc.numberOf("documents"));
+
+        kc.fromBuilder(kc.build().term("textClass", "nichts"));
+
+        assertEquals("Documents", 0, kc.numberOf("documents"));
+        assertEquals("Tokens", 0, kc.numberOf("tokens"));
+        assertEquals("Sentences", 0, kc.numberOf("sentences"));
+        assertEquals("Paragraphs", 0, kc.numberOf("paragraphs"));
+	};
 
     @Test
     public void filterExampleAtomicLegacy () throws Exception {
