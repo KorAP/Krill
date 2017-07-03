@@ -11,27 +11,51 @@ import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
 
 import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanQuery;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class TestKrillCollectionIndex {
     private KrillIndex ki;
+
+
+    @Test
+    public void testKrillCollectionWithWrongJson () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc3());
+        ki.commit();
+
+        KrillCollection kc = new KrillCollection("{lalala}");
+        kc.setIndex(ki);
+        long docs = 0, tokens = 0, sentences = 0, paragraphs = 0;
+        try {
+            docs = kc.numberOf("documents");
+            tokens = kc.numberOf("tokens");
+            sentences = kc.numberOf("sentences");
+            paragraphs = kc.numberOf("paragraphs");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertEquals(0, docs);
+        assertEquals(0, tokens);
+        assertEquals(0, sentences);
+        assertEquals(0, paragraphs);
+
+    }
 
 
     @Test
@@ -57,7 +81,7 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.term("author", "Michael"));
         assertEquals(0, kcn.docCount());
 
-		kcn.fromBuilder(cb.term("nothing", "nothing"));
+        kcn.fromBuilder(cb.term("nothing", "nothing"));
         assertEquals(0, kcn.docCount());
 
         kcn.fromBuilder(cb.term("textClass", "reisen"));
@@ -433,7 +457,8 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 130, kc.numberOf("paragraphs"));
     };
 
-	@Test
+
+    @Test
     public void filterExampleWithNullresult () throws Exception {
 
         // Construct index
@@ -441,7 +466,7 @@ public class TestKrillCollectionIndex {
         // Indexing test files
         for (String i : new String[] { "00001", "00002" }) {
             ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
-					  true);
+                    true);
         };
         ki.commit();
 
@@ -456,7 +481,8 @@ public class TestKrillCollectionIndex {
         assertEquals("Tokens", 0, kc.numberOf("tokens"));
         assertEquals("Sentences", 0, kc.numberOf("sentences"));
         assertEquals("Paragraphs", 0, kc.numberOf("paragraphs"));
-	};
+    };
+
 
     @Test
     public void filterExampleAtomicLegacy () throws Exception {
