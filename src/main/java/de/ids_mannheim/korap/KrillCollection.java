@@ -98,18 +98,21 @@ public final class KrillCollection extends Notifications {
             }
             else{
                 this.addError(StatusCodes.MISSING_COLLECTION, "Collection is not found.");
+				this.fromBuilder(this.build().nothing());
             }
         }
 
         // Query Exception
         catch (QueryException qe) {
             this.addError(qe.getErrorCode(), qe.getMessage());
+			this.fromBuilder(this.build().nothing());
         }
 
         // JSON exception
         catch (IOException e) {
             this.addError(621, "Unable to parse JSON", "KrillCollection",
                     e.getLocalizedMessage());
+			this.fromBuilder(this.build().nothing());
         };
     };
 
@@ -140,6 +143,7 @@ public final class KrillCollection extends Notifications {
         }
         catch (Exception e) {
             this.addError(621, "Unable to parse JSON", "KrillCollection");
+			this.fromBuilder(this.build().nothing());
         };
 
         return this;

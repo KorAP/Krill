@@ -1,7 +1,9 @@
-0.55.8 2017-05-29
+0.55.8 2017-07-04
         - [feature] Retrieve and display pagebreaks (diewald)
         - [bugfix] Handle invalid dates in input (diewald)
         - [feature] Support availability meta data (diewald)
+        - [bugfix] Do not respond with a "match all" VC if the
+          VC data (e.g. JSON) is wrong (diewald)
 
 0.55.7 2017-01-24
         - [bugfix] Sorted results in unordered element distance query

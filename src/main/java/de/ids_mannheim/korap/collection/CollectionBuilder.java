@@ -51,6 +51,12 @@ public class CollectionBuilder {
         return new CollectionBuilder.Range(field, since, KrillDate.END);
     };
 
+	public CollectionBuilder.Interface nothing () {
+
+		// Requires that a field with name "0---" does not exist
+        return new CollectionBuilder.Term("0---", "0");
+    };
+
 
     public CollectionBuilder.Interface till (String field, String date) {
         try {

@@ -39,7 +39,9 @@ public class TestKrillCollectionIndex {
         ki.commit();
 
         KrillCollection kc = new KrillCollection("{lalala}");
+		assertEquals("Unable to parse JSON", kc.getError(0).getMessage());
         kc.setIndex(ki);
+
         long docs = 0, tokens = 0, sentences = 0, paragraphs = 0;
         try {
             docs = kc.numberOf("documents");
