@@ -9,7 +9,7 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.TextAnalyzer;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
-
+import de.ids_mannheim.korap.util.StatusCodes;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.QueryBuilder;
 
@@ -56,7 +56,9 @@ public class TestKrillCollectionIndex {
         assertEquals(0, tokens);
         assertEquals(0, sentences);
         assertEquals(0, paragraphs);
-
+        
+        assertEquals(1, kc.getErrors().size());
+        assertEquals(StatusCodes.UNABLE_TO_PARSE_JSON, kc.getErrors().get(0).getCode());
     }
 
 

@@ -246,14 +246,6 @@ public class Notifications {
         return this;
     }
     
-    public Notifications addError (StatusCodes status, String msg, String ... terms) {
-        if (this.errors == null)
-            this.errors = new Messages();
-        this.errors.add(status.getCode(), msg, terms);
-        return this;
-    };
-
-
     /**
      * Appends a new error.
      * 
