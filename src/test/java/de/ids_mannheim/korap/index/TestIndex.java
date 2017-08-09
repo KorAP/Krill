@@ -191,7 +191,6 @@ public class TestIndex { // extends LuceneTestCase {
         return list;
     };
 
-
     @Test
     public void indexLucene () throws Exception {
 
@@ -305,9 +304,6 @@ public class TestIndex { // extends LuceneTestCase {
         ssrquery = new SpanRegexQueryWrapper("text", "s:e.");
         assertEquals(0, searcher.search(ssrquery.toQuery(), 10).totalHits);
 
-        // Check http://comments.gmane.org/gmane.comp.jakarta.lucene.user/52283
-        // for Carstens question on wildcards
-
         // RegexpQuery
         // All docs containing "E."/i ([Ee]r) (2x)
         srquery = new RegexpQuery(new Term("text", "i:e."));
@@ -321,6 +317,15 @@ public class TestIndex { // extends LuceneTestCase {
         // All docs containing "ng"/x (Angst) (2x)
         srquery = new RegexpQuery(new Term("text", "s:.*ng.*"));
         assertEquals(2, searcher.search(srquery, 10).totalHits);
+
+
+        // Check http://comments.gmane.org/gmane.comp.jakarta.lucene.user/52283
+        // for Carstens question on wildcards
+		// Wildcardquery
+        // All docs containing ".{4}en" (liefen und Hunden)
+        WildcardQuery swquery = new WildcardQuery(new Term("text", "s:*ng*"));
+		assertEquals("text:s:*ng*", swquery.toString());
+		assertEquals(2, searcher.search(swquery, 10).totalHits);
 
         // [base=angst]
         SpanTermQuery stq = new SpanTermQuery(new Term("text", "l:angst"));
