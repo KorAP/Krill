@@ -388,6 +388,20 @@ public class TestSpanSequenceQueryJSON {
         assertEquals(sqwi.toQuery().toString(),"spanNext(tokens:s:der, spanExpansion(tokens:s:Mann, !tokens:tt/p:ADJA{0, 100}, left, class:1))");
     };
 
+	@Test
+    public void queryJSONcosmas2Bug () throws QueryException {
+
+        SpanQueryWrapper sqwi = getJSONQuery(getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld").getFile());
+
+        // meine* /+w1:2,s0 &Erfahrung
+        assertEquals(sqwi.toQuery().toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
+					 "{129: tokens:l:Erfahrung}, "+
+					 "[(w[1:2], ordered, notExcluded), "+
+					 "(base/s:s[0:0], ordered, notExcluded)])");
+    };
+
+
+	
 
     // get query wrapper based on json file
     public SpanQueryWrapper jsonQueryFile (String filename) throws QueryException {
