@@ -1334,14 +1334,13 @@ public final class KrillIndex {
             // Rewrite query (for regex and wildcard queries)
             // Revise!
             // Based on core/src/java/org/apache/lucene/search/IndexSearcher.java
-            // and highlighter/src/java/org/apache/lucene/search/postingshighlight/PostingsHighlighter.java
-            for (Query rewrittenQuery = query
-                    .rewrite(this.reader()); !rewrittenQuery
-                            .equals(query); rewrittenQuery = query
-                                    .rewrite(this.reader())) {
+            // and highlighter/src/java/org/apache/lucene/search/
+			//   postingshighlight/PostingsHighlighter.java
+            for (Query rewrittenQuery = query.rewrite(this.reader());
+				 !rewrittenQuery.equals(query);
+				 rewrittenQuery = query.rewrite(this.reader())) {
                 query = (SpanQuery) rewrittenQuery;
             };
-
 
             // Todo: run this in a separated thread
             for (LeafReaderContext atomic : this.reader().leaves()) {
@@ -1507,6 +1506,7 @@ public final class KrillIndex {
 
             kr.setTotalResults(cutoff ? (long) -1 : (long) i);
         }
+
         catch (IOException e) {
             kr.addError(600, "Unable to read index", e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());

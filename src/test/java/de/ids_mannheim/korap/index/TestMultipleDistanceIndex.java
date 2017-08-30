@@ -144,30 +144,29 @@ public class TestMultipleDistanceIndex {
     }
 
 
-//  assertEquals(sqwi.toQuery().toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
-  //                 "{129: tokens:l:Erfahrung}, "+
-  //                 "[(w[1:2], ordered, notExcluded), "+
-  //                 "(base/s:s[0:0], ordered, notExcluded)])");
+    //  assertEquals(sqwi.toQuery().toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
+	//                 "{129: tokens:l:Erfahrung}, "+
+	//                 "[(w[1:2], ordered, notExcluded), "+
+	//                 "(base/s:s[0:0], ordered, notExcluded)])");
 
-  @Test
-  public void testQueryWithWildCard () throws IOException {
-      // meine* /+w1:2,s0 &Erfahrung
-      ki = new KrillIndex();
-      ki.addDoc(createFieldDoc5());
-      ki.commit();
+	@Test
+	public void testQueryWithWildCard () throws IOException {
+		// meine* /+w1:2,s0 &Erfahrung
+		ki = new KrillIndex();
+		ki.addDoc(createFieldDoc5());
+		ki.commit();
       
-      WildcardQuery wcquery = new WildcardQuery(new Term("base", "meine*"));
-      SpanMultiTermQueryWrapper<WildcardQuery> mtq =
+		WildcardQuery wcquery = new WildcardQuery(new Term("base", "s:Meine*"));
+		SpanMultiTermQueryWrapper<WildcardQuery> mtq =
             new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+
+		assertEquals(wcquery.toString(), "base:s:Meine*");
       
-      kr = ki.search(mtq, (short) 10);
-//      for (Match m: kr.getMatches()){
-//          System.out.println(m.getStartPos() + ", "+ m.getEndPos());
-//      }
-      assertEquals(3, kr.getMatches().size());
-      assertEquals(0, kr.getMatch(0).getStartPos());
-      assertEquals(1, kr.getMatch(0).getEndPos());
-  }
+		kr = ki.search(mtq, (short) 10);
+		assertEquals(4, kr.getMatches().size());
+		assertEquals(0, kr.getMatch(0).getStartPos());
+		assertEquals(1, kr.getMatch(0).getEndPos());
+	}
     
     @Test
     public void testUnorderedTokenDistance () throws IOException {
