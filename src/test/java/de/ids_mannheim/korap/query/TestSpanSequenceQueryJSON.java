@@ -392,9 +392,9 @@ public class TestSpanSequenceQueryJSON {
     public void queryJSONcosmas2Bug () throws QueryException {
 
         SpanQueryWrapper sqwi = getJSONQuery(getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld").getFile());
-
+        SpanQuery sq = sqwi.toQuery();
         // meine* /+w1:2,s0 &Erfahrung
-        assertEquals(sqwi.toQuery().toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
+        assertEquals(sq.toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
 					 "{129: tokens:l:Erfahrung}, "+
 					 "[(w[1:2], ordered, notExcluded), "+
 					 "(base/s:s[0:0], ordered, notExcluded)])");

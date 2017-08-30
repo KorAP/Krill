@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.MultiTermQuery;
+import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
@@ -106,7 +109,8 @@ public class TestMultipleDistanceIndex {
                         "[(6-7)s:c|_7$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>7<b>0|<>:p$<b>64<i>6<i>7<i>7<b>0]");
         return fd;
     }
-    
+
+
     private FieldDocument createFieldDoc4 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-4");
@@ -114,22 +118,65 @@ public class TestMultipleDistanceIndex {
                 "[(0-1)s:Zum|_1$<i>0<i>1|<>:s$<b>64<i>0<i>9<i>9<b>0]"
                         + "[(1-2)s:Begin|_2$<i>1<i>2]"
                         + "[(2-3)s:der|_3$<i>2<i>3]"
-                        + "[(3-4)s:Veranstaltung|_4$<i>3<i>4]" 
+                        + "[(3-4)s:Veranstaltung|_4$<i>3<i>4]"
                         + "[(4-5)s:ruft|_5$<i>4<i>5]"
-                        + "[(5-6)s:der|_6$<i>5<i>6]" 
+                        + "[(5-6)s:der|_6$<i>5<i>6]"
                         + "[(6-7)s:Moderator|_7$<i>6<i>7]"
                         + "[(7-8)s:die|_8$<i>7<i>8]"
                         + "[(8-9)s:Gäste|_9$<i>8<i>9]");
         return fd;
     }
+    
+    private FieldDocument createFieldDoc5 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-5");
+        fd.addTV("base", "text",
+                "[(0-1)s:Meine|_1$<i>0<i>1|<>:s$<b>64<i>0<i>9<i>9<b>0]"
+                        + "[(1-2)s:Erfahrung|_2$<i>1<i>2]"
+                        + "[(2-3)s:Meiner|_3$<i>2<i>3]"
+                        + "[(3-4)s:Erfahrung|_4$<i>3<i>4]"
+                        + "[(4-5)s:Mein|_5$<i>4<i>5]"
+                        + "[(5-6)s:Erfahrung|_6$<i>5<i>6]"
+                        + "[(6-7)s:Meinem|_7$<i>6<i>7]"
+                        + "[(7-8)s:Erfahrung|_8$<i>7<i>8]"
+                        + "[(8-9)s:Meinen|_9$<i>8<i>9]");
+        return fd;
+    }
 
+
+//  assertEquals(sqwi.toQuery().toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
+  //                 "{129: tokens:l:Erfahrung}, "+
+  //                 "[(w[1:2], ordered, notExcluded), "+
+  //                 "(base/s:s[0:0], ordered, notExcluded)])");
+
+  @Test
+  public void testQueryWithWildCard () throws IOException {
+      // meine* /+w1:2,s0 &Erfahrung
+      ki = new KrillIndex();
+      ki.addDoc(createFieldDoc5());
+      ki.commit();
+      
+      WildcardQuery wcquery = new WildcardQuery(new Term("base", "meine*"));
+      SpanMultiTermQueryWrapper<WildcardQuery> mtq =
+            new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+      
+      kr = ki.search(mtq, (short) 10);
+//      for (Match m: kr.getMatches()){
+//          System.out.println(m.getStartPos() + ", "+ m.getEndPos());
+//      }
+      assertEquals(3, kr.getMatches().size());
+      assertEquals(0, kr.getMatch(0).getStartPos());
+      assertEquals(1, kr.getMatch(0).getEndPos());
+  }
+    
     @Test
     public void testUnorderedTokenDistance () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc4());
         ki.commit();
 
-        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
         constraints.add(createConstraint("w", 0, 5, true, false));
         constraints.add(createConstraint("s", 0, 0, true, false));
 
@@ -138,17 +185,16 @@ public class TestMultipleDistanceIndex {
         kr = ki.search(mdq, (short) 10);
         assertEquals(1, kr.getMatch(0).getStartPos());
         assertEquals(7, kr.getMatch(0).getEndPos());
-        
-        SpanQuery sq = new SpanDistanceQuery(
-                mdq,
+
+        SpanQuery sq = new SpanDistanceQuery(mdq,
                 new SpanTermQuery(new Term("base", "s:ruft")),
                 new DistanceConstraint(0, 0, false, false), true);
-        
+
         kr = ki.search(sq, (short) 10);
         assertEquals(1, kr.getMatch(0).getStartPos());
         assertEquals(7, kr.getMatch(0).getEndPos());
     }
-    
+
 
     /**
      * Unordered, same sentence
@@ -159,7 +205,8 @@ public class TestMultipleDistanceIndex {
         ki.addDoc(createFieldDoc0());
         ki.commit();
 
-        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
         constraints.add(createConstraint("w", 0, 2, false, false));
         constraints.add(createConstraint("s", 0, 0, false, false));
 
@@ -190,7 +237,8 @@ public class TestMultipleDistanceIndex {
         ki.commit();
 
         // Ordered - two constraints
-        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
         constraints.add(createConstraint("w", 0, 2, true, false));
         constraints.add(createConstraint("s", 1, 1, true, false));
 
@@ -244,7 +292,8 @@ public class TestMultipleDistanceIndex {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
         constraints.add(createConstraint("w", 1, 2, false, false));
         constraints.add(createConstraint("s", 1, 2, false, false));
 
@@ -287,7 +336,8 @@ public class TestMultipleDistanceIndex {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
         constraints.add(createConstraint("w", 1, 2, false, false));
         constraints.add(createConstraint("s", 1, 2, false, false));
 
@@ -319,14 +369,15 @@ public class TestMultipleDistanceIndex {
         ki.commit();
 
         // ordered
-        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
         constraints.add(createConstraint("w", 1, 2, true, false));
         constraints.add(createConstraint("s", 1, 2, true, false));
 
         SpanQuery mdq;
         mdq = createQuery("s:c", "s:c", constraints, false);
         kr = ki.search(mdq, (short) 10);
-        
+
         assertEquals((long) 4, kr.getTotalResults());
         assertEquals(1, kr.getMatch(0).getStartPos());
         assertEquals(3, kr.getMatch(0).getEndPos());
@@ -337,7 +388,7 @@ public class TestMultipleDistanceIndex {
         assertEquals(4, kr.getMatch(2).getEndPos());
         assertEquals(3, kr.getMatch(3).getStartPos());
         assertEquals(6, kr.getMatch(3).getEndPos());
-        
+
         //unordered
         constraints = new ArrayList<DistanceConstraint>();
         constraints.add(createConstraint("w", 1, 2, false, false));
@@ -379,7 +430,8 @@ public class TestMultipleDistanceIndex {
         assertEquals((long) 6, kr.getTotalResults());
 
 
-        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
         constraints.add(dc1);
         constraints.add(dc2);
 
@@ -414,7 +466,8 @@ public class TestMultipleDistanceIndex {
         // 0-1, 1-2, 6-7
 
         // Exclusion within the same sentence
-        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
         constraints.add(createConstraint("w", 0, 2, false, true));
         constraints.add(createConstraint("s", 0, 0, false, true));
 
@@ -444,4 +497,6 @@ public class TestMultipleDistanceIndex {
         assertEquals(7, kr.getMatch(0).getEndPos());
 
     }
+
+
 }
