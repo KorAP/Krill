@@ -166,6 +166,21 @@ public class TestMultipleDistanceIndex {
 		assertEquals(4, kr.getMatches().size());
 		assertEquals(0, kr.getMatch(0).getStartPos());
 		assertEquals(1, kr.getMatch(0).getEndPos());
+
+        SpanQuery sq = new SpanTermQuery(new Term("base", "s:Erfahrung"));
+
+		List<DistanceConstraint> constraints =
+			new ArrayList<DistanceConstraint>();
+        constraints.add(createConstraint("w", 1, 2, true, false));
+        constraints.add(createConstraint("s", 0, 0, true, false));
+		
+		SpanQuery mdsq = new SpanMultipleDistanceQuery(mtq, sq, constraints, true, true);
+		assertEquals(mdsq.toString(), "spanMultipleDistance(SpanMultiTermQueryWrapper(base:s:Meine*), base:s:Erfahrung, [(w[1:2], ordered, notExcluded), (s[0:0], ordered, notExcluded)])");
+
+		kr = ki.search(mdsq, (short) 10);
+		assertEquals(3, kr.getMatches().size());
+		assertEquals(0, kr.getMatch(0).getStartPos());
+		assertEquals(2, kr.getMatch(0).getEndPos());		
 	}
     
     @Test
