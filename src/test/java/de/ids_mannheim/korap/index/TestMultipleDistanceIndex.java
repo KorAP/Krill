@@ -143,6 +143,45 @@ public class TestMultipleDistanceIndex {
         return fd;
     }
 
+	private FieldDocument createFieldDoc6 () {
+		FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-6");
+        fd.addTV("base", "text",
+                "[(0-1)s:Meine|_1$<i>0<i>1|<>:s$<b>64<i>0<i>5<i>5<b>0]"
+                        + "[(1-2)s:Meiner|_2$<i>1<i>2]"
+                        + "[(2-3)s:Mein|_3$<i>2<i>3]"
+                        + "[(3-4)s:Meinem|_4$<i>3<i>4]"
+                        + "[(4-5)s:Meinen|_5$<i>4<i>5]");
+        return fd;
+    }
+
+	private FieldDocument createFieldDoc7 () {
+		FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-7");
+        fd.addTV("base", "text",
+                "[(0-1)s:Erfahrung|_1$<i>0<i>1|<>:s$<b>64<i>0<i>4<i>4<b>0]"
+				 + "[(1-2)s:Erfahrung|_2$<i>1<i>2]"
+				 + "[(2-3)s:Erfahrung|_3$<i>2<i>3]"
+				 + "[(3-4)s:Erfahrung|_4$<i>3<i>4]");
+        return fd;
+    }
+
+	private FieldDocument createFieldDoc8 () {
+		FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-8");
+        fd.addTV("base", "text",
+                "[(0-1)s:Meine|_1$<i>0<i>1|<>:s$<b>64<i>0<i>9<i>9<b>0]"
+                        + "[(1-2)s:Erfahrung|_2$<i>1<i>2]"
+                        + "[(2-3)s:Meiner|_3$<i>2<i>3]"
+                        + "[(3-4)s:Erfahrung|_4$<i>3<i>4]"
+                        + "[(4-5)s:Mein|_5$<i>4<i>5]"
+                        + "[(5-6)s:Erfahrung|_6$<i>5<i>6]"
+                        + "[(6-7)s:Meinem|_7$<i>6<i>7]"
+                        + "[(7-8)s:Erfahrung|_8$<i>7<i>8]"
+                        + "[(8-9)s:Meinen|_9$<i>8<i>9]");
+        return fd;
+    }
+
 
     //  assertEquals(sqwi.toQuery().toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
 	//                 "{129: tokens:l:Erfahrung}, "+
@@ -155,7 +194,8 @@ public class TestMultipleDistanceIndex {
 		ki = new KrillIndex();
 		ki.addDoc(createFieldDoc5());
 		ki.commit();
-      
+
+		// Check simple rewriting
 		WildcardQuery wcquery = new WildcardQuery(new Term("base", "s:Meine*"));
 		SpanMultiTermQueryWrapper<WildcardQuery> mtq =
             new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
@@ -167,6 +207,8 @@ public class TestMultipleDistanceIndex {
 		assertEquals(0, kr.getMatch(0).getStartPos());
 		assertEquals(1, kr.getMatch(0).getEndPos());
 
+
+		// Check rewriting in multidistance query
         SpanQuery sq = new SpanTermQuery(new Term("base", "s:Erfahrung"));
 
 		List<DistanceConstraint> constraints =
@@ -180,7 +222,15 @@ public class TestMultipleDistanceIndex {
 		kr = ki.search(mdsq, (short) 10);
 		assertEquals(3, kr.getMatches().size());
 		assertEquals(0, kr.getMatch(0).getStartPos());
-		assertEquals(2, kr.getMatch(0).getEndPos());		
+		assertEquals(2, kr.getMatch(0).getEndPos());
+
+		// Check skipping with multiple documents
+		ki.addDoc(createFieldDoc6());
+		ki.addDoc(createFieldDoc7());
+		ki.addDoc(createFieldDoc8());
+		ki.commit();
+		kr = ki.search(mdsq, (short) 10);
+		assertEquals(6, kr.getMatches().size());
 	}
     
     @Test
