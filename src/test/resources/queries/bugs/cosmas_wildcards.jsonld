@@ -27,6 +27,7 @@
             "wrap":{
               "@type":"koral:term",
               "layer":"lemma",
+              "foundry":"tt",		
               "match":"match:eq",
               "key":"Erfahrung"
             },

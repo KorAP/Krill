@@ -395,7 +395,7 @@ public class TestSpanSequenceQueryJSON {
         SpanQuery sq = sqwi.toQuery();
         // meine* /+w1:2,s0 &Erfahrung
         assertEquals(sq.toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
-					 "{129: tokens:l:Erfahrung}, "+
+					 "{129: tokens:tt/l:Erfahrung}, "+
 					 "[(w[1:2], ordered, notExcluded), "+
 					 "(base/s:s[0:0], ordered, notExcluded)])");
     };

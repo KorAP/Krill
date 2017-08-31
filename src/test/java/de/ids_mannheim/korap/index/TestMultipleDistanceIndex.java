@@ -1,29 +1,34 @@
 package de.ids_mannheim.korap.index;
 
+import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.MultiTermQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.store.MMapDirectory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.DistanceConstraint;
+import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
-import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
 public class TestMultipleDistanceIndex {
@@ -45,11 +50,17 @@ public class TestMultipleDistanceIndex {
 
     public DistanceConstraint createConstraint (String unit, int min, int max,
             boolean isOrdered, boolean exclusion) {
+        return createConstraint("base", unit, min, max, isOrdered, exclusion);
+    }
+
+
+    public DistanceConstraint createConstraint (String field, String unit,
+            int min, int max, boolean isOrdered, boolean exclusion) {
 
         if (unit.equals("w")) {
             return new DistanceConstraint(min, max, isOrdered, exclusion);
         }
-        return new DistanceConstraint(new SpanElementQuery("base", unit), min,
+        return new DistanceConstraint(new SpanElementQuery(field, unit), min,
                 max, isOrdered, exclusion);
     }
 
@@ -126,27 +137,29 @@ public class TestMultipleDistanceIndex {
                         + "[(8-9)s:Gäste|_9$<i>8<i>9]");
         return fd;
     }
-    
+
+
     private FieldDocument createFieldDoc5 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-5");
-        fd.addTV("base", "text",
+        fd.addTV("tokens", "text",
                 "[(0-1)s:Meine|_1$<i>0<i>1|<>:s$<b>64<i>0<i>9<i>9<b>0]"
-                        + "[(1-2)s:Erfahrung|_2$<i>1<i>2]"
+                        + "[(1-2)l:Erfahrung|_2$<i>1<i>2]"
                         + "[(2-3)s:Meiner|_3$<i>2<i>3]"
-                        + "[(3-4)s:Erfahrung|_4$<i>3<i>4]"
+                        + "[(3-4)l:Erfahrung|_4$<i>3<i>4]"
                         + "[(4-5)s:Mein|_5$<i>4<i>5]"
-                        + "[(5-6)s:Erfahrung|_6$<i>5<i>6]"
+                        + "[(5-6)l:Erfahrung|_6$<i>5<i>6]"
                         + "[(6-7)s:Meinem|_7$<i>6<i>7]"
-                        + "[(7-8)s:Erfahrung|_8$<i>7<i>8]"
+                        + "[(7-8)l:Erfahrung|_8$<i>7<i>8]"
                         + "[(8-9)s:Meinen|_9$<i>8<i>9]");
         return fd;
     }
 
-	private FieldDocument createFieldDoc6 () {
-		FieldDocument fd = new FieldDocument();
+
+    private FieldDocument createFieldDoc6 () {
+        FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-6");
-        fd.addTV("base", "text",
+        fd.addTV("tokens", "text",
                 "[(0-1)s:Meine|_1$<i>0<i>1|<>:s$<b>64<i>0<i>5<i>5<b>0]"
                         + "[(1-2)s:Meiner|_2$<i>1<i>2]"
                         + "[(2-3)s:Mein|_3$<i>2<i>3]"
@@ -155,84 +168,163 @@ public class TestMultipleDistanceIndex {
         return fd;
     }
 
-	private FieldDocument createFieldDoc7 () {
-		FieldDocument fd = new FieldDocument();
+
+    private FieldDocument createFieldDoc7 () {
+        FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-7");
-        fd.addTV("base", "text",
-                "[(0-1)s:Erfahrung|_1$<i>0<i>1|<>:s$<b>64<i>0<i>4<i>4<b>0]"
-				 + "[(1-2)s:Erfahrung|_2$<i>1<i>2]"
-				 + "[(2-3)s:Erfahrung|_3$<i>2<i>3]"
-				 + "[(3-4)s:Erfahrung|_4$<i>3<i>4]");
+        fd.addTV("tokens", "text",
+                "[(0-1)l:Erfahrung|_1$<i>0<i>1|<>:s$<b>64<i>0<i>4<i>4<b>0]"
+                        + "[(1-2)l:Erfahrung|_2$<i>1<i>2]"
+                        + "[(2-3)l:Erfahrung|_3$<i>2<i>3]"
+                        + "[(3-4)l:Erfahrung|_4$<i>3<i>4]");
         return fd;
     }
 
-	private FieldDocument createFieldDoc8 () {
-		FieldDocument fd = new FieldDocument();
+
+    private FieldDocument createFieldDoc8 () {
+        FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-8");
-        fd.addTV("base", "text",
+        fd.addTV("tokens", "text",
                 "[(0-1)s:Meine|_1$<i>0<i>1|<>:s$<b>64<i>0<i>9<i>9<b>0]"
-                        + "[(1-2)s:Erfahrung|_2$<i>1<i>2]"
+                        + "[(1-2)l:Erfahrung|_2$<i>1<i>2]"
                         + "[(2-3)s:Meiner|_3$<i>2<i>3]"
-                        + "[(3-4)s:Erfahrung|_4$<i>3<i>4]"
+                        + "[(3-4)l:Erfahrung|_4$<i>3<i>4]"
                         + "[(4-5)s:Mein|_5$<i>4<i>5]"
-                        + "[(5-6)s:Erfahrung|_6$<i>5<i>6]"
+                        + "[(5-6)l:Erfahrung|_6$<i>5<i>6]"
                         + "[(6-7)s:Meinem|_7$<i>6<i>7]"
-                        + "[(7-8)s:Erfahrung|_8$<i>7<i>8]"
+                        + "[(7-8)l:Erfahrung|_8$<i>7<i>8]"
                         + "[(8-9)s:Meinen|_9$<i>8<i>9]");
         return fd;
     }
 
 
-    //  assertEquals(sqwi.toQuery().toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
-	//                 "{129: tokens:l:Erfahrung}, "+
-	//                 "[(w[1:2], ordered, notExcluded), "+
-	//                 "(base/s:s[0:0], ordered, notExcluded)])");
+    @Test
+    public void testQueryWithWildCard () throws IOException {
+        // meine* /+w1:2,s0 &Erfahrung
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc5());
+        ki.commit();
 
-	@Test
-	public void testQueryWithWildCard () throws IOException {
-		// meine* /+w1:2,s0 &Erfahrung
-		ki = new KrillIndex();
-		ki.addDoc(createFieldDoc5());
-		ki.commit();
+        // Check simple rewriting
+        WildcardQuery wcquery =
+                new WildcardQuery(new Term("tokens", "s:Meine*"));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
+                new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
 
-		// Check simple rewriting
-		WildcardQuery wcquery = new WildcardQuery(new Term("base", "s:Meine*"));
-		SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-            new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+        assertEquals(wcquery.toString(), "tokens:s:Meine*");
 
-		assertEquals(wcquery.toString(), "base:s:Meine*");
-      
-		kr = ki.search(mtq, (short) 10);
-		assertEquals(4, kr.getMatches().size());
-		assertEquals(0, kr.getMatch(0).getStartPos());
-		assertEquals(1, kr.getMatch(0).getEndPos());
+        kr = ki.search(mtq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(1, kr.getMatch(0).getEndPos());
 
+        // Check rewriting in multidistance query
+        SpanQuery sq = new SpanTermQuery(new Term("tokens", "l:Erfahrung"));
+        kr = ki.search(sq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
 
-		// Check rewriting in multidistance query
-        SpanQuery sq = new SpanTermQuery(new Term("base", "s:Erfahrung"));
-
-		List<DistanceConstraint> constraints =
-			new ArrayList<DistanceConstraint>();
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
         constraints.add(createConstraint("w", 1, 2, true, false));
-        constraints.add(createConstraint("s", 0, 0, true, false));
-		
-		SpanQuery mdsq = new SpanMultipleDistanceQuery(mtq, sq, constraints, true, true);
-		assertEquals(mdsq.toString(), "spanMultipleDistance(SpanMultiTermQueryWrapper(base:s:Meine*), base:s:Erfahrung, [(w[1:2], ordered, notExcluded), (s[0:0], ordered, notExcluded)])");
+        constraints.add(createConstraint("tokens", "s", 0, 0, true, false));
 
-		kr = ki.search(mdsq, (short) 10);
-		assertEquals(3, kr.getMatches().size());
-		assertEquals(0, kr.getMatch(0).getStartPos());
-		assertEquals(2, kr.getMatch(0).getEndPos());
+        SpanQuery mdsq =
+                new SpanMultipleDistanceQuery(mtq, sq, constraints, true, true);
+        assertEquals(mdsq.toString(),
+                "spanMultipleDistance(SpanMultiTermQueryWrapper(tokens:s:Meine*), "
+                        + "tokens:l:Erfahrung, [(w[1:2], ordered, notExcluded), (s[0:0], "
+                        + "ordered, notExcluded)])");
 
-		// Check skipping with multiple documents
-		ki.addDoc(createFieldDoc6());
-		ki.addDoc(createFieldDoc7());
-		ki.addDoc(createFieldDoc8());
-		ki.commit();
-		kr = ki.search(mdsq, (short) 10);
-		assertEquals(6, kr.getMatches().size());
-	}
-    
+        kr = ki.search(mdsq, (short) 10);
+        assertEquals(3, kr.getMatches().size());
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(2, kr.getMatch(0).getEndPos());
+
+        // Check skipping with multiple documents
+        ki.addDoc(createFieldDoc6());
+        ki.addDoc(createFieldDoc7());
+        ki.addDoc(createFieldDoc8());
+        ki.commit();
+        kr = ki.search(mdsq, (short) 10);
+        assertEquals(6, kr.getMatches().size());
+    }
+
+
+    @Test
+    @Ignore
+    public void testWithSampleIndex () throws IOException, QueryException {
+        String path =
+                "/home/elma/git/Kustvakt-new/src/test/resources/sample-index";
+        KrillIndex sample = new KrillIndex(new MMapDirectory(Paths.get(path)));
+
+        WildcardQuery wcquery =
+                new WildcardQuery(new Term("tokens", "s:meine*"));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
+                new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+
+        SpanTermQuery sq =
+                new SpanTermQuery(new Term("tokens", "tt/l:Erfahrung"));
+
+        // meine* /+w1:2 &Erfahrung
+        SpanQuery tdq = new SpanDistanceQuery(mtq, sq,
+                createConstraint("w", 1, 2, true, false), true);
+
+        kr = sample.search(tdq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+        assertEquals(107, kr.getMatch(0).getStartPos());
+        assertEquals(109, kr.getMatch(0).getEndPos());
+        assertEquals(132566, kr.getMatch(1).getStartPos());
+        assertEquals(132569, kr.getMatch(1).getEndPos());
+        assertEquals(161393, kr.getMatch(2).getStartPos());
+        assertEquals(161396, kr.getMatch(2).getEndPos());
+        assertEquals(10298, kr.getMatch(3).getStartPos());
+        assertEquals(10301, kr.getMatch(3).getEndPos());
+
+        // meine* /+s0 &Erfahrung
+        SpanQuery edq = new SpanDistanceQuery(mtq, sq,
+                createConstraint("tokens", "base/s:s", 0, 0, true, false),
+                true);
+        kr = sample.search(edq, (short) 20);
+        assertEquals(18, kr.getMatches().size());
+
+        //meine* /+w1:2,s0 &Erfahrung
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
+        constraints.add(createConstraint("w", 1, 2, true, false));
+        constraints
+                .add(createConstraint("tokens", "base/s:s", 0, 0, true, false));
+
+        SpanQuery mdsq = new SpanMultipleDistanceQuery(
+                new SpanClassQuery(mtq, (byte) 129),
+                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+        kr = sample.search(mdsq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+
+        // check SpanQueryWrapper generated query
+        SpanQueryWrapper sqwi = getJSONQuery(
+                getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld")
+                        .getFile());
+        SpanQuery jsq = sqwi.toQuery();
+        assertEquals(mdsq.toString(), jsq.toString());
+    }
+
+
+    @Test
+    @Ignore
+    public void testWithSampleIndexAndJson ()
+            throws IOException, QueryException {
+        String path =
+                "/home/elma/git/Kustvakt-new/src/test/resources/sample-index";
+        KrillIndex sample = new KrillIndex(new MMapDirectory(Paths.get(path)));
+        SpanQueryWrapper sqwi = getJSONQuery(
+                getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld")
+                        .getFile());
+        SpanQuery sq = sqwi.toQuery();
+        kr = sample.search(sq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+    }
+
+
     @Test
     public void testUnorderedTokenDistance () throws IOException {
         ki = new KrillIndex();
