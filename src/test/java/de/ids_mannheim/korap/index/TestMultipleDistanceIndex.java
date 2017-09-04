@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.index;
 
 import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
+import static de.ids_mannheim.korap.TestSimple.getJsonString;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -19,7 +20,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -317,10 +324,47 @@ public class TestMultipleDistanceIndex {
                 "/home/elma/git/Kustvakt-new/src/test/resources/sample-index";
         KrillIndex sample = new KrillIndex(new MMapDirectory(Paths.get(path)));
         SpanQueryWrapper sqwi = getJSONQuery(
-                getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld")
+                getClass().getResource("/queries/bugs/cosmas_wildcards2.jsonld")
                         .getFile());
         SpanQuery sq = sqwi.toQuery();
         kr = sample.search(sq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+        
+        // test krill apply
+        Krill krill = new Krill();
+        krill.setSpanQuery(sq);
+        krill.setIndex(sample);
+        kr = krill.apply();
+        assertEquals(4, kr.getMatches().size());
+        
+        // test krill deserialization
+        String jsonString = getJsonString( getClass().getResource("/queries/bugs/cosmas_wildcards2.jsonld")
+                .getFile());
+        krill = new Krill();
+        
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(jsonString);
+        final KrillQuery kq = new KrillQuery("tokens");
+        krill.setQuery(kq);
+        
+        SpanQueryWrapper qw = kq.fromKoral(jsonNode.get("query"));
+        assertEquals(sqwi.toQuery(),qw.toQuery());
+
+        krill.setSpanQuery(qw.toQuery());
+        kr = krill.apply(sample);
+        assertEquals(4, kr.getMatches().size());   
+    }
+    
+    @Test
+    @Ignore
+    public void testWithKrillWithCollection () throws IOException {
+        String path =
+                "/home/elma/git/Kustvakt-new/src/test/resources/sample-index";
+        KrillIndex sample = new KrillIndex(new MMapDirectory(Paths.get(path)));
+        String json = getJsonString( getClass().getResource("/queries/bugs/cosmas_wildcards2.jsonld")
+                .getFile());
+        Krill krill = new Krill(json);
+        kr = krill.apply(sample);
         assertEquals(4, kr.getMatches().size());
     }
 

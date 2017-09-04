@@ -337,5 +337,11 @@ public class Krill extends Response {
     @Deprecated
     public SpanQuery getSpanQuery () {
         return this.spanQuery;
-    };
+    }
+
+    //EM
+    public void setSpanQuery (SpanQuery sq) {
+        this.spanQuery = sq;
+        
+    }
 };
