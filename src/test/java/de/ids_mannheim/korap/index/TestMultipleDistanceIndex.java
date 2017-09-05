@@ -34,6 +34,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -323,47 +324,66 @@ public class TestMultipleDistanceIndex {
         String path =
                 "/home/elma/git/Kustvakt-new/src/test/resources/sample-index";
         KrillIndex sample = new KrillIndex(new MMapDirectory(Paths.get(path)));
-        SpanQueryWrapper sqwi = getJSONQuery(
-                getClass().getResource("/queries/bugs/cosmas_wildcards2.jsonld")
-                        .getFile());
+        SpanQueryWrapper sqwi = getJSONQuery(getClass()
+                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
+                .getFile());
         SpanQuery sq = sqwi.toQuery();
         kr = sample.search(sq, (short) 10);
         assertEquals(4, kr.getMatches().size());
-        
+
         // test krill apply
         Krill krill = new Krill();
         krill.setSpanQuery(sq);
         krill.setIndex(sample);
         kr = krill.apply();
         assertEquals(4, kr.getMatches().size());
-        
+
         // test krill deserialization
-        String jsonString = getJsonString( getClass().getResource("/queries/bugs/cosmas_wildcards2.jsonld")
+        String jsonString = getJsonString(getClass()
+                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
                 .getFile());
         krill = new Krill();
-        
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(jsonString);
         final KrillQuery kq = new KrillQuery("tokens");
         krill.setQuery(kq);
-        
+
         SpanQueryWrapper qw = kq.fromKoral(jsonNode.get("query"));
-        assertEquals(sqwi.toQuery(),qw.toQuery());
+        assertEquals(sqwi.toQuery(), qw.toQuery());
 
         krill.setSpanQuery(qw.toQuery());
         kr = krill.apply(sample);
-        assertEquals(4, kr.getMatches().size());   
+        assertEquals(4, kr.getMatches().size());
+
+        //        for(Match m: kr.getMatches()){
+        //            System.out.println(m.getID());
+        //            System.out.println(m.getAvailability());
+        //            System.out.println(m.getSnippetBrackets());
+        //        }
     }
-    
+
+
     @Test
     @Ignore
     public void testWithKrillWithCollection () throws IOException {
         String path =
                 "/home/elma/git/Kustvakt-new/src/test/resources/sample-index";
         KrillIndex sample = new KrillIndex(new MMapDirectory(Paths.get(path)));
-        String json = getJsonString( getClass().getResource("/queries/bugs/cosmas_wildcards2.jsonld")
+
+        // collection .*
+        String json = getJsonString(getClass()
+                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
                 .getFile());
         Krill krill = new Krill(json);
+        kr = krill.apply(sample);
+        assertEquals(4, kr.getMatches().size());
+
+        // collection QAO.*
+        json = getJsonString(getClass()
+                .getResource("/queries/bugs/cosmas_wildcards_qao.jsonld")
+                .getFile());
+        krill = new Krill(json);
         kr = krill.apply(sample);
         assertEquals(4, kr.getMatches().size());
     }
@@ -512,14 +532,14 @@ public class TestMultipleDistanceIndex {
         assertEquals(4, kr.getMatch(4).getStartPos());
         assertEquals(7, kr.getMatch(4).getEndPos());
 
-        //	    System.out.print(kr.getTotalResults()+"\n");
-        //		for (int i=0; i< kr.getTotalResults(); i++){
-        //			System.out.println(
-        //				kr.match(i).getLocalDocID()+" "+
-        //				kr.match(i).startPos + " " +
-        //				kr.match(i).endPos
-        //		    );
-        //		}
+        //      System.out.print(kr.getTotalResults()+"\n");
+        //      for (int i=0; i< kr.getTotalResults(); i++){
+        //          System.out.println(
+        //              kr.match(i).getLocalDocID()+" "+
+        //              kr.match(i).startPos + " " +
+        //              kr.match(i).endPos
+        //          );
+        //      }
 
     }
 

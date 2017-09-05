@@ -101,7 +101,7 @@
     },
     "collection": {
         "@type": "koral:doc",
-        "value": "CC-BY.*",
+        "value": ".*",
         "match": "match:eq",
         "type": "type:regex",
         "key": "availability",
