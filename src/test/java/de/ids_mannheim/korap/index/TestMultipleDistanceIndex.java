@@ -44,7 +44,6 @@ public class TestMultipleDistanceIndex {
     private KrillIndex ki;
     private Result kr;
 
-
     public SpanQuery createQuery (String x, String y,
             List<DistanceConstraint> constraints, boolean isOrdered) {
 
@@ -280,11 +279,9 @@ public class TestMultipleDistanceIndex {
 	
 
     @Test
-    @Ignore
+	@Ignore("Private data usage")
     public void testWithSampleIndex () throws IOException, QueryException {
-        String path =
-                "/home/elma/git/Kustvakt-new/src/test/resources/sample-index";
-        KrillIndex sample = new KrillIndex(new MMapDirectory(Paths.get(path)));
+        KrillIndex sample = getSampleIndex();
 
         WildcardQuery wcquery =
                 new WildcardQuery(new Term("tokens", "s:meine*"));
@@ -339,12 +336,10 @@ public class TestMultipleDistanceIndex {
 
 
     @Test
-    @Ignore
+	@Ignore("Private data usage")
     public void testWithSampleIndexAndJson ()
             throws IOException, QueryException {
-        String path =
-                "/home/elma/git/Kustvakt-new/src/test/resources/sample-index";
-        KrillIndex sample = new KrillIndex(new MMapDirectory(Paths.get(path)));
+        KrillIndex sample = getSampleIndex();
         SpanQueryWrapper sqwi = getJSONQuery(getClass()
                 .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
                 .getFile());
@@ -386,11 +381,9 @@ public class TestMultipleDistanceIndex {
 
 
     @Test
-    @Ignore
+	@Ignore("Private data usage")
     public void testWithKrillWithCollection () throws IOException {
-        String path =
-                "/home/elma/git/Kustvakt-new/src/test/resources/sample-index";
-        KrillIndex sample = new KrillIndex(new MMapDirectory(Paths.get(path)));
+        KrillIndex sample = getSampleIndex();
 
         // collection .*
         String json = getJsonString(getClass()
@@ -739,5 +732,12 @@ public class TestMultipleDistanceIndex {
 
     }
 
-
+	private KrillIndex getSampleIndex () throws IOException {
+		return new KrillIndex(
+			new MMapDirectory(
+				Paths.get(getClass().getResource("/sample-index").getFile()
+					)
+				)
+			);
+	};
 }

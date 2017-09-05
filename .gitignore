@@ -24,3 +24,4 @@
 /src/main/resources/korap.conf
 /dependency-reduced-pom.xml
 /bin
+/src/test/resources/sample-index
