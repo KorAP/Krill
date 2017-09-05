@@ -257,6 +257,27 @@ public class TestMultipleDistanceIndex {
         assertEquals(6, kr.getMatches().size());
     }
 
+	
+	@Test
+    public void queryJSONwildcardNoFoundry () throws QueryException, IOException {
+        // meine*
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc5());
+        ki.commit();
+
+        // treat merging gracefully
+		SpanQueryWrapper sqw = getJSONQuery(
+			getClass().getResource("/queries/bugs/cosmas_wildcards_missingfoundry.jsonld")
+			.getFile());
+		SpanQuery sq = sqw.toQuery();
+		assertEquals(sq.toString(),"SpanMultiTermQueryWrapper(tokens:l:Erfahr*)");
+
+		kr = ki.search(sq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+        assertEquals(1, kr.getMatch(0).getStartPos());
+        assertEquals(2, kr.getMatch(0).getEndPos());
+    };
+	
 
     @Test
     @Ignore

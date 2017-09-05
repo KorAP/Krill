@@ -611,8 +611,6 @@ public class TestKrillQueryJSON {
                 "spanNext(tokens:s:der, tokens:s:Baum)");
 		assertEquals(kq.getWarning(0).getCode(), 774);
     };
-
-
 	
 
     public static String getString (String path) {
