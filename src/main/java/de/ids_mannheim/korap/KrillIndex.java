@@ -1351,7 +1351,12 @@ public final class KrillIndex {
                  * Todo: There may be a way to know early if the bitset is emty
                  * by using LongBitSet - but this may not be as fast as I think.
                  */
-                final Bits bitset = collection.bits(atomic);
+                final FixedBitSet bitset = collection.bits(atomic);
+
+				if (bitset.nextSetBit(0) == DocIdSetIterator.NO_MORE_DOCS) {
+					continue;
+				};
+
                 final PositionsToOffset pto = new PositionsToOffset(atomic,
                         field);
 

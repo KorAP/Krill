@@ -398,6 +398,8 @@ public class TestMultipleDistanceIndex {
                 .getResource("/queries/bugs/cosmas_wildcards_qao.jsonld")
                 .getFile());
         krill = new Krill(json);
+		assertEquals(krill.getCollection().toString(),
+					 "QueryWrapperFilter(availability:/QAO.*/)");
         kr = krill.apply(sample);
         assertEquals(4, kr.getMatches().size());
     }
