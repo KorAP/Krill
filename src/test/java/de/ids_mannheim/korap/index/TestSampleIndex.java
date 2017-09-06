@@ -13,6 +13,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.store.MMapDirectory;
 import org.junit.BeforeClass;
@@ -267,6 +268,11 @@ public class TestSampleIndex {
         //spans(spanOr([tokens:s:meinem, tokens:s:meinen, tokens:s:meiner, tokens:s:meines]))@0:36-37
     }
 
+	@Test
+	public void testEmptySpanOrQuery () {
+		SpanQuery sq = new SpanOrQuery();
+	};
+
 
     @Test
     public void testWildcardPlusWithCollection () throws IOException {
@@ -284,15 +290,16 @@ public class TestSampleIndex {
         
         // mein+ /+w1:2,s0 &Erfahrung
         SpanMultiTermQueryWrapper<WildcardQuery> mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
-                new WildcardQuery(new Term("tokens", "s:mein+")));
-        SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+			new WildcardQuery(new Term("tokens", "s:mein+")));
+
+		SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
+			new SpanClassQuery(mtq, (byte) 129),
+			new SpanClassQuery(sq, (byte) 129), constraints, true, true);
 
         krillAvailabilityAll.setSpanQuery(mdsq);
         kr = sample.search(krillAvailabilityAll);
-        assertEquals(4, kr.getMatches().size());
-        
-        //spanOr([])
+
+		// As described in http://korap.github.io/Koral/, '+' is not a valid wildcard
+		assertEquals(0, kr.getMatches().size());
     }
 }

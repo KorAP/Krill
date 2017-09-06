@@ -9,6 +9,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
@@ -57,6 +58,16 @@ public class SpanClassQuery extends SimpleSpanQuery {
         SpanQuery query = (SpanQuery) this.firstClause.rewrite(reader);
 
         if (query != this.firstClause) {
+
+			// Rewritten spanquery is empty
+			if (query.getField() == null) {
+
+				// Return an artificially created null-query
+				// I guess there's a better way, but who knows
+				return new SpanTermQuery(
+					new Term(this.firstClause.getField(), "")
+					);
+			};
 
 			SpanClassQuery clone = this.clone();
             clone.firstClause = query;

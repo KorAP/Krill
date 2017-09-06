@@ -1359,7 +1359,7 @@ public final class KrillIndex {
 
                 final PositionsToOffset pto = new PositionsToOffset(atomic,
                         field);
-
+				
                 // Spans spans = NearSpansOrdered();
                 final Spans spans = query.getSpans(atomic, (Bits) bitset,
                         termContexts);
