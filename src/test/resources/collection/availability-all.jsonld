@@ -1,0 +1,39 @@
+{"collection": {
+    "operation": "operation:or",
+    "operands": [
+        {
+            "@type": "koral:doc",
+            "value": "CC-BY.*",
+            "match": "match:eq",
+            "type": "type:regex",
+            "key": "availability"
+        },
+        {
+            "operation": "operation:or",
+            "operands": [
+                {
+                    "@type": "koral:doc",
+                    "value": "ACA.*",
+                    "match": "match:eq",
+                    "type": "type:regex",
+                    "key": "availability"
+                },
+                {
+                    "@type": "koral:doc",
+                    "value": "QAO.*",
+                    "match": "match:eq",
+                    "type": "type:regex",
+                    "key": "availability"
+                }
+            ],
+            "@type": "koral:docGroup"
+        }
+    ],
+    "@type": "koral:docGroup",
+    "rewrites": [{
+        "@type": "koral:rewrite",
+        "src": "Kustvakt",
+        "operation": "operation:insertion",
+        "scope": "availability(ALL)"
+    }]
+}}

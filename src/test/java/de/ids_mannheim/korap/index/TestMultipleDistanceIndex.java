@@ -55,13 +55,13 @@ public class TestMultipleDistanceIndex {
     }
 
 
-    public DistanceConstraint createConstraint (String unit, int min, int max,
+    public static DistanceConstraint createConstraint (String unit, int min, int max,
             boolean isOrdered, boolean exclusion) {
         return createConstraint("base", unit, min, max, isOrdered, exclusion);
     }
 
 
-    public DistanceConstraint createConstraint (String field, String unit,
+    public static DistanceConstraint createConstraint (String field, String unit,
             int min, int max, boolean isOrdered, boolean exclusion) {
 
         if (unit.equals("w")) {
@@ -277,133 +277,6 @@ public class TestMultipleDistanceIndex {
         assertEquals(2, kr.getMatch(0).getEndPos());
     };
 	
-
-    @Test
-	@Ignore("Private data usage")
-    public void testWithSampleIndex () throws IOException, QueryException {
-        KrillIndex sample = getSampleIndex();
-
-        WildcardQuery wcquery =
-                new WildcardQuery(new Term("tokens", "s:meine*"));
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
-
-        SpanTermQuery sq =
-                new SpanTermQuery(new Term("tokens", "tt/l:Erfahrung"));
-
-        // meine* /+w1:2 &Erfahrung
-        SpanQuery tdq = new SpanDistanceQuery(mtq, sq,
-                createConstraint("w", 1, 2, true, false), true);
-
-        kr = sample.search(tdq, (short) 10);
-        assertEquals(4, kr.getMatches().size());
-        assertEquals(107, kr.getMatch(0).getStartPos());
-        assertEquals(109, kr.getMatch(0).getEndPos());
-        assertEquals(132566, kr.getMatch(1).getStartPos());
-        assertEquals(132569, kr.getMatch(1).getEndPos());
-        assertEquals(161393, kr.getMatch(2).getStartPos());
-        assertEquals(161396, kr.getMatch(2).getEndPos());
-        assertEquals(10298, kr.getMatch(3).getStartPos());
-        assertEquals(10301, kr.getMatch(3).getEndPos());
-
-        // meine* /+s0 &Erfahrung
-        SpanQuery edq = new SpanDistanceQuery(mtq, sq,
-                createConstraint("tokens", "base/s:s", 0, 0, true, false),
-                true);
-        kr = sample.search(edq, (short) 20);
-        assertEquals(18, kr.getMatches().size());
-
-        //meine* /+w1:2,s0 &Erfahrung
-        List<DistanceConstraint> constraints =
-                new ArrayList<DistanceConstraint>();
-        constraints.add(createConstraint("w", 1, 2, true, false));
-        constraints
-                .add(createConstraint("tokens", "base/s:s", 0, 0, true, false));
-
-        SpanQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
-        kr = sample.search(mdsq, (short) 10);
-        assertEquals(4, kr.getMatches().size());
-
-        // check SpanQueryWrapper generated query
-        SpanQueryWrapper sqwi = getJSONQuery(
-                getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld")
-                        .getFile());
-        SpanQuery jsq = sqwi.toQuery();
-        assertEquals(mdsq.toString(), jsq.toString());
-    }
-
-
-    @Test
-	@Ignore("Private data usage")
-    public void testWithSampleIndexAndJson ()
-            throws IOException, QueryException {
-        KrillIndex sample = getSampleIndex();
-        SpanQueryWrapper sqwi = getJSONQuery(getClass()
-                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
-                .getFile());
-        SpanQuery sq = sqwi.toQuery();
-        kr = sample.search(sq, (short) 10);
-        assertEquals(4, kr.getMatches().size());
-
-        // test krill apply
-        Krill krill = new Krill();
-        krill.setSpanQuery(sq);
-        krill.setIndex(sample);
-        kr = krill.apply();
-        assertEquals(4, kr.getMatches().size());
-
-        // test krill deserialization
-        String jsonString = getJsonString(getClass()
-                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
-                .getFile());
-        krill = new Krill();
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = mapper.readTree(jsonString);
-        final KrillQuery kq = new KrillQuery("tokens");
-        krill.setQuery(kq);
-
-        SpanQueryWrapper qw = kq.fromKoral(jsonNode.get("query"));
-        assertEquals(sqwi.toQuery(), qw.toQuery());
-
-        krill.setSpanQuery(qw.toQuery());
-        kr = krill.apply(sample);
-        assertEquals(4, kr.getMatches().size());
-
-        //        for(Match m: kr.getMatches()){
-        //            System.out.println(m.getID());
-        //            System.out.println(m.getAvailability());
-        //            System.out.println(m.getSnippetBrackets());
-        //        }
-    }
-
-
-    @Test
-	@Ignore("Private data usage")
-    public void testWithKrillWithCollection () throws IOException {
-        KrillIndex sample = getSampleIndex();
-
-        // collection .*
-        String json = getJsonString(getClass()
-                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
-                .getFile());
-        Krill krill = new Krill(json);
-        kr = krill.apply(sample);
-        assertEquals(4, kr.getMatches().size());
-
-        // collection QAO.*
-        json = getJsonString(getClass()
-                .getResource("/queries/bugs/cosmas_wildcards_qao.jsonld")
-                .getFile());
-        krill = new Krill(json);
-		assertEquals(krill.getCollection().toString(),
-					 "QueryWrapperFilter(availability:/QAO.*/)");
-        kr = krill.apply(sample);
-        assertEquals(4, kr.getMatches().size());
-    }
-
 
     @Test
     public void testUnorderedTokenDistance () throws IOException {
@@ -733,13 +606,4 @@ public class TestMultipleDistanceIndex {
         assertEquals(7, kr.getMatch(0).getEndPos());
 
     }
-
-	private KrillIndex getSampleIndex () throws IOException {
-		return new KrillIndex(
-			new MMapDirectory(
-				Paths.get(getClass().getResource("/sample-index").getFile()
-					)
-				)
-			);
-	};
 }

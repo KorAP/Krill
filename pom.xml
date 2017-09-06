@@ -272,6 +272,7 @@
 						<exclude>**/benchmark/*</exclude>
 						<exclude>**/TestWPDIndex.java</exclude>
 						<exclude>**/TestRealIndex.java</exclude>
+						<exclude>**/TestSampleIndex.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

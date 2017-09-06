@@ -1,0 +1,298 @@
+package de.ids_mannheim.korap.index;
+
+import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
+import static de.ids_mannheim.korap.TestSimple.getJsonString;
+import static org.junit.Assert.assertEquals;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.store.MMapDirectory;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.query.DistanceConstraint;
+import de.ids_mannheim.korap.query.SpanClassQuery;
+import de.ids_mannheim.korap.query.SpanDistanceQuery;
+import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.QueryException;
+
+import de.ids_mannheim.korap.index.TestMultipleDistanceIndex;
+
+public class TestSampleIndex {
+
+    private Result kr;
+    private KrillIndex sample;
+    private Krill krillAvailabilityAll;
+
+
+    private KrillIndex getSampleIndex () throws IOException {
+        return new KrillIndex(new MMapDirectory(
+                Paths.get(getClass().getResource("/sample-index").getFile())));
+
+    };
+
+
+    public TestSampleIndex () throws IOException {
+        sample = getSampleIndex();
+        String jsonCollection = getJsonString(getClass()
+                .getResource("/collection/availability-all.jsonld").getFile());
+        KrillCollection collection = new KrillCollection(jsonCollection);
+        krillAvailabilityAll = new Krill();
+        krillAvailabilityAll.setCollection(collection);
+    }
+
+
+    @Test
+    public void testMultipleDistanceWithWildcards ()
+            throws IOException, QueryException {
+        WildcardQuery wcquery =
+                new WildcardQuery(new Term("tokens", "s:meine*"));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
+                new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+
+        SpanTermQuery sq =
+                new SpanTermQuery(new Term("tokens", "tt/l:Erfahrung"));
+
+        // meine* /+w1:2 &Erfahrung
+        SpanQuery tdq = new SpanDistanceQuery(mtq, sq, TestMultipleDistanceIndex
+                .createConstraint("w", 1, 2, true, false), true);
+
+        kr = sample.search(tdq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+        assertEquals(107, kr.getMatch(0).getStartPos());
+        assertEquals(109, kr.getMatch(0).getEndPos());
+        assertEquals(132566, kr.getMatch(1).getStartPos());
+        assertEquals(132569, kr.getMatch(1).getEndPos());
+        assertEquals(161393, kr.getMatch(2).getStartPos());
+        assertEquals(161396, kr.getMatch(2).getEndPos());
+        assertEquals(10298, kr.getMatch(3).getStartPos());
+        assertEquals(10301, kr.getMatch(3).getEndPos());
+
+        // meine* /+s0 &Erfahrung
+        SpanQuery edq = new SpanDistanceQuery(mtq, sq, TestMultipleDistanceIndex
+                .createConstraint("tokens", "base/s:s", 0, 0, true, false),
+                true);
+        kr = sample.search(edq, (short) 20);
+        assertEquals(18, kr.getMatches().size());
+
+        //meine* /+w1:2,s0 &Erfahrung
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
+        constraints.add(TestMultipleDistanceIndex.createConstraint("w", 1, 2,
+                true, false));
+        constraints.add(TestMultipleDistanceIndex.createConstraint("tokens",
+                "base/s:s", 0, 0, true, false));
+
+        SpanQuery mdsq = new SpanMultipleDistanceQuery(
+                new SpanClassQuery(mtq, (byte) 129),
+                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+        kr = sample.search(mdsq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+
+        // check SpanQueryWrapper generated query
+        SpanQueryWrapper sqwi = getJSONQuery(
+                getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld")
+                        .getFile());
+        SpanQuery jsq = sqwi.toQuery();
+        assertEquals(mdsq.toString(), jsq.toString());
+    }
+
+
+    @Test
+    public void testWildcardsWithJson () throws IOException, QueryException {
+        SpanQueryWrapper sqwi = getJSONQuery(getClass()
+                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
+                .getFile());
+        SpanQuery sq = sqwi.toQuery();
+        kr = sample.search(sq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+
+        // test krill apply
+        Krill krill = new Krill();
+        krill.setSpanQuery(sq);
+        krill.setIndex(sample);
+        kr = krill.apply();
+        assertEquals(4, kr.getMatches().size());
+
+        // test krill deserialization
+        String jsonString = getJsonString(getClass()
+                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
+                .getFile());
+        krill = new Krill();
+
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(jsonString);
+        final KrillQuery kq = new KrillQuery("tokens");
+        krill.setQuery(kq);
+
+        SpanQueryWrapper qw = kq.fromKoral(jsonNode.get("query"));
+        assertEquals(sqwi.toQuery(), qw.toQuery());
+
+        krill.setSpanQuery(qw.toQuery());
+        kr = krill.apply(sample);
+        assertEquals(4, kr.getMatches().size());
+    }
+
+
+    @Test
+    public void testWildcardsWithCollectionJSON () throws IOException {
+        // collection .*
+        String json = getJsonString(getClass()
+                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
+                .getFile());
+        Krill krill = new Krill(json);
+        kr = krill.apply(sample);
+        assertEquals(4, kr.getMatches().size());
+
+        // collection QAO.*
+        json = getJsonString(getClass()
+                .getResource("/queries/bugs/cosmas_wildcards_qao.jsonld")
+                .getFile());
+        krill = new Krill(json);
+        assertEquals(krill.getCollection().toString(),
+                "QueryWrapperFilter(availability:/QAO.*/)");
+        kr = krill.apply(sample);
+        assertEquals(4, kr.getMatches().size());
+
+    }
+
+
+    @Test
+    public void testWildcardStarWithCollection () throws IOException {
+        // &Erfahrung
+        SpanTermQuery sq =
+                new SpanTermQuery(new Term("tokens", "tt/l:Erfahrung"));
+
+        // meine*
+        WildcardQuery wcquery =
+                new WildcardQuery(new Term("tokens", "s:meine*"));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
+                new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+
+        // /+w1:2,s0
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
+        constraints.add(TestMultipleDistanceIndex.createConstraint("w", 1, 2,
+                true, false));
+        constraints.add(TestMultipleDistanceIndex.createConstraint("tokens",
+                "base/s:s", 0, 0, true, false));
+
+        // meine* /+w1:2,s0 &Erfahrung
+        SpanQuery mdsq = new SpanMultipleDistanceQuery(
+                new SpanClassQuery(mtq, (byte) 129),
+                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+
+        krillAvailabilityAll.setSpanQuery(mdsq);
+        kr = sample.search(krillAvailabilityAll);
+
+        assertEquals(4, kr.getMatches().size());
+
+        assertEquals("match-GOE/AGI/04846-p107-109", kr.getMatch(0).getID());
+        assertEquals("QAO-NC-LOC:ids", kr.getMatch(0).getAvailability());
+        assertEquals("... gelesen und erzählt hat, ich in "
+                + "[[meine Erfahrungen]] hätte mit aufnehmen sollen. "
+                + "heute jedoch ...",
+                kr.getMatch(0).getSnippetBrackets());
+
+        assertEquals("match-GOE/AGD/00000-p132566-132569",
+                kr.getMatch(1).getID());
+        assertEquals("QAO-NC-LOC:ids-NU:1", kr.getMatch(1).getAvailability());
+        assertEquals("... Mannes umständlich beibringen und solches "
+                + "durch [[meine eigne Erfahrung]] bekräftigen: das "
+                + "alles sollte nicht gelten ...",
+                kr.getMatch(1).getSnippetBrackets());
+
+        assertEquals("match-GOE/AGD/00000-p161393-161396",
+                kr.getMatch(2).getID());
+        assertEquals("QAO-NC-LOC:ids-NU:1", kr.getMatch(2).getAvailability());
+        assertEquals("... lassen, bis er sich zuletzt an "
+                + "[[meine sämtlichen Erfahrungen]] und Überzeugungen "
+                + "anschloß, in welchem Sinne ...",
+                kr.getMatch(2).getSnippetBrackets());
+
+        assertEquals("match-GOE/AGD/06345-p10298-10301",
+                kr.getMatch(3).getID());
+        assertEquals("QAO-NC", kr.getMatch(3).getAvailability());
+        assertEquals("... bis aufs Äußerste verfolgte, und, über "
+                + "[[meine enge Erfahrung]] hinaus, nach ähnlichen Fällen "
+                + "in der ...", kr.getMatch(3).getSnippetBrackets());
+
+    }
+
+
+    @Test
+    public void testWildcardQuestionMarkWithCollection () throws IOException {
+        // &Erfahrung
+        SpanTermQuery sq =
+                new SpanTermQuery(new Term("tokens", "tt/l:Erfahrung"));
+
+        // /+w1:2,s0
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
+        constraints.add(TestMultipleDistanceIndex.createConstraint("w", 1, 2,
+                true, false));
+        constraints.add(TestMultipleDistanceIndex.createConstraint("tokens",
+                "base/s:s", 0, 0, true, false));
+
+        // meine? /+w1:2,s0 &Erfahrung
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
+                new SpanMultiTermQueryWrapper<WildcardQuery>(
+                        new WildcardQuery(new Term("tokens", "s:meine?")));
+        SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
+                new SpanClassQuery(mtq, (byte) 129),
+                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+
+        krillAvailabilityAll.setSpanQuery(mdsq);
+        kr = sample.search(krillAvailabilityAll);
+        assertEquals(4, kr.getMatches().size());
+        
+        //spans(spanOr([tokens:s:meinem, tokens:s:meinen, tokens:s:meiner, tokens:s:meines]))@0:36-37
+    }
+
+
+    @Test
+    public void testWildcardPlusWithCollection () throws IOException {
+     // &Erfahrung
+        SpanTermQuery sq =
+                new SpanTermQuery(new Term("tokens", "tt/l:Erfahrung"));
+
+        // /+w1:2,s0
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
+        constraints.add(TestMultipleDistanceIndex.createConstraint("w", 1, 2,
+                true, false));
+        constraints.add(TestMultipleDistanceIndex.createConstraint("tokens",
+                "base/s:s", 0, 0, true, false));
+        
+        // mein+ /+w1:2,s0 &Erfahrung
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
+                new WildcardQuery(new Term("tokens", "s:mein+")));
+        SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
+                new SpanClassQuery(mtq, (byte) 129),
+                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+
+        krillAvailabilityAll.setSpanQuery(mdsq);
+        kr = sample.search(krillAvailabilityAll);
+        assertEquals(4, kr.getMatches().size());
+        
+        //spanOr([])
+    }
+}
