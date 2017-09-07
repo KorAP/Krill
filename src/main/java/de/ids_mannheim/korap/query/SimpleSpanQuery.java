@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
@@ -74,6 +75,8 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
     protected List<SpanQuery> clauseList = null;
     protected String field;
     protected boolean collectPayloads;
+    protected boolean isFieldNull = false;
+    private Logger log = Logger.getLogger(SimpleSpanQuery.class);
 
 
     public SimpleSpanQuery () {}
@@ -98,6 +101,10 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
                     "The first clause cannot be null.");
         }
         this.field = firstClause.getField();
+        if (field == null){
+            isFieldNull = true;
+            log .warn("Field is null for "+ firstClause.toString());
+        }
         this.setFirstClause(firstClause);
         this.collectPayloads = collectPayloads;
     }
@@ -160,7 +167,12 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
 
 
     private void checkField (SpanQuery clause) {
-        if (!clause.getField().equals(field)) {
+        String field = clause.getField();
+        if (field == null){
+            log .warn("Field is null for "+ secondClause.toString());
+            isFieldNull = true;
+        }
+        else if (!isFieldNull && !clause.getField().equals(field)) {
             throw new IllegalArgumentException(
                     "Clauses must have the same field.");
         }

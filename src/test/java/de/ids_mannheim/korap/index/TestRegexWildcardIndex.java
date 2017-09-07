@@ -408,7 +408,9 @@ public class TestRegexWildcardIndex {
 			true
 			);
         assertEquals(
-			"spanMultipleDistance(SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe, [(w[1:2], ordered, notExcluded), (base/s:s[0:0], ordered, notExcluded)])",
+			"spanMultipleDistance(SpanMultiTermQueryWrapper(base:/s:z.*e/), "
+			+ "base:s:affe, [(w[1:2], ordered, notExcluded), ("
+			+ "base/s:s[0:0], ordered, notExcluded)])",
 			sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());
@@ -422,8 +424,9 @@ public class TestRegexWildcardIndex {
 			true
 			);
         assertEquals(
-			"spanMultipleDistance({1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}, base:s:affe, [(w[1:2], ordered, notExcluded), (base/s:s[0:0], ordered, notExcluded)])",
-			sq.toString());
+                "spanMultipleDistance({1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}, "
+                + "base:s:affe, [(w[1:2], ordered, notExcluded), (base/s:s[0:0], ordered, notExcluded)])",
+                sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());
     };
