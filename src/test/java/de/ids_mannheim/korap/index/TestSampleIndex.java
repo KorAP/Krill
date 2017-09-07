@@ -14,6 +14,7 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
+import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.store.MMapDirectory;
 import org.junit.BeforeClass;
@@ -276,7 +277,7 @@ public class TestSampleIndex {
 
     @Test
     public void testWildcardPlusWithCollection () throws IOException {
-     // &Erfahrung
+		// &Erfahrung
         SpanTermQuery sq =
                 new SpanTermQuery(new Term("tokens", "tt/l:Erfahrung"));
 
@@ -292,6 +293,23 @@ public class TestSampleIndex {
         SpanMultiTermQueryWrapper<WildcardQuery> mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
 			new WildcardQuery(new Term("tokens", "s:mein+")));
 
+
+		// Just to make sure, Lucene internal queries treat SpanOr([]) correctly
+		SpanQuery soq = new SpanNearQuery(
+			new SpanQuery[]{mtq,sq},
+			1,
+			true
+			);
+		
+        krillAvailabilityAll.setSpanQuery(soq);
+        kr = sample.search(krillAvailabilityAll);
+
+		// As described in http://korap.github.io/Koral/, '+' is not a valid wildcard
+		assertEquals(0, kr.getMatches().size());
+
+
+		
+		// Check the reported classed query
 		SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
 			new SpanClassQuery(mtq, (byte) 129),
 			new SpanClassQuery(sq, (byte) 129), constraints, true, true);
@@ -301,5 +319,17 @@ public class TestSampleIndex {
 
 		// As described in http://korap.github.io/Koral/, '+' is not a valid wildcard
 		assertEquals(0, kr.getMatches().size());
-    }
+
+		
+		// Check multiple distance query
+		mdsq = new SpanMultipleDistanceQuery(
+			mtq,
+			sq, constraints, true, true);
+		
+        krillAvailabilityAll.setSpanQuery(mdsq);
+        kr = sample.search(krillAvailabilityAll);
+
+		// As described in http://korap.github.io/Koral/, '+' is not a valid wildcard
+		assertEquals(0, kr.getMatches().size());
+	}
 }
