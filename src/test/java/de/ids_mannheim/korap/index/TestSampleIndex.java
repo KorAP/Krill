@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
@@ -236,10 +237,10 @@ public class TestSampleIndex {
     public void testWildcardStarRewritten () throws IOException {
         // meine* /+w1:2,s0 &Erfahrung
         // rewritten into meine.*
-        WildcardQuery wcquery =
-                new WildcardQuery(new Term("tokens", "s:meine.*"));
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+        RegexpQuery wcquery =
+                new RegexpQuery(new Term("tokens", "s:meine.*"));
+        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
+                new SpanMultiTermQueryWrapper<RegexpQuery>(wcquery);
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
                 new SpanClassQuery(mtq, (byte) 129),
                 new SpanClassQuery(sq, (byte) 129), constraints, true, true);
@@ -266,9 +267,21 @@ public class TestSampleIndex {
 
         krillAvailabilityAll.setSpanQuery(mdsq);
         kr = sample.search(krillAvailabilityAll);
-        assertEquals(4, kr.getMatches().size());
-        
+		assertEquals(0, kr.getMatches().size());
         //spans(spanOr([tokens:s:meinem, tokens:s:meinen, tokens:s:meiner, tokens:s:meines]))@0:36-37
+
+
+
+		// mein? /+w1:2,s0 &Erfahrung
+        mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
+			new WildcardQuery(new Term("tokens", "s:mein?")));
+        mdsq = new SpanMultipleDistanceQuery(
+			new SpanClassQuery(mtq, (byte) 129),
+			new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+
+        krillAvailabilityAll.setSpanQuery(mdsq);
+        kr = sample.search(krillAvailabilityAll);
+		assertEquals(4, kr.getMatches().size());        
     }
     
     @Test
@@ -293,9 +306,9 @@ public class TestSampleIndex {
     public void testWildcardQuestionMarkWithFullstop () throws IOException {
 
         // meine? /+w1:2,s0 &Erfahrung
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(
-                        new WildcardQuery(new Term("tokens", "s:mein.?")));
+        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
+                new SpanMultiTermQueryWrapper<RegexpQuery>(
+                        new RegexpQuery(new Term("tokens", "s:meine.?")));
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
                 new SpanClassQuery(mtq, (byte) 129),
                 new SpanClassQuery(sq, (byte) 129), constraints, true, true);
@@ -313,9 +326,9 @@ public class TestSampleIndex {
 
         // C2 meine+ /+w1:2,s0 &Erfahrung
         // meine+ rewritten into meine.?
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(
-                        new WildcardQuery(new Term("tokens", "s:meine.?")));
+        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
+			new SpanMultiTermQueryWrapper<RegexpQuery>(
+				new RegexpQuery(new Term("tokens", "s:meine.?")));
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
                 new SpanClassQuery(mtq, (byte) 129),
                 new SpanClassQuery(sq, (byte) 129), constraints, true, true);
