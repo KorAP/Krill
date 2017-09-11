@@ -30,6 +30,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSampleIndex {
@@ -174,7 +175,6 @@ public class TestSampleIndex {
 
     }
 
-
     @Test
     public void testWildcardStarWithCollection () throws IOException {
 
@@ -225,5 +225,29 @@ public class TestSampleIndex {
                 + "[[meine enge Erfahrung]] hinaus, nach ähnlichen Fällen "
                 + "in der ...", kr.getMatch(3).getSnippetBrackets());
     }
-   
+
+	@Test
+    public void testMatchWithDependency () throws IOException, QueryException {
+		// /GOE/AGA/01784/p104-105/matchInfo?layer=c&foundry=corenlp&spans=true
+		Match km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
+								   "tokens",
+								   "corenlp",
+								   "c",
+								   true,
+								   true);
+
+		assertEquals(km.getSnippetBrackets(), "... [[meine eigne Erfahrung]] ...");
+		assertEquals(km.getSnippetHTML(), "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark>meine eigne Erfahrung</mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
+
+		km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
+								   "tokens",
+								   "malt",
+								   "d",
+								   true,
+								   true);
+
+		assertEquals(km.getSnippetBrackets(), "... [[{malt/d:DET>132567:meine} {#132567:{malt/d:ATTR>132567:eigne}} {malt/d:PN>132564:Erfahrung}]] ...");
+		assertEquals(km.getSnippetHTML(), "... [[{malt/d:DET>132567:meine} {#132567:{malt/d:ATTR>132567:eigne}} {malt/d:PN>132564:Erfahrung}]] ...");
+
+	}   
 }
