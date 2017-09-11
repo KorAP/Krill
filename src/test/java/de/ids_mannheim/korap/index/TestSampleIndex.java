@@ -11,11 +11,8 @@ import java.util.List;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.search.spans.SpanNearQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.store.MMapDirectory;
 import org.junit.Test;
@@ -32,11 +29,8 @@ import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanMultipleDistanceQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
-
-import de.ids_mannheim.korap.index.TestMultipleDistanceIndex;
 
 public class TestSampleIndex {
 
@@ -231,162 +225,5 @@ public class TestSampleIndex {
                 + "[[meine enge Erfahrung]] hinaus, nach ähnlichen Fällen "
                 + "in der ...", kr.getMatch(3).getSnippetBrackets());
     }
-
-
-    @Test
-    public void testWildcardStarRewritten () throws IOException {
-        // meine* /+w1:2,s0 &Erfahrung
-        // rewritten into meine.*
-        RegexpQuery wcquery =
-                new RegexpQuery(new Term("tokens", "s:meine.*"));
-        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
-                new SpanMultiTermQueryWrapper<RegexpQuery>(wcquery);
-        SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
-
-        krillAvailabilityAll.setSpanQuery(mdsq);
-        kr = sample.search(krillAvailabilityAll);
-
-        assertEquals(4, kr.getMatches().size());
-        
-        // spans(spanOr([]))@START
-    }
-
-
-    @Test
-    public void testWildcardQuestionMarkWithCollection () throws IOException {
-
-        // meine? /+w1:2,s0 &Erfahrung
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(
-                        new WildcardQuery(new Term("tokens", "s:meine?")));
-        SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
-
-        krillAvailabilityAll.setSpanQuery(mdsq);
-        kr = sample.search(krillAvailabilityAll);
-		assertEquals(0, kr.getMatches().size());
-        //spans(spanOr([tokens:s:meinem, tokens:s:meinen, tokens:s:meiner, tokens:s:meines]))@0:36-37
-
-
-
-		// mein? /+w1:2,s0 &Erfahrung
-        mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
-			new WildcardQuery(new Term("tokens", "s:mein?")));
-        mdsq = new SpanMultipleDistanceQuery(
-			new SpanClassQuery(mtq, (byte) 129),
-			new SpanClassQuery(sq, (byte) 129), constraints, true, true);
-
-        krillAvailabilityAll.setSpanQuery(mdsq);
-        kr = sample.search(krillAvailabilityAll);
-		assertEquals(4, kr.getMatches().size());        
-    }
-    
-    @Test
-    public void testWildcardQuestionMark () throws IOException {
-
-        // meine? /+w1:2,s0 &Erfahrung
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(
-                        new WildcardQuery(new Term("tokens", "s:mein?")));
-        SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
-
-        krillAvailabilityAll.setSpanQuery(mdsq);
-        kr = sample.search(krillAvailabilityAll);
-        assertEquals(4, kr.getMatches().size());
-        
-        //spans(spanOr([tokens:s:meine, tokens:s:meint]))@START
-    }
-    
-    @Test
-    public void testWildcardQuestionMarkWithFullstop () throws IOException {
-
-        // meine? /+w1:2,s0 &Erfahrung
-        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
-                new SpanMultiTermQueryWrapper<RegexpQuery>(
-                        new RegexpQuery(new Term("tokens", "s:meine.?")));
-        SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
-
-        krillAvailabilityAll.setSpanQuery(mdsq);
-        kr = sample.search(krillAvailabilityAll);
-        assertEquals(4, kr.getMatches().size());
-        
-        //spans(spanOr([]))@START
-    }
-    
-    
-    @Test
-    public void testWildcardPlusRewritten () throws IOException {
-
-        // C2 meine+ /+w1:2,s0 &Erfahrung
-        // meine+ rewritten into meine.?
-        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
-			new SpanMultiTermQueryWrapper<RegexpQuery>(
-				new RegexpQuery(new Term("tokens", "s:meine.?")));
-        SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
-
-        krillAvailabilityAll.setSpanQuery(mdsq);
-        kr = sample.search(krillAvailabilityAll);
-        assertEquals(4, kr.getMatches().size());
-
-        //spans(spanOr([]))@START
-    }
-
-
-
-    @Test
-    public void testEmptySpanOrQuery () {
-        SpanQuery sq = new SpanOrQuery();
-    };
-
-
-    @Test
-    public void testWildcardPlusWithCollection () throws IOException {
-
-        // mein+ /+w1:2,s0 &Erfahrung
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(
-                        new WildcardQuery(new Term("tokens", "s:mein+")));
-
-
-        // Just to make sure, Lucene internal queries treat SpanOr([]) correctly
-        SpanQuery soq = new SpanNearQuery(new SpanQuery[] { mtq, sq }, 1, true);
-
-        krillAvailabilityAll.setSpanQuery(soq);
-        kr = sample.search(krillAvailabilityAll);
-
-        // As described in http://korap.github.io/Koral/, '+' is not a valid wildcard
-        assertEquals(0, kr.getMatches().size());
-
-
-
-        // Check the reported classed query
-        SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
-
-        krillAvailabilityAll.setSpanQuery(mdsq);
-        kr = sample.search(krillAvailabilityAll);
-
-        // As described in http://korap.github.io/Koral/, '+' is not a valid wildcard
-        assertEquals(0, kr.getMatches().size());
-
-
-        // Check multiple distance query
-        mdsq = new SpanMultipleDistanceQuery(mtq, sq, constraints, true, true);
-
-        krillAvailabilityAll.setSpanQuery(mdsq);
-        kr = sample.search(krillAvailabilityAll);
-
-        // As described in http://korap.github.io/Koral/, '+' is not a valid wildcard
-        assertEquals(0, kr.getMatches().size());
-    }
+   
 }
