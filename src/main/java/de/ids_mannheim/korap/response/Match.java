@@ -427,6 +427,11 @@ public class Match extends AbstractDocument {
      *            Annotation string.
      */
     public void addRelation (int src, int target, String annotation) {
+
+		if (DEBUG)
+			log.trace("Add relation {}: {} and {}", annotation, src, target);
+
+		
         this.addHighlight(new Highlight(src, src, annotation, target));
         int id = identifierNumberCounter--;
         identifierNumber.put(id, target);
@@ -672,6 +677,9 @@ public class Match extends AbstractDocument {
     @JsonIgnore
     public String getPosID (int pos) {
 
+		if (DEBUG)
+			log.trace("Retrieve the identifier for pos");
+
         // Identifier already given
         if (this.identifier != null)
             return this.identifier;
@@ -683,9 +691,22 @@ public class Match extends AbstractDocument {
         PosIdentifier id = new PosIdentifier();
 
         // Get prefix string corpus/doc
+		// <legacy>
         id.setCorpusID(this.getCorpusID());
         id.setDocID(this.getDocID());
+		// </legacy>
+        id.setTextSigle(this.getTextSigle());
         id.setPos(pos);
+
+		if (DEBUG)
+			log.trace(
+				"The identifier is {} in {} ({}-{}) {}",
+				id.toString(),
+				this.getTextSigle(),
+				this.getCorpusID(),
+				this.getDocID(),
+				pos
+				);
 
         return id.toString();
     };

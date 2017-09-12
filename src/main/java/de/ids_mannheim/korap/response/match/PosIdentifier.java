@@ -5,7 +5,6 @@ import java.util.*;
 public class PosIdentifier extends DocIdentifier {
     private int pos;
 
-
     public PosIdentifier () {};
 
 
@@ -21,16 +20,24 @@ public class PosIdentifier extends DocIdentifier {
 
 
     public String toString () {
-        if (this.docID == null)
+        if (this.textSigle == null && this.docID == null)
             return null;
 
-        StringBuilder sb = new StringBuilder("word-");
+        StringBuilder sb = new StringBuilder("token-");
 
+        // Get prefix string text sigle
+		if (this.textSigle != null) {
+			sb.append(this.textSigle);
+		}
         // Get prefix string corpus/doc
-        if (this.corpusID != null) {
-            sb.append(this.corpusID).append('!');
-        };
-        sb.append(this.docID);
+		else {
+			// <legacy>
+			if (this.corpusID != null) {
+				sb.append(this.corpusID).append('!');
+			};
+			sb.append(this.docID);
+			// </legacy>
+		};
 
         sb.append("-p");
         sb.append(this.pos);

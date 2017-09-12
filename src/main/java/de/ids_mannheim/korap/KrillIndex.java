@@ -1205,12 +1205,14 @@ public final class KrillIndex {
                                 t.getStartChar(), t.getStartPos(),
                                 t.getEndChar(), t.getEndPos());
 
-                    if (t.getType() == "term" || t.getType() == "span")
+                    if (t.getType() == "term" || t.getType() == "span") {
                         match.addAnnotation(t.getStartPos(), t.getEndPos(),
                                 t.getAnnotation());
-                    else if (t.getType() == "relSrc")
+					}
+                    else if (t.getType() == "relSrc") {
                         match.addRelation(t.getStartPos(), t.getEndPos(),
                                 t.getAnnotation());
+					};
                 };
 
                 break;

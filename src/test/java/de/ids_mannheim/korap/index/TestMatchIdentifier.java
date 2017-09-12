@@ -107,7 +107,7 @@ public class TestMatchIdentifier {
         assertEquals(id.getCorpusID(), "c1");
         assertEquals(id.getDocID(), "d1");
         assertEquals(id.getPos(), 8);
-        assertEquals(id.toString(), "word-c1!d1-p8");
+        assertEquals(id.toString(), "token-c1!d1-p8");
     };
 
 
@@ -370,12 +370,12 @@ public class TestMatchIdentifier {
 					 + "<mark>"
 					 + "<span title=\"x/o:erstens\">"
 					 + "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" "
-					    + "xlink:href=\"#word-c1!d1-p3\">"
+					    + "xlink:href=\"#token-c1!d1-p3\">"
 					 + "a" + "</span>"
 					 + "</span>"
 					 + "<span title=\"x/o:zweitens\">" + "b" + "</span>"
 					 + "<span title=\"x/o:drittens\">" + "c" + "</span>"
-					 + "<span xml:id=\"word-c1!d1-p3\">"
+					 + "<span xml:id=\"token-c1!d1-p3\">"
 					 + "<span title=\"x/o:viertens\">" + "a" + "</span>"
 					 + "</span>"
 					 + "<span title=\"x/o:fünftens\">" + "b" + "</span>"
@@ -395,12 +395,12 @@ public class TestMatchIdentifier {
 					 + "</span>" + "<span class=\"match\">"+"<mark>"
 					 +"<span title=\"x/o:erstens\">"
 					 +"<span xlink:title=\"x/rel:a\" " + "xlink:type=\"simple\" "
-					 +"xlink:href=\"#word-c1!d1-p3\">a</span>"
+					 +"xlink:href=\"#token-c1!d1-p3\">a</span>"
 					 +"</span>"
 					 +"<span title=\"x/o:zweitens\">b</span>"
 					 +"<mark class=\"class-7 level-0\">"
 					 +"<span title=\"x/o:drittens\">c</span>"
-					 +"<span xml:id=\"word-c1!d1-p3\">"
+					 +"<span xml:id=\"token-c1!d1-p3\">"
 					 +"<span title=\"x/o:viertens\">a</span>"
 					 +"</span>"
 					 +"</mark>"
@@ -491,19 +491,19 @@ public class TestMatchIdentifier {
 					 + "<span title=\"f/m:eins\">" + "<span title=\"f/y:one\">"
 					 + "<span title=\"it/is:1\">"
 					 + "<span title=\"x/o:erstens\">"
-					 + "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" xlink:href=\"#word-c1!d1-p3\">"
+					 + "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" xlink:href=\"#token-c1!d1-p3\">"
 					 + "a</span>" + "</span>" + "</span>"
 					 + "</span>" + "</span>"
 					 + "<span title=\"f/m:zwei\">" + "<span title=\"f/y:two\">"
 					 + "<span title=\"it/is:2\">"
 					 + "<span title=\"x/o:zweitens\">"
-					 + "<span xlink:title=\"x/rel:b\" xlink:type=\"simple\" xlink:href=\"#word-c1!d1-p3\">"
+					 + "<span xlink:title=\"x/rel:b\" xlink:type=\"simple\" xlink:href=\"#token-c1!d1-p3\">"
 					 + "b</span>" + "</span>"
 					 + "</span>" + "</span>" + "</span>"
 					 + "<span title=\"f/m:drei\">" + "<span title=\"f/y:three\">"
 					 + "<span title=\"it/is:3\">"
 					 + "<span title=\"x/o:drittens\">c</span>" + "</span>"
-					 + "</span>" + "</span>" + "<span xml:id=\"word-c1!d1-p3\">"
+					 + "</span>" + "</span>" + "<span xml:id=\"token-c1!d1-p3\">"
 					 + "<span title=\"f/m:vier\">" + "<span title=\"f/y:four\">"
 					 + "<span title=\"it/is:4\">"
 					 + "<span title=\"x/o:viertens\">a</span>" + "</span>"

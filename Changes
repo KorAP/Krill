@@ -1,3 +1,7 @@
+0.55.9 2017-09-12
+        - [bugfix] Serialize token identifier correctly for
+          new corpora with text siglen (diewald)
+
 0.55.8 2017-09-05
         - [feature] Retrieve and display pagebreaks (diewald)
         - [bugfix] Handle invalid dates in input (diewald)

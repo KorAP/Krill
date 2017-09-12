@@ -7,6 +7,9 @@ import static de.ids_mannheim.korap.util.KrillString.*;
 import java.util.*;
 import java.io.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
   Class for elements with highlighting information
 */
@@ -23,6 +26,11 @@ public class HighlightCombinatorElement {
     public String characters;
     public boolean terminal = true;
 
+	// Logger
+	private final static Logger log = LoggerFactory.getLogger(Match.class);
+
+	// This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
 
     // Constructor for highlighting elements
     public HighlightCombinatorElement (byte type, int number) {
@@ -78,6 +86,12 @@ public class HighlightCombinatorElement {
                 }
                 else {
                     Relation rel = match.getRelationID(this.number);
+
+					if (DEBUG) {
+						log.trace("Annotation is a relation with id {}", this.number);
+						log.trace("Resulting in relation {}: {}", rel.annotation, rel.ref);
+					};
+
                     sb.append("xlink:title=\"")
                             .append(escapeHTML(rel.annotation))
                             .append("\" xlink:type=\"simple\" xlink:href=\"#")
