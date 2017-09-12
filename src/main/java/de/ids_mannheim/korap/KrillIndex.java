@@ -138,7 +138,7 @@ public final class KrillIndex {
 
     private byte[] pl = new byte[4];
     private static ByteBuffer bb = ByteBuffer.allocate(4),
-            bbOffset = ByteBuffer.allocate(8), bbTerm = ByteBuffer.allocate(16);
+            bbOffset = ByteBuffer.allocate(8), bbTerm = ByteBuffer.allocate(32);
 
     // Some initializations ...
     {
@@ -1182,7 +1182,8 @@ public final class KrillIndex {
 
                             // Copy the payload
                             bbTerm.clear();
-                            if (payload != null) {
+
+                            if (payload != null && payload.length <= bbTerm.capacity()) {
                                 bbTerm.put(payload.bytes, payload.offset,
                                         payload.length);
                             };

@@ -249,5 +249,15 @@ public class TestSampleIndex {
 		assertEquals(km.getSnippetBrackets(), "... [[{malt/d:DET>132567:meine} {#132567:{malt/d:ATTR>132567:eigne}} {malt/d:PN>132564:Erfahrung}]] ...");
 		assertEquals(km.getSnippetHTML(), "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span xlink:title=\"malt/d:DET\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">meine</span> <span xml:id=\"token-GOE/AGD/00000-p132567\"><span xlink:title=\"malt/d:ATTR\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">eigne</span></span> <span xlink:title=\"malt/d:PN\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132564\">Erfahrung</span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
 
+		km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
+								 "tokens",
+								 "malt",
+								 "d",
+								 true,
+								 true,
+								 true);
+
+		assertEquals(km.getSnippetBrackets().substring(0,20), "[{#132507:{malt/d:SU");
+		assertEquals(km.getSnippetHTML().substring(0,20), "<span class=\"context");
 	}   
 }

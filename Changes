@@ -1,6 +1,7 @@
 0.55.9 2017-09-12
         - [bugfix] Serialize token identifier correctly for
           new corpora with text siglen (diewald)
+        - [bugfix] Extend bytebuffer for relation payloads (diewald)
 
 0.55.8 2017-09-05
         - [feature] Retrieve and display pagebreaks (diewald)
