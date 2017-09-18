@@ -89,14 +89,14 @@ public class HighlightCombinatorElement {
 
 					if (DEBUG) {
 						log.trace("Annotation is a relation with id {}", this.number);
-						log.trace("Resulting in relation {}: {}", rel.annotation, rel.ref);
+						log.trace("Resulting in relation {}: {}-{}", rel.annotation, rel.refStart, rel.refEnd);
 					};
 
                     sb.append("xlink:title=\"")
-                            .append(escapeHTML(rel.annotation))
-                            .append("\" xlink:type=\"simple\" xlink:href=\"#")
-                            .append(escapeHTML(match.getPosID(rel.ref)))
-                            .append('"');
+						.append(escapeHTML(rel.annotation))
+						.append("\" xlink:type=\"simple\" xlink:href=\"#")
+						.append(escapeHTML(match.getPosID(rel.refStart, rel.refEnd)))
+						.append('"');
                 };
                 sb.append('>');
             }
@@ -168,7 +168,10 @@ public class HighlightCombinatorElement {
                     else {
                         Relation rel = match.getRelationID(this.number);
                         sb.append(rel.annotation);
-                        sb.append('>').append(rel.ref);
+                        sb.append('>').append(rel.refStart);
+
+						if (rel.refEnd != -1)
+							sb.append('-').append(rel.refEnd);
                     };
                     sb.append(':');
                 }

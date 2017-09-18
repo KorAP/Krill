@@ -103,11 +103,25 @@ public class TestMatchIdentifier {
         PosIdentifier id = new PosIdentifier();
         id.setCorpusID("c1");
         id.setDocID("d1");
-        id.setPos(8);
+        id.setStart(8);
         assertEquals(id.getCorpusID(), "c1");
         assertEquals(id.getDocID(), "d1");
-        assertEquals(id.getPos(), 8);
+        assertEquals(id.getStart(), 8);
         assertEquals(id.toString(), "token-c1!d1-p8");
+    };
+
+	@Test
+    public void posIdentifierExample2 () throws IOException {
+        PosIdentifier id = new PosIdentifier();
+        id.setCorpusID("c1");
+        id.setDocID("d1");
+        id.setStart(8);
+        id.setEnd(12);
+        assertEquals(id.getCorpusID(), "c1");
+        assertEquals(id.getDocID(), "d1");
+        assertEquals(id.getStart(), 8);
+        assertEquals(id.getEnd(), 12);
+        assertEquals(id.toString(), "token-c1!d1-p8-12");
     };
 
 

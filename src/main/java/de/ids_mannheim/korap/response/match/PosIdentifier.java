@@ -3,21 +3,29 @@ package de.ids_mannheim.korap.response.match;
 import java.util.*;
 
 public class PosIdentifier extends DocIdentifier {
-    private int pos;
+    private int start = -1;
+	private int end = -1;
 
     public PosIdentifier () {};
 
 
-    public void setPos (int pos) {
+    public void setStart (int pos) {
         if (pos >= 0)
-            this.pos = pos;
+            this.start = pos;
     };
 
-
-    public int getPos () {
-        return this.pos;
+    public int getStart () {
+        return this.start;
     };
 
+	public void setEnd (int pos) {
+        if (pos >= 0)
+            this.end = pos;
+    };
+
+	public int getEnd () {
+        return this.end;
+    };
 
     public String toString () {
         if (this.textSigle == null && this.docID == null)
@@ -40,7 +48,9 @@ public class PosIdentifier extends DocIdentifier {
 		};
 
         sb.append("-p");
-        sb.append(this.pos);
+        sb.append(this.getStart());
+		if (this.getEnd() != -1)
+			sb.append("-").append(this.end);
 
         return sb.toString();
     };

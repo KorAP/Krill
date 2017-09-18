@@ -216,12 +216,12 @@ public class Match extends AbstractDocument {
         public int number = -1;
 
         // Relational highlight
-        public Highlight (int start, int end, String annotation, int ref) {
+        public Highlight (int start, int end, String annotation, int refStart, int refEnd) {
             this.start = start;
             this.end = end;
             // TODO: This can overflow!
             this.number = relationNumberCounter++;
-            relationNumber.put(this.number, new Relation(annotation, ref));
+            relationNumber.put(this.number, new Relation(annotation, refStart, refEnd));
         };
 
 
@@ -438,10 +438,10 @@ public class Match extends AbstractDocument {
 
 		if (srcEnd == -1) {
 			// Add source token
-			this.addHighlight(new Highlight(srcStart, srcStart, annotation, targetStart));
+			this.addHighlight(new Highlight(srcStart, srcStart, annotation, targetStart, targetEnd));
 		}
 		else {
-			this.addHighlight(new Highlight(srcStart, srcEnd, annotation, targetStart));
+			this.addHighlight(new Highlight(srcStart, srcEnd, annotation, targetStart, targetEnd));
 		};
 
         int id = identifierNumberCounter--;
@@ -684,15 +684,27 @@ public class Match extends AbstractDocument {
         return id;
     };
 
-
     /**
      * Get identifier for a specific position.
      * 
      * @param int
      *            Position to get identifier on.
      */
-    @JsonIgnore
+	@JsonIgnore
     public String getPosID (int pos) {
+		return this.getPosID(pos, -1);
+	};
+
+    /**
+     * Get identifier for a specific position.
+     * 
+     * @param int
+     *            Start position to get identifier on.
+     * @param int
+     *            End position to get identifier on.
+     */
+    @JsonIgnore
+		public String getPosID (int start, int end) {
 
 		if (DEBUG)
 			log.trace("Retrieve the identifier for pos");
@@ -713,7 +725,8 @@ public class Match extends AbstractDocument {
         id.setDocID(this.getDocID());
 		// </legacy>
         id.setTextSigle(this.getTextSigle());
-        id.setPos(pos);
+        id.setStart(start);
+        id.setEnd(end);
 
 		if (DEBUG)
 			log.trace(
@@ -722,7 +735,7 @@ public class Match extends AbstractDocument {
 				this.getTextSigle(),
 				this.getCorpusID(),
 				this.getDocID(),
-				pos
+				start
 				);
 
         return id.toString();

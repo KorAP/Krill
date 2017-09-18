@@ -183,6 +183,8 @@ public class TermInfo implements Comparable<TermInfo> {
 				this.targetStartPos = this.payload.getInt();
 				this.targetEndPos   = this.payload.getInt();
 			}
+
+			// Span to token
 			else if (pti == 34) {
                 /*
 				 * 1 byte for PTI (34), 
@@ -192,6 +194,11 @@ public class TermInfo implements Comparable<TermInfo> {
 				 * 1 integer for end position of the right part, and 
 				 * and 0-3 TUIs as above.
 				 */
+
+				// Ignore offsets
+				this.payload.getInt();
+				this.endPos = this.payload.getInt();
+				this.targetStartPos = this.payload.getInt();
 			}
 			else if (pti == 35) {
 				/*
@@ -205,6 +212,16 @@ public class TermInfo implements Comparable<TermInfo> {
 				 * 1 integer for end position of the right part, 
 				 * and 0-3 TUIs as above.
 				 */
+
+				// Ignore offsets
+				this.payload.getInt();
+				this.payload.getInt();
+				this.payload.getInt();
+				this.payload.getInt();
+
+				this.endPos = this.payload.getInt();
+				this.targetStartPos = this.payload.getInt();
+				this.targetEndPos = this.payload.getInt();
 			}
             else {
                 this.endPos = this.payload.getInt() - 1;
