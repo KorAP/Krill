@@ -61,7 +61,7 @@ public class TestTermInfo {
         assertEquals("foundry", term.getFoundry(), "xip");
         assertEquals("layer", term.getLayer(), "p");
         assertEquals("startPos", term.getStartPos(), 11);
-        assertEquals("endPos", term.getEndPos(), 16);
+        assertEquals("targetStartPos", term.getTargetStartPos(), 16);
         assertEquals("startChar", term.getStartChar(), -1);
         assertEquals("endChar", term.getEndChar(), -1);
         assertEquals("depth", term.getDepth(), 0);

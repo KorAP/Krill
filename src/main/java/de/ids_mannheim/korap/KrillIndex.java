@@ -1211,8 +1211,15 @@ public final class KrillIndex {
                                 t.getAnnotation());
 					}
                     else if (t.getType() == "relSrc") {
-                        match.addRelation(t.getStartPos(), t.getEndPos(),
-                                t.getAnnotation());
+						// This only respects relSrc!
+						// May require more information for bidirectional relations
+                        match.addRelation(
+							t.getStartPos(),
+							t.getEndPos(),
+							t.getTargetStartPos(),
+							t.getTargetEndPos(),
+							t.getAnnotation()
+							);
 					};
                 };
 

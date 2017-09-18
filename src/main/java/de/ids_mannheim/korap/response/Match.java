@@ -426,16 +426,17 @@ public class Match extends AbstractDocument {
      * @param annotation
      *            Annotation string.
      */
-    public void addRelation (int src, int target, String annotation) {
+    public void addRelation (int srcStart, int srcEnd, int targetStart, int targetEnd, String annotation) {
 
 		if (DEBUG)
-			log.trace("Add relation {}: {} and {}", annotation, src, target);
+			log.trace("Add relation {}: {}-{}->{}-{}",
+					  annotation, srcStart, srcEnd, targetStart, targetEnd);
 
 		
-        this.addHighlight(new Highlight(src, src, annotation, target));
+        this.addHighlight(new Highlight(srcStart, srcStart, annotation, targetStart));
         int id = identifierNumberCounter--;
-        identifierNumber.put(id, target);
-        this.addHighlight(new Highlight(target, target, id));
+        identifierNumber.put(id, targetStart);
+        this.addHighlight(new Highlight(targetStart, targetStart, id));
     };
 
 

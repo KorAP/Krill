@@ -16,7 +16,6 @@ public class TermInfo implements Comparable<TermInfo> {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-
     // TODO: Support various terms - including relations!
 
     private String foundry, layer, value, term, type, annotation;
@@ -26,7 +25,13 @@ public class TermInfo implements Comparable<TermInfo> {
     private ByteBuffer payload;
     private boolean analyzed = false;
 
-    private int startChar = -1, endChar = -1, startPos = -1, endPos = -1;
+    private int
+	    startChar      = -1, // character offset for start of span
+		endChar        = -1, // character offset for end of span
+		startPos       = -1, // start position of source
+		endPos         = -1, // end position of source
+		targetStartPos = -1, // start position of target
+		targetEndPos   = -1; // end position of target
 
     private byte depth = (byte) 0;
 
@@ -97,15 +102,25 @@ public class TermInfo implements Comparable<TermInfo> {
                 this.type = "term";
         };
 
+		int pti = 0;
+
         // Analyze term value
         if (ttype != 1) {
 
-            this.payload.get(); // Ignore PTI - temporary!!!
+			pti = this.payload.get(); // Ignore PTI - temporary!!!
 
-            if (DEBUG)
-                log.trace("Check {} for {}", tterm, prefixRegex.toString());
+            if (DEBUG) {
+                log.trace(
+					"Check {} with {} for {}",
+					tterm,
+					pti,
+					prefixRegex.toString()
+					);
+			};
+
             matcher = prefixRegex.matcher(tterm);
-            if (matcher.matches() && matcher.groupCount() == 3) {
+
+			if (matcher.matches() && matcher.groupCount() == 3) {
                 this.annotation = tterm;
                 if (matcher.group(1) != null)
                     this.foundry = matcher.group(1);
@@ -116,7 +131,7 @@ public class TermInfo implements Comparable<TermInfo> {
             };
         }
 
-        // for positions
+        // for positions (aka offset tokens)
         else {
             this.value = tterm;
             this.startChar = this.payload.getInt();
@@ -131,10 +146,66 @@ public class TermInfo implements Comparable<TermInfo> {
 
         // for spans, relations and attributes
         if (ttype > 1 && ttype != 4) {
+
+			// relSrc
             if (this.type.equals("relTarget")) {
                 this.endPos = this.startPos;
                 this.startPos = this.payload.getInt() - 1;
             }
+
+			// Token-to-token relation
+			else if (pti == 32) {
+				/*
+				 * 1 byte for PTI (32), 
+				 * 1 integer for the right part token position, 
+				 * 1 short for the left-part TUI, 
+				 * 1 short for right-part TUI and 
+				 * 1 short for the relation TUI. 
+				 */
+				this.targetStartPos = this.payload.getInt() -1;
+			}
+
+			// Token-to-span relation
+			else if (pti == 33) {
+				/*
+				 * 1 byte for PTI (33), 
+				 * 1 integer for the start span offset of the right part, 
+				 * 1 integer for the end span offset of the right part, 
+				 * 1 integer for the start position of the right part, 
+				 * 1 integer for the end position of the right part, 
+				 * and 0-3 TUIs as above.
+				 */
+				// Ignore offsets
+				this.payload.getInt();
+				this.payload.getInt();
+
+                this.endPos = this.startPos;
+				this.targetStartPos = this.payload.getInt();
+				this.targetEndPos   = this.payload.getInt();
+			}
+			else if (pti == 34) {
+                /*
+				 * 1 byte for PTI (34), 
+				 * 1 integer for the start span offset of the left part, 
+				 * 1 integer for the end span offset of the left part, 
+				 * 1 integer for end position of the left part, 
+				 * 1 integer for end position of the right part, and 
+				 * and 0-3 TUIs as above.
+				 */
+			}
+			else if (pti == 35) {
+				/*
+				 * 1 byte for PTI (35), 
+				 * 1 integer for the start span offset of the left part, 
+				 * 1 integer for the end span offset of the left part, 
+				 * 1 integer for the start span offset of the right part, 
+				 * 1 integer for the end span offset of the right part, 
+				 * 1 integer for end position of the left part, 
+				 * 1 integer for the start position of the right part, 
+				 * 1 integer for end position of the right part, 
+				 * and 0-3 TUIs as above.
+				 */
+			}
             else {
                 this.endPos = this.payload.getInt() - 1;
             };
@@ -144,6 +215,11 @@ public class TermInfo implements Comparable<TermInfo> {
         if (ttype == 2 && this.payload.position() < lastPos) {
             this.depth = this.payload.get();
         };
+
+		/*
+		 * TODO:
+		 *   Analyze TUI for attributes
+		 */
 
         // payloads can have different meaning
         analyzed = true;
@@ -183,6 +259,15 @@ public class TermInfo implements Comparable<TermInfo> {
 
     public int getEndPos () {
         return this.endPos;
+    };
+
+	public int getTargetStartPos () {
+        return this.targetStartPos;
+    };
+
+
+    public int getTargetEndPos () {
+        return this.targetEndPos;
     };
 
 
