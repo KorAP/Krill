@@ -426,17 +426,33 @@ public class Match extends AbstractDocument {
      * @param annotation
      *            Annotation string.
      */
-    public void addRelation (int srcStart, int srcEnd, int targetStart, int targetEnd, String annotation) {
+    public void addRelation (int srcStart,
+							 int srcEnd,
+							 int targetStart,
+							 int targetEnd,
+							 String annotation) {
 
 		if (DEBUG)
 			log.trace("Add relation {}: {}-{}->{}-{}",
 					  annotation, srcStart, srcEnd, targetStart, targetEnd);
 
-		
-        this.addHighlight(new Highlight(srcStart, srcStart, annotation, targetStart));
+		if (srcEnd == -1) {
+			// Add source token
+			this.addHighlight(new Highlight(srcStart, srcStart, annotation, targetStart));
+		}
+		else {
+			this.addHighlight(new Highlight(srcStart, srcEnd, annotation, targetStart));
+		};
+
         int id = identifierNumberCounter--;
         identifierNumber.put(id, targetStart);
-        this.addHighlight(new Highlight(targetStart, targetStart, id));
+
+		if (targetEnd == -1) {
+			this.addHighlight(new Highlight(targetStart, targetStart, id));
+		}
+		else {
+			this.addHighlight(new Highlight(targetStart, targetEnd, id));
+		};
     };
 
 
