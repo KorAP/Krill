@@ -631,6 +631,26 @@ public class TestMatchIdentifier {
         assertTrue(res.at("/pubDate").isMissingNode());
     };
 
+	@Test
+    public void indexSigleDuplicate () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createSigleDoc2());
+        ki.addDoc(createSigleDoc1());
+        ki.commit();
+        Match km = ki.getMatchInfo("match-c1/d1/t1-p3-9", "tokens", null, null,
+                false, false);
+
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("tokens", res.at("/field").asText());
+        assertTrue(res.at("/startMore").asBoolean());
+        assertTrue(res.at("/endMore").asBoolean());
+        assertEquals("c1", res.at("/corpusSigle").asText());
+        assertEquals("c1/d1", res.at("/docSigle").asText());
+        assertEquals("c1/d1/t1", res.at("/textSigle").asText());
+        assertEquals("match-c1/d1/t1-p3-9", res.at("/matchID").asText());
+        assertEquals(2, res.at("/UID").asInt());
+    };
+
 
     @Test
     public void indexAttributeInfo () throws IOException, QueryException {
@@ -770,6 +790,46 @@ public class TestMatchIdentifier {
                         + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/s:tag$<b>64<i>7<i>10<i>10<b>0<s>1|@:x/s:key:value$<b>17<i>10<s>1|_7$<i>7<i>8]"
                         + "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8$<i>8<i>9]"
                         + "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>9<i>10]");
+        return fd;
+    };
+
+	private FieldDocument createSigleDoc1 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("corpusSigle", "c1");
+        fd.addString("docSigle", "c1/d1");
+        fd.addString("textSigle", "c1/d1/t1");
+        fd.addInt("UID", 1);
+        fd.addTV("tokens", "abcabcabac",
+                "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
+				 + "[(1-2)s:b|i:b|_1$<i>1<i>2]"
+				 + "[(2-3)s:c|i:c|_2$<i>2<i>3]"
+				 + "[(3-4)s:a|i:a|_3$<i>3<i>4]"
+				 + "[(4-5)s:b|i:b|_4$<i>4<i>5]"
+				 + "[(5-6)s:c|i:c|_5$<i>5<i>6]"
+				 + "[(6-7)s:a|i:a|_6$<i>6<i>7]"
+				 + "[(7-8)s:b|i:b|_7$<i>7<i>8]"
+				 + "[(8-9)s:a|i:a|_8$<i>8<i>9]"
+				 + "[(9-10)s:c|i:c|_9$<i>9<i>10]");
+        return fd;
+    };
+
+	private FieldDocument createSigleDoc2 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("corpusSigle", "c1");
+        fd.addString("docSigle", "c1/d1");
+        fd.addString("textSigle", "c1/d1/t1");
+        fd.addInt("UID", 2);
+        fd.addTV("tokens", "abcabcabac",
+                "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
+				 + "[(1-2)s:b|i:b|_1$<i>1<i>2]"
+				 + "[(2-3)s:c|i:c|_2$<i>2<i>3]"
+				 + "[(3-4)s:a|i:a|_3$<i>3<i>4]"
+				 + "[(4-5)s:b|i:b|_4$<i>4<i>5]"
+				 + "[(5-6)s:c|i:c|_5$<i>5<i>6]"
+				 + "[(6-7)s:a|i:a|_6$<i>6<i>7]"
+				 + "[(7-8)s:b|i:b|_7$<i>7<i>8]"
+				 + "[(8-9)s:a|i:a|_8$<i>8<i>9]"
+				 + "[(9-10)s:c|i:c|_9$<i>9<i>10]");
         return fd;
     };
 
