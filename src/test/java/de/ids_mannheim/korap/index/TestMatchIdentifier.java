@@ -651,6 +651,18 @@ public class TestMatchIdentifier {
         assertEquals(2, res.at("/UID").asInt());
     };
 
+	@Test
+	public void indexMultipleSpanStarts () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createSimpleFieldDoc5());
+        ki.commit();
+        Match km = ki.getMatchInfo("match-c1!d5-p0-4", "tokens", null, null,
+                true, false);
+
+		assertEquals("SnippetBrackets (with Spans)",
+					 "[[{x/tag:a:{x/tag:b:{x/tag:c:{x/tag:v:x}}y}}z]]",
+					 km.getSnippetBrackets());
+	};
 
     @Test
     public void indexAttributeInfo () throws IOException, QueryException {
@@ -771,6 +783,22 @@ public class TestMatchIdentifier {
         return fd;
     };
 
+    private FieldDocument createSimpleFieldDoc5 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("corpusID", "c1");
+        fd.addString("ID", "d5");
+        fd.addTV("tokens", "xyz",
+                "[(0-1)s:x|i:x"+
+				 "|<>:x/tag:v$<b>65<i>1" +
+				 "|<>:x/tag:c$<b>64<i>1<i>0<i>2"+
+				 "|<>:x/tag:a$<b>64<i>2<i>0<i>3"+
+				 "|<>:x/tag:b$<b>64<i>2<i>0<i>3"+
+				 "|_1$<i>0<i>1]"
+				 + "[(1-2)s:y|i:y|_2$<i>1<i>2]"
+				 + "[(2-3)s:z|i:z|_3$<i>2<i>3]");
+        return fd;
+    };
+	
 
     /*
       Check for terms|spans|rels ...

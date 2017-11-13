@@ -1226,7 +1226,9 @@ public class Match extends AbstractDocument {
                 };
 
 				// Add partial string
-				snippetArray.addString(clean.substring(oldPos, pos));
+				if (pos > 0)
+					snippetArray.addString(clean.substring(oldPos, pos));
+				// TODO: Test case missing
 
 				// Remember the new position
                 oldPos = pos;
