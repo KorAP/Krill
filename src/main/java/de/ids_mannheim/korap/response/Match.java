@@ -433,13 +433,14 @@ public class Match extends AbstractDocument {
 							 String annotation) {
 
 		if (DEBUG)
-			log.trace("Add relation {}: {}-{}->{}-{}",
+			log.trace("Add relation {}: {}-{}>>{}-{}",
 					  annotation, srcStart, srcEnd, targetStart, targetEnd);
 
+		// Add source token
 		if (srcEnd == -1) {
-			// Add source token
 			this.addHighlight(new Highlight(srcStart, srcStart, annotation, targetStart, targetEnd));
 		}
+		// Add source span
 		else {
 			this.addHighlight(new Highlight(srcStart, srcEnd, annotation, targetStart, targetEnd));
 		};
@@ -447,9 +448,12 @@ public class Match extends AbstractDocument {
         int id = identifierNumberCounter--;
         identifierNumber.put(id, targetStart);
 
+		// Add target token
 		if (targetEnd == -1) {
 			this.addHighlight(new Highlight(targetStart, targetStart, id));
 		}
+
+		// Add target span
 		else {
 			this.addHighlight(new Highlight(targetStart, targetEnd, id));
 		};
@@ -1200,8 +1204,10 @@ public class Match extends AbstractDocument {
     private void _processHighlightSnippet (String clean,
             ArrayList<int[]> stack) {
 
-        if (DEBUG)
+        if (DEBUG) {
             log.trace("--- Process Highlight snippet");
+            log.trace("--- Snippet: {}", clean);
+		};
 
         int pos = 0, oldPos = 0;
 
@@ -1214,6 +1220,12 @@ public class Match extends AbstractDocument {
 			// empty elements and the end position for closing elements
             pos = element[3] != 0 ? element[0] : element[1];
 
+			if (DEBUG)
+				log.trace("Add tag at position {} (was {})",
+						  pos,
+						  oldPos);
+
+			
 			// The new position is behind the old position
             if (pos > oldPos) {
 
@@ -1222,7 +1234,12 @@ public class Match extends AbstractDocument {
                 if (pos > clean.length()) {
 
 					// Reposition to the end
-                    pos = clean.length() - 1;
+                    pos = clean.length();
+
+					if (DEBUG)
+						log.trace("Position exceeds string, now {}",
+								  pos);
+
                 };
 
 				// Add partial string
