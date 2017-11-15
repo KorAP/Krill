@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.match.MatchIdentifier;
@@ -655,6 +656,8 @@ public class TestMatchIdentifier {
 	public void indexMultipleSpanStarts () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createSimpleFieldDoc5());
+        FieldDocument fd = ki.addDoc(2, getClass().getResourceAsStream("/goe/AGA-03828-new.json.gz"), true);
+		
         ki.commit();
         Match km = ki.getMatchInfo("match-c1!d5-p0-4", "tokens", null, null,
                 true, false);
@@ -662,8 +665,228 @@ public class TestMatchIdentifier {
 		assertEquals("SnippetBrackets (with Spans)",
 					 "[[{x/tag:a:{x/tag:b:{x/tag:c:{x/tag:v:x}}y}}z]]",
 					 km.getSnippetBrackets());
+		
+        assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
+        assertEquals(fd.getTitle(), "Autobiographische Einzelheiten");
+
+		
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("marmot/m:case:nom").with("marmot/m:degree:pos"));
+        Result kr = ks.apply(ki);
+
+		assertEquals(83, kr.getTotalResults());
+		assertEquals("match-GOE/AGA/03828-p0-1", kr.getMatch(0).getID());
+
+		km = ki.getMatchInfo("match-GOE/AGA/03828-p0-10", "tokens", "malt", null,
+							 true, false);
+
+		// Autobiographische einzelheiten Selbstschilderung (1) immer tätiger, nach innen und außen fortwirkender
+		/*
+		  [
+		  "-:base/paragraphs$<i>14",
+		  "-:base/sentences$<i>215",
+		  "-:corenlp/sentences$<i>212",
+		  "-:opennlp/sentences$<i>203",
+		  "-:tokens$<i>5234",
+		  "<>:dereko/s:front$<b>65<i>0<i>0<i>0<b>1",
+		  "<>:dereko/s:pb$<b>65<i>0<i>0<i>0<b>3<s>2",
+		  "<>:base/s:s$<b>64<i>0<i>30<i>2<b>2",
+		  "<>:dereko/s:head$<b>64<i>0<i>30<i>2<b>3<s>3",
+		  "<>:dereko/s:s$<b>64<i>0<i>30<i>2<b>4",
+		  "<>:corenlp/c:ROOT$<b>64<i>0<i>254<i>32<b>0",
+		  "<>:corenlp/s:s$<b>64<i>0<i>254<i>32<b>0",
+		  "<>:opennlp/s:s$<b>64<i>0<i>254<i>32<b>0",
+		  "<>:corenlp/c:NUR$<b>64<i>0<i>254<i>32<b>1",
+		  "<>:corenlp/c:NP$<b>64<i>0<i>253<i>32<b>2",
+		  "<>:base/s:t$<b>64<i>0<i>35242<i>5233<b>0",
+		  "<>:dereko/s:text$<b>64<i>0<i>35242<i>5233<b>0",
+		  "<>:dereko/s:body$<b>64<i>0<i>35242<i>5233<b>1",
+		  "<>:dereko/s:div$<b>64<i>0<i>35242<i>5233<b>2<s>1",
+		  ">:malt/d:ATTR$<b>32<i>2",
+		  "<:malt/d:ROOT$<b>34<i>0<i>179<i>21<i>2",
+		  "<:malt/d:ROOT$<b>34<i>0<i>179<i>21<i>13",
+		  "@:dereko/s:n:0$<b>17<s>1<i>5233",
+		  "@:dereko/s:type:Autobiographie$<b>17<s>1<i>5233",
+		  "@:dereko/s:complete:y$<b>17<s>1<i>5233",
+		  "@:dereko/s:n:529$<b>17<s>2",
+		  "@:dereko/s:id:aga.03828-529-pb529$<b>17<s>2",
+		  "@:dereko/s:TEIform:pb$<b>17<s>2",
+		  "@:dereko/s:type:main$<b>17<s>3<i>2",
+		  "_0$<i>0<i>17",
+		  "corenlp/p:ADJA",
+		  "i:autobiographische",
+		  "marmot/m:case:nom",
+		  "marmot/m:degree:pos",
+		  "marmot/m:gender:fem",
+		  "marmot/m:number:pl",
+		  "marmot/p:ADJA",
+		  "opennlp/p:ADJA",
+		  "s:Autobiographische",
+		  "tt/l:Autobiographische$<b>129<b>32",
+		  "tt/l:autobiographisch$<b>129<b>222",
+		  "tt/p:ADJA$<b>129<b>222",
+		  "tt/p:NN$<b>129<b>32",
+		  "~:base/s:pb$<i>529<i>0"
+		  ],[
+		  ">:malt/d:ATTR$<b>32<i>2",
+		  "_1$<i>18<i>30",
+		  "corenlp/p:ADJA",
+		  "i:einzelheiten",
+		  "marmot/m:case:nom",
+		  "marmot/m:gender:fem",
+		  "marmot/m:number:pl",
+		  "marmot/p:NN",
+		  "opennlp/p:ADJA",
+		  "s:einzelheiten",
+		  "tt/p:ADJA$<b>129<b>253"
+		  ],[
+		  "<:malt/d:ATTR$<b>32<i>0",
+		  "<>:base/s:s$<b>64<i>31<i>52<i>4<b>2",
+		  "<>:dereko/s:head$<b>64<i>31<i>52<i>4<b>4<s>2",
+		  "<>:dereko/s:s$<b>64<i>31<i>52<i>4<b>5",
+		  "<>:corenlp/c:S$<b>64<i>31<i>253<i>32<b>3",
+		  "<>:dereko/s:div$<b>64<i>31<i>3299<i>504<b>3<s>1",
+		  ">:malt/d:ROOT$<b>33<i>0<i>179<i>0<i>21",
+		  "<:malt/d:ATTR$<b>32<i>1",
+		  "<:malt/d:APP$<b>32<i>3",
+		  "<:malt/d:ATTR$<b>32<i>5",
+		  "@:dereko/s:complete:y$<b>17<s>1<i>504",
+		  "@:dereko/s:n:1$<b>17<s>1<i>504",
+		  "@:dereko/s:type:section$<b>17<s>1<i>504",
+		  "@:dereko/s:type:cross$<b>17<s>2<i>4",
+		  "_2$<i>31<i>48",
+		  "corenlp/p:NN",
+		  "i:selbstschilderung",
+		  "marmot/m:case:nom",
+		  "marmot/m:gender:fem",
+		  "marmot/m:number:sg",
+		  "marmot/p:NN",
+		  "opennlp/p:NN",
+		  "s:Selbstschilderung",
+		  "tt/l:Selbstschilderung$<b>129<b>255",
+		  "tt/p:NN$<b>129<b>255"
+		  ],[
+		  "<>:corenlp/c:NM$<b>64<i>50<i>52<i>4<b>6",
+		  "<>:corenlp/c:AVP$<b>64<i>50<i>58<i>5<b>5",
+		  "<>:corenlp/c:AP$<b>64<i>50<i>66<i>6<b>4",
+		  ">:malt/d:APP$<b>32<i>2",
+		  "_3$<i>50<i>51",
+		  "corenlp/p:CARD",
+		  "i:1",
+		  "marmot/p:CARD",
+		  "opennlp/p:CARD",
+		  "s:1",
+		  "tt/l:1$<b>129<b>255",
+		  "tt/p:CARD$<b>129<b>255"
+		  ],[
+		  "<>:base/s:s$<b>64<i>53<i>254<i>32<b>2",
+		  "<>:dereko/s:s$<b>64<i>53<i>254<i>32<b>5<s>1",
+		  "<>:base/s:p$<b>64<i>53<i>3299<i>504<b>1",
+		  "<>:dereko/s:p$<b>64<i>53<i>3299<i>504<b>4",
+		  ">:malt/d:ADV$<b>32<i>5",
+		  "@:dereko/s:type:manual$<b>17<s>1<i>32",
+		  "_4$<i>53<i>58",
+		  "corenlp/p:ADV",
+		  "i:immer",
+		  "marmot/p:ADV",
+		  "opennlp/p:ADV",
+		  "s:immer",
+		  "tt/l:immer$<b>129<b>255",
+		  "tt/p:ADV$<b>129<b>255"
+		  ],[
+		  ">:malt/d:ATTR$<b>32<i>2",
+		  "<:malt/d:ADV$<b>32<i>4",
+		  "_5$<i>59<i>66",
+		  "corenlp/p:ADJD",
+		  "i:tätiger",
+		  "marmot/m:degree:comp",
+		  "marmot/p:ADJD",
+		  "opennlp/p:ADJD",
+		  "s:tätiger",
+		  "tt/l:tätig$<b>129<b>233",
+		  "tt/p:ADJD$<b>129<b>233"
+		  ],[
+		  "<:malt/d:PN$<b>32<i>7",
+		  "<>:corenlp/c:PP$<b>64<i>68<i>127<i>13<b>4",
+		  ">:malt/d:PP$<b>32<i>13",
+		  "_6$<i>68<i>72",
+		  "corenlp/p:APPR",
+		  "i:nach",
+		  "marmot/p:APPR",
+		  "opennlp/p:APPR",
+		  "s:nach",
+		  "tt/l:nach$<b>129<b>172",
+		  "tt/l:nach$<b>129<b>82",
+		  "tt/p:ADV$<b>129<b>82",
+		  "tt/p:APPR$<b>129<b>172"
+		  ],[
+		  "<:malt/d:KON$<b>32<i>8",
+		  "<>:corenlp/c:CAVP$<b>64<i>73<i>88<i>10<b>5",
+		  ">:malt/d:PN$<b>32<i>6",
+		  "_7$<i>73<i>78",
+		  "corenlp/p:TRUNC",
+		  "i:innen",
+		  "marmot/p:ADV",
+		  "opennlp/p:ADV",
+		  "s:innen",
+		  "tt/l:innen$<b>129<b>173",
+		  "tt/l:innen$<b>129<b>81",
+		  "tt/p:ADJD$<b>129<b>173",
+		  "tt/p:ADV$<b>129<b>81"
+		  ],[
+		  ">:malt/d:KON$<b>32<i>7",
+		  "<:malt/d:CJ$<b>32<i>12",
+		  "_8$<i>79<i>82",
+		  "corenlp/p:KON",
+		  "i:und",
+		  "marmot/p:KON",
+		  "opennlp/p:KON",
+		  "s:und",
+		  "tt/l:und$<b>129<b>255",
+		  "tt/p:KON$<b>129<b>255"
+		  ],[
+		  ">:malt/d:ADV$<b>32<i>11",
+		  "_9$<i>83<i>88",
+		  "corenlp/p:ADV",
+		  "i:aussen",
+		  "marmot/p:ADV",
+		  "opennlp/p:ADV",
+		  "s:außen",
+		  "tt/l:außen$<b>129<b>253",
+		  "tt/p:ADV$<b>129<b>253"
+		  ],[
+		  ">:malt/d:ADV$<b>32<i>11",
+		  "_10$<i>89<i>102",
+		  "corenlp/p:ADJA",
+		  "i:fortwirkender",
+		  "marmot/m:case:nom",
+		  "marmot/m:degree:pos",
+		  "marmot/m:gender:masc",
+		  "marmot/m:number:sg",
+		  "marmot/p:ADJA",
+		  "opennlp/p:ADJA",
+		  "s:fortwirkender",
+		  "tt/l:fortwirkend$<b>129<b>158",
+		  "tt/l:fortwirkend$<b>129<b>96",
+		  "tt/p:ADJA$<b>129<b>96",
+		  "tt/p:ADJD$<b>129<b>158"
+		  ]
+		 */
+		assertEquals("SnippetBrackets (with Spans)",
+					 "[[{malt/d:ATTR>1:Autobiographische} "+
+					 "{#1:{malt/d:ATTR>1:einzelheiten}} "+
+					 "{malt/d:ROOT>0-21:Selbstschilderung} "+
+					 "({malt/d:APP>1:1}) "+
+					 "{#4:{malt/d:ADV>4:immer}} "+
+					 "{#5:{malt/d:ATTR>1:tätiger}}, "+
+					 "{#6:{malt/d:PP>12:nach}} "+
+					 "{malt/d:PN>5:innen} "+
+					 "{malt/d:KON>6:und} "+
+					 "{malt/d:ADV>10:außen}]]n ...",
+					 km.getSnippetBrackets());
 	};
 
+
+	
     @Test
     public void indexAttributeInfo () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();

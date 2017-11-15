@@ -1226,12 +1226,12 @@ public class Match extends AbstractDocument {
                 };
 
 				// Add partial string
-				if (pos > 0)
+				if (pos > 0 && pos > oldPos) {
 					snippetArray.addString(clean.substring(oldPos, pos));
-				// TODO: Test case missing
+				};
 
 				// Remember the new position
-                oldPos = pos;
+				oldPos = pos;
             };
 
 			// close tag
