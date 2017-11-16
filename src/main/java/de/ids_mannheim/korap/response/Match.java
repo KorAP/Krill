@@ -297,7 +297,7 @@ public class Match extends AbstractDocument {
                             && end <= this.getEndPos()) {
 
                         if (DEBUG) {
-                            log.trace("Add highlight of class {}!",
+                            log.trace("Add highlight with class/relationnr {}!",
                                     unsignedByte(number));
                         };
 
@@ -433,23 +433,27 @@ public class Match extends AbstractDocument {
 							 String annotation) {
 
 		if (DEBUG)
-			log.trace("Add relation {}: {}-{}>>{}-{}",
+			log.trace("Add relation '{}': source={}-{} >> target={}-{}",
 					  annotation, srcStart, srcEnd, targetStart, targetEnd);
 
 		// Add source token
-		if (srcEnd == -1) {
-			this.addHighlight(new Highlight(srcStart, srcStart, annotation, targetStart, targetEnd));
+		if (srcEnd == -1) { // || srcStart == srcEnd) {
+			this.addHighlight(
+				new Highlight(srcStart, srcStart, annotation, targetStart, targetEnd)
+				);
 		}
 		// Add source span
 		else {
-			this.addHighlight(new Highlight(srcStart, srcEnd, annotation, targetStart, targetEnd));
+			this.addHighlight(
+				new Highlight(srcStart, srcEnd, annotation, targetStart, targetEnd)
+				);
 		};
 
         int id = identifierNumberCounter--;
         identifierNumber.put(id, targetStart);
 
 		// Add target token
-		if (targetEnd == -1) {
+		if (targetEnd == -1) { // || targetStart == targetEnd) {
 			this.addHighlight(new Highlight(targetStart, targetStart, id));
 		}
 

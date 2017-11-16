@@ -1,9 +1,11 @@
-0.55.9 2017-11-15
+0.55.9 2017-11-16
         - [bugfix] Serialize token identifier correctly for
           new corpora with text siglen (diewald)
         - [bugfix] Extend bytebuffer for relation payloads (diewald)
         - [bugfix] Wrong char offsets in snippet generation, where
           repositioning can result in exceeding the string (diewald)
+        - [bugfix] Set correct start position of token-token-relations
+          in snippet generation (diewald)
 
 0.55.8 2017-09-05
         - [feature] Retrieve and display pagebreaks (diewald)

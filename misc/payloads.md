@@ -98,7 +98,7 @@ character offsets of relations with span parts
 are also stored in integer.
 
 Left-part TUI reference, right-part TUI reference, and relation TUI can
-e optionally stored in
+be optionally stored in
 payloads. A TUI is only necessary when an attribute refers to it, for example
 to match a relation span with a specific attribute.
 

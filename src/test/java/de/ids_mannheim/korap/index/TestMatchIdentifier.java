@@ -291,14 +291,7 @@ public class TestMatchIdentifier {
         assertEquals("tokens", res.at("/field").asText());
         assertEquals("GOE_AGX.00002", res.at("/textSigle").asText());
         assertEquals("Goethe, Johann Wolfgang von", res.at("/author").asText());
-
-        /*
-        km = ki.getMatchInfo(
-        	"match-GOE!GOE_AGX.00002-p10-20",
-        					 "tokens", true, (String) null, (String) null, true, true, false);	
-        assertEquals("", km.toJsonString());
-        */
-    };
+	};
 
 
     @Test
@@ -377,10 +370,11 @@ public class TestMatchIdentifier {
                 "x", null, true, false);
 
         assertEquals("SnippetBrackets (1)",
-                "[[{x/o:erstens:{x/rel:a>3:a}}{x/o:zweitens:b}{x/o:drittens:c}{#3:{x/o:viertens:a}}{x/o:fünftens:b}]] ...",
+					 "[[{x/o:erstens:{x/rel:a>3:a}}{x/o:zweitens:b}{x/o:drittens:c}{#3:{x/o:viertens:a}}{x/o:fünftens:b}]] ...",
                 km.getSnippetBrackets());
 
-		assertEquals("SnippetHTML (1)", "<span class=\"context-left\">"
+		assertEquals("SnippetHTML (1)",
+					 "<span class=\"context-left\">"
 					 + "</span>" + "<span class=\"match\">"
 					 + "<mark>"
 					 + "<span title=\"x/o:erstens\">"
@@ -400,7 +394,7 @@ public class TestMatchIdentifier {
 					 + "<span class=\"more\">"
 					 + "</span>"
 					 + "</span>",
-                km.getSnippetHTML());
+					 km.getSnippetHTML());
 
         km = ki.getMatchInfo("match-c1!d1-p0-5(7)2-3(4)8-8(2)7-8", "tokens",
                 "x", null, true, true);
@@ -501,30 +495,49 @@ public class TestMatchIdentifier {
         Match km = ki.getMatchInfo("match-c1!d1-p0-4", "tokens", null, null,
 								   true, true);
 
-        assertEquals("SnippetHTML (2)", "<span class=\"context-left\">"
-					 + "</span>" + "<span class=\"match\">" + "<mark>"
-					 + "<span title=\"f/m:eins\">" + "<span title=\"f/y:one\">"
-					 + "<span title=\"it/is:1\">"
-					 + "<span title=\"x/o:erstens\">"
-					 + "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" xlink:href=\"#token-c1!d1-p3\">"
-					 + "a</span>" + "</span>" + "</span>"
-					 + "</span>" + "</span>"
-					 + "<span title=\"f/m:zwei\">" + "<span title=\"f/y:two\">"
-					 + "<span title=\"it/is:2\">"
-					 + "<span title=\"x/o:zweitens\">"
-					 + "<span xlink:title=\"x/rel:b\" xlink:type=\"simple\" xlink:href=\"#token-c1!d1-p3\">"
-					 + "b</span>" + "</span>"
-					 + "</span>" + "</span>" + "</span>"
-					 + "<span title=\"f/m:drei\">" + "<span title=\"f/y:three\">"
-					 + "<span title=\"it/is:3\">"
-					 + "<span title=\"x/o:drittens\">c</span>" + "</span>"
-					 + "</span>" + "</span>" + "<span xml:id=\"token-c1!d1-p3\">"
-					 + "<span title=\"f/m:vier\">" + "<span title=\"f/y:four\">"
-					 + "<span title=\"it/is:4\">"
-					 + "<span title=\"x/o:viertens\">a</span>" + "</span>"
-					 + "</span>" + "</span>" + "</span>" + "</mark>" + "</span>"
-					 + "<span class=\"context-right\">" + "<span class=\"more\">"
-					 + "</span>" + "</span>", km.getSnippetHTML());
+        assertEquals("SnippetHTML (2)",
+					 "<span class=\"context-left\">"+
+					 "</span>"+
+					 "<span class=\"match\">"+
+					 "<mark><span title=\"f/m:eins\">"+
+					 "<span title=\"f/y:one\">"+
+					 "<span title=\"it/is:1\">"+
+					 "<span title=\"x/o:erstens\">"+
+					 "<span xlink:title=\"x/rel:a\" xlink:type=\"simple\" xlink:href=\"#token-c1!d1-p3\">a</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "<span title=\"f/m:zwei\">"+
+					 "<span title=\"f/y:two\">"+
+					 "<span title=\"it/is:2\">"+
+					 "<span title=\"x/o:zweitens\">"+
+					 "<span xlink:title=\"x/rel:b\" xlink:type=\"simple\" xlink:href=\"#token-c1!d1-p3\">b</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "<span title=\"f/m:drei\">"+
+					 "<span title=\"f/y:three\">"+
+					 "<span title=\"it/is:3\">"+
+					 "<span title=\"x/o:drittens\">c</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "<span xml:id=\"token-c1!d1-p3\">" +
+					 "<span title=\"f/m:vier\"><span title=\"f/y:four\">"+
+					 "<span title=\"it/is:4\">"+
+					 "<span title=\"x/o:viertens\">a</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "</span>"+
+					 "</mark>"+
+					 "</span>"+
+					 "<span class=\"context-right\">"+
+					 "<span class=\"more\"></span>"+
+					 "</span>",
+					 km.getSnippetHTML());
     };
 
 
@@ -656,7 +669,9 @@ public class TestMatchIdentifier {
 	public void indexMultipleSpanStarts () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createSimpleFieldDoc5());
-        FieldDocument fd = ki.addDoc(2, getClass().getResourceAsStream("/goe/AGA-03828-new.json.gz"), true);
+        FieldDocument fd = ki.addDoc(
+			2,
+			getClass().getResourceAsStream("/goe/AGA-03828-new.json.gz"), true);
 		
         ki.commit();
 
@@ -683,17 +698,61 @@ public class TestMatchIdentifier {
 							 true, false);
 		
 		assertEquals("SnippetBrackets (with Spans)",
-					 "[[{malt/d:ATTR>1:Autobiographische} "+
-					 "{#1:{malt/d:ATTR>1:einzelheiten}} "+
-					 "{malt/d:ROOT>0-21:Selbstschilderung} "+
-					 "({malt/d:APP>1:1}) "+
-					 "{#4:{malt/d:ADV>4:immer}} "+
-					 "{#5:{malt/d:ATTR>1:tätiger}}, "+
-					 "{#6:{malt/d:PP>12:nach}} "+
-					 "{malt/d:PN>5:innen} "+
-					 "{malt/d:KON>6:und} "+
-					 "{malt/d:ADV>10:außen}]] ...",
+					 "[[{malt/d:ATTR>2:Autobiographische} "+
+					 "{malt/d:ATTR>2:einzelheiten} "+
+					 "{#2:{malt/d:ROOT>0-21:Selbstschilderung}} "+
+					 "({malt/d:APP>2:1}) "+
+					 "{malt/d:ADV>5:immer} "+
+					 "{#5:{malt/d:ATTR>2:tätiger}}, "+
+					 "{#6:{malt/d:PP>13:nach}} "+
+					 "{#7:{malt/d:PN>6:innen}} "+
+					 "{malt/d:KON>7:und} "+
+					 "{malt/d:ADV>11:außen}]] "+
+					 "...",
 					 km.getSnippetBrackets());
+	};
+
+	@Test
+	public void indexDependencyAnnotations () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd =
+			ki.addDoc(
+				2,
+				getClass().getResourceAsStream("/goe/Corpus-Doc-0002.json"), false);
+		
+        ki.commit();
+
+		Match km;
+
+		km = ki.getMatchInfo(
+        	"match-Corpus/Doc/0002-p0-6",
+        					 "tokens", "malt", null, true, false);
+
+		        assertEquals("SnippetHTML (1)",
+					 "<span class=\"context-left\"></span>"+
+							 "<span class=\"match\">"+
+							 "<mark>"+
+							 "<span xml:id=\"token-Corpus/Doc/0002-p0\">"+
+							 "<span xlink:title=\"malt/d:ROOT\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p0-6\">Maximen</span>"+
+							 "</span> "+
+							 "<span xml:id=\"token-Corpus/Doc/0002-p1\">"+
+							 "<span xlink:title=\"malt/d:KON\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p0\">und</span>"+
+							 "</span> "+
+							 "<span xlink:title=\"malt/d:CJ\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p1\">Reflexionen</span> "+
+							 "<span xml:id=\"token-Corpus/Doc/0002-p3\">" +
+							 "<span xlink:title=\"malt/d:KON\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p0\">Religion</span>"+
+							 "</span> "+
+							 "<span xml:id=\"token-Corpus/Doc/0002-p4\">"+
+							 "<span xlink:title=\"malt/d:KON\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p3\">und</span>"+
+							 "</span> "+
+							 "<span xlink:title=\"malt/d:CJ\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p4\">Christentum</span>"+
+							 "</mark>"+
+							 "</span>"+
+							 "<span class=\"context-right\">"+
+							 "<span class=\"more\">"+
+							 "</span>"+
+							 "</span>",
+							 km.getSnippetHTML());
 	};
 
 
@@ -747,10 +806,10 @@ public class TestMatchIdentifier {
         fd.addString("ID", "d1");
         fd.addString("availability", "CC-BY-SA");
         fd.addTV("tokens", "abcabcabac",
-                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<b>32<i>4<s>0<s>0<s>0|_0$<i>0<i>1|-:t$<i>10]"
+                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<b>32<i>3<s>0<s>0<s>0|_0$<i>0<i>1|-:t$<i>10]"
                         + "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|_1$<i>1<i>2]"
                         + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:base/s:s$<b>64<i>2<i>5<i>5]"
-                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<b>40<i>1<s>0<s>0<s>0|_3$<i>3<i>4]"
+                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<b>32<i>0<s>0<s>0<s>0|_3$<i>3<i>4]"
                         + "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4$<i>4<i>5]"
                         + "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>5<i>6]"
                         + "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6$<i>6<i>7]"
@@ -766,16 +825,16 @@ public class TestMatchIdentifier {
         fd.addString("corpusID", "c1");
         fd.addString("ID", "d1");
         fd.addTV("tokens", "abcabcabac",
-                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<b>32<i>4<s>0<s>0<s>0|_0$<i>0<i>1|-:t$<i>10]"
-                        + "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|>:x/rel:b$<b>32<i>4<s>0<s>0<s>0|_1$<i>1<i>2]"
-                        + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:base/s:s$<b>64<i>2<i>5<i>5]"
-                        + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<b>40<i>1<s>0<s>0<s>0|_3$<i>3<i>4]"
-                        + "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4$<i>4<i>5]"
-                        + "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>5<i>6]"
-                        + "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6$<i>6<i>7]"
-                        + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag$<b>64<i>7<i>10<i>10|_7$<i>7<i>8]"
-                        + "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8$<i>8<i>9]"
-                        + "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>9<i>10]");
+                "[(0-1)s:a|i:a|f/m:eins|f/y:one|x/o:erstens|it/is:1|>:x/rel:a$<b>32<i>3<s>0<s>0<s>0|_0$<i>0<i>1|-:t$<i>10]"
+				 + "[(1-2)s:b|i:b|f/m:zwei|f/y:two|x/o:zweitens|it/is:2|>:x/rel:b$<b>32<i>3<s>0<s>0<s>0|_1$<i>1<i>2]"
+				 + "[(2-3)s:c|i:c|f/m:drei|f/y:three|x/o:drittens|it/is:3|_2$<i>2<i>3|<>:base/s:s$<b>64<i>2<i>5<i>5]"
+				 + "[(3-4)s:a|i:a|f/m:vier|f/y:four|x/o:viertens|it/is:4|<:x/rel:b$<b>32<i>0<s>0<s>0<s>0|_3$<i>3<i>4]"
+				 + "[(4-5)s:b|i:b|f/m:fuenf|f/y:five|x/o:fünftens|it/is:5|_4$<i>4<i>5]"
+				 + "[(5-6)s:c|i:c|f/m:sechs|f/y:six|x/o:sechstens|it/is:6|_5$<i>5<i>6]"
+				 + "[(6-7)s:a|i:a|f/m:sieben|f/y:seven|x/o:siebtens|it/is:7|_6$<i>6<i>7]"
+				 + "[(7-8)s:b|i:b|f/m:acht|f/y:eight|x/o:achtens|it/is:8|<>:x/tag$<b>64<i>7<i>10<i>10|_7$<i>7<i>8]"
+				 + "[(8-9)s:a|i:a|f/m:neun|f/y:nine|x/o:neuntens|it/is:9|_8$<i>8<i>9]"
+				 + "[(9-10)s:c|i:c|f/m:zehn|f/y:ten|x/o:zehntens|it/is:10|_9$<i>9<i>10]");
         return fd;
     };
 

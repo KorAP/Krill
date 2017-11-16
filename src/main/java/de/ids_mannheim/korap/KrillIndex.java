@@ -1175,8 +1175,11 @@ public final class KrillIndex {
                                 && pos < match.getEndPos()) {
 
                             if (DEBUG)
-                                log.trace(">> {}: {}-{}-{}", termString,
-                                        docs.freq(), pos, docs.getPayload());
+                                log.trace(">> {}: freq:{}, pos:{}, payload:{}",
+										  termString,
+										  docs.freq(),
+										  pos,
+										  docs.getPayload());
 
                             BytesRef payload = docs.getPayload();
 
@@ -1201,10 +1204,11 @@ public final class KrillIndex {
                 // Add annotations based on the retrieved infos
                 for (TermInfo t : termList.getTerms()) {
                     if (DEBUG)
-                        log.trace("Add term {}/{}:{} to {}({})-{}({})",
-                                t.getFoundry(), t.getLayer(), t.getValue(),
-                                t.getStartChar(), t.getStartPos(),
-                                t.getEndChar(), t.getEndPos());
+                        log.trace(
+							"Add term {}/{}:{} with char:{}(pos:{})-char:{}(pos:{})",
+							t.getFoundry(), t.getLayer(), t.getValue(),
+							t.getStartChar(), t.getStartPos(),
+							t.getEndChar(), t.getEndPos());
 
                     if (t.getType() == "term" || t.getType() == "span") {
                         match.addAnnotation(t.getStartPos(), t.getEndPos(),

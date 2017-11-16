@@ -162,7 +162,7 @@ public class TermInfo implements Comparable<TermInfo> {
 				 * 1 short for right-part TUI and 
 				 * 1 short for the relation TUI. 
 				 */
-				this.targetStartPos = this.payload.getInt() -1;
+				this.targetStartPos = this.payload.getInt();
 			}
 
 			// Token-to-span relation
