@@ -1,0 +1,29 @@
+{ 
+  "query": {
+        "operation": "operation:relation",
+        "operands": [
+            {
+                "wrap": {
+                    "@type": "koral:term",
+                    "layer": "l",
+                    "foundry": "tt",
+                    "match": "match:eq",
+                    "key": "die"
+                },
+                "@type": "koral:token"
+            },
+            {"@type": "koral:span"}
+        ],
+        "@type": "koral:group",
+        "relType": {
+            "wrap": {
+                "@type": "koral:term",
+                "layer": "d",
+                "foundry": "malt",
+                "match": "match:eq",
+                "key": "DET"
+            },
+            "@type": "koral:relation"
+        }
+    }
+}
