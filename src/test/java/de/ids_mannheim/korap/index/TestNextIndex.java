@@ -346,13 +346,71 @@ public class TestNextIndex {
         assertEquals(2, kr.getMatch(0).getEndPos());
         assertEquals(3, kr.getMatch(1).getStartPos());
         assertEquals(5, kr.getMatch(1).getEndPos());
-    }
+    };
+
+
+	@Test
+	public void sequenceSkipBug () throws IOException {
+		KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createFieldDoc1());
+		ki.addDoc(createFieldDoc3());
+		ki.addDoc(createFieldDoc4());
+        ki.addDoc(createFieldDoc5()); // match for 2
+        ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc3());
+        ki.addDoc(createFieldDoc4());
+        ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc3());
+        ki.addDoc(createFieldDoc1());
+        ki.commit();
+		
+		ki.addDoc(createFieldDoc5()); // match for 2
+        ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc2()); // match for 1 and 2
+		ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc3());
+        ki.addDoc(createFieldDoc4());
+        ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc3());
+
+        ki.commit();
+
+		// "cab" is in 2
+        SpanQuery sq =
+			new SpanNextQuery(
+				new SpanNextQuery(
+					new SpanTermQuery(new Term("base", "s:c")),
+					new SpanTermQuery(new Term("base", "s:a"))
+					),
+                new SpanTermQuery(new Term("base", "s:b"))
+				);
+
+        Result kr = ki.search(sq, (short) 10);
+
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(3, kr.getMatch(0).getEndPos());
+        assertEquals("totalResults", kr.getTotalResults(), 1);
+
+		// "aba" is in 2 and 5
+		sq = new SpanNextQuery(
+			new SpanNextQuery(
+				new SpanTermQuery(new Term("base", "s:a")),
+				new SpanTermQuery(new Term("base", "s:b"))
+				),
+			new SpanTermQuery(new Term("base", "s:a"))
+			);
+
+        kr = ki.search(sq, (short) 10);
+        assertEquals("totalResults", kr.getTotalResults(), 3);
+	};
 
 
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "bcbadb",
+        fd.addTV("base", "bbadb", // bba[dc]b
                 "[(0-1)s:b|i:b|_0$<i>0<i>1]" + "[(1-2)s:c|i:c|s:b|_1$<i>1<i>2]"
                         + "[(2-3)s:b|i:b|_2$<i>2<i>3]"
                         + "[(3-4)s:a|i:a|_3$<i>3<i>4|<>:e$<b>64<i>3<i>6<i>6<b>0]"
@@ -365,7 +423,7 @@ public class TestNextIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "caba",
+        fd.addTV("base", "caba", // c[ac][ba]a
                 "[(0-1)s:c|i:c|_0$<i>0<i>1]"
                         + "[(1-2)s:a|i:a|s:c|_1$<i>1<i>2|<>:e$<b>64<i>1<i>3<i>3<b>0]"
                         + "[(2-3)s:b|i:b|s:a|_2$<i>2<i>3]"
@@ -377,7 +435,7 @@ public class TestNextIndex {
     private FieldDocument createFieldDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "cdbd",
+        fd.addTV("base", "cdbd", //  c[ba]d
                 "[(0-1)s:c|i:c|_0$<i>0<i>1]" + "[(1-2)s:d|i:d|_1$<i>1<i>2]"
                         + "[(2-3)s:b|i:b|s:a|_2$<i>2<i>3]"
                         + "[(3-4)s:d|i:d|_3$<i>3<i>4]");
@@ -389,7 +447,7 @@ public class TestNextIndex {
     private FieldDocument createFieldDoc4 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
-        fd.addTV("base", "bcbadb",
+        fd.addTV("base", "bcbadb", // b[cb]ba[dc]b
                 "[(0-1)s:b|i:b|_0$<i>0<i>1]"
                         + "[(1-2)s:c|i:c|s:b|<>:s$<b>64<i>1<i>3<i>3<b>0|_1$<i>1<i>2<b>0]"
                         + "[(2-3)s:b|i:b|_2$<i>2<i>3]"
@@ -399,5 +457,17 @@ public class TestNextIndex {
         return fd;
     }
 
+    private FieldDocument createFieldDoc5 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-4");
+        fd.addTV("base", "dabaca",
+                "[(0-1)s:d|i:d|_0$<i>0<i>1]"
+				 + "[(1-2)s:a|i:a|_1$<i>1<i>2|<>:e$<b>64<i>1<i>3<i>3<b>0]"
+				 + "[(2-3)s:b|i:b|_2$<i>2<i>3]"
+				 + "[(3-4)s:a|i:a|_3$<i>3<i>4]"
+				 + "[(4-5)s:c|i:c|_4$<i>4<i>5]"
+				 + "[(5-6)s:a|i:a|_5$<i>5<i>6]");
+        return fd;
+    }	
 
 };

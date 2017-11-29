@@ -293,6 +293,48 @@ public class TestMatchIdentifier {
         assertEquals("Goethe, Johann Wolfgang von", res.at("/author").asText());
 	};
 
+	@Test
+    public void snippetBugTest () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/wiki/wpd15-u43-34816.json.gz"), true);
+        ki.commit();
+
+        Match km = ki.getMatchInfo("match-WPD15/U43/34816-p420-422", "tokens",
+								   "tt", "l", false, false);
+
+		assertEquals("SnippetBrackets (with Spans)",
+					 "<span class=\"context-left\">"+
+					 "<span class=\"more\"></span></span>"+
+					 "<span class=\"match\">"+
+					 "<mark>"+
+					 "<span title=\"tt/l:online\">online</span> "+
+					 "<span title=\"tt/l:verfügbar\">verfügbar</span>"+
+					 "</mark>"+
+					 "</span>"+
+					 "<span class=\"context-right\">"+
+					 "<span class=\"more\"></span>"+
+					 "</span>",
+					 km.getSnippetHTML());
+
+		 km = ki.getMatchInfo("match-WPD15/U43/34816-p420-422", "tokens",
+								   "dereko", null, true, false);
+
+		 assertEquals("SnippetBrackets (with Spans)",
+					  "<span class=\"context-left\">"+
+					  "<span class=\"more\"></span>"+
+					  "</span>"+
+					  "<span class=\"match\">"+
+					  "<mark>"+
+					  "<span title=\"dereko/s:ref\">online</span> verfügbar"+
+					  "</mark>"+
+					  "</span>"+
+					  "<span class=\"context-right\">"+
+					  "<span class=\"more\"></span>"+
+					  "</span>",
+					 km.getSnippetHTML());
+
+	};
+
 
     @Test
     public void indexExample5Spans () throws IOException, QueryException {
