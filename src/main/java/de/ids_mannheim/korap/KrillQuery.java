@@ -32,6 +32,7 @@ import de.ids_mannheim.korap.query.wrap.SpanWithAttributeQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanWithinQueryWrapper;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.StatusCodes;
 
 /**
  * <p>
@@ -570,15 +571,17 @@ public final class KrillQuery extends Notifications {
             direction = "<:";
         }
 
-        if (!relation.has("@type"))
+        if (!relation.has("@type")){
             throw new QueryException(701,
                     "JSON-LD group has no @type attribute");
-
+        }
+        
+        SpanRelationWrapper spanRelationWrapper;
         if (relation.get("@type").asText().equals("koral:relation")) {
             if (!relation.has("wrap")) {
                 throw new QueryException(718, "Missing relation term");
             }
-            // fix me: termgroup relation
+            
             SpanQueryWrapper relationWrapper =
                     _termFromJson(relation.get("wrap"), direction);
             return new SpanRelationWrapper(relationWrapper, operand1, operand2);
@@ -586,6 +589,13 @@ public final class KrillQuery extends Notifications {
         else {
             throw new QueryException(713, "Query type is not supported");
         }
+        
+//        if (relation.has("boundary")){
+//            _operationRepetitionFromJson(relation, operands);
+//        }
+//        else{
+//            
+//        }
     }
 
 
@@ -634,6 +644,11 @@ public final class KrillQuery extends Notifications {
         byte flag = WITHIN;
         switch (frame) {
             case "isAround":
+                JsonNode operand = operands.get(0);
+                if (operand.get("@type").asText().equals("koral:token")){
+                    throw new QueryException(StatusCodes.INVALID_QUERY, 
+                            "Token cannot contain another token or element.");
+                }
                 break;
             case "strictlyContains":
                 flag = REAL_WITHIN;
@@ -676,7 +691,7 @@ public final class KrillQuery extends Notifications {
                 throw new QueryException(706, "Frame type is unknown");
         };
 
-        // The exclusion operator is no longer relevant
+        
         // <legacyCode>
         Boolean exclude;
         if (json.has("exclude") && json.get("exclude").asBoolean()) {
