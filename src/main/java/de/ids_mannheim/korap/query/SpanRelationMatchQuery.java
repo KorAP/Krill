@@ -10,6 +10,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
+import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.spans.FocusSpans;
 
 /**
@@ -81,7 +82,7 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
         SpanFocusQuery sq = null;
         SpanFocusQuery sq2 = null;
         // match source and then target
-        if (relationQuery.getDirection() == 0) {
+        if (relationQuery.getDirection().equals(RelationDirection.RIGHT)) {
             sq = new SpanFocusQuery(
                     new SpanSegmentQuery(relationQuery, operandQuery, true),
                     relation.getTempTargetNum());

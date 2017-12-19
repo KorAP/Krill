@@ -105,12 +105,13 @@ public class TestSpanRelationQueryJSON {
                 "focus(#[1,2]spanSegment(spanRelation(tokens:>:mate/d:HEAD), <tokens:c:s />))",
                 sq.toString());
     }
-    
+
     @Test
     public void testMatchRelationSourceToken () throws QueryException {
         //
         String filepath = getClass()
-                .getResource("/queries/relation/match-source-token.json").getFile();
+                .getResource("/queries/relation/match-source-token.json")
+                .getFile();
         SpanQueryWrapper sqwi = getJSONQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
@@ -118,7 +119,7 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
-    
+
     @Test
     public void testMatchRelationTarget () throws QueryException {
         //
@@ -240,8 +241,21 @@ public class TestSpanRelationQueryJSON {
                 sq.toString());
     }
 
+    @Test
+    public void testTypedRelationWithAnnotationRegex () throws QueryException {
+        String filepath = getClass()
+                .getResource(
+                        "/queries/relation/typed-relation-with-key-regex.json")
+                .getFile();
+        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals("focus(#[1,2]spanSegment(<tokens:corenlp/c:NP />, "
+                + "focus(#2: spanSegment(spanRelation(SpanMultiTermQueryWrapper(tokens:/>:malt/d:.*/)), "
+                + "<tokens:corenlp/c:VP />))))", sq.toString());
+    }
 
     // EM: should relation term allow empty key?
+    // EM: or should this be interpreted as any key, i.e. [func=/.*/]
     @Test
     public void testTypedRelationWithoutKey () throws QueryException {
 
@@ -297,11 +311,11 @@ public class TestSpanRelationQueryJSON {
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "focus(#[1,2]spanSegment(tokens:tt/p:VVINF, "
-                + "focus(#2: spanSegment("
-                + "spanRelation(tokens:>:malt/d:KONJ), tokens:tt/p:KOUI))))",
+                        + "focus(#2: spanSegment("
+                        + "spanRelation(tokens:>:malt/d:KONJ), tokens:tt/p:KOUI))))",
                 sq.toString());
 
     }
-    
+
     // EM: handle empty koral:span
 }

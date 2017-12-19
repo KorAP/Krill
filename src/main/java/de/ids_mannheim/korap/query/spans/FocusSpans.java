@@ -14,6 +14,7 @@ import org.apache.lucene.index.TermState;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.Bits;
 
+import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 
 
@@ -157,10 +158,10 @@ public class FocusSpans extends SimpleSpans {
 
         if (firstSpans instanceof RelationSpans && classNumbers.size() == 1) {
             RelationSpans relationSpans = (RelationSpans) firstSpans;
-            int direction = relationSpans.getDirection();
+            RelationDirection direction = relationSpans.getDirection();
 
             if (classNumbers.get(0) == relationSpans.getTempSourceNum()) {
-                if (direction == 0) {
+                if (direction.equals(RelationDirection.RIGHT)) {
                     setSpanId(relationSpans.getLeftId());
                 }
                 else {
@@ -168,7 +169,7 @@ public class FocusSpans extends SimpleSpans {
                 }
             }
             else if (classNumbers.get(0) == relationSpans.getTempTargetNum()) {
-                if (direction == 0) {
+                if (direction.equals(RelationDirection.RIGHT)) {
                     setSpanId(relationSpans.getRightId());
                 }
                 else {

@@ -10,6 +10,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
@@ -36,7 +37,7 @@ public class TestFocusIndex {
         ki.commit();
         SpanRelationQuery sq = new SpanRelationQuery(
                 new SpanTermQuery(new Term("base", ">:xip/syntax-dep_rel")),
-                true);
+                true, RelationDirection.RIGHT);
         sq.setSourceClass((byte) 1);
 
         SpanFocusQuery sfq = new SpanFocusQuery(sq, (byte) 1);

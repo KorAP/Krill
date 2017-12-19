@@ -10,11 +10,13 @@ import java.util.Map;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
 
 /**
@@ -52,8 +54,8 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
 public class RelationSpans extends RelationBaseSpans {
 
     private int currentDoc, currentPosition;
-    private int direction;
-    private TermSpans relationTermSpan;
+    private RelationDirection direction;
+    private Spans relationTermSpan;
 
     protected Logger logger = LoggerFactory.getLogger(RelationSpans.class);
     private List<CandidateSpan> candidateList;
@@ -96,7 +98,7 @@ public class RelationSpans extends RelationBaseSpans {
         targetClass = relationSpanQuery.getTargetClass();
 
         candidateList = new ArrayList<>();
-        relationTermSpan = (TermSpans) firstSpans;
+        relationTermSpan = firstSpans;
         hasMoreSpans = relationTermSpan.next();
     }
 
@@ -138,8 +140,10 @@ public class RelationSpans extends RelationBaseSpans {
             }
             else {
                 setCandidateList();
-                currentDoc = relationTermSpan.doc();
-                currentPosition = relationTermSpan.start();
+                if(hasMoreSpans){
+                    currentDoc = relationTermSpan.doc();
+                    currentPosition = relationTermSpan.start();
+                }
             }
         }
         return false;
@@ -155,6 +159,7 @@ public class RelationSpans extends RelationBaseSpans {
      * @throws IOException
      */
     private void setCandidateList () throws IOException {
+        logger.debug("hasMoreSpans "+hasMoreSpans+" "+relationTermSpan.doc());
         while (hasMoreSpans && relationTermSpan.doc() == currentDoc
                 && relationTermSpan.start() == currentPosition) {
 
@@ -257,7 +262,7 @@ public class RelationSpans extends RelationBaseSpans {
         if (relationTermSpan.isPayloadAvailable()) {
             payload.addAll(relationTermSpan.getPayload());
         }
-        if (direction == 0) {
+        if (direction.equals(RelationDirection.RIGHT)) {
             payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
                     tempSourceNum, false));
             payload.add(createClassPayload(cs.getRightStart(), cs.getRightEnd(),
@@ -393,12 +398,12 @@ public class RelationSpans extends RelationBaseSpans {
     }
 
 
-    public int getDirection () {
+    public RelationDirection getDirection () {
         return direction;
     }
 
 
-    public void setDirection (int direction) {
+    public void setDirection (RelationDirection direction) {
         this.direction = direction;
     }
 

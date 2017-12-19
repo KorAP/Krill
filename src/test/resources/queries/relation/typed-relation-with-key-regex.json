@@ -1,0 +1,40 @@
+{
+    "@context": "http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+    "query": {
+        "operation": "operation:relation",
+        "operands": [
+            {
+                "wrap": {
+                    "@type": "koral:term",
+                    "layer": "c",
+                    "foundry": "corenlp",
+                    "match": "match:eq",
+                    "key": "VP"
+                },
+                "@type": "koral:span"
+            },
+            {
+                "wrap": {
+                    "@type": "koral:term",
+                    "layer": "c",
+                    "foundry": "corenlp",
+                    "match": "match:eq",
+                    "key": "NP"
+                },
+                "@type": "koral:span"
+            }
+        ],
+        "@type": "koral:group",
+        "relType": {
+        	"@type": "koral:relation",
+            "wrap": {
+                "@type": "koral:term",
+                "layer": "d",
+                "foundry": "malt",
+                "match": "match:eq",
+                "type": "type:regex",
+                "key": ".*"
+            }
+        }
+    }
+}

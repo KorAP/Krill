@@ -11,6 +11,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
@@ -44,7 +45,8 @@ public class TestReferenceIndex {
         SpanFocusQuery sfq1 = new SpanFocusQuery(snq1, (byte) 2);
 
         SpanRelationQuery srq = new SpanRelationQuery(
-                new SpanTermQuery(new Term("base", "<:child-of")), true);
+                new SpanTermQuery(new Term("base", "<:child-of")), true, 
+                RelationDirection.LEFT);
 
         SpanElementQuery seq2 = new SpanElementQuery("base", "pp");
         SpanClassQuery scq3 = new SpanClassQuery(seq2, (byte) 3);
@@ -126,7 +128,7 @@ public class TestReferenceIndex {
         // nn -> prp
         SpanRelationQuery srq = new SpanRelationQuery(
                 new SpanTermQuery(new Term("tokens", ">:stanford/d:tag")),
-                true);
+                true, RelationDirection.RIGHT);
         SpanRelationMatchQuery rq = new SpanRelationMatchQuery(srq, sfq2, scq2,
                 true);
 

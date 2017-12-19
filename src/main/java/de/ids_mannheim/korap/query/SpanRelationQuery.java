@@ -9,11 +9,11 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
+import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.spans.RelationSpans;
 
 /**
@@ -54,7 +54,7 @@ import de.ids_mannheim.korap.query.spans.RelationSpans;
  */
 public class SpanRelationQuery extends SimpleSpanQuery {
 
-    private int direction = 0; // >
+    private RelationDirection direction;
     private byte tempSourceNum = 1;
     private byte tempTargetNum = 2;
     private byte sourceClass;
@@ -75,29 +75,32 @@ public class SpanRelationQuery extends SimpleSpanQuery {
      *            payloads are to be collected, otherwise
      *            <code>false</code>.
      */
-    public SpanRelationQuery (SpanQuery firstClause, boolean collectPayloads) {
+    public SpanRelationQuery (SpanQuery firstClause, boolean collectPayloads, 
+            RelationDirection direction) {
         super(firstClause, collectPayloads);
-        SpanTermQuery st = (SpanTermQuery) firstClause;
-        String direction = st.getTerm().text().substring(0, 1);
-        if (direction.equals("<")) {
-            this.direction = 1;
-        }
+        this.direction = direction;
+//        SpanTermQuery st = (SpanTermQuery) firstClause;
+//        String direction = st.getTerm().text().substring(0, 1);
+//        if (direction.equals("<")) {
+//            this.direction = 1;
+//        }
     }
 
 
-    public SpanRelationQuery (SpanQuery firstClause, List<Byte> classNumbers,
-                              boolean collectPayloads) {
-        this(firstClause, collectPayloads);
-        this.tempClassNumbers = classNumbers;
-        this.tempSourceNum = classNumbers.get(0);
-        this.tempTargetNum = classNumbers.get(1);
-    }
+//    public SpanRelationQuery (SpanQuery firstClause, List<Byte> classNumbers,
+//                              boolean collectPayloads) {
+//        this(firstClause, collectPayloads);
+//        this.tempClassNumbers = classNumbers;
+//        this.tempSourceNum = classNumbers.get(0);
+//        this.tempTargetNum = classNumbers.get(1);
+//    }
 
 
     @Override
     public SimpleSpanQuery clone () {
         SimpleSpanQuery sq = new SpanRelationQuery(
-                (SpanQuery) this.firstClause.clone(), this.collectPayloads);
+                (SpanQuery) this.firstClause.clone(), this.collectPayloads, 
+                this.direction);
         return sq;
     }
 
@@ -136,12 +139,12 @@ public class SpanRelationQuery extends SimpleSpanQuery {
     }
 
 
-    public int getDirection () {
+    public RelationDirection getDirection () {
         return direction;
     }
 
 
-    public void setDirection (int direction) {
+    public void setDirection (RelationDirection direction) {
         this.direction = direction;
     }
 
