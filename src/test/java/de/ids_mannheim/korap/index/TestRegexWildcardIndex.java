@@ -57,7 +57,7 @@ public class TestRegexWildcardIndex {
         assertEquals("affe [[afffe]] baum ...",
                 kr.getMatch(1).getSnippetBrackets());
 
-        ks = _newKrill(new QueryBuilder("base").re("s:baum.*"));
+        ks = _newKrill(kq.re("s:baum.*"));
         kr = ki.search(ks);
 
         assertEquals((long) 2, kr.getTotalResults());
@@ -66,7 +66,7 @@ public class TestRegexWildcardIndex {
         assertEquals("... baum [[baumgarten]] steingarten ...",
                 kr.getMatch(1).getSnippetBrackets());
 
-        ks = _newKrill(new QueryBuilder("base").re("s:.....?garten"));
+        ks = _newKrill(kq.re("s:.....?garten"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
         assertEquals("... baum [[baumgarten]] steingarten ...",
@@ -74,7 +74,7 @@ public class TestRegexWildcardIndex {
         assertEquals("... baumgarten [[steingarten]] franz ...",
                 kr.getMatch(1).getSnippetBrackets());
 
-        ks = _newKrill(new QueryBuilder("base").re("s:ha.s"));
+        ks = _newKrill(kq.re("s:ha.s"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
         assertEquals("... franz [[hans]] haus ...",
@@ -82,14 +82,27 @@ public class TestRegexWildcardIndex {
         assertEquals("... hans [[haus]] efeu ...",
                 kr.getMatch(1).getSnippetBrackets());
 
-        ks = _newKrill(new QueryBuilder("base").re("s:.*ff.*"));
+        ks = _newKrill(kq.re("s:.*ff.*"));
         kr = ki.search(ks);
         assertEquals((long) 3, kr.getTotalResults());
         assertEquals("[[affe]] afffe ...", kr.getMatch(0).getSnippetBrackets());
         assertEquals("affe [[afffe]] baum ...",
                 kr.getMatch(1).getSnippetBrackets());
         assertEquals("... efeu [[effe]]", kr.getMatch(2).getSnippetBrackets());
-    };
+
+		SpanQueryWrapper sq = kq.seq(
+			kq.re("s:.*garten")
+			).append(
+				kq.seg().without(
+					kq.re("s:.*an.*")
+					)
+				);
+		System.err.println(sq.toQuery().toString());
+		ks = _newKrill(sq);
+        kr = ki.search(ks);
+
+        assertEquals((long) 1, kr.getTotalResults());
+	};
 
 
     @Test

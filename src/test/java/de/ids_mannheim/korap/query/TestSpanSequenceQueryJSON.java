@@ -209,6 +209,17 @@ public class TestSpanSequenceQueryJSON {
     };
 
 
+	@Test
+    public void queryJSONseqNegativeRegexEnd () throws QueryException {
+        SpanQueryWrapper sqwi = jsonQueryFile("negative-regex.jsonld");
+        // [tt/p=NN][tt/p!="NN"]
+        assertEquals(
+			"focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:tt/p:NN, !SpanMultiTermQueryWrapper(tokens:/opennlp/p:NN/){1, 1}, right)}))",
+			sqwi.toQuery().toString()
+			);
+    };
+
+
     @Test
     public void queryJSONseqNegativeStartRepetition () throws QueryException {
         SpanQueryWrapper sqwi = jsonQueryFile(

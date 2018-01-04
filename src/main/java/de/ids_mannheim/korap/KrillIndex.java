@@ -1356,6 +1356,10 @@ public final class KrillIndex {
                 query = (SpanQuery) rewrittenQuery;
             };
 
+			if (DEBUG)
+				log.trace("Rewritten query is {}", query.toString());
+
+
             // Todo: run this in a separated thread
             for (LeafReaderContext atomic : this.reader().leaves()) {
 

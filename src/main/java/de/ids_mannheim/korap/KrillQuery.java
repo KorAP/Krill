@@ -24,6 +24,7 @@ import de.ids_mannheim.korap.query.wrap.SpanFocusQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanReferenceQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRelationWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
 import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
@@ -1228,53 +1229,77 @@ public final class KrillQuery extends Notifications {
             value.append(':').append(json.get("value").asText());
 
         // Regular expression or wildcard
-        if (isTerm && json.has("type")) {
+        if (isTerm) {
 
-            QueryBuilder qb = this.builder();
+			String match = "match:eq";
+			if (json.has("match")) {
+				match = json.get("match").asText();
+			};
 
-            // Branch on type
-            switch (json.get("type").asText()) {
+			if (json.has("type")) {
+				QueryBuilder qb = this.builder();
+
+				// Branch on type
+				switch (json.get("type").asText()) {
                 case "type:regex": {
 
                     // The regex can be rewritten to an any token
                     if (value.toString().matches("^[si]:\\.[\\+\\*]\\??$")) {
                         return new SpanRepetitionQueryWrapper();
                     };
-                    return qb.seg(qb.re(value.toString(), isCaseInsensitive));
-                }
-                case "type:wildcard":
-                    return qb.seq(qb.wc(value.toString(), isCaseInsensitive));
 
+					SpanRegexQueryWrapper srqw = qb.re(value.toString(), isCaseInsensitive);
+
+					if (match.equals("match:ne")) {
+						if (DEBUG)
+							log.trace("Term is negated");
+						// ssqw.makeNegative();
+						return this.builder().seg().without(srqw);
+					}
+					else if (match.equals("match:eq")) {
+						return srqw;
+					}
+					throw new QueryException(741, "Match relation unknown");
+                }
+                case "type:wildcard": {
+
+					SpanWildcardQueryWrapper swcqw =
+						qb.wc(value.toString(), isCaseInsensitive);
+
+					if (match.equals("match:ne")) {
+						if (DEBUG)
+							log.trace("Term is negated");
+						// ssqw.makeNegative();
+						return this.builder().seg().without(swcqw);
+					}
+					else if (match.equals("match:eq")) {
+						return swcqw;
+					};
+					throw new QueryException(741, "Match relation unknown");
+				}
                 case "type:string":
                     break;
-
+					
                 default:
                     this.addWarning(746,
-                            "Term type is not supported - treated as a string");
-            };
-        };
+									"Term type is not supported - treated as a string");
+				};
+			};
 
-        if (isTerm) {
-
-            String match = "match:eq";
-            if (json.has("match")) {
-                match = json.get("match").asText();
-            }
-
-            SpanSegmentQueryWrapper ssqw = this.builder().seg(value.toString());
-            if (match.equals("match:ne")) {
-                if (DEBUG)
-                    log.trace("Term is negated");
-                ssqw.makeNegative();
-                return this.builder().seg().without(ssqw);
-            }
-            else if (match.equals("match:eq")) {
-                return ssqw;
-            }
-            else {
-                throw new QueryException(741, "Match relation unknown");
-            }
-        }
+			SpanSegmentQueryWrapper ssqw = this.builder().seg(value.toString());
+			if (match.equals("match:ne")) {
+				if (DEBUG)
+					log.trace("Term is negated");
+				ssqw.makeNegative();
+				return this.builder().seg().without(ssqw);
+			}
+			else if (match.equals("match:eq")) {
+				return ssqw;
+			}
+			else {
+				throw new QueryException(741, "Match relation unknown");
+			}
+		};
 
         if (json.has("attr")) {
             JsonNode attrNode = json.get("attr");
