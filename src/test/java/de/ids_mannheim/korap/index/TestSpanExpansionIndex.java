@@ -16,6 +16,7 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.automaton.RegExp;
 import org.junit.Test;
 
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
@@ -433,6 +434,48 @@ public class TestSpanExpansionIndex {
     }
 
 
+	@Test
+    public void indexRegexSequence () throws Exception {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createFieldDoc5());
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+
+		SpanQueryWrapper sq = kq.seq(
+			kq.or("s:baumgarten", "s:steingarten")
+			).append(kq.seg().without(kq.or("s:franz", "s:hans")));
+		
+
+		// Expected to find [baumgarten steingarten]
+		Krill ks = _newKrill(sq);
+        Result kr = ki.search(ks);
+
+        assertEquals((long) 1, kr.getTotalResults());
+
+        assertEquals("... baum [[baumgarten steingarten]] franz ...",
+					 kr.getMatch(0).getSnippetBrackets());
+
+		// The same result should be shown for:
+
+		sq = kq.seq(
+			kq.re("s:.*garten")
+			).append(
+				kq.seg().without(
+					kq.re("s:.*an.*")
+					)
+				);
+
+		ks = _newKrill(sq);
+        kr = ki.search(ks);
+
+        assertEquals((long) 1, kr.getTotalResults());
+
+        assertEquals("... baum [[baumgarten steingarten]] franz ...",
+					 kr.getMatch(0).getSnippetBrackets());
+	};
+	
+
 
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
@@ -447,7 +490,6 @@ public class TestSpanExpansionIndex {
                         + "[(9-10)s:c|_9$<i>9<i>10]");
         return fd;
     }
-
 
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
@@ -485,13 +527,30 @@ public class TestSpanExpansionIndex {
 
     private FieldDocument createFieldDoc4 () {
         FieldDocument fd = new FieldDocument();
-        fd.addString("ID", "doc-3");
+        fd.addString("ID", "doc-4");
         fd.addTV("base", "ce",
                 "[(0-1)s:c|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>2<i>2<b>0]]"
                         + "[(1-2)s:e|_1$<i>1<i>2]");
         return fd;
     }
 
+	private FieldDocument createFieldDoc5 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-5");
+        fd.addTV("base",
+                "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
+                "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10|<>:base/s:t$<b>64<i>0<i>9<i>9<b>0]"
+                        + "[(5-10)s:afffe|_1$<i>5<i>10]"
+                        + "[(11-15)s:baum|_2$<i>11<i>15]"
+                        + "[(16-26)s:baumgarten|_3$<i>16<i>26]"
+                        + "[(27-38)s:steingarten|_4$<i>27<i>38]"
+                        + "[(39-44)s:franz|_5$<i>39<i>44]"
+                        + "[(45-49)s:hans|_6$<i>45<i>49]"
+                        + "[(50-54)s:haus|_7$<i>50<i>54]"
+                        + "[(55-59)s:efeu|_8$<i>55<i>59]"
+                        + "[(60-64)s:effe|_9$<i>60<i>64]");
+        return fd;
+    }
 
     private String readFile (String path) {
         StringBuilder sb = new StringBuilder();
@@ -508,4 +567,11 @@ public class TestSpanExpansionIndex {
         }
         return sb.toString();
     }
+
+    private Krill _newKrill (SpanQueryWrapper query) {
+        Krill ks = new Krill(query);
+        ks.getMeta().getContext().left.setToken(true).setLength(1);
+        ks.getMeta().getContext().right.setToken(true).setLength(1);
+        return ks;
+    };
 }

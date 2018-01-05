@@ -89,19 +89,6 @@ public class TestRegexWildcardIndex {
         assertEquals("affe [[afffe]] baum ...",
                 kr.getMatch(1).getSnippetBrackets());
         assertEquals("... efeu [[effe]]", kr.getMatch(2).getSnippetBrackets());
-
-		SpanQueryWrapper sq = kq.seq(
-			kq.re("s:.*garten")
-			).append(
-				kq.seg().without(
-					kq.re("s:.*an.*")
-					)
-				);
-		System.err.println(sq.toQuery().toString());
-		ks = _newKrill(sq);
-        kr = ki.search(ks);
-
-        assertEquals((long) 1, kr.getTotalResults());
 	};
 
 
