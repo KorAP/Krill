@@ -159,6 +159,56 @@ public class TestKrillCollectionIndex {
     };
 
 
+	@Test
+    public void testIndexWithRegex () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc3());
+        ki.commit();
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
+
+		// Frank, Sebastian
+		kcn.fromBuilder(cb.re("author", ".*an.*"));
+        assertEquals(2, kcn.docCount());
+
+		// Kultur & Reisen,
+		// Reisen & Finanzen,
+		// Nachricht & Kultur & Reisen
+		kcn.fromBuilder(cb.re("textClass", ".*(ult|eis).*"));
+        assertEquals(3, kcn.docCount());
+
+		// Test in group
+		kcn.fromBuilder(
+			cb.andGroup().with(cb.term("textClass", "reisen")).with(cb.term("textClass", "kultur"))
+			);
+        assertEquals(2, kcn.docCount());
+
+		kcn.fromBuilder(
+			cb.andGroup().with(
+				cb.re("textClass", ".*eis.*")
+				).with(
+					cb.re("textClass", ".*ult.*")
+					)
+			);
+        assertEquals(2, kcn.docCount());
+
+		kcn.fromBuilder(
+			cb.andGroup().with(
+				cb.re("textClass", ".*eis.*")
+				).with(
+					cb.orGroup().with(
+						cb.re("textClass", ".*ult.*")
+						).with(
+							cb.re("textClass", ".*nan.*")
+							)
+					)
+			);
+        assertEquals(3, kcn.docCount());
+	};
+
+	
     @Test
     public void testIndexWithNegation () throws IOException {
         ki = new KrillIndex();
