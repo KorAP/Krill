@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
@@ -76,7 +78,8 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
     protected String field;
     protected boolean collectPayloads;
     protected boolean isFieldNull = false;
-    private Logger log = Logger.getLogger(SimpleSpanQuery.class);
+    // private Logger log = Logger.getLogger(SimpleSpanQuery.class);
+    private final static Logger log = LoggerFactory.getLogger(SimpleSpanQuery.class);
 
 
     public SimpleSpanQuery () {}

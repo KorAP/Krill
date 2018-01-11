@@ -1,4 +1,4 @@
-0.55.9 2017-12-19
+0.55.9 2018-01-11
         - [bugfix] Serialize token identifier correctly for
           new corpora with text siglen (diewald)
         - [bugfix] Extend bytebuffer for relation payloads (diewald)
@@ -8,6 +8,8 @@
           in snippet generation (diewald)
         - [bugfix] Token cannot contain another token or element (margaretha)
         - [feature] Enabled searching relation query using regex (margaretha)
+        - [bugfix] Fix deserialization of negative regex in sequences (diewald)
+        - [cleanup] Upgraded Log4j to v2 (diewald)
 
 0.55.8 2017-09-05
         - [feature] Retrieve and display pagebreaks (diewald)

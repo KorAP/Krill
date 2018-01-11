@@ -17,15 +17,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Ignore;
 import static org.junit.Assert.*;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public class TestDatabase {
 
     private Connection conn;
     private Statement stat;
 
-
     @Before
     public void setUp () throws Exception {
+		SLF4JBridgeHandler.install();
+		System.setProperty("com.mchange.v2.log.MLog", "com.mchange.v2.log.FallbackMLog");
+		System.setProperty("com.mchange.v2.log.FallbackMLog.DEFAULT_CUTOFF_LEVEL", "WARNING");
+		
         Class.forName("org.sqlite.JDBC");
         conn = DriverManager.getConnection("jdbc:sqlite::memory:");
         this.stat = conn.createStatement();
