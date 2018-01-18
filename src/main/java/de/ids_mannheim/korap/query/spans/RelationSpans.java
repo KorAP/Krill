@@ -219,7 +219,7 @@ public class RelationSpans extends RelationBaseSpans {
             }
         }
         else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_TERM.value) { // length
-            // 15
+            // 17
             // 1-4 start element offset
             // 5-8 end element offset
             cs.setEnd(bb.getInt(9));
@@ -227,14 +227,14 @@ public class RelationSpans extends RelationBaseSpans {
             i = bb.getInt(13);
             cs.setRightStart(i);
             cs.setRightEnd(i + 1);
-            if (length > 13) {
+            if (length > 17) {
                 cs.setLeftId(bb.getShort(17)); // left id
                 cs.setRightId(bb.getShort(19)); // right id
                 cs.setSpanId(bb.getShort(21)); // relation id
             }
         }
         else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_ELEMENT.value) {
-            // length 19
+            // 19
 
             // 1-4 start left-element offset
             // 5-8 end left-element offset

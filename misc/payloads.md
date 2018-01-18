@@ -143,7 +143,7 @@ position 3.
 * 1 integer for the start span offset of the left part, 
 * 1 integer for the end span offset of the left part, 
 * 1 integer for end position of the left part, 
-* 1 integer for end position of the right part, and 
+* 1 integer for token position of the right part, and 
 * and 0-3 TUIs as above.
 
 For example:
