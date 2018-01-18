@@ -11,7 +11,6 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,7 +193,7 @@ public class RelationSpans extends RelationBaseSpans {
         int i;
         this.payloadTypeIdentifier = bb.get(0);
 
-        if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_TERM.value) { // length 11            
+        if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_TERM.value) { 
             i = bb.getInt(1);
             cs.setLeftEnd(cs.start + 1);
             cs.setRightStart(i);
@@ -205,11 +204,12 @@ public class RelationSpans extends RelationBaseSpans {
                 cs.setSpanId(bb.getShort(9)); // relation id
             }
         }
-        else if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_ELEMENT.value) { // length
-            // 15
+        else if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_ELEMENT.value) {
             cs.setLeftEnd(cs.start + 1);
             // 1-4 start element offset
             // 5-8 end element offset
+            // 9-12 start element position
+            // 13-16 end element position
             cs.setRightStart(bb.getInt(9));
             cs.setRightEnd(bb.getInt(13));
             if (length > 17) {
@@ -218,10 +218,11 @@ public class RelationSpans extends RelationBaseSpans {
                 cs.setSpanId(bb.getShort(21)); // relation id
             }
         }
-        else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_TERM.value) { // length
-            // 17
+        else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_TERM.value) { 
             // 1-4 start element offset
             // 5-8 end element offset
+            // 9-12 end element position
+            // 13-16 end term position
             cs.setEnd(bb.getInt(9));
             cs.setLeftEnd(cs.end);
             i = bb.getInt(13);
@@ -234,18 +235,18 @@ public class RelationSpans extends RelationBaseSpans {
             }
         }
         else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_ELEMENT.value) {
-            // 19
-
             // 1-4 start left-element offset
             // 5-8 end left-element offset
             // 9-12 start right-element offset
             // 13-16 end right-element offset
-
+            // 17-20 end left-element position
+            // 21-24 start right element position
+            // 25-28 end right element position
             cs.setEnd(bb.getInt(17));
             cs.setLeftEnd(cs.end);
             cs.setRightStart(bb.getInt(21));
             cs.setRightEnd(bb.getInt(25));
-            if (length > 17) {
+            if (length > 28) {
                 cs.setLeftId(bb.getShort(29)); // left id
                 cs.setRightId(bb.getShort(31)); // right id
                 cs.setSpanId(bb.getShort(33)); // relation id
