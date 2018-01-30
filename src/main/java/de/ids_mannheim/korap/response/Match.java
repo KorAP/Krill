@@ -1334,6 +1334,10 @@ public class Match extends AbstractDocument {
         StringBuilder sb = new StringBuilder();
 		StringBuilder rightContext = new StringBuilder();
 
+		// Remember ids already defined to
+		// have joined elements
+		HashSet<String> joins = new HashSet<>(100);
+
         // Snippet stack sizes
         short start = (short) 0;
         short end = this.snippetArray.size();
@@ -1358,7 +1362,7 @@ public class Match extends AbstractDocument {
 
 			// First element is textual
 			if (elem.type == 0) {
-				sb.append(elem.toHTML(this, level, levelCache));
+				sb.append(elem.toHTML(this, level, levelCache, joins));
 				// Move start position
 				start++;
 			};
@@ -1372,7 +1376,9 @@ public class Match extends AbstractDocument {
 
 			// Last element is textual
 			if (elem != null && elem.type == 0) {
-				rightContext.append(elem.toHTML(this, level, levelCache));
+				rightContext.append(
+					elem.toHTML(this, level, levelCache, joins)
+					);
 
 				// decrement end
 				end--;
@@ -1391,7 +1397,9 @@ public class Match extends AbstractDocument {
 			elem = this.snippetArray.get(i);
 			// UNTESTED
 			if (elem != null) {
-				String elemString = elem.toHTML(this, level, levelCache);
+				String elemString = elem.toHTML(
+					this, level, levelCache, joins
+					);
 				if (DEBUG) {
 					log.trace("Add node {}", elemString);
 				};

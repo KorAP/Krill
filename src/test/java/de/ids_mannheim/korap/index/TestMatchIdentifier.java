@@ -348,9 +348,6 @@ public class TestMatchIdentifier {
         Match km = ki.getMatchInfo("match-WDD17/982/72848-p15844-15846", "tokens",
 								   "lwc", "d", true, true, true);
 
-		// TODO:
-		//   This test is broken - it should not introduce
-		//   IDs multiple times
 		String snippet = km.getSnippetHTML();
 		assertEquals(
 			"SnippetBrackets (with Spans)",
@@ -370,7 +367,7 @@ public class TestMatchIdentifier {
 			"<span xlink:title=\"lwc/d:--\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15839-15840\">AL</span>"+
 			"</span>"+
 			"</span>"+
-			"<span xml:id=\"token-WDD17/982/72848-p15839-15840\">"+
+			"<span xlink:type=\"join\" xlink:href=\"#token-WDD17/982/72848-p15839-15840\">"+
 			":"+
 			"<span xml:id=\"token-WDD17/982/72848-p15840-15846\">"+
 			"<span xml:id=\"token-WDD17/982/72848-p15840\">"+
@@ -378,7 +375,8 @@ public class TestMatchIdentifier {
 			"</span>"+
 			"</span>"+
 			"</span>"+
-			"<span xml:id=\"token-WDD17/982/72848-p15840-15846\">"+
+			// "<span xml:id=\"token-WDD17/982/72848-p15840-15846\">"+
+			"<span xlink:type=\"join\" xlink:href=\"#token-WDD17/982/72848-p15840-15846\">"+
 			" "+
 			"<span xlink:title=\"lwc/d:NK\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15842\">den</span>"+
 			" "+

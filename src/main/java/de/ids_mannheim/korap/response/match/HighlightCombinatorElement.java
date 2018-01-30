@@ -58,7 +58,7 @@ public class HighlightCombinatorElement {
 
 
     // Return html fragment for this combinator element
-    public String toHTML (Match match, FixedBitSet level, byte[] levelCache) {
+public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet joins) {
 
         // Opening
         if (this.type == 1) {
@@ -71,10 +71,26 @@ public class HighlightCombinatorElement {
 
 			// This is a relation target
             else if (this.number < -1) {
-                sb.append("<span xml:id=\"")
-                        .append(escapeHTML(
-                                match.getPosID(match.getClassID(this.number))))
-                        .append("\">");
+
+				// Create id
+				String id = escapeHTML(
+					match.getPosID(match.getClassID(this.number))
+					);
+
+				// ID already in use - create join
+				if (joins.contains(id)) {
+					sb.append("<span xlink:type=\"join\" xlink:href=\"#")
+						.append(id)
+						.append("\">");
+				}
+
+				// Not yet in use - create
+				else {
+					sb.append("<span xml:id=\"")
+						.append(id)
+						.append("\">");
+					joins.add(id);
+				};
             }
 
 			// This is an annotation

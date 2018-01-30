@@ -99,7 +99,7 @@ public class HighlightCombinator {
         // Just some debug information
         if (DEBUG) {
             StringBuilder sb = new StringBuilder(
-                    "Stack for checking with class ");
+                    "Stack for checking with number ");
             sb.append(number).append(" is ");
             for (int s : this.balanceStack) {
                 sb.append('[').append(s).append(']');
