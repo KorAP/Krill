@@ -115,7 +115,7 @@ public class Match extends AbstractDocument {
 
     private HashMap<Integer, String> annotationNumber = new HashMap<>(16);
     private HashMap<Integer, Relation> relationNumber = new HashMap<>(16);
-    private HashMap<Integer, Integer> identifierNumber = new HashMap<>(16);
+    private HashMap<Integer, String> identifierNumber = new HashMap<>(16);
 
     // -1 is match highlight
     int annotationNumberCounter = 256;
@@ -209,7 +209,7 @@ public class Match extends AbstractDocument {
     /**
      * Private class of highlights.
 	 * TODO: This should probably be renamed, as it not only contains highlights
-	 * but also annotations and pagebreaks
+	 * but also annotations, pagebreaks and relations
      */
     private class Highlight {
         public int start, end;
@@ -221,6 +221,12 @@ public class Match extends AbstractDocument {
             this.end = end;
             // TODO: This can overflow!
             this.number = relationNumberCounter++;
+
+			if (DEBUG) {
+				log.trace("Add relation (2) '{}': source={}-{} >> target={}-{}",
+						  annotation, start, end, refStart, refEnd);
+			};
+			
             relationNumber.put(this.number, new Relation(annotation, refStart, refEnd));
         };
 
@@ -433,7 +439,7 @@ public class Match extends AbstractDocument {
 							 String annotation) {
 
 		if (DEBUG)
-			log.trace("Add relation '{}': source={}-{} >> target={}-{}",
+			log.trace("Add relation (1) '{}': source={}-{} >> target={}-{}",
 					  annotation, srcStart, srcEnd, targetStart, targetEnd);
 
 		// Add source token
@@ -450,16 +456,24 @@ public class Match extends AbstractDocument {
 		};
 
         int id = identifierNumberCounter--;
-        identifierNumber.put(id, targetStart);
+
+		// Here is probably the problem: the identifier-number
+		// needs to incorporate targetEnd as well
 
 		// Add target token
-		if (targetEnd == -1) { // || targetStart == targetEnd) {
+		// (The last part was previously commented
+		// out for unknown reason)
+		if (targetEnd == -1 || targetStart == targetEnd) {
 			this.addHighlight(new Highlight(targetStart, targetStart, id));
+
+			identifierNumber.put(id, String.valueOf(targetStart));
 		}
 
 		// Add target span
 		else {
 			this.addHighlight(new Highlight(targetStart, targetEnd, id));
+			identifierNumber.put(id, targetStart + "-" + targetEnd);
+
 		};
     };
 
@@ -703,6 +717,29 @@ public class Match extends AbstractDocument {
 		return this.getPosID(pos, -1);
 	};
 
+
+	/**
+     * Get identifier for a specific position.
+     * 
+     * @param String
+     *            Start and optional end position to get
+	 *            identifier on, separated by a dash.
+     */
+	@JsonIgnore
+    public String getPosID (String pos) {
+
+		String[] startEnd = pos.split("-");
+		if (startEnd.length == 2) {
+			return this.getPosID(
+				Integer.parseInt(startEnd[0]),
+				Integer.parseInt(startEnd[1])
+				);
+		}
+		return this.getPosID(Integer.parseInt(startEnd[0]), -1);
+	};
+
+	
+
     /**
      * Get identifier for a specific position.
      * 
@@ -712,10 +749,10 @@ public class Match extends AbstractDocument {
      *            End position to get identifier on.
      */
     @JsonIgnore
-		public String getPosID (int start, int end) {
+	public String getPosID (int start, int end) {
 
 		if (DEBUG)
-			log.trace("Retrieve the identifier for pos");
+			log.trace("Retrieve identifier for position {}-{}", start, end);
 
         // Identifier already given
         if (this.identifier != null)
@@ -738,7 +775,7 @@ public class Match extends AbstractDocument {
 
 		if (DEBUG)
 			log.trace(
-				"The identifier is {} in {} ({}-{}) {}",
+				"Identifier is {} in {} ({}-{}) {}",
 				id.toString(),
 				this.getTextSigle(),
 				this.getCorpusID(),
@@ -1262,6 +1299,7 @@ public class Match extends AbstractDocument {
                 snippetArray.addClose(element[2]);
             }
 
+			// empty tag
 			else if (element[3] == 2) {
 
 				// Add Empty (pagebreak)
@@ -1349,10 +1387,16 @@ public class Match extends AbstractDocument {
         // Iterate through all remaining elements
         sb.append("<span class=\"match\">");
         for (short i = start; i <= end; i++) {
+
 			elem = this.snippetArray.get(i);
 			// UNTESTED
-			if (elem != null)
-				sb.append(elem.toHTML(this, level, levelCache));
+			if (elem != null) {
+				String elemString = elem.toHTML(this, level, levelCache);
+				if (DEBUG) {
+					log.trace("Add node {}", elemString);
+				};
+				sb.append(elemString);
+			}
         };
         sb.append("</span>");
         sb.append(rightContext);
@@ -1493,23 +1537,44 @@ public class Match extends AbstractDocument {
 			else if (openList.peekFirst()[0] < closeList.peekFirst()[1]) {
 
 				if (DEBUG)
-					log.debug("Open starts before close ends");
+					log.debug("Open tag starts before close tag ends");
 
                 int[] e = openList.removeFirst().clone();
 
 				// Mark as opener
                 e[3] = 1;
 
+				if (DEBUG) {
+
+					//      -1: match
+					//    < -1: relation target
+					// >= 2048: relation source
+					// >=  256: annotation
+					
+					log.trace(
+						"Add open with number {} to stack at {}-{}",
+						e[2], e[0], e[1]
+						);
+				};
+
 				// Add opener to stack
                 stack.add(e);
             }
 
 			else {
-				if (DEBUG)
+				int[] e = closeList.removeFirst();
+				
+				if (DEBUG) {
 					log.debug("Close ends before open");
 
+					log.trace(
+						"Add close with number {} to stack at {}-{}",
+						e[2], e[0], e[1]
+						);
+				};
+
 				// Add closener to stack
-                stack.add(closeList.removeFirst());
+                stack.add(e);
             };
         };
         return stack;
@@ -1854,7 +1919,7 @@ public class Match extends AbstractDocument {
     // Yeah ... I mean ... why not?
     private void _filterMultipleIdentifiers () {
         ArrayList<Integer> removeDuplicate = new ArrayList<>(10);
-        HashSet<Integer> identifiers = new HashSet<>(20);
+        HashSet<String> identifiers = new HashSet<>(20);
         for (int i = 0; i < this.span.size(); i++) {
 
             // span is an int array: [Start, End, Number, Dummy]
@@ -1864,7 +1929,8 @@ public class Match extends AbstractDocument {
             if (highlightNumber < -1) {
 
                 // Get the real identifier
-                int idNumber = identifierNumber.get(highlightNumber);
+                String idNumber =
+					identifierNumber.get(highlightNumber);
                 if (identifiers.contains(idNumber)) {
                     removeDuplicate.add(i);
                 }
@@ -1889,7 +1955,7 @@ public class Match extends AbstractDocument {
      * Get identifier based on class number
      */
     @JsonIgnore
-    public int getClassID (int nr) {
+    public String getClassID (int nr) {
         return this.identifierNumber.get(nr);
     };
 

@@ -69,6 +69,7 @@ public class HighlightCombinatorElement {
                 sb.append("<mark>");
             }
 
+			// This is a relation target
             else if (this.number < -1) {
                 sb.append("<span xml:id=\"")
                         .append(escapeHTML(
@@ -76,6 +77,7 @@ public class HighlightCombinatorElement {
                         .append("\">");
             }
 
+			// This is an annotation
             else if (this.number >= 256) {
                 sb.append("<span ");
                 if (this.number < 2048) {
@@ -84,6 +86,8 @@ public class HighlightCombinatorElement {
                                     match.getAnnotationID(this.number)))
                             .append('"');
                 }
+
+				// This is a relation source
                 else {
                     Relation rel = match.getRelationID(this.number);
 
@@ -101,7 +105,8 @@ public class HighlightCombinatorElement {
                 sb.append('>');
             }
 
-            // Highlight - < 256
+            // This is a highlight
+			// < 256
             else {
                 // Get the first free level slot
                 byte pos;
@@ -119,7 +124,7 @@ public class HighlightCombinatorElement {
             return sb.toString();
         }
 
-        // Closing
+        // This is a Closing tag
         else if (this.type == 2) {
             if (this.number < -1 || this.number >= 256)
                 return "</span>";

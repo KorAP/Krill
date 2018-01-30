@@ -339,6 +339,70 @@ public class TestMatchIdentifier {
 	};
 
 
+	@Test
+    public void snippetBugTest2 () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/wiki/wdd17-982-72848.json.gz"), true);
+        ki.commit();
+
+        Match km = ki.getMatchInfo("match-WDD17/982/72848-p15844-15846", "tokens",
+								   "lwc", "d", true, true, true);
+
+		// TODO:
+		//   This test is broken - it should not introduce
+		//   IDs multiple times
+		String snippet = km.getSnippetHTML();
+		assertEquals(
+			"SnippetBrackets (with Spans)",
+			snippet,
+			"<span class=\"context-left\"></span>"+
+			"<span class=\"match\">"+
+			"<span xml:id=\"token-WDD17/982/72848-p15836-15839\">"+
+			"<span xlink:title=\"lwc/d:NK\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15838\">Ein</span>"+
+			" "+
+			"<span xlink:title=\"lwc/d:NK\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15838\">letztes</span>"+
+			" "+
+			"<span xml:id=\"token-WDD17/982/72848-p15838\">"+
+			"<span xlink:title=\"lwc/d:--\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15836-15839\">mal</span>"+
+			"</span>"+
+			": "+
+			"<span xml:id=\"token-WDD17/982/72848-p15839-15840\">"+
+			"<span xlink:title=\"lwc/d:--\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15839-15840\">AL</span>"+
+			"</span>"+
+			"</span>"+
+			"<span xml:id=\"token-WDD17/982/72848-p15839-15840\">"+
+			":"+
+			"<span xml:id=\"token-WDD17/982/72848-p15840-15846\">"+
+			"<span xml:id=\"token-WDD17/982/72848-p15840\">"+
+			"<span xlink:title=\"lwc/d:--\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15840-15846\">halt</span>"+
+			"</span>"+
+			"</span>"+
+			"</span>"+
+			"<span xml:id=\"token-WDD17/982/72848-p15840-15846\">"+
+			" "+
+			"<span xlink:title=\"lwc/d:NK\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15842\">den</span>"+
+			" "+
+			"<span xml:id=\"token-WDD17/982/72848-p15842\">"+
+			"<span xlink:title=\"lwc/d:OA\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15843\">Ball</span>"+
+			"</span>"+
+			" "+
+			"<span xml:id=\"token-WDD17/982/72848-p15843\">"+
+			"<span xlink:title=\"lwc/d:PD\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15840\">flach</span>"+
+			"</span>"+
+			", "+
+			"<mark>"+
+			"<span xlink:title=\"lwc/d:MO\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15845\">ganz</span>"+
+			" "+
+			"<span xml:id=\"token-WDD17/982/72848-p15845\">"+
+			"<span xlink:title=\"lwc/d:CJ\" xlink:type=\"simple\" xlink:href=\"#token-WDD17/982/72848-p15843\">flach</span>"+
+			"</span>"+
+			"</mark>"+
+			"</span>"+
+			"</span>"+
+			"<span class=\"context-right\"></span>"
+			);
+	};
+
     @Test
     public void indexExample5Spans () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
@@ -774,28 +838,35 @@ public class TestMatchIdentifier {
         					 "tokens", "malt", null, true, false);
 
 		        assertEquals("SnippetHTML (1)",
-					 "<span class=\"context-left\"></span>"+
+							 "<span class=\"context-left\">"+
+							 "</span>"+
 							 "<span class=\"match\">"+
+							 "<span xml:id=\"token-Corpus/Doc/0002-p0-6\">"+
 							 "<mark>"+
 							 "<span xml:id=\"token-Corpus/Doc/0002-p0\">"+
 							 "<span xlink:title=\"malt/d:ROOT\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p0-6\">Maximen</span>"+
-							 "</span> "+
+							 "</span>"+
+							 " "+
 							 "<span xml:id=\"token-Corpus/Doc/0002-p1\">"+
 							 "<span xlink:title=\"malt/d:KON\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p0\">und</span>"+
-							 "</span> "+
-							 "<span xlink:title=\"malt/d:CJ\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p1\">Reflexionen</span> "+
-							 "<span xml:id=\"token-Corpus/Doc/0002-p3\">" +
+							 "</span>"+
+							 " "+
+							 "<span xlink:title=\"malt/d:CJ\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p1\">Reflexionen</span>"+
+							 " "+
+							 "<span xml:id=\"token-Corpus/Doc/0002-p3\">"+
 							 "<span xlink:title=\"malt/d:KON\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p0\">Religion</span>"+
-							 "</span> "+
+							 "</span>"+
+							 " "+
 							 "<span xml:id=\"token-Corpus/Doc/0002-p4\">"+
 							 "<span xlink:title=\"malt/d:KON\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p3\">und</span>"+
-							 "</span> "+
+							 "</span>"+
+							 " "+
 							 "<span xlink:title=\"malt/d:CJ\" xlink:type=\"simple\" xlink:href=\"#token-Corpus/Doc/0002-p4\">Christentum</span>"+
 							 "</mark>"+
 							 "</span>"+
-							 "<span class=\"context-right\">"+
-							 "<span class=\"more\">"+
 							 "</span>"+
+							 "<span class=\"context-right\">"+
+							 "<span class=\"more\"></span>"+
 							 "</span>",
 							 km.getSnippetHTML());
 	};
