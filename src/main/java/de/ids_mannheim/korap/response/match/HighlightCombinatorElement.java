@@ -79,7 +79,7 @@ public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet
 
 				// ID already in use - create join
 				if (joins.contains(id)) {
-					sb.append("<span xlink:type=\"join\" xlink:href=\"#")
+					sb.append("<span xlink:show=\"other\" data-action=\"join\" xlink:href=\"#")
 						.append(id)
 						.append("\">");
 				}
@@ -114,7 +114,7 @@ public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet
 
                     sb.append("xlink:title=\"")
 						.append(escapeHTML(rel.annotation))
-						.append("\" xlink:type=\"simple\" xlink:href=\"#")
+						.append("\" xlink:show=\"none\" xlink:href=\"#")
 						.append(escapeHTML(match.getPosID(rel.refStart, rel.refEnd)))
 						.append('"');
                 };

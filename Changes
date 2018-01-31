@@ -1,3 +1,8 @@
+0.56.1 2018-01-31
+        - [bugfix] Changed relation serialization in snippet to work
+          with segmented target anchors (diewald)
+          Warning: This is a breaking change!
+
 0.55.9 2018-01-11
         - [bugfix] Serialize token identifier correctly for
           new corpora with text siglen (diewald)
