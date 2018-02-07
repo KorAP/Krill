@@ -795,14 +795,15 @@ public final class KrillIndex {
                 DocIdSet filterSet = filter.getDocIdSet(atomic,
                         atomic.reader().getLiveDocs());
 
-                // Create a bitset for the correct document
-                Bits bitset = filterSet.bits();
-
                 DocIdSetIterator filterIterator = filterSet.iterator();
 
-                if (DEBUG)
+                if (DEBUG) {
+					// Create a bitset for the correct document
+					Bits bitset = filterSet.bits();
+					
                     log.trace("Checking document in {} with {}", filterSet,
-                            bitset);
+							  bitset);
+				};
 
                 // No document found
                 if (filterIterator == null)
@@ -1043,15 +1044,15 @@ public final class KrillIndex {
                 DocIdSet filterSet = filter.getDocIdSet(atomic,
                         atomic.reader().getLiveDocs());
 
-
-                // Create a bitset for the correct document
-                Bits bitset = filterSet.bits();
-
                 DocIdSetIterator filterIterator = filterSet.iterator();
 
-                if (DEBUG)
+                if (DEBUG) {
+					// Create a bitset for the correct document
+					Bits bitset = filterSet.bits();
+
                     log.trace("Checking document in {} with {}", filterSet,
-                            bitset);
+							  bitset);
+				};
 
                 // No document found
                 if (filterIterator == null)
@@ -1545,16 +1546,68 @@ public final class KrillIndex {
     };
 
 
-    public void getFields () {
-        /*
-         * Return a map of key, value pairs:
-         *
-         * keywords => keywords (contains)
-         * author => text (contains)
-         */
+	// Return field values
+    public MetaFields getFields (String textSigle) {
+		// , HashSet<String> fields) {
+
+		// Create TermQuery for document
+		TermQuery textSigleQuery = new TermQuery(new Term("textSigle", textSigle));
+
+		Filter filter = (Filter) new QueryWrapperFilter(textSigleQuery);
+
+		/*
+		if (fields.contain("@all"))
+			fields = null;
+		*/
+
+		MetaFields metaFields = new MetaFields(textSigle);
+
+        try {
+
+            // Iterate over all atomic indices and find the matching document
+            for (LeafReaderContext atomic : this.reader().leaves()) {
+
+				// Retrieve the single document of interest
+                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader().getLiveDocs());
+
+                DocIdSetIterator filterIterator = filterSet.iterator();
+
+				// No document found
+                if (filterIterator == null)
+                    continue;
+
+
+                // Go to the matching doc - and remember its ID
+                int localDocID = filterIterator.nextDoc();
+
+                if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+                    continue;
+
+                Document doc = atomic.reader().document(localDocID);
+
+				Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
+				while (fieldIterator.hasNext()) {
+					IndexableField iField = fieldIterator.next();
+
+					// Add field
+					metaFields.add(iField);
+				};
+
+				return metaFields;
+			};
+		}
+		catch  (IOException e) {
+            metaFields.addError(600, "Unable to read index", e.getLocalizedMessage());
+            log.warn(e.getLocalizedMessage());
+        };
+
+        metaFields.addError(630, "Document not found");
+
+		return metaFields;
     };
 
 
+	
     public void getValues (String field) {
 
     };

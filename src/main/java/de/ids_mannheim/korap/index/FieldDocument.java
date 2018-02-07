@@ -33,6 +33,12 @@ import java.util.*;
   to make this less messy and speed things up.
 */
 
+/*
+ * Currently the Fielddocument is not ready to be used for KQ
+ * serialization of fields - this is currently done in
+ * response/Fields.
+*/
+
 /**
  * FieldDocument represents a simple API to create documents
  * for storing with KrillIndex. <i>Field</i> in the name resembles

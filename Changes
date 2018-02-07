@@ -1,3 +1,6 @@
+0.56.2 2018-02-07
+        - [feature] Introduce meta field retrieval method (diewald)
+
 0.56.1 2018-01-31
         - [bugfix] Changed relation serialization in snippet to work
           with segmented target anchors (diewald)

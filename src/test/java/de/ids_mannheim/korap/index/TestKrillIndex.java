@@ -21,6 +21,9 @@ import de.ids_mannheim.korap.index.MultiTermTokenStream;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+
 @RunWith(JUnit4.class)
 public class TestKrillIndex {
 
@@ -181,4 +184,64 @@ public class TestKrillIndex {
         assertEquals("Akron", ki.getDoc("05678").getTitle());
         assertEquals(5678, ki.getDoc("05678").getUID());
     };
+
+
+    @Test
+    public void indexRetrieveFieldInfo () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+
+        fd.addString("name", "Peter");
+        fd.addString("textSigle", "a/b/c");
+        fd.addInt("zahl1", 56);
+		fd.addStored("ref", "My reference");
+
+		fd.addKeyword("keyword", "baum");
+		fd.addKeyword("keyword", "wald");
+
+		fd.addText("title", "Der Name der Rose");
+
+        ki.addDoc(fd);
+
+        /* Save documents */
+        ki.commit();
+
+        JsonNode res = ki.getFields("a/b/c").toJsonNode();
+
+		// TODO: Check if the sorting is always identical!
+
+		assertEquals("ref", res.at("/document/fields/0/key").asText());
+		assertEquals("type:string", res.at("/document/fields/0/type").asText());
+		assertEquals("koral:field", res.at("/document/fields/0/@type").asText());
+		assertEquals(true, res.at("/document/fields/0/retrieveOnly").asBoolean());
+		assertEquals("My reference", res.at("/document/fields/0/value").asText());
+
+		assertEquals("title", res.at("/document/fields/1/key").asText());
+		assertEquals("type:text", res.at("/document/fields/1/type").asText());
+		assertEquals("koral:field", res.at("/document/fields/1/@type").asText());
+		assertEquals("Der Name der Rose", res.at("/document/fields/1/value").asText());
+
+		assertEquals("textSigle", res.at("/document/fields/2/key").asText());
+		assertEquals("type:string", res.at("/document/fields/2/type").asText());
+		assertEquals("koral:field", res.at("/document/fields/2/@type").asText());
+		assertEquals("a/b/c", res.at("/document/fields/2/value").asText());
+
+		assertEquals("keyword", res.at("/document/fields/3/key").asText());
+		assertEquals("type:string", res.at("/document/fields/3/type").asText());
+		assertEquals("koral:field", res.at("/document/fields/3/@type").asText());
+		assertEquals("baum", res.at("/document/fields/3/value/0").asText());
+		assertEquals("wald", res.at("/document/fields/3/value/1").asText());
+
+		assertEquals("zahl1", res.at("/document/fields/4/key").asText());
+		assertEquals("type:number", res.at("/document/fields/4/type").asText());
+		assertEquals("koral:field", res.at("/document/fields/4/@type").asText());
+		assertEquals(56, res.at("/document/fields/4/value").asInt());
+
+		assertEquals("name", res.at("/document/fields/5/key").asText());
+		assertEquals("type:string", res.at("/document/fields/5/type").asText());
+		assertEquals("koral:field", res.at("/document/fields/5/@type").asText());
+		assertEquals("Peter", res.at("/document/fields/5/value").asText());
+
+	};
 };
