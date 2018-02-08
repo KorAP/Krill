@@ -67,35 +67,25 @@ public class MetaFields extends AbstractDocument {
 
 		// Field has numeric value (possibly a date)
 		if (n != null) {
-			// System.err.print("-num");
 
 			// TODO:
 			//   check if the number is a date!
 			mf.type = "type:number";
-
 			mf.values.add(n.toString());
-			// System.err.println(" = " + n.toString());
 		}
 		
 		// Field has a textual value
 		else if (s != null) {
+
+			// Field is not indexed
 			if (iFieldType.indexOptions() == IndexOptions.NONE) {
-				// System.err.print("-readonly");
-				mf.retrieveOnly = true;
-				// System.err.print("-string");
+				mf.type = "type:store";
 			}
 			else if (iFieldType.indexOptions() != IndexOptions.DOCS) {
-				// System.err.print("-string");
-				/*
-				  }
-				  else {
-				System.err.print("-text");
-				*/
 				mf.type = "type:text";
 			};
 
 			mf.values.add(s.toString());
-			// System.err.println(" = " + s);
 		}
 		
 		else {

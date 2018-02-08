@@ -212,9 +212,8 @@ public class TestKrillIndex {
 		// TODO: Check if the sorting is always identical!
 
 		assertEquals("ref", res.at("/document/fields/0/key").asText());
-		assertEquals("type:string", res.at("/document/fields/0/type").asText());
+		assertEquals("type:store", res.at("/document/fields/0/type").asText());
 		assertEquals("koral:field", res.at("/document/fields/0/@type").asText());
-		assertEquals(true, res.at("/document/fields/0/retrieveOnly").asBoolean());
 		assertEquals("My reference", res.at("/document/fields/0/value").asText());
 
 		assertEquals("title", res.at("/document/fields/1/key").asText());

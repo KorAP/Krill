@@ -23,7 +23,6 @@ public class MetaField {
 	public String type = "type:string";
 	public String key;
 	public List<String> values = new ArrayList<>();
-	public Boolean retrieveOnly = false;
 
 	public MetaField (String key) {
 		this.key = key;
@@ -37,9 +36,6 @@ public class MetaField {
 		json.put("@type", "koral:field");
 		json.put("type", this.type);
 		json.put("key", this.key);
-
-		if (this.retrieveOnly)
-			json.put("retrieveOnly", true);
 
 		// Value is numerical
 		if (this.type.equals("type:number")) {
