@@ -242,5 +242,31 @@ public class TestKrillIndex {
 		assertEquals("koral:field", res.at("/document/fields/5/@type").asText());
 		assertEquals("Peter", res.at("/document/fields/5/value").asText());
 
+
+		// Test with real document
+        ki.addDoc(getClass().getResourceAsStream("/wiki/wdd17-982-72848.json.gz"),true);
+
+        /* Save documents */
+        ki.commit();
+
+        res = ki.getFields("wdd17/982/72841").toJsonNode();
+
+		assertEquals("Document not found", res.at("/errors/0/1").asText());
+
+        res = ki.getFields("WDD17/982/72848").toJsonNode();
+
+		assertEquals("type:number", res.at("/document/fields/0/type").asText());
+		assertEquals("pubDate", res.at("/document/fields/0/key").asText());
+		assertEquals(20170701, res.at("/document/fields/0/value").asInt());
+
+		assertEquals("type:string", res.at("/document/fields/1/type").asText());
+		assertEquals("textSigle", res.at("/document/fields/1/key").asText());
+		assertEquals("WDD17/982/72848", res.at("/document/fields/1/value").asText());
+
+		// TODO:
+		//   This should better be an array!
+		assertEquals("type:string", res.at("/document/fields/2/type").asText());
+		assertEquals("foundries", res.at("/document/fields/2/key").asText());
+		assertEquals("dereko dereko/structure dereko/structure/base-sentences-paragraphs-pagebreaks lwc lwc/dependency treetagger treetagger/morpho", res.at("/document/fields/2/value").asText());
 	};
 };

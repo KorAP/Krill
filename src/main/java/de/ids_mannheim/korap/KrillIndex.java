@@ -1589,6 +1589,9 @@ public final class KrillIndex {
 				while (fieldIterator.hasNext()) {
 					IndexableField iField = fieldIterator.next();
 
+					if (iField.name().equals("tokens"))
+						continue;
+
 					// Add field
 					metaFields.add(iField);
 				};
