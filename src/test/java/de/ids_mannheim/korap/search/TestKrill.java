@@ -740,7 +740,7 @@ public class TestKrill {
 
         QueryBuilder kq = new QueryBuilder("tokens");
         Krill ks = new Krill(kq.focus(1,
-                kq.contains(kq.tag("base/s:s"), kq._(1, kq.seg("s:Leben")))));
+                kq.contains(kq.tag("base/s:s"), kq.nr(1, kq.seg("s:Leben")))));
 
         Result kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),
@@ -754,7 +754,7 @@ public class TestKrill {
 
         // Try with high class - don't highlight
         ks = new Krill(kq.focus(129,
-                kq.contains(kq.tag("base/s:s"), kq._(129, kq.seg("s:Leben")))));
+                kq.contains(kq.tag("base/s:s"), kq.nr(129, kq.seg("s:Leben")))));
 
         kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),

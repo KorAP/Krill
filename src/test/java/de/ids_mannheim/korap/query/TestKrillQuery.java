@@ -140,7 +140,7 @@ public class TestKrillQuery {
     public void KorapClassQuery () throws QueryException {
         QueryBuilder kq = new QueryBuilder("field");
         SpanQuery sq = kq.seq(kq.seg("tree"),
-                kq._(1, kq.contains(kq.tag("s"), kq.tag("np"))), kq.re("hey.*"))
+                kq.nr(1, kq.contains(kq.tag("s"), kq.tag("np"))), kq.re("hey.*"))
                 .toQuery();
         assertEquals(
                 "spanNext(spanNext(field:tree, {1: spanContain(<field:s />, <field:np />)}), SpanMultiTermQueryWrapper(field:/hey.*/))",
@@ -151,7 +151,7 @@ public class TestKrillQuery {
     @Test
     public void KorapClassQuery2 () throws QueryException {
         QueryBuilder kq = new QueryBuilder("field");
-        SpanQuery sq = kq._(kq.seg("base:test")).toQuery();
+        SpanQuery sq = kq.nr(kq.seg("base:test")).toQuery();
         assertEquals("{1: field:base:test}", sq.toString());
     };
 
@@ -160,7 +160,7 @@ public class TestKrillQuery {
     public void KorapClassQuery3 () throws QueryException {
         QueryBuilder kq = new QueryBuilder("field");
         SpanQuery sq = kq.seq(kq.seg("tree"),
-                kq.contains(kq.tag("s"), kq._(kq.tag("np"))), kq.re("hey.*"))
+                kq.contains(kq.tag("s"), kq.nr(kq.tag("np"))), kq.re("hey.*"))
                 .toQuery();
         assertEquals(
                 "spanNext(spanNext(field:tree, spanContain(<field:s />, {1: <field:np />})), SpanMultiTermQueryWrapper(field:/hey.*/))",
@@ -187,7 +187,7 @@ public class TestKrillQuery {
     @Test
     public void KorapShrinkQuery2 () throws QueryException {
         QueryBuilder kq = new QueryBuilder("field");
-        SpanQuery sq = kq.focus(1, kq._(1, kq.tag("np"))).toQuery();
+        SpanQuery sq = kq.focus(1, kq.nr(1, kq.tag("np"))).toQuery();
         assertEquals("focus(1: {1: <field:np />})", sq.toString());
     };
 
@@ -195,8 +195,8 @@ public class TestKrillQuery {
     @Test
     public void KorapShrinkQuery3 () throws QueryException {
         QueryBuilder kq = new QueryBuilder("field");
-        SpanQuery sq = kq.focus(1, kq._(1,
-                kq.seq(kq.tag("np"), kq._(kq.seg("test").without("no")))))
+        SpanQuery sq = kq.focus(1, kq.nr(1,
+                kq.seq(kq.tag("np"), kq.nr(kq.seg("test").without("no")))))
                 .toQuery();
         assertEquals(
                 "focus(1: {1: spanNext(<field:np />, {1: spanNot(field:test, field:no, 0, 0)})})",
@@ -208,7 +208,7 @@ public class TestKrillQuery {
     public void KorapShrinkQuery4 () throws QueryException {
         QueryBuilder kq = new QueryBuilder("field");
         SpanQuery sq = kq.seq(kq.seg("try1"),
-                kq.focus(1, kq._(1, kq.seg("try2"))), kq.seg("try3")).toQuery();
+                kq.focus(1, kq.nr(1, kq.seg("try2"))), kq.seg("try3")).toQuery();
         assertEquals(
                 "spanNext(spanNext(field:try1, focus(1: {1: field:try2})), field:try3)",
                 sq.toString());

@@ -402,22 +402,22 @@ public class QueryBuilder {
 
 
     // Class
-    public SpanClassQueryWrapper _ (byte number, SpanQueryWrapper element) {
+    public SpanClassQueryWrapper nr (byte number, SpanQueryWrapper element) {
         return new SpanClassQueryWrapper(element, number);
     };
 
 
-    public SpanClassQueryWrapper _ (int number, SpanQueryWrapper element) {
+    public SpanClassQueryWrapper nr (int number, SpanQueryWrapper element) {
         return new SpanClassQueryWrapper(element, number);
     };
 
 
-    public SpanClassQueryWrapper _ (short number, SpanQueryWrapper element) {
+    public SpanClassQueryWrapper nr (short number, SpanQueryWrapper element) {
         return new SpanClassQueryWrapper(element, number);
     };
 
 
-    public SpanClassQueryWrapper _ (SpanQueryWrapper element) {
+    public SpanClassQueryWrapper nr (SpanQueryWrapper element) {
         return new SpanClassQueryWrapper(element);
     };
 

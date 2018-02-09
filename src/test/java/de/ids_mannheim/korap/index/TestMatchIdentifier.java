@@ -135,7 +135,7 @@ public class TestMatchIdentifier {
 
         QueryBuilder kq = new QueryBuilder("tokens");
         Krill ks = new Krill(
-                kq._(2, kq.seq(kq.seg("s:b")).append(kq._(kq.seg("s:a")))));
+                kq.nr(2, kq.seq(kq.seg("s:b")).append(kq.nr(kq.seg("s:a")))));
         Result kr = ki.search(ks);
 
         assertEquals("totalResults", kr.getTotalResults(), 1);

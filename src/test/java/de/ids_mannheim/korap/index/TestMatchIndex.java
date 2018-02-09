@@ -326,8 +326,8 @@ public class TestMatchIndex {
 
         QueryBuilder kq = new QueryBuilder("base");
 
-        SpanQuery sq = kq._(1, kq.seq(kq.seg("s:b")).append(kq.seg("s:a"))
-                .append(kq._(2, kq.seg("s:c")))).toQuery();
+        SpanQuery sq = kq.nr(1, kq.seq(kq.seg("s:b")).append(kq.seg("s:a"))
+                .append(kq.nr(2, kq.seg("s:c")))).toQuery();
 
         kr = ki.search(sq, 0, (short) 20, true, (short) 2, true, (short) 5);
 

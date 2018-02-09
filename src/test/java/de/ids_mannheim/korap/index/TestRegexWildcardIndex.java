@@ -364,7 +364,7 @@ public class TestRegexWildcardIndex {
         assertEquals((long) 0, kr.getTotalResults());
 
 		// Test with classes
-		sq = kq._(kq.re("s:z.*e")).toQuery();
+		sq = kq.nr(kq.re("s:z.*e")).toQuery();
         assertEquals(
 			"{1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}",
 			sq.toString());
@@ -372,7 +372,7 @@ public class TestRegexWildcardIndex {
         assertEquals((long) 0, kr.getTotalResults());
 
 		// Test with nested classes
-		sq = kq.within(kq._(kq.re("s:z.*e")), kq.seg("s:affe")).toQuery();
+		sq = kq.within(kq.nr(kq.re("s:z.*e")), kq.seg("s:affe")).toQuery();
         assertEquals(
 			"spanContain({1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}, base:s:affe)",
 			sq.toString());
@@ -417,7 +417,7 @@ public class TestRegexWildcardIndex {
 
 		// Test with multiple distances and a class
 		sq = new SpanMultipleDistanceQuery(
-			kq._(kq.re("s:z.*e")).toQuery(),
+			kq.nr(kq.re("s:z.*e")).toQuery(),
 			kq.seg("s:affe").toQuery(),
 			constraints,
 			true,

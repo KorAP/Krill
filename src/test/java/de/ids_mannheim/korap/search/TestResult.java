@@ -51,8 +51,8 @@ public class TestResult {
         ki.commit();
 
         QueryBuilder kq = new QueryBuilder("base");
-        SpanQuery q = (SpanQuery) kq.or(kq._(1, kq.seg("s:a")))
-                .or(kq._(2, kq.seg("s:b"))).toQuery();
+        SpanQuery q = (SpanQuery) kq.or(kq.nr(1, kq.seg("s:a")))
+                .or(kq.nr(2, kq.seg("s:b"))).toQuery();
         Result kr = ki.search(q);
         assertEquals((long) 7, kr.getTotalResults());
 

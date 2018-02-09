@@ -44,7 +44,7 @@ public class TestHighlight { // extends LuceneTestCase {
 
         QueryBuilder kq = new QueryBuilder("tokens");
         Result kr = ki
-                .search((SpanQuery) kq.seq(kq._(1, kq.seg("s:b"))).toQuery());
+                .search((SpanQuery) kq.seq(kq.nr(1, kq.seg("s:b"))).toQuery());
         Match km = kr.getMatch(0);
         assertEquals(km.getStartPos(), 1);
         assertEquals(km.getEndPos(), 2);
@@ -54,8 +54,8 @@ public class TestHighlight { // extends LuceneTestCase {
                 "<span class=\"context-left\">a</span><span class=\"match\"><mark><mark class=\"class-1 level-0\">b</mark></mark></span><span class=\"context-right\">c</span>",
                 km.getSnippetHTML());
 
-        kr = ki.search((SpanQuery) kq.seq(kq._(1, kq.seg("s:b")))
-                .append(kq._(2, kq.seg("s:c"))).toQuery());
+        kr = ki.search((SpanQuery) kq.seq(kq.nr(1, kq.seg("s:b")))
+                .append(kq.nr(2, kq.seg("s:c"))).toQuery());
         km = kr.getMatch(0);
         assertEquals(km.getStartPos(), 1);
         assertEquals(km.getEndPos(), 3);
@@ -69,8 +69,8 @@ public class TestHighlight { // extends LuceneTestCase {
 
 
         kr = ki.search((SpanQuery) kq
-                .seq(kq._(1, kq.seq(kq.seg("s:a")).append(kq.seg("s:b"))))
-                .append(kq._(2, kq.seg("s:c"))).toQuery());
+                .seq(kq.nr(1, kq.seq(kq.seg("s:a")).append(kq.seg("s:b"))))
+                .append(kq.nr(2, kq.seg("s:c"))).toQuery());
         km = kr.getMatch(0);
         assertEquals(km.getStartPos(), 0);
         assertEquals(km.getEndPos(), 3);
@@ -84,12 +84,12 @@ public class TestHighlight { // extends LuceneTestCase {
 
 
         kr = ki.search(
-                (SpanQuery) kq._(
+                (SpanQuery) kq.nr(
                         3, kq
-                                .seq(kq._(1,
+                                .seq(kq.nr(1,
                                         kq.seq(kq.seg("s:a"))
                                                 .append(kq.seg("s:b"))))
-                                .append(kq._(2, kq.seg("s:c"))))
+                                .append(kq.nr(2, kq.seg("s:c"))))
                         .toQuery());
         km = kr.getMatch(0);
         assertEquals(km.getStartPos(), 0);
@@ -185,8 +185,8 @@ public class TestHighlight { // extends LuceneTestCase {
         ki.commit();
 
         QueryBuilder kq = new QueryBuilder("base");
-        SpanQuery q = (SpanQuery) kq.or(kq._(1, kq.seg("s:a")))
-                .or(kq._(2, kq.seg("s:b"))).toQuery();
+        SpanQuery q = (SpanQuery) kq.or(kq.nr(1, kq.seg("s:a")))
+                .or(kq.nr(2, kq.seg("s:b"))).toQuery();
         Result kr = ki.search(q);
         assertEquals((long) 14, kr.getTotalResults());
         assertEquals("[[{1:a}]]bab", kr.getMatch(0).getSnippetBrackets());
@@ -209,7 +209,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals("ab[[{1:a}]]", kr.getMatch(13).getSnippetBrackets());
 
         kq = new QueryBuilder("base");
-        q = (SpanQuery) kq.or(kq._(1, kq.seg("i:a"))).or(kq._(2, kq.seg("i:c")))
+        q = (SpanQuery) kq.or(kq.nr(1, kq.seg("i:a"))).or(kq.nr(2, kq.seg("i:c")))
                 .toQuery();
         Krill qs = new Krill(q);
         qs.getMeta().getContext().left.setToken(true).setLength((short) 1);
@@ -245,7 +245,7 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals("... [[{2:a}]]", kr.getMatch(9).getSnippetBrackets());
 
         q = (SpanQuery) kq
-                ._(3, kq.or(kq._(1, kq.seg("i:a"))).or(kq._(2, kq.seg("i:c"))))
+                .nr(3, kq.or(kq.nr(1, kq.seg("i:a"))).or(kq.nr(2, kq.seg("i:c"))))
                 .toQuery();
         qs = new Krill(q);
         qs.getMeta().getContext().left.setToken(true).setLength((short) 0);
