@@ -156,6 +156,10 @@ public class HighlightCombinator {
             // add this element number temporarily on the stack
             tempStack.push(eold);
 
+			// There are no more elements on the balance stack
+			if (this.balanceStack.empty())
+				break;
+
             // Check next element
             eold = this.balanceStack.pop();
         };

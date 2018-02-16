@@ -88,7 +88,7 @@ public class Match extends AbstractDocument {
 	private static final int PB_MARKER = -99999;
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
@@ -1753,7 +1753,7 @@ public class Match extends AbstractDocument {
             startOffsetChar = spanContext[2];
             endOffsetChar = spanContext[3];
             if (DEBUG)
-                log.trace("Got context is based from span {}-{}/{}-{}",
+                log.trace("Got context based on span {}-{}/{}-{}",
                         startOffset, endOffset, startOffsetChar, endOffsetChar);
         };
 

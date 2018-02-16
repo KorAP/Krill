@@ -30,7 +30,7 @@ public class HighlightCombinatorElement {
 	private final static Logger log = LoggerFactory.getLogger(Match.class);
 
 	// This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     // Constructor for highlighting elements
     public HighlightCombinatorElement (byte type, int number) {

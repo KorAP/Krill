@@ -395,12 +395,70 @@ public class TestMatchIdentifier {
 			"<span xlink:title=\"lwc/d:CJ\" xlink:show=\"none\" xlink:href=\"#token-WDD17/982/72848-p15843\">flach</span>"+
 			"</span>"+
 			"</mark>"+
+			"."+
 			"</span>"+
 			"</span>"+
 			"<span class=\"context-right\"></span>"
 			);
 	};
 
+
+	@Test
+    public void snippetBugTest3 () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/wiki/WPD17-H81-63495.json.gz"), true);
+        ki.commit();
+
+        Match km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
+								   "xyz", "s", true, true, true);
+		String snippet = km.getSnippetHTML();
+		assertEquals(
+			"<span class=\"context-left\">"+
+			"</span>"+
+			"<span class=\"match\">"+
+			"<mark>Der alte Baum</mark>"+
+			"</span>"+
+			"<span class=\"context-right\">"+
+			" war eine Sommerlinde (Tilia platyphyllos) , der neue ist eine Winterlinde (Tilia cordata)."+
+			"</span>",
+			snippet
+			);
+		/*
+
+		Match km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
+								   "dereko", "s", true, true, true);
+
+		String snippet = km.getSnippetHTML();
+		assertEquals(
+			"<span class=\"context-left\"></span>"+
+		    "<span class=\"match\">"+
+		      "<span title=\"dereko/s:s\">"+
+			    "<mark>"+
+			      "Der alte Baum"+
+			    "</mark>"+
+			    " war eine "+
+			    "<span title=\"dereko/s:ref\">Sommerlinde</span>"+
+			    " ("+
+			    "<span title=\"dereko/s:hi\">Tilia platyphyllos</span>"+
+			  "</span>"+
+			"</span>"+
+			"<span title=\"dereko/s:s\">"+
+			  ") , "+
+			  "<span title=\"dereko/s:ptr\">"+
+			    "der neue ist eine "+
+			    "<span title=\"dereko/s:ref\">Winterlinde</span>"+
+			    " ("+
+			    "<span title=\"dereko/s:hi\">Tilia cordata</span>"+
+			  "</span>"+
+			"</span>"+
+			"<span title=\"dereko/s:ptr\"></span>"+
+			"<span class=\"context-right\"></span>",
+			snippet
+			);
+		*/
+	};
+
+	
     @Test
     public void indexExample5Spans () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();

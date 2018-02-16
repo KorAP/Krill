@@ -1119,6 +1119,8 @@ public final class KrillIndex {
                             && spanContext[0] < spanContext[1]) {
                         match.setStartPos(spanContext[0]);
                         match.setEndPos(spanContext[1]);
+						match.potentialStartPosChar = spanContext[2];
+						match.potentialEndPosChar = spanContext[3];
                         match.startMore = false;
                         match.endMore = false;
                     }
