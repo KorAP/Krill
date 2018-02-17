@@ -77,10 +77,12 @@ public class HighlightCombinator {
 			log.trace("Add opening {} to stack", number);
     };
 
-	// Add empty highlight to the stack
+
+    // Add empty highlight to the stack
     public void addEmpty (int pagenumber) {
         this.combine.add(new HighlightCombinatorElement((byte) 3, pagenumber));
     };
+
 
     // Add closing highlight combinator to the stack
     public void addClose (int number) {

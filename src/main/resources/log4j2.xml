@@ -14,7 +14,7 @@
             level="trace">
       <AppenderRef ref="Console"/>
     </Logger>
-    <Logger name="de.ids_mannheim.korap.KrillIndex"
+    <Logger name="de.ids_mannheim.korap.response.Match"
             additivity="false"
             level="trace">
       <AppenderRef ref="Console"/>

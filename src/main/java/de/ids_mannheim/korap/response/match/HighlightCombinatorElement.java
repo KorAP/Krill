@@ -15,6 +15,10 @@ import org.slf4j.LoggerFactory;
 */
 public class HighlightCombinatorElement {
 
+	// Number -1:     Match
+	// Number -99998: Context
+	private final static int CONTEXT = -99998;
+	
     // Type 0: Textual data
     // Type 1: Opening
     // Type 2: Closing
@@ -58,7 +62,7 @@ public class HighlightCombinatorElement {
 
 
     // Return html fragment for this combinator element
-public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet joins) {
+	public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet joins) {
 
         // Opening
         if (this.type == 1) {
@@ -68,6 +72,11 @@ public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet
             if (this.number == -1) {
                 sb.append("<mark>");
             }
+
+			// This is context
+			else if (this.number == CONTEXT) {
+				// DO nothing
+			}
 
 			// This is a relation target
             else if (this.number < -1) {
@@ -142,6 +151,9 @@ public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet
 
         // This is a Closing tag
         else if (this.type == 2) {
+			if (this.number == CONTEXT)
+				return "";
+			
             if (this.number < -1 || this.number >= 256)
                 return "</span>";
 
@@ -173,6 +185,11 @@ public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet
                 sb.append("[");
             }
 
+			// This is context
+			else if (this.number == CONTEXT) {
+				// DO nothing
+			}
+
             // Identifier
             else if (this.number < -1) {
                 sb.append("{#");
@@ -203,6 +220,11 @@ public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet
             return sb.toString();
         }
         else if (this.type == 2) {
+
+			// This is context
+			if (this.number == CONTEXT)
+				return "";
+			
             if (this.number == -1)
                 return "]";
             return "}";

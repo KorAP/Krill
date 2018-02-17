@@ -87,6 +87,9 @@ public class Match extends AbstractDocument {
 	// end marker of highlights that are pagebreaks
 	private static final int PB_MARKER = -99999;
 
+	// Textual elements that are in context
+	private static final int CONTEXT = -99998;
+
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = true;
 
@@ -1550,18 +1553,19 @@ public class Match extends AbstractDocument {
                 int[] e = openList.removeFirst().clone();
 
 				// Mark as opener
-                e[3] = 1;
+				e[3] = 1;
 
 				if (DEBUG) {
 
 					//      -1: match
 					//    < -1: relation target
+					//  -99998: context
 					// >= 2048: relation source
 					// >=  256: annotation
 					
 					log.trace(
-						"Add open with number {} to stack at {}-{}",
-						e[2], e[0], e[1]
+						"Add open with number {} to stack at {}-{} as {}",
+						e[2], e[0], e[1], e[3]
 						);
 				};
 
@@ -1663,9 +1667,12 @@ public class Match extends AbstractDocument {
         // Add match span, in case no inner match is defined
         if (this.innerMatchEndPos == -1) {
 			if (DEBUG)
-				log.debug("Added array to span with {} (1)", intArray);
+				log.debug("Added array to match span with {} (1)", intArray);
             this.span.add(intArray);
 		};
+
+		// Add context highlight
+		this.span.add(new int[]{intArray[0], intArray[1], CONTEXT, 0});
 
         // highlights
         // -- I'm not sure about this.

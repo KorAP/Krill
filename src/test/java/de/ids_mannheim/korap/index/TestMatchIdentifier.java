@@ -20,6 +20,7 @@ import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.match.MatchIdentifier;
 import de.ids_mannheim.korap.response.match.PosIdentifier;
@@ -409,21 +410,126 @@ public class TestMatchIdentifier {
         ki.addDoc(getClass().getResourceAsStream("/wiki/WPD17-H81-63495.json.gz"), true);
         ki.commit();
 
-        Match km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
-								   "xyz", "s", true, true, true);
-		String snippet = km.getSnippetHTML();
+        Match km;
+		String snippet;
+		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
+							 "xyz", "s", false, false, false);
+		km.setContext(new SearchContext(true, (short) 2, true, (short) 2));
+
+		snippet = km.getSnippetHTML();
 		assertEquals(
 			"<span class=\"context-left\">"+
+			"<span class=\"more\"></span>"+
+			"angesehen wurde. "+
 			"</span>"+
 			"<span class=\"match\">"+
 			"<mark>Der alte Baum</mark>"+
 			"</span>"+
 			"<span class=\"context-right\">"+
-			" war eine Sommerlinde (Tilia platyphyllos) , der neue ist eine Winterlinde (Tilia cordata)."+
+			" war eine"+
+			"<span class=\"more\"></span>"+
 			"</span>",
 			snippet
 			);
-		/*
+
+		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
+								   "xyz", "s", true, true, true);
+		//km.setContext(new SearchContext(true, (short) 2, true, (short) 2));
+		snippet = km.getSnippetHTML();
+		assertEquals(
+			"<span class=\"context-left\">"+
+			"</span>"+
+			"<span class=\"match\">"+
+			"<mark>Der alte Baum</mark>"+
+			" war eine Sommerlinde (Tilia platyphyllos) , der neue ist eine Winterlinde (Tilia cordata)."+
+			"</span>"+
+			"<span class=\"context-right\">"+
+			"</span>",
+			snippet
+			);
+
+		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
+							 null, null, false, true, true);
+		snippet = km.getSnippetHTML();
+		assertEquals(
+			"<span class=\"context-left\"></span>"+
+			"<span class=\"match\">"+
+			"<mark>"+
+			"<span title=\"tt/l:die\">"+
+			"<span title=\"tt/p:ART\">Der</span>"+
+			"</span>"+
+			" "+
+			"<span title=\"tt/l:alt\">"+
+			"<span title=\"tt/p:ADJA\">alte</span>"+
+			"</span>"+
+			" "+
+			"<span title=\"tt/l:Baum\">"+
+			"<span title=\"tt/p:NN\">Baum</span>"+
+			"</span>"+
+			"</mark>"+
+			" "+
+			"<span title=\"tt/l:sein\">"+
+			"<span title=\"tt/p:VAFIN\">war</span>"+
+			"</span>"+
+			" "+
+			"<span title=\"tt/l:eine\">"+
+			"<span title=\"tt/p:ART\">eine</span>"+
+			"</span>"+
+			" "+
+			"<span title=\"tt/l:Sommerlinde\">"+
+			"<span title=\"tt/l:Sommerlinde\">"+
+			"<span title=\"tt/p:NE\">"+
+			"<span title=\"tt/p:NN\">Sommerlinde</span>"+
+			"</span>"+
+			"</span>"+
+			"</span>"+
+			" ("+
+			"<span title=\"tt/p:NE\">Tilia</span>"+
+			" "+
+			"<span title=\"tt/p:ADJA\">"+
+			"<span title=\"tt/p:ADJD\">"+
+			"<span title=\"tt/p:NE\">"+
+			"<span title=\"tt/p:NN\">"+
+			"<span title=\"tt/p:VVFIN\">platyphyllos</span>"+
+			"</span>"+
+			"</span>"+
+			"</span>"+
+			"</span>"+
+			") , "+
+			"<span title=\"tt/l:die\">"+
+			"<span title=\"tt/p:ART\">der</span>"+
+			"</span>"+
+			" "+
+			"<span title=\"tt/l:neu\">"+
+			"<span title=\"tt/p:ADJA\">neue</span>"+
+			"</span>"+
+			" "+
+			"<span title=\"tt/l:sein\">"+
+			"<span title=\"tt/p:VAFIN\">ist</span>"+
+			"</span>"+
+			" "+
+			"<span title=\"tt/l:eine\">"+
+			"<span title=\"tt/p:ART\">eine</span>"+
+			"</span>"+
+			" "+
+			"<span title=\"tt/l:Winterlinde\">"+
+			"<span title=\"tt/l:Winterlinde\">"+
+			"<span title=\"tt/p:NE\">"+
+			"<span title=\"tt/p:NN\">Winterlinde</span>"+
+			"</span>"+
+			"</span>"+
+			"</span>"+
+			" ("+
+			"<span title=\"tt/p:NE\">Tilia</span>"+
+			" "+
+			"<span title=\"tt/p:NE\">cordata</span>"+
+			")."+
+			"</span>"+
+			"<span class=\"context-right\">"+
+			"</span>",
+			snippet
+			);
+/*
 
 		Match km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
 								   "dereko", "s", true, true, true);
