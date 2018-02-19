@@ -419,6 +419,10 @@ public class Match extends AbstractDocument {
      *            Annotation string.
      */
     public void addAnnotation (int start, int end, String annotation) {
+
+		if (DEBUG && start > end)
+			log.warn("Annotation span is negative: {}, {} for {}", start, end, annotation);
+
         this.addHighlight(new Highlight(start, end, annotation));
     };
 
@@ -1681,6 +1685,13 @@ public class Match extends AbstractDocument {
                 log.trace("There are highlights!");
 
             for (Highlight highlight : this.highlight) {
+				if (DEBUG && highlight.start > highlight.end) {
+					log.warn("Start position is before end position {}-{}!",
+							 highlight.start,
+							 highlight.end);
+				};
+
+				
 				int start = -1;
                 int end = -1;
 

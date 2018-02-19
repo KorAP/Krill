@@ -142,6 +142,8 @@ public class TermInfo implements Comparable<TermInfo> {
         if (ttype == 2) {
             this.startChar = this.payload.getInt();
             this.endChar = this.payload.getInt();
+			if (this.startChar == this.endChar)
+				this.type = "empty";
         };
 
         // for spans, relations and attributes

@@ -412,6 +412,7 @@ public class TestMatchIdentifier {
 
         Match km;
 		String snippet;
+
 		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
 							 "xyz", "s", false, false, false);
 		km.setContext(new SearchContext(true, (short) 2, true, (short) 2));
@@ -432,21 +433,46 @@ public class TestMatchIdentifier {
 			snippet
 			);
 
+		// Expansion - no context
 		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
 								   "xyz", "s", true, true, true);
-		//km.setContext(new SearchContext(true, (short) 2, true, (short) 2));
 		snippet = km.getSnippetHTML();
 		assertEquals(
 			"<span class=\"context-left\">"+
 			"</span>"+
 			"<span class=\"match\">"+
 			"<mark>Der alte Baum</mark>"+
-			" war eine Sommerlinde (Tilia platyphyllos) , der neue ist eine Winterlinde (Tilia cordata)."+
+			" war eine Sommerlinde (Tilia platyphyllos) , "+
+			"der neue ist eine Winterlinde (Tilia cordata)."+
 			"</span>"+
 			"<span class=\"context-right\">"+
 			"</span>",
 			snippet
 			);
+
+		// Addition context
+		/*
+		  TODO: Support context nonetheless
+		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
+								   "xyz", "s", true, true, true);
+		km.setContext(new SearchContext(true, (short) 2, true, (short) 2));
+
+		snippet = km.getSnippetHTML();
+		assertEquals(
+			"<span class=\"context-left\">"+
+			"xyz"+
+			"</span>"+
+			"<span class=\"match\">"+
+			"<mark>Der alte Baum</mark>"+
+			" war eine Sommerlinde (Tilia platyphyllos) , "+
+			"der neue ist eine Winterlinde (Tilia cordata)."+
+			"</span>"+
+			"<span class=\"context-right\">"+
+			"xyz"+
+			"</span>",
+			snippet
+			);
+		*/
 
 		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
 							 null, null, false, true, true);
@@ -529,39 +555,28 @@ public class TestMatchIdentifier {
 			"</span>",
 			snippet
 			);
-/*
-
-		Match km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
+		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
 								   "dereko", "s", true, true, true);
 
-		String snippet = km.getSnippetHTML();
+		snippet = km.getSnippetHTML();
 		assertEquals(
 			"<span class=\"context-left\"></span>"+
-		    "<span class=\"match\">"+
-		      "<span title=\"dereko/s:s\">"+
-			    "<mark>"+
-			      "Der alte Baum"+
-			    "</mark>"+
+			"<span class=\"match\">"+
+			  "<span title=\"dereko/s:s\">"+
+			    "<mark>Der alte Baum</mark>"+
 			    " war eine "+
 			    "<span title=\"dereko/s:ref\">Sommerlinde</span>"+
 			    " ("+
 			    "<span title=\"dereko/s:hi\">Tilia platyphyllos</span>"+
-			  "</span>"+
-			"</span>"+
-			"<span title=\"dereko/s:s\">"+
-			  ") , "+
-			  "<span title=\"dereko/s:ptr\">"+
-			    "der neue ist eine "+
-			    "<span title=\"dereko/s:ref\">Winterlinde</span>"+
-			    " ("+
+			    ") , der neue ist eine "+
+			    "<span title=\"dereko/s:ref\">Winterlinde</span> ("+
 			    "<span title=\"dereko/s:hi\">Tilia cordata</span>"+
 			  "</span>"+
+			  ")."+
 			"</span>"+
-			"<span title=\"dereko/s:ptr\"></span>"+
 			"<span class=\"context-right\"></span>",
 			snippet
 			);
-		*/
 	};
 
 	

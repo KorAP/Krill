@@ -1,7 +1,13 @@
-0.56.2 2018-02-09
+0.56.2 2018-02-19
         - [feature] Introduce meta field retrieval method (diewald)
         - [cleanup] Rename KrillQuery's "_"-method to "nr" to improve
           compatibility with future versions of Java (diewald)
+        - [bugfix] Fixed expansion to respect character boundaries
+          (diewald)
+        - [bugfix] Fixed wrong behaviour of textual non-contexts in
+          snippet generation (diewald)
+        - [bugfix] Removed problematic serialization of empty
+          annotations (diewald)
 
 0.56.1 2018-01-31
         - [bugfix] Changed relation serialization in snippet to work
