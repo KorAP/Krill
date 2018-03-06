@@ -17,7 +17,7 @@ public class HighlightCombinator {
     private final static Logger log = LoggerFactory.getLogger(Match.class);
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     private LinkedList<HighlightCombinatorElement> combine;
     private Stack<Integer> balanceStack = new Stack<>();

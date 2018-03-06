@@ -11,6 +11,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import de.ids_mannheim.korap.index.AbstractDocument;
 
+import java.io.IOException;
+
+import de.ids_mannheim.korap.index.KeywordAnalyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+
+import java.io.StringReader;
+
 import java.util.*;
 
 import org.apache.lucene.index.*;
@@ -77,15 +85,45 @@ public class MetaFields extends AbstractDocument {
 		// Field has a textual value
 		else if (s != null) {
 
-			// Field is not indexed
+			// Stored
 			if (iFieldType.indexOptions() == IndexOptions.NONE) {
 				mf.type = "type:store";
+				mf.values.add(s.toString());
 			}
+
+			// Keywords
+			else if (iFieldType.indexOptions() == IndexOptions.DOCS_AND_FREQS) {
+				mf.type = "type:keywords";
+
+				// Analyze keywords
+				try {
+					StringReader reader = new StringReader(s.toString());
+					KeywordAnalyzer kwa = new KeywordAnalyzer();
+					TokenStream ts = kwa.tokenStream("-", reader);
+					CharTermAttribute term;
+					ts.reset();
+					while (ts.incrementToken()) {
+						term = ts.getAttribute(CharTermAttribute.class);
+						mf.values.add(term.toString());
+					};
+					ts.close();
+					reader.close();
+				}
+				catch (IOException e) {
+					log.error("Unable to split {}={}", iField.name(), s.toString());
+				}
+			}
+
+			// Text
 			else if (iFieldType.indexOptions() != IndexOptions.DOCS) {
 				mf.type = "type:text";
-			};
+				mf.values.add(s.toString());
+			}
 
-			mf.values.add(s.toString());
+			// String
+			else {
+				mf.values.add(s.toString());
+			};
 		}
 		
 		else {

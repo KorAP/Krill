@@ -242,7 +242,7 @@ public class TestKrillIndex {
 				break;
 
 			case "keyword":
-				assertEquals("type:string", field.at("/type").asText());
+				assertEquals("type:keywords", field.at("/type").asText());
 				assertEquals("koral:field", field.at("/@type").asText());
 				assertEquals("baum", field.at("/value/0").asText());
 				assertEquals("wald", field.at("/value/1").asText());
@@ -301,13 +301,10 @@ public class TestKrillIndex {
 				break;
 
 			case "foundries":
-				// TODO:
-				//   This should better be an array!
-				assertEquals("type:string", field.at("/type").asText());
-				assertEquals("dereko dereko/structure " +
-							 "dereko/structure/base-sentences-paragraphs-pagebreaks "+
-							 "lwc lwc/dependency treetagger treetagger/morpho",
-							 field.at("/value").asText());
+				assertEquals("type:keywords", field.at("/type").asText());
+				assertEquals("dereko", field.at("/value/0").asText());
+				assertEquals("dereko/structure", field.at("/value/1").asText());
+				assertEquals("dereko/structure/base-sentences-paragraphs-pagebreaks", field.at("/value/2").asText());
 				break;
 			};
 		};

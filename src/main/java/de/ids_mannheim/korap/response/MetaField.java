@@ -56,7 +56,7 @@ public class MetaField {
 			};
 		}
 
-		// Value is textual
+		// Value is textual or keywords
 		else {
 			// Value is a list
 			if (this.values.size() > 1) {
@@ -69,7 +69,7 @@ public class MetaField {
 			}
 
 			// Value is a single
-			else {
+			else if (this.values.size() > 0) {
 				json.put("value", this.values.get(0));
 			};
 		};

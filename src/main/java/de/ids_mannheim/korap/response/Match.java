@@ -91,7 +91,7 @@ public class Match extends AbstractDocument {
 	private static final int CONTEXT = -99998;
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();

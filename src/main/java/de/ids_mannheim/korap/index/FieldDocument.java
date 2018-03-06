@@ -67,11 +67,14 @@ public class FieldDocument extends AbstractDocument {
         tvNoField.setStoreTermVectorPayloads(true);
         tvNoField.setStoreTermVectorOffsets(false);
 
+        keywords.setStoreTermVectors(false);
+		/*
         keywords.setStoreTermVectors(true);
         keywords.setStoreTermVectorPositions(false);
         keywords.setStoreTermVectorPayloads(false);
         keywords.setStoreTermVectorOffsets(false);
-        keywords.setIndexOptions(IndexOptions.DOCS);
+		*/
+        keywords.setIndexOptions(IndexOptions.DOCS_AND_FREQS);
     };
 
 

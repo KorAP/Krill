@@ -19,6 +19,11 @@
             level="trace">
       <AppenderRef ref="Console"/>
     </Logger>
+      <Logger name="de.ids_mannheim.korap.KrillIndex"
+            additivity="false"
+            level="trace">
+      <AppenderRef ref="Console"/>
+    </Logger>
     -->
   </Loggers>
 </Configuration>
