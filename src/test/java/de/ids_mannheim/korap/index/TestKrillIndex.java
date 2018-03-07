@@ -290,8 +290,8 @@ public class TestKrillIndex {
 			switch (key) {
 			case "pubDate":
 
-				assertEquals("type:number", field.at("/type").asText());
-				assertEquals(20170701, field.at("/value").asInt());
+				assertEquals("type:date", field.at("/type").asText());
+				assertEquals("2017-07-01", field.at("/value").asText());
 				break;
 
 			case "textSigle":

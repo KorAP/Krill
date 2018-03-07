@@ -9,7 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
 import de.ids_mannheim.korap.index.AbstractDocument;
+import de.ids_mannheim.korap.util.KrillDate;
 
 import java.io.IOException;
 
@@ -20,6 +22,7 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import java.io.StringReader;
 
 import java.util.*;
+import java.util.regex.*;
 
 import org.apache.lucene.index.*;
 
@@ -31,6 +34,11 @@ public class MetaFields extends AbstractDocument {
 
 	// This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
+
+	// TODO:
+	//   This is a temporary indicator to check
+	//   whether a date field is a date
+	private static final Pattern dateKeyPattern = Pattern.compile(".*Date$");
 
 	// Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
@@ -76,10 +84,25 @@ public class MetaFields extends AbstractDocument {
 		// Field has numeric value (possibly a date)
 		if (n != null) {
 
-			// TODO:
-			//   check if the number is a date!
-			mf.type = "type:number";
-			mf.values.add(n.toString());
+			// Check if key indicates a date
+			Matcher dateMatcher = dateKeyPattern.matcher(mf.key);
+			if (dateMatcher.matches()) {
+				mf.type = "type:date";
+
+				// Check structure with KrillDate
+				KrillDate date = new KrillDate(n.toString());
+				if (date != null) {
+
+					// Serialize withz dash separation
+					mf.values.add(date.toDisplay());
+				};
+			}
+
+			// Field is a number
+			else {
+				mf.type = "type:number";
+				mf.values.add(n.toString());
+			};
 		}
 		
 		// Field has a textual value

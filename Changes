@@ -1,4 +1,4 @@
-0.56.2 2018-02-19
+0.56.2 2018-03-07
         - [feature] Introduce meta field retrieval method (diewald)
         - [cleanup] Rename KrillQuery's "_"-method to "nr" to improve
           compatibility with future versions of Java (diewald)
@@ -8,6 +8,10 @@
           snippet generation (diewald)
         - [bugfix] Removed problematic serialization of empty
           annotations (diewald)
+        - [feature] Serialize metadata keywords as arrays, when
+          indexed properly (may require reindexing; diewald)
+        - [feature] Serialize dates in dash separation format, when
+          metadata field name ends with "Date" (diewald)
 
 0.56.1 2018-01-31
         - [bugfix] Changed relation serialization in snippet to work
