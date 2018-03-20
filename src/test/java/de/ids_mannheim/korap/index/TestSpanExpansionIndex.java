@@ -22,10 +22,11 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
+import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSpanExpansionIndex {
@@ -147,8 +148,8 @@ public class TestSpanExpansionIndex {
     public void testCase3 () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
-        SpanTermQuery notQuery = new SpanTermQuery(
-                new Term("tokens", "s:Buchstabe"));
+        SpanTermQuery notQuery =
+                new SpanTermQuery(new Term("tokens", "s:Buchstabe"));
 
         SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 2, 3, 0,
                 classNumber, true);
@@ -183,8 +184,8 @@ public class TestSpanExpansionIndex {
     public void testCase4 () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
-        SpanTermQuery notQuery = new SpanTermQuery(
-                new Term("tokens", "tt/p:ADJA"));
+        SpanTermQuery notQuery =
+                new SpanTermQuery(new Term("tokens", "tt/p:ADJA"));
 
         SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 0, 2, -1,
                 classNumber, true);
@@ -272,8 +273,8 @@ public class TestSpanExpansionIndex {
         SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:e"));
         SpanTermQuery notQuery = new SpanTermQuery(new Term("base", "s:d"));
 
-        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 2, 3, 0,
-                true);
+        SpanExpansionQuery seq =
+                new SpanExpansionQuery(stq, notQuery, 2, 3, 0, true);
         kr = ki.search(seq, (short) 20);
 
         // notClause.doc() > firstSpans.doc()
@@ -336,10 +337,10 @@ public class TestSpanExpansionIndex {
         ki.commit();
 
         // See /queries/bugs/repetition_group_rewrite
-        RegexpQuery requery = new RegexpQuery(new Term("base", "s:[ac]"),
-                RegExp.ALL);
-        SpanMultiTermQueryWrapper<RegexpQuery> query = new SpanMultiTermQueryWrapper<RegexpQuery>(
-                requery);
+        RegexpQuery requery =
+                new RegexpQuery(new Term("base", "s:[ac]"), RegExp.ALL);
+        SpanMultiTermQueryWrapper<RegexpQuery> query =
+                new SpanMultiTermQueryWrapper<RegexpQuery>(requery);
         SpanExpansionQuery seq = new SpanExpansionQuery(query, 1, 1, 1, true);
         SpanRepetitionQuery rep = new SpanRepetitionQuery(seq, 2, 2, true);
 
@@ -378,16 +379,6 @@ public class TestSpanExpansionIndex {
         assertEquals(11, kr.getMatch(4).getEndPos());
 
         kr = ki.search(rep, (short) 20);
-
-        // for (Match km : kr.getMatches()){
-        // System.out.println(
-        // km.getStartPos() +
-        // "," +
-        // km.getEndPos() +
-        // " " +
-        // km.getSnippetBrackets()
-        // );
-        // };
 
         assertEquals("[[cecc]]ecdeec", kr.getMatch(0).getSnippetBrackets());
         assertEquals("cec[[cecd]]eec", kr.getMatch(1).getSnippetBrackets());
@@ -434,7 +425,7 @@ public class TestSpanExpansionIndex {
     }
 
 
-	@Test
+    @Test
     public void indexRegexSequence () throws Exception {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc5());
@@ -442,40 +433,70 @@ public class TestSpanExpansionIndex {
 
         QueryBuilder kq = new QueryBuilder("base");
 
-		SpanQueryWrapper sq = kq.seq(
-			kq.or("s:baumgarten", "s:steingarten")
-			).append(kq.seg().without(kq.or("s:franz", "s:hans")));
-		
+        SpanQueryWrapper sq = kq.seq(kq.or("s:baumgarten", "s:steingarten"))
+                .append(kq.seg().without(kq.or("s:franz", "s:hans")));
 
-		// Expected to find [baumgarten steingarten]
-		Krill ks = _newKrill(sq);
+
+        // Expected to find [baumgarten steingarten]
+        Krill ks = _newKrill(sq);
         Result kr = ki.search(ks);
 
         assertEquals((long) 1, kr.getTotalResults());
 
         assertEquals("... baum [[baumgarten steingarten]] franz ...",
-					 kr.getMatch(0).getSnippetBrackets());
+                kr.getMatch(0).getSnippetBrackets());
 
-		// The same result should be shown for:
+        // The same result should be shown for:
 
-		sq = kq.seq(
-			kq.re("s:.*garten")
-			).append(
-				kq.seg().without(
-					kq.re("s:.*an.*")
-					)
-				);
+        sq = kq.seq(kq.re("s:.*garten"))
+                .append(kq.seg().without(kq.re("s:.*an.*")));
 
-		ks = _newKrill(sq);
+        ks = _newKrill(sq);
         kr = ki.search(ks);
 
         assertEquals((long) 1, kr.getTotalResults());
 
         assertEquals("... baum [[baumgarten steingarten]] franz ...",
-					 kr.getMatch(0).getSnippetBrackets());
-	};
-	
+                kr.getMatch(0).getSnippetBrackets());
+    };
 
+    @Test
+    public void testBugRegexExpandLeftNoMoreSpan () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createFieldDoc6());
+        ki.commit();
+
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:a"));
+        
+        RegexpQuery requery =
+                new RegexpQuery(new Term("base", "s:[bc]"), RegExp.ALL);
+        SpanMultiTermQueryWrapper<RegexpQuery> notQuery =
+                new SpanMultiTermQueryWrapper<RegexpQuery>(requery);
+
+        byte classNumber = 1;
+        // left expansion
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 0, 1, -1,
+                classNumber, true);
+
+        kr = ki.search(seq, (short) 20);
+
+        assertEquals(9,kr.getMatches().size());
+        
+    }
+
+    private FieldDocument createFieldDoc6 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-6");
+        fd.addTV("base", "baaaaaa",
+                "[(0-1)s:b|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>10<i>10<b>0]"
+                        + "[(1-2)s:a|_1$<i>1<i>2]" + "[(2-3)s:c|_2$<i>2<i>3]"
+                        + "[(3-4)s:a|s:d|_3$<i>3<i>4]"
+                        + "[(4-5)s:a|_4$<i>4<i>5]" + "[(5-6)s:c|_5$<i>5<i>6]"
+                        + "[(6-7)s:a|_6$<i>6<i>7]" + "[(7-8)s:d|_7$<i>7<i>8]"
+                        + "[(8-9)s:a|_8$<i>8<i>9]"
+                        + "[(9-10)s:a|_9$<i>9<i>10]");
+        return fd;
+    }
 
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
@@ -534,7 +555,7 @@ public class TestSpanExpansionIndex {
         return fd;
     }
 
-	private FieldDocument createFieldDoc5 () {
+    private FieldDocument createFieldDoc5 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-5");
         fd.addTV("base",

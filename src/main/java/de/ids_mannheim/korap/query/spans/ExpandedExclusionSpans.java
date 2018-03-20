@@ -150,8 +150,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 }
                 break;
             }
-            else if (!notClause.next())
-                hasMoreNotClause = false;
+            else if (!notClause.next()) hasMoreNotClause = false;
         }
     }
 
@@ -173,15 +172,16 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 lastNotClause = new CandidateSpan(notClause);
                 //counter--;
             }
-            if (!notClause.next())
+            if (!notClause.next()) {
                 hasMoreNotClause = false;
+            }
         }
 
         // if a notClause is between max and firstspan.start, 
         // then maxPos = last NotClause pos -1
         generateCandidates(min, maxPos, direction);
 
-        if (lastNotClause != null)
+        if (lastNotClause != null && hasMoreNotClause)
             while ((hasMoreSpans = firstSpans.next())
                     // the next notClause is not in between max and firstspan.start()
                     && notClause.start() > firstSpans.start()
@@ -192,8 +192,9 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 maxPos = firstSpans.start() - lastNotClause.getStart() - 1;
                 generateCandidates(min, maxPos, direction);
             }
-        else
+        else {
             hasMoreSpans = firstSpans.next();
+        }
     }
 
 
@@ -216,8 +217,9 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 firstNotClause = new CandidateSpan(notClause);
                 isFound = true;
             }
-            if (!notClause.next())
+            if (!notClause.next()) {
                 hasMoreNotClause = false;
+            }
         }
         // if a notClause is between firstSpan.end and max
         // then maxPos = the first notClause pos -1 
@@ -233,8 +235,9 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 generateCandidates(min, maxPos, direction);
             }
         }
-        else
+        else {
             hasMoreSpans = firstSpans.next();
+        }
     }
 
 
