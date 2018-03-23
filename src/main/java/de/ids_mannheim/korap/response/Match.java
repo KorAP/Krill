@@ -128,7 +128,11 @@ public class Match extends AbstractDocument {
 	private int startPage = -1;
 	private int endPage = -1;
 	
-    private String tempSnippet, snippetHTML, snippetBrackets, identifier;
+    private String tempSnippet,
+		snippetHTML,
+		snippetBrackets,
+		identifier,
+		mirrorIdentifier;
 
     private HighlightCombinator snippetArray;
 
@@ -186,7 +190,9 @@ public class Match extends AbstractDocument {
      */
     public Match (String idString, boolean includeHighlights) {
         MatchIdentifier id = new MatchIdentifier(idString);
+
         if (id.getStartPos() > -1) {
+			this.mirrorIdentifier = id.toString();
 
             if (id.getTextSigle() != null)
                 this.setTextSigle(id.getTextSigle());
@@ -204,7 +210,7 @@ public class Match extends AbstractDocument {
                     if (pos[0] < id.getStartPos() || pos[1] > id.getEndPos())
                         continue;
                     this.addHighlight(pos[0], pos[1], pos[2]);
-                };
+				};
         };
     };
 
@@ -666,10 +672,16 @@ public class Match extends AbstractDocument {
     @Override
     @JsonProperty("matchID")
     public String getID () {
+		
+		// Return identifier as given
+        if (this.mirrorIdentifier != null) {
+            return this.mirrorIdentifier;
+		};
 
-        // Identifier already given
-        if (this.identifier != null)
+        // Identifier already created
+        if (this.identifier != null) {
             return this.identifier;
+		};
 
         // No, nada, nix
         if (this.localDocID == -1)
@@ -1098,7 +1110,7 @@ public class Match extends AbstractDocument {
         this.processed = false;
         this.snippetHTML = null;
         this.snippetBrackets = null;
-        this.identifier = null;
+		this.identifier = null;
 
         // Delete all spans
         if (this.span != null)

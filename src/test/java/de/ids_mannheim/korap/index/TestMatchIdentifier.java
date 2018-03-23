@@ -174,13 +174,17 @@ public class TestMatchIdentifier {
                 "... [[{f/m:acht:b}{f/m:neun:a}]] ...",
                 km.getSnippetBrackets());
 
-
+		// Mirror identifier when passed
         km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8", "tokens", "f",
                 null, false, false);
         assertEquals("SnippetBrackets (1b)",
                 "... [[{f/m:acht:{f/y:eight:b}}{f/m:neun:{f/y:nine:a}}]] ...",
                 km.getSnippetBrackets());
 
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("match-c1!d1-p7-9(0)8-8(2)7-8",
+                res.at("/matchID").asText());
+		
         km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8", "tokens", "f", "m",
                 false, true);
 
@@ -216,7 +220,7 @@ public class TestMatchIdentifier {
                         + "<span class=\"more\">" + "</span>" + "</span>",
                 km.getSnippetHTML());
 
-        JsonNode res = mapper.readTree(km.toJsonString());
+		res = mapper.readTree(km.toJsonString());
         assertEquals("tokens", res.at("/field").asText());
         assertTrue(res.at("/startMore").asBoolean());
         assertTrue(res.at("/endMore").asBoolean());

@@ -1,4 +1,4 @@
-0.56.2 2018-03-20
+0.56.2 2018-03-23
         - [feature] Introduce meta field retrieval method (diewald)
         - [cleanup] Rename KrillQuery's "_"-method to "nr" to improve
           compatibility with future versions of Java (diewald)
@@ -13,7 +13,9 @@
         - [feature] Serialize dates in dash separation format, when
           metadata field name ends with "Date" (diewald)
         - [bugfix] Fixed left exclusion-expansion when there is no 
-          more span for SpanOrQuery (margaretha) 
+          more span for SpanOrQuery (margaretha)
+        - [bugfix] Fixed matchID response to be always identical to
+          a given matchID (diewald)
 
 0.56.1 2018-01-31
         - [bugfix] Changed relation serialization in snippet to work
