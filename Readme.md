@@ -67,6 +67,12 @@ To run the test suite ...
 $ mvn clean test
 ```
 
+To build a Krill library and install it in your local Maven repository
+(needed for Kustvakt) ...
+
+```
+$ mvn install
+```
 ## Caveats
 
 Krill operates on tokens and is limited to a single tokenization stream.
