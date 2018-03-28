@@ -227,7 +227,8 @@ public final class KrillCollection extends Notifications {
                         return this.cb.term(key, json.get("value").asText())
                                 .not();
 
-                    // This may change - but for now it means the elements are lowercased
+					// TODO:
+					// This needs to change - but for now it means the elements are lowercased
                     case "match:contains":
                         return this.cb.term(key,
                                 json.get("value").asText().toLowerCase());

@@ -1,3 +1,6 @@
+0.57 2018-03-28
+        - [feature] Support text queries in metadata (diewald)
+
 0.56.2 2018-03-23
         - [feature] Introduce meta field retrieval method (diewald)
         - [cleanup] Rename KrillQuery's "_"-method to "nr" to improve

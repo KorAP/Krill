@@ -420,6 +420,23 @@ public class TestKrillCollectionIndex {
         assertEquals(3, kcn.docCount());
     };
 
+	@Test
+    public void testIndexWithTextStringQueries () throws IOException {
+		ki = new KrillIndex();
+		ki.addDoc(createDoc1());
+		ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
+
+		// Simple string tests
+        kcn.fromBuilder(cb.text("text", "Der alte Mann"));
+
+		// Uses german analyzer for the moment
+		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"alt mann\")");
+        // assertEquals(3, kcn.docCount());
+	};
+
 
     @Test
     public void filterExampleFromLegacy () throws Exception {

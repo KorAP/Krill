@@ -2,11 +2,16 @@ package de.ids_mannheim.korap.collection;
 
 import java.util.*;
 import java.io.IOException;
+import java.io.StringReader;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.NumericRangeFilter;
+import org.apache.lucene.analysis.de.GermanAnalyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+
 import de.ids_mannheim.korap.util.KrillDate;
 
 import org.slf4j.Logger;
@@ -17,9 +22,12 @@ import de.ids_mannheim.korap.collection.BooleanGroupFilter;
 
 /*
  * TODO: Optimize!
- * - Remove identical object in Boolean groups
- * - Flatten boolean groups
- * - create "between" ranges for multiple date objects
+ *   - Remove identical object in Boolean groups
+ *   - Flatten boolean groups
+ *   - create "between" ranges for multiple date objects
+ *
+ * TODO:
+ *   - Filters are deprecated, they should be ported to queries
  */
 
 public class CollectionBuilder {
@@ -41,6 +49,11 @@ public class CollectionBuilder {
         return new CollectionBuilder.Term(field, term, true);
     };
 
+
+    public CollectionBuilder.Interface text (String field, String text) {
+        return new CollectionBuilder.Text(field, text);
+    };
+	
 
     public CollectionBuilder.Interface since (String field, String date) {
         int since = new KrillDate(date).floor();
@@ -185,6 +198,66 @@ public class CollectionBuilder {
         };
     };
 
+
+    public class Text implements CollectionBuilder.Interface {
+        private boolean isNegative = false;
+        // private boolean regex = false;
+        private String field;
+        private String text;
+
+
+        public Text (String field, String text) {
+            this.field = field;
+            this.text = text;
+        };
+
+		// TODO:
+		//   Currently this treatment is language specific and
+		//    does too mzch, I guess.
+        public Filter toFilter () {
+			StringReader reader = new StringReader(this.text);
+			GermanAnalyzer ga = new GermanAnalyzer();
+			PhraseQuery pq = new PhraseQuery();
+			int pos = 0;
+			try {
+				TokenStream ts = ga.tokenStream(this.field , reader);
+				CharTermAttribute term;
+				ts.reset();
+				while (ts.incrementToken()) {
+					term = ts.getAttribute(CharTermAttribute.class);
+					pq.add(new org.apache.lucene.index.Term(this.field, term.toString()), pos++);
+				};
+				ts.close();
+			}
+			catch (IOException ie) {
+				System.err.println(ie);
+				return null;
+			};
+			reader.close();
+			return new QueryWrapperFilter(pq);
+        };
+
+
+        public String toString () {
+            Filter filter = this.toFilter();
+            if (filter == null)
+                return "";
+            return filter.toString();
+        };
+
+
+        public boolean isNegative () {
+            return this.isNegative;
+        };
+
+
+        public CollectionBuilder.Interface not () {
+            this.isNegative = true;
+            return this;
+        };
+    };
+
+	
     public class Group implements CollectionBuilder.Interface {
         private boolean isOptional = false;
         private boolean isNegative = true;
