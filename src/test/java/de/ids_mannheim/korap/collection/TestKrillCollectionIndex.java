@@ -304,7 +304,6 @@ public class TestKrillCollectionIndex {
         ki = new KrillIndex();
         FieldDocument fd = ki.addDoc(createDoc1());
         ki.commit();
-
         Analyzer ana = new TextAnalyzer();
         TokenStream ts = fd.doc.getField("text").tokenStream(ana, null);
 
@@ -409,7 +408,10 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.re("author", "Frank|Peter"));
         assertEquals(2, kcn.docCount());
 
-        // "Frau" doesn't work!
+		// "Frau" requires text request!
+		kcn.fromBuilder(cb.text("text", "Frau"));
+        assertEquals(1, kcn.docCount());
+
         kcn.fromBuilder(cb.term("text", "frau"));
         assertEquals(1, kcn.docCount());
 
@@ -429,12 +431,18 @@ public class TestKrillCollectionIndex {
         CollectionBuilder cb = new CollectionBuilder();
         KrillCollection kcn = new KrillCollection(ki);
 
+        kcn.fromBuilder(cb.term("text", "mann"));
+        assertEquals(1, kcn.docCount());
+
+		kcn.fromBuilder(cb.text("text", "Mann"));
+        assertEquals(1, kcn.docCount());
+
 		// Simple string tests
         kcn.fromBuilder(cb.text("text", "Der alte Mann"));
 
-		// Uses german analyzer for the moment
-		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"alt mann\")");
-        // assertEquals(3, kcn.docCount());
+		// Uses german analyzer for the createDocument
+		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"der alte mann\")");
+		assertEquals(1, kcn.docCount());
 	};
 
 

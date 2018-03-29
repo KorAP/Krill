@@ -8,11 +8,11 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.NumericRangeFilter;
-import org.apache.lucene.analysis.de.GermanAnalyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import de.ids_mannheim.korap.util.KrillDate;
+import de.ids_mannheim.korap.index.TextAnalyzer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,7 +216,7 @@ public class CollectionBuilder {
 		//    does too mzch, I guess.
         public Filter toFilter () {
 			StringReader reader = new StringReader(this.text);
-			GermanAnalyzer ga = new GermanAnalyzer();
+			TextAnalyzer ga = new TextAnalyzer();
 			PhraseQuery pq = new PhraseQuery();
 			int pos = 0;
 			try {

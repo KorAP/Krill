@@ -101,7 +101,8 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("-author:goethe", ks.getCollection().toString());
+        assertEquals("-QueryWrapperFilter(author:\"goethe\")",
+					 ks.getCollection().toString());
     };
 
 

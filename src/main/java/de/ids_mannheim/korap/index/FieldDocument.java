@@ -20,7 +20,11 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
 
+import org.apache.lucene.analysis.TokenStream;
+
 import java.util.*;
+import java.io.StringReader;
+import java.io.IOException;
 
 /*
   TODO: Store primary data at base/cons field.
@@ -50,6 +54,9 @@ import java.util.*;
 public class FieldDocument extends AbstractDocument {
     ObjectMapper mapper = new ObjectMapper();
 
+	@JsonIgnore
+	private TextAnalyzer analyzer = new TextAnalyzer();
+	
     @JsonIgnore
     public Document doc = new Document();
     private FieldType tvField = new FieldType(TextField.TYPE_STORED);
@@ -92,7 +99,14 @@ public class FieldDocument extends AbstractDocument {
 
 
     public void addText (String key, String value) {
-        doc.add(new TextField(key, value, Field.Store.YES));
+		Field textField = new Field(key, value, tvField);
+		try {
+			textField.tokenStream(this.analyzer, null);
+			doc.add(textField);
+		}
+		catch (IOException io) {
+			System.err.println(io);
+		};
     };
 
 
