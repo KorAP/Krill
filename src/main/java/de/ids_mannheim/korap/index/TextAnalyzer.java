@@ -17,11 +17,22 @@ import java.io.Reader;
  */
 
 public class TextAnalyzer extends Analyzer {
-
+	// private static String verbatim;
+	
     @Override
     protected TokenStreamComponents createComponents (final String fieldName) {
-        final Tokenizer source = new StandardTokenizer();
+		final Tokenizer source = new TextPrependTokenizer();
         TokenStream sink = new LowerCaseFilter(source);
-        return new TokenStreamComponents(source, sink);
+		// sink = new TextTokenFilter(sink);
+		// source.setVerbatim(this.verbatim);
+		return new TokenStreamComponents(source, sink);
     };
+
+
+	// Set verbatim
+	/*
+	public void setVerbatim (String value) {
+		this.verbatim = value;
+	}
+	*/
 };

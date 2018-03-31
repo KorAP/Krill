@@ -151,10 +151,10 @@ public class TestKrillCollectionIndex {
                 .with(cb.term("textClass", "kultur")));
         assertEquals(0, kcn.docCount());
 
-        kcn.fromBuilder(cb.term("text", "mann"));
+        kcn.fromBuilder(cb.term("text", "mann~"));
         assertEquals(3, kcn.docCount());
 
-        kcn.fromBuilder(cb.term("text", "frau"));
+        kcn.fromBuilder(cb.term("text", "frau~"));
         assertEquals(1, kcn.docCount());
     };
 
@@ -312,6 +312,8 @@ public class TestKrillCollectionIndex {
         ts.reset();
 
         ts.incrementToken();
+        assertEquals("[prepend]", charTermAttribute.toString());
+        ts.incrementToken();
         assertEquals("der", charTermAttribute.toString());
         ts.incrementToken();
         assertEquals("alte", charTermAttribute.toString());
@@ -412,13 +414,13 @@ public class TestKrillCollectionIndex {
 		kcn.fromBuilder(cb.text("text", "Frau"));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.term("text", "frau"));
+        kcn.fromBuilder(cb.term("text", "frau~"));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.re("text", "frau"));
+        kcn.fromBuilder(cb.re("text", "frau."));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.re("text", "frau|mann"));
+        kcn.fromBuilder(cb.re("text", "frau.|mann."));
         assertEquals(3, kcn.docCount());
     };
 
@@ -431,7 +433,7 @@ public class TestKrillCollectionIndex {
         CollectionBuilder cb = new CollectionBuilder();
         KrillCollection kcn = new KrillCollection(ki);
 
-        kcn.fromBuilder(cb.term("text", "mann"));
+        kcn.fromBuilder(cb.term("text", "mann~"));
         assertEquals(1, kcn.docCount());
 
 		kcn.fromBuilder(cb.text("text", "Mann"));
@@ -441,7 +443,7 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.text("text", "Der alte Mann"));
 
 		// Uses german analyzer for the createDocument
-		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"der alte mann\")");
+		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"der~ alte~ mann~\")");
 		assertEquals(1, kcn.docCount());
 	};
 
