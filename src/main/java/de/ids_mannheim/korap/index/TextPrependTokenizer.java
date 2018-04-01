@@ -5,14 +5,16 @@ package de.ids_mannheim.korap.index;
 // but prepends a verbatim string to the TokenStream
 
 import java.io.IOException;
+import java.io.Reader;
 
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
-//  de.ids_mannheim.korap.index.VerbatimAttr
 import org.apache.lucene.analysis.standard.StandardTokenizerImpl;
-
 import org.apache.lucene.util.AttributeFactory;
+import org.apache.lucene.util.AttributeSource;
+import org.apache.commons.io.IOUtils;
+import java.io.StringReader;
 
 
 public final class TextPrependTokenizer extends Tokenizer {
@@ -37,6 +39,14 @@ public final class TextPrependTokenizer extends Tokenizer {
 	}
 
 	private void init() {
+		/*try {
+			System.err.println(IOUtils.toString(reader));
+		}
+		catch (IOException io) {
+			System.err.println("Exception: " + io);
+		};
+		System.err.println(input.reset());
+		*/
 		this.scanner = new StandardTokenizerImpl(input);
 		this.init = true;
 	}

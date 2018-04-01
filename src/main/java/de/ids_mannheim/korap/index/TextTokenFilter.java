@@ -25,13 +25,13 @@ public final class TextTokenFilter extends TokenFilter {
   
 	@Override
 	public final boolean incrementToken() throws IOException {
+
 		// Prepend verbatim string
-		if (this.initTerm && this.verbatim != null) {
+		if (this.initTerm) {
 			clearAttributes();
-			termAtt.append(this.verbatim);
+			termAtt.append("[PREPEND2]");
             posIncrAtt.setPositionIncrement(10000);
 			this.initTerm = false;
-			this.verbatim = null;
 			return true;
 		};
 

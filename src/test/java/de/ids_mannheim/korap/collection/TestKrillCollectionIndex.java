@@ -312,6 +312,8 @@ public class TestKrillCollectionIndex {
         ts.reset();
 
         ts.incrementToken();
+        assertEquals("[PREPEND2]", charTermAttribute.toString());
+        ts.incrementToken();
         assertEquals("[prepend]", charTermAttribute.toString());
         ts.incrementToken();
         assertEquals("der", charTermAttribute.toString());
@@ -844,7 +846,7 @@ public class TestKrillCollectionIndex {
         fd.addString("author", "Frank");
         fd.addKeyword("textClass", "Nachricht Kultur Reisen");
         fd.addInt("pubDate", 20051210);
-        fd.addText("text", "Der alte Mann ging über die Straße");
+        fd.addText("text", "Der alte  Mann ging über die Straße");
         return fd;
     };
 
