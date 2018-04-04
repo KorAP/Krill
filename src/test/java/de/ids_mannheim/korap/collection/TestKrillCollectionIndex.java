@@ -6,7 +6,6 @@ import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.index.TextAnalyzer;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.util.StatusCodes;
@@ -151,10 +150,10 @@ public class TestKrillCollectionIndex {
                 .with(cb.term("textClass", "kultur")));
         assertEquals(0, kcn.docCount());
 
-        kcn.fromBuilder(cb.term("text", "mann~"));
+        kcn.fromBuilder(cb.term("text", "mann"));
         assertEquals(3, kcn.docCount());
 
-        kcn.fromBuilder(cb.term("text", "frau~"));
+        kcn.fromBuilder(cb.term("text", "frau"));
         assertEquals(1, kcn.docCount());
     };
 
@@ -300,39 +299,6 @@ public class TestKrillCollectionIndex {
 
 
     @Test
-    public void testIndexStream () throws IOException {
-        ki = new KrillIndex();
-        FieldDocument fd = ki.addDoc(createDoc1());
-        ki.commit();
-        Analyzer ana = new TextAnalyzer();
-        TokenStream ts = fd.doc.getField("text").tokenStream(ana, null);
-
-        CharTermAttribute charTermAttribute = ts
-                .addAttribute(CharTermAttribute.class);
-        ts.reset();
-
-        ts.incrementToken();
-        assertEquals("[PREPEND2]", charTermAttribute.toString());
-        ts.incrementToken();
-        assertEquals("[prepend]", charTermAttribute.toString());
-        ts.incrementToken();
-        assertEquals("der", charTermAttribute.toString());
-        ts.incrementToken();
-        assertEquals("alte", charTermAttribute.toString());
-        ts.incrementToken();
-        assertEquals("mann", charTermAttribute.toString());
-        ts.incrementToken();
-        assertEquals("ging", charTermAttribute.toString());
-        ts.incrementToken();
-        assertEquals("über", charTermAttribute.toString());
-        ts.incrementToken();
-        assertEquals("die", charTermAttribute.toString());
-        ts.incrementToken();
-        assertEquals("straße", charTermAttribute.toString());
-    };
-
-
-    @Test
     public void testIndexWithDateRanges () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createDoc1());
@@ -397,7 +363,7 @@ public class TestKrillCollectionIndex {
     public void testIndexWithRegexes () throws IOException {
         ki = new KrillIndex();
 
-        ki.addDoc(createDoc1());
+        FieldDocument fd = ki.addDoc(createDoc1());
         ki.addDoc(createDoc2());
         ki.addDoc(createDoc3());
         ki.commit();
@@ -416,15 +382,22 @@ public class TestKrillCollectionIndex {
 		kcn.fromBuilder(cb.text("text", "Frau"));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.term("text", "frau~"));
+        kcn.fromBuilder(cb.term("text", "frau"));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.re("text", "frau."));
+        kcn.fromBuilder(cb.re("text", "fra."));
         assertEquals(1, kcn.docCount());
 
-        kcn.fromBuilder(cb.re("text", "frau.|mann."));
+        kcn.fromBuilder(cb.re("text", "fra.|ma.n"));
         assertEquals(3, kcn.docCount());
-    };
+
+		String sv = fd.doc.getField("text").stringValue();
+		assertEquals("Der alte  Mann ging über die Straße", sv);
+
+        kcn.fromBuilder(cb.term("text", sv));
+        assertEquals(1, kcn.docCount());
+
+	};
 
 	@Test
     public void testIndexWithTextStringQueries () throws IOException {
@@ -435,18 +408,15 @@ public class TestKrillCollectionIndex {
         CollectionBuilder cb = new CollectionBuilder();
         KrillCollection kcn = new KrillCollection(ki);
 
-        kcn.fromBuilder(cb.term("text", "mann~"));
+        kcn.fromBuilder(cb.term("text", "mann"));
         assertEquals(1, kcn.docCount());
 
-		kcn.fromBuilder(cb.text("text", "Mann"));
+		kcn.fromBuilder(cb.term("text", "Der alte  Mann ging über die Straße"));
         assertEquals(1, kcn.docCount());
 
-		// Simple string tests
-        kcn.fromBuilder(cb.text("text", "Der alte Mann"));
-
-		// Uses german analyzer for the createDocument
-		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"der~ alte~ mann~\")");
-		assertEquals(1, kcn.docCount());
+		kcn.fromBuilder(cb.text("text", "Der alte Mann"));
+		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"der alte mann\")");
+        assertEquals(1, kcn.docCount());
 	};
 
 

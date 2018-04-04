@@ -53,9 +53,6 @@ import java.io.IOException;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FieldDocument extends AbstractDocument {
     ObjectMapper mapper = new ObjectMapper();
-
-	@JsonIgnore
-	private TextAnalyzer analyzer = new TextAnalyzer();
 	
     @JsonIgnore
     public Document doc = new Document();
@@ -99,14 +96,7 @@ public class FieldDocument extends AbstractDocument {
 
 
     public void addText (String key, String value) {
-		Field textField = new Field(key, value, tvField);
-		try {
-			textField.tokenStream(this.analyzer, null);
-			doc.add(textField);
-		}
-		catch (IOException io) {
-			System.err.println(io);
-		};
+		doc.add(new TextPrependedField(key, value));
     };
 
 

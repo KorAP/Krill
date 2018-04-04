@@ -12,7 +12,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import de.ids_mannheim.korap.util.KrillDate;
-import de.ids_mannheim.korap.index.TextAnalyzer;
+import de.ids_mannheim.korap.index.TextPrependedTokenStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -215,25 +215,24 @@ public class CollectionBuilder {
 		//   Currently this treatment is language specific and
 		//    does too mzch, I guess.
         public Filter toFilter () {
-			StringReader reader = new StringReader(this.text);
-			TextAnalyzer ga = new TextAnalyzer();
 			PhraseQuery pq = new PhraseQuery();
 			int pos = 0;
 			try {
-				TokenStream ts = ga.tokenStream(this.field , reader);
+				TextPrependedTokenStream tpts = new TextPrependedTokenStream(this.text);
+				tpts.doNotPrepend();
 				CharTermAttribute term;
-				ts.reset();
-				while (ts.incrementToken()) {
-					term = ts.getAttribute(CharTermAttribute.class);
+				tpts.reset();
+				while (tpts.incrementToken()) {
+					term = tpts.getAttribute(CharTermAttribute.class);
 					pq.add(new org.apache.lucene.index.Term(this.field, term.toString()), pos++);
 				};
-				ts.close();
+				tpts.close();
 			}
 			catch (IOException ie) {
 				System.err.println(ie);
 				return null;
 			};
-			reader.close();
+			
 			return new QueryWrapperFilter(pq);
         };
 
