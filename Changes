@@ -1,5 +1,8 @@
-0.57 2018-04-04
-        - [feature] Support text queries in metadata (diewald)
+0.57 2018-04-05
+        - [feature] Support text queries in metadata
+          (requires reindexing to work properly; diewald)
+        - [cleanup] Remove unnecessary case folding in meta field
+          text queries (diewald)
 
 0.56.2 2018-03-23
         - [feature] Introduce meta field retrieval method (diewald)

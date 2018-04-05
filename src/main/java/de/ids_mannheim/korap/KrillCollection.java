@@ -227,18 +227,21 @@ public final class KrillCollection extends Notifications {
                         return this.cb.term(key, json.get("value").asText())
                                 .not();
 
+						// Contains and containsnot (or excludes) is only
+						// effective on text fields and ineffective on
+						// string fields
                     case "match:contains":
                         return this.cb.text(key,
-                                json.get("value").asText().toLowerCase());
+                                json.get("value").asText());
 
                     case "match:containsnot":
                         return this.cb.text(key,
-                                json.get("value").asText().toLowerCase()).not();
+                                json.get("value").asText()).not();
 
                     // <LEGACY>
                     case "match:excludes":
                         return this.cb.text(key,
-                                json.get("value").asText().toLowerCase()).not();
+                                json.get("value").asText()).not();
                     // </LEGACY>
                 };
 
@@ -258,12 +261,22 @@ public final class KrillCollection extends Notifications {
                 else if (match.equals("match:ne")) {
                     return this.cb.re(key, json.get("value").asText()).not();
                 }
+
+				// Contains and containsnot (or excludes) is
+				// identical to eq and ne in case of regexes for the moment,
+				// though it may be beneficial to circumfix these
+				// with .*
                 else if (match.equals("match:contains")) {
                     return this.cb.re(key, json.get("value").asText());
                 }
+                else if (match.equals("match:containsnot")) {
+                    return this.cb.re(key, json.get("value").asText());
+                }
+				// <LEGACY>
                 else if (match.equals("match:excludes")) {
                     return this.cb.re(key, json.get("value").asText()).not();
                 };
+				// </LEGACY>
 
                 throw new QueryException(841,
                         "Match relation unknown for type");
