@@ -186,7 +186,7 @@ public class TestKrillIndex {
     };
 
 
-    @Test
+	@Test
     public void indexRetrieveFieldInfo () throws IOException {
         KrillIndex ki = new KrillIndex();
 

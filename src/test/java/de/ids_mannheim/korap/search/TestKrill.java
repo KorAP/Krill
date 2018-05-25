@@ -1320,4 +1320,30 @@ public class TestKrill {
         assertEquals(25, kr.getItemsPerPage());
     };
 
+	@Test
+    public void searchLongMatch () throws IOException {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        ki.addDoc(
+                getClass().getResourceAsStream("/goe/AGX-00002.json"),
+                false);
+        ki.commit();
+
+        Krill k = new Krill(new QueryBuilder("tokens").tag("xy/z:long"));
+
+        assertEquals(k.getSpanQuery().toString(), "<tokens:xy/z:long />");
+
+        Result kr = k.apply(ki);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(2, kr.getMatch(0).getStartPos());
+        assertEquals(52, kr.getMatch(0).getEndPos());
+        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+                "Maximen und [[Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur]<!>], so hat er sie gleich in ...");
+        assertEquals(kr.getMatch(0).getSnippetHTML(),
+                "<span class=\"context-left\">Maximen und </span><span class=\"match\"><mark>Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur</mark><span class=\"cutted\"></span></span><span class=\"context-right\">, so hat er sie gleich in<span class=\"more\"></span></span>");
+        assertEquals(kr.getMatch(0).getTextSigle(), "GOE_AGX.00002");
+    };
+
 };

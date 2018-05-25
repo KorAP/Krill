@@ -84,6 +84,8 @@ public class Match extends AbstractDocument {
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Match.class);
 
+	private static final int MAX_MATCH_TOKENS = 50;
+	
 	// end marker of highlights that are pagebreaks
 	private static final int PB_MARKER = -99999;
 
@@ -109,6 +111,9 @@ public class Match extends AbstractDocument {
 
     @JsonIgnore
     public int potentialStartPosChar = -1, potentialEndPosChar = -1;
+
+	@JsonIgnore
+	public boolean cutted = false;
 
     private String version;
 
@@ -168,8 +173,8 @@ public class Match extends AbstractDocument {
                   int endPos) {
         this.positionsToOffset = pto;
         this.localDocID = localDocID;
-        this.startPos = startPos;
-        this.endPos = endPos;
+        this.setStartPos(startPos);
+        this.setEndPos(endPos);
     };
 
 
@@ -340,7 +345,7 @@ public class Match extends AbstractDocument {
                             this.potentialStartPosChar = bb.getInt(1);
                     };
 
-                    if (bb.getInt(4) > this.potentialEndPosChar)
+                    if (bb.getInt(4) > this.potentialEndPosChar && !this.cutted)
                         this.potentialEndPosChar = bb.getInt(5);
 
                     if (DEBUG)
@@ -572,6 +577,10 @@ public class Match extends AbstractDocument {
     @JsonIgnore
     public void setStartPos (int pos) {
         this.startPos = pos;
+		if (this.endPos != -1 && (this.endPos - pos) > MAX_MATCH_TOKENS) {
+			this.endPos = pos + MAX_MATCH_TOKENS;
+			this.cutted = true;
+		};
     };
 
 
@@ -615,6 +624,10 @@ public class Match extends AbstractDocument {
      */
     @JsonIgnore
     public void setEndPos (int pos) {
+		if (this.startPos != -1 && (pos - this.startPos) > MAX_MATCH_TOKENS) {
+			pos = this.startPos + MAX_MATCH_TOKENS;
+			this.cutted = true;
+		};
         this.endPos = pos;
     };
 
@@ -1425,6 +1438,9 @@ public class Match extends AbstractDocument {
 				sb.append(elemString);
 			}
         };
+		if (this.cutted) {
+			sb.append("<span class=\"cutted\"></span>");
+		};
         sb.append("</span>");
         sb.append(rightContext);
 
@@ -1475,6 +1491,9 @@ public class Match extends AbstractDocument {
             sb.append(this.snippetArray.get(i).toBrackets(this));
         };
 
+		if (this.cutted) {
+			sb.append("<!>");
+		};
         sb.append("]");
         sb.append(rightContext);
 
