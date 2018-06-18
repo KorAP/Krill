@@ -243,7 +243,8 @@ public class TestFieldDocument {
     public static String getString (String path) {
         StringBuilder contentBuilder = new StringBuilder();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(path));
+			BufferedReader in = new BufferedReader(new FileReader(path));
+
             String str;
             while ((str = in.readLine()) != null) {
                 contentBuilder.append(str);

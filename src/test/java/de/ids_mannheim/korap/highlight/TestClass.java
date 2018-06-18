@@ -3,9 +3,7 @@ package de.ids_mannheim.korap.highlight;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URLDecoder;
 
 import org.apache.lucene.search.spans.SpanQuery;
@@ -101,7 +99,7 @@ public class TestClass {
     private String readFile (String path) {
         StringBuilder sb = new StringBuilder();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(path));
+			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(URLDecoder.decode(path, "UTF-8")), "UTF-8"));
             String str;
             while ((str = in.readLine()) != null) {
                 sb.append(str);
