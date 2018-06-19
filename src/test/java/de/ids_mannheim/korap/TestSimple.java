@@ -117,7 +117,12 @@ public class TestSimple {
 
         StringBuilder contentBuilder = new StringBuilder();
         try {			
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(URLDecoder.decode(path, "UTF-8")), "UTF-8"));
+			BufferedReader in = new BufferedReader(
+				new InputStreamReader(
+					new FileInputStream(URLDecoder.decode(path, "UTF-8")),
+					"UTF-8"
+					)
+				);
             String str;
             while ((str = in.readLine()) != null) {
                 contentBuilder.append(str);

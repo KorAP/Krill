@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 
 import java.io.*;
 import java.net.URLDecoder;
+import static de.ids_mannheim.korap.TestSimple.*;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -1102,10 +1103,8 @@ public class TestWithinIndex {
     // contains(<s>, (es wird | wird es))
     @Test
     public void queryJSONpoly2 () throws QueryException, IOException {
-        String jsonPath = URLDecoder.decode(
-                getClass().getResource("/queries/poly2.json").getFile(),
-                "UTF-8");
-        String jsonPQuery = readFile(jsonPath);
+        String jsonPath = getClass().getResource("/queries/poly2.json").getFile();
+        String jsonPQuery = getJsonString(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonPQuery);
 
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
@@ -1140,10 +1139,9 @@ public class TestWithinIndex {
           at de.ids_mannheim.korap.Krill.apply(Krill.java:304)
         */
 
-        String jsonPath = URLDecoder.decode(getClass()
-                .getResource("/queries/bugs/span_or_bug.jsonld").getFile(),
-                "UTF-8");
-        String jsonPQuery = readFile(jsonPath);
+        String jsonPath = getClass()
+                .getResource("/queries/bugs/span_or_bug.jsonld").getFile();
+        String jsonPQuery = getJsonString(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonPQuery);
 
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
@@ -1163,22 +1161,4 @@ public class TestWithinIndex {
         Result kr = ki.search(sq, (short) 1);
         assertEquals(1, kr.getTotalResults());
     }
-
-
-
-    private String readFile (String path) {
-        StringBuilder sb = new StringBuilder();
-        try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(URLDecoder.decode(path, "UTF-8")), "UTF-8"));
-            String str;
-            while ((str = in.readLine()) != null) {
-                sb.append(str);
-            };
-            in.close();
-        }
-        catch (IOException e) {
-            fail(e.getMessage());
-        }
-        return sb.toString();
-    };
 };

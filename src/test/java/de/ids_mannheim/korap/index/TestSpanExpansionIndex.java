@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.*;
-import java.net.URLDecoder;
+import static de.ids_mannheim.korap.TestSimple.*;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.RegexpQuery;
@@ -296,10 +296,8 @@ public class TestSpanExpansionIndex {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.commit();
-        String jsonPath = URLDecoder.decode(
-                getClass().getResource("/queries/poly3.json").getFile(),
-                "UTF-8");
-        String jsonQuery = readFile(jsonPath);
+        String jsonPath = getClass().getResource("/queries/poly3.json").getFile();
+        String jsonQuery = getJsonString(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
         SpanQuery sq = sqwi.toQuery();
@@ -396,10 +394,9 @@ public class TestSpanExpansionIndex {
         ki.addDoc(createFieldDoc3());
         ki.addDoc(createFieldDoc4());
         ki.commit();
-        String jsonPath = URLDecoder.decode(getClass()
-                .getResource("/queries/bugs/expansion_bug_3.jsonld").getFile(),
-                "UTF-8");
-        String json = readFile(jsonPath);
+        String jsonPath = getClass()
+                .getResource("/queries/bugs/expansion_bug_3.jsonld").getFile();
+        String json = getJsonString(jsonPath);
         KrillQuery kq = new KrillQuery("base");
         SpanQuery sq = kq.fromKoral(json).toQuery();
         assertEquals(sq.toString(),
@@ -569,22 +566,6 @@ public class TestSpanExpansionIndex {
                         + "[(55-59)s:efeu|_8$<i>55<i>59]"
                         + "[(60-64)s:effe|_9$<i>60<i>64]");
         return fd;
-    }
-
-    private String readFile (String path) {
-        StringBuilder sb = new StringBuilder();
-        try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(URLDecoder.decode(path, "UTF-8")), "UTF-8"));
-            String str;
-            while ((str = in.readLine()) != null) {
-                sb.append(str);
-            }
-            in.close();
-        }
-        catch (IOException e) {
-            fail(e.getMessage());
-        }
-        return sb.toString();
     }
 
     private Krill _newKrill (SpanQueryWrapper query) {

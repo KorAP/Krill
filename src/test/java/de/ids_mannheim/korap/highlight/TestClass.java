@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.*;
-import java.net.URLDecoder;
+import static de.ids_mannheim.korap.TestSimple.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
@@ -28,10 +28,8 @@ public class TestClass {
     @Test
     public void queryJSONpoly1 () throws QueryException, IOException {
 
-        String jsonPath = URLDecoder.decode(
-                getClass().getResource("/queries/poly1.json").getFile(),
-                "UTF-8");
-        String jsonQuery = readFile(jsonPath);
+        String jsonPath = getClass().getResource("/queries/poly1.json").getFile();
+        String jsonQuery = getJsonString(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
         SpanNextQuery sq = (SpanNextQuery) sqwi.toQuery();
@@ -64,10 +62,8 @@ public class TestClass {
     @Test
     public void queryJSONpoly4 () throws QueryException, IOException {
 
-        String jsonPath = URLDecoder.decode(
-                getClass().getResource("/queries/poly4.json").getFile(),
-                "UTF-8");
-        String jsonQuery = readFile(jsonPath);
+        String jsonPath = getClass().getResource("/queries/poly4.json").getFile();
+        String jsonQuery = getJsonString(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
         SpanQuery sq = sqwi.toQuery();
 
@@ -93,22 +89,5 @@ public class TestClass {
         assertEquals(5, kr.getMatch(0).getEndPos());
 
         //fail("Tests have to be updated");
-    }
-
-
-    private String readFile (String path) {
-        StringBuilder sb = new StringBuilder();
-        try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(URLDecoder.decode(path, "UTF-8")), "UTF-8"));
-            String str;
-            while ((str = in.readLine()) != null) {
-                sb.append(str);
-            };
-            in.close();
-        }
-        catch (IOException e) {
-            fail(e.getMessage());
-        }
-        return sb.toString();
     }
 }

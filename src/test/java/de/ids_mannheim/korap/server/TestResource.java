@@ -9,6 +9,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.client.Entity;
 
+import static de.ids_mannheim.korap.TestSimple.*;
+
 import org.glassfish.grizzly.http.server.HttpServer;
 
 import static org.junit.Assert.*;
@@ -17,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.FileInputStream;
-import java.net.URLDecoder;
 
 import de.ids_mannheim.korap.server.Node;
 import de.ids_mannheim.korap.response.Result;
@@ -248,7 +249,7 @@ public class TestResource {
     public void testCollection () throws IOException {
 
         // mate/l:sein
-        String json = getString(getClass()
+        String json = getJsonString(getClass()
                 .getResource("/queries/bsp-uid-example.jsonld").getFile());
 
         try {
@@ -263,22 +264,5 @@ public class TestResource {
                     + " (Known issue)");
         };
 
-    };
-
-
-    public static String getString (String path) {
-        StringBuilder contentBuilder = new StringBuilder();
-        try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(URLDecoder.decode(path, "UTF-8")), "UTF-8"));
-            String str;
-            while ((str = in.readLine()) != null) {
-                contentBuilder.append(str);
-            };
-            in.close();
-        }
-        catch (IOException e) {
-            fail(e.getMessage());
-        };
-        return contentBuilder.toString();
     };
 };

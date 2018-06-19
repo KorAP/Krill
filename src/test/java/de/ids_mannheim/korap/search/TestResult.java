@@ -2,7 +2,7 @@ package de.ids_mannheim.korap.search;
 
 import java.util.*;
 import java.io.*;
-import java.net.URLDecoder;
+import static de.ids_mannheim.korap.TestSimple.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
@@ -110,7 +110,7 @@ public class TestResult {
         ki.addDoc(fd);
         ki.commit();
 
-        String json = getString(getClass()
+        String json = getJsonString(getClass()
                 .getResource("/queries/bugs/optionality_warning.jsonld")
                 .getFile());
         Krill ks = new Krill(json);
@@ -148,7 +148,7 @@ public class TestResult {
         // Commit!
         ki.commit();
 
-        String json = getString(getClass()
+        String json = getJsonString(getClass()
                 .getResource("/queries/bsp-result-check.jsonld").getFile());
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -259,23 +259,5 @@ public class TestResult {
         assertEquals(1, res.at("/matches/2/tokens/0/1").asInt());
         assertEquals(1, res.at("/matches/2/tokens/1/0").asInt());
         assertEquals(2, res.at("/matches/2/tokens/1/1").asInt());
-    };
-
-
-    public static String getString (String path) {
-        StringBuilder contentBuilder = new StringBuilder();
-        try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(URLDecoder.decode(path, "UTF-8")), "UTF-8"));
-
-            String str;
-            while ((str = in.readLine()) != null) {
-                contentBuilder.append(str);
-            };
-            in.close();
-        }
-        catch (IOException e) {
-            fail(e.getMessage());
-        }
-        return contentBuilder.toString();
     };
 };

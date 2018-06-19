@@ -2,9 +2,7 @@ package de.ids_mannheim.korap.query;
 
 import java.util.*;
 import java.io.*;
-import java.net.URLDecoder;
-import java.nio.file.Path;
-import java.nio.file.Files;
+import static de.ids_mannheim.korap.TestSimple.*;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
@@ -418,7 +416,7 @@ public class TestKrillQueryJSON {
     public void queryJSONunderspecifiedTokenBug () {
         // ((MORPH(APPR) ODER MORPH(APPRART)) /+w1 Urlaub
         try {
-            String json = getString(getClass()
+            String json = getJsonString(getClass()
                     .getResource("/queries/bugs/underspecified_token.jsonld")
                     .getFile());
             new KrillQuery("tokens").fromKoral(json);
@@ -489,21 +487,21 @@ public class TestKrillQueryJSON {
     public void queryJSONflags2 () throws QueryException {
         // buchstabe/i
         try {
-            String json = getString(getClass()
+            String json = getJsonString(getClass()
                     .getResource("/queries/flags/unknown1.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
             assertEquals(kq.fromKoral(json).toQuery().toString(),
                     "tokens:s:buchstabe");
             assertEquals(kq.getWarning(0).getCode(), 748);
 
-            json = getString(getClass()
+            json = getJsonString(getClass()
                     .getResource("/queries/flags/unknown2.jsonld").getFile());
             kq = new KrillQuery("tokens");
             assertEquals(kq.fromKoral(json).toQuery().toString(),
                     "tokens:i:buchstabe");
             assertEquals(kq.getWarning(0).getCode(), 748);
 
-            json = getString(getClass()
+            json = getJsonString(getClass()
                     .getResource("/queries/flags/unknown3.jsonld").getFile());
             kq = new KrillQuery("tokens");
             assertEquals(kq.fromKoral(json).toQuery().toString(),
@@ -521,7 +519,7 @@ public class TestKrillQueryJSON {
     public void queryJSONelement () throws QueryException {
         // <base/s=s>
         try {
-            String json = getString(getClass()
+            String json = getJsonString(getClass()
                     .getResource("/queries/element/simple-element.jsonld")
                     .getFile());
             KrillQuery kq = new KrillQuery("tokens");
@@ -539,7 +537,7 @@ public class TestKrillQueryJSON {
     public void queryJSONinfiniteExpansion () throws QueryException {
         // der []*
         try {
-            String json = getString(getClass()
+            String json = getJsonString(getClass()
                     .getResource("/queries/bugs/expansion_bug_3.jsonld")
                     .getFile());
             KrillQuery kq = new KrillQuery("tokens");
@@ -557,7 +555,7 @@ public class TestKrillQueryJSON {
     public void queryJSONcomplexSpanOrTerm () throws QueryException {
         // startsWith(<base/s=s>, { lassen | laufen })
         try {
-            String json = getString(getClass()
+            String json = getJsonString(getClass()
                     .getResource("/queries/bugs/span_or_bug.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
@@ -574,7 +572,7 @@ public class TestKrillQueryJSON {
     public void queryJSONdistancesWithRegexes () throws QueryException {
         // "der" []{2,3} [opennlp/p="NN"]
         try {
-            String json = getString(getClass()
+            String json = getJsonString(getClass()
                     .getResource(
                             "/queries/bugs/distances_with_regex_bug.jsonld")
                     .getFile());
@@ -592,7 +590,7 @@ public class TestKrillQueryJSON {
     @Test
     public void queryJSONregexRewrite1 () throws QueryException {
         // "der" [.+?]
-        String json = getString(getClass()
+        String json = getJsonString(getClass()
                 .getResource("/queries/sequence/regex-rewrite-1.jsonld")
                 .getFile());
         KrillQuery kq = new KrillQuery("tokens");
@@ -605,7 +603,7 @@ public class TestKrillQueryJSON {
     @Test
     public void queryJSONmerge () throws QueryException {
         // treat merging gracefully
-        String json = getString(getClass()
+        String json = getJsonString(getClass()
                 .getResource("/queries/merge.jsonld")
                 .getFile());
         KrillQuery kq = new KrillQuery("tokens");
@@ -615,29 +613,12 @@ public class TestKrillQueryJSON {
     };
 	
 
-    public static String getString (String path) {
-        StringBuilder contentBuilder = new StringBuilder();
-        try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(URLDecoder.decode(path, "UTF-8")), "UTF-8"));
-
-            String str;
-            while ((str = in.readLine()) != null) {
-                contentBuilder.append(str);
-            };
-            in.close();
-        }
-        catch (IOException e) {
-            fail(e.getMessage());
-        }
-        return contentBuilder.toString();
-    };
-
-
+	// TODO: Probably replace with getJSONQuery
     public static SpanQueryWrapper jsonQuery (String jsonFile) {
         SpanQueryWrapper sqwi;
 
         try {
-            String json = getString(jsonFile);
+            String json = getJsonString(jsonFile);
             sqwi = new KrillQuery("tokens").fromKoral(json);
         }
         catch (QueryException e) {

@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 
 import java.util.*;
 import java.io.*;
-import java.net.URLDecoder;
+import static de.ids_mannheim.korap.TestSimple.*;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -244,9 +244,7 @@ public class TestElementDistanceIndex {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
 
-        String jsonPath = URLDecoder.decode(
-                getClass().getResource("/queries/cosmas1.json").getFile(),
-                "UTF-8");
+        String jsonPath = getClass().getResource("/queries/cosmas1.json").getFile();
         SpanQueryWrapper sqwi = jsonQuery(jsonPath);
         kr = ki.search(sqwi.toQuery(), (short) 10);
 
@@ -274,9 +272,8 @@ public class TestElementDistanceIndex {
         assertEquals(kr.getTotalResults(), 1);
         assertEquals("[[ecebdc]]", kr.getMatch(0).getSnippetBrackets());
 
-        String jsonPath = URLDecoder.decode(getClass()
-                .getResource("/queries/distances/in-same-t.jsonld").getFile(),
-                "UTF-8");
+        String jsonPath = getClass()
+                .getResource("/queries/distances/in-same-t.jsonld").getFile();
         sqwi = jsonQuery(jsonPath);
 
         assertEquals(
@@ -288,29 +285,13 @@ public class TestElementDistanceIndex {
         assertEquals("[[ec]]ebdc", kr.getMatch(0).getSnippetBrackets());
     }
 
-
-    public static String getString (String path) {
-        StringBuilder contentBuilder = new StringBuilder();
-        try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(URLDecoder.decode(path, "UTF-8")), "UTF-8"));
-            String str;
-            while ((str = in.readLine()) != null) {
-                contentBuilder.append(str);
-            }
-            in.close();
-        }
-        catch (IOException e) {
-            fail(e.getMessage());
-        }
-        return contentBuilder.toString();
-    }
-
-
+	// TODO:
+	// probably replace with getJSONQuery()
     public static SpanQueryWrapper jsonQuery (String jsonFile) {
         SpanQueryWrapper sqwi;
 
         try {
-            String json = getString(jsonFile);
+            String json = getJsonString(jsonFile);
             sqwi = new KrillQuery("tokens").fromKoral(json);
         }
         catch (QueryException e) {
