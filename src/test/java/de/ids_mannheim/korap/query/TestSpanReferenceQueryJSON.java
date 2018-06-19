@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.query;
 
-import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
+import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class TestSpanReferenceQueryJSON {
                 .getResource(
                         "/queries/reference/first-operand-reference.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
         // 'cat="V" & cat="NP" & cat="PP" & #2 . #1 & #1 ->dep #3 &
@@ -42,7 +42,7 @@ public class TestSpanReferenceQueryJSON {
                 .getResource(
                         "/queries/reference/second-operand-reference.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
         // 'cat="V" & cat="NP" & cat="PP" & #2 . #1 & #1 ->dep #3 &
@@ -61,7 +61,7 @@ public class TestSpanReferenceQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/reference/multiple-references.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
         // 'cat="VP" & cat="NP" & cat="PP" & #1 . #2 & #2 . #3 & #1 .
@@ -84,7 +84,7 @@ public class TestSpanReferenceQueryJSON {
                 .getResource(
                         "/queries/reference/bug-multiple-distance-simple.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
         assertEquals(
@@ -95,7 +95,7 @@ public class TestSpanReferenceQueryJSON {
         filepath = getClass()
                 .getResource("/queries/reference/bug-multiple-distance.jsonld")
                 .getFile();
-        sqwi = getJSONQuery(filepath);
+        sqwi = getJsonQuery(filepath);
         sq = sqwi.toQuery();
 
         // 'cat="VP" & cat="NP" & cat="PP" & #1 . #2 & #2 . #3 & #1 .

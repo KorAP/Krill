@@ -96,18 +96,10 @@ public class TestSimple {
 
 
     // Get query wrapper based on json file
-    public static SpanQueryWrapper getJSONQuery (String jsonFile) throws QueryException {
+    public static SpanQueryWrapper getJsonQuery (String jsonFile) throws QueryException {
         SpanQueryWrapper sqwi;
-
-//        try {
-            String json = getJsonString(jsonFile);
-            sqwi = new KrillQuery("tokens").fromKoral(json);
-//        }
-//        catch (QueryException e) {
-//            //fail(e.getMessage());
-//            log.error(e.getMessage());
-//            sqwi = new QueryBuilder("tokens").seg("???");
-//        };        
+		String json = getJsonString(jsonFile);
+		sqwi = new KrillQuery("tokens").fromKoral(json);
         return sqwi;
     };
 

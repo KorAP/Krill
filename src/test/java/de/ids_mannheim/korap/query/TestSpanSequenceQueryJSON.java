@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.query;
 
-import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
+import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -402,7 +402,7 @@ public class TestSpanSequenceQueryJSON {
 	@Test
     public void queryJSONcosmas2Bug () throws QueryException {
 
-        SpanQueryWrapper sqwi = getJSONQuery(getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld").getFile());
+        SpanQueryWrapper sqwi = getJsonQuery(getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld").getFile());
         SpanQuery sq = sqwi.toQuery();
         // meine* /+w1:2,s0 &Erfahrung
         assertEquals(sq.toString(),"spanMultipleDistance({129: SpanMultiTermQueryWrapper(tokens:s:meine*)}, "+
@@ -416,6 +416,6 @@ public class TestSpanSequenceQueryJSON {
 
     // get query wrapper based on json file
     public SpanQueryWrapper jsonQueryFile (String filename) throws QueryException {
-        return getJSONQuery(getClass().getResource(path + filename).getFile());
+        return getJsonQuery(getClass().getResource(path + filename).getFile());
     };
 };

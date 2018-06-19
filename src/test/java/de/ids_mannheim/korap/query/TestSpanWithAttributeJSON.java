@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.query;
 
-import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
+import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.lucene.search.spans.SpanQuery;
@@ -22,7 +22,7 @@ public class TestSpanWithAttributeJSON {
                 .getResource(
                         "/queries/attribute/element-single-attribute.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "spanElementWithAttribute(<tokens:head />, spanAttribute(tokens:type:top))",
@@ -36,7 +36,7 @@ public class TestSpanWithAttributeJSON {
                 .getResource(
                         "/queries/attribute/element-single-not-attribute.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "spanElementWithAttribute(<tokens:head />, spanAttribute(!tokens:type:top))",
@@ -50,7 +50,7 @@ public class TestSpanWithAttributeJSON {
                 .getResource(
                         "/queries/attribute/element-multiple-and-not-attributes.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "spanElementWithAttribute(<tokens:div />, [spanAttribute(tokens:type:Zeitschrift), "
@@ -65,7 +65,7 @@ public class TestSpanWithAttributeJSON {
                 .getResource(
                         "/queries/attribute/element-multiple-or-attributes.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "spanOr([spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:type:Zeitschrift)), "
@@ -81,7 +81,7 @@ public class TestSpanWithAttributeJSON {
                 .getResource(
                         "/queries/attribute/any-element-with-attribute.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals("spanWithAttribute(spanAttribute(tokens:type:top))",
                 sq.toString());
@@ -95,7 +95,7 @@ public class TestSpanWithAttributeJSON {
                 .getResource(
                         "/queries/attribute/any-element-with-multiple-or-attributes.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "spanOr([spanWithAttribute(spanAttribute(tokens:type:Zeitschrift)), "
@@ -112,7 +112,7 @@ public class TestSpanWithAttributeJSON {
                 .getResource(
                         "/queries/attribute/any-element-with-multiple-and-not-attributes.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "spanWithAttribute([spanAttribute(tokens:type:Zeitschrift), "
@@ -129,7 +129,7 @@ public class TestSpanWithAttributeJSON {
                 .getResource(
                         "/queries/attribute/any-element-with-single-not-attribute.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         //        assertEquals("tokens:???", sq.toString());
     }

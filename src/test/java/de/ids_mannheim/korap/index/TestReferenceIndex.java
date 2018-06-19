@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.index;
 
-import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
+import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -92,7 +92,7 @@ public class TestReferenceIndex {
         String filepath = getClass()
                 .getResource("/queries/reference/distance-reference.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
         // cat="vb" & cat="prp" & cat="nn" & #1 .{0,1} #2 & #1
@@ -187,7 +187,7 @@ public class TestReferenceIndex {
                 .getResource(
                         "/queries/reference/distance-multiple-references.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
         // 'cat="vb" & cat="prp" & cat="nn" & #1 .{0,1} #2 & #1 .{0,2}
@@ -226,7 +226,7 @@ public class TestReferenceIndex {
         String filepath = getClass()
                 .getResource("/queries/reference/distance-reference.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
         kr = ki.search(sq, (short) 10);

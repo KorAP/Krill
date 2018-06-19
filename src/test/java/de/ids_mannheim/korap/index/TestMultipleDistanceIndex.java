@@ -1,7 +1,6 @@
 package de.ids_mannheim.korap.index;
 
-import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
-import static de.ids_mannheim.korap.TestSimple.getJsonString;
+import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -265,7 +264,7 @@ public class TestMultipleDistanceIndex {
         ki.commit();
 
         // treat merging gracefully
-		SpanQueryWrapper sqw = getJSONQuery(
+		SpanQueryWrapper sqw = getJsonQuery(
 			getClass().getResource("/queries/bugs/cosmas_wildcards_missingfoundry.jsonld")
 			.getFile());
 		SpanQuery sq = sqw.toQuery();

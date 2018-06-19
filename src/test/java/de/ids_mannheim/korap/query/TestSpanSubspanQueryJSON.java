@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.query;
 
-import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
+import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.lucene.search.spans.SpanQuery;
@@ -19,7 +19,7 @@ public class TestSpanSubspanQueryJSON {
         // subspan(tokens:tt/l:Haus, 0, 1)
         String filepath = getClass()
                 .getResource("/queries/submatch/termquery.jsonld").getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals("tokens:tt/l:Haus", sq.toString());
     }
@@ -31,7 +31,7 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/term-start-offset.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals("tokens:tt/l:Haus", sq.toString());
     }
@@ -42,7 +42,7 @@ public class TestSpanSubspanQueryJSON {
         // subspan(tokens:tt/l:Haus, 1, 1)
         String filepath = getClass()
                 .getResource("/queries/submatch/term-null.jsonld").getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(null, sq);
     }
@@ -54,7 +54,7 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/simpleElement.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "subspan(spanContain(<tokens:s />, tokens:tt/l:Haus), 1, 4)",
@@ -67,7 +67,7 @@ public class TestSpanSubspanQueryJSON {
         // submatch(1,:<s>)
         String filepath = getClass()
                 .getResource("/queries/submatch/noLength.jsonld").getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals("subspan(<tokens:s />, 1, 0)", sq.toString());
     }
@@ -78,7 +78,7 @@ public class TestSpanSubspanQueryJSON {
         // submatch(-1,4:<s>)
         String filepath = getClass()
                 .getResource("/queries/submatch/minusStart.jsonld").getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals("subspan(<tokens:s />, -1, 4)", sq.toString());
     }
@@ -91,7 +91,7 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/empty-minusStart.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "subspan(spanExpansion(tokens:s:der, []{1, 8}, right), -1, 4)",
@@ -105,7 +105,7 @@ public class TestSpanSubspanQueryJSON {
         // submatch(1,2:der []{1,8})
         String filepath = getClass()
                 .getResource("/queries/submatch/empty-max.jsonld").getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "subspan(spanExpansion(tokens:s:der, []{1, 8}, right), 1, 2)",
@@ -117,7 +117,7 @@ public class TestSpanSubspanQueryJSON {
     public void testCaseEmptyWrapped () throws QueryException {
         String filepath = getClass()
                 .getResource("/queries/submatch/wrapped.jsonld").getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "focus(129: spanElementDistance({129: tokens:s:der}, {129: subspan"
@@ -131,7 +131,7 @@ public class TestSpanSubspanQueryJSON {
         // die subspan(der []{1,}, 2,3)
         String filepath = getClass()
                 .getResource("/queries/submatch/embedded.jsonld").getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "spanNext({1: tokens:s:die}, {1: subspan(spanExpansion("
@@ -147,7 +147,7 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/embedded-null.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals("tokens:s:die", sq.toString());
     }
@@ -159,7 +159,7 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/embedded-valid-empty.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:die, []{2, 5}, right)}))",
@@ -173,7 +173,7 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/negative-token.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals("tokens:l:Baum", sq.toString());
     }
@@ -184,7 +184,7 @@ public class TestSpanSubspanQueryJSON {
         // das submatch(0,1:[base != Baum])
         String filepath = getClass()
                 .getResource("/queries/submatch/negative-seq.jsonld").getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right)}))",
@@ -198,7 +198,7 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/negative-sequence-class.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right, class:1)}))",
@@ -212,7 +212,7 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/embedded-negative-seq.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "subspan(spanExpansion(tokens:s:das, !tokens:l:Baum{1, 1}, right), 1, 1)",
@@ -227,7 +227,7 @@ public class TestSpanSubspanQueryJSON {
                 .getResource(
                         "/queries/submatch/embedded-negative-class-seq.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "subspan({1: spanExpansion(tokens:s:dass, !tokens:l:Baum{1, 1}, left)}, 0, 1)",
@@ -242,7 +242,7 @@ public class TestSpanSubspanQueryJSON {
                 .getResource(
                         "/queries/submatch/embedded-negative-repetition.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "subspan(spanExpansion(tokens:s:das, !tokens:l:Baum{1, 3}, right), 1, 1)",
@@ -256,7 +256,7 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/negative-repetition.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:das, !tokens:l:Baum{2, 2}, right)}))",

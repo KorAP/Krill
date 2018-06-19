@@ -1,7 +1,6 @@
 package de.ids_mannheim.korap.index;
 
-import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
-import static de.ids_mannheim.korap.TestSimple.getJsonString;
+import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -75,7 +74,7 @@ public class TestSampleIndex {
         String filepath = getClass()
                 .getResource("/queries/relation/lemma-bug.json")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
         kr = sample.search(sq, (short) 10);
@@ -121,7 +120,7 @@ public class TestSampleIndex {
         assertEquals(4, kr.getMatches().size());
 
         // check SpanQueryWrapper generated query
-        SpanQueryWrapper sqwi = getJSONQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld")
                         .getFile());
         SpanQuery jsq = sqwi.toQuery();
@@ -131,7 +130,7 @@ public class TestSampleIndex {
 
     @Test
     public void testWildcardsWithJson () throws IOException, QueryException {
-        SpanQueryWrapper sqwi = getJSONQuery(getClass()
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
                 .getFile());
         SpanQuery sq = sqwi.toQuery();

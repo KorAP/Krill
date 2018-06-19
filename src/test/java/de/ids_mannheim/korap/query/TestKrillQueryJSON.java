@@ -22,7 +22,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp1 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp1.jsonld").getFile());
 
         // There is a repetition in here
@@ -35,7 +35,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp1Disjunction () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp1c.jsonld").getFile());
 
         // There is a repetition in here
@@ -49,7 +49,7 @@ public class TestKrillQueryJSON {
     @Test
     public void queryJSONBsp1b () throws QueryException {
 
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp1b.jsonld").getFile());
 
         // [base=foo]|([base=foo][base=bar]) meta author=Goethe&year=1815
@@ -60,7 +60,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp2 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp2.jsonld").getFile());
 
         // ([base=foo]|[base=bar])[base=foobar]
@@ -71,7 +71,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp3 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp3.jsonld").getFile());
 
         // focus({[base=Mann]})
@@ -82,7 +82,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp4 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp4.jsonld").getFile());
 
         // focus({[base=foo]}[orth=bar])
@@ -93,7 +93,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp5 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp5.jsonld").getFile());
 
         // focus(1:[base=Der]{1:[base=Mann]}) 
@@ -104,7 +104,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp6 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp6.jsonld").getFile());
 
         // [base=katze]
@@ -114,7 +114,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp7 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp7.jsonld").getFile());
 
         // [!base=Katze]
@@ -125,7 +125,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp9 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp9.jsonld").getFile());
 
         // [base=Katze&orth=Katzen]
@@ -136,7 +136,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp9b () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp9b.jsonld").getFile());
 
         // [base=Katze&orth=Katzen]
@@ -147,7 +147,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp10 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp10.jsonld").getFile());
 
         // [base=Katze][orth=und][orth=Hunde]
@@ -158,7 +158,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp11 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp11.jsonld").getFile());
 
         // [base!=Katze | orth!=Katzen]
@@ -175,7 +175,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp12 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp12.jsonld").getFile());
 
         // contains(<np>,[base=Mann])
@@ -186,7 +186,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp13 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp13.jsonld").getFile());
 
         assertEquals(sqwi.toQuery().toString(),
@@ -196,7 +196,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp13b () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp13b.jsonld").getFile());
 
         // startswith(<np>,[pos=Det])
@@ -207,7 +207,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp14 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp14.jsonld").getFile());
 
         // 'vers{2,3}uch'
@@ -218,7 +218,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp15 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp15.jsonld").getFile());
 
         // [orth='vers.*ch']
@@ -229,7 +229,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp16 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp16.jsonld").getFile());
 
         // [(base=bar|base=foo)&orth=foobar]
@@ -240,7 +240,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBsp17 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp17.jsonld").getFile());
 
         // within(<np>,[base=Mann])
@@ -260,7 +260,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONBspClass () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp-class.jsonld").getFile());
 
         // within(<np>,[base=Mann])
@@ -271,7 +271,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONcosmas3 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/cosmas3.json").getFile());
 
         // "das /+w1:3 Buch"
@@ -282,7 +282,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONcosmas4 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/cosmas4.json").getFile());
 
         // "das /+w1:3,s1:1 Buch"
@@ -293,7 +293,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONcosmas4b () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/cosmas4b.json").getFile());
 
         // "das /+w1:3,s1 Buch"
@@ -304,7 +304,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONcosmas10 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/cosmas10.json").getFile());
 
         // "Institut für $deutsche Sprache"
@@ -315,7 +315,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONcosmas10b () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/cosmas10b.json").getFile());
 
         // "Institut $FÜR $deutsche Sprache"
@@ -326,7 +326,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONcosmas16 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/cosmas16.json").getFile());
 
         // "$wegen #IN(L) <s>"
@@ -337,7 +337,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONcosmas17 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/cosmas17.json").getFile());
 
         // "#BED($wegen , +sa)"
@@ -348,7 +348,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONcosmas20 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/cosmas20.json").getFile());
 
         //     "MORPH(V) #IN(R) #ELEM(S)"
@@ -359,7 +359,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONrepetition () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(getClass()
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bsp-repetition.jsonld").getFile());
 
         // der[cnx/p=A]{0,2}[tt/p=NN]
@@ -370,7 +370,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONboundaryBug () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(getClass()
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bsp-boundary.jsonld").getFile());
 
         // Tal []{1,} Wald
@@ -381,7 +381,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONcosmasBoundaryBug () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(getClass()
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bugs/cosmas_boundary.jsonld").getFile());
 
         // Namen /s1 Leben
@@ -392,7 +392,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONfoundryForOrthBug () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bugs/foundry_for_orth.jsonld")
                         .getFile());
 
@@ -403,7 +403,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONfoundryForOrthBug2 () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(getClass()
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bugs/foundry_for_orth_2.jsonld")
                 .getFile());
 
@@ -429,7 +429,7 @@ public class TestKrillQueryJSON {
 
     @Test
     public void queryJSONspecialLayerBug () throws QueryException {
-        SpanQueryWrapper sqwi = jsonQuery(getClass()
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bugs/special_layer.jsonld").getFile());
         assertEquals(sqwi.toQuery().toString(),
                 "spanNext(spanNext(spanNext(tokens:s:Baum, tokens:cnx/p:CC), tokens:tt/l:Baum), <tokens:xip/c:MC />)");
@@ -439,7 +439,7 @@ public class TestKrillQueryJSON {
     @Test
     public void queryJSONrepetitionGroupRewriteBug () throws QueryException {
         // ([cnx/p="A"][]){2}
-        SpanQueryWrapper sqwi = jsonQuery(getClass()
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bugs/repetition_group_rewrite.jsonld")
                 .getFile());
 
@@ -451,7 +451,7 @@ public class TestKrillQueryJSON {
     @Test
     public void queryJSONoverlapsFrameWorkaround () throws QueryException {
         // overlaps(<s>,[tt/p=CARD][tt/p="N.*"])
-        SpanQueryWrapper sqwi = jsonQuery(getClass()
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bugs/overlaps_frame_workaround.jsonld")
                 .getFile());
 
@@ -463,7 +463,7 @@ public class TestKrillQueryJSON {
     @Test
     public void queryJSONflags1 () throws QueryException {
         // buchstabe/i
-        SpanQueryWrapper sqwi = jsonQuery(
+        SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/flags/caseInsensitive.jsonld")
                         .getFile());
 
@@ -474,7 +474,7 @@ public class TestKrillQueryJSON {
     @Test
     public void queryJSONspanWrapDeserializationBug () throws QueryException {
         // contains(<s>, Erde  []* Sonne)
-        SpanQueryWrapper sqwi = jsonQuery(getClass()
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bugs/unspecified_key_bug.jsonld")
                 .getFile());
 
@@ -610,21 +610,5 @@ public class TestKrillQueryJSON {
         assertEquals(kq.fromKoral(json).toQuery().toString(),
                 "spanNext(tokens:s:der, tokens:s:Baum)");
 		assertEquals(kq.getWarning(0).getCode(), 774);
-    };
-	
-
-	// TODO: Probably replace with getJSONQuery
-    public static SpanQueryWrapper jsonQuery (String jsonFile) {
-        SpanQueryWrapper sqwi;
-
-        try {
-            String json = getJsonString(jsonFile);
-            sqwi = new KrillQuery("tokens").fromKoral(json);
-        }
-        catch (QueryException e) {
-            fail(e.getMessage());
-            sqwi = new QueryBuilder("tokens").seg("???");
-        };
-        return sqwi;
     };
 };

@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.query;
 
-import static de.ids_mannheim.korap.TestSimple.getJSONQuery;
+import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.lucene.search.spans.SpanQuery;
@@ -24,7 +24,7 @@ public class TestSpanWithinQueryJSON {
                 .getResource(
                         "/queries/position/token-contain-sentence.json")
                 .getFile();
-        SpanQueryWrapper sqwi = getJSONQuery(filepath);
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
     }
 }

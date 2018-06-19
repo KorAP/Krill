@@ -245,7 +245,7 @@ public class TestElementDistanceIndex {
         ki.commit();
 
         String jsonPath = getClass().getResource("/queries/cosmas1.json").getFile();
-        SpanQueryWrapper sqwi = jsonQuery(jsonPath);
+        SpanQueryWrapper sqwi = getJsonQuery(jsonPath);
         kr = ki.search(sqwi.toQuery(), (short) 10);
 
         assertEquals((long) 3, kr.getTotalResults());
@@ -274,7 +274,7 @@ public class TestElementDistanceIndex {
 
         String jsonPath = getClass()
                 .getResource("/queries/distances/in-same-t.jsonld").getFile();
-        sqwi = jsonQuery(jsonPath);
+        sqwi = getJsonQuery(jsonPath);
 
         assertEquals(
                 "spanElementDistance(tokens:s:c, tokens:s:e, [(base/s:t[0:0], ordered, notExcluded)])",
@@ -283,21 +283,5 @@ public class TestElementDistanceIndex {
         kr = ki.search(sqwi.toQuery(), (short) 10);
         assertEquals(1, kr.getTotalResults()); // Is 1 correct or should it not be ordered?
         assertEquals("[[ec]]ebdc", kr.getMatch(0).getSnippetBrackets());
-    }
-
-	// TODO:
-	// probably replace with getJSONQuery()
-    public static SpanQueryWrapper jsonQuery (String jsonFile) {
-        SpanQueryWrapper sqwi;
-
-        try {
-            String json = getJsonString(jsonFile);
-            sqwi = new KrillQuery("tokens").fromKoral(json);
-        }
-        catch (QueryException e) {
-            fail(e.getMessage());
-            sqwi = new QueryBuilder("tokens").seg("???");
-        }
-        return sqwi;
     }
 }
