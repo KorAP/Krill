@@ -1,0 +1,20 @@
+<ehcache xsi:noNamespaceSchemaLocation="ehcache.xsd"
+	updateCheck="true" monitoring="autodetect" dynamicConfig="true">
+
+	<diskStore path="./krill_cache" />
+
+	<defaultCache 
+		maxEntriesLocalHeap="0" 
+		eternal="false"
+		timeToIdleSeconds="1200" 
+		timeToLiveSeconds="1200">
+	</defaultCache>
+
+	<cache name='named_vc' 
+		eternal='true' 
+		memoryStoreEvictionPolicy="LRU" 
+		maxBytesLocalHeap="256M"
+		maxBytesLocalDisk="1G"
+		overflowToDisk='true' />
+
+</ehcache>

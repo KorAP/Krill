@@ -1,24 +1,22 @@
 package de.ids_mannheim.korap.collection;
 
-import java.util.*;
 import java.io.IOException;
-import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queries.TermsFilter;
-import org.apache.lucene.search.*;
-import org.apache.lucene.search.NumericRangeFilter;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-
-import de.ids_mannheim.korap.util.KrillDate;
-import de.ids_mannheim.korap.index.TextPrependedTokenStream;
-
+import org.apache.lucene.queries.TermsFilter;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.NumericRangeFilter;
+import org.apache.lucene.search.PhraseQuery;
+import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.RegexpQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.KrillCollection;
-import de.ids_mannheim.korap.collection.BooleanGroupFilter;
+import de.ids_mannheim.korap.index.TextPrependedTokenStream;
+import de.ids_mannheim.korap.util.KrillDate;
 
 /*
  * TODO: Optimize!
@@ -374,4 +372,35 @@ public class CollectionBuilder {
             return this;
         };
     };
+    
+    public class NamedVC implements CollectionBuilder.Interface {
+
+        private CachedCollection cachedCollection;
+        private boolean isNegative = false;
+
+        public NamedVC (CachedCollection cc) {
+            this.cachedCollection = cc;
+        }
+
+        @Override
+        public Filter toFilter () {
+            return new NamedVCFilter(cachedCollection);
+        }
+
+        @Override
+        public boolean isNegative () {
+            return this.isNegative;
+        }
+
+        @Override
+        public CollectionBuilder.Interface not () {
+            this.isNegative = true;
+            return this;
+        }
+        
+    }
+
+    public Interface namedVC (CachedCollection cc) {
+        return new CollectionBuilder.NamedVC(cc);
+    }
 };

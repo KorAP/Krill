@@ -1,27 +1,39 @@
 package de.ids_mannheim.korap;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.lucene.index.DocsAndPositionsEnum;
+import org.apache.lucene.index.LeafReader;
+import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.search.BitsFilteredDocIdSet;
+import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.search.DocIdSetIterator;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.util.BitDocIdSet;
+import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.FixedBitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.ids_mannheim.korap.collection.CachedCollection;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.StatusCodes;
-
-import org.apache.lucene.search.*;
-import org.apache.lucene.index.*;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.FixedBitSet;
-import org.apache.lucene.util.BitDocIdSet;
-import org.apache.lucene.util.Bits;
-import org.apache.lucene.search.BitsFilteredDocIdSet;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
-
-import java.nio.ByteBuffer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
 
 /**
  * Create a Virtual Collection of documents by means of a KoralQuery
@@ -50,13 +62,16 @@ public final class KrillCollection extends Notifications {
     private static ByteBuffer bb = ByteBuffer.allocate(4);
 
     // Logger
-    private final static Logger log = LoggerFactory
-            .getLogger(KrillCollection.class);
+    private final static Logger log =
+            LoggerFactory.getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-
+    public static Cache cache = CacheManager.newInstance().getCache("named_vc");
+    private boolean isNamedVC = false;
+    private Serializable name;
+    
     /**
      * Construct a new KrillCollection.
      * 
@@ -85,34 +100,35 @@ public final class KrillCollection extends Notifications {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode json = mapper.readTree(jsonString);
- 
-            if (json.has("errors") && json.get("errors").size()>0){
-                this.addError(StatusCodes.INVALID_QUERY,"Json has errors.");
+
+            if (json.has("errors") && json.get("errors").size() > 0) {
+                this.addError(StatusCodes.INVALID_QUERY, "Json has errors.");
             }
-            else if (json.has("collection")){
+            else if (json.has("collection")) {
                 this.fromKoral(json.get("collection"));
             }
-            else if (json.has("collections")){
+            else if (json.has("collections")) {
                 this.addError(899,
                         "Collections are not supported anymore in favour of a single collection");
             }
-            else{
-                this.addError(StatusCodes.MISSING_COLLECTION, "Collection is not found.");
-				this.fromBuilder(this.build().nothing());
+            else {
+                this.addError(StatusCodes.MISSING_COLLECTION,
+                        "Collection is not found.");
+                this.fromBuilder(this.build().nothing());
             }
         }
 
         // Query Exception
         catch (QueryException qe) {
             this.addError(qe.getErrorCode(), qe.getMessage());
-			this.fromBuilder(this.build().nothing());
+            this.fromBuilder(this.build().nothing());
         }
 
         // JSON exception
         catch (IOException e) {
             this.addError(621, "Unable to parse JSON", "KrillCollection",
                     e.getLocalizedMessage());
-			this.fromBuilder(this.build().nothing());
+            this.fromBuilder(this.build().nothing());
         };
     };
 
@@ -143,7 +159,7 @@ public final class KrillCollection extends Notifications {
         }
         catch (Exception e) {
             this.addError(621, "Unable to parse JSON", "KrillCollection");
-			this.fromBuilder(this.build().nothing());
+            this.fromBuilder(this.build().nothing());
         };
 
         return this;
@@ -181,11 +197,9 @@ public final class KrillCollection extends Notifications {
             String valtype = "type:string";
             String match = "match:eq";
 
-            if (json.has("key"))
-                key = json.get("key").asText();
+            if (json.has("key")) key = json.get("key").asText();
 
-            if (json.has("type"))
-                valtype = json.get("type").asText();
+            if (json.has("type")) valtype = json.get("type").asText();
 
             // Filter based on date
             if (valtype.equals("type:date")) {
@@ -195,8 +209,7 @@ public final class KrillCollection extends Notifications {
 
                 String dateStr = json.get("value").asText();
 
-                if (json.has("match"))
-                    match = json.get("match").asText();
+                if (json.has("match")) match = json.get("match").asText();
 
                 // TODO: This isn't stable yet
                 switch (match) {
@@ -216,8 +229,7 @@ public final class KrillCollection extends Notifications {
 
             // Filter based on string
             else if (valtype.equals("type:string")) {
-                if (json.has("match"))
-                    match = json.get("match").asText();
+                if (json.has("match")) match = json.get("match").asText();
 
                 switch (match) {
 
@@ -227,21 +239,20 @@ public final class KrillCollection extends Notifications {
                         return this.cb.term(key, json.get("value").asText())
                                 .not();
 
-						// Contains and containsnot (or excludes) is only
-						// effective on text fields and ineffective on
-						// string fields
+                    // Contains and containsnot (or excludes) is only
+                    // effective on text fields and ineffective on
+                    // string fields
                     case "match:contains":
-                        return this.cb.text(key,
-                                json.get("value").asText());
+                        return this.cb.text(key, json.get("value").asText());
 
                     case "match:containsnot":
-                        return this.cb.text(key,
-                                json.get("value").asText()).not();
+                        return this.cb.text(key, json.get("value").asText())
+                                .not();
 
                     // <LEGACY>
                     case "match:excludes":
-                        return this.cb.text(key,
-                                json.get("value").asText()).not();
+                        return this.cb.text(key, json.get("value").asText())
+                                .not();
                     // </LEGACY>
                 };
 
@@ -252,8 +263,7 @@ public final class KrillCollection extends Notifications {
             // Filter based on regex
             else if (valtype.equals("type:regex")) {
 
-                if (json.has("match"))
-                    match = json.get("match").asText();
+                if (json.has("match")) match = json.get("match").asText();
 
                 if (match.equals("match:eq")) {
                     return this.cb.re(key, json.get("value").asText());
@@ -262,21 +272,22 @@ public final class KrillCollection extends Notifications {
                     return this.cb.re(key, json.get("value").asText()).not();
                 }
 
-				// Contains and containsnot (or excludes) is
-				// identical to eq and ne in case of regexes for the moment,
-				// though it may be beneficial to circumfix these
-				// with .*
+                // Contains and containsnot (or excludes) is
+                // identical to eq and ne in case of regexes for the
+                // moment,
+                // though it may be beneficial to circumfix these
+                // with .*
                 else if (match.equals("match:contains")) {
                     return this.cb.re(key, json.get("value").asText());
                 }
                 else if (match.equals("match:containsnot")) {
                     return this.cb.re(key, json.get("value").asText());
                 }
-				// <LEGACY>
+                // <LEGACY>
                 else if (match.equals("match:excludes")) {
                     return this.cb.re(key, json.get("value").asText()).not();
                 };
-				// </LEGACY>
+                // </LEGACY>
 
                 throw new QueryException(841,
                         "Match relation unknown for type");
@@ -311,6 +322,31 @@ public final class KrillCollection extends Notifications {
             };
             return group;
         }
+        // vc reference
+        else if (type.equals("koral:docGroupRef")) {
+            if (!json.has("ref")) {
+                throw new QueryException(StatusCodes.MISSING_VC_REFERENCE,
+                        "ref is not found");
+            }
+            
+            String ref = json.get("ref").asText();
+            if (ref.isEmpty()){
+                throw new QueryException(StatusCodes.MISSING_VC_REFERENCE,
+                        "ref is empty");
+            }
+            
+            Element element = cache.get(ref);
+            if (element == null){
+                this.addError(StatusCodes.MISSING_COLLECTION,
+                        "Collection is not found.");
+                return this.build().nothing();
+            }
+            else {
+               CachedCollection cc = (CachedCollection) element.getObjectValue();
+               return cb.namedVC(cc);
+            }
+        }
+
 
         // Unknown type
         throw new QueryException(813, "Collection type is not supported");
@@ -374,8 +410,7 @@ public final class KrillCollection extends Notifications {
      * Serialize collection to a {@link Filter} object.
      */
     public Filter toFilter () {
-        if (this.cbi == null)
-            return null;
+        if (this.cbi == null) return null;
 
         return this.cbi.toFilter();
     };
@@ -386,8 +421,7 @@ public final class KrillCollection extends Notifications {
      * not.
      */
     public boolean isNegative () {
-        if (this.cbi == null)
-            return false;
+        if (this.cbi == null) return false;
 
         return this.cbi.isNegative();
     };
@@ -404,8 +438,7 @@ public final class KrillCollection extends Notifications {
      */
     public String toString () {
         Filter filter = this.toFilter();
-        if (filter == null)
-            return "";
+        if (filter == null) return "";
 
         return (this.isNegative() ? "-" : "") + filter.toString();
     };
@@ -438,6 +471,7 @@ public final class KrillCollection extends Notifications {
      * @throws IOException
      */
     public FixedBitSet bits (LeafReaderContext atomic) throws IOException {
+        
         LeafReader r = atomic.reader();
         FixedBitSet bitset = new FixedBitSet(r.maxDoc());
         DocIdSet docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
@@ -476,8 +510,7 @@ public final class KrillCollection extends Notifications {
 
         Filter filter;
         if (this.cbi == null || (filter = this.cbi.toFilter()) == null) {
-            if (acceptDocs == null)
-                return null;
+            if (acceptDocs == null) return null;
 
             bitset.set(0, maxDoc);
         }
@@ -485,12 +518,11 @@ public final class KrillCollection extends Notifications {
 
             // Init vector
             DocIdSet docids = filter.getDocIdSet(atomic, null);
-            DocIdSetIterator filterIter = (docids == null) ? null
-                    : docids.iterator();
+            DocIdSetIterator filterIter =
+                    (docids == null) ? null : docids.iterator();
 
             if (filterIter == null) {
-                if (!this.cbi.isNegative())
-                    return null;
+                if (!this.cbi.isNegative()) return null;
 
                 bitset.set(0, maxDoc);
             }
@@ -499,8 +531,7 @@ public final class KrillCollection extends Notifications {
                 bitset.or(filterIter);
 
                 // Revert for negation
-                if (this.cbi.isNegative())
-                    bitset.flip(0, maxDoc);
+                if (this.cbi.isNegative()) bitset.flip(0, maxDoc);
             };
         };
 
@@ -539,18 +570,15 @@ public final class KrillCollection extends Notifications {
     public long numberOf (String field, String type) throws IOException {
 
         // No index defined
-        if (this.index == null)
-            return (long) -1;
+        if (this.index == null) return (long) -1;
 
         // No reader (inex is empty)
-        if (this.index.reader() == null)
-            return (long) 0;
+        if (this.index.reader() == null) return (long) 0;
 
         // This is redundant to index stuff
         if (type.equals("documents") || type.equals("base/texts")) {
             if (this.cbi == null) {
-                if (this.index.reader() == null)
-                    return (long) 0;
+                if (this.index.reader() == null) return (long) 0;
                 return (long) this.index.reader().numDocs();
             }
             else
@@ -561,8 +589,7 @@ public final class KrillCollection extends Notifications {
         // This may be prefixed by foundries
         Term term = new Term(field, "-:" + type);
 
-        if (DEBUG)
-            log.debug("Iterate for {}/{}", field, type);
+        if (DEBUG) log.debug("Iterate for {}/{}", field, type);
 
         long occurrences = 0;
         try {
@@ -570,13 +597,11 @@ public final class KrillCollection extends Notifications {
             for (LeafReaderContext atomic : this.index.reader().leaves()) {
                 Bits bits = this.bits(atomic);
 
-                if (DEBUG)
-                    log.debug("Final bits  {}", _bits(bits));
+                if (DEBUG) log.debug("Final bits  {}", _bits(bits));
 
                 occurrences += this._numberOfAtomic(bits, atomic, term);
-                if (DEBUG)
-                    log.debug("Added up to {} for {}/{}", occurrences, field,
-                            type);
+                if (DEBUG) log.debug("Added up to {} for {}/{}", occurrences,
+                        field, type);
             };
         }
 
@@ -603,7 +628,8 @@ public final class KrillCollection extends Notifications {
             // Todo: Maybe reuse a termsEnum!
             final TermsEnum termsEnum = terms.iterator(null);
 
-            // Set the position in the iterator to the term that is seeked
+            // Set the position in the iterator to the term that is
+            // seeked
             if (termsEnum.seekExact(term.bytes())) {
 
                 // TODO: Reuse a DocsAndPositionsEnum!!
@@ -615,8 +641,7 @@ public final class KrillCollection extends Notifications {
 
                 // The iterator is empty
                 // This may even be an error, but we return 0
-                if (docs.docID() == DocsAndPositionsEnum.NO_MORE_DOCS)
-                    return 0;
+                if (docs.docID() == DocsAndPositionsEnum.NO_MORE_DOCS) return 0;
 
                 // Init some variables for data copying
                 long occurrences = 0;
@@ -625,8 +650,7 @@ public final class KrillCollection extends Notifications {
                 // Init nextDoc()
                 while (docs.nextDoc() != DocsAndPositionsEnum.NO_MORE_DOCS) {
 
-                    if (docs.freq() < 1)
-                        continue;
+                    if (docs.freq() < 1) continue;
 
                     // Initialize (go to first term)
                     docs.nextPosition();
@@ -640,11 +664,10 @@ public final class KrillCollection extends Notifications {
                         // Add payload as integer
                         occurrences += bb.wrap(pl).getInt();
 
-                        if (DEBUG)
-                            log.debug(
-                                    "Value for {} incremented by {} to {} in {}",
-                                    term, bb.wrap(pl).getInt(), occurrences,
-                                    docs.docID());
+                        if (DEBUG) log.debug(
+                                "Value for {} incremented by {} to {} in {}",
+                                term, bb.wrap(pl).getInt(), occurrences,
+                                docs.docID());
                     };
                 };
 
@@ -668,8 +691,7 @@ public final class KrillCollection extends Notifications {
     public long docCount () {
 
         // No index defined
-        if (this.index == null)
-            return (long) 0;
+        if (this.index == null) return (long) 0;
 
         // TODO: Caching!
 
@@ -696,6 +718,22 @@ public final class KrillCollection extends Notifications {
         return str;
     };
 
+
+    private void createDocVector () {
+        List<FixedBitSet> bitSetList = new ArrayList<>();
+        try {
+            FixedBitSet bitset;
+            for (LeafReaderContext atomic : this.index.reader().leaves()) {
+                if ((bitset = this.bits(atomic)) != null) {
+                    bitSetList.add(bitset);
+                }
+            };
+        }
+        catch (IOException e) {
+            log.warn(e.getLocalizedMessage());
+        };
+
+    }
 
     /*
      * Analyze how terms relate

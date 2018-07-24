@@ -1,0 +1,11 @@
+{"collection": {
+    "name" : "cache-goe",
+    "@type": "koral:doc",
+    "key": "textSigle",
+    "match": "match:eq",
+    "value": [
+        "GOE/AGF/00000",
+        "GOE/AGA/01784"
+    ]
+}}
+

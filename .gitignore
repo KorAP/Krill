@@ -25,3 +25,4 @@
 /dependency-reduced-pom.xml
 /bin
 /src/test/resources/sample-index
+/krill_cache/
