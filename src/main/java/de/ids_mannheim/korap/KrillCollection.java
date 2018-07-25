@@ -1,10 +1,10 @@
 package de.ids_mannheim.korap;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.index.DocsAndPositionsEnum;
 import org.apache.lucene.index.LeafReader;
@@ -26,8 +26,9 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.ids_mannheim.korap.collection.CachedCollection;
+import de.ids_mannheim.korap.collection.CachedVCData;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
+import de.ids_mannheim.korap.collection.SerializableDocIdSet;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.StatusCodes;
@@ -59,7 +60,7 @@ public final class KrillCollection extends Notifications {
     private CollectionBuilder cb = new CollectionBuilder();
     private CollectionBuilder.Interface cbi;
     private byte[] pl = new byte[4];
-    private static ByteBuffer bb = ByteBuffer.allocate(4);
+    // private static ByteBuffer bb = ByteBuffer.allocate(4);
 
     // Logger
     private final static Logger log =
@@ -68,10 +69,11 @@ public final class KrillCollection extends Notifications {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    public static Cache cache = CacheManager.newInstance().getCache("named_vc");
-    private boolean isNamedVC = false;
-    private Serializable name;
-    
+    public static CacheManager cacheManager = CacheManager.newInstance();
+    public static Cache cache = cacheManager.getCache("named_vc");
+    private String name;
+    private boolean toCache = false;
+
     /**
      * Construct a new KrillCollection.
      * 
@@ -91,12 +93,31 @@ public final class KrillCollection extends Notifications {
 
 
     /**
+     * Constructs a KrillCollection according to the given KrillIndex
+     * and KoralQuery.
+     * 
+     * KrillIndex is necessary for caching virtual corpora.
+     * 
+     * @param index
+     * @param jsonString
+     */
+    public KrillCollection (KrillIndex index, String jsonString) {
+        this.index = index;
+        createCollection(jsonString);
+    };
+
+
+    /**
      * Construct a new KrillCollection by passing a KoralQuery.
      * 
      * @param json
      *            The KoralQuery document as a JSON string.
      */
     public KrillCollection (String jsonString) {
+        createCollection(jsonString);
+    }
+
+    public void createCollection (String jsonString) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode json = mapper.readTree(jsonString);
@@ -191,11 +212,26 @@ public final class KrillCollection extends Notifications {
 
         String type = json.get("@type").asText();
 
+        if (json.has("cache")) {
+            setToCache(json.get("cache").asBoolean());
+        }
+
         if (type.equals("koral:doc")) {
 
+            // default key
             String key = "tokens";
             String valtype = "type:string";
             String match = "match:eq";
+
+            if (isToCache()) {
+                if (!json.has("name")) {
+                    throw new QueryException(StatusCodes.MISSING_ID,
+                            "Collection id or name is required for caching.");
+                }
+                else {
+                    setName(json.get("name").asText());
+                }
+            }
 
             if (json.has("key")) key = json.get("key").asText();
 
@@ -291,13 +327,37 @@ public final class KrillCollection extends Notifications {
 
                 throw new QueryException(841,
                         "Match relation unknown for type");
-            };
+            }
+
+            else if (valtype.equals("type:string[]")) {
+
+                if (json.has("match")) {
+                    match = json.get("match").asText();
+                }
+
+                CollectionBuilder.Group group = null;
+                if (match.equals("match:eq")) {
+                    group = this.cb.orGroup();
+                    for (JsonNode value : json.get("value")) {
+                        group.with(cb.term(key, value.asText()));
+                    }
+                }
+                else if (match.equals("match:ne")) {
+                    group = this.cb.andGroup();
+                    for (JsonNode value : json.get("value")) {
+                        group.with(cb.term(key, value.asText()).not());
+                    }
+                }
+                return group;
+            }
 
             throw new QueryException(843, "Document type is not supported");
         }
 
         // nested group
-        else if (type.equals("koral:docGroup")) {
+        else if (type.equals("koral:docGroup"))
+
+        {
 
             if (!json.has("operands") || !json.get("operands").isArray())
                 throw new QueryException(842,
@@ -328,22 +388,22 @@ public final class KrillCollection extends Notifications {
                 throw new QueryException(StatusCodes.MISSING_VC_REFERENCE,
                         "ref is not found");
             }
-            
+
             String ref = json.get("ref").asText();
-            if (ref.isEmpty()){
+            if (ref.isEmpty()) {
                 throw new QueryException(StatusCodes.MISSING_VC_REFERENCE,
                         "ref is empty");
             }
-            
+
             Element element = cache.get(ref);
-            if (element == null){
+            if (element == null) {
                 this.addError(StatusCodes.MISSING_COLLECTION,
                         "Collection is not found.");
                 return this.build().nothing();
             }
             else {
-               CachedCollection cc = (CachedCollection) element.getObjectValue();
-               return cb.namedVC(cc);
+                CachedVCData cc = (CachedVCData) element.getObjectValue();
+                return cb.namedVC(cc);
             }
         }
 
@@ -471,7 +531,7 @@ public final class KrillCollection extends Notifications {
      * @throws IOException
      */
     public FixedBitSet bits (LeafReaderContext atomic) throws IOException {
-        
+
         LeafReader r = atomic.reader();
         FixedBitSet bitset = new FixedBitSet(r.maxDoc());
         DocIdSet docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
@@ -662,11 +722,11 @@ public final class KrillCollection extends Notifications {
                                 4);
 
                         // Add payload as integer
-                        occurrences += bb.wrap(pl).getInt();
+                        occurrences += ByteBuffer.wrap(pl).getInt();
 
                         if (DEBUG) log.debug(
                                 "Value for {} incremented by {} to {} in {}",
-                                term, bb.wrap(pl).getInt(), occurrences,
+                                term, ByteBuffer.wrap(pl).getInt(), occurrences,
                                 docs.docID());
                     };
                 };
@@ -719,20 +779,43 @@ public final class KrillCollection extends Notifications {
     };
 
 
-    private void createDocVector () {
-        List<FixedBitSet> bitSetList = new ArrayList<>();
-        try {
-            FixedBitSet bitset;
-            for (LeafReaderContext atomic : this.index.reader().leaves()) {
-                if ((bitset = this.bits(atomic)) != null) {
-                    bitSetList.add(bitset);
-                }
-            };
-        }
-        catch (IOException e) {
-            log.warn(e.getLocalizedMessage());
-        };
+    public CachedVCData storeInCache () throws IOException {
+        List<LeafReaderContext> leaves = this.index.reader().leaves();
+        Map<Integer, DocIdSet> docIdMap =
+                new HashMap<Integer, DocIdSet>(leaves.size());
 
+        for (LeafReaderContext context : leaves) {
+            if (docIdMap.get(context.hashCode()) == null) {
+                FixedBitSet bitset = bits(context);
+                docIdMap.put(context.hashCode(),
+                        new SerializableDocIdSet(bitset));
+            }
+        }
+
+        CachedVCData cc = new CachedVCData(docIdMap);
+        cache.put(new Element(getName(), cc));
+
+        this.cbi = cb.namedVC(cc);
+        return cc;
+    }
+
+    public String getName () {
+        return name;
+    }
+
+
+    public void setName (String name) {
+        this.name = name;
+    }
+
+
+    public boolean isToCache () {
+        return toCache;
+    }
+
+
+    public void setToCache (boolean toCache) {
+        this.toCache = toCache;
     }
 
     /*

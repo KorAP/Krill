@@ -1,5 +1,7 @@
-0.58 2018-07-24
+0.58 2018-07-25
         - Implemented referencing cached collection (margaretha)
+        - Implemented deserialization of collection with array values and cache option (margaretha)
+        - Implemented caching collection (margaretha)
 
 0.57 2018-04-05
         - [feature] Support text queries in metadata

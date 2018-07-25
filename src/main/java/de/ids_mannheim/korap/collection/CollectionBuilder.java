@@ -373,18 +373,18 @@ public class CollectionBuilder {
         };
     };
     
-    public class NamedVC implements CollectionBuilder.Interface {
+    public class CachedVC implements CollectionBuilder.Interface {
 
-        private CachedCollection cachedCollection;
+        private CachedVCData cachedCollection;
         private boolean isNegative = false;
 
-        public NamedVC (CachedCollection cc) {
+        public CachedVC (CachedVCData cc) {
             this.cachedCollection = cc;
         }
 
         @Override
         public Filter toFilter () {
-            return new NamedVCFilter(cachedCollection);
+            return new CachedVCFilter(cachedCollection);
         }
 
         @Override
@@ -400,7 +400,7 @@ public class CollectionBuilder {
         
     }
 
-    public Interface namedVC (CachedCollection cc) {
-        return new CollectionBuilder.NamedVC(cc);
+    public Interface namedVC (CachedVCData cc) {
+        return new CollectionBuilder.CachedVC(cc);
     }
 };

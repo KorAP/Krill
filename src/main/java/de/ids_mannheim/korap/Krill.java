@@ -1,21 +1,18 @@
 package de.ids_mannheim.korap;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
 
 import org.apache.lucene.search.spans.SpanQuery;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.response.Result;
-import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.response.Notifications;
-import de.ids_mannheim.korap.response.Response;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.response.Response;
+import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.QueryException;
 
 /**
  * <p>Krill is a corpus data retrieval index using Lucene for
@@ -61,7 +58,6 @@ public class Krill extends Response {
     private KrillIndex index;
     private SpanQuery spanQuery;
     private JsonNode request;
-    private String spanContext;
 
     private final ObjectMapper mapper = new ObjectMapper();
 

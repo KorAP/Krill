@@ -68,12 +68,14 @@ public class StatusCodes {
     public static final int INVALID_REGEX = 807;
     public static final int UNKNOWN_REWRITE_OPERATION = 814;
     public static final int MISSING_SOURCE = 815;
+    public static final int MISSING_ID = 816;
     public static final int MISSING_VALUE = 820;
     public static final int EMPTY_FILTER = 830;
     public static final int UNWRAPPABLE_FILTER = 831;
     public static final int INVALID_FILTER_OPERATION = 832;
     public static final int UNSUPPORTED_TYPE = 843;
     public static final int COLLECTIONS_UNSUPPORTED = 850;
+    public static final int CACHING_COLLECTION_FAILED = 851;
 
     // 900 - 999 - Corpus Data errors 
     public static final int INVALID_OFFSET = 952;

@@ -1,44 +1,79 @@
 package de.ids_mannheim.korap;
 
-// Krill classes
-import de.ids_mannheim.korap.index.*;
-import de.ids_mannheim.korap.response.*;
-import de.ids_mannheim.korap.query.SpanElementQuery;
-import de.ids_mannheim.korap.util.KrillProperties;
-import de.ids_mannheim.korap.util.QueryException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+// Java core classes
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
-// Lucene classes
-import org.apache.lucene.search.*;
-import org.apache.lucene.search.spans.*;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.*;
-import org.apache.lucene.index.IndexWriterConfig.OpenMode;
-import org.apache.lucene.store.*;
 import org.apache.lucene.analysis.Analyzer;
 /*
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 */
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
-import org.apache.lucene.analysis.util.CharArraySet;
-import org.apache.lucene.util.*;
-import org.apache.lucene.util.automaton.*;
-
-// JSON helper class
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.DocsAndPositionsEnum;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermContext;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
+// Lucene classes
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.search.DocIdSetIterator;
+import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.Bits;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.FixedBitSet;
+import org.apache.lucene.util.automaton.CompiledAutomaton;
+import org.apache.lucene.util.automaton.RegExp;
 // Log4j Logger classes
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// Java core classes
-import java.util.*;
-import java.util.zip.GZIPInputStream;
-import java.util.regex.Pattern;
-import java.io.*;
-import java.net.URL;
-import java.nio.ByteBuffer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+// Krill classes
+import de.ids_mannheim.korap.index.FieldDocument;
+import de.ids_mannheim.korap.index.KeywordAnalyzer;
+import de.ids_mannheim.korap.index.PositionsToOffset;
+import de.ids_mannheim.korap.index.SpanInfo;
+import de.ids_mannheim.korap.index.TermInfo;
+import de.ids_mannheim.korap.index.TextAnalyzer;
+import de.ids_mannheim.korap.index.TimeOutThread;
+import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.response.MatchCollector;
+import de.ids_mannheim.korap.response.MetaFields;
+import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.SearchContext;
+import de.ids_mannheim.korap.response.Text;
+import de.ids_mannheim.korap.util.KrillProperties;
+import de.ids_mannheim.korap.util.QueryException;
+import net.sf.ehcache.CacheManager;
 
 /**
  * <p>KrillIndex implements a simple API for searching in and writing
@@ -389,6 +424,7 @@ public final class KrillIndex {
             log.error("Unable to add document");
         };
 
+        CacheManager.getInstance().clearAll();
         return doc;
     };
 
@@ -419,6 +455,7 @@ public final class KrillIndex {
             log.error("Unable to delete documents");
         };
 
+        CacheManager.getInstance().clearAll();
         return false;
     };
 
@@ -467,6 +504,7 @@ public final class KrillIndex {
             fd.setUID(uid);
             fd = this.addDoc(fd);
         };
+        CacheManager.getInstance().clearAll();
         return fd;
     };
 
@@ -522,6 +560,8 @@ public final class KrillIndex {
             fd.setUID(uid);
             return this.addDoc(fd);
         };
+        
+        CacheManager.getInstance().clearAll();
         return fd;
     };
 

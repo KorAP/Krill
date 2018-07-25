@@ -1,0 +1,15 @@
+{"query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "layer":"orth",
+      "key":"der",
+      "match":"match:eq",
+      "foundry":"opennlp"
+    }
+  },
+  "collection": {
+    "@type": "koral:docGroupRef",
+    "ref": "cache-goe"
+  }
+}

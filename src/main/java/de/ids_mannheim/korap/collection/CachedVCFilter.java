@@ -7,11 +7,11 @@ import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.Bits;
 
-public class NamedVCFilter extends Filter {
+public class CachedVCFilter extends Filter {
 
-    private CachedCollection cachedCollection;
+    private CachedVCData cachedCollection;
     
-    public NamedVCFilter (CachedCollection cachedCollection) {
+    public CachedVCFilter (CachedVCData cachedCollection) {
         this.cachedCollection = cachedCollection;
     }
 
@@ -19,7 +19,7 @@ public class NamedVCFilter extends Filter {
     public DocIdSet getDocIdSet (LeafReaderContext context, Bits acceptDocs)
             throws IOException {
         
-        return cachedCollection.getDocIdMap().get(context);
+        return cachedCollection.getDocIdMap().get(context.hashCode());
     }
 
 }
