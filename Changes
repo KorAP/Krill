@@ -1,7 +1,8 @@
-0.58 2018-07-25
+0.58.0 2018-07-26
         - Implemented referencing cached collection (margaretha)
         - Implemented deserialization of collection with array values and cache option (margaretha)
         - Implemented caching collection (margaretha)
+        - Implemented KrillCollection cache clearing (margaretha)
 
 0.57 2018-04-05
         - [feature] Support text queries in metadata

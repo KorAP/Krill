@@ -73,7 +73,6 @@ import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.Text;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
-import net.sf.ehcache.CacheManager;
 
 /**
  * <p>KrillIndex implements a simple API for searching in and writing
@@ -373,6 +372,7 @@ public final class KrillIndex {
         this.writer().commit();
         commitCounter = 0;
         this.closeReader();
+        KrillCollection.cache.removeAll();
     };
 
 
@@ -423,8 +423,6 @@ public final class KrillIndex {
         catch (IOException e) {
             log.error("Unable to add document");
         };
-
-        CacheManager.getInstance().clearAll();
         return doc;
     };
 
@@ -454,8 +452,6 @@ public final class KrillIndex {
         catch (IOException e) {
             log.error("Unable to delete documents");
         };
-
-        CacheManager.getInstance().clearAll();
         return false;
     };
 
@@ -504,7 +500,6 @@ public final class KrillIndex {
             fd.setUID(uid);
             fd = this.addDoc(fd);
         };
-        CacheManager.getInstance().clearAll();
         return fd;
     };
 
@@ -561,7 +556,6 @@ public final class KrillIndex {
             return this.addDoc(fd);
         };
         
-        CacheManager.getInstance().clearAll();
         return fd;
     };
 

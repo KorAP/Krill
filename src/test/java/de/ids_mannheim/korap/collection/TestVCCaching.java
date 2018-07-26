@@ -1,8 +1,8 @@
 package de.ids_mannheim.korap.collection;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +15,7 @@ import org.junit.Test;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillIndex;
-import net.sf.ehcache.CacheManager;
+import de.ids_mannheim.korap.index.FieldDocument;
 import net.sf.ehcache.Element;
 
 public class TestVCCaching {
@@ -33,10 +33,17 @@ public class TestVCCaching {
     }
 
     @Test
-    public void testCacheVC () throws IOException {
+    public void testCache () throws IOException {
+        testAddToCache();
+        testSearchCachedVC();
+        testClearCache();
+    }
+
+    private void testAddToCache () throws IOException {
         InputStream is = getClass().getClassLoader()
                 .getResourceAsStream("named-vc/named-vc-free.jsonld");
         String json = IOUtils.toString(is);
+        is.close();
 
         KrillCollection kc = new KrillCollection(json);
         kc.setIndex(index);
@@ -46,9 +53,6 @@ public class TestVCCaching {
         CachedVCData cc = (CachedVCData) element.getObjectValue();
 
         assertTrue(cc.getDocIdMap().size() > 0);
-
-        testSearchCachedVC();
-        testClearCache();
     }
 
     private void testSearchCachedVC () throws IOException {
@@ -66,10 +70,35 @@ public class TestVCCaching {
         assertNotNull(result);
         assertTrue(!result.isEmpty());
     }
+
+    private void testClearCache () {
+        KrillCollection.cache.removeAll();
+
+        Element element = KrillCollection.cache.get("cache-goe");
+        assertNull(element);
+    }
+
+    @Test
+    public void testAddDocToIndex () throws IOException {
+        testAddToCache();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base", "x  y", "[(0-3)s:x]" + // 1
+                "[(3-4)s:y]" // 2
+        );
+        index.addDoc(fd);
+        index.commit();
+        
+        Element element = KrillCollection.cache.get("cache-goe");
+        assertNull(element);
+    }
     
-    public void testClearCache () {
-        CacheManager cacheManager = CacheManager.getInstance();
-        cacheManager.clearAll();
+    @Test
+    public void testDelDocFromIndex () throws IOException {
+        testAddToCache();
+
+        index.delDocs("textSigle", "GOE/AGF/00000");
+        index.commit();
         
         Element element = KrillCollection.cache.get("cache-goe");
         assertNull(element);
