@@ -37,6 +37,8 @@ public class TestVCCaching {
         testAddToCache();
         testSearchCachedVC();
         testClearCache();
+        testAddDocToIndex();
+        testDelDocFromIndex();
     }
 
     private void testAddToCache () throws IOException {
@@ -78,7 +80,6 @@ public class TestVCCaching {
         assertNull(element);
     }
 
-    @Test
     public void testAddDocToIndex () throws IOException {
         testAddToCache();
 
@@ -93,7 +94,6 @@ public class TestVCCaching {
         assertNull(element);
     }
     
-    @Test
     public void testDelDocFromIndex () throws IOException {
         testAddToCache();
 
@@ -102,5 +102,16 @@ public class TestVCCaching {
         
         Element element = KrillCollection.cache.get("cache-goe");
         assertNull(element);
+    }
+    
+    @Test
+    public void testAutoCaching () throws IOException {
+        InputStream is = getClass().getClassLoader()
+                .getResourceAsStream("collection/query-with-vc-ref.jsonld");
+        String json = IOUtils.toString(is);
+
+        String result = new Krill(json).apply(this.index).toJsonString();
+        assertNotNull(result);
+        assertTrue(!result.isEmpty());
     }
 }

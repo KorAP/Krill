@@ -2,10 +2,13 @@ package de.ids_mannheim.korap.collection;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.queries.TermsFilter;
+import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.PhraseQuery;
@@ -399,8 +402,47 @@ public class CollectionBuilder {
         }
         
     }
+    
+    /** Wraps a sub CollectionBuilder.Interface to allows VC caching
+     *  
+     * @author margaretha
+     *
+     */
+    public class ToCacheVC implements CollectionBuilder.Interface {
 
+        private CollectionBuilder.Interface child;
+        private String cacheKey;
+        
+        private Map<Integer, DocIdSet> docIdMap;
+
+        public ToCacheVC (String vcRef, Interface cbi) {
+            this.child = cbi;
+            this.cacheKey = vcRef;
+            this.docIdMap  = new HashMap<Integer, DocIdSet>();
+        }
+
+        @Override
+        public Filter toFilter () {
+            return new ToCacheVCFilter(cacheKey,docIdMap, child, child.toFilter());
+        }
+
+        @Override
+        public boolean isNegative () {
+            return child.isNegative();
+        }
+
+        @Override
+        public CollectionBuilder.Interface not () {
+            // not supported
+            return this;
+        }
+    }
+    
     public Interface namedVC (CachedVCData cc) {
         return new CollectionBuilder.CachedVC(cc);
+    }
+    
+    public Interface toCacheVC (String vcRef, Interface cbi) {
+        return new CollectionBuilder.ToCacheVC(vcRef, cbi);
     }
 };

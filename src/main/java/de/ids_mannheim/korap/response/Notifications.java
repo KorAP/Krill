@@ -46,7 +46,7 @@ import de.ids_mannheim.korap.util.StatusCodes;
 public class Notifications {
 
     // Create object mapper for JSON generation
-    ObjectMapper mapper = new ObjectMapper();
+    protected ObjectMapper mapper = new ObjectMapper();
 
     private Messages warnings, errors, messages;
 

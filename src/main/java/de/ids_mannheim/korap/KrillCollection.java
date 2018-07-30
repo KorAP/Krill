@@ -1,11 +1,14 @@
 package de.ids_mannheim.korap;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.index.DocsAndPositionsEnum;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
@@ -90,22 +93,6 @@ public final class KrillCollection extends Notifications {
     public KrillCollection (KrillIndex index) {
         this.index = index;
     };
-
-
-    /**
-     * Constructs a KrillCollection according to the given KrillIndex
-     * and KoralQuery.
-     * 
-     * KrillIndex is necessary for caching virtual corpora.
-     * 
-     * @param index
-     * @param jsonString
-     */
-    public KrillCollection (KrillIndex index, String jsonString) {
-        this.index = index;
-        createCollection(jsonString);
-    };
-
 
     /**
      * Construct a new KrillCollection by passing a KoralQuery.
@@ -397,9 +384,26 @@ public final class KrillCollection extends Notifications {
 
             Element element = cache.get(ref);
             if (element == null) {
-                this.addError(StatusCodes.MISSING_COLLECTION,
-                        "Collection is not found.");
-                return this.build().nothing();
+                String corpusQuery = loadVCFile(ref);
+                if (corpusQuery == null){
+                    return this.build().nothing();
+                }
+                else{
+                    JsonNode node;
+                    try {
+                        node = mapper.readTree(corpusQuery);
+                    }
+                    catch (IOException e) {
+                        throw new QueryException(StatusCodes.INVALID_QUERY, 
+                                "Failed parsing collection query to JsonNode.");
+                    }
+                    if (!node.has("collection")){
+                        this.addError(StatusCodes.MISSING_COLLECTION,
+                                "KoralQuery does not contain a collection.");
+                        return this.build().nothing();
+                    }
+                    return cb.toCacheVC(ref, this._fromKoral(node.at("/collection")));
+                }
             }
             else {
                 CachedVCData cc = (CachedVCData) element.getObjectValue();
@@ -412,6 +416,20 @@ public final class KrillCollection extends Notifications {
         throw new QueryException(813, "Collection type is not supported");
     };
 
+    
+    private String loadVCFile (String ref) {
+        File file = new File(ref);
+        String json = null;
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            json = IOUtils.toString(fis);
+        }
+        catch (IOException e) {
+            this.addError(StatusCodes.MISSING_COLLECTION,
+                    "Collection is not found.");
+        }
+        return json;
+    }
 
     /**
      * Set the collection from a {@link CollectionBuilder} object.
@@ -798,7 +816,7 @@ public final class KrillCollection extends Notifications {
         this.cbi = cb.namedVC(cc);
         return cc;
     }
-
+    
     public String getName () {
         return name;
     }
