@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.collection;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.lucene.index.LeafReader;
@@ -14,15 +15,20 @@ import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.collection.CollectionBuilder.Interface;
 import net.sf.ehcache.Element;
 
+/** Filter for virtual corpus / collection that should be cached.  
+ * 
+ * @author margaretha
+ *
+ */
 public class ToCacheVCFilter extends Filter {
 
 
     private Filter filter;
     private CollectionBuilder.Interface cbi;
     private String cacheKey;
-    private Map<Integer, DocIdSet> docIdMap;
+    private Map<Integer, DocBits> docIdMap;
 
-    public ToCacheVCFilter (String cacheKey, Map<Integer, DocIdSet> docIdMap,
+    public ToCacheVCFilter (String cacheKey, Map<Integer, DocBits> docIdMap,
                             Interface cbi, Filter filter) {
         this.cacheKey = cacheKey;
         this.docIdMap = docIdMap;
@@ -52,11 +58,11 @@ public class ToCacheVCFilter extends Filter {
             bitset.or(docIdSet.iterator());
         }
 
-        docIdMap.put(context.hashCode(), new SerializableDocIdSet(bitset));
-        CachedVCData cachedVCData = new CachedVCData(docIdMap);
+        docIdMap.put(context.hashCode(), new DocBits(bitset.getBits()));
+        CachedVCData cachedVCData = new CachedVCData(new HashMap<>(docIdMap));
 
+        KrillCollection.cache.remove(cacheKey);
         KrillCollection.cache.put(new Element(cacheKey, cachedVCData));
-
         return docIdSet;
     }
 

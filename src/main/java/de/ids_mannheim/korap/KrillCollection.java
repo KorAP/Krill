@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.collection.CachedVCData;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
-import de.ids_mannheim.korap.collection.SerializableDocIdSet;
+import de.ids_mannheim.korap.collection.DocBits;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.StatusCodes;
@@ -72,10 +72,8 @@ public final class KrillCollection extends Notifications {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    public static CacheManager cacheManager = CacheManager.newInstance();
-    public static Cache cache = cacheManager.getCache("named_vc");
-    private String name;
-    private boolean toCache = false;
+    public final static CacheManager cacheManager = CacheManager.newInstance();
+    public final static Cache cache = cacheManager.getCache("named_vc");
 
     /**
      * Construct a new KrillCollection.
@@ -101,10 +99,6 @@ public final class KrillCollection extends Notifications {
      *            The KoralQuery document as a JSON string.
      */
     public KrillCollection (String jsonString) {
-        createCollection(jsonString);
-    }
-
-    public void createCollection (String jsonString) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode json = mapper.readTree(jsonString);
@@ -199,26 +193,12 @@ public final class KrillCollection extends Notifications {
 
         String type = json.get("@type").asText();
 
-        if (json.has("cache")) {
-            setToCache(json.get("cache").asBoolean());
-        }
-
         if (type.equals("koral:doc")) {
 
             // default key
             String key = "tokens";
             String valtype = "type:string";
             String match = "match:eq";
-
-            if (isToCache()) {
-                if (!json.has("name")) {
-                    throw new QueryException(StatusCodes.MISSING_ID,
-                            "Collection id or name is required for caching.");
-                }
-                else {
-                    setName(json.get("name").asText());
-                }
-            }
 
             if (json.has("key")) key = json.get("key").asText();
 
@@ -252,6 +232,28 @@ public final class KrillCollection extends Notifications {
 
             // Filter based on string
             else if (valtype.equals("type:string")) {
+                
+                if (json.get("value").asText().startsWith("[")){
+                    if (json.has("match")) {
+                        match = json.get("match").asText();
+                    }
+
+                    CollectionBuilder.Group group = null;
+                    if (match.equals("match:eq")) {
+                        group = this.cb.orGroup();
+                        for (JsonNode value : json.get("value")) {
+                            group.with(cb.term(key, value.asText()));
+                        }
+                    }
+                    else if (match.equals("match:ne")) {
+                        group = this.cb.andGroup();
+                        for (JsonNode value : json.get("value")) {
+                            group.with(cb.term(key, value.asText()).not());
+                        }
+                    }
+                    return group;
+                }
+                
                 if (json.has("match")) match = json.get("match").asText();
 
                 switch (match) {
@@ -316,28 +318,6 @@ public final class KrillCollection extends Notifications {
                         "Match relation unknown for type");
             }
 
-            else if (valtype.equals("type:string[]")) {
-
-                if (json.has("match")) {
-                    match = json.get("match").asText();
-                }
-
-                CollectionBuilder.Group group = null;
-                if (match.equals("match:eq")) {
-                    group = this.cb.orGroup();
-                    for (JsonNode value : json.get("value")) {
-                        group.with(cb.term(key, value.asText()));
-                    }
-                }
-                else if (match.equals("match:ne")) {
-                    group = this.cb.andGroup();
-                    for (JsonNode value : json.get("value")) {
-                        group.with(cb.term(key, value.asText()).not());
-                    }
-                }
-                return group;
-            }
-
             throw new QueryException(843, "Document type is not supported");
         }
 
@@ -382,7 +362,7 @@ public final class KrillCollection extends Notifications {
                         "ref is empty");
             }
 
-            Element element = cache.get(ref);
+            Element element = KrillCollection.cache.get(ref);
             if (element == null) {
                 String corpusQuery = loadVCFile(ref);
                 if (corpusQuery == null){
@@ -418,7 +398,7 @@ public final class KrillCollection extends Notifications {
 
     
     private String loadVCFile (String ref) {
-        File file = new File(ref);
+        File file = new File("vc/"+ref+".jsonld");
         String json = null;
         try {
             FileInputStream fis = new FileInputStream(file);
@@ -797,45 +777,29 @@ public final class KrillCollection extends Notifications {
     };
 
 
-    public CachedVCData storeInCache () throws IOException {
+    public void storeInCache (String cacheKey) throws IOException {
+        if (cacheKey ==null || cacheKey.isEmpty()) {
+            this.addError(StatusCodes.MISSING_ID,
+                    "Collection name is required for caching.");
+        }
+        
         List<LeafReaderContext> leaves = this.index.reader().leaves();
-        Map<Integer, DocIdSet> docIdMap =
-                new HashMap<Integer, DocIdSet>(leaves.size());
+        Map<Integer, DocBits> docIdMap =
+                new HashMap<Integer, DocBits>(leaves.size());
 
         for (LeafReaderContext context : leaves) {
             if (docIdMap.get(context.hashCode()) == null) {
                 FixedBitSet bitset = bits(context);
                 docIdMap.put(context.hashCode(),
-                        new SerializableDocIdSet(bitset));
+                        new DocBits(bitset.getBits()));
             }
         }
 
         CachedVCData cc = new CachedVCData(docIdMap);
-        cache.put(new Element(getName(), cc));
-
+        cache.put(new Element(cacheKey, cc));
         this.cbi = cb.namedVC(cc);
-        return cc;
     }
     
-    public String getName () {
-        return name;
-    }
-
-
-    public void setName (String name) {
-        this.name = name;
-    }
-
-
-    public boolean isToCache () {
-        return toCache;
-    }
-
-
-    public void setToCache (boolean toCache) {
-        this.toCache = toCache;
-    }
-
     /*
      * Analyze how terms relate
      */

@@ -1,9 +1,9 @@
 {"collection": {
-    "name" : "cache-goe",
+    "name" : "named-vc1",
     "@type": "koral:doc",
     "key": "textSigle",
     "match": "match:ne",
-    "type" : "type:string[]",
+    "type" : "type:string",
     "value": [
         "GOE/AGF/00000",
         "GOE/AGA/01784"

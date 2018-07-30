@@ -4,6 +4,7 @@
         - Implemented caching collection (margaretha)
         - Implemented KrillCollection cache clearing (margaretha)
         - Implemented auto-caching (margaretha)
+        - Implemented serializable doc bits vector for caching on disk (margaretha)
 
 0.57 2018-04-05
         - [feature] Support text queries in metadata

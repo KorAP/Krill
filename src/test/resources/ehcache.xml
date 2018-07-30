@@ -12,10 +12,11 @@
 
 	<cache name="named_vc" 
 		eternal="true" 
-		memoryStoreEvictionPolicy="LRU" 
-		maxBytesLocalHeap="256M" >
-		<!-- maxBytesLocalDisk="1G"> 
-		<persistence strategy="localTempSwap"/> -->
+		memoryStoreEvictionPolicy="LRU"
+		maxElementsInMemory="1" 
+		maxBytesLocalDisk="1G"
+		diskExpiryThreadIntervalSeconds = "120" > 
+		<persistence strategy="localTempSwap"/>
 	</cache>
 
 </ehcache>

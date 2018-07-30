@@ -376,6 +376,11 @@ public class CollectionBuilder {
         };
     };
     
+    /** Builder for virtual corpus / collection existing in the cache
+     * 
+     * @author margaretha
+     *
+     */
     public class CachedVC implements CollectionBuilder.Interface {
 
         private CachedVCData cachedCollection;
@@ -413,12 +418,12 @@ public class CollectionBuilder {
         private CollectionBuilder.Interface child;
         private String cacheKey;
         
-        private Map<Integer, DocIdSet> docIdMap;
+        private Map<Integer, DocBits> docIdMap;
 
         public ToCacheVC (String vcRef, Interface cbi) {
             this.child = cbi;
             this.cacheKey = vcRef;
-            this.docIdMap  = new HashMap<Integer, DocIdSet>();
+            this.docIdMap  = new HashMap<Integer, DocBits>();
         }
 
         @Override

@@ -1,0 +1,13 @@
+{"collection": {
+    "name" : "named-vc2",
+    "@type": "koral:doc",
+    "key": "textSigle",
+    "match": "match:eq",
+    "type" : "type:string",
+    "value": [
+        "GOE/AGA/02232",
+        "GOE/AGA/02616",
+        "GOE/AGA/03828"
+    ],
+    "cache" : "true"
+}}
