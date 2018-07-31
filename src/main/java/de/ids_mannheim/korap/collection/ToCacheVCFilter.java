@@ -47,16 +47,21 @@ public class ToCacheVCFilter extends Filter {
         FixedBitSet bitset = new FixedBitSet(maxDoc);
 
         if (docIdSet == null) {
-            if (this.cbi != null) {
-                bitset.clear(0, bitset.length());
+            if (cbi.isNegative()) {
+                bitset.set(0, maxDoc);
             }
             else {
-                bitset.set(0, bitset.length());
-            };
+                bitset.clear(0, maxDoc);
+            }
         }
         else {
             bitset.or(docIdSet.iterator());
+            if (cbi.isNegative()){
+                bitset.flip(0, maxDoc);
+            }
         }
+        
+        
 
         docIdMap.put(context.hashCode(), new DocBits(bitset.getBits()));
         CachedVCData cachedVCData = new CachedVCData(new HashMap<>(docIdMap));

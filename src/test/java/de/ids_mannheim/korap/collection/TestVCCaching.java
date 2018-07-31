@@ -2,7 +2,6 @@ package de.ids_mannheim.korap.collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -15,6 +14,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.lucene.store.MMapDirectory;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillIndex;
@@ -25,6 +27,8 @@ import net.sf.ehcache.Element;
 
 public class TestVCCaching {
 
+    public static final ObjectMapper mapper = new ObjectMapper();
+    
     private KrillIndex getSampleIndex () throws IOException {
         return new KrillIndex(new MMapDirectory(
                 Paths.get(getClass().getResource("/sample-index").getFile())));
@@ -90,14 +94,9 @@ public class TestVCCaching {
         String json = IOUtils.toString(is);
 
         String result = new Krill(json).apply(this.index).toJsonString();
-        assertNotNull(result);
-        assertTrue(!result.isEmpty());
-
-        // test with match:eq
-        json.replaceFirst("match:ne", "match:eq");
-        result = new Krill(json).apply(this.index).toJsonString();
-        assertNotNull(result);
-        assertTrue(!result.isEmpty());
+        System.out.println(json);
+        JsonNode node = mapper.readTree(result);
+        assertTrue(node.at("/matches").size()>0);
     }
 
     private void testClearCache () {
@@ -132,7 +131,9 @@ public class TestVCCaching {
     }
     
     @Test
-    public void testAutoCaching () throws IOException {
+    public void testAutoCachingMatchNe () throws IOException {
+        testSearchCachedVC();
+        // search from cache
         testSearchCachedVC();
         testClearCache();
     }
