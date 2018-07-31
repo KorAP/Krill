@@ -290,6 +290,7 @@
 						<exclude>**/TestRealIndex.java</exclude>
 						<exclude>**/TestSampleIndex.java</exclude>
 						<exclude>**/TestVCCaching.java</exclude>
+						<exclude>**/TestWithExternalIndex.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

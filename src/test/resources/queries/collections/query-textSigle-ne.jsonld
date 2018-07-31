@@ -1,0 +1,31 @@
+{
+    "query": {
+        "@type": "koral:token",
+        "wrap": {
+            "@type": "koral:term",
+            "match": "match:eq",
+            "key": "der",
+            "layer": "orth",
+            "foundry": "opennlp"
+        }
+    },
+    "collection": {
+        "@type": "koral:docGroup",
+        "operation": "operation:and",
+        "operands": [
+            {
+                "@type": "koral:doc",
+                "match": "match:eq",
+                "type": "type:regex",
+                "value": "CC-BY.*",
+                "key": "availability"
+            },
+            {
+                "@type": "koral:doc",
+                "match": "match:ne",
+                "value": "GOE/AGI/00000",
+                "key": "textSigle"
+            }
+        ]
+    }
+}

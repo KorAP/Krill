@@ -1,5 +1,4 @@
 {"collection": {
-    "name" : "named-vc1",
     "@type": "koral:doc",
     "key": "textSigle",
     "match": "match:ne",
@@ -7,6 +6,5 @@
     "value": [
         "GOE/AGF/00000",
         "GOE/AGA/01784"
-    ],
-    "cache" : "true"
+    ]
 }}

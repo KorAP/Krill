@@ -1,5 +1,6 @@
 package de.ids_mannheim.korap.collection;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -8,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.store.MMapDirectory;
@@ -17,6 +19,8 @@ import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.index.FieldDocument;
+import de.ids_mannheim.korap.response.Message;
+import de.ids_mannheim.korap.util.StatusCodes;
 import net.sf.ehcache.Element;
 
 public class TestVCCaching {
@@ -32,6 +36,20 @@ public class TestVCCaching {
         index = getSampleIndex();
     }
 
+    @Test
+    public void testUnknownVC () throws IOException {
+
+        InputStream is = getClass().getClassLoader()
+                .getResourceAsStream("collection/unknown-vc-ref.jsonld");
+        String json = IOUtils.toString(is);
+
+        KrillCollection kc = new KrillCollection(json);
+        List<Message> messages = kc.getErrors().getMessages();
+        assertEquals(1, messages.size());
+
+        assertEquals(StatusCodes.MISSING_COLLECTION, messages.get(0).getCode());
+    }
+    
     @Test
     public void testCache () throws IOException {
         testManualAddToCache("named-vc/named-vc1.jsonld", "named-vc1");

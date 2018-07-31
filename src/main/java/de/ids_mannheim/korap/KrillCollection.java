@@ -232,8 +232,7 @@ public final class KrillCollection extends Notifications {
 
             // Filter based on string
             else if (valtype.equals("type:string")) {
-                
-                if (json.get("value").asText().startsWith("[")){
+                if (json.get("value").size() > 1){
                     if (json.has("match")) {
                         match = json.get("match").asText();
                     }
