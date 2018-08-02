@@ -7,7 +7,8 @@ import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.Bits;
 
-/** Filter for virtual corpus/collection existing in the cache.
+/**
+ * Filter for virtual corpus/collection existing in the cache.
  * 
  * @author margaretha
  *
@@ -15,7 +16,7 @@ import org.apache.lucene.util.Bits;
 public class CachedVCFilter extends Filter {
 
     private CachedVCData cachedCollection;
-    
+
     public CachedVCFilter (CachedVCData cachedCollection) {
         this.cachedCollection = cachedCollection;
     }
@@ -23,7 +24,12 @@ public class CachedVCFilter extends Filter {
     @Override
     public DocIdSet getDocIdSet (LeafReaderContext context, Bits acceptDocs)
             throws IOException {
-        DocBits docBits = cachedCollection.getDocIdMap().get(context.hashCode());
+        DocBits docBits =
+                cachedCollection.getDocIdMap().get(context.hashCode());
+        if (docBits == null) {
+            // does not exist in the cache
+            return null;
+        }
         return docBits.createBitDocIdSet();
     }
 
