@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.index.DocsAndPositionsEnum;
@@ -33,6 +34,7 @@ import de.ids_mannheim.korap.collection.CachedVCData;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.collection.DocBits;
 import de.ids_mannheim.korap.response.Notifications;
+import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.StatusCodes;
 import net.sf.ehcache.Cache;
@@ -397,7 +399,19 @@ public final class KrillCollection extends Notifications {
 
     
     private String loadVCFile (String ref) {
-        File file = new File("vc/"+ref+".jsonld");
+        Properties prop = KrillProperties.loadDefaultProperties();
+        if (prop == null){
+            this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
+                    "krill.properties is not found.");
+            return null;
+        }
+        
+        String namedVCPath = prop.getProperty("krill.namedVC");
+        if (!namedVCPath.endsWith("/")){
+            namedVCPath += "/";
+        }
+        File file = new File(namedVCPath+ref+".jsonld");
+        
         String json = null;
         try {
             FileInputStream fis = new FileInputStream(file);

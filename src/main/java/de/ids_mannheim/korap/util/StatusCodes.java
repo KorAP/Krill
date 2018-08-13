@@ -7,6 +7,7 @@ public class StatusCodes {
     public static final int UNABLE_TO_ADD_DOC_TO_INDEX = 602;
     public static final int UNABLE_TP_COMMIT_STAGED_DATA_TO_INDEX = 603;
     public static final int UNABLE_TO_CONNECT_TO_DB = 604;
+    public static final int MISSING_KRILL_PROPERTIES = 605;
     public static final int MISSING_REQUEST_PARAMETER = 610;
     public static final int ARBITRARY_DESERIALIZATION_ERROR = 613;
     public static final int UNABLE_TO_GENERATE_JSON = 620;

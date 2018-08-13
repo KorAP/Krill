@@ -13,19 +13,17 @@ import org.apache.lucene.util.FixedBitSet;
 public class DocBits implements Serializable {
 
     /**
-     * 
+     * Auto generated
      */
     private static final long serialVersionUID = -3505650918983180852L;
     final long[] bits;
-    final int numBits;
 
     public DocBits (long[] bits) {
         this.bits = bits;
-        this.numBits = bits.length;
     }
 
     public BitDocIdSet createBitDocIdSet () {
-        FixedBitSet bitset = new FixedBitSet(bits, numBits);
+        FixedBitSet bitset = new FixedBitSet(bits, bits.length);
         BitDocIdSet docIdSet = new BitDocIdSet(bitset);
         return docIdSet;
     }
@@ -36,7 +34,7 @@ public class DocBits implements Serializable {
         int i = 1;
         for (long b : bits) {
             sb.append(b);
-            if (i < numBits) {
+            if (i < bits.length) {
                 sb.append(",");
             }
             i++;

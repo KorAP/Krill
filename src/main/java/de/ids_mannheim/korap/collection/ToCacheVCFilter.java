@@ -60,8 +60,6 @@ public class ToCacheVCFilter extends Filter {
                 bitset.flip(0, maxDoc);
             }
         }
-        
-        
 
         docIdMap.put(context.hashCode(), new DocBits(bitset.getBits()));
         CachedVCData cachedVCData = new CachedVCData(new HashMap<>(docIdMap));

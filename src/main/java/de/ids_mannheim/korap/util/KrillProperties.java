@@ -91,4 +91,8 @@ public class KrillProperties {
         };
         return info;
     };
+    
+    public static void setProp (Properties prop) {
+        KrillProperties.prop = prop;
+    }
 };
