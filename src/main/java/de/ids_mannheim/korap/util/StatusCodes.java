@@ -40,7 +40,6 @@ public class StatusCodes {
     public static final int MISSING_RELATION_NODE = 717;
     public static final int MISSING_RELATION_TERM = 718;
     public static final int INVALID_QUERY = 719;
-    public static final int MISSING_VC_REFERENCE = 720;
     
     public static final int INVALID_MATCH_ID = 730;
     public static final int MISSING_KEY = 740;
@@ -71,6 +70,7 @@ public class StatusCodes {
     public static final int MISSING_SOURCE = 815;
     public static final int MISSING_ID = 816;
     public static final int MISSING_VALUE = 820;
+    public static final int MISSING_VC_REFERENCE = 821;
     public static final int EMPTY_FILTER = 830;
     public static final int UNWRAPPABLE_FILTER = 831;
     public static final int INVALID_FILTER_OPERATION = 832;

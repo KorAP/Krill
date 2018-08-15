@@ -87,6 +87,7 @@
 814: "Unknown rewrite operation"
 815: "Rewrite expects source"
 820: "Dates require value fields"
+821: "Reference is missing"
 830: "Filter was empty"
 831: "Filter is not wrappable"
 832: "Filter operation is invalid"
