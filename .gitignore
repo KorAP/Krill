@@ -27,3 +27,4 @@
 /src/test/resources/sample-index
 /src/test/java/de/ids_mannheim/korap/collection/TestWithExternalIndex.java
 /krill_cache/
+/vc
