@@ -1,12 +1,17 @@
-0.58.0 2018-08-13
-    - Implemented referencing cached collection (margaretha)
-    - Implemented deserialization of collection with array values and cache option (margaretha)
-    - Implemented caching collection (margaretha)
-    - Implemented KrillCollection cache clearing (margaretha)
-    - Implemented auto-caching (margaretha)
-    - Implemented serializable doc bits vector for caching on disk (margaretha)
-    - Added check for non-existing doc bit vector in the cache (margaretha)
-    - Implemented custom namedVC path (margaretha)
+0.58.0 2018-08-15
+    - [feature] Implemented referencing cached collection (margaretha)
+    - [feature] Implemented deserialization of collection with array values
+      and cache option (margaretha)
+    - [feature] Implemented caching collection (margaretha)
+    - [feature] Implemented KrillCollection cache clearing (margaretha)
+    - [feature] Implemented auto-caching for VC (margaretha)
+    - [feature] Implemented serializable doc bits vector for VC caching
+      on disk (margaretha)
+    - [feature] Added check for non-existing doc bit vector in the cache
+      (margaretha)
+    - [feature] Implemented custom namedVC path (margaretha)
+    - [bugfix] Fix wrong behaviour of negative constraints in and-Groups
+      of VCs (#42; diewald)
 
 0.57 2018-04-05
     - [feature] Support text queries in metadata

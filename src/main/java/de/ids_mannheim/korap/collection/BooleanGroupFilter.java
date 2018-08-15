@@ -122,14 +122,6 @@ public class BooleanGroupFilter extends Filter {
     };
 
 
-    /*
-    @Override
-    public String toString (String str) {
-        return this.toString();
-    };
-    */
-
-
     @Override
     public DocIdSet getDocIdSet (LeafReaderContext context, Bits acceptDocs)
             throws IOException {
@@ -160,22 +152,22 @@ public class BooleanGroupFilter extends Filter {
                 // Filter matches
                 if (operand.isNegative) {
 
-                    // This means, everything is allowed
-                    if (this.isOptional) {
+					if (DEBUG) {
+						// OR - This means, everything is allowed
+						if (this.isOptional) {
+                            log.debug("- Filter to allow all documents (OR NEG NULL)");
 
-                        // Everything is allowed
-                        if (DEBUG)
-                            log.debug("- Filter to allow all documents");
+						}
+						// AND - The negation is irrelevant
+						else {
+							log.debug("- Filter to allow all documents (AND NEG NULL)");
+						};
+					};
 
-                        bitset.set(0, maxDoc);
-                        return BitsFilteredDocIdSet
-                                .wrap(new BitDocIdSet(bitset), acceptDocs);
-                    };
 
-                    // There is no possible match
-                    if (DEBUG)
-                        log.debug("- Filter to allow no documents (1)");
-                    return null;
+					bitset.set(0, maxDoc);
+					return BitsFilteredDocIdSet
+						.wrap(new BitDocIdSet(bitset), acceptDocs);
                 }
 
                 // The result is unimportant

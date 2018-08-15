@@ -809,6 +809,54 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 75, ki.numberOf("paragraphs"));
     };
 
+	@Test
+    public void testKrillCollectionWithNonexistingNegation () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1()); // nachricht kultur reisen
+        ki.addDoc(createDoc3()); // reisen finanzen
+        ki.commit();
+
+        KrillCollection kc = new KrillCollection(ki);
+        CollectionBuilder cb = kc.build();
+
+		kc.fromBuilder(cb.term("textClass","reisen"));
+		assertEquals(kc.toString(), "textClass:reisen");
+        assertEquals("Documents", 2, kc.numberOf("documents"));
+
+		kc.fromBuilder(cb.andGroup().with(
+						   cb.term("textClass","reisen")
+						   ).with(
+							   cb.term("textClass","nachricht").not()
+							   ));
+		assertEquals(kc.toString(), "AndGroup(textClass:reisen -textClass:nachricht)");
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+
+		
+		kc.fromBuilder(cb.andGroup().with(
+						   cb.term("textClass","reisen")
+						   ).with(
+							   cb.term("textClass","reisen").not()
+							   ));
+		assertEquals(kc.toString(), "AndGroup(textClass:reisen -textClass:reisen)");
+        assertEquals("Documents", 0, kc.numberOf("documents"));
+
+		kc.fromBuilder(cb.andGroup().with(
+						   cb.term("textClass","kultur")
+						   ).with(
+							   cb.term("textClass","finanzen").not()
+							   ));
+		assertEquals(kc.toString(), "AndGroup(textClass:kultur -textClass:finanzen)");
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+
+		kc.fromBuilder(cb.andGroup().with(
+						   cb.term("textClass","reisen")
+						   ).with(
+							   cb.term("textClass","Blabla").not()
+							   ));
+		assertEquals(kc.toString(), "AndGroup(textClass:reisen -textClass:Blabla)");
+        assertEquals("Documents", 2, kc.numberOf("documents"));
+    }
+
 
     private FieldDocument createDoc1 () {
         FieldDocument fd = new FieldDocument();

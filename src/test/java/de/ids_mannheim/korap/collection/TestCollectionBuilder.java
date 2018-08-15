@@ -123,6 +123,14 @@ public class TestCollectionBuilder {
                         .with(kc.term("title", "name")).toString());
     };
 
+    @Test
+    public void builderAndCombinedNeg () throws IOException {
+        CollectionBuilder kc = new CollectionBuilder();
+        assertEquals("AndGroup(author:tree -title:name)",
+                kc.andGroup().with(kc.term("author", "tree"))
+					 .with(kc.term("title", "name").not()).toString());
+    };
+	
 
     @Test
     public void builderAndNestedSimple () throws IOException {
