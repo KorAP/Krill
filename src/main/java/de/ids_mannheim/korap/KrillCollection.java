@@ -241,18 +241,13 @@ public final class KrillCollection extends Notifications {
                         match = json.get("match").asText();
                     }
 
-                    CollectionBuilder.Group group = null;
-                    if (match.equals("match:eq")) {
-                        group = this.cb.orGroup();
-                        for (JsonNode value : json.get("value")) {
-                            group.with(cb.term(key, value.asText()));
-                        }
+                    CollectionBuilder.Group group = this.cb.orGroup();
+                    for (JsonNode value : json.get("value")) {
+                        group.with(cb.term(key, value.asText()));
                     }
-                    else if (match.equals("match:ne")) {
-                        group = this.cb.andGroup();
-                        for (JsonNode value : json.get("value")) {
-                            group.with(cb.term(key, value.asText()).not());
-                        }
+                    
+                    if (match.equals("match:ne")) {
+                        return group.not();
                     }
                     return group;
                 }

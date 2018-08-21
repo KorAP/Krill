@@ -13,6 +13,8 @@
     - [bugfix] Fix wrong behaviour of negative constraints in and-Groups
       of VCs (#42; diewald)
     - [feature] Adding loading namedVC from gz (margaretha)
+    - [bugfix] Fixed VC deserialization and double negations in 
+      CollectionBuilder.group (margaretha)
 
 0.57 2018-04-05
     - [feature] Support text queries in metadata

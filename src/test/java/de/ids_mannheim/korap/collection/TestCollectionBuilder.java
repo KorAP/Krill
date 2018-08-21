@@ -198,10 +198,12 @@ public class TestCollectionBuilder {
         assertTrue(kbi.isNegative());
 
         kbi = kc.andGroup().with(kc.term("author", "tree").not());
+        kbi.not();
         assertEquals("author:tree", kbi.toString());
         assertTrue(kbi.isNegative());
 
         kbi = kc.orGroup().with(kc.term("author", "tree").not());
+        kbi.not();
         assertEquals("author:tree", kbi.toString());
         assertTrue(kbi.isNegative());
     };

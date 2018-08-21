@@ -260,14 +260,17 @@ public class CollectionBuilder {
 	
     public class Group implements CollectionBuilder.Interface {
         private boolean isOptional = false;
-        private boolean isNegative = true;
+        private boolean isNegative = false;
 
 
         public boolean isNegative () {
             return this.isNegative;
         };
 
-
+        public void setNegative (boolean isNegative) {
+            this.isNegative = isNegative;
+        }
+        
         public boolean isOptional () {
             return this.isOptional;
         };
@@ -285,8 +288,6 @@ public class CollectionBuilder {
             if (cb == null)
                 return this;
 
-            if (!cb.isNegative())
-                this.isNegative = false;
             this.operands.add(cb);
             return this;
         };
