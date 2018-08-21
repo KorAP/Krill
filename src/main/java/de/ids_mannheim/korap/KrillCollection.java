@@ -188,7 +188,11 @@ public final class KrillCollection extends Notifications {
 
     // Create collection from KoralQuery
     private CollectionBuilder.Interface _fromKoral (JsonNode json)
-            throws QueryException {
+		throws QueryException {
+
+		if (json.has("collection")) {
+			return this._fromKoral(json.at("/collection"));
+		};
 
         if (!json.has("@type")) {
             throw new QueryException(701,

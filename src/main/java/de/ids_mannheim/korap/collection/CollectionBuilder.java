@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
+import java.io.File;
+import java.io.FileInputStream;
 
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.queries.TermsFilter;
@@ -17,9 +20,22 @@ import org.apache.lucene.search.RegexpQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.io.IOUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.index.TextPrependedTokenStream;
 import de.ids_mannheim.korap.util.KrillDate;
+import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.StatusCodes;
+import de.ids_mannheim.korap.util.KrillProperties;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
 
 /*
  * TODO: Optimize!
@@ -33,6 +49,10 @@ import de.ids_mannheim.korap.util.KrillDate;
 
 public class CollectionBuilder {
 
+    public final static CacheManager cacheManager = CacheManager.newInstance();
+    public final static Cache cache = cacheManager.getCache("named_vc");
+
+	
     // Logger
     private final static Logger log = LoggerFactory
             .getLogger(KrillCollection.class);
@@ -122,6 +142,10 @@ public class CollectionBuilder {
 
         return new CollectionBuilder.Range(field, dateDF.floor(),
                 dateDF.ceil());
+    };
+
+	public CollectionBuilder.Interface referTo (String reference) {
+        return new CollectionBuilder.Reference(reference);
     };
 
 
@@ -214,7 +238,7 @@ public class CollectionBuilder {
 
 		// TODO:
 		//   Currently this treatment is language specific and
-		//    does too mzch, I guess.
+		//    does too much, I guess.
         public Filter toFilter () {
 			PhraseQuery pq = new PhraseQuery();
 			int pos = 0;
@@ -257,6 +281,99 @@ public class CollectionBuilder {
         };
     };
 
+
+    public class Reference implements CollectionBuilder.Interface {
+        private boolean isNegative = false;
+        private String reference;
+		private Map<Integer, DocBits> docIdMap =
+			new HashMap<Integer, DocBits>();
+
+        public Reference (String reference) {
+            this.reference = reference;
+        };
+
+        public Filter toFilter () {
+			ObjectMapper mapper = new ObjectMapper();
+			Element element = KrillCollection.cache.get(this.reference);
+            if (element == null) {
+                String corpusQuery = loadVCFile(this.reference);
+                if (corpusQuery == null){
+                    return nothing().toFilter();
+                }
+                else{
+					KrillCollection kc = new KrillCollection();
+					try {
+						kc.fromKoral(corpusQuery);
+					}
+
+					// This is probably a bad idea and filtering should
+					// throw exceptions!
+					catch (QueryException qe) {
+						return null;
+					};
+
+					return new ToCacheVCFilter(
+						this.reference,
+						docIdMap,
+						kc.getBuilder(),
+						kc.toFilter()
+						);
+                }
+            }
+            else {
+                CachedVCData cc = (CachedVCData) element.getObjectValue();
+                return new CachedVCFilter(cc);
+            }
+        };
+
+
+        public String toString () {
+			return "referTo(" + this.reference + ")";
+        };
+
+
+        public boolean isNegative () {
+            return this.isNegative;
+        };
+
+
+        public CollectionBuilder.Interface not () {
+            this.isNegative = true;
+            return this;
+        };
+
+		private String loadVCFile (String ref) {
+			Properties prop = KrillProperties.loadDefaultProperties();
+			if (prop == null){
+				/*
+				  this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
+							  "krill.properties is not found.");
+				*/
+				return null;
+			}
+			
+			String namedVCPath = prop.getProperty("krill.namedVC");
+			if (!namedVCPath.endsWith("/")){
+				namedVCPath += "/";
+			}
+			File file = new File(namedVCPath+ref+".jsonld");
+			
+			String json = null;
+			try {
+				FileInputStream fis = new FileInputStream(file);
+				json = IOUtils.toString(fis);
+			}
+			catch (IOException e) {
+				/*
+				this.addError(StatusCodes.MISSING_COLLECTION,
+							  "Collection is not found.");
+				*/
+				return null;
+			}
+			return json;
+		}	
+    };
+	
 	
     public class Group implements CollectionBuilder.Interface {
         private boolean isOptional = false;
@@ -443,7 +560,8 @@ public class CollectionBuilder {
             return this;
         }
     }
-    
+
+	// Maybe irrelevant
     public Interface namedVC (CachedVCData cc) {
         return new CollectionBuilder.CachedVC(cc);
     }
