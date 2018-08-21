@@ -61,6 +61,7 @@ public class StatusCodes {
 
     // 800 - 899 - Virtual Collection Messages
     public static final int MISSING_COLLECTION = 800;
+    public static final int READING_COLLECTION_FAILED = 801;
     public static final int UNSUPPORTED_MATCH_TYPE = 802;
     public static final int UNKNOWN_VALUE_TYPE = 804;
     public static final int INVALID_VALUE = 805;

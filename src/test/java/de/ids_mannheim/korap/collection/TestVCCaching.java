@@ -45,7 +45,7 @@ public class TestVCCaching {
 
         InputStream is = getClass().getClassLoader()
                 .getResourceAsStream("collection/unknown-vc-ref.jsonld");
-        String json = IOUtils.toString(is);
+        String json = IOUtils.toString(is,"utf-8");
 
         KrillCollection kc = new KrillCollection(json);
         List<Message> messages = kc.getErrors().getMessages();
@@ -80,7 +80,7 @@ public class TestVCCaching {
     private void testManualAddToCache (String filename, String vcName) throws IOException {
         InputStream is = getClass().getClassLoader()
                 .getResourceAsStream(filename);
-        String json = IOUtils.toString(is);
+        String json = IOUtils.toString(is,"utf-8");
         is.close();
 
         KrillCollection kc = new KrillCollection(json);
@@ -91,7 +91,7 @@ public class TestVCCaching {
     private void testSearchCachedVC () throws IOException {
         InputStream is = getClass().getClassLoader()
                 .getResourceAsStream("collection/query-with-vc-ref.jsonld");
-        String json = IOUtils.toString(is);
+        String json = IOUtils.toString(is, "utf-8");
 
         String result = new Krill(json).apply(this.index).toJsonString();
         System.out.println(json);
