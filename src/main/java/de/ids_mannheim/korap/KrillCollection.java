@@ -8,8 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.lucene.index.DocsAndPositionsEnum;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
@@ -400,27 +402,46 @@ public final class KrillCollection extends Notifications {
     
     private String loadVCFile (String ref) {
         Properties prop = KrillProperties.loadDefaultProperties();
-        if (prop == null){
+        if (prop == null) {
             this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
                     "krill.properties is not found.");
             return null;
         }
-        
+
         String namedVCPath = prop.getProperty("krill.namedVC");
-        if (!namedVCPath.endsWith("/")){
+        if (!namedVCPath.endsWith("/")) {
             namedVCPath += "/";
         }
-        File file = new File(namedVCPath+ref+".jsonld");
-        
+        File file; 
         String json = null;
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            json = IOUtils.toString(fis);
+        if ((file= new File(namedVCPath + ref + ".jsonld")).exists()) {
+            try (FileInputStream fis = new FileInputStream(file)) {
+                json = IOUtils.toString(fis,"utf-8");
+            }
+            catch (IOException e) {
+                this.addError(StatusCodes.READING_COLLECTION_FAILED,
+                        e.getMessage());
+            }
         }
-        catch (IOException e) {
+        // slower than plain text, but save space
+        else if ((file = new File(namedVCPath + ref + ".jsonld.gz")).exists()){
+            try (GZIPInputStream gzipInputStream =
+                    new GZIPInputStream(new FileInputStream(file));
+                    ByteArrayOutputStream bos =
+                            new ByteArrayOutputStream(512);) {
+                bos.write(gzipInputStream);
+                json = bos.toString("utf-8");
+            }
+            catch (IOException e) {
+                this.addError(StatusCodes.READING_COLLECTION_FAILED,
+                        e.getMessage());
+            }
+        }
+        else{
             this.addError(StatusCodes.MISSING_COLLECTION,
                     "Collection is not found.");
         }
+
         return json;
     }
 
