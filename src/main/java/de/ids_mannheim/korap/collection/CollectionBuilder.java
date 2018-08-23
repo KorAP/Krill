@@ -162,7 +162,7 @@ public class CollectionBuilder {
         public String toString ();
 
 
-        public Filter toFilter ();
+        public Filter toFilter () throws QueryException;
 
 
         public boolean isNegative ();
@@ -292,37 +292,33 @@ public class CollectionBuilder {
             this.reference = reference;
         };
 
-        public Filter toFilter () {
+        public Filter toFilter () throws QueryException {
 			ObjectMapper mapper = new ObjectMapper();
+
 			Element element = KrillCollection.cache.get(this.reference);
             if (element == null) {
-                String corpusQuery = loadVCFile(this.reference);
-                if (corpusQuery == null){
-                    return nothing().toFilter();
-                }
-                else{
-					KrillCollection kc = new KrillCollection();
-					try {
-						kc.fromKoral(corpusQuery);
-					}
 
-					// This is probably a bad idea and filtering should
-					// throw exceptions!
-					catch (QueryException qe) {
-						return null;
-					};
+                KrillCollection kc = new KrillCollection();
 
-					return new ToCacheVCFilter(
-						this.reference,
-						docIdMap,
-						kc.getBuilder(),
-						kc.toFilter()
+				kc.fromCache(this.reference);
+
+				if (kc.hasErrors()) {
+					throw new QueryException(
+						kc.getError(0).getCode(),
+						kc.getError(0).getMessage()
 						);
-                }
-            }
+				};
+
+				return new ToCacheVCFilter(
+					this.reference,
+					docIdMap,
+					kc.getBuilder(),
+					kc.toFilter()
+					);
+			}
             else {
                 CachedVCData cc = (CachedVCData) element.getObjectValue();
-                return new CachedVCFilter(cc);
+                return new CachedVCFilter(this.reference, cc);
             }
         };
 
@@ -417,7 +413,7 @@ public class CollectionBuilder {
         };
 
 
-        public Filter toFilter () {
+        public Filter toFilter () throws QueryException {
             if (this.operands == null || this.operands.isEmpty())
                 return null;
 
@@ -443,10 +439,16 @@ public class CollectionBuilder {
 
 
         public String toString () {
-            Filter filter = this.toFilter();
-            if (filter == null)
-                return "";
-            return filter.toString();
+			try {
+				Filter filter = this.toFilter();
+				if (filter == null)
+					return "";
+				return filter.toString();
+			}
+			catch (QueryException qe) {
+				log.warn(qe.getLocalizedMessage());
+			};
+			return "";
         };
 
 
@@ -501,16 +503,18 @@ public class CollectionBuilder {
      */
     public class CachedVC implements CollectionBuilder.Interface {
 
+        private String cacheKey;
         private CachedVCData cachedCollection;
         private boolean isNegative = false;
 
-        public CachedVC (CachedVCData cc) {
-            this.cachedCollection = cc;
+        public CachedVC (String vcRef, CachedVCData cc) {
+            this.cacheKey = vcRef;
+			this.cachedCollection = cc;
         }
 
         @Override
         public Filter toFilter () {
-            return new CachedVCFilter(cachedCollection);
+            return new CachedVCFilter(this.cacheKey, cachedCollection);
         }
 
         @Override
@@ -545,7 +549,7 @@ public class CollectionBuilder {
         }
 
         @Override
-        public Filter toFilter () {
+        public Filter toFilter () throws QueryException {
             return new ToCacheVCFilter(cacheKey,docIdMap, child, child.toFilter());
         }
 
@@ -562,8 +566,8 @@ public class CollectionBuilder {
     }
 
 	// Maybe irrelevant
-    public Interface namedVC (CachedVCData cc) {
-        return new CollectionBuilder.CachedVC(cc);
+    public Interface namedVC (String vcRef, CachedVCData cc) {
+        return new CollectionBuilder.CachedVC(vcRef, cc);
     }
     
     public Interface toCacheVC (String vcRef, Interface cbi) {

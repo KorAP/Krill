@@ -21,8 +21,6 @@ import net.sf.ehcache.Element;
  *
  */
 public class ToCacheVCFilter extends Filter {
-
-
     private Filter filter;
     private CollectionBuilder.Interface cbi;
     private String cacheKey;
@@ -66,7 +64,12 @@ public class ToCacheVCFilter extends Filter {
 
         KrillCollection.cache.remove(cacheKey);
         KrillCollection.cache.put(new Element(cacheKey, cachedVCData));
+
         return docIdSet;
     }
 
+    @Override
+    public String toString () {
+		return "referTo(" + this.cacheKey + ")";
+    };
 }

@@ -70,4 +70,8 @@ public class CachedVCData implements Serializable {
         }
         return map;
     }
+
+	public String toString () {
+		return this.docIdMap.toString();
+	}
 }
