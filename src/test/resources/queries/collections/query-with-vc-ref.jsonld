@@ -3,9 +3,8 @@
     "wrap":{
       "@type":"koral:term",
       "layer":"orth",
-      "key":"der",
-      "match":"match:eq",
-      "foundry":"opennlp"
+      "key":"a",
+      "match":"match:eq"
     }
   },
   "collection": {
