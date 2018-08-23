@@ -1,4 +1,4 @@
-0.58.0 2018-08-21
+0.58.0 2018-08-23
     - [feature] Implemented referencing cached collection (margaretha)
     - [feature] Implemented deserialization of collection with array values
       and cache option (margaretha)
@@ -15,6 +15,9 @@
     - [feature] Adding loading namedVC from gz (margaretha)
     - [bugfix] Fixed VC deserialization and double negations in 
       CollectionBuilder.group (margaretha)
+    - [cleanup] Move caching mechanism to toFilter() phase (diewald)
+    - [cleanup] Rewrite test suite for caching to be part of
+      regular test suite (diewald)
 
 0.57 2018-04-05
     - [feature] Support text queries in metadata

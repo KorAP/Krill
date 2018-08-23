@@ -2,6 +2,8 @@ package de.ids_mannheim.korap.collection;
 
 import java.io.IOException;
 
+import java.util.Properties;
+
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
@@ -9,6 +11,8 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.util.StatusCodes;
+import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.QueryBuilder;
 
@@ -18,16 +22,21 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
+import static de.ids_mannheim.korap.TestSimple.*;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import net.sf.ehcache.Element;
+
+
 @RunWith(JUnit4.class)
 public class TestKrillCollectionIndex {
     private KrillIndex ki;
 
+    final String path = "/queries/collections/";
 
     @Test
     public void testKrillCollectionWithWrongJson () throws IOException {
@@ -396,7 +405,6 @@ public class TestKrillCollectionIndex {
 
         kcn.fromBuilder(cb.term("text", sv));
         assertEquals(1, kcn.docCount());
-
 	};
 
 	@Test
@@ -418,6 +426,133 @@ public class TestKrillCollectionIndex {
 		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"der alte mann\")");
         assertEquals(1, kcn.docCount());
 	};
+
+	@Test
+    public void testUnknownVC () throws IOException {
+		ki = new KrillIndex();
+		ki.addDoc(createDoc1());
+		ki.commit();
+
+		// This test was adopted from TestVCCaching,
+		// But does not fail anymore for deserialization
+        String json = _getJSONString("unknown-vc-ref.jsonld");
+
+        KrillCollection kc = new KrillCollection(json);
+		assertEquals("referTo(https://korap.ids-mannheim.de/@ndiewald/MyCorpus)", kc.getBuilder().toString());
+
+		// Fails on filtering
+		assertEquals("", kc.toString());
+		
+        QueryBuilder kq = new QueryBuilder("field");
+		
+		Krill krill = new Krill(kq.seg("a").with("b"));
+		krill.setCollection(kc);
+		
+		Result result = krill.apply(ki);
+
+		assertEquals(StatusCodes.MISSING_COLLECTION, result.getError(0).getCode());
+	};
+
+    @Test
+    public void testCache () throws IOException {
+
+		Properties prop = KrillProperties.loadDefaultProperties();
+
+		String vcPath = getClass().getResource(path + "named-vcs").getFile();
+		String tempVC = prop.getProperty("krill.namedVC");
+		prop.setProperty("krill.namedVC", vcPath);
+
+		ki = new KrillIndex();
+		ki.addDoc(createDoc1());
+		ki.addDoc(createDoc2());
+		ki.commit();
+		
+        testManualAddToCache(ki, "named-vcs/named-vc1.jsonld", "named-vc1");
+        testManualAddToCache(ki, "named-vcs/named-vc2.jsonld", "named-vc2");
+        
+        Element element = KrillCollection.cache.get("named-vc1");
+        CachedVCData cc = (CachedVCData) element.getObjectValue();
+        assertTrue(cc.getDocIdMap().size() > 0);
+
+        element = KrillCollection.cache.get("named-vc2");
+        cc = (CachedVCData) element.getObjectValue();
+        assertTrue(cc.getDocIdMap().size() > 0);
+
+		// Check for cache location
+        assertFalse(KrillCollection.cache.isElementInMemory("named-vc1"));
+        assertTrue(KrillCollection.cache.isElementOnDisk("named-vc1"));
+        assertTrue(KrillCollection.cache.isElementInMemory("named-vc2"));
+        assertTrue(KrillCollection.cache.isElementOnDisk("named-vc2"));
+
+        // testSearchCachedVC();
+		String json = _getJSONString("query-with-vc-ref.jsonld");
+		// references named-vc1: ID eq ["doc-2","doc-3"]
+
+		Krill krill = new Krill(json);
+		// TODO: Better keep the reference
+		testManualAddToCache(ki, "named-vcs/named-vc1.jsonld", "named-vc1");
+		assertEquals("referTo(cached:named-vc1)", krill.getCollection().toString());
+
+		Result result = krill.apply(ki);
+		assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+		assertEquals(result.getMatch(0).getUID(), 2);
+		assertEquals(result.getMatches().size(), 1);
+		
+        // testAddDocToIndex();
+		ki.addDoc(createDoc3());
+		ki.commit();
+
+		// Cache is removed after index change
+        element = KrillCollection.cache.get("named-vc1");
+        assertNull(element);
+
+		// Restart search - this time it's not precached
+        krill = new Krill(json);
+		assertEquals("referTo(named-vc1)", krill.getCollection().toString());
+		result = krill.apply(ki);
+
+		assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+		assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+		assertEquals(result.getMatches().size(), 2);
+
+		// testAutoCachingMatch
+		// Check autocache
+		element = KrillCollection.cache.get("named-vc1");
+		cc = (CachedVCData) element.getObjectValue();
+        assertTrue(cc.getDocIdMap().size() > 0);
+		
+		// Because of autocaching, this should work now
+        krill = new Krill(json);
+		assertEquals("referTo(cached:named-vc1)", krill.getCollection().toString());
+		result = krill.apply(ki);
+		assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+		assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+		assertEquals(result.getMatches().size(), 2);
+
+		// Cache is removed on deletion
+		ki.addDoc(createDoc1());
+		ki.commit();
+
+		// Check cache
+		element = KrillCollection.cache.get("named-vc1");
+        assertNull(element);
+
+		// Rerun query
+        krill = new Krill(json);
+		assertEquals("referTo(named-vc1)", krill.getCollection().toString());
+		result = krill.apply(ki);
+		assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+		assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+		assertEquals(result.getMatches().size(), 2);
+		
+		prop.setProperty("krill.namedVC", tempVC);
+
+		// testClearCache
+		KrillCollection.cache.removeAll();
+
+        element = KrillCollection.cache.get("named-vc1");
+        assertNull(element);
+    };
 
 
     @Test
@@ -860,33 +995,59 @@ public class TestKrillCollectionIndex {
 
     private FieldDocument createDoc1 () {
         FieldDocument fd = new FieldDocument();
+        fd.addString("UID", "1");
         fd.addString("ID", "doc-1");
         fd.addString("author", "Frank");
         fd.addKeyword("textClass", "Nachricht Kultur Reisen");
         fd.addInt("pubDate", 20051210);
         fd.addText("text", "Der alte  Mann ging über die Straße");
+        fd.addTV("tokens", "a b c", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
+				 + "[(2-3)s:b|i:b|_1$<i>2<i>3]" + "[(4-5)s:c|i:c|_2$<i>4<i>5]");
         return fd;
     };
 
 
     private FieldDocument createDoc2 () {
         FieldDocument fd = new FieldDocument();
-        fd.addString("ID", "doc-2");
+        fd.addString("UID", "2");
+		fd.addString("ID", "doc-2");
         fd.addString("author", "Peter");
         fd.addKeyword("textClass", "Kultur Reisen");
         fd.addInt("pubDate", 20051207);
         fd.addText("text", "Der junge Mann hatte keine andere Wahl");
+        fd.addTV("tokens", "a c d", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
+				 + "[(2-3)s:c|i:c|_1$<i>2<i>3]" + "[(4-5)s:d|i:d|_2$<i>4<i>5]");
         return fd;
     };
 
 
     private FieldDocument createDoc3 () {
         FieldDocument fd = new FieldDocument();
-        fd.addString("ID", "doc-3");
+        fd.addString("UID", "3");
+		fd.addString("ID", "doc-3");
         fd.addString("author", "Sebastian");
         fd.addKeyword("textClass", "Reisen Finanzen");
         fd.addInt("pubDate", 20051216);
         fd.addText("text", "Die Frau und der Mann küssten sich");
+        fd.addTV("tokens", "a d e", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
+				 + "[(2-3)s:d|i:d|_1$<i>2<i>3]" + "[(4-5)s:e|i:e|_2$<i>4<i>5]");
         return fd;
+    };
+
+    private void testManualAddToCache (KrillIndex index, String filename, String vcName) throws IOException {
+		String json = _getJSONString(filename);
+
+        KrillCollection kc = new KrillCollection(json);
+        kc.setIndex(index);
+		try {
+			kc.storeInCache(vcName);
+		}
+		catch (QueryException qe) {
+			System.err.println(qe.getLocalizedMessage());
+		};
+    };
+
+    private String _getJSONString (String file) {
+        return getJsonString(getClass().getResource(path + file).getFile());
     };
 };

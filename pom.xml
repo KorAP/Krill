@@ -289,7 +289,6 @@
 						<exclude>**/TestWPDIndex.java</exclude>
 						<exclude>**/TestRealIndex.java</exclude>
 						<exclude>**/TestSampleIndex.java</exclude>
-						<exclude>**/TestVCCaching.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
