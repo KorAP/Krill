@@ -16,8 +16,10 @@ import org.apache.lucene.util.Bits;
 public class CachedVCFilter extends Filter {
 
     private CachedVCData cachedCollection;
+	private String cacheKey;
 
-    public CachedVCFilter (CachedVCData cachedCollection) {
+    public CachedVCFilter (String cacheKey, CachedVCData cachedCollection) {
+		this.cacheKey = cacheKey;
         this.cachedCollection = cachedCollection;
     }
 
@@ -26,6 +28,7 @@ public class CachedVCFilter extends Filter {
             throws IOException {
         DocBits docBits =
                 cachedCollection.getDocIdMap().get(context.hashCode());
+
         if (docBits == null) {
             // does not exist in the cache
             return null;
@@ -33,4 +36,8 @@ public class CachedVCFilter extends Filter {
         return docBits.createBitDocIdSet();
     }
 
+	@Override
+    public String toString () {
+		return "referTo(cached:" + this.cacheKey + ")";
+    };
 }

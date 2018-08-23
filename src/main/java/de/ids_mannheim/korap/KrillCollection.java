@@ -67,6 +67,8 @@ public final class KrillCollection extends Notifications {
     private CollectionBuilder cb = new CollectionBuilder();
     private CollectionBuilder.Interface cbi;
     private byte[] pl = new byte[4];
+
+	private Filter prefiltered = null;
     // private static ByteBuffer bb = ByteBuffer.allocate(4);
 
     // Logger
@@ -119,7 +121,7 @@ public final class KrillCollection extends Notifications {
             }
             else {
                 this.addError(StatusCodes.MISSING_COLLECTION,
-                        "Collection is not found.");
+                        "Collection is not found");
                 this.fromBuilder(this.build().nothing());
             }
         }
@@ -160,6 +162,7 @@ public final class KrillCollection extends Notifications {
      */
     public KrillCollection fromKoral (String jsonString) throws QueryException {
         ObjectMapper mapper = new ObjectMapper();
+		this.prefiltered = null;
         try {
             this.fromKoral((JsonNode) mapper.readTree(jsonString));
         }
@@ -172,6 +175,60 @@ public final class KrillCollection extends Notifications {
     };
 
 
+	public KrillCollection fromCache (String ref) throws QueryException {
+        Properties prop = KrillProperties.loadDefaultProperties();
+		this.prefiltered = null;
+	
+        if (prop == null) {
+            this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
+						  "krill.properties is not found.");
+			return null;
+        }
+
+        String namedVCPath = prop.getProperty("krill.namedVC");
+
+		if (!namedVCPath.endsWith("/")) {
+            namedVCPath += "/";
+        };
+
+		String fileName = namedVCPath + ref + ".jsonld";
+		File file; 
+        String json = null;
+        if ((file= new File(fileName)).exists()) {
+            try (FileInputStream fis = new FileInputStream(file)) {
+                json = IOUtils.toString(fis,"utf-8");
+            }
+            catch (IOException e) {
+                this.addError(StatusCodes.READING_COLLECTION_FAILED,
+                        e.getMessage());
+				return this;
+            }
+        }
+        // slower than plain text, but save space
+        else if ((file = new File(fileName + ".gz")).exists()){
+            try (GZIPInputStream gzipInputStream =
+                    new GZIPInputStream(new FileInputStream(file));
+                    ByteArrayOutputStream bos =
+                            new ByteArrayOutputStream(512);) {
+                bos.write(gzipInputStream);
+                json = bos.toString("utf-8");
+            }
+            catch (IOException e) {
+                this.addError(StatusCodes.READING_COLLECTION_FAILED,
+                        e.getMessage());
+				return this;
+            }
+        }
+        else{
+            this.addError(StatusCodes.MISSING_COLLECTION,
+                    "Collection is not found " + fileName);
+			return this;
+        };
+
+        return this.fromKoral(json);
+	};
+
+
     /**
      * Import the "collection" part of a KoralQuery.
      * 
@@ -182,13 +239,18 @@ public final class KrillCollection extends Notifications {
      */
     public KrillCollection fromKoral (JsonNode json) throws QueryException {
         this.json = json;
+		this.prefiltered = null;
         return this.fromBuilder(this._fromKoral(json));
     };
 
 
     // Create collection from KoralQuery
     private CollectionBuilder.Interface _fromKoral (JsonNode json)
-            throws QueryException {
+		throws QueryException {
+
+		if (json.has("collection")) {
+			return this._fromKoral(json.at("/collection"));
+		};
 
         if (!json.has("@type")) {
             throw new QueryException(701,
@@ -320,9 +382,7 @@ public final class KrillCollection extends Notifications {
         }
 
         // nested group
-        else if (type.equals("koral:docGroup"))
-
-        {
+        else if (type.equals("koral:docGroup")) {
 
             if (!json.has("operands") || !json.get("operands").isArray())
                 throw new QueryException(842,
@@ -347,8 +407,10 @@ public final class KrillCollection extends Notifications {
             };
             return group;
         }
+
         // vc reference
         else if (type.equals("koral:docGroupRef")) {
+			
             if (!json.has("ref")) {
                 throw new QueryException(StatusCodes.MISSING_VC_REFERENCE,
                         "ref is not found");
@@ -358,87 +420,15 @@ public final class KrillCollection extends Notifications {
             if (ref.isEmpty()) {
                 throw new QueryException(StatusCodes.MISSING_VC_REFERENCE,
                         "ref is empty");
-            }
+            };
 
-            Element element = KrillCollection.cache.get(ref);
-            if (element == null) {
-                String corpusQuery = loadVCFile(ref);
-                if (corpusQuery == null){
-                    return this.build().nothing();
-                }
-                else{
-                    JsonNode node;
-                    try {
-                        node = mapper.readTree(corpusQuery);
-                    }
-                    catch (IOException e) {
-                        throw new QueryException(StatusCodes.INVALID_QUERY, 
-                                "Failed parsing collection query to JsonNode.");
-                    }
-                    if (!node.has("collection")){
-                        this.addError(StatusCodes.MISSING_COLLECTION,
-                                "KoralQuery does not contain a collection.");
-                        return this.build().nothing();
-                    }
-                    return cb.toCacheVC(ref, this._fromKoral(node.at("/collection")));
-                }
-            }
-            else {
-                CachedVCData cc = (CachedVCData) element.getObjectValue();
-                return cb.namedVC(cc);
-            }
+			return this.cb.referTo(ref);
         }
 
 
         // Unknown type
         throw new QueryException(813, "Collection type is not supported");
     };
-
-    
-    private String loadVCFile (String ref) {
-        Properties prop = KrillProperties.loadDefaultProperties();
-        if (prop == null) {
-            this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
-                    "krill.properties is not found.");
-            return null;
-        }
-
-        String namedVCPath = prop.getProperty("krill.namedVC");
-        if (!namedVCPath.endsWith("/")) {
-            namedVCPath += "/";
-        }
-        File file; 
-        String json = null;
-        if ((file= new File(namedVCPath + ref + ".jsonld")).exists()) {
-            try (FileInputStream fis = new FileInputStream(file)) {
-                json = IOUtils.toString(fis,"utf-8");
-            }
-            catch (IOException e) {
-                this.addError(StatusCodes.READING_COLLECTION_FAILED,
-                        e.getMessage());
-            }
-        }
-        // slower than plain text, but save space
-        else if ((file = new File(namedVCPath + ref + ".jsonld.gz")).exists()){
-            try (GZIPInputStream gzipInputStream =
-                    new GZIPInputStream(new FileInputStream(file));
-                    ByteArrayOutputStream bos =
-                            new ByteArrayOutputStream(512);) {
-                bos.write(gzipInputStream);
-                json = bos.toString("utf-8");
-            }
-            catch (IOException e) {
-                this.addError(StatusCodes.READING_COLLECTION_FAILED,
-                        e.getMessage());
-            }
-        }
-        else{
-            this.addError(StatusCodes.MISSING_COLLECTION,
-                    "Collection is not found.");
-        }
-
-        return json;
-    }
 
     /**
      * Set the collection from a {@link CollectionBuilder} object.
@@ -447,6 +437,7 @@ public final class KrillCollection extends Notifications {
      *            The CollectionBuilder object.
      */
     public KrillCollection fromBuilder (CollectionBuilder.Interface cbi) {
+		this.prefiltered = null;
         this.cbi = cbi;
         return this;
     };
@@ -485,6 +476,7 @@ public final class KrillCollection extends Notifications {
      * @return The {@link KrillCollection} object for chaining.
      */
     public KrillCollection filterUIDs (String ... uids) {
+		this.prefiltered = null;
         CollectionBuilder.Group cbg = this.cb.orGroup();
         for (String uid : uids) {
             cbg.with(this.cb.term("UID", uid));
@@ -496,10 +488,15 @@ public final class KrillCollection extends Notifications {
     /**
      * Serialize collection to a {@link Filter} object.
      */
-    public Filter toFilter () {
-        if (this.cbi == null) return null;
-
-        return this.cbi.toFilter();
+    public Filter toFilter () throws QueryException {
+        if (this.cbi == null)
+			return null;
+	
+		if (this.prefiltered != null)
+			return this.prefiltered;
+		
+		this.prefiltered = this.cbi.toFilter();
+		return this.prefiltered;
     };
 
 
@@ -515,7 +512,7 @@ public final class KrillCollection extends Notifications {
 
 
     /**
-     * Generate a string representatio of the virtual collection.
+     * Generate a string representation of the virtual collection.
      * 
      * <strong>Warning</strong>: This currently does not generate a
      * valid
@@ -524,10 +521,15 @@ public final class KrillCollection extends Notifications {
      * @return A string representation of the virtual collection.
      */
     public String toString () {
-        Filter filter = this.toFilter();
-        if (filter == null) return "";
-
-        return (this.isNegative() ? "-" : "") + filter.toString();
+		try {
+			Filter filter = this.toFilter();
+			if (filter == null) return "";
+			return (this.isNegative() ? "-" : "") + filter.toString();
+		}
+		catch (QueryException qe) {
+            log.warn(qe.getLocalizedMessage());
+		};
+		return "";
     };
 
 
@@ -557,7 +559,7 @@ public final class KrillCollection extends Notifications {
      *         virtual collection.
      * @throws IOException
      */
-    public FixedBitSet bits (LeafReaderContext atomic) throws IOException {
+    public FixedBitSet bits (LeafReaderContext atomic) throws IOException, QueryException {
 
         LeafReader r = atomic.reader();
         FixedBitSet bitset = new FixedBitSet(r.maxDoc());
@@ -590,46 +592,45 @@ public final class KrillCollection extends Notifications {
      * @throws IOException
      */
     public DocIdSet getDocIdSet (LeafReaderContext atomic, Bits acceptDocs)
-            throws IOException {
+		throws IOException, QueryException {
 
         int maxDoc = atomic.reader().maxDoc();
         FixedBitSet bitset = new FixedBitSet(maxDoc);
 
         Filter filter;
-        if (this.cbi == null || (filter = this.cbi.toFilter()) == null) {
-            if (acceptDocs == null) return null;
+		if (this.cbi == null || (filter = this.toFilter()) == null) {
+			if (acceptDocs == null) return null;
+			bitset.set(0, maxDoc);
+		}
+		else {
 
-            bitset.set(0, maxDoc);
-        }
-        else {
+			// Init vector
+			DocIdSet docids = filter.getDocIdSet(atomic, null);
+			DocIdSetIterator filterIter =
+				(docids == null) ? null : docids.iterator();
+				
+			if (filterIter == null) {
+				if (!this.cbi.isNegative()) return null;
 
-            // Init vector
-            DocIdSet docids = filter.getDocIdSet(atomic, null);
-            DocIdSetIterator filterIter =
-                    (docids == null) ? null : docids.iterator();
+				bitset.set(0, maxDoc);
+			}
+			else {
+				// Or bit set
+				bitset.or(filterIter);
+					
+				// Revert for negation
+				if (this.cbi.isNegative()) bitset.flip(0, maxDoc);
+			};
+		};
 
-            if (filterIter == null) {
-                if (!this.cbi.isNegative()) return null;
-
-                bitset.set(0, maxDoc);
-            }
-            else {
-                // Or bit set
-                bitset.or(filterIter);
-
-                // Revert for negation
-                if (this.cbi.isNegative()) bitset.flip(0, maxDoc);
-            };
-        };
-
-        if (DEBUG) {
-            log.debug("Bit set is  {}", _bits(bitset));
-            log.debug("Livedocs is {}", _bits(acceptDocs));
+		if (DEBUG) {
+			log.debug("Bit set is  {}", _bits(bitset));
+			log.debug("Livedocs is {}", _bits(acceptDocs));
         };
 
         // Remove deleted docs
         return (DocIdSet) BitsFilteredDocIdSet
-                .wrap((DocIdSet) new BitDocIdSet(bitset), acceptDocs);
+			.wrap((DocIdSet) new BitDocIdSet(bitset), acceptDocs);
     };
 
 
@@ -694,7 +695,12 @@ public final class KrillCollection extends Notifications {
 
         // Something went wrong
         catch (IOException e) {
-            log.warn(e.getMessage());
+            log.warn(e.getLocalizedMessage());
+		}
+
+		// E.g. reference corpus not found
+        catch (QueryException e) {
+            log.warn(e.getLocalizedMessage());
         };
 
         return occurrences;
@@ -792,6 +798,9 @@ public final class KrillCollection extends Notifications {
         }
         catch (IOException e) {
             log.warn(e.getLocalizedMessage());
+		}
+        catch (QueryException e) {
+            log.warn(e.getLocalizedMessage());
         };
         return docCount;
     };
@@ -806,7 +815,7 @@ public final class KrillCollection extends Notifications {
     };
 
 
-    public void storeInCache (String cacheKey) throws IOException {
+    public void storeInCache (String cacheKey) throws IOException, QueryException {
         if (cacheKey ==null || cacheKey.isEmpty()) {
             this.addError(StatusCodes.MISSING_ID,
                     "Collection name is required for caching.");
@@ -826,7 +835,7 @@ public final class KrillCollection extends Notifications {
 
         CachedVCData cc = new CachedVCData(docIdMap);
         cache.put(new Element(cacheKey, cc));
-        this.cbi = cb.namedVC(cc);
+        this.cbi = cb.namedVC(cacheKey, cc);
     }
     
     /*

@@ -1,0 +1,9 @@
+{"collection": {
+    "@type": "koral:doc",
+    "key": "UID",
+    "type" : "type:string",
+    "value": [
+        2,
+        3
+    ]
+}}
