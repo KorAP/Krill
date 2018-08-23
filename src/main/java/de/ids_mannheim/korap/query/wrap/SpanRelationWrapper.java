@@ -17,6 +17,7 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
     private SpanQueryWrapper subQuery2;
     private RelationDirection direction;
 
+
     public SpanRelationWrapper (SpanQueryWrapper relationWrapper,
                                 SpanQueryWrapper operand1,
                                 SpanQueryWrapper operand2) {
@@ -45,15 +46,16 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
             return null;
         }
 
-        SpanQuery relationTermQuery = relationQuery
-                .retrieveNode(this.retrieveNode).toFragmentQuery();
-        
-//        SpanTermQuery relationTermQuery = (SpanTermQuery) relationQuery
-//                .retrieveNode(this.retrieveNode).toFragmentQuery();
+        SpanQuery relationTermQuery = relationQuery.retrieveNode(
+                this.retrieveNode).toFragmentQuery();
+
+        //        SpanTermQuery relationTermQuery = (SpanTermQuery) relationQuery
+        //                .retrieveNode(this.retrieveNode).toFragmentQuery();
         if (relationTermQuery == null)
             return null;
 
-        SpanRelationQuery rq = new SpanRelationQuery(relationTermQuery, true, direction);
+        SpanRelationQuery rq = new SpanRelationQuery(relationTermQuery, true,
+                direction);
         SpanQuery subq1, subq2;
 
         if (subQuery1.isEmpty) {
@@ -99,10 +101,13 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
         fq.setSorted(false);
         return fq;
     }
-    
+
+
     public void setDirection (RelationDirection direction) {
         this.direction = direction;
     }
+
+
     public RelationDirection getDirection () {
         return direction;
     }

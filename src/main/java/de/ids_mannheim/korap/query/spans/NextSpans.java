@@ -31,6 +31,7 @@ public class NextSpans extends SimpleSpans {
     private int candidateListDocNum;
     private boolean hasMoreFirstSpan;
 
+
     /**
      * Constructs NextSpans for the given {@link SpanNextQuery}.
      * 
@@ -72,8 +73,7 @@ public class NextSpans extends SimpleSpans {
      */
     private boolean advance () throws IOException {
 
-        while (hasMoreSpans || !matchList.isEmpty()
-                || !candidateList.isEmpty()) {
+        while (hasMoreSpans || !matchList.isEmpty() || !candidateList.isEmpty()) {
             if (!matchList.isEmpty()) {
                 matchDocNumber = firstSpans.doc();
                 matchStartPosition = firstSpans.start();
@@ -193,8 +193,8 @@ public class NextSpans extends SimpleSpans {
                 payloads.addAll(cs.getPayloads());
         }
 
-        matchList.add(new CandidateSpan(start, cs.getEnd(), candidateListDocNum,
-                cost, payloads));
+        matchList.add(new CandidateSpan(start, cs.getEnd(),
+                candidateListDocNum, cost, payloads));
     }
 
 

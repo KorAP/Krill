@@ -91,10 +91,13 @@ public class TestUnorderedElementDistanceIndex {
         return fd;
     }
 
+
     private FieldDocument createFieldDoc5 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "text",
+        fd.addTV(
+                "base",
+                "text",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
                         + "[(1-2)s:b|s:e|_2$<i>1<i>2]"
                         + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>4<b>0]"
@@ -105,13 +108,13 @@ public class TestUnorderedElementDistanceIndex {
         return fd;
     }
 
+
     public SpanQuery createQuery (String elementType, String x, String y,
             int minDistance, int maxDistance, boolean isOrdered) {
         SpanElementQuery e = new SpanElementQuery("base", elementType);
         return new SpanDistanceQuery(new SpanTermQuery(new Term("base", x)),
                 new SpanTermQuery(new Term("base", y)), new DistanceConstraint(
-                        e, minDistance, maxDistance, isOrdered, false),
-                true);
+                        e, minDistance, maxDistance, isOrdered, false), true);
     }
 
 
@@ -264,7 +267,7 @@ public class TestUnorderedElementDistanceIndex {
         //		    );
         //		}
     }
-    
+
 
 
     /**

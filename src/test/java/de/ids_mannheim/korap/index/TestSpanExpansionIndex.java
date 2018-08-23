@@ -146,8 +146,8 @@ public class TestSpanExpansionIndex {
     public void testCase3 () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
-        SpanTermQuery notQuery =
-                new SpanTermQuery(new Term("tokens", "s:Buchstabe"));
+        SpanTermQuery notQuery = new SpanTermQuery(new Term("tokens",
+                "s:Buchstabe"));
 
         SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 2, 3, 0,
                 classNumber, true);
@@ -182,11 +182,11 @@ public class TestSpanExpansionIndex {
     public void testCase4 () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
-        SpanTermQuery notQuery =
-                new SpanTermQuery(new Term("tokens", "tt/p:ADJA"));
+        SpanTermQuery notQuery = new SpanTermQuery(new Term("tokens",
+                "tt/p:ADJA"));
 
-        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 0, 2, -1,
-                classNumber, true);
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 0, 2,
+                -1, classNumber, true);
         kr = ki.search(seq, (short) 10);
 
         assertEquals(6, kr.getMatch(0).getStartPos());
@@ -271,8 +271,8 @@ public class TestSpanExpansionIndex {
         SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:e"));
         SpanTermQuery notQuery = new SpanTermQuery(new Term("base", "s:d"));
 
-        SpanExpansionQuery seq =
-                new SpanExpansionQuery(stq, notQuery, 2, 3, 0, true);
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 2, 3, 0,
+                true);
         kr = ki.search(seq, (short) 20);
 
         // notClause.doc() > firstSpans.doc()
@@ -296,7 +296,8 @@ public class TestSpanExpansionIndex {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.commit();
-        String jsonPath = getClass().getResource("/queries/poly3.json").getFile();
+        String jsonPath = getClass().getResource("/queries/poly3.json")
+                .getFile();
         String jsonQuery = getJsonString(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
@@ -333,10 +334,10 @@ public class TestSpanExpansionIndex {
         ki.commit();
 
         // See /queries/bugs/repetition_group_rewrite
-        RegexpQuery requery =
-                new RegexpQuery(new Term("base", "s:[ac]"), RegExp.ALL);
-        SpanMultiTermQueryWrapper<RegexpQuery> query =
-                new SpanMultiTermQueryWrapper<RegexpQuery>(requery);
+        RegexpQuery requery = new RegexpQuery(new Term("base", "s:[ac]"),
+                RegExp.ALL);
+        SpanMultiTermQueryWrapper<RegexpQuery> query = new SpanMultiTermQueryWrapper<RegexpQuery>(
+                requery);
         SpanExpansionQuery seq = new SpanExpansionQuery(query, 1, 1, 1, true);
         SpanRepetitionQuery rep = new SpanRepetitionQuery(seq, 2, 2, true);
 
@@ -394,12 +395,13 @@ public class TestSpanExpansionIndex {
         ki.addDoc(createFieldDoc3());
         ki.addDoc(createFieldDoc4());
         ki.commit();
-        String jsonPath = getClass()
-                .getResource("/queries/bugs/expansion_bug_3.jsonld").getFile();
+        String jsonPath = getClass().getResource(
+                "/queries/bugs/expansion_bug_3.jsonld").getFile();
         String json = getJsonString(jsonPath);
         KrillQuery kq = new KrillQuery("base");
         SpanQuery sq = kq.fromKoral(json).toQuery();
-        assertEquals(sq.toString(),
+        assertEquals(
+                sq.toString(),
                 "focus(254: spanContain(<base:base/s:t />, {254: spanExpansion(base:s:c, []{0, 4}, right)}))");
 
         kr = ki.search(sq, (short) 10);
@@ -438,22 +440,23 @@ public class TestSpanExpansionIndex {
 
         assertEquals((long) 1, kr.getTotalResults());
 
-        assertEquals("... baum [[baumgarten steingarten]] franz ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... baum [[baumgarten steingarten]] franz ...", kr
+                .getMatch(0).getSnippetBrackets());
 
         // The same result should be shown for:
 
-        sq = kq.seq(kq.re("s:.*garten"))
-                .append(kq.seg().without(kq.re("s:.*an.*")));
+        sq = kq.seq(kq.re("s:.*garten")).append(
+                kq.seg().without(kq.re("s:.*an.*")));
 
         ks = _newKrill(sq);
         kr = ki.search(ks);
 
         assertEquals((long) 1, kr.getTotalResults());
 
-        assertEquals("... baum [[baumgarten steingarten]] franz ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... baum [[baumgarten steingarten]] franz ...", kr
+                .getMatch(0).getSnippetBrackets());
     };
+
 
     @Test
     public void testBugRegexExpandLeftNoMoreSpan () throws IOException {
@@ -462,22 +465,23 @@ public class TestSpanExpansionIndex {
         ki.commit();
 
         SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:a"));
-        
-        RegexpQuery requery =
-                new RegexpQuery(new Term("base", "s:[bc]"), RegExp.ALL);
-        SpanMultiTermQueryWrapper<RegexpQuery> notQuery =
-                new SpanMultiTermQueryWrapper<RegexpQuery>(requery);
+
+        RegexpQuery requery = new RegexpQuery(new Term("base", "s:[bc]"),
+                RegExp.ALL);
+        SpanMultiTermQueryWrapper<RegexpQuery> notQuery = new SpanMultiTermQueryWrapper<RegexpQuery>(
+                requery);
 
         byte classNumber = 1;
         // left expansion
-        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 0, 1, -1,
-                classNumber, true);
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 0, 1,
+                -1, classNumber, true);
 
         kr = ki.search(seq, (short) 20);
 
-        assertEquals(9,kr.getMatches().size());
-        
+        assertEquals(9, kr.getMatches().size());
+
     }
+
 
     private FieldDocument createFieldDoc6 () {
         FieldDocument fd = new FieldDocument();
@@ -488,10 +492,10 @@ public class TestSpanExpansionIndex {
                         + "[(3-4)s:a|s:d|_3$<i>3<i>4]"
                         + "[(4-5)s:a|_4$<i>4<i>5]" + "[(5-6)s:c|_5$<i>5<i>6]"
                         + "[(6-7)s:a|_6$<i>6<i>7]" + "[(7-8)s:d|_7$<i>7<i>8]"
-                        + "[(8-9)s:a|_8$<i>8<i>9]"
-                        + "[(9-10)s:a|_9$<i>9<i>10]");
+                        + "[(8-9)s:a|_8$<i>8<i>9]" + "[(9-10)s:a|_9$<i>9<i>10]");
         return fd;
     }
+
 
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
@@ -502,10 +506,10 @@ public class TestSpanExpansionIndex {
                         + "[(3-4)s:c|s:d|_3$<i>3<i>4]"
                         + "[(4-5)s:e|_4$<i>4<i>5]" + "[(5-6)s:c|_5$<i>5<i>6]"
                         + "[(6-7)s:d|_6$<i>6<i>7]" + "[(7-8)s:e|_7$<i>7<i>8]"
-                        + "[(8-9)s:e|_8$<i>8<i>9]"
-                        + "[(9-10)s:c|_9$<i>9<i>10]");
+                        + "[(8-9)s:e|_8$<i>8<i>9]" + "[(9-10)s:c|_9$<i>9<i>10]");
         return fd;
     }
+
 
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
@@ -550,10 +554,12 @@ public class TestSpanExpansionIndex {
         return fd;
     }
 
+
     private FieldDocument createFieldDoc5 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-5");
-        fd.addTV("base",
+        fd.addTV(
+                "base",
                 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
                 "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10|<>:base/s:t$<b>64<i>0<i>9<i>9<b>0]"
                         + "[(5-10)s:afffe|_1$<i>5<i>10]"
@@ -567,6 +573,7 @@ public class TestSpanExpansionIndex {
                         + "[(60-64)s:effe|_9$<i>60<i>64]");
         return fd;
     }
+
 
     private Krill _newKrill (SpanQueryWrapper query) {
         Krill ks = new Krill(query);

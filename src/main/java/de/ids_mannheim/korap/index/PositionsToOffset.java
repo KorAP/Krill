@@ -161,8 +161,8 @@ public class PositionsToOffset {
 
 
     public void addOffset (int docID, int pos, int startOffset, int endOffset) {
-        offsets.put(new PositionsToOffsetArray(docID, pos),
-                new Integer[] { startOffset, endOffset });
+        offsets.put(new PositionsToOffsetArray(docID, pos), new Integer[] {
+                startOffset, endOffset });
     };
 
 
@@ -233,7 +233,8 @@ public class PositionsToOffset {
                             }
 
                             else {
-                                log.error("Doc {} has no offsets stored for {}",
+                                log.error(
+                                        "Doc {} has no offsets stored for {}",
                                         docID, term.toString());
                             };
                         };

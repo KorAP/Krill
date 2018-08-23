@@ -63,9 +63,9 @@ public class HighlightCombinator {
     // Add primary data to the stack
     public void addString (String characters) {
         this.combine.add(new HighlightCombinatorElement(characters));
-		if (DEBUG) {
-			log.trace("Add string \"{}\" to stack", characters);
-		};
+        if (DEBUG) {
+            log.trace("Add string \"{}\" to stack", characters);
+        };
     };
 
 
@@ -73,8 +73,8 @@ public class HighlightCombinator {
     public void addOpen (int number) {
         this.combine.add(new HighlightCombinatorElement((byte) 1, number));
         this.balanceStack.push(number);
-		if (DEBUG)
-			log.trace("Add opening {} to stack", number);
+        if (DEBUG)
+            log.trace("Add opening {} to stack", number);
     };
 
 
@@ -120,14 +120,9 @@ public class HighlightCombinator {
             lastComb = this.combine.peekLast();
 
             if (DEBUG)
-                log.trace(
-                        "Closing element is unbalanced - {} "
-                                + "!= {} with lastComb {}|{}|{}",
-                        eold,
-						number,
-						lastComb.type,
-						lastComb.number,
-                        lastComb.characters);
+                log.trace("Closing element is unbalanced - {} "
+                        + "!= {} with lastComb {}|{}|{}", eold, number,
+                        lastComb.type, lastComb.number, lastComb.characters);
 
             // combinator is opening and the number is not equal to the last
             // element on the balanceStack
@@ -137,12 +132,10 @@ public class HighlightCombinator {
                 this.combine.removeLast();
             }
 
-			// Last element is empty
-			else if (lastComb.type == 3) {
-				log.error(
-					"The last element was empty -- and this is not correctly handled yet"
-					);
-			}
+            // Last element is empty
+            else if (lastComb.type == 3) {
+                log.error("The last element was empty -- and this is not correctly handled yet");
+            }
 
             // combinator is either closing (??) or another opener
             else {
@@ -151,16 +144,16 @@ public class HighlightCombinator {
                     log.trace("close element a) {}", eold);
 
                 // Add a closer for the old element (this has following elements)
-                this.combine.add(
-                        new HighlightCombinatorElement((byte) 2, eold, false));
+                this.combine.add(new HighlightCombinatorElement((byte) 2, eold,
+                        false));
             };
 
             // add this element number temporarily on the stack
             tempStack.push(eold);
 
-			// There are no more elements on the balance stack
-			if (this.balanceStack.empty())
-				break;
+            // There are no more elements on the balance stack
+            if (this.balanceStack.empty())
+                break;
 
             // Check next element
             eold = this.balanceStack.pop();
@@ -181,9 +174,9 @@ public class HighlightCombinator {
                 lastComb = this.combine.peekLast();
             };
         }
-		else if (lastComb.type == 3) {
-			System.err.println("öööööööööööööööööööööööö");
-		}
+        else if (lastComb.type == 3) {
+            System.err.println("öööööööööööööööööööööööö");
+        }
         else {
             if (DEBUG)
                 log.trace("close element b) {}", number);

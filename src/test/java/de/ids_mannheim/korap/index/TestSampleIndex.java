@@ -43,16 +43,16 @@ public class TestSampleIndex {
 
 
     private KrillIndex getSampleIndex () throws IOException {
-        return new KrillIndex(new MMapDirectory(
-                Paths.get(getClass().getResource("/sample-index").getFile())));
+        return new KrillIndex(new MMapDirectory(Paths.get(getClass()
+                .getResource("/sample-index").getFile())));
 
     };
 
 
     public TestSampleIndex () throws IOException {
         sample = getSampleIndex();
-        String jsonCollection = getJsonString(getClass()
-                .getResource("/collection/availability-all.jsonld").getFile());
+        String jsonCollection = getJsonString(getClass().getResource(
+                "/collection/availability-all.jsonld").getFile());
         KrillCollection collection = new KrillCollection(jsonCollection);
         krillAvailabilityAll = new Krill();
         krillAvailabilityAll.setCollection(collection);
@@ -69,29 +69,31 @@ public class TestSampleIndex {
 
     }
 
+
     @Test
     public void testRelationLemmaBug () throws IOException, QueryException {
-        String filepath = getClass()
-                .getResource("/queries/relation/lemma-bug.json")
-                .getFile();
+        String filepath = getClass().getResource(
+                "/queries/relation/lemma-bug.json").getFile();
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
 
         kr = sample.search(sq, (short) 10);
         assertNotEquals(0, kr.getMatches().size());
-      }
-    
+    }
+
+
     @Test
-    public void testMultipleDistanceWithWildcards ()
-            throws IOException, QueryException {
-        WildcardQuery wcquery =
-                new WildcardQuery(new Term("tokens", "s:meine*"));
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+    public void testMultipleDistanceWithWildcards () throws IOException,
+            QueryException {
+        WildcardQuery wcquery = new WildcardQuery(
+                new Term("tokens", "s:meine*"));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
+                wcquery);
 
         // meine* /+w1:2 &Erfahrung
-        SpanQuery tdq = new SpanDistanceQuery(mtq, sq, TestMultipleDistanceIndex
-                .createConstraint("w", 1, 2, true, false), true);
+        SpanQuery tdq = new SpanDistanceQuery(mtq, sq,
+                TestMultipleDistanceIndex.createConstraint("w", 1, 2, true,
+                        false), true);
 
         kr = sample.search(tdq, (short) 10);
         assertEquals(4, kr.getMatches().size());
@@ -105,24 +107,23 @@ public class TestSampleIndex {
         assertEquals(10301, kr.getMatch(3).getEndPos());
 
         // meine* /+s0 &Erfahrung
-        SpanQuery edq = new SpanDistanceQuery(mtq, sq, TestMultipleDistanceIndex
-                .createConstraint("tokens", "base/s:s", 0, 0, true, false),
-                true);
+        SpanQuery edq = new SpanDistanceQuery(mtq, sq,
+                TestMultipleDistanceIndex.createConstraint("tokens",
+                        "base/s:s", 0, 0, true, false), true);
         kr = sample.search(edq, (short) 20);
         assertEquals(18, kr.getMatches().size());
 
         //meine* /+w1:2,s0 &Erfahrung
 
-        SpanQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+        SpanQuery mdsq = new SpanMultipleDistanceQuery(new SpanClassQuery(mtq,
+                (byte) 129), new SpanClassQuery(sq, (byte) 129), constraints,
+                true, true);
         kr = sample.search(mdsq, (short) 10);
         assertEquals(4, kr.getMatches().size());
 
         // check SpanQueryWrapper generated query
-        SpanQueryWrapper sqwi = getJsonQuery(
-                getClass().getResource("/queries/bugs/cosmas_wildcards.jsonld")
-                        .getFile());
+        SpanQueryWrapper sqwi = getJsonQuery(getClass().getResource(
+                "/queries/bugs/cosmas_wildcards.jsonld").getFile());
         SpanQuery jsq = sqwi.toQuery();
         assertEquals(mdsq.toString(), jsq.toString());
     }
@@ -130,9 +131,8 @@ public class TestSampleIndex {
 
     @Test
     public void testWildcardsWithJson () throws IOException, QueryException {
-        SpanQueryWrapper sqwi = getJsonQuery(getClass()
-                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
-                .getFile());
+        SpanQueryWrapper sqwi = getJsonQuery(getClass().getResource(
+                "/queries/bugs/cosmas_wildcards_all.jsonld").getFile());
         SpanQuery sq = sqwi.toQuery();
         kr = sample.search(sq, (short) 10);
         assertEquals(4, kr.getMatches().size());
@@ -145,9 +145,8 @@ public class TestSampleIndex {
         assertEquals(4, kr.getMatches().size());
 
         // test krill deserialization
-        String jsonString = getJsonString(getClass()
-                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
-                .getFile());
+        String jsonString = getJsonString(getClass().getResource(
+                "/queries/bugs/cosmas_wildcards_all.jsonld").getFile());
         krill = new Krill();
 
         ObjectMapper mapper = new ObjectMapper();
@@ -167,17 +166,15 @@ public class TestSampleIndex {
     @Test
     public void testWildcardsWithCollectionJSON () throws IOException {
         // collection .*
-        String json = getJsonString(getClass()
-                .getResource("/queries/bugs/cosmas_wildcards_all.jsonld")
-                .getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/cosmas_wildcards_all.jsonld").getFile());
         Krill krill = new Krill(json);
         kr = krill.apply(sample);
         assertEquals(4, kr.getMatches().size());
 
         // collection QAO.*
-        json = getJsonString(getClass()
-                .getResource("/queries/bugs/cosmas_wildcards_qao.jsonld")
-                .getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/bugs/cosmas_wildcards_qao.jsonld").getFile());
         krill = new Krill(json);
         assertEquals(krill.getCollection().toString(),
                 "QueryWrapperFilter(availability:/QAO.*/)");
@@ -186,19 +183,20 @@ public class TestSampleIndex {
 
     }
 
+
     @Test
     public void testWildcardStarWithCollection () throws IOException {
 
         // meine*
-        WildcardQuery wcquery =
-                new WildcardQuery(new Term("tokens", "s:meine*"));
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+        WildcardQuery wcquery = new WildcardQuery(
+                new Term("tokens", "s:meine*"));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
+                wcquery);
 
         // meine* /+w1:2,s0 &Erfahrung
-        SpanQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+        SpanQuery mdsq = new SpanMultipleDistanceQuery(new SpanClassQuery(mtq,
+                (byte) 129), new SpanClassQuery(sq, (byte) 129), constraints,
+                true, true);
 
         krillAvailabilityAll.setSpanQuery(mdsq);
         kr = sample.search(krillAvailabilityAll);
@@ -207,68 +205,60 @@ public class TestSampleIndex {
 
         assertEquals("match-GOE/AGI/04846-p107-109", kr.getMatch(0).getID());
         assertEquals("QAO-NC-LOC:ids", kr.getMatch(0).getAvailability());
-        assertEquals(
-                "... gelesen und erzählt hat, ich in "
-                        + "[[meine Erfahrungen]] hätte mit aufnehmen sollen. "
-                        + "heute jedoch ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... gelesen und erzählt hat, ich in "
+                + "[[meine Erfahrungen]] hätte mit aufnehmen sollen. "
+                + "heute jedoch ...", kr.getMatch(0).getSnippetBrackets());
 
-        assertEquals("match-GOE/AGD/00000-p132566-132569",
-                kr.getMatch(1).getID());
+        assertEquals("match-GOE/AGD/00000-p132566-132569", kr.getMatch(1)
+                .getID());
         assertEquals("QAO-NC-LOC:ids-NU:1", kr.getMatch(1).getAvailability());
         assertEquals("... Mannes umständlich beibringen und solches "
                 + "durch [[meine eigne Erfahrung]] bekräftigen: das "
-                + "alles sollte nicht gelten ...",
-                kr.getMatch(1).getSnippetBrackets());
+                + "alles sollte nicht gelten ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
-        assertEquals("match-GOE/AGD/00000-p161393-161396",
-                kr.getMatch(2).getID());
+        assertEquals("match-GOE/AGD/00000-p161393-161396", kr.getMatch(2)
+                .getID());
         assertEquals("QAO-NC-LOC:ids-NU:1", kr.getMatch(2).getAvailability());
         assertEquals("... lassen, bis er sich zuletzt an "
                 + "[[meine sämtlichen Erfahrungen]] und Überzeugungen "
-                + "anschloß, in welchem Sinne ...",
-                kr.getMatch(2).getSnippetBrackets());
+                + "anschloß, in welchem Sinne ...", kr.getMatch(2)
+                .getSnippetBrackets());
 
-        assertEquals("match-GOE/AGD/06345-p10298-10301",
-                kr.getMatch(3).getID());
+        assertEquals("match-GOE/AGD/06345-p10298-10301", kr.getMatch(3).getID());
         assertEquals("QAO-NC", kr.getMatch(3).getAvailability());
         assertEquals("... bis aufs Äußerste verfolgte, und, über "
                 + "[[meine enge Erfahrung]] hinaus, nach ähnlichen Fällen "
                 + "in der ...", kr.getMatch(3).getSnippetBrackets());
     }
 
-	@Test
+
+    @Test
     public void testMatchWithDependency () throws IOException, QueryException {
-		// /GOE/AGA/01784/p104-105/matchInfo?layer=c&foundry=corenlp&spans=true
-		Match km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
-								   "tokens",
-								   "corenlp",
-								   "c",
-								   true,
-								   true);
+        // /GOE/AGA/01784/p104-105/matchInfo?layer=c&foundry=corenlp&spans=true
+        Match km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
+                "tokens", "corenlp", "c", true, true);
 
-		assertEquals(km.getSnippetBrackets(), "... [[meine eigne Erfahrung]] ...");
-		assertEquals(km.getSnippetHTML(), "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark>meine eigne Erfahrung</mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
+        assertEquals(km.getSnippetBrackets(),
+                "... [[meine eigne Erfahrung]] ...");
+        assertEquals(
+                km.getSnippetHTML(),
+                "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark>meine eigne Erfahrung</mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
 
-		km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
-								   "tokens",
-								   "malt",
-								   "d",
-								   true,
-								   true);
+        km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
+                "tokens", "malt", "d", true, true);
 
-		//assertEquals(km.getSnippetBrackets(), "... [[{malt/d:DET>132567:meine} {#132567:{malt/d:ATTR>132567:eigne}} {malt/d:PN>132564:Erfahrung}]] ...");
-		assertEquals(km.getSnippetHTML(), "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span xlink:title=\"malt/d:DET\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">meine</span> <span xml:id=\"token-GOE/AGD/00000-p132567\"><span xlink:title=\"malt/d:ATTR\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">eigne</span></span> <span xlink:title=\"malt/d:PN\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132564\">Erfahrung</span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
+        //assertEquals(km.getSnippetBrackets(), "... [[{malt/d:DET>132567:meine} {#132567:{malt/d:ATTR>132567:eigne}} {malt/d:PN>132564:Erfahrung}]] ...");
+        assertEquals(
+                km.getSnippetHTML(),
+                "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span xlink:title=\"malt/d:DET\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">meine</span> <span xml:id=\"token-GOE/AGD/00000-p132567\"><span xlink:title=\"malt/d:ATTR\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">eigne</span></span> <span xlink:title=\"malt/d:PN\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132564\">Erfahrung</span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
 
-		km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
-								 "tokens",
-								 "malt",
-								 "d",
-								 true,
-								 true,
-								 true);
+        km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
+                "tokens", "malt", "d", true, true, true);
 
-		assertEquals(km.getSnippetBrackets().substring(0,20), "[{#132507:{malt/d:SU");
-		assertEquals(km.getSnippetHTML().substring(0,20), "<span class=\"context");
-	}   
+        assertEquals(km.getSnippetBrackets().substring(0, 20),
+                "[{#132507:{malt/d:SU");
+        assertEquals(km.getSnippetHTML().substring(0, 20),
+                "<span class=\"context");
+    }
 }

@@ -172,7 +172,8 @@ public final class KrillIndex {
 
     private byte[] pl = new byte[4];
     private static ByteBuffer bb = ByteBuffer.allocate(4),
-            bbOffset = ByteBuffer.allocate(8), bbTerm = ByteBuffer.allocate(32);
+            bbOffset = ByteBuffer.allocate(8),
+            bbTerm = ByteBuffer.allocate(32);
 
     // Some initializations ...
     {
@@ -193,8 +194,7 @@ public final class KrillIndex {
                 this.autoCommit = Integer.parseInt(autoCommitStr);
             }
             catch (NumberFormatException e) {
-                log.error(
-                        "krill.index.commit.auto expected to be a numerical value");
+                log.error("krill.index.commit.auto expected to be a numerical value");
             };
         };
     };
@@ -555,7 +555,7 @@ public final class KrillIndex {
             fd.setUID(uid);
             return this.addDoc(fd);
         };
-        
+
         return fd;
     };
 
@@ -580,8 +580,8 @@ public final class KrillIndex {
             if (gzip) {
 
                 // Create json field document
-                FieldDocument fd = this.mapper.readValue(
-                        new GZIPInputStream(json), FieldDocument.class);
+                FieldDocument fd = this.mapper.readValue(new GZIPInputStream(
+                        json), FieldDocument.class);
                 return fd;
             };
             return this.mapper.readValue(json, FieldDocument.class);
@@ -612,8 +612,7 @@ public final class KrillIndex {
      * @return The number of the occurrences.
      * @see KrillCollection#numberOf
      */
-    public long numberOf (KrillCollection collection, String field,
-            String type) {
+    public long numberOf (KrillCollection collection, String field, String type) {
 
         collection.setIndex(this);
         try {
@@ -817,8 +816,8 @@ public final class KrillIndex {
         // Rewrite parse ID
         uid = new Integer(Integer.parseInt(uid)).toString();
 
-        Filter filter = (Filter) new QueryWrapperFilter(
-                new TermQuery(new Term("UID", uid)));
+        Filter filter = (Filter) new QueryWrapperFilter(new TermQuery(new Term(
+                "UID", uid)));
 
         try {
 
@@ -826,18 +825,18 @@ public final class KrillIndex {
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 // Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic,
-                        atomic.reader().getLiveDocs());
+                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
+                        .getLiveDocs());
 
                 DocIdSetIterator filterIterator = filterSet.iterator();
 
                 if (DEBUG) {
-					// Create a bitset for the correct document
-					Bits bitset = filterSet.bits();
-					
+                    // Create a bitset for the correct document
+                    Bits bitset = filterSet.bits();
+
                     log.trace("Checking document in {} with {}", filterSet,
-							  bitset);
-				};
+                            bitset);
+                };
 
                 // No document found
                 if (filterIterator == null)
@@ -893,7 +892,7 @@ public final class KrillIndex {
                 false,    // includeSpans
                 true,     // includeHighlights
                 false     // extendToSentence
-        );
+                );
     };
 
 
@@ -958,7 +957,8 @@ public final class KrillIndex {
         // Create a filter based on the corpusID and the docID
         BooleanQuery bool = new BooleanQuery();
         if (match.getTextSigle() != null) {
-            bool.add(new TermQuery(new Term("textSigle", match.getTextSigle())),
+            bool.add(
+                    new TermQuery(new Term("textSigle", match.getTextSigle())),
                     BooleanClause.Occur.MUST);
         }
 
@@ -1027,8 +1027,7 @@ public final class KrillIndex {
 
                         // Filter out bad layers
                         for (i = layer.size() - 1; i >= 0; i--) {
-                            if (!harmlessLayer.matcher(layer.get(i))
-                                    .matches()) {
+                            if (!harmlessLayer.matcher(layer.get(i)).matches()) {
                                 throw new QueryException(
                                         "Invalid layer requested: "
                                                 + layer.get(i));
@@ -1075,18 +1074,18 @@ public final class KrillIndex {
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 // Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic,
-                        atomic.reader().getLiveDocs());
+                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
+                        .getLiveDocs());
 
                 DocIdSetIterator filterIterator = filterSet.iterator();
 
                 if (DEBUG) {
-					// Create a bitset for the correct document
-					Bits bitset = filterSet.bits();
+                    // Create a bitset for the correct document
+                    Bits bitset = filterSet.bits();
 
                     log.trace("Checking document in {} with {}", filterSet,
-							  bitset);
-				};
+                            bitset);
+                };
 
                 // No document found
                 if (filterIterator == null)
@@ -1109,16 +1108,16 @@ public final class KrillIndex {
                 Terms docTerms = atomic.reader().getTermVector(localDocID,
                         field);
 
-				// The following fields should be lifted for the match
-                HashSet<String> fields = (HashSet<String>) new Krill().getMeta()
-                        .getFields().clone();
+                // The following fields should be lifted for the match
+                HashSet<String> fields = (HashSet<String>) new Krill()
+                        .getMeta().getFields().clone();
 
-				// Lift primary field
+                // Lift primary field
                 fields.add(field);
 
-				// Lift all fields
-				if (fields.contains("@all"))
-					fields = null;
+                // Lift all fields
+                if (fields.contains("@all"))
+                    fields = null;
 
                 // Load the necessary fields of the document
                 Document doc = atomic.reader().document(localDocID, fields);
@@ -1149,12 +1148,11 @@ public final class KrillIndex {
                     if (DEBUG)
                         log.trace("Extend to sentence element '{}'", element);
 
-                    if (spanContext[0] >= 0
-                            && spanContext[0] < spanContext[1]) {
+                    if (spanContext[0] >= 0 && spanContext[0] < spanContext[1]) {
                         match.setStartPos(spanContext[0]);
                         match.setEndPos(spanContext[1]);
-						match.potentialStartPosChar = spanContext[2];
-						match.potentialEndPosChar = spanContext[3];
+                        match.potentialStartPosChar = spanContext[2];
+                        match.potentialEndPosChar = spanContext[3];
                         match.startMore = false;
                         match.endMore = false;
                     }
@@ -1213,17 +1211,16 @@ public final class KrillIndex {
 
                             if (DEBUG)
                                 log.trace(">> {}: freq:{}, pos:{}, payload:{}",
-										  termString,
-										  docs.freq(),
-										  pos,
-										  docs.getPayload());
+                                        termString, docs.freq(), pos,
+                                        docs.getPayload());
 
                             BytesRef payload = docs.getPayload();
 
                             // Copy the payload
                             bbTerm.clear();
 
-                            if (payload != null && payload.length <= bbTerm.capacity()) {
+                            if (payload != null
+                                    && payload.length <= bbTerm.capacity()) {
                                 bbTerm.put(payload.bytes, payload.offset,
                                         payload.length);
                             };
@@ -1242,41 +1239,36 @@ public final class KrillIndex {
                 for (TermInfo t : termList.getTerms()) {
                     if (DEBUG)
                         log.trace(
-							"Add term {}/{}:{} with char:{}(pos:{})-char:{}(pos:{})",
-							t.getFoundry(), t.getLayer(), t.getValue(),
-							t.getStartChar(), t.getStartPos(),
-							t.getEndChar(), t.getEndPos());
+                                "Add term {}/{}:{} with char:{}(pos:{})-char:{}(pos:{})",
+                                t.getFoundry(), t.getLayer(), t.getValue(),
+                                t.getStartChar(), t.getStartPos(),
+                                t.getEndChar(), t.getEndPos());
 
-					// Ignore empty types for the moment
+                    // Ignore empty types for the moment
                     if (t.getType() == "term" || t.getType() == "span") {
                         match.addAnnotation(t.getStartPos(), t.getEndPos(),
                                 t.getAnnotation());
-					}
+                    }
 
-					// TODO:
-					// else if (t.getType() == "empty") {
-					// }
+                    // TODO:
+                    // else if (t.getType() == "empty") {
+                    // }
 
-					// Use relSrc for annotation views
-					else if (t.getType() == "relSrc") {
-						// This only respects relSrc!
-						// May require more information for bidirectional relations
-                        match.addRelation(
-							t.getStartPos(),
-							t.getEndPos(),
-							t.getTargetStartPos(),
-							t.getTargetEndPos(),
-							t.getAnnotation()
-							);
-					};
+                    // Use relSrc for annotation views
+                    else if (t.getType() == "relSrc") {
+                        // This only respects relSrc!
+                        // May require more information for bidirectional relations
+                        match.addRelation(t.getStartPos(), t.getEndPos(),
+                                t.getTargetStartPos(), t.getTargetEndPos(),
+                                t.getAnnotation());
+                    };
                 };
 
                 break;
             };
         }
         catch (IOException e) {
-            match.addError(600, "Unable to read index",
-                    e.getLocalizedMessage());
+            match.addError(600, "Unable to read index", e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());
         };
 
@@ -1393,15 +1385,15 @@ public final class KrillIndex {
             // Revise!
             // Based on core/src/java/org/apache/lucene/search/IndexSearcher.java
             // and highlighter/src/java/org/apache/lucene/search/
-			//   postingshighlight/PostingsHighlighter.java
-            for (Query rewrittenQuery = query.rewrite(this.reader());
-				 !rewrittenQuery.equals(query);
-				 rewrittenQuery = query.rewrite(this.reader())) {
+            //   postingshighlight/PostingsHighlighter.java
+            for (Query rewrittenQuery = query.rewrite(this.reader()); !rewrittenQuery
+                    .equals(query); rewrittenQuery = query.rewrite(this
+                    .reader())) {
                 query = (SpanQuery) rewrittenQuery;
             };
 
-			if (DEBUG)
-				log.trace("Rewritten query is {}", query.toString());
+            if (DEBUG)
+                log.trace("Rewritten query is {}", query.toString());
 
 
             // Todo: run this in a separated thread
@@ -1415,13 +1407,13 @@ public final class KrillIndex {
                  */
                 final FixedBitSet bitset = collection.bits(atomic);
 
-				if (bitset.nextSetBit(0) == DocIdSetIterator.NO_MORE_DOCS) {
-					continue;
-				};
+                if (bitset.nextSetBit(0) == DocIdSetIterator.NO_MORE_DOCS) {
+                    continue;
+                };
 
                 final PositionsToOffset pto = new PositionsToOffset(atomic,
                         field);
-				
+
                 // Spans spans = NearSpansOrdered();
                 final Spans spans = query.getSpans(atomic, (Bits) bitset,
                         termContexts);
@@ -1451,8 +1443,7 @@ public final class KrillIndex {
                     if (itemsPerResource > 0) {
 
                         // IDS are identical
-                        if (localDocID == oldLocalDocID
-                                || oldLocalDocID == -1) {
+                        if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
                             if (itemsPerResourceCounter++ >= itemsPerResource) {
                                 if (spans.skipTo(localDocID + 1) != true) {
                                     break;
@@ -1478,19 +1469,18 @@ public final class KrillIndex {
                     docID = atomic.docBase + localDocID;
 
                     // Do not load all of this, in case the doc is the same!
-                    final Document doc = (fields != null)
-                            ? lreader.document(localDocID, fields)
-                            : lreader.document(localDocID);
+                    final Document doc = (fields != null) ? lreader.document(
+                            localDocID, fields) : lreader.document(localDocID);
 
                     // Create new Match
                     final Match match = new Match(pto, localDocID,
                             spans.start(), spans.end());
                     match.setContext(kr.getContext());
 
-					match.retrievePagebreaks("~:base/s:pb");
+                    match.retrievePagebreaks("~:base/s:pb");
 
-					if (DEBUG)
-						log.trace("Retrieve pagebreaks from index");
+                    if (DEBUG)
+                        log.trace("Retrieve pagebreaks from index");
 
                     // Add match to Result
                     kr.add(match);
@@ -1543,8 +1533,7 @@ public final class KrillIndex {
                             break;
 
                         // IDS are identical
-                        if (localDocID == oldLocalDocID
-                                || oldLocalDocID == -1) {
+                        if (localDocID == oldLocalDocID || oldLocalDocID == -1) {
                             if (localDocID == -1)
                                 break;
 
@@ -1577,12 +1566,12 @@ public final class KrillIndex {
         catch (IOException e) {
             kr.addError(600, "Unable to read index", e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());
-		}
+        }
 
-		catch (QueryException e) {
-            kr.addError(e.getErrorCode(),e.getLocalizedMessage());
-            log.warn(e.getLocalizedMessage());			
-		};
+        catch (QueryException e) {
+            kr.addError(e.getErrorCode(), e.getLocalizedMessage());
+            log.warn(e.getLocalizedMessage());
+        };
 
         // Stop timer thread
         tthread.stopTimer();
@@ -1594,33 +1583,35 @@ public final class KrillIndex {
     };
 
 
-	// Return field values
+    // Return field values
     public MetaFields getFields (String textSigle) {
-		// , HashSet<String> fields) {
+        // , HashSet<String> fields) {
 
-		// Create TermQuery for document
-		TermQuery textSigleQuery = new TermQuery(new Term("textSigle", textSigle));
+        // Create TermQuery for document
+        TermQuery textSigleQuery = new TermQuery(new Term("textSigle",
+                textSigle));
 
-		Filter filter = (Filter) new QueryWrapperFilter(textSigleQuery);
+        Filter filter = (Filter) new QueryWrapperFilter(textSigleQuery);
 
-		/*
-		if (fields.contain("@all"))
-			fields = null;
-		*/
+        /*
+        if (fields.contain("@all"))
+        	fields = null;
+        */
 
-		MetaFields metaFields = new MetaFields(textSigle);
+        MetaFields metaFields = new MetaFields(textSigle);
 
         try {
 
             // Iterate over all atomic indices and find the matching document
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
-				// Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader().getLiveDocs());
+                // Retrieve the single document of interest
+                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader()
+                        .getLiveDocs());
 
                 DocIdSetIterator filterIterator = filterSet.iterator();
 
-				// No document found
+                // No document found
                 if (filterIterator == null)
                     continue;
 
@@ -1633,32 +1624,34 @@ public final class KrillIndex {
 
                 Document doc = atomic.reader().document(localDocID);
 
-				Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
-				while (fieldIterator.hasNext()) {
-					IndexableField iField = fieldIterator.next();
+                Iterator<IndexableField> fieldIterator = doc.getFields()
+                        .iterator();
+                while (fieldIterator.hasNext()) {
+                    IndexableField iField = fieldIterator.next();
 
-					if (iField.name().equals("tokens"))
-						continue;
+                    if (iField.name().equals("tokens"))
+                        continue;
 
-					// Add field
-					metaFields.add(iField);
-				};
+                    // Add field
+                    metaFields.add(iField);
+                };
 
-				return metaFields;
-			};
-		}
-		catch  (IOException e) {
-            metaFields.addError(600, "Unable to read index", e.getLocalizedMessage());
+                return metaFields;
+            };
+        }
+        catch (IOException e) {
+            metaFields.addError(600, "Unable to read index",
+                    e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());
         };
 
         metaFields.addError(630, "Document not found");
 
-		return metaFields;
+        return metaFields;
     };
 
 
-	
+
     public void getValues (String field) {
 
     };
@@ -1693,9 +1686,8 @@ public final class KrillIndex {
         try {
 
             // Rewrite query (for regex and wildcard queries)
-            for (Query rewrittenQuery = query.rewrite(
-                    this.reader()); rewrittenQuery != (Query) query; rewrittenQuery = query
-                            .rewrite(this.reader())) {
+            for (Query rewrittenQuery = query.rewrite(this.reader()); rewrittenQuery != (Query) query; rewrittenQuery = query
+                    .rewrite(this.reader())) {
                 query = (SpanQuery) rewrittenQuery;
             };
 
@@ -1741,8 +1733,8 @@ public final class KrillIndex {
                         };
 
                         // Read document id from index
-                        uniqueDocIDString = lreader.document(localDocID, fields)
-                                .get("UID");
+                        uniqueDocIDString = lreader
+                                .document(localDocID, fields).get("UID");
 
                         if (uniqueDocIDString != null)
                             uniqueDocID = Integer.parseInt(uniqueDocIDString);
@@ -1768,11 +1760,11 @@ public final class KrillIndex {
         catch (IOException e) {
             mc.addError(600, "Unable to read index", e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());
-		}
-		catch (QueryException e) {
-            mc.addError(e.getErrorCode(),e.getLocalizedMessage());
-            log.warn(e.getLocalizedMessage());			
-		};
+        }
+        catch (QueryException e) {
+            mc.addError(e.getErrorCode(), e.getLocalizedMessage());
+            log.warn(e.getLocalizedMessage());
+        };
 
         mc.close();
         return mc;

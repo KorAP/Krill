@@ -105,8 +105,7 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
      *         within
      *         the maximum distance, <code>false</code> otherwise.
      */
-    protected boolean isWithinMaxDistance (CandidateSpan target,
-            Spans candidate) {
+    protected boolean isWithinMaxDistance (CandidateSpan target, Spans candidate) {
         // left candidate
         if (candidate.end() < target.getStart()
                 && candidate.end() + maxDistance <= target.getStart()) {
@@ -129,11 +128,13 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
         int actualDistance;
         CandidateSpan match;
         for (CandidateSpan cs : candidateList) {
-            if (minDistance == 0 &&
-            // intersection
+            if (minDistance == 0
+                    &&
+                    // intersection
                     target.getStart() < cs.getEnd()
                     && cs.getStart() < target.getEnd()) {
-                match = createMatchCandidate(target, cs, true, isTargetFirstSpan);
+                match = createMatchCandidate(target, cs, true,
+                        isTargetFirstSpan);
                 matches.add(match);
                 continue;
             }
@@ -146,9 +147,9 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
                 // right candidate
                 actualDistance = cs.getStart() - target.getEnd() + 1;
             }
-            if (minDistance <= actualDistance
-                    && actualDistance <= maxDistance) {
-                match = createMatchCandidate(target, cs, false, isTargetFirstSpan);
+            if (minDistance <= actualDistance && actualDistance <= maxDistance) {
+                match = createMatchCandidate(target, cs, false,
+                        isTargetFirstSpan);
                 matches.add(match);
             }
         }

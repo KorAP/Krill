@@ -29,8 +29,8 @@ public class SpanExpansionQueryWrapper extends SpanQueryWrapper {
     private byte classNumber;
 
 
-    public SpanExpansionQueryWrapper (SpanQueryWrapper anchor, int min, int max,
-                                      int direction, byte classNumber) {
+    public SpanExpansionQueryWrapper (SpanQueryWrapper anchor, int min,
+                                      int max, int direction, byte classNumber) {
         this.anchor = anchor;
         this.isNull = false;
         this.min = min;
@@ -52,9 +52,8 @@ public class SpanExpansionQueryWrapper extends SpanQueryWrapper {
 
     @Override
     public SpanQuery toFragmentQuery () throws QueryException {
-        return new SpanExpansionQuery(
-                this.anchor.retrieveNode(this.retrieveNode).toFragmentQuery(),
-                this.getMin(), this.getMax(), this.direction, this.classNumber,
-                true);
+        return new SpanExpansionQuery(this.anchor.retrieveNode(
+                this.retrieveNode).toFragmentQuery(), this.getMin(),
+                this.getMax(), this.direction, this.classNumber, true);
     };
 };

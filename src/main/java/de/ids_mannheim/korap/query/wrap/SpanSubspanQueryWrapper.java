@@ -25,8 +25,7 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
 
 
     public SpanSubspanQueryWrapper (SpanQueryWrapper sqw, int startOffset,
-                                    int length)
-            throws QueryException {
+                                    int length) throws QueryException {
         if (length < 0) {
             throw new QueryException(
                     "SpanSubspanQuery cannot have length less than 0.");

@@ -99,8 +99,7 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery {
     public SpanMultipleDistanceQuery (SpanQuery firstClause,
                                       SpanQuery secondClause,
                                       List<DistanceConstraint> constraints,
-                                      boolean isOrdered,
-                                      boolean collectPayloads) {
+                                      boolean isOrdered, boolean collectPayloads) {
         super(firstClause, secondClause, collectPayloads);
         this.constraints = constraints;
         this.isOrdered = isOrdered;

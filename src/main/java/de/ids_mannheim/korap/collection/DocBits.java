@@ -5,10 +5,11 @@ import java.io.Serializable;
 import org.apache.lucene.util.BitDocIdSet;
 import org.apache.lucene.util.FixedBitSet;
 
-/** Serializable object for caching Lucene doc bit vector.
+/**
+ * Serializable object for caching Lucene doc bit vector.
  * 
  * @author margaretha
- *
+ * 
  */
 public class DocBits implements Serializable {
 
@@ -18,15 +19,18 @@ public class DocBits implements Serializable {
     private static final long serialVersionUID = -3505650918983180852L;
     final long[] bits;
 
+
     public DocBits (long[] bits) {
         this.bits = bits;
     }
+
 
     public BitDocIdSet createBitDocIdSet () {
         FixedBitSet bitset = new FixedBitSet(bits, bits.length);
         BitDocIdSet docIdSet = new BitDocIdSet(bitset);
         return docIdSet;
     }
+
 
     @Override
     public String toString () {

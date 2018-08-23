@@ -5,8 +5,9 @@ package de.ids_mannheim.korap.response.match;
  */
 public class Relation {
     public int refStart;
-	public int refEnd;
+    public int refEnd;
     public String annotation;
+
 
     public Relation (String annotation, int refStart, int refEnd) {
         this.annotation = annotation;

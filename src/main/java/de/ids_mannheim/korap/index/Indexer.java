@@ -47,7 +47,7 @@ import java.nio.file.Paths;
  * 
  * 
  * @author diewald, margaretha
- *
+ * 
  */
 public class Indexer {
     private KrillIndex index;
@@ -59,6 +59,7 @@ public class Indexer {
 
     // Init logger
     private final static Logger log = LoggerFactory.getLogger(Indexer.class);
+
 
     /**
      * Construct a new indexer object.
@@ -103,8 +104,7 @@ public class Indexer {
                 log.info("Adding " + file + " to the index. ");
 
                 try {
-                    if (this.index.addDoc(new FileInputStream(file),
-                            true) == null) {
+                    if (this.index.addDoc(new FileInputStream(file), true) == null) {
                         log.warn("fail.");
                         continue;
                     }
@@ -140,9 +140,11 @@ public class Indexer {
         }
     }
 
-    private void closeIndex() throws IOException{
+
+    private void closeIndex () throws IOException {
         index.close();
     }
+
 
     /**
      * Main method.
@@ -154,22 +156,27 @@ public class Indexer {
      * @throws IOException
      */
     public static void main (String[] argv) throws IOException {
-        
+
         Options options = new Options();
-        options.addOption(Option.builder("c").longOpt("config")
+        options.addOption(Option
+                .builder("c")
+                .longOpt("config")
                 .desc("configuration file (defaults to "
-                        + KrillProperties.defaultPropertiesLocation
-                        + ").")
+                        + KrillProperties.defaultPropertiesLocation + ").")
                 .hasArg().argName("properties file").required().build());
-        options.addOption(Option.builder("i").longOpt("inputDir")
+        options.addOption(Option
+                .builder("i")
+                .longOpt("inputDir")
                 .desc("input directories separated by semicolons. The input files "
                         + "have to be in <filename>.json.gz format. ")
                 .hasArgs().argName("input directories").required()
                 .valueSeparator(new Character(';')).build());
-        options.addOption(Option.builder("o").longOpt("outputDir")
+        options.addOption(Option
+                .builder("o")
+                .longOpt("outputDir")
                 .desc("index output directory (defaults to "
-                        + "krill.indexDir in the configuration.")
-                .hasArg().argName("output directory").build());
+                        + "krill.indexDir in the configuration.").hasArg()
+                .argName("output directory").build());
 
         CommandLineParser parser = new DefaultParser();
 
@@ -193,8 +200,7 @@ public class Indexer {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(
                     "Krill indexer\n java -jar -c <properties file> -i <input directories> "
-                            + "[-o <output directory>]",
-                    options);
+                            + "[-o <output directory>]", options);
             return;
         }
         catch (ParseException e) {
@@ -224,6 +230,6 @@ public class Indexer {
             message += "s";
         }
         System.out.print(message + ".");
-        
+
     }
 }

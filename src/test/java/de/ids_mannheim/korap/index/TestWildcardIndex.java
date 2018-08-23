@@ -64,15 +64,15 @@ public class TestWildcardIndex {
         ki.addDoc(createFieldDoc1());
         ki.commit();
         // meine*
-        WildcardQuery wcquery =
-                new WildcardQuery(new Term("tokens", "s:meine*"));
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
+        WildcardQuery wcquery = new WildcardQuery(
+                new Term("tokens", "s:meine*"));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
+                wcquery);
 
         // meine* /+w1:2,s0 &Erfahrung
-        SpanQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+        SpanQuery mdsq = new SpanMultipleDistanceQuery(new SpanClassQuery(mtq,
+                (byte) 129), new SpanClassQuery(sq, (byte) 129), constraints,
+                true, true);
 
         kr = ki.search(mdsq, (short) 10);
         assertEquals(4, kr.getMatches().size());
@@ -86,12 +86,11 @@ public class TestWildcardIndex {
         ki.commit();
 
         // Wildcard ? means regex . (expects exactly one character)
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(
-                        new WildcardQuery(new Term("tokens", "s:meine?")));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
+                new WildcardQuery(new Term("tokens", "s:meine?")));
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+                new SpanClassQuery(mtq, (byte) 129), new SpanClassQuery(sq,
+                        (byte) 129), constraints, true, true);
 
         kr = ki.search(mdsq, (short) 10);
         assertEquals(3, kr.getMatches().size());
@@ -106,12 +105,11 @@ public class TestWildcardIndex {
         ki.commit();
 
         // Wildcard ? means regex . (expects exactly one character)
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(
-                        new WildcardQuery(new Term("tokens", "s:mein?")));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
+                new WildcardQuery(new Term("tokens", "s:mein?")));
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+                new SpanClassQuery(mtq, (byte) 129), new SpanClassQuery(sq,
+                        (byte) 129), constraints, true, true);
 
         kr = ki.search(mdsq, (short) 10);
         assertEquals(1, kr.getMatches().size());
@@ -125,9 +123,8 @@ public class TestWildcardIndex {
         ki.addDoc(createFieldDoc1());
         ki.commit();
         // mein+ /+w1:2,s0 &Erfahrung
-        SpanMultiTermQueryWrapper<WildcardQuery> mtq =
-                new SpanMultiTermQueryWrapper<WildcardQuery>(
-                        new WildcardQuery(new Term("tokens", "s:mein+")));
+        SpanMultiTermQueryWrapper<WildcardQuery> mtq = new SpanMultiTermQueryWrapper<WildcardQuery>(
+                new WildcardQuery(new Term("tokens", "s:mein+")));
 
 
         // Just to make sure, Lucene internal queries treat SpanOr([]) correctly
@@ -140,8 +137,8 @@ public class TestWildcardIndex {
 
         // Check the reported classed query
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+                new SpanClassQuery(mtq, (byte) 129), new SpanClassQuery(sq,
+                        (byte) 129), constraints, true, true);
 
         kr = ki.search(mdsq, (short) 10);
         assertEquals(0, kr.getMatches().size());

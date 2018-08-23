@@ -65,11 +65,11 @@ public class TestRegexIndex {
         // meine* /+w1:2,s0 &Erfahrung
         // rewritten into meine.*
         RegexpQuery wcquery = new RegexpQuery(new Term("tokens", "s:meine.*"));
-        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
-                new SpanMultiTermQueryWrapper<RegexpQuery>(wcquery);
+        SpanMultiTermQueryWrapper<RegexpQuery> mtq = new SpanMultiTermQueryWrapper<RegexpQuery>(
+                wcquery);
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+                new SpanClassQuery(mtq, (byte) 129), new SpanClassQuery(sq,
+                        (byte) 129), constraints, true, true);
 
 
         kr = ki.search(mdsq, (short) 10);
@@ -85,12 +85,11 @@ public class TestRegexIndex {
 
         // meine? /+w1:2,s0 &Erfahrung
         // meine? rewritten into meine.
-        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
-                new SpanMultiTermQueryWrapper<RegexpQuery>(
-                        new RegexpQuery(new Term("tokens", "s:meine.")));
+        SpanMultiTermQueryWrapper<RegexpQuery> mtq = new SpanMultiTermQueryWrapper<RegexpQuery>(
+                new RegexpQuery(new Term("tokens", "s:meine.")));
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+                new SpanClassQuery(mtq, (byte) 129), new SpanClassQuery(sq,
+                        (byte) 129), constraints, true, true);
 
         kr = ki.search(mdsq, (short) 10);
         assertEquals(3, kr.getMatches().size());
@@ -106,16 +105,16 @@ public class TestRegexIndex {
 
         // C2 meine+ /+w1:2,s0 &Erfahrung
         // meine+ rewritten into meine.?
-        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
-                new SpanMultiTermQueryWrapper<RegexpQuery>(
-                        new RegexpQuery(new Term("tokens", "s:meine.?")));
+        SpanMultiTermQueryWrapper<RegexpQuery> mtq = new SpanMultiTermQueryWrapper<RegexpQuery>(
+                new RegexpQuery(new Term("tokens", "s:meine.?")));
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+                new SpanClassQuery(mtq, (byte) 129), new SpanClassQuery(sq,
+                        (byte) 129), constraints, true, true);
 
         kr = ki.search(mdsq, (short) 10);
         assertEquals(4, kr.getMatches().size());
     }
+
 
     @Test
     public void testWildcardPlusRewritten2 () throws IOException {
@@ -125,16 +124,14 @@ public class TestRegexIndex {
 
         // C2 mein+ /+w1:2,s0 &Erfahrung
         // mein+ rewritten into mein.?
-        SpanMultiTermQueryWrapper<RegexpQuery> mtq =
-                new SpanMultiTermQueryWrapper<RegexpQuery>(
-                        new RegexpQuery(new Term("tokens", "s:mein.?")));
+        SpanMultiTermQueryWrapper<RegexpQuery> mtq = new SpanMultiTermQueryWrapper<RegexpQuery>(
+                new RegexpQuery(new Term("tokens", "s:mein.?")));
         SpanMultipleDistanceQuery mdsq = new SpanMultipleDistanceQuery(
-                new SpanClassQuery(mtq, (byte) 129),
-                new SpanClassQuery(sq, (byte) 129), constraints, true, true);
+                new SpanClassQuery(mtq, (byte) 129), new SpanClassQuery(sq,
+                        (byte) 129), constraints, true, true);
 
         kr = ki.search(mdsq, (short) 10);
         assertEquals(2, kr.getMatches().size());
     }
 
 }
-

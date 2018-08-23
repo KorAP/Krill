@@ -40,6 +40,7 @@ public class TestMatch {
         assertEquals("PRO-DUD_KSTA-2013-01.3651", m.getTextSigle());
     };
 
+
     @Test
     public void testMatchLong () {
         Match m = new Match("match-PRO-DUD!PRO-DUD_KSTA-2013-01.3651-p326-480",

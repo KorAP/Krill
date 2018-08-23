@@ -5,9 +5,11 @@ public enum RelationDirection {
 
     private String value;
 
+
     RelationDirection (String value) {
         this.value = value;
     }
+
 
     public String value () {
         return value;

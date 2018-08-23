@@ -30,7 +30,7 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
 public class SpanQueryWrapper {
 
     private static Logger log = LoggerFactory.getLogger(SpanQueryWrapper.class);
-    
+
     // Boundaries, e.g. for repetitions
     protected int min = 1, max = 1;
 
@@ -76,7 +76,7 @@ public class SpanQueryWrapper {
                     new SpanClassQuery(this.toFragmentQuery(), (byte) 254)),
                     (byte) 254);
         };
-        
+
         SpanQuery sq = this.toFragmentQuery();
         log.info(sq.toString());
         return sq;
@@ -426,9 +426,13 @@ public class SpanQueryWrapper {
      * @return A string containg the query representation.
      */
     public String toString () {
-        String string = "" + (this.isNull() ? "isNull" : "notNull") + "-"
-                + (this.isEmpty() ? "isEmpty" : "notEmpty") + "-"
-                + (this.isOptional() ? "isOptional" : "notOptional") + "-"
+        String string = ""
+                + (this.isNull() ? "isNull" : "notNull")
+                + "-"
+                + (this.isEmpty() ? "isEmpty" : "notEmpty")
+                + "-"
+                + (this.isOptional() ? "isOptional" : "notOptional")
+                + "-"
                 + (this.isExtendedToTheRight() ? "isExtendedToTheRight"
                         : "notExtendedToTheRight");;
         return string;

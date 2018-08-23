@@ -101,8 +101,9 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
     @Override
     protected boolean findMatch () throws IOException {
         CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
-        if (minDistance == 0 &&
-        // intersection
+        if (minDistance == 0
+                &&
+                // intersection
                 candidateSpan.getStart() < secondSpans.end()
                 && secondSpans.start() < candidateSpan.getEnd()) {
 

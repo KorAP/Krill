@@ -37,8 +37,8 @@ public class TestWPDIndex {
     private SpanDistanceQuery createElementDistanceQuery (String e, String x,
             String y, int min, int max, boolean isOrdered, boolean exclusion) {
         SpanElementQuery eq = new SpanElementQuery("tokens", e);
-        SpanDistanceQuery sq = new SpanDistanceQuery(
-                new SpanTermQuery(new Term("tokens", x)),
+        SpanDistanceQuery sq = new SpanDistanceQuery(new SpanTermQuery(
+                new Term("tokens", x)),
                 new SpanTermQuery(new Term("tokens", y)),
                 new DistanceConstraint(eq, min, max, isOrdered, exclusion),
                 true);
@@ -48,8 +48,8 @@ public class TestWPDIndex {
 
     private SpanDistanceQuery createDistanceQuery (String x, String y, int min,
             int max, boolean isOrdered, boolean exclusion) {
-        SpanDistanceQuery sq = new SpanDistanceQuery(
-                new SpanTermQuery(new Term("tokens", x)),
+        SpanDistanceQuery sq = new SpanDistanceQuery(new SpanTermQuery(
+                new Term("tokens", x)),
                 new SpanTermQuery(new Term("tokens", y)),
                 new DistanceConstraint(min, max, isOrdered, exclusion), true);
         return sq;
@@ -192,24 +192,21 @@ public class TestWPDIndex {
     @Test
     public void testCase5 () throws IOException {
         SpanQuery sq;
-        sq = new SpanRepetitionQuery(
-                new SpanTermQuery(new Term("tokens", "mate/p:ADJA")), 1, 2,
-                true);
+        sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens",
+                "mate/p:ADJA")), 1, 2, true);
         ks = new Krill(sq);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 4116416);
         //0.9s
 
-        sq = new SpanRepetitionQuery(
-                new SpanTermQuery(new Term("tokens", "mate/p:ADJA")), 1, 1,
-                true);
+        sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens",
+                "mate/p:ADJA")), 1, 1, true);
         ks = new Krill(sq);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 3879671);
 
-        sq = new SpanRepetitionQuery(
-                new SpanTermQuery(new Term("tokens", "mate/p:ADJA")), 2, 2,
-                true);
+        sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens",
+                "mate/p:ADJA")), 2, 2, true);
         ks = new Krill(sq);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 236745);
@@ -220,18 +217,16 @@ public class TestWPDIndex {
     /** Next and repetition */
     @Test
     public void testCase6 () throws IOException {
-        SpanQuery sq = new SpanNextQuery(
-                new SpanTermQuery(new Term("tokens", "tt/p:NN")),
-                new SpanRepetitionQuery(
-                        new SpanTermQuery(new Term("tokens", "mate/p:ADJA")), 2,
-                        2, true));
+        SpanQuery sq = new SpanNextQuery(new SpanTermQuery(new Term("tokens",
+                "tt/p:NN")), new SpanRepetitionQuery(new SpanTermQuery(
+                new Term("tokens", "mate/p:ADJA")), 2, 2, true));
         ks = new Krill(sq);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 30223);
         // 1.1s
 
-        SpanQuery sq2 = new SpanNextQuery(sq,
-                new SpanTermQuery(new Term("tokens", "tt/p:NN")));
+        SpanQuery sq2 = new SpanNextQuery(sq, new SpanTermQuery(new Term(
+                "tokens", "tt/p:NN")));
         ks = new Krill(sq2);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 26607);

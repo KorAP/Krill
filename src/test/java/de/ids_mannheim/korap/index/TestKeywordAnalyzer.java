@@ -20,27 +20,27 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestKeywordAnalyzer {
 
-	@Test
-	public void keywordAnalyzer () throws IOException {
+    @Test
+    public void keywordAnalyzer () throws IOException {
 
-		StringReader reader = new StringReader("alpha beta gamma");
-		
-		KeywordAnalyzer kwa = new KeywordAnalyzer();
-		TokenStream ts = kwa.tokenStream("keys", reader);
-		ts.reset();
+        StringReader reader = new StringReader("alpha beta gamma");
 
-		assertTrue(ts.incrementToken());
-		CharTermAttribute term = ts.getAttribute(CharTermAttribute.class);
+        KeywordAnalyzer kwa = new KeywordAnalyzer();
+        TokenStream ts = kwa.tokenStream("keys", reader);
+        ts.reset();
 
-		assertEquals(term.toString(), "alpha");
-		assertTrue(ts.incrementToken());
-		term = ts.getAttribute(CharTermAttribute.class);
-		assertEquals(term.toString(), "beta");
+        assertTrue(ts.incrementToken());
+        CharTermAttribute term = ts.getAttribute(CharTermAttribute.class);
 
-		assertTrue(ts.incrementToken());
-		term = ts.getAttribute(CharTermAttribute.class);
-		assertEquals(term.toString(), "gamma");
+        assertEquals(term.toString(), "alpha");
+        assertTrue(ts.incrementToken());
+        term = ts.getAttribute(CharTermAttribute.class);
+        assertEquals(term.toString(), "beta");
 
-		assertTrue(!ts.incrementToken());
-	};
+        assertTrue(ts.incrementToken());
+        term = ts.getAttribute(CharTermAttribute.class);
+        assertEquals(term.toString(), "gamma");
+
+        assertTrue(!ts.incrementToken());
+    };
 };

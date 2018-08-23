@@ -226,8 +226,8 @@ public class AttributeSpans extends SimpleSpans {
      * spanIds come first on the list.
      * 
      */
-    class CandidateAttributeSpan extends CandidateSpan
-            implements Comparable<CandidateSpan> {
+    class CandidateAttributeSpan extends CandidateSpan implements
+            Comparable<CandidateSpan> {
 
         /**
          * Construct a CandidateAttributeSpan based on the given span,

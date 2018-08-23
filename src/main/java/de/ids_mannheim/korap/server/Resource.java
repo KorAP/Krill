@@ -292,8 +292,8 @@ public class Resource {
 
         // Get the database
         try {
-            final MatchCollectorDB mc = new MatchCollectorDB(1000,
-                    "Res_" + resultID);
+            final MatchCollectorDB mc = new MatchCollectorDB(1000, "Res_"
+                    + resultID);
             final ComboPooledDataSource pool = Node.getDBPool();
             mc.setDBPool("mysql", pool, pool.getConnection());
 
@@ -348,8 +348,7 @@ public class Resource {
     @GET
     @Path("/match/{matchID}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String match (@PathParam("matchID") String id,
-            @Context UriInfo uri) {
+    public String match (@PathParam("matchID") String id, @Context UriInfo uri) {
 
         Response kresp = _initResponse();
         if (kresp.hasErrors())
@@ -362,8 +361,7 @@ public class Resource {
         // Get query parameters
         MultivaluedMap<String, String> qp = uri.getQueryParameters();
 
-        boolean includeSpans = false, includeHighlights = true,
-                extendToSentence = false, info = false;
+        boolean includeSpans = false, includeHighlights = true, extendToSentence = false, info = false;
 
         // Optional query parameter "info" for more information on the match
         if (!_isNull(qp.getFirst("info")))
@@ -389,9 +387,8 @@ public class Resource {
 
         try {
             // Get match info
-            return index
-                    .getMatchInfo(id, "tokens", info, foundries, layers,
-                            includeSpans, includeHighlights, extendToSentence)
+            return index.getMatchInfo(id, "tokens", info, foundries, layers,
+                    includeSpans, includeHighlights, extendToSentence)
                     .toJsonString();
         }
 

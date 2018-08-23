@@ -217,10 +217,14 @@ public final class KrillQuery extends Notifications {
         return this._fromKoral(json);
     };
 
+
     private SpanQueryWrapper _fromKoral (JsonNode json) throws QueryException {
         return _fromKoral(json, false);
     }
-    private SpanQueryWrapper _fromKoral (JsonNode json, boolean isOperationRelation) throws QueryException {
+
+
+    private SpanQueryWrapper _fromKoral (JsonNode json,
+            boolean isOperationRelation) throws QueryException {
         int number = 0;
 
         // Only accept @typed objects for the moment
@@ -237,10 +241,10 @@ public final class KrillQuery extends Notifications {
                 return this._groupFromJson(json);
 
             case "koral:reference":
-                if (json.has("operation") && !json.get("operation").asText()
-                        .equals("operation:focus"))
-                    throw new QueryException(712,
-                            "Unknown reference operation");
+                if (json.has("operation")
+                        && !json.get("operation").asText()
+                                .equals("operation:focus"))
+                    throw new QueryException(712, "Unknown reference operation");
 
                 if (!json.has("operands")) {
                     throw new QueryException(766,
@@ -299,13 +303,14 @@ public final class KrillQuery extends Notifications {
                     SpanSubspanQueryWrapper ssqw = new SpanSubspanQueryWrapper(
                             sqw, startOffset, length);
                     return ssqw;
-                };
+                }
+                ;
 
                 if (DEBUG)
                     log.trace("Wrap class reference {}", number);
 
-                return new SpanFocusQueryWrapper(
-                        this._fromKoral(operands.get(0)), number);
+                return new SpanFocusQueryWrapper(this._fromKoral(operands
+                        .get(0)), number);
 
             case "koral:token":
 
@@ -319,7 +324,8 @@ public final class KrillQuery extends Notifications {
             case "koral:span":
                 // EM: what to do with empty koral:span? 
                 // it is allowed only in relation queries
-                if (isOperationRelation && !json.has("key") && !json.has("wrap") && !json.has("attr")) {
+                if (isOperationRelation && !json.has("key")
+                        && !json.has("wrap") && !json.has("attr")) {
                     return new SpanRepetitionQueryWrapper();
                 }
                 if (!json.has("wrap"))
@@ -460,13 +466,13 @@ public final class KrillQuery extends Notifications {
                         "Merge operation is currently not supported");
                 return _fromKoral(operands.get(0));
 
-            // Deprecated in favor of operation:junction
+                // Deprecated in favor of operation:junction
             case "operation:or":
                 return this._operationJunctionFromJson(operands);
-            /*
-              case "operation:submatch": // Deprecated in favor of koral:reference
-              return this._operationSubmatchFromJson(json, operands);
-            */
+                /*
+                  case "operation:submatch": // Deprecated in favor of koral:reference
+                  return this._operationSubmatchFromJson(json, operands);
+                */
             case "operation:disjunction":
                 return this._operationJunctionFromJson(operands);
         };
@@ -486,9 +492,11 @@ public final class KrillQuery extends Notifications {
         for (int i = 0; i < operands.size(); i++) {
             childNode = operands.get(i);
             if (childNode.has("@type")
-                    && childNode.get("@type").asText().equals("koral:reference")
-                    && childNode.has("operation") && childNode.get("operation")
-                            .asText().equals("operation:focus")
+                    && childNode.get("@type").asText()
+                            .equals("koral:reference")
+                    && childNode.has("operation")
+                    && childNode.get("operation").asText()
+                            .equals("operation:focus")
                     && !childNode.has("operands")) {
 
                 if (childNode.has("classRef")) {
@@ -573,40 +581,41 @@ public final class KrillQuery extends Notifications {
         if (operand1.isEmpty() && !operand2.isEmpty()) {
             direction = RelationDirection.LEFT; // "<:";
         }
-        else{
+        else {
             direction = RelationDirection.RIGHT; // ">:"
         }
 
-        if (!relation.has("@type")){
+        if (!relation.has("@type")) {
             throw new QueryException(701,
                     "JSON-LD group has no @type attribute");
         }
-        
+
         if (relation.get("@type").asText().equals("koral:relation")) {
             SpanRelationWrapper spanRelationWrapper;
             SpanQueryWrapper relationTermWrapper;
             if (!relation.has("wrap")) {
                 throw new QueryException(718, "Missing relation term.");
             }
-            else{
-                relationTermWrapper =
-                        _termFromJson(relation.get("wrap"), false, direction);
-                spanRelationWrapper = new SpanRelationWrapper(relationTermWrapper, operand1, operand2);
+            else {
+                relationTermWrapper = _termFromJson(relation.get("wrap"),
+                        false, direction);
+                spanRelationWrapper = new SpanRelationWrapper(
+                        relationTermWrapper, operand1, operand2);
             }
-            
-            spanRelationWrapper.setDirection(direction);    
+
+            spanRelationWrapper.setDirection(direction);
             return spanRelationWrapper;
         }
         else {
             throw new QueryException(713, "Query type is not supported");
         }
-        
-//        if (relation.has("boundary")){
-//            _operationRepetitionFromJson(relation, operands);
-//        }
-//        else{
-//            
-//        }
+
+        //        if (relation.has("boundary")){
+        //            _operationRepetitionFromJson(relation, operands);
+        //        }
+        //        else{
+        //            
+        //        }
     }
 
 
@@ -656,8 +665,8 @@ public final class KrillQuery extends Notifications {
         switch (frame) {
             case "isAround":
                 JsonNode operand = operands.get(0);
-                if (operand.get("@type").asText().equals("koral:token")){
-                    throw new QueryException(StatusCodes.INVALID_QUERY, 
+                if (operand.get("@type").asText().equals("koral:token")) {
+                    throw new QueryException(StatusCodes.INVALID_QUERY,
                             "Token cannot contain another token or element.");
                 }
                 break;
@@ -702,7 +711,7 @@ public final class KrillQuery extends Notifications {
                 throw new QueryException(706, "Frame type is unknown");
         };
 
-        
+
         // <legacyCode>
         Boolean exclude;
         if (json.has("exclude") && json.get("exclude").asBoolean()) {
@@ -1001,8 +1010,7 @@ public final class KrillQuery extends Notifications {
         // inOrder was set to false without a distance constraint
         if (!sseqqw.isInOrder() && !sseqqw.hasConstraints()) {
             if (DEBUG)
-                log.trace(
-                        "Add distance constraint - for the normal inorder case");
+                log.trace("Add distance constraint - for the normal inorder case");
 
             sseqqw.withConstraint(1, 1, "w");
         };
@@ -1010,9 +1018,9 @@ public final class KrillQuery extends Notifications {
         return sseqqw;
     };
 
+
     // Deserialize koral:token
-    private SpanQueryWrapper _segFromJson (JsonNode json)
-            throws QueryException {
+    private SpanQueryWrapper _segFromJson (JsonNode json) throws QueryException {
 
         if (!json.has("@type"))
             throw new QueryException(701,
@@ -1045,9 +1053,9 @@ public final class KrillQuery extends Notifications {
                 //
                 //            case "match:eq":
                 return this._termFromJson(json);
-            //            };
-            //
-            //            throw new QueryException(741, "Match relation unknown");
+                //            };
+                //
+                //            throw new QueryException(741, "Match relation unknown");
 
             case "koral:termGroup":
 
@@ -1082,7 +1090,8 @@ public final class KrillQuery extends Notifications {
                                 throw new QueryException(744,
                                         "Operand not supported in term group");
                             };
-                        };
+                        }
+                        ;
                         return ssegqw;
 
                     case "relation:or":
@@ -1091,9 +1100,11 @@ public final class KrillQuery extends Notifications {
                                 this.field);
                         for (JsonNode operand : operands) {
                             ssaq.or(this._segFromJson(operand));
-                        };
+                        }
+                        ;
                         return ssaq;
-                };
+                }
+                ;
         };
         throw new QueryException(745, "Token type is not supported");
     };
@@ -1103,36 +1114,38 @@ public final class KrillQuery extends Notifications {
             throws QueryException {
         return this._termFromJson(json, false, null);
     }
+
+
     private SpanQueryWrapper _termFromJson (JsonNode json, boolean isSpan)
             throws QueryException {
         return this._termFromJson(json, isSpan, null);
     }
 
+
     // Deserialize koral:term
     // TODO: Not optimal as it does not respect non-term
-    private SpanQueryWrapper _termFromJson (JsonNode json, boolean isSpan, RelationDirection direction)
-            throws QueryException {
+    private SpanQueryWrapper _termFromJson (JsonNode json, boolean isSpan,
+            RelationDirection direction) throws QueryException {
 
         if (!json.has("@type")) {
             throw new QueryException(701,
                     "JSON-LD group has no @type attribute");
         };
-        
+
         String termType = json.get("@type").asText();
-        
-        Boolean isTerm = termType.equals("koral:term") ? true
-                : false;
+
+        Boolean isTerm = termType.equals("koral:term") ? true : false;
         Boolean isCaseInsensitive = false;
 
         if (!json.has("key") || json.get("key").asText().length() < 1) {
             // why must it have an attr?
             if (!json.has("attr")) {
-//                return new SpanRepetitionQueryWrapper();
+                //                return new SpanRepetitionQueryWrapper();
                 throw new QueryException(740,
                         "Key definition is missing in term or span");
             }
         };
-        
+
         // Empty koral:span hack
         if (isSpan) {
             isTerm = false;
@@ -1231,75 +1244,76 @@ public final class KrillQuery extends Notifications {
         // Regular expression or wildcard
         if (isTerm) {
 
-			String match = "match:eq";
-			if (json.has("match")) {
-				match = json.get("match").asText();
-			};
+            String match = "match:eq";
+            if (json.has("match")) {
+                match = json.get("match").asText();
+            };
 
-			if (json.has("type")) {
-				QueryBuilder qb = this.builder();
+            if (json.has("type")) {
+                QueryBuilder qb = this.builder();
 
-				// Branch on type
-				switch (json.get("type").asText()) {
-                case "type:regex": {
+                // Branch on type
+                switch (json.get("type").asText()) {
+                    case "type:regex": {
 
-                    // The regex can be rewritten to an any token
-                    if (value.toString().matches("^[si]:\\.[\\+\\*]\\??$")) {
-                        return new SpanRepetitionQueryWrapper();
-                    };
+                        // The regex can be rewritten to an any token
+                        if (value.toString().matches("^[si]:\\.[\\+\\*]\\??$")) {
+                            return new SpanRepetitionQueryWrapper();
+                        };
 
-					SpanRegexQueryWrapper srqw = qb.re(value.toString(), isCaseInsensitive);
+                        SpanRegexQueryWrapper srqw = qb.re(value.toString(),
+                                isCaseInsensitive);
 
-					if (match.equals("match:ne")) {
-						if (DEBUG)
-							log.trace("Term is negated");
-						// ssqw.makeNegative();
-						return this.builder().seg().without(srqw);
-					}
-					else if (match.equals("match:eq")) {
-						return srqw;
-					}
-					throw new QueryException(741, "Match relation unknown");
-                }
-                case "type:wildcard": {
+                        if (match.equals("match:ne")) {
+                            if (DEBUG)
+                                log.trace("Term is negated");
+                            // ssqw.makeNegative();
+                            return this.builder().seg().without(srqw);
+                        }
+                        else if (match.equals("match:eq")) {
+                            return srqw;
+                        }
+                        throw new QueryException(741, "Match relation unknown");
+                    }
+                    case "type:wildcard": {
 
-					SpanWildcardQueryWrapper swcqw =
-						qb.wc(value.toString(), isCaseInsensitive);
+                        SpanWildcardQueryWrapper swcqw = qb.wc(
+                                value.toString(), isCaseInsensitive);
 
-					if (match.equals("match:ne")) {
-						if (DEBUG)
-							log.trace("Term is negated");
-						// ssqw.makeNegative();
-						return this.builder().seg().without(swcqw);
-					}
-					else if (match.equals("match:eq")) {
-						return swcqw;
-					};
-					throw new QueryException(741, "Match relation unknown");
-				}
-                case "type:string":
-                    break;
-					
-                default:
-                    this.addWarning(746,
-									"Term type is not supported - treated as a string");
-				};
-			};
+                        if (match.equals("match:ne")) {
+                            if (DEBUG)
+                                log.trace("Term is negated");
+                            // ssqw.makeNegative();
+                            return this.builder().seg().without(swcqw);
+                        }
+                        else if (match.equals("match:eq")) {
+                            return swcqw;
+                        };
+                        throw new QueryException(741, "Match relation unknown");
+                    }
+                    case "type:string":
+                        break;
 
-			SpanSegmentQueryWrapper ssqw = this.builder().seg(value.toString());
-			if (match.equals("match:ne")) {
-				if (DEBUG)
-					log.trace("Term is negated");
-				ssqw.makeNegative();
-				return this.builder().seg().without(ssqw);
-			}
-			else if (match.equals("match:eq")) {
-				return ssqw;
-			}
-			else {
-				throw new QueryException(741, "Match relation unknown");
-			}
-		};
+                    default:
+                        this.addWarning(746,
+                                "Term type is not supported - treated as a string");
+                };
+            };
+
+            SpanSegmentQueryWrapper ssqw = this.builder().seg(value.toString());
+            if (match.equals("match:ne")) {
+                if (DEBUG)
+                    log.trace("Term is negated");
+                ssqw.makeNegative();
+                return this.builder().seg().without(ssqw);
+            }
+            else if (match.equals("match:eq")) {
+                return ssqw;
+            }
+            else {
+                throw new QueryException(741, "Match relation unknown");
+            }
+        };
 
         if (json.has("attr")) {
             JsonNode attrNode = json.get("attr");
@@ -1314,8 +1328,8 @@ public final class KrillQuery extends Notifications {
                 // "Arbitraty elements with attributes are currently not supported.");
             }
             else {
-                SpanQueryWrapper elementWithIdWrapper = this.builder()
-                        .tag(value.toString());
+                SpanQueryWrapper elementWithIdWrapper = this.builder().tag(
+                        value.toString());
                 if (elementWithIdWrapper == null) {
                     return null;
                 }
@@ -1432,8 +1446,9 @@ public final class KrillQuery extends Notifications {
 
                 // TODO: Here do not refer to 'tokens'!!!
                 // EM: what should it be? property?
-                return new SpanAttributeQueryWrapper(new SpanSimpleQueryWrapper(
-                        "tokens", "@root", Boolean.valueOf(rootValue)));
+                return new SpanAttributeQueryWrapper(
+                        new SpanSimpleQueryWrapper("tokens", "@root",
+                                Boolean.valueOf(rootValue)));
             }
         }
         return null;

@@ -12,7 +12,7 @@ import java.util.Map;
  * Virtual corpus data to cache
  * 
  * @author margaretha
- *
+ * 
  */
 public class CachedVCData implements Serializable {
 
@@ -24,17 +24,21 @@ public class CachedVCData implements Serializable {
 
     private Map<Integer, DocBits> docIdMap;
 
+
     public CachedVCData (Map<Integer, DocBits> docIdMap) {
         this.docIdMap = docIdMap;
     }
+
 
     public Map<Integer, DocBits> getDocIdMap () {
         return docIdMap;
     }
 
+
     public void setDocIdMap (Map<Integer, DocBits> docIdMap) {
         this.docIdMap = docIdMap;
     }
+
 
     // EM: for optimization. has not been checked.
     // ehcache retrieves a byte[] much faster than a map, however,
@@ -48,6 +52,7 @@ public class CachedVCData implements Serializable {
         oos.flush();
         return bos.toByteArray();
     }
+
 
     private Map<Integer, DocBits> toMap (byte[] bytes)
             throws ClassNotFoundException, IOException {
@@ -71,7 +76,8 @@ public class CachedVCData implements Serializable {
         return map;
     }
 
-	public String toString () {
-		return this.docIdMap.toString();
-	}
+
+    public String toString () {
+        return this.docIdMap.toString();
+    }
 }

@@ -53,7 +53,7 @@ import java.io.IOException;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FieldDocument extends AbstractDocument {
     ObjectMapper mapper = new ObjectMapper();
-	
+
     @JsonIgnore
     public Document doc = new Document();
     private FieldType tvField = new FieldType(TextField.TYPE_STORED);
@@ -72,12 +72,12 @@ public class FieldDocument extends AbstractDocument {
         tvNoField.setStoreTermVectorOffsets(false);
 
         keywords.setStoreTermVectors(false);
-		/*
+        /*
         keywords.setStoreTermVectors(true);
         keywords.setStoreTermVectorPositions(false);
         keywords.setStoreTermVectorPayloads(false);
         keywords.setStoreTermVectorOffsets(false);
-		*/
+        */
         keywords.setIndexOptions(IndexOptions.DOCS_AND_FREQS);
     };
 
@@ -90,13 +90,13 @@ public class FieldDocument extends AbstractDocument {
 
 
     public void addInt (String key, String value) {
-		if (value != null)
-			this.addInt(key, Integer.parseInt(value));
+        if (value != null)
+            this.addInt(key, Integer.parseInt(value));
     };
 
 
     public void addText (String key, String value) {
-		doc.add(new TextPrependedField(key, value));
+        doc.add(new TextPrependedField(key, value));
     };
 
 
@@ -296,9 +296,9 @@ public class FieldDocument extends AbstractDocument {
     @Override
     public KrillDate setPubDate (String pubDate) {
         KrillDate date = super.setPubDate(pubDate);
-		if (date != null) {
-			this.addInt("pubDate", date.toString());
-		};
+        if (date != null) {
+            this.addInt("pubDate", date.toString());
+        };
         return date;
     };
 
@@ -307,9 +307,9 @@ public class FieldDocument extends AbstractDocument {
     @Override
     public KrillDate setCreationDate (String creationDate) {
         KrillDate date = super.setCreationDate(creationDate);
-		if (date != null) {
-			this.addInt("creationDate", date.toString());
-		};
+        if (date != null) {
+            this.addInt("creationDate", date.toString());
+        };
         return date;
     };
 
@@ -435,18 +435,19 @@ public class FieldDocument extends AbstractDocument {
 
 
     @Override
-	@Deprecated
+    @Deprecated
     public void setLicense (String license) {
         super.setAvailability(license);
         this.addString("availability", license);
     };
 
 
-	@Override
-	public void setAvailability (String availability) {
+    @Override
+    public void setAvailability (String availability) {
         super.setAvailability(availability);
         this.addString("availability", availability);
     };
+
 
     /*
     @Override
@@ -454,7 +455,7 @@ public class FieldDocument extends AbstractDocument {
         super.setPages(pages);
         this.addStored("pages", pages);
     };
-	*/
+    */
 
 
     @Override

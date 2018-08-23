@@ -89,8 +89,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
     public SpanSequenceQueryWrapper (String field, String ... terms) {
         this(field);
         for (int i = 0; i < terms.length; i++) {
-            this.segments.add(new SpanSimpleQueryWrapper(
-                    new SpanTermQuery(new Term(field, terms[i]))));
+            this.segments.add(new SpanSimpleQueryWrapper(new SpanTermQuery(
+                    new Term(field, terms[i]))));
         };
         // Query can't be null anymore
         this.isNull = false;
@@ -133,8 +133,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         if (DEBUG) {
             if (!sswq.isEmpty()) {
                 try {
-                    log.trace("New span sequence {}",
-                            sswq.toFragmentQuery().toString());
+                    log.trace("New span sequence {}", sswq.toFragmentQuery()
+                            .toString());
                 }
                 catch (QueryException qe) {
                     log.trace("Unable to serialize query {}", qe.getMessage());
@@ -392,8 +392,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             this.constraints = new ArrayList<DistanceConstraint>(1);
         if (DEBUG)
             log.trace("With contraint {}-{} (excl {})", min, max, exclusion);
-        this.constraints.add(
-                new DistanceConstraint(min, max, this.isInOrder, exclusion));
+        this.constraints.add(new DistanceConstraint(min, max, this.isInOrder,
+                exclusion));
         return this;
     };
 
@@ -476,8 +476,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             String unit, boolean exclusion) {
 
         if (DEBUG)
-            log.trace("With contraint {}-{} (unit {}, excl {})", min, max, unit,
-                    exclusion);
+            log.trace("With contraint {}-{} (unit {}, excl {})", min, max,
+                    unit, exclusion);
 
         // Word unit
         if (unit.equals("w")) {
@@ -486,15 +486,15 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
             if (this.constraints == null)
                 this.constraints = new ArrayList<DistanceConstraint>(1);
 
-            this.constraints.add(
-                    new DistanceConstraint(min, max, isInOrder, exclusion));
+            this.constraints.add(new DistanceConstraint(min, max, isInOrder,
+                    exclusion));
 
             return this;
         };
 
         // Element unit (sentence or paragraph)
-        return this.withConstraint(min, max,
-                new SpanElementQueryWrapper(this.field, unit), exclusion);
+        return this.withConstraint(min, max, new SpanElementQueryWrapper(
+                this.field, unit), exclusion);
     };
 
 
@@ -545,10 +545,9 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         // Element unit (sentence or paragraph)
         // Todo: This should possibly be evaluated to a query later on!
         try {
-            this.constraints.add(new DistanceConstraint(
-                    (SpanElementQuery) unit.retrieveNode(this.retrieveNode)
-                            .toFragmentQuery(),
-                    min, max, isInOrder, exclusion));
+            this.constraints.add(new DistanceConstraint((SpanElementQuery) unit
+                    .retrieveNode(this.retrieveNode).toFragmentQuery(), min,
+                    max, isInOrder, exclusion));
         }
         catch (QueryException qe) {
             this.constraintException = qe;
@@ -719,28 +718,28 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         SpanQuery query = null;
         int i = 0;
 
-		// Get the first valid segment
+        // Get the first valid segment
         while (query == null && i < this.segments.size()) {
             query = this.segments.get(i).retrieveNode(this.retrieveNode)
-				.toFragmentQuery();
+                    .toFragmentQuery();
             i++;
         };
 
-		// No valid segment found
+        // No valid segment found
         if (query == null)
             return (SpanQuery) null;
-	
+
         // NextQueries
         if (!this.hasConstraints() && this.isInOrder()) {
 
-			// TODO: Optimize:
-			// Join identicals to repetition, so spanNext(a,a) -> a{2}
-			
+            // TODO: Optimize:
+            // Join identicals to repetition, so spanNext(a,a) -> a{2}
+
             for (; i < this.segments.size(); i++) {
 
-				// Get the first query for next sequence
+                // Get the first query for next sequence
                 SpanQuery second = this.segments.get(i)
-					.retrieveNode(this.retrieveNode).toFragmentQuery();
+                        .retrieveNode(this.retrieveNode).toFragmentQuery();
                 if (second == null)
                     continue;
 
@@ -777,8 +776,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     if (sq == null)
                         continue;
 
-                    SpanDistanceQuery sdquery = new SpanDistanceQuery(query, sq,
-                            constraint, true);
+                    SpanDistanceQuery sdquery = new SpanDistanceQuery(query,
+                            sq, constraint, true);
                     query = (SpanQuery) sdquery;
                 };
             }
@@ -801,8 +800,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     if (sq == null)
                         continue;
 
-                    SpanDistanceQuery sdquery = new SpanDistanceQuery(query, sq,
-                            constraint, true);
+                    SpanDistanceQuery sdquery = new SpanDistanceQuery(query,
+                            sq, constraint, true);
                     query = (SpanQuery) sdquery;
                 };
             };
@@ -883,7 +882,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
                     // Insert the solution
                     try {
-                        this.segments.set(i + 1,
+                        this.segments.set(
+                                i + 1,
                                 _merge(this.segments.get(i + 1), underScrutiny,
                                         false));
                     }
@@ -913,8 +913,10 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
                     // Insert the solution
                     try {
-                        this.segments.set(i - 1, _merge(
-                                this.segments.get(i - 1), underScrutiny, true));
+                        this.segments.set(
+                                i - 1,
+                                _merge(this.segments.get(i - 1), underScrutiny,
+                                        true));
                     }
                     catch (QueryException e) {
                         this.isSolved = true;
@@ -974,8 +976,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         int direction = mergeLeft ? 1 : -1;
 
         if (DEBUG)
-            log.trace("Will merge two spans to {}",
-                    mergeLeft ? "left" : "right");
+            log.trace("Will merge two spans to {}", mergeLeft ? "left"
+                    : "right");
 
         // Make empty extension to anchor
         if (problem.isEmpty()) {
@@ -990,8 +992,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     && anchor.isExtended()) {
 
                 if (DEBUG)
-                    log.trace(
-                            "It may be possible to extend anchor with problem");
+                    log.trace("It may be possible to extend anchor with problem");
 
                 if (
                 // Further extend to the right ...
@@ -1021,7 +1022,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                     problem.isOptional() ? 0 : problem.getMin(),
                     problem.getMax(), direction,
                     problem.hasClass() ? problem.getClassNumber() : (byte) 0)
-                            .isExtended(true);
+                    .isExtended(true);
 
             // Set right extension
             if (direction >= 0)
@@ -1041,10 +1042,10 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
             // TODO: Should probably wrapped as well!
             // A sequence of negative tokens may expand jointly!
-            query = new SpanExpansionQuery(
-                    anchor.retrieveNode(this.retrieveNode).toFragmentQuery(),
-                    problem.retrieveNode(this.retrieveNode).toFragmentQuery(),
-                    problem.getMin(), problem.getMax(), direction,
+            query = new SpanExpansionQuery(anchor.retrieveNode(
+                    this.retrieveNode).toFragmentQuery(), problem.retrieveNode(
+                    this.retrieveNode).toFragmentQuery(), problem.getMin(),
+                    problem.getMax(), direction,
                     problem.hasClass() ? problem.getClassNumber() : (byte) 0,
                     true);
 
@@ -1069,8 +1070,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
                 anchor);
 
         // [base=der]
-        SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(this.field,
-                anchor);
+        SpanSequenceQueryWrapper ssqw = new SpanSequenceQueryWrapper(
+                this.field, anchor);
 
         // [base=der][base=baum]
         if (mergeLeft) {

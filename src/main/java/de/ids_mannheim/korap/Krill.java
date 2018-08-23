@@ -218,8 +218,8 @@ public class Krill extends Response {
 
                 // TODO: Temporary
                 if (collNode.fieldNames().hasNext()) {
-                    this.setCollection(
-                            new KrillCollection().fromKoral(collNode));
+                    this.setCollection(new KrillCollection()
+                            .fromKoral(collNode));
                 };
             }
 
@@ -335,9 +335,10 @@ public class Krill extends Response {
         return this.spanQuery;
     }
 
+
     //EM
     public void setSpanQuery (SpanQuery sq) {
         this.spanQuery = sq;
-        
+
     }
 };

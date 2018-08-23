@@ -49,6 +49,7 @@ public class SpanRepetitionQuery extends SimpleSpanQuery {
 
     private int min, max;
 
+
     /**
      * Constructs a SpanRepetitionQuery for the given
      * {@link SpanQuery}.

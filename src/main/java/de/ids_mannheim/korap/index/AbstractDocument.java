@@ -44,7 +44,7 @@ public abstract class AbstractDocument extends Response {
     public int internalDocID, localDocID, UID;
 
     private KrillDate pubDate,
-            // newly added
+    // newly added
             creationDate;
 
     private HashMap<String, String> fieldMap;
@@ -52,19 +52,29 @@ public abstract class AbstractDocument extends Response {
     private String
 
     // No longer supported
-    ID, corpusID, field, layerInfo, tokenization,
+            ID,
+            corpusID,
+            field,
+            layerInfo,
+            tokenization,
 
             // Still supported
-            foundries, textClass, pubPlace,
+            foundries,
+            textClass,
+            pubPlace,
 
             // Newly added for the corpus/doc/text distinction of DeReKo
-            textSigle, docSigle, corpusSigle, title, subTitle, author, editor,
-            docTitle, docSubTitle, docAuthor, docEditor, corpusTitle,
-            corpusSubTitle, corpusAuthor, corpusEditor, textType, textTypeArt,
-            textTypeRef, textColumn, textDomain, fileEditionStatement,
+            textSigle, docSigle, corpusSigle, title, subTitle, author,
+            editor,
+            docTitle, docSubTitle, docAuthor, docEditor,
+            corpusTitle,
+            corpusSubTitle, corpusAuthor, corpusEditor, textType,
+            textTypeArt,
+            textTypeRef, textColumn, textDomain,
+            fileEditionStatement,
             biblEditionStatement, publisher, reference, language, availability,
-	// pages,
-		keywords,
+            // pages,
+            keywords,
 
             // Meta information regarding annotations
             tokenSource, layerInfos;
@@ -188,15 +198,15 @@ public abstract class AbstractDocument extends Response {
         if (fields.contains("language"))
             this.setLanguage(doc.get("language"));
 
-		// Deprecated
+        // Deprecated
         if (fields.contains("license"))
             this.setAvailability(doc.get("license"));
-		else if (fields.contains("availability"))
+        else if (fields.contains("availability"))
             this.setAvailability(doc.get("availability"));
-		/*
+        /*
         if (fields.contains("pages"))
             this.setPages(doc.get("pages"));
-		*/
+        */
         if (fields.contains("biblEditionStatement"))
             this.setBiblEditionStatement(doc.get("biblEditionStatement"));
         if (fields.contains("fileEditionStatement"))
@@ -811,7 +821,7 @@ public abstract class AbstractDocument extends Response {
      * 
      * @return The license of the text as a string.
      */
-	@Deprecated
+    @Deprecated
     public String getLicense () {
         return this.availability;
     };
@@ -823,12 +833,13 @@ public abstract class AbstractDocument extends Response {
      * @param license
      *            The license of the text as a string.
      */
-	@Deprecated
+    @Deprecated
     public void setLicense (String license) {
         this.availability = license;
     };
 
-	/**
+
+    /**
      * Get the availability of the text as a string.
      * 
      * @return The availability of the text as a string.
@@ -868,7 +879,7 @@ public abstract class AbstractDocument extends Response {
     public void setPages (String pages) {
         this.pages = pages;
     };
-	*/
+    */
 
     /**
      * Get the file edition statement of the text as a string.

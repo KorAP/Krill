@@ -162,8 +162,7 @@ public class TestResponse {
         assertEquals(kresp.getWarning(0).getMessage(), "This is a warning");
         assertEquals(kresp.getWarning(1).getMessage(),
                 "This is a second warning");
-        assertEquals(kresp.getWarning(2).getMessage(),
-                "Response time exceeded");
+        assertEquals(kresp.getWarning(2).getMessage(), "Response time exceeded");
         assertEquals("0.49", kresp.getVersion());
         assertEquals("seaweed", kresp.getName());
         assertEquals("40.5s", kresp.getBenchmark());

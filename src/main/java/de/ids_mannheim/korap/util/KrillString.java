@@ -58,9 +58,9 @@ public class KrillString {
      */
     public static String escapeHTML (String text) {
 
-		if (text == null)
-			return "";
-		
+        if (text == null)
+            return "";
+
         return text.replace("&", "&amp;").replace("<", "&lt;")
                 .replace(">", "&gt;").replace("\"", "&quot;");
     };

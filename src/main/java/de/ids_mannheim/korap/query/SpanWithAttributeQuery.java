@@ -199,8 +199,8 @@ public class SpanWithAttributeQuery extends SimpleSpanQuery {
                     termContexts);
         }
 
-        SimpleSpans spans = (SimpleSpans) this.getFirstClause()
-                .getSpans(context, acceptDocs, termContexts);
+        SimpleSpans spans = (SimpleSpans) this.getFirstClause().getSpans(
+                context, acceptDocs, termContexts);
         return new SpansWithAttribute(this, spans, context, acceptDocs,
                 termContexts);
     }

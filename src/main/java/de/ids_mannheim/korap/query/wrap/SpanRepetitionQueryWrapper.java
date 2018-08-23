@@ -32,7 +32,7 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
             this.subquery = subquery;
             if (subquery.maybeUnsorted())
                 this.maybeUnsorted = true;
-			this.isEmpty = false;
+            this.isEmpty = false;
         }
         else
             this.isEmpty = true;
@@ -45,7 +45,7 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
             return;
         };
 
-		this.isNull = false;
+        this.isNull = false;
         this.min = exact;
         this.max = exact;
     };
@@ -104,9 +104,8 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
                     .toFragmentQuery();
 
         // That's a fine repetition query
-        return new SpanRepetitionQuery(
-                this.subquery.retrieveNode(this.retrieveNode).toFragmentQuery(),
-                this.min, this.max, true);
+        return new SpanRepetitionQuery(this.subquery.retrieveNode(
+                this.retrieveNode).toFragmentQuery(), this.min, this.max, true);
     };
 
 

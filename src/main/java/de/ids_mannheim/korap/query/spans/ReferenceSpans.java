@@ -18,7 +18,7 @@ import de.ids_mannheim.korap.query.SpanReferenceQuery;
  * in the payloads of the subspans (firstspans).
  * 
  * @author margaretha
- *
+ * 
  */
 public class ReferenceSpans extends SimpleSpans {
 

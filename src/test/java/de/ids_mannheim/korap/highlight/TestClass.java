@@ -28,7 +28,8 @@ public class TestClass {
     @Test
     public void queryJSONpoly1 () throws QueryException, IOException {
 
-        String jsonPath = getClass().getResource("/queries/poly1.json").getFile();
+        String jsonPath = getClass().getResource("/queries/poly1.json")
+                .getFile();
         String jsonQuery = getJsonString(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
@@ -62,7 +63,8 @@ public class TestClass {
     @Test
     public void queryJSONpoly4 () throws QueryException, IOException {
 
-        String jsonPath = getClass().getResource("/queries/poly4.json").getFile();
+        String jsonPath = getClass().getResource("/queries/poly4.json")
+                .getFile();
         String jsonQuery = getJsonString(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
         SpanQuery sq = sqwi.toQuery();

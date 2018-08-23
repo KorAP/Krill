@@ -141,8 +141,9 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      */
     private int findElementPosition (Spans span) throws IOException {
         // Check in the element list
-        if (!elementList.isEmpty() && span.end() <= elementList
-                .get(elementList.size() - 1).getEnd()) {
+        if (!elementList.isEmpty()
+                && span.end() <= elementList.get(elementList.size() - 1)
+                        .getEnd()) {
 
             for (CandidateSpan e : elementList)
                 if (e.getEnd() >= span.end() && e.getStart() <= span.start()) {
@@ -223,13 +224,11 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         int targetPos = target.getPosition();
 
         // left candidate
-        if (candidatePos < targetPos
-                && candidatePos + maxDistance < targetPos) {
+        if (candidatePos < targetPos && candidatePos + maxDistance < targetPos) {
             return false;
         }
         // right candidate
-        if (candidatePos > targetPos
-                && targetPos + maxDistance < candidatePos) {
+        if (candidatePos > targetPos && targetPos + maxDistance < candidatePos) {
             return false;
         }
         return true;
@@ -260,6 +259,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
         }
         return matches;
     }
+
 
     @Override
     protected void updateList (List<CandidateSpan> candidateList) {

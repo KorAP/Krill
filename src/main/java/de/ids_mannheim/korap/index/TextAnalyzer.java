@@ -13,8 +13,8 @@ import java.io.Reader;
 public class TextAnalyzer extends Analyzer {
     @Override
     protected TokenStreamComponents createComponents (final String fieldName) {
-		final Tokenizer source = new StandardTokenizer();
+        final Tokenizer source = new StandardTokenizer();
         TokenStream sink = new LowerCaseFilter(source);
-		return new TokenStreamComponents(source, sink);
+        return new TokenStreamComponents(source, sink);
     };
 };

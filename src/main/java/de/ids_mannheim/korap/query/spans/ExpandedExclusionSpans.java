@@ -68,9 +68,10 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         super(spanExpansionQuery, context, acceptDocs, termContexts);
 
         if (spanExpansionQuery.getSecondClause() == null) {
-            throw new IllegalArgumentException("The SpanExpansionQuery "
-                    + "is not valid. The spanquery to exclude (notClause) cannot "
-                    + "be null.");
+            throw new IllegalArgumentException(
+                    "The SpanExpansionQuery "
+                            + "is not valid. The spanquery to exclude (notClause) cannot "
+                            + "be null.");
         }
 
         /*
@@ -150,7 +151,8 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 }
                 break;
             }
-            else if (!notClause.next()) hasMoreNotClause = false;
+            else if (!notClause.next())
+                hasMoreNotClause = false;
         }
     }
 
@@ -267,8 +269,8 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                     end = firstSpans.end();
                     //System.out.println(start+","+end);
                     cs = new CandidateSpan(start, end, firstSpans.doc(),
-                            firstSpans.cost(),
-                            createPayloads(start, firstSpans.start()));
+                            firstSpans.cost(), createPayloads(start,
+                                    firstSpans.start()));
                     candidateSpans.add(cs);
                 }
                 counter--;

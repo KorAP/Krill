@@ -144,9 +144,9 @@ public class TestSegmentNegationIndex {
     private FieldDocument createFieldDoc2 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("tokens", "bdb",
-                "[(0-1)s:b|i:b|_1$<i>0<i>1]" + "[(1-2)s:d|i:d|s:b|_2$<i>1<i>2]"
-                        + "[(2-3)s:b|i:b|s:a|_3$<i>2<i>3]");
+        fd.addTV("tokens", "bdb", "[(0-1)s:b|i:b|_1$<i>0<i>1]"
+                + "[(1-2)s:d|i:d|s:b|_2$<i>1<i>2]"
+                + "[(2-3)s:b|i:b|s:a|_3$<i>2<i>3]");
         return fd;
     }
 

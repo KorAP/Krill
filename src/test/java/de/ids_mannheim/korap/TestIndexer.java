@@ -17,7 +17,7 @@ import de.ids_mannheim.korap.index.Indexer;
 
 /**
  * @author margaretha
- *
+ * 
  */
 public class TestIndexer {
     private Logger logger = LoggerFactory.getLogger(TestIndexer.class);
@@ -25,35 +25,45 @@ public class TestIndexer {
     private String info = "usage: Krill indexer";
     private File outputDirectory = new File("test-index");
 
+
     @Test
     public void testArguments () throws IOException {
-        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
-                "-i", "src/test/resources/bzk" });
+        Indexer.main(new String[] { "-c",
+                "src/test/resources/krill.properties", "-i",
+                "src/test/resources/bzk" });
         assertEquals("Indexed 1 file.", outputStream.toString());
     }
+
 
     @Test
     public void testOutputArgument () throws IOException {
-        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
-                "-i", "src/test/resources/bzk", "-o", "test-output"});
+        Indexer.main(new String[] { "-c",
+                "src/test/resources/krill.properties", "-i",
+                "src/test/resources/bzk", "-o", "test-output" });
         assertEquals("Indexed 1 file.", outputStream.toString());
     }
 
+
     @Test
     public void testMultipleInputFiles () throws IOException {
-        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
-                "-i", "src/test/resources/wiki" });
+        Indexer.main(new String[] { "-c",
+                "src/test/resources/krill.properties", "-i",
+                "src/test/resources/wiki" });
         assertEquals("Indexed 17 files.", outputStream.toString());
     }
 
+
     @Test
     public void testMultipleInputDirectories () throws IOException {
-        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+        Indexer.main(new String[] {
+                "-c",
+                "src/test/resources/krill.properties",
                 "-i",
                 "src/test/resources/bzk;src/test/resources/goe;src/test/resources/sgbr",
                 "-o", "test-index" });
         assertEquals("Indexed 5 files.", outputStream.toString());
     }
+
 
     @Test
     public void testEmptyArgument () throws IOException {
@@ -71,23 +81,27 @@ public class TestIndexer {
         assertEquals(true, outputStream.toString().startsWith(info));
     }
 
+
     @Test
     public void testMissingInput () throws IOException {
-        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
-                "-o", "test-index" });
+        Indexer.main(new String[] { "-c",
+                "src/test/resources/krill.properties", "-o", "test-index" });
         logger.info(outputStream.toString());
         assertEquals(true, outputStream.toString().startsWith(info));
     }
+
 
     @Before
     public void setOutputStream () {
         System.setOut(new PrintStream(outputStream));
     }
 
+
     @After
     public void cleanOutputStream () {
         System.setOut(null);
     }
+
 
     @Before
     public void cleanOutputDirectory () {
@@ -97,6 +111,7 @@ public class TestIndexer {
             deleteFile(outputDirectory);
         }
     }
+
 
     private void deleteFile (File path) {
         if (path.isDirectory()) {

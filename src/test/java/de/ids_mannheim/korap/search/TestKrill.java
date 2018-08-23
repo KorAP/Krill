@@ -84,7 +84,8 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
@@ -123,21 +124,22 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        String json = getJsonString(
-                getClass().getResource("/queries/metaquery3.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/metaquery3.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 66);
         assertEquals(5, kr.getItemsPerPage());
         assertEquals(5, kr.getStartIndex());
-        assertEquals("... a: A ist [[der klangreichste]] der V ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... a: A ist [[der klangreichste]] der V ...", kr
+                .getMatch(0).getSnippetBrackets());
     };
 
 
@@ -148,19 +150,20 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439", "00012-fakemeta", "00030-fakemeta",
-                /*
-                  "02035-substring",
-                  "05663-unbalanced",
-                  "07452-deep"
-                */
+        /*
+          "02035-substring",
+          "05663-unbalanced",
+          "07452-deep"
+        */
         }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        String json = getJsonString(
-                getClass().getResource("/queries/metaquery4.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/metaquery4.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -174,15 +177,15 @@ public class TestKrill {
 
         assertEquals(kr.getTotalResults(), 5);
 
-        json = getJsonString(
-                getClass().getResource("/queries/metaquery5.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/metaquery5.jsonld").getFile());
 
         ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 1);
 
-        json = getJsonString(
-                getClass().getResource("/queries/metaquery6.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/metaquery6.jsonld").getFile());
         ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 1);
@@ -205,7 +208,8 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
@@ -222,13 +226,14 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        String json = getJsonString(
-                getClass().getResource("/queries/bsp-fail1.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-fail1.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
         assertEquals(0, kr.getStartIndex());
@@ -244,13 +249,14 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        String json = getJsonString(
-                getClass().getResource("/queries/bsp-fail2.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-fail2.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
         assertEquals(50, kr.getItemsPerPage());
@@ -266,8 +272,8 @@ public class TestKrill {
     public void queryJSONmirrorTestBug () throws IOException {
         // Construct index
         KrillIndex ki = new KrillIndex();
-        String json = getJsonString(getClass()
-                .getResource("/queries/bugs/failing_mirror.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/failing_mirror.jsonld").getFile());
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
 
@@ -276,9 +282,8 @@ public class TestKrill {
 
         assertEquals("Unable to parse JSON", res.at("/errors/0/1").asText());
 
-        json = getJsonString(
-                getClass().getResource("/queries/bugs/failing_mirror_2.jsonld")
-                        .getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/bugs/failing_mirror_2.jsonld").getFile());
         ks = new Krill(json);
         kr = ks.apply(ki);
 
@@ -301,23 +306,23 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        String json = getJsonString(getClass()
-                .getResource("/queries/bsp-context.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-context.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
-        assertEquals(
-                "A bzw. a ist der erste Buchstabe des"
-                        + " lateinischen [[Alphabets]] und ein Vokal."
-                        + " Der Buchstabe A hat in deutschen Texten"
-                        + " eine durchschnittliche Häufigkeit  ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("A bzw. a ist der erste Buchstabe des"
+                + " lateinischen [[Alphabets]] und ein Vokal."
+                + " Der Buchstabe A hat in deutschen Texten"
+                + " eine durchschnittliche Häufigkeit  ...", kr.getMatch(0)
+                .getSnippetBrackets());
 
         ks.getMeta().setCount(5);
         ks.getMeta().setStartPage(2);
@@ -326,25 +331,23 @@ public class TestKrill {
         assertEquals(5, kr.getStartIndex());
         assertEquals(5, kr.getItemsPerPage());
 
-        json = getJsonString(getClass()
-                .getResource("/queries/bsp-context-2.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/bsp-context-2.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
 
         assertEquals(kr.getTotalResults(), -1);
-        assertEquals(
-                "... lls seit den Griechen beibehalten worden."
-                        + " 3. Bedeutungen in der Biologie steht A für"
-                        + " das Nukleosid Adenosin steht A die Base"
-                        + " Adenin steht A für die Aminosäure Alanin"
-                        + " in der Informatik steht a für den dezimalen"
-                        + " [[Wert]] 97 sowohl im ASCII- als auch im"
-                        + " Unicode-Zeichensatz steht A für den dezimalen"
-                        + " Wert 65 sowohl im ASCII- als auch im"
-                        + " Unicode-Zeichensatz als Kfz-Kennzeichen"
-                        + " steht A in Deutschland für Augsburg."
-                        + " in Österreich auf ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... lls seit den Griechen beibehalten worden."
+                + " 3. Bedeutungen in der Biologie steht A für"
+                + " das Nukleosid Adenosin steht A die Base"
+                + " Adenin steht A für die Aminosäure Alanin"
+                + " in der Informatik steht a für den dezimalen"
+                + " [[Wert]] 97 sowohl im ASCII- als auch im"
+                + " Unicode-Zeichensatz steht A für den dezimalen"
+                + " Wert 65 sowohl im ASCII- als auch im"
+                + " Unicode-Zeichensatz als Kfz-Kennzeichen"
+                + " steht A in Deutschland für Augsburg."
+                + " in Österreich auf ...", kr.getMatch(0).getSnippetBrackets());
     };
 
 
@@ -355,13 +358,14 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        String json = getJsonString(
-                getClass().getResource("/queries/bsp-paging.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-paging.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -369,16 +373,16 @@ public class TestKrill {
         assertEquals(5, kr.getStartIndex());
         assertEquals(5, kr.getItemsPerPage());
 
-        json = getJsonString(
-                getClass().getResource("/queries/bsp-cutoff.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/bsp-cutoff.jsonld").getFile());
         ks = ks = new Krill(json);
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), -1);
         assertEquals(2, kr.getStartIndex());
         assertEquals(2, kr.getItemsPerPage());
 
-        json = getJsonString(
-                getClass().getResource("/queries/metaquery9.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/metaquery9.jsonld").getFile());
         KrillCollection kc = new KrillCollection(json);
         kc.setIndex(ki);
         assertEquals(7, kc.numberOf("documents"));
@@ -392,12 +396,13 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
-        String json = getJsonString(getClass()
-                .getResource("/queries/bsp-itemsPerResource.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-itemsPerResource.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -476,8 +481,8 @@ public class TestKrill {
         };
         ki.commit();
 
-        String json = getJsonString(getClass()
-                .getResource("/queries/bsp-uid-example.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-uid-example.jsonld").getFile());
 
         Krill ks = new Krill(json);
         ks.getMeta().setItemsPerResource(1);
@@ -523,14 +528,13 @@ public class TestKrill {
         assertNull(fd.getTextClass());
         assertEquals(fd.getLanguage(), "de");
         assertEquals(fd.getPubPlace(), "München");
-        assertEquals(fd.getReference(),
-                "Goethe, Johann Wolfgang von:"
-                        + " Autobiographische Einzelheiten,"
-                        + " (Geschrieben bis 1832), In: Goethe,"
-                        + " Johann Wolfgang von: Goethes Werke,"
-                        + " Bd. 10, Autobiographische Schriften"
-                        + " II, Hrsg.: Trunz, Erich. München: "
-                        + "Verlag C. H. Beck, 1982, S. 529-547");
+        assertEquals(fd.getReference(), "Goethe, Johann Wolfgang von:"
+                + " Autobiographische Einzelheiten,"
+                + " (Geschrieben bis 1832), In: Goethe,"
+                + " Johann Wolfgang von: Goethes Werke,"
+                + " Bd. 10, Autobiographische Schriften"
+                + " II, Hrsg.: Trunz, Erich. München: "
+                + "Verlag C. H. Beck, 1982, S. 529-547");
         assertEquals(fd.getPublisher(), "Verlag C. H. Beck");
         assertNull(fd.getEditor());
         assertNull(fd.getFileEditionStatement());
@@ -572,14 +576,15 @@ public class TestKrill {
         assertEquals(25, kr.getItemsPerPage());
     };
 
-	
+
     @Test
     public void searchJSONwithPagebreaks () throws IOException {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
         FieldDocument fd = ki.addDoc(1,
-                getClass().getResourceAsStream("/goe/AGA-03828-pb.json.gz"), true);
+                getClass().getResourceAsStream("/goe/AGA-03828-pb.json.gz"),
+                true);
         ki.commit();
 
         assertEquals(fd.getUID(), 1);
@@ -594,21 +599,20 @@ public class TestKrill {
         assertNull(fd.getTextColumn());
         assertNull(fd.getTextDomain());
         // assertEquals(fd.getPages(), "529-547");
-		// assertEquals(fd.getAvailability(), "QAO-NC");
+        // assertEquals(fd.getAvailability(), "QAO-NC");
         assertEquals(fd.getCreationDate().toString(), "18200000");
         assertEquals(fd.getPubDate().toString(), "19820000");
         assertEquals(fd.getAuthor(), "Goethe, Johann Wolfgang von");
         assertNull(fd.getTextClass());
         assertEquals(fd.getLanguage(), "de");
         assertEquals(fd.getPubPlace(), "München");
-        assertEquals(fd.getReference(),
-                "Goethe, Johann Wolfgang von:"
-                        + " Autobiographische Einzelheiten,"
-                        + " (Geschrieben bis 1832), In: Goethe,"
-                        + " Johann Wolfgang von: Goethes Werke,"
-                        + " Bd. 10, Autobiographische Schriften"
-                        + " II, Hrsg.: Trunz, Erich. München: "
-                        + "Verlag C. H. Beck, 1982, S. 529-547");
+        assertEquals(fd.getReference(), "Goethe, Johann Wolfgang von:"
+                + " Autobiographische Einzelheiten,"
+                + " (Geschrieben bis 1832), In: Goethe,"
+                + " Johann Wolfgang von: Goethes Werke,"
+                + " Bd. 10, Autobiographische Schriften"
+                + " II, Hrsg.: Trunz, Erich. München: "
+                + "Verlag C. H. Beck, 1982, S. 529-547");
         assertEquals(fd.getPublisher(), "Verlag C. H. Beck");
         assertNull(fd.getEditor());
         assertNull(fd.getFileEditionStatement());
@@ -616,9 +620,8 @@ public class TestKrill {
         assertNull(fd.getKeywords());
 
         assertEquals(fd.getTokenSource(), "base#tokens_aggr");
-        assertEquals(fd.getFoundries(),
-                "dereko dereko/structure "+
-					 "dereko/structure/base-sentences-paragraphs-pagebreaks");
+        assertEquals(fd.getFoundries(), "dereko dereko/structure "
+                + "dereko/structure/base-sentences-paragraphs-pagebreaks");
         assertEquals(fd.getLayerInfos(), "dereko/s=spans");
 
         assertEquals(fd.getCorpusTitle(), "Goethes Werke");
@@ -638,12 +641,12 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
 
-		Match m = kr.getMatch(5);
-		assertEquals("Start page", m.getStartPage(), 529);
+        Match m = kr.getMatch(5);
+        assertEquals("Start page", m.getStartPage(), 529);
 
-		ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(m.toJsonString());
-		assertEquals(529, res.at("/pages/0").asInt());
+        assertEquals(529, res.at("/pages/0").asInt());
     };
 
 
@@ -690,7 +693,8 @@ public class TestKrill {
 
         assertEquals(fd.getTokenSource(), "opennlp#tokens");
 
-        assertEquals(fd.getFoundries(),
+        assertEquals(
+                fd.getFoundries(),
                 "base base/paragraphs base/sentences corenlp "
                         + "corenlp/constituency corenlp/morpho corenlp/namedentities"
                         + " corenlp/sentences glemm glemm/morpho mate mate/morpho"
@@ -735,8 +739,8 @@ public class TestKrill {
                 getClass().getResourceAsStream("/bzk/D59-00089.json.gz"), true);
         ki.commit();
 
-        String json = getJsonString(getClass()
-                .getResource("/queries/bugs/cosmas_boundary.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/cosmas_boundary.jsonld").getFile());
 
         QueryBuilder kq = new QueryBuilder("tokens");
         Krill ks = new Krill(kq.focus(1,
@@ -748,7 +752,8 @@ public class TestKrill {
         assertEquals(40, kr.getMatch(0).getStartPos());
         assertEquals(41, kr.getMatch(0).getEndPos());
 
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+        assertEquals(
+                kr.getMatch(0).getSnippetBrackets(),
                 "... Initiative\" eine neue politische Gruppierung ins "
                         + "[[{1:Leben}]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
 
@@ -759,16 +764,19 @@ public class TestKrill {
         kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),
                 "focus(129: spanContain(<tokens:base/s:s />, {129: tokens:s:Leben}))");
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+        assertEquals(
+                kr.getMatch(0).getSnippetBrackets(),
                 "... Initiative\" eine neue politische Gruppierung ins "
                         + "[[Leben]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
 
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(),
+        assertEquals(
+                kr.getSerialQuery(),
                 "focus(129: spanElementDistance({129: tokens:s:Namen}, "
                         + "{129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]))");
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+        assertEquals(
+                kr.getMatch(0).getSnippetBrackets(),
                 "... ihren Austritt erklärt und unter dem [[Namen \"Einheitsbewegung "
                         + "der sozialistischen Initiative\" eine neue politische Gruppierung "
                         + "ins Leben]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
@@ -789,16 +797,16 @@ public class TestKrill {
 
         ki.commit();
 
-        String json = getJsonString(
-                getClass().getResource("/queries/bugs/multiple_classes.jsonld")
-                        .getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/multiple_classes.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),
                 "{4: spanNext({1: spanNext({2: tokens:s:ins}, "
                         + "{3: tokens:s:Leben})}, tokens:s:gerufen)}");
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+        assertEquals(
+                kr.getMatch(0).getSnippetBrackets(),
                 "... sozialistischen Initiative\" eine neue politische"
                         + " Gruppierung [[{4:{1:{2:ins} {3:Leben}} gerufen}]] hatten. "
                         + "Pressemeldungen zufolge haben sich in ...");
@@ -819,9 +827,8 @@ public class TestKrill {
 
         ki.commit();
 
-        String json = getJsonString(
-                getClass().getResource("/queries/bugs/multiple_classes.jsonld")
-                        .getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/multiple_classes.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -830,9 +837,8 @@ public class TestKrill {
         JsonNode res = mapper.readTree(kr.toTokenListJsonString());
 
         assertEquals(1, res.at("/meta/totalResults").asInt());
-        assertEquals(
-                "{4: spanNext({1: spanNext({2: tokens:s:ins}, "
-                        + "{3: tokens:s:Leben})}, tokens:s:gerufen)}",
+        assertEquals("{4: spanNext({1: spanNext({2: tokens:s:ins}, "
+                + "{3: tokens:s:Leben})}, tokens:s:gerufen)}",
                 res.at("/meta/serialQuery").asText());
         assertEquals(0, res.at("/meta/startIndex").asInt());
         assertEquals(25, res.at("/meta/itemsPerPage").asInt());
@@ -863,9 +869,8 @@ public class TestKrill {
         assertEquals("BZK", fd.getCorpusSigle());
 
         // [tt/p="A.*"]{0,3}[tt/p="N.*"]
-        String json = getJsonString(
-                getClass().getResource("/queries/bugs/multiterm_rewrite.jsonld")
-                        .getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/multiterm_rewrite.jsonld").getFile());
 
         Krill ks = new Krill(json);
         KrillCollection kc = ks.getCollection();
@@ -908,7 +913,8 @@ public class TestKrill {
         assertEquals(kr.getMatch(3).getSnippetBrackets(),
                 "Saragat-Partei zerfällt Rom ([[ADN]]) "
                         + "die von dem Rechtssozialisten Saragat geführte ...");
-        assertEquals(kr.getMatch(23).getSnippetBrackets(),
+        assertEquals(
+                kr.getMatch(23).getSnippetBrackets(),
                 "... dem Namen \"Einheitsbewegung der sozialistischen "
                         + "Initiative\" [[eine neue politische Gruppierung]] "
                         + "ins Leben gerufen hatten. Pressemeldungen zufolge ...");
@@ -926,9 +932,8 @@ public class TestKrill {
         ki.commit();
 
         // ({1:Sonne []* Erde} | {2: Erde []* Sonne})
-        String json = getJsonString(getClass()
-                .getResource("/queries/bugs/tokendistancespan_bug.jsonld")
-                .getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/tokendistancespan_bug.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -945,13 +950,13 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
-        String json = getJsonString(getClass()
-                .getResource("/queries/metaquery8-nocollection.jsonld")
-                .getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/metaquery8-nocollection.jsonld").getFile());
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
@@ -959,8 +964,8 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
 
-        json = getJsonString(
-                getClass().getResource("/queries/metaquery8.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/metaquery8.jsonld").getFile());
 
         ks = new Krill(json);
         kr = ks.apply(ki);
@@ -970,8 +975,8 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
 
-        json = getJsonString(getClass()
-                .getResource("/queries/metaquery8-filtered.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/metaquery8-filtered.jsonld").getFile());
 
         ks = new Krill(json);
         kr = ks.apply(ki);
@@ -981,9 +986,8 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
 
-        json = getJsonString(getClass()
-                .getResource("/queries/metaquery8-filtered-further.jsonld")
-                .getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/metaquery8-filtered-further.jsonld").getFile());
 
         ks = new Krill(json);
         kr = ks.apply(ki);
@@ -993,9 +997,8 @@ public class TestKrill {
         assertEquals(10, kr.getItemsPerPage());
 
 
-        json = getJsonString(getClass()
-                .getResource("/queries/metaquery8-filtered-nested.jsonld")
-                .getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/metaquery8-filtered-nested.jsonld").getFile());
 
         ks = new Krill(json);
         kr = ks.apply(ki);
@@ -1023,13 +1026,14 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        String json = getJsonString(getClass()
-                .getResource("/queries/bsp-context-2.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-context-2.jsonld").getFile());
 
         Krill ks = new Krill(json);
         ks.getMeta().setCutOff(false);
@@ -1045,11 +1049,11 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
 
-        assertFalse(
-                kr.getContext().toJsonNode().toString().equals("\"base/s:s\""));
+        assertFalse(kr.getContext().toJsonNode().toString()
+                .equals("\"base/s:s\""));
 
-        json = getJsonString(getClass()
-                .getResource("/queries/bsp-context-sentence.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/bsp-context-sentence.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
         assertEquals(kr.getContext().toJsonNode().toString(), "\"base/s:s\"");
@@ -1074,13 +1078,14 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        String json = getJsonString(
-                getClass().getResource("/queries/bsp-bug.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-bug.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
 
@@ -1096,19 +1101,20 @@ public class TestKrill {
         // Indexing test files
         for (String i : new String[] { "00001" }) {
             // , "00002", "00003", "00004", "00005", "00006", "02439"
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
         // "der" []{2,3} [opennlp/p="NN"]
-        String json = getJsonString(getClass()
-                .getResource("/queries/bugs/distances_with_regex_bug.jsonld")
-                .getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/distances_with_regex_bug.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
 
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+        assertEquals(
+                kr.getMatch(0).getSnippetBrackets(),
                 "Mit Ausnahme von Fremdwörtern und Namen ist das A der einzige Buchstabe im Deutschen, [[der zweifach am Anfang]] eines Wortes stehen darf, etwa im Wort Aal.");
 
     };
@@ -1127,15 +1133,14 @@ public class TestKrill {
 
         // Expansion bug
         // der alte Digraph Aa durch Å
-        String json = getJsonString(getClass()
-                .getResource("/queries/bugs/expansion_bug_2.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/expansion_bug_2.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
-        assertEquals(
-                "... Buchstabe des Alphabetes. In Dänemark ist "
-                        + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
-                        + "in Eigennamen und Ortsnamen ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... Buchstabe des Alphabetes. In Dänemark ist "
+                + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
+                + "in Eigennamen und Ortsnamen ...", kr.getMatch(0)
+                .getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
         assertEquals(kr.getTotalResults(), 1);
 
@@ -1148,54 +1153,52 @@ public class TestKrill {
 
         // der alte Digraph Aa durch []
         // Works with one document
-        json = getJsonString(getClass()
-                .getResource("/queries/bugs/expansion_bug.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/bugs/expansion_bug.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
 
         // focus(254: spanContain(<tokens:base/s:t />, {254: spanNext(spanNext(spanNext(spanNext(tokens:s:der, tokens:s:alte), tokens:s:Digraph), tokens:s:Aa), spanExpansion(tokens:s:durch, []{1, 1}, right))}))
 
-        assertEquals(
-                "... Buchstabe des Alphabetes. In Dänemark ist "
-                        + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
-                        + "in Eigennamen und Ortsnamen ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... Buchstabe des Alphabetes. In Dänemark ist "
+                + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
+                + "in Eigennamen und Ortsnamen ...", kr.getMatch(0)
+                .getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
         assertEquals(kr.getTotalResults(), 1);
 
         // Now try with one file ahead
         ki = new KrillIndex();
         for (String i : new String[] { "00001", "00002" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
         // Expansion bug
         // der alte Digraph Aa durch Å
-        json = getJsonString(getClass()
-                .getResource("/queries/bugs/expansion_bug_2.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/bugs/expansion_bug_2.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
 
-        assertEquals(
-                "... Buchstabe des Alphabetes. In Dänemark ist "
-                        + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
-                        + "in Eigennamen und Ortsnamen ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... Buchstabe des Alphabetes. In Dänemark ist "
+                + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
+                + "in Eigennamen und Ortsnamen ...", kr.getMatch(0)
+                .getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
         assertEquals(kr.getTotalResults(), 1);
 
         // der alte Digraph Aa durch []
-        json = getJsonString(getClass()
-                .getResource("/queries/bugs/expansion_bug.jsonld").getFile());
+        json = getJsonString(getClass().getResource(
+                "/queries/bugs/expansion_bug.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
-        assertEquals(
-                "... Buchstabe des Alphabetes. In Dänemark ist "
-                        + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
-                        + "in Eigennamen und Ortsnamen ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... Buchstabe des Alphabetes. In Dänemark ist "
+                + "[[der alte Digraph Aa durch Å]] ersetzt worden, "
+                + "in Eigennamen und Ortsnamen ...", kr.getMatch(0)
+                .getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
         assertEquals(kr.getTotalResults(), 1);
     };
@@ -1208,15 +1211,14 @@ public class TestKrill {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
 
-        String json = getJsonString(getClass()
-                .getResource("/queries/bugs/zero_repetition_bug.jsonld")
-                .getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/zero_repetition_bug.jsonld").getFile());
 
         Result kr = new Krill(json).apply(ki);
 
         assertEquals(783, kr.getError(0).getCode());
-        assertEquals("This query can't match anywhere",
-                kr.getError(0).getMessage());
+        assertEquals("This query can't match anywhere", kr.getError(0)
+                .getMessage());
     };
 
 
@@ -1229,9 +1231,8 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        ki.addDoc(
-                getClass().getResourceAsStream("/sgbr/BSP-2013-01-32.json.gz"),
-                true);
+        ki.addDoc(getClass()
+                .getResourceAsStream("/sgbr/BSP-2013-01-32.json.gz"), true);
         ki.commit();
 
         Krill k = new Krill(new QueryBuilder("tokens").tag("base/s:s"));
@@ -1247,8 +1248,8 @@ public class TestKrill {
     };
 
 
-	/**
-	 * This is a Schreibgebrauch ressource that didn't work for
+    /**
+     * This is a Schreibgebrauch ressource that didn't work for
      * element queries.
      */
     @Test
@@ -1281,14 +1282,13 @@ public class TestKrill {
         assertNull(fd.getTextClass());
         assertEquals(fd.getLanguage(), "de");
         assertEquals(fd.getPubPlace(), "München");
-        assertEquals(fd.getReference(),
-                "Goethe, Johann Wolfgang von:"
-                        + " Autobiographische Einzelheiten,"
-                        + " (Geschrieben bis 1832), In: Goethe,"
-                        + " Johann Wolfgang von: Goethes Werke,"
-                        + " Bd. 10, Autobiographische Schriften"
-                        + " II, Hrsg.: Trunz, Erich. München: "
-                        + "Verlag C. H. Beck, 1982, S. 529-547");
+        assertEquals(fd.getReference(), "Goethe, Johann Wolfgang von:"
+                + " Autobiographische Einzelheiten,"
+                + " (Geschrieben bis 1832), In: Goethe,"
+                + " Johann Wolfgang von: Goethes Werke,"
+                + " Bd. 10, Autobiographische Schriften"
+                + " II, Hrsg.: Trunz, Erich. München: "
+                + "Verlag C. H. Beck, 1982, S. 529-547");
         assertEquals(fd.getPublisher(), "Verlag C. H. Beck");
         assertNull(fd.getEditor());
         assertNull(fd.getFileEditionStatement());
@@ -1296,9 +1296,11 @@ public class TestKrill {
         assertNull(fd.getKeywords());
 
         assertEquals(fd.getTokenSource(), "base#tokens");
-        assertEquals(fd.getFoundries(),
+        assertEquals(
+                fd.getFoundries(),
                 "corenlp corenlp/constituency corenlp/morpho corenlp/sentences dereko dereko/structure dereko/structure/base-sentences-paragraphs-pagebreaks malt malt/dependency marmot marmot/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho");
-        assertEquals(fd.getLayerInfos(),
+        assertEquals(
+                fd.getLayerInfos(),
                 "corenlp/c=spans corenlp/p=tokens corenlp/s=spans dereko/s=spans malt/d=rels marmot/m=tokens marmot/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens");
 
         assertEquals(fd.getCorpusTitle(), "Goethes Werke");
@@ -1311,8 +1313,8 @@ public class TestKrill {
         assertNull(fd.getDocEditor());
         assertNull(fd.getDocAuthor());
 
-        Krill ks = new Krill(new QueryBuilder("tokens").seg("marmot/m:case:nom")
-                .with("marmot/m:number:pl"));
+        Krill ks = new Krill(new QueryBuilder("tokens")
+                .seg("marmot/m:case:nom").with("marmot/m:number:pl"));
         Result kr = ks.apply(ki);
 
         assertEquals(kr.getTotalResults(), 141);
@@ -1320,15 +1322,14 @@ public class TestKrill {
         assertEquals(25, kr.getItemsPerPage());
     };
 
-	@Test
+
+    @Test
     public void searchLongMatch () throws IOException {
 
         // Construct index
         KrillIndex ki = new KrillIndex();
         // Indexing test files
-        ki.addDoc(
-                getClass().getResourceAsStream("/goe/AGX-00002.json"),
-                false);
+        ki.addDoc(getClass().getResourceAsStream("/goe/AGX-00002.json"), false);
         ki.commit();
 
         Krill k = new Krill(new QueryBuilder("tokens").tag("xy/z:long"));
@@ -1339,9 +1340,11 @@ public class TestKrill {
         assertEquals(kr.getTotalResults(), 1);
         assertEquals(2, kr.getMatch(0).getStartPos());
         assertEquals(52, kr.getMatch(0).getEndPos());
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+        assertEquals(
+                kr.getMatch(0).getSnippetBrackets(),
                 "Maximen und [[Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur]<!>], so hat er sie gleich in ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),
+        assertEquals(
+                kr.getMatch(0).getSnippetHTML(),
                 "<span class=\"context-left\">Maximen und </span><span class=\"match\"><mark>Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur</mark><span class=\"cutted\"></span></span><span class=\"context-right\">, so hat er sie gleich in<span class=\"more\"></span></span>");
         assertEquals(kr.getMatch(0).getTextSigle(), "GOE_AGX.00002");
     };

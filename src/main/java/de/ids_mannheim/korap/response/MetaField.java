@@ -17,63 +17,65 @@ import org.apache.lucene.index.*;
  */
 public class MetaField {
 
-	// Mapper for JSON serialization
+    // Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
 
-	public String type = "type:string";
-	public String key;
-	public List<String> values = new ArrayList<>();
+    public String type = "type:string";
+    public String key;
+    public List<String> values = new ArrayList<>();
 
-	public MetaField (String key) {
-		this.key = key;
-	};
 
-	/**
-	 * Create JsonNode
-	 */
-	public JsonNode toJsonNode () {
+    public MetaField (String key) {
+        this.key = key;
+    };
+
+
+    /**
+     * Create JsonNode
+     */
+    public JsonNode toJsonNode () {
         ObjectNode json = mapper.createObjectNode();
-		json.put("@type", "koral:field");
-		json.put("type", this.type);
-		json.put("key", this.key);
+        json.put("@type", "koral:field");
+        json.put("type", this.type);
+        json.put("key", this.key);
 
-		// Value is numerical
-		if (this.type.equals("type:number")) {
+        // Value is numerical
+        if (this.type.equals("type:number")) {
 
-			// Value is a list
-			if (this.values.size() > 1) {
-				ArrayNode list = json.putArray("value");
+            // Value is a list
+            if (this.values.size() > 1) {
+                ArrayNode list = json.putArray("value");
 
-				Iterator vIter = this.values.iterator();
-				while (vIter.hasNext()) {
-					list.add((int) Integer.parseInt((String) vIter.next()));
-				};
-			}
+                Iterator vIter = this.values.iterator();
+                while (vIter.hasNext()) {
+                    list.add((int) Integer.parseInt((String) vIter.next()));
+                };
+            }
 
-			// Value is a single
-			else {
-				json.put("value", Integer.parseInt(this.values.get(0)));
-			};
-		}
+            // Value is a single
+            else {
+                json.put("value", Integer.parseInt(this.values.get(0)));
+            };
+        }
 
-		// Value is textual or keywords
-		else {
-			// Value is a list
-			if (this.values.size() > 1) {
-				ArrayNode list = json.putArray("value");
+        // Value is textual or keywords
+        else {
+            // Value is a list
+            if (this.values.size() > 1) {
+                ArrayNode list = json.putArray("value");
 
-				Iterator vIter = this.values.iterator();
-				while (vIter.hasNext()) {
-					list.add((String) vIter.next());
-				};
-			}
+                Iterator vIter = this.values.iterator();
+                while (vIter.hasNext()) {
+                    list.add((String) vIter.next());
+                };
+            }
 
-			// Value is a single
-			else if (this.values.size() > 0) {
-				json.put("value", this.values.get(0));
-			};
-		};
+            // Value is a single
+            else if (this.values.size() > 0) {
+                json.put("value", this.values.get(0));
+            };
+        };
 
-		return (JsonNode) json;
-	};
+        return (JsonNode) json;
+    };
 };

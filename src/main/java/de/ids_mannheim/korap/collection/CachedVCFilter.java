@@ -11,23 +11,25 @@ import org.apache.lucene.util.Bits;
  * Filter for virtual corpus/collection existing in the cache.
  * 
  * @author margaretha
- *
+ * 
  */
 public class CachedVCFilter extends Filter {
 
     private CachedVCData cachedCollection;
-	private String cacheKey;
+    private String cacheKey;
+
 
     public CachedVCFilter (String cacheKey, CachedVCData cachedCollection) {
-		this.cacheKey = cacheKey;
+        this.cacheKey = cacheKey;
         this.cachedCollection = cachedCollection;
     }
+
 
     @Override
     public DocIdSet getDocIdSet (LeafReaderContext context, Bits acceptDocs)
             throws IOException {
-        DocBits docBits =
-                cachedCollection.getDocIdMap().get(context.hashCode());
+        DocBits docBits = cachedCollection.getDocIdMap()
+                .get(context.hashCode());
 
         if (docBits == null) {
             // does not exist in the cache
@@ -36,8 +38,9 @@ public class CachedVCFilter extends Filter {
         return docBits.createBitDocIdSet();
     }
 
-	@Override
+
+    @Override
     public String toString () {
-		return "referTo(cached:" + this.cacheKey + ")";
+        return "referTo(cached:" + this.cacheKey + ")";
     };
 }

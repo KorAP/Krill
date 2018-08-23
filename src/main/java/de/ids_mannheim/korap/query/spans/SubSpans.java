@@ -178,10 +178,9 @@ public class SubSpans extends SimpleSpans {
         cs.setDoc(firstSpans.doc());
 
         if (DEBUG) {
-            log.trace(
-                    "Start at absolute position {} "
-                            + "and end at absolute position {}",
-                    cs.getStart(), cs.getEnd());
+            log.trace("Start at absolute position {} "
+                    + "and end at absolute position {}", cs.getStart(),
+                    cs.getEnd());
         };
 
         return true;

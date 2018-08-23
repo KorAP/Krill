@@ -113,7 +113,7 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
     private boolean isOrdered;
     private int minDistance, maxDistance;
     private SpanElementQuery elementQuery; // element distance unit (sentence or
-                                          // paragraph)
+                                           // paragraph)
     private String distanceUnit;
     private String spanName;
     private DistanceConstraint constraint;

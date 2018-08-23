@@ -45,6 +45,7 @@ public final class ElementSpans extends SimpleSpans {
 
         private byte value;
 
+
         private PayloadTypeIdentifier (int value) {
             this.value = (byte) value;
         }
@@ -129,8 +130,8 @@ public final class ElementSpans extends SimpleSpans {
             return;
         }
 
-        if (!payload.isEmpty() && payload.get(0) != null){
-                
+        if (!payload.isEmpty() && payload.get(0) != null) {
+
             // Get payload one by one
             final int length = payload.get(0).length;
             final ByteBuffer bb = ByteBuffer.allocate(length);

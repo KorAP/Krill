@@ -28,7 +28,7 @@ import de.ids_mannheim.korap.util.QueryException;
 
 /**
  * @author margaretha
- *
+ * 
  */
 @RunWith(JUnit4.class)
 public class TestElementDistanceIndex {
@@ -55,7 +55,9 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("tokens", "ecebdc",
+        fd.addTV(
+                "tokens",
+                "ecebdc",
                 "[(0-1)s:e|_1$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>6<i>6<b>0|<>:s$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:c|s:b|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2<b>0]"
                         + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
@@ -92,11 +94,14 @@ public class TestElementDistanceIndex {
                         + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
-    
+
+
     private FieldDocument createFieldDoc4 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-4");
-        fd.addTV("tokens", "bdbcdd",
+        fd.addTV(
+                "tokens",
+                "bdbcdd",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:d|_2$<i>1<i>2]"
                         + "[(2-3)s:c|s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>5<i>3<b>0]"
@@ -147,6 +152,7 @@ public class TestElementDistanceIndex {
         assertEquals(4, kr.getMatch(3).endPos);
     }
 
+
     /**
      * Ignore nested element distance unit
      * */
@@ -168,7 +174,7 @@ public class TestElementDistanceIndex {
         assertEquals(4, kr.getMatch(1).endPos);
     }
 
-    
+
     /**
      * Ensure terms and elements are in the same doc
      */
@@ -244,7 +250,8 @@ public class TestElementDistanceIndex {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
 
-        String jsonPath = getClass().getResource("/queries/cosmas1.json").getFile();
+        String jsonPath = getClass().getResource("/queries/cosmas1.json")
+                .getFile();
         SpanQueryWrapper sqwi = getJsonQuery(jsonPath);
         kr = ki.search(sqwi.toQuery(), (short) 10);
 
@@ -272,8 +279,8 @@ public class TestElementDistanceIndex {
         assertEquals(kr.getTotalResults(), 1);
         assertEquals("[[ecebdc]]", kr.getMatch(0).getSnippetBrackets());
 
-        String jsonPath = getClass()
-                .getResource("/queries/distances/in-same-t.jsonld").getFile();
+        String jsonPath = getClass().getResource(
+                "/queries/distances/in-same-t.jsonld").getFile();
         sqwi = getJsonQuery(jsonPath);
 
         assertEquals(

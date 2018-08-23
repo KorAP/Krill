@@ -159,8 +159,7 @@ public class MultipleDistanceSpans extends DistanceSpans {
             }
         }
         else if (xf.getStart() == yf.getStart() && xf.getEnd() == yf.getEnd()
-                && xs.getStart() == ys.getStart()
-                && xs.getEnd() == ys.getEnd()) {
+                && xs.getStart() == ys.getStart() && xs.getEnd() == ys.getEnd()) {
             setMatchProperties(x, false);
             return true;
         }

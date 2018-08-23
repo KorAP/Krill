@@ -15,16 +15,18 @@ import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.collection.CollectionBuilder.Interface;
 import net.sf.ehcache.Element;
 
-/** Filter for virtual corpus / collection that should be cached.  
+/**
+ * Filter for virtual corpus / collection that should be cached.
  * 
  * @author margaretha
- *
+ * 
  */
 public class ToCacheVCFilter extends Filter {
     private Filter filter;
     private CollectionBuilder.Interface cbi;
     private String cacheKey;
     private Map<Integer, DocBits> docIdMap;
+
 
     public ToCacheVCFilter (String cacheKey, Map<Integer, DocBits> docIdMap,
                             Interface cbi, Filter filter) {
@@ -33,6 +35,7 @@ public class ToCacheVCFilter extends Filter {
         this.cbi = cbi;
         this.filter = filter;
     }
+
 
     @Override
     public DocIdSet getDocIdSet (LeafReaderContext context, Bits acceptDocs)
@@ -54,7 +57,7 @@ public class ToCacheVCFilter extends Filter {
         }
         else {
             bitset.or(docIdSet.iterator());
-            if (cbi.isNegative()){
+            if (cbi.isNegative()) {
                 bitset.flip(0, maxDoc);
             }
         }
@@ -68,8 +71,9 @@ public class ToCacheVCFilter extends Filter {
         return docIdSet;
     }
 
+
     @Override
     public String toString () {
-		return "referTo(" + this.cacheKey + ")";
+        return "referTo(" + this.cacheKey + ")";
     };
 }

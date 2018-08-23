@@ -72,8 +72,7 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
-        return (Spans) new SegmentSpans(this, context, acceptDocs,
-                termContexts);
+        return (Spans) new SegmentSpans(this, context, acceptDocs, termContexts);
     }
 
 

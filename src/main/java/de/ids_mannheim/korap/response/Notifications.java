@@ -238,14 +238,17 @@ public class Notifications {
         this.errors.add(code, msg, terms);
         return this;
     };
-    
+
+
     public Notifications addError (int code, String[] terms) {
         if (this.errors == null)
             this.errors = new Messages();
-        this.errors.add(code, terms[0], Arrays.copyOfRange(terms, 1, terms.length));
+        this.errors.add(code, terms[0],
+                Arrays.copyOfRange(terms, 1, terms.length));
         return this;
     }
-    
+
+
     /**
      * Appends a new error.
      * 

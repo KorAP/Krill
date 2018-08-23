@@ -91,19 +91,19 @@ public class TestCollectionBuilder {
         assertEquals("referTo(ndiewald/myCorpus)",
                 kc.referTo("ndiewald/myCorpus").toString());
     };
-	
+
 
     @Test
     public void builderTill () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
-        assertEquals("pubDate:[0 TO 20059999]",
-                kc.till("pubDate", "2005").toString());
+        assertEquals("pubDate:[0 TO 20059999]", kc.till("pubDate", "2005")
+                .toString());
 
-        assertEquals("pubDate:[0 TO 20051299]",
-                kc.till("pubDate", "2005-12").toString());
+        assertEquals("pubDate:[0 TO 20051299]", kc.till("pubDate", "2005-12")
+                .toString());
 
-        assertEquals("pubDate:[0 TO 20051204]",
-                kc.till("pubDate", "2005-12-04").toString());
+        assertEquals("pubDate:[0 TO 20051204]", kc
+                .till("pubDate", "2005-12-04").toString());
     };
 
 
@@ -118,41 +118,47 @@ public class TestCollectionBuilder {
     @Test
     public void builderOrSimple () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
-        assertEquals("author:tree",
-                kc.orGroup().with(kc.term("author", "tree")).toString());
+        assertEquals("author:tree", kc.orGroup()
+                .with(kc.term("author", "tree")).toString());
     };
 
 
     @Test
     public void builderAndCombined () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
-        assertEquals("AndGroup(author:tree title:name)",
+        assertEquals(
+                "AndGroup(author:tree title:name)",
                 kc.andGroup().with(kc.term("author", "tree"))
                         .with(kc.term("title", "name")).toString());
     };
 
+
     @Test
     public void builderAndCombinedNeg () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
-        assertEquals("AndGroup(author:tree -title:name)",
+        assertEquals(
+                "AndGroup(author:tree -title:name)",
                 kc.andGroup().with(kc.term("author", "tree"))
-					 .with(kc.term("title", "name").not()).toString());
+                        .with(kc.term("title", "name").not()).toString());
     };
-	
+
 
     @Test
     public void builderAndNestedSimple () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
-        assertEquals("AndGroup(author:tree title:name)",
-                kc.andGroup().with(kc.andGroup().with(kc.term("author", "tree"))
-                        .with(kc.term("title", "name"))).toString());
+        assertEquals(
+                "AndGroup(author:tree title:name)",
+                kc.andGroup()
+                        .with(kc.andGroup().with(kc.term("author", "tree"))
+                                .with(kc.term("title", "name"))).toString());
     };
 
 
     @Test
     public void builderOrCombined () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
-        assertEquals("OrGroup(author:tree title:name)",
+        assertEquals(
+                "OrGroup(author:tree title:name)",
                 kc.orGroup().with(kc.term("author", "tree"))
                         .with(kc.term("title", "name")).toString());
     };
@@ -161,21 +167,23 @@ public class TestCollectionBuilder {
     @Test
     public void builderOrNestedSimple () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
-        assertEquals("OrGroup(author:tree title:name)",
-                kc.orGroup().with(kc.orGroup().with(kc.term("author", "tree"))
-                        .with(kc.term("title", "name"))).toString());
+        assertEquals(
+                "OrGroup(author:tree title:name)",
+                kc.orGroup()
+                        .with(kc.orGroup().with(kc.term("author", "tree"))
+                                .with(kc.term("title", "name"))).toString());
     };
 
 
     @Test
     public void builderGroups () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
-        String g = kc.orGroup()
+        String g = kc
+                .orGroup()
                 .with(kc.orGroup().with(kc.term("author", "tree1"))
                         .with(kc.term("title", "name1")))
                 .with(kc.andGroup().with(kc.term("author", "tree2"))
-                        .with(kc.term("title", "name2")))
-                .toString();
+                        .with(kc.term("title", "name2"))).toString();
         assertEquals(
                 "OrGroup(OrGroup(author:tree1 title:name1) AndGroup(author:tree2 title:name2))",
                 g);
@@ -191,8 +199,9 @@ public class TestCollectionBuilder {
         assertEquals("OrGroup(author:tree1 title:name1)", kbi.toString());
         assertFalse(kbi.isNegative());
 
-        kbi = kc.andGroup().with(kc.orGroup().with(kc.term("author", "tree1"))
-                .with(kc.term("title", "name1"))).not();
+        kbi = kc.andGroup()
+                .with(kc.orGroup().with(kc.term("author", "tree1"))
+                        .with(kc.term("title", "name1"))).not();
         assertEquals("OrGroup(author:tree1 title:name1)", kbi.toString());
         assertTrue(kbi.isNegative());
     };
@@ -234,7 +243,8 @@ public class TestCollectionBuilder {
                 kf.and("textClass", "tree").and("textClass", "sport")
                         .toString());
         */
-        assertEquals("AndGroup(textClass:tree textClass:sport)",
+        assertEquals(
+                "AndGroup(textClass:tree textClass:sport)",
                 kf.andGroup().with(kf.term("textClass", "tree"))
                         .with(kf.term("textClass", "sport")).toString());
 
@@ -255,7 +265,8 @@ public class TestCollectionBuilder {
         assertEquals("+textClass:tree +textClass:sport +textClass:news", kf
                 .and("textClass", "tree", "sport", "news").toString());
         */
-        assertEquals("AndGroup(textClass:tree textClass:sport textClass:news)",
+        assertEquals(
+                "AndGroup(textClass:tree textClass:sport textClass:news)",
                 kf.andGroup().with("textClass", "tree")
                         .with("textClass", "sport").with("textClass", "news")
                         .toString());
@@ -264,9 +275,9 @@ public class TestCollectionBuilder {
         assertEquals("corpusID:c-1 corpusID:c-2 corpusID:c-3",
                 kf.or("corpusID", "c-1", "c-2", "c-3").toString());
         */
-        assertEquals("OrGroup(corpusID:c-1 corpusID:c-2 corpusID:c-3)",
-                kf.orGroup().with("corpusID", "c-1").with("corpusID", "c-2")
-                        .with("corpusID", "c-3").toString());
+        assertEquals("OrGroup(corpusID:c-1 corpusID:c-2 corpusID:c-3)", kf
+                .orGroup().with("corpusID", "c-1").with("corpusID", "c-2")
+                .with("corpusID", "c-3").toString());
 
     };
 
@@ -288,8 +299,8 @@ public class TestCollectionBuilder {
         assertEquals("+pubDate:[0 TO 20030604]", kf.till("2003-06-04")
                 .toString());
         */
-        assertEquals("pubDate:[0 TO 20030604]",
-                kf.till("pubDate", "2003-06-04").toString());
+        assertEquals("pubDate:[0 TO 20030604]", kf
+                .till("pubDate", "2003-06-04").toString());
 
 
         /*
@@ -354,40 +365,40 @@ public class TestCollectionBuilder {
         /*
         assertEquals("+pubDate:[0 TO 20059999]", kf.till("2005").toString());
         */
-        assertEquals("pubDate:[0 TO 20059999]",
-                kf.till("pubDate", "2005").toString());
+        assertEquals("pubDate:[0 TO 20059999]", kf.till("pubDate", "2005")
+                .toString());
 
         /*
         assertEquals("+pubDate:[0 TO 20051099]", kf.till("200510").toString());
         */
-        assertEquals("pubDate:[0 TO 20051099]",
-                kf.till("pubDate", "200510").toString());
+        assertEquals("pubDate:[0 TO 20051099]", kf.till("pubDate", "200510")
+                .toString());
 
         /*
         assertEquals("+pubDate:[0 TO 20051099]", kf.till("200510").toString());
         */
-        assertEquals("pubDate:[0 TO 20051099]",
-                kf.till("pubDate", "200510").toString());
+        assertEquals("pubDate:[0 TO 20051099]", kf.till("pubDate", "200510")
+                .toString());
 
         /*
         assertEquals("+pubDate:[0 TO 20051099]", kf.till("2005-10").toString());
         */
-        assertEquals("pubDate:[0 TO 20051099]",
-                kf.till("pubDate", "2005-10").toString());
+        assertEquals("pubDate:[0 TO 20051099]", kf.till("pubDate", "2005-10")
+                .toString());
 
         /*
         assertEquals("+pubDate:[0 TO 20051006]", kf.till("2005-1006")
                 .toString());
          */
-        assertEquals("pubDate:[0 TO 20051006]",
-                kf.till("pubDate", "2005-1006").toString());
+        assertEquals("pubDate:[0 TO 20051006]", kf.till("pubDate", "2005-1006")
+                .toString());
 
         /*
         assertEquals("+pubDate:[0 TO 20051006]", kf.till("2005-10-06")
                 .toString());
         */
-        assertEquals("pubDate:[0 TO 20051006]",
-                kf.till("pubDate", "2005-10-06").toString());
+        assertEquals("pubDate:[0 TO 20051006]", kf
+                .till("pubDate", "2005-10-06").toString());
 
         /*
         assertEquals("+pubDate:[20050000 TO 99999999]", kf.since("2005")

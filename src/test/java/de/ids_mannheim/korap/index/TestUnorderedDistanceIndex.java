@@ -28,16 +28,16 @@ public class TestUnorderedDistanceIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "text",
-                "[(0-1)s:c|_1$<i>0<i>1]" + "[(1-2)s:e|_2$<i>1<i>2]"
-                        + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
-                        + "[(3-4)s:c|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
-                        + "[(4-5)s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
-                        + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8<b>0]"
-                        + "[(6-7)s:d|_7$<i>6<i>7]"
-                        + "[(7-8)s:f|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
-                        + "[(8-9)s:e|_9$<i>8<i>9|<>:x$<b>64<i>8<i>10<i>10<b>0]"
-                        + "[(9-10)s:d|_10$<i>9<i>10]");
+        fd.addTV("base", "text", "[(0-1)s:c|_1$<i>0<i>1]"
+                + "[(1-2)s:e|_2$<i>1<i>2]"
+                + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
+                + "[(3-4)s:c|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
+                + "[(4-5)s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
+                + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8<b>0]"
+                + "[(6-7)s:d|_7$<i>6<i>7]"
+                + "[(7-8)s:f|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
+                + "[(8-9)s:e|_9$<i>8<i>9|<>:x$<b>64<i>8<i>10<i>10<b>0]"
+                + "[(9-10)s:d|_10$<i>9<i>10]");
         return fd;
     }
 
@@ -45,13 +45,12 @@ public class TestUnorderedDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "text",
-                "[(0-1)s:d|_1$<i>0<i>1]" + "[(1-2)s:c|_2$<i>1<i>2]"
-                        + "[(2-3)s:e|_3$<i>2<i>3]" + "[(3-4)s:e|_4$<i>3<i>4]"
-                        + "[(4-5)s:d|_5$<i>4<i>5]" + "[(5-6)s:e|_6$<i>5<i>6]"
-                        + "[(6-7)s:e|_7$<i>6<i>7]" + "[(7-8)s:c|_8$<i>7<i>8]"
-                        + "[(8-9)s:e|_9$<i>8<i>9]"
-                        + "[(9-10)s:d|_10$<i>9<i>10]");
+        fd.addTV("base", "text", "[(0-1)s:d|_1$<i>0<i>1]"
+                + "[(1-2)s:c|_2$<i>1<i>2]" + "[(2-3)s:e|_3$<i>2<i>3]"
+                + "[(3-4)s:e|_4$<i>3<i>4]" + "[(4-5)s:d|_5$<i>4<i>5]"
+                + "[(5-6)s:e|_6$<i>5<i>6]" + "[(6-7)s:e|_7$<i>6<i>7]"
+                + "[(7-8)s:c|_8$<i>7<i>8]" + "[(8-9)s:e|_9$<i>8<i>9]"
+                + "[(9-10)s:d|_10$<i>9<i>10]");
         return fd;
     }
 
@@ -59,20 +58,18 @@ public class TestUnorderedDistanceIndex {
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "text",
-                "[(0-1)s:f|_1$<i>0<i>1]" + "[(1-2)s:c|_2$<i>1<i>2]"
-                        + "[(2-3)s:e|_3$<i>2<i>3]" + "[(3-4)s:e|_4$<i>3<i>4]"
-                        + "[(4-5)s:d|_5$<i>4<i>5]" + "[(5-6)s:f|_6$<i>5<i>6]"
-                        + "[(6-7)s:f|_7$<i>6<i>7]");
+        fd.addTV("base", "text", "[(0-1)s:f|_1$<i>0<i>1]"
+                + "[(1-2)s:c|_2$<i>1<i>2]" + "[(2-3)s:e|_3$<i>2<i>3]"
+                + "[(3-4)s:e|_4$<i>3<i>4]" + "[(4-5)s:d|_5$<i>4<i>5]"
+                + "[(5-6)s:f|_6$<i>5<i>6]" + "[(6-7)s:f|_7$<i>6<i>7]");
         return fd;
     }
 
 
     private SpanQuery createQuery (String x, String y, int min, int max,
             boolean isOrdered) {
-        SpanQuery sq = new SpanDistanceQuery(
-                new SpanTermQuery(new Term("base", x)),
-                new SpanTermQuery(new Term("base", y)),
+        SpanQuery sq = new SpanDistanceQuery(new SpanTermQuery(new Term("base",
+                x)), new SpanTermQuery(new Term("base", y)),
                 new DistanceConstraint(min, max, isOrdered, false), true);
         return sq;
     }
@@ -81,8 +78,8 @@ public class TestUnorderedDistanceIndex {
     private SpanQuery createElementQuery (String x, String y, int min, int max,
             boolean isOrdered) {
         SpanQuery sq = new SpanDistanceQuery(new SpanElementQuery("base", x),
-                new SpanElementQuery("base", y),
-                new DistanceConstraint(min, max, isOrdered, false), true);
+                new SpanElementQuery("base", y), new DistanceConstraint(min,
+                        max, isOrdered, false), true);
         return sq;
     }
 
@@ -170,8 +167,9 @@ public class TestUnorderedDistanceIndex {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        SpanQuery sq = new SpanNextQuery(createQuery("s:d", "s:e", 1, 2, false),
-                new SpanTermQuery(new Term("base", "s:f")));
+        SpanQuery sq = new SpanNextQuery(
+                createQuery("s:d", "s:e", 1, 2, false), new SpanTermQuery(
+                        new Term("base", "s:f")));
 
         kr = ki.search(sq, (short) 10);
         assertEquals(kr.getTotalResults(), 2);
@@ -264,9 +262,9 @@ public class TestUnorderedDistanceIndex {
         ki.commit();
 
         SpanQuery sq = createQuery("s:c", "s:d", 1, 2, false);
-        SpanQuery sq2 = new SpanDistanceQuery(sq,
-                new SpanTermQuery(new Term("base", "s:e")),
-                new DistanceConstraint(1, 2, true, false), true);
+        SpanQuery sq2 = new SpanDistanceQuery(sq, new SpanTermQuery(new Term(
+                "base", "s:e")), new DistanceConstraint(1, 2, true, false),
+                true);
         kr = ki.search(sq2, (short) 10);
         assertEquals(kr.getTotalResults(), 3);
         assertEquals(5, kr.getMatch(0).getStartPos());
@@ -287,9 +285,8 @@ public class TestUnorderedDistanceIndex {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc1());
         ki.commit();
-        SpanQuery sq = new SpanNextQuery(
-                new SpanTermQuery(new Term("base", "s:d")),
-                createQuery("s:c", "s:e", 1, 2, false));
+        SpanQuery sq = new SpanNextQuery(new SpanTermQuery(new Term("base",
+                "s:d")), createQuery("s:c", "s:e", 1, 2, false));
         kr = ki.search(sq, (short) 10);
 
         assertEquals(kr.getTotalResults(), 3);

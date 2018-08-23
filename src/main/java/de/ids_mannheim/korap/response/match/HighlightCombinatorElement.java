@@ -15,14 +15,14 @@ import org.slf4j.LoggerFactory;
 */
 public class HighlightCombinatorElement {
 
-	// Number -1:     Match
-	// Number -99998: Context
-	private final static int CONTEXT = -99998;
-	
+    // Number -1:     Match
+    // Number -99998: Context
+    private final static int CONTEXT = -99998;
+
     // Type 0: Textual data
     // Type 1: Opening
     // Type 2: Closing
-	// Type 3: Empty
+    // Type 3: Empty
     public byte type;
 
     public int number = 0;
@@ -30,11 +30,12 @@ public class HighlightCombinatorElement {
     public String characters;
     public boolean terminal = true;
 
-	// Logger
-	private final static Logger log = LoggerFactory.getLogger(Match.class);
+    // Logger
+    private final static Logger log = LoggerFactory.getLogger(Match.class);
 
-	// This advices the java compiler to ignore all loggings
+    // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
+
 
     // Constructor for highlighting elements
     public HighlightCombinatorElement (byte type, int number) {
@@ -46,8 +47,7 @@ public class HighlightCombinatorElement {
     // Constructor for highlighting elements,
     // that may not be terminal, i.e. they were closed and will
     // be reopened for overlapping issues.
-    public HighlightCombinatorElement (byte type, int number,
-                                       boolean terminal) {
+    public HighlightCombinatorElement (byte type, int number, boolean terminal) {
         this.type = type;
         this.number = number;
         this.terminal = terminal;
@@ -62,7 +62,8 @@ public class HighlightCombinatorElement {
 
 
     // Return html fragment for this combinator element
-	public String toHTML (Match match, FixedBitSet level, byte[] levelCache, HashSet joins) {
+    public String toHTML (Match match, FixedBitSet level, byte[] levelCache,
+            HashSet joins) {
 
         // Opening
         if (this.type == 1) {
@@ -73,65 +74,63 @@ public class HighlightCombinatorElement {
                 sb.append("<mark>");
             }
 
-			// This is context
-			else if (this.number == CONTEXT) {
-				// DO nothing
-			}
-
-			// This is a relation target
-            else if (this.number < -1) {
-
-				// Create id
-				String id = escapeHTML(
-					match.getPosID(match.getClassID(this.number))
-					);
-
-				// ID already in use - create join
-				if (joins.contains(id)) {
-					sb.append("<span xlink:show=\"other\" data-action=\"join\" xlink:href=\"#")
-						.append(id)
-						.append("\">");
-				}
-
-				// Not yet in use - create
-				else {
-					sb.append("<span xml:id=\"")
-						.append(id)
-						.append("\">");
-					joins.add(id);
-				};
+            // This is context
+            else if (this.number == CONTEXT) {
+                // DO nothing
             }
 
-			// This is an annotation
+            // This is a relation target
+            else if (this.number < -1) {
+
+                // Create id
+                String id = escapeHTML(match.getPosID(match
+                        .getClassID(this.number)));
+
+                // ID already in use - create join
+                if (joins.contains(id)) {
+                    sb.append(
+                            "<span xlink:show=\"other\" data-action=\"join\" xlink:href=\"#")
+                            .append(id).append("\">");
+                }
+
+                // Not yet in use - create
+                else {
+                    sb.append("<span xml:id=\"").append(id).append("\">");
+                    joins.add(id);
+                };
+            }
+
+            // This is an annotation
             else if (this.number >= 256) {
                 sb.append("<span ");
                 if (this.number < 2048) {
                     sb.append("title=\"")
-                            .append(escapeHTML(
-                                    match.getAnnotationID(this.number)))
-                            .append('"');
+                            .append(escapeHTML(match
+                                    .getAnnotationID(this.number))).append('"');
                 }
 
-				// This is a relation source
+                // This is a relation source
                 else {
                     Relation rel = match.getRelationID(this.number);
 
-					if (DEBUG) {
-						log.trace("Annotation is a relation with id {}", this.number);
-						log.trace("Resulting in relation {}: {}-{}", rel.annotation, rel.refStart, rel.refEnd);
-					};
+                    if (DEBUG) {
+                        log.trace("Annotation is a relation with id {}",
+                                this.number);
+                        log.trace("Resulting in relation {}: {}-{}",
+                                rel.annotation, rel.refStart, rel.refEnd);
+                    };
 
                     sb.append("xlink:title=\"")
-						.append(escapeHTML(rel.annotation))
-						.append("\" xlink:show=\"none\" xlink:href=\"#")
-						.append(escapeHTML(match.getPosID(rel.refStart, rel.refEnd)))
-						.append('"');
+                            .append(escapeHTML(rel.annotation))
+                            .append("\" xlink:show=\"none\" xlink:href=\"#")
+                            .append(escapeHTML(match.getPosID(rel.refStart,
+                                    rel.refEnd))).append('"');
                 };
                 sb.append('>');
             }
 
             // This is a highlight
-			// < 256
+            // < 256
             else {
                 // Get the first free level slot
                 byte pos;
@@ -151,9 +150,9 @@ public class HighlightCombinatorElement {
 
         // This is a Closing tag
         else if (this.type == 2) {
-			if (this.number == CONTEXT)
-				return "";
-			
+            if (this.number == CONTEXT)
+                return "";
+
             if (this.number < -1 || this.number >= 256)
                 return "</span>";
 
@@ -165,10 +164,10 @@ public class HighlightCombinatorElement {
             return "</mark>";
         }
 
-		// Empty element
-		else if (this.type == 3) {
-			return "<span class=\"pb\" data-after=\"" + number + "\"></span>";
-		};
+        // Empty element
+        else if (this.type == 3) {
+            return "<span class=\"pb\" data-after=\"" + number + "\"></span>";
+        };
 
         // HTML encode primary data
         return escapeHTML(this.characters);
@@ -185,10 +184,10 @@ public class HighlightCombinatorElement {
                 sb.append("[");
             }
 
-			// This is context
-			else if (this.number == CONTEXT) {
-				// DO nothing
-			}
+            // This is context
+            else if (this.number == CONTEXT) {
+                // DO nothing
+            }
 
             // Identifier
             else if (this.number < -1) {
@@ -208,8 +207,8 @@ public class HighlightCombinatorElement {
                         sb.append(rel.annotation);
                         sb.append('>').append(rel.refStart);
 
-						if (rel.refEnd != -1)
-							sb.append('-').append(rel.refEnd);
+                        if (rel.refEnd != -1)
+                            sb.append('-').append(rel.refEnd);
                     };
                     sb.append(':');
                 }
@@ -221,10 +220,10 @@ public class HighlightCombinatorElement {
         }
         else if (this.type == 2) {
 
-			// This is context
-			if (this.number == CONTEXT)
-				return "";
-			
+            // This is context
+            if (this.number == CONTEXT)
+                return "";
+
             if (this.number == -1)
                 return "]";
             return "}";

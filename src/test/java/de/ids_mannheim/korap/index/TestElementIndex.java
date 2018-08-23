@@ -80,13 +80,12 @@ public class TestElementIndex {
 
         // <a><a><a>h</a>hhij</a>hij</a>hij</a>
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "h  h        i  j   h  i  j  h  i  j  ",
-                "[(0-3)s:h|" + "<>:a$<b>64<i>0<i>18<i>3<b>0|"
-                        + "<>:a$<b>64<i>0<i>27<i>6<b>0|"
-                        + "<>:a$<b>64<i>0<i>36<i>9]" + "[(3-6)s:h]"
-                        + "[(12-15)s:i<b>0]" + "[(15-18)s:j]" + "[(18-21)s:h]"
-                        + "[(21-24)s:i]" + "[(24-27)s:j]" + "[(27-30)s:h]"
-                        + "[(30-33)s:i]" + "[(33-36)s:j]");
+        fd.addTV("base", "h  h        i  j   h  i  j  h  i  j  ", "[(0-3)s:h|"
+                + "<>:a$<b>64<i>0<i>18<i>3<b>0|"
+                + "<>:a$<b>64<i>0<i>27<i>6<b>0|" + "<>:a$<b>64<i>0<i>36<i>9]"
+                + "[(3-6)s:h]" + "[(12-15)s:i<b>0]" + "[(15-18)s:j]"
+                + "[(18-21)s:h]" + "[(21-24)s:i]" + "[(24-27)s:j]"
+                + "[(27-30)s:h]" + "[(30-33)s:i]" + "[(33-36)s:j]");
         ki.addDoc(fd);
 
         // Save documents
@@ -132,13 +131,15 @@ public class TestElementIndex {
 
         // xyz
         fd = new FieldDocument();
-        fd.addTV("base", "x  y  z  ",
-                "[(0-3)s:x]" + "[(3-6)s:y]" + "[(6-9)s:z]");
+        fd.addTV("base", "x  y  z  ", "[(0-3)s:x]" + "[(3-6)s:y]"
+                + "[(6-9)s:z]");
         ki.addDoc(fd);
 
         // <a>x<a><b>y<a>zcde</a>cde</b></a>cde</a>
         fd = new FieldDocument();
-        fd.addTV("base", "x  y  z  k  l  m  k  l  m  k  l  m  ",
+        fd.addTV(
+                "base",
+                "x  y  z  k  l  m  k  l  m  k  l  m  ",
                 "[(0-3)s:x|<>:a$<b>64<i>0<i>3<i>12<b>0]"
                         + "[(3-6)s:y|<>:a$<b>64<i>3<i>6<i>9<b>0|<>:b$<b>64<i>3<i>6<i>9<b>0]"
                         + "[(6-9)s:z|<>:a$<b>64<i>6<i>9<i>6<b>0]"
@@ -149,19 +150,19 @@ public class TestElementIndex {
 
         // <a><a><a>h</a>hhij</a>hij</a>hij</a>
         fd = new FieldDocument();
-        fd.addTV("base", "h  h        i  j  h  i  j  h  i  j  ",
-                "[(0-3)s:h|" + "<>:a$<b>64<i>0<i>18<i>3<b>0|"
-                        + "<>:a$<b>64<i>0<i>27<i>6<b>0|"
-                        + "<>:a$<b>64<i>0<i>36<i>9<b>0]" + "[(3-6)s:h]"
-                        + "[(12-15)s:i]" + "[(15-18)s:j]" + "[(18-21)s:h]"
-                        + "[(21-24)s:i]" + "[(24-27)s:j]" + "[(27-30)s:h]"
-                        + "[(30-33)s:i]" + "[(33-36)s:j]");
+        fd.addTV("base", "h  h        i  j  h  i  j  h  i  j  ", "[(0-3)s:h|"
+                + "<>:a$<b>64<i>0<i>18<i>3<b>0|"
+                + "<>:a$<b>64<i>0<i>27<i>6<b>0|"
+                + "<>:a$<b>64<i>0<i>36<i>9<b>0]" + "[(3-6)s:h]"
+                + "[(12-15)s:i]" + "[(15-18)s:j]" + "[(18-21)s:h]"
+                + "[(21-24)s:i]" + "[(24-27)s:j]" + "[(27-30)s:h]"
+                + "[(30-33)s:i]" + "[(33-36)s:j]");
         ki.addDoc(fd);
 
         // xyz
         fd = new FieldDocument();
-        fd.addTV("base", "a  b  c  ",
-                "[(0-3)s:a]" + "[(3-6)s:b]" + "[(6-9)s:c]");
+        fd.addTV("base", "a  b  c  ", "[(0-3)s:a]" + "[(3-6)s:b]"
+                + "[(6-9)s:c]");
         ki.addDoc(fd);
 
 
@@ -213,8 +214,11 @@ public class TestElementIndex {
         KrillIndex ki = new KrillIndex();
 
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "111111ccc222222fff333333iiijjj",
-                "[(0-3)s:a|_0$<i>0<i>3]" + "[(3-6)s:b|_1$<i>3<i>6]"
+        fd.addTV(
+                "base",
+                "111111ccc222222fff333333iiijjj",
+                "[(0-3)s:a|_0$<i>0<i>3]"
+                        + "[(3-6)s:b|_1$<i>3<i>6]"
                         + "[(6-9)s:c|_2$<i>6<i>9]"
                         + "[(9-12)s:d|_3$<i>9<i>12|<>:a$<b>64<i>9<i>15<i>4<b>0]"
                         + "[(12-15)s:e|_4$<i>12<i>15]"
@@ -235,10 +239,10 @@ public class TestElementIndex {
         Result kr = ki.search(sq, 0, (short) 15, false, (short) 3, false,
                 (short) 3);
 
-        assertEquals("... ccc[[222222]]fff ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... fff[[333333]]iii ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... ccc[[222222]]fff ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... fff[[333333]]iii ...", kr.getMatch(1)
+                .getSnippetBrackets());
     };
 
 
@@ -247,9 +251,12 @@ public class TestElementIndex {
         KrillIndex ki = new KrillIndex();
 
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base", "111111ccc222222fff333333iiijjj",
+        fd.addTV(
+                "base",
+                "111111ccc222222fff333333iiijjj",
                 "[(0-3)s:a|_0$<i>0<i>3|<>:a$<b>64<i>0<i>6<i>1<b>0]"
-                        + "[(3-6)s:b|_1$<i>3<i>6]" + "[(6-9)s:c|_2$<i>6<i>9]"
+                        + "[(3-6)s:b|_1$<i>3<i>6]"
+                        + "[(6-9)s:c|_2$<i>6<i>9]"
                         + "[(9-12)s:d|_3$<i>9<i>12|<>:a$<b>64<i>9<i>15<i>4<b>0]"
                         + "[(12-15)s:e|_4$<i>12<i>15]"
                         + "[(15-18)s:f|_5$<i>15<i>18]"
@@ -270,10 +277,10 @@ public class TestElementIndex {
                 (short) 3);
 
         assertEquals("[[111111]]ccc ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... ccc[[222222]]fff ...",
-                kr.getMatch(1).getSnippetBrackets());
-        assertEquals("... fff[[333333]]iii ...",
-                kr.getMatch(2).getSnippetBrackets());
+        assertEquals("... ccc[[222222]]fff ...", kr.getMatch(1)
+                .getSnippetBrackets());
+        assertEquals("... fff[[333333]]iii ...", kr.getMatch(2)
+                .getSnippetBrackets());
     };
 
 
@@ -300,11 +307,10 @@ public class TestElementIndex {
         ki.addDoc(fd);
 
         fd = new FieldDocument();
-        fd.addTV("base", "x  y  z  h  ",
-                "[(0-3)s:x|_0$<i>0<i>3]" + // 1
-                        "[(3-6)s:y|_1$<i>3<i>6]" + // 2
-                        "[(6-9)s:z|_2$<i>6<i>9]" + // 3
-                        "[(9-12)s:h|_3$<i>9<i>12]"); // 4
+        fd.addTV("base", "x  y  z  h  ", "[(0-3)s:x|_0$<i>0<i>3]" + // 1
+                "[(3-6)s:y|_1$<i>3<i>6]" + // 2
+                "[(6-9)s:z|_2$<i>6<i>9]" + // 3
+                "[(9-12)s:h|_3$<i>9<i>12]"); // 4
         ki.addDoc(fd);
 
         // Here is a larger offset than expected
@@ -334,11 +340,10 @@ public class TestElementIndex {
         ki.addDoc(fd);
 
         fd = new FieldDocument();
-        fd.addTV("base", "x  y  z  h  ",
-                "[(0-3)s:x|_0$<i>0<i>3]" + // 1
-                        "[(3-6)s:y|_1$<i>3<i>6]" + // 2
-                        "[(6-9)s:z|_2$<i>6<i>9]" + // 3
-                        "[(9-12)s:h|_3$<i>9<i>12]"); // 4
+        fd.addTV("base", "x  y  z  h  ", "[(0-3)s:x|_0$<i>0<i>3]" + // 1
+                "[(3-6)s:y|_1$<i>3<i>6]" + // 2
+                "[(6-9)s:z|_2$<i>6<i>9]" + // 3
+                "[(9-12)s:h|_3$<i>9<i>12]"); // 4
         ki.addDoc(fd);
 
         // Save documents

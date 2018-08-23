@@ -18,7 +18,7 @@ import de.ids_mannheim.korap.query.spans.FocusSpans;
  * SpanQueries.
  * 
  * @author margaretha
- *
+ * 
  */
 public class SpanRelationMatchQuery extends SimpleSpanQuery {
 
@@ -42,17 +42,16 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
      *            <code>false</code>.
      */
     public SpanRelationMatchQuery (SpanRelationQuery relation,
-                                   SpanQuery spanQuery,
-                                   boolean collectPayloads) {
+                                   SpanQuery spanQuery, boolean collectPayloads) {
 
         checkArguments(relation, spanQuery);
-        SpanFocusQuery sq = new SpanFocusQuery(
-                new SpanSegmentQuery(relationQuery, operandQuery, true),
+        SpanFocusQuery sq = new SpanFocusQuery(new SpanSegmentQuery(
+                relationQuery, operandQuery, true),
                 relation.getTempClassNumbers());
         sq.setMatchTemporaryClass(true);
         sq.setRemoveTemporaryClasses(true);
         sq.setSorted(false); // which operand to focus might be
-                            // different from that to match
+                             // different from that to match
 
         this.setFirstClause(sq);
         this.collectPayloads = collectPayloads;
@@ -75,34 +74,31 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
      *            otherwise
      *            <code>false</code>.
      */
-    public SpanRelationMatchQuery (SpanRelationQuery relation, SpanQuery source,
-                                   SpanQuery target, boolean collectPayloads) {
+    public SpanRelationMatchQuery (SpanRelationQuery relation,
+                                   SpanQuery source, SpanQuery target,
+                                   boolean collectPayloads) {
 
         checkArguments(relation, source, target);
         SpanFocusQuery sq = null;
         SpanFocusQuery sq2 = null;
         // match source and then target
         if (relationQuery.getDirection().equals(RelationDirection.RIGHT)) {
-            sq = new SpanFocusQuery(
-                    new SpanSegmentQuery(relationQuery, operandQuery, true),
-                    relation.getTempTargetNum());
+            sq = new SpanFocusQuery(new SpanSegmentQuery(relationQuery,
+                    operandQuery, true), relation.getTempTargetNum());
             sq.setSorted(false);
             sq.setMatchTemporaryClass(true);
 
-            sq2 = new SpanFocusQuery(
-                    new SpanSegmentQuery(operand2Query, sq, true),
-                    relation.getTempClassNumbers());
+            sq2 = new SpanFocusQuery(new SpanSegmentQuery(operand2Query, sq,
+                    true), relation.getTempClassNumbers());
         }
         // match target and then source
         else {
-            sq = new SpanFocusQuery(
-                    new SpanSegmentQuery(relationQuery, operandQuery, true),
-                    relation.getTempSourceNum());
+            sq = new SpanFocusQuery(new SpanSegmentQuery(relationQuery,
+                    operandQuery, true), relation.getTempSourceNum());
             sq.setMatchTemporaryClass(true);
 
-            sq2 = new SpanFocusQuery(
-                    new SpanSegmentQuery(sq, operand2Query, true),
-                    relation.getTempClassNumbers());
+            sq2 = new SpanFocusQuery(new SpanSegmentQuery(sq, operand2Query,
+                    true), relation.getTempClassNumbers());
         }
 
         sq2.setMatchTemporaryClass(true);
@@ -125,8 +121,7 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
      * @param spanQuery
      *            SpanQuery
      */
-    public void checkArguments (SpanRelationQuery relation,
-            SpanQuery spanQuery) {
+    public void checkArguments (SpanRelationQuery relation, SpanQuery spanQuery) {
         if (relation == null) {
             throw new IllegalArgumentException(
                     "The relation query cannot be null.");
@@ -193,8 +188,8 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
             Map<Term, TermContext> termContexts) throws IOException {
 
-        return new FocusSpans((SpanFocusQuery) firstClause, context, acceptDocs,
-                termContexts);
+        return new FocusSpans((SpanFocusQuery) firstClause, context,
+                acceptDocs, termContexts);
     }
 
 

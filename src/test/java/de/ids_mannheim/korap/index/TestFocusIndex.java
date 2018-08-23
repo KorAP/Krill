@@ -35,9 +35,9 @@ public class TestFocusIndex {
         ki.addDoc(TestRelationIndex.createFieldDoc0());
         ki.addDoc(TestRelationIndex.createFieldDoc1());
         ki.commit();
-        SpanRelationQuery sq = new SpanRelationQuery(
-                new SpanTermQuery(new Term("base", ">:xip/syntax-dep_rel")),
-                true, RelationDirection.RIGHT);
+        SpanRelationQuery sq = new SpanRelationQuery(new SpanTermQuery(
+                new Term("base", ">:xip/syntax-dep_rel")), true,
+                RelationDirection.RIGHT);
         sq.setSourceClass((byte) 1);
 
         SpanFocusQuery sfq = new SpanFocusQuery(sq, (byte) 1);

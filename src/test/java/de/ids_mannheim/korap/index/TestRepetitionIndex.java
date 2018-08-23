@@ -25,16 +25,16 @@ public class TestRepetitionIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "text",
-                "[(0-1)s:c|_1$<i>0<i>1]" + "[(1-2)s:e|_2$<i>1<i>2]"
-                        + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
-                        + "[(3-4)s:c|s:b|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
-                        + "[(4-5)s:e|s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
-                        + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8]"
-                        + "[(6-7)s:d|_7$<i>6<i>7<b>0]"
-                        + "[(7-8)s:e|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
-                        + "[(8-9)s:e|s:b|_9$<i>8<i>9|<>:x$<b>64<i>8<i>10<i>10<b>0]"
-                        + "[(9-10)s:d|_10$<i>9<i>10]");
+        fd.addTV("base", "text", "[(0-1)s:c|_1$<i>0<i>1]"
+                + "[(1-2)s:e|_2$<i>1<i>2]"
+                + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
+                + "[(3-4)s:c|s:b|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
+                + "[(4-5)s:e|s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
+                + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8]"
+                + "[(6-7)s:d|_7$<i>6<i>7<b>0]"
+                + "[(7-8)s:e|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
+                + "[(8-9)s:e|s:b|_9$<i>8<i>9|<>:x$<b>64<i>8<i>10<i>10<b>0]"
+                + "[(9-10)s:d|_10$<i>9<i>10]");
         return fd;
     }
 
@@ -86,8 +86,8 @@ public class TestRepetitionIndex {
 
         // Quantifier only
         // c{1,2}
-        SpanQuery sq = new SpanRepetitionQuery(
-                new SpanTermQuery(new Term("base", "s:c")), 1, 2, true);
+        SpanQuery sq = new SpanRepetitionQuery(new SpanTermQuery(new Term(
+                "base", "s:c")), 1, 2, true);
         kr = ki.search(sq, (short) 10);
         // 0-1, 2-3, 2-4, 3-4, 5-6
         assertEquals((long) 5, kr.getTotalResults());
@@ -113,9 +113,8 @@ public class TestRepetitionIndex {
         SpanQuery sq, sq2;
         // ec{1,2}
         sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:e")),
-                new SpanRepetitionQuery(
-                        new SpanTermQuery(new Term("base", "s:c")), 1, 2,
-                        true));
+                new SpanRepetitionQuery(new SpanTermQuery(new Term("base",
+                        "s:c")), 1, 2, true));
 
         kr = ki.search(sq, (short) 10);
         // 1-3, 1-4, 4-6
@@ -194,9 +193,8 @@ public class TestRepetitionIndex {
 
         // ec{2,2}
         sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:e")),
-                new SpanRepetitionQuery(
-                        new SpanTermQuery(new Term("base", "s:c")), 2, 2,
-                        true));
+                new SpanRepetitionQuery(new SpanTermQuery(new Term("base",
+                        "s:c")), 2, 2, true));
 
         kr = ki.search(sq, (short) 10);
         assertEquals((long) 2, kr.getTotalResults());
@@ -215,11 +213,10 @@ public class TestRepetitionIndex {
         SpanQuery sq, sq2;
         // ec{1,2}
         sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:e")),
-                new SpanOrQuery(new SpanRepetitionQuery(
-                        new SpanTermQuery(new Term("base", "s:c")), 1, 1, true),
-                        new SpanRepetitionQuery(
-                                new SpanTermQuery(new Term("base", "s:b")), 1,
-                                1, true)));
+                new SpanOrQuery(new SpanRepetitionQuery(new SpanTermQuery(
+                        new Term("base", "s:c")), 1, 1, true),
+                        new SpanRepetitionQuery(new SpanTermQuery(new Term(
+                                "base", "s:b")), 1, 1, true)));
         kr = ki.search(sq, (short) 10);
         assertEquals((long) 3, kr.getTotalResults());
         assertEquals(1, kr.getMatch(0).startPos);
@@ -240,14 +237,14 @@ public class TestRepetitionIndex {
 
         SpanQuery sq;
         // c{2,2}
-        sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("base", "s:c")),
-                1, 3, true);
+        sq = new SpanRepetitionQuery(
+                new SpanTermQuery(new Term("base", "s:c")), 1, 3, true);
         kr = ki.search(sq, (short) 10);
         // 2-3, 2-4, 2-5, 3-4, 3-5, 3-6, 4-5, 4-6, 5-6, 7-8  
         assertEquals((long) 10, kr.getTotalResults());
 
-        sq = new SpanRepetitionQuery(new SpanTermQuery(new Term("base", "s:c")),
-                2, 3, true);
+        sq = new SpanRepetitionQuery(
+                new SpanTermQuery(new Term("base", "s:c")), 2, 3, true);
         kr = ki.search(sq, (short) 10);
         // 2-4, 2-5, 3-5, 3-6, 4-6 
         assertEquals((long) 5, kr.getTotalResults());
@@ -271,8 +268,8 @@ public class TestRepetitionIndex {
 
         SpanQuery sq0, sq1, sq2;
         sq0 = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
-        sq1 = new SpanRepetitionQuery(
-                new SpanTermQuery(new Term("tokens", "tt/p:ADJA")), 2, 3, true);
+        sq1 = new SpanRepetitionQuery(new SpanTermQuery(new Term("tokens",
+                "tt/p:ADJA")), 2, 3, true);
         sq2 = new SpanNextQuery(sq1, sq0);
         kr = ki.search(sq2, (short) 10);
 
@@ -283,8 +280,8 @@ public class TestRepetitionIndex {
         assertEquals(77, kr.getMatch(1).getEndPos());
 
 
-        sq2 = new SpanNextQuery(
-                new SpanTermQuery(new Term("tokens", "s:offenen")), sq2);
+        sq2 = new SpanNextQuery(new SpanTermQuery(new Term("tokens",
+                "s:offenen")), sq2);
         kr = ki.search(sq2, (short) 10);
 
         assertEquals((long) 1, kr.getTotalResults());

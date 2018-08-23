@@ -12,10 +12,11 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.ClassFilteredSpans;
 
-/** Filters query results by means of class operations.
+/**
+ * Filters query results by means of class operations.
  * 
  * @author margaretha
- *
+ * 
  */
 public class SpanClassFilterQuery extends SimpleSpanQuery {
 

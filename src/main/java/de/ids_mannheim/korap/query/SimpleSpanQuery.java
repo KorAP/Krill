@@ -79,7 +79,8 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
     protected boolean collectPayloads;
     protected boolean isFieldNull = false;
     // private Logger log = Logger.getLogger(SimpleSpanQuery.class);
-    private final static Logger log = LoggerFactory.getLogger(SimpleSpanQuery.class);
+    private final static Logger log = LoggerFactory
+            .getLogger(SimpleSpanQuery.class);
 
 
     public SimpleSpanQuery () {}
@@ -104,9 +105,9 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
                     "The first clause cannot be null.");
         }
         this.field = firstClause.getField();
-        if (field == null){
+        if (field == null) {
             isFieldNull = true;
-            log .warn("Field is null for "+ firstClause.toString());
+            log.warn("Field is null for " + firstClause.toString());
         }
         this.setFirstClause(firstClause);
         this.collectPayloads = collectPayloads;
@@ -171,8 +172,8 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
 
     private void checkField (SpanQuery clause) {
         String field = clause.getField();
-        if (field == null){
-            log .warn("Field is null for "+ secondClause.toString());
+        if (field == null) {
+            log.warn("Field is null for " + secondClause.toString());
             isFieldNull = true;
         }
         else if (!isFieldNull && !clause.getField().equals(field)) {
@@ -354,8 +355,8 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
             throws IOException {
 
         for (int i = 0; i < spanQueries.size(); i++) {
-            final SpanQuery query = (SpanQuery) spanQueries.get(i)
-                    .rewrite(reader);
+            final SpanQuery query = (SpanQuery) spanQueries.get(i).rewrite(
+                    reader);
             if (!query.equals(spanQueries.get(i))) {
                 if (clone == null)
                     clone = clone();

@@ -36,9 +36,9 @@ public class TestResult {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
-        fd.addTV("base", "abab",
-                "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" + "[(1-2)s:b|i:b|_1#1-2]"
-                        + "[(2-3)s:a|i:c|_2#2-3]" + "[(3-4)s:b|i:a|_3#3-4]");
+        fd.addTV("base", "abab", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]"
+                + "[(3-4)s:b|i:a|_3#3-4]");
         ki.addDoc(fd);
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
@@ -76,8 +76,8 @@ public class TestResult {
         */
         assertEquals(1, res.at("/matches/0/UID").asInt());
         assertEquals("doc-1", res.at("/matches/0/docID").asText());
-        assertEquals("match-doc-1-p0-1(1)0-0",
-                res.at("/matches/0/matchID").asText());
+        assertEquals("match-doc-1-p0-1(1)0-0", res.at("/matches/0/matchID")
+                .asText());
         assertEquals(
                 "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-1 level-0\">a</mark></mark></span><span class=\"context-right\">bab</span>",
                 res.at("/matches/0/snippet").asText());
@@ -90,8 +90,8 @@ public class TestResult {
         */
         assertEquals(2, res.at("/matches/6/UID").asInt());
         assertEquals("doc-2", res.at("/matches/6/docID").asText());
-        assertEquals("match-doc-2-p2-3(1)2-2",
-                res.at("/matches/6/matchID").asText());
+        assertEquals("match-doc-2-p2-3(1)2-2", res.at("/matches/6/matchID")
+                .asText());
         assertEquals(
                 "<span class=\"context-left\">ab</span><span class=\"match\"><mark><mark class=\"class-1 level-0\">a</mark></mark></span><span class=\"context-right\"></span>",
                 res.at("/matches/6/snippet").asText());
@@ -104,15 +104,14 @@ public class TestResult {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
-        fd.addTV("tokens", "abab",
-                "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" + "[(1-2)s:b|i:b|_1#1-2]"
-                        + "[(2-3)s:a|i:c|_2#2-3]" + "[(3-4)s:b|i:a|_3#3-4]");
+        fd.addTV("tokens", "abab", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]"
+                + "[(3-4)s:b|i:a|_3#3-4]");
         ki.addDoc(fd);
         ki.commit();
 
-        String json = getJsonString(getClass()
-                .getResource("/queries/bugs/optionality_warning.jsonld")
-                .getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bugs/optionality_warning.jsonld").getFile());
         Krill ks = new Krill(json);
 
         Result kr = ks.apply(ki);
@@ -123,8 +122,8 @@ public class TestResult {
 
         // Old:
         // assertEquals("Optionality of query is ignored", res.at("/warning").asText());
-        assertEquals("Optionality of query is ignored",
-                res.at("/warnings/0/1").asText());
+        assertEquals("Optionality of query is ignored", res.at("/warnings/0/1")
+                .asText());
     };
 
 
@@ -134,9 +133,9 @@ public class TestResult {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
-        fd.addTV("tokens", "abab",
-                "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" + "[(1-2)s:b|i:b|_1#1-2]"
-                        + "[(2-3)s:a|i:c|_2#2-3]" + "[(3-4)s:b|i:a|_3#3-4]");
+        fd.addTV("tokens", "abab", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]"
+                + "[(3-4)s:b|i:a|_3#3-4]");
         ki.addDoc(fd);
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
@@ -148,8 +147,8 @@ public class TestResult {
         // Commit!
         ki.commit();
 
-        String json = getJsonString(getClass()
-                .getResource("/queries/bsp-result-check.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-result-check.jsonld").getFile());
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
         assertEquals((long) 7, kr.getTotalResults());
@@ -180,19 +179,19 @@ public class TestResult {
         assertEquals("operation:or", res.at("/query/operation").asText());
 
         assertEquals("koral:token", res.at("/query/operands/0/@type").asText());
-        assertEquals("koral:term",
-                res.at("/query/operands/0/wrap/@type").asText());
+        assertEquals("koral:term", res.at("/query/operands/0/wrap/@type")
+                .asText());
         assertEquals("orth", res.at("/query/operands/0/wrap/layer").asText());
         assertEquals("a", res.at("/query/operands/0/wrap/key").asText());
-        assertEquals("match:eq",
-                res.at("/query/operands/0/wrap/match").asText());
+        assertEquals("match:eq", res.at("/query/operands/0/wrap/match")
+                .asText());
         assertEquals("koral:token", res.at("/query/operands/1/@type").asText());
-        assertEquals("koral:term",
-                res.at("/query/operands/1/wrap/@type").asText());
+        assertEquals("koral:term", res.at("/query/operands/1/wrap/@type")
+                .asText());
         assertEquals("orth", res.at("/query/operands/1/wrap/layer").asText());
         assertEquals("b", res.at("/query/operands/1/wrap/key").asText());
-        assertEquals("match:eq",
-                res.at("/query/operands/1/wrap/match").asText());
+        assertEquals("match:eq", res.at("/query/operands/1/wrap/match")
+                .asText());
 
         // Matches
         assertEquals(1, res.at("/matches/0/UID").asInt());
@@ -213,9 +212,9 @@ public class TestResult {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addString("UID", "1");
-        fd.addTV("base", "abab",
-                "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]" + "[(1-2)s:b|i:b|_1#1-2]"
-                        + "[(2-3)s:a|i:c|_2#2-3]" + "[(3-4)s:b|i:a|_3#3-4]");
+        fd.addTV("base", "abab", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>4]"
+                + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:a|i:c|_2#2-3]"
+                + "[(3-4)s:b|i:a|_3#3-4]");
         ki.addDoc(fd);
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
@@ -237,8 +236,8 @@ public class TestResult {
         JsonNode res = mapper.readTree(kr.toTokenListJsonString());
 
         assertEquals(3, res.at("/meta/totalResults").asInt());
-        assertEquals("spanNext(base:s:a, base:s:b)",
-                res.at("/meta/serialQuery").asText());
+        assertEquals("spanNext(base:s:a, base:s:b)", res
+                .at("/meta/serialQuery").asText());
         assertEquals(0, res.at("/meta/startIndex").asInt());
         assertEquals(25, res.at("/meta/itemsPerPage").asInt());
 

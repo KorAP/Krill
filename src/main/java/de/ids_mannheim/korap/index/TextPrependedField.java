@@ -13,16 +13,17 @@ public final class TextPrependedField extends Field {
 
     public static FieldType TEXT = new FieldType(TextField.TYPE_STORED);
 
-	static {
+    static {
         TEXT.setStoreTermVectors(true);
         TEXT.setStoreTermVectorPositions(true);
         TEXT.setStoreTermVectorPayloads(true);
         TEXT.setStoreTermVectorOffsets(false);
-	};
+    };
 
-  public TextPrependedField(String name, String value) {
-	  super(name, value, TEXT);
-	  TextPrependedTokenStream tpts = new TextPrependedTokenStream(value);
-	  this.setTokenStream(tpts);
-  };
+
+    public TextPrependedField (String name, String value) {
+        super(name, value, TEXT);
+        TextPrependedTokenStream tpts = new TextPrependedTokenStream(value);
+        this.setTokenStream(tpts);
+    };
 };

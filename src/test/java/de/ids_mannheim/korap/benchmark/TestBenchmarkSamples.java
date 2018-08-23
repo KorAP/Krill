@@ -38,7 +38,8 @@ public class TestBenchmarkSamples {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();

@@ -140,8 +140,8 @@ public final class MatchCollectorDB extends MatchCollector {
             };
 
             // Prepare statement based on the string
-            PreparedStatement prep = this.connection
-                    .prepareStatement(sb.toString());
+            PreparedStatement prep = this.connection.prepareStatement(sb
+                    .toString());
 
             int i = 1;
             ListIterator li = this.matchCollector.listIterator();

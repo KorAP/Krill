@@ -117,8 +117,8 @@ public class ExpandedSpans extends SimpleSpans {
             while (counter >= min) {
                 start = Math.max(0, firstSpans.start() - counter);
                 cs = new CandidateSpan(start, firstSpans.end(),
-                        firstSpans.doc(), firstSpans.cost(),
-                        createPayloads(start, firstSpans.start()));
+                        firstSpans.doc(), firstSpans.cost(), createPayloads(
+                                start, firstSpans.start()));
 
                 candidateSpans.add(cs);
                 counter--;
@@ -130,8 +130,8 @@ public class ExpandedSpans extends SimpleSpans {
                 // TODO: How do I know if the end is already too far (over the end of the doc)? 
                 end = firstSpans.end() + counter;
                 cs = new CandidateSpan(firstSpans.start(), end,
-                        firstSpans.doc(), firstSpans.cost(),
-                        createPayloads(firstSpans.end(), end));
+                        firstSpans.doc(), firstSpans.cost(), createPayloads(
+                                firstSpans.end(), end));
                 candidateSpans.add(cs);
                 counter++;
             }

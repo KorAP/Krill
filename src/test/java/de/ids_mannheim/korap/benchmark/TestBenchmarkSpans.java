@@ -29,21 +29,21 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmark1 () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(
-                getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(
-                Paths.get(prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
-        String json = getString(
-                getClass().getResource("/queries/benchmark1.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/benchmark1.jsonld").getFile());
 
         int rounds = 100;
 
@@ -83,21 +83,21 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmark2JSON () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(
-                getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(
-                Paths.get(prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
-        String json = getString(
-                getClass().getResource("/queries/benchmark2.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/benchmark2.jsonld").getFile());
 
         int rounds = 10000;
 
@@ -129,21 +129,21 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmarkSentences () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(
-                getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(
-                Paths.get(prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
-        String json = getString(
-                getClass().getResource("/queries/benchmark4.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/benchmark4.jsonld").getFile());
 
         int rounds = 10;
 
@@ -175,21 +175,21 @@ public class TestBenchmarkSpans {
         // [orth=Der]{1:[orth=Mann]{2:[orth=und]}}
 
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(
-                getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(
-                Paths.get(prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         // Without classes
-        String json = getString(getClass()
-                .getResource("/queries/benchmark5-ohne.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/benchmark5-ohne.jsonld").getFile());
 
         int rounds = 2000;
 
@@ -208,8 +208,8 @@ public class TestBenchmarkSpans {
         t1 = 0;
         t2 = 0;
         // With classes
-        json = getString(
-                getClass().getResource("/queries/benchmark5.jsonld").getFile());
+        json = getString(getClass().getResource("/queries/benchmark5.jsonld")
+                .getFile());
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
@@ -224,8 +224,8 @@ public class TestBenchmarkSpans {
         t1 = 0;
         t2 = 0;
         // With submatch
-        json = getString(getClass()
-                .getResource("/queries/benchmark5-submatch.jsonld").getFile());
+        json = getString(getClass().getResource(
+                "/queries/benchmark5-submatch.jsonld").getFile());
 
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
@@ -295,8 +295,9 @@ public class TestBenchmarkSpans {
 
             // Indexing test files
             for (String d : docs) {
-                FieldDocument fd = ki.addDoc(getClass()
-                        .getResourceAsStream("/wiki/" + d + ".json.gz"), true);
+                FieldDocument fd = ki.addDoc(
+                        getClass().getResourceAsStream(
+                                "/wiki/" + d + ".json.gz"), true);
             };
             ki.commit();
         };
@@ -320,21 +321,21 @@ public class TestBenchmarkSpans {
     @Test
     public void checkBenchmark3 () throws IOException {
         Properties prop = new Properties();
-        InputStream fr = new FileInputStream(
-                getClass().getResource("/krill.properties").getFile());
+        InputStream fr = new FileInputStream(getClass().getResource(
+                "/krill.properties").getFile());
         prop.load(fr);
 
         // Get the real index
-        KrillIndex ki = new KrillIndex(new MMapDirectory(
-                Paths.get(prop.getProperty("krill.indexDir"))));
+        KrillIndex ki = new KrillIndex(new MMapDirectory(Paths.get(prop
+                .getProperty("krill.indexDir"))));
 
         // Create a container for virtual collections:
         KrillCollection kc = new KrillCollection(ki);
 
         long t1 = 0, t2 = 0;
         /// cosmas20.json!!!
-        String json = getString(
-                getClass().getResource("/queries/benchmark3.jsonld").getFile());
+        String json = getString(getClass().getResource(
+                "/queries/benchmark3.jsonld").getFile());
 
         int rounds = 500;
 

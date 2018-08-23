@@ -33,32 +33,38 @@ public class TestAttributeIndex {
     private FieldDocument createFieldDoc0 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("base", "bcbabd", "[(0-1)s:a|_1$<i>0<i>1|"
-                + "<>:s$<b>64<i>0<i>5<i>5<b>0<s>3|"
-                + "<>:div$<b>64<i>0<i>2<i>2<b>0<s>2|"
-                + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>1|"
-                + "@:class=header$<b>17<i>3<s>1|@:class=header$<b>17<i>2<s>2]"
+        fd.addTV(
+                "base",
+                "bcbabd",
+                "[(0-1)s:a|_1$<i>0<i>1|"
+                        + "<>:s$<b>64<i>0<i>5<i>5<b>0<s>3|"
+                        + "<>:div$<b>64<i>0<i>2<i>2<b>0<s>2|"
+                        + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>1|"
+                        + "@:class=header$<b>17<i>3<s>1|@:class=header$<b>17<i>2<s>2]"
 
-                + "[(1-2)s:e|_2$<i>1<i>2|"
-                + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>1|@:class=header$<b>17<i>2<s>1]"
+                        + "[(1-2)s:e|_2$<i>1<i>2|"
+                        + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>1|@:class=header$<b>17<i>2<s>1]"
 
-                + "[(2-3)s:e|_3$<i>2<i>3|"
-                + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=time$<b>17<i>5<s>1]"
+                        + "[(2-3)s:e|_3$<i>2<i>3|"
+                        + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=time$<b>17<i>5<s>1]"
 
-                + "[(3-4)s:a|_4$<i>3<i>4|"
-                + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1]"
+                        + "[(3-4)s:a|_4$<i>3<i>4|"
+                        + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1]"
 
-                + "[(4-5)s:b|_5$<i>4<i>5|" + "<>:a$<b>64<i>4<i>5<i>5<b>0<s>2|"
-                + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|"
-                + "@:class=header$<b>17<i>5<s>2]"
+                        + "[(4-5)s:b|_5$<i>4<i>5|"
+                        + "<>:a$<b>64<i>4<i>5<i>5<b>0<s>2|"
+                        + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|"
+                        + "@:class=header$<b>17<i>5<s>2]"
 
-                + "[(5-6)s:d|_6$<i>5<i>6|" + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>2|"
-                + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>1|"
-                + "@:class=header$<b>17<i>6<s>1]"
+                        + "[(5-6)s:d|_6$<i>5<i>6|"
+                        + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>2|"
+                        + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>1|"
+                        + "@:class=header$<b>17<i>6<s>1]"
 
-                + "[(6-7)s:d|_7$<i>6<i>7|" + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
-                + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1"
-                + "|@:class=header$<b>17<i>7<s>1|@:class=header$<b>17<i>7<s>2]");
+                        + "[(6-7)s:d|_7$<i>6<i>7|"
+                        + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
+                        + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1"
+                        + "|@:class=header$<b>17<i>7<s>1|@:class=header$<b>17<i>7<s>2]");
 
         return fd;
     }
@@ -67,29 +73,36 @@ public class TestAttributeIndex {
     private FieldDocument createFieldDoc1 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "bcbabd", "[(0-1)s:b|_1$<i>0<i>1|"
-                + "<>:s<b>64<i>0<i>5<i>5<b>0<s>2|"
-                + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>1|"
-                + "@:class=header$<b>17<i>3<s>1|@:class=title$<b>17<i>3<s>1|@:class=book$<b>17<i>3<s>1]"
+        fd.addTV(
+                "base",
+                "bcbabd",
+                "[(0-1)s:b|_1$<i>0<i>1|"
+                        + "<>:s<b>64<i>0<i>5<i>5<b>0<s>2|"
+                        + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>1|"
+                        + "@:class=header$<b>17<i>3<s>1|@:class=title$<b>17<i>3<s>1|@:class=book$<b>17<i>3<s>1]"
 
-                + "[(1-2)s:c|_2$<i>1<i>2|" + "<>:div$<b>64<i>1<i>2<i>2<b>0<s>1|"
-                + "@:class=header$<b>17<i>2<s>1|@:class=title$<b>17<i>2<s>1]"
+                        + "[(1-2)s:c|_2$<i>1<i>2|"
+                        + "<>:div$<b>64<i>1<i>2<i>2<b>0<s>1|"
+                        + "@:class=header$<b>17<i>2<s>1|@:class=title$<b>17<i>2<s>1]"
 
-                + "[(2-3)s:b|_3$<i>2<i>3|"
-                + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=book$<b>17<i>5<s>1]"
+                        + "[(2-3)s:b|_3$<i>2<i>3|"
+                        + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=book$<b>17<i>5<s>1]"
 
-                + "[(3-4)s:a|_4$<i>3<i>4|"
-                + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
+                        + "[(3-4)s:a|_4$<i>3<i>4|"
+                        + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
 
-                + "[(4-5)s:b|_5$<i>4<i>5|" + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|"
-                + "@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1|@:class=title$<b>17<i>5<s>1]"
+                        + "[(4-5)s:b|_5$<i>4<i>5|"
+                        + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|"
+                        + "@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1|@:class=title$<b>17<i>5<s>1]"
 
-                + "[(5-6)s:d|_6$<i>5<i>6|" + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>2|"
-                + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
+                        + "[(5-6)s:d|_6$<i>5<i>6|"
+                        + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>2|"
+                        + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
 
-                + "[(6-7)s:d|_7$<i>6<i>7|" + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
-                + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1|"
-                + "@:class=header$<b>17<i>7<s>1|@:class=title$<b>17<i>7<s>1]");
+                        + "[(6-7)s:d|_7$<i>6<i>7|"
+                        + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
+                        + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1|"
+                        + "@:class=header$<b>17<i>7<s>1|@:class=title$<b>17<i>7<s>1]");
 
         return fd;
     }
@@ -98,31 +111,38 @@ public class TestAttributeIndex {
     private FieldDocument createFieldDoc2 () {
         fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "bcbabd", "[(0-1)s:b|_1$<i>0<i>1|"
-                + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>2|"
-                + "<>:s$<b>64<i>0<i>5<i>5<b>0<s>1|"
-                + "@:class=header$<b>17<i>3<s>2|@:class=book$<b>17<i>5<s>1|@:class=book$<b>17<i>3<s>2]"
+        fd.addTV(
+                "base",
+                "bcbabd",
+                "[(0-1)s:b|_1$<i>0<i>1|"
+                        + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>2|"
+                        + "<>:s$<b>64<i>0<i>5<i>5<b>0<s>1|"
+                        + "@:class=header$<b>17<i>3<s>2|@:class=book$<b>17<i>5<s>1|@:class=book$<b>17<i>3<s>2]"
 
-                + "[(1-2)s:e|_2$<i>1<i>2|" + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>2|"
-                + "<>:div$<b>64<i>1<i>2<i>2<b>0<s>1|"
-                + "@:class=book$<b>17<i>2<s>2|@:class=header$<b>17<i>2<s>1]"
+                        + "[(1-2)s:e|_2$<i>1<i>2|"
+                        + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>2|"
+                        + "<>:div$<b>64<i>1<i>2<i>2<b>0<s>1|"
+                        + "@:class=book$<b>17<i>2<s>2|@:class=header$<b>17<i>2<s>1]"
 
-                + "[(2-3)s:b|_3$<i>2<i>3|" + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>2|"
-                + "<>:div$<b>64<i>2<i>3<i>5<b>0<s>1|"
-                + "@:class=header$<b>17<i>2<s>2|@:class=book$<b>17<i>5<s>1]"
+                        + "[(2-3)s:b|_3$<i>2<i>3|"
+                        + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>2|"
+                        + "<>:div$<b>64<i>2<i>3<i>5<b>0<s>1|"
+                        + "@:class=header$<b>17<i>2<s>2|@:class=book$<b>17<i>5<s>1]"
 
-                + "[(3-4)s:a|_4$<i>3<i>4|"
-                + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
+                        + "[(3-4)s:a|_4$<i>3<i>4|"
+                        + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
 
-                + "[(4-5)s:b|_5$<i>4<i>5|"
-                + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1]"
+                        + "[(4-5)s:b|_5$<i>4<i>5|"
+                        + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1]"
 
-                + "[(5-6)s:d|_6$<i>5<i>6|" + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>1|"
-                + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
+                        + "[(5-6)s:d|_6$<i>5<i>6|"
+                        + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>1|"
+                        + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
 
-                + "[(6-7)s:d|_7$<i>6<i>7|" + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
-                + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1|"
-                + "@:class=header$<b>17<i>7<s>1|@:class=book$<b>17<i>7<s>2]");
+                        + "[(6-7)s:d|_7$<i>6<i>7|"
+                        + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
+                        + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1|"
+                        + "@:class=header$<b>17<i>7<s>1|@:class=book$<b>17<i>7<s>2]");
 
         return fd;
     }
@@ -138,8 +158,8 @@ public class TestAttributeIndex {
         ki.addDoc(createFieldDoc0());
         ki.commit();
 
-        SpanAttributeQuery saq = new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=header")), true);
+        SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
+                new Term("base", "@:class=header")), true);
 
         SpanElementQuery seq = new SpanElementQuery("base", "div");
 
@@ -176,13 +196,13 @@ public class TestAttributeIndex {
         ki.commit();
         // header and title
         List<SpanQuery> sql = new ArrayList<>();
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=header")), true));
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=title")), true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=header")), true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=title")), true));
 
-        SpanQuery sq = new SpanWithAttributeQuery(
-                new SpanElementQuery("base", "div"), sql, true);
+        SpanQuery sq = new SpanWithAttributeQuery(new SpanElementQuery("base",
+                "div"), sql, true);
 
         kr = ki.search(sq, (short) 10);
 
@@ -198,9 +218,8 @@ public class TestAttributeIndex {
 
         // Add not Attribute
         // header and title, not book
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=book")), true,
-                true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=book")), true, true));
 
         sq = new SpanWithAttributeQuery(new SpanElementQuery("base", "div"),
                 sql, true);
@@ -216,9 +235,8 @@ public class TestAttributeIndex {
         // Test multiple negations
         // header, not title, not book
         sql.remove(1);
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=title")), true,
-                true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=title")), true, true));
 
         sq = new SpanWithAttributeQuery(new SpanElementQuery("base", "div"),
                 sql, true);
@@ -241,11 +259,10 @@ public class TestAttributeIndex {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        SpanAttributeQuery saq = new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=book")), true,
-                true);
-        SpanQuery sq = new SpanWithAttributeQuery(
-                new SpanElementQuery("base", "div"), saq, true);
+        SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
+                new Term("base", "@:class=book")), true, true);
+        SpanQuery sq = new SpanWithAttributeQuery(new SpanElementQuery("base",
+                "div"), saq, true);
 
         kr = ki.search(sq, (short) 10);
         assertEquals(4, kr.getTotalResults());
@@ -260,9 +277,8 @@ public class TestAttributeIndex {
 
         List<SpanQuery> sql = new ArrayList<>();
         sql.add(saq);
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=header")), true,
-                true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=header")), true, true));
         sq = new SpanWithAttributeQuery(new SpanElementQuery("base", "div"),
                 sql, true);
 
@@ -284,13 +300,12 @@ public class TestAttributeIndex {
         ki.commit();
 
         List<SpanQuery> sql = new ArrayList<>();
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=header")), true));
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=book")), true,
-                true));
-        SpanQuery sq = new SpanWithAttributeQuery(
-                new SpanElementQuery("base", "div"), sql, true);
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=header")), true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=book")), true, true));
+        SpanQuery sq = new SpanWithAttributeQuery(new SpanElementQuery("base",
+                "div"), sql, true);
 
         kr = ki.search(sq, (short) 10);
 
@@ -312,8 +327,8 @@ public class TestAttributeIndex {
         ki.addDoc(createFieldDoc2());
         ki.commit();
 
-        SpanAttributeQuery saq = new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=book")), true);
+        SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
+                new Term("base", "@:class=book")), true);
 
         List<SpanQuery> sql = new ArrayList<>();
         sql.add(saq);
@@ -330,8 +345,8 @@ public class TestAttributeIndex {
 
         assertEquals((long) 6, kr.getTotalResults());
 
-        SpanNextQuery snq = new SpanNextQuery(
-                new SpanTermQuery(new Term("base", "s:e")), sq);
+        SpanNextQuery snq = new SpanNextQuery(new SpanTermQuery(new Term(
+                "base", "s:e")), sq);
 
         kr = ki.search(snq, (short) 10);
 
@@ -349,8 +364,8 @@ public class TestAttributeIndex {
     public void testCase5 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
-        SpanAttributeQuery saq = new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=book")), true);
+        SpanAttributeQuery saq = new SpanAttributeQuery(new SpanTermQuery(
+                new Term("base", "@:class=book")), true);
 
         SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(saq, true);
         kr = ki.search(swaq, (short) 10);
@@ -380,10 +395,10 @@ public class TestAttributeIndex {
         ki.commit();
 
         List<SpanQuery> sql = new ArrayList<>();
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=header")), true));
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=book")), true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=header")), true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=book")), true));
 
         SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sql, true);
         kr = ki.search(swaq, (short) 10);
@@ -406,11 +421,10 @@ public class TestAttributeIndex {
         ki.commit();
 
         List<SpanQuery> sql = new ArrayList<>();
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=header")), true,
-                true));
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=book")), true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=header")), true, true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=book")), true));
 
         SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sql, true);
         kr = ki.search(swaq, (short) 10);
@@ -441,12 +455,10 @@ public class TestAttributeIndex {
         ki.commit();
 
         List<SpanQuery> sql = new ArrayList<>();
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=header")), true,
-                true));
-        sql.add(new SpanAttributeQuery(
-                new SpanTermQuery(new Term("base", "@:class=book")), true,
-                true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=header")), true, true));
+        sql.add(new SpanAttributeQuery(new SpanTermQuery(new Term("base",
+                "@:class=book")), true, true));
 
         SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sql, true);
         kr = ki.search(swaq, (short) 10);

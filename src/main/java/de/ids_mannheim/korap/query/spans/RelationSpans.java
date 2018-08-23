@@ -62,8 +62,8 @@ public class RelationSpans extends RelationBaseSpans {
     private byte sourceClass, targetClass;
 
     public static enum PayloadTypeIdentifier {
-        TERM_TO_TERM(32), TERM_TO_ELEMENT(33), ELEMENT_TO_TERM(
-                34), ELEMENT_TO_ELEMENT(35);
+        TERM_TO_TERM(32), TERM_TO_ELEMENT(33), ELEMENT_TO_TERM(34), ELEMENT_TO_ELEMENT(
+                35);
 
         private byte value;
 
@@ -139,7 +139,7 @@ public class RelationSpans extends RelationBaseSpans {
             }
             else {
                 setCandidateList();
-                if(hasMoreSpans){
+                if (hasMoreSpans) {
                     currentDoc = relationTermSpan.doc();
                     currentPosition = relationTermSpan.start();
                 }
@@ -158,7 +158,8 @@ public class RelationSpans extends RelationBaseSpans {
      * @throws IOException
      */
     private void setCandidateList () throws IOException {
-        logger.debug("hasMoreSpans "+hasMoreSpans+" "+relationTermSpan.doc());
+        logger.debug("hasMoreSpans " + hasMoreSpans + " "
+                + relationTermSpan.doc());
         while (hasMoreSpans && relationTermSpan.doc() == currentDoc
                 && relationTermSpan.start() == currentPosition) {
 
@@ -193,7 +194,7 @@ public class RelationSpans extends RelationBaseSpans {
         int i;
         this.payloadTypeIdentifier = bb.get(0);
 
-        if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_TERM.value) { 
+        if (payloadTypeIdentifier == PayloadTypeIdentifier.TERM_TO_TERM.value) {
             i = bb.getInt(1);
             cs.setLeftEnd(cs.start + 1);
             cs.setRightStart(i);
@@ -218,7 +219,7 @@ public class RelationSpans extends RelationBaseSpans {
                 cs.setSpanId(bb.getShort(21)); // relation id
             }
         }
-        else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_TERM.value) { 
+        else if (payloadTypeIdentifier == PayloadTypeIdentifier.ELEMENT_TO_TERM.value) {
             // 1-4 start element offset
             // 5-8 end element offset
             // 9-12 end element position
@@ -266,8 +267,8 @@ public class RelationSpans extends RelationBaseSpans {
         if (direction.equals(RelationDirection.RIGHT)) {
             payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
                     tempSourceNum, false));
-            payload.add(createClassPayload(cs.getRightStart(), cs.getRightEnd(),
-                    tempTargetNum, false));
+            payload.add(createClassPayload(cs.getRightStart(),
+                    cs.getRightEnd(), tempTargetNum, false));
 
             if (sourceClass > 0) {
                 payload.add(createClassPayload(cs.getLeftStart(),
@@ -280,8 +281,8 @@ public class RelationSpans extends RelationBaseSpans {
 
         }
         else {
-            payload.add(createClassPayload(cs.getRightStart(), cs.getRightEnd(),
-                    tempSourceNum, false));
+            payload.add(createClassPayload(cs.getRightStart(),
+                    cs.getRightEnd(), tempSourceNum, false));
             payload.add(createClassPayload(cs.getLeftStart(), cs.getLeftEnd(),
                     tempTargetNum, false));
 

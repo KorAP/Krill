@@ -206,7 +206,8 @@ public class Response extends Notifications {
     public Response setBenchmark (long ts1, long ts2) {
         this.benchmark = (ts2 - ts1) < 100_000_000 ?
         // Store as miliseconds
-                (((double) (ts2 - ts1) * 1e-6) + " ms") :
+        (((double) (ts2 - ts1) * 1e-6) + " ms")
+                :
                 // Store as seconds
                 (((double) (ts2 - ts1) / 1000000000.0) + " s");
         return this;

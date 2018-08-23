@@ -25,13 +25,12 @@ public class TermInfo implements Comparable<TermInfo> {
     private ByteBuffer payload;
     private boolean analyzed = false;
 
-    private int
-	    startChar      = -1, // character offset for start of span
-		endChar        = -1, // character offset for end of span
-		startPos       = -1, // start position of source
-		endPos         = -1, // end position of source
-		targetStartPos = -1, // start position of target
-		targetEndPos   = -1; // end position of target
+    private int startChar = -1, // character offset for start of span
+            endChar = -1, // character offset for end of span
+            startPos = -1, // start position of source
+            endPos = -1, // end position of source
+            targetStartPos = -1, // start position of target
+            targetEndPos = -1; // end position of target
 
     private byte depth = (byte) 0;
 
@@ -73,7 +72,8 @@ public class TermInfo implements Comparable<TermInfo> {
                     this.type = "relTarget";
                     tterm = tterm.substring(2);
                     ttype = 3;
-                };
+                }
+                ;
                 break;
 
             case '>':
@@ -102,25 +102,21 @@ public class TermInfo implements Comparable<TermInfo> {
                 this.type = "term";
         };
 
-		int pti = 0;
+        int pti = 0;
 
         // Analyze term value
         if (ttype != 1) {
 
-			pti = this.payload.get(); // Ignore PTI - temporary!!!
+            pti = this.payload.get(); // Ignore PTI - temporary!!!
 
             if (DEBUG) {
-                log.trace(
-					"Check {} with {} for {}",
-					tterm,
-					pti,
-					prefixRegex.toString()
-					);
-			};
+                log.trace("Check {} with {} for {}", tterm, pti,
+                        prefixRegex.toString());
+            };
 
             matcher = prefixRegex.matcher(tterm);
 
-			if (matcher.matches() && matcher.groupCount() == 3) {
+            if (matcher.matches() && matcher.groupCount() == 3) {
                 this.annotation = tterm;
                 if (matcher.group(1) != null)
                     this.foundry = matcher.group(1);
@@ -142,89 +138,89 @@ public class TermInfo implements Comparable<TermInfo> {
         if (ttype == 2) {
             this.startChar = this.payload.getInt();
             this.endChar = this.payload.getInt();
-			if (this.startChar == this.endChar)
-				this.type = "empty";
+            if (this.startChar == this.endChar)
+                this.type = "empty";
         };
 
         // for spans, relations and attributes
         if (ttype > 1 && ttype != 4) {
 
-			// relSrc
+            // relSrc
             if (this.type.equals("relTarget")) {
                 this.endPos = this.startPos;
                 this.startPos = this.payload.getInt() - 1;
             }
 
-			// Token-to-token relation
-			else if (pti == 32) {
-				/*
-				 * 1 byte for PTI (32), 
-				 * 1 integer for the right part token position, 
-				 * 1 short for the left-part TUI, 
-				 * 1 short for right-part TUI and 
-				 * 1 short for the relation TUI. 
-				 */
-				this.targetStartPos = this.payload.getInt();
-			}
+            // Token-to-token relation
+            else if (pti == 32) {
+                /*
+                 * 1 byte for PTI (32), 
+                 * 1 integer for the right part token position, 
+                 * 1 short for the left-part TUI, 
+                 * 1 short for right-part TUI and 
+                 * 1 short for the relation TUI. 
+                 */
+                this.targetStartPos = this.payload.getInt();
+            }
 
-			// Token-to-span relation
-			else if (pti == 33) {
-				/*
-				 * 1 byte for PTI (33), 
-				 * 1 integer for the start span offset of the right part, 
-				 * 1 integer for the end span offset of the right part, 
-				 * 1 integer for the start position of the right part, 
-				 * 1 integer for the end position of the right part, 
-				 * and 0-3 TUIs as above.
-				 */
-				// Ignore offsets
-				this.payload.getInt();
-				this.payload.getInt();
+            // Token-to-span relation
+            else if (pti == 33) {
+                /*
+                 * 1 byte for PTI (33), 
+                 * 1 integer for the start span offset of the right part, 
+                 * 1 integer for the end span offset of the right part, 
+                 * 1 integer for the start position of the right part, 
+                 * 1 integer for the end position of the right part, 
+                 * and 0-3 TUIs as above.
+                 */
+                // Ignore offsets
+                this.payload.getInt();
+                this.payload.getInt();
 
                 this.endPos = this.startPos;
-				this.targetStartPos = this.payload.getInt();
-				this.targetEndPos   = this.payload.getInt();
-			}
+                this.targetStartPos = this.payload.getInt();
+                this.targetEndPos = this.payload.getInt();
+            }
 
-			// Span to token
-			else if (pti == 34) {
+            // Span to token
+            else if (pti == 34) {
                 /*
-				 * 1 byte for PTI (34), 
-				 * 1 integer for the start span offset of the left part, 
-				 * 1 integer for the end span offset of the left part, 
-				 * 1 integer for end position of the left part, 
-				 * 1 integer for end position of the right part, and 
-				 * and 0-3 TUIs as above.
-				 */
+                 * 1 byte for PTI (34), 
+                 * 1 integer for the start span offset of the left part, 
+                 * 1 integer for the end span offset of the left part, 
+                 * 1 integer for end position of the left part, 
+                 * 1 integer for end position of the right part, and 
+                 * and 0-3 TUIs as above.
+                 */
 
-				// Ignore offsets
-				this.payload.getInt();
-				this.endPos = this.payload.getInt();
-				this.targetStartPos = this.payload.getInt();
-			}
-			else if (pti == 35) {
-				/*
-				 * 1 byte for PTI (35), 
-				 * 1 integer for the start span offset of the left part, 
-				 * 1 integer for the end span offset of the left part, 
-				 * 1 integer for the start span offset of the right part, 
-				 * 1 integer for the end span offset of the right part, 
-				 * 1 integer for end position of the left part, 
-				 * 1 integer for the start position of the right part, 
-				 * 1 integer for end position of the right part, 
-				 * and 0-3 TUIs as above.
-				 */
+                // Ignore offsets
+                this.payload.getInt();
+                this.endPos = this.payload.getInt();
+                this.targetStartPos = this.payload.getInt();
+            }
+            else if (pti == 35) {
+                /*
+                 * 1 byte for PTI (35), 
+                 * 1 integer for the start span offset of the left part, 
+                 * 1 integer for the end span offset of the left part, 
+                 * 1 integer for the start span offset of the right part, 
+                 * 1 integer for the end span offset of the right part, 
+                 * 1 integer for end position of the left part, 
+                 * 1 integer for the start position of the right part, 
+                 * 1 integer for end position of the right part, 
+                 * and 0-3 TUIs as above.
+                 */
 
-				// Ignore offsets
-				this.payload.getInt();
-				this.payload.getInt();
-				this.payload.getInt();
-				this.payload.getInt();
+                // Ignore offsets
+                this.payload.getInt();
+                this.payload.getInt();
+                this.payload.getInt();
+                this.payload.getInt();
 
-				this.endPos = this.payload.getInt();
-				this.targetStartPos = this.payload.getInt();
-				this.targetEndPos = this.payload.getInt();
-			}
+                this.endPos = this.payload.getInt();
+                this.targetStartPos = this.payload.getInt();
+                this.targetEndPos = this.payload.getInt();
+            }
             else {
                 this.endPos = this.payload.getInt() - 1;
             };
@@ -235,10 +231,10 @@ public class TermInfo implements Comparable<TermInfo> {
             this.depth = this.payload.get();
         };
 
-		/*
-		 * TODO:
-		 *   Analyze TUI for attributes
-		 */
+        /*
+         * TODO:
+         *   Analyze TUI for attributes
+         */
 
         // payloads can have different meaning
         analyzed = true;
@@ -280,7 +276,8 @@ public class TermInfo implements Comparable<TermInfo> {
         return this.endPos;
     };
 
-	public int getTargetStartPos () {
+
+    public int getTargetStartPos () {
         return this.targetStartPos;
     };
 

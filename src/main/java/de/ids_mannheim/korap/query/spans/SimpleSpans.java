@@ -53,8 +53,7 @@ public abstract class SimpleSpans extends Spans {
 
     public SimpleSpans (SimpleSpanQuery simpleSpanQuery,
                         LeafReaderContext context, Bits acceptDocs,
-                        Map<Term, TermContext> termContexts)
-            throws IOException {
+                        Map<Term, TermContext> termContexts) throws IOException {
         this();
         query = simpleSpanQuery;
         collectPayloads = query.isCollectPayloads();
@@ -151,10 +150,12 @@ public abstract class SimpleSpans extends Spans {
 
     @Override
     public String toString () {
-        return getClass().getName() + "(" + query.toString() + ")@"
-                + (isStartEnumeration ? "START"
-                        : (hasMoreSpans ? (doc() + ":" + start() + "-" + end())
-                                : "END"));
+        return getClass().getName()
+                + "("
+                + query.toString()
+                + ")@"
+                + (isStartEnumeration ? "START" : (hasMoreSpans ? (doc() + ":"
+                        + start() + "-" + end()) : "END"));
     }
 
 

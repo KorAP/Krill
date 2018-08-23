@@ -38,7 +38,8 @@ public class TestMessage {
         assertEquals("[[612,\"Foo\"],[613,\"Bar\",\"Instanz\"]]",
                 km.toJsonString());
         km.add(614, "Test");
-        assertEquals("[[612,\"Foo\"],[613,\"Bar\",\"Instanz\"],[614,\"Test\"]]",
+        assertEquals(
+                "[[612,\"Foo\"],[613,\"Bar\",\"Instanz\"],[614,\"Test\"]]",
                 km.toJsonString());
     };
 

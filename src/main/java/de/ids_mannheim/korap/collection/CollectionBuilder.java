@@ -52,7 +52,7 @@ public class CollectionBuilder {
     public final static CacheManager cacheManager = CacheManager.newInstance();
     public final static Cache cache = cacheManager.getCache("named_vc");
 
-	
+
     // Logger
     private final static Logger log = LoggerFactory
             .getLogger(KrillCollection.class);
@@ -74,7 +74,7 @@ public class CollectionBuilder {
     public CollectionBuilder.Interface text (String field, String text) {
         return new CollectionBuilder.Text(field, text);
     };
-	
+
 
     public CollectionBuilder.Interface since (String field, String date) {
         int since = new KrillDate(date).floor();
@@ -85,9 +85,10 @@ public class CollectionBuilder {
         return new CollectionBuilder.Range(field, since, KrillDate.END);
     };
 
-	public CollectionBuilder.Interface nothing () {
 
-		// Requires that a field with name "0---" does not exist
+    public CollectionBuilder.Interface nothing () {
+
+        // Requires that a field with name "0---" does not exist
         return new CollectionBuilder.Term("0---", "0");
     };
 
@@ -98,8 +99,7 @@ public class CollectionBuilder {
             if (till == 0 || till == KrillDate.END)
                 return null;
 
-            return new CollectionBuilder.Range(field, KrillDate.BEGINNING,
-                    till);
+            return new CollectionBuilder.Range(field, KrillDate.BEGINNING, till);
         }
         catch (NumberFormatException e) {
             log.warn("Parameter of till(date) is invalid");
@@ -140,11 +140,11 @@ public class CollectionBuilder {
             return new CollectionBuilder.Range(field, begin, end);
         };
 
-        return new CollectionBuilder.Range(field, dateDF.floor(),
-                dateDF.ceil());
+        return new CollectionBuilder.Range(field, dateDF.floor(), dateDF.ceil());
     };
 
-	public CollectionBuilder.Interface referTo (String reference) {
+
+    public CollectionBuilder.Interface referTo (String reference) {
         return new CollectionBuilder.Reference(reference);
     };
 
@@ -199,8 +199,8 @@ public class CollectionBuilder {
                                 this.field, this.term)));
 
             // Simple term
-            return new TermsFilter(
-                    new org.apache.lucene.index.Term(this.field, this.term));
+            return new TermsFilter(new org.apache.lucene.index.Term(this.field,
+                    this.term));
         };
 
 
@@ -236,29 +236,32 @@ public class CollectionBuilder {
             this.text = text;
         };
 
-		// TODO:
-		//   Currently this treatment is language specific and
-		//    does too much, I guess.
+
+        // TODO:
+        //   Currently this treatment is language specific and
+        //    does too much, I guess.
         public Filter toFilter () {
-			PhraseQuery pq = new PhraseQuery();
-			int pos = 0;
-			try {
-				TextPrependedTokenStream tpts = new TextPrependedTokenStream(this.text);
-				tpts.doNotPrepend();
-				CharTermAttribute term;
-				tpts.reset();
-				while (tpts.incrementToken()) {
-					term = tpts.getAttribute(CharTermAttribute.class);
-					pq.add(new org.apache.lucene.index.Term(this.field, term.toString()), pos++);
-				};
-				tpts.close();
-			}
-			catch (IOException ie) {
-				System.err.println(ie);
-				return null;
-			};
-			
-			return new QueryWrapperFilter(pq);
+            PhraseQuery pq = new PhraseQuery();
+            int pos = 0;
+            try {
+                TextPrependedTokenStream tpts = new TextPrependedTokenStream(
+                        this.text);
+                tpts.doNotPrepend();
+                CharTermAttribute term;
+                tpts.reset();
+                while (tpts.incrementToken()) {
+                    term = tpts.getAttribute(CharTermAttribute.class);
+                    pq.add(new org.apache.lucene.index.Term(this.field, term
+                            .toString()), pos++);
+                };
+                tpts.close();
+            }
+            catch (IOException ie) {
+                System.err.println(ie);
+                return null;
+            };
+
+            return new QueryWrapperFilter(pq);
         };
 
 
@@ -285,37 +288,32 @@ public class CollectionBuilder {
     public class Reference implements CollectionBuilder.Interface {
         private boolean isNegative = false;
         private String reference;
-		private Map<Integer, DocBits> docIdMap =
-			new HashMap<Integer, DocBits>();
+        private Map<Integer, DocBits> docIdMap = new HashMap<Integer, DocBits>();
+
 
         public Reference (String reference) {
             this.reference = reference;
         };
 
-        public Filter toFilter () throws QueryException {
-			ObjectMapper mapper = new ObjectMapper();
 
-			Element element = KrillCollection.cache.get(this.reference);
+        public Filter toFilter () throws QueryException {
+            ObjectMapper mapper = new ObjectMapper();
+
+            Element element = KrillCollection.cache.get(this.reference);
             if (element == null) {
 
                 KrillCollection kc = new KrillCollection();
 
-				kc.fromCache(this.reference);
+                kc.fromCache(this.reference);
 
-				if (kc.hasErrors()) {
-					throw new QueryException(
-						kc.getError(0).getCode(),
-						kc.getError(0).getMessage()
-						);
-				};
+                if (kc.hasErrors()) {
+                    throw new QueryException(kc.getError(0).getCode(), kc
+                            .getError(0).getMessage());
+                };
 
-				return new ToCacheVCFilter(
-					this.reference,
-					docIdMap,
-					kc.getBuilder(),
-					kc.toFilter()
-					);
-			}
+                return new ToCacheVCFilter(this.reference, docIdMap,
+                        kc.getBuilder(), kc.toFilter());
+            }
             else {
                 CachedVCData cc = (CachedVCData) element.getObjectValue();
                 return new CachedVCFilter(this.reference, cc);
@@ -324,7 +322,7 @@ public class CollectionBuilder {
 
 
         public String toString () {
-			return "referTo(" + this.reference + ")";
+            return "referTo(" + this.reference + ")";
         };
 
 
@@ -338,39 +336,40 @@ public class CollectionBuilder {
             return this;
         };
 
-		private String loadVCFile (String ref) {
-			Properties prop = KrillProperties.loadDefaultProperties();
-			if (prop == null){
-				/*
-				  this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
-							  "krill.properties is not found.");
-				*/
-				return null;
-			}
-			
-			String namedVCPath = prop.getProperty("krill.namedVC");
-			if (!namedVCPath.endsWith("/")){
-				namedVCPath += "/";
-			}
-			File file = new File(namedVCPath+ref+".jsonld");
-			
-			String json = null;
-			try {
-				FileInputStream fis = new FileInputStream(file);
-				json = IOUtils.toString(fis);
-			}
-			catch (IOException e) {
-				/*
-				this.addError(StatusCodes.MISSING_COLLECTION,
-							  "Collection is not found.");
-				*/
-				return null;
-			}
-			return json;
-		}	
+
+        private String loadVCFile (String ref) {
+            Properties prop = KrillProperties.loadDefaultProperties();
+            if (prop == null) {
+                /*
+                  this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
+                			  "krill.properties is not found.");
+                */
+                return null;
+            }
+
+            String namedVCPath = prop.getProperty("krill.namedVC");
+            if (!namedVCPath.endsWith("/")) {
+                namedVCPath += "/";
+            }
+            File file = new File(namedVCPath + ref + ".jsonld");
+
+            String json = null;
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                json = IOUtils.toString(fis);
+            }
+            catch (IOException e) {
+                /*
+                this.addError(StatusCodes.MISSING_COLLECTION,
+                			  "Collection is not found.");
+                */
+                return null;
+            }
+            return json;
+        }
     };
-	
-	
+
+
     public class Group implements CollectionBuilder.Interface {
         private boolean isOptional = false;
         private boolean isNegative = false;
@@ -380,10 +379,12 @@ public class CollectionBuilder {
             return this.isNegative;
         };
 
+
         public void setNegative (boolean isNegative) {
             this.isNegative = isNegative;
         }
-        
+
+
         public boolean isOptional () {
             return this.isOptional;
         };
@@ -439,16 +440,16 @@ public class CollectionBuilder {
 
 
         public String toString () {
-			try {
-				Filter filter = this.toFilter();
-				if (filter == null)
-					return "";
-				return filter.toString();
-			}
-			catch (QueryException qe) {
-				log.warn(qe.getLocalizedMessage());
-			};
-			return "";
+            try {
+                Filter filter = this.toFilter();
+                if (filter == null)
+                    return "";
+                return filter.toString();
+            }
+            catch (QueryException qe) {
+                log.warn(qe.getLocalizedMessage());
+            };
+            return "";
         };
 
 
@@ -495,11 +496,12 @@ public class CollectionBuilder {
             return this;
         };
     };
-    
-    /** Builder for virtual corpus / collection existing in the cache
+
+    /**
+     * Builder for virtual corpus / collection existing in the cache
      * 
      * @author margaretha
-     *
+     * 
      */
     public class CachedVC implements CollectionBuilder.Interface {
 
@@ -507,56 +509,66 @@ public class CollectionBuilder {
         private CachedVCData cachedCollection;
         private boolean isNegative = false;
 
+
         public CachedVC (String vcRef, CachedVCData cc) {
             this.cacheKey = vcRef;
-			this.cachedCollection = cc;
+            this.cachedCollection = cc;
         }
+
 
         @Override
         public Filter toFilter () {
             return new CachedVCFilter(this.cacheKey, cachedCollection);
         }
 
+
         @Override
         public boolean isNegative () {
             return this.isNegative;
         }
+
 
         @Override
         public CollectionBuilder.Interface not () {
             this.isNegative = true;
             return this;
         }
-        
+
     }
-    
-    /** Wraps a sub CollectionBuilder.Interface to allows VC caching
-     *  
+
+    /**
+     * Wraps a sub CollectionBuilder.Interface to allows VC caching
+     * 
      * @author margaretha
-     *
+     * 
      */
     public class ToCacheVC implements CollectionBuilder.Interface {
 
         private CollectionBuilder.Interface child;
         private String cacheKey;
-        
+
         private Map<Integer, DocBits> docIdMap;
+
 
         public ToCacheVC (String vcRef, Interface cbi) {
             this.child = cbi;
             this.cacheKey = vcRef;
-            this.docIdMap  = new HashMap<Integer, DocBits>();
+            this.docIdMap = new HashMap<Integer, DocBits>();
         }
+
 
         @Override
         public Filter toFilter () throws QueryException {
-            return new ToCacheVCFilter(cacheKey,docIdMap, child, child.toFilter());
+            return new ToCacheVCFilter(cacheKey, docIdMap, child,
+                    child.toFilter());
         }
+
 
         @Override
         public boolean isNegative () {
             return child.isNegative();
         }
+
 
         @Override
         public CollectionBuilder.Interface not () {
@@ -565,11 +577,13 @@ public class CollectionBuilder {
         }
     }
 
-	// Maybe irrelevant
+
+    // Maybe irrelevant
     public Interface namedVC (String vcRef, CachedVCData cc) {
         return new CollectionBuilder.CachedVC(vcRef, cc);
     }
-    
+
+
     public Interface toCacheVC (String vcRef, Interface cbi) {
         return new CollectionBuilder.ToCacheVC(vcRef, cbi);
     }

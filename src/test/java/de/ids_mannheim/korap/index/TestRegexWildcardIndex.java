@@ -28,7 +28,8 @@ public class TestRegexWildcardIndex {
 
         // abcabcabac
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base",
+        fd.addTV(
+                "base",
                 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
                 "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10]"
                         + "[(5-10)s:afffe|_1$<i>5<i>10]"
@@ -46,50 +47,50 @@ public class TestRegexWildcardIndex {
 
         QueryBuilder kq = new QueryBuilder("base");
         SpanQueryWrapper sqw = kq.re("s:af*e");
-        assertEquals("SpanMultiTermQueryWrapper(base:/s:af*e/)",
-                sqw.toQuery().toString());
+        assertEquals("SpanMultiTermQueryWrapper(base:/s:af*e/)", sqw.toQuery()
+                .toString());
 
         Krill ks = _newKrill(sqw);
 
         Result kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
         assertEquals("[[affe]] afffe ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("affe [[afffe]] baum ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("affe [[afffe]] baum ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(kq.re("s:baum.*"));
         kr = ki.search(ks);
 
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... afffe [[baum]] baumgarten ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... baum [[baumgarten]] steingarten ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... afffe [[baum]] baumgarten ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... baum [[baumgarten]] steingarten ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(kq.re("s:.....?garten"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... baum [[baumgarten]] steingarten ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... baumgarten [[steingarten]] franz ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... baum [[baumgarten]] steingarten ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... baumgarten [[steingarten]] franz ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(kq.re("s:ha.s"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... franz [[hans]] haus ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... hans [[haus]] efeu ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... franz [[hans]] haus ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... hans [[haus]] efeu ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(kq.re("s:.*ff.*"));
         kr = ki.search(ks);
         assertEquals((long) 3, kr.getTotalResults());
         assertEquals("[[affe]] afffe ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("affe [[afffe]] baum ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("affe [[afffe]] baum ...", kr.getMatch(1)
+                .getSnippetBrackets());
         assertEquals("... efeu [[effe]]", kr.getMatch(2).getSnippetBrackets());
-	};
+    };
 
 
     @Test
@@ -98,7 +99,8 @@ public class TestRegexWildcardIndex {
 
         // abcabcabac
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base",
+        fd.addTV(
+                "base",
                 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
                 "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10]"
                         + "[(5-10)s:afffe|_1$<i>5<i>10]"
@@ -116,16 +118,16 @@ public class TestRegexWildcardIndex {
 
         QueryBuilder kq = new QueryBuilder("base");
         SpanQueryWrapper sq = kq.wc("s:af*e");
-        assertEquals("SpanMultiTermQueryWrapper(base:s:af*e)",
-                sq.toQuery().toString());
+        assertEquals("SpanMultiTermQueryWrapper(base:s:af*e)", sq.toQuery()
+                .toString());
 
         Krill ks = _newKrill(sq);
 
         Result kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
         assertEquals("[[affe]] afffe ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("affe [[afffe]] baum ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("affe [[afffe]] baum ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").wc("s:baum.*"));
         kr = ki.search(ks);
@@ -135,26 +137,26 @@ public class TestRegexWildcardIndex {
         ks = _newKrill(new QueryBuilder("base").wc("s:baum*"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... afffe [[baum]] baumgarten ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... baum [[baumgarten]] steingarten ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... afffe [[baum]] baumgarten ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... baum [[baumgarten]] steingarten ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").wc("s:*garten"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... baum [[baumgarten]] steingarten ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... baumgarten [[steingarten]] franz ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... baum [[baumgarten]] steingarten ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... baumgarten [[steingarten]] franz ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").wc("s:ha?s"));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... franz [[hans]] haus ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... hans [[haus]] efeu ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... franz [[hans]] haus ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... hans [[haus]] efeu ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").wc("s:?ff?"));
         kr = ki.search(ks);
@@ -170,7 +172,8 @@ public class TestRegexWildcardIndex {
 
         // abcabcabac
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base",
+        fd.addTV(
+                "base",
                 "AfFe aFfFE Baum Baumgarten SteinGarten franZ HaNs Haus Efeu effe",
                 "[(0-4)s:AfFe|i:affe|_0$<i>0<i>4|-:t$<i>10]"
                         + "[(5-10)s:aFfFE|i:afffe|_1$<i>5<i>10]"
@@ -188,15 +191,15 @@ public class TestRegexWildcardIndex {
 
         QueryBuilder kq = new QueryBuilder("base");
         SpanQueryWrapper sqw = kq.re("s:Af*e", true);
-        assertEquals("SpanMultiTermQueryWrapper(base:/i:af*e/)",
-                sqw.toQuery().toString());
+        assertEquals("SpanMultiTermQueryWrapper(base:/i:af*e/)", sqw.toQuery()
+                .toString());
 
         Krill ks = _newKrill(sqw);
         Result kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
         assertEquals("[[AfFe]] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("AfFe [[aFfFE]] Baum ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("AfFe [[aFfFE]] Baum ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:Af.*e"));
         kr = ki.search(ks);
@@ -206,39 +209,39 @@ public class TestRegexWildcardIndex {
         ks = _newKrill(new QueryBuilder("base").re("s:baum.*", true));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... aFfFE [[Baum]] Baumgarten ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... Baum [[Baumgarten]] SteinGarten ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... aFfFE [[Baum]] Baumgarten ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... Baum [[Baumgarten]] SteinGarten ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:.*garten", true));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... Baum [[Baumgarten]] SteinGarten ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... Baumgarten [[SteinGarten]] franZ ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... Baum [[Baumgarten]] SteinGarten ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... Baumgarten [[SteinGarten]] franZ ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:.*garten", false));
         kr = ki.search(ks);
         assertEquals((long) 1, kr.getTotalResults());
-        assertEquals("... Baum [[Baumgarten]] SteinGarten ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("... Baum [[Baumgarten]] SteinGarten ...", kr.getMatch(0)
+                .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:ha.s", true));
         kr = ki.search(ks);
         assertEquals((long) 2, kr.getTotalResults());
-        assertEquals("... franZ [[HaNs]] Haus ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals("... HaNs [[Haus]] Efeu ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("... franZ [[HaNs]] Haus ...", kr.getMatch(0)
+                .getSnippetBrackets());
+        assertEquals("... HaNs [[Haus]] Efeu ...", kr.getMatch(1)
+                .getSnippetBrackets());
 
         ks = _newKrill(new QueryBuilder("base").re("s:.*f*e", true));
         kr = ki.search(ks);
         assertEquals((long) 3, kr.getTotalResults());
         assertEquals("[[AfFe]] aFfFE ...", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("AfFe [[aFfFE]] Baum ...",
-                kr.getMatch(1).getSnippetBrackets());
+        assertEquals("AfFe [[aFfFE]] Baum ...", kr.getMatch(1)
+                .getSnippetBrackets());
         assertEquals("... Efeu [[effe]]", kr.getMatch(2).getSnippetBrackets());
     };
 
@@ -249,7 +252,8 @@ public class TestRegexWildcardIndex {
 
         // abcabcabac
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base",
+        fd.addTV(
+                "base",
                 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
                 "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10]"
                         + "[(5-10)s:afffe|_1$<i>5<i>10]"
@@ -278,8 +282,8 @@ public class TestRegexWildcardIndex {
 
         Result kr = ki.search(ks);
         assertEquals((long) 1, kr.getTotalResults());
-        assertEquals("[[affe afffe]] baum ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[[affe afffe]] baum ...", kr.getMatch(0)
+                .getSnippetBrackets());
     };
 
 
@@ -289,7 +293,8 @@ public class TestRegexWildcardIndex {
 
         // abcabcabac
         FieldDocument fd = new FieldDocument();
-        fd.addTV("base",
+        fd.addTV(
+                "base",
                 "affe afffe baum baumgarten steingarten franz hans haus efeu effe",
                 "[(0-4)s:affe|_0$<i>0<i>4|-:t$<i>10]"
                         + "[(5-10)s:afffe|_1$<i>5<i>10]"
@@ -306,10 +311,9 @@ public class TestRegexWildcardIndex {
         ki.commit();
 
         QueryBuilder kq = new QueryBuilder("base");
-        SpanQuery sq = kq
-                .contains(kq.seq(kq.re("s:a.*e")).append(kq.re("s:af*e")),
-                        kq.seg("s:affe"))
-                .toQuery();
+        SpanQuery sq = kq.contains(
+                kq.seq(kq.re("s:a.*e")).append(kq.re("s:af*e")),
+                kq.seg("s:affe")).toQuery();
         assertEquals(
                 "spanContain(spanNext(SpanMultiTermQueryWrapper(base:/s:a.*e/), SpanMultiTermQueryWrapper(base:/s:af*e/)), base:s:affe)",
                 sq.toString());
@@ -319,113 +323,87 @@ public class TestRegexWildcardIndex {
 
         Result kr = ki.search(ks);
         assertEquals((long) 1, kr.getTotalResults());
-        assertEquals("[[affe afffe]] baum ...",
-                kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[[affe afffe]] baum ...", kr.getMatch(0)
+                .getSnippetBrackets());
 
 
-		// Test without matches in sequence
-		sq = kq.seq(kq.re("s:z.*e")).append(kq.seg("s:affe")).toQuery();
+        // Test without matches in sequence
+        sq = kq.seq(kq.re("s:z.*e")).append(kq.seg("s:affe")).toQuery();
         assertEquals(
-			"spanNext(SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe)",
-			sq.toString());
+                "spanNext(SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe)",
+                sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());
 
-		// Test without matches in segment
-		sq = kq.seg().with(kq.re("s:z.*e")).with("s:affe").toQuery();
+        // Test without matches in segment
+        sq = kq.seg().with(kq.re("s:z.*e")).with("s:affe").toQuery();
         assertEquals(
-			"spanSegment(SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe)",
-			sq.toString());
+                "spanSegment(SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe)",
+                sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());
 
-		// Test without matches in or
-		sq = kq.or(kq.re("s:z.*e"), kq.seg("s:affe")).toQuery();
+        // Test without matches in or
+        sq = kq.or(kq.re("s:z.*e"), kq.seg("s:affe")).toQuery();
         assertEquals(
-			"spanOr([SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe])",
-			sq.toString());
+                "spanOr([SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe])",
+                sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 1, kr.getTotalResults());
 
-		// Test without matches in within
-		sq = kq.within(kq.re("s:z.*e"), kq.seg("s:affe")).toQuery();
+        // Test without matches in within
+        sq = kq.within(kq.re("s:z.*e"), kq.seg("s:affe")).toQuery();
         assertEquals(
-			"spanContain(SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe)",
-			sq.toString());
+                "spanContain(SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe)",
+                sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());
 
-		// Test without matches in within (reversed)
-		sq = kq.within(kq.seg("s:affe"), kq.re("s:z.*e")).toQuery();
+        // Test without matches in within (reversed)
+        sq = kq.within(kq.seg("s:affe"), kq.re("s:z.*e")).toQuery();
         assertEquals(
-			"spanContain(base:s:affe, SpanMultiTermQueryWrapper(base:/s:z.*e/))",
-			sq.toString());
+                "spanContain(base:s:affe, SpanMultiTermQueryWrapper(base:/s:z.*e/))",
+                sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());
 
-		// Test with classes
-		sq = kq.nr(kq.re("s:z.*e")).toQuery();
-        assertEquals(
-			"{1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}",
-			sq.toString());
+        // Test with classes
+        sq = kq.nr(kq.re("s:z.*e")).toQuery();
+        assertEquals("{1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}",
+                sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());
 
-		// Test with nested classes
-		sq = kq.within(kq.nr(kq.re("s:z.*e")), kq.seg("s:affe")).toQuery();
+        // Test with nested classes
+        sq = kq.within(kq.nr(kq.re("s:z.*e")), kq.seg("s:affe")).toQuery();
         assertEquals(
-			"spanContain({1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}, base:s:affe)",
-			sq.toString());
+                "spanContain({1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}, base:s:affe)",
+                sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());
 
-		// Test with multiple distances
-		List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
-        constraints.add(
-			TestMultipleDistanceIndex.createConstraint(
-				"w",
-				1,
-				2,
-				true,
-				false
-				)
-			);
-        constraints.add(
-			TestMultipleDistanceIndex.createConstraint(
-				"tokens",
-				"base/s:s",
-				0,
-				0,
-				true,
-				false
-				)
-			);
-		sq = new SpanMultipleDistanceQuery(
-			kq.re("s:z.*e").toQuery(),
-			kq.seg("s:affe").toQuery(),
-			constraints,
-			true,
-			true
-			);
+        // Test with multiple distances
+        List<DistanceConstraint> constraints = new ArrayList<DistanceConstraint>();
+        constraints.add(TestMultipleDistanceIndex.createConstraint("w", 1, 2,
+                true, false));
+        constraints.add(TestMultipleDistanceIndex.createConstraint("tokens",
+                "base/s:s", 0, 0, true, false));
+        sq = new SpanMultipleDistanceQuery(kq.re("s:z.*e").toQuery(), kq.seg(
+                "s:affe").toQuery(), constraints, true, true);
         assertEquals(
-			"spanMultipleDistance(SpanMultiTermQueryWrapper(base:/s:z.*e/), "
-			+ "base:s:affe, [(w[1:2], ordered, notExcluded), ("
-			+ "base/s:s[0:0], ordered, notExcluded)])",
-			sq.toString());
+                "spanMultipleDistance(SpanMultiTermQueryWrapper(base:/s:z.*e/), "
+                        + "base:s:affe, [(w[1:2], ordered, notExcluded), ("
+                        + "base/s:s[0:0], ordered, notExcluded)])",
+                sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());
 
-		// Test with multiple distances and a class
-		sq = new SpanMultipleDistanceQuery(
-			kq.nr(kq.re("s:z.*e")).toQuery(),
-			kq.seg("s:affe").toQuery(),
-			constraints,
-			true,
-			true
-			);
+        // Test with multiple distances and a class
+        sq = new SpanMultipleDistanceQuery(kq.nr(kq.re("s:z.*e")).toQuery(), kq
+                .seg("s:affe").toQuery(), constraints, true, true);
         assertEquals(
                 "spanMultipleDistance({1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}, "
-                + "base:s:affe, [(w[1:2], ordered, notExcluded), (base/s:s[0:0], ordered, notExcluded)])",
+                        + "base:s:affe, [(w[1:2], ordered, notExcluded), (base/s:s[0:0], ordered, notExcluded)])",
                 sq.toString());
         kr = ki.search(new Krill(sq));
         assertEquals((long) 0, kr.getTotalResults());

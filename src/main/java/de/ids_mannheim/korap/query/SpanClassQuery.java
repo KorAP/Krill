@@ -51,6 +51,7 @@ public class SpanClassQuery extends SimpleSpanQuery {
                 termContexts, number);
     };
 
+
     @Override
     public Query rewrite (IndexReader reader) throws IOException {
 
@@ -58,19 +59,20 @@ public class SpanClassQuery extends SimpleSpanQuery {
 
         if (query != this.firstClause) {
 
-			// Rewritten spanquery is empty
-			if (query.getField() == null) {
+            // Rewritten spanquery is empty
+            if (query.getField() == null) {
 
-				// Return the empty child query
-				return query;
-			};
+                // Return the empty child query
+                return query;
+            };
 
-			SpanClassQuery clone = this.clone();
+            SpanClassQuery clone = this.clone();
             clone.firstClause = query;
-			return clone;
+            return clone;
         };
         return this;
     };
+
 
     @Override
     public SpanClassQuery clone () {

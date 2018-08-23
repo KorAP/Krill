@@ -115,8 +115,8 @@ public class TestResource {
 
 
 
-            String json = StringfromFile(
-                    getClass().getResource("/wiki/" + i + ".json").getFile());
+            String json = StringfromFile(getClass().getResource(
+                    "/wiki/" + i + ".json").getFile());
 
             Entity jsonE = Entity.json(json);
 
@@ -135,8 +135,8 @@ public class TestResource {
             }
         };
 
-        String json = StringfromFile(
-                getClass().getResource("/wiki/02439.json").getFile());
+        String json = StringfromFile(getClass().getResource("/wiki/02439.json")
+                .getFile());
         Entity jsonE = Entity.json(json);
 
         try {
@@ -249,8 +249,8 @@ public class TestResource {
     public void testCollection () throws IOException {
 
         // mate/l:sein
-        String json = getJsonString(getClass()
-                .getResource("/queries/bsp-uid-example.jsonld").getFile());
+        String json = getJsonString(getClass().getResource(
+                "/queries/bsp-uid-example.jsonld").getFile());
 
         try {
             String resp = target.path("/").queryParam("uid", "1")
@@ -260,8 +260,7 @@ public class TestResource {
             assertEquals(2, res.at("/meta/totalResults").asInt());
         }
         catch (Exception e) {
-            fail("Server response failed: " + e.getMessage()
-                    + " (Known issue)");
+            fail("Server response failed: " + e.getMessage() + " (Known issue)");
         };
 
     };

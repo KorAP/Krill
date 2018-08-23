@@ -24,17 +24,20 @@ public class TestDatabase {
     private Connection conn;
     private Statement stat;
 
+
     @Before
     public void setUp () throws Exception {
-		SLF4JBridgeHandler.install();
-		System.setProperty("com.mchange.v2.log.MLog", "com.mchange.v2.log.FallbackMLog");
-		System.setProperty("com.mchange.v2.log.FallbackMLog.DEFAULT_CUTOFF_LEVEL", "WARNING");
-		
+        SLF4JBridgeHandler.install();
+        System.setProperty("com.mchange.v2.log.MLog",
+                "com.mchange.v2.log.FallbackMLog");
+        System.setProperty(
+                "com.mchange.v2.log.FallbackMLog.DEFAULT_CUTOFF_LEVEL",
+                "WARNING");
+
         Class.forName("org.sqlite.JDBC");
         conn = DriverManager.getConnection("jdbc:sqlite::memory:");
         this.stat = conn.createStatement();
-        stat.executeUpdate(
-                "CREATE TABLE IF NOT EXISTS people (name TEXT, age INTEGER);");
+        stat.executeUpdate("CREATE TABLE IF NOT EXISTS people (name TEXT, age INTEGER);");
         conn.setAutoCommit(false);
     };
 
@@ -88,8 +91,7 @@ public class TestDatabase {
         this.conn = cpds.getConnection();
         conn.setAutoCommit(false);
         this.stat = conn.createStatement();
-        stat.executeUpdate(
-                "CREATE TABLE IF NOT EXISTS result_a (text_id INTEGER, match_count INTEGER);");
+        stat.executeUpdate("CREATE TABLE IF NOT EXISTS result_a (text_id INTEGER, match_count INTEGER);");
         // conn.setAutoCommit(false);
         PreparedStatement prep = this.conn
                 .prepareStatement("INSERT INTO result_a VALUES (?, ?);");
@@ -143,8 +145,7 @@ public class TestDatabase {
         conn = cpds.getConnection();
         conn.setAutoCommit(false);
         Statement stat = conn.createStatement();
-        stat.executeUpdate(
-                "CREATE TABLE IF NOT EXISTS matchXYZ (text_id INTEGER, match_count INTEGER);");
+        stat.executeUpdate("CREATE TABLE IF NOT EXISTS matchXYZ (text_id INTEGER, match_count INTEGER);");
         conn.commit();
         stat.close();
 

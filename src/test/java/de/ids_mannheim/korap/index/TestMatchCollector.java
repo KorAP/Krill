@@ -41,12 +41,12 @@ public class TestMatchCollector {
         fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addString("UID", "2");
-        fd.addTV("base", "bcbabd",
-                "[(0-1)s:b|i:b|_1$<i>0<i>1]" + "[(1-2)s:c|i:c|s:b|_2$<i>1<i>2]"
-                        + "[(2-3)s:b|i:b|_3$<i>2<i>3|<>:e#2-4$<i>4]"
-                        + "[(3-4)s:a|i:a|_4$<i>3<i>4|<>:e#3-5$<i>5|<>:e2#3-5$<i>5]"
-                        + "[(4-5)s:b|i:b|s:c|_5$<i>4<i>5]"
-                        + "[(5-6)s:d|i:d|_6$<i>5<i>6|<>:e2#5-6$<i>6]");
+        fd.addTV("base", "bcbabd", "[(0-1)s:b|i:b|_1$<i>0<i>1]"
+                + "[(1-2)s:c|i:c|s:b|_2$<i>1<i>2]"
+                + "[(2-3)s:b|i:b|_3$<i>2<i>3|<>:e#2-4$<i>4]"
+                + "[(3-4)s:a|i:a|_4$<i>3<i>4|<>:e#3-5$<i>5|<>:e2#3-5$<i>5]"
+                + "[(4-5)s:b|i:b|s:c|_5$<i>4<i>5]"
+                + "[(5-6)s:d|i:d|_6$<i>5<i>6|<>:e2#5-6$<i>6]");
         ki.addDoc(fd);
 
         ki.commit();

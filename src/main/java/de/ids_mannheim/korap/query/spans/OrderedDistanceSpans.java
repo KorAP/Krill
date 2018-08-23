@@ -51,7 +51,7 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
 
         candidateList = new ArrayList<>();
         candidateListIndex = -1;
-        if (hasMoreFirstSpans){
+        if (hasMoreFirstSpans) {
             candidateListDocNum = firstSpans.doc();
         }
     }

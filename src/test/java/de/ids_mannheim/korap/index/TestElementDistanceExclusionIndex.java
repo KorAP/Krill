@@ -25,9 +25,8 @@ public class TestElementDistanceExclusionIndex {
     private SpanQuery createQuery (String e, String x, String y, int min,
             int max, boolean isOrdered, boolean exclusion) {
         SpanElementQuery eq = new SpanElementQuery("base", e);
-        SpanDistanceQuery sq = new SpanDistanceQuery(
-                new SpanTermQuery(new Term("base", x)),
-                new SpanTermQuery(new Term("base", y)),
+        SpanDistanceQuery sq = new SpanDistanceQuery(new SpanTermQuery(
+                new Term("base", x)), new SpanTermQuery(new Term("base", y)),
                 new DistanceConstraint(eq, min, max, isOrdered, exclusion),
                 true);
         return sq;

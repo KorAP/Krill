@@ -37,9 +37,8 @@ public class TestNotifications {
         notes.addWarning(613, "Foo");
         notes.addWarning(614, "Bar", "Spiel");
 
-        assertEquals(
-                "{\"warnings\":[[613,\"Foo\"],[614,\"Bar\"," + "\"Spiel\"]]}",
-                notes.toJsonString());
+        assertEquals("{\"warnings\":[[613,\"Foo\"],[614,\"Bar\","
+                + "\"Spiel\"]]}", notes.toJsonString());
 
         assertTrue(notes.hasWarnings());
         assertFalse(notes.hasMessages());

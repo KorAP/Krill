@@ -38,6 +38,7 @@ public class TestKrillCollectionIndex {
 
     final String path = "/queries/collections/";
 
+
     @Test
     public void testKrillCollectionWithWrongJson () throws IOException {
         ki = new KrillIndex();
@@ -47,7 +48,7 @@ public class TestKrillCollectionIndex {
         ki.commit();
 
         KrillCollection kc = new KrillCollection("{lalala}");
-		assertEquals("Unable to parse JSON", kc.getError(0).getMessage());
+        assertEquals("Unable to parse JSON", kc.getError(0).getMessage());
         kc.setIndex(ki);
 
         long docs = 0, tokens = 0, sentences = 0, paragraphs = 0;
@@ -64,9 +65,10 @@ public class TestKrillCollectionIndex {
         assertEquals(0, tokens);
         assertEquals(0, sentences);
         assertEquals(0, paragraphs);
-        
+
         assertEquals(1, kc.getErrors().size());
-        assertEquals(StatusCodes.UNABLE_TO_PARSE_JSON, kc.getErrors().get(0).getCode());
+        assertEquals(StatusCodes.UNABLE_TO_PARSE_JSON, kc.getErrors().get(0)
+                .getCode());
     }
 
 
@@ -167,7 +169,7 @@ public class TestKrillCollectionIndex {
     };
 
 
-	@Test
+    @Test
     public void testIndexWithRegex () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createDoc1());
@@ -177,46 +179,34 @@ public class TestKrillCollectionIndex {
         CollectionBuilder cb = new CollectionBuilder();
         KrillCollection kcn = new KrillCollection(ki);
 
-		// Frank, Sebastian
-		kcn.fromBuilder(cb.re("author", ".*an.*"));
+        // Frank, Sebastian
+        kcn.fromBuilder(cb.re("author", ".*an.*"));
         assertEquals(2, kcn.docCount());
 
-		// Kultur & Reisen,
-		// Reisen & Finanzen,
-		// Nachricht & Kultur & Reisen
-		kcn.fromBuilder(cb.re("textClass", ".*(ult|eis).*"));
+        // Kultur & Reisen,
+        // Reisen & Finanzen,
+        // Nachricht & Kultur & Reisen
+        kcn.fromBuilder(cb.re("textClass", ".*(ult|eis).*"));
         assertEquals(3, kcn.docCount());
 
-		// Test in group
-		kcn.fromBuilder(
-			cb.andGroup().with(cb.term("textClass", "reisen")).with(cb.term("textClass", "kultur"))
-			);
+        // Test in group
+        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen"))
+                .with(cb.term("textClass", "kultur")));
         assertEquals(2, kcn.docCount());
 
-		kcn.fromBuilder(
-			cb.andGroup().with(
-				cb.re("textClass", ".*eis.*")
-				).with(
-					cb.re("textClass", ".*ult.*")
-					)
-			);
+        kcn.fromBuilder(cb.andGroup().with(cb.re("textClass", ".*eis.*"))
+                .with(cb.re("textClass", ".*ult.*")));
         assertEquals(2, kcn.docCount());
 
-		kcn.fromBuilder(
-			cb.andGroup().with(
-				cb.re("textClass", ".*eis.*")
-				).with(
-					cb.orGroup().with(
-						cb.re("textClass", ".*ult.*")
-						).with(
-							cb.re("textClass", ".*nan.*")
-							)
-					)
-			);
+        kcn.fromBuilder(cb
+                .andGroup()
+                .with(cb.re("textClass", ".*eis.*"))
+                .with(cb.orGroup().with(cb.re("textClass", ".*ult.*"))
+                        .with(cb.re("textClass", ".*nan.*"))));
         assertEquals(3, kcn.docCount());
-	};
+    };
 
-	
+
     @Test
     public void testIndexWithNegation () throws IOException {
         ki = new KrillIndex();
@@ -387,8 +377,8 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.re("author", "Frank|Peter"));
         assertEquals(2, kcn.docCount());
 
-		// "Frau" requires text request!
-		kcn.fromBuilder(cb.text("text", "Frau"));
+        // "Frau" requires text request!
+        kcn.fromBuilder(cb.text("text", "Frau"));
         assertEquals(1, kcn.docCount());
 
         kcn.fromBuilder(cb.term("text", "frau"));
@@ -400,18 +390,19 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.re("text", "fra.|ma.n"));
         assertEquals(3, kcn.docCount());
 
-		String sv = fd.doc.getField("text").stringValue();
-		assertEquals("Der alte  Mann ging über die Straße", sv);
+        String sv = fd.doc.getField("text").stringValue();
+        assertEquals("Der alte  Mann ging über die Straße", sv);
 
         kcn.fromBuilder(cb.term("text", sv));
         assertEquals(1, kcn.docCount());
-	};
+    };
 
-	@Test
+
+    @Test
     public void testIndexWithTextStringQueries () throws IOException {
-		ki = new KrillIndex();
-		ki.addDoc(createDoc1());
-		ki.commit();
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.commit();
 
         CollectionBuilder cb = new CollectionBuilder();
         KrillCollection kcn = new KrillCollection(ki);
@@ -419,57 +410,63 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.term("text", "mann"));
         assertEquals(1, kcn.docCount());
 
-		kcn.fromBuilder(cb.term("text", "Der alte  Mann ging über die Straße"));
+        kcn.fromBuilder(cb.term("text", "Der alte  Mann ging über die Straße"));
         assertEquals(1, kcn.docCount());
 
-		kcn.fromBuilder(cb.text("text", "Der alte Mann"));
-		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"der alte mann\")");
+        kcn.fromBuilder(cb.text("text", "Der alte Mann"));
+        assertEquals(kcn.toString(),
+                "QueryWrapperFilter(text:\"der alte mann\")");
         assertEquals(1, kcn.docCount());
-	};
+    };
 
-	@Test
+
+    @Test
     public void testUnknownVC () throws IOException {
-		ki = new KrillIndex();
-		ki.addDoc(createDoc1());
-		ki.commit();
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.commit();
 
-		// This test was adopted from TestVCCaching,
-		// But does not fail anymore for deserialization
+        // This test was adopted from TestVCCaching,
+        // But does not fail anymore for deserialization
         String json = _getJSONString("unknown-vc-ref.jsonld");
 
         KrillCollection kc = new KrillCollection(json);
-		assertEquals("referTo(https://korap.ids-mannheim.de/@ndiewald/MyCorpus)", kc.getBuilder().toString());
+        assertEquals(
+                "referTo(https://korap.ids-mannheim.de/@ndiewald/MyCorpus)", kc
+                        .getBuilder().toString());
 
-		// Fails on filtering
-		assertEquals("", kc.toString());
-		
+        // Fails on filtering
+        assertEquals("", kc.toString());
+
         QueryBuilder kq = new QueryBuilder("field");
-		
-		Krill krill = new Krill(kq.seg("a").with("b"));
-		krill.setCollection(kc);
-		
-		Result result = krill.apply(ki);
 
-		assertEquals(StatusCodes.MISSING_COLLECTION, result.getError(0).getCode());
-	};
+        Krill krill = new Krill(kq.seg("a").with("b"));
+        krill.setCollection(kc);
+
+        Result result = krill.apply(ki);
+
+        assertEquals(StatusCodes.MISSING_COLLECTION, result.getError(0)
+                .getCode());
+    };
+
 
     @Test
     public void testCache () throws IOException {
 
-		Properties prop = KrillProperties.loadDefaultProperties();
+        Properties prop = KrillProperties.loadDefaultProperties();
 
-		String vcPath = getClass().getResource(path + "named-vcs").getFile();
-		String tempVC = prop.getProperty("krill.namedVC");
-		prop.setProperty("krill.namedVC", vcPath);
+        String vcPath = getClass().getResource(path + "named-vcs").getFile();
+        String tempVC = prop.getProperty("krill.namedVC");
+        prop.setProperty("krill.namedVC", vcPath);
 
-		ki = new KrillIndex();
-		ki.addDoc(createDoc1());
-		ki.addDoc(createDoc2());
-		ki.commit();
-		
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.commit();
+
         testManualAddToCache(ki, "named-vcs/named-vc1.jsonld", "named-vc1");
         testManualAddToCache(ki, "named-vcs/named-vc2.jsonld", "named-vc2");
-        
+
         Element element = KrillCollection.cache.get("named-vc1");
         CachedVCData cc = (CachedVCData) element.getObjectValue();
         assertTrue(cc.getDocIdMap().size() > 0);
@@ -478,77 +475,79 @@ public class TestKrillCollectionIndex {
         cc = (CachedVCData) element.getObjectValue();
         assertTrue(cc.getDocIdMap().size() > 0);
 
-		// Check for cache location
+        // Check for cache location
         assertFalse(KrillCollection.cache.isElementInMemory("named-vc1"));
         assertTrue(KrillCollection.cache.isElementOnDisk("named-vc1"));
         assertTrue(KrillCollection.cache.isElementInMemory("named-vc2"));
         assertTrue(KrillCollection.cache.isElementOnDisk("named-vc2"));
 
         // testSearchCachedVC();
-		String json = _getJSONString("query-with-vc-ref.jsonld");
-		// references named-vc1: ID eq ["doc-2","doc-3"]
+        String json = _getJSONString("query-with-vc-ref.jsonld");
+        // references named-vc1: ID eq ["doc-2","doc-3"]
 
-		Krill krill = new Krill(json);
-		// TODO: Better keep the reference
-		testManualAddToCache(ki, "named-vcs/named-vc1.jsonld", "named-vc1");
-		assertEquals("referTo(cached:named-vc1)", krill.getCollection().toString());
+        Krill krill = new Krill(json);
+        // TODO: Better keep the reference
+        testManualAddToCache(ki, "named-vcs/named-vc1.jsonld", "named-vc1");
+        assertEquals("referTo(cached:named-vc1)", krill.getCollection()
+                .toString());
 
-		Result result = krill.apply(ki);
-		assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
-		assertEquals(result.getMatch(0).getUID(), 2);
-		assertEquals(result.getMatches().size(), 1);
-		
+        Result result = krill.apply(ki);
+        assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+        assertEquals(result.getMatch(0).getUID(), 2);
+        assertEquals(result.getMatches().size(), 1);
+
         // testAddDocToIndex();
-		ki.addDoc(createDoc3());
-		ki.commit();
+        ki.addDoc(createDoc3());
+        ki.commit();
 
-		// Cache is removed after index change
+        // Cache is removed after index change
         element = KrillCollection.cache.get("named-vc1");
         assertNull(element);
 
-		// Restart search - this time it's not precached
+        // Restart search - this time it's not precached
         krill = new Krill(json);
-		assertEquals("referTo(named-vc1)", krill.getCollection().toString());
-		result = krill.apply(ki);
+        assertEquals("referTo(named-vc1)", krill.getCollection().toString());
+        result = krill.apply(ki);
 
-		assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
-		assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
-		assertEquals(result.getMatches().size(), 2);
+        assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+        assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+        assertEquals(result.getMatches().size(), 2);
 
-		// testAutoCachingMatch
-		// Check autocache
-		element = KrillCollection.cache.get("named-vc1");
-		cc = (CachedVCData) element.getObjectValue();
+        // testAutoCachingMatch
+        // Check autocache
+        element = KrillCollection.cache.get("named-vc1");
+        cc = (CachedVCData) element.getObjectValue();
         assertTrue(cc.getDocIdMap().size() > 0);
-		
-		// Because of autocaching, this should work now
+
+        // Because of autocaching, this should work now
         krill = new Krill(json);
-		assertEquals("referTo(cached:named-vc1)", krill.getCollection().toString());
-		result = krill.apply(ki);
-		assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
-		assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
-		assertEquals(result.getMatches().size(), 2);
+        assertEquals("referTo(cached:named-vc1)", krill.getCollection()
+                .toString());
+        result = krill.apply(ki);
+        assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+        assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+        assertEquals(result.getMatches().size(), 2);
 
-		// Cache is removed on deletion
-		ki.addDoc(createDoc1());
-		ki.commit();
+        // Cache is removed on deletion
+        ki.addDoc(createDoc1());
+        ki.commit();
 
-		// Check cache
-		element = KrillCollection.cache.get("named-vc1");
+        // Check cache
+        element = KrillCollection.cache.get("named-vc1");
         assertNull(element);
 
-		// Rerun query
+        // Rerun query
         krill = new Krill(json);
-		assertEquals("referTo(named-vc1)", krill.getCollection().toString());
-		result = krill.apply(ki);
-		assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
-		assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
-		assertEquals(result.getMatches().size(), 2);
-		
-		prop.setProperty("krill.namedVC", tempVC);
+        assertEquals("referTo(named-vc1)", krill.getCollection().toString());
+        result = krill.apply(ki);
+        assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+        assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+        assertEquals(result.getMatches().size(), 2);
 
-		// testClearCache
-		KrillCollection.cache.removeAll();
+        prop.setProperty("krill.namedVC", tempVC);
+
+        // testClearCache
+        KrillCollection.cache.removeAll();
 
         element = KrillCollection.cache.get("named-vc1");
         assertNull(element);
@@ -563,7 +562,8 @@ public class TestKrillCollectionIndex {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
@@ -619,11 +619,13 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
         // Create a query
-        Krill ks = new Krill(
-                new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
-        ks.setCollection(kc).getMeta().setStartIndex(0).setCount((short) 20)
-                .setContext(
-                        new SearchContext(true, (short) 5, true, (short) 5));
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN")
+                .with("tt/p:NN"));
+        ks.setCollection(kc)
+                .getMeta()
+                .setStartIndex(0)
+                .setCount((short) 20)
+                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
 
         Result kr = ks.apply(ki);
 
@@ -653,7 +655,8 @@ public class TestKrillCollectionIndex {
         KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] { "00001", "00002" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
@@ -682,7 +685,8 @@ public class TestKrillCollectionIndex {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
             ki.commit();
         };
@@ -734,11 +738,13 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 48, kc.numberOf("paragraphs"));
 
         // Create a query
-        Krill ks = new Krill(
-                new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
-        ks.setCollection(kc).getMeta().setStartIndex(0).setCount((short) 20)
-                .setContext(
-                        new SearchContext(true, (short) 5, true, (short) 5));
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN")
+                .with("tt/p:NN"));
+        ks.setCollection(kc)
+                .getMeta()
+                .setStartIndex(0)
+                .setCount((short) 20)
+                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
 
         Result kr = ks.apply(ki);
         /*
@@ -793,14 +799,14 @@ public class TestKrillCollectionIndex {
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
-            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+            ki.addDoc(
+                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
                     true);
         };
         ki.commit();
 
-        ki.addDoc(
-                getClass().getResourceAsStream("/wiki/00012-fakemeta.json.gz"),
-                true);
+        ki.addDoc(getClass()
+                .getResourceAsStream("/wiki/00012-fakemeta.json.gz"), true);
 
         ki.commit();
 
@@ -825,11 +831,13 @@ public class TestKrillCollectionIndex {
 
 
         // Create a query
-        Krill ks = new Krill(
-                new QueryBuilder("tokens").seg("opennlp/p:NN").with("tt/p:NN"));
-        ks.setCollection(kc).getMeta().setStartIndex(0).setCount((short) 20)
-                .setContext(
-                        new SearchContext(true, (short) 5, true, (short) 5));
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("opennlp/p:NN")
+                .with("tt/p:NN"));
+        ks.setCollection(kc)
+                .getMeta()
+                .setStartIndex(0)
+                .setCount((short) 20)
+                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
 
         Result kr = ks.apply(ki);
 
@@ -891,9 +899,11 @@ public class TestKrillCollectionIndex {
 
 
         Krill ks = new Krill(sq);
-        ks.setCollection(kc).getMeta().setStartIndex(0).setCount((short) 20)
-                .setContext(
-                        new SearchContext(true, (short) 5, true, (short) 5));
+        ks.setCollection(kc)
+                .getMeta()
+                .setStartIndex(0)
+                .setCount((short) 20)
+                .setContext(new SearchContext(true, (short) 5, true, (short) 5));
         kr = ks.apply(ki);
 
         // kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);
@@ -944,8 +954,10 @@ public class TestKrillCollectionIndex {
         assertEquals("Paragraphs", 75, ki.numberOf("paragraphs"));
     };
 
-	@Test
-    public void testKrillCollectionWithNonexistingNegation () throws IOException {
+
+    @Test
+    public void testKrillCollectionWithNonexistingNegation ()
+            throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createDoc1()); // nachricht kultur reisen
         ki.addDoc(createDoc3()); // reisen finanzen
@@ -954,41 +966,33 @@ public class TestKrillCollectionIndex {
         KrillCollection kc = new KrillCollection(ki);
         CollectionBuilder cb = kc.build();
 
-		kc.fromBuilder(cb.term("textClass","reisen"));
-		assertEquals(kc.toString(), "textClass:reisen");
+        kc.fromBuilder(cb.term("textClass", "reisen"));
+        assertEquals(kc.toString(), "textClass:reisen");
         assertEquals("Documents", 2, kc.numberOf("documents"));
 
-		kc.fromBuilder(cb.andGroup().with(
-						   cb.term("textClass","reisen")
-						   ).with(
-							   cb.term("textClass","nachricht").not()
-							   ));
-		assertEquals(kc.toString(), "AndGroup(textClass:reisen -textClass:nachricht)");
+        kc.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen"))
+                .with(cb.term("textClass", "nachricht").not()));
+        assertEquals(kc.toString(),
+                "AndGroup(textClass:reisen -textClass:nachricht)");
         assertEquals("Documents", 1, kc.numberOf("documents"));
 
-		
-		kc.fromBuilder(cb.andGroup().with(
-						   cb.term("textClass","reisen")
-						   ).with(
-							   cb.term("textClass","reisen").not()
-							   ));
-		assertEquals(kc.toString(), "AndGroup(textClass:reisen -textClass:reisen)");
+
+        kc.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen"))
+                .with(cb.term("textClass", "reisen").not()));
+        assertEquals(kc.toString(),
+                "AndGroup(textClass:reisen -textClass:reisen)");
         assertEquals("Documents", 0, kc.numberOf("documents"));
 
-		kc.fromBuilder(cb.andGroup().with(
-						   cb.term("textClass","kultur")
-						   ).with(
-							   cb.term("textClass","finanzen").not()
-							   ));
-		assertEquals(kc.toString(), "AndGroup(textClass:kultur -textClass:finanzen)");
+        kc.fromBuilder(cb.andGroup().with(cb.term("textClass", "kultur"))
+                .with(cb.term("textClass", "finanzen").not()));
+        assertEquals(kc.toString(),
+                "AndGroup(textClass:kultur -textClass:finanzen)");
         assertEquals("Documents", 1, kc.numberOf("documents"));
 
-		kc.fromBuilder(cb.andGroup().with(
-						   cb.term("textClass","reisen")
-						   ).with(
-							   cb.term("textClass","Blabla").not()
-							   ));
-		assertEquals(kc.toString(), "AndGroup(textClass:reisen -textClass:Blabla)");
+        kc.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen"))
+                .with(cb.term("textClass", "Blabla").not()));
+        assertEquals(kc.toString(),
+                "AndGroup(textClass:reisen -textClass:Blabla)");
         assertEquals("Documents", 2, kc.numberOf("documents"));
     }
 
@@ -1002,7 +1006,7 @@ public class TestKrillCollectionIndex {
         fd.addInt("pubDate", 20051210);
         fd.addText("text", "Der alte  Mann ging über die Straße");
         fd.addTV("tokens", "a b c", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
-				 + "[(2-3)s:b|i:b|_1$<i>2<i>3]" + "[(4-5)s:c|i:c|_2$<i>4<i>5]");
+                + "[(2-3)s:b|i:b|_1$<i>2<i>3]" + "[(4-5)s:c|i:c|_2$<i>4<i>5]");
         return fd;
     };
 
@@ -1010,13 +1014,13 @@ public class TestKrillCollectionIndex {
     private FieldDocument createDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("UID", "2");
-		fd.addString("ID", "doc-2");
+        fd.addString("ID", "doc-2");
         fd.addString("author", "Peter");
         fd.addKeyword("textClass", "Kultur Reisen");
         fd.addInt("pubDate", 20051207);
         fd.addText("text", "Der junge Mann hatte keine andere Wahl");
         fd.addTV("tokens", "a c d", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
-				 + "[(2-3)s:c|i:c|_1$<i>2<i>3]" + "[(4-5)s:d|i:d|_2$<i>4<i>5]");
+                + "[(2-3)s:c|i:c|_1$<i>2<i>3]" + "[(4-5)s:d|i:d|_2$<i>4<i>5]");
         return fd;
     };
 
@@ -1024,28 +1028,31 @@ public class TestKrillCollectionIndex {
     private FieldDocument createDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("UID", "3");
-		fd.addString("ID", "doc-3");
+        fd.addString("ID", "doc-3");
         fd.addString("author", "Sebastian");
         fd.addKeyword("textClass", "Reisen Finanzen");
         fd.addInt("pubDate", 20051216);
         fd.addText("text", "Die Frau und der Mann küssten sich");
         fd.addTV("tokens", "a d e", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
-				 + "[(2-3)s:d|i:d|_1$<i>2<i>3]" + "[(4-5)s:e|i:e|_2$<i>4<i>5]");
+                + "[(2-3)s:d|i:d|_1$<i>2<i>3]" + "[(4-5)s:e|i:e|_2$<i>4<i>5]");
         return fd;
     };
 
-    private void testManualAddToCache (KrillIndex index, String filename, String vcName) throws IOException {
-		String json = _getJSONString(filename);
+
+    private void testManualAddToCache (KrillIndex index, String filename,
+            String vcName) throws IOException {
+        String json = _getJSONString(filename);
 
         KrillCollection kc = new KrillCollection(json);
         kc.setIndex(index);
-		try {
-			kc.storeInCache(vcName);
-		}
-		catch (QueryException qe) {
-			System.err.println(qe.getLocalizedMessage());
-		};
+        try {
+            kc.storeInCache(vcName);
+        }
+        catch (QueryException qe) {
+            System.err.println(qe.getLocalizedMessage());
+        };
     };
+
 
     private String _getJSONString (String file) {
         return getJsonString(getClass().getResource(path + file).getFile());

@@ -51,8 +51,9 @@ public class TestKrillIndex {
         fd.addInt("zahl3", "059");
         fd.addInt("UID", 1);
         fd.addText("teaser", "Das ist der Name der Rose");
-        fd.addTV("base", "ich bau", "[(0-3)s:ich|l:ich|p:PPER|-:sentences$<i>2]"
-                + "[(4-7)s:bau|l:bauen|p:VVFIN]");
+        fd.addTV("base", "ich bau",
+                "[(0-3)s:ich|l:ich|p:PPER|-:sentences$<i>2]"
+                        + "[(4-7)s:bau|l:bauen|p:VVFIN]");
         ki.addDoc(fd);
 
         fd = new FieldDocument();
@@ -138,11 +139,10 @@ public class TestKrillIndex {
 
         // These values are canonically equivalent
         // But indexed as byte sequences
-        fd.addTV("base",
-                new String("ju" + "\u006E" + "\u0303" + "o") + " "
-                        + new String("ju" + "\u00F1" + "o"),
-                "[(0-5)s:ju" + "\u006E" + "\u0303" + "o|_0$<i>0<i>5|-:t$<i>2]"
-                        + "[(6-10)s:ju" + "\u00F1" + "o|_1$<i>6<i>10]");
+        fd.addTV("base", new String("ju" + "\u006E" + "\u0303" + "o") + " "
+                + new String("ju" + "\u00F1" + "o"), "[(0-5)s:ju" + "\u006E"
+                + "\u0303" + "o|_0$<i>0<i>5|-:t$<i>2]" + "[(6-10)s:ju"
+                + "\u00F1" + "o|_1$<i>6<i>10]");
         ki.addDoc(fd);
         ki.commit();
 
@@ -186,7 +186,7 @@ public class TestKrillIndex {
     };
 
 
-	@Test
+    @Test
     public void indexRetrieveFieldInfo () throws IOException {
         KrillIndex ki = new KrillIndex();
 
@@ -195,12 +195,12 @@ public class TestKrillIndex {
         fd.addString("name", "Peter");
         fd.addString("textSigle", "a/b/c");
         fd.addInt("zahl1", 56);
-		fd.addStored("ref", "My reference");
+        fd.addStored("ref", "My reference");
 
-		fd.addKeyword("keyword", "baum");
-		fd.addKeyword("keyword", "wald");
+        fd.addKeyword("keyword", "baum");
+        fd.addKeyword("keyword", "wald");
 
-		fd.addText("title", "Der Name der Rose");
+        fd.addText("title", "Der Name der Rose");
 
         ki.addDoc(fd);
 
@@ -209,104 +209,110 @@ public class TestKrillIndex {
 
         JsonNode res = ki.getFields("a/b/c").toJsonNode();
 
-		// TODO: Check if the sorting is always identical!
+        // TODO: Check if the sorting is always identical!
 
-		Iterator fieldIter = res.at("/document/fields").elements();
+        Iterator fieldIter = res.at("/document/fields").elements();
 
-		int checkC = 0;
-		while (fieldIter.hasNext()) {
-			JsonNode field = (JsonNode) fieldIter.next();
+        int checkC = 0;
+        while (fieldIter.hasNext()) {
+            JsonNode field = (JsonNode) fieldIter.next();
 
-			String key = field.at("/key").asText();
+            String key = field.at("/key").asText();
 
-			switch (key) {
-			case "ref":
-				assertEquals("type:store", field.at("/type").asText());
-				assertEquals("koral:field", field.at("/@type").asText());
-				assertEquals("My reference", field.at("/value").asText());
-				checkC++;
-				break;
+            switch (key) {
+                case "ref":
+                    assertEquals("type:store", field.at("/type").asText());
+                    assertEquals("koral:field", field.at("/@type").asText());
+                    assertEquals("My reference", field.at("/value").asText());
+                    checkC++;
+                    break;
 
-			case "title":
-				assertEquals("type:text", field.at("/type").asText());
-				assertEquals("koral:field", field.at("/@type").asText());
-				assertEquals("Der Name der Rose", field.at("/value").asText());
-				checkC++;
-				break;
+                case "title":
+                    assertEquals("type:text", field.at("/type").asText());
+                    assertEquals("koral:field", field.at("/@type").asText());
+                    assertEquals("Der Name der Rose", field.at("/value")
+                            .asText());
+                    checkC++;
+                    break;
 
-			case "textSigle":
-				assertEquals("type:string", field.at("/type").asText());
-				assertEquals("koral:field", field.at("/@type").asText());
-				assertEquals("a/b/c", field.at("/value").asText());
-				checkC++;
-				break;
+                case "textSigle":
+                    assertEquals("type:string", field.at("/type").asText());
+                    assertEquals("koral:field", field.at("/@type").asText());
+                    assertEquals("a/b/c", field.at("/value").asText());
+                    checkC++;
+                    break;
 
-			case "keyword":
-				assertEquals("type:keywords", field.at("/type").asText());
-				assertEquals("koral:field", field.at("/@type").asText());
-				assertEquals("baum", field.at("/value/0").asText());
-				assertEquals("wald", field.at("/value/1").asText());
-				checkC++;
-				break;
+                case "keyword":
+                    assertEquals("type:keywords", field.at("/type").asText());
+                    assertEquals("koral:field", field.at("/@type").asText());
+                    assertEquals("baum", field.at("/value/0").asText());
+                    assertEquals("wald", field.at("/value/1").asText());
+                    checkC++;
+                    break;
 
-			case "zahl1":
-				assertEquals("type:number", field.at("/type").asText());
-				assertEquals("koral:field", field.at("/@type").asText());
-				assertEquals(56, field.at("/value").asInt());
-				checkC++;
-				break;
+                case "zahl1":
+                    assertEquals("type:number", field.at("/type").asText());
+                    assertEquals("koral:field", field.at("/@type").asText());
+                    assertEquals(56, field.at("/value").asInt());
+                    checkC++;
+                    break;
 
-			case "name":
-				assertEquals("type:string", field.at("/type").asText());
-				assertEquals("koral:field", field.at("/@type").asText());
-				assertEquals("Peter", field.at("/value").asText());
-				checkC++;
-				break;
-			};
-		};
-		
-		assertEquals(6, checkC);
+                case "name":
+                    assertEquals("type:string", field.at("/type").asText());
+                    assertEquals("koral:field", field.at("/@type").asText());
+                    assertEquals("Peter", field.at("/value").asText());
+                    checkC++;
+                    break;
+            };
+        };
+
+        assertEquals(6, checkC);
 
 
-		// Test with real document
-        ki.addDoc(getClass().getResourceAsStream("/wiki/wdd17-982-72848.json.gz"),true);
+        // Test with real document
+        ki.addDoc(
+                getClass().getResourceAsStream("/wiki/wdd17-982-72848.json.gz"),
+                true);
 
         /* Save documents */
         ki.commit();
 
-		res = ki.getFields("wdd17/982/72841").toJsonNode();
-		assertEquals("Document not found", res.at("/errors/0/1").asText());
+        res = ki.getFields("wdd17/982/72841").toJsonNode();
+        assertEquals("Document not found", res.at("/errors/0/1").asText());
 
-		res = ki.getFields("WDD17/982/72848").toJsonNode();
+        res = ki.getFields("WDD17/982/72848").toJsonNode();
 
-		fieldIter = res.at("/document/fields").elements();
+        fieldIter = res.at("/document/fields").elements();
 
-		checkC = 0;
-		while (fieldIter.hasNext()) {
-			JsonNode field = (JsonNode) fieldIter.next();
+        checkC = 0;
+        while (fieldIter.hasNext()) {
+            JsonNode field = (JsonNode) fieldIter.next();
 
-			String key = field.at("/key").asText();
+            String key = field.at("/key").asText();
 
-			switch (key) {
-			case "pubDate":
+            switch (key) {
+                case "pubDate":
 
-				assertEquals("type:date", field.at("/type").asText());
-				assertEquals("2017-07-01", field.at("/value").asText());
-				break;
+                    assertEquals("type:date", field.at("/type").asText());
+                    assertEquals("2017-07-01", field.at("/value").asText());
+                    break;
 
-			case "textSigle":
+                case "textSigle":
 
-				assertEquals("type:string", field.at("/type").asText());
-				assertEquals("WDD17/982/72848", field.at("/value").asText());
-				break;
+                    assertEquals("type:string", field.at("/type").asText());
+                    assertEquals("WDD17/982/72848", field.at("/value").asText());
+                    break;
 
-			case "foundries":
-				assertEquals("type:keywords", field.at("/type").asText());
-				assertEquals("dereko", field.at("/value/0").asText());
-				assertEquals("dereko/structure", field.at("/value/1").asText());
-				assertEquals("dereko/structure/base-sentences-paragraphs-pagebreaks", field.at("/value/2").asText());
-				break;
-			};
-		};
-	};
+                case "foundries":
+                    assertEquals("type:keywords", field.at("/type").asText());
+                    assertEquals("dereko", field.at("/value/0").asText());
+                    assertEquals("dereko/structure", field.at("/value/1")
+                            .asText());
+                    assertEquals(
+                            "dereko/structure/base-sentences-paragraphs-pagebreaks",
+                            field.at("/value/2").asText());
+                    break;
+            };
+        };
+    };
 };

@@ -191,6 +191,7 @@ public class TestIndex { // extends LuceneTestCase {
         return list;
     };
 
+
     @Test
     public void indexLucene () throws Exception {
 
@@ -231,27 +232,24 @@ public class TestIndex { // extends LuceneTestCase {
 
         // textClass
         // All texts of text class "news"
-        assertEquals(2,
-                searcher.search(new TermQuery(new Term("textClass", "news")),
-                        10).totalHits);
+        assertEquals(2, searcher.search(new TermQuery(new Term("textClass",
+                "news")), 10).totalHits);
 
         // textClass
         // All texts of text class "sports"
-        assertEquals(2,
-                searcher.search(new TermQuery(new Term("textClass", "sports")),
-                        10).totalHits);
+        assertEquals(2, searcher.search(new TermQuery(new Term("textClass",
+                "sports")), 10).totalHits);
 
         // TextIndex
         // All docs containing "l:nehmen"
-        assertEquals(1,
-                searcher.search(new TermQuery(new Term("text", "l:nehmen")),
-                        10).totalHits);
+        assertEquals(1, searcher.search(new TermQuery(new Term("text",
+                "l:nehmen")), 10).totalHits);
 
         // TextIndex
         // All docs containing "s:den"
-        assertEquals(2,
-                searcher.search(new TermQuery(new Term("text", "s:den")),
-                        10).totalHits);
+        assertEquals(
+                2,
+                searcher.search(new TermQuery(new Term("text", "s:den")), 10).totalHits);
 
         /*
         assertEquals(3,
@@ -310,8 +308,8 @@ public class TestIndex { // extends LuceneTestCase {
         assertEquals(2, searcher.search(srquery, 10).totalHits);
 
         ssrquery = new SpanRegexQueryWrapper("text", "s:e.", true);
-        assertEquals("SpanMultiTermQueryWrapper(text:/i:e./)",
-                ssrquery.toQuery().toString());
+        assertEquals("SpanMultiTermQueryWrapper(text:/i:e./)", ssrquery
+                .toQuery().toString());
         assertEquals(2, searcher.search(ssrquery.toQuery(), 10).totalHits);
 
         // All docs containing "ng"/x (Angst) (2x)
@@ -321,11 +319,11 @@ public class TestIndex { // extends LuceneTestCase {
 
         // Check http://comments.gmane.org/gmane.comp.jakarta.lucene.user/52283
         // for Carstens question on wildcards
-		// Wildcardquery
+        // Wildcardquery
         // All docs containing ".{4}en" (liefen und Hunden)
         WildcardQuery swquery = new WildcardQuery(new Term("text", "s:*ng*"));
-		assertEquals("text:s:*ng*", swquery.toString());
-		assertEquals(2, searcher.search(swquery, 10).totalHits);
+        assertEquals("text:s:*ng*", swquery.toString());
+        assertEquals(2, searcher.search(swquery, 10).totalHits);
 
         // [base=angst]
         SpanTermQuery stq = new SpanTermQuery(new Term("text", "l:angst"));
@@ -333,72 +331,60 @@ public class TestIndex { // extends LuceneTestCase {
 
         // vor Angst
         // [orth=vor][orth=Angst]
-        SpanNearQuery snquery = new SpanNearQuery(
-                new SpanQuery[] { new SpanTermQuery(new Term("text", "s:vor")),
-                        new SpanTermQuery(new Term("text", "s:Angst")) },
-                1, true);
+        SpanNearQuery snquery = new SpanNearQuery(new SpanQuery[] {
+                new SpanTermQuery(new Term("text", "s:vor")),
+                new SpanTermQuery(new Term("text", "s:Angst")) }, 1, true);
         assertEquals(1, searcher.search(snquery, 10).totalHits);
 
         // Spannearquery [p:VVFIN][]{,5}[m:nom:sg:fem]
-        snquery = new SpanNearQuery(
-                new SpanQuery[] {
-                        new SpanTermQuery(new Term("text", "p:VVFIN")),
-                        new SpanSegmentQueryWrapper("text", "m:c:nom", "m:n:sg",
-                                "m:g:fem").toQuery() },
-                5,     // slop
+        snquery = new SpanNearQuery(new SpanQuery[] {
+                new SpanTermQuery(new Term("text", "p:VVFIN")),
+                new SpanSegmentQueryWrapper("text", "m:c:nom", "m:n:sg",
+                        "m:g:fem").toQuery() }, 5,     // slop
                 true   // inOrder
-            // Possible: CollectPayloads
+        // Possible: CollectPayloads
         );
         assertEquals(1, searcher.search(snquery, 10).totalHits);
 
 
         // Spannearquery [p:VVFIN][m:acc:sg:masc]
-        snquery = new SpanNearQuery(new SpanQuery[] { new SpanTermQuery(
-                new Term("text", "p:VVFIN")),
-                new SpanNearQuery(
-                        new SpanQuery[] {
-                                new SpanTermQuery(new Term("text", "m:c:acc")),
-                                new SpanNearQuery(
-                                        new SpanQuery[] {
-                                                new SpanTermQuery(new Term(
-                                                        "text", "m:n:sg")),
-                                                new SpanTermQuery(new Term(
-                                                        "text", "m:g:masc")) },
-                                        -1, false) },
+        snquery = new SpanNearQuery(new SpanQuery[] {
+                new SpanTermQuery(new Term("text", "p:VVFIN")),
+                new SpanNearQuery(new SpanQuery[] {
+                        new SpanTermQuery(new Term("text", "m:c:acc")),
+                        new SpanNearQuery(
+                                new SpanQuery[] {
+                                        new SpanTermQuery(new Term("text",
+                                                "m:n:sg")),
+                                        new SpanTermQuery(new Term("text",
+                                                "m:g:masc")) }, -1, false) },
                         -1,     // slop
                         false   // inOrder
                 // Possible: CollectPayloads
                 )
-                // new SpanTermQuery(new Term("text", "m:-acc:--sg:masc"))
-        }, 0,     // slop
+        // new SpanTermQuery(new Term("text", "m:-acc:--sg:masc"))
+                }, 0,     // slop
                 true   // inOrder
-            // Possible: CollectPayloads
+        // Possible: CollectPayloads
         );
         assertEquals(1, searcher.search(snquery, 10).totalHits);
 
 
         // Spannearquery [p:VVFIN|m:3:sg:past:ind]
         // Exact match!
-        snquery = new SpanNearQuery(
-                new SpanQuery[] {
-                        new SpanTermQuery(new Term("text", "p:VVFIN")),
+        snquery = new SpanNearQuery(new SpanQuery[] {
+                new SpanTermQuery(new Term("text", "p:VVFIN")),
+                new SpanNearQuery(new SpanQuery[] {
+                        new SpanTermQuery(new Term("text", "m:p:3")),
                         new SpanNearQuery(new SpanQuery[] {
-                                new SpanTermQuery(new Term("text", "m:p:3")),
+                                new SpanTermQuery(new Term("text", "m:n:sg")),
                                 new SpanNearQuery(new SpanQuery[] {
-                                        new SpanTermQuery(
-                                                new Term("text", "m:n:sg")),
-                                        new SpanNearQuery(
-                                                new SpanQuery[] {
-                                                        new SpanTermQuery(
-                                                                new Term("text",
-                                                                        "m:t:past")),
-                                                        new SpanTermQuery(
-                                                                new Term("text",
-                                                                        "m:m:ind")), },
-                                                -1, false) },
-                                        -1, false) },
-                                -1, false) },
-                // new SpanTermQuery(new Term("text", "m:---3:--sg:past:-ind"))
+                                        new SpanTermQuery(new Term("text",
+                                                "m:t:past")),
+                                        new SpanTermQuery(new Term("text",
+                                                "m:m:ind")), }, -1, false) },
+                                -1, false) }, -1, false) },
+        // new SpanTermQuery(new Term("text", "m:---3:--sg:past:-ind"))
                 -1,     // slop
                 false   // inOrder
         // Possible: CollectPayloads
@@ -409,14 +395,12 @@ public class TestIndex { // extends LuceneTestCase {
         // Spannearquery [p:VVFIN & m:3:sg:past:ind]
         // Exact match!
         // Maybe it IS equal
-        snquery = new SpanNearQuery(
-                new SpanQuery[] {
-                        new SpanTermQuery(new Term("text", "p:VVFIN")),
-                        new SpanTermQuery(new Term("text", "m:p:3")),
-                        new SpanTermQuery(new Term("text", "m:n:sg")),
-                        new SpanTermQuery(new Term("text", "m:t:past")),
-                        new SpanTermQuery(new Term("text", "m:m:ind")), },
-                -1,     // slop
+        snquery = new SpanNearQuery(new SpanQuery[] {
+                new SpanTermQuery(new Term("text", "p:VVFIN")),
+                new SpanTermQuery(new Term("text", "m:p:3")),
+                new SpanTermQuery(new Term("text", "m:n:sg")),
+                new SpanTermQuery(new Term("text", "m:t:past")),
+                new SpanTermQuery(new Term("text", "m:m:ind")), }, -1,     // slop
                 false   // inOrder
         // Possible: CollectPayloads
         );
@@ -443,14 +427,12 @@ public class TestIndex { // extends LuceneTestCase {
         */
 
         // Spannearquery [p:VVFIN][]{,5}[m:nom:sg:fem]
-        snquery = new SpanNearQuery(
-                new SpanQuery[] {
-                        new SpanTermQuery(new Term("text", "p:VVFIN")),
-                        new SpanSegmentQueryWrapper("text", "m:c:nom", "m:n:sg",
-                                "m:g:fem").toQuery() },
-                5,     // slop
+        snquery = new SpanNearQuery(new SpanQuery[] {
+                new SpanTermQuery(new Term("text", "p:VVFIN")),
+                new SpanSegmentQueryWrapper("text", "m:c:nom", "m:n:sg",
+                        "m:g:fem").toQuery() }, 5,     // slop
                 true   // inOrder
-            // Possible: CollectPayloads
+        // Possible: CollectPayloads
         );
         assertEquals(1, searcher.search(snquery, 10).totalHits);
 
@@ -469,40 +451,41 @@ public class TestIndex { // extends LuceneTestCase {
         assertEquals(2, searcher.search(snqquery, 10).totalHits);
 
         // [p = NN & (m:c: = dat | m:c = acc)]
-        snquery = new SpanNearQuery(
-                new SpanQuery[] { new SpanTermQuery(new Term("text", "p:NN")),
-                        new SpanOrQuery(
-                                new SpanTermQuery(new Term("text", "m:c:nom")),
-                                new SpanTermQuery(
-                                        new Term("text", "m:c:acc"))) },
-                -1, false);
+        snquery = new SpanNearQuery(new SpanQuery[] {
+                new SpanTermQuery(new Term("text", "p:NN")),
+                new SpanOrQuery(new SpanTermQuery(new Term("text", "m:c:nom")),
+                        new SpanTermQuery(new Term("text", "m:c:acc"))) }, -1,
+                false);
 
         assertEquals(2, searcher.search(snqquery, 10).totalHits);
 
         // [p = NN & !(m:c: = nom | m:c = acc)]
-        snqquery = new SpanNotQuery(new SpanTermQuery(new Term("text", "p:NN")),
-                new SpanOrQuery(new SpanTermQuery(new Term("text", "m:c:nom")),
+        snqquery = new SpanNotQuery(
+                new SpanTermQuery(new Term("text", "p:NN")), new SpanOrQuery(
+                        new SpanTermQuery(new Term("text", "m:c:nom")),
                         new SpanTermQuery(new Term("text", "m:c:acc"))));
         assertEquals(1, searcher.search(snqquery, 10).totalHits);
 
         // [p = NN & !(m:c = nom)]
-        snqquery = new SpanNotQuery(new SpanTermQuery(new Term("text", "p:NN")),
-                new SpanTermQuery(new Term("text", "m:c:nom")));
+        snqquery = new SpanNotQuery(
+                new SpanTermQuery(new Term("text", "p:NN")), new SpanTermQuery(
+                        new Term("text", "m:c:nom")));
         assertEquals(3, searcher.search(snqquery, 10).totalHits);
 
         // [p=NN & !(m:c = acc)]
-        snqquery = new SpanNotQuery(new SpanTermQuery(new Term("text", "p:NN")),
-                new SpanTermQuery(new Term("text", "m:c:acc")));
+        snqquery = new SpanNotQuery(
+                new SpanTermQuery(new Term("text", "p:NN")), new SpanTermQuery(
+                        new Term("text", "m:c:acc")));
         assertEquals(2, searcher.search(snqquery, 10).totalHits);
 
         // [p=PPER][][p=ART]
         snquery = new SpanNearQuery(
-                new SpanQuery[] { new SpanTermQuery(new Term("text", "p:PPER")),
+                new SpanQuery[] {
+                        new SpanTermQuery(new Term("text", "p:PPER")),
                         new SpanNearQuery(new SpanQuery[] {
                                 new SpanTermQuery(new Term("text", "T")),
                                 new SpanTermQuery(new Term("text", "p:ART")) },
-                                0, true), },
-                0, true);
+                                0, true), }, 0, true);
         assertEquals(1, searcher.search(snquery, 10).totalHits);
 
 
@@ -521,14 +504,11 @@ public class TestIndex { // extends LuceneTestCase {
 
 
         // [][][p:VAFIN]
-        snquery = new SpanNearQuery(
-                new SpanQuery[] {
-                        new SpanNearQuery(new SpanQuery[] {
-                                new SpanTermQuery(new Term("text", "T")),
-                                new SpanTermQuery(new Term("text", "T")) }, 0,
-                                true),
-                        new SpanTermQuery(new Term("text", "p:VAFIN")) },
-                0, true);
+        snquery = new SpanNearQuery(new SpanQuery[] {
+                new SpanNearQuery(new SpanQuery[] {
+                        new SpanTermQuery(new Term("text", "T")),
+                        new SpanTermQuery(new Term("text", "T")) }, 0, true),
+                new SpanTermQuery(new Term("text", "p:VAFIN")) }, 0, true);
         assertEquals(1, searcher.search(snquery, 10).totalHits);
 
         /*
@@ -566,8 +546,8 @@ public class TestIndex { // extends LuceneTestCase {
                                 new SpanTermQuery(new Term("text", "T")),
                                 new SpanTermQuery(new Term("text", "T")) }, 0,
                                 true, false),
-                        new SpanTermQuery(new Term("text", "p:VAFIN")) },
-                0, true, false);
+                        new SpanTermQuery(new Term("text", "p:VAFIN")) }, 0,
+                true, false);
         assertEquals(1, searcher.search(snquery, 10).totalHits);
 
         payloadString = new StringBuilder();

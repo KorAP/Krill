@@ -104,8 +104,8 @@ public class BooleanGroupFilter extends Filter {
 
     @Override
     public String toString () {
-        StringBuilder buffer = new StringBuilder(
-                this.isOptional ? "OrGroup(" : "AndGroup(");
+        StringBuilder buffer = new StringBuilder(this.isOptional ? "OrGroup("
+                : "AndGroup(");
         boolean first = true;
         for (final GroupFilterOperand operand : this.operands) {
             if (first)
@@ -152,22 +152,22 @@ public class BooleanGroupFilter extends Filter {
                 // Filter matches
                 if (operand.isNegative) {
 
-					if (DEBUG) {
-						// OR - This means, everything is allowed
-						if (this.isOptional) {
+                    if (DEBUG) {
+                        // OR - This means, everything is allowed
+                        if (this.isOptional) {
                             log.debug("- Filter to allow all documents (OR NEG NULL)");
 
-						}
-						// AND - The negation is irrelevant
-						else {
-							log.debug("- Filter to allow all documents (AND NEG NULL)");
-						};
-					};
+                        }
+                        // AND - The negation is irrelevant
+                        else {
+                            log.debug("- Filter to allow all documents (AND NEG NULL)");
+                        };
+                    };
 
 
-					bitset.set(0, maxDoc);
-					return BitsFilteredDocIdSet
-						.wrap(new BitDocIdSet(bitset), acceptDocs);
+                    bitset.set(0, maxDoc);
+                    return BitsFilteredDocIdSet.wrap(new BitDocIdSet(bitset),
+                            acceptDocs);
                 }
 
                 // The result is unimportant

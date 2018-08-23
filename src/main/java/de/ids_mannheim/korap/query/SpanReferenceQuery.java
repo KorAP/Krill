@@ -40,11 +40,12 @@ import de.ids_mannheim.korap.query.spans.ReferenceSpans;
  * from previous operations).
  * 
  * @author margaretha
- *
+ * 
  */
 public class SpanReferenceQuery extends SimpleSpanQuery {
 
     private byte classNum;
+
 
     public SpanReferenceQuery (SpanQuery firstClause, byte classNum,
                                boolean collectPayloads) {
@@ -78,7 +79,9 @@ public class SpanReferenceQuery extends SimpleSpanQuery {
     }
 
 
-    /** Get the class number of the referred spans.
+    /**
+     * Get the class number of the referred spans.
+     * 
      * @return the class number of the referred spans
      */
     public byte getClassNum () {
@@ -86,9 +89,11 @@ public class SpanReferenceQuery extends SimpleSpanQuery {
     }
 
 
-    /** Set the class number of the referred spans. 
+    /**
+     * Set the class number of the referred spans.
      * 
-     * @param classNum the class number of the referred spans
+     * @param classNum
+     *            the class number of the referred spans
      */
     public void setClassNum (byte classNum) {
         this.classNum = classNum;

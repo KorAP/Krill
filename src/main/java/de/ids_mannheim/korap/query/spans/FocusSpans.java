@@ -105,8 +105,9 @@ public class FocusSpans extends SimpleSpans {
         while (hasMoreSpans || candidates.size() > 0) {
             if (isSorted) {
 
-                if (firstSpans.isPayloadAvailable() && updateSpanPositions(
-                        cs = new CandidateSpan(firstSpans))) {
+                if (firstSpans.isPayloadAvailable()
+                        && updateSpanPositions(cs = new CandidateSpan(
+                                firstSpans))) {
                     setMatch(cs);
                     hasMoreSpans = firstSpans.next();
                     return true;
@@ -133,8 +134,8 @@ public class FocusSpans extends SimpleSpans {
         while (hasMoreSpans && candidates.size() < windowSize
                 && firstSpans.doc() == currentDoc) {
 
-            if (firstSpans.isPayloadAvailable() && updateSpanPositions(
-                    cs = new CandidateSpan(firstSpans))) {
+            if (firstSpans.isPayloadAvailable()
+                    && updateSpanPositions(cs = new CandidateSpan(firstSpans))) {
                 if (cs.getDoc() == prevDoc && cs.getStart() < prevStart) {
                     log.warn("Span (" + cs.getStart() + ", " + cs.getEnd()
                             + ") is out of order and skipped.");

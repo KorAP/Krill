@@ -40,10 +40,8 @@ public class TestRealIndex {
     @Test
     public void testCase1 () throws IOException, QueryException {
         QueryBuilder kq = new QueryBuilder("tokens");
-        ks = new Krill(kq
-                .within(kq.tag("base/s:s"),
-                        kq.seq(kq.re("s:.*")).append(kq.nr(kq.re("s:.*"))))
-                .toQuery());
+        ks = new Krill(kq.within(kq.tag("base/s:s"),
+                kq.seq(kq.re("s:.*")).append(kq.nr(kq.re("s:.*")))).toQuery());
         ks.getMeta().setTimeOut(10000);
         kr = ks.apply(ki);
         System.err.println(kr.toJsonString());

@@ -30,8 +30,9 @@ import org.slf4j.LoggerFactory;
  */
 public class TestSimple {
 
-    private static Logger log  = LoggerFactory.getLogger(TestSimple.class);
-    
+    private static Logger log = LoggerFactory.getLogger(TestSimple.class);
+
+
     // Add document
     public static void addDoc (IndexWriter w, Map<String, String> m)
             throws IOException {
@@ -96,10 +97,11 @@ public class TestSimple {
 
 
     // Get query wrapper based on json file
-    public static SpanQueryWrapper getJsonQuery (String jsonFile) throws QueryException {
+    public static SpanQueryWrapper getJsonQuery (String jsonFile)
+            throws QueryException {
         SpanQueryWrapper sqwi;
-		String json = getJsonString(jsonFile);
-		sqwi = new KrillQuery("tokens").fromKoral(json);
+        String json = getJsonString(jsonFile);
+        sqwi = new KrillQuery("tokens").fromKoral(json);
         return sqwi;
     };
 
@@ -108,13 +110,10 @@ public class TestSimple {
     public static String getJsonString (String path) {
 
         StringBuilder contentBuilder = new StringBuilder();
-        try {			
-			BufferedReader in = new BufferedReader(
-				new InputStreamReader(
-					new FileInputStream(URLDecoder.decode(path, "UTF-8")),
-					"UTF-8"
-					)
-				);
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(URLDecoder.decode(path, "UTF-8")),
+                    "UTF-8"));
             String str;
             while ((str = in.readLine()) != null) {
                 contentBuilder.append(str);

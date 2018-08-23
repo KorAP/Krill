@@ -153,8 +153,7 @@ public class MultiTermTokenStream extends TokenStream {
      *            A surface string of a {@link MultiTerm}.
      * @return The {@link MultiTermTokenStream} object for chaining.
      */
-    public MultiTermTokenStream addMultiTermToken (char prefix,
-            String surface) {
+    public MultiTermTokenStream addMultiTermToken (char prefix, String surface) {
         return this.addMultiTermToken(new MultiTermToken(prefix, surface));
     };
 

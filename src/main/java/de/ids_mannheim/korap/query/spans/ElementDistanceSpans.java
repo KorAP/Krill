@@ -162,6 +162,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         }
     }
 
+
     @Override
     protected boolean isSecondSpanValid () throws IOException {
         if (advanceElementTo(secondSpans)) {
@@ -173,6 +174,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         return false;
     }
 
+
     @Override
     public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (secondSpans.doc() < target)) {
@@ -183,24 +185,26 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         }
 
         setCandidateList();
-       
-        while (hasMoreSpans && !isSecondSpanValid()){
+
+        while (hasMoreSpans && !isSecondSpanValid()) {
             hasMoreSpans = secondSpans.next();
             setCandidateList();
         }
-        
+
         matchPayload.clear();
         isStartEnumeration = false;
         return advance();
     }
 
+
     @Override
     public long cost () {
-        if (!candidateList.isEmpty()){
+        if (!candidateList.isEmpty()) {
             CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
-            return elements.cost() + candidateSpan.getCost() + secondSpans.cost();
+            return elements.cost() + candidateSpan.getCost()
+                    + secondSpans.cost();
         }
-        else{
+        else {
             return elements.cost() + secondSpans.cost();
         }
     }

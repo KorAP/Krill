@@ -8,7 +8,7 @@ import java.util.Comparator;
  * ordered before the other CandidateSpan.
  * 
  * @author margaretha
- *
+ * 
  */
 public class CandidateSpanComparator implements Comparator<CandidateSpan> {
 

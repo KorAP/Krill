@@ -57,8 +57,8 @@ public class SpanSubspanQuery extends SimpleSpanQuery {
      *            otherwise
      *            <code>false</code>.
      */
-    public SpanSubspanQuery (SpanQuery firstClause, int startOffset, int length,
-                             boolean collectPayloads) {
+    public SpanSubspanQuery (SpanQuery firstClause, int startOffset,
+                             int length, boolean collectPayloads) {
         super(firstClause, collectPayloads);
         this.startOffset = startOffset;
         this.length = length;

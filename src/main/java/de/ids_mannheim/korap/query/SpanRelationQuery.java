@@ -75,31 +75,31 @@ public class SpanRelationQuery extends SimpleSpanQuery {
      *            payloads are to be collected, otherwise
      *            <code>false</code>.
      */
-    public SpanRelationQuery (SpanQuery firstClause, boolean collectPayloads, 
-            RelationDirection direction) {
+    public SpanRelationQuery (SpanQuery firstClause, boolean collectPayloads,
+                              RelationDirection direction) {
         super(firstClause, collectPayloads);
         this.direction = direction;
-//        SpanTermQuery st = (SpanTermQuery) firstClause;
-//        String direction = st.getTerm().text().substring(0, 1);
-//        if (direction.equals("<")) {
-//            this.direction = 1;
-//        }
+        //        SpanTermQuery st = (SpanTermQuery) firstClause;
+        //        String direction = st.getTerm().text().substring(0, 1);
+        //        if (direction.equals("<")) {
+        //            this.direction = 1;
+        //        }
     }
 
 
-//    public SpanRelationQuery (SpanQuery firstClause, List<Byte> classNumbers,
-//                              boolean collectPayloads) {
-//        this(firstClause, collectPayloads);
-//        this.tempClassNumbers = classNumbers;
-//        this.tempSourceNum = classNumbers.get(0);
-//        this.tempTargetNum = classNumbers.get(1);
-//    }
+    //    public SpanRelationQuery (SpanQuery firstClause, List<Byte> classNumbers,
+    //                              boolean collectPayloads) {
+    //        this(firstClause, collectPayloads);
+    //        this.tempClassNumbers = classNumbers;
+    //        this.tempSourceNum = classNumbers.get(0);
+    //        this.tempTargetNum = classNumbers.get(1);
+    //    }
 
 
     @Override
     public SimpleSpanQuery clone () {
         SimpleSpanQuery sq = new SpanRelationQuery(
-                (SpanQuery) this.firstClause.clone(), this.collectPayloads, 
+                (SpanQuery) this.firstClause.clone(), this.collectPayloads,
                 this.direction);
         return sq;
     }

@@ -8,10 +8,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * Todo: Properties may be loaded twice - although Java may cache automatically
+ * Todo: Properties may be loaded twice - although Java may cache
+ * automatically
  * 
  * @author diewald, margaretha
- *
+ * 
  */
 public class KrillProperties {
 
@@ -22,6 +23,7 @@ public class KrillProperties {
     // Logger
     private final static Logger log = LoggerFactory
             .getLogger(KrillProperties.class);
+
 
     // Load properties from file
     public static Properties loadDefaultProperties () {
@@ -52,7 +54,7 @@ public class KrillProperties {
                 if (iFile == null) {
                     log.warn(
                             "Cannot find {}. Please create it using "
-                            + "\"src/main/resources/krill.properties.info\" as template.",
+                                    + "\"src/main/resources/krill.properties.info\" as template.",
                             propFile, propFile);
                     return null;
                 };
@@ -91,7 +93,8 @@ public class KrillProperties {
         };
         return info;
     };
-    
+
+
     public static void setProp (Properties prop) {
         KrillProperties.prop = prop;
     }
