@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
+import java.io.File;
+import java.io.FileInputStream;
 
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.queries.TermsFilter;
@@ -17,9 +20,22 @@ import org.apache.lucene.search.RegexpQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.commons.io.IOUtils;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.index.TextPrependedTokenStream;
 import de.ids_mannheim.korap.util.KrillDate;
+import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.StatusCodes;
+import de.ids_mannheim.korap.util.KrillProperties;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
 
 /*
  * TODO: Optimize!
@@ -33,6 +49,10 @@ import de.ids_mannheim.korap.util.KrillDate;
 
 public class CollectionBuilder {
 
+    public final static CacheManager cacheManager = CacheManager.newInstance();
+    public final static Cache cache = cacheManager.getCache("named_vc");
+
+	
     // Logger
     private final static Logger log = LoggerFactory
             .getLogger(KrillCollection.class);
@@ -124,6 +144,10 @@ public class CollectionBuilder {
                 dateDF.ceil());
     };
 
+	public CollectionBuilder.Interface referTo (String reference) {
+        return new CollectionBuilder.Reference(reference);
+    };
+
 
     public CollectionBuilder.Group andGroup () {
         return new CollectionBuilder.Group(false);
@@ -138,7 +162,7 @@ public class CollectionBuilder {
         public String toString ();
 
 
-        public Filter toFilter ();
+        public Filter toFilter () throws QueryException;
 
 
         public boolean isNegative ();
@@ -214,7 +238,7 @@ public class CollectionBuilder {
 
 		// TODO:
 		//   Currently this treatment is language specific and
-		//    does too mzch, I guess.
+		//    does too much, I guess.
         public Filter toFilter () {
 			PhraseQuery pq = new PhraseQuery();
 			int pos = 0;
@@ -257,6 +281,95 @@ public class CollectionBuilder {
         };
     };
 
+
+    public class Reference implements CollectionBuilder.Interface {
+        private boolean isNegative = false;
+        private String reference;
+		private Map<Integer, DocBits> docIdMap =
+			new HashMap<Integer, DocBits>();
+
+        public Reference (String reference) {
+            this.reference = reference;
+        };
+
+        public Filter toFilter () throws QueryException {
+			ObjectMapper mapper = new ObjectMapper();
+
+			Element element = KrillCollection.cache.get(this.reference);
+            if (element == null) {
+
+                KrillCollection kc = new KrillCollection();
+
+				kc.fromCache(this.reference);
+
+				if (kc.hasErrors()) {
+					throw new QueryException(
+						kc.getError(0).getCode(),
+						kc.getError(0).getMessage()
+						);
+				};
+
+				return new ToCacheVCFilter(
+					this.reference,
+					docIdMap,
+					kc.getBuilder(),
+					kc.toFilter()
+					);
+			}
+            else {
+                CachedVCData cc = (CachedVCData) element.getObjectValue();
+                return new CachedVCFilter(this.reference, cc);
+            }
+        };
+
+
+        public String toString () {
+			return "referTo(" + this.reference + ")";
+        };
+
+
+        public boolean isNegative () {
+            return this.isNegative;
+        };
+
+
+        public CollectionBuilder.Interface not () {
+            this.isNegative = true;
+            return this;
+        };
+
+		private String loadVCFile (String ref) {
+			Properties prop = KrillProperties.loadDefaultProperties();
+			if (prop == null){
+				/*
+				  this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
+							  "krill.properties is not found.");
+				*/
+				return null;
+			}
+			
+			String namedVCPath = prop.getProperty("krill.namedVC");
+			if (!namedVCPath.endsWith("/")){
+				namedVCPath += "/";
+			}
+			File file = new File(namedVCPath+ref+".jsonld");
+			
+			String json = null;
+			try {
+				FileInputStream fis = new FileInputStream(file);
+				json = IOUtils.toString(fis);
+			}
+			catch (IOException e) {
+				/*
+				this.addError(StatusCodes.MISSING_COLLECTION,
+							  "Collection is not found.");
+				*/
+				return null;
+			}
+			return json;
+		}	
+    };
+	
 	
     public class Group implements CollectionBuilder.Interface {
         private boolean isOptional = false;
@@ -300,7 +413,7 @@ public class CollectionBuilder {
         };
 
 
-        public Filter toFilter () {
+        public Filter toFilter () throws QueryException {
             if (this.operands == null || this.operands.isEmpty())
                 return null;
 
@@ -326,10 +439,16 @@ public class CollectionBuilder {
 
 
         public String toString () {
-            Filter filter = this.toFilter();
-            if (filter == null)
-                return "";
-            return filter.toString();
+			try {
+				Filter filter = this.toFilter();
+				if (filter == null)
+					return "";
+				return filter.toString();
+			}
+			catch (QueryException qe) {
+				log.warn(qe.getLocalizedMessage());
+			};
+			return "";
         };
 
 
@@ -384,16 +503,18 @@ public class CollectionBuilder {
      */
     public class CachedVC implements CollectionBuilder.Interface {
 
+        private String cacheKey;
         private CachedVCData cachedCollection;
         private boolean isNegative = false;
 
-        public CachedVC (CachedVCData cc) {
-            this.cachedCollection = cc;
+        public CachedVC (String vcRef, CachedVCData cc) {
+            this.cacheKey = vcRef;
+			this.cachedCollection = cc;
         }
 
         @Override
         public Filter toFilter () {
-            return new CachedVCFilter(cachedCollection);
+            return new CachedVCFilter(this.cacheKey, cachedCollection);
         }
 
         @Override
@@ -428,7 +549,7 @@ public class CollectionBuilder {
         }
 
         @Override
-        public Filter toFilter () {
+        public Filter toFilter () throws QueryException {
             return new ToCacheVCFilter(cacheKey,docIdMap, child, child.toFilter());
         }
 
@@ -443,9 +564,10 @@ public class CollectionBuilder {
             return this;
         }
     }
-    
-    public Interface namedVC (CachedVCData cc) {
-        return new CollectionBuilder.CachedVC(cc);
+
+	// Maybe irrelevant
+    public Interface namedVC (String vcRef, CachedVCData cc) {
+        return new CollectionBuilder.CachedVC(vcRef, cc);
     }
     
     public Interface toCacheVC (String vcRef, Interface cbi) {

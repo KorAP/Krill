@@ -86,6 +86,14 @@ public class TestCollectionBuilder {
 
 
     @Test
+    public void builderRefrence () throws IOException {
+        CollectionBuilder kc = new CollectionBuilder();
+        assertEquals("referTo(ndiewald/myCorpus)",
+                kc.referTo("ndiewald/myCorpus").toString());
+    };
+	
+
+    @Test
     public void builderTill () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
         assertEquals("pubDate:[0 TO 20059999]",

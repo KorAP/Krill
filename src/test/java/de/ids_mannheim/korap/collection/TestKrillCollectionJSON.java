@@ -18,12 +18,13 @@ import org.junit.Test;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import de.ids_mannheim.korap.response.Message;
+import de.ids_mannheim.korap.util.StatusCodes;
 
 @RunWith(JUnit4.class)
 public class TestKrillCollectionJSON {
 
     final String path = "/queries/collections/";
-
 
     @Test
     public void collection1 () {

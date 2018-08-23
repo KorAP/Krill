@@ -1577,7 +1577,12 @@ public final class KrillIndex {
         catch (IOException e) {
             kr.addError(600, "Unable to read index", e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());
-        };
+		}
+
+		catch (QueryException e) {
+            kr.addError(e.getErrorCode(),e.getLocalizedMessage());
+            log.warn(e.getLocalizedMessage());			
+		};
 
         // Stop timer thread
         tthread.stopTimer();
@@ -1763,7 +1768,11 @@ public final class KrillIndex {
         catch (IOException e) {
             mc.addError(600, "Unable to read index", e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());
-        };
+		}
+		catch (QueryException e) {
+            mc.addError(e.getErrorCode(),e.getLocalizedMessage());
+            log.warn(e.getLocalizedMessage());			
+		};
 
         mc.close();
         return mc;
