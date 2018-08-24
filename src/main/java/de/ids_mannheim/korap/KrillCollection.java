@@ -68,6 +68,8 @@ public final class KrillCollection extends Notifications {
     private CollectionBuilder.Interface cbi;
     private byte[] pl = new byte[4];
 
+    private ObjectMapper mapper = new ObjectMapper();
+    
 	private Filter prefiltered = null;
     // private static ByteBuffer bb = ByteBuffer.allocate(4);
 
@@ -105,7 +107,7 @@ public final class KrillCollection extends Notifications {
      *            The KoralQuery document as a JSON string.
      */
     public KrillCollection (String jsonString) {
-        ObjectMapper mapper = new ObjectMapper();
+
         try {
             JsonNode json = mapper.readTree(jsonString);
 
@@ -161,7 +163,6 @@ public final class KrillCollection extends Notifications {
      * @throws QueryException
      */
     public KrillCollection fromKoral (String jsonString) throws QueryException {
-        ObjectMapper mapper = new ObjectMapper();
 		this.prefiltered = null;
         try {
             this.fromKoral((JsonNode) mapper.readTree(jsonString));
@@ -175,7 +176,7 @@ public final class KrillCollection extends Notifications {
     };
 
 
-	public KrillCollection fromCache (String ref) throws QueryException {
+	public KrillCollection fromStore (String ref) throws QueryException {
         Properties prop = KrillProperties.loadDefaultProperties();
 		this.prefiltered = null;
 	
