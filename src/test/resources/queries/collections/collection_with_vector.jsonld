@@ -1,0 +1,20 @@
+{
+  "@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+  "query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "layer":"orth",
+      "key":"der",
+      "match":"match:eq",	
+      "foundry":"opennlp"
+    }
+  },
+  "collection":{
+    "key":"textSigle",
+    "match":"match:eq",
+    "type":"type:string",
+    "value":["aaa","bbb","ccc"],
+    "@type":"koral:doc"
+  }
+}

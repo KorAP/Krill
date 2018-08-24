@@ -148,6 +148,21 @@ public class TestKrillCollectionJSON {
         assertEquals("", kc.toString());
     };
 
+    @Test
+    public void collectionWithValueVector () {
+        String metaQuery = _getJSONString("collection_with_vector.jsonld");
+        KrillCollection kc = new KrillCollection(metaQuery);
+        assertFalse(kc.hasErrors());
+        assertEquals("OrGroup(textSigle:aaa textSigle:bbb textSigle:ccc)", kc.toString());
+    };
+
+    @Test
+    public void collectionWithValueVectorNe () {
+        String metaQuery = _getJSONString("collection_with_vector_ne.jsonld");
+        KrillCollection kc = new KrillCollection(metaQuery);
+        assertFalse(kc.hasErrors());
+        assertEquals("-OrGroup(textClass:nachricht textClass:finanzen)", kc.toString());
+    };
 
     @Test
     public void collectionMirror () throws Exception {

@@ -1,0 +1,23 @@
+{
+  "@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+  "query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "layer":"orth",
+      "key":"a",
+      "match":"match:eq",	
+      "foundry":"opennlp"
+    }
+  },
+  "collection":{
+    "key":"textClass",
+    "match":"match:ne",
+    "type":"type:string",
+    "value":["nachricht","finanzen"],
+    "@type":"koral:doc"
+  },
+  "meta":{
+    "cutOff":null
+  }
+}

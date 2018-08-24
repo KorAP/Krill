@@ -993,6 +993,57 @@ public class TestKrillCollectionIndex {
     }
 
 
+	@Test
+    public void testKrillCollectionWithValueVectorNe () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1()); // nachricht kultur reisen
+        ki.addDoc(createDoc2()); // kultur reisen
+        ki.addDoc(createDoc3()); // reisen finanzen
+        ki.commit();
+
+		KrillCollection kc = new KrillCollection();
+		kc.setIndex(ki);
+
+        CollectionBuilder cb = kc.build();
+		kc.fromBuilder(cb.orGroup().with(cb.term("textClass", "nachricht")).with(cb.term("textClass","finanzen")));
+		assertEquals("OrGroup(textClass:nachricht textClass:finanzen)", kc.toString());
+        assertEquals("Documents", 2, kc.numberOf("documents"));
+
+		kc.fromBuilder(cb.term("textClass", "nachricht").not());
+		assertEquals("-textClass:nachricht", kc.toString());
+        assertEquals("Documents", 2, kc.numberOf("documents"));
+
+        kc.fromBuilder(cb.orGroup().with(cb.term("textClass", "nachricht").not()).with(cb.term("textClass","finanzen").not()));
+        assertEquals("OrGroup(-textClass:nachricht -textClass:finanzen)", kc.toString());
+        assertEquals("Documents", 3, kc.numberOf("documents"));
+
+        kc.fromBuilder(cb.orGroup().with(cb.term("textClass", "nachricht")).with(cb.term("textClass","finanzen")).not());
+		assertEquals("-OrGroup(textClass:nachricht textClass:finanzen)", kc.toString());
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("i:a"));
+        ks.setCollection(kc);
+
+        // Create a query        
+        Result kr = ks.apply(ki);
+        assertEquals(1, kr.getTotalResults());
+        assertEquals("[[a]] c d", kr.getMatch(0).getSnippetBrackets());
+
+        String json = _getJSONString("collection_with_vector_ne.jsonld");
+        ks = new Krill(json);
+
+        kc = ks.getCollection();
+        kc.setIndex(ki);
+        
+        assertEquals("-OrGroup(textClass:nachricht textClass:finanzen)", kc.toString());
+        assertEquals("Documents", 1, kc.numberOf("documents"));
+
+        kr = ks.apply(ki);
+        assertEquals("[[a]] c d", kr.getMatch(0).getSnippetBrackets());
+        assertEquals(1, kr.getTotalResults());
+    };
+	
+
     private FieldDocument createDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("UID", "1");
