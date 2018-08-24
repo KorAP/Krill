@@ -91,6 +91,23 @@ public class TestCollectionBuilder {
         assertEquals("referTo(ndiewald/myCorpus)",
                 kc.referTo("ndiewald/myCorpus").toString());
     };
+
+
+    @Test
+    public void builderReferenceNested () throws IOException {
+        CollectionBuilder kc = new CollectionBuilder();
+
+        // Doesn't work (as intended), because the filtering
+        // phase won't work
+        assertEquals(
+            "",
+            kc.orGroup().with(
+                kc.referTo("example")
+                ).with(
+                    kc.term("opennlp","check")
+                    ).toString()
+            );
+    };
 	
 
     @Test

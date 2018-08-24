@@ -175,7 +175,7 @@ public final class KrillCollection extends Notifications {
     };
 
 
-	public KrillCollection fromCache (String ref) throws QueryException {
+	public KrillCollection fromStore (String ref) throws QueryException {
         Properties prop = KrillProperties.loadDefaultProperties();
 		this.prefiltered = null;
 	
