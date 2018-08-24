@@ -297,13 +297,12 @@ public class CollectionBuilder {
 
 			Element element = KrillCollection.cache.get(this.reference);
             if (element == null) {
-
                 KrillCollection kc = new KrillCollection();
 
-				kc.fromCache(this.reference);
+				kc.fromStore(this.reference);
 
-				if (kc.hasErrors()) {
-					throw new QueryException(
+				if (kc.hasErrors()) {                    
+                    throw new QueryException(
 						kc.getError(0).getCode(),
 						kc.getError(0).getMessage()
 						);
