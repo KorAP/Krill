@@ -1380,7 +1380,7 @@ public class TestKrillCollectionIndex {
     
     
 
-    private FieldDocument createDoc1 () {
+    public static FieldDocument createDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("UID", "1");
         fd.addString("ID", "doc-1");
@@ -1394,7 +1394,7 @@ public class TestKrillCollectionIndex {
     };
 
 
-    private FieldDocument createDoc2 () {
+    public static FieldDocument createDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("UID", "2");
 		fd.addString("ID", "doc-2");
@@ -1408,7 +1408,7 @@ public class TestKrillCollectionIndex {
     };
 
 
-    private FieldDocument createDoc3 () {
+    public static FieldDocument createDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("UID", "3");
 		fd.addString("ID", "doc-3");
