@@ -17,13 +17,15 @@ public class DocBits implements Serializable {
      */
     private static final long serialVersionUID = -3505650918983180852L;
     final long[] bits;
+    final int numbits;
 
-    public DocBits (long[] bits) {
+    public DocBits (long[] bits, int numbits) {
         this.bits = bits;
+        this.numbits = numbits;
     }
 
     public BitDocIdSet createBitDocIdSet () {
-        FixedBitSet bitset = new FixedBitSet(bits, bits.length);
+        FixedBitSet bitset = new FixedBitSet(bits, numbits);
         BitDocIdSet docIdSet = new BitDocIdSet(bitset);
         return docIdSet;
     }
@@ -34,12 +36,16 @@ public class DocBits implements Serializable {
         int i = 1;
         for (long b : bits) {
             sb.append(b);
-            if (i < bits.length) {
+            if (i < numbits) {
                 sb.append(",");
             }
             i++;
         }
         sb.append("]");
         return sb.toString();
+    }
+    
+    public long[] getBits () {
+        return bits;
     }
 }
