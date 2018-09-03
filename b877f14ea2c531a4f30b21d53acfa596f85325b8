@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6f5640c8_173a5810",
+        "filename": "Changes",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2018-09-03T14:08:33Z",
+      "side": 1,
+      "message": "Please prefix the change with [cleanup] or remove the line, as it is part of the bugfix.",
+      "revId": "b877f14ea2c531a4f30b21d53acfa596f85325b8",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c",
+      "unresolved": false
+    }
+  ]
+}
