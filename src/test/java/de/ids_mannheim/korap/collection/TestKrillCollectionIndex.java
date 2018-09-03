@@ -1330,7 +1330,34 @@ public class TestKrillCollectionIndex {
         assertEquals("[[a]] c d", kr.getMatch(0).getSnippetBrackets());
         assertEquals(1, kr.getTotalResults());
     };
-	
+
+	@Test
+    public void testKrillCollectionWithLargeVector () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc3());
+        ki.commit();
+        ki.addDoc(createDoc5000());
+        ki.commit();
+
+        String json = _getJSONString("collection_large_vector.jsonld");
+        KrillCollection kc = new KrillCollection(json);
+
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("i:a"));
+        ks.setCollection(kc);
+        kc.setIndex(ki);
+        
+        assertEquals("Documents", 4, kc.numberOf("documents"));
+
+        Result kr = ks.apply(ki);
+        assertEquals("[[a]] b c", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("[[a]] c d", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("[[a]] d e", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("[[a]] d e", kr.getMatch(3).getSnippetBrackets());
+    };
+
+    
 
     private FieldDocument createDoc1 () {
         FieldDocument fd = new FieldDocument();
@@ -1373,6 +1400,20 @@ public class TestKrillCollectionIndex {
         return fd;
     };
 
+    private FieldDocument createDoc5000 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("UID", "5000");
+		fd.addString("ID", "doc-5000");
+        fd.addString("author", "Sebastian");
+        fd.addKeyword("textClass", "Kultur Finanzen");
+        fd.addInt("pubDate", 20180202);
+        fd.addText("text", "Die Frau und der Mann küssten sich");
+        fd.addTV("tokens", "a d e", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
+				 + "[(2-3)s:d|i:d|_1$<i>2<i>3]" + "[(4-5)s:e|i:e|_2$<i>4<i>5]");
+        return fd;
+    };
+
+    
     private void testManualAddToCache (KrillIndex index, String filename, String vcName) throws IOException {
 		String json = _getJSONString(filename);
 

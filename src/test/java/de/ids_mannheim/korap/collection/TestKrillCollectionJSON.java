@@ -81,8 +81,7 @@ public class TestKrillCollectionJSON {
         assertEquals("-QueryWrapperFilter(author:/Goethe/)",
                 ks.getCollection().toString());
     };
-
-
+   
     @Test
     public void collectionWithNegativeString () {
         String query = _getJSONString("collection_ne.jsonld");
@@ -91,6 +90,16 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
         assertEquals("-author:Goethe", ks.getCollection().toString());
+    };
+
+    @Test
+    public void collectionWithLargeVector () {
+        String query = _getJSONString("collection_large_vector.jsonld");
+        Krill ks = new Krill(query);
+        assertFalse(ks.hasErrors());
+        assertFalse(ks.hasWarnings());
+        assertFalse(ks.hasMessages());
+        assertTrue(ks.getCollection().toString().contains("UID:5000"));
     };
 
 
