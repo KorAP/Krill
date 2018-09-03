@@ -1357,6 +1357,27 @@ public class TestKrillCollectionIndex {
         assertEquals("[[a]] d e", kr.getMatch(3).getSnippetBrackets());
     };
 
+	@Test
+    public void testKrillCollectionWithLargeVectorAndLargeIndex () throws IOException {
+        ki = new KrillIndex();
+        for (int i = 0; i < 6000; i++) {
+            FieldDocument fd = new FieldDocument();
+            fd.addString("UID", Integer.toString(i));
+            ki.addDoc(fd);
+            if (i == 4500)
+                ki.commit();
+        };
+
+        ki.commit();
+
+        String json = _getJSONString("collection_large_vector.jsonld");
+        KrillCollection kc = new KrillCollection(json);
+        kc.setIndex(ki);
+        
+        assertEquals("Documents", 5000, kc.numberOf("documents"));
+    };
+
+    
     
 
     private FieldDocument createDoc1 () {
