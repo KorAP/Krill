@@ -300,6 +300,7 @@ public final class KrillCollection extends Notifications {
             // Filter based on string
             else if (valtype.equals("type:string")) {
                 if (json.get("value").size() > 1){
+                    log.debug("koral:doc size " + json.get("value").size());
                     if (json.has("match")) {
                         match = json.get("match").asText();
                     }
@@ -829,8 +830,9 @@ public final class KrillCollection extends Notifications {
         for (LeafReaderContext context : leaves) {
             if (docIdMap.get(context.hashCode()) == null) {
                 FixedBitSet bitset = bits(context);
+                DocBits docBits = new DocBits(bitset.getBits(), bitset.length());
                 docIdMap.put(context.hashCode(),
-                        new DocBits(bitset.getBits()));
+                        docBits);
             }
         }
 

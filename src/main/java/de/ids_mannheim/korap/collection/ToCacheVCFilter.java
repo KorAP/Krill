@@ -59,7 +59,7 @@ public class ToCacheVCFilter extends Filter {
             }
         }
 
-        docIdMap.put(context.hashCode(), new DocBits(bitset.getBits()));
+        docIdMap.put(context.hashCode(), new DocBits(bitset.getBits(), bitset.length()));
         CachedVCData cachedVCData = new CachedVCData(new HashMap<>(docIdMap));
 
         KrillCollection.cache.remove(cacheKey);

@@ -1,17 +1,17 @@
 package de.ids_mannheim.korap.collection;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
-import java.io.File;
-import java.io.FileInputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.queries.TermsFilter;
-import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.PhraseQuery;
@@ -20,15 +20,11 @@ import org.apache.lucene.search.RegexpQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.io.IOUtils;
-
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.index.TextPrependedTokenStream;
 import de.ids_mannheim.korap.util.KrillDate;
-import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.util.StatusCodes;
 import de.ids_mannheim.korap.util.KrillProperties;
-
+import de.ids_mannheim.korap.util.QueryException;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
