@@ -2,6 +2,8 @@ package de.ids_mannheim.korap.collection;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
@@ -15,11 +17,13 @@ import org.apache.lucene.util.Bits;
  */
 public class CachedVCFilter extends Filter {
 
+    public static Logger jlog = LogManager.getLogger(CachedVCFilter.class);
+
     private CachedVCData cachedCollection;
-	private String cacheKey;
+    private String cacheKey;
 
     public CachedVCFilter (String cacheKey, CachedVCData cachedCollection) {
-		this.cacheKey = cacheKey;
+        this.cacheKey = cacheKey;
         this.cachedCollection = cachedCollection;
     }
 
@@ -30,14 +34,14 @@ public class CachedVCFilter extends Filter {
                 cachedCollection.getDocIdMap().get(context.hashCode());
 
         if (docBits == null) {
-            // does not exist in the cache
+            jlog.debug("LeafReaderContext is not found in the cache.");
             return null;
         }
         return docBits.createBitDocIdSet();
     }
 
-	@Override
+    @Override
     public String toString () {
-		return "referTo(cached:" + this.cacheKey + ")";
+        return "referTo(cached:" + this.cacheKey + ")";
     };
 }

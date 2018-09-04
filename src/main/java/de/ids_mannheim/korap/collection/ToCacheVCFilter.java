@@ -10,12 +10,15 @@ import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.collection.CollectionBuilder.Interface;
 import net.sf.ehcache.Element;
 
-/** Filter for virtual corpus / collection that should be cached.  
+/**
+ * Filter for virtual corpus / collection that should be cached.
  * 
  * @author margaretha
  *
@@ -25,7 +28,11 @@ public class ToCacheVCFilter extends Filter {
     private CollectionBuilder.Interface cbi;
     private String cacheKey;
     private Map<Integer, DocBits> docIdMap;
+    // EM: auto caching is disabled regarding issue #44 
+    private boolean isAutoCachingEnabled = false;
 
+    public final static Logger log = LoggerFactory.getLogger(ToCacheVCFilter.class);
+            
     public ToCacheVCFilter (String cacheKey, Map<Integer, DocBits> docIdMap,
                             Interface cbi, Filter filter) {
         this.cacheKey = cacheKey;
@@ -54,22 +61,27 @@ public class ToCacheVCFilter extends Filter {
         }
         else {
             bitset.or(docIdSet.iterator());
-            if (cbi.isNegative()){
+            if (cbi.isNegative()) {
                 bitset.flip(0, maxDoc);
             }
         }
 
-        docIdMap.put(context.hashCode(), new DocBits(bitset.getBits(), bitset.length()));
-        CachedVCData cachedVCData = new CachedVCData(new HashMap<>(docIdMap));
+        if (isAutoCachingEnabled) {
+            docIdMap.put(context.hashCode(),
+                    new DocBits(bitset.getBits(), bitset.length()));
+            CachedVCData cachedVCData =
+                    new CachedVCData(new HashMap<>(docIdMap));
 
-        KrillCollection.cache.remove(cacheKey);
-        KrillCollection.cache.put(new Element(cacheKey, cachedVCData));
+            KrillCollection.cache.remove(cacheKey);
+            KrillCollection.cache.put(new Element(cacheKey, cachedVCData));
+        }
 
+        log.debug("To cache doc bits length: "+ docIdSet.bits().length());
         return docIdSet;
     }
 
     @Override
     public String toString () {
-		return "referTo(" + this.cacheKey + ")";
+        return "referTo(" + this.cacheKey + ")";
     };
 }
