@@ -455,6 +455,7 @@ public class TestKrillCollectionIndex {
 	};
 
     @Test
+    @Ignore
     public void testCache () throws IOException {
 
 		Properties prop = KrillProperties.loadDefaultProperties();
@@ -556,6 +557,7 @@ public class TestKrillCollectionIndex {
     };
 
 	@Test
+	@Ignore
     public void testNestedNamedVCs () throws IOException {
         Properties prop = KrillProperties.loadDefaultProperties();
 
@@ -666,6 +668,7 @@ public class TestKrillCollectionIndex {
 
 
 	@Test
+	@Ignore
     public void testNamedVCsAfterQueryWithMissingDocs () throws IOException {
         Properties prop = KrillProperties.loadDefaultProperties();
 

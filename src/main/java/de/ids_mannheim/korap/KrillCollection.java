@@ -81,7 +81,7 @@ public final class KrillCollection extends Notifications {
     public static final boolean DEBUG = false;
 
     public final static CacheManager cacheManager = CacheManager.newInstance();
-    public final static Cache cache = cacheManager.getCache("named_vc");
+    public static Cache cache = cacheManager.getCache("named_vc");
 
     /**
      * Construct a new KrillCollection.
