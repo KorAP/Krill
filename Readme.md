@@ -54,14 +54,14 @@ Further dependencies are resolved using Maven.
 
 ## Setup
 
-To fetch the latest version of Krill ...
+To install the latest version of Krill from scratch, do ...
 
 ```
 $ git clone https://github.com/KorAP/Krill
 $ cd Krill
 ```
 
-To run the test suite ...
+Then run the test suite ...
 
 ```
 $ mvn clean test
@@ -73,6 +73,16 @@ To build a Krill library and install it in your local Maven repository
 ```
 $ mvn install
 ```
+
+To update an existing repository, pull the latest version at the Krill 
+installation directory
+
+```
+$ git pull origin master
+```
+
+Afterwards, rerun the test suite and install the library.
+
 ## Caveats
 
 Krill operates on tokens and is limited to a single tokenization stream.

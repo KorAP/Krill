@@ -22,7 +22,8 @@
     - [cleanup] Move caching mechanism to toFilter() phase (diewald)
     - [cleanup] Rewrite test suite for caching to be part of
       regular test suite (diewald)
-    - [bugfix] Fixed missing docs in VC cache (margaretha)  
+    - [bugfix] Fixed missing docs in VC cache (margaretha)
+    - [documentation] Added update hint to Readme (diewald)
 
 0.57 2018-04-05
     - [feature] Support text queries in metadata
