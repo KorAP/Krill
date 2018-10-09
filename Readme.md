@@ -73,6 +73,16 @@ To build a Krill library and install it in your local Maven repository
 ```
 $ mvn install
 ```
+
+To update an existing installation, change into the Krill directory,
+and pull the latest version ...
+
+```
+$ git pull origin master
+```
+
+Afterwards, rerun the test suite and install the library.
+
 ## Caveats
 
 Krill operates on tokens and is limited to a single tokenization stream.
