@@ -1,10 +1,9 @@
 package de.ids_mannheim.korap.index;
 
+import static de.ids_mannheim.korap.TestSimple.getJsonString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-import java.io.*;
-import static de.ids_mannheim.korap.TestSimple.*;
+import java.io.IOException;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.RegexpQuery;
@@ -20,10 +19,8 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
-import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
