@@ -30,11 +30,9 @@ import de.ids_mannheim.korap.query.SpanExpansionQuery;
  * to the
  * <em>right</em> of the original span.
  * 
- * The expansion offsets, namely the start and end position of an
- * expansion
- * part, can be stored in payloads. A class number is assigned to the
- * offsets
- * grouping them altogether.
+ * The expansion offsets, namely the start and end positions of an
+ * expansion part, are stored in payloads. A class number is assigned
+ * to the offsets grouping them altogether.
  * 
  * @author margaretha
  */
@@ -48,7 +46,6 @@ public class ExpandedExclusionSpans extends SimpleSpans {
     private Spans notClause;
 
     private long matchCost;
-
 
     /**
      * Constructs ExpandedExclusionSpans from the given
@@ -91,14 +88,12 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         hasMoreSpans = firstSpans.next();
     }
 
-
     @Override
     public boolean next () throws IOException {
         matchPayload.clear();
         isStartEnumeration = false;
         return advance();
     }
-
 
     /**
      * Advances the ExpandedExclusionSpans to the next match.
@@ -131,7 +126,6 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         return false;
     }
 
-
     /**
      * Finds matches by expanding the firstspans either to the left or
      * to the
@@ -154,38 +148,41 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         }
     }
 
-
     /**
      * Expands the firstspans to the left.
      * 
      * @throws IOException
      */
     private void expandLeft () throws IOException {
-        //int counter = max;
+        // int counter = max;
         int maxPos = max;
         CandidateSpan lastNotClause = null;
-        while (hasMoreNotClause && notClause.start() < firstSpans.start()) {
+        while (hasMoreNotClause && 
+                notClause.doc() == firstSpans.doc() && 
+                notClause.start() < firstSpans.start()) {
 
             // between max and firstspan.start()
             if (notClause.start() >= firstSpans.start() - maxPos) {
                 maxPos = firstSpans.start() - notClause.start() - 1;
                 lastNotClause = new CandidateSpan(notClause);
-                //counter--;
+                // counter--;
             }
             if (!notClause.next()) {
                 hasMoreNotClause = false;
             }
         }
 
-        // if a notClause is between max and firstspan.start, 
+        // if a notClause is between max and firstspan.start,
         // then maxPos = last NotClause pos -1
         generateCandidates(min, maxPos, direction);
 
         if (lastNotClause != null && hasMoreNotClause)
             while ((hasMoreSpans = firstSpans.next())
-                    // the next notClause is not in between max and firstspan.start()
+                    // the next notClause is not in between max and
+                    // firstspan.start()
                     && notClause.start() > firstSpans.start()
-                    // the last notClause is in between max and firstspan.start()
+                    // the last notClause is in between max and
+                    // firstspan.start()
                     && lastNotClause.getStart() < firstSpans.start()
                     && lastNotClause.getStart() >= firstSpans.start() - max) {
 
@@ -196,7 +193,6 @@ public class ExpandedExclusionSpans extends SimpleSpans {
             hasMoreSpans = firstSpans.next();
         }
     }
-
 
     /**
      * Expands the firstspans to the right.
@@ -209,7 +205,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         boolean isFound = false;
 
         CandidateSpan firstNotClause = null;
-        //System.out.println("main start:"+firstSpans.start());
+        // System.out.println("main start:"+firstSpans.start());
         while (hasMoreNotClause && notClause.start() < expansionEnd) {
             // between firstspan.end() and expansionEnd
             if (!isFound && notClause.start() >= firstSpans.end()) {
@@ -222,7 +218,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
             }
         }
         // if a notClause is between firstSpan.end and max
-        // then maxPos = the first notClause pos -1 
+        // then maxPos = the first notClause pos -1
         generateCandidates(min, maxPos, direction);
 
         if (firstNotClause != null) {
@@ -230,7 +226,9 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                     // in between
                     && firstNotClause.getStart() < firstSpans.end() + max
                     && firstNotClause.getStart() >= firstSpans.end()) {
-                //System.out.println("first start:"+firstNotClause.getStart()+", main start:"+firstSpans.start());
+                // System.out.println("first
+                // start:"+firstNotClause.getStart()+", main
+                // start:"+firstSpans.start());
                 maxPos = firstNotClause.getStart() - firstSpans.end() - 1;
                 generateCandidates(min, maxPos, direction);
             }
@@ -239,7 +237,6 @@ public class ExpandedExclusionSpans extends SimpleSpans {
             hasMoreSpans = firstSpans.next();
         }
     }
-
 
     /**
      * Creates new candidate matches for the given direction, minimum
@@ -265,7 +262,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 start = Math.max(0, firstSpans.start() - counter);
                 if (start > -1) {
                     end = firstSpans.end();
-                    //System.out.println(start+","+end);
+                    // System.out.println(start+","+end);
                     cs = new CandidateSpan(start, end, firstSpans.doc(),
                             firstSpans.cost(),
                             createPayloads(start, firstSpans.start()));
@@ -279,7 +276,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
             while (counter <= maxPos) {
                 start = firstSpans.start();
                 end = firstSpans.end() + counter;
-                //System.out.println(start+","+end);
+                // System.out.println(start+","+end);
 
                 cs = new CandidateSpan(start, end, firstSpans.doc(),
                         firstSpans.cost(),
@@ -289,7 +286,6 @@ public class ExpandedExclusionSpans extends SimpleSpans {
             }
         }
     }
-
 
     /**
      * Creates payloads for a candiate match by copying the payloads
@@ -314,12 +310,11 @@ public class ExpandedExclusionSpans extends SimpleSpans {
             payload.addAll(firstSpans.getPayload());
         }
         if (classNumber > 0) {
-            //System.out.println("Extension offsets "+start+","+end);
+            // System.out.println("Extension offsets "+start+","+end);
             payload.add(createExtensionPayloads(start, end));
         }
         return payload;
     }
-
 
     /**
      * Generates a byte array of extension offsets and class number to
@@ -342,7 +337,6 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         return buffer.array();
     }
 
-
     @Override
     public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (firstSpans.doc() < target)) {
@@ -354,7 +348,6 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         matchPayload.clear();
         return advance();
     }
-
 
     @Override
     public long cost () {

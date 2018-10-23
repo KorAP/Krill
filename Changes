@@ -1,4 +1,4 @@
-0.58.0 2018-09-03
+0.58.0 2018-10-23
     - [feature] Implemented referencing cached collection (margaretha)
     - [feature] Implemented deserialization of collection with array values
       and cache option (margaretha)
@@ -19,6 +19,7 @@
     - [cleanup] Rewrite test suite for caching to be part of
       regular test suite (diewald)
     - [bugfix] Fixed missing docs in VC cache (margaretha)
+    - [bugfix] Span expansion with negation (margaretha)
     
 
 0.57 2018-04-05
