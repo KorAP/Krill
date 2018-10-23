@@ -1,10 +1,9 @@
 package de.ids_mannheim.korap.index;
 
+import static de.ids_mannheim.korap.TestSimple.getJsonString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
-import java.io.*;
-import static de.ids_mannheim.korap.TestSimple.*;
+import java.io.IOException;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.RegexpQuery;
@@ -20,10 +19,8 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
-import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -479,6 +476,71 @@ public class TestSpanExpansionIndex {
         
     }
 
+
+    @Test
+    public void indexExpansionWithNegationDifferentFragments () throws Exception {
+        KrillIndex ki = new KrillIndex();
+
+        // Add to the index in a single fragment
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base",
+                 "a B c",
+                 "[(0-1)s:a|i:a|_1$<i>0<i>1]"
+                 + "[(1-2)s:B|i:b|_2$<i>1<i>2|]"
+                 + "[(2-3)s:c|i:c|_3$<i>2<i>3]");
+        ki.addDoc(fd);
+        ki.commit();
+        fd.addTV("base",
+                 "a b c",
+                 "[(0-1)s:a|i:a|_1$<i>0<i>1]"
+                 + "[(1-2)s:b|i:b|_2$<i>1<i>2|]"
+                 + "[(2-3)s:c|i:c|_3$<i>2<i>3]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+        SpanQuery sq = kq.seq(kq.seg("s:a")).append(kq.seg().without("s:B")).append(kq.seg("s:c")).toQuery();
+        assertEquals("spanNext(base:s:a, spanExpansion(base:s:c, !base:s:B{1, 1}, left))", sq.toString());
+        Krill ks = new Krill(sq);
+        ks.getMeta().getContext().left.setToken(true).setLength(0);
+        ks.getMeta().getContext().right.setToken(true).setLength(0);
+
+        Result kr = ki.search(ks);
+        assertEquals((long) 1, kr.getTotalResults());
+    };
+
+    @Test
+    public void indexExpansionWithNegationSameFragmentBug () throws Exception {
+        KrillIndex ki = new KrillIndex();
+
+        // Add to the index in a single fragment
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base",
+                 "a B c",
+                 "[(0-1)s:a|i:a|_1$<i>0<i>1]"
+                 + "[(1-2)s:B|i:b|_2$<i>1<i>2|]"
+                 + "[(2-3)s:c|i:c|_3$<i>2<i>3]");
+        ki.addDoc(fd);
+        fd.addTV("base",
+                 "a b c",
+                 "[(0-1)s:a|i:a|_1$<i>0<i>1]"
+                 + "[(1-2)s:b|i:b|_2$<i>1<i>2|]"
+                 + "[(2-3)s:c|i:c|_3$<i>2<i>3]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+        SpanQuery sq = kq.seq(kq.seg("s:a")).append(kq.seg().without("s:B")).append(kq.seg("s:c")).toQuery();
+        assertEquals("spanNext(base:s:a, spanExpansion(base:s:c, !base:s:B{1, 1}, left))", sq.toString());
+        Krill ks = new Krill(sq);
+        ks.getMeta().getContext().left.setToken(true).setLength(0);
+        ks.getMeta().getContext().right.setToken(true).setLength(0);
+
+        Result kr = ki.search(ks);
+        assertEquals((long) 1, kr.getTotalResults());
+    };
+
+    
     private FieldDocument createFieldDoc6 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-6");
