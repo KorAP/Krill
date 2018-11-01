@@ -60,6 +60,36 @@ public class TestSimple {
         w.addDocument(doc);
     };
 
+    // Add document
+    public static FieldDocument simpleFieldDoc (String s) {
+        String[] characters = s.split("");
+
+        FieldDocument fd = new FieldDocument();
+        String surface = "";
+        String annotation = "";
+
+        for (int i = 0; i < characters.length; i++) {
+            String fixChar = characters[i];
+            surface += fixChar;
+            annotation +=
+                "[("+i+"-"+(i+1)+")s:"+fixChar+
+                "|_"+i+"$<i>"+i+"<i>"+(i+1)+"]";
+        };
+
+        fd.addTV("base",surface, annotation);
+        return fd;
+    };
+
+    public static FieldDocument simpleFuzzyFieldDoc (List<String> chars, int minLength, int maxLength) {
+        String surface = "";
+
+        for (int i = 0; i < (int)(Math.random() * (maxLength - minLength)) + minLength; i++) {
+            String randomChar = chars.get((int)(Math.random() * 6));
+            surface += randomChar;
+        };
+        return simpleFieldDoc(surface);
+
+    };
 
     // Get Term Vector
     public static MultiTermTokenStream getTermVector (String stream) {
