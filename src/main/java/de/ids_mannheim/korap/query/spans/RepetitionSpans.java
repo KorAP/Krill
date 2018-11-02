@@ -86,13 +86,17 @@ public class RepetitionSpans extends SimpleSpans {
 
         while (hasMoreSpans || !matchList.isEmpty()) {
             if (!matchList.isEmpty()) {
+
+                // Take the first element of the matchlist
                 setMatchProperties(matchList.get(0));
                 matchList.remove(0);
+               
                 return true;
             }
             matchCost = 0;
 
             List<CandidateSpan> adjacentSpans = collectAdjacentSpans();
+
             setMatchList(adjacentSpans);
         }
         return false;
@@ -135,23 +139,30 @@ public class RepetitionSpans extends SimpleSpans {
             i++;
         }
         while ((hasMoreSpans = firstSpans.next())
-                && startSpan.getDoc() == firstSpans.doc()) {
+               && startSpan.getDoc() == firstSpans.doc()) {
 
             if (DEBUG) {
-                log.debug("Check adjacency at {}-{}|{}-{} in {}",
-                        prevSpan.getStart(), prevSpan.getEnd(),
-                        firstSpans.start(), firstSpans.end(),
-                        startSpan.getDoc());
+                log.debug("Check adjacency of rep-spans at {}-{}|{}-{} in {}={}={}",
+                          prevSpan.getStart(), prevSpan.getEnd(),
+                          firstSpans.start(), firstSpans.end(),
+                          startSpan.getDoc(), firstSpans.doc(), prevSpan.getDoc());
             };
 
             if (firstSpans.start() > prevSpan.getEnd()) {
                 candidates.add(new CandidateSpan(firstSpans));
                 break;
             }
+
+            /*
+             * ND: This seems to be suboptimal, in cases of searching
+             *     for "ab{2,3}c" and a match like "abbbbbbbbbbbbbbbbbbbbbbbbbbc".
+             */
             else if (firstSpans.start() == prevSpan.getEnd()) {
                 prevSpan = new CandidateSpan(firstSpans);
                 adjacentSpans.add(prevSpan);
             }
+
+            // firstSpan.start() < prevSpan.getEnd()
             else {
                 candidates.add(new CandidateSpan(firstSpans));
             }
@@ -169,6 +180,7 @@ public class RepetitionSpans extends SimpleSpans {
      */
     private void setMatchList (List<CandidateSpan> adjacentSpans) {
         CandidateSpan startSpan, endSpan, matchSpan;
+        
         for (int i = min; i < max + 1; i++) {
             int j = 0;
             int endIndex;
@@ -180,6 +192,14 @@ public class RepetitionSpans extends SimpleSpans {
                         matchSpan = startSpan.clone();
                         matchSpan.setPayloads(computeMatchPayload(adjacentSpans,
                                 0, endIndex - 1));
+
+                        if (DEBUG) {
+                            log.debug("1. Add span to matchlist: {}-{} at {}",
+                                      matchSpan.getStart(),
+                                      matchSpan.getEnd(),
+                                      matchSpan.getDoc());
+                        };
+
                         matchList.add(matchSpan);
                     }
                     catch (CloneNotSupportedException e) {
@@ -188,21 +208,36 @@ public class RepetitionSpans extends SimpleSpans {
                 }
                 else {
                     endSpan = adjacentSpans.get(endIndex);
-                    matchSpan = new CandidateSpan(startSpan.getStart(),
-                            endSpan.getEnd(), startSpan.getDoc(),
-                            computeMatchCost(adjacentSpans, 0, endIndex),
-                            computeMatchPayload(adjacentSpans, 0, endIndex));
+                    matchSpan = new CandidateSpan(
+                        startSpan.getStart(),
+                        endSpan.getEnd(),
+                        startSpan.getDoc(),
+                        computeMatchCost(adjacentSpans, 0, endIndex),
+                        computeMatchPayload(adjacentSpans, 0, endIndex)
+                        );
                     //System.out.println("c:"+matchSpan.getCost() +" p:"+ matchSpan.getPayloads().size());
                     //System.out.println(startSpan.getStart() +","+endSpan.getEnd());
+
+                    if (DEBUG) {
+                        log.debug("2. Add span to matchlist: {}-{} at {}={}",
+                                  matchSpan.getStart(),
+                                  matchSpan.getEnd(),
+                                  matchSpan.getDoc(),
+                                  endSpan.getDoc());
+                    };
+                    
                     matchList.add(matchSpan);
                 }
                 j++;
             }
 
+            /*
             if (j + i == adjacentSpans.size()) {
 
             }
+            */
         }
+
         Collections.sort(matchList);
     }
 
@@ -269,6 +304,14 @@ public class RepetitionSpans extends SimpleSpans {
      */
     private void setMatchProperties (CandidateSpan candidateSpan)
             throws IOException {
+
+        if (DEBUG) {
+            log.debug("Set match properties to {}-{} at {}",
+                      candidateSpan.getStart(),
+                      candidateSpan.getEnd(),
+                      candidateSpan.getDoc()                              
+                );
+        };
         matchDocNumber = candidateSpan.getDoc();
         matchStartPosition = candidateSpan.getStart();
         matchEndPosition = candidateSpan.getEnd();
@@ -280,6 +323,12 @@ public class RepetitionSpans extends SimpleSpans {
 
     @Override
     public boolean skipTo (int target) throws IOException {
+        if (DEBUG) {
+            log.debug("Skip repetitionSpans to {}", target);
+        };
+        matchDocNumber = -1;
+        matchStartPosition = -1;
+        matchEndPosition = -1;
         if (!candidates.isEmpty()) {
             Iterator<CandidateSpan> i = candidates.iterator();
             while (i.hasNext()) {
@@ -298,6 +347,13 @@ public class RepetitionSpans extends SimpleSpans {
                 hasMoreSpans = false;
                 return false;
             }
+            if (DEBUG) {
+                log.debug("Skip firstSpans to {}={} succeed with positions {}-{}",
+                          target,
+                          firstSpans.doc(),
+                          firstSpans.start(),
+                          firstSpans.end());
+            };
         }
         matchList.clear();
         return advance();

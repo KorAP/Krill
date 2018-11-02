@@ -85,12 +85,22 @@ public class NextSpans extends SimpleSpans {
                 || !candidateList.isEmpty()) {
 
             // Check, if the matchlist is fine
-            // It may be enough to clear it though
-            while (!matchList.isEmpty() && matchList.get(0).getDoc() != firstSpans.doc()) {
-                matchList.remove(0);
+            if (!matchList.isEmpty() &&
+                candidateListDocNum != firstSpans.doc()) {
+
                 if (DEBUG) {
-                    log.debug("Remove first entry from matchlist because it's not in the same doc");
+                    log.debug(
+                        "Remove entries from matchlist because " +
+                        "it's not in the same doc {}!={}",
+                        firstSpans.doc(),
+                        candidateListDocNum);
                 };
+
+                // Clear matchList
+                matchList.clear();
+
+                // Set new matchlist
+                setMatchList();
             };
 
             if (!matchList.isEmpty()) {                
