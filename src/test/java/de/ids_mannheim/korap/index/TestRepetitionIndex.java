@@ -3,24 +3,33 @@ package de.ids_mannheim.korap.index;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.*;
+import java.util.regex.*;
 
+import static de.ids_mannheim.korap.TestSimple.getJsonString;
+import static de.ids_mannheim.korap.TestSimple.simpleFieldDoc;
+import static de.ids_mannheim.korap.TestSimple.simpleFuzzyFieldDoc;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
+import org.junit.Ignore;
 
+import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.QueryException;
 
 public class TestRepetitionIndex {
 
     private KrillIndex ki;
     private Result kr;
-
+    private FieldDocument fd;
 
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
@@ -251,15 +260,6 @@ public class TestRepetitionIndex {
         kr = ki.search(sq, (short) 10);
         // 2-4, 2-5, 3-5, 3-6, 4-6 
         assertEquals((long) 5, kr.getTotalResults());
-
-        //        System.out.print(kr.getTotalResults()+"\n");
-        //		for (int i=0; i< kr.getTotalResults(); i++){
-        //			System.out.println(
-        //				kr.match(i).getLocalDocID()+" "+
-        //				kr.match(i).startPos + " " +
-        //				kr.match(i).endPos
-        //			);
-        //		}
     }
 
 
@@ -295,5 +295,140 @@ public class TestRepetitionIndex {
         	System.out.println(km.getSnippetBrackets());
         	System.out.println(km.getStartPos() +","+km.getEndPos());
         }*/
+    };
+
+    @Test
+    public void testRepetitionSnippetBug () throws IOException, QueryException {
+        // Construct index
+        Pattern p = Pattern.compile("bccc?d");
+        
+        // Der [corenlp/p=ADJA]{2,3} Baum
+
+        QueryBuilder qb = new QueryBuilder("base");
+
+        // b c{2,3} d
+        SpanQuery sq = qb.seq(
+            qb.seg("s:b")
+            ).append(
+                qb.repeat(qb.seg("s:c"),2,3)
+                ).append(
+                    qb.seg("s:d")
+                    ).toQuery();
+        
+        Krill ks = new Krill(sq);
+
+        assertEquals(ks.getSpanQuery().toString(),
+                     "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)");
+
+        // simpleDocTest
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("abccde"));
+        ki.commit();
+        Result kr = ks.apply(ki);
+        assertEquals(1,kr.getTotalResults());
+
+        // fuzzingRepetitionBug();
+
+        // First fuzzed failure (0 vs 1)
+        ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("cccd"));
+        ki.addDoc(simpleFieldDoc("bccccccaeae"));
+        ki.addDoc(simpleFieldDoc("cbcedb"));
+
+        ki.commit();
+        kr = ks.apply(ki);
+        assertEquals(0,kr.getTotalResults());
+
+        // Second fuzzed failure (1 vs 0)
+        ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("cdddbc"));
+        ki.addDoc(simpleFieldDoc("bccc"));
+        ki.addDoc(simpleFieldDoc("cbcccd"));
+
+        ki.commit();
+        kr = ks.apply(ki);
+        assertEquals(1,kr.getTotalResults());
+            
+        // Third fuzzed failure (1 vs 2)
+        ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("bccdcb"));
+        ki.addDoc(simpleFieldDoc("ebccce"));
+        ki.addDoc(simpleFieldDoc("adbdcd"));
+        
+        ki.commit();
+        kr = ks.apply(ki);
+        assertEquals(1,kr.getTotalResults());
+    };
+
+
+    /**
+     * This method creates a corpus using fuzzing to
+     * check for unexpected, failing constellations
+     * regarding repetition queries.
+     * By shrinking the accepted result length, it tries
+     * to minimize the complexity of the constellations.
+     */
+    public void fuzzingRepetitionBug () throws IOException, QueryException {
+
+        List<String> chars = Arrays.asList("a", "b", "c", "c", "d", "e");
+
+        // Construct index
+        Pattern p = Pattern.compile("bccc?d");
+        QueryBuilder qb = new QueryBuilder("base");
+
+        // b c{2,3} d
+        SpanQuery sq = qb.seq(
+            qb.seg("s:b")
+            ).append(
+                qb.repeat(qb.seg("s:c"),2,3)
+                ).append(
+                    qb.seg("s:d")
+                    ).toQuery();
+        
+        Krill ks = new Krill(sq);
+
+        assertEquals(ks.getSpanQuery().toString(),
+                     "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)");
+
+        String lastFailureConf = "";
+
+        int minLength = 6;
+        int maxLength = 22;
+        int maxDocs = 8;
+
+        // Create fuzzy corpora (1000 trials)
+        for (int x = 0; x < 100000; x++) {
+            KrillIndex ki = new KrillIndex();
+            ArrayList<String> list = new ArrayList<String>();
+            int c = 0;
+
+            // Create a corpus of 8 fuzzy docs
+            for (int i = 0; i < (int)(Math.random() * maxDocs); i++) {
+                FieldDocument testDoc = simpleFuzzyFieldDoc(chars, minLength, maxLength);
+                String testString = testDoc.doc.getField("base").stringValue();
+                Matcher m = p.matcher(testString);
+                list.add(testString);
+                while (m.find())
+                    c++;
+                ki.addDoc(testDoc);
+            };
+
+            ki.commit();
+
+            Result kr = ks.apply(ki);
+
+            // Check if the regex-calculated matches are correct, otherwise
+            // spit out the corpus configurations
+            if (c != kr.getTotalResults()) {
+                String failureConf = c + ":" + kr.getTotalResults() + " " + list.toString();
+                if (lastFailureConf.length() == 0 ||
+                    failureConf.length() < lastFailureConf.length()) {
+                    System.err.println(failureConf);
+                    lastFailureConf = failureConf;
+                    minLength--;
+                    maxDocs--;
+                };
+            };
+        };
     };
 }
