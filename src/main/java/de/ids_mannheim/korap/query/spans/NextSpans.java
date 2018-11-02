@@ -11,6 +11,9 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.ids_mannheim.korap.query.SpanNextQuery;
 
 /**
@@ -25,6 +28,12 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
  * @author diewald
  */
 public class NextSpans extends SimpleSpans {
+
+    // Logger
+    private final Logger log = LoggerFactory.getLogger(NextSpans.class);
+
+    // This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
 
     private List<CandidateSpan> matchList;
     private List<CandidateSpan> candidateList;
@@ -71,13 +80,24 @@ public class NextSpans extends SimpleSpans {
      * @throws IOException
      */
     private boolean advance () throws IOException {
-
+       
         while (hasMoreSpans || !matchList.isEmpty()
                 || !candidateList.isEmpty()) {
-            if (!matchList.isEmpty()) {
+
+            // Check, if the matchlist is fine
+            // It may be enough to clear it though
+            while (!matchList.isEmpty() && matchList.get(0).getDoc() != firstSpans.doc()) {
+                matchList.remove(0);
+                if (DEBUG) {
+                    log.debug("Remove first entry from matchlist because it's not in the same doc");
+                };
+            };
+
+            if (!matchList.isEmpty()) {                
                 matchDocNumber = firstSpans.doc();
                 matchStartPosition = firstSpans.start();
                 matchEndPosition = matchList.get(0).getEnd();
+                
                 spanId = matchList.get(0).getSpanId();
                 if (collectPayloads)
                     matchPayload.addAll(matchList.get(0).getPayloads());
@@ -112,6 +132,16 @@ public class NextSpans extends SimpleSpans {
         else {
             candidateList.clear();
             if (hasMoreSpans && ensureSameDoc(firstSpans, secondSpans)) {
+                if (DEBUG) {
+                    log.debug("First and second span now in same doc: {}-{} and {}-{} in {}={}",
+                              firstSpans.start(),
+                              firstSpans.end(),
+                              secondSpans.start(),
+                              secondSpans.end(),
+                              firstSpans.doc(),
+                              secondSpans.doc()
+                        );
+                }
                 candidateListDocNum = firstSpans.doc();
                 searchMatches();
             }
@@ -133,6 +163,7 @@ public class NextSpans extends SimpleSpans {
         CandidateSpan cs;
         while (i.hasNext()) {
             cs = i.next();
+
             if (cs.getStart() == firstSpans.end()) {
                 addMatch(cs);
             }
@@ -161,6 +192,14 @@ public class NextSpans extends SimpleSpans {
                 break;
             }
             if (secondSpans.start() == firstSpans.end()) {
+                
+                if (DEBUG) {
+                    log.debug("Check adjacency at {}-{}|{}-{} in {}={}={}",
+                              firstSpans.start(), firstSpans.end(),
+                              secondSpans.start(), secondSpans.end(),
+                              firstSpans.doc(), secondSpans.doc(), candidateListDocNum);
+                };
+                
                 candidateList.add(new CandidateSpan(secondSpans));
                 addMatch(new CandidateSpan(secondSpans));
             }
@@ -201,10 +240,23 @@ public class NextSpans extends SimpleSpans {
     @Override
     public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (firstSpans.doc() < target)) {
+
             if (!firstSpans.skipTo(target)) {
                 hasMoreSpans = false;
                 return false;
-            }
+            };
+
+            if (DEBUG) {
+                log.debug("Skip firstSpans to {}={} succeed with positions {}-{}",
+                          target,
+                          firstSpans.doc(),
+                          firstSpans.start(),
+                          firstSpans.end());
+                log.debug("secondSpans is at positions {}-{} at {}",
+                          secondSpans.start(),
+                          secondSpans.end(),
+                          secondSpans.doc());
+            };
         }
         matchPayload.clear();
         return advance();

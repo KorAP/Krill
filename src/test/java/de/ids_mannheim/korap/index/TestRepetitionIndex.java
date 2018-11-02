@@ -298,7 +298,7 @@ public class TestRepetitionIndex {
     };
 
     @Test
-    public void testRepetitionSnippetBug () throws IOException, QueryException {
+    public void testRepetitionSnippetBug1 () throws IOException, QueryException {
         // Construct index
         Pattern p = Pattern.compile("bccc?d");
         
@@ -331,24 +331,14 @@ public class TestRepetitionIndex {
 
         // First fuzzed failure (0 vs 1)
         ki = new KrillIndex();
-        ki.addDoc(simpleFieldDoc("cccd"));
-        ki.addDoc(simpleFieldDoc("bccccccaeae"));
-        ki.addDoc(simpleFieldDoc("cbcedb"));
+        ki.addDoc(simpleFieldDoc("cccd"));        // 0
+        ki.addDoc(simpleFieldDoc("bccccccaeae")); // 1
+        ki.addDoc(simpleFieldDoc("cbcedb"));      // 2
 
         ki.commit();
         kr = ks.apply(ki);
         assertEquals(0,kr.getTotalResults());
 
-        // Second fuzzed failure (1 vs 0)
-        ki = new KrillIndex();
-        ki.addDoc(simpleFieldDoc("cdddbc"));
-        ki.addDoc(simpleFieldDoc("bccc"));
-        ki.addDoc(simpleFieldDoc("cbcccd"));
-
-        ki.commit();
-        kr = ks.apply(ki);
-        assertEquals(1,kr.getTotalResults());
-            
         // Third fuzzed failure (1 vs 2)
         ki = new KrillIndex();
         ki.addDoc(simpleFieldDoc("bccdcb"));
@@ -360,6 +350,41 @@ public class TestRepetitionIndex {
         assertEquals(1,kr.getTotalResults());
     };
 
+    @Test
+    public void testRepetitionSnippetBug2 () throws IOException, QueryException {
+        // Construct index
+        Pattern p = Pattern.compile("bccc?d");
+        
+        QueryBuilder qb = new QueryBuilder("base");
+
+        // b c{2,3} d
+        SpanQuery sq = qb.seq(
+            qb.seg("s:b")
+            ).append(
+                qb.repeat(qb.seg("s:c"),2,3)
+                ).append(
+                    qb.seg("s:d")
+                    ).toQuery();
+        
+        Krill ks = new Krill(sq);
+
+        assertEquals(ks.getSpanQuery().toString(),
+                     "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)");
+
+        // fuzzingRepetitionBug();
+
+        // Second fuzzed failure (1 vs 0)
+        ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("cdddbc"));
+        ki.addDoc(simpleFieldDoc("bccc"));
+        ki.addDoc(simpleFieldDoc("cbcccd"));
+
+        ki.commit();
+        kr = ks.apply(ki);
+        assertEquals(1,kr.getTotalResults());
+    };
+
+    
 
     /**
      * This method creates a corpus using fuzzing to
