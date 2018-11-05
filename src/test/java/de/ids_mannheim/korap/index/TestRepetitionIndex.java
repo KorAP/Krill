@@ -384,7 +384,41 @@ public class TestRepetitionIndex {
         assertEquals(1,kr.getTotalResults());
     };
 
-    
+    @Test
+    @Ignore
+    public void testRepetitionSnippetBug3 () throws IOException, QueryException {
+        // Construct index
+        Pattern p = Pattern.compile("bccc?d");
+        
+        QueryBuilder qb = new QueryBuilder("base");
+
+        // b c{2,3} d
+        SpanQuery sq = qb.seq(
+            qb.seg("s:b")
+            ).append(
+                qb.repeat(qb.seg("s:c"),2,3)
+                ).append(
+                    qb.seg("s:d")
+                    ).toQuery();
+        
+        Krill ks = new Krill(sq);
+
+        assertEquals(ks.getSpanQuery().toString(),
+                     "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)");
+
+        // fuzzingRepetitionBug();
+
+        // Fourth fuzzed failure (1 vs 0)
+        ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("cdcd"));
+        ki.addDoc(simpleFieldDoc("bcebccac"));
+        ki.addDoc(simpleFieldDoc("bccdcecc")); // !
+
+        ki.commit();
+        kr = ks.apply(ki);
+        assertEquals(1,kr.getTotalResults());
+    };
+
 
     /**
      * This method creates a corpus using fuzzing to
