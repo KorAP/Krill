@@ -30,7 +30,6 @@
       regular test suite (diewald)
     - [bugfix] Fixed missing docs in VC cache (margaretha)
     - [documentation] Added update hint to Readme (diewald)
-	- [bugfix] Span expansion with negation (margaretha)
 
 0.57 2018-04-05
     - [feature] Support text queries in metadata
