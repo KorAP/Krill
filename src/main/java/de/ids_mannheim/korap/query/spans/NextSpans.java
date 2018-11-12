@@ -116,8 +116,9 @@ public class NextSpans extends SimpleSpans {
             }
             // Forward firstspan
             hasMoreFirstSpan = firstSpans.next();
-            if (hasMoreFirstSpan)
+            if (hasMoreFirstSpan){
                 setMatchList();
+            }
             else {
                 hasMoreSpans = false;
                 candidateList.clear();
@@ -269,6 +270,13 @@ public class NextSpans extends SimpleSpans {
             };
         }
         matchPayload.clear();
+        if (hasMoreFirstSpan){
+            setMatchList();
+        }
+        else {
+            hasMoreSpans = false;
+            candidateList.clear();
+        }
         return advance();
     }
 

@@ -72,10 +72,8 @@ public class RepetitionSpans extends SimpleSpans {
 
     /**
      * Advances the RepetitionSpans to the next match by setting the
-     * first
-     * element in the matchlist as the current match. When the
-     * matchlist is
-     * empty, it has to be set first.
+     * first element in the matchlist as the current match. When the
+     * matchlist is empty, it has to be set first.
      * 
      * @return <code>true</code> if a match is found,
      *         <code>false</code>
@@ -104,7 +102,8 @@ public class RepetitionSpans extends SimpleSpans {
 
 
     /**
-     * Collects all adjacent firstspans occurring in a sequence.
+     * Collects all adjacent firstspans occurring in a sequence 
+     * in the same document.
      * 
      * @return a list of the adjacent spans
      * @throws IOException
@@ -173,8 +172,7 @@ public class RepetitionSpans extends SimpleSpans {
 
     /**
      * Generates all possible repetition match spans from the given
-     * list of
-     * adjacent spans and add them to the match list.
+     * list of adjacent spans and add them to the match list.
      * 
      * @param adjacentSpans
      */
@@ -230,12 +228,6 @@ public class RepetitionSpans extends SimpleSpans {
                 }
                 j++;
             }
-
-            /*
-            if (j + i == adjacentSpans.size()) {
-
-            }
-            */
         }
 
         Collections.sort(matchList);

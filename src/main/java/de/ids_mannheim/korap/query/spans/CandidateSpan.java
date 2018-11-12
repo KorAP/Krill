@@ -409,4 +409,9 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
         else
             return 1;
     }
+    
+    @Override
+    public String toString () {
+        return getClass().getName() + "@" +doc + ":" + start + "-" + end;
+    }
 }

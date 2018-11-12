@@ -1,4 +1,4 @@
-0.58.1 2018-11-02
+0.58.1 2018-11-12
     - [bugfix] Security upgrade of Jackson for CVE-2017-17485 and
       CVE-2018-7489 (diewald)
     - [bugfix] Span expansion with negation (margaretha)
@@ -7,6 +7,8 @@
     - [feature] Helper methods for fuzzing (diewald)
     - [bugfix] Remove entries from matchList that are not in the same
       document in NextSpans (diewald)
+    - [bugfix] Fixed skipTo in NextSpans, see de.ids_mannheim.korap.index.
+      TestRepetitionIndex.testRepetitionSnippetBug3() (margaretha)  
 
 0.58.0 2018-09-03
     - [feature] Implemented referencing cached collection (margaretha)

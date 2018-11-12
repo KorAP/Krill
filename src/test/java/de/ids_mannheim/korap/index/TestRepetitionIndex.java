@@ -385,7 +385,6 @@ public class TestRepetitionIndex {
     };
 
     @Test
-    @Ignore
     public void testRepetitionSnippetBug3 () throws IOException, QueryException {
         // Construct index
         Pattern p = Pattern.compile("bccc?d");
