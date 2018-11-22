@@ -1,27 +1,42 @@
 package de.ids_mannheim.korap;
 
-import java.util.*;
-import java.io.*;
+import static de.ids_mannheim.korap.util.KrillByte.byte2int;
+import static org.junit.Assert.fail;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
-
-import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.index.*;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.util.CorpusDataException;
-
-import static de.ids_mannheim.korap.util.KrillByte.*;
-
-import org.apache.lucene.index.*;
-import org.apache.lucene.document.*;
-import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.ids_mannheim.korap.index.FieldDocument;
+import de.ids_mannheim.korap.index.MultiTermToken;
+import de.ids_mannheim.korap.index.MultiTermTokenStream;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.CorpusDataException;
+import de.ids_mannheim.korap.util.QueryException;
 
 /**
  * Helper class for testing the KrillIndex framework (Simple).
@@ -60,9 +75,13 @@ public class TestSimple {
         w.addDocument(doc);
     };
 
-    // Add document
     public static FieldDocument simpleFieldDoc (String s) {
-        String[] characters = s.split("");
+        return simpleFieldDoc(s, "");
+    }
+            
+    // Add document
+    public static FieldDocument simpleFieldDoc (String s, String delimiter) {
+        String[] characters = s.split(delimiter);
 
         FieldDocument fd = new FieldDocument();
         String surface = "";
@@ -80,11 +99,12 @@ public class TestSimple {
         return fd;
     };
 
+    // Create a new FieldDocument with random data
     public static FieldDocument simpleFuzzyFieldDoc (List<String> chars, int minLength, int maxLength) {
         String surface = "";
 
         for (int i = 0; i < (int)(Math.random() * (maxLength - minLength)) + minLength; i++) {
-            String randomChar = chars.get((int)(Math.random() * 6));
+            String randomChar = chars.get((int)(Math.random() * chars.size()));
             surface += randomChar;
         };
         return simpleFieldDoc(surface);
@@ -188,5 +208,57 @@ public class TestSimple {
             };
         };
         return spanArray;
+    };
+
+
+    // Simple fuzzing test
+    public static void fuzzingTest (List<String> chars, Pattern resultPattern,
+            SpanQuery sq, int minTextLength, int maxTextLength, int maxDocs)
+            throws IOException, QueryException {
+
+        Krill ks = new Krill(sq);
+        String lastFailureConf = "";
+
+        // Multiple runs of corpus creation and query checks
+        for (int x = 0; x < 100000; x++) {
+            KrillIndex ki = new KrillIndex();
+            ArrayList<String> list = new ArrayList<String>();
+            int c = 0;
+
+            // Create a corpus of <= maxDocs fuzzy docs
+            for (int i = 0; i < (int) (Math.random() * maxDocs); i++) {
+                FieldDocument testDoc = simpleFuzzyFieldDoc(chars,
+                        minTextLength, maxTextLength);
+                String testString = testDoc.doc.getField("base").stringValue();
+                Matcher m = resultPattern.matcher(testString);
+                list.add(testString);
+                int offset = 0;
+                while (m.find(offset)) {
+                    c++;
+                    offset = Math.max(0, m.start() + 1);
+                }
+                ki.addDoc(testDoc);
+            };
+
+            ki.commit();
+            Result kr = ks.apply(ki);
+            
+            // Check if the regex-calculated matches are correct,
+            // otherwise
+            // spit out the corpus configurations
+            if (c != kr.getTotalResults()) {
+                String failureConf = "expected:" + c + ", actual:"
+                        + kr.getTotalResults() + ", docs:" + list.toString();
+
+                // Try to keep the failing configuration small
+                if (lastFailureConf.length() == 0
+                        || failureConf.length() < lastFailureConf.length()) {
+                    System.err.println(failureConf);
+                    lastFailureConf = failureConf;
+                    minTextLength--;
+                    maxDocs--;
+                };
+            };
+        };
     };
 };

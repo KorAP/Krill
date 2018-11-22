@@ -178,7 +178,7 @@ public class NextSpans extends SimpleSpans {
             if (cs.getStart() == firstSpans.end()) {
                 addMatch(cs);
             }
-            else {
+            else if (cs.getEnd() < firstSpans.end()){
                 i.remove();
             }
         }
