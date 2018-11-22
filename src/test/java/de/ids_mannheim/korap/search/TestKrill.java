@@ -895,7 +895,7 @@ public class TestKrill {
                         + "(tokens:/tt/p:A.*/){1,3}), "
                         + "SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/))])");
 
-        assertEquals(kr.getTotalResults(), 58);
+        assertEquals(68,kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
 
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
@@ -908,10 +908,9 @@ public class TestKrill {
         assertEquals(kr.getMatch(3).getSnippetBrackets(),
                 "Saragat-Partei zerfällt Rom ([[ADN]]) "
                         + "die von dem Rechtssozialisten Saragat geführte ...");
-        assertEquals(kr.getMatch(23).getSnippetBrackets(),
-                "... dem Namen \"Einheitsbewegung der sozialistischen "
-                        + "Initiative\" [[eine neue politische Gruppierung]] "
-                        + "ins Leben gerufen hatten. Pressemeldungen zufolge ...");
+        assertEquals("... auseinander, nachdem vor einiger Zeit mehrere "
+                + "[[prominente Mitglieder]] ihren Austritt erklärt "
+                + "und unter dem ...", kr.getMatch(23).getSnippetBrackets());
     };
 
 

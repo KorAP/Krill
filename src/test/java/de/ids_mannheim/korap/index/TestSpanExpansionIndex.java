@@ -1,9 +1,13 @@
 package de.ids_mannheim.korap.index;
 
 import static de.ids_mannheim.korap.TestSimple.getJsonString;
+import static de.ids_mannheim.korap.TestSimple.simpleFieldDoc;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.RegexpQuery;
@@ -16,9 +20,11 @@ import org.junit.Test;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.TestSimple;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
+import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
@@ -29,26 +35,58 @@ public class TestSpanExpansionIndex {
     Result kr;
     KrillIndex ki;
 
-
     public TestSpanExpansionIndex () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
     }
 
+    /** Method for finding bugs. Since java matcher cannot find multiple matches
+     * from the same offset, the expected results are sometimes lower than the 
+     * actual results. 
+     * 
+     * @throws IOException
+     * @throws QueryException
+     */
+    public void fuzzyTest () throws IOException, QueryException {
+        List<String> chars = Arrays.asList("a", "b", "c", "d", "e");
+
+        // c []{0,2} a
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanTermQuery stq2 = new SpanTermQuery(new Term("base", "s:a"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 2, 0, true);
+        SpanNextQuery snq = new SpanNextQuery(seq, stq2);
+
+        Pattern resultPattern = Pattern.compile("c[a-e]{0,2}a");
+        TestSimple.fuzzingTest(chars, resultPattern, snq,
+                6, 20, 8,1);
+    }
+    
+    @Test
+    public void testNoExpansion () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("cc"));
+        ki.commit();
+
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 0, 0, true);
+        Result kr = ki.search(seq, (short) 10);
+        
+        assertEquals(2, kr.getTotalResults());
+    }
 
     /**
      * Left and right expansions
      */
     @Test
-    public void testCase1 () throws IOException {
+    public void testLeftRightExpansions () throws IOException {
 
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "s:des"));
         // left
         SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 2, -1, true);
         kr = ki.search(seq, (short) 10);
 
-        //assertEquals(69,kr.getTotalResults());
+        // assertEquals(69,kr.getTotalResults());
         assertEquals(5, kr.getMatch(0).getStartPos());
         assertEquals(8, kr.getMatch(0).getEndPos());
         assertEquals(6, kr.getMatch(1).getStartPos());
@@ -57,9 +95,9 @@ public class TestSpanExpansionIndex {
         assertEquals(8, kr.getMatch(2).getEndPos());
 
         /*
-         * for (Match km : kr.getMatches()) {
-         * System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
-         * km.getSnippetBrackets()); }
+          for (Match km : kr.getMatches()) {
+          System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
+          km.getSnippetBrackets()); }
          */
 
         // right
@@ -76,13 +114,12 @@ public class TestSpanExpansionIndex {
         assertEquals(161, kr.getMatch(3).getEndPos());
     }
 
-
     /**
      * Classnumber
      * Check the expansion offsets
      */
     @Test
-    public void testCase2 () {
+    public void testExpansionWithClassNumber () {
         byte classNumber = 1;
         SpanExpansionQuery sq;
         // create new payload for the expansion offsets
@@ -135,12 +172,11 @@ public class TestSpanExpansionIndex {
          */
     }
 
-
     /**
      * Right expansion with exclusion
      */
     @Test
-    public void testCase3 () throws IOException {
+    public void testRightExpansionWithExclusion () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
         SpanTermQuery notQuery =
@@ -170,13 +206,12 @@ public class TestSpanExpansionIndex {
          */
     }
 
-
     /**
      * Left expansion with exclusion
      * No expansion
      */
     @Test
-    public void testCase4 () throws IOException {
+    public void testLeftExpansionWithExclusion () throws IOException {
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
         SpanTermQuery notQuery =
@@ -212,7 +247,6 @@ public class TestSpanExpansionIndex {
 
     }
 
-
     /**
      * Expansion over start and end documents start => cut to 0
      * TODO: end => to be handled in rendering process
@@ -220,7 +254,7 @@ public class TestSpanExpansionIndex {
      * @throws IOException
      */
     @Test
-    public void testCase5 () throws IOException {
+    public void testExpansionOverStart () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc0());
         ki.commit();
@@ -234,7 +268,7 @@ public class TestSpanExpansionIndex {
         assertEquals(0, kr.getMatch(0).getStartPos());
         assertEquals(2, kr.getMatch(0).getEndPos());
 
-        //right expansion exceeds end position
+        // right expansion exceeds end position
         seq = new SpanExpansionQuery(stq, 3, 3, 0, true);
         kr = ki.search(seq, (short) 10);
 
@@ -251,14 +285,13 @@ public class TestSpanExpansionIndex {
          */
     }
 
-
     /**
      * Expansion exclusion : multiple documents
      * 
      * @throws IOException
      */
     @Test
-    public void testCase6 () throws IOException {
+    public void testExclusionWithMultipleDocs () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createFieldDoc0()); // same doc
         ki.addDoc(createFieldDoc1()); // only not clause
@@ -283,22 +316,22 @@ public class TestSpanExpansionIndex {
         assertEquals(4, kr.getMatch(4).getEndPos());
     }
 
-
     /**
      * Skip to
      */
     @Test
-    public void testCase7 () throws IOException, QueryException {
+    public void testExpansionWithSkipTo () throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.commit();
-        String jsonPath = getClass().getResource("/queries/poly3.json").getFile();
+        String jsonPath =
+                getClass().getResource("/queries/poly3.json").getFile();
         String jsonQuery = getJsonString(jsonPath);
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonQuery);
 
         SpanQuery sq = sqwi.toQuery();
-        //System.out.println(sq.toString());
+        // System.out.println(sq.toString());
         kr = ki.search(sq, (short) 20);
 
         assertEquals(205, kr.getMatch(0).getStartPos());
@@ -310,7 +343,6 @@ public class TestSpanExpansionIndex {
          * +km.getSnippetBrackets() ); }
          */
     }
-
 
     /**
      * Query rewrite bug
@@ -378,8 +410,6 @@ public class TestSpanExpansionIndex {
         assertEquals((long) 2, kr.getTotalResults());
     }
 
-
-
     /**
      * Query rewrite bug
      * 
@@ -416,7 +446,6 @@ public class TestSpanExpansionIndex {
         assertEquals(2, kr.getTotalResults());
     }
 
-
     @Test
     public void indexRegexSequence () throws Exception {
         KrillIndex ki = new KrillIndex();
@@ -427,7 +456,6 @@ public class TestSpanExpansionIndex {
 
         SpanQueryWrapper sq = kq.seq(kq.or("s:baumgarten", "s:steingarten"))
                 .append(kq.seg().without(kq.or("s:franz", "s:hans")));
-
 
         // Expected to find [baumgarten steingarten]
         Krill ks = _newKrill(sq);
@@ -459,7 +487,7 @@ public class TestSpanExpansionIndex {
         ki.commit();
 
         SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:a"));
-        
+
         RegexpQuery requery =
                 new RegexpQuery(new Term("base", "s:[bc]"), RegExp.ALL);
         SpanMultiTermQueryWrapper<RegexpQuery> notQuery =
@@ -472,10 +500,9 @@ public class TestSpanExpansionIndex {
 
         kr = ki.search(seq, (short) 20);
 
-        assertEquals(9,kr.getMatches().size());
-        
-    }
+        assertEquals(9, kr.getMatches().size());
 
+    }
 
     @Test
     public void indexExpansionWithNegationDifferentFragments () throws Exception {
@@ -540,7 +567,6 @@ public class TestSpanExpansionIndex {
         assertEquals((long) 1, kr.getTotalResults());
     };
 
-    
     private FieldDocument createFieldDoc6 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-6");
@@ -580,7 +606,6 @@ public class TestSpanExpansionIndex {
         return fd;
     }
 
-
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
@@ -592,7 +617,6 @@ public class TestSpanExpansionIndex {
         return fd;
     }
 
-
     private FieldDocument createFieldDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
@@ -601,7 +625,6 @@ public class TestSpanExpansionIndex {
                         + "[(1-2)s:a|_1$<i>1<i>2]" + "[(2-3)s:b|_2$<i>2<i>3]");
         return fd;
     }
-
 
     private FieldDocument createFieldDoc4 () {
         FieldDocument fd = new FieldDocument();

@@ -1,5 +1,6 @@
 package de.ids_mannheim.korap.index;
 
+import static de.ids_mannheim.korap.TestSimple.simpleFieldDoc;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -15,16 +16,55 @@ import org.junit.runners.JUnit4;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
-import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 
 @RunWith(JUnit4.class)
 public class TestNextIndex {
 
     // Todo: primary data as a non-indexed field separated.
+
+    @Test
+    public void testNextExpansion () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("ccecc"));
+        ki.commit();
+
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 2, 0, true);
+        Result kr = ki.search(seq, (short) 20);
+//        assertEquals(8, kr.getTotalResults());
+        assertEquals(12, kr.getTotalResults());
+        
+        SpanNextQuery snq = new SpanNextQuery(seq, stq);
+        kr = ki.search(snq, (short) 10);
+
+        // cc ccec cec cecc cc
+        // 1-3 1-5 2-5 2-6 4-6
+        assertEquals(5, kr.getTotalResults());
+    }
+    
+    @Test
+    public void testNextExpansion2 () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("cccc"));
+        ki.commit();
+
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 2, 0, true);
+//        Result kr = ki.search(seq, (short) 20);
+//        assertEquals(12, kr.getTotalResults());
+        
+        SpanNextQuery snq = new SpanNextQuery(seq, stq);
+        Result kr = ki.search(snq, (short) 10);
+
+        // cc ccc cccc cc  ccc cc
+        // 1-3 1-4 1-5 2-4 2-5 3-5
+        assertEquals(6, kr.getTotalResults());
+    }
 
     @Test
     public void indexExample1 () throws IOException {
@@ -71,7 +111,6 @@ public class TestNextIndex {
         assertEquals(1, ki.numberOf("base", "documents"));
         assertEquals(10, ki.numberOf("base", "t"));
 
-
         sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:a")),
                 new SpanNextQuery(new SpanTermQuery(new Term("base", "s:b")),
                         new SpanTermQuery(new Term("base", "s:c"))));
@@ -88,7 +127,6 @@ public class TestNextIndex {
         assertEquals(10, ki.numberOf("base", "t"));
 
     };
-
 
     @Test
     public void indexExample2 () throws IOException {
@@ -118,7 +156,6 @@ public class TestNextIndex {
 
     };
 
-
     @Test
     public void indexExample3 () throws IOException {
         KrillIndex ki = new KrillIndex();
@@ -145,7 +182,6 @@ public class TestNextIndex {
         kr = ki.search(sq, (short) 10);
         assertEquals("abc[[abcab]]ac", kr.getMatch(0).getSnippetBrackets());
     };
-
 
     @Test
     public void indexExample4 () throws IOException {
@@ -203,7 +239,6 @@ public class TestNextIndex {
         assertEquals("xb[[zxbzx]]bxz", kr.getMatch(0).getSnippetBrackets());
     };
 
-
     /**
      * Multiple atomic indices
      * Skip to a greater doc#
@@ -217,9 +252,9 @@ public class TestNextIndex {
         ki.addDoc(createFieldDoc3());
         ki.commit();
 
-        SpanQuery sq = new SpanNextQuery(
-                new SpanTermQuery(new Term("base", "s:d")),
-                new SpanTermQuery(new Term("base", "s:b")));
+        SpanQuery sq =
+                new SpanNextQuery(new SpanTermQuery(new Term("base", "s:d")),
+                        new SpanTermQuery(new Term("base", "s:b")));
         Result kr = ki.search(sq, (short) 10);
 
         assertEquals("totalResults", kr.getTotalResults(), 2);
@@ -242,7 +277,6 @@ public class TestNextIndex {
         assertEquals("EndPos", 4, kr.getMatch(0).endPos);
     }
 
-
     /** Skip to NextSpan */
     @Test
     public void indexExample6 () throws IOException {
@@ -252,10 +286,11 @@ public class TestNextIndex {
         ki.addDoc(createFieldDoc3());
         ki.commit();
 
-        SpanQuery sq = new SpanNextQuery(
-                new SpanTermQuery(new Term("base", "s:c")),
-                new SpanNextQuery(new SpanTermQuery(new Term("base", "s:d")),
-                        new SpanTermQuery(new Term("base", "s:b"))));
+        SpanQuery sq =
+                new SpanNextQuery(new SpanTermQuery(new Term("base", "s:c")),
+                        new SpanNextQuery(
+                                new SpanTermQuery(new Term("base", "s:d")),
+                                new SpanTermQuery(new Term("base", "s:b"))));
 
         Result kr = ki.search(sq, (short) 10);
         assertEquals("totalResults", kr.getTotalResults(), 1);
@@ -286,7 +321,6 @@ public class TestNextIndex {
         // }
     }
 
-
     @Test
     public void indexExample7Distances () throws Exception {
         KrillIndex ki = new KrillIndex();
@@ -306,7 +340,6 @@ public class TestNextIndex {
         assertEquals("doc-number", "match-doc-2-p2-4", kr.getMatch(1).getID());
         assertEquals("doc-number", "match-doc-3-p2-5", kr.getMatch(2).getID());
     };
-
 
     @Test
     public void indexExample8Distances () throws Exception {
@@ -328,7 +361,6 @@ public class TestNextIndex {
         assertEquals("doc-number", "match-doc-3-p3-6", kr.getMatch(2).getID());
     };
 
-
     @Test
     public void indexExample9 () throws IOException {
         KrillIndex ki = new KrillIndex();
@@ -348,14 +380,13 @@ public class TestNextIndex {
         assertEquals(5, kr.getMatch(1).getEndPos());
     };
 
-
-	@Test
-	public void sequenceSkipBug () throws IOException {
-		KrillIndex ki = new KrillIndex();
+    @Test
+    public void sequenceSkipBug () throws IOException {
+        KrillIndex ki = new KrillIndex();
 
         ki.addDoc(createFieldDoc1());
-		ki.addDoc(createFieldDoc3());
-		ki.addDoc(createFieldDoc4());
+        ki.addDoc(createFieldDoc3());
+        ki.addDoc(createFieldDoc4());
         ki.addDoc(createFieldDoc5()); // match for 2
         ki.addDoc(createFieldDoc1());
         ki.addDoc(createFieldDoc3());
@@ -365,11 +396,11 @@ public class TestNextIndex {
         ki.addDoc(createFieldDoc3());
         ki.addDoc(createFieldDoc1());
         ki.commit();
-		
-		ki.addDoc(createFieldDoc5()); // match for 2
+
+        ki.addDoc(createFieldDoc5()); // match for 2
         ki.addDoc(createFieldDoc1());
         ki.addDoc(createFieldDoc2()); // match for 1 and 2
-		ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc1());
         ki.addDoc(createFieldDoc3());
         ki.addDoc(createFieldDoc4());
         ki.addDoc(createFieldDoc1());
@@ -377,15 +408,11 @@ public class TestNextIndex {
 
         ki.commit();
 
-		// "cab" is in 2
-        SpanQuery sq =
-			new SpanNextQuery(
-				new SpanNextQuery(
-					new SpanTermQuery(new Term("base", "s:c")),
-					new SpanTermQuery(new Term("base", "s:a"))
-					),
-                new SpanTermQuery(new Term("base", "s:b"))
-				);
+        // "cab" is in 2
+        SpanQuery sq = new SpanNextQuery(
+                new SpanNextQuery(new SpanTermQuery(new Term("base", "s:c")),
+                        new SpanTermQuery(new Term("base", "s:a"))),
+                new SpanTermQuery(new Term("base", "s:b")));
 
         Result kr = ki.search(sq, (short) 10);
 
@@ -393,19 +420,15 @@ public class TestNextIndex {
         assertEquals(3, kr.getMatch(0).getEndPos());
         assertEquals("totalResults", kr.getTotalResults(), 1);
 
-		// "aba" is in 2 and 5
-		sq = new SpanNextQuery(
-			new SpanNextQuery(
-				new SpanTermQuery(new Term("base", "s:a")),
-				new SpanTermQuery(new Term("base", "s:b"))
-				),
-			new SpanTermQuery(new Term("base", "s:a"))
-			);
+        // "aba" is in 2 and 5
+        sq = new SpanNextQuery(
+                new SpanNextQuery(new SpanTermQuery(new Term("base", "s:a")),
+                        new SpanTermQuery(new Term("base", "s:b"))),
+                new SpanTermQuery(new Term("base", "s:a")));
 
         kr = ki.search(sq, (short) 10);
         assertEquals("totalResults", kr.getTotalResults(), 3);
-	};
-
+    };
 
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
@@ -419,7 +442,6 @@ public class TestNextIndex {
         return fd;
     }
 
-
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
@@ -431,18 +453,16 @@ public class TestNextIndex {
         return fd;
     }
 
-
     private FieldDocument createFieldDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
-        fd.addTV("base", "cdbd", //  c[ba]d
+        fd.addTV("base", "cdbd", // c[ba]d
                 "[(0-1)s:c|i:c|_0$<i>0<i>1]" + "[(1-2)s:d|i:d|_1$<i>1<i>2]"
                         + "[(2-3)s:b|i:b|s:a|_2$<i>2<i>3]"
                         + "[(3-4)s:d|i:d|_3$<i>3<i>4]");
 
         return fd;
     }
-
 
     private FieldDocument createFieldDoc4 () {
         FieldDocument fd = new FieldDocument();
@@ -460,14 +480,11 @@ public class TestNextIndex {
     private FieldDocument createFieldDoc5 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-4");
-        fd.addTV("base", "dabaca",
-                "[(0-1)s:d|i:d|_0$<i>0<i>1]"
-				 + "[(1-2)s:a|i:a|_1$<i>1<i>2|<>:e$<b>64<i>1<i>3<i>3<b>0]"
-				 + "[(2-3)s:b|i:b|_2$<i>2<i>3]"
-				 + "[(3-4)s:a|i:a|_3$<i>3<i>4]"
-				 + "[(4-5)s:c|i:c|_4$<i>4<i>5]"
-				 + "[(5-6)s:a|i:a|_5$<i>5<i>6]");
+        fd.addTV("base", "dabaca", "[(0-1)s:d|i:d|_0$<i>0<i>1]"
+                + "[(1-2)s:a|i:a|_1$<i>1<i>2|<>:e$<b>64<i>1<i>3<i>3<b>0]"
+                + "[(2-3)s:b|i:b|_2$<i>2<i>3]" + "[(3-4)s:a|i:a|_3$<i>3<i>4]"
+                + "[(4-5)s:c|i:c|_4$<i>4<i>5]" + "[(5-6)s:a|i:a|_5$<i>5<i>6]");
         return fd;
-    }	
+    }
 
 };
