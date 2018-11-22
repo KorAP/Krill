@@ -1,6 +1,8 @@
 package de.ids_mannheim.korap;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.*;
 import java.net.URLDecoder;
 
@@ -10,9 +12,11 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.index.*;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.CorpusDataException;
 
+import static de.ids_mannheim.korap.TestSimple.simpleFuzzyFieldDoc;
 import static de.ids_mannheim.korap.util.KrillByte.*;
 
 import org.apache.lucene.index.*;
@@ -84,7 +88,7 @@ public class TestSimple {
         String surface = "";
 
         for (int i = 0; i < (int)(Math.random() * (maxLength - minLength)) + minLength; i++) {
-            String randomChar = chars.get((int)(Math.random() * 6));
+            String randomChar = chars.get((int)(Math.random() * chars.size()));
             surface += randomChar;
         };
         return simpleFieldDoc(surface);
@@ -188,5 +192,54 @@ public class TestSimple {
             };
         };
         return spanArray;
+    };
+    
+    public static void fuzzingTest (List<String> chars, Pattern resultPattern,
+            SpanQuery sq, int minTextLength, int maxTextLength, int maxDocs,
+            int offsetReduction) throws IOException, QueryException {
+
+        Krill ks = new Krill(sq);
+        String lastFailureConf = "";
+
+        // Create fuzzy corpora (1000 trials)
+        for (int x = 0; x < 100000; x++) {
+            KrillIndex ki = new KrillIndex();
+            ArrayList<String> list = new ArrayList<String>();
+            int c = 0;
+
+            // Create a corpus of 8 fuzzy docs
+            for (int i = 0; i < (int) (Math.random() * maxDocs); i++) {
+                FieldDocument testDoc = simpleFuzzyFieldDoc(chars,
+                        minTextLength, maxTextLength);
+                String testString = testDoc.doc.getField("base").stringValue();
+                Matcher m = resultPattern.matcher(testString);
+                list.add(testString);
+                int offset = 0;
+                while (m.find(offset)) {
+                    c++;
+                    offset = Math.max(0, m.start() + 1);
+                }
+                ki.addDoc(testDoc);
+            };
+
+            ki.commit();
+
+            Result kr = ks.apply(ki);
+
+            // Check if the regex-calculated matches are correct,
+            // otherwise
+            // spit out the corpus configurations
+            if (c != kr.getTotalResults()) {
+                String failureConf = "expected:" + c + ", actual:"
+                        + kr.getTotalResults() + ", docs:" + list.toString();
+                if (lastFailureConf.length() == 0
+                        || failureConf.length() < lastFailureConf.length()) {
+                    System.err.println(failureConf);
+                    lastFailureConf = failureConf;
+                    minTextLength--;
+                    maxDocs--;
+                };
+            };
+        };
     };
 };
