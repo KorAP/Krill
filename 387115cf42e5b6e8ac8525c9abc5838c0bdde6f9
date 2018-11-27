@@ -22,6 +22,30 @@
       "revId": "387115cf42e5b6e8ac8525c9abc5838c0bdde6f9",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "0a6ed35a_5b3bfddd",
+        "filename": "src/test/java/de/ids_mannheim/korap/index/TestSpanExpansionIndex.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 585,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2018-11-27T16:22:55Z",
+      "side": 1,
+      "message": "They are failing for you? Then your fix wouldn\u0027t work. They are not failing for me.\nBecause the Test checks the sorting it\u0027s meaningless without these tests. (The number of matches doesn\u0027t check for the particular issue.)",
+      "parentUuid": "a49abc64_c8d43103",
+      "range": {
+        "startLine": 584,
+        "startChar": 10,
+        "endLine": 585,
+        "endChar": 72
+      },
+      "revId": "387115cf42e5b6e8ac8525c9abc5838c0bdde6f9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c",
+      "unresolved": true
     }
   ]
 }
