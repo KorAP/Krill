@@ -16,6 +16,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.automaton.RegExp;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
@@ -568,6 +569,32 @@ public class TestSpanExpansionIndex {
         assertEquals((long) 1, kr.getTotalResults());
     };
 
+
+    @Test
+    @Ignore
+    public void indexExpansionLeftWithWrongSorting () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("abcc"));
+        ki.commit();
+        
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 2, -1, true);
+        assertEquals("spanExpansion(base:s:c, []{0, 2}, left)", seq.toString());
+        Result kr = ki.search(seq, (short) 10);
+
+        /*
+        for (Match km : kr.getMatches()) {
+            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
+                               km.getSnippetBrackets());
+        };
+        */
+
+        assertEquals(kr.getMatch(1).getSnippetBrackets(), "a[[bc]]c");
+        assertEquals(kr.getMatch(2).getSnippetBrackets(), "a[[bcc]]");
+        assertEquals(6, kr.getTotalResults());
+    }
+
+    
     private FieldDocument createFieldDoc6 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-6");
