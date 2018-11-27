@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "a49abc64_c8d43103",
+        "filename": "src/test/java/de/ids_mannheim/korap/index/TestSpanExpansionIndex.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 585,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2018-11-27T15:42:27Z",
+      "side": 1,
+      "message": "the snippetbrackets do not match, so i commented them.",
+      "range": {
+        "startLine": 584,
+        "startChar": 10,
+        "endLine": 585,
+        "endChar": 72
+      },
+      "revId": "387115cf42e5b6e8ac8525c9abc5838c0bdde6f9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c",
+      "unresolved": true
+    }
+  ]
+}
