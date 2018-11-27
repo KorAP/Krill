@@ -178,7 +178,8 @@ public class NextSpans extends SimpleSpans {
             if (cs.getStart() == firstSpans.end()) {
                 addMatch(cs);
             }
-            else if (cs.getEnd() < firstSpans.end()){
+            else if (cs.getEnd() < firstSpans.end() 
+                    && cs.getStart() <firstSpans.start()){
                 i.remove();
             }
         }
@@ -268,15 +269,16 @@ public class NextSpans extends SimpleSpans {
                           secondSpans.end(),
                           secondSpans.doc());
             };
+            
+            if (hasMoreFirstSpan){
+                setMatchList();
+            }
+            else {
+                hasMoreSpans = false;
+                candidateList.clear();
+            }
         }
         matchPayload.clear();
-        if (hasMoreFirstSpan){
-            setMatchList();
-        }
-        else {
-            hasMoreSpans = false;
-            candidateList.clear();
-        }
         return advance();
     }
 
