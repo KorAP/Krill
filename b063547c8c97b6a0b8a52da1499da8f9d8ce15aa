@@ -16,6 +16,24 @@
       "revId": "b063547c8c97b6a0b8a52da1499da8f9d8ce15aa",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2d881fc8_631cb496",
+        "filename": "src/test/java/de/ids_mannheim/korap/TestSimple.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2018-11-27T10:30:01Z",
+      "side": 1,
+      "message": "no it is not needed. It was added automatically by eclipse when I copy paste the code.",
+      "parentUuid": "f1b460f1_76dd7b9a",
+      "revId": "b063547c8c97b6a0b8a52da1499da8f9d8ce15aa",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c",
+      "unresolved": false
     }
   ]
 }
