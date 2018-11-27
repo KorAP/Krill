@@ -4,6 +4,9 @@ import static de.ids_mannheim.korap.TestSimple.simpleFieldDoc;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanOrQuery;
@@ -14,21 +17,57 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.TestSimple;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
 public class TestNextIndex {
 
     // Todo: primary data as a non-indexed field separated.
+    
+//    @Test
+    public void fuzzyTest () throws IOException, QueryException {
+        List<String> chars = Arrays.asList("a", "b", "c", "c","d", "e");
 
+        // c c a
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanTermQuery stq2 = new SpanTermQuery(new Term("base", "s:a"));
+        SpanNextQuery snq = new SpanNextQuery(stq, stq);
+        SpanNextQuery snq2 = new SpanNextQuery(snq, stq2);
+
+        Pattern resultPattern = Pattern.compile("cca");
+        TestSimple.fuzzingTest(chars, resultPattern, snq2,
+                5, 10, 8);
+    }
+    
     @Test
-    public void testNextExpansion () throws IOException {
+    public void testInfiniteSkipTo () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("ddc"));
+        ki.addDoc(simpleFieldDoc("cc"));
+        ki.addDoc(simpleFieldDoc("abedaed"));
+        ki.commit();
+
+        //cca
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanTermQuery stq2 = new SpanTermQuery(new Term("base", "s:a"));
+        SpanNextQuery snq = new SpanNextQuery(stq, stq);
+        SpanNextQuery snq2 = new SpanNextQuery(snq, stq2);
+        
+        Result kr = ki.search(snq2, (short) 10);
+        assertEquals(0, kr.getTotalResults());
+    }
+    
+    @Test
+    public void testNextExpansionBug () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(simpleFieldDoc("ccecc"));
         ki.commit();
@@ -48,7 +87,7 @@ public class TestNextIndex {
     }
     
     @Test
-    public void testNextExpansion2 () throws IOException {
+    public void testNextExpansionBug2 () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(simpleFieldDoc("cccc"));
         ki.commit();
@@ -65,7 +104,24 @@ public class TestNextIndex {
         // 1-3 1-4 1-5 2-4 2-5 3-5
         assertEquals(6, kr.getTotalResults());
     }
-
+    
+    @Test
+    public void testNextExpansionBug3 () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("r a d m d d v b", " "));
+        ki.commit();
+        
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:d"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 4, 0, true);
+        Result kr = ki.search(seq, (short) 20);
+        
+        SpanNextQuery snq = new SpanNextQuery(seq, stq);
+        kr = ki.search(snq, (short) 10);
+        
+        // 2-5, 2-6, 4-6
+        assertEquals(3, kr.getTotalResults());
+    }
+    
     @Test
     public void indexExample1 () throws IOException {
         KrillIndex ki = new KrillIndex();
