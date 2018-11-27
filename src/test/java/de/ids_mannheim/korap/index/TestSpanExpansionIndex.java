@@ -48,6 +48,7 @@ public class TestSpanExpansionIndex {
      * @throws IOException
      * @throws QueryException
      */
+//    @Test
     public void fuzzyTest () throws IOException, QueryException {
         List<String> chars = Arrays.asList("a", "b", "c", "d", "e");
 
@@ -59,7 +60,7 @@ public class TestSpanExpansionIndex {
 
         Pattern resultPattern = Pattern.compile("c[a-e]{0,2}a");
         TestSimple.fuzzingTest(chars, resultPattern, snq,
-                6, 20, 8,1);
+                6, 20, 8);
     }
     
     @Test
