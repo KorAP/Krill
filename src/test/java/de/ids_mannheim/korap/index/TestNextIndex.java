@@ -123,6 +123,43 @@ public class TestNextIndex {
     }
     
     @Test
+    public void testNextRightExpansion () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("F u G S h A d F ü d T F u d m", " "));
+        ki.commit();
+        
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:d"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 6, 0, true);
+        SpanNextQuery snq = new SpanNextQuery(seq,stq);
+        assertEquals("spanNext(spanExpansion(base:s:d, []{0, 6}, right), base:s:d)", snq.toString());
+        Result kr = ki.search(snq, (short) 10);
+
+//        6,10 FuGShA[[dFüd]]TFudm
+//        6,14 FuGShA[[dFüdTFud]]m
+//        9,14 ... ShAdFü[[dTFud]]
+        assertEquals(3, kr.getTotalResults());
+    }
+    
+    @Test
+    public void testNextLeftExpansion () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("F u G S h A d F ü d T F u d m", " "));
+        ki.commit();
+        
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:d"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 6, -1, true);
+        Result kr = ki.search(seq, (short) 20);
+        
+        assertEquals(21, kr.getTotalResults());
+        
+        SpanNextQuery snq = new SpanNextQuery(stq,seq);
+        assertEquals("spanNext(base:s:d, spanExpansion(base:s:d, []{0, 6}, left))", snq.toString());
+        kr = ki.search(snq, (short) 10);
+        
+        assertEquals(3, kr.getTotalResults());
+    }
+    
+    @Test
     public void indexExample1 () throws IOException {
         KrillIndex ki = new KrillIndex();
 

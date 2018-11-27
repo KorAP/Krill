@@ -16,7 +16,6 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.automaton.RegExp;
 import org.junit.Test;
-import org.junit.Ignore;
 
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
@@ -28,6 +27,7 @@ import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -571,7 +571,6 @@ public class TestSpanExpansionIndex {
 
 
     @Test
-    @Ignore
     public void indexExpansionLeftWithWrongSorting () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(simpleFieldDoc("abcc"));
@@ -582,18 +581,36 @@ public class TestSpanExpansionIndex {
         assertEquals("spanExpansion(base:s:c, []{0, 2}, left)", seq.toString());
         Result kr = ki.search(seq, (short) 10);
 
-        /*
-        for (Match km : kr.getMatches()) {
-            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
-                               km.getSnippetBrackets());
-        };
-        */
-
-        assertEquals(kr.getMatch(1).getSnippetBrackets(), "a[[bc]]c");
-        assertEquals(kr.getMatch(2).getSnippetBrackets(), "a[[bcc]]");
+        assertEquals("a[[bc]]c", kr.getMatch(1).getSnippetBrackets());
+        assertEquals(1, kr.getMatch(1).getStartPos());
+        assertEquals(3, kr.getMatch(1).getEndPos());
+        assertEquals("a[[bcc]]", kr.getMatch(2).getSnippetBrackets());
+        assertEquals(1, kr.getMatch(2).getStartPos());
+        assertEquals(4, kr.getMatch(2).getEndPos());
         assertEquals(6, kr.getTotalResults());
     }
 
+    
+    /** Tests left expansion over start doc boundary. Redundant matches should
+     *  be omitted.
+     * @throws IOException
+     */
+    @Test
+    public void testLeftExpansionRedundantMatches () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("A d F ü d T F u d m", " "));
+        ki.commit();
+        
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:d"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 6, -1, true);
+        Result kr = ki.search(seq, (short) 20);
+        
+        Match m = kr.getMatch(5);
+        assertEquals(2, m.getStartPos());
+        assertEquals(9, m.getEndPos());
+        assertEquals(14, kr.getTotalResults());
+
+    }
     
     private FieldDocument createFieldDoc6 () {
         FieldDocument fd = new FieldDocument();
