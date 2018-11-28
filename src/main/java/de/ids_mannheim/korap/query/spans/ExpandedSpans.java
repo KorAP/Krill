@@ -3,8 +3,9 @@ package de.ids_mannheim.korap.query.spans;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.lucene.index.LeafReaderContext;
@@ -21,7 +22,7 @@ import de.ids_mannheim.korap.query.SpanExpansionQuery;
  * {@link SpanExpansionQuery}.
  * 
  * The expansion offsets, namely the start and end position of an
- * expansion part, can be stored in payloads. A class number is 
+ * expansion part, can be stored in payloads. A class number is
  * assigned to the offsets grouping them altogether.
  * 
  * @author margaretha
@@ -31,9 +32,8 @@ public class ExpandedSpans extends SimpleSpans {
     private int min, max;
     private byte classNumber;
     private int direction;
-    private SortedSet<CandidateSpan> candidateSpans;
+    private List<CandidateSpan> candidateSpans;
     private long matchCost;
-
 
     /**
      * Constructs ExpandedSpans from the given
@@ -56,24 +56,16 @@ public class ExpandedSpans extends SimpleSpans {
         this.direction = spanExpansionQuery.getDirection();
         this.classNumber = spanExpansionQuery.getClassNumber();
 
-        candidateSpans = new TreeSet<CandidateSpan>();
-        hasMoreSpans = true;
-        if (direction < 0){
-            hasMoreSpans = firstSpans.next(); 
-        }
+        candidateSpans = new ArrayList<CandidateSpan>();
+        hasMoreSpans = firstSpans.next();
     }
-
 
     @Override
     public boolean next () throws IOException {
         matchPayload.clear();
         isStartEnumeration = false;
-        if (candidateSpans.size() == 0 && hasMoreSpans && direction >= 0) {
-            hasMoreSpans = firstSpans.next();
-        }
         return advance();
     }
-
 
     /**
      * Advances the ExpandedSpans to the next match by setting the
@@ -89,19 +81,19 @@ public class ExpandedSpans extends SimpleSpans {
     private boolean advance () throws IOException {
         while (candidateSpans.size() > 0 || hasMoreSpans) {
             if (candidateSpans.size() > 0) {
-                CandidateSpan cs = candidateSpans.first();
+                CandidateSpan cs = candidateSpans.get(0);
                 setMatch(cs);
                 candidateSpans.remove(cs);
                 return true;
             }
             else {
                 setCandidateList();
-//                log.debug(candidateSpans.toString());
+                Collections.sort(candidateSpans);
+                log.debug(candidateSpans.toString());
             }
         }
         return false;
     }
-
 
     /**
      * Sets the candidateList by adding new candidate match spans for
@@ -112,24 +104,27 @@ public class ExpandedSpans extends SimpleSpans {
      */
     private void setCandidateList () throws IOException {
         CandidateSpan cs;
-        int counter, start, end;
+        int counter, start, end = 0;
 
         if (direction < 0) { // left
             counter = max;
             while (counter >= min) {
-                start = Math.max(0, firstSpans.start() - counter);
-                cs = new CandidateSpan(start, firstSpans.end(),
-                        firstSpans.doc(), firstSpans.cost(),
-                        createPayloads(start, firstSpans.start()));
+                start = firstSpans.start() - counter;
+                if (start >= 0) {
+                    cs = new CandidateSpan(start, firstSpans.end(),
+                            firstSpans.doc(), firstSpans.cost(),
+                            createPayloads(start, firstSpans.start()));
 
-                candidateSpans.add(cs);
+                    candidateSpans.add(cs);
+                }
                 counter--;
             }
-            
+
             int lastPosition = firstSpans.start();
-            if (hasMoreSpans && (hasMoreSpans = firstSpans.next()) ) {
+            if (hasMoreSpans && (hasMoreSpans = firstSpans.next())) {
                 start = Math.max(0, firstSpans.start() - max);
-                log.debug("next candidate start: "+start+", lastPosition "+lastPosition);
+                log.debug("next candidate start: " + start + ", lastPosition "
+                        + lastPosition);
                 if (start <= lastPosition) {
                     setCandidateList();
                 }
@@ -138,7 +133,8 @@ public class ExpandedSpans extends SimpleSpans {
         else {
             counter = min;
             while (counter <= max) {
-                // TODO: How do I know if the end is already too far (over the end of the doc)? 
+                // TODO: How do I know if the end is already too far
+                // (over the end of the doc)?
                 end = firstSpans.end() + counter;
                 cs = new CandidateSpan(firstSpans.start(), end,
                         firstSpans.doc(), firstSpans.cost(),
@@ -146,17 +142,27 @@ public class ExpandedSpans extends SimpleSpans {
                 candidateSpans.add(cs);
                 counter++;
             }
+
+            int lastPosition = end;
+            if (hasMoreSpans && (hasMoreSpans = firstSpans.next())) {
+                log.debug("next candidate start: " + firstSpans.start()
+                        + ", lastPosition " + lastPosition);
+                if (firstSpans.start() <= lastPosition) {
+                    setCandidateList();
+                }
+            }
         }
     }
-
 
     /**
      * Prepares the payloads for a candidate match (ExpandedSpans). If
      * the class number is set, the extension offsets with the given
      * start and end positions are to be stored in the payloads.
      * 
-     * @param start start position
-     * @param end end position
+     * @param start
+     *            start position
+     * @param end
+     *            end position
      * @return the payloads for a candidaete match
      * @throws IOException
      */
@@ -168,20 +174,21 @@ public class ExpandedSpans extends SimpleSpans {
             payload.addAll(firstSpans.getPayload());
         }
         if (classNumber > 0) {
-            //System.out.println("Extension offsets "+start+","+end);
+            // System.out.println("Extension offsets "+start+","+end);
             payload.add(createExtensionPayloads(start, end));
         }
         return payload;
     }
-
 
     /**
      * Prepares a byte array of extension offsets with the given start
      * and end positions and the class number, to be stored in
      * payloads.
      * 
-     * @param start start position
-     * @param end end position
+     * @param start
+     *            start position
+     * @param end
+     *            end position
      * @return a byte array of extension offsets and the class number
      */
     private byte[] createExtensionPayloads (int start, int end) {
@@ -193,7 +200,6 @@ public class ExpandedSpans extends SimpleSpans {
         buffer.put(classNumber);
         return buffer.array();
     }
-
 
     /**
      * Sets the properties of the given candidate match span as the
@@ -209,7 +215,6 @@ public class ExpandedSpans extends SimpleSpans {
         matchCost = candidateSpan.getCost();
     }
 
-
     @Override
     public boolean skipTo (int target) throws IOException {
         if (hasMoreSpans && (firstSpans.doc() < target)) {
@@ -221,7 +226,6 @@ public class ExpandedSpans extends SimpleSpans {
         matchPayload.clear();
         return advance();
     }
-
 
     @Override
     public long cost () {
