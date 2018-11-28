@@ -1,4 +1,4 @@
-0.58.1 2018-11-27
+0.58.1 2018-11-28
     - [bugfix] Security upgrade of Jackson for CVE-2017-17485 and
       CVE-2018-7489 (diewald)
     - [bugfix] Span expansion with negation (margaretha)
@@ -11,7 +11,8 @@
       TestRepetitionIndex.testRepetitionSnippetBug3() (margaretha)
     - [bugfix] Fixed the candidate list in NextSpans, see de.ids_mannheim.
       korap.index.TestNextIndex.testNextExpansionBug() (margaretha)  
-    - [bugfix] Fixed left expansion match order (margaretha)   
+    - [bugfix] Fixed left expansion match order (margaretha)
+    - [bugfix] Fixed right expansion match order & expansion over start (margaretha)
 
 0.58.0 2018-09-03
     - [feature] Implemented referencing cached collection (margaretha)

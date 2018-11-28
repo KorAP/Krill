@@ -97,16 +97,10 @@ public class TestSpanExpansionIndex {
         assertEquals(7, kr.getMatch(2).getStartPos());
         assertEquals(8, kr.getMatch(2).getEndPos());
 
-        /*
-          for (Match km : kr.getMatches()) {
-          System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
-          km.getSnippetBrackets()); }
-         */
-
         // right
         seq = new SpanExpansionQuery(stq, 3, 4, 0, true);
         kr = ki.search(seq, (short) 10);
-
+        
         assertEquals(7, kr.getMatch(0).getStartPos());
         assertEquals(11, kr.getMatch(0).getEndPos());
         assertEquals(7, kr.getMatch(1).getStartPos());
@@ -267,9 +261,9 @@ public class TestSpanExpansionIndex {
         SpanExpansionQuery seq = new SpanExpansionQuery(stq, 2, 2, -1, true);
         kr = ki.search(seq, (short) 10);
 
-        assertEquals((long) 4, kr.getTotalResults());
-        assertEquals(0, kr.getMatch(0).getStartPos());
-        assertEquals(2, kr.getMatch(0).getEndPos());
+        assertEquals((long) 3, kr.getTotalResults());
+        assertEquals(2, kr.getMatch(0).getStartPos());
+        assertEquals(5, kr.getMatch(0).getEndPos());
 
         // right expansion exceeds end position
         seq = new SpanExpansionQuery(stq, 3, 3, 0, true);
@@ -592,8 +586,7 @@ public class TestSpanExpansionIndex {
     }
 
     @Test
-    @Ignore
-    public void indexExpansionMultipleStartsWithWrongSorting () throws IOException {
+    public void indexExpansionMultipleStartsWithCorrectSorting () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(simpleFieldDoc("abccef"));
         ki.commit();
@@ -606,42 +599,56 @@ public class TestSpanExpansionIndex {
             seqR.toString());
         Result kr = ki.search(seqR, (short) 20);
 
-        /*
-        for (Match km : kr.getMatches()) {
-            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
-                               km.getSnippetBrackets());
-        };
-        */
+//        for (Match km : kr.getMatches()) {
+//            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
+//                               km.getSnippetBrackets());
+//        };
 
         // TODO: These are duplicate results that may be restricted with a wrapper
         assertEquals("a[[bcc]]ef", kr.getMatch(3).getSnippetBrackets());
         assertEquals("a[[bcc]]ef", kr.getMatch(4).getSnippetBrackets());
         assertEquals(12, kr.getTotalResults());
+    }
 
-        stq = new SpanTermQuery(new Term("base", "s:c"));
-        seqL = new SpanExpansionQuery(stq, 0, 2, -1, true);
-        seqR = new SpanExpansionQuery(seqL, 0, 2, 0, true);
+    @Test
+    public void testRightExpansionWithWrongSorting ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("abccef"));
+        ki.commit();
+        
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanExpansionQuery seqL = new SpanExpansionQuery(stq, 0, 2, -1, true);
+        kr = ki.search(seqL, (short) 20);
+//        for (Match km : kr.getMatches()) {
+//            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
+//                               km.getSnippetBrackets());
+//        };
+        
+        SpanExpansionQuery seqR = new SpanExpansionQuery(seqL, 0, 2, 0, true);
         assertEquals(
             "spanExpansion(spanExpansion(base:s:c, []{0, 2}, left), []{0, 2}, right)",
             seqR.toString());
         kr = ki.search(seqR, (short) 20);
 
-        /*
-        for (Match km : kr.getMatches()) {
-            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
-                               km.getSnippetBrackets());
-        };
-        */
+        
+//        for (Match km : kr.getMatches()) {
+//            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
+//                               km.getSnippetBrackets());
+//        };
+        
         assertEquals("a[[bcc]]ef", kr.getMatch(5).getSnippetBrackets());
         assertEquals("a[[bcce]]f", kr.getMatch(6).getSnippetBrackets());
         assertEquals(18, kr.getTotalResults());        
     }
     
+    @Test
     public void testLeftExpansionWrongSorting () throws IOException {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(simpleFieldDoc("B u d B R a d m d Z z s B d v", " "));
         ki.commit();
         
+        // d positions: 2-3, 6-7, 8-9, 13-14
         SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:d"));
         SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 8, -1, true);
         
@@ -649,7 +656,7 @@ public class TestSpanExpansionIndex {
 //        for (Match km : kr.getMatches()){
 //             System.out.println(km.getStartPos() +","+km.getEndPos()+" "
 //             +km.getSnippetBrackets()); }
-        // 2-3, 6-7, 8-9, 13-14
+        
         assertEquals("BudBR[[admdZzsBd]]v", kr.getMatch(15).getSnippetBrackets());
         assertEquals(28, kr.getTotalResults());
     }
@@ -667,6 +674,11 @@ public class TestSpanExpansionIndex {
         SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:d"));
         SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 6, -1, true);
         Result kr = ki.search(seq, (short) 20);
+        
+//        for (Match km : kr.getMatches()) {
+//            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
+//                               km.getSnippetBrackets());
+//        };
         
         Match m = kr.getMatch(5);
         assertEquals(2, m.getStartPos());

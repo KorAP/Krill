@@ -118,7 +118,9 @@ public class NextSpans extends SimpleSpans {
             // Forward firstspan
             hasMoreFirstSpan = firstSpans.next();
             if (hasMoreFirstSpan){
-                log.debug("FirstSpan "+firstSpans.start() +","+firstSpans.end());
+                if (DEBUG) {
+                    log.debug("FirstSpan "+firstSpans.start() +","+firstSpans.end());
+                }
                 setMatchList();
             }
             else {
@@ -172,7 +174,9 @@ public class NextSpans extends SimpleSpans {
      * @throws IOException
      */
     private void searchCandidates () throws IOException {
-        log.debug(candidateList.toString());
+        if (DEBUG) {
+            log.debug(candidateList.toString());
+        };
         Iterator<CandidateSpan> i = candidateList.iterator();
         CandidateSpan cs;
         while (i.hasNext()) {
@@ -203,7 +207,9 @@ public class NextSpans extends SimpleSpans {
     private void searchMatches () throws IOException {
 
         while (hasMoreSpans && candidateListDocNum == secondSpans.doc()) {
-            log.debug("SecondSpan " +secondSpans.start() + "," + secondSpans.end());
+            if (DEBUG) {
+                log.debug("SecondSpan " +secondSpans.start() + "," + secondSpans.end());
+            };
             if (secondSpans.start() > firstSpans.end()) {
                 break;
             }
