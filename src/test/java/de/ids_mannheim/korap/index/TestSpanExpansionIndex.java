@@ -16,6 +16,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.automaton.RegExp;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
@@ -590,6 +591,52 @@ public class TestSpanExpansionIndex {
         assertEquals(6, kr.getTotalResults());
     }
 
+    @Test
+    @Ignore
+    public void indexExpansionMultipleStartsWithWrongSorting () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("abccef"));
+        ki.commit();
+
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanExpansionQuery seqL = new SpanExpansionQuery(stq, 0, 2, -1, true);
+        SpanExpansionQuery seqR = new SpanExpansionQuery(seqL, 0, 1, 0, true);
+        assertEquals(
+            "spanExpansion(spanExpansion(base:s:c, []{0, 2}, left), []{0, 1}, right)",
+            seqR.toString());
+        Result kr = ki.search(seqR, (short) 20);
+
+        /*
+        for (Match km : kr.getMatches()) {
+            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
+                               km.getSnippetBrackets());
+        };
+        */
+
+        // TODO: These are duplicate results that may be restricted with a wrapper
+        assertEquals("a[[bcc]]ef", kr.getMatch(3).getSnippetBrackets());
+        assertEquals("a[[bcc]]ef", kr.getMatch(4).getSnippetBrackets());
+        assertEquals(12, kr.getTotalResults());
+
+        stq = new SpanTermQuery(new Term("base", "s:c"));
+        seqL = new SpanExpansionQuery(stq, 0, 2, -1, true);
+        seqR = new SpanExpansionQuery(seqL, 0, 2, 0, true);
+        assertEquals(
+            "spanExpansion(spanExpansion(base:s:c, []{0, 2}, left), []{0, 2}, right)",
+            seqR.toString());
+        kr = ki.search(seqR, (short) 20);
+
+        /*
+        for (Match km : kr.getMatches()) {
+            System.out.println(km.getStartPos() + "," + km.getEndPos() + " " +
+                               km.getSnippetBrackets());
+        };
+        */
+        assertEquals("a[[bcc]]ef", kr.getMatch(5).getSnippetBrackets());
+        assertEquals("a[[bcce]]f", kr.getMatch(6).getSnippetBrackets());
+        assertEquals(18, kr.getTotalResults());        
+    }
+    
     
     /** Tests left expansion over start doc boundary. Redundant matches should
      *  be omitted.
