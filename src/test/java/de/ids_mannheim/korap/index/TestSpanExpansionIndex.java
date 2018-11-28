@@ -641,6 +641,29 @@ public class TestSpanExpansionIndex {
         assertEquals("a[[bcce]]f", kr.getMatch(6).getSnippetBrackets());
         assertEquals(18, kr.getTotalResults());        
     }
+
+
+    @Test
+    public void testRightExpansionWithTextBoundary () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("aabcd"));
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+
+        // a[ab]?[]{0,2}
+        SpanQuery sq = kq.seq(kq.seg("s:a")).append(kq.opt(kq.or("s:a","s:b"))).append(kq.repeat(kq.empty(),0,5)).toQuery();
+        assertEquals(
+            "focus(254: spanContain(<base:base/s:t />, {254: "+
+            "spanExpansion(spanOr([base:s:a, spanNext(base:s:a, spanOr([base:s:a, base:s:b]))]), []{0, 5}, right)"+
+            "}))", sq.toString());
+
+        Result kr = ki.search(sq, (short) 25);
+        assertEquals("[[aabcd]]", kr.getMatch(8).getSnippetBrackets());
+        assertEquals("a[[a]]bcd", kr.getMatch(9).getSnippetBrackets());
+        assertEquals(16, kr.getTotalResults());        
+    }
+
     
     @Test
     public void testLeftExpansionWrongSorting () throws IOException {

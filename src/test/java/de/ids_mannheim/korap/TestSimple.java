@@ -90,9 +90,10 @@ public class TestSimple {
         for (int i = 0; i < characters.length; i++) {
             String fixChar = characters[i];
             surface += fixChar;
-            annotation +=
-                "[("+i+"-"+(i+1)+")s:"+fixChar+
-                "|_"+i+"$<i>"+i+"<i>"+(i+1)+"]";
+            annotation += "[("+i+"-"+(i+1)+")s:"+fixChar;
+            if (i == 0)
+                annotation += "|<>:base/s:t$<b>64<i>0<i>" + characters.length + "<i>" + characters.length + "<b>0";
+            annotation += "|_"+i+"$<i>"+i+"<i>"+(i+1)+"]";
         };
 
         fd.addTV("base",surface, annotation);
