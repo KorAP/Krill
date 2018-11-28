@@ -311,6 +311,14 @@ public class TestKrillQuery {
                 sq.toString());
     };
 
+    @Test
+    public void KorapOptQuery () throws QueryException {
+        QueryBuilder kq = new QueryBuilder("field");
+        SpanQuery sq = kq.seq(kq.opt(kq.seg("x"))).append(kq.seg("y")).toQuery();
+        assertEquals(
+                "spanOr([field:y, spanNext(field:x, field:y)])",
+                sq.toString());
+    };  
 
 
     @Test

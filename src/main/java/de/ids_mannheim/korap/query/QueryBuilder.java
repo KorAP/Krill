@@ -455,4 +455,9 @@ public class QueryBuilder {
             int max) {
         return new SpanRepetitionQueryWrapper(element, min, max);
     };
+
+    // Optionality
+    public SpanRepetitionQueryWrapper opt (SpanQueryWrapper element) {
+        return new SpanRepetitionQueryWrapper(element, 0, 1);
+    };
 };
