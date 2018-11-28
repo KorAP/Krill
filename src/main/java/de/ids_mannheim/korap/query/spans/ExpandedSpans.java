@@ -95,7 +95,8 @@ public class ExpandedSpans extends SimpleSpans {
                 return true;
             }
             else {
-                setCandidateList(firstSpans.end());
+                setCandidateList();
+//                log.debug(candidateSpans.toString());
             }
         }
         return false;
@@ -107,14 +108,9 @@ public class ExpandedSpans extends SimpleSpans {
      * all possible expansion with respect to the expansion length
      * (min,max) variables.
      * 
-     * @param lastPosition
-     *            is used in left expansion. The start position of
-     *            the candidates to collect must not beyond this
-     *            position.
-     * 
      * @throws IOException
      */
-    private void setCandidateList (int lastPosition) throws IOException {
+    private void setCandidateList () throws IOException {
         CandidateSpan cs;
         int counter, start, end;
 
@@ -130,10 +126,12 @@ public class ExpandedSpans extends SimpleSpans {
                 counter--;
             }
             
+            int lastPosition = firstSpans.start();
             if (hasMoreSpans && (hasMoreSpans = firstSpans.next()) ) {
                 start = Math.max(0, firstSpans.start() - max);
+                log.debug("next candidate start: "+start+", lastPosition "+lastPosition);
                 if (start <= lastPosition) {
-                    setCandidateList(lastPosition);
+                    setCandidateList();
                 }
             }
         }

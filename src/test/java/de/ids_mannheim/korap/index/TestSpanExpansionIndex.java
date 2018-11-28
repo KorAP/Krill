@@ -637,6 +637,22 @@ public class TestSpanExpansionIndex {
         assertEquals(18, kr.getTotalResults());        
     }
     
+    public void testLeftExpansionWrongSorting () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("B u d B R a d m d Z z s B d v", " "));
+        ki.commit();
+        
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:d"));
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, 0, 8, -1, true);
+        
+        Result kr = ki.search(seq, (short) 25);
+//        for (Match km : kr.getMatches()){
+//             System.out.println(km.getStartPos() +","+km.getEndPos()+" "
+//             +km.getSnippetBrackets()); }
+        // 2-3, 6-7, 8-9, 13-14
+        assertEquals("BudBR[[admdZzsBd]]v", kr.getMatch(15).getSnippetBrackets());
+        assertEquals(28, kr.getTotalResults());
+    }
     
     /** Tests left expansion over start doc boundary. Redundant matches should
      *  be omitted.
@@ -658,6 +674,7 @@ public class TestSpanExpansionIndex {
         assertEquals(14, kr.getTotalResults());
 
     }
+    
     
     private FieldDocument createFieldDoc6 () {
         FieldDocument fd = new FieldDocument();
