@@ -1,30 +1,24 @@
 package de.ids_mannheim.korap.index;
 
-import org.junit.Test;
-import org.junit.Ignore;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanOrQuery;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
+import org.junit.Test;
+
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.constants.RelationDirection;
+import de.ids_mannheim.korap.query.SpanClassQuery;
+import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
-import de.ids_mannheim.korap.query.DistanceConstraint;
-import de.ids_mannheim.korap.query.SpanClassQuery;
-import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
-import de.ids_mannheim.korap.util.QueryException;
-
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
-
 
 public class TestFocusIndex {
     private KrillIndex ki;
@@ -34,12 +28,11 @@ public class TestFocusIndex {
         ki = new KrillIndex();
     }
 
-
     /**
      * Check Skipto focus spans
      */
     @Test
-    public void testCase12 () throws IOException {
+    public void testSkipTo () throws IOException {
         ki.addDoc(TestRelationIndex.createFieldDoc0());
         ki.addDoc(TestRelationIndex.createFieldDoc1());
         ki.commit();
@@ -65,7 +58,6 @@ public class TestFocusIndex {
     }
 
     @Test
-    @Ignore
     public void testFocusSorting () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc());
@@ -103,8 +95,8 @@ public class TestFocusIndex {
         assertEquals("a[[b{1:c}d]]", kr.getMatch(3).getSnippetBrackets());
         assertEquals(4, kr.getTotalResults());
 
-
         SpanFocusQuery focus = new SpanFocusQuery(within, (byte) 1);
+        focus.setSorted(false);
         kr = ki.search(focus, (short) 10);
         assertEquals("a[[{1:b}]]cd", kr.getMatch(0).getSnippetBrackets());
         assertEquals("a[[{1:b}]]cd", kr.getMatch(1).getSnippetBrackets());
@@ -116,9 +108,7 @@ public class TestFocusIndex {
     public static FieldDocument createFieldDoc () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV(
-                "tokens",
-                "abcd",
+        fd.addTV("tokens", "abcd",
 
                 "[(0-1)s:a|_0$<i>0<i>1|"
                 + "<>:x$<b>64<i>0<i>3<i>3<b>0]"
