@@ -40,6 +40,7 @@ public class SpanExpansionQueryWrapper extends SpanQueryWrapper {
         this.isExtended = true;
         if (direction >= 0)
             this.isExtendedToTheRight = true;
+        this.maybeUnsorted = anchor.maybeUnsorted();
     };
 
 

@@ -72,9 +72,18 @@ public class SpanQueryWrapper {
 
         // Wrap the query in a <base/s=t>, if it's extended to the right
         if (this.isExtendedToTheRight()) {
-            return new SpanFocusQuery(new SpanWithinQuery("base/s:t",
+            SpanFocusQuery sfc = new SpanFocusQuery(new SpanWithinQuery("base/s:t",
                     new SpanClassQuery(this.toFragmentQuery(), (byte) 254)),
                     (byte) 254);
+
+            // Only sort, in case it wraps an unsorted query,
+            // within base/s:t is sorted per definition.
+            if (this.maybeUnsorted()) {
+                sfc.setSorted(false);
+            };
+
+            return sfc;
+
         };
         
         SpanQuery sq = this.toFragmentQuery();
@@ -280,7 +289,7 @@ public class SpanQueryWrapper {
      * Normally spans are always sorted, but in case of
      * a wrapped relation query, classed operands may
      * be in arbitrary order. When focussing on these
-     * classes, the span has to me reordered.
+     * classes, the span has to be reordered.
      * 
      * @return <tt>true</tt> in case the wrapped query
      *         has to be sorted on focussing,

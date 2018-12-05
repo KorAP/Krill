@@ -35,6 +35,7 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
 
         this.subQuery1 = operand1;
         this.subQuery2 = operand2;
+        this.maybeUnsorted = true;
     }
 
 

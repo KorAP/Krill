@@ -99,20 +99,6 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
 
     /**
      * Constructs a new object for sequence deserialization
-     * by passing a single {@link SpanQuery} object.
-     * 
-     * @param query
-     *            Initial {@link SpanQuery} to search for.
-     */
-    public SpanSequenceQueryWrapper (SpanQuery query) {
-        this(query.getField());
-        this.segments.add(new SpanSimpleQueryWrapper(query));
-        this.isNull = false;
-    };
-
-
-    /**
-     * Constructs a new object for sequence deserialization
      * by passing a single {@link SpanQueryWrapper} object.
      * These wrapper queries may be optional, negative, or empty.
      * 
@@ -126,8 +112,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         if (sswq.isNull())
             return;
 
-        if (sswq.maybeUnsorted())
-            this.maybeUnsorted = true;
+        this.maybeUnsorted = sswq.maybeUnsorted();
 
         // Some debugging on initiating new sequences
         if (DEBUG) {
@@ -168,20 +153,9 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      *         chaining.
      */
     public SpanSequenceQueryWrapper append (String term) {
-        return this.append(new SpanTermQuery(new Term(field, term)));
-    };
-
-
-    /**
-     * Append a new {@link SpanQuery} object to the sequence.
-     * 
-     * @param query
-     *            A new {@link SpanQuery} to search for.
-     * @return The {@link SpanSequenceQueryWrapper} object for
-     *         chaining.
-     */
-    public SpanSequenceQueryWrapper append (SpanQuery query) {
-        return this.append(new SpanSimpleQueryWrapper(query));
+        return this.append(
+            new SpanSimpleQueryWrapper(field, term)
+            );
     };
 
 
@@ -258,20 +232,9 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      *         chaining.
      */
     public SpanSequenceQueryWrapper prepend (String term) {
-        return this.prepend(new SpanTermQuery(new Term(field, term)));
-    };
-
-
-    /**
-     * Prepend a new {@link SpanQuery} object to the sequence.
-     * 
-     * @param query
-     *            A new {@link SpanQuery} to search for.
-     * @return The {@link SpanSequenceQueryWrapper} object for
-     *         chaining.
-     */
-    public SpanSequenceQueryWrapper prepend (SpanQuery query) {
-        return this.prepend(new SpanSimpleQueryWrapper(query));
+        return this.prepend(
+            new SpanSimpleQueryWrapper(field, term)
+            );
     };
 
 
@@ -580,6 +543,8 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
      */
     public void setInOrder (boolean order) {
         this.isInOrder = order;
+        if (order == false)
+            this.maybeUnsorted = true;
     };
 
 
