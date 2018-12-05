@@ -15,7 +15,7 @@ import de.ids_mannheim.korap.util.QueryException;
  */
 
 public class SpanElementQueryWrapper extends SpanQueryWrapper {
-    String element;
+    protected String element;
     String field;
 
 

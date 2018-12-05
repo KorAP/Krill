@@ -99,6 +99,9 @@ public class SpanFocusQuery extends SimpleSpanQuery {
             buffer.append((short) classNumbers.get(0) & 0xFF).append(": ");
         }
         buffer.append(this.firstClause.toString());
+        if (!this.isSorted()) {
+            buffer.append(",sorting");
+        }
         buffer.append(')');
         buffer.append(ToStringUtils.boost(getBoost()));
         return buffer.toString();

@@ -121,7 +121,15 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
         if (this.element.maybeUnsorted())
             return true;
 
-        return this.maybeUnsorted;
+        if (this.flag == SpanWithinQuery.MATCH ||
+            this.flag == SpanWithinQuery.STARTSWITH) {
+            return false;
+        };
+
+        // TODO:
+        //   Optimize by checking for containing classes!
+
+        return true;
     };
 
 
