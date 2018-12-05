@@ -27,18 +27,10 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
     };
 
 
-    public SpanAlterQueryWrapper (String field, SpanQuery query) {
-        this.field = field;
-        this.alternatives = new ArrayList<>();
-        this.alternatives.add(new SpanSimpleQueryWrapper(query));
-    };
-
-
     public SpanAlterQueryWrapper (String field, SpanQueryWrapper query) {
         this.field = field;
         this.alternatives = new ArrayList<>();
-        if (query.maybeUnsorted())
-            this.maybeUnsorted = true;
+        this.maybeUnsorted = query.maybeUnsorted();
         this.alternatives.add(query);
     };
 
@@ -48,21 +40,16 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
         this.alternatives = new ArrayList<>();
         for (String term : terms) {
             this.isNull = false;
-            this.alternatives.add(new SpanSimpleQueryWrapper(
-                    new SpanTermQuery(new Term(this.field, term))));
+            this.alternatives.add(
+                new SpanSimpleQueryWrapper(this.field, term)
+                );
         };
     };
 
 
     public SpanAlterQueryWrapper or (String term) {
-        return this.or(new SpanTermQuery(new Term(this.field, term)));
-    };
-
-
-    public SpanAlterQueryWrapper or (SpanQuery query) {
-        this.alternatives.add(new SpanSimpleQueryWrapper(query));
-        this.isNull = false;
-        return this;
+        SpanQueryWrapper sqw = new SpanSimpleQueryWrapper(this.field, term);
+        return this.or(sqw);
     };
 
 

@@ -37,7 +37,9 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
                     "The query requires a positive attribute.");
         }
         this.attrQueryWrapper = attrQuery;
+        this.maybeUnsorted = attrQuery.maybeUnsorted();
         this.isSingleAttribute = true;
+        
     }
 
 

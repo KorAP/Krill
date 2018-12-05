@@ -9,6 +9,7 @@ import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.constants.RelationDirection;
@@ -18,7 +19,11 @@ import de.ids_mannheim.korap.query.SpanFocusQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRelationQuery;
 import de.ids_mannheim.korap.query.SpanWithinQuery;
+import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.util.QueryException;
 
 public class TestFocusIndex {
     private KrillIndex ki;
@@ -98,6 +103,7 @@ public class TestFocusIndex {
         SpanFocusQuery focus = new SpanFocusQuery(within, (byte) 1);
         focus.setSorted(false);
         kr = ki.search(focus, (short) 10);
+        assertEquals("focus(1: spanContain(<tokens:x />, spanOr([{1: tokens:s:b}, {1: tokens:s:c}])),sorting)", focus.toString());
         assertEquals("a[[{1:b}]]cd", kr.getMatch(0).getSnippetBrackets());
         assertEquals("a[[{1:b}]]cd", kr.getMatch(1).getSnippetBrackets());
         assertEquals("ab[[{1:c}]]d", kr.getMatch(2).getSnippetBrackets());
@@ -139,6 +145,35 @@ public class TestFocusIndex {
 
     }
 
+    @Test
+    public void testFocusSortingWrapping () throws QueryException, IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc());
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("tokens");
+
+        SpanQueryWrapper focus = kq.focus(kq.within(kq.tag("x"), kq.or(kq.nr(1, kq.seg("s:b")), kq.nr(1, kq.seg("s:c")))));
+        assertEquals("focus(1: spanContain(<tokens:x />, spanOr([{1: tokens:s:b}, {1: tokens:s:c}])),sorting)", focus.toQuery().toString());
+        
+        kr = ki.search(focus.toQuery(), (short) 10);
+        assertEquals("a[[{1:b}]]cd", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("a[[{1:b}]]cd", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("ab[[{1:c}]]d", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("ab[[{1:c}]]d", kr.getMatch(3).getSnippetBrackets());
+        assertEquals(4, kr.getTotalResults());
+
+
+        focus = kq.focus(kq.startswith(kq.tag("x"), kq.or(kq.nr(1, kq.seg("s:b")), kq.nr(1, kq.seg("s:c")))));
+        assertEquals("focus(1: spanStartsWith(<tokens:x />, spanOr([{1: tokens:s:b}, {1: tokens:s:c}])))",
+                     focus.toQuery().toString());
+
+        kr = ki.search(focus.toQuery(), (short) 10);
+        assertEquals("a[[{1:b}]]cd", kr.getMatch(0).getSnippetBrackets());
+        assertEquals(1, kr.getTotalResults());
+    }
+
+    
     public static FieldDocument createFieldDoc () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");

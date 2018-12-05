@@ -18,6 +18,7 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
         this.number = number;
         if (number != (byte) 0)
             this.hasClass = true;
+        this.maybeUnsorted = subquery.maybeUnsorted();
     };
 
 
@@ -58,13 +59,6 @@ public class SpanClassQueryWrapper extends SpanQueryWrapper {
     public boolean isNegative () {
         return this.subquery.isNegative();
     };
-
-
-    @Override
-    public boolean maybeUnsorted () {
-        return this.subquery.maybeUnsorted();
-    };
-
 
     public SpanQuery toFragmentQuery () throws QueryException {
         if (this.subquery.isNull())

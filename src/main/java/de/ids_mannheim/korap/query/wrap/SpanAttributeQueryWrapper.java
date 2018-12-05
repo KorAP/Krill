@@ -31,8 +31,7 @@ public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
             this.isNegative = true;
         };
 
-        if (sqw.maybeUnsorted())
-            this.maybeUnsorted = true;
+        this.maybeUnsorted = sqw.maybeUnsorted();
     };
 
 

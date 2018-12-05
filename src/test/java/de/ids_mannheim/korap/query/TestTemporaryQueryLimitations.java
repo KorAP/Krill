@@ -56,7 +56,7 @@ public class TestTemporaryQueryLimitations {
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),
-                "focus(130: {131: spanContain({129: <tokens:s />}, {130: tokens:s:wegen})})");
+                "focus(130: {131: spanContain({129: <tokens:s />}, {130: tokens:s:wegen})},sorting)");
         assertEquals(kr.getTotalResults(), 0);
         assertEquals(kr.getStartIndex(), 0);
 

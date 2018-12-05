@@ -744,7 +744,7 @@ public class TestKrill {
 
         Result kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),
-                "focus(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}))");
+                "focus(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}),sorting)");
         assertEquals(40, kr.getMatch(0).getStartPos());
         assertEquals(41, kr.getMatch(0).getEndPos());
 
@@ -758,7 +758,7 @@ public class TestKrill {
 
         kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),
-                "focus(129: spanContain(<tokens:base/s:s />, {129: tokens:s:Leben}))");
+                "focus(129: spanContain(<tokens:base/s:s />, {129: tokens:s:Leben}),sorting)");
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
                 "... Initiative\" eine neue politische Gruppierung ins "
                         + "[[Leben]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
@@ -767,7 +767,7 @@ public class TestKrill {
         kr = ks.apply(ki);
         assertEquals(kr.getSerialQuery(),
                 "focus(129: spanElementDistance({129: tokens:s:Namen}, "
-                        + "{129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]))");
+                        + "{129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]),sorting)");
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
                 "... ihren Austritt erklärt und unter dem [[Namen \"Einheitsbewegung "
                         + "der sozialistischen Initiative\" eine neue politische Gruppierung "
