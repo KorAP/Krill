@@ -130,9 +130,16 @@ public class FocusSpans extends SimpleSpans {
 
     private void collectCandidates () throws IOException {
         CandidateSpan cs = null;
-        while (hasMoreSpans && candidates.size() < windowSize
-                && firstSpans.doc() == currentDoc) {
-
+        CandidateSpan head = null;
+        
+        while (hasMoreSpans && firstSpans.doc() == currentDoc) {
+            if (head == null){ 
+                head = candidates.peek();
+            }
+            else if (head.getStart() < firstSpans.start()){
+                break;
+            }
+            
             if (firstSpans.isPayloadAvailable() && updateSpanPositions(
                     cs = new CandidateSpan(firstSpans))) {
                 if (cs.getDoc() == prevDoc && cs.getStart() < prevStart) {

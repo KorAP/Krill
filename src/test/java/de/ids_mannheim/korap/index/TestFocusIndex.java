@@ -103,6 +103,40 @@ public class TestFocusIndex {
         assertEquals("ab[[{1:c}]]d", kr.getMatch(2).getSnippetBrackets());
         assertEquals("ab[[{1:c}]]d", kr.getMatch(3).getSnippetBrackets());
         assertEquals(4, kr.getTotalResults());
+        
+        testFocusSortingOverWindowSize(elemX, classB, classC);
+        
+    }
+    
+    private void testFocusSortingOverWindowSize (SpanQuery elemX,
+            SpanQuery classB, SpanQuery classC) throws IOException {
+        ki.addDoc(createFieldDoc1());
+        ki.commit();
+        
+        SpanQuery termD = new SpanTermQuery(new Term("tokens", "s:d"));
+        SpanQuery classD = new SpanClassQuery(termD, (byte) 1);
+        
+        SpanQuery or = new SpanOrQuery(classB, classC, classD);
+        SpanWithinQuery within = new SpanWithinQuery(elemX, or);
+        kr = ki.search(within, (short) 10);
+        
+        assertEquals("[[abc{1:d}]]", kr.getMatch(7).getSnippetBrackets());
+        assertEquals(10, kr.getTotalResults());
+        
+        SpanFocusQuery focus = new SpanFocusQuery(within, (byte) 1);
+        focus.setSorted(false);
+        focus.setWindowSize(2);
+        kr = ki.search(focus, (short) 10);
+        
+//        for (Match m: kr.getMatches()){
+//            System.out.println(m.getDocID() + " "+m.getSnippetBrackets());
+//        }
+        assertEquals("a[[{1:b}]]cd", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("a[[{1:b}]]cd", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("ab[[{1:c}]]d", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("ab[[{1:c}]]d", kr.getMatch(3).getSnippetBrackets());
+        assertEquals(10, kr.getTotalResults());
+
     }
 
     public static FieldDocument createFieldDoc () {
@@ -115,6 +149,22 @@ public class TestFocusIndex {
                 + "[(1-2)s:b|_1$<i>1<i>2|"
                 + "<>:x$<b>64<i>1<i>4<i>4<b>0]"
                 + "[(2-3)s:c|_2$<i>2<i>3]"
+                + "[(3-4)s:d|_3$<i>3<i>4]"
+                 );
+        
+        return fd;
+    }
+    
+    public static FieldDocument createFieldDoc1 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("tokens", "abcd",
+
+                "[(0-1)s:a|_0$<i>0<i>1|"
+                + "<>:x$<b>64<i>0<i>4<i>4<b>0]"
+                + "[(1-2)s:b|_1$<i>1<i>2]"
+                + "[(2-3)s:c|_2$<i>2<i>3|"
+                + "<>:x$<b>64<i>2<i>4<i>4<b>0]"
                 + "[(3-4)s:d|_3$<i>3<i>4]"
                  );
         

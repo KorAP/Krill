@@ -14,6 +14,7 @@
     - [bugfix] Fixed left expansion match order (margaretha)
     - [bugfix] Fixed right expansion match order & expansion over start (margaretha)
     - [feature] Added opt() method to QueryBuilder (diewald)
+    - [bugfix] Improved FocusSpans sorting (margaretha)
 
 0.58.0 2018-09-03
     - [feature] Implemented referencing cached collection (margaretha)
