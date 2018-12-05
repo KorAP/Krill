@@ -30,6 +30,7 @@ public class SpanReferenceQueryWrapper extends SpanQueryWrapper {
                     "Class number must be bigger than 0.");
         }
         this.classNum = classNum;
+        this.maybeUnsorted = subQueryWrapper.maybeUnsorted();
     }
 
 

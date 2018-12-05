@@ -48,6 +48,7 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
         else if (subquery.isNegative()) {
             handleNegativeSubquery();
         }
+        this.maybeUnsorted = sqw.maybeUnsorted();
     }
 
 
@@ -143,11 +144,5 @@ public class SpanSubspanQueryWrapper extends SpanQueryWrapper {
         if (startOffset > 0)
             return false;
         return this.subquery.isOptional();
-    };
-
-
-    @Override
-    public boolean maybeUnsorted () {
-        return this.subquery.maybeUnsorted();
     };
 }
