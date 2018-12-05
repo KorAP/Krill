@@ -1,13 +1,10 @@
 package de.ids_mannheim.korap.query.wrap;
 
-import org.apache.lucene.search.RegexpQuery;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
-import org.apache.lucene.util.automaton.RegExp;
 import org.apache.lucene.index.Term;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-
-import java.util.*;
+import org.apache.lucene.search.RegexpQuery;
+import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.util.automaton.RegExp;
 
 /*
   TODO: Don't allow queries like ".*?"!!!

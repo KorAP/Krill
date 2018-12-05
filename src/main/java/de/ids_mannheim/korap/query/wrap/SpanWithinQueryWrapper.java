@@ -1,16 +1,9 @@
 package de.ids_mannheim.korap.query.wrap;
 
-import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-
-import de.ids_mannheim.korap.util.QueryException;
-
-import java.util.*;
-
 import org.apache.lucene.search.spans.SpanQuery;
+
+import de.ids_mannheim.korap.query.SpanWithinQuery;
+import de.ids_mannheim.korap.util.QueryException;
 
 /*
   Todo:
@@ -121,7 +114,15 @@ public class SpanWithinQueryWrapper extends SpanQueryWrapper {
         if (this.element.maybeUnsorted())
             return true;
 
-        return this.maybeUnsorted;
+        if (this.flag == SpanWithinQuery.MATCH ||
+            this.flag == SpanWithinQuery.STARTSWITH) {
+            return false;
+        };
+
+        // TODO:
+        //   Optimize by checking for containing classes!
+
+        return true;
     };
 
 

@@ -22,7 +22,6 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
-import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 
 /*
@@ -462,7 +461,7 @@ public class TestRelationIndex {
         rv.setSorted(false);
 
         assertEquals(
-                "focus(1: focus(#[1,2]spanSegment(spanRelation(base:>:child-of), {1: <base:np />})))",
+                "focus(1: focus(#[1,2]spanSegment(spanRelation(base:>:child-of), {1: <base:np />}),sorting),sorting)",
                 rv.toString());
 
         kr = ki.search(rv, (short) 10);
@@ -569,7 +568,7 @@ public class TestRelationIndex {
         rv2.setSorted(false);
 
         assertEquals(
-                "focus(2: focus(#[1,2]spanSegment({2: target:spanRelation(base:>:child-of)}, {1: <base:np />})))",
+                "focus(2: focus(#[1,2]spanSegment({2: target:spanRelation(base:>:child-of)}, {1: <base:np />}),sorting),sorting)",
                 rv2.toString());
 
         kr = ki.search(rv2, (short) 10);
@@ -664,7 +663,7 @@ public class TestRelationIndex {
         rv.setSorted(false);
 
         assertEquals(
-                "focus(2: focus(#[1,2]spanSegment({2: source:spanRelation(base:<:child-of)}, {1: <base:np />})))",
+                "focus(2: focus(#[1,2]spanSegment({2: source:spanRelation(base:<:child-of)}, {1: <base:np />}),sorting),sorting)",
                 rv.toString());
 
         kr = ki.search(rv, (short) 10);
@@ -801,8 +800,8 @@ public class TestRelationIndex {
         sfq2.setSorted(false);
         assertEquals("focus(1: spanSegment(focus(2: spanSegment({1: source:"
                 + "{2: target:spanRelation(base:>:child-of)}}, "
-                + "{1: spanTermWithId(base:pos:ART)})), "
-                + "{2: <base:np />}))", sfq2.toString());
+                + "{1: spanTermWithId(base:pos:ART)}),sorting), "
+                + "{2: <base:np />}),sorting)", sfq2.toString());
 
         kr = ki.search(sfq2, (short) 10);
 
@@ -1009,7 +1008,7 @@ public class TestRelationIndex {
         assertEquals(
                 "focus(#[1,2]spanSegment(spanWithAttribute(spanAttribute(base:@:case=accusative)), "
                         + "focus(#2: spanSegment({1: source:{2: target:spanRelation(base:>:child-of)}}, "
-                        + "spanWithAttribute(spanAttribute(base:@:case=accusative))))))",
+                        + "spanWithAttribute(spanAttribute(base:@:case=accusative))),sorting)),sorting)",
                 srmq.toString());
         kr = ki.search(srmq, (short) 10);
         assertEquals((long) 1, kr.getTotalResults());

@@ -1,23 +1,16 @@
 package de.ids_mannheim.korap.query.wrap;
 
-import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSegmentQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanSimpleQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.lucene.search.spans.SpanOrQuery;
+import org.apache.lucene.search.spans.SpanQuery;
 
 import de.ids_mannheim.korap.util.QueryException;
 
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.index.Term;
-
-import java.util.*;
-
 public class SpanAlterQueryWrapper extends SpanQueryWrapper {
     private String field;
-    private SpanQuery query;
     private List<SpanQueryWrapper> alternatives;
 
 
@@ -27,18 +20,10 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
     };
 
 
-    public SpanAlterQueryWrapper (String field, SpanQuery query) {
-        this.field = field;
-        this.alternatives = new ArrayList<>();
-        this.alternatives.add(new SpanSimpleQueryWrapper(query));
-    };
-
-
     public SpanAlterQueryWrapper (String field, SpanQueryWrapper query) {
         this.field = field;
         this.alternatives = new ArrayList<>();
-        if (query.maybeUnsorted())
-            this.maybeUnsorted = true;
+        this.maybeUnsorted = query.maybeUnsorted();
         this.alternatives.add(query);
     };
 
@@ -48,21 +33,16 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
         this.alternatives = new ArrayList<>();
         for (String term : terms) {
             this.isNull = false;
-            this.alternatives.add(new SpanSimpleQueryWrapper(
-                    new SpanTermQuery(new Term(this.field, term))));
+            this.alternatives.add(
+                new SpanSimpleQueryWrapper(this.field, term)
+                );
         };
     };
 
 
     public SpanAlterQueryWrapper or (String term) {
-        return this.or(new SpanTermQuery(new Term(this.field, term)));
-    };
-
-
-    public SpanAlterQueryWrapper or (SpanQuery query) {
-        this.alternatives.add(new SpanSimpleQueryWrapper(query));
-        this.isNull = false;
-        return this;
+        SpanQueryWrapper sqw = new SpanSimpleQueryWrapper(this.field, term);
+        return this.or(sqw);
     };
 
 

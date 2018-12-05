@@ -353,7 +353,7 @@ public class TestKrillQueryJSON {
 
         //     "MORPH(V) #IN(R) #ELEM(S)"
         assertEquals(sqwi.toQuery().toString(),
-                "focus(1: spanEndsWith(<tokens:s />, {1: tokens:p:V}))");
+                "focus(1: spanEndsWith(<tokens:s />, {1: tokens:p:V}),sorting)");
     };
 
 
@@ -386,7 +386,7 @@ public class TestKrillQueryJSON {
 
         // Namen /s1 Leben
         assertEquals(sqwi.toQuery().toString(),
-                "focus(129: spanElementDistance({129: tokens:s:Namen}, {129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]))");
+                "focus(129: spanElementDistance({129: tokens:s:Namen}, {129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]),sorting)");
     };
 
 

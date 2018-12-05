@@ -1,14 +1,9 @@
 package de.ids_mannheim.korap.query.wrap;
 
-import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.util.automaton.RegExp;
-import org.apache.lucene.index.Term;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
+
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.util.QueryException;
-
-import java.util.*;
 
 /*
  * TODO: SpanExpansionQueryWrapper currently does not support negative extensions!
@@ -40,6 +35,7 @@ public class SpanExpansionQueryWrapper extends SpanQueryWrapper {
         this.isExtended = true;
         if (direction >= 0)
             this.isExtendedToTheRight = true;
+        this.maybeUnsorted = anchor.maybeUnsorted();
     };
 
 

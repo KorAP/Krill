@@ -1,12 +1,9 @@
 package de.ids_mannheim.korap.query.wrap;
 
-import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import org.apache.lucene.index.Term;
-
-import java.util.*;
+import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
+import org.apache.lucene.search.spans.SpanQuery;
 
 public class SpanWildcardQueryWrapper extends SpanQueryWrapper {
     private SpanQuery query;

@@ -1,18 +1,13 @@
 package de.ids_mannheim.korap.query.wrap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanNotQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
-import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanRegexQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanWildcardQueryWrapper;
-import de.ids_mannheim.korap.query.SpanSegmentQuery;
+import org.apache.lucene.search.spans.SpanQuery;
 
+import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.util.QueryException;
 
 

@@ -30,8 +30,7 @@ public class SpanRepetitionQueryWrapper extends SpanQueryWrapper {
 
         if (!subquery.isEmpty()) {
             this.subquery = subquery;
-            if (subquery.maybeUnsorted())
-                this.maybeUnsorted = true;
+            this.maybeUnsorted = subquery.maybeUnsorted();
 			this.isEmpty = false;
         }
         else

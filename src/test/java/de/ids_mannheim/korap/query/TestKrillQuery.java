@@ -4,6 +4,7 @@ import java.util.*;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -344,6 +345,56 @@ public class TestKrillQuery {
         assertEquals("spanStartsWith(field:test, field:test2)", sq.toString());
     };
 
-    // kq.seg("a").append(kq.ANY).append("b:c");
-    // kq.repeat(kq.seg("a", "b"), 5)
+
+    @Test
+    public void korapMaybeUnsorted () throws QueryException {
+        QueryBuilder kq = new QueryBuilder("field");
+        SpanQueryWrapper sqw = kq.re("a.*");
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.wc("a?b");
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.seg("a", "b").with("c");
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.seg("a", "b").with("c");
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.seq().append("c").prepend("b");
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.tag("abc");
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.within(kq.tag("abc"), kq.seg("a"));
+        assertTrue(sqw.maybeUnsorted());
+
+        sqw = kq.contains(kq.tag("abc"), kq.seg("a"));
+        assertTrue(sqw.maybeUnsorted());
+
+        sqw = kq.startswith(kq.tag("abc"), kq.seg("a"));
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.endswith(kq.tag("abc"), kq.seg("a"));
+        assertTrue(sqw.maybeUnsorted());
+
+        sqw = kq.overlaps(kq.tag("abc"), kq.seg("a"));
+        assertTrue(sqw.maybeUnsorted());
+
+        sqw = kq.matches(kq.tag("abc"), kq.seg("a"));
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.matches(kq.within(kq.tag("abc"), kq.seg("a")), kq.seg("a"));
+        assertTrue(sqw.maybeUnsorted());
+        
+        sqw = kq.nr(2, kq.tag("abc"));
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.repeat(kq.tag("abc"), 4);
+        assertFalse(sqw.maybeUnsorted());
+
+        sqw = kq.repeat(kq.within(kq.tag("abc"), kq.seg("a")), 4);
+        assertTrue(sqw.maybeUnsorted());
+    };
 };

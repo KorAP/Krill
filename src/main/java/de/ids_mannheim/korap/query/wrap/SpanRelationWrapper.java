@@ -1,8 +1,6 @@
 package de.ids_mannheim.korap.query.wrap;
 
-import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
 
 import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
@@ -35,6 +33,7 @@ public class SpanRelationWrapper extends SpanQueryWrapper {
 
         this.subQuery1 = operand1;
         this.subQuery2 = operand2;
+        this.maybeUnsorted = true;
     }
 
 

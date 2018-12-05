@@ -30,7 +30,7 @@ public class TestSpanReferenceQueryJSON {
                 "spanReference(spanNext({3: tokens:p:P}, "
                         + "focus(2: focus(#[1,2]spanSegment({3: tokens:p:P}, "
                         + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
-                        + "focus(1: spanNext({2: tokens:p:V}, {1: <tokens:c:NP />})))))))), 3)",
+                        + "focus(1: spanNext({2: tokens:p:V}, {1: <tokens:c:NP />}))),sorting)),sorting),sorting)), 3)",
                 sq.toString());
     }
 
@@ -50,7 +50,7 @@ public class TestSpanReferenceQueryJSON {
         assertEquals(
                 "spanReference(spanNext(focus(2: focus(#[1,2]spanSegment({3: tokens:p:P}, "
                         + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
-                        + "focus(1: spanNext({2: tokens:p:V}, {1: <tokens:c:NP />}))))))), "
+                        + "focus(1: spanNext({2: tokens:p:V}, {1: <tokens:c:NP />}))),sorting)),sorting),sorting), "
                         + "{3: tokens:p:P}), 3)",
                 sq.toString());
     }
@@ -70,7 +70,7 @@ public class TestSpanReferenceQueryJSON {
                 "spanReference(focus(#[1,2]spanSegment({1: <tokens:c:VP />}, "
                         + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
                         + "focus(2: spanReference(spanNext(focus(1: spanNext(focus(2: spanNext({1: <tokens:c:VP />}, "
-                        + "{2: <tokens:c:NP />})), {3: <tokens:c:PP />})), {3: <tokens:c:PP />}), 3)))))), 1)",
+                        + "{2: <tokens:c:NP />})), {3: <tokens:c:PP />})), {3: <tokens:c:PP />}), 3))),sorting)),sorting), 1)",
                 sq.toString());
     }
 
@@ -104,8 +104,8 @@ public class TestSpanReferenceQueryJSON {
                 "spanReference(focus(#[1,2]spanSegment({1: <tokens:c:prp />}, "
                         + "focus(#2: spanSegment(spanRelation(tokens:>:stanford/d:tag), "
                         + "focus(2: spanDistance(focus(1: spanDistance(<tokens:c:vb />, "
-                        + "{1: <tokens:c:prp />}, [(w[1:1], notOrdered, notExcluded)])), "
-                        + "{2: <tokens:c:nn />}, [(w[1:3], ordered, notExcluded)])))))), 1)",
+                        + "{1: <tokens:c:prp />}, [(w[1:1], notOrdered, notExcluded)]),sorting), "
+                        + "{2: <tokens:c:nn />}, [(w[1:3], ordered, notExcluded)]))),sorting)),sorting), 1)",
                 sq.toString());
     }
 }
