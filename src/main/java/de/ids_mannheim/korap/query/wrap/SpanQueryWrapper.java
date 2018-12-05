@@ -78,7 +78,6 @@ public class SpanQueryWrapper {
         };
         
         SpanQuery sq = this.toFragmentQuery();
-        log.info(sq.toString());
         return sq;
     };
 

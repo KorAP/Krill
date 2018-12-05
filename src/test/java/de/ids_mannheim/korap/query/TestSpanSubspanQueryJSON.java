@@ -37,7 +37,7 @@ public class TestSpanSubspanQueryJSON {
     }
 
 
-    @Test (expected=NullPointerException.class)
+    @Test
     public void testTermNull () throws QueryException {
         // subspan(tokens:tt/l:Haus, 1, 1)
         String filepath = getClass()

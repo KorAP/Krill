@@ -30,7 +30,7 @@ public class MultiTermToken {
     private boolean sorted = false;
 
     // This advices the java compiler to ignore all loggings
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     private final Logger log = LoggerFactory
             .getLogger(MultiTermTokenStream.class);
 
