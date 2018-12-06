@@ -41,7 +41,7 @@ public class TestRealIndex {
     public void testCase1 () throws IOException, QueryException {
         QueryBuilder kq = new QueryBuilder("tokens");
         ks = new Krill(kq
-                .within(kq.tag("base/s:s"),
+                .contains(kq.tag("base/s:s"),
                         kq.seq(kq.re("s:.*")).append(kq.nr(kq.re("s:.*"))))
                 .toQuery());
         ks.getMeta().setTimeOut(10000);

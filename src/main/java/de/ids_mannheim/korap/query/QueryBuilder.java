@@ -364,13 +364,6 @@ public class QueryBuilder {
      * @param embedded
      *            A SpanQuery that is wrapped in the element.
      */
-    @Deprecated
-    public SpanWithinQueryWrapper within (SpanQueryWrapper element,
-            SpanQueryWrapper embedded) {
-        return new SpanWithinQueryWrapper(element, embedded);
-    };
-
-
     public SpanWithinQueryWrapper contains (SpanQueryWrapper element,
             SpanQueryWrapper embedded) {
         return new SpanWithinQueryWrapper(element, embedded, WITHIN);

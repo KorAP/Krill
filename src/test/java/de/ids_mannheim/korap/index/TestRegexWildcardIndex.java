@@ -348,7 +348,7 @@ public class TestRegexWildcardIndex {
         assertEquals((long) 1, kr.getTotalResults());
 
 		// Test without matches in within
-		sq = kq.within(kq.re("s:z.*e"), kq.seg("s:affe")).toQuery();
+		sq = kq.contains(kq.re("s:z.*e"), kq.seg("s:affe")).toQuery();
         assertEquals(
 			"spanContain(SpanMultiTermQueryWrapper(base:/s:z.*e/), base:s:affe)",
 			sq.toString());
@@ -356,7 +356,7 @@ public class TestRegexWildcardIndex {
         assertEquals((long) 0, kr.getTotalResults());
 
 		// Test without matches in within (reversed)
-		sq = kq.within(kq.seg("s:affe"), kq.re("s:z.*e")).toQuery();
+		sq = kq.contains(kq.seg("s:affe"), kq.re("s:z.*e")).toQuery();
         assertEquals(
 			"spanContain(base:s:affe, SpanMultiTermQueryWrapper(base:/s:z.*e/))",
 			sq.toString());
@@ -372,7 +372,7 @@ public class TestRegexWildcardIndex {
         assertEquals((long) 0, kr.getTotalResults());
 
 		// Test with nested classes
-		sq = kq.within(kq.nr(kq.re("s:z.*e")), kq.seg("s:affe")).toQuery();
+		sq = kq.contains(kq.nr(kq.re("s:z.*e")), kq.seg("s:affe")).toQuery();
         assertEquals(
 			"spanContain({1: SpanMultiTermQueryWrapper(base:/s:z.*e/)}, base:s:affe)",
 			sq.toString());
