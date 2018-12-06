@@ -367,7 +367,7 @@ public class TestKrillQuery {
         sqw = kq.tag("abc");
         assertFalse(sqw.maybeUnsorted());
 
-        sqw = kq.within(kq.tag("abc"), kq.seg("a"));
+        sqw = kq.contains(kq.tag("abc"), kq.seg("a"));
         assertTrue(sqw.maybeUnsorted());
 
         sqw = kq.contains(kq.tag("abc"), kq.seg("a"));
@@ -385,7 +385,7 @@ public class TestKrillQuery {
         sqw = kq.matches(kq.tag("abc"), kq.seg("a"));
         assertFalse(sqw.maybeUnsorted());
 
-        sqw = kq.matches(kq.within(kq.tag("abc"), kq.seg("a")), kq.seg("a"));
+        sqw = kq.matches(kq.contains(kq.tag("abc"), kq.seg("a")), kq.seg("a"));
         assertTrue(sqw.maybeUnsorted());
         
         sqw = kq.nr(2, kq.tag("abc"));
@@ -394,7 +394,7 @@ public class TestKrillQuery {
         sqw = kq.repeat(kq.tag("abc"), 4);
         assertFalse(sqw.maybeUnsorted());
 
-        sqw = kq.repeat(kq.within(kq.tag("abc"), kq.seg("a")), 4);
+        sqw = kq.repeat(kq.contains(kq.tag("abc"), kq.seg("a")), 4);
         assertTrue(sqw.maybeUnsorted());
     };
 };

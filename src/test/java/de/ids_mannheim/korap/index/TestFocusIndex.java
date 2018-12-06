@@ -151,7 +151,7 @@ public class TestFocusIndex {
 
         QueryBuilder kq = new QueryBuilder("tokens");
 
-        SpanQueryWrapper focus = kq.focus(kq.within(kq.tag("x"), kq.or(kq.nr(1, kq.seg("s:b")), kq.nr(1, kq.seg("s:c")))));
+        SpanQueryWrapper focus = kq.focus(kq.contains(kq.tag("x"), kq.or(kq.nr(1, kq.seg("s:b")), kq.nr(1, kq.seg("s:c")))));
         assertEquals("focus(1: spanContain(<tokens:x />, spanOr([{1: tokens:s:b}, {1: tokens:s:c}])),sorting)", focus.toQuery().toString());
         
         kr = ki.search(focus.toQuery(), (short) 10);

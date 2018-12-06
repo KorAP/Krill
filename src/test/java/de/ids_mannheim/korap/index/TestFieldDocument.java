@@ -157,7 +157,7 @@ public class TestFieldDocument {
         // Start creating query
         // within(<s>, {1: {2: [mate/p=ADJA & mate/m=number:sg]}[opennlp/p=NN & tt/p=NN]})
 
-        ks = new Krill(kq.within(kq.tag("base/s:s"), kq.nr(1,
+        ks = new Krill(kq.contains(kq.tag("base/s:s"), kq.nr(1,
                 kq.seq(kq.seg("mate/p:ADJA")).append(kq.seg("opennlp/p:NN")))));
 
         KrillMeta meta = ks.getMeta();
