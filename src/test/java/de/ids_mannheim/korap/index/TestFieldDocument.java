@@ -23,8 +23,6 @@ import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
-// mvn -Dtest=TestWithinIndex#indexExample1 test
-
 @RunWith(JUnit4.class)
 public class TestFieldDocument {
 
@@ -44,6 +42,7 @@ public class TestFieldDocument {
         fd.addInt("lastModified", 20130717);
         fd.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
                 + "[(1-2)s:b|i:b|_1$<i>1<i>2]" + "[(2-3)s:c|i:c|_2$<i>2<i>3]");
+        fd.addAttachement("Wikilink", "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel");
 
         assertEquals(fd.doc.getField("title").name(), "title");
         assertEquals(fd.doc.getField("title").stringValue(), "Wikipedia");
@@ -78,6 +77,10 @@ public class TestFieldDocument {
         assertEquals(fd.doc.getField("textClass").name(), "textClass");
         assertEquals(fd.doc.getField("textClass").stringValue(),
                 "music entertainment");
+        assertEquals(fd.doc.getField("Wikilink").name(), "Wikilink");
+        assertEquals(fd.doc.getField("Wikilink").stringValue(),
+                     "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel"
+            );
     };
 
 
