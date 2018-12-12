@@ -110,8 +110,14 @@ public class MetaFields extends AbstractDocument {
 
 			// Stored
 			if (iFieldType.indexOptions() == IndexOptions.NONE) {
-				mf.type = "type:store";
-				mf.values.add(s.toString());
+                String value = s.toString();
+                if (value.startsWith("data:")) {
+                    mf.type = "type:attachement";
+                }
+                else {
+                    mf.type = "type:store";
+                };
+				mf.values.add(value);
 			}
 
 			// Keywords

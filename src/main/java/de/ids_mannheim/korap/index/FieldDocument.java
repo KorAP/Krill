@@ -109,6 +109,9 @@ public class FieldDocument extends AbstractDocument {
         doc.add(new StringField(key, value, Field.Store.YES));
     };
 
+    public void addAttachement (String key, String value) {
+        doc.add(new StoredField(key, value));
+    };    
 
     public void addStored (String key, String value) {
         doc.add(new StoredField(key, value));

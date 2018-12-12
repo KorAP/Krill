@@ -1,3 +1,6 @@
+0.58.3 2018-12-12
+    - [feature] Introduced attachements as meta data fields (diewald).
+
 0.58.2 2018-12-05
     - [bugfix] Fixed the candidate list in NextSpans, see de.ids_mannheim.
       korap.index.TestNextIndex.testNextExpansionBug() (margaretha)  

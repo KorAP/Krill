@@ -196,6 +196,7 @@ public class TestKrillIndex {
         fd.addString("textSigle", "a/b/c");
         fd.addInt("zahl1", 56);
 		fd.addStored("ref", "My reference");
+		fd.addAttachement("ref2", "data:text/plain;charset=UTF-8,My reference2");
 
 		fd.addKeyword("keyword", "baum");
 		fd.addKeyword("keyword", "wald");
@@ -227,6 +228,13 @@ public class TestKrillIndex {
 				checkC++;
 				break;
 
+			case "ref2":
+				assertEquals("type:attachement", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("data:text/plain;charset=UTF-8,My reference2", field.at("/value").asText());
+				checkC++;
+				break;
+                
 			case "title":
 				assertEquals("type:text", field.at("/type").asText());
 				assertEquals("koral:field", field.at("/@type").asText());
@@ -265,7 +273,7 @@ public class TestKrillIndex {
 			};
 		};
 		
-		assertEquals(6, checkC);
+		assertEquals(7, checkC);
 
 
 		// Test with real document
