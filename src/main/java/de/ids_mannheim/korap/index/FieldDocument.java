@@ -6,6 +6,9 @@ import de.ids_mannheim.korap.index.AbstractDocument;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.CorpusDataException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -53,7 +56,13 @@ import java.io.IOException;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FieldDocument extends AbstractDocument {
     ObjectMapper mapper = new ObjectMapper();
-	
+
+    // Logger
+	private final static Logger log = LoggerFactory.getLogger(FieldDocument.class);
+
+	// This advices the java compiler to ignore all loggings
+    public static final boolean DEBUG = false;
+
     @JsonIgnore
     public Document doc = new Document();
     private FieldType tvField = new FieldType(TextField.TYPE_STORED);
@@ -207,6 +216,75 @@ public class FieldDocument extends AbstractDocument {
         // Get tokenSource info
         if (node.containsKey("tokenSource"))
             this.setTokenSource((String) node.get("tokenSource"));
+    };
+
+
+    /**
+     * Deserialize koral:field types for meta data
+     */
+    public void setMetaFields (ArrayList<Map<String, JsonNode>> fields) {
+        String type, key, value;
+        StringBuffer sb = new StringBuffer();
+        Iterator<JsonNode> i;
+
+        for (Map<String, JsonNode> field : fields) {
+            if (field.get("@type").asText().equals("koral:field")) {
+                type = (String) field.get("type").asText();
+                key = (String) field.get("key").asText();
+
+                // Add string field
+                if (type.equals("type:string") || type.equals("type:keywords")) {
+
+                    // Field is an array
+                    if (field.get("value").isArray()) {
+                        i = field.get("value").elements();
+
+                        sb.setLength(0);
+                        while (i.hasNext()) {
+                            sb.append(i.next().asText()).append(" ");
+                        };
+                        if (sb.length() > 1) {
+                            sb.setLength(sb.length() - 1);
+                        };
+                        this.addKeyword(key, sb.toString());
+                    }
+                    else {
+                        this.addString(key, field.get("value").asText());
+                    };
+                }
+
+                // Add text field
+                else if (type.equals("type:text")) {
+                    this.addText(key, field.get("value").asText());
+                }
+
+                // Add integer field
+                else if (type.equals("type:integer")) {
+                    this.addInt(key, field.get("value").asInt());
+                }
+
+                // Add attachement field
+                else if (type.equals("type:attachement")) {
+                    value = field.get("value").asText();
+                    if (value.startsWith("data:")) {
+                        this.addAttachement(key, value);
+                    };
+                }
+
+                // Add date field
+                else if (type.equals("type:date")) {
+                    KrillDate date = new KrillDate(field.get("value").asText());
+                    if (date != null) {
+                        this.addInt(key, date.toString());
+                    };
+                }
+
+                // Unknown
+                else {
+                    log.error("Unknown field type {}", type);
+                };
+            };
+        }
     };
 
 
