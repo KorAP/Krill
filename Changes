@@ -1,11 +1,15 @@
 0.58.3 2018-12-12
-    - [feature] Introduced attachements as meta data fields (diewald).
+    - [feature] Introduced attachements as meta data fields
+      (fixes #49) (diewald).
+    - [feature] Introduced preliminary support of arbitrary
+      metadata fields (see #47) (diewald)
 
 0.58.2 2018-12-05
     - [bugfix] Fixed the candidate list in NextSpans, see de.ids_mannheim.
       korap.index.TestNextIndex.testNextExpansionBug() (margaretha)  
     - [bugfix] Fixed left expansion match order (margaretha)
-    - [bugfix] Fixed right expansion match order & expansion over start (margaretha)
+    - [bugfix] Fixed right expansion match order & expansion over start
+      (margaretha)
     - [feature] Added opt() method to QueryBuilder (diewald)
     - [bugfix] Improved FocusSpans sorting (fixes #7) (margaretha)
     - [bugfix] Adopt sorting for FocusSpans in SpanQueryWrappers (diewald)

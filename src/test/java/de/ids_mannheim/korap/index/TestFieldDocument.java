@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.index;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.util.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,6 +14,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import static de.ids_mannheim.korap.TestSimple.*;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillMeta;
@@ -197,7 +201,7 @@ public class TestFieldDocument {
                 "UTF-8");
 
         // {1:der} \w0:5 nicht
-        SpanQueryWrapper sqwi = jsonQuery(jsonPath);
+        SpanQueryWrapper sqwi = getJsonQuery(jsonPath);
 
         Result kr = ki.search(sqwi.toQuery(), 0, (short) 5, true, (short) 2,
                 false, (short) 5);
@@ -242,36 +246,188 @@ public class TestFieldDocument {
         assertEquals(fd.getPubPlace(), "Bochum");
         assertEquals(fd.getPubDate().toDisplay(), "");
 	};
-	
-    public static String getString (String path) {
-        StringBuilder contentBuilder = new StringBuilder();
-        try {
-			BufferedReader in = new BufferedReader(new FileReader(path));
 
-            String str;
-            while ((str = in.readLine()) != null) {
-                contentBuilder.append(str);
+    @Test
+    public void indexNewMetaData () throws Exception {
+
+        String json = new String(
+            "{"
+            + "  \"fields\" : ["
+            + "    { "
+            + "      \"primaryData\" : \"abc\""
+            + "    },"
+            + "    {"
+            + "      \"name\" : \"tokens\","
+            + "      \"data\" : ["
+            + "         [ \"s:a\", \"i:a\", \"_0$<i>0<i>1\", \"-:t$<i>3\"],"
+            + "         [ \"s:b\", \"i:b\", \"_1$<i>1<i>2\" ],"
+            + "         [ \"s:c\", \"i:c\", \"_2$<i>2<i>3\" ]"
+            + "      ]"
+            + "    }"
+            + "  ],"
+            + "  \"metaFields\" : ["
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"corpusID\","
+            + "      \"value\" : \"WPD\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"textSigle\","
+            + "      \"value\" : \"x/y/z\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"ID\","
+            + "      \"value\" : \"WPD-AAA-00001\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"textClass\","
+            + "      \"value\" : [\"music\",\"entertainment\"]"
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:text\","
+            + "      \"key\" : \"author\","
+            + "      \"value\" : \"Peter Frankenfeld\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:date\","
+            + "      \"key\" : \"pubDate\","
+            + "      \"value\" : \"2015-05-01\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:text\","
+            + "      \"key\" : \"title\","
+            + "      \"value\" : \"Wikipedia\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:text\","
+            + "      \"key\" : \"subTitle\","
+            + "      \"value\" : \"Die freie Enzyklopädie\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"pubPlace\","
+            + "      \"value\" : \"Bochum\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:attachement\","
+            + "      \"key\" : \"link\","
+            + "      \"value\" : \"data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel\""
+            + "    }"
+            + "  ]"
+            + "}");
+
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(json);
+
+        ki.commit();
+
+        assertEquals(fd.getPrimaryData(), "abc");
+        assertEquals(fd.doc.getField("corpusID").stringValue(), "WPD");
+        assertEquals(fd.doc.getField("textSigle").stringValue(), "x/y/z");
+        assertEquals(fd.doc.getField("ID").stringValue(), "WPD-AAA-00001");
+        assertEquals(fd.doc.getField("textClass").stringValue(), "music entertainment");
+        assertEquals(fd.doc.getField("author").stringValue(), "Peter Frankenfeld");
+        assertEquals(fd.doc.getField("title").stringValue(), "Wikipedia");
+        assertEquals(fd.doc.getField("subTitle").stringValue(), "Die freie Enzyklopädie");
+        assertEquals(fd.doc.getField("pubPlace").stringValue(), "Bochum");
+        assertEquals(fd.doc.getField("pubDate").stringValue(), "20150501");
+        assertEquals(fd.doc.getField("link").stringValue(), "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel");
+
+        JsonNode res = ki.getFields("x/y/z").toJsonNode();
+
+        Iterator fieldIter = res.at("/document/fields").elements();
+
+        		int checkC = 0;
+		while (fieldIter.hasNext()) {
+			JsonNode field = (JsonNode) fieldIter.next();
+
+			String key = field.at("/key").asText();
+
+			switch (key) {
+			case "corpusID":
+				assertEquals("type:string", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("WPD", field.at("/value").asText());
+				checkC++;
+				break;
+
+			case "textSigle":
+				assertEquals("type:string", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("x/y/z", field.at("/value").asText());
+				checkC++;
+				break;
+
+			case "ID":
+				assertEquals("type:string", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("WPD-AAA-00001", field.at("/value").asText());
+				checkC++;
+				break;
+
+			case "textClass":
+				assertEquals("type:keywords", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("music", field.at("/value/0").asText());
+				assertEquals("entertainment", field.at("/value/1").asText());
+				checkC++;
+				break;
+
+            case "author":
+				assertEquals("type:text", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("Peter Frankenfeld", field.at("/value").asText());
+				checkC++;
+				break;
+
+            case "title":
+				assertEquals("type:text", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("Wikipedia", field.at("/value").asText());
+				checkC++;
+				break;
+
+            case "subTitle":
+				assertEquals("type:text", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("Die freie Enzyklopädie", field.at("/value").asText());
+				checkC++;
+				break;
+
+            case "pubPlace":
+				assertEquals("type:string", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("Bochum", field.at("/value").asText());
+				checkC++;
+				break;
+
+            case "pubDate":
+				assertEquals("type:date", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("2015-05-01", field.at("/value").asText());
+				checkC++;
+				break;
+
+            case "link":
+				assertEquals("type:attachement", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel", field.at("/value").asText());
+				checkC++;
+				break;
             };
-            in.close();
-        }
-        catch (IOException e) {
-            fail(e.getMessage());
-        }
-        return contentBuilder.toString();
-    };
-
-
-    public static SpanQueryWrapper jsonQuery (String jsonFile) {
-        SpanQueryWrapper sqwi;
-
-        try {
-            String json = getString(jsonFile);
-            sqwi = new KrillQuery("tokens").fromKoral(json);
-        }
-        catch (QueryException e) {
-            fail(e.getMessage());
-            sqwi = new QueryBuilder("tokens").seg("???");
         };
-        return sqwi;
     };
 };
