@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "98da9251_04883023",
+        "filename": "src/test/java/de/ids_mannheim/korap/search/TestMetaFields.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 335,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2018-12-14T11:29:39Z",
+      "side": 1,
+      "message": "I forgot to add a real test here - will amend. Sorry.",
+      "revId": "89cdd63cee809c715223c850c68665acc2da8fb8",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c",
+      "unresolved": false
+    }
+  ]
+}
