@@ -324,7 +324,7 @@ public class TestMetaFields {
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = new FieldDocument();
         fd.addString("textSigle", "ABC-123-0002");
-        fd.addText("title", "Die Wahlverwandschaften");
+        fd.addText("title", "Die Wahlverwandtschaften");
         fd.addText("author", "Johann Wolfgang von Goethe");
         fd.addKeyword("textClass", "reisen wissenschaft");
         fd.addInt("pubDate", 20130617);
@@ -332,7 +332,14 @@ public class TestMetaFields {
                 + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]");
         fd.addAttachement("WikiLink", "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel");
         ki.addDoc(fd);
+        ki.commit();
 
+        assertEquals(fd.doc.getField("textSigle").stringValue(), "ABC-123-0002");
+        assertEquals(fd.doc.getField("title").stringValue(), "Die Wahlverwandtschaften");
+        assertEquals(fd.doc.getField("author").stringValue(), "Johann Wolfgang von Goethe");
+        assertEquals(fd.doc.getField("textClass").stringValue(), "reisen wissenschaft");
+        assertEquals(fd.doc.getField("pubDate").stringValue(), "20130617");
+        assertEquals(fd.doc.getField("WikiLink").stringValue(), "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel");
     }
 
 };
