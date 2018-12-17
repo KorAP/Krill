@@ -17,6 +17,8 @@ import org.apache.lucene.util.Bits;
  */
 public class CachedVCFilter extends Filter {
 
+    public static final boolean DEBUG = false;
+
     public static Logger jlog = LogManager.getLogger(CachedVCFilter.class);
 
     private CachedVCData cachedCollection;
@@ -34,7 +36,8 @@ public class CachedVCFilter extends Filter {
                 cachedCollection.getDocIdMap().get(context.hashCode());
 
         if (docBits == null) {
-            jlog.debug("LeafReaderContext is not found in the cache.");
+            if (DEBUG)
+                jlog.debug("LeafReaderContext is not found in the cache.");
             return null;
         }
         return docBits.createBitDocIdSet();

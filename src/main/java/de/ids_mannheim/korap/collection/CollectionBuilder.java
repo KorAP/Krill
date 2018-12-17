@@ -289,7 +289,9 @@ public class CollectionBuilder {
 			Element element = KrillCollection.cache.get(this.reference);
 			
             if (element == null) {
-                log.debug(reference + " is NOT found in the cache");
+                if (DEBUG) {
+                    log.debug(reference + " is NOT found in the cache");
+                }
                 KrillCollection kc = new KrillCollection();
 
 				kc.fromStore(this.reference);
@@ -309,7 +311,9 @@ public class CollectionBuilder {
 					);
 			}
             else {
-                log.debug(reference + " is FOUND in the cache.");
+                if (DEBUG) { 
+                    log.debug(reference + " is FOUND in the cache."); 
+                }
                 CachedVCData cc = (CachedVCData) element.getObjectValue();
                 return new CachedVCFilter(this.reference, cc);
             }

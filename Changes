@@ -3,6 +3,7 @@
       (fixes #49) (diewald).
     - [feature] Introduced preliminary support of arbitrary
       metadata fields (see #47) (diewald)
+    - Added debug flags to improve debugging performance (margaretha)  
 
 0.58.2 2018-12-05
     - [bugfix] Fixed the candidate list in NextSpans, see de.ids_mannheim.
