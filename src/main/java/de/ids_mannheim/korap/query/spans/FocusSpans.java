@@ -17,7 +17,6 @@ import org.apache.lucene.util.Bits;
 import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 
-
 /**
  * originalSpans, that can focus on the span boundaries of classed
  * subqueries.
@@ -58,7 +57,6 @@ public class FocusSpans extends SimpleSpans {
     private PriorityQueue<CandidateSpan> candidates;
     private CandidateSpanComparator comparator;
 
-
     /**
      * Construct a FocusSpan for the given {@link SpanQuery}.
      * 
@@ -96,7 +94,6 @@ public class FocusSpans extends SimpleSpans {
         this.query = query;
     }
 
-
     @Override
     public boolean next () throws IOException {
         matchPayload.clear();
@@ -127,24 +124,25 @@ public class FocusSpans extends SimpleSpans {
         return false;
     }
 
-
     private void collectCandidates () throws IOException {
         CandidateSpan cs = null;
         CandidateSpan head = null;
-        
+
         while (hasMoreSpans && firstSpans.doc() == currentDoc) {
-            if (head == null){ 
+            if (head == null) {
                 head = candidates.peek();
             }
-            else if (head.getStart() < firstSpans.start()){
+            else if (head.getStart() < firstSpans.start()) {
                 break;
             }
-            
+
             if (firstSpans.isPayloadAvailable() && updateSpanPositions(
                     cs = new CandidateSpan(firstSpans))) {
                 if (cs.getDoc() == prevDoc && cs.getStart() < prevStart) {
-                    log.warn("Span (" + cs.getStart() + ", " + cs.getEnd()
-                            + ") is out of order and skipped.");
+                    if (DEBUG) {
+                        log.debug("Span (" + cs.getStart() + ", " + cs.getEnd()
+                                + ") is out of order and skipped.");
+                    }
                 }
                 else {
                     candidates.add(cs);
@@ -153,7 +151,6 @@ public class FocusSpans extends SimpleSpans {
             hasMoreSpans = firstSpans.next();
         }
     }
-
 
     private void setMatch (CandidateSpan cs) {
         matchStartPosition = cs.getStart();
@@ -187,8 +184,9 @@ public class FocusSpans extends SimpleSpans {
             // throw new
             // IllegalArgumentException("Classnumber is not found.");
             // }
-            if (spanId > 0)
+            if (spanId > 0) {
                 hasSpanId = true;
+            }
         }
         else if (cs.getSpanId() > 0) {
             setSpanId(cs.getSpanId());
@@ -196,7 +194,6 @@ public class FocusSpans extends SimpleSpans {
         }
 
     }
-
 
     private boolean updateSpanPositions (CandidateSpan candidateSpan)
             throws IOException {
@@ -207,7 +204,8 @@ public class FocusSpans extends SimpleSpans {
 
         candidateSpan.getPayloads().clear();
 
-        // Iterate over all payloads and find the maximum span per class
+        // Iterate over all payloads and find the maximum span per
+        // class
         for (byte[] payload : firstSpans.getPayload()) {
             // No class payload - ignore
             // this may be problematic for other calculated payloads!
@@ -241,7 +239,7 @@ public class FocusSpans extends SimpleSpans {
                 continue;
             };
 
-            if (//payload.length == 8 || 
+            if (// payload.length == 8 ||
             (removeTemporaryClasses && payload.length == 11)) {
                 continue;
             }
@@ -256,7 +254,6 @@ public class FocusSpans extends SimpleSpans {
 
         return isClassFound;
     }
-
 
     // Todo: Check for this on document boundaries!
     @Override
@@ -278,13 +275,11 @@ public class FocusSpans extends SimpleSpans {
         return false;
     };
 
-
     @Override
     public String toString () {
         return getClass().getName() + "(" + this.query.toString() + ")@"
                 + (doc() + ":" + start() + "-" + end());
     };
-
 
     @Override
     public long cost () {

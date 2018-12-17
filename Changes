@@ -1,8 +1,9 @@
-0.58.3 2018-12-12
+0.58.3 2018-12-17
     - [feature] Introduced attachements as meta data fields
       (fixes #49) (diewald).
     - [feature] Introduced preliminary support of arbitrary
       metadata fields (see #47) (diewald)
+    - [performance] Added debug flags (margaretha)  
 
 0.58.2 2018-12-05
     - [bugfix] Fixed the candidate list in NextSpans, see de.ids_mannheim.

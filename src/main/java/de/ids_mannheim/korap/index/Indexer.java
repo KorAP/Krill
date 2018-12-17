@@ -1,9 +1,13 @@
 package de.ids_mannheim.korap.index;
 
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.*;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -15,13 +19,11 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.store.MMapDirectory;
-import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.util.KrillProperties;
-
-import static de.ids_mannheim.korap.util.KrillProperties.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.file.Paths;
+
+import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.util.KrillProperties;
 
 /**
  * Standalone indexer tool for Krill.
@@ -59,6 +61,7 @@ public class Indexer {
 
     // Init logger
     private final static Logger log = LoggerFactory.getLogger(Indexer.class);
+    private static final boolean DEBUG = false;
 
     /**
      * Construct a new indexer object.
@@ -109,7 +112,9 @@ public class Indexer {
                         continue;
                     }
                     this.count++;
-                    log.debug("Finished adding files. (" + count + ").");
+                    if (DEBUG){
+                        log.debug("Finished adding files. (" + count + ").");
+                    }
 
                     // Commit in case the commit count is reached
                     if ((this.count % this.commitCount) == 0)

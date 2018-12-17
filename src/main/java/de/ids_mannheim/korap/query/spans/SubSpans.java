@@ -43,7 +43,6 @@ public class SubSpans extends SimpleSpans {
     private PriorityQueue<CandidateSpan> candidates;
     private CandidateSpanComparator comparator;
 
-
     /**
      * Constructs SubSpans for the given {@link SpanSubspanQuery}
      * specifiying the start offset and the length of the subspans.
@@ -72,13 +71,11 @@ public class SubSpans extends SimpleSpans {
         hasMoreSpans = firstSpans.next();
     }
 
-
     @Override
     public boolean next () throws IOException {
         isStartEnumeration = false;
         return advance();
     }
-
 
     /**
      * Advances the SubSpans to the next match.
@@ -111,7 +108,6 @@ public class SubSpans extends SimpleSpans {
         return false;
     }
 
-
     private void collectCandidates () throws IOException {
 
         while (hasMoreSpans && candidates.size() < windowSize
@@ -119,8 +115,11 @@ public class SubSpans extends SimpleSpans {
             CandidateSpan cs;
             if (findMatch(cs = new CandidateSpan(firstSpans))) {
                 if (cs.getDoc() == prevDoc && cs.getStart() < prevStart) {
-                    log.warn("Span (" + cs.getStart() + ", " + cs.getEnd()
-                            + ") is out of order and skipped.");
+                    if (DEBUG) {
+                        log.debug("Span (" + cs.getStart() + ", " + cs.getEnd()
+                                + ") is out of order and skipped.");
+                    }
+
                 }
                 else {
                     candidates.add(cs);
@@ -129,7 +128,6 @@ public class SubSpans extends SimpleSpans {
             hasMoreSpans = firstSpans.next();
         }
     }
-
 
     /**
      * Sets the properties of the current match/subspan.
@@ -187,7 +185,6 @@ public class SubSpans extends SimpleSpans {
         return true;
     }
 
-
     private void setMatch (CandidateSpan cs) {
         matchStartPosition = cs.getStart();
         prevStart = matchStartPosition;
@@ -197,7 +194,6 @@ public class SubSpans extends SimpleSpans {
         matchPayload.clear();
         matchPayload.addAll(cs.getPayloads());
     }
-
 
     @Override
     public boolean skipTo (int target) throws IOException {
@@ -217,7 +213,6 @@ public class SubSpans extends SimpleSpans {
         }
         return advance();
     }
-
 
     @Override
     public long cost () {
