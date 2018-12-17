@@ -52,6 +52,7 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
  */
 public class RelationSpans extends RelationBaseSpans {
 
+    private static final boolean DEBUG = false;
     private int currentDoc, currentPosition;
     private RelationDirection direction;
     private Spans relationTermSpan;
@@ -158,7 +159,9 @@ public class RelationSpans extends RelationBaseSpans {
      * @throws IOException
      */
     private void setCandidateList () throws IOException {
-        logger.debug("hasMoreSpans "+hasMoreSpans+" "+relationTermSpan.doc());
+        if (DEBUG){
+            logger.debug("hasMoreSpans "+hasMoreSpans+" "+relationTermSpan.doc());
+        }
         while (hasMoreSpans && relationTermSpan.doc() == currentDoc
                 && relationTermSpan.start() == currentPosition) {
 

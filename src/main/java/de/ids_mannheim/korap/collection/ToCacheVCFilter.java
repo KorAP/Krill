@@ -32,6 +32,7 @@ public class ToCacheVCFilter extends Filter {
     private boolean isAutoCachingEnabled = false;
 
     public final static Logger log = LoggerFactory.getLogger(ToCacheVCFilter.class);
+    public static final boolean DEBUG = false;
             
     public ToCacheVCFilter (String cacheKey, Map<Integer, DocBits> docIdMap,
                             Interface cbi, Filter filter) {
@@ -76,7 +77,9 @@ public class ToCacheVCFilter extends Filter {
             KrillCollection.cache.put(new Element(cacheKey, cachedVCData));
         }
 
-        log.debug("To cache doc bits length: "+ docIdSet.bits().length());
+        if (DEBUG){
+            log.debug("To cache doc bits length: "+ docIdSet.bits().length());
+        }
         return docIdSet;
     }
 
