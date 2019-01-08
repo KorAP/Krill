@@ -26,8 +26,7 @@ import java.util.regex.*;
 
 import org.apache.lucene.index.*;
 
-@JsonInclude(Include.NON_NULL)
-public class MetaFields extends AbstractDocument {
+public class MetaFieldsExt {
 
 	// Logger
 	private final static Logger log = LoggerFactory.getLogger(MetaFields.class);
@@ -46,14 +45,9 @@ public class MetaFields extends AbstractDocument {
 	private Map<String, MetaField> fieldsMap = new HashMap<>();
 
 
-	public MetaFields () {};
+	public MetaFieldsExt () {};
 
     
-	public MetaFields (String id) {
-		this.addMessage(0, "Response format is temporary");		
-	};
-
-
 	/**
 	 * Add field to collection
 	 */
@@ -104,7 +98,7 @@ public class MetaFields extends AbstractDocument {
 
 			// Field is a number
 			else {
-				mf.type = "type:integer";
+				mf.type = "type:number";
 				mf.values.add(n.toString());
 			};
 		}
@@ -153,12 +147,6 @@ public class MetaFields extends AbstractDocument {
 				mf.values.add(s.toString());
 			}
 
-            // Special treatment for legacy indices
-            else if (mf.key.equals("UID")) {
-				mf.type = "type:integer";
-				mf.values.add(s.toString());
-            }
-
 			// String
 			else {
 				mf.values.add(s.toString());
@@ -185,32 +173,4 @@ public class MetaFields extends AbstractDocument {
     public MetaField get (String key) {
         return fieldsMap.get(key);
     };
-    
-
-	/**
-     * Serialize response as a {@link JsonNode}.
-     * 
-     * @return {@link JsonNode} representation of the response
-     */
-    public JsonNode toJsonNode () {
-
-		// Get notifications
-        ObjectNode json = (ObjectNode) super.toJsonNode();
-
-		ObjectNode doc = json.putObject("document");
-		doc.put("@type", "koral:document");
-		
-		ArrayNode fields = doc.putArray("fields");
-
-		// Iterate over all fields
-		Iterator fIter = fieldsMap.keySet().iterator();
-		while (fIter.hasNext()) {
-			// System.err.println(fIter.next());
-			MetaField mf = fieldsMap.get(fIter.next());
-			// System.err.println(mf.type);
-			fields.add(mf.toJsonNode());
-		};
-
-		return json;
-	};
 };

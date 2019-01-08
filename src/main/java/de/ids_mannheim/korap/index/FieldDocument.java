@@ -328,11 +328,13 @@ public class FieldDocument extends AbstractDocument {
                 this.addKeyword("foundries", foundries);
                 super.setFoundries(foundries);
             };
+            /*
             if (field.containsKey("tokenization")) {
                 String tokenization = (String) field.get("tokenization");
                 this.addString("tokenization", tokenization);
                 super.setTokenization(tokenization);
             };
+            */
 
             this.addTV(fieldName, this.getPrimaryData(), mtts);
         };
@@ -376,23 +378,23 @@ public class FieldDocument extends AbstractDocument {
 
     @JsonProperty("pubDate")
     @Override
-    public KrillDate setPubDate (String pubDate) {
-        KrillDate date = super.setPubDate(pubDate);
+    public void setPubDate (String pubDate) {
+        super.setPubDate(pubDate);
+        KrillDate date = new KrillDate(pubDate);
 		if (date != null) {
 			this.addInt("pubDate", date.toString());
 		};
-        return date;
     };
 
 
     @JsonProperty("creationDate")
     @Override
-    public KrillDate setCreationDate (String creationDate) {
-        KrillDate date = super.setCreationDate(creationDate);
+    public void setCreationDate (String creationDate) {
+        super.setCreationDate(creationDate);
+        KrillDate date = new KrillDate(creationDate);
 		if (date != null) {
 			this.addInt("creationDate", date.toString());
 		};
-        return date;
     };
 
 
@@ -429,15 +431,6 @@ public class FieldDocument extends AbstractDocument {
             this.addString("UID", new Integer(this.UID).toString());
         };
     };
-
-
-    // No longer supported
-    @Override
-    public void setLayerInfo (String layerInfo) {
-        super.setLayerInfo(layerInfo);
-        this.addStored("layerInfo", layerInfo);
-    };
-
 
     @Override
     public void setLayerInfos (String layerInfos) {
@@ -516,7 +509,6 @@ public class FieldDocument extends AbstractDocument {
     };
 
 
-    @Override
 	@Deprecated
     public void setLicense (String license) {
         super.setAvailability(license);
@@ -529,15 +521,6 @@ public class FieldDocument extends AbstractDocument {
         super.setAvailability(availability);
         this.addString("availability", availability);
     };
-
-    /*
-    @Override
-    public void setPages (String pages) {
-        super.setPages(pages);
-        this.addStored("pages", pages);
-    };
-	*/
-
 
     @Override
     public void setFileEditionStatement (String fileEditionStatement) {

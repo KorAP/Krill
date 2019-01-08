@@ -258,7 +258,7 @@ public class TestKrillIndex {
 				break;
 
 			case "zahl1":
-				assertEquals("type:number", field.at("/type").asText());
+				assertEquals("type:integer", field.at("/type").asText());
 				assertEquals("koral:field", field.at("/@type").asText());
 				assertEquals(56, field.at("/value").asInt());
 				checkC++;

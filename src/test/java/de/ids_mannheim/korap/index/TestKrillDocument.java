@@ -99,8 +99,8 @@ public class TestKrillDocument {
         krd.setTextDomain("Comment");
         assertEquals("Comment", krd.getTextDomain());
 
-        krd.setLicense("cc");
-        assertEquals("cc", krd.getLicense());
+        krd.setAvailability("cc");
+        assertEquals("cc", krd.getAvailability());
 
         /*
 		  krd.setPages("56-78");

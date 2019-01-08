@@ -5,6 +5,8 @@ import java.util.*;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.Response;
+import de.ids_mannheim.korap.response.MetaField;
+import de.ids_mannheim.korap.response.MetaFieldsExt;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -43,32 +45,12 @@ public abstract class AbstractDocument extends Response {
     @JsonIgnore
     public int internalDocID, localDocID, UID;
 
-    private KrillDate pubDate,
-            // newly added
-            creationDate;
+    // private HashMap<String, String> fieldMap;
 
-    private HashMap<String, String> fieldMap;
+    private MetaFieldsExt metaFields = new MetaFieldsExt();
 
-    private String
-
-    // No longer supported
-    ID, corpusID, field, layerInfo, tokenization,
-
-            // Still supported
-            foundries, textClass, pubPlace,
-
-            // Newly added for the corpus/doc/text distinction of DeReKo
-            textSigle, docSigle, corpusSigle, title, subTitle, author, editor,
-            docTitle, docSubTitle, docAuthor, docEditor, corpusTitle,
-            corpusSubTitle, corpusAuthor, corpusEditor, textType, textTypeArt,
-            textTypeRef, textColumn, textDomain, fileEditionStatement,
-            biblEditionStatement, publisher, reference, language, availability,
-	// pages,
-		keywords,
-
-            // Meta information regarding annotations
-            tokenSource, layerInfos;
-
+    // Deprecated
+    private String ID, corpusID;
 
     /**
      * Populate document meta information with information coming from
@@ -108,10 +90,6 @@ public abstract class AbstractDocument extends Response {
             this.setCorpusID(doc.get("corpusID"));
         if (fields.contains("ID"))
             this.setID(doc.get("ID"));
-        if (fields.contains("tokenization"))
-            this.setTokenization(doc.get("tokenization"));
-        if (fields.contains("layerInfo"))
-            this.setLayerInfo(doc.get("layerInfo"));
 
         // valid
         if (fields.contains("UID"))
@@ -188,19 +166,17 @@ public abstract class AbstractDocument extends Response {
         if (fields.contains("language"))
             this.setLanguage(doc.get("language"));
 
-		// Deprecated
-        if (fields.contains("license"))
-            this.setAvailability(doc.get("license"));
-		else if (fields.contains("availability"))
-            this.setAvailability(doc.get("availability"));
-		/*
-        if (fields.contains("pages"))
-            this.setPages(doc.get("pages"));
-		*/
         if (fields.contains("biblEditionStatement"))
             this.setBiblEditionStatement(doc.get("biblEditionStatement"));
         if (fields.contains("fileEditionStatement"))
             this.setFileEditionStatement(doc.get("fileEditionStatement"));
+
+        // Legacy
+        if (fields.contains("license"))
+            this.setAvailability(doc.get("license"));
+		else if (fields.contains("availability"))
+            this.setAvailability(doc.get("availability"));
+
     };
 
 
@@ -217,7 +193,7 @@ public abstract class AbstractDocument extends Response {
      */
     public void populateDocument (Document doc, String field,
             Collection<String> fields) {
-        this.setField(field);
+        // this.setField(field);
         this.setPrimaryData(doc.get(field));
         this.populateFields(doc, fields);
     };
@@ -231,7 +207,10 @@ public abstract class AbstractDocument extends Response {
      */
     @JsonIgnore
     public KrillDate getPubDate () {
-        return this.pubDate;
+        String pubDate = this.getFieldValue("pubDate");
+        if (pubDate == null)
+            return null;
+        return new KrillDate(pubDate);
     };
 
 
@@ -243,8 +222,10 @@ public abstract class AbstractDocument extends Response {
      */
     @JsonProperty("pubDate")
     public String getPubDateString () {
-        if (this.pubDate != null) {
-            String date = this.pubDate.toDisplay();
+        KrillDate pubDate = this.getPubDate();
+
+        if (pubDate != null) {
+            String date = pubDate.toDisplay();
             if (date.length() == 0)
                 return null;
             return date;
@@ -261,21 +242,8 @@ public abstract class AbstractDocument extends Response {
      *            representation.
      * @return A {@link KrillDate} object for chaining.
      */
-    public KrillDate setPubDate (String date) {
-        this.pubDate = new KrillDate(date);
-        return this.pubDate;
-    };
-
-
-    /**
-     * Set the publication date of the document.
-     * 
-     * @param date
-     *            The date as a {@link KrillDate} object.
-     * @return A {@link KrillDate} object for chaining.
-     */
-    public KrillDate setPubDate (KrillDate date) {
-        return (this.pubDate = date);
+    public void setPubDate (String pubDate) {
+        this.addDateX("pubDate", pubDate);
     };
 
 
@@ -287,7 +255,10 @@ public abstract class AbstractDocument extends Response {
      */
     @JsonIgnore
     public KrillDate getCreationDate () {
-        return this.creationDate;
+        String creationDate = this.getFieldValue("creationDate");
+        if (creationDate == null)
+            return null;
+        return new KrillDate(creationDate);
     };
 
 
@@ -299,8 +270,14 @@ public abstract class AbstractDocument extends Response {
      */
     @JsonProperty("creationDate")
     public String getCreationDateString () {
-        if (this.creationDate != null)
-            return this.creationDate.toDisplay();
+        KrillDate creationDate = this.getCreationDate();
+
+        if (creationDate != null) {
+            String date = creationDate.toDisplay();
+            if (date.length() == 0)
+                return null;
+            return date;
+        };
         return null;
     };
 
@@ -313,9 +290,8 @@ public abstract class AbstractDocument extends Response {
      *            representation.
      * @return A {@link KrillDate} object for chaining.
      */
-    public KrillDate setCreationDate (String date) {
-        this.creationDate = new KrillDate(date);
-        return this.creationDate;
+    public void setCreationDate (String creationDate) {
+        this.addDateX("creationDate", creationDate);
     };
 
 
@@ -326,10 +302,11 @@ public abstract class AbstractDocument extends Response {
      *            The date as a {@link KrillDate} object.
      * @return A {@link KrillDate} object for chaining.
      */
+    /*
     public KrillDate setCreationDate (KrillDate date) {
         return (this.creationDate = date);
     };
-
+    */
 
     /**
      * Get the name of the author of the document.
@@ -337,7 +314,7 @@ public abstract class AbstractDocument extends Response {
      * @return The name of the author as a string.
      */
     public String getAuthor () {
-        return this.author;
+        return this.getFieldValue("author");
     };
 
 
@@ -348,7 +325,7 @@ public abstract class AbstractDocument extends Response {
      *            The name of the author as a string.
      */
     public void setAuthor (String author) {
-        this.author = author;
+        this.addTextX("author", author);
     };
 
 
@@ -358,7 +335,7 @@ public abstract class AbstractDocument extends Response {
      * @return The text class of the document as a string.
      */
     public String getTextClass () {
-        return this.textClass;
+        return this.getFieldValue("textClass");
     };
 
 
@@ -369,7 +346,7 @@ public abstract class AbstractDocument extends Response {
      *            The text class of the document as a string.
      */
     public void setTextClass (String textClass) {
-        this.textClass = textClass;
+        this.addKeywordsX("textClass", textClass);
     };
 
 
@@ -379,7 +356,7 @@ public abstract class AbstractDocument extends Response {
      * @return The publication place of the document as a string.
      */
     public String getPubPlace () {
-        return this.pubPlace;
+        return this.getFieldValue("pubPlace");
     };
 
 
@@ -390,7 +367,7 @@ public abstract class AbstractDocument extends Response {
      *            The publication place of the document as a string.
      */
     public void setPubPlace (String pubPlace) {
-        this.pubPlace = pubPlace;
+        this.addStringX("pubPlace", pubPlace);
     };
 
 
@@ -439,7 +416,7 @@ public abstract class AbstractDocument extends Response {
      * @return The title of the document as a string.
      */
     public String getTitle () {
-        return this.title;
+        return this.getFieldValue("title");
     };
 
 
@@ -450,7 +427,7 @@ public abstract class AbstractDocument extends Response {
      *            The title of the document as a string.
      */
     public void setTitle (String title) {
-        this.title = title;
+        this.addTextX("title", title);
     };
 
 
@@ -460,7 +437,7 @@ public abstract class AbstractDocument extends Response {
      * @return The subtitle of the document as a string.
      */
     public String getSubTitle () {
-        return this.subTitle;
+        return this.getFieldValue("subTitle");
     };
 
 
@@ -471,7 +448,7 @@ public abstract class AbstractDocument extends Response {
      *            The subtitle of the document as a string.
      */
     public void setSubTitle (String subTitle) {
-        this.subTitle = subTitle;
+        this.addTextX("subTitle", subTitle);
     };
 
 
@@ -553,7 +530,7 @@ public abstract class AbstractDocument extends Response {
      * @return The foundry information string.
      */
     public String getFoundries () {
-        return this.foundries;
+        return this.getFieldValue("foundries");
     };
 
 
@@ -565,7 +542,7 @@ public abstract class AbstractDocument extends Response {
      *            The foundry information string.
      */
     public void setFoundries (String foundries) {
-        this.foundries = foundries;
+        this.addKeywordsX("foundries", foundries);
     };
 
 
@@ -576,7 +553,7 @@ public abstract class AbstractDocument extends Response {
      * @return The layer information string.
      */
     public String getLayerInfos () {
-        return this.layerInfos;
+        return this.getFieldValue("layerInfos");
     };
 
 
@@ -588,7 +565,7 @@ public abstract class AbstractDocument extends Response {
      *            The layer information string.
      */
     public void setLayerInfos (String layerInfos) {
-        this.layerInfos = layerInfos;
+        this.addStoredX("layerInfos", layerInfos);
     };
 
 
@@ -599,7 +576,7 @@ public abstract class AbstractDocument extends Response {
      * @return The text sigle as a string.
      */
     public String getTextSigle () {
-        return this.textSigle;
+        return this.getFieldValue("textSigle");
     };
 
 
@@ -611,7 +588,7 @@ public abstract class AbstractDocument extends Response {
      *            The text sigle as a string.
      */
     public void setTextSigle (String textSigle) {
-        this.textSigle = textSigle;
+        this.addStringX("textSigle", textSigle);
     };
 
 
@@ -622,7 +599,7 @@ public abstract class AbstractDocument extends Response {
      * @return The corpus sigle as a string.
      */
     public String getCorpusSigle () {
-        return this.corpusSigle;
+        return this.getFieldValue("corpusSigle");
     };
 
 
@@ -634,7 +611,7 @@ public abstract class AbstractDocument extends Response {
      *            The corpus sigle as a string.
      */
     public void setCorpusSigle (String corpusSigle) {
-        this.corpusSigle = corpusSigle;
+        this.addStringX("corpusSigle", corpusSigle);
     };
 
 
@@ -644,7 +621,7 @@ public abstract class AbstractDocument extends Response {
      * @return The document sigle as a string.
      */
     public String getDocSigle () {
-        return this.docSigle;
+        return this.getFieldValue("docSigle");
     };
 
 
@@ -655,7 +632,7 @@ public abstract class AbstractDocument extends Response {
      *            The document sigle as a string.
      */
     public void setDocSigle (String docSigle) {
-        this.docSigle = docSigle;
+        this.addStringX("docSigle", docSigle);
     };
 
 
@@ -665,7 +642,7 @@ public abstract class AbstractDocument extends Response {
      * @return The name of the publisher as a string.
      */
     public String getPublisher () {
-        return this.publisher;
+        return this.getFieldValue("publisher");
     };
 
 
@@ -676,7 +653,7 @@ public abstract class AbstractDocument extends Response {
      *            The name of the publisher as a string.
      */
     public void setPublisher (String publisher) {
-        this.publisher = publisher;
+        this.addStoredX("publisher", publisher);
     };
 
 
@@ -686,7 +663,7 @@ public abstract class AbstractDocument extends Response {
      * @return The name of the editor as a string.
      */
     public String getEditor () {
-        return this.editor;
+        return this.getFieldValue("editor");
     };
 
 
@@ -697,17 +674,17 @@ public abstract class AbstractDocument extends Response {
      *            The name of the editor as a string.
      */
     public void setEditor (String editor) {
-        this.editor = editor;
+        this.addStoredX("editor", editor);
     };
 
-
+    
     /**
      * Get the type of the text as a string.
      * 
      * @return The type of the text as a string.
      */
     public String getTextType () {
-        return this.textType;
+        return this.getFieldValue("textType");
     };
 
 
@@ -718,7 +695,7 @@ public abstract class AbstractDocument extends Response {
      *            The type of the text as a string.
      */
     public void setTextType (String textType) {
-        this.textType = textType;
+        this.addStringX("textType", textType);
     };
 
 
@@ -728,7 +705,7 @@ public abstract class AbstractDocument extends Response {
      * @return The type art of the text as a string.
      */
     public String getTextTypeArt () {
-        return this.textTypeArt;
+        return this.getFieldValue("textTypeArt");
     };
 
 
@@ -739,7 +716,7 @@ public abstract class AbstractDocument extends Response {
      *            The type art of the text as a string.
      */
     public void setTextTypeArt (String textTypeArt) {
-        this.textTypeArt = textTypeArt;
+        this.addStringX("textTypeArt", textTypeArt);
     };
 
 
@@ -750,7 +727,7 @@ public abstract class AbstractDocument extends Response {
      *            The type reference of the text as a string.
      */
     public void setTextTypeRef (String textTypeRef) {
-        this.textTypeRef = textTypeRef;
+        this.addStringX("textTypeRef", textTypeRef);
     };
 
 
@@ -760,7 +737,7 @@ public abstract class AbstractDocument extends Response {
      * @return The type reference of the text as a string.
      */
     public String getTextTypeRef () {
-        return this.textTypeRef;
+        return this.getFieldValue("textTypeRef");
     };
 
 
@@ -770,7 +747,7 @@ public abstract class AbstractDocument extends Response {
      * @return The column of the text as a string.
      */
     public String getTextColumn () {
-        return this.textColumn;
+        return this.getFieldValue("textColumn");
     };
 
 
@@ -781,7 +758,7 @@ public abstract class AbstractDocument extends Response {
      *            The column of the text as a string.
      */
     public void setTextColumn (String textColumn) {
-        this.textColumn = textColumn;
+        this.addStringX("textColumn", textColumn);
     };
 
 
@@ -791,7 +768,7 @@ public abstract class AbstractDocument extends Response {
      * @return The domain of the text as a string.
      */
     public String getTextDomain () {
-        return this.textDomain;
+        return this.getFieldValue("textDomain");
     };
 
 
@@ -802,31 +779,9 @@ public abstract class AbstractDocument extends Response {
      *            The domain of the text as a string.
      */
     public void setTextDomain (String textDomain) {
-        this.textDomain = textDomain;
+        this.addStringX("textDomain", textDomain);
     };
 
-
-    /**
-     * Get the license of the text as a string.
-     * 
-     * @return The license of the text as a string.
-     */
-	@Deprecated
-    public String getLicense () {
-        return this.availability;
-    };
-
-
-    /**
-     * Set the license of the text as a string.
-     * 
-     * @param license
-     *            The license of the text as a string.
-     */
-	@Deprecated
-    public void setLicense (String license) {
-        this.availability = license;
-    };
 
 	/**
      * Get the availability of the text as a string.
@@ -834,7 +789,7 @@ public abstract class AbstractDocument extends Response {
      * @return The availability of the text as a string.
      */
     public String getAvailability () {
-        return this.availability;
+        return this.getFieldValue("availability");
     };
 
 
@@ -845,30 +800,9 @@ public abstract class AbstractDocument extends Response {
      *            The availability of the text as a string.
      */
     public void setAvailability (String availability) {
-        this.availability = availability;
+        this.addStringX("availability", availability);
     };
 
-
-    /*
-     * Get the page numbers of the text as a string.
-     * 
-     * @return The page numbers of the text as a string.
-    public String getPages () {
-        return this.pages;
-    };
-     */
-
-
-    /*
-     * Set the page numbers of the text as a string.
-     * 
-     * @param pages
-     *            The page numbers of the text as a string.
-     *
-    public void setPages (String pages) {
-        this.pages = pages;
-    };
-	*/
 
     /**
      * Get the file edition statement of the text as a string.
@@ -876,7 +810,7 @@ public abstract class AbstractDocument extends Response {
      * @return The file edition statement of the text as a string.
      */
     public String getFileEditionStatement () {
-        return this.fileEditionStatement;
+        return this.getFieldValue("fileEditionStatement");
     };
 
 
@@ -888,7 +822,7 @@ public abstract class AbstractDocument extends Response {
      *            of the text as a string.
      */
     public void setFileEditionStatement (String fileEditionStatement) {
-        this.fileEditionStatement = fileEditionStatement;
+        this.addStoredX("fileEditionStatement", fileEditionStatement);
     };
 
 
@@ -899,7 +833,7 @@ public abstract class AbstractDocument extends Response {
      *         string.
      */
     public String getBiblEditionStatement () {
-        return this.biblEditionStatement;
+        return this.getFieldValue("biblEditionStatement");
     };
 
 
@@ -911,7 +845,7 @@ public abstract class AbstractDocument extends Response {
      *            of the text as a string.
      */
     public void setBiblEditionStatement (String biblEditionStatement) {
-        this.biblEditionStatement = biblEditionStatement;
+        this.addStoredX("biblEditionStatement", biblEditionStatement);
     };
 
 
@@ -921,7 +855,7 @@ public abstract class AbstractDocument extends Response {
      * @return The reference of the text as a string.
      */
     public String getReference () {
-        return this.reference;
+        return this.getFieldValue("reference");
     };
 
 
@@ -932,7 +866,7 @@ public abstract class AbstractDocument extends Response {
      *            The reference of the text as a string.
      */
     public void setReference (String reference) {
-        this.reference = reference;
+        this.addStoredX("reference", reference);
     };
 
 
@@ -942,7 +876,7 @@ public abstract class AbstractDocument extends Response {
      * @return The language of the text as a string.
      */
     public String getLanguage () {
-        return this.language;
+        return this.getFieldValue("language");
     };
 
 
@@ -953,7 +887,7 @@ public abstract class AbstractDocument extends Response {
      *            The language of the text as a string.
      */
     public void setLanguage (String language) {
-        this.language = language;
+        this.addStringX("language", language);
     };
 
 
@@ -963,7 +897,7 @@ public abstract class AbstractDocument extends Response {
      * @return The corpus title of the text as a string.
      */
     public String getCorpusTitle () {
-        return this.corpusTitle;
+        return this.getFieldValue("corpusTitle");
     };
 
 
@@ -974,7 +908,7 @@ public abstract class AbstractDocument extends Response {
      *            The corpus title of the text as a string.
      */
     public void setCorpusTitle (String corpusTitle) {
-        this.corpusTitle = corpusTitle;
+        this.addTextX("corpusTitle", corpusTitle);
     };
 
 
@@ -984,7 +918,7 @@ public abstract class AbstractDocument extends Response {
      * @return The corpus subtitle of the text as a string.
      */
     public String getCorpusSubTitle () {
-        return this.corpusSubTitle;
+        return this.getFieldValue("corpusSubTitle");
     };
 
 
@@ -996,7 +930,7 @@ public abstract class AbstractDocument extends Response {
      *            text as a string.
      */
     public void setCorpusSubTitle (String corpusSubTitle) {
-        this.corpusSubTitle = corpusSubTitle;
+        this.addTextX("corpusSubTitle", corpusSubTitle);
     };
 
 
@@ -1006,7 +940,7 @@ public abstract class AbstractDocument extends Response {
      * @return The corpus author of the text as a string.
      */
     public String getCorpusAuthor () {
-        return this.corpusAuthor;
+        return this.getFieldValue("corpusAuthor");
     };
 
 
@@ -1016,7 +950,7 @@ public abstract class AbstractDocument extends Response {
      * @return The corpus author of the text as a string.
      */
     public void setCorpusAuthor (String corpusAuthor) {
-        this.corpusAuthor = corpusAuthor;
+        this.addTextX("corpusAuthor", corpusAuthor);
     };
 
 
@@ -1026,7 +960,7 @@ public abstract class AbstractDocument extends Response {
      * @return The corpus editor of the text as a string.
      */
     public String getCorpusEditor () {
-        return this.corpusEditor;
+        return this.getFieldValue("corpusEditor");
     };
 
 
@@ -1037,7 +971,7 @@ public abstract class AbstractDocument extends Response {
      *            The corpus editor of the text as a string.
      */
     public void setCorpusEditor (String corpusEditor) {
-        this.corpusEditor = corpusEditor;
+        this.addStoredX("corpusEditor", corpusEditor);
     };
 
 
@@ -1047,7 +981,7 @@ public abstract class AbstractDocument extends Response {
      * @return The document title of the text as a string.
      */
     public String getDocTitle () {
-        return this.docTitle;
+        return this.getFieldValue("docTitle");
     };
 
 
@@ -1058,7 +992,7 @@ public abstract class AbstractDocument extends Response {
      *            The document title of the text as a string.
      */
     public void setDocTitle (String docTitle) {
-        this.docTitle = docTitle;
+        this.addTextX("docTitle", docTitle);
     };
 
 
@@ -1068,7 +1002,7 @@ public abstract class AbstractDocument extends Response {
      * @return The subtitle of the document of the text as a string.
      */
     public String getDocSubTitle () {
-        return this.docSubTitle;
+        return this.getFieldValue("docSubTitle");
     };
 
 
@@ -1080,7 +1014,7 @@ public abstract class AbstractDocument extends Response {
      *            text as a string.
      */
     public void setDocSubTitle (String docSubTitle) {
-        this.docSubTitle = docSubTitle;
+        this.addTextX("docSubTitle", docSubTitle);
     };
 
 
@@ -1090,7 +1024,7 @@ public abstract class AbstractDocument extends Response {
      * @return The author of the document of the text as a string.
      */
     public String getDocAuthor () {
-        return this.docAuthor;
+        return this.getFieldValue("docAuthor");
     };
 
 
@@ -1101,7 +1035,7 @@ public abstract class AbstractDocument extends Response {
      *            The author of the document of the text as a string.
      */
     public void setDocAuthor (String docAuthor) {
-        this.docAuthor = docAuthor;
+        this.addTextX("docAuthor", docAuthor);
     };
 
 
@@ -1111,7 +1045,7 @@ public abstract class AbstractDocument extends Response {
      * @return The editor of the document of the text as a string.
      */
     public String getDocEditor () {
-        return this.docEditor;
+        return this.getFieldValue("docEditor");
     };
 
 
@@ -1122,7 +1056,7 @@ public abstract class AbstractDocument extends Response {
      *            The editor of the document of the text as a string.
      */
     public void setDocEditor (String docEditor) {
-        this.docEditor = docEditor;
+        this.addStoredX("docEditor", docEditor);
     };
 
 
@@ -1132,7 +1066,7 @@ public abstract class AbstractDocument extends Response {
      * @return The keywords of the text as a string.
      */
     public String getKeywords () {
-        return this.keywords;
+        return this.getFieldValue("keywords");
     };
 
 
@@ -1143,7 +1077,7 @@ public abstract class AbstractDocument extends Response {
      *            The keywords of the text as a string.
      */
     public void setKeywords (String keywords) {
-        this.keywords = keywords;
+        this.addKeywordsX("keywords", keywords);
     };
 
 
@@ -1154,7 +1088,7 @@ public abstract class AbstractDocument extends Response {
      * @return The tokenization information as a string.
      */
     public String getTokenSource () {
-        return this.tokenSource;
+        return this.getFieldValue("tokenSource");
     };
 
 
@@ -1166,43 +1100,7 @@ public abstract class AbstractDocument extends Response {
      *            The tokenization information as a string.
      */
     public void setTokenSource (String tokenSource) {
-        this.tokenSource = tokenSource;
-    };
-
-
-    @Deprecated
-    public void setTokenization (String tokenization) {
-        this.tokenization = tokenization;
-    };
-
-
-    @Deprecated
-    public String getTokenization () {
-        return this.tokenization;
-    };
-
-
-    @Deprecated
-    public void setLayerInfo (String layerInfo) {
-        this.layerInfo = layerInfo;
-    };
-
-
-    @Deprecated
-    public String getLayerInfo () {
-        return this.layerInfo;
-    };
-
-
-    @Deprecated
-    public void setField (String field) {
-        this.field = field;
-    };
-
-
-    @Deprecated
-    public String getField () {
-        return this.field;
+        this.addStoredX("tokenSource", tokenSource);
     };
 
 
@@ -1247,4 +1145,76 @@ public abstract class AbstractDocument extends Response {
 
         return json;
     };
+
+    @JsonIgnore
+    private String getFieldValue (String field) {
+        MetaField mf = metaFields.get(field);
+
+        if (mf != null) {
+            return metaFields.get(field).values.get(0);
+        };
+
+        return null;
+    };
+
+    @JsonIgnore
+    private void addStringX (String key, String value) {
+        metaFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:string",
+                value
+                )
+            );
+    };
+    
+    @JsonIgnore
+    private void addStoredX (String key, String value) {
+        metaFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:attachement",
+                value
+                )
+            );
+    };
+
+    @JsonIgnore
+    private void addKeywordsX (String key, String value) {
+        metaFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:keywords",
+                value
+                )
+            );
+    };
+
+    @JsonIgnore
+    private void addTextX (String key, String value) {
+        metaFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:text",
+                value
+                )
+            );
+    };
+
+    @JsonIgnore
+    private void addDateX (String key, String value) {
+        metaFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:date",
+                value
+                )
+            );
+    };
+
 };

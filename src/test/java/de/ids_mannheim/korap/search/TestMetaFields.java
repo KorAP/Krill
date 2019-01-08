@@ -59,7 +59,6 @@ public class TestMetaFields {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toJsonString());
 
-        // System.err.println(res.toString());
         // mirror fields
         assertEquals(9, res.at("/meta/count").asInt());
 
@@ -207,7 +206,7 @@ public class TestMetaFields {
                 res.at("/matches/0/foundries").asText());
         assertEquals("Goethe-Korpus",
                 res.at("/matches/0/corpusTitle").asText());
-        assertEquals("QAO-NC", res.at("/matches/0/license").asText());
+        assertEquals("QAO-NC", res.at("/matches/0/availability").asText());
         assertEquals("Goethe: Maximen und Reflexionen, (1827-1842)",
                 res.at("/matches/0/docTitle").asText());
         assertEquals("1827", res.at("/matches/0/creationDate").asText());

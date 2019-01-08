@@ -221,7 +221,7 @@ public class TestMatchIdentifier {
                 km.getSnippetHTML());
 
 		res = mapper.readTree(km.toJsonString());
-        assertEquals("tokens", res.at("/field").asText());
+        // assertEquals("tokens", res.at("/field").asText());
         assertTrue(res.at("/startMore").asBoolean());
         assertTrue(res.at("/endMore").asBoolean());
         assertEquals("c1", res.at("/corpusID").asText());
@@ -294,7 +294,7 @@ public class TestMatchIdentifier {
                 true, (String) null, (String) null, true, true, true);
 
         JsonNode res = mapper.readTree(km.toJsonString());
-        assertEquals("tokens", res.at("/field").asText());
+        // assertEquals("tokens", res.at("/field").asText());
         assertEquals("GOE_AGX.00002", res.at("/textSigle").asText());
         assertEquals("Goethe, Johann Wolfgang von", res.at("/author").asText());
 	};
@@ -923,7 +923,7 @@ public class TestMatchIdentifier {
         Match km = ki.getMatchInfo("match-c1!d4-p3-9", "tokens", null, null,
                 false, false);
         JsonNode res = mapper.readTree(km.toJsonString());
-        assertEquals("tokens", res.at("/field").asText());
+        // assertEquals("tokens", res.at("/field").asText());
         assertTrue(res.at("/startMore").asBoolean());
         assertTrue(res.at("/endMore").asBoolean());
         assertEquals("c1", res.at("/corpusID").asText());
@@ -945,7 +945,7 @@ public class TestMatchIdentifier {
                 false, false);
 
         JsonNode res = mapper.readTree(km.toJsonString());
-        assertEquals("tokens", res.at("/field").asText());
+        // assertEquals("tokens", res.at("/field").asText());
         assertTrue(res.at("/startMore").asBoolean());
         assertTrue(res.at("/endMore").asBoolean());
         assertEquals("c1", res.at("/corpusSigle").asText());
@@ -1064,7 +1064,7 @@ public class TestMatchIdentifier {
         Match km = ki.getMatchInfo("match-ca1!da1-p7-10", "tokens", null, null,
                 false, false);
         JsonNode res = mapper.readTree(km.toJsonString());
-        assertEquals("tokens", res.at("/field").asText());
+        // assertEquals("tokens", res.at("/field").asText());
         assertTrue(res.at("/startMore").asBoolean());
         assertTrue(res.at("/endMore").asBoolean());
         assertEquals("ca1", res.at("/corpusID").asText());

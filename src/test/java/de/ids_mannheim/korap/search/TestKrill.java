@@ -516,7 +516,7 @@ public class TestKrill {
         assertNull(fd.getTextColumn());
         assertNull(fd.getTextDomain());
         // assertEquals(fd.getPages(), "529-547");
-        assertEquals(fd.getLicense(), "QAO-NC");
+        assertEquals(fd.getAvailability(), "QAO-NC");
         assertEquals(fd.getCreationDate().toString(), "18200000");
         assertEquals(fd.getPubDate().toString(), "19820000");
         assertEquals(fd.getAuthor(), "Goethe, Johann Wolfgang von");
@@ -673,7 +673,7 @@ public class TestKrill {
         assertEquals(fd.getTextTypeRef(), "Tageszeitung");
         assertEquals(fd.getTextDomain(), "Politik");
         assertEquals(fd.getCreationDate().toString(), "19590219");
-        assertEquals(fd.getLicense(), "ACA-NC-LC");
+        assertEquals(fd.getAvailability(), "ACA-NC-LC");
         assertEquals(fd.getTextColumn(), "POLITIK");
         // assertNull(fd.getPages());
         assertEquals(fd.getTextClass(), "politik ausland");
@@ -1273,7 +1273,7 @@ public class TestKrill {
         assertNull(fd.getTextColumn());
         assertNull(fd.getTextDomain());
         // assertEquals(fd.getPages(), "529-547");
-        assertEquals(fd.getLicense(), "QAO-NC");
+        assertEquals(fd.getAvailability(), "QAO-NC");
         assertEquals(fd.getCreationDate().toString(), "18200000");
         assertEquals(fd.getPubDate().toString(), "19820000");
         assertEquals(fd.getAuthor(), "Goethe, Johann Wolfgang von");

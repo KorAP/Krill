@@ -21,9 +21,18 @@ public class MetaField {
 	public String key;
 	public List<String> values = new ArrayList<>();
 
-	public MetaField (String key) {
+
+    public MetaField (String key) {
 		this.key = key;
 	};
+
+
+    public MetaField (String key, String type, String value) {
+        this.key = key;
+        this.type = type;
+        this.values.add(value);
+    };
+    
 
 	/**
 	 * Create JsonNode
@@ -35,7 +44,7 @@ public class MetaField {
 		json.put("key", this.key);
 
 		// Value is numerical
-		if (this.type.equals("type:number")) {
+		if (this.type.equals("type:integer")) {
 
 			// Value is a list
 			if (this.values.size() > 1) {
