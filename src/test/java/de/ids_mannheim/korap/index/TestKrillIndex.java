@@ -198,8 +198,8 @@ public class TestKrillIndex {
 		fd.addStored("ref", "My reference");
 		fd.addAttachement("ref2", "data:text/plain;charset=UTF-8,My reference2");
 
-		fd.addKeyword("keyword", "baum");
-		fd.addKeyword("keyword", "wald");
+		fd.addKeywords("keyword", "baum");
+		fd.addKeywords("keyword", "wald");
 
 		fd.addText("title", "Der Name der Rose");
 

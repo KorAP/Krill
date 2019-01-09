@@ -225,7 +225,7 @@ public class TestMetaFields {
         fd.addString("textSigle", "ABC-123-0001");
         fd.addText("title", "Die Wahlverwandschaften");
         fd.addText("author", "Johann Wolfgang von Goethe");
-        fd.addKeyword("textClass", "reisen wissenschaft");
+        fd.addKeywords("textClass", "reisen wissenschaft");
         fd.addInt("pubDate", 20130617);
         fd.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
                 + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]");
@@ -237,7 +237,7 @@ public class TestMetaFields {
         fd2.addString("textSigle", "ABC-125-0001");
         fd2.addText("title", "Die Glocke");
         fd2.addText("author", "Schiller, Friedrich");
-        fd2.addKeyword("textClass", "Reisen geschichte");
+        fd2.addKeywords("textClass", "Reisen geschichte");
         fd2.addInt("pubDate", 20130203);
         fd2.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
                 + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]");
@@ -325,7 +325,7 @@ public class TestMetaFields {
         fd.addString("textSigle", "ABC-123-0002");
         fd.addText("title", "Die Wahlverwandtschaften");
         fd.addText("author", "Johann Wolfgang von Goethe");
-        fd.addKeyword("textClass", "reisen wissenschaft");
+        fd.addKeywords("textClass", "reisen wissenschaft");
         fd.addInt("pubDate", 20130617);
         fd.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
                 + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]");
