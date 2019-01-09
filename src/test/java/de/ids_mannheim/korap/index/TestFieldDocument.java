@@ -335,7 +335,7 @@ public class TestFieldDocument {
         ki.commit();
 
         assertEquals(fd.getPrimaryData(), "abc");
-        assertEquals(fd.doc.getField("corpusID").stringValue(), "WPD");
+        // assertEquals(fd.doc.getField("corpusID").stringValue(), "WPD");
         assertEquals(fd.doc.getField("textSigle").stringValue(), "x/y/z");
         assertEquals(fd.doc.getField("ID").stringValue(), "WPD-AAA-00001");
         assertEquals(fd.doc.getField("textClass").stringValue(), "music entertainment");

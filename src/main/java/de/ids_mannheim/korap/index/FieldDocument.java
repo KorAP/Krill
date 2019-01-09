@@ -5,6 +5,7 @@ import de.ids_mannheim.korap.index.MultiTermToken;
 import de.ids_mannheim.korap.index.AbstractDocument;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.CorpusDataException;
+import de.ids_mannheim.korap.response.MetaField;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,12 +83,6 @@ public class FieldDocument extends AbstractDocument {
         tvNoField.setStoreTermVectorOffsets(false);
 
         keywords.setStoreTermVectors(false);
-		/*
-        keywords.setStoreTermVectors(true);
-        keywords.setStoreTermVectorPositions(false);
-        keywords.setStoreTermVectorPayloads(false);
-        keywords.setStoreTermVectorOffsets(false);
-		*/
         keywords.setIndexOptions(IndexOptions.DOCS_AND_FREQS);
     };
 
@@ -98,37 +93,103 @@ public class FieldDocument extends AbstractDocument {
         doc.add(new IntField(key, value, Field.Store.YES));
     };
 
-
     public void addInt (String key, String value) {
 		if (value != null)
 			this.addInt(key, Integer.parseInt(value));
     };
 
+    @Override
+    public void addDate (String key, String value) {
+        mFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:date",
+                value
+                )
+            );
+        KrillDate date = new KrillDate(value);
+		if (date != null) {
+			this.addInt(key, date.toString());
+		};
+    }
 
+    @Override
     public void addText (String key, String value) {
+        mFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:text",
+                value
+                )
+            );
 		doc.add(new TextPrependedField(key, value));
     };
 
 
-    public void addKeyword (String key, String value) {
+    @Override
+    public void addKeywords (String key, String value) {
+        mFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:keywords",
+                value
+                )
+            );
+
         doc.add(new Field(key, value, keywords));
     };
 
-
+    @Override
     public void addString (String key, String value) {
+        mFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:string",
+                value
+                )
+            );
         doc.add(new StringField(key, value, Field.Store.YES));
     };
 
     public void addAttachement (String key, String value) {
+        mFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:attachement",
+                value
+                )
+            );
         doc.add(new StoredField(key, value));
     };    
 
+    @Override
     public void addStored (String key, String value) {
+        mFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:store",
+                value
+                )
+            );
         doc.add(new StoredField(key, value));
     };
 
 
     public void addStored (String key, int value) {
+        mFields.add(
+            key,
+            new MetaField(
+                key,
+                "type:store",
+                new Integer(value).toString()
+                )
+            );
         doc.add(new StoredField(key, value));
     };
 
@@ -247,7 +308,7 @@ public class FieldDocument extends AbstractDocument {
                         if (sb.length() > 1) {
                             sb.setLength(sb.length() - 1);
                         };
-                        this.addKeyword(key, sb.toString());
+                        this.addKeywords(key, sb.toString());
                     }
                     else {
                         this.addString(key, field.get("value").asText());
@@ -325,304 +386,10 @@ public class FieldDocument extends AbstractDocument {
             if (field.containsKey("foundries")) {
                 // TODO: Do not store positions!
                 String foundries = (String) field.get("foundries");
-                this.addKeyword("foundries", foundries);
-                super.setFoundries(foundries);
+                this.setFoundries(foundries);
             };
-            /*
-            if (field.containsKey("tokenization")) {
-                String tokenization = (String) field.get("tokenization");
-                this.addString("tokenization", tokenization);
-                super.setTokenization(tokenization);
-            };
-            */
 
             this.addTV(fieldName, this.getPrimaryData(), mtts);
         };
-    };
-
-
-    @Override
-    public void setTextClass (String textClass) {
-        super.setTextClass(textClass);
-        this.addKeyword("textClass", textClass);
-    };
-
-
-    @Override
-    public void setTitle (String title) {
-        super.setTitle(title);
-        this.addText("title", title);
-    };
-
-
-    @Override
-    public void setSubTitle (String subTitle) {
-        super.setSubTitle(subTitle);
-        this.addText("subTitle", subTitle);
-    };
-
-
-    @Override
-    public void setAuthor (String author) {
-        super.setAuthor(author);
-        this.addText("author", author);
-    };
-
-
-    @Override
-    public void setPubPlace (String pubPlace) {
-        super.setPubPlace(pubPlace);
-        this.addString("pubPlace", pubPlace);
-    };
-
-
-    @JsonProperty("pubDate")
-    @Override
-    public void setPubDate (String pubDate) {
-        super.setPubDate(pubDate);
-        KrillDate date = new KrillDate(pubDate);
-		if (date != null) {
-			this.addInt("pubDate", date.toString());
-		};
-    };
-
-
-    @JsonProperty("creationDate")
-    @Override
-    public void setCreationDate (String creationDate) {
-        super.setCreationDate(creationDate);
-        KrillDate date = new KrillDate(creationDate);
-		if (date != null) {
-			this.addInt("creationDate", date.toString());
-		};
-    };
-
-
-    // No longer supported
-    @Override
-    public void setCorpusID (String corpusID) {
-        super.setCorpusID(corpusID);
-        this.addString("corpusID", corpusID);
-    };
-
-
-    // No longer supported
-    @Override
-    public void setID (String ID) {
-        super.setID(ID);
-        this.addString("ID", ID);
-    };
-
-
-    @Override
-    @JsonIgnore
-    public void setUID (int ID) {
-        if (ID != 0) {
-            super.setUID(ID);
-            this.addString("UID", new Integer(ID).toString());
-        }
-    };
-
-
-    @Override
-    public void setUID (String ID) {
-        if (ID != null) {
-            super.setUID(ID);
-            this.addString("UID", new Integer(this.UID).toString());
-        };
-    };
-
-    @Override
-    public void setLayerInfos (String layerInfos) {
-        super.setLayerInfos(layerInfos);
-        this.addStored("layerInfos", layerInfos);
-    };
-
-
-    @Override
-    public void setTextSigle (String textSigle) {
-        super.setTextSigle(textSigle);
-        this.addString("textSigle", textSigle);
-    };
-
-
-    @Override
-    public void setDocSigle (String docSigle) {
-        super.setDocSigle(docSigle);
-        this.addString("docSigle", docSigle);
-    };
-
-
-    @Override
-    public void setCorpusSigle (String corpusSigle) {
-        super.setCorpusSigle(corpusSigle);
-        this.addString("corpusSigle", corpusSigle);
-    };
-
-
-    @Override
-    public void setPublisher (String publisher) {
-        super.setPublisher(publisher);
-        this.addStored("publisher", publisher);
-    };
-
-
-    @Override
-    public void setEditor (String editor) {
-        super.setEditor(editor);
-        this.addStored("editor", editor);
-    };
-
-
-    @Override
-    public void setTextType (String textType) {
-        super.setTextType(textType);
-        this.addString("textType", textType);
-    };
-
-
-    @Override
-    public void setTextTypeArt (String textTypeArt) {
-        super.setTextTypeArt(textTypeArt);
-        this.addString("textTypeArt", textTypeArt);
-    };
-
-
-    @Override
-    public void setTextTypeRef (String textTypeRef) {
-        super.setTextTypeRef(textTypeRef);
-        this.addString("textTypeRef", textTypeRef);
-    };
-
-
-    @Override
-    public void setTextColumn (String textColumn) {
-        super.setTextColumn(textColumn);
-        this.addString("textColumn", textColumn);
-    };
-
-
-    @Override
-    public void setTextDomain (String textDomain) {
-        super.setTextDomain(textDomain);
-        this.addString("textDomain", textDomain);
-    };
-
-
-	@Deprecated
-    public void setLicense (String license) {
-        super.setAvailability(license);
-        this.addString("availability", license);
-    };
-
-
-	@Override
-	public void setAvailability (String availability) {
-        super.setAvailability(availability);
-        this.addString("availability", availability);
-    };
-
-    @Override
-    public void setFileEditionStatement (String fileEditionStatement) {
-        super.setFileEditionStatement(fileEditionStatement);
-        this.addStored("fileEditionStatement", fileEditionStatement);
-    };
-
-
-    @Override
-    public void setBiblEditionStatement (String biblEditionStatement) {
-        super.setBiblEditionStatement(biblEditionStatement);
-        this.addStored("biblEditionStatement", biblEditionStatement);
-    };
-
-
-    @Override
-    public void setReference (String reference) {
-        super.setReference(reference);
-        this.addStored("reference", reference);
-    };
-
-
-    @Override
-    public void setLanguage (String language) {
-        super.setLanguage(language);
-        this.addString("language", language);
-    };
-
-
-    @Override
-    public void setDocTitle (String docTitle) {
-        super.setDocTitle(docTitle);
-        this.addText("docTitle", docTitle);
-    };
-
-
-    @Override
-    public void setDocSubTitle (String docSubTitle) {
-        super.setDocSubTitle(docSubTitle);
-        this.addText("docSubTitle", docSubTitle);
-    };
-
-
-    @Override
-    public void setDocAuthor (String docAuthor) {
-        super.setDocAuthor(docAuthor);
-        this.addText("docAuthor", docAuthor);
-    };
-
-
-    @Override
-    public void setDocEditor (String docEditor) {
-        super.setDocEditor(docEditor);
-        this.addStored("docEditor", docEditor);
-    };
-
-
-    @Override
-    public void setCorpusTitle (String corpusTitle) {
-        super.setCorpusTitle(corpusTitle);
-        this.addText("corpusTitle", corpusTitle);
-    };
-
-
-    @Override
-    public void setCorpusSubTitle (String corpusSubTitle) {
-        super.setCorpusSubTitle(corpusSubTitle);
-        this.addText("corpusSubTitle", corpusSubTitle);
-    };
-
-
-    @Override
-    public void setCorpusAuthor (String corpusAuthor) {
-        super.setCorpusAuthor(corpusAuthor);
-        this.addText("corpusAuthor", corpusAuthor);
-    };
-
-
-    @Override
-    public void setCorpusEditor (String corpusEditor) {
-        super.setCorpusEditor(corpusEditor);
-        this.addStored("corpusEditor", corpusEditor);
-    };
-
-
-    @Override
-    public void setKeywords (String keywords) {
-        super.setKeywords(keywords);
-        this.addKeyword("keywords", keywords);
-    };
-
-
-    @Override
-    public void setTokenSource (String tokenSource) {
-        super.setTokenSource(tokenSource);
-        this.addStored("tokenSource", tokenSource);
-    };
-
-
-    @Override
-    public void setFoundries (String foundries) {
-        super.setFoundries(foundries);
-        this.addKeyword("foundries", foundries);
     };
 };
