@@ -200,11 +200,11 @@ public class Match extends AbstractDocument {
 			this.mirrorIdentifier = id.toString();
 
             if (id.getTextSigle() != null)
-                this.setTextSigle(id.getTextSigle());
+                this.addString("textSigle", id.getTextSigle());
 
             // <legacy>
-            this.setCorpusID(id.getCorpusID());
-            this.setDocID(id.getDocID());
+            this.addString("corpusID", id.getCorpusID());
+            this.addString("ID", id.getDocID());
             // </legacy>
 
             this.setStartPos(id.getStartPos());
@@ -525,17 +525,6 @@ public class Match extends AbstractDocument {
 	public int getEndPage () {
 		return this.endPage;
 	};
-
-	
-    /**
-     * Set document id.
-     * 
-     * @param id
-     *            String representation of document ID.
-     */
-    public void setDocID (String id) {
-        super.setID(id);
-    };
 
 
     /**

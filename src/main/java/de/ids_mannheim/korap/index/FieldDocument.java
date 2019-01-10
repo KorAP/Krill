@@ -69,7 +69,7 @@ public class FieldDocument extends AbstractDocument {
     public Document doc = new Document();
     private FieldType tvField = new FieldType(TextField.TYPE_STORED);
     private FieldType tvNoField = new FieldType(TextField.TYPE_NOT_STORED);
-    private FieldType keywords = new FieldType(TextField.TYPE_STORED);
+    private FieldType keywordField = new FieldType(TextField.TYPE_STORED);
 
     {
         tvField.setStoreTermVectors(true);
@@ -82,8 +82,8 @@ public class FieldDocument extends AbstractDocument {
         tvNoField.setStoreTermVectorPayloads(true);
         tvNoField.setStoreTermVectorOffsets(false);
 
-        keywords.setStoreTermVectors(false);
-        keywords.setIndexOptions(IndexOptions.DOCS_AND_FREQS);
+        keywordField.setStoreTermVectors(false);
+        keywordField.setIndexOptions(IndexOptions.DOCS_AND_FREQS);
     };
 
 
@@ -139,7 +139,7 @@ public class FieldDocument extends AbstractDocument {
                 )
             );
 
-        doc.add(new Field(key, value, keywords));
+        doc.add(new Field(key, value, keywordField));
     };
 
     @Override
@@ -269,15 +269,18 @@ public class FieldDocument extends AbstractDocument {
 
         // Get foundry info
         if (node.containsKey("foundries"))
-            this.setFoundries((String) node.get("foundries"));
+            this.addKeywords(
+                "foundries",
+                (String) node.get("foundries")
+                );
 
         // Get layer info
         if (node.containsKey("layerInfos"))
-            this.setLayerInfos((String) node.get("layerInfos"));
+            this.addStored("layerInfos", (String) node.get("layerInfos"));
 
         // Get tokenSource info
         if (node.containsKey("tokenSource"))
-            this.setTokenSource((String) node.get("tokenSource"));
+            this.addStored("tokenSource", (String) node.get("tokenSource"));
     };
 
     
@@ -386,7 +389,7 @@ public class FieldDocument extends AbstractDocument {
             if (field.containsKey("foundries")) {
                 // TODO: Do not store positions!
                 String foundries = (String) field.get("foundries");
-                this.setFoundries(foundries);
+                this.addKeywords("foundries", foundries);
             };
 
             this.addTV(fieldName, this.getPrimaryData(), mtts);

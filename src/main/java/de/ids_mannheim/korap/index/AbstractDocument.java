@@ -36,16 +36,72 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author diewald
  */
 @JsonInclude(Include.NON_EMPTY)
-@JsonIgnoreProperties(ignoreUnknown = true)
+// @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractDocument extends Response {
     ObjectMapper mapper = new ObjectMapper();
 
     private String primaryData;
 
+    private static HashSet<String> legacyStringFields =
+        new HashSet<String>(Arrays.asList(
+                                "pubPlace",
+                                "textSigle",
+                                "docSigle",
+                                "corpusSigle",
+                                "textType",
+                                "textTypeArt",
+                                "textTypeRef",
+                                "textColumn",
+                                "textDomain",
+                                "availability",
+                                "language",
+                                "corpusID", // Deprecated!
+                                "ID"        // Deprecated!
+                                ));
+    
+    private static HashSet<String> legacyTextFields =
+        new HashSet<String>(Arrays.asList(
+                                "author",
+                                "title",
+                                "subTitle",
+                                "corpusTitle",
+                                "corpusSubTitle",
+                                "corpusAuthor",
+                                "docTitle",
+                                "docSubTitle",
+                                "docAuthor"
+                                ));
+
+    private static HashSet<String> legacyKeywordsFields =
+        new HashSet<String>(Arrays.asList(
+                                "textClass",
+                                "foundries",
+                                "keywords"
+                                ));
+
+    private static HashSet<String> legacyStoredFields =
+        new HashSet<String>(Arrays.asList(
+                                "docEditor",
+                                "tokenSource",
+                                "layerInfos",
+                                "publisher",
+                                "editor",
+                                "fileEditionStatement",
+                                "biblEditionStatement",
+                                "reference",
+                                "corpusEditor"
+                                ));
+
+    private static HashSet<String> legacyDateFields =
+        new HashSet<String>(Arrays.asList(
+                                "pubDate",
+                                "creationDate"
+                                ));
+
+    
+    
     @JsonIgnore
     public int internalDocID, localDocID, UID;
-
-    // private HashMap<String, String> fieldMap;
 
     @JsonIgnore
     public MetaFieldsExt mFields = new MetaFieldsExt();
@@ -83,97 +139,56 @@ public abstract class AbstractDocument extends Response {
     public void populateFields (Document doc, Collection<String> fields) {
         // Remember - never serialize "tokens"
 
-        // LEGACY
-        if (fields.contains("corpusID"))
-            this.setCorpusID(doc.get("corpusID"));
-        if (fields.contains("ID"))
-            this.setID(doc.get("ID"));
+        // TODO:
+        //   Pupulate based on field types!
 
-        // valid
         if (fields.contains("UID"))
             this.setUID(doc.get("UID"));
-        if (fields.contains("author"))
-            this.setAuthor(doc.get("author"));
-        if (fields.contains("textClass"))
-            this.setTextClass(doc.get("textClass"));
-        if (fields.contains("title"))
-            this.setTitle(doc.get("title"));
-        if (fields.contains("subTitle"))
-            this.setSubTitle(doc.get("subTitle"));
-        if (fields.contains("pubDate"))
-            this.setPubDate(doc.get("pubDate"));
-        if (fields.contains("pubPlace"))
-            this.setPubPlace(doc.get("pubPlace"));
 
-        // Temporary (later meta fields in term vector)
-        if (fields.contains("foundries"))
-            this.setFoundries(doc.get("foundries"));
+        String field;
+        Iterator<String> i = legacyTextFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (fields.contains(field)) {
+                this.addText(field, doc.get(field));
+            };
+        };
 
-        // New fields
-        if (fields.contains("textSigle"))
-            this.setTextSigle(doc.get("textSigle"));
-        if (fields.contains("docSigle"))
-            this.setDocSigle(doc.get("docSigle"));
-        if (fields.contains("corpusSigle"))
-            this.setCorpusSigle(doc.get("corpusSigle"));
-        if (fields.contains("layerInfos"))
-            this.setLayerInfos(doc.get("layerInfos"));
-        if (fields.contains("tokenSource"))
-            this.setTokenSource(doc.get("tokenSource"));
-        if (fields.contains("editor"))
-            this.setEditor(doc.get("editor"));
+        i = legacyKeywordsFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (fields.contains(field)) {
+                this.addKeywords(field, doc.get(field));
+            };
+        };
 
-        if (fields.contains("corpusAuthor"))
-            this.setCorpusAuthor(doc.get("corpusAuthor"));
-        if (fields.contains("corpusEditor"))
-            this.setCorpusEditor(doc.get("corpusEditor"));
-        if (fields.contains("corpusTitle"))
-            this.setCorpusTitle(doc.get("corpusTitle"));
-        if (fields.contains("corpusSubTitle"))
-            this.setCorpusSubTitle(doc.get("corpusSubTitle"));
+        i = legacyStoredFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (fields.contains(field)) {
+                this.addStored(field, doc.get(field));
+            };
+        };
 
-        if (fields.contains("docAuthor"))
-            this.setDocAuthor(doc.get("docAuthor"));
-        if (fields.contains("docEditor"))
-            this.setDocEditor(doc.get("docEditor"));
-        if (fields.contains("docTitle"))
-            this.setDocTitle(doc.get("docTitle"));
-        if (fields.contains("docSubTitle"))
-            this.setDocSubTitle(doc.get("docSubTitle"));
+        i = legacyStringFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (fields.contains(field)) {
+                this.addString(field, doc.get(field));
+            };
+        };
 
-        if (fields.contains("publisher"))
-            this.setPublisher(doc.get("publisher"));
-        if (fields.contains("reference"))
-            this.setReference(doc.get("reference"));
-        if (fields.contains("creationDate"))
-            this.setCreationDate(doc.get("creationDate"));
-        if (fields.contains("keywords"))
-            this.setKeywords(doc.get("keywords"));
-        if (fields.contains("textClass"))
-            this.setTextClass(doc.get("textClass"));
-        if (fields.contains("textColumn"))
-            this.setTextColumn(doc.get("textColumn"));
-        if (fields.contains("textDomain"))
-            this.setTextDomain(doc.get("textDomain"));
-        if (fields.contains("textType"))
-            this.setTextType(doc.get("textType"));
-        if (fields.contains("textTypeArt"))
-            this.setTextTypeArt(doc.get("textTypeArt"));
-        if (fields.contains("textTypeRef"))
-            this.setTextTypeRef(doc.get("textTypeRef"));
-        if (fields.contains("language"))
-            this.setLanguage(doc.get("language"));
-
-        if (fields.contains("biblEditionStatement"))
-            this.setBiblEditionStatement(doc.get("biblEditionStatement"));
-        if (fields.contains("fileEditionStatement"))
-            this.setFileEditionStatement(doc.get("fileEditionStatement"));
-
+        i = legacyDateFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (fields.contains(field)) {
+                this.addDate(field, doc.get(field));
+            };
+        };
+        
         // Legacy
         if (fields.contains("license"))
-            this.setAvailability(doc.get("license"));
-		else if (fields.contains("availability"))
-            this.setAvailability(doc.get("availability"));
+            this.addString("availability", doc.get("license"));
 
     };
 
@@ -191,7 +206,6 @@ public abstract class AbstractDocument extends Response {
      */
     public void populateDocument (Document doc, String field,
             Collection<String> fields) {
-        // this.setField(field);
         this.setPrimaryData(doc.get(field));
         this.populateFields(doc, fields);
     };
@@ -233,20 +247,6 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the publication date of the document.
-     * 
-     * @param date
-     *            The date as a {@link KrillDate} compatible string
-     *            representation.
-     * @return A {@link KrillDate} object for chaining.
-     */
-    @JsonProperty("pubDate")
-    public void setPubDate (String pubDate) {
-        this.addDate("pubDate", pubDate);
-    };
-
-
-    /**
      * Get the creation date of the document
      * as a {@link KrillDate} object.
      * 
@@ -282,33 +282,6 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the creation date of the document.
-     * 
-     * @param date
-     *            The date as a {@link KrillDate} compatible string
-     *            representation.
-     * @return A {@link KrillDate} object for chaining.
-     */
-    @JsonProperty("creationDate")
-    public void setCreationDate (String creationDate) {
-        this.addDate("creationDate", creationDate);
-    };
-
-
-    /**
-     * Set the creation date of the document.
-     * 
-     * @param date
-     *            The date as a {@link KrillDate} object.
-     * @return A {@link KrillDate} object for chaining.
-     */
-    /*
-    public KrillDate setCreationDate (KrillDate date) {
-        return (this.creationDate = date);
-    };
-    */
-
-    /**
      * Get the name of the author of the document.
      * 
      * @return The name of the author as a string.
@@ -317,18 +290,7 @@ public abstract class AbstractDocument extends Response {
         return this.getFieldValue("author");
     };
 
-
-    /**
-     * Set the name of the author of the document.
-     * 
-     * @param author
-     *            The name of the author as a string.
-     */
-    public void setAuthor (String author) {
-        this.addText("author", author);
-    };
-
-
+    
     /**
      * Get the text class of the document.
      * 
@@ -340,34 +302,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the text class of the document.
-     * 
-     * @param textClass
-     *            The text class of the document as a string.
-     */
-    public void setTextClass (String textClass) {
-        this.addKeywords("textClass", textClass);
-    };
-
-
-    /**
      * Get the publication place of the document.
      * 
      * @return The publication place of the document as a string.
      */
     public String getPubPlace () {
         return this.getFieldValue("pubPlace");
-    };
-
-
-    /**
-     * Set the publication place of the document.
-     * 
-     * @param pubPlace
-     *            The publication place of the document as a string.
-     */
-    public void setPubPlace (String pubPlace) {
-        this.addString("pubPlace", pubPlace);
     };
 
 
@@ -425,34 +365,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the title of the document.
-     * 
-     * @param title
-     *            The title of the document as a string.
-     */
-    public void setTitle (String title) {
-        this.addText("title", title);
-    };
-
-
-    /**
      * Get the subtitle of the document.
      * 
      * @return The subtitle of the document as a string.
      */
     public String getSubTitle () {
         return this.getFieldValue("subTitle");
-    };
-
-
-    /**
-     * Set the subtitle of the document.
-     * 
-     * @param subTitle
-     *            The subtitle of the document as a string.
-     */
-    public void setSubTitle (String subTitle) {
-        this.addText("subTitle", subTitle);
     };
 
 
@@ -539,18 +457,6 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set information on the foundries the document
-     * is annotated with.
-     * 
-     * @param foundries
-     *            The foundry information string.
-     */
-    public void setFoundries (String foundries) {
-        this.addKeywords("foundries", foundries);
-    };
-
-
-    /**
      * Get information on the layers the document
      * is annotated with as a string.
      * 
@@ -558,18 +464,6 @@ public abstract class AbstractDocument extends Response {
      */
     public String getLayerInfos () {
         return this.getFieldValue("layerInfos");
-    };
-
-
-    /**
-     * Set information on the layers the document
-     * is annotated with as a string.
-     * 
-     * @param layerInfos
-     *            The layer information string.
-     */
-    public void setLayerInfos (String layerInfos) {
-        this.addStored("layerInfos", layerInfos);
     };
 
 
@@ -584,18 +478,6 @@ public abstract class AbstractDocument extends Response {
     };
 
 
-    // This is the new text id
-    /**
-     * Set the text sigle as a string.
-     * 
-     * @param textSigle
-     *            The text sigle as a string.
-     */
-    public void setTextSigle (String textSigle) {
-        this.addString("textSigle", textSigle);
-    };
-
-
     // This is the new corpus id
     /**
      * Get the corpus sigle as a string.
@@ -604,18 +486,6 @@ public abstract class AbstractDocument extends Response {
      */
     public String getCorpusSigle () {
         return this.getFieldValue("corpusSigle");
-    };
-
-
-    // This is the new corpus id
-    /**
-     * Set the corpus sigle as a string.
-     * 
-     * @param corpusSigle
-     *            The corpus sigle as a string.
-     */
-    public void setCorpusSigle (String corpusSigle) {
-        this.addString("corpusSigle", corpusSigle);
     };
 
 
@@ -630,17 +500,6 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the document sigle as a string.
-     * 
-     * @param docSigle
-     *            The document sigle as a string.
-     */
-    public void setDocSigle (String docSigle) {
-        this.addString("docSigle", docSigle);
-    };
-
-
-    /**
      * Get the name of the publisher as a string.
      * 
      * @return The name of the publisher as a string.
@@ -651,34 +510,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the name of the publisher as a string.
-     * 
-     * @param publisher
-     *            The name of the publisher as a string.
-     */
-    public void setPublisher (String publisher) {
-        this.addStored("publisher", publisher);
-    };
-
-
-    /**
      * Get the name of the editor as a string.
      * 
      * @return The name of the editor as a string.
      */
     public String getEditor () {
         return this.getFieldValue("editor");
-    };
-
-
-    /**
-     * Set the name of the editor as a string.
-     * 
-     * @param editor
-     *            The name of the editor as a string.
-     */
-    public void setEditor (String editor) {
-        this.addStored("editor", editor);
     };
 
     
@@ -693,17 +530,6 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the type of the text as a string.
-     * 
-     * @param textType
-     *            The type of the text as a string.
-     */
-    public void setTextType (String textType) {
-        this.addString("textType", textType);
-    };
-
-
-    /**
      * Get the type art of the text as a string.
      * 
      * @return The type art of the text as a string.
@@ -711,29 +537,6 @@ public abstract class AbstractDocument extends Response {
     public String getTextTypeArt () {
         return this.getFieldValue("textTypeArt");
     };
-
-
-    /**
-     * Set the type art of the text as a string.
-     * 
-     * @param textTypeArt
-     *            The type art of the text as a string.
-     */
-    public void setTextTypeArt (String textTypeArt) {
-        this.addString("textTypeArt", textTypeArt);
-    };
-
-
-    /**
-     * Set the type reference of the text as a string.
-     * 
-     * @param textTypeRef
-     *            The type reference of the text as a string.
-     */
-    public void setTextTypeRef (String textTypeRef) {
-        this.addString("textTypeRef", textTypeRef);
-    };
-
 
     /**
      * Get the type reference of the text as a string.
@@ -756,34 +559,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the column of the text as a string.
-     * 
-     * @param textColumn
-     *            The column of the text as a string.
-     */
-    public void setTextColumn (String textColumn) {
-        this.addString("textColumn", textColumn);
-    };
-
-
-    /**
      * Get the domain of the text as a string.
      * 
      * @return The domain of the text as a string.
      */
     public String getTextDomain () {
         return this.getFieldValue("textDomain");
-    };
-
-
-    /**
-     * Set the domain of the text as a string.
-     * 
-     * @param textDomain
-     *            The domain of the text as a string.
-     */
-    public void setTextDomain (String textDomain) {
-        this.addString("textDomain", textDomain);
     };
 
 
@@ -795,30 +576,6 @@ public abstract class AbstractDocument extends Response {
     public String getAvailability () {
         return this.getFieldValue("availability");
     };
-
-
-    /**
-     * Set the availability of the text as a string.
-     * 
-     * @param availability
-     *            The availability of the text as a string.
-     */
-    public void setAvailability (String availability) {
-        this.addString("availability", availability);
-    };
-
-
-    /**
-     * Set the license of the text as a string.
-     * This is a deprecated alias to setAvailability.
-     * 
-     * @param license
-     *            The license of the text as a string.
-     */
-	@Deprecated
-    public void setLicense (String license) {
-        this.setAvailability(license);
-    };
     
 
     /**
@@ -828,18 +585,6 @@ public abstract class AbstractDocument extends Response {
      */
     public String getFileEditionStatement () {
         return this.getFieldValue("fileEditionStatement");
-    };
-
-
-    /**
-     * Set the file edition statement of the text as a string.
-     * 
-     * @param fileEditionStatement
-     *            The file edition statement
-     *            of the text as a string.
-     */
-    public void setFileEditionStatement (String fileEditionStatement) {
-        this.addStored("fileEditionStatement", fileEditionStatement);
     };
 
 
@@ -855,35 +600,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the bibliograhic edition statement of the text as a string.
-     * 
-     * @param biblEditionStatement
-     *            The bibliograhic edition statement
-     *            of the text as a string.
-     */
-    public void setBiblEditionStatement (String biblEditionStatement) {
-        this.addStored("biblEditionStatement", biblEditionStatement);
-    };
-
-
-    /**
      * Get the reference of the text as a string.
      * 
      * @return The reference of the text as a string.
      */
     public String getReference () {
         return this.getFieldValue("reference");
-    };
-
-
-    /**
-     * Set the reference of the text as a string.
-     * 
-     * @param reference
-     *            The reference of the text as a string.
-     */
-    public void setReference (String reference) {
-        this.addStored("reference", reference);
     };
 
 
@@ -898,34 +620,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the language of the text as a string.
-     * 
-     * @param language
-     *            The language of the text as a string.
-     */
-    public void setLanguage (String language) {
-        this.addString("language", language);
-    };
-
-
-    /**
      * Get the corpus title of the text as a string.
      * 
      * @return The corpus title of the text as a string.
      */
     public String getCorpusTitle () {
         return this.getFieldValue("corpusTitle");
-    };
-
-
-    /**
-     * Set the corpus title of the text as a string.
-     * 
-     * @param corpusTitle
-     *            The corpus title of the text as a string.
-     */
-    public void setCorpusTitle (String corpusTitle) {
-        this.addText("corpusTitle", corpusTitle);
     };
 
 
@@ -940,34 +640,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the corpus subtitle of the text as a string.
-     * 
-     * @param corpusSubTitle
-     *            The corpus subtitle of the
-     *            text as a string.
-     */
-    public void setCorpusSubTitle (String corpusSubTitle) {
-        this.addText("corpusSubTitle", corpusSubTitle);
-    };
-
-
-    /**
      * Get the corpus author of the text as a string.
      * 
      * @return The corpus author of the text as a string.
      */
     public String getCorpusAuthor () {
         return this.getFieldValue("corpusAuthor");
-    };
-
-
-    /**
-     * Set the corpus author of the text as a string.
-     * 
-     * @return The corpus author of the text as a string.
-     */
-    public void setCorpusAuthor (String corpusAuthor) {
-        this.addText("corpusAuthor", corpusAuthor);
     };
 
 
@@ -982,34 +660,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the corpus editor of the text as a string.
-     * 
-     * @param corpusEditor
-     *            The corpus editor of the text as a string.
-     */
-    public void setCorpusEditor (String corpusEditor) {
-        this.addStored("corpusEditor", corpusEditor);
-    };
-
-
-    /**
      * Get the document title of the text as a string.
      * 
      * @return The document title of the text as a string.
      */
     public String getDocTitle () {
         return this.getFieldValue("docTitle");
-    };
-
-
-    /**
-     * Set the document title of the text as a string.
-     * 
-     * @param docTitle
-     *            The document title of the text as a string.
-     */
-    public void setDocTitle (String docTitle) {
-        this.addText("docTitle", docTitle);
     };
 
 
@@ -1024,35 +680,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the subtitle of the document of the text as a string.
-     * 
-     * @param docSubTitle
-     *            The subtitle of the document of the
-     *            text as a string.
-     */
-    public void setDocSubTitle (String docSubTitle) {
-        this.addText("docSubTitle", docSubTitle);
-    };
-
-
-    /**
      * Get the author of the document of the text as a string.
      * 
      * @return The author of the document of the text as a string.
      */
     public String getDocAuthor () {
         return this.getFieldValue("docAuthor");
-    };
-
-
-    /**
-     * Set the author of the document of the text as a string.
-     * 
-     * @param docAuthor
-     *            The author of the document of the text as a string.
-     */
-    public void setDocAuthor (String docAuthor) {
-        this.addText("docAuthor", docAuthor);
     };
 
 
@@ -1067,17 +700,6 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Set the editor of the document of the text as a string.
-     * 
-     * @param docEditor
-     *            The editor of the document of the text as a string.
-     */
-    public void setDocEditor (String docEditor) {
-        this.addStored("docEditor", docEditor);
-    };
-
-
-    /**
      * Get the keywords of the text as a string.
      * 
      * @return The keywords of the text as a string.
@@ -1085,18 +707,6 @@ public abstract class AbstractDocument extends Response {
     public String getKeywords () {
         return this.getFieldValue("keywords");
     };
-
-
-    /**
-     * Set the keywords of the text as a string.
-     * 
-     * @param keywords
-     *            The keywords of the text as a string.
-     */
-    public void setKeywords (String keywords) {
-        this.addKeywords("keywords", keywords);
-    };
-
 
     /**
      * Get information about the source of tokenization
@@ -1108,31 +718,11 @@ public abstract class AbstractDocument extends Response {
         return this.getFieldValue("tokenSource");
     };
 
-
-    /**
-     * Set information about the source of tokenization
-     * as a string.
-     * 
-     * @param tokenSource
-     *            The tokenization information as a string.
-     */
-    public void setTokenSource (String tokenSource) {
-        this.addStored("tokenSource", tokenSource);
-    };
-
-
     @Deprecated
     @JsonProperty("corpusID")
     public String getCorpusID () {
         return this.getFieldValue("corpusID");
     };
-
-
-    @Deprecated
-    public void setCorpusID (String corpusID) {
-        this.addString("corpusID", corpusID);
-    };
-
 
     @Deprecated
     @JsonProperty("ID")
@@ -1140,12 +730,48 @@ public abstract class AbstractDocument extends Response {
         return this.getFieldValue("ID");
     };
 
+    @JsonAnySetter
+    public void setLegacyMetaField (String name, JsonNode value) {
+        
+        // Treat legacy string fields
+        if (legacyStringFields.contains(name)) {
+            this.addString(name, value.asText());
+        }
 
-    @Deprecated
-    public void setID (String ID) {
-        this.addString("ID", ID);
+        // Treat legacy text fields
+        else if (legacyTextFields.contains(name)) {
+            this.addText(name, value.asText());
+        }
+
+        // Treat legacy keyword fields
+        else if (legacyKeywordsFields.contains(name)) {
+            this.addKeywords(name, value.asText());
+        }
+
+        // Treat legacy stored fields
+        else if (legacyStoredFields.contains(name)) {
+            this.addStored(name, value.asText());
+        }
+
+        // Treat legacy date fields
+        else if (legacyDateFields.contains(name)) {
+            this.addDate(name, value.asText());
+        }
+        
+        else if (name.equals("license")) {
+            this.addString("availability", value.asText());
+        }
+
+        // Temporarily - treat legacy store values introduced for Sgbr
+        else if (name.equals("store")) {
+            // TODO: Store all values
+        };
+        //
+        // else {
+        //    System.err.println("Unknown field: " + name);
+        // };
     };
-
+    
 
     /**
      * Serialize response as a {@link JsonNode}.
