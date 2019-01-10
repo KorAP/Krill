@@ -162,12 +162,12 @@ public class TestKrillIndex {
         KrillIndex ki = new KrillIndex();
 
         FieldDocument fd = new FieldDocument();
-        fd.setTitle("Peter");
+        fd.addText("title", "Peter");
         fd.setUID(22);
         ki.addDoc(fd);
 
         fd = new FieldDocument();
-        fd.setTitle("Akron");
+        fd.addText("title", "Akron");
         fd.setUID("05678");
         ki.addDoc(fd);
 

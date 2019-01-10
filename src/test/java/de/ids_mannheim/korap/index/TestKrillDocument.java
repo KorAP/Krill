@@ -26,18 +26,18 @@ public class TestKrillDocument {
     @Test
     public void createDocument () throws IOException {
         KrillRealDocument krd = new KrillRealDocument();
-        krd.setPubDate("2014-10-12");
+        krd.addDate("pubDate", "2014-10-12");
         assertEquals("20141012", krd.getPubDate().toString());
         assertEquals("2014-10-12", krd.getPubDateString());
 
-        krd.setCreationDate("2012-09-05");
+        krd.addDate("creationDate", "2012-09-05");
         assertEquals("20120905", krd.getCreationDate().toString());
         assertEquals("2012-09-05", krd.getCreationDateString());
 
-        krd.setAuthor("Stephen King");
+        krd.addText("author", "Stephen King");
         assertEquals("Stephen King", krd.getAuthor());
 
-        krd.setPubPlace("Düsseldorf");
+        krd.addString("pubPlace","Düsseldorf");
         assertEquals("Düsseldorf", krd.getPubPlace());
 
         krd.setUID(415);
@@ -52,10 +52,10 @@ public class TestKrillDocument {
         catch (NumberFormatException e) {};
         assertEquals(561, krd.getUID());
 
-        krd.setTitle("An Example");
+        krd.addText("title", "An Example");
         assertEquals("An Example", krd.getTitle());
 
-        krd.setSubTitle("An Example");
+        krd.addText("subTitle", "An Example");
         assertEquals("An Example", krd.getSubTitle());
 
         krd.setPrimaryData("We don't need no education");
@@ -69,37 +69,37 @@ public class TestKrillDocument {
         krd.setPrimaryData("öäüß");
         assertEquals(4, krd.getPrimaryDataLength());
 
-        krd.setTextSigle("U-abc-001");
+        krd.addString("textSigle", "U-abc-001");
         assertEquals("U-abc-001", krd.getTextSigle());
 
-        krd.setDocSigle("U-abc");
+        krd.addString("docSigle", "U-abc");
         assertEquals("U-abc", krd.getDocSigle());
 
-        krd.setCorpusSigle("U");
+        krd.addString("corpusSigle", "U");
         assertEquals("U", krd.getCorpusSigle());
 
-        krd.setPublisher("Pope Francis");
+        krd.addStored("publisher", "Pope Francis");
         assertEquals("Pope Francis", krd.getPublisher());
 
-        krd.setEditor("Michael Knight");
+        krd.addStored("editor", "Michael Knight");
         assertEquals("Michael Knight", krd.getEditor());
 
-        krd.setTextType("shortstory");
+        krd.addString("textType", "shortstory");
         assertEquals("shortstory", krd.getTextType());
 
-        krd.setTextTypeArt("Reportage");
+        krd.addString("textTypeArt", "Reportage");
         assertEquals("Reportage", krd.getTextTypeArt());
 
-        krd.setTextTypeRef("Hm");
+        krd.addString("textTypeRef", "Hm");
         assertEquals("Hm", krd.getTextTypeRef());
 
-        krd.setTextColumn("Feuilleton");
+        krd.addString("textColumn", "Feuilleton");
         assertEquals("Feuilleton", krd.getTextColumn());
 
-        krd.setTextDomain("Comment");
+        krd.addString("textDomain", "Comment");
         assertEquals("Comment", krd.getTextDomain());
 
-        krd.setAvailability("cc");
+        krd.addString("availability", "cc");
         assertEquals("cc", krd.getAvailability());
 
         /*
@@ -107,37 +107,37 @@ public class TestKrillDocument {
 		  assertEquals("56-78", krd.getPages());
 		*/
 
-        krd.setFileEditionStatement("no problemo 1");
+        krd.addStored("fileEditionStatement", "no problemo 1");
         assertEquals("no problemo 1", krd.getFileEditionStatement());
 
-        krd.setBiblEditionStatement("no problemo 2");
+        krd.addStored("biblEditionStatement", "no problemo 2");
         assertEquals("no problemo 2", krd.getBiblEditionStatement());
 
-        krd.setLanguage("de");
+        krd.addString("language", "de");
         assertEquals("de", krd.getLanguage());
 
-        krd.setCorpusTitle("Mannheimer Morgen");
+        krd.addText("corpusTitle", "Mannheimer Morgen");
         assertEquals("Mannheimer Morgen", krd.getCorpusTitle());
 
-        krd.setCorpusSubTitle("Zeitung für Mannheim");
+        krd.addText("corpusSubTitle", "Zeitung für Mannheim");
         assertEquals("Zeitung für Mannheim", krd.getCorpusSubTitle());
 
-        krd.setCorpusAuthor("Peter Gabriel");
+        krd.addText("corpusAuthor", "Peter Gabriel");
         assertEquals("Peter Gabriel", krd.getCorpusAuthor());
 
-        krd.setCorpusEditor("Phil Collins");
+        krd.addStored("corpusEditor", "Phil Collins");
         assertEquals("Phil Collins", krd.getCorpusEditor());
 
-        krd.setDocTitle("New York Times");
+        krd.addText("docTitle", "New York Times");
         assertEquals("New York Times", krd.getDocTitle());
 
-        krd.setDocSubTitle("Newspaper for New York");
+        krd.addText("docSubTitle", "Newspaper for New York");
         assertEquals("Newspaper for New York", krd.getDocSubTitle());
 
-        krd.setDocAuthor("Dean Baquet");
+        krd.addText("docAuthor", "Dean Baquet");
         assertEquals("Dean Baquet", krd.getDocAuthor());
 
-        krd.setDocEditor("Arthur Ochs Sulzberger Jr.");
+        krd.addText("docEditor", "Arthur Ochs Sulzberger Jr.");
         assertEquals("Arthur Ochs Sulzberger Jr.", krd.getDocEditor());
     };
 };
