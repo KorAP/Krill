@@ -175,13 +175,13 @@ public class TestKrillIndex {
 
         assertEquals(2, ki.numberOf("base", "documents"));
 
-        assertEquals("Peter", ki.getDoc("22").getTitle());
+        assertEquals("Peter", ki.getDoc("22").getFieldValue("title"));
         assertEquals(22, ki.getDoc("22").getUID());
 
-        assertEquals("Akron", ki.getDoc("5678").getTitle());
+        assertEquals("Akron", ki.getDoc("5678").getFieldValue("title"));
         assertEquals(5678, ki.getDoc("5678").getUID());
 
-        assertEquals("Akron", ki.getDoc("05678").getTitle());
+        assertEquals("Akron", ki.getDoc("05678").getFieldValue("title"));
         assertEquals(5678, ki.getDoc("05678").getUID());
     };
 

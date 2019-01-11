@@ -105,6 +105,7 @@ public class TestMetaFields {
         assertEquals("match-WPD_AAA.00001-p6-7",
                 res.at("/matches/0/matchID").asText());
         // assertEquals("p6-7", res.at("/matches/0/matchID").asText());
+        assertTrue(res.at("/matches/0/subTitle").isMissingNode());
         assertEquals("", res.at("/matches/0/subTitle").asText());
         assertEquals("", res.at("/matches/0/textClass").asText());
         assertEquals("", res.at("/matches/0/pubPlace").asText());

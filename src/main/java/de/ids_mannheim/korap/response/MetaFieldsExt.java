@@ -26,7 +26,7 @@ import java.util.regex.*;
 
 import org.apache.lucene.index.*;
 
-public class MetaFieldsExt {
+public class MetaFieldsExt implements Iterable<MetaField> {
 
 	// Logger
 	private final static Logger log = LoggerFactory.getLogger(MetaFields.class);
@@ -161,6 +161,9 @@ public class MetaFieldsExt {
 
     /**
 	 * Add field to collection
+     *
+     * @param key
+     *        The key of the field
      */
     public void add (String key, MetaField mf) {
         fieldsMap.put(key, mf);
@@ -169,8 +172,49 @@ public class MetaFieldsExt {
 
     /**
 	 * Get field from collection
+     *
+     * @param key
+     *        The key of the field
      */
     public MetaField get (String key) {
         return fieldsMap.get(key);
+    };
+
+
+    /**
+	 * Check for field existence.
+     *
+     * @param key
+     *        The key of the field
+     */
+    public Boolean contains (String key) {
+        return fieldsMap.containsKey(key);
+    };
+
+
+    
+    @Override
+    public Iterator<MetaField> iterator() {
+        return new Iterator<MetaField>() {
+
+            private Iterator it = fieldsMap.keySet().iterator();
+                
+            private int currentIndex = 0;
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            };
+
+            @Override
+            public MetaField next() {
+                return fieldsMap.get(it.next());
+            };
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            };
+        };
     };
 };

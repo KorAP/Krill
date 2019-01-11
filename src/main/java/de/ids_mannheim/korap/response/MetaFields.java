@@ -202,13 +202,12 @@ public class MetaFields extends AbstractDocument {
 		
 		ArrayNode fields = doc.putArray("fields");
 
+       
 		// Iterate over all fields
 		Iterator fIter = fieldsMap.keySet().iterator();
 		while (fIter.hasNext()) {
-			// System.err.println(fIter.next());
-			MetaField mf = fieldsMap.get(fIter.next());
-			// System.err.println(mf.type);
-			fields.add(mf.toJsonNode());
+            MetaField mf = fieldsMap.get(fIter.next());
+            fields.add(mf.toJsonNode());
 		};
 
 		return json;

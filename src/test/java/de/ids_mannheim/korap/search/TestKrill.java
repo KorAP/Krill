@@ -508,22 +508,22 @@ public class TestKrill {
         assertEquals(fd.getTextSigle(), "GOE_AGA.03828");
         assertEquals(fd.getDocSigle(), "GOE_AGA");
         assertEquals(fd.getCorpusSigle(), "GOE");
-        assertEquals(fd.getTitle(), "Autobiographische Einzelheiten");
-        assertNull(fd.getSubTitle());
-        assertEquals(fd.getTextType(), "Autobiographie");
-        assertNull(fd.getTextTypeArt());
-        assertNull(fd.getTextTypeRef());
-        assertNull(fd.getTextColumn());
-        assertNull(fd.getTextDomain());
+        assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
+        assertNull(fd.getFieldValue("subTitle"));
+        assertEquals(fd.getFieldValue("textType"), "Autobiographie");
+        assertNull(fd.getFieldValue("textTypeArt"));
+        assertNull(fd.getFieldValue("textTypeRef"));
+        assertNull(fd.getFieldValue("textColumn"));
+        assertNull(fd.getFieldValue("textDomain"));
         // assertEquals(fd.getPages(), "529-547");
-        assertEquals(fd.getAvailability(), "QAO-NC");
-        assertEquals(fd.getCreationDate().toString(), "18200000");
-        assertEquals(fd.getPubDate().toString(), "19820000");
-        assertEquals(fd.getAuthor(), "Goethe, Johann Wolfgang von");
-        assertNull(fd.getTextClass());
-        assertEquals(fd.getLanguage(), "de");
-        assertEquals(fd.getPubPlace(), "München");
-        assertEquals(fd.getReference(),
+        assertEquals(fd.getFieldValue("availability"), "QAO-NC");
+        assertEquals(fd.getFieldValue("creationDate"), "1820");
+        assertEquals(fd.getFieldValue("pubDate"), "1982");
+        assertEquals(fd.getFieldValue("author"), "Goethe, Johann Wolfgang von");
+        assertNull(fd.getFieldValue("textClass"));
+        assertEquals(fd.getFieldValue("language"), "de");
+        assertEquals(fd.getFieldValue("pubPlace"), "München");
+        assertEquals(fd.getFieldValue("reference"),
                 "Goethe, Johann Wolfgang von:"
                         + " Autobiographische Einzelheiten,"
                         + " (Geschrieben bis 1832), In: Goethe,"
@@ -531,14 +531,14 @@ public class TestKrill {
                         + " Bd. 10, Autobiographische Schriften"
                         + " II, Hrsg.: Trunz, Erich. München: "
                         + "Verlag C. H. Beck, 1982, S. 529-547");
-        assertEquals(fd.getPublisher(), "Verlag C. H. Beck");
-        assertNull(fd.getEditor());
-        assertNull(fd.getFileEditionStatement());
-        assertNull(fd.getBiblEditionStatement());
-        assertNull(fd.getKeywords());
+        assertEquals(fd.getFieldValue("publisher"), "Verlag C. H. Beck");
+        assertNull(fd.getFieldValue("editor"));
+        assertNull(fd.getFieldValue("fileEditionStatement"));
+        assertNull(fd.getFieldValue("biblEditionStatement"));
+        assertNull(fd.getFieldValue("keywords"));
 
-        assertEquals(fd.getTokenSource(), "opennlp#tokens");
-        assertEquals(fd.getFoundries(),
+        assertEquals(fd.getFieldValue("tokenSource"), "opennlp#tokens");
+        assertEquals(fd.getFieldValue("foundries"),
                 "base base/paragraphs base/sentences corenlp "
                         + "corenlp/constituency corenlp/morpho "
                         + "corenlp/namedentities corenlp/sentences "
@@ -546,22 +546,22 @@ public class TestKrill {
                         + " opennlp opennlp/morpho opennlp/sentences"
                         + " treetagger treetagger/morpho "
                         + "treetagger/sentences");
-        assertEquals(fd.getLayerInfos(),
+        assertEquals(fd.getFieldValue("layerInfos"),
                 "base/s=spans corenlp/c=spans corenlp/ne=tokens"
                         + " corenlp/p=tokens corenlp/s=spans glemm/l=tokens"
                         + " mate/l=tokens mate/m=tokens mate/p=tokens"
                         + " opennlp/p=tokens opennlp/s=spans tt/l=tokens"
                         + " tt/p=tokens tt/s=spans");
 
-        assertEquals(fd.getCorpusTitle(), "Goethes Werke");
-        assertNull(fd.getCorpusSubTitle());
-        assertEquals(fd.getCorpusAuthor(), "Goethe, Johann Wolfgang von");
-        assertEquals(fd.getCorpusEditor(), "Trunz, Erich");
-        assertEquals(fd.getDocTitle(),
+        assertEquals(fd.getFieldValue("corpusTitle"), "Goethes Werke");
+        assertNull(fd.getFieldValue("corpusSubTitle"));
+        assertEquals(fd.getFieldValue("corpusAuthor"), "Goethe, Johann Wolfgang von");
+        assertEquals(fd.getFieldValue("corpusEditor"), "Trunz, Erich");
+        assertEquals(fd.getFieldValue("docTitle"),
                 "Goethe: Autobiographische Schriften II, (1817-1825, 1832)");
-        assertNull(fd.getDocSubTitle());
-        assertNull(fd.getDocEditor());
-        assertNull(fd.getDocAuthor());
+        assertNull(fd.getFieldValue("docSubTitle"));
+        assertNull(fd.getFieldValue("docEditor"));
+        assertNull(fd.getFieldValue("docAuthor"));
 
         Krill ks = new Krill(new QueryBuilder("tokens").seg("mate/m:case:nom")
                 .with("mate/m:number:pl"));
@@ -586,22 +586,22 @@ public class TestKrill {
         assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
         assertEquals(fd.getDocSigle(), "GOE/AGA");
         assertEquals(fd.getCorpusSigle(), "GOE");
-        assertEquals(fd.getTitle(), "Autobiographische Einzelheiten");
-        assertNull(fd.getSubTitle());
-        assertEquals(fd.getTextType(), "Autobiographie");
-        assertNull(fd.getTextTypeArt());
-        assertNull(fd.getTextTypeRef());
-        assertNull(fd.getTextColumn());
-        assertNull(fd.getTextDomain());
+        assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
+        assertNull(fd.getFieldValue("subTitle"));
+        assertEquals(fd.getFieldValue("textType"), "Autobiographie");
+        assertNull(fd.getFieldValue("textTypeArt"));
+        assertNull(fd.getFieldValue("textTypeRef"));
+        assertNull(fd.getFieldValue("textColumn"));
+        assertNull(fd.getFieldValue("textDomain"));
         // assertEquals(fd.getPages(), "529-547");
-		// assertEquals(fd.getAvailability(), "QAO-NC");
-        assertEquals(fd.getCreationDate().toString(), "18200000");
-        assertEquals(fd.getPubDate().toString(), "19820000");
-        assertEquals(fd.getAuthor(), "Goethe, Johann Wolfgang von");
-        assertNull(fd.getTextClass());
-        assertEquals(fd.getLanguage(), "de");
-        assertEquals(fd.getPubPlace(), "München");
-        assertEquals(fd.getReference(),
+		// assertEquals(fd.getFieldValue("availability"), "QAO-NC");
+        assertEquals(fd.getFieldValue("creationDate"), "1820");
+        assertEquals(fd.getFieldValue("pubDate"), "1982");
+        assertEquals(fd.getFieldValue("author"), "Goethe, Johann Wolfgang von");
+        assertNull(fd.getFieldValue("textClass"));
+        assertEquals(fd.getFieldValue("language"), "de");
+        assertEquals(fd.getFieldValue("pubPlace"), "München");
+        assertEquals(fd.getFieldValue("reference"),
                 "Goethe, Johann Wolfgang von:"
                         + " Autobiographische Einzelheiten,"
                         + " (Geschrieben bis 1832), In: Goethe,"
@@ -609,27 +609,27 @@ public class TestKrill {
                         + " Bd. 10, Autobiographische Schriften"
                         + " II, Hrsg.: Trunz, Erich. München: "
                         + "Verlag C. H. Beck, 1982, S. 529-547");
-        assertEquals(fd.getPublisher(), "Verlag C. H. Beck");
-        assertNull(fd.getEditor());
-        assertNull(fd.getFileEditionStatement());
-        assertNull(fd.getBiblEditionStatement());
-        assertNull(fd.getKeywords());
+        assertEquals(fd.getFieldValue("publisher"), "Verlag C. H. Beck");
+        assertNull(fd.getFieldValue("editor"));
+        assertNull(fd.getFieldValue("fileEditionStatement"));
+        assertNull(fd.getFieldValue("biblEditionStatement"));
+        assertNull(fd.getFieldValue("keywords"));
 
-        assertEquals(fd.getTokenSource(), "base#tokens_aggr");
-        assertEquals(fd.getFoundries(),
+        assertEquals(fd.getFieldValue("tokenSource"), "base#tokens_aggr");
+        assertEquals(fd.getFieldValue("foundries"),
                 "dereko dereko/structure "+
 					 "dereko/structure/base-sentences-paragraphs-pagebreaks");
-        assertEquals(fd.getLayerInfos(), "dereko/s=spans");
+        assertEquals(fd.getFieldValue("layerInfos"), "dereko/s=spans");
 
-        assertEquals(fd.getCorpusTitle(), "Goethes Werke");
-        assertNull(fd.getCorpusSubTitle());
-        assertEquals(fd.getCorpusAuthor(), "Goethe, Johann Wolfgang von");
-        assertEquals(fd.getCorpusEditor(), "Trunz, Erich");
-        assertEquals(fd.getDocTitle(),
+        assertEquals(fd.getFieldValue("corpusTitle"), "Goethes Werke");
+        assertNull(fd.getFieldValue("corpusSubTitle"));
+        assertEquals(fd.getFieldValue("corpusAuthor"), "Goethe, Johann Wolfgang von");
+        assertEquals(fd.getFieldValue("corpusEditor"), "Trunz, Erich");
+        assertEquals(fd.getFieldValue("docTitle"),
                 "Goethe: Autobiographische Schriften II, (1817-1825, 1832)");
-        assertNull(fd.getDocSubTitle());
-        assertNull(fd.getDocEditor());
-        assertNull(fd.getDocAuthor());
+        assertNull(fd.getFieldValue("docSubTitle"));
+        assertNull(fd.getFieldValue("docEditor"));
+        assertNull(fd.getFieldValue("docAuthor"));
 
         Krill ks = new Krill(new QueryBuilder("tokens").seg("s:der"));
         Result kr = ks.apply(ki);
@@ -660,61 +660,61 @@ public class TestKrill {
         assertEquals(fd.getTextSigle(), "BZK_D59.00089");
         assertEquals(fd.getDocSigle(), "BZK_D59");
         assertEquals(fd.getCorpusSigle(), "BZK");
-        assertEquals(fd.getTitle(), "Saragat-Partei zerfällt");
-        assertEquals(fd.getPubDate().toString(), "19590219");
+        assertEquals(fd.getFieldValue("title"), "Saragat-Partei zerfällt");
+        assertEquals(fd.getFieldValue("pubDate"), "1959-02-19");
 
-        assertNull(fd.getSubTitle());
-        assertNull(fd.getAuthor());
-        assertNull(fd.getEditor());
-        assertEquals(fd.getPubPlace(), "Berlin");
-        assertNull(fd.getPublisher());
-        assertEquals(fd.getTextType(), "Zeitung: Tageszeitung");
-        assertNull(fd.getTextTypeArt());
-        assertEquals(fd.getTextTypeRef(), "Tageszeitung");
-        assertEquals(fd.getTextDomain(), "Politik");
-        assertEquals(fd.getCreationDate().toString(), "19590219");
-        assertEquals(fd.getAvailability(), "ACA-NC-LC");
-        assertEquals(fd.getTextColumn(), "POLITIK");
+        assertNull(fd.getFieldValue("subTitle"));
+        assertNull(fd.getFieldValue("author"));
+        assertNull(fd.getFieldValue("editor"));
+        assertEquals(fd.getFieldValue("pubPlace"), "Berlin");
+        assertNull(fd.getFieldValue("publisher"));
+        assertEquals(fd.getFieldValue("textType"), "Zeitung: Tageszeitung");
+        assertNull(fd.getFieldValue("textTypeArt"));
+        assertEquals(fd.getFieldValue("textTypeRef"), "Tageszeitung");
+        assertEquals(fd.getFieldValue("textDomain"), "Politik");
+        assertEquals(fd.getFieldValue("creationDate"), "1959-02-19");
+        assertEquals(fd.getFieldValue("availability"), "ACA-NC-LC");
+        assertEquals(fd.getFieldValue("textColumn"), "POLITIK");
         // assertNull(fd.getPages());
-        assertEquals(fd.getTextClass(), "politik ausland");
-        assertNull(fd.getFileEditionStatement());
-        assertNull(fd.getBiblEditionStatement());
+        assertEquals(fd.getFieldValue("textClass"), "politik ausland");
+        assertNull(fd.getFieldValue("fileEditionStatement"));
+        assertNull(fd.getFieldValue("biblEditionStatement"));
 
-        assertEquals(fd.getLanguage(), "de");
-        assertEquals(fd.getReference(),
+        assertEquals(fd.getFieldValue("language"), "de");
+        assertEquals(fd.getFieldValue("reference"),
                 "Neues Deutschland, [Tageszeitung], 19.02.1959, Jg. 14,"
                         + " Berliner Ausgabe, S. 7. - Sachgebiet: Politik, "
                         + "Originalressort: POLITIK; Saragat-Partei zerfällt");
-        assertNull(fd.getPublisher());
-        assertNull(fd.getKeywords());
+        assertNull(fd.getFieldValue("publisher"));
+        assertNull(fd.getFieldValue("keywords"));
 
-        assertEquals(fd.getTokenSource(), "opennlp#tokens");
+        assertEquals(fd.getFieldValue("tokenSource"), "opennlp#tokens");
 
-        assertEquals(fd.getFoundries(),
+        assertEquals(fd.getFieldValue("foundries"),
                 "base base/paragraphs base/sentences corenlp "
                         + "corenlp/constituency corenlp/morpho corenlp/namedentities"
                         + " corenlp/sentences glemm glemm/morpho mate mate/morpho"
                         + " opennlp opennlp/morpho opennlp/sentences treetagger"
                         + " treetagger/morpho treetagger/sentences");
 
-        assertEquals(fd.getLayerInfos(),
+        assertEquals(fd.getFieldValue("layerInfos"),
                 "base/s=spans corenlp/c=spans corenlp/ne=tokens"
                         + " corenlp/p=tokens corenlp/s=spans glemm/l=tokens"
                         + " mate/l=tokens mate/m=tokens mate/p=tokens"
                         + " opennlp/p=tokens opennlp/s=spans tt/l=tokens"
                         + " tt/p=tokens tt/s=spans");
 
-        assertEquals(fd.getCorpusTitle(), "Bonner Zeitungskorpus");
-        assertNull(fd.getCorpusSubTitle());
-        assertNull(fd.getCorpusAuthor());
-        assertNull(fd.getCorpusEditor());
+        assertEquals(fd.getFieldValue("corpusTitle"), "Bonner Zeitungskorpus");
+        assertNull(fd.getFieldValue("corpusSubTitle"));
+        assertNull(fd.getFieldValue("corpusAuthor"));
+        assertNull(fd.getFieldValue("corpusEditor"));
 
-        assertEquals(fd.getDocTitle(), "Neues Deutschland");
-        assertEquals(fd.getDocSubTitle(),
+        assertEquals(fd.getFieldValue("docTitle"), "Neues Deutschland");
+        assertEquals(fd.getFieldValue("docSubTitle"),
                 "Organ des Zentralkomitees der Sozialistischen "
                         + "Einheitspartei Deutschlands");
-        assertNull(fd.getDocEditor());
-        assertNull(fd.getDocAuthor());
+        assertNull(fd.getFieldValue("docEditor"));
+        assertNull(fd.getFieldValue("docAuthor"));
 
         Krill ks = new Krill(new QueryBuilder("tokens").seg("mate/m:case:nom")
                 .with("mate/m:number:sg"));
@@ -1265,22 +1265,22 @@ public class TestKrill {
         assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
         assertEquals(fd.getDocSigle(), "GOE/AGA");
         assertEquals(fd.getCorpusSigle(), "GOE");
-        assertEquals(fd.getTitle(), "Autobiographische Einzelheiten");
-        assertNull(fd.getSubTitle());
-        assertEquals(fd.getTextType(), "Autobiographie");
-        assertNull(fd.getTextTypeArt());
-        assertNull(fd.getTextTypeRef());
-        assertNull(fd.getTextColumn());
-        assertNull(fd.getTextDomain());
+        assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
+        assertNull(fd.getFieldValue("subTitle"));
+        assertEquals(fd.getFieldValue("textType"), "Autobiographie");
+        assertNull(fd.getFieldValue("textTypeArt"));
+        assertNull(fd.getFieldValue("textTypeRef"));
+        assertNull(fd.getFieldValue("textColumn"));
+        assertNull(fd.getFieldValue("textDomain"));
         // assertEquals(fd.getPages(), "529-547");
-        assertEquals(fd.getAvailability(), "QAO-NC");
-        assertEquals(fd.getCreationDate().toString(), "18200000");
-        assertEquals(fd.getPubDate().toString(), "19820000");
-        assertEquals(fd.getAuthor(), "Goethe, Johann Wolfgang von");
-        assertNull(fd.getTextClass());
-        assertEquals(fd.getLanguage(), "de");
-        assertEquals(fd.getPubPlace(), "München");
-        assertEquals(fd.getReference(),
+        assertEquals(fd.getFieldValue("availability"), "QAO-NC");
+        assertEquals(fd.getFieldValue("creationDate"), "1820");
+        assertEquals(fd.getFieldValue("pubDate"), "1982");
+        assertEquals(fd.getFieldValue("author"), "Goethe, Johann Wolfgang von");
+        assertNull(fd.getFieldValue("textClass"));
+        assertEquals(fd.getFieldValue("language"), "de");
+        assertEquals(fd.getFieldValue("pubPlace"), "München");
+        assertEquals(fd.getFieldValue("reference"),
                 "Goethe, Johann Wolfgang von:"
                         + " Autobiographische Einzelheiten,"
                         + " (Geschrieben bis 1832), In: Goethe,"
@@ -1288,27 +1288,27 @@ public class TestKrill {
                         + " Bd. 10, Autobiographische Schriften"
                         + " II, Hrsg.: Trunz, Erich. München: "
                         + "Verlag C. H. Beck, 1982, S. 529-547");
-        assertEquals(fd.getPublisher(), "Verlag C. H. Beck");
-        assertNull(fd.getEditor());
-        assertNull(fd.getFileEditionStatement());
-        assertNull(fd.getBiblEditionStatement());
-        assertNull(fd.getKeywords());
+        assertEquals(fd.getFieldValue("publisher"), "Verlag C. H. Beck");
+        assertNull(fd.getFieldValue("editor"));
+        assertNull(fd.getFieldValue("fileEditionStatement"));
+        assertNull(fd.getFieldValue("biblEditionStatement"));
+        assertNull(fd.getFieldValue("keywords"));
 
-        assertEquals(fd.getTokenSource(), "base#tokens");
-        assertEquals(fd.getFoundries(),
+        assertEquals(fd.getFieldValue("tokenSource"), "base#tokens");
+        assertEquals(fd.getFieldValue("foundries"),
                 "corenlp corenlp/constituency corenlp/morpho corenlp/sentences dereko dereko/structure dereko/structure/base-sentences-paragraphs-pagebreaks malt malt/dependency marmot marmot/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho");
-        assertEquals(fd.getLayerInfos(),
+        assertEquals(fd.getFieldValue("layerInfos"),
                 "corenlp/c=spans corenlp/p=tokens corenlp/s=spans dereko/s=spans malt/d=rels marmot/m=tokens marmot/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens");
 
-        assertEquals(fd.getCorpusTitle(), "Goethes Werke");
-        assertNull(fd.getCorpusSubTitle());
-        assertEquals(fd.getCorpusAuthor(), "Goethe, Johann Wolfgang von");
-        assertEquals(fd.getCorpusEditor(), "Trunz, Erich");
-        assertEquals(fd.getDocTitle(),
+        assertEquals(fd.getFieldValue("corpusTitle"), "Goethes Werke");
+        assertNull(fd.getFieldValue("corpusSubTitle"));
+        assertEquals(fd.getFieldValue("corpusAuthor"), "Goethe, Johann Wolfgang von");
+        assertEquals(fd.getFieldValue("corpusEditor"), "Trunz, Erich");
+        assertEquals(fd.getFieldValue("docTitle"),
                 "Goethe: Autobiographische Schriften II, (1817-1825, 1832)");
-        assertNull(fd.getDocSubTitle());
-        assertNull(fd.getDocEditor());
-        assertNull(fd.getDocAuthor());
+        assertNull(fd.getFieldValue("docSubTitle"));
+        assertNull(fd.getFieldValue("docEditor"));
+        assertNull(fd.getFieldValue("docAuthor"));
 
         Krill ks = new Krill(new QueryBuilder("tokens").seg("marmot/m:case:nom")
                 .with("marmot/m:number:pl"));

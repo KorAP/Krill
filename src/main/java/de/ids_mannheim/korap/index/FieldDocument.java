@@ -100,18 +100,18 @@ public class FieldDocument extends AbstractDocument {
 
     @Override
     public void addDate (String key, String value) {
+        KrillDate date = new KrillDate(value);
+		if (date != null) {
+			this.addInt(key, date.toString());
+		};
         mFields.add(
             key,
             new MetaField(
                 key,
                 "type:date",
-                value
+                date.toDisplay()
                 )
             );
-        KrillDate date = new KrillDate(value);
-		if (date != null) {
-			this.addInt(key, date.toString());
-		};
     }
 
     @Override
@@ -338,10 +338,13 @@ public class FieldDocument extends AbstractDocument {
 
                 // Add date field
                 else if (type.equals("type:date")) {
+                    this.addDate(key, field.get("value").asText());
+                    /*
                     KrillDate date = new KrillDate(field.get("value").asText());
                     if (date != null) {
                         this.addInt(key, date.toString());
                     };
+                    */
                 }
 
                 // Unknown

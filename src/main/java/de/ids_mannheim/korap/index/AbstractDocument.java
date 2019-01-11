@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /*
  * Todo:: Author and textClass may be arrays!
@@ -96,9 +97,7 @@ public abstract class AbstractDocument extends Response {
         new HashSet<String>(Arrays.asList(
                                 "pubDate",
                                 "creationDate"
-                                ));
-
-    
+                                ));    
     
     @JsonIgnore
     public int internalDocID, localDocID, UID;
@@ -212,106 +211,6 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the publication date of the document
-     * as a {@link KrillDate} object.
-     * 
-     * @return A {@link KrillDate} object for chaining.
-     */
-    @JsonIgnore
-    public KrillDate getPubDate () {
-        String pubDate = this.getFieldValue("pubDate");
-        if (pubDate == null)
-            return null;
-        return new KrillDate(pubDate);
-    };
-
-
-    /**
-     * Get the publication date of the document
-     * as a string.
-     * 
-     * @return A string containing the {@link KrillDate}.
-     */
-    @JsonProperty("pubDate")
-    public String getPubDateString () {
-        KrillDate pubDate = this.getPubDate();
-
-        if (pubDate != null) {
-            String date = pubDate.toDisplay();
-            if (date.length() == 0)
-                return null;
-            return date;
-        };
-        return null;
-    };
-
-
-    /**
-     * Get the creation date of the document
-     * as a {@link KrillDate} object.
-     * 
-     * @return A {@link KrillDate} object for chaining.
-     */
-    @JsonIgnore
-    public KrillDate getCreationDate () {
-        String creationDate = this.getFieldValue("creationDate");
-        if (creationDate == null)
-            return null;
-        return new KrillDate(creationDate);
-    };
-
-
-    /**
-     * Get the creation date of the document
-     * as a string.
-     * 
-     * @return A string containing the {@link KrillDate}.
-     */
-    @JsonProperty("creationDate")
-    public String getCreationDateString () {
-        KrillDate creationDate = this.getCreationDate();
-
-        if (creationDate != null) {
-            String date = creationDate.toDisplay();
-            if (date.length() == 0)
-                return null;
-            return date;
-        };
-        return null;
-    };
-
-
-    /**
-     * Get the name of the author of the document.
-     * 
-     * @return The name of the author as a string.
-     */
-    public String getAuthor () {
-        return this.getFieldValue("author");
-    };
-
-    
-    /**
-     * Get the text class of the document.
-     * 
-     * @return The text class of the document as a string.
-     */
-    public String getTextClass () {
-        return this.getFieldValue("textClass");
-    };
-
-
-    /**
-     * Get the publication place of the document.
-     * 
-     * @return The publication place of the document as a string.
-     */
-    public String getPubPlace () {
-        return this.getFieldValue("pubPlace");
-    };
-
-
-    /**
      * Get the unique identifier of the document.
      * 
      * @return The unique identifier of the document as an integer.
@@ -351,26 +250,6 @@ public abstract class AbstractDocument extends Response {
             this.UID = Integer.parseInt(UID);
             this.addString("UID", new Integer(this.UID).toString());
         };
-    };
-
-
-    /**
-     * Get the title of the document.
-     * 
-     * @return The title of the document as a string.
-     */
-    public String getTitle () {
-        return this.getFieldValue("title");
-    };
-
-
-    /**
-     * Get the subtitle of the document.
-     * 
-     * @return The subtitle of the document as a string.
-     */
-    public String getSubTitle () {
-        return this.getFieldValue("subTitle");
     };
 
 
@@ -446,46 +325,12 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get information on the foundries the document
-     * is annotated with as a string.
-     * 
-     * @return The foundry information string.
-     */
-    public String getFoundries () {
-        return this.getFieldValue("foundries");
-    };
-
-
-    /**
-     * Get information on the layers the document
-     * is annotated with as a string.
-     * 
-     * @return The layer information string.
-     */
-    public String getLayerInfos () {
-        return this.getFieldValue("layerInfos");
-    };
-
-
-    // This is the new text id
-    /**
      * Get the text sigle as a string.
      * 
      * @return The text sigle as a string.
      */
     public String getTextSigle () {
         return this.getFieldValue("textSigle");
-    };
-
-
-    // This is the new corpus id
-    /**
-     * Get the corpus sigle as a string.
-     * 
-     * @return The corpus sigle as a string.
-     */
-    public String getCorpusSigle () {
-        return this.getFieldValue("corpusSigle");
     };
 
 
@@ -500,223 +345,14 @@ public abstract class AbstractDocument extends Response {
 
 
     /**
-     * Get the name of the publisher as a string.
+     * Get the corpus sigle as a string.
      * 
-     * @return The name of the publisher as a string.
+     * @return The corpus sigle as a string.
      */
-    public String getPublisher () {
-        return this.getFieldValue("publisher");
+    public String getCorpusSigle () {
+        return this.getFieldValue("corpusSigle");
     };
 
-
-    /**
-     * Get the name of the editor as a string.
-     * 
-     * @return The name of the editor as a string.
-     */
-    public String getEditor () {
-        return this.getFieldValue("editor");
-    };
-
-    
-    /**
-     * Get the type of the text as a string.
-     * 
-     * @return The type of the text as a string.
-     */
-    public String getTextType () {
-        return this.getFieldValue("textType");
-    };
-
-
-    /**
-     * Get the type art of the text as a string.
-     * 
-     * @return The type art of the text as a string.
-     */
-    public String getTextTypeArt () {
-        return this.getFieldValue("textTypeArt");
-    };
-
-    /**
-     * Get the type reference of the text as a string.
-     * 
-     * @return The type reference of the text as a string.
-     */
-    public String getTextTypeRef () {
-        return this.getFieldValue("textTypeRef");
-    };
-
-
-    /**
-     * Get the column of the text as a string.
-     * 
-     * @return The column of the text as a string.
-     */
-    public String getTextColumn () {
-        return this.getFieldValue("textColumn");
-    };
-
-
-    /**
-     * Get the domain of the text as a string.
-     * 
-     * @return The domain of the text as a string.
-     */
-    public String getTextDomain () {
-        return this.getFieldValue("textDomain");
-    };
-
-
-	/**
-     * Get the availability of the text as a string.
-     * 
-     * @return The availability of the text as a string.
-     */
-    public String getAvailability () {
-        return this.getFieldValue("availability");
-    };
-    
-
-    /**
-     * Get the file edition statement of the text as a string.
-     * 
-     * @return The file edition statement of the text as a string.
-     */
-    public String getFileEditionStatement () {
-        return this.getFieldValue("fileEditionStatement");
-    };
-
-
-    /**
-     * Get the bibliograhic edition statement of the text as a string.
-     * 
-     * @return The bibliograhic edition statement of the text as a
-     *         string.
-     */
-    public String getBiblEditionStatement () {
-        return this.getFieldValue("biblEditionStatement");
-    };
-
-
-    /**
-     * Get the reference of the text as a string.
-     * 
-     * @return The reference of the text as a string.
-     */
-    public String getReference () {
-        return this.getFieldValue("reference");
-    };
-
-
-    /**
-     * Get the language of the text as a string.
-     * 
-     * @return The language of the text as a string.
-     */
-    public String getLanguage () {
-        return this.getFieldValue("language");
-    };
-
-
-    /**
-     * Get the corpus title of the text as a string.
-     * 
-     * @return The corpus title of the text as a string.
-     */
-    public String getCorpusTitle () {
-        return this.getFieldValue("corpusTitle");
-    };
-
-
-    /**
-     * Get the corpus subtitle of the text as a string.
-     * 
-     * @return The corpus subtitle of the text as a string.
-     */
-    public String getCorpusSubTitle () {
-        return this.getFieldValue("corpusSubTitle");
-    };
-
-
-    /**
-     * Get the corpus author of the text as a string.
-     * 
-     * @return The corpus author of the text as a string.
-     */
-    public String getCorpusAuthor () {
-        return this.getFieldValue("corpusAuthor");
-    };
-
-
-    /**
-     * Get the corpus editor of the text as a string.
-     * 
-     * @return The corpus editor of the text as a string.
-     */
-    public String getCorpusEditor () {
-        return this.getFieldValue("corpusEditor");
-    };
-
-
-    /**
-     * Get the document title of the text as a string.
-     * 
-     * @return The document title of the text as a string.
-     */
-    public String getDocTitle () {
-        return this.getFieldValue("docTitle");
-    };
-
-
-    /**
-     * Get the subtitle of the document of the text as a string.
-     * 
-     * @return The subtitle of the document of the text as a string.
-     */
-    public String getDocSubTitle () {
-        return this.getFieldValue("docSubTitle");
-    };
-
-
-    /**
-     * Get the author of the document of the text as a string.
-     * 
-     * @return The author of the document of the text as a string.
-     */
-    public String getDocAuthor () {
-        return this.getFieldValue("docAuthor");
-    };
-
-
-    /**
-     * Get the editor of the document of the text as a string.
-     * 
-     * @return The editor of the document of the text as a string.
-     */
-    public String getDocEditor () {
-        return this.getFieldValue("docEditor");
-    };
-
-
-    /**
-     * Get the keywords of the text as a string.
-     * 
-     * @return The keywords of the text as a string.
-     */
-    public String getKeywords () {
-        return this.getFieldValue("keywords");
-    };
-
-    /**
-     * Get information about the source of tokenization
-     * as a string.
-     * 
-     * @return The tokenization information as a string.
-     */
-    public String getTokenSource () {
-        return this.getFieldValue("tokenSource");
-    };
 
     @Deprecated
     @JsonProperty("corpusID")
@@ -730,6 +366,90 @@ public abstract class AbstractDocument extends Response {
         return this.getFieldValue("ID");
     };
 
+    @JsonAnyGetter
+    public Map<String, JsonNode> getLegacyMetaFields () {
+        Iterator mfIterator = mFields.iterator();
+
+        HashMap<String, JsonNode> map = new HashMap<>();
+
+        String field;
+        Iterator<String> i = legacyDateFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (mFields.contains(field)) {
+                KrillDate date = this.getFieldValueAsDate(field);
+                if (date != null) {
+                    String dateStr = date.toDisplay();
+                    if (dateStr.length() != 0) {
+                        map.put(
+                            field,
+                            new TextNode(dateStr)
+                            );
+                    };
+                };
+            };
+        };
+
+        i = legacyStoredFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (mFields.contains(field)) {
+                String value = this.getFieldValue(field);
+                if (value != null) {
+                    map.put(
+                        field,
+                        new TextNode(this.getFieldValue(field))
+                        );
+                };
+            };
+        };
+
+        i = legacyTextFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (mFields.contains(field)) {
+                String value = this.getFieldValue(field);
+                if (value != null) {
+                    map.put(
+                        field,
+                        new TextNode(value)
+                        );
+                };
+            };
+        };
+
+        i = legacyStringFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (mFields.contains(field)) {
+                String value = this.getFieldValue(field);
+                if (value != null) {
+                    map.put(
+                        field,
+                        new TextNode(value)
+                        );
+                };
+            };
+        };
+
+        i = legacyKeywordsFields.iterator();
+        while (i.hasNext()) {
+            field = i.next();
+            if (mFields.contains(field)) {
+                String value = this.getFieldValue(field);
+                if (value != null) {
+                    map.put(
+                        field,
+                        new TextNode(value)
+                        );
+                };
+            };
+        };
+        
+        return map;
+    }
+
+    
     @JsonAnySetter
     public void setLegacyMetaField (String name, JsonNode value) {
         
@@ -757,7 +477,7 @@ public abstract class AbstractDocument extends Response {
         else if (legacyDateFields.contains(name)) {
             this.addDate(name, value.asText());
         }
-        
+       
         else if (name.equals("license")) {
             this.addString("availability", value.asText());
         }
@@ -790,7 +510,7 @@ public abstract class AbstractDocument extends Response {
     };
 
     @JsonIgnore
-    private String getFieldValue (String field) {
+    public String getFieldValue (String field) {
         MetaField mf = mFields.get(field);
 
         if (mf != null) {
@@ -798,6 +518,17 @@ public abstract class AbstractDocument extends Response {
         };
 
         return null;
+    };
+
+
+    @JsonIgnore
+    public KrillDate getFieldValueAsDate (String field) {
+        String date = this.getFieldValue(field);
+
+        if (date == null)
+            return null;
+
+        return new KrillDate(date);
     };
 
     @JsonIgnore
@@ -850,12 +581,13 @@ public abstract class AbstractDocument extends Response {
 
     @JsonIgnore
     public void addDate (String key, String value) {
+        KrillDate date = new KrillDate(value);
         mFields.add(
             key,
             new MetaField(
                 key,
                 "type:date",
-                value
+                date.toDisplay()
                 )
             );
     };

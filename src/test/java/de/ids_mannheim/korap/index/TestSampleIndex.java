@@ -206,7 +206,7 @@ public class TestSampleIndex {
         assertEquals(4, kr.getMatches().size());
 
         assertEquals("match-GOE/AGI/04846-p107-109", kr.getMatch(0).getID());
-        assertEquals("QAO-NC-LOC:ids", kr.getMatch(0).getAvailability());
+        assertEquals("QAO-NC-LOC:ids", kr.getMatch(0).getFieldValue("availability"));
         assertEquals(
                 "... gelesen und erzählt hat, ich in "
                         + "[[meine Erfahrungen]] hätte mit aufnehmen sollen. "
@@ -215,7 +215,7 @@ public class TestSampleIndex {
 
         assertEquals("match-GOE/AGD/00000-p132566-132569",
                 kr.getMatch(1).getID());
-        assertEquals("QAO-NC-LOC:ids-NU:1", kr.getMatch(1).getAvailability());
+        assertEquals("QAO-NC-LOC:ids-NU:1", kr.getMatch(1).getFieldValue("availability"));
         assertEquals("... Mannes umständlich beibringen und solches "
                 + "durch [[meine eigne Erfahrung]] bekräftigen: das "
                 + "alles sollte nicht gelten ...",
@@ -223,7 +223,7 @@ public class TestSampleIndex {
 
         assertEquals("match-GOE/AGD/00000-p161393-161396",
                 kr.getMatch(2).getID());
-        assertEquals("QAO-NC-LOC:ids-NU:1", kr.getMatch(2).getAvailability());
+        assertEquals("QAO-NC-LOC:ids-NU:1", kr.getMatch(2).getFieldValue("availability"));
         assertEquals("... lassen, bis er sich zuletzt an "
                 + "[[meine sämtlichen Erfahrungen]] und Überzeugungen "
                 + "anschloß, in welchem Sinne ...",
@@ -231,7 +231,7 @@ public class TestSampleIndex {
 
         assertEquals("match-GOE/AGD/06345-p10298-10301",
                 kr.getMatch(3).getID());
-        assertEquals("QAO-NC", kr.getMatch(3).getAvailability());
+        assertEquals("QAO-NC", kr.getMatch(3).getFieldValue("availability"));
         assertEquals("... bis aufs Äußerste verfolgte, und, über "
                 + "[[meine enge Erfahrung]] hinaus, nach ähnlichen Fällen "
                 + "in der ...", kr.getMatch(3).getSnippetBrackets());

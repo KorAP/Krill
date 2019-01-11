@@ -975,7 +975,7 @@ public class TestMatchIdentifier {
 					 km.getSnippetBrackets());
 		
         assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
-        assertEquals(fd.getTitle(), "Autobiographische Einzelheiten");
+        assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
 
 		
         Krill ks = new Krill(new QueryBuilder("tokens").seg("marmot/m:case:nom").with("marmot/m:degree:pos"));
@@ -1095,7 +1095,7 @@ public class TestMatchIdentifier {
 
         Match km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8", "tokens",
                 null, null, false, false);
-		assertEquals(km.getAvailability(), "CC-BY-SA");
+		assertEquals(km.getFieldValue("availability"), "CC-BY-SA");
     };
 
 

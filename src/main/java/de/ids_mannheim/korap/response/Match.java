@@ -1889,7 +1889,6 @@ public class Match extends AbstractDocument {
 
     // Identical to Result!
     public JsonNode toJsonNode () {
-        // ObjectNode json = (ObjectNode) mapper.valueToTree(this);
         ObjectNode json = (ObjectNode) super.toJsonNode();
 
         if (this.context != null)

@@ -114,12 +114,12 @@ public class TestFieldDocument {
         assertEquals(fd.getPrimaryData(), "abc");
         assertEquals(fd.getCorpusID(), "WPD");
         assertEquals(fd.getID(), "WPD-AAA-00001");
-        assertEquals(fd.getTextClass(), "music entertainment");
-        assertEquals(fd.getAuthor(), "Peter Frankenfeld");
-        assertEquals(fd.getTitle(), "Wikipedia");
-        assertEquals(fd.getSubTitle(), "Die freie Enzyklopädie");
-        assertEquals(fd.getPubPlace(), "Bochum");
-        assertEquals(fd.getPubDate().toDisplay(), "2013-06-17");
+        assertEquals(fd.getFieldValue("textClass"), "music entertainment");
+        assertEquals(fd.getFieldValue("author"), "Peter Frankenfeld");
+        assertEquals(fd.getFieldValue("title"), "Wikipedia");
+        assertEquals(fd.getFieldValue("subTitle"), "Die freie Enzyklopädie");
+        assertEquals(fd.getFieldValue("pubPlace"), "Bochum");
+        assertEquals(fd.getFieldValueAsDate("pubDate").toDisplay(), "2013-06-17");
 
         QueryBuilder kq = new QueryBuilder("tokens");
         Result kr = ki
@@ -130,12 +130,12 @@ public class TestFieldDocument {
         assertEquals(km.getPrimaryData(), "abc");
         assertEquals(km.getCorpusID(), "WPD");
         assertEquals(km.getDocID(), "WPD-AAA-00001");
-        assertEquals(km.getTextClass(), "music entertainment");
-        assertEquals(km.getAuthor(), "Peter Frankenfeld");
-        assertEquals(km.getTitle(), "Wikipedia");
-        assertEquals(km.getSubTitle(), "Die freie Enzyklopädie");
-        assertEquals(km.getPubPlace(), "Bochum");
-        assertEquals(km.getPubDate().toDisplay(), "2013-06-17");
+        assertEquals(km.getFieldValue("textClass"), "music entertainment");
+        assertEquals(km.getFieldValue("author"), "Peter Frankenfeld");
+        assertEquals(km.getFieldValue("title"), "Wikipedia");
+        assertEquals(km.getFieldValue("subTitle"), "Die freie Enzyklopädie");
+        assertEquals(km.getFieldValue("pubPlace"), "Bochum");
+        assertEquals(km.getFieldValueAsDate("pubDate").toDisplay(), "2013-06-17");
 
         assertEquals(km.getSnippetBrackets(), "a[[{3:b}]]c");
     };
@@ -239,12 +239,12 @@ public class TestFieldDocument {
         assertEquals(fd.getPrimaryData(), "abc");
         assertEquals(fd.getCorpusID(), "WPD");
         assertEquals(fd.getID(), "WPD-AAA-00001");
-        assertEquals(fd.getTextClass(), "music entertainment");
-        assertEquals(fd.getAuthor(), "Peter Frankenfeld");
-        assertEquals(fd.getTitle(), "Wikipedia");
-        assertEquals(fd.getSubTitle(), "Die freie Enzyklopädie");
-        assertEquals(fd.getPubPlace(), "Bochum");
-        assertEquals(fd.getPubDate().toDisplay(), "");
+        assertEquals(fd.getFieldValue("textClass"), "music entertainment");
+        assertEquals(fd.getFieldValue("author"), "Peter Frankenfeld");
+        assertEquals(fd.getFieldValue("title"), "Wikipedia");
+        assertEquals(fd.getFieldValue("subTitle"), "Die freie Enzyklopädie");
+        assertEquals(fd.getFieldValue("pubPlace"), "Bochum");
+        assertEquals(fd.getFieldValueAsDate("pubDate").toDisplay(), "");
 	};
 
     @Test

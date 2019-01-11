@@ -27,18 +27,18 @@ public class TestKrillDocument {
     public void createDocument () throws IOException {
         KrillRealDocument krd = new KrillRealDocument();
         krd.addDate("pubDate", "2014-10-12");
-        assertEquals("20141012", krd.getPubDate().toString());
-        assertEquals("2014-10-12", krd.getPubDateString());
+        assertEquals("2014-10-12", krd.getFieldValue("pubDate"));
+        // assertEquals("2014-10-12", krd.getFieldValueAsDate("pubDate").toDisplay());
 
         krd.addDate("creationDate", "2012-09-05");
-        assertEquals("20120905", krd.getCreationDate().toString());
-        assertEquals("2012-09-05", krd.getCreationDateString());
+        assertEquals("2012-09-05", krd.getFieldValue("creationDate"));
+        // assertEquals("2012-09-05", krd.getFieldValueAsDate("creationDate").toDisplay());
 
         krd.addText("author", "Stephen King");
-        assertEquals("Stephen King", krd.getAuthor());
+        assertEquals("Stephen King", krd.getFieldValue("author"));
 
         krd.addString("pubPlace","Düsseldorf");
-        assertEquals("Düsseldorf", krd.getPubPlace());
+        assertEquals("Düsseldorf", krd.getFieldValue("pubPlace"));
 
         krd.setUID(415);
         assertEquals(415, krd.getUID());
@@ -53,10 +53,10 @@ public class TestKrillDocument {
         assertEquals(561, krd.getUID());
 
         krd.addText("title", "An Example");
-        assertEquals("An Example", krd.getTitle());
+        assertEquals("An Example", krd.getFieldValue("title"));
 
         krd.addText("subTitle", "An Example");
-        assertEquals("An Example", krd.getSubTitle());
+        assertEquals("An Example", krd.getFieldValue("subTitle"));
 
         krd.setPrimaryData("We don't need no education");
         assertEquals("We don't need no education", krd.getPrimaryData());
@@ -79,28 +79,28 @@ public class TestKrillDocument {
         assertEquals("U", krd.getCorpusSigle());
 
         krd.addStored("publisher", "Pope Francis");
-        assertEquals("Pope Francis", krd.getPublisher());
+        assertEquals("Pope Francis", krd.getFieldValue("publisher"));
 
         krd.addStored("editor", "Michael Knight");
-        assertEquals("Michael Knight", krd.getEditor());
+        assertEquals("Michael Knight", krd.getFieldValue("editor"));
 
         krd.addString("textType", "shortstory");
-        assertEquals("shortstory", krd.getTextType());
+        assertEquals("shortstory", krd.getFieldValue("textType"));
 
         krd.addString("textTypeArt", "Reportage");
-        assertEquals("Reportage", krd.getTextTypeArt());
+        assertEquals("Reportage", krd.getFieldValue("textTypeArt"));
 
         krd.addString("textTypeRef", "Hm");
-        assertEquals("Hm", krd.getTextTypeRef());
+        assertEquals("Hm", krd.getFieldValue("textTypeRef"));
 
         krd.addString("textColumn", "Feuilleton");
-        assertEquals("Feuilleton", krd.getTextColumn());
+        assertEquals("Feuilleton", krd.getFieldValue("textColumn"));
 
         krd.addString("textDomain", "Comment");
-        assertEquals("Comment", krd.getTextDomain());
+        assertEquals("Comment", krd.getFieldValue("textDomain"));
 
         krd.addString("availability", "cc");
-        assertEquals("cc", krd.getAvailability());
+        assertEquals("cc", krd.getFieldValue("availability"));
 
         /*
 		  krd.setPages("56-78");
@@ -108,36 +108,36 @@ public class TestKrillDocument {
 		*/
 
         krd.addStored("fileEditionStatement", "no problemo 1");
-        assertEquals("no problemo 1", krd.getFileEditionStatement());
+        assertEquals("no problemo 1", krd.getFieldValue("fileEditionStatement"));
 
         krd.addStored("biblEditionStatement", "no problemo 2");
-        assertEquals("no problemo 2", krd.getBiblEditionStatement());
+        assertEquals("no problemo 2", krd.getFieldValue("biblEditionStatement"));
 
         krd.addString("language", "de");
-        assertEquals("de", krd.getLanguage());
+        assertEquals("de", krd.getFieldValue("language"));
 
         krd.addText("corpusTitle", "Mannheimer Morgen");
-        assertEquals("Mannheimer Morgen", krd.getCorpusTitle());
+        assertEquals("Mannheimer Morgen", krd.getFieldValue("corpusTitle"));
 
         krd.addText("corpusSubTitle", "Zeitung für Mannheim");
-        assertEquals("Zeitung für Mannheim", krd.getCorpusSubTitle());
+        assertEquals("Zeitung für Mannheim", krd.getFieldValue("corpusSubTitle"));
 
         krd.addText("corpusAuthor", "Peter Gabriel");
-        assertEquals("Peter Gabriel", krd.getCorpusAuthor());
+        assertEquals("Peter Gabriel", krd.getFieldValue("corpusAuthor"));
 
         krd.addStored("corpusEditor", "Phil Collins");
-        assertEquals("Phil Collins", krd.getCorpusEditor());
+        assertEquals("Phil Collins", krd.getFieldValue("corpusEditor"));
 
         krd.addText("docTitle", "New York Times");
-        assertEquals("New York Times", krd.getDocTitle());
+        assertEquals("New York Times", krd.getFieldValue("docTitle"));
 
         krd.addText("docSubTitle", "Newspaper for New York");
-        assertEquals("Newspaper for New York", krd.getDocSubTitle());
+        assertEquals("Newspaper for New York", krd.getFieldValue("docSubTitle"));
 
         krd.addText("docAuthor", "Dean Baquet");
-        assertEquals("Dean Baquet", krd.getDocAuthor());
+        assertEquals("Dean Baquet", krd.getFieldValue("docAuthor"));
 
         krd.addText("docEditor", "Arthur Ochs Sulzberger Jr.");
-        assertEquals("Arthur Ochs Sulzberger Jr.", krd.getDocEditor());
+        assertEquals("Arthur Ochs Sulzberger Jr.", krd.getFieldValue("docEditor"));
     };
 };
