@@ -26,14 +26,26 @@ public class MetaField {
 		this.key = key;
 	};
 
+    public MetaField (String key, String type) {
+        this.key = key;
+        this.type = type;
+	};
 
     public MetaField (String key, String type, String value) {
         this.key = key;
         this.type = type;
         this.values.add(value);
     };
-    
 
+    /**
+     * Add value to meta field.
+     */
+    public MetaField addValue (String value) {
+        this.values.add(value);
+        return this;
+    };
+
+    
 	/**
 	 * Create JsonNode
 	 */

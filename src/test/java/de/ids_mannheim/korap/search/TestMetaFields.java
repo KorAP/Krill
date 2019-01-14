@@ -172,6 +172,7 @@ public class TestMetaFields {
         assertEquals(
                 "base base/paragraphs base/sentences connexor connexor/morpho connexor/phrase connexor/sentences connexor/syntax corenlp corenlp/constituency corenlp/morpho corenlp/namedentities corenlp/sentences glemm glemm/morpho mate mate/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho treetagger/sentences xip xip/constituency xip/morpho xip/sentences",
                 res.at("/matches/0/foundries").asText());
+
         assertEquals("Goethe-Korpus",
                 res.at("/matches/0/corpusTitle").asText());
         assertEquals("QAO-NC", res.at("/matches/0/availability").asText());
