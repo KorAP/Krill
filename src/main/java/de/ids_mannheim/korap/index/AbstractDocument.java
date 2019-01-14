@@ -40,9 +40,9 @@ import com.fasterxml.jackson.databind.node.TextNode;
 // @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractDocument extends Response {
     ObjectMapper mapper = new ObjectMapper();
-
+    
     private String primaryData;
-
+    
     private static HashSet<String> legacyStringFields =
         new HashSet<String>(Arrays.asList(
                                 "pubPlace",
@@ -135,62 +135,34 @@ public abstract class AbstractDocument extends Response {
     };
 
 
-    public void populateFields (Document doc, Collection<String> fields) {
-        // Remember - never serialize "tokens"
-
-        // TODO:
-        //   Pupulate based on field types!
-
+    public void populateFields (Document doc, Collection<String> fields) {        
         if (fields.contains("UID"))
             this.setUID(doc.get("UID"));
 
-        String field;
-        Iterator<String> i = legacyTextFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (fields.contains(field)) {
-                this.addText(field, doc.get(field));
-            };
-        };
+        Iterator<String> fieldsIter = fields.iterator();
 
-        i = legacyKeywordsFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (fields.contains(field)) {
-                this.addKeywords(field, doc.get(field));
-            };
-        };
+        while (fieldsIter.hasNext()) {
+            String name = fieldsIter.next();
 
-        i = legacyStoredFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (fields.contains(field)) {
-                this.addStored(field, doc.get(field));
-            };
-        };
+            // Remember - never serialize "tokens"
+            if (name == "tokens" || name == "UID")
+                continue;
 
-        i = legacyStringFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (fields.contains(field)) {
-                this.addString(field, doc.get(field));
-            };
-        };
+            IndexableField iField = doc.getField(name);
+            
+            if (iField == null)
+                continue;
 
-        i = legacyDateFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (fields.contains(field)) {
-                this.addDate(field, doc.get(field));
-            };
-        };
-        
-        // Legacy
-        if (fields.contains("license"))
-            this.addString("availability", doc.get("license"));
+            
+            MetaField mf = mFields.add(iField);
 
+            // Legacy
+            if (name == "license")
+                this.addString("availability", doc.get("license"));
+
+        };
     };
-
+    
 
     /**
      * Populate document meta information with information coming from
@@ -368,82 +340,24 @@ public abstract class AbstractDocument extends Response {
 
     @JsonAnyGetter
     public Map<String, JsonNode> getLegacyMetaFields () {
-        Iterator mfIterator = mFields.iterator();
+
+        Iterator<MetaField> mfIterator = mFields.iterator();
 
         HashMap<String, JsonNode> map = new HashMap<>();
 
-        String field;
-        Iterator<String> i = legacyDateFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (mFields.contains(field)) {
-                KrillDate date = this.getFieldValueAsDate(field);
-                if (date != null) {
-                    String dateStr = date.toDisplay();
-                    if (dateStr.length() != 0) {
-                        map.put(
-                            field,
-                            new TextNode(dateStr)
-                            );
-                    };
-                };
-            };
-        };
-
-        i = legacyStoredFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (mFields.contains(field)) {
-                String value = this.getFieldValue(field);
-                if (value != null) {
-                    map.put(
-                        field,
-                        new TextNode(this.getFieldValue(field))
-                        );
-                };
-            };
-        };
-
-        i = legacyTextFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (mFields.contains(field)) {
-                String value = this.getFieldValue(field);
-                if (value != null) {
-                    map.put(
-                        field,
-                        new TextNode(value)
-                        );
-                };
-            };
-        };
-
-        i = legacyStringFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (mFields.contains(field)) {
-                String value = this.getFieldValue(field);
-                if (value != null) {
-                    map.put(
-                        field,
-                        new TextNode(value)
-                        );
-                };
-            };
-        };
-
-        i = legacyKeywordsFields.iterator();
-        while (i.hasNext()) {
-            field = i.next();
-            if (mFields.contains(field)) {
-                String value = this.getFieldValue(field);
-                if (value != null) {
-                    map.put(
-                        field,
-                        new TextNode(value)
-                        );
-                };
-            };
+        while (mfIterator.hasNext()) {
+            String mfs = mfIterator.next().key;
+            if (legacyDateFields.contains(mfs) ||
+                legacyStoredFields.contains(mfs) ||
+                legacyTextFields.contains(mfs) ||
+                legacyStringFields.contains(mfs) ||
+                legacyKeywordsFields.contains(mfs)
+                ) {
+                map.put(mfs, new TextNode(this.getFieldValue(mfs)));
+            }
+            else if (legacyDateFields.contains(mfs)) {
+                map.put(mfs, new TextNode(this.getFieldValue(mfs)));
+            }
         };
         
         return map;
@@ -513,8 +427,11 @@ public abstract class AbstractDocument extends Response {
     public String getFieldValue (String field) {
         MetaField mf = mFields.get(field);
 
-        if (mf != null) {
-            return mFields.get(field).values.get(0);
+        if (mf != null && mf.values.size() > 0) {
+            return String.join(
+                " ",
+                mf.values
+                );
         };
 
         return null;
@@ -533,8 +450,10 @@ public abstract class AbstractDocument extends Response {
 
     @JsonIgnore
     public void addString (String key, String value) {
+        if (value == null)
+            return;
+        
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:string",
@@ -545,8 +464,10 @@ public abstract class AbstractDocument extends Response {
     
     @JsonIgnore
     public void addStored (String key, String value) {
+        if (value == null)
+            return;
+
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:store",
@@ -554,11 +475,13 @@ public abstract class AbstractDocument extends Response {
                 )
             );
     };
-
+    
     @JsonIgnore
     public void addKeywords (String key, String value) {
+        if (value == null)
+            return;
+
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:keywords",
@@ -569,8 +492,10 @@ public abstract class AbstractDocument extends Response {
 
     @JsonIgnore
     public void addText (String key, String value) {
+        if (value == null)
+            return;
+
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:text",
@@ -581,9 +506,11 @@ public abstract class AbstractDocument extends Response {
 
     @JsonIgnore
     public void addDate (String key, String value) {
+        if (value == null)
+            return;
+
         KrillDate date = new KrillDate(value);
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:date",
@@ -591,5 +518,4 @@ public abstract class AbstractDocument extends Response {
                 )
             );
     };
-
 };

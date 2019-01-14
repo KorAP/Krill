@@ -51,8 +51,34 @@ public class MetaFieldsExt implements Iterable<MetaField> {
 	/**
 	 * Add field to collection
 	 */
-	public void add (IndexableField iField) {
-					
+	public MetaField add (IndexableField iField) {
+        MetaField mf = metaFieldFromIndexableField(iField);
+
+		// Ignore non-stored fields
+		if (mf == null)
+			return null;
+
+        fieldsMap.put(mf.key, mf);
+        return mf;
+	};
+
+
+	/**
+	 * Add field to collection
+	 */
+    public MetaField add (MetaField mf) {
+		// Ignore non-stored fields
+		if (mf == null)
+			return null;
+
+        fieldsMap.put(mf.key, mf);
+        return mf;
+    };
+
+    
+    // Field type needs to be restored heuristically
+    // - though that's not very elegant
+    public static MetaField metaFieldFromIndexableField (IndexableField iField) {
 		IndexableFieldType iFieldType = iField.fieldType();
 
 		// Field type needs to be restored heuristically
@@ -60,19 +86,9 @@ public class MetaFieldsExt implements Iterable<MetaField> {
 
 		// Ignore non-stored fields
 		if (!iFieldType.stored())
-			return;
+			return null;
 
 		MetaField mf = new MetaField(iField.name());
-
-		// Reuse existing metafield
-		if (fieldsMap.containsKey(mf.key)) {
-			mf = fieldsMap.get(mf.key);
-		}
-
-		// Add new field
-		else {
-			fieldsMap.put(mf.key, mf);
-		};
 		
 		// TODO: Check if metaField exists for that field
 
@@ -83,31 +99,29 @@ public class MetaFieldsExt implements Iterable<MetaField> {
 		if (n != null) {
 
 			// Check if key indicates a date
-			Matcher dateMatcher = dateKeyPattern.matcher(mf.key);
+			Matcher dateMatcher = dateKeyPattern.matcher(iField.name());
 			if (dateMatcher.matches()) {
-				mf.type = "type:date";
-
-				// Check structure with KrillDate
-				KrillDate date = new KrillDate(n.toString());
+                mf.type = "type:date";
+                KrillDate date = new KrillDate(n.toString());
 				if (date != null) {
 
 					// Serialize withz dash separation
 					mf.values.add(date.toDisplay());
 				};
-			}
+            }
 
 			// Field is a number
 			else {
-				mf.type = "type:number";
-				mf.values.add(n.toString());
+                mf.values.add(n.toString());
 			};
 		}
 		
 		// Field has a textual value
 		else if (s != null) {
 
-			// Stored
+            // Stored
 			if (iFieldType.indexOptions() == IndexOptions.NONE) {
+
                 String value = s.toString();
                 if (value.startsWith("data:")) {
                     mf.type = "type:attachement";
@@ -116,6 +130,7 @@ public class MetaFieldsExt implements Iterable<MetaField> {
                     mf.type = "type:store";
                 };
 				mf.values.add(value);
+                return mf;
 			}
 
 			// Keywords
@@ -147,6 +162,12 @@ public class MetaFieldsExt implements Iterable<MetaField> {
 				mf.values.add(s.toString());
 			}
 
+            // Special treatment for legacy indices
+            else if (mf.key.equals("UID")) {
+				mf.type = "type:integer";
+				mf.values.add(s.toString());
+            }
+
 			// String
 			else {
 				mf.values.add(s.toString());
@@ -156,17 +177,10 @@ public class MetaFieldsExt implements Iterable<MetaField> {
 		else {
 			log.error("Unknown field type {}", iField.name());
 		};
-	};
 
+        mf.values.removeAll(Collections.singleton(null));
 
-    /**
-	 * Add field to collection
-     *
-     * @param key
-     *        The key of the field
-     */
-    public void add (String key, MetaField mf) {
-        fieldsMap.put(key, mf);
+        return mf;
     };
 
 

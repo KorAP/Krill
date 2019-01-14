@@ -100,12 +100,14 @@ public class FieldDocument extends AbstractDocument {
 
     @Override
     public void addDate (String key, String value) {
+        if (value == null)
+            return;
+
         KrillDate date = new KrillDate(value);
 		if (date != null) {
 			this.addInt(key, date.toString());
 		};
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:date",
@@ -116,8 +118,10 @@ public class FieldDocument extends AbstractDocument {
 
     @Override
     public void addText (String key, String value) {
+        if (value == null)
+            return;
+
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:text",
@@ -130,8 +134,10 @@ public class FieldDocument extends AbstractDocument {
 
     @Override
     public void addKeywords (String key, String value) {
+        if (value == null)
+            return;
+
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:keywords",
@@ -144,8 +150,10 @@ public class FieldDocument extends AbstractDocument {
 
     @Override
     public void addString (String key, String value) {
+        if (value == null)
+            return;
+        
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:string",
@@ -156,8 +164,10 @@ public class FieldDocument extends AbstractDocument {
     };
 
     public void addAttachement (String key, String value) {
+        if (value == null)
+            return;
+
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:attachement",
@@ -169,8 +179,10 @@ public class FieldDocument extends AbstractDocument {
 
     @Override
     public void addStored (String key, String value) {
+        if (value == null)
+            return;
+
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:store",
@@ -183,7 +195,6 @@ public class FieldDocument extends AbstractDocument {
 
     public void addStored (String key, int value) {
         mFields.add(
-            key,
             new MetaField(
                 key,
                 "type:store",
