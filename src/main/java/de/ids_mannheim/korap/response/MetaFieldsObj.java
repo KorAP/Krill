@@ -69,6 +69,11 @@ public class MetaFieldsObj implements Iterable<MetaField> {
 		if (mf == null)
 			return null;
 
+        if (fieldsMap.containsKey(mf.key)) {
+            fieldsMap.get(mf.key).values.addAll(mf.values);
+            return fieldsMap.get(mf.key);
+        };
+        
         fieldsMap.put(mf.key, mf);
         return mf;
     };

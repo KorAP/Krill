@@ -920,6 +920,7 @@ public class TestMatchIdentifier {
         KrillIndex ki = new KrillIndex();
         ki.addDoc(createSimpleFieldDoc4());
         ki.commit();
+        
         Match km = ki.getMatchInfo("match-c1!d4-p3-9", "tokens", null, null,
                 false, false);
         JsonNode res = mapper.readTree(km.toJsonString());

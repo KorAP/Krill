@@ -152,11 +152,19 @@ public abstract class AbstractDocument extends Response {
     };
 
 
-    public void populateFields (Document doc, Collection<String> fields) {        
+    public void populateFields (Document doc, Collection<String> fields) {
+        // Remove all fields already set
+        Iterator<String> fieldsIter = fields.iterator();
+        while (fieldsIter.hasNext()) {
+            if (mFields.contains(fieldsIter.next())) {
+                fieldsIter.remove();
+            };
+        };
+
         if (fields.contains("UID"))
             this.setUID(doc.get("UID"));
-
-        Iterator<String> fieldsIter = fields.iterator();
+        
+        fieldsIter = fields.iterator();
 
         while (fieldsIter.hasNext()) {
             String name = fieldsIter.next();

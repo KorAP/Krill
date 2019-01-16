@@ -198,12 +198,10 @@ public class TestKrillIndex {
 		fd.addStored("ref", "My reference");
 		fd.addAttachement("ref2", "data:text/plain;charset=UTF-8,My reference2");
 
-        /*
 		fd.addKeywords("keyword", "baum");
 		fd.addKeywords("keyword", "wald");
-        */
 
-        fd.addKeywords("keyword", "baum wald");
+        fd.addKeywords("keyword", "garten laube");
 
 		fd.addText("title", "Der Name der Rose");
 
@@ -258,6 +256,8 @@ public class TestKrillIndex {
 				assertEquals("koral:field", field.at("/@type").asText());
 				assertEquals("baum", field.at("/value/0").asText());
 				assertEquals("wald", field.at("/value/1").asText());
+				assertEquals("garten", field.at("/value/2").asText());
+				assertEquals("laube", field.at("/value/3").asText());
 				checkC++;
 				break;
 
