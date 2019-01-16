@@ -6,7 +6,7 @@ import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.Response;
 import de.ids_mannheim.korap.response.MetaField;
-import de.ids_mannheim.korap.response.MetaFieldsExt;
+import de.ids_mannheim.korap.response.MetaFieldsObj;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -103,7 +103,7 @@ public abstract class AbstractDocument extends Response {
     public int internalDocID, localDocID, UID;
 
     @JsonIgnore
-    public MetaFieldsExt mFields = new MetaFieldsExt();
+    public MetaFieldsObj mFields = new MetaFieldsObj();
 
     /**
      * Populate document meta information with information coming from
@@ -121,6 +121,23 @@ public abstract class AbstractDocument extends Response {
             fieldList.add(fieldIterator.next().name());
 
         this.populateDocument(doc, field, fieldList);
+    };
+
+    /**
+     * Populate document meta information with information coming from
+     * the index.
+     * 
+     * @param doc
+     *            Document object.
+     * @param field
+     *            Primary data field.
+     * @param fields
+     *            Hash object with all supported fields.
+     */
+    public void populateDocument (Document doc, String field,
+            Collection<String> fields) {
+        this.setPrimaryData(doc.get(field));
+        this.populateFields(doc, fields);
     };
 
 
@@ -161,24 +178,6 @@ public abstract class AbstractDocument extends Response {
                 this.addString("availability", doc.get("license"));
 
         };
-    };
-    
-
-    /**
-     * Populate document meta information with information coming from
-     * the index.
-     * 
-     * @param doc
-     *            Document object.
-     * @param field
-     *            Primary data field.
-     * @param fields
-     *            Hash object with all supported fields.
-     */
-    public void populateDocument (Document doc, String field,
-            Collection<String> fields) {
-        this.setPrimaryData(doc.get(field));
-        this.populateFields(doc, fields);
     };
 
 

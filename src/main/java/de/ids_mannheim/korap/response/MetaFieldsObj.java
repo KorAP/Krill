@@ -26,7 +26,7 @@ import java.util.regex.*;
 
 import org.apache.lucene.index.*;
 
-public class MetaFieldsExt implements Iterable<MetaField> {
+public class MetaFieldsObj implements Iterable<MetaField> {
 
 	// Logger
 	private final static Logger log = LoggerFactory.getLogger(MetaFields.class);
@@ -45,7 +45,7 @@ public class MetaFieldsExt implements Iterable<MetaField> {
 	private Map<String, MetaField> fieldsMap = new HashMap<>();
 
 
-	public MetaFieldsExt () {};
+	public MetaFieldsObj () {};
 
     
 	/**
@@ -112,6 +112,7 @@ public class MetaFieldsExt implements Iterable<MetaField> {
 
 			// Field is a number
 			else {
+                mf.type = "type:integer";
                 mf.values.add(n.toString());
 			};
 		}

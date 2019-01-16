@@ -1632,17 +1632,7 @@ public final class KrillIndex {
                     continue;
 
                 Document doc = atomic.reader().document(localDocID);
-
-				Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
-				while (fieldIterator.hasNext()) {
-					IndexableField iField = fieldIterator.next();
-
-					if (iField.name().equals("tokens"))
-						continue;
-
-					// Add field
-					metaFields.add(iField);
-				};
+                metaFields.populateFields(doc);
 
 				return metaFields;
 			};
