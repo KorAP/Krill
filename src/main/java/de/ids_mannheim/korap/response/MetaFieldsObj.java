@@ -52,14 +52,12 @@ public class MetaFieldsObj implements Iterable<MetaField> {
 	 * Add field to collection
 	 */
 	public MetaField add (IndexableField iField) {
-        MetaField mf = metaFieldFromIndexableField(iField);
-
-		// Ignore non-stored fields
-		if (mf == null)
-			return null;
-
-        fieldsMap.put(mf.key, mf);
-        return mf;
+        return this.add(
+            metaFieldFromIndexableField(
+                iField,
+                new MetaField(iField.name())
+                )
+            );
 	};
 
 
@@ -78,7 +76,7 @@ public class MetaFieldsObj implements Iterable<MetaField> {
     
     // Field type needs to be restored heuristically
     // - though that's not very elegant
-    public static MetaField metaFieldFromIndexableField (IndexableField iField) {
+    public static MetaField metaFieldFromIndexableField (IndexableField iField, MetaField mf) {
 		IndexableFieldType iFieldType = iField.fieldType();
 
 		// Field type needs to be restored heuristically
@@ -87,8 +85,6 @@ public class MetaFieldsObj implements Iterable<MetaField> {
 		// Ignore non-stored fields
 		if (!iFieldType.stored())
 			return null;
-
-		MetaField mf = new MetaField(iField.name());
 		
 		// TODO: Check if metaField exists for that field
 

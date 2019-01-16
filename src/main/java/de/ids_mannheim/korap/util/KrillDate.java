@@ -164,6 +164,16 @@ public class KrillDate {
 
 
     /**
+     * Return the date as an integer
+     * based on the stringification.
+     * 
+     * @return The date as an integer.
+     */
+    public int toInteger () throws NumberFormatException {
+        return Integer.parseInt(this.toString());
+    };
+
+    /**
      * Serialize ceiled date to string.
      * 
      * @return The date as a string.

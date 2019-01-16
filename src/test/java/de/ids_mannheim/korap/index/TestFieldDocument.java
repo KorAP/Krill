@@ -27,6 +27,9 @@ import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
+import org.apache.lucene.document.Document;
+
+
 @RunWith(JUnit4.class)
 public class TestFieldDocument {
 
@@ -48,41 +51,43 @@ public class TestFieldDocument {
                 + "[(1-2)s:b|i:b|_1$<i>1<i>2]" + "[(2-3)s:c|i:c|_2$<i>2<i>3]");
         fd.addAttachement("Wikilink", "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel");
 
-        assertEquals(fd.doc.getField("title").name(), "title");
-        assertEquals(fd.doc.getField("title").stringValue(), "Wikipedia");
+        Document doc = fd.compile();
+        
+        assertEquals(doc.getField("title").name(), "title");
+        assertEquals(doc.getField("title").stringValue(), "Wikipedia");
 
-        assertEquals(fd.doc.getField("corpusID").name(), "corpusID");
-        assertEquals(fd.doc.getField("corpusID").stringValue(), "WPD");
+        assertEquals(doc.getField("corpusID").name(), "corpusID");
+        assertEquals(doc.getField("corpusID").stringValue(), "WPD");
 
-        assertEquals(fd.doc.getField("ID").name(), "ID");
-        assertEquals(fd.doc.getField("ID").stringValue(), "WPD-AAA-00001");
+        assertEquals(doc.getField("ID").name(), "ID");
+        assertEquals(doc.getField("ID").stringValue(), "WPD-AAA-00001");
 
-        assertEquals(fd.doc.getField("subTitle").name(), "subTitle");
-        assertEquals(fd.doc.getField("subTitle").stringValue(),
+        assertEquals(doc.getField("subTitle").name(), "subTitle");
+        assertEquals(doc.getField("subTitle").stringValue(),
                 "Die freie Enzyklopädie");
 
-        assertEquals(fd.doc.getField("pubPlace").name(), "pubPlace");
-        assertEquals(fd.doc.getField("pubPlace").stringValue(), "Bochum");
+        assertEquals(doc.getField("pubPlace").name(), "pubPlace");
+        assertEquals(doc.getField("pubPlace").stringValue(), "Bochum");
 
-        assertEquals(fd.doc.getField("lastModified").name(), "lastModified");
-        assertEquals(fd.doc.getField("lastModified").stringValue(), "20130717");
+        assertEquals(doc.getField("lastModified").name(), "lastModified");
+        assertEquals(doc.getField("lastModified").stringValue(), "20130717");
 
-        assertEquals(fd.doc.getField("tokens").name(), "tokens");
-        assertEquals(fd.doc.getField("tokens").stringValue(), "abc");
+        assertEquals(doc.getField("tokens").name(), "tokens");
+        assertEquals(doc.getField("tokens").stringValue(), "abc");
 
-        assertEquals(fd.doc.getField("author").name(), "author");
-        assertEquals(fd.doc.getField("author").stringValue(),
+        assertEquals(doc.getField("author").name(), "author");
+        assertEquals(doc.getField("author").stringValue(),
                 "Peter Frankenfeld");
 
-        assertEquals(fd.doc.getField("layerInfo").name(), "layerInfo");
-        assertEquals(fd.doc.getField("layerInfo").stringValue(),
+        assertEquals(doc.getField("layerInfo").name(), "layerInfo");
+        assertEquals(doc.getField("layerInfo").stringValue(),
                 "opennlp/p=pos");
 
-        assertEquals(fd.doc.getField("textClass").name(), "textClass");
-        assertEquals(fd.doc.getField("textClass").stringValue(),
+        assertEquals(doc.getField("textClass").name(), "textClass");
+        assertEquals(doc.getField("textClass").stringValue(),
                 "music entertainment");
-        assertEquals(fd.doc.getField("Wikilink").name(), "Wikilink");
-        assertEquals(fd.doc.getField("Wikilink").stringValue(),
+        assertEquals(doc.getField("Wikilink").name(), "Wikilink");
+        assertEquals(doc.getField("Wikilink").stringValue(),
                      "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel"
             );
     };

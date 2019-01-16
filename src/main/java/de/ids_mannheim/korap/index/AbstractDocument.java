@@ -460,6 +460,27 @@ public abstract class AbstractDocument extends Response {
                 )
             );
     };
+
+
+    @JsonIgnore
+    public void addInt (String key, String value) {
+        if (value == null)
+            return;
+        
+        mFields.add(
+            new MetaField(
+                key,
+                "type:integer",
+                value
+                )
+            );
+    };
+
+    @JsonIgnore
+    public void addInt (String key, int value) {
+        this.addInt(key, new Integer(value).toString());
+    };
+
     
     @JsonIgnore
     public void addStored (String key, String value) {
@@ -474,6 +495,22 @@ public abstract class AbstractDocument extends Response {
                 )
             );
     };
+
+
+    @JsonIgnore
+    public void addAttachement (String key, String value) {
+        if (value == null)
+            return;
+
+        mFields.add(
+            new MetaField(
+                key,
+                "type:attachement",
+                value
+                )
+            );
+    };
+
     
     @JsonIgnore
     public void addKeywords (String key, String value) {

@@ -87,123 +87,74 @@ public class FieldDocument extends AbstractDocument {
     };
 
 
-    // see http://www.cowtowncoder.com/blog/archives/2011/07/entry_457.html
+    /**
+     * Add all fields to document
+     */
+    public Document compile () {
 
-    public void addInt (String key, int value) {
-        doc.add(new IntField(key, value, Field.Store.YES));
+		// Iterate over all fields
+		Iterator<MetaField> fIter = mFields.iterator();
+		while (fIter.hasNext()) {
+            MetaField mf = fIter.next();
+            switch (mf.type) {
+
+            case "type:integer":
+                try {
+                    int val = Integer.parseInt(mf.values.get(0));
+                    doc.add(new IntField(mf.key, val, Field.Store.YES));
+                }
+                catch (NumberFormatException ne) {
+                    continue;
+                };
+                break;
+
+            case "type:date":
+                KrillDate date = new KrillDate(mf.values.get(0));
+                if (date != null) {
+                    try {
+                        int dateInt = date.toInteger();
+                        doc.add(new IntField(mf.key, dateInt, Field.Store.YES));
+                    }
+                    catch (NumberFormatException ne) {
+                        continue;
+                    };
+                };
+                break;
+
+            
+            case "type:string":
+                doc.add(
+                    new StringField(
+                        mf.key,
+                        mf.values.get(0),
+                        Field.Store.YES
+                        )
+                    );
+                break;
+
+            case "type:keywords":
+                doc.add(
+                    new Field(
+                        mf.key,
+                        String.join(" ", mf.values),
+                        keywordField
+                        )
+                    );
+                break;
+            
+            case "type:text":
+                doc.add(new TextPrependedField(mf.key, mf.values.get(0)));
+                break;
+
+            case "type:attachement":
+            case "type:store":
+                doc.add(new StoredField(mf.key, mf.values.get(0)));
+           	};
+        };
+
+        return doc;
     };
-
-    public void addInt (String key, String value) {
-		if (value != null)
-			this.addInt(key, Integer.parseInt(value));
-    };
-
-    @Override
-    public void addDate (String key, String value) {
-        if (value == null)
-            return;
-
-        KrillDate date = new KrillDate(value);
-		if (date != null) {
-			this.addInt(key, date.toString());
-		};
-        mFields.add(
-            new MetaField(
-                key,
-                "type:date",
-                date.toDisplay()
-                )
-            );
-    }
-
-    @Override
-    public void addText (String key, String value) {
-        if (value == null)
-            return;
-
-        mFields.add(
-            new MetaField(
-                key,
-                "type:text",
-                value
-                )
-            );
-		doc.add(new TextPrependedField(key, value));
-    };
-
-
-    @Override
-    public void addKeywords (String key, String value) {
-        if (value == null)
-            return;
-
-        mFields.add(
-            new MetaField(
-                key,
-                "type:keywords",
-                value
-                )
-            );
-
-        doc.add(new Field(key, value, keywordField));
-    };
-
-    @Override
-    public void addString (String key, String value) {
-        if (value == null)
-            return;
-        
-        mFields.add(
-            new MetaField(
-                key,
-                "type:string",
-                value
-                )
-            );
-        doc.add(new StringField(key, value, Field.Store.YES));
-    };
-
-    public void addAttachement (String key, String value) {
-        if (value == null)
-            return;
-
-        mFields.add(
-            new MetaField(
-                key,
-                "type:attachement",
-                value
-                )
-            );
-        doc.add(new StoredField(key, value));
-    };    
-
-    @Override
-    public void addStored (String key, String value) {
-        if (value == null)
-            return;
-
-        mFields.add(
-            new MetaField(
-                key,
-                "type:store",
-                value
-                )
-            );
-        doc.add(new StoredField(key, value));
-    };
-
-
-    public void addStored (String key, int value) {
-        mFields.add(
-            new MetaField(
-                key,
-                "type:store",
-                new Integer(value).toString()
-                )
-            );
-        doc.add(new StoredField(key, value));
-    };
-
+   
 
     public void addTV (String key, String value, String tsString) {
         this.addTV(key, value, new MultiTermTokenStream(tsString));
@@ -298,6 +249,7 @@ public class FieldDocument extends AbstractDocument {
     /**
      * Deserialize koral:field types for meta data
      */
+    // Temporarily this needs to be in a "metaFields" parameter
     public void setMetaFields (ArrayList<Map<String, JsonNode>> fields) {
         String type, key, value;
         StringBuffer sb = new StringBuffer();

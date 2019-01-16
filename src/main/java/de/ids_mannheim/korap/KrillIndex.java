@@ -412,7 +412,7 @@ public final class KrillIndex {
         try {
 
             // Add document to writer
-            this.writer().addDocument(doc.doc);
+            this.writer().addDocument(doc.compile());
             if (++commitCounter > autoCommit) {
                 this.commit();
                 commitCounter = 0;
