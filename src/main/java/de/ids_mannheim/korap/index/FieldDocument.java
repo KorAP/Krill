@@ -20,6 +20,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.DoubleField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
@@ -70,7 +71,7 @@ public class FieldDocument extends AbstractDocument {
     private FieldType tvField = new FieldType(TextField.TYPE_STORED);
     private FieldType tvNoField = new FieldType(TextField.TYPE_NOT_STORED);
     private FieldType keywordField = new FieldType(TextField.TYPE_STORED);
-
+    
     {
         tvField.setStoreTermVectors(true);
         tvField.setStoreTermVectorPositions(true);
@@ -101,7 +102,7 @@ public class FieldDocument extends AbstractDocument {
             case "type:integer":
                 try {
                     int val = Integer.parseInt(mf.values.get(0));
-                    doc.add(new IntField(mf.key, val, Field.Store.YES));
+                    doc.add(new DoubleField(mf.key, (double) val, Field.Store.YES));
                 }
                 catch (NumberFormatException ne) {
                     continue;
@@ -112,8 +113,7 @@ public class FieldDocument extends AbstractDocument {
                 KrillDate date = new KrillDate(mf.values.get(0));
                 if (date != null) {
                     try {
-                        int dateInt = date.toInteger();
-                        doc.add(new IntField(mf.key, dateInt, Field.Store.YES));
+                        doc.add(new IntField(mf.key, date.toInteger(), Field.Store.YES));
                     }
                     catch (NumberFormatException ne) {
                         continue;
@@ -276,6 +276,9 @@ public class FieldDocument extends AbstractDocument {
                         };
                         this.addKeywords(key, sb.toString());
                     }
+                    else if (type.equals("type:keywords")) {
+                        this.addKeywords(key, field.get("value").asText());
+                    }
                     else {
                         this.addString(key, field.get("value").asText());
                     };
@@ -291,6 +294,12 @@ public class FieldDocument extends AbstractDocument {
                     this.addInt(key, field.get("value").asInt());
                 }
 
+                // Add store field
+                else if (type.equals("type:store")) {
+                    value = field.get("value").asText();
+                    this.addStored(key, value);
+                }
+
                 // Add attachement field
                 else if (type.equals("type:attachement")) {
                     value = field.get("value").asText();
@@ -302,12 +311,6 @@ public class FieldDocument extends AbstractDocument {
                 // Add date field
                 else if (type.equals("type:date")) {
                     this.addDate(key, field.get("value").asText());
-                    /*
-                    KrillDate date = new KrillDate(field.get("value").asText());
-                    if (date != null) {
-                        this.addInt(key, date.toString());
-                    };
-                    */
                 }
 
                 // Unknown

@@ -25,6 +25,7 @@ import java.util.*;
 import java.util.regex.*;
 
 import org.apache.lucene.index.*;
+import org.apache.lucene.document.FieldType;
 
 public class MetaFieldsObj implements Iterable<MetaField> {
 
@@ -34,10 +35,7 @@ public class MetaFieldsObj implements Iterable<MetaField> {
 	// This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-	// TODO:
-	//   This is a temporary indicator to check
-	//   whether a date field is a date
-	private static final Pattern dateKeyPattern = Pattern.compile(".*Date$");
+    private static final Pattern dateValuePattern = Pattern.compile("^([0-9]{8})$");
 
 	// Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
@@ -100,9 +98,10 @@ public class MetaFieldsObj implements Iterable<MetaField> {
 		if (n != null) {
 
 			// Check if key indicates a date
-			Matcher dateMatcher = dateKeyPattern.matcher(iField.name());
-			if (dateMatcher.matches()) {
+			Matcher dateMatcher = dateValuePattern.matcher(n.toString());
+            if (dateMatcher.matches()) {
                 mf.type = "type:date";
+                
                 KrillDate date = new KrillDate(n.toString());
 				if (date != null) {
 
@@ -114,7 +113,7 @@ public class MetaFieldsObj implements Iterable<MetaField> {
 			// Field is a number
 			else {
                 mf.type = "type:integer";
-                mf.values.add(n.toString());
+                mf.values.add(new Integer(n.intValue()).toString());
 			};
 		}
 		

@@ -1389,7 +1389,7 @@ public class TestKrillCollectionIndex {
         fd.addString("ID", "doc-1");
         fd.addString("author", "Frank");
         fd.addKeywords("textClass", "Nachricht Kultur Reisen");
-        fd.addInt("pubDate", 20051210);
+        fd.addDate("pubDate", 20051210);
         fd.addText("text", "Der alte  Mann ging über die Straße");
         fd.addTV("tokens", "a b c", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
 				 + "[(2-3)s:b|i:b|_1$<i>2<i>3]" + "[(4-5)s:c|i:c|_2$<i>4<i>5]");
@@ -1403,7 +1403,7 @@ public class TestKrillCollectionIndex {
 		fd.addString("ID", "doc-2");
         fd.addString("author", "Peter");
         fd.addKeywords("textClass", "Kultur Reisen");
-        fd.addInt("pubDate", 20051207);
+        fd.addDate("pubDate", 20051207);
         fd.addText("text", "Der junge Mann hatte keine andere Wahl");
         fd.addTV("tokens", "a c d", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
 				 + "[(2-3)s:c|i:c|_1$<i>2<i>3]" + "[(4-5)s:d|i:d|_2$<i>4<i>5]");
@@ -1417,7 +1417,7 @@ public class TestKrillCollectionIndex {
 		fd.addString("ID", "doc-3");
         fd.addString("author", "Sebastian");
         fd.addKeywords("textClass", "Reisen Finanzen");
-        fd.addInt("pubDate", 20051216);
+        fd.addDate("pubDate", 20051216);
         fd.addText("text", "Die Frau und der Mann küssten sich");
         fd.addTV("tokens", "a d e", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
 				 + "[(2-3)s:d|i:d|_1$<i>2<i>3]" + "[(4-5)s:e|i:e|_2$<i>4<i>5]");
@@ -1430,7 +1430,7 @@ public class TestKrillCollectionIndex {
 		fd.addString("ID", "doc-5000");
         fd.addString("author", "Sebastian");
         fd.addKeywords("textClass", "Kultur Finanzen");
-        fd.addInt("pubDate", 20180202);
+        fd.addDate("pubDate", 20180202);
         fd.addText("text", "Die Frau und der Mann küssten sich");
         fd.addTV("tokens", "a d e", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
 				 + "[(2-3)s:d|i:d|_1$<i>2<i>3]" + "[(4-5)s:e|i:e|_2$<i>4<i>5]");

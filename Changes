@@ -1,4 +1,4 @@
-0.58.4 2019-01-16
+0.58.4 2019-01-17
     - [cleanup] Remove deprecated methods setLicense/getLicense,
       setTokenization/getTokenization, setLayerInfo/getLayerInfo,
       setField/getField (including json serialization)
@@ -7,6 +7,8 @@
       AbstractDocument and FieldDocument (diewald)
     - [cleanup] Remove hardwired (de)serialization of legacy metadata
       fields (diewald)
+    - [feature] Support for arbitrary metadata fields (fixes #47)
+      (diewald)
 
 0.58.3 2018-12-17
     - [feature] Introduced attachements as meta data fields

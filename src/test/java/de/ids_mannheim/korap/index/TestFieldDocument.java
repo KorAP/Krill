@@ -26,6 +26,7 @@ import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
+import static de.ids_mannheim.korap.response.MetaFieldsObj.*;
 
 import org.apache.lucene.document.Document;
 
@@ -41,12 +42,13 @@ public class TestFieldDocument {
         fd.addString("ID", "WPD-AAA-00001");
         fd.addText("textClass", "music entertainment");
         fd.addText("author", "Peter Frankenfeld");
-        fd.addInt("pubDate", 20130617);
+        fd.addDate("pubDate", 20130617);
+        fd.addInt("justanumber", 12345678);
         fd.addText("title", "Wikipedia");
         fd.addText("subTitle", "Die freie Enzyklopädie");
         fd.addStored("layerInfo", "opennlp/p=pos");
         fd.addString("pubPlace", "Bochum");
-        fd.addInt("lastModified", 20130717);
+        fd.addDate("lastModified", 20130717);
         fd.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
                 + "[(1-2)s:b|i:b|_1$<i>1<i>2]" + "[(2-3)s:c|i:c|_2$<i>2<i>3]");
         fd.addAttachement("Wikilink", "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel");
@@ -55,7 +57,7 @@ public class TestFieldDocument {
         
         assertEquals(doc.getField("title").name(), "title");
         assertEquals(doc.getField("title").stringValue(), "Wikipedia");
-
+       
         assertEquals(doc.getField("corpusID").name(), "corpusID");
         assertEquals(doc.getField("corpusID").stringValue(), "WPD");
 
@@ -90,6 +92,9 @@ public class TestFieldDocument {
         assertEquals(doc.getField("Wikilink").stringValue(),
                      "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel"
             );
+
+        assertEquals(doc.getField("justanumber").numericValue().intValue(), 12345678);
+
     };
 
 
@@ -430,6 +435,189 @@ public class TestFieldDocument {
 				assertEquals("type:attachement", field.at("/type").asText());
 				assertEquals("koral:field", field.at("/@type").asText());
 				assertEquals("data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel", field.at("/value").asText());
+				checkC++;
+				break;
+            };
+        };
+    };
+
+    @Test
+    public void indexArbitraryMetaData () throws Exception {
+        String json = new String(
+            "{"
+            + "  \"fields\" : ["
+            + "    { "
+            + "      \"primaryData\" : \"abc\""
+            + "    },"
+            + "    {"
+            + "      \"name\" : \"tokens\","
+            + "      \"data\" : ["
+            + "         [ \"s:a\", \"i:a\", \"_0$<i>0<i>1\", \"-:t$<i>3\"],"
+            + "         [ \"s:b\", \"i:b\", \"_1$<i>1<i>2\" ],"
+            + "         [ \"s:c\", \"i:c\", \"_2$<i>2<i>3\" ]"
+            + "      ]"
+            + "    }"
+            + "  ],"
+            + "  \"metaFields\" : ["
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"textSigle\","
+            + "      \"value\" : \"aa/bb/cc\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:integer\","
+            + "      \"key\" : \"alter\","
+            + "      \"value\" : 40"
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"name\","
+            + "      \"value\" : \"Frank\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"name\","
+            + "      \"value\" : \"Julian\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"schluesselwoerter\","
+            + "      \"value\" : [\"musik\",\"unterhaltung\"]"
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:keywords\","
+            + "      \"key\" : \"tags\","
+            + "      \"value\" : \"nachrichten feuilleton\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:keywords\","
+            + "      \"key\" : \"tags\","
+            + "      \"value\" : [\"sport\",\"raetsel\"]"
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:text\","
+            + "      \"key\" : \"titel\","
+            + "      \"value\" : \"Der alte Baum\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:attachement\","
+            + "      \"key\" : \"anhang\","
+            + "      \"value\" : \"data:application/x.korap-link,http://spiegel.de/\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:store\","
+            + "      \"key\" : \"referenz\","
+            + "      \"value\" : \"So war das\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:date\","
+            + "      \"key\" : \"datum\","
+            + "      \"value\" : \"2018-04-03\""
+            + "    }"
+            + "  ]"
+            + "}");
+
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(json);
+
+        ki.commit();
+
+        assertEquals(fd.getPrimaryData(), "abc");
+        assertEquals(fd.doc.getField("alter").stringValue(), "40.0");
+        assertEquals(fd.doc.getField("name").stringValue(), "Frank");
+        assertEquals(fd.doc.getField("schluesselwoerter").stringValue(), "musik unterhaltung");
+        assertEquals(fd.doc.getField("tags").stringValue(), "nachrichten feuilleton sport raetsel");
+        assertEquals(fd.doc.getField("titel").stringValue(), "Der alte Baum");
+        assertEquals(fd.doc.getField("anhang").stringValue(), "data:application/x.korap-link,http://spiegel.de/");
+        assertEquals(fd.doc.getField("referenz").stringValue(), "So war das");
+        assertEquals(fd.doc.getField("datum").stringValue(), "20180403");
+
+        JsonNode res = ki.getFields("aa/bb/cc").toJsonNode();
+
+        Iterator fieldIter = res.at("/document/fields").elements();
+
+        int checkC = 0;
+		while (fieldIter.hasNext()) {
+			JsonNode field = (JsonNode) fieldIter.next();
+
+			String key = field.at("/key").asText();
+
+			switch (key) {
+			case "textSigle":
+				assertEquals("type:string", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("aa/bb/cc", field.at("/value").asText());
+				checkC++;
+				break;
+
+			case "alter":
+				assertEquals("type:integer", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals(40, field.at("/value").asInt());
+				checkC++;
+				break;
+
+			case "name":
+				assertEquals("type:string", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("Frank", field.at("/value").asText());
+				checkC++;
+				break;
+
+			case "schluesselwoerter":
+				assertEquals("type:keywords", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("musik", field.at("/value/0").asText());
+				assertEquals("unterhaltung", field.at("/value/1").asText());
+				checkC++;
+				break;
+
+            case "tags":
+				assertEquals("type:keywords", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("nachrichten", field.at("/value/0").asText());
+				assertEquals("feuilleton", field.at("/value/1").asText());
+				assertEquals("sport", field.at("/value/2").asText());
+				assertEquals("raetsel", field.at("/value/3").asText());
+				checkC++;
+				break;
+
+            case "titel":
+				assertEquals("type:text", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("Der alte Baum", field.at("/value").asText());
+				checkC++;
+				break;
+
+            case "anhang":
+				assertEquals("type:attachement", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("data:application/x.korap-link,http://spiegel.de/", field.at("/value").asText());
+				checkC++;
+				break;
+
+            case "referenz":
+				assertEquals("type:store", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("So war das", field.at("/value").asText());
+				checkC++;
+				break;
+
+            case "datum":
+				assertEquals("type:date", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("2018-04-03", field.at("/value").asText());
 				checkC++;
 				break;
             };

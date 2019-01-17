@@ -142,7 +142,6 @@ public abstract class AbstractDocument extends Response {
 
 
     public void populateFields (Document doc) {
-
         HashSet<String> fieldList = new HashSet<>(32);
         Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
         while (fieldIterator.hasNext())
@@ -554,6 +553,10 @@ public abstract class AbstractDocument extends Response {
             return;
 
         KrillDate date = new KrillDate(value);
+
+        if (date == null)
+            return;
+        
         mFields.add(
             new MetaField(
                 key,
@@ -561,5 +564,10 @@ public abstract class AbstractDocument extends Response {
                 date.toDisplay()
                 )
             );
+    };
+
+    @JsonIgnore
+    public void addDate (String key, int value) {
+        this.addDate(key, new Integer(value).toString());
     };
 };

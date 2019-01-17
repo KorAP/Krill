@@ -1219,7 +1219,7 @@ public class TestMatchIdentifier {
         fd.addString("corpusSigle", "c1");
         fd.addString("docSigle", "c1/d1");
         fd.addString("textSigle", "c1/d1/t1");
-        fd.addInt("UID", 1);
+        fd.setUID(1);
         fd.addTV("tokens", "abcabcabac",
                 "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
 				 + "[(1-2)s:b|i:b|_1$<i>1<i>2]"
@@ -1239,7 +1239,7 @@ public class TestMatchIdentifier {
         fd.addString("corpusSigle", "c1");
         fd.addString("docSigle", "c1/d1");
         fd.addString("textSigle", "c1/d1/t1");
-        fd.addInt("UID", 2);
+        fd.setUID(2);
         fd.addTV("tokens", "abcabcabac",
                 "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>10]"
 				 + "[(1-2)s:b|i:b|_1$<i>1<i>2]"

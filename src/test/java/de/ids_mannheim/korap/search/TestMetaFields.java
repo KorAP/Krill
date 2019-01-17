@@ -328,7 +328,7 @@ public class TestMetaFields {
         fd.addText("title", "Die Wahlverwandtschaften");
         fd.addText("author", "Johann Wolfgang von Goethe");
         fd.addKeywords("textClass", "reisen wissenschaft");
-        fd.addInt("pubDate", 20130617);
+        fd.addDate("pubDate", 20130617);
         fd.addTV("tokens", "abc", "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
                 + "[(1-2)s:b|i:b|_1#1-2]" + "[(2-3)s:c|i:c|_2#2-3]");
         fd.addAttachement("WikiLink", "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel");

@@ -53,7 +53,7 @@ public class MetaField {
         ObjectNode json = mapper.createObjectNode();
 		json.put("@type", "koral:field");
 		json.put("type", this.type);
-		json.put("key", this.key);
+        json.put("key", this.key);
 
 		// Value is numerical
 		if (this.type.equals("type:integer")) {
@@ -74,9 +74,10 @@ public class MetaField {
 			};
 		}
 
+        
 		// Value is textual or keywords
 		else {
-			// Value is a list
+            // Value is a list
 			if (this.values.size() > 1) {
 				ArrayNode list = json.putArray("value");
 
