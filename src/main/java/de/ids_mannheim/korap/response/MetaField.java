@@ -17,10 +17,9 @@ public class MetaField {
 	// Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
 
-	public String type = "type:string";
+	public String type;
 	public String key;
 	public List<String> values = new ArrayList<>();
-
 
     public MetaField (String key) {
 		this.key = key;
@@ -52,8 +51,12 @@ public class MetaField {
 	public JsonNode toJsonNode () {
         ObjectNode json = mapper.createObjectNode();
 		json.put("@type", "koral:field");
-		json.put("type", this.type);
         json.put("key", this.key);
+
+        if (this.type == null)
+            return json;
+            
+        json.put("type", this.type);
 
 		// Value is numerical
 		if (this.type.equals("type:integer")) {

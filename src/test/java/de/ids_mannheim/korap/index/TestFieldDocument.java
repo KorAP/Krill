@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.*;
@@ -11,6 +12,7 @@ import java.net.URLDecoder;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -26,7 +28,6 @@ import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
-import static de.ids_mannheim.korap.response.MetaFieldsObj.*;
 
 import org.apache.lucene.document.Document;
 
@@ -441,92 +442,10 @@ public class TestFieldDocument {
         };
     };
 
+    
     @Test
     public void indexArbitraryMetaData () throws Exception {
-        String json = new String(
-            "{"
-            + "  \"fields\" : ["
-            + "    { "
-            + "      \"primaryData\" : \"abc\""
-            + "    },"
-            + "    {"
-            + "      \"name\" : \"tokens\","
-            + "      \"data\" : ["
-            + "         [ \"s:a\", \"i:a\", \"_0$<i>0<i>1\", \"-:t$<i>3\"],"
-            + "         [ \"s:b\", \"i:b\", \"_1$<i>1<i>2\" ],"
-            + "         [ \"s:c\", \"i:c\", \"_2$<i>2<i>3\" ]"
-            + "      ]"
-            + "    }"
-            + "  ],"
-            + "  \"metaFields\" : ["
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:string\","
-            + "      \"key\" : \"textSigle\","
-            + "      \"value\" : \"aa/bb/cc\""
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:integer\","
-            + "      \"key\" : \"alter\","
-            + "      \"value\" : 40"
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:string\","
-            + "      \"key\" : \"name\","
-            + "      \"value\" : \"Frank\""
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:string\","
-            + "      \"key\" : \"name\","
-            + "      \"value\" : \"Julian\""
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:string\","
-            + "      \"key\" : \"schluesselwoerter\","
-            + "      \"value\" : [\"musik\",\"unterhaltung\"]"
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:keywords\","
-            + "      \"key\" : \"tags\","
-            + "      \"value\" : \"nachrichten feuilleton\""
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:keywords\","
-            + "      \"key\" : \"tags\","
-            + "      \"value\" : [\"sport\",\"raetsel\"]"
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:text\","
-            + "      \"key\" : \"titel\","
-            + "      \"value\" : \"Der alte Baum\""
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:attachement\","
-            + "      \"key\" : \"anhang\","
-            + "      \"value\" : \"data:application/x.korap-link,http://spiegel.de/\""
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:store\","
-            + "      \"key\" : \"referenz\","
-            + "      \"value\" : \"So war das\""
-            + "    },"
-            + "    {"
-            + "      \"@type\" : \"koral:field\","
-            + "      \"type\" : \"type:date\","
-            + "      \"key\" : \"datum\","
-            + "      \"value\" : \"2018-04-03\""
-            + "    }"
-            + "  ]"
-            + "}");
+        String json = createDocString1();
 
         KrillIndex ki = new KrillIndex();
         FieldDocument fd = ki.addDoc(json);
@@ -622,5 +541,161 @@ public class TestFieldDocument {
 				break;
             };
         };
+    };
+
+    @Test
+    public void indexArbitraryMetaDataPartial () throws Exception {
+        String json = createDocString1();
+
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(json);
+
+        ki.commit();
+
+        ArrayList hs = new ArrayList<String>();
+        hs.add("datum");
+        hs.add("titel");
+        JsonNode res = ki.getFields("aa/bb/cc", hs).toJsonNode();
+        assertEquals("type:date", res.at("/document/fields/0/type").asText());
+        assertEquals("datum", res.at("/document/fields/0/key").asText());
+        assertEquals("2018-04-03", res.at("/document/fields/0/value").asText());
+        assertEquals("type:text", res.at("/document/fields/1/type").asText());
+        assertEquals("titel", res.at("/document/fields/1/key").asText());
+        assertEquals("Der alte Baum", res.at("/document/fields/1/value").asText());
+        assertTrue(res.at("/document/fields/2").isMissingNode());
+    };
+
+    @Test
+    public void indexArbitraryMetaDataSorted () throws Exception {
+        String json = createDocString1();
+
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(json);
+
+        ki.commit();
+
+        ArrayList hs = new ArrayList<String>();
+        hs.add("titel");
+        hs.add("datum");
+        JsonNode res = ki.getFields("aa/bb/cc", hs).toJsonNode();
+        assertEquals("type:text", res.at("/document/fields/0/type").asText());
+        assertEquals("titel", res.at("/document/fields/0/key").asText());
+        assertEquals("Der alte Baum", res.at("/document/fields/0/value").asText());
+        assertEquals("type:date", res.at("/document/fields/1/type").asText());
+        assertEquals("datum", res.at("/document/fields/1/key").asText());
+        assertEquals("2018-04-03", res.at("/document/fields/1/value").asText());
+        assertTrue(res.at("/document/fields/2").isMissingNode());
+    };
+    
+    @Test
+    public void indexArbitraryMetaDataEmpty () throws Exception {
+        String json = createDocString1();
+
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(json);
+
+        ki.commit();
+
+        ArrayList hs = new ArrayList<String>();
+        hs.add("titel");
+        hs.add("frage");
+        hs.add("datum");
+        JsonNode res = ki.getFields("aa/bb/cc", hs).toJsonNode();
+        assertEquals("type:text", res.at("/document/fields/0/type").asText());
+        assertEquals("titel", res.at("/document/fields/0/key").asText());
+        assertEquals("Der alte Baum", res.at("/document/fields/0/value").asText());
+        assertEquals("frage", res.at("/document/fields/1/key").asText());
+        assertTrue(res.at("/document/fields/1/type").isMissingNode());
+        assertEquals("type:date", res.at("/document/fields/2/type").asText());
+        assertEquals("datum", res.at("/document/fields/2/key").asText());
+        assertEquals("2018-04-03", res.at("/document/fields/2/value").asText());
+        assertTrue(res.at("/document/fields/3").isMissingNode());
+    };
+
+    private static String createDocString1 () {
+        return new String(
+            "{"
+            + "  \"fields\" : ["
+            + "    { "
+            + "      \"primaryData\" : \"abc\""
+            + "    },"
+            + "    {"
+            + "      \"name\" : \"tokens\","
+            + "      \"data\" : ["
+            + "         [ \"s:a\", \"i:a\", \"_0$<i>0<i>1\", \"-:t$<i>3\"],"
+            + "         [ \"s:b\", \"i:b\", \"_1$<i>1<i>2\" ],"
+            + "         [ \"s:c\", \"i:c\", \"_2$<i>2<i>3\" ]"
+            + "      ]"
+            + "    }"
+            + "  ],"
+            + "  \"metaFields\" : ["
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"textSigle\","
+            + "      \"value\" : \"aa/bb/cc\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:integer\","
+            + "      \"key\" : \"alter\","
+            + "      \"value\" : 40"
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"name\","
+            + "      \"value\" : \"Frank\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"name\","
+            + "      \"value\" : \"Julian\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"schluesselwoerter\","
+            + "      \"value\" : [\"musik\",\"unterhaltung\"]"
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:keywords\","
+            + "      \"key\" : \"tags\","
+            + "      \"value\" : \"nachrichten feuilleton\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:keywords\","
+            + "      \"key\" : \"tags\","
+            + "      \"value\" : [\"sport\",\"raetsel\"]"
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:text\","
+            + "      \"key\" : \"titel\","
+            + "      \"value\" : \"Der alte Baum\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:attachement\","
+            + "      \"key\" : \"anhang\","
+            + "      \"value\" : \"data:application/x.korap-link,http://spiegel.de/\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:store\","
+            + "      \"key\" : \"referenz\","
+            + "      \"value\" : \"So war das\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:date\","
+            + "      \"key\" : \"datum\","
+            + "      \"value\" : \"2018-04-03\""
+            + "    }"
+            + "  ]"
+            + "}");
     };
 };

@@ -40,6 +40,8 @@ public class MetaFieldsObj implements Iterable<MetaField> {
 	// Mapper for JSON serialization
     ObjectMapper mapper = new ObjectMapper();
 
+	public List<String> fieldsOrder;
+
 	private Map<String, MetaField> fieldsMap = new HashMap<>();
 
 
@@ -53,7 +55,7 @@ public class MetaFieldsObj implements Iterable<MetaField> {
         return this.add(
             metaFieldFromIndexableField(
                 iField,
-                new MetaField(iField.name())
+                new MetaField(iField.name(), "type:string")
                 )
             );
 	};
@@ -76,7 +78,7 @@ public class MetaFieldsObj implements Iterable<MetaField> {
         return mf;
     };
 
-    
+
     // Field type needs to be restored heuristically
     // - though that's not very elegant
     public static MetaField metaFieldFromIndexableField (IndexableField iField, MetaField mf) {
@@ -206,14 +208,20 @@ public class MetaFieldsObj implements Iterable<MetaField> {
         return fieldsMap.containsKey(key);
     };
 
+    private Iterator<String> getIterator () {
+        if (this.fieldsOrder == null) {
+            return fieldsMap.keySet().iterator();
+        };
+        return this.fieldsOrder.iterator();
+    };
 
     
     @Override
     public Iterator<MetaField> iterator() {
         return new Iterator<MetaField>() {
 
-            private Iterator it = fieldsMap.keySet().iterator();
-                
+            private Iterator<String> it = getIterator();
+
             private int currentIndex = 0;
 
             @Override
@@ -223,7 +231,11 @@ public class MetaFieldsObj implements Iterable<MetaField> {
 
             @Override
             public MetaField next() {
-                return fieldsMap.get(it.next());
+                String key = it.next();
+                MetaField mf = fieldsMap.get(key);
+                if (mf == null)
+                    return new MetaField(key);
+                return mf;
             };
 
             @Override

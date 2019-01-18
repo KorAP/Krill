@@ -61,10 +61,6 @@ public class Krill extends Response {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    // Logger
-    private final static Logger log = LoggerFactory.getLogger(Krill.class);
-
-
     /**
      * Construct a new Krill object.
      */
@@ -305,7 +301,6 @@ public class Krill extends Response {
 
         // Apply search
         else {
-
             // This contains meta and matches
             kr = this.index.search(this);
             // this.getCollection().setIndex(this.index);
@@ -313,6 +308,7 @@ public class Krill extends Response {
         };
 
         kr.setQuery(this.getQuery());
+
         kr.setCollection(this.getCollection());
         kr.setMeta(this.getMeta());
 

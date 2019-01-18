@@ -26,7 +26,7 @@ public final class KrillMeta extends Notifications {
     private short itemsPerResource = 0;
     private SearchContext context;
 
-    private HashSet<String> fields;
+    private ArrayList<String> fields;
     HashSet<Integer> highlights;
 
     // Timeout search after milliseconds
@@ -37,9 +37,7 @@ public final class KrillMeta extends Notifications {
     private final static Logger log = LoggerFactory.getLogger(Krill.class);
 
     {
-        fields = new HashSet<String>(16);
-
-        // TODO: Support @all
+        fields = new ArrayList<String>(16);
 
         // Lift following fields per default
         // These fields are chosen for <legacy /> reasons
@@ -171,8 +169,9 @@ public final class KrillMeta extends Notifications {
                     this.addField(field.asText());
                 };
             }
-            else
+            else {
                 this.addField(json.get("fields").asText());
+            };
         };
 
         return this;
@@ -265,7 +264,7 @@ public final class KrillMeta extends Notifications {
     /**
      * Get the fields as a set
      */
-    public HashSet<String> getFields () {
+    public ArrayList<String> getFields () {
         return this.fields;
     };
 

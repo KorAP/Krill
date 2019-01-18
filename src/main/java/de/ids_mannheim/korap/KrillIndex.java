@@ -4,13 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 // Java core classes
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
@@ -818,7 +812,7 @@ public final class KrillIndex {
         uid = new Integer(Integer.parseInt(uid)).toString();
 
         Filter filter = (Filter) new QueryWrapperFilter(
-                new TermQuery(new Term("UID", uid)));
+            new TermQuery(new Term("UID", uid)));
 
         try {
 
@@ -1110,24 +1104,28 @@ public final class KrillIndex {
                         field);
 
 				// The following fields should be lifted for the match
-                HashSet<String> fields = (HashSet<String>) new Krill().getMeta()
-                        .getFields().clone();
-
-				// Lift primary field
-                fields.add(field);
+                List<String> fields = (ArrayList<String>) new Krill().getMeta()
+                    .getFields().clone();
 
 				// Lift all fields
 				if (fields.contains("@all"))
 					fields = null;
 
+                HashSet<String> fieldsSet = new HashSet<String>(fields);
+
+				// Lift primary field
+                fieldsSet.add(field);
+                
                 // Load the necessary fields of the document
-                Document doc = atomic.reader().document(localDocID, fields);
+                Document doc = (fields != null)
+                    ? atomic.reader().document(localDocID, fieldsSet)
+                    : atomic.reader().document(localDocID);
 
                 // Put some more information to the match
                 PositionsToOffset pto = new PositionsToOffset(atomic, field);
                 match.setPositionsToOffset(pto);
                 match.setLocalDocID(localDocID);
-                match.populateDocument(doc, field, fields);
+                match.populateDocument(doc, field, (List<String>) fields);
                 if (DEBUG)
                     log.trace("The document has the id '{}' or the sigle '{}'",
                             match.getDocID(), match.getTextSigle());
@@ -1346,15 +1344,18 @@ public final class KrillIndex {
             kr.setVersion(this.getVersion());
 
         // The following fields should be lifted for matches
-        HashSet<String> fields = (HashSet<String>) meta.getFields().clone();
-
-        // Lift primary field
-        fields.add(field);
+        List<String> fields = (ArrayList<String>) meta.getFields().clone();
+        HashSet<String> fieldsSet = new HashSet<String>(fields);
 
         // Lift all fields
-        if (fields.contains("@all"))
+        if (fields.contains("@all")) {
             fields = null;
-
+        }
+        else {
+            // Lift primary field
+            fieldsSet.add(field);
+        };
+        
         // Some initializations ...
         int i = 0;
         int startIndex = kr.getStartIndex();
@@ -1479,7 +1480,7 @@ public final class KrillIndex {
 
                     // Do not load all of this, in case the doc is the same!
                     final Document doc = (fields != null)
-                            ? lreader.document(localDocID, fields)
+                            ? lreader.document(localDocID, fieldsSet)
                             : lreader.document(localDocID);
 
                     // Create new Match
@@ -1593,20 +1594,24 @@ public final class KrillIndex {
         return kr;
     };
 
+    public MetaFields getFields (String textSigle) {
+
+        List hs = new ArrayList<String>();
+        hs.add("@all");
+        return this.getFields(textSigle, hs);
+    };
+
 
 	// Return field values
-    public MetaFields getFields (String textSigle) {
-		// , HashSet<String> fields) {
+    public MetaFields getFields (String textSigle, List<String> fields) {
 
 		// Create TermQuery for document
 		TermQuery textSigleQuery = new TermQuery(new Term("textSigle", textSigle));
 
 		Filter filter = (Filter) new QueryWrapperFilter(textSigleQuery);
 
-		/*
-		if (fields.contain("@all"))
+		if (fields.contains("@all"))
 			fields = null;
-		*/
 
 		MetaFields metaFields = new MetaFields(textSigle);
 
@@ -1632,7 +1637,10 @@ public final class KrillIndex {
                     continue;
 
                 Document doc = atomic.reader().document(localDocID);
-                metaFields.populateFields(doc);
+                if (fields == null)
+                    metaFields.populateFields(doc);
+                else
+                    metaFields.populateFields(doc, fields);
 
 				return metaFields;
 			};

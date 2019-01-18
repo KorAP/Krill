@@ -115,7 +115,7 @@ public abstract class AbstractDocument extends Response {
      *            Primary data field.
      */
     public void populateDocument (Document doc, String field) {
-        HashSet<String> fieldList = new HashSet<>(32);
+        List<String> fieldList = new ArrayList<>(32);
         Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
         while (fieldIterator.hasNext())
             fieldList.add(fieldIterator.next().name());
@@ -135,23 +135,26 @@ public abstract class AbstractDocument extends Response {
      *            Hash object with all supported fields.
      */
     public void populateDocument (Document doc, String field,
-            Collection<String> fields) {
+            List<String> fields) {
         this.setPrimaryData(doc.get(field));
         this.populateFields(doc, fields);
     };
 
 
     public void populateFields (Document doc) {
-        HashSet<String> fieldList = new HashSet<>(32);
+        ArrayList<String> fieldList = new ArrayList<>(32);
         Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
-        while (fieldIterator.hasNext())
+        while (fieldIterator.hasNext()) {
             fieldList.add(fieldIterator.next().name());
+        };
 
+        // TODO: Sort alphabetically!
+        
         this.populateFields(doc, fieldList);
     };
 
 
-    public void populateFields (Document doc, Collection<String> fields) {
+    public void populateFields (Document doc, List<String> fields) {
         // Remove all fields already set
         Iterator<String> fieldsIter = fields.iterator();
         while (fieldsIter.hasNext()) {
@@ -160,10 +163,13 @@ public abstract class AbstractDocument extends Response {
             };
         };
 
-        if (fields.contains("UID"))
+        
+        if (fields.contains("UID")) {
             this.setUID(doc.get("UID"));
+        };
         
         fieldsIter = fields.iterator();
+        mFields.fieldsOrder = new ArrayList<>(16);
 
         while (fieldsIter.hasNext()) {
             String name = fieldsIter.next();
@@ -172,11 +178,12 @@ public abstract class AbstractDocument extends Response {
             if (name == "tokens" || name == "UID")
                 continue;
 
+            mFields.fieldsOrder.add(name);
+
             IndexableField iField = doc.getField(name);
             
             if (iField == null)
                 continue;
-
             
             MetaField mf = mFields.add(iField);
 
@@ -352,17 +359,21 @@ public abstract class AbstractDocument extends Response {
         HashMap<String, JsonNode> map = new HashMap<>();
 
         while (mfIterator.hasNext()) {
-            String mfs = mfIterator.next().key;
-            if (legacyDateFields.contains(mfs) ||
-                legacyStoredFields.contains(mfs) ||
-                legacyTextFields.contains(mfs) ||
-                legacyStringFields.contains(mfs) ||
-                legacyKeywordsFields.contains(mfs)
+            MetaField mf = mfIterator.next();
+            if (mf == null)
+                continue;
+            String mfs = mf.key;
+            String value = this.getFieldValue(mfs);
+                if (value != null && (
+                        legacyDateFields.contains(mfs) ||
+                        legacyStoredFields.contains(mfs) ||
+                        legacyTextFields.contains(mfs) ||
+                        legacyStringFields.contains(mfs) ||
+                        legacyKeywordsFields.contains(mfs) ||
+                        legacyDateFields.contains(mfs)
+                        )
                 ) {
-                map.put(mfs, new TextNode(this.getFieldValue(mfs)));
-            }
-            else if (legacyDateFields.contains(mfs)) {
-                map.put(mfs, new TextNode(this.getFieldValue(mfs)));
+                map.put(mfs, new TextNode(value));
             }
         };
         
