@@ -131,6 +131,7 @@ public class TestMetaFields {
         Result kr = ks.apply(ki);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toJsonString());
+        
         assertEquals(0, res.at("/matches/0/UID").asInt());
         assertEquals("GOE_AGX.00002", res.at("/matches/0/textSigle").asText());
         assertEquals("Maximen und Reflexionen",

@@ -1,4 +1,4 @@
-0.58.4 2019-01-17
+0.58.4 2019-01-18
     - [cleanup] Remove deprecated methods setLicense/getLicense,
       setTokenization/getTokenization, setLayerInfo/getLayerInfo,
       setField/getField (including json serialization)
@@ -8,6 +8,10 @@
     - [cleanup] Remove hardwired (de)serialization of legacy metadata
       fields (diewald)
     - [feature] Support for arbitrary metadata fields (fixes #47)
+      (diewald)
+    - [feature] Support for fields parameter in getFields() method
+      (fixes #46) (diewald)
+    - [feature] Respect fields order for fields responses (fixes #46)
       (diewald)
 
 0.58.3 2018-12-17
