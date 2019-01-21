@@ -340,6 +340,12 @@ public abstract class AbstractDocument extends Response {
 
 
     @Deprecated
+    public String getAvailability () {
+        return this.getFieldValue("availability");
+    };
+    
+
+    @Deprecated
     @JsonProperty("corpusID")
     public String getCorpusID () {
         return this.getFieldValue("corpusID");
