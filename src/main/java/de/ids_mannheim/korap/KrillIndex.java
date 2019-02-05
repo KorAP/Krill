@@ -1245,18 +1245,19 @@ public final class KrillIndex {
 							t.getStartChar(), t.getStartPos(),
 							t.getEndChar(), t.getEndPos());
 
+
 					// Ignore empty types for the moment
-                    if (t.getType() == "term" || t.getType() == "span") {
+                    if (t.getType().equals("term") || t.getType().equals("span")) {
                         match.addAnnotation(t.getStartPos(), t.getEndPos(),
                                 t.getAnnotation());
 					}
 
 					// TODO:
-					// else if (t.getType() == "empty") {
+					// else if (t.getType().equals("empty")) {
 					// }
 
 					// Use relSrc for annotation views
-					else if (t.getType() == "relSrc") {
+					else if (t.getType().equals("relSrc")) {
 						// This only respects relSrc!
 						// May require more information for bidirectional relations
                         match.addRelation(
