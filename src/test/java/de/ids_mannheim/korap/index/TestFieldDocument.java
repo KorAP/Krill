@@ -438,6 +438,9 @@ public class TestFieldDocument {
 				assertEquals("data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel", field.at("/value").asText());
 				checkC++;
 				break;
+
+            default:
+                fail("Unknown field: " + key);
             };
         };
     };
@@ -539,6 +542,9 @@ public class TestFieldDocument {
 				assertEquals("2018-04-03", field.at("/value").asText());
 				checkC++;
 				break;
+
+            default:
+                fail("Unknown field: " + key);
             };
         };
     };

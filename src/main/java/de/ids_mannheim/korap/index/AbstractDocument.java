@@ -175,7 +175,7 @@ public abstract class AbstractDocument extends Response {
             String name = fieldsIter.next();
 
             // Remember - never serialize "tokens"
-            if (name == "tokens" || name == "UID")
+            if (name.equals("tokens") || name.equals("UID"))
                 continue;
 
             mFields.fieldsOrder.add(name);
@@ -188,7 +188,7 @@ public abstract class AbstractDocument extends Response {
             MetaField mf = mFields.add(iField);
 
             // Legacy
-            if (name == "license")
+            if (name.equals("license"))
                 this.addString("availability", doc.get("license"));
 
         };

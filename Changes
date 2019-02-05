@@ -1,4 +1,4 @@
-0.58.4 2019-01-21
+0.58.4 2019-02-05
     - [cleanup] Remove deprecated methods setLicense/getLicense,
       setTokenization/getTokenization, setLayerInfo/getLayerInfo,
       setField/getField (including json serialization)
@@ -15,6 +15,8 @@
       (diewald)
     - [bugfix] Reintroduce getAvailability() method in AbstractDocument
       for compatibility with Kustvakt (diewald)
+    - [bugfix] Fix bug where tokens were serialized in getFields()
+      method (diewald)
 
 0.58.3 2018-12-17
     - [feature] Introduced attachements as meta data fields
