@@ -1,3 +1,5 @@
+0.58.5 2019-02-06
+
 0.58.4 2019-02-05
     - [cleanup] Remove deprecated methods setLicense/getLicense,
       setTokenization/getTokenization, setLayerInfo/getLayerInfo,
