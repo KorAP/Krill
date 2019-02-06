@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.TextField;
@@ -249,8 +250,13 @@ public class FieldDocument extends AbstractDocument {
     /**
      * Deserialize koral:field types for meta data
      */
-    // Temporarily this needs to be in a "metaFields" parameter
-    public void setMetaFields (ArrayList<Map<String, JsonNode>> fields) {
+    public void setFields (ArrayList<Map<String, JsonNode>> fields) {
+        // Check if this is a token stream
+        if (!fields.get(0).containsKey("@type") && fields.get(0).containsKey("primaryData")) {
+            this.setLegacyFields(fields);        
+            return;
+        };
+        
         String type, key, value;
         StringBuffer sb = new StringBuffer();
         Iterator<JsonNode> i;
@@ -325,23 +331,27 @@ public class FieldDocument extends AbstractDocument {
     /**
      * Deserialize token stream data (LEGACY).
      */
-    public void setFields (ArrayList<Map<String, Object>> fields) {
-        Map<String, Object> primary = fields.remove(0);
-        this.setPrimaryData((String) primary.get("primaryData"));
+    @JsonIgnore
+    private void setLegacyFields (ArrayList<Map<String, JsonNode>> fields) {
+        Map<String, JsonNode> primary = fields.remove(0);
+        this.setPrimaryData(primary.get("primaryData").asText());
 
-        for (Map<String, Object> field : fields) {
+        for (Map<String, JsonNode> field : fields) {
 
-            String fieldName = (String) field.get("name");
+            String fieldName = field.get("name").asText();
             MultiTermTokenStream mtts = this.newMultiTermTokenStream();
 
-            for (ArrayList<String> token : (ArrayList<ArrayList<String>>) field
-                    .get("data")) {
+            Iterator tokenIterator = field.get("data").elements();
+
+            while (tokenIterator.hasNext()) {
+                ArrayNode token = (ArrayNode) tokenIterator.next();
 
                 try {
-                    MultiTermToken mtt = new MultiTermToken(token.remove(0));
+                    MultiTermToken mtt = new MultiTermToken(token.remove(0).asText());
 
-                    for (String term : token) {
-                        mtt.add(term);
+                    Iterator<JsonNode> terms = token.elements();
+                    while (terms.hasNext()) {
+                        mtt.add(terms.next().asText());
                     };
 
                     mtts.addMultiTermToken(mtt);
@@ -349,16 +359,17 @@ public class FieldDocument extends AbstractDocument {
                 catch (CorpusDataException cde) {
                     this.addError(cde.getErrorCode(), cde.getMessage());
                 };
-            };
 
+                
+            };
+            
             // TODO: This is normally dependend to the tokenization!
             //       Add this as meta information to the document
             // Store this information as well as tokenization information
             // as meta fields in the tokenization term vector
             if (field.containsKey("foundries")) {
                 // TODO: Do not store positions!
-                String foundries = (String) field.get("foundries");
-                this.addKeywords("foundries", foundries);
+                this.addKeywords("foundries", field.get("foundries").asText());
             };
 
             this.addTV(fieldName, this.getPrimaryData(), mtts);
