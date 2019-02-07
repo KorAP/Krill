@@ -20,9 +20,6 @@ import org.apache.lucene.document.Document;
 
 public class MetaFields extends AbstractDocument {
 
-    // Mapper for JSON serialization
-    ObjectMapper mapper = new ObjectMapper();
-
     public MetaFields (String id) {
 		this.addMessage(0, "Response format is temporary");
     };

@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 @JsonInclude(Include.NON_EMPTY)
 // @JsonIgnoreProperties(ignoreUnknown = true)
+
 public abstract class AbstractDocument extends Response {
     ObjectMapper mapper = new ObjectMapper();
     
@@ -155,20 +156,13 @@ public abstract class AbstractDocument extends Response {
 
 
     public void populateFields (Document doc, List<String> fields) {
-        // Remove all fields already set
         Iterator<String> fieldsIter = fields.iterator();
-        while (fieldsIter.hasNext()) {
-            if (mFields.contains(fieldsIter.next())) {
-                fieldsIter.remove();
-            };
-        };
-
         
         if (fields.contains("UID")) {
             this.setUID(doc.get("UID"));
         };
         
-        fieldsIter = fields.iterator();
+        // fieldsIter = fields.iterator();
         mFields.fieldsOrder = new ArrayList<>(16);
 
         while (fieldsIter.hasNext()) {
@@ -179,6 +173,11 @@ public abstract class AbstractDocument extends Response {
                 continue;
 
             mFields.fieldsOrder.add(name);
+
+            // Ignore fields already set
+            if (mFields.contains(name)) {
+                continue;
+            };
 
             IndexableField iField = doc.getField(name);
             
@@ -314,6 +313,7 @@ public abstract class AbstractDocument extends Response {
      * 
      * @return The text sigle as a string.
      */
+    @JsonIgnore
     public String getTextSigle () {
         return this.getFieldValue("textSigle");
     };
@@ -324,6 +324,7 @@ public abstract class AbstractDocument extends Response {
      * 
      * @return The document sigle as a string.
      */
+    @JsonIgnore
     public String getDocSigle () {
         return this.getFieldValue("docSigle");
     };
@@ -334,12 +335,14 @@ public abstract class AbstractDocument extends Response {
      * 
      * @return The corpus sigle as a string.
      */
+    @JsonIgnore
     public String getCorpusSigle () {
         return this.getFieldValue("corpusSigle");
     };
 
 
     @Deprecated
+    @JsonIgnore
     public String getAvailability () {
         return this.getFieldValue("availability");
     };
@@ -369,6 +372,7 @@ public abstract class AbstractDocument extends Response {
             if (mf == null)
                 continue;
             String mfs = mf.key;
+
             String value = this.getFieldValue(mfs);
                 if (value != null && (
                         legacyDateFields.contains(mfs) ||

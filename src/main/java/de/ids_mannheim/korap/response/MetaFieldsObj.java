@@ -208,6 +208,7 @@ public class MetaFieldsObj implements Iterable<MetaField> {
         return fieldsMap.containsKey(key);
     };
 
+
     private Iterator<String> getIterator () {
         if (this.fieldsOrder == null) {
             return fieldsMap.keySet().iterator();

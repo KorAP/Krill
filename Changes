@@ -1,4 +1,8 @@
-0.58.5 2019-02-06
+0.58.5 2019-02-07
+    - [bugfix] Fix bug where duplicate keys occured in
+      field data output (diewald)
+    - [bugfix] Fix bug where fields already set where lifted
+      again, but ignored in the fields order list (diewald)
 
 0.58.4 2019-02-05
     - [cleanup] Remove deprecated methods setLicense/getLicense,

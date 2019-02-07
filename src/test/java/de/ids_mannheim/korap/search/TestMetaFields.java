@@ -131,7 +131,7 @@ public class TestMetaFields {
         Result kr = ks.apply(ki);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toJsonString());
-        
+
         assertEquals(0, res.at("/matches/0/UID").asInt());
         assertEquals("GOE_AGX.00002", res.at("/matches/0/textSigle").asText());
         assertEquals("Maximen und Reflexionen",
@@ -218,6 +218,51 @@ public class TestMetaFields {
                 res.at("/matches/0/matchID").asText());
     };
 
+
+    @Test
+    public void searchMetaFieldsDuplicateKeys () throws IOException {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/goe/AGX-00002.json"), false);
+        ki.commit();
+
+        String jsonString = getJsonString(getClass()
+                .getResource("/queries/metas/fields_single.jsonld").getFile());
+
+        Krill ks = new Krill(jsonString);
+        ks.getMeta().setLimit(1);
+        Result kr = ks.apply(ki);
+
+        String resultJson = kr.toJsonString();
+
+        assertTrue(resultJson.indexOf("\"textSigle\":\"GOE_AGX.00002\"") > 0);
+        assertTrue(resultJson.indexOf("\"docSigle\":\"GOE_AGX\"") > 0);
+        assertTrue(resultJson.indexOf("\"corpusSigle\":\"GOE\"") > 0);
+        assertTrue(resultJson.indexOf("\"UID\":") > 0);
+        assertTrue(resultJson.indexOf("\"availability\":") > 0);
+        
+        assertEquals(
+            resultJson.indexOf("\"textSigle\":\"GOE_AGX.00002\""),
+            resultJson.lastIndexOf("\"textSigle\":\"GOE_AGX.00002\"")
+            );
+        assertEquals(
+            resultJson.indexOf("\"docSigle\":\"GOE_AGX\""),
+            resultJson.lastIndexOf("\"docSigle\":\"GOE_AGX\"")
+            );
+        assertEquals(
+            resultJson.indexOf("\"corpusSigle\":\"GOE\""),
+            resultJson.lastIndexOf("\"corpusSigle\":\"GOE\"")
+            );
+        assertEquals(
+            resultJson.indexOf("\"UID\":0"),
+            resultJson.lastIndexOf("\"UID\":0")
+            );
+        assertEquals(
+            resultJson.indexOf("\"availability\":"),
+            resultJson.lastIndexOf("\"availability\":")
+            );
+    };    
 
     @Test
     public void searchCollectionFields () throws IOException {

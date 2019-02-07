@@ -40,7 +40,8 @@ public final class KrillMeta extends Notifications {
         fields = new ArrayList<String>(16);
 
         // Lift following fields per default
-        // These fields are chosen for <legacy /> reasons
+        // These fields are chosen for
+        // <legacy /> reasons
         for (String field : new String[] {
 				"ID",
 				"UID",
