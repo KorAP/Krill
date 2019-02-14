@@ -366,7 +366,8 @@ public final class KrillIndex {
         this.writer().commit();
         commitCounter = 0;
         this.closeReader();
-        KrillCollection.cache.removeAll();
+        if (KrillCollection.cache != null)
+            KrillCollection.cache.removeAll();
     };
 
 
