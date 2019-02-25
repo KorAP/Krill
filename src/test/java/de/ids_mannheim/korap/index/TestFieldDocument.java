@@ -26,6 +26,7 @@ import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.response.MetaFields;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -614,6 +615,59 @@ public class TestFieldDocument {
         assertTrue(res.at("/document/fields/3").isMissingNode());
     };
 
+
+    @Test
+    public void indexUpsert () throws Exception {
+        KrillIndex ki = new KrillIndex();
+
+        // Add new document
+        FieldDocument fd = new FieldDocument();
+        fd.addString("textSigle", "AAA/BBB/001");
+        fd.addString("content", "Example1");
+        ki.upsertDoc(fd);
+        ki.commit();
+
+        MetaFields mfs = ki.getFields("AAA/BBB/001");
+        assertEquals(mfs.getFieldValue("indexCreationDate").length(), 10);
+        assertTrue(mfs.getFieldValue("indexCreationDate").matches("\\d{4}-\\d{2}-\\d{2}"));
+        assertEquals(
+            mfs.getFieldValue("indexCreationDate"),
+            mfs.getFieldValue("indexLastModified")
+            );
+        assertEquals(mfs.getFieldValue("content"), "Example1");
+
+
+        // Add new document
+        fd = new FieldDocument();
+        fd.addString("textSigle", "AAA/BBB/002");
+        fd.addString("content", "Example2");
+
+        ki.upsertDoc(fd);
+        ki.commit();
+
+        mfs = ki.getFields("AAA/BBB/002");
+        assertEquals(mfs.getFieldValue("indexCreationDate").length(), 10);
+       
+        assertTrue(mfs.getFieldValue("indexCreationDate").matches("\\d{4}-\\d{2}-\\d{2}"));
+        assertEquals(mfs.getFieldValue("content"), "Example2");
+
+        fd = new FieldDocument();
+        fd.addString("textSigle", "AAA/BBB/001");
+        fd.addString("content", "Example3");
+
+        ki.upsertDoc(fd);
+        ki.commit();
+
+        mfs = ki.getFields("AAA/BBB/001");
+        assertEquals(mfs.getFieldValue("indexCreationDate").length(), 10);
+        assertTrue(mfs.getFieldValue("indexCreationDate").matches("\\d{4}-\\d{2}-\\d{2}"));
+        assertEquals(mfs.getFieldValue("content"), "Example3");
+
+        assertEquals(ki.numberOf("documents"), 2);
+        
+    };
+
+    
     private static String createDocString1 () {
         return new String(
             "{"

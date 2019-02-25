@@ -8,6 +8,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import java.time.LocalDate;
+
 import org.apache.lucene.analysis.Analyzer;
 /*
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -66,6 +68,7 @@ import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.Text;
 import de.ids_mannheim.korap.util.KrillProperties;
+import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
@@ -260,6 +263,8 @@ public final class KrillIndex {
         // Todo: Maybe use DirectoryReader.openIfChanged(DirectoryReader)
         if (!readerOpen)
             this.openReader();
+        if (!readerOpen)
+            return null;
         return this.reader;
     };
 
@@ -391,6 +396,96 @@ public final class KrillIndex {
         this.autoCommit = value;
     };
 
+
+    /**
+     * Update a document in the index as a {@link FieldDocument}
+     * if it already exists (based on the textSigle), otherwise
+     * insert it to the index.
+     * 
+     * @param doc
+     *            The {@link FieldDocument} to add to the index.
+     * @return The {@link FieldDocument}, which means, the same
+     *         object, that was passed to the method.
+     */
+    public FieldDocument upsertDoc (FieldDocument doc) {
+        if (doc == null)
+            return doc;
+
+        // Create a filter based on the corpusID and the docID
+        String textSigle = doc.getTextSigle();
+        KrillDate current = new KrillDate(LocalDate.now());
+        KrillDate indexCreationDate = current;
+        KrillDate indexLastModified = current;
+               
+        // Delete the document if exists
+        if (textSigle != null) {
+
+            // First find the document
+            Filter filter = (Filter) new QueryWrapperFilter(
+                new TermQuery(new Term("textSigle", textSigle))
+                );
+            
+            try {
+                // Iterate over all atomic indices and find the matching document
+
+                if (this.reader() != null) {
+                
+                    for (LeafReaderContext atomic : this.reader().leaves()) {
+
+                        // Retrieve the single document of interest
+                        DocIdSet filterSet = filter.getDocIdSet(
+                            atomic,
+                            atomic.reader().getLiveDocs());
+                        
+                        DocIdSetIterator filterIterator = filterSet.iterator();
+
+                        if (filterIterator == null)
+                            continue;
+                    
+                        // Go to the matching doc - and remember its ID
+                        int localDocID = filterIterator.nextDoc();
+
+                        if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+                            continue;
+
+                        // We've found the correct document! Hurray!
+                        if (DEBUG)
+                            log.trace("We've found a matching document");
+
+                        // TODO: Probably use
+                        // document(int docID, StoredFieldVisitor visitor)
+                        Document storedDoc = atomic.reader().document(localDocID);
+
+                        // Document is loadable
+                        if (storedDoc != null) {
+                            IndexableField indexCreationField =
+                                storedDoc.getField("indexCreationDate");
+                        
+                            if (indexCreationField == null) {
+                                indexCreationDate = current;
+                            }
+                            else {
+                                indexCreationDate = new KrillDate(
+                                    indexCreationField.numericValue().toString()
+                                    );
+                            };
+                        };
+                        this.delDocs("textSigle", textSigle);
+                    };
+                };
+            }
+
+            catch (IOException e) {
+                log.error("Unable to upsert document");
+            };
+        };
+
+        doc.addDate("indexCreationDate", indexCreationDate.toDisplay());
+        doc.addDate("indexLastModified", indexLastModified.toDisplay());
+
+        return this.addDoc(doc);
+    };
+    
 
     /**
      * Add a document to the index as a {@link FieldDocument}.

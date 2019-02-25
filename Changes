@@ -4,6 +4,9 @@
     - [bugfix] Fix bug where fields already set where lifted
       again, but ignored in the fields order list (diewald)
     - [feature] Added LocalDate handling to KrillDate (diewald)
+    - [feature] Added upsert method to index and fix #43
+      by adding indexCreationDate and indexLastModified field
+      (diewald)
 
 0.58.4 2019-02-05
     - [cleanup] Remove deprecated methods setLicense/getLicense,
