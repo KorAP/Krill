@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.util;
 
 import java.util.*;
 import java.util.regex.*;
+import java.time.LocalDate;
 
 /**
  * KrillDate implements a helper object to stringify
@@ -90,6 +91,22 @@ public class KrillDate {
         };
     };
 
+
+    /**
+     * Construct a new KrillDate object.
+     * 
+     * @param date
+     *            The date as a Date object.
+     */
+    public KrillDate (LocalDate date) {
+        if (date == null)
+            return;
+
+        this.year  = date.getYear();
+        this.month = date.getMonthValue();
+        this.day   = date.getDayOfMonth();
+    };
+    
 
     /**
      * Get the date as an integer with ceiled values for

@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.QueryException;
+import java.time.LocalDate;
+
 
 /**
  * @author diewald
@@ -210,5 +212,19 @@ public class TestKrillDate {
         assertEquals(0, kd.month);
         assertEquals(0, kd.day);
         assertEquals("", kd.toDisplay());
+    };
+
+    @Test
+    public void testWithLocalDate () {
+        KrillDate kd =
+            new KrillDate(
+                LocalDate.of(2012, 12, 12)
+                );
+        assertEquals("2012-12-12", kd.toDisplay());
+
+        kd = new KrillDate(
+            LocalDate.of(2014, 1, 2)
+            );
+        assertEquals("2014-01-02", kd.toDisplay());
     };
 };
