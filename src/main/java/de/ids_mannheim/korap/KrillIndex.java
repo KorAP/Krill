@@ -318,7 +318,7 @@ public final class KrillIndex {
 
 
     // Close index reader
-    private void closeReader () throws IOException {
+    public void closeReader () throws IOException {
         if (readerOpen) {
             this.reader.close();
             readerOpen = false;
@@ -1527,6 +1527,7 @@ public final class KrillIndex {
                 final IndexReader lreader = atomic.reader();
                 int localDocID, docID;
 
+                boolean isTimeout = false;
                 // TODO: Get document information from Cache! Fieldcache?
                 for (; i < hits; i++) {
 
@@ -1540,6 +1541,7 @@ public final class KrillIndex {
                     // Timeout!
                     if (tthread.getTime() > timeout) {
                         kr.setTimeExceeded(true);
+                        isTimeout=true;
                         break;
                     };
 
@@ -1621,7 +1623,7 @@ public final class KrillIndex {
                 };
 
                 // Can be disabled TEMPORARILY
-                while (!cutoff && spans.next()) {
+                while (!cutoff && !isTimeout && spans.next()) {
 
                     // TODO: Deprecated
                     if (limit > 0 && i >= limit)
