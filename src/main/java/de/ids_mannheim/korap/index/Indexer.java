@@ -57,6 +57,7 @@ public class Indexer {
     private int commitCount;
 
     private static String path = null;
+    private static boolean addInsteadOfUpsert = false;
     private Pattern jsonFilePattern;
 
     // Init logger
@@ -103,14 +104,24 @@ public class Indexer {
             matcher = jsonFilePattern.matcher(file);
             if (matcher.find()) {
                 file = dir.getPath() + '/' + file;
-                log.info("Adding " + file + " to the index. ");
 
                 try {
-                    if (this.index.addDoc(new FileInputStream(file),
-                            true) == null) {
-                        log.warn("fail.");
-                        continue;
+                    if (addInsteadOfUpsert) {
+                        log.info("Add " + file + " to the index. ");
+                        if (this.index.addDoc(new FileInputStream(file),
+                                              true) == null) {
+                            log.warn("fail.");
+                            continue;
+                        }
                     }
+                    else {
+                        log.info("Add or update " + file + " to the index. ");
+                        if (this.index.upsertDoc(new FileInputStream(file),
+                                                 true) == null) {
+                            log.warn("fail.");
+                            continue;
+                        };
+                    };
                     this.count++;
                     if (DEBUG){
                         log.debug("Finished adding files. (" + count + ").");
@@ -175,14 +186,17 @@ public class Indexer {
                 .desc("index output directory (defaults to "
                         + "krill.indexDir in the configuration.")
                 .hasArg().argName("output directory").build());
+        options.addOption(Option.builder("a").longOpt("addInsteadofUpsert")
+                .desc("Always add files to the index, never update")
+                .build());
 
+        
         CommandLineParser parser = new DefaultParser();
 
         String propFile = null;
         String[] inputDirectories = null;
         try {
             CommandLine cmd = parser.parse(options, argv);
-
             log.info("Configuration file: " + cmd.getOptionValue("c"));
             propFile = cmd.getOptionValue("c");
             log.info("Input directories: "
@@ -193,12 +207,16 @@ public class Indexer {
                 log.info("Output directory: " + cmd.getOptionValue("o"));
                 path = cmd.getOptionValue("o");
             }
+
+            if (cmd.hasOption("a")) {
+                addInsteadOfUpsert = true;
+            };
         }
         catch (MissingOptionException e) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(
                     "Krill indexer\n java -jar -c <properties file> -i <input directories> "
-                            + "[-o <output directory>]",
+                            + "[-o <output directory> -a]",
                     options);
             return;
         }
@@ -224,7 +242,10 @@ public class Indexer {
         // Final commit
         log.info("Finished indexing.");
         // Finish indexing
-        String message = "Indexed " + indexer.count + " file";
+        String message = "Added ";
+        if (!addInsteadOfUpsert)
+            message += "or updated ";
+        message += indexer.count + " file";
         if (indexer.count > 1) {
             message += "s";
         }

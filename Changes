@@ -1,4 +1,4 @@
-0.58.5 2019-03-04
+0.58.5 2019-03-06
     - [bugfix] Fix bug where duplicate keys occured in
       field data output (diewald)
     - [bugfix] Fix bug where fields already set where lifted
@@ -8,6 +8,9 @@
       by adding indexCreationDate and indexLastModified field
       (diewald)
     - [bugfix] Fixed #50 multiple timeout warnings (margaretha) 
+    - [feature] Instead of adding, the Indexer now upserts documents
+      to avoid multiple documents with the same text sigle
+      (diewald)
 
 0.58.4 2019-02-05
     - [cleanup] Remove deprecated methods setLicense/getLicense,
