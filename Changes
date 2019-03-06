@@ -1,4 +1,4 @@
-0.58.5 2019-02-25
+0.58.5 2019-03-06
     - [bugfix] Fix bug where duplicate keys occured in
       field data output (diewald)
     - [bugfix] Fix bug where fields already set where lifted
@@ -6,6 +6,9 @@
     - [feature] Added LocalDate handling to KrillDate (diewald)
     - [feature] Added upsert method to index and fix #43
       by adding indexCreationDate and indexLastModified field
+      (diewald)
+    - Instead of adding, the Indexer now upserts documents
+      to avoid multiple documents with the same text sigle
       (diewald)
 
 0.58.4 2019-02-05

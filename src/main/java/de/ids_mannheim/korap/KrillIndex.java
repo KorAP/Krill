@@ -485,6 +485,20 @@ public final class KrillIndex {
 
         return this.addDoc(doc);
     };
+
+
+    /**
+     * Update a document in the index as a {@link FieldDocument}
+     * if it already exists (based on the textSigle), otherwise
+     * insert it to the index.
+     * 
+     * @param json
+     *            The JSON document to add to the index.
+     * @return The {@link FieldDocument}.
+     */
+    public FieldDocument upsertDoc (InputStream json, boolean gzip) {
+        return this.upsertDoc(_fromFile(json, gzip));
+    };  
     
 
     /**
@@ -622,7 +636,7 @@ public final class KrillIndex {
     public FieldDocument addDoc (InputStream json, boolean gzip) {
         return this.addDoc(_fromFile(json, gzip));
     };
-
+    
 
     /**
      * Add a document to the index as a JSON string

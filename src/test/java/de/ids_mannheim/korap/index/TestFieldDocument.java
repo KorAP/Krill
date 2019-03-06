@@ -664,7 +664,11 @@ public class TestFieldDocument {
         assertEquals(mfs.getFieldValue("content"), "Example3");
 
         assertEquals(ki.numberOf("documents"), 2);
-        
+
+        // Test Inputstream method
+        ki.upsertDoc(getClass().getResourceAsStream("/wiki/WPD17-H81-63495.json.gz"), true);
+        ki.commit();
+        assertEquals(ki.numberOf("documents"), 3);
     };
 
     
