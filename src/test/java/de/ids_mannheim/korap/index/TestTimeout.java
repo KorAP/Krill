@@ -32,4 +32,24 @@ public class TestTimeout {
         assertEquals(StatusCodes.RESPONSE_TIME_EXCEEDED,
                 kr.getWarning(0).getCode());
     }
+
+    @Test
+    public void testMultipleWarningMultilpleFragmentBug () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
+        ki.commit();
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
+        ki.commit();
+
+        SpanQuery q = new SpanTermQuery(new Term("tokens", "s:der"));
+        Krill ks = new Krill(q);
+        KrillMeta meta = ks.getMeta();
+        meta.setTimeOut(-1);
+        Result kr = ks.apply(ki);
+        assertEquals(1, kr.getWarnings().size());
+        assertEquals(StatusCodes.RESPONSE_TIME_EXCEEDED,
+                kr.getWarning(0).getCode());
+    }
+
+
 }

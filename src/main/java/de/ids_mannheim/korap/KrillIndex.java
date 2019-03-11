@@ -1496,6 +1496,7 @@ public final class KrillIndex {
         final TimeOutThread tthread = new TimeOutThread();
         tthread.start();
         final long timeout = meta.getTimeOut();
+        boolean isTimeout = false;
 
         // See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
         long t1 = System.nanoTime();
@@ -1521,6 +1522,10 @@ public final class KrillIndex {
 
                 int oldLocalDocID = -1;
 
+                if (isTimeout)
+                    break;
+
+                
                 /*
                  * Todo: There may be a way to know early if the bitset is emty
                  * by using LongBitSet - but this may not be as fast as I think.
@@ -1541,7 +1546,6 @@ public final class KrillIndex {
                 final IndexReader lreader = atomic.reader();
                 int localDocID, docID;
 
-                boolean isTimeout = false;
                 // TODO: Get document information from Cache! Fieldcache?
                 for (; i < hits; i++) {
 
@@ -1646,6 +1650,7 @@ public final class KrillIndex {
                     // Timeout!
                     if (tthread.getTime() > timeout) {
                         kr.setTimeExceeded(true);
+                        isTimeout=true;
                         break;
                     };
 
