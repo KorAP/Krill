@@ -1646,6 +1646,7 @@ public final class KrillIndex {
                     // Timeout!
                     if (tthread.getTime() > timeout) {
                         kr.setTimeExceeded(true);
+                        isTimeout=true;
                         break;
                     };
 
