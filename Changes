@@ -11,6 +11,7 @@
     - [feature] Instead of adding, the Indexer now upserts documents
       to avoid multiple documents with the same text sigle
       (diewald)
+    - [bugfix] Fixed #53 element distance query bug (margaretha)
 
 0.58.4 2019-02-05
     - [cleanup] Remove deprecated methods setLicense/getLicense,
