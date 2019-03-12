@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
@@ -32,6 +34,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
     private long matchCost;
     protected int currentDocNum;
 
+    private Logger log = LogManager.getLogger(UnorderedDistanceSpans.class);
 
     /**
      * Constructs UnorderedDistanceSpans for the given
@@ -158,17 +161,20 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
                 }
             }
         }
-        else if (firstSpanList.isEmpty()) {
+        else if (!secondSpanList.isEmpty()) {
             // log.trace("current target: " + secondSpanList.get(0).getStart()
             // + " " + secondSpanList.get(0).getEnd());
             // log.trace("candidates: empty");
             updateList(secondSpanList);
         }
-        else {
+        else if (!firstSpanList.isEmpty()) {
             // log.trace("current target: " + firstSpanList.get(0).getStart()
             // + " " + firstSpanList.get(0).getEnd());
             // log.trace("candidates: empty");
             updateList(firstSpanList);
+        }
+        else{
+            log.debug("Both candidate lists empty");
         }
     }
 
