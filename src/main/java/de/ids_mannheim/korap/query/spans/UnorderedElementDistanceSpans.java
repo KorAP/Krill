@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
@@ -33,6 +35,8 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
     // target span
     private List<CandidateSpan> elementList;
 
+    private Logger log = LogManager.getLogger(UnorderedElementDistanceSpans.class);
+    boolean DEBUG = false;
 
     /**
      * Constructs UnorderedElementDistanceSpans for the given
@@ -75,6 +79,11 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
                         hasMoreFirstSpans);
                 hasMoreSecondSpans = addSpan(secondSpans, secondSpanList,
                         hasMoreSecondSpans);
+                
+                if (DEBUG){
+                    log.debug("prepare firstSpanList: " +firstSpanList.size());
+                    log.debug("prepare secondSpanList: " +secondSpanList.size());
+                }
             }
             else {
                 hasMoreSpans = false;
@@ -263,6 +272,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
     @Override
     protected void updateList (List<CandidateSpan> candidateList) {
+//        if (DEBUG) log.debug("candidate list size: " +candidateList.size());
         updateElementList(candidateList.get(0).getPosition());
         candidateList.remove(0);
     }

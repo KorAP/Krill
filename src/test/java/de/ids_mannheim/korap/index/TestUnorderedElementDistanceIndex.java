@@ -17,6 +17,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
 public class TestUnorderedElementDistanceIndex {
@@ -93,7 +94,7 @@ public class TestUnorderedElementDistanceIndex {
 
     private FieldDocument createFieldDoc5 () {
         FieldDocument fd = new FieldDocument();
-        fd.addString("ID", "doc-2");
+        fd.addString("ID", "doc-5");
         fd.addTV("base", "text",
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0|<>:p$<b>64<i>0<i>4<i>4<b>0]"
                         + "[(1-2)s:b|s:e|_2$<i>1<i>2]"
@@ -102,6 +103,20 @@ public class TestUnorderedElementDistanceIndex {
                         + "[(4-5)s:e|_5$<i>4<i>5|<>:s$<b>64<i>4<i>6<i>6<b>0|<>:p$<b>64<i>4<i>6<i>6<b>0]"
                         + "[(5-6)s:d|_6$<i>5<i>6]"
                         + "[(6-7)s:b|_7$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>7<b>0|<>:p$<b>64<i>6<i>7<i>7<b>0]");
+        return fd;
+    }
+    
+    private FieldDocument createFieldDoc6 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-6");
+        fd.addTV("base", "text",
+                "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0]"
+                        + "[(1-2)s:b|s:e|_2$<i>1<i>2]"
+                        + "[(2-3)s:e|_3$<i>2<i>3]"
+                        + "[(3-4)s:b|s:c|_4$<i>3<i>4]"
+                        + "[(4-5)s:a|_5$<i>4<i>5]"
+                        + "[(5-6)s:a|_6$<i>5<i>6]"
+                        + "[(6-7)s:b|_7$<i>6<i>7]");
         return fd;
     }
 
@@ -296,5 +311,22 @@ public class TestUnorderedElementDistanceIndex {
         assertEquals(5, kr.getMatch(6).endPos);
         assertEquals(4, kr.getMatch(7).startPos);
         assertEquals(7, kr.getMatch(7).endPos);
+    }
+    
+    
+    /** Both candidate lists may be empty because the spans are not in an element span.
+     * 
+     * @throws IOException
+     * @throws QueryException
+     */
+    @Test
+    public void testBothCandidateListEmptyBug () throws IOException, QueryException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc6());
+        ki.commit();
+
+        SpanQuery sq = createQuery("s", "s:a", "s:c", 1, 2, false);
+        kr = ki.search(sq, (short) 10);
+        assertEquals(0, kr.getMatches().size());
     }
 }
