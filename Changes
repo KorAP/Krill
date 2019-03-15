@@ -1,4 +1,4 @@
-0.58.5 2019-03-06
+0.58.5 2019-03-15
     - [bugfix] Fix bug where duplicate keys occured in
       field data output (diewald)
     - [bugfix] Fix bug where fields already set where lifted
@@ -12,6 +12,8 @@
       to avoid multiple documents with the same text sigle
       (diewald)
     - [bugfix] Fixed #53 element distance query bug (margaretha)
+    - [bugfix] Workaround for #54 failing offsets due to
+      surrogate pairs (diewald)
 
 0.58.4 2019-02-05
     - [cleanup] Remove deprecated methods setLicense/getLicense,

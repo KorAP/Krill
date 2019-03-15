@@ -291,9 +291,13 @@ public abstract class AbstractDocument extends Response {
      *            as a string.
      */
     public void setPrimaryData (String primary) {
-        this.primaryData = primary;
+        // Java can't work with utf-8 substrings as defined in the input data,
+        // That's why substringing fails on surrogates. This is a workaround
+        // to remove surrogates to make substringing work again.
+        // It would probably be better to fix this before the data hits the index,
+        // but we have to work with old indices as well.
+        this.primaryData = primary.replaceAll("[^\u0000-\uffff]", "?");
     };
-
 
     /**
      * Get the length of the primary data of the document

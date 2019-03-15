@@ -355,6 +355,45 @@ public class TestHighlight { // extends LuceneTestCase {
                 "Valid class numbers exceeded");
     };
 
+    @Test
+    public void highlightSnippetOffsetBug () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/wiki/WUD17-G97-20422.json.gz"),  true);
+        ki.commit();
+
+        /*
+        QueryBuilder kq = new QueryBuilder("tokens");
+        SpanQuery q = (SpanQuery) kq.seg("s:Sockenpuppe").toQuery();
+
+        Krill qs = new Krill(q);
+        qs.getMeta().getContext().left.setToken(true).setLength((short) 0);
+        qs.getMeta().getContext().right.setToken(true).setLength((short) 0);    
+        Result kr = ki.search(qs);
+        */
+        Match km;
+        
+        km = ki.getMatch("match-WUD17/G97/20422-p1020-1021");
+        assertEquals(km.getSnippetBrackets(), "... [[Madonna]] ...");
+
+        km = ki.getMatch("match-WUD17/G97/20422-p1030-1031");
+        assertEquals(km.getSnippetBrackets(), "... [[Kurier]] ...");
+
+        km = ki.getMatch("match-WUD17/G97/20422-p1032-1033");
+        assertEquals(km.getSnippetBrackets(), "... [[Spalte]] ...");
+
+        // There is a surrogate between 6500, 6600 that makes the substring
+        // broken, as the original substring works on utf-8, but Java works on utf-16
+
+        km = ki.getMatch("match-WUD17/G97/20422-p1033-1034");
+        assertEquals(km.getSnippetBrackets(), "... [[Neue]] ...");
+        
+        km = ki.getMatch("match-WUD17/G97/20422-p1034-1035");
+        assertEquals(km.getSnippetBrackets(), "... [[Artikel]] ...");        
+        
+        km = ki.getMatch("match-WUD17/G97/20422-p5707-5708");
+        assertEquals(km.getSnippetBrackets(), "... [[Sockenpuppe]] ...");
+    }
+    
 
     @Test
     public void highlightEscapes () throws IOException, QueryException {

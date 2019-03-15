@@ -199,6 +199,8 @@ public class FieldDocument extends AbstractDocument {
      * Deserialize token stream data.
      */
     public void setData (Map<String, Object> node) {
+
+        // TODO: Replace surrogates here, see AbstractDocument#setPrimaryData
         this.setPrimaryData((String) node.get("text"));
 
         String fieldName = (String) node.get("name");
