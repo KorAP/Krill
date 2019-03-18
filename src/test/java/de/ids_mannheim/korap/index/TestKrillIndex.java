@@ -37,6 +37,7 @@ public class TestKrillIndex {
     @Test
     public void indexExample () throws IOException {
         KrillIndex ki = new KrillIndex();
+        assertEquals(ki.isReaderOpen(), false);
 
         assertEquals(0, ki.numberOf("base", "documents"));
         assertEquals(0, ki.numberOf("base", "tokens"));
@@ -73,8 +74,10 @@ public class TestKrillIndex {
         /* Save documents */
         ki.commit();
 
+        assertEquals(ki.isReaderOpen(), false);
         assertEquals(2, ki.numberOf("base", "documents"));
         assertEquals(7, ki.numberOf("base", "sentences"));
+        assertEquals(ki.isReaderOpen(), true);
 
         fd = new FieldDocument();
 
@@ -87,6 +90,7 @@ public class TestKrillIndex {
                 + "[(4-8)s:baum|l:baum|p:NN]");
         ki.addDoc(fd);
 
+        
         /* Save documents */
         ki.commit();
 
