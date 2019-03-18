@@ -1893,4 +1893,8 @@ public final class KrillIndex {
         mc.close();
         return mc;
     };
+    
+    public boolean isReaderOpen () {
+        return readerOpen;
+    }
 };
