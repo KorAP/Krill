@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -107,7 +108,7 @@ public class Indexer {
 
                 try {
                     if (addInsteadOfUpsert) {
-                        log.info("Add " + file + " to the index. ");
+                        log.info("{} Add {} to the index. ", this.count, file);
                         if (this.index.addDoc(new FileInputStream(file),
                                               true) == null) {
                             log.warn("fail.");
@@ -115,7 +116,7 @@ public class Indexer {
                         }
                     }
                     else {
-                        log.info("Add or update " + file + " to the index. ");
+                        log.info("{} Add or update {} to the index. ", this.count, file);
                         if (this.index.upsertDoc(new FileInputStream(file),
                                                  true) == null) {
                             log.warn("fail.");
@@ -128,8 +129,12 @@ public class Indexer {
                     }
 
                     // Commit in case the commit count is reached
-                    if ((this.count % this.commitCount) == 0)
+                    if ((this.count % this.commitCount) == 0) {
+
+                        // This will be done in addition to the
+                        // autocommit initiated by KrillIndex
                         this.commit();
+                    }
                 }
                 catch (FileNotFoundException e) {
                     log.error("File " + file + " is not found!");
@@ -156,8 +161,17 @@ public class Indexer {
         }
     }
 
-    private void closeIndex() throws IOException{
-        index.close();
+    private void closeIndex(Boolean wait) throws IOException, InterruptedException {
+        this.commit();
+        // Some delay to make sure the cleanup runs through
+        if (wait) {
+            TimeUnit.SECONDS.sleep(15);
+        };
+        this.index.closeReader();
+        this.index.closeWriter();
+        if (wait) {
+            TimeUnit.SECONDS.sleep(5);
+        };
     }
 
     /**
@@ -169,7 +183,7 @@ public class Indexer {
      *            and a list of directories
      * @throws IOException
      */
-    public static void main (String[] argv) throws IOException {
+    public static void main (String[] argv) {
         
         Options options = new Options();
         options.addOption(Option.builder("c").longOpt("config")
@@ -189,10 +203,14 @@ public class Indexer {
         options.addOption(Option.builder("a").longOpt("addInsteadofUpsert")
                 .desc("Always add files to the index, never update")
                 .build());
+        options.addOption(Option.builder("dne").longOpt("doNotExit")
+                .desc("For testing")
+                .build());
 
         
         CommandLineParser parser = new DefaultParser();
 
+        Boolean doNotExit = false;
         String propFile = null;
         String[] inputDirectories = null;
         try {
@@ -211,6 +229,11 @@ public class Indexer {
             if (cmd.hasOption("a")) {
                 addInsteadOfUpsert = true;
             };
+
+            if (cmd.hasOption("dne")) {
+                doNotExit = true;
+            };
+
         }
         catch (MissingOptionException e) {
             HelpFormatter formatter = new HelpFormatter();
@@ -228,28 +251,42 @@ public class Indexer {
         // Load properties
         Properties prop = KrillProperties.loadProperties(propFile);
 
-        // Get indexer object
-        Indexer indexer = new Indexer(prop);
+        try {
+            // Get indexer object
+            Indexer indexer = new Indexer(prop);
 
-        // Iterate over list of directories
-        for (String arg : inputDirectories) {
-            log.info("Indexing files in " + arg);
-            File f = new File(arg);
-            if (f.isDirectory())
-                indexer.parse(f);
+            // Iterate over list of directories
+            for (String arg : inputDirectories) {
+                log.info("Indexing files in " + arg);
+                File f = new File(arg);
+                if (f.isDirectory())
+                    indexer.parse(f);
+            }
+            indexer.closeIndex(!doNotExit);
+
+            // Final commit
+            log.info("Finished indexing.");
+            // Finish indexing
+            String message = "Added ";
+            if (!addInsteadOfUpsert)
+                message += "or updated ";
+            message += indexer.count + " file";
+            if (indexer.count > 1) {
+                message += "s";
+            }
+            System.out.println(message + ".");
+            if (!doNotExit) {
+                System.exit(0);
+            }
         }
-        indexer.closeIndex();
-        // Final commit
-        log.info("Finished indexing.");
-        // Finish indexing
-        String message = "Added ";
-        if (!addInsteadOfUpsert)
-            message += "or updated ";
-        message += indexer.count + " file";
-        if (indexer.count > 1) {
-            message += "s";
+        catch (IOException e) {
+            log.error("Unexpected error: " + e);
+            e.printStackTrace();
         }
-        System.out.print(message + ".");
-        
+
+        catch (InterruptedException e) {
+            log.error("Unexpected error: " + e);
+            e.printStackTrace();
+        };
     }
 }
