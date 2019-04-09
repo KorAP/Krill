@@ -34,7 +34,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
@@ -155,9 +154,8 @@ public final class KrillIndex {
     private IndexReader reader;
 
     private IndexWriter writer;
-    private IndexWriterConfig config;
-    private IndexSearcher searcher;
     private boolean readerOpen = false;
+    private boolean writerOpen = false;
     private Directory directory;
 
     // The commit counter is only there for
@@ -217,18 +215,6 @@ public final class KrillIndex {
      */
     public KrillIndex (Directory directory) throws IOException {
         this.directory = directory;
-
-        // Add analyzers
-        // TODO: Should probably not be here - make configurable
-        Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
-        analyzerPerField.put("textClass", new KeywordAnalyzer());
-        analyzerPerField.put("keywords", new KeywordAnalyzer());
-        analyzerPerField.put("foundries", new KeywordAnalyzer());
-        PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(
-                new TextAnalyzer(), analyzerPerField);
-
-        // Create configuration with base analyzer
-        this.config = new IndexWriterConfig(analyzer);
     };
 
 
@@ -279,37 +265,37 @@ public final class KrillIndex {
      */
     public IndexWriter writer () throws IOException {
         // Open writer if not already opened
-        if (this.writer == null)
-            this.writer = new IndexWriter(this.directory, this.config);
+        if (!writerOpen)
+            this.openWriter();
+        if (!writerOpen)
+            return null;
         return this.writer;
     };
-
-
-    /**
-     * The Lucene {@link IndexSearcher} object.
-     * 
-     * Will be created, in case it doesn't exist yet.
-     * 
-     * @return The {@link IndexSearcher} object.
-     */
-    public IndexSearcher searcher () {
-        if (this.searcher == null)
-            this.searcher = new IndexSearcher(this.reader());
-        return this.searcher;
-    };
-
+    
 
     // Open index reader
-    private void openReader () {
+    private void openWriter () {
+        if (writerOpen) {
+            return;
+        };
+
         try {
-            // open reader
-            this.reader = DirectoryReader.open(this.directory);
-            readerOpen = true;
-            if (this.searcher != null)
-                this.searcher = new IndexSearcher(reader);
+
+            // Add analyzers
+            // This is just for legacy reasons
+            Map<String, Analyzer> analyzerPerField = new HashMap<String, Analyzer>();
+            analyzerPerField.put("textClass", new KeywordAnalyzer());
+            analyzerPerField.put("keywords", new KeywordAnalyzer());
+            analyzerPerField.put("foundries", new KeywordAnalyzer());
+            PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(
+                new TextAnalyzer(), analyzerPerField);
+
+            // Create configuration with base analyzer
+            this.writer = new IndexWriter(this.directory, new IndexWriterConfig(analyzer));
+            writerOpen = true;
         }
 
-        // Failed to open reader
+        // Failed to open writer
         catch (IOException e) {
             // e.printStackTrace();
             log.warn(e.getLocalizedMessage());
@@ -317,19 +303,47 @@ public final class KrillIndex {
     };
 
 
+    // Open index reader
+    private void openReader () {
+        if (readerOpen) {
+            // this.reader = DirectoryReader.openIfChanged(this.reader)
+            return;
+        };
+
+        try {
+            // open reader
+            this.reader = DirectoryReader.open(this.directory);
+            readerOpen = true;
+        }
+
+        // Failed to open reader
+        catch (IOException e) {
+            // This is in tests most of the time
+            // no problem, because the message just says
+            // "No segments found", because the reader
+            // is empty initially.
+            log.warn(e.getLocalizedMessage());
+        };
+    };
+
+
     // Close index reader
     public void closeReader () throws IOException {
-        if (readerOpen) {
+        if (readerOpen || this.reader != null) {
             this.reader.close();
+            this.reader = null;
             readerOpen = false;
         };
     };
 
 
     // Close index writer
-    private void closeWriter () throws IOException {
-        if (this.writer != null)
+    public void closeWriter () throws IOException {
+        if (writerOpen || this.writer != null) {
             this.writer.close();
+            this.writer = null;
+            writerOpen = false;
+        };
     };
 
 
@@ -341,8 +355,8 @@ public final class KrillIndex {
      * @throws IOException
      */
     public void close () throws IOException {
-        this.closeReader();
         this.closeWriter();
+        this.closeReader();
     };
 
 
@@ -472,6 +486,9 @@ public final class KrillIndex {
                         };
                         this.delDocs("textSigle", textSigle);
                     };
+                }
+                else {
+                    log.warn("Reader is null");
                 };
             }
 
@@ -683,12 +700,17 @@ public final class KrillIndex {
         try {
             if (gzip) {
 
+                GZIPInputStream gzipFile = new GZIPInputStream(json);
+
                 // Create json field document
                 FieldDocument fd = this.mapper.readValue(
-                        new GZIPInputStream(json), FieldDocument.class);
+                        gzipFile, FieldDocument.class);
+                gzipFile.close();
                 return fd;
             };
-            return this.mapper.readValue(json, FieldDocument.class);
+            FieldDocument field = this.mapper.readValue(json, FieldDocument.class);
+            json.close();
+            return field;
         }
 
         // Fail to add json object

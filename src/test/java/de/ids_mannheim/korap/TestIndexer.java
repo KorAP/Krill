@@ -28,22 +28,25 @@ public class TestIndexer {
     @Test
     public void testArguments () throws IOException {
         Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
-                "-i", "src/test/resources/bzk" });
-        assertEquals("Added or updated 1 file.", outputStream.toString());
+                                    "-i", "src/test/resources/bzk",
+                                    "--doNotExit"});
+        assertEquals("Added or updated 1 file.\n", outputStream.toString());
     }
 
     @Test
     public void testOutputArgument () throws IOException {
         Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
-                "-i", "src/test/resources/bzk", "-o", "test-output"});
-        assertEquals("Added or updated 1 file.", outputStream.toString());
+                                    "-i", "src/test/resources/bzk", "-o", "test-output",
+                                    "--doNotExit"});
+        assertEquals("Added or updated 1 file.\n", outputStream.toString());
     }
 
     @Test
     public void testMultipleInputFiles () throws IOException {
         Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
-                "-i", "src/test/resources/wiki" });
-        assertEquals("Added or updated 18 files.", outputStream.toString());
+                                    "-i", "src/test/resources/wiki",
+                                    "--doNotExit"});
+        assertEquals("Added or updated 18 files.\n", outputStream.toString());
     }
 
 
@@ -52,19 +55,21 @@ public class TestIndexer {
         Indexer.main(new String[] {
                 "-c", "src/test/resources/krill.properties",
                 "-i", "src/test/resources/bzk",
-                "-a" });
+                "-a",
+                "--doNotExit"});
         logger.info(outputStream.toString());
-        assertEquals(outputStream.toString(), "Added 1 file.");
+        assertEquals(outputStream.toString(), "Added 1 file.\n");
     }
 
     
     @Test
     public void testMultipleInputDirectories () throws IOException {
         Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
-                "-i",
-                "src/test/resources/bzk;src/test/resources/goe;src/test/resources/sgbr",
-                "-o", "test-index" });
-        assertEquals("Added or updated 5 files.", outputStream.toString());
+                                    "-i",
+                                    "src/test/resources/bzk;src/test/resources/goe;src/test/resources/sgbr",
+                                    "-o", "test-index",
+                                    "--doNotExit"});
+        assertEquals("Added or updated 5 files.\n", outputStream.toString());
     }
 
     @Test
@@ -78,7 +83,8 @@ public class TestIndexer {
     @Test
     public void testMissingConfig () throws IOException {
         Indexer.main(new String[] { "-i", "src/test/resources/bzk",
-                "-o test-index" });
+                                    "-o test-index",
+                                    "--doNotExit"});
         logger.info(outputStream.toString());
         assertEquals(true, outputStream.toString().startsWith(info));
     }
@@ -86,7 +92,8 @@ public class TestIndexer {
     @Test
     public void testMissingInput () throws IOException {
         Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
-                "-o", "test-index" });
+                                    "-o", "test-index",
+                                    "--doNotExit"});
         logger.info(outputStream.toString());
         assertEquals(true, outputStream.toString().startsWith(info));
     }

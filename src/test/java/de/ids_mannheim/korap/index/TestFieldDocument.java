@@ -669,6 +669,18 @@ public class TestFieldDocument {
         ki.upsertDoc(getClass().getResourceAsStream("/wiki/WPD17-H81-63495.json.gz"), true);
         ki.commit();
         assertEquals(ki.numberOf("documents"), 3);
+
+        ki.close();
+
+        fd = new FieldDocument();
+        fd.addString("textSigle", "AAA/DDD/005");
+        fd.addString("content", "Example4");
+        
+        ki.upsertDoc(fd);
+        ki.commit();
+
+        assertEquals(ki.numberOf("documents"), 4);
+
     };
 
     
