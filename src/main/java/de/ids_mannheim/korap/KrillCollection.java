@@ -80,14 +80,16 @@ public final class KrillCollection extends Notifications {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    public final static CacheManager cacheManager = CacheManager.newInstance();
-    public static Cache cache = cacheManager.getCache("named_vc");
+    public static CacheManager cacheManager;
+    public static Cache cache;
 
     /**
      * Construct a new KrillCollection.
      * 
      */
-    public KrillCollection () {};
+    public KrillCollection () {
+        initializeCache();
+    };
 
 
     /**
@@ -97,6 +99,7 @@ public final class KrillCollection extends Notifications {
      *            The {@link KrillIndex} object.
      */
     public KrillCollection (KrillIndex index) {
+        initializeCache();
         this.index = index;
     };
 
@@ -107,7 +110,7 @@ public final class KrillCollection extends Notifications {
      *            The KoralQuery document as a JSON string.
      */
     public KrillCollection (String jsonString) {
-
+        initializeCache();
         try {
             JsonNode json = mapper.readTree(jsonString);
 
@@ -142,7 +145,16 @@ public final class KrillCollection extends Notifications {
         };
     };
 
-
+    public static void initializeCache () {
+        if (cacheManager == null) {
+            cacheManager = CacheManager.newInstance();
+        }
+        if (cache == null) {
+            cache = cacheManager.getCache("named_vc");
+        }
+    }
+    
+    
     /**
      * Set the {@link KrillIndex} the virtual collection refers to.
      * 

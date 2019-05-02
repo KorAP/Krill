@@ -157,6 +157,7 @@ public class Indexer {
     }
 
     private void closeIndex() throws IOException{
+        this.commit();
         index.close();
     }
 
@@ -238,7 +239,9 @@ public class Indexer {
             if (f.isDirectory())
                 indexer.parse(f);
         }
+        
         indexer.closeIndex();
+        
         // Final commit
         log.info("Finished indexing.");
         // Finish indexing

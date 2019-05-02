@@ -286,8 +286,10 @@ public class CollectionBuilder {
         };
 
         public Filter toFilter () throws QueryException {
-			Element element = KrillCollection.cache.get(this.reference);
-			
+            Element element = null;
+            if (KrillCollection.cache != null){
+                element = KrillCollection.cache.get(this.reference);
+            }
             if (element == null) {
                 if (DEBUG) {
                     log.debug(reference + " is NOT found in the cache");

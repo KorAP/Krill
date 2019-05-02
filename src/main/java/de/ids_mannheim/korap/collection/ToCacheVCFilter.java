@@ -73,6 +73,9 @@ public class ToCacheVCFilter extends Filter {
             CachedVCData cachedVCData =
                     new CachedVCData(new HashMap<>(docIdMap));
 
+            if (KrillCollection.cache == null){
+                KrillCollection.initializeCache();
+            }
             KrillCollection.cache.remove(cacheKey);
             KrillCollection.cache.put(new Element(cacheKey, cachedVCData));
         }

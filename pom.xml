@@ -35,7 +35,7 @@
 
 	<groupId>de.ids_mannheim.korap</groupId>
 	<artifactId>Krill</artifactId>
-	<version>0.58.5</version>
+	<version>0.58.6</version>
 	<packaging>jar</packaging>
 
 	<name>Krill</name>
@@ -286,7 +286,7 @@
 				<version>2.22.1</version>
 				<configuration>
           		    <useSystemClassLoader>false</useSystemClassLoader>
-          		    <argLine>-Xms512m</argLine>
+          		    <argLine>-Xmx512m</argLine>
 					<excludes>
 						<exclude>**/benchmark/*</exclude>
 						<exclude>**/TestWPDIndex.java</exclude>
