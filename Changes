@@ -1,5 +1,8 @@
 0.58.6 2019-05-28
     - [bugfix] Updated cache loading (fixed #55) (diewald, margaretha)
+    - [bugfix] Introduce left match cutting so that
+      in matchinfo with expandToContext cutting won't
+      remove the actual match (diewald; reported by CoRoLa)
 
 0.58.5 2019-03-18
     - [bugfix] Fix bug where duplicate keys occured in

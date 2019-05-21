@@ -113,7 +113,8 @@ public class Match extends AbstractDocument {
     public int potentialStartPosChar = -1, potentialEndPosChar = -1;
 
 	@JsonIgnore
-	public boolean cutted = false;
+	public boolean startCutted = false;
+	public boolean endCutted = false;
 
     private String version;
 
@@ -218,7 +219,6 @@ public class Match extends AbstractDocument {
 				};
         };
     };
-
 
     /**
      * Private class of highlights.
@@ -345,7 +345,7 @@ public class Match extends AbstractDocument {
                             this.potentialStartPosChar = bb.getInt(1);
                     };
 
-                    if (bb.getInt(4) > this.potentialEndPosChar && !this.cutted)
+                    if (bb.getInt(4) > this.potentialEndPosChar && !this.endCutted)
                         this.potentialEndPosChar = bb.getInt(5);
 
                     if (DEBUG)
@@ -500,6 +500,11 @@ public class Match extends AbstractDocument {
 		this.addHighlight(new Highlight(start, pagenumber));
 	};
 
+    @JsonIgnore
+    public int getMaxMatchTokens () {
+        return MAX_MATCH_TOKENS;
+    }
+    
     /**
      * Get document id.
      */
@@ -568,7 +573,7 @@ public class Match extends AbstractDocument {
         this.startPos = pos;
 		if (this.endPos != -1 && (this.endPos - pos) > MAX_MATCH_TOKENS) {
 			this.endPos = pos + MAX_MATCH_TOKENS;
-			this.cutted = true;
+			this.endCutted = true;
 		};
     };
 
@@ -615,7 +620,7 @@ public class Match extends AbstractDocument {
     public void setEndPos (int pos) {
 		if (this.startPos != -1 && (pos - this.startPos) > MAX_MATCH_TOKENS) {
 			pos = this.startPos + MAX_MATCH_TOKENS;
-			this.cutted = true;
+			this.endCutted = true;
 		};
         this.endPos = pos;
     };
@@ -821,6 +826,10 @@ public class Match extends AbstractDocument {
         return this.context;
     };
 
+    @JsonIgnore
+    public int getLength () {
+        return this.getEndPos() - this.getStartPos();
+    };  
 
 	
 	// Retrieve pagebreaks in a certain area
@@ -1413,6 +1422,11 @@ public class Match extends AbstractDocument {
 
         // Iterate through all remaining elements
         sb.append("<span class=\"match\">");
+
+		if (this.startCutted) {
+			sb.append("<span class=\"cutted\"></span>");
+		};
+        
         for (short i = start; i <= end; i++) {
 
 			elem = this.snippetArray.get(i);
@@ -1427,7 +1441,7 @@ public class Match extends AbstractDocument {
 				sb.append(elemString);
 			}
         };
-		if (this.cutted) {
+		if (this.endCutted) {
 			sb.append("<span class=\"cutted\"></span>");
 		};
         sb.append("</span>");
@@ -1465,6 +1479,10 @@ public class Match extends AbstractDocument {
 
         sb.append("[");
 
+		if (this.startCutted) {
+			sb.append("<!>");
+		};
+        
         // Last element of sorted array
         elem = this.snippetArray.getLast();
         StringBuilder rightContext = new StringBuilder();
@@ -1480,7 +1498,7 @@ public class Match extends AbstractDocument {
             sb.append(this.snippetArray.get(i).toBrackets(this));
         };
 
-		if (this.cutted) {
+		if (this.endCutted) {
 			sb.append("<!>");
 		};
         sb.append("]");

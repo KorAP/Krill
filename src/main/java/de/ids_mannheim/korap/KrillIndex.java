@@ -1273,6 +1273,7 @@ public final class KrillIndex {
 
                 // Search for minimal surrounding sentences
                 if (extendToSentence) {
+                    
                     String element = "base/s:s";
                     int[] spanContext = match.expandContextToSpan(element);
 
@@ -1281,6 +1282,22 @@ public final class KrillIndex {
 
                     if (spanContext[0] >= 0
                             && spanContext[0] < spanContext[1]) {
+
+                        // Match needs to be cutted!
+                        if ((spanContext[1] - spanContext[0]) > match.getMaxMatchTokens()) {
+                            int contextLength = match.getMaxMatchTokens() - match.getLength();
+                            int halfContext = contextLength / 2;
+
+                            // This is the extended context calculated
+                            int realLeftLength = match.getStartPos() - spanContext[0];
+
+                            // The length is too large - cut!
+                            if (realLeftLength > halfContext) {
+                                match.startCutted = true;
+                                spanContext[0] = match.getStartPos() - halfContext;
+                            }
+                        }
+
                         match.setStartPos(spanContext[0]);
                         match.setEndPos(spanContext[1]);
 						match.potentialStartPosChar = spanContext[2];

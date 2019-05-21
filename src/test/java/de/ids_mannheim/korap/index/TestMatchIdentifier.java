@@ -15,6 +15,11 @@ import org.junit.runners.JUnit4;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
+import de.ids_mannheim.korap.response.Result;
+
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.QueryBuilder;
@@ -1099,6 +1104,31 @@ public class TestMatchIdentifier {
 		assertEquals(km.getFieldValue("availability"), "CC-BY-SA");
     };
 
+    @Test
+    public void indexCorolaTokensBugReplicated () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(getClass().getResourceAsStream("/others/corola-bug.json"), false);
+        ki.commit();
+
+        SpanQuery sq = new SpanTermQuery(new Term("tokens", "s:b"));
+
+        Result kr = ki.search(sq, (short) 10);
+
+        assertEquals(70, kr.getMatch(0).getStartPos());
+        assertEquals(71, kr.getMatch(0).getEndPos());
+        assertEquals("totalResults", kr.getTotalResults(), 1);
+        assertEquals("... a a a a a a [[b]] a a a a a a ...", kr.getMatch(0).getSnippetBrackets());
+            
+        // see TestNextIndex#corolaNextTest
+        Match km = ki.getMatchInfo("match-Corola-blog/BlogPost/370281_a_371610-p70-71", "tokens", null, null,false, false, true);
+
+        // The match needs to be cutted on both sides!
+        String str = km.getSnippetBrackets();
+        assertTrue(str.contains("[<!>a"));
+        assertTrue(str.contains("a}<!>]"));
+    };
+    
 
     private FieldDocument createSimpleFieldDoc () {
         FieldDocument fd = new FieldDocument();
