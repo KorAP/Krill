@@ -1457,12 +1457,13 @@ public final class KrillIndex {
         // The following fields should be lifted for matches
         List<String> fields = (ArrayList<String>) meta.getFields().clone();
         HashSet<String> fieldsSet = new HashSet<String>(fields);
+        boolean snippets = meta.hasSnippets();
 
         // Lift all fields
         if (fields.contains("@all")) {
             fields = null;
         }
-        else {
+        else  {
             // Lift primary field
             fieldsSet.add(field);
         };
@@ -1536,8 +1537,7 @@ public final class KrillIndex {
 					continue;
 				};
 
-                final PositionsToOffset pto = new PositionsToOffset(atomic,
-                        field);
+                final PositionsToOffset pto = snippets ? new PositionsToOffset(atomic, field) : null;
 				
                 // Spans spans = NearSpansOrdered();
                 final Spans spans = query.getSpans(atomic, (Bits) bitset,
@@ -1603,29 +1603,33 @@ public final class KrillIndex {
                     // Create new Match
                     final Match match = new Match(pto, localDocID,
                             spans.start(), spans.end());
-                    match.setContext(kr.getContext());
 
-					match.retrievePagebreaks("~:base/s:pb");
+                    // Add snippet if existing
+                    if (snippets) {
+                        match.setContext(kr.getContext());
+                        match.retrievePagebreaks("~:base/s:pb");
 
-					if (DEBUG)
-						log.trace("Retrieve pagebreaks from index");
+                        if (DEBUG)
+                            log.trace("Retrieve pagebreaks from index");
+
+                        if (spans.isPayloadAvailable())
+                            match.addPayload((List<byte[]>) spans.getPayload());
+                    }
 
                     // Add match to Result
                     kr.add(match);
-
-                    if (spans.isPayloadAvailable())
-                        match.addPayload((List<byte[]>) spans.getPayload());
-
+                    
                     match.internalDocID = docID;
-
+                    
                     // Lift certain fields
                     if (fields != null) {
-                        match.populateDocument(doc, field, fields);
+                        match.populateDocument(doc, snippets ? field : null, fields);
                     }
                     // Lift all fields
                     else {
-                        match.populateDocument(doc, field);
+                        match.populateDocument(doc, snippets ? field : null);
                     };
+
 
                     if (DEBUG) {
                         if (match.getDocID() != null)

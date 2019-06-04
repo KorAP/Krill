@@ -189,6 +189,16 @@ public class TestFieldDocument {
         assertEquals(
                 "... okal. [[Der Buchstabe A hat in {1:deutschen Texten} eine durchschnittliche Häufigkeit von 6,51 %.]] Er ist damit der sechsthäufigste Buchstabe ...",
                 ks.apply(ki).getMatch(0).getSnippetBrackets());
+
+
+        // Do not retrieve snippets
+        meta.setSnippets(false);
+
+        Match km = ks.apply(ki).getMatch(0);
+        
+        assertEquals("Ruru,Jens.Ol,Aglarech", km.toJsonNode().get("author").asText());
+        assertTrue(!km.toJsonNode().has("snippet"));
+        assertEquals("", km.getPrimaryData());
     };
 
 
