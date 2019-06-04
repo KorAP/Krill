@@ -1137,8 +1137,10 @@ public class Match extends AbstractDocument {
 
         // Relevant details are missing
         if (this.positionsToOffset == null || this.localDocID == -1) {
-            log.warn("You have to define "
-                    + "positionsToOffset and localDocID first before");
+            if (DEBUG) {
+                log.warn("You have to define "
+                         + "positionsToOffset and localDocID first before");
+            }
             return false;
         };
 

@@ -137,7 +137,8 @@ public abstract class AbstractDocument extends Response {
      */
     public void populateDocument (Document doc, String field,
             List<String> fields) {
-        this.setPrimaryData(doc.get(field));
+        if (field != null)
+            this.setPrimaryData(doc.get(field));
         this.populateFields(doc, fields);
     };
 
