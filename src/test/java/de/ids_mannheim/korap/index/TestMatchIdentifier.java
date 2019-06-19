@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -227,8 +228,8 @@ public class TestMatchIdentifier {
 
 		res = mapper.readTree(km.toJsonString());
         // assertEquals("tokens", res.at("/field").asText());
-        assertTrue(res.at("/startMore").asBoolean());
-        assertTrue(res.at("/endMore").asBoolean());
+        assertFalse(res.has("startMore"));
+        assertFalse(res.has("endMore"));
         assertEquals("c1", res.at("/corpusID").asText());
         assertEquals("d1", res.at("/docID").asText());
         assertEquals("match-c1!d1-p7-9(4)8-8(2)7-8",
@@ -930,8 +931,8 @@ public class TestMatchIdentifier {
                 false, false);
         JsonNode res = mapper.readTree(km.toJsonString());
         // assertEquals("tokens", res.at("/field").asText());
-        assertTrue(res.at("/startMore").asBoolean());
-        assertTrue(res.at("/endMore").asBoolean());
+        assertFalse(res.has("startMore"));
+        assertFalse(res.has("endMore"));
         assertEquals("c1", res.at("/corpusID").asText());
         assertEquals("d4", res.at("/docID").asText());
         assertEquals(
@@ -952,8 +953,8 @@ public class TestMatchIdentifier {
 
         JsonNode res = mapper.readTree(km.toJsonString());
         // assertEquals("tokens", res.at("/field").asText());
-        assertTrue(res.at("/startMore").asBoolean());
-        assertTrue(res.at("/endMore").asBoolean());
+        assertFalse(res.has("startMore"));
+        assertFalse(res.has("endMore"));
         assertEquals("c1", res.at("/corpusSigle").asText());
         assertEquals("c1/d1", res.at("/docSigle").asText());
         assertEquals("c1/d1/t1", res.at("/textSigle").asText());
@@ -1071,8 +1072,8 @@ public class TestMatchIdentifier {
                 false, false);
         JsonNode res = mapper.readTree(km.toJsonString());
         // assertEquals("tokens", res.at("/field").asText());
-        assertTrue(res.at("/startMore").asBoolean());
-        assertTrue(res.at("/endMore").asBoolean());
+        assertFalse(res.has("startMore"));
+        assertFalse(res.has("endMore"));
         assertEquals("ca1", res.at("/corpusID").asText());
         assertEquals("da1", res.at("/docID").asText());
         assertEquals("<span class=\"context-left\">" + "<span class=\"more\">"

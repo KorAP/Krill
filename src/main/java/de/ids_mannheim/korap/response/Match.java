@@ -113,8 +113,7 @@ public class Match extends AbstractDocument {
     public int potentialStartPosChar = -1, potentialEndPosChar = -1;
 
 	@JsonIgnore
-	public boolean startCutted = false;
-	public boolean endCutted = false;
+	public boolean startCutted = false, endCutted = false;
 
     private String version;
 
@@ -142,6 +141,8 @@ public class Match extends AbstractDocument {
 
     private HighlightCombinator snippetArray;
 
+    
+    @JsonIgnore
     public boolean startMore = true, endMore = true;
 
     private Collection<byte[]> payload;
