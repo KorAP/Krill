@@ -1,0 +1,51 @@
+{
+    "@context": "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld",
+    "query": {
+        "@type": "koral:group",
+        "distances": [{
+            "@type": "cosmas:distance",
+            "key": "s",
+	    "boundary": {
+		"@type": "koral:boundary",
+		"max": "0",
+		"min": "0"
+	    }
+        }],
+        "inOrder": false,
+        "operands": [
+            {
+                "@type": "koral:token",
+                "wrap": {
+                    "@type": "koral:term",
+                    "foundry": "opennlp",
+                    "key": "Buchstaben",
+                    "layer": "orth",
+                    "match": "match:eq",
+                    "rewrites": [{
+                        "@type": "koral:rewrite",
+                        "operation": "operation:injection",
+                        "scope": "foundry",
+                        "src": "Kustvakt"
+                    }]
+                }
+            },
+            {
+                "@type": "koral:token",
+                "wrap": {
+                    "@type": "koral:term",
+                    "foundry": "opennlp",
+                    "key": "Alphabet",
+                    "layer": "orth",
+                    "match": "match:eq",
+                    "rewrites": [{
+                        "@type": "koral:rewrite",
+                        "operation": "operation:injection",
+                        "scope": "foundry",
+                        "src": "Kustvakt"
+                    }]
+                }
+            }
+        ],
+        "operation": "operation:sequence"
+    }
+}

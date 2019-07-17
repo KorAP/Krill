@@ -36,7 +36,6 @@ public class TestElementDistanceIndex {
     Result kr;
     KrillIndex ki;
 
-
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
@@ -51,7 +50,6 @@ public class TestElementDistanceIndex {
         return fd;
     }
 
-
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
@@ -64,7 +62,6 @@ public class TestElementDistanceIndex {
                         + "[(5-6)s:c|_6$<i>5<i>6|<>:s$<b>64<i>5<i>6<i>6<b>0]");
         return fd;
     }
-
 
     private FieldDocument createFieldDoc2 () {
         FieldDocument fd = new FieldDocument();
@@ -79,7 +76,6 @@ public class TestElementDistanceIndex {
         return fd;
     }
 
-
     private FieldDocument createFieldDoc3 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
@@ -92,7 +88,7 @@ public class TestElementDistanceIndex {
                         + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
-    
+
     private FieldDocument createFieldDoc4 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-4");
@@ -106,7 +102,6 @@ public class TestElementDistanceIndex {
         return fd;
     }
 
-
     public SpanQuery createQuery (String elementType, String x, String y,
             int min, int max, boolean isOrdered) {
 
@@ -115,7 +110,6 @@ public class TestElementDistanceIndex {
                 new SpanTermQuery(new Term("tokens", y)),
                 new DistanceConstraint(e, min, max, isOrdered, false), true);
     }
-
 
     /**
      * Multiple documents
@@ -149,7 +143,7 @@ public class TestElementDistanceIndex {
 
     /**
      * Ignore nested element distance unit
-     * */
+     */
     @Test
     public void testCase1b () throws IOException {
         ki = new KrillIndex();
@@ -168,7 +162,6 @@ public class TestElementDistanceIndex {
         assertEquals(4, kr.getMatch(1).endPos);
     }
 
-    
     /**
      * Ensure terms and elements are in the same doc
      */
@@ -190,7 +183,6 @@ public class TestElementDistanceIndex {
         assertEquals(4, kr.getMatch(0).endPos);
 
     }
-
 
     /** Skip to */
     @Test
@@ -216,7 +208,6 @@ public class TestElementDistanceIndex {
 
     }
 
-
     /** Same tokens in different elements */
     @Test
     public void testCase4 () throws IOException {
@@ -236,7 +227,6 @@ public class TestElementDistanceIndex {
 
     }
 
-
     /** Test query from json */
     @Test
     public void testCase5 () throws Exception {
@@ -244,7 +234,8 @@ public class TestElementDistanceIndex {
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
 
-        String jsonPath = getClass().getResource("/queries/cosmas1.json").getFile();
+        String jsonPath =
+                getClass().getResource("/queries/cosmas1.json").getFile();
         SpanQueryWrapper sqwi = getJsonQuery(jsonPath);
         kr = ki.search(sqwi.toQuery(), (short) 10);
 
@@ -255,6 +246,24 @@ public class TestElementDistanceIndex {
         assertEquals(33, kr.getMatch(1).endPos);
     }
 
+    @Test
+    public void testCQLAnd () throws Exception {
+        ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
+        ki.commit();
+
+        String jsonPath = getClass()
+                .getResource("/queries/distances/cql-and.jsonld").getFile();
+        SpanQueryWrapper sqwi = getJsonQuery(jsonPath);
+        SpanQuery query = sqwi.toQuery();
+        assertEquals(
+                "spanElementDistance(tokens:s:Buchstaben, tokens:s:Alphabet, "
+                        + "[(base/s:s[0:0], notOrdered, notExcluded)])",
+                query.toString());
+        kr = ki.search(sqwi.toQuery(), (short) 10);
+
+        assertEquals((long) 1, kr.getTotalResults());
+    }
 
     /** Test query from json (2) */
     @Test
@@ -281,7 +290,9 @@ public class TestElementDistanceIndex {
                 sqwi.toQuery().toString());
 
         kr = ki.search(sqwi.toQuery(), (short) 10);
-        assertEquals(1, kr.getTotalResults()); // Is 1 correct or should it not be ordered?
+        assertEquals(1, kr.getTotalResults()); // Is 1 correct or
+                                               // should it not be
+                                               // ordered?
         assertEquals("[[ec]]ebdc", kr.getMatch(0).getSnippetBrackets());
     }
 }
