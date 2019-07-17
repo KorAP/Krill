@@ -9,6 +9,7 @@
       from JSON responses (diewald)
     - [bugfix] Do not optimize %+w1:1 to be a treated like /+w1:1
       (diewald)
+    - Added a CQL AND query test (margaretha)  
 
 0.58.5 2019-03-18
     - [bugfix] Fix bug where duplicate keys occured in
