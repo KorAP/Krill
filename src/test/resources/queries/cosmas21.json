@@ -1,0 +1,72 @@
+{
+  "context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query" : {
+    "@type": "koral:group",
+    "distances": [
+      {
+        "@type": "cosmas:distance",
+        "boundary": {
+          "@type": "koral:boundary",
+          "max": 1,
+          "min": 1
+        },
+        "exclude": true,
+        "key": "w"
+      }
+    ],
+    "inOrder": true,
+    "operands": [
+      {
+        "@type": "koral:group",
+        "classOut": 129,
+        "operands": [
+          {
+            "@type": "koral:token",
+            "wrap": {
+              "@type": "koral:term",
+              "foundry": "opennlp",
+              "key": "die",
+              "layer": "orth",
+              "match": "match:eq",
+              "rewrites": [
+                {
+                  "@type": "koral:rewrite",
+                  "operation": "operation:injection",
+                  "scope": "foundry",
+                  "src": "Kustvakt"
+                }
+              ]
+            }
+          }
+        ],
+        "operation": "operation:class"
+      },
+      {
+        "@type": "koral:group",
+        "classOut": 129,
+        "operands": [
+          {
+            "@type": "koral:token",
+            "wrap": {
+              "@type": "koral:term",
+              "foundry": "opennlp",
+              "key": "Gegenwart",
+              "layer": "orth",
+              "match": "match:eq",
+              "rewrites": [
+                {
+                  "@type": "koral:rewrite",
+                  "operation": "operation:injection",
+                  "scope": "foundry",
+                  "src": "Kustvakt"
+                }
+              ]
+            }
+          }
+        ],
+        "operation": "operation:class"
+      }
+    ],
+    "operation": "operation:sequence"
+  }
+}

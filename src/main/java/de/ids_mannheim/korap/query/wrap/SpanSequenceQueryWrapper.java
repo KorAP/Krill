@@ -567,7 +567,7 @@ public class SpanSequenceQueryWrapper extends SpanQueryWrapper {
         if (this.constraints.size() == 1) {
             DistanceConstraint dc = this.constraints.get(0);
             if (dc.getUnit().equals("w") && dc.getMinDistance() == 1
-                    && dc.getMaxDistance() == 1 && this.isInOrder) {
+                && dc.getMaxDistance() == 1 && !dc.isExclusion() && this.isInOrder) {
                 return false;
             };
         };

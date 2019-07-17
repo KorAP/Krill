@@ -356,6 +356,17 @@ public class TestKrillQueryJSON {
                 "focus(1: spanEndsWith(<tokens:s />, {1: tokens:p:V}),sorting)");
     };
 
+    @Test
+    public void queryJSONcosmas21 () throws QueryException {
+        SpanQueryWrapper sqwi = getJsonQuery(
+                getClass().getResource("/queries/cosmas21.json").getFile());
+
+        // die %+w1:1 Gegenwart
+        assertEquals(sqwi.toQuery().toString(),
+                "spanDistance({129: tokens:s:die}, {129: tokens:s:Gegenwart}, [(w[1:1], ordered, excluded)])");
+    };
+
+    
 
     @Test
     public void queryJSONrepetition () throws QueryException {
