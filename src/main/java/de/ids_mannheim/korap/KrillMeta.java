@@ -200,7 +200,7 @@ public final class KrillMeta extends Notifications {
 
 
     public KrillMeta setCount (short value) {
-        if (value > 0)
+        if (value >= 0)
             this.count = (value <= this.countMax) ? value : this.countMax;
         return this;
     };

@@ -1,4 +1,4 @@
-0.58.6 2019-07-17
+0.58.6 2019-08-28
     - [bugfix] Updated cache loading (fixed #55) (diewald, margaretha)
     - [bugfix] Introduce left match cutting so that
       in matchinfo with expandToContext cutting won't
@@ -10,6 +10,8 @@
     - [bugfix] Do not optimize %+w1:1 to be a treated like /+w1:1
       (diewald)
     - [cleanup] Added a CQL AND query test (margaretha)  
+    - [feature] Accept count=0 to only retrieve totalResults
+      (diewald)
 
 0.58.5 2019-03-18
     - [bugfix] Fix bug where duplicate keys occured in

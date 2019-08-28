@@ -30,6 +30,7 @@ import de.ids_mannheim.korap.response.SearchContext;
 
 @RunWith(JUnit4.class)
 public class TestKrill {
+
     @Test
     public void searchCount () {
         Krill k = new Krill(new QueryBuilder("field1").seg("a").with("b"));
@@ -45,8 +46,9 @@ public class TestKrill {
         assertEquals(meta.getCount(), 20);
         meta.setCount(500);
         assertEquals(meta.getCount(), meta.getCountMax());
+        meta.setCount(0);
+        assertEquals(meta.getCount(), 0);
     };
-
 
     @Test
     public void searchStartIndex () {
@@ -103,6 +105,7 @@ public class TestKrill {
 
         Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 6);
+        assertEquals(kr.getMatches().size(), 1);
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
                 "... dem [[Buchstaben]] A ...");
 
@@ -113,6 +116,14 @@ public class TestKrill {
         assertEquals(1, res.at("/meta/context/left/1").asInt());
         assertEquals("token", res.at("/meta/context/right/0").asText());
         assertEquals(1, res.at("/meta/context/right/1").asInt());
+
+        // Handle count=0 correctly
+        meta = ks.getMeta();
+        meta.setCount(0);
+        kr = ks.apply(ki);
+        assertEquals(kr.getTotalResults(), 6);
+        assertEquals(kr.getItemsPerPage(), 0);
+        assertEquals(kr.getMatches().size(), 0);
     };
 
 
@@ -185,7 +196,7 @@ public class TestKrill {
                 getClass().getResource("/queries/metaquery6.jsonld").getFile());
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(kr.getTotalResults(), 1);        
     };
 
 
