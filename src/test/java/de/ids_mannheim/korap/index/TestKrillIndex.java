@@ -325,4 +325,54 @@ public class TestKrillIndex {
 			};
 		};
 	};
+
+	@Test
+    public void indexRetrieveFieldInfoUpsert () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("name", "Peter");
+        fd.addString("textSigle", "a/b/c");
+        ki.upsertDoc(fd);
+
+        /* Save documents */
+        ki.commit();
+
+        fd = new FieldDocument();
+        fd.addString("name", "Frank");
+        fd.addString("textSigle", "a/b/d");
+        ki.upsertDoc(fd);
+
+        /* Save documents */
+        ki.commit();
+
+        fd = new FieldDocument();
+        fd.addString("name", "Franz");
+        fd.addString("textSigle", "a/b/c");
+        ki.upsertDoc(fd);
+
+        /* Save documents */
+        ki.commit();
+        JsonNode res = ki.getFields("a/b/c").toJsonNode();
+		Iterator fieldIter = res.at("/document/fields").elements();
+
+		int checkC = 0;
+        while (fieldIter.hasNext()) {
+			JsonNode field = (JsonNode) fieldIter.next();
+
+			String key = field.at("/key").asText();
+
+			switch (key) {
+            case "name":
+				assertEquals("type:string", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("Franz", field.at("/value").asText());
+				checkC++;
+				break;
+            }
+        }
+
+        assertEquals(1, checkC);
+        
+    }
 };
