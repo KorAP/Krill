@@ -1,3 +1,7 @@
+0.58.7 2019-09-16
+    - [bugfix] Fix the behaviour of negative operands in virtual
+      corpora (diewald)
+
 0.58.6 2019-08-28
     - [bugfix] Updated cache loading (fixed #55) (diewald, margaretha)
     - [bugfix] Introduce left match cutting so that

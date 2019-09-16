@@ -93,6 +93,16 @@ public class TestKrillCollectionJSON {
     };
 
     @Test
+    public void collectionWithMultipleNe () {
+        String metaQuery = _getJSONString("collection_multine.jsonld");
+        KrillCollection kc = new KrillCollection(metaQuery);
+        assertEquals(kc.toString(),
+                "AndGroup(QueryWrapperFilter(availability:/CC-BY.*/) AndGroup(-corpusSigle:WUD17 -corpusSigle:WDD17))");
+    };
+
+
+    
+    @Test
     public void collectionWithLargeVector () {
         String query = _getJSONString("collection_large_vector.jsonld");
         Krill ks = new Krill(query);

@@ -1,0 +1,36 @@
+{
+  "@context": "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld",
+  "collection": {
+    "@type": "koral:docGroup",
+    "operands": [
+      {
+        "@type": "koral:doc",
+        "key": "availability",
+        "match": "match:eq",
+        "type": "type:regex",
+        "value": "CC-BY.*"
+      },
+      {
+        "@type": "koral:docGroup",
+        "operands": [
+          {
+            "@type": "koral:doc",
+            "key": "corpusSigle",
+            "match": "match:ne",
+            "value": "WUD17",
+            "type": "type:string"
+          },
+          {
+            "@type": "koral:doc",
+            "key": "corpusSigle",
+            "match": "match:ne",
+            "value": "WDD17",
+            "type": "type:string"
+          }
+        ],
+        "operation": "operation:and"
+      }
+    ],
+    "operation": "operation:and"
+  }
+}
