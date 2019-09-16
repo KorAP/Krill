@@ -123,25 +123,27 @@ public class BooleanGroupFilter extends Filter {
 
 
     @Override
-    public DocIdSet getDocIdSet (LeafReaderContext context, Bits acceptDocs)
+    public DocIdSet getDocIdSet (LeafReaderContext atomic, Bits acceptDocs)
             throws IOException {
-        final LeafReader reader = context.reader();
+        final LeafReader reader = atomic.reader();
         int maxDoc = reader.maxDoc();
         FixedBitSet bitset = new FixedBitSet(maxDoc);
         FixedBitSet combinator = new FixedBitSet(maxDoc);
         boolean init = true;
 
-        if (DEBUG)
-            log.debug("Start trying to filter on bitset of length {}", maxDoc);
+        if (DEBUG) {
+            log.debug("Filter on group {} in a corpus of {} docs", this.toString(), maxDoc);
+        }
 
-        for (final GroupFilterOperand operand : this.operands) {
-            final DocIdSet docids = operand.filter.getDocIdSet(context, null);
-            final DocIdSetIterator filterIter = (docids == null) ? null
-                    : docids.iterator();
+        for (GroupFilterOperand operand : this.operands) {
+            DocIdSet docids = operand.filter.getDocIdSet(atomic, null);
+            DocIdSetIterator filterIter = (docids == null) ? null
+                : docids.iterator();
 
             if (DEBUG)
                 log.debug("> Filter to bitset of {} ({} negative)",
-                        operand.filter.toString(), operand.isNegative);
+                          operand.filter.toString(), operand.isNegative);
+
 
             // Filter resulted in no docs
             if (filterIter == null) {
@@ -149,60 +151,77 @@ public class BooleanGroupFilter extends Filter {
                 if (DEBUG)
                     log.debug("- Filter is null");
 
-                // Filter matches
+                // Filter matches everywhere
                 if (operand.isNegative) {
 
-					if (DEBUG) {
-						// OR - This means, everything is allowed
-						if (this.isOptional) {
+                    // OR - This means, everything is allowed
+                    if (this.isOptional) {
+                        if (DEBUG) {
                             log.debug("- Filter to allow all documents (OR NEG NULL)");
+                        }
 
-						}
-						// AND - The negation is irrelevant
-						else {
-							log.debug("- Filter to allow all documents (AND NEG NULL)");
-						};
-					};
+                        // bitset.set(1, maxDoc);
+                        bitset.set(0, maxDoc);
+
+                        // Match all accepted documents!
+                        return BitsFilteredDocIdSet
+                            .wrap(new BitDocIdSet(bitset), acceptDocs);
+                    }
 
 
-					bitset.set(0, maxDoc);
-					return BitsFilteredDocIdSet
-						.wrap(new BitDocIdSet(bitset), acceptDocs);
+                    // AND - The negation is irrelevant
+                    if (init) {
+                        if (DEBUG)
+                            log.debug("- Initialize by setting to all");
+
+                        bitset.set(0, maxDoc);
+                    }
+
+                    else if (DEBUG) {
+                        log.debug("- Filter by ignoring this operand (AND NEG NULL)");
+                    };
                 }
 
-                // The result is unimportant
-                else if (this.isOptional) {
-                    if (DEBUG)
-                        log.debug("- Filter is ignorable");
-                    continue;
-                };
-
+                // AND with NULL
                 // There is no possible match
+                else if (!this.isOptional) {
+
+                    if (DEBUG)
+                        log.debug("- Filter to allow no documents (2)");
+                    return null;
+                }
+
+                // OR WITH 0 - ignore!
+                else if (DEBUG) {
+                    log.debug("- Filter is ignorable");
+                }
+
                 if (DEBUG)
-                    log.debug("- Filter to allow no documents (2)");
-                return null;
+                    log.debug("- Check next operand");
+
             }
 
             // Initialize bitset
             else if (init) {
 
+                // Set initially empty bitset to filterIter
                 bitset.or(filterIter);
 
                 if (DEBUG)
-                    log.debug("- Filter is inial with card {}",
-                            bitset.cardinality());
+                    log.debug("- Filter is inital with card {}",
+                              bitset.cardinality());
 
                 // Flip the matching documents
                 if (operand.isNegative) {
                     bitset.flip(0, maxDoc);
                     if (DEBUG)
                         log.debug(
-                                "- Filter is negative - so flipped to card {} (1)",
-                                bitset.cardinality());
+                            "- Filter is negative - so flipped to card {} (1)",
+                            bitset.cardinality());
                 };
-
-                init = false;
             }
+
+            // Operate on bitsets
             else {
 
                 if (DEBUG)
@@ -251,7 +270,16 @@ public class BooleanGroupFilter extends Filter {
                 if (DEBUG)
                     log.debug("- Subresult has card {} ", bitset.cardinality());
             };
+
+            if (DEBUG)
+                log.debug("- Init is over");
+
+            init = false;
         };
+
+        if (DEBUG)
+            log.debug("- Operand list ends");
+        
         return BitsFilteredDocIdSet.wrap(new BitDocIdSet(bitset), acceptDocs);
     };
 };

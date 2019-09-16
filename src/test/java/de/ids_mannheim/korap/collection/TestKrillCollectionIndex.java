@@ -219,7 +219,7 @@ public class TestKrillCollectionIndex {
 
 	
     @Test
-    public void testIndexWithNegation () throws IOException {
+    public void testIndexWithNegation1 () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createDoc1());
         ki.addDoc(createDoc2());
@@ -246,8 +246,196 @@ public class TestKrillCollectionIndex {
         kcn.fromBuilder(cb.orGroup().with(cb.term("textClass", "kultur").not())
                 .with(cb.term("author", "Sebastian")));
         assertEquals(1, kcn.docCount());
+        
+        kcn.fromBuilder(
+            cb.andGroup().with(
+                cb.term("author", "Frank").not()
+                )
+            .with(
+                cb.term("author", "Sebastian").not()
+                )
+            );
+        assertEquals("AndGroup(-author:Frank -author:Sebastian)", kcn.toString());
+        assertEquals(1, kcn.docCount());
+
+
+        kcn.fromBuilder(
+            cb.andGroup().with(
+                cb.term("author", "Peter")
+                )
+            .with(
+                cb.andGroup().with(
+                    cb.term("author", "Frank").not()
+                    )
+                .with(
+                    cb.term("author", "Sebastian").not()
+                    )
+                )
+            );
+        assertEquals("AndGroup(author:Peter AndGroup(-author:Frank -author:Sebastian))", kcn.toString());
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(
+            cb.andGroup().with(
+                cb.re("textClass", "reis.*")
+                )
+            .with(
+                cb.andGroup().with(
+                    cb.term("author", "Frank").not()
+                    )
+                .with(
+                    cb.term("author", "Sebastian").not()
+                    )
+                )
+            );
+        assertEquals("AndGroup(QueryWrapperFilter(textClass:/reis.*/) AndGroup(-author:Frank -author:Sebastian))", kcn.toString());
+        assertEquals(1, kcn.docCount());
     };
 
+
+    @Test
+    public void testIndexWithNegation2 () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.commit();
+        ki.addDoc(createDoc2());
+        ki.commit();
+        ki.addDoc(createDoc3());
+        ki.commit();
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
+
+        // Simple negation tests
+        kcn.fromBuilder(cb.term("author", "Frank").not());
+        assertEquals(2, kcn.docCount());
+
+        kcn.fromBuilder(cb.term("textClass", "reisen").not());
+        assertEquals(0, kcn.docCount());
+
+        kcn.fromBuilder(cb.term("textClass", "kultur").not());
+        assertEquals(1, kcn.docCount());
+
+        // orGroup with simple Negation
+        kcn.fromBuilder(cb.orGroup().with(cb.term("textClass", "kultur").not())
+                .with(cb.term("author", "Peter")));
+        assertEquals(2, kcn.docCount());
+
+        kcn.fromBuilder(cb.orGroup().with(cb.term("textClass", "kultur").not())
+                .with(cb.term("author", "Sebastian")));
+        assertEquals(1, kcn.docCount());
+       
+        kcn.fromBuilder(
+            cb.andGroup().with(
+                cb.term("author", "Frank").not()
+                )
+            .with(
+                cb.term("author", "Sebastian").not()
+                )
+            );
+        assertEquals("AndGroup(-author:Frank -author:Sebastian)", kcn.toString());
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(
+            cb.andGroup().with(
+                cb.term("author", "Peter")
+                )
+            .with(
+                cb.andGroup().with(
+                    cb.term("author", "Frank").not()
+                    )
+                .with(
+                    cb.term("author", "Sebastian").not()
+                    )
+                )
+            );
+        assertEquals("AndGroup(author:Peter AndGroup(-author:Frank -author:Sebastian))", kcn.toString());
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(
+            cb.andGroup().with(
+                cb.re("textClass", "reis..")
+                )
+            .with(
+                cb.andGroup().with(
+                    cb.term("author", "Frank").not()
+                    )
+                .with(
+                    cb.term("author", "Sebastian").not()
+                    )
+                )
+            );
+        assertEquals("AndGroup(QueryWrapperFilter(textClass:/reis../) AndGroup(-author:Frank -author:Sebastian))", kcn.toString());
+        assertEquals(1, kcn.docCount());
+    };
+
+    @Test
+    public void testIndexWithNegation3 () throws IOException {
+
+        // This is identical to above but the operands are switched
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.commit();
+        ki.addDoc(createDoc2());
+        ki.commit();
+        ki.addDoc(createDoc3());
+        ki.commit();
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
+
+        // orGroup with simple Negation
+        kcn.fromBuilder(
+            cb.orGroup().with(cb.term("author", "Peter"))
+            .with(cb.term("textClass", "kultur").not()));
+        assertEquals(2, kcn.docCount());
+
+        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Sebastian"))
+                        .with(cb.term("textClass", "kultur").not()));
+        assertEquals(1, kcn.docCount());
+       
+        kcn.fromBuilder(
+            cb.andGroup().with(
+                cb.term("author", "Sebastian").not()
+                )
+            .with(
+                cb.term("author", "Frank").not()
+                )
+            );
+        assertEquals("AndGroup(-author:Sebastian -author:Frank)", kcn.toString());
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(
+            cb.andGroup().with(
+                cb.andGroup().with(
+                    cb.term("author", "Sebastian").not()
+                    )
+                .with(
+                    cb.term("author", "Frank").not()
+                    )
+                )
+            .with(
+                cb.term("author", "Peter")
+                )
+            );
+        assertEquals("AndGroup(AndGroup(-author:Sebastian -author:Frank) author:Peter)", kcn.toString());
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(
+            cb.andGroup().with(
+                cb.andGroup().with(
+                    cb.term("author", "Sebastian").not()
+                    )
+                .with(
+                    cb.term("author", "Frank").not()
+                    )
+                )
+            .with(
+                cb.re("textClass", "reis..")
+                )
+            );
+        assertEquals("AndGroup(AndGroup(-author:Sebastian -author:Frank) QueryWrapperFilter(textClass:/reis../))", kcn.toString());
+        assertEquals(1, kcn.docCount());
+    };  
+    
 
     @Test
     public void testIndexWithMultipleCommitsAndDeletes () throws IOException {

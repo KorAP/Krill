@@ -419,6 +419,10 @@ public final class KrillCollection extends Notifications {
                         "Unknown document group operation");
 
             for (JsonNode operand : json.get("operands")) {
+
+                // TODO:
+                //   Potentially bed here, when operand is a group inside a group
+                //   with the same operator (and not negative)
                 group.with(this._fromKoral(operand));
             };
             return group;
@@ -581,6 +585,7 @@ public final class KrillCollection extends Notifications {
         FixedBitSet bitset = new FixedBitSet(r.maxDoc());
         DocIdSet docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
 
+
         if (docids == null) {
             if (this.cbi != null) {
                 bitset.clear(0, bitset.length());
@@ -589,8 +594,9 @@ public final class KrillCollection extends Notifications {
                 bitset.set(0, bitset.length());
             };
         }
-        else
+        else {
             bitset.or(docids.iterator());
+        }
 
         return bitset;
     };
@@ -622,16 +628,19 @@ public final class KrillCollection extends Notifications {
 
 			// Init vector
 			DocIdSet docids = filter.getDocIdSet(atomic, null);
+
 			DocIdSetIterator filterIter =
 				(docids == null) ? null : docids.iterator();
 				
 			if (filterIter == null) {
+                
 				if (!this.cbi.isNegative()) return null;
 
 				bitset.set(0, maxDoc);
 			}
 			else {
-				// Or bit set
+
+                // Or bit set
 				bitset.or(filterIter);
 					
 				// Revert for negation
