@@ -1,4 +1,4 @@
-0.58.8 2019-11-06
+0.59.0 2019-11-06
     - [bugfix] Fix offset retrieval in concurrent searches
       (diewald)
     - [cleanup] Removed deprecated numberOf() method from index
