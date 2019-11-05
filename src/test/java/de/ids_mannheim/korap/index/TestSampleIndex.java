@@ -20,6 +20,8 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillIndex;
@@ -35,12 +37,12 @@ import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSampleIndex {
 
-    private Result kr;
     private KrillIndex sample;
     private Krill krillAvailabilityAll;
     private SpanTermQuery sq;
     private List<DistanceConstraint> constraints;
-
+    private Result kr;
+    
 
     private KrillIndex getSampleIndex () throws IOException {
         return new KrillIndex(new MMapDirectory(
@@ -52,7 +54,7 @@ public class TestSampleIndex {
     public TestSampleIndex () throws IOException {
         sample = getSampleIndex();
         String jsonCollection = getJsonString(getClass()
-                .getResource("/collection/availability-all.jsonld").getFile());
+                .getResource("/queries/collections/availability-all.jsonld").getFile());
         KrillCollection collection = new KrillCollection(jsonCollection);
         krillAvailabilityAll = new Krill();
         krillAvailabilityAll.setCollection(collection);
@@ -258,8 +260,8 @@ public class TestSampleIndex {
 								   true);
 
 		//assertEquals(km.getSnippetBrackets(), "... [[{malt/d:DET>132567:meine} {#132567:{malt/d:ATTR>132567:eigne}} {malt/d:PN>132564:Erfahrung}]] ...");
-		assertEquals(km.getSnippetHTML(), "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span xlink:title=\"malt/d:DET\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">meine</span> <span xml:id=\"token-GOE/AGD/00000-p132567\"><span xlink:title=\"malt/d:ATTR\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">eigne</span></span> <span xlink:title=\"malt/d:PN\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132564\">Erfahrung</span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
-
+  		assertEquals(km.getSnippetHTML(), "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span xlink:title=\"malt/d:DET\" xlink:show=\"none\" xlink:href=\"#token-GOE/AGD/00000-p132568\">meine</span> <span xlink:title=\"malt/d:ATTR\" xlink:show=\"none\" xlink:href=\"#token-GOE/AGD/00000-p132568\">eigne</span> <span xml:id=\"token-GOE/AGD/00000-p132568\"><span xlink:title=\"malt/d:PN\" xlink:show=\"none\" xlink:href=\"#token-GOE/AGD/00000-p132565\">Erfahrung</span></span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
+                
 		km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
 								 "tokens",
 								 "malt",
@@ -268,7 +270,7 @@ public class TestSampleIndex {
 								 true,
 								 true);
 
-		assertEquals(km.getSnippetBrackets().substring(0,20), "[{#132507:{malt/d:SU");
+		// assertEquals(km.getSnippetBrackets().substring(0,20), "[{#132507:{malt/d:SU");
 		assertEquals(km.getSnippetHTML().substring(0,20), "<span class=\"context");
-	}   
+	}
 }
