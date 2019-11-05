@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.WildcardQuery;
@@ -20,6 +21,8 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillIndex;
@@ -35,12 +38,12 @@ import de.ids_mannheim.korap.util.QueryException;
 
 public class TestSampleIndex {
 
-    private Result kr;
     private KrillIndex sample;
     private Krill krillAvailabilityAll;
     private SpanTermQuery sq;
     private List<DistanceConstraint> constraints;
-
+    private Result kr;
+    
 
     private KrillIndex getSampleIndex () throws IOException {
         return new KrillIndex(new MMapDirectory(
@@ -52,7 +55,7 @@ public class TestSampleIndex {
     public TestSampleIndex () throws IOException {
         sample = getSampleIndex();
         String jsonCollection = getJsonString(getClass()
-                .getResource("/collection/availability-all.jsonld").getFile());
+                .getResource("/queries/collections/availability-all.jsonld").getFile());
         KrillCollection collection = new KrillCollection(jsonCollection);
         krillAvailabilityAll = new Krill();
         krillAvailabilityAll.setCollection(collection);
@@ -258,8 +261,8 @@ public class TestSampleIndex {
 								   true);
 
 		//assertEquals(km.getSnippetBrackets(), "... [[{malt/d:DET>132567:meine} {#132567:{malt/d:ATTR>132567:eigne}} {malt/d:PN>132564:Erfahrung}]] ...");
-		assertEquals(km.getSnippetHTML(), "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span xlink:title=\"malt/d:DET\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">meine</span> <span xml:id=\"token-GOE/AGD/00000-p132567\"><span xlink:title=\"malt/d:ATTR\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132567\">eigne</span></span> <span xlink:title=\"malt/d:PN\" xlink:type=\"simple\" xlink:href=\"#token-GOE/AGD/00000-p132564\">Erfahrung</span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
-
+  		assertEquals(km.getSnippetHTML(), "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span xlink:title=\"malt/d:DET\" xlink:show=\"none\" xlink:href=\"#token-GOE/AGD/00000-p132568\">meine</span> <span xlink:title=\"malt/d:ATTR\" xlink:show=\"none\" xlink:href=\"#token-GOE/AGD/00000-p132568\">eigne</span> <span xml:id=\"token-GOE/AGD/00000-p132568\"><span xlink:title=\"malt/d:PN\" xlink:show=\"none\" xlink:href=\"#token-GOE/AGD/00000-p132565\">Erfahrung</span></span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>");
+                
 		km = sample.getMatchInfo("match-GOE/AGD/00000-p132566-132569",
 								 "tokens",
 								 "malt",
@@ -268,7 +271,144 @@ public class TestSampleIndex {
 								 true,
 								 true);
 
-		assertEquals(km.getSnippetBrackets().substring(0,20), "[{#132507:{malt/d:SU");
+		// assertEquals(km.getSnippetBrackets().substring(0,20), "[{#132507:{malt/d:SU");
 		assertEquals(km.getSnippetHTML().substring(0,20), "<span class=\"context");
 	}   
+
+    @Test
+    public void TestSampleIndexParallel () throws IOException, QueryException, InterruptedException, ExecutionException {
+
+        // The sample index is global
+
+        final SpanQuery sq1 = new QueryBuilder("tokens").seg("s:meine").toQuery();
+        final SpanQuery sq2 = new QueryBuilder("tokens").seg("s:ihre").toQuery();
+        final SpanQuery sq3 = new QueryBuilder("tokens").seg("s:unseres").toQuery();
+
+        Callable<String> req1 = new Callable<String>(){
+                @Override
+                public String call() throws Exception {
+
+                    Result kr = sample.search(sq1, (short) 10);
+
+                    if (kr.getMatch(0).getStartPos() != 131) {
+                        return "1-1StartPos=" + kr.getMatch(0).getStartPos();
+                    }
+
+                    if (kr.getMatch(0).getEndPos() != 132) {
+                        return "1-1EndPos=" + kr.getMatch(0).getEndPos();
+                    }
+
+                    if (kr.getMatch(1).getStartPos() != 803) {
+                        return "1-2StartPos=" + kr.getMatch(1).getStartPos();
+                    }
+
+                    if (kr.getMatch(1).getEndPos() != 804) {
+                        return "1-2EndPos=" + kr.getMatch(1).getEndPos();
+                    }
+
+                    if (!kr.getMatch(1).getSnippetBrackets().equals(
+                            "... der Jesuiten Tun und Wesen hält [[meine]] Betrachtungen fest. Kirchen, Türme, Gebäude haben ..."
+                            )) {
+                        return "1-Snippet=" + kr.getMatch(1).getSnippetBrackets();
+                    }
+                    
+                    return "ok";
+                }
+            };
+
+        Callable<String> req2 = new Callable<String>(){
+                @Override
+                public String call() throws Exception {
+                    Result kr = sample.search(sq2, (short) 10);
+
+                    if (kr.getMatch(0).getStartPos() != 471) {
+                        return "2-1StartPos=" + kr.getMatch(0).getStartPos();
+                    }
+
+                    if (kr.getMatch(0).getEndPos() != 472) {
+                        return "2-1EndPos=" + kr.getMatch(0).getEndPos();
+                    }
+
+                    if (kr.getMatch(1).getStartPos() != 715) {
+                        return "2-2StartPos=" + kr.getMatch(1).getStartPos();
+                    }
+
+                    if (kr.getMatch(1).getEndPos() != 716) {
+                        return "2-2EndPos=" + kr.getMatch(1).getEndPos();
+                    }
+
+                    if (!kr.getMatch(1).getSnippetBrackets().equals(
+                            "... und wie durch gefälligen Prunk sich [[ihre]] Kirchen auszeichnen, so bemächtigen sich die ..."
+                            )) {
+                        return "2-Snippet=" + kr.getMatch(1).getSnippetBrackets();
+                    }
+                    
+                    return "ok";
+                }
+            };
+
+        Callable<String> req3 = new Callable<String>(){
+                @Override
+                public String call() throws Exception {
+                    Result kr = sample.search(sq3, (short) 10);
+
+                    if (kr.getMatch(0).getStartPos() != 69582) {
+                        return "3-1StartPos=" + kr.getMatch(0).getStartPos();
+                    }
+
+                    if (kr.getMatch(0).getEndPos() != 69583) {
+                        return "3-1EndPos=" + kr.getMatch(0).getEndPos();
+                    }
+
+                    if (kr.getMatch(1).getStartPos() != 70671) {
+                        return "3-2StartPos=" + kr.getMatch(1).getStartPos();
+                    }
+
+                    if (kr.getMatch(1).getEndPos() != 70672) {
+                        return "3-2EndPos=" + kr.getMatch(1).getEndPos();
+                    }
+
+                    if (!kr.getMatch(1).getSnippetBrackets().equals(
+                            "... Blatt gibt euch bloß ein Zeugnis [[unseres]] Unvermögens, diese Gegenstände genugsam zu fassen ..."
+                            )) {
+                        return "3-Snippet=" + kr.getMatch(1).getSnippetBrackets();
+                    }
+                    
+                    return "ok";
+                }
+            };
+        
+
+        // Create a pool with n threads
+        ExecutorService executor = Executors.newFixedThreadPool(16);
+
+        for (int i = 0; i < 2000; i++) {
+            Future<String> res3 = executor.submit(req3);
+            Future<String> res1 = executor.submit(req1);
+            Future<String> res2 = executor.submit(req2);
+
+            String value1 = res1.get();
+            String value2 = res2.get();
+            String value3 = res3.get();
+
+            if (!value1.equals("ok")) {
+                System.err.println("at "+ i);
+                assertEquals("ok", value1);
+                break;
+            }
+            if (!value2.equals("ok")) {
+                System.err.println("at "+ i);
+                assertEquals("ok", value2);
+                break;
+            }
+            if (!value3.equals("ok")) {
+                System.err.println("at "+ i);
+                assertEquals("ok", value3);
+                break;
+            }
+            System.err.println("Run "+i);
+        };
+        
+        executor.shutdown();
+    };
 }

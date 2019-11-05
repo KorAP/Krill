@@ -20,7 +20,7 @@ public class PositionsToOffset {
     private LeafReaderContext atomic;
     private boolean processed = false;
     private Integer[] pair;
-    private static ByteBuffer bbOffset = ByteBuffer.allocate(8);
+    private ByteBuffer bbOffset;
 
     HashSet<PositionsToOffsetArray> positions;
     HashMap<PositionsToOffsetArray, Integer[]> offsets;
@@ -64,6 +64,7 @@ public class PositionsToOffset {
         this.atomic = atomic;
         this.positions = new HashSet<>(64);
         this.offsets = new HashMap<>(64);
+        this.bbOffset = ByteBuffer.allocate(8);
     };
 
 
