@@ -165,9 +165,7 @@ public final class KrillIndex {
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
 
-    private byte[] pl = new byte[4];
-    private static ByteBuffer bb = ByteBuffer.allocate(4),
-            bbOffset = ByteBuffer.allocate(8), bbTerm = ByteBuffer.allocate(32);
+    private static ByteBuffer bbTerm = ByteBuffer.allocate(32);
 
     // Some initializations ...
     {
@@ -749,54 +747,6 @@ public final class KrillIndex {
             log.warn(e.getLocalizedMessage());
         };
         return (long) -1;
-
-        // Short cut for documents
-        // This will be only "texts" in the future
-        /*
-        if (type.equals("documents") || type.equals("base/texts")) {
-            if (collection.getCount() <= 0) {
-                try {
-                    return (long) this.reader().numDocs();
-                }
-                catch (Exception e) {
-                    log.warn(e.getLocalizedMessage());
-                };
-                return (long) 0;
-            };
-            long docCount = 0;
-            // int i = 1;
-            try {
-                for (LeafReaderContext atomic : this.reader().leaves()) {
-                    docCount += collection.bits(atomic).cardinality();
-                    // i++;
-                };
-            }
-            catch (IOException e) {
-                log.warn(e.getLocalizedMessage());
-            };
-            return docCount;
-        };
-        
-        // Create search term
-        // This may be prefixed by foundries
-        Term term = new Term(field, "-:" + type);
-        
-        long occurrences = 0;
-        try {
-            // Iterate over all atomic readers and collect occurrences
-            for (LeafReaderContext atomic : this.reader().leaves()) {
-                occurrences += this._numberOfAtomic(collection.bits(atomic),
-                        atomic, term);
-            };
-        }
-        
-        // Something went wrong
-        catch (Exception e) {
-            log.warn(e.getLocalizedMessage());
-        };
-        
-        return occurrences;
-        */
     };
 
 
@@ -833,105 +783,6 @@ public final class KrillIndex {
      */
     public long numberOf (String type) {
         return this.numberOf("tokens", type);
-    };
-
-
-    /**
-     * Search for the number of occurrences of different types,
-     * e.g. <i>documents</i>, <i>sentences</i> etc.
-     * 
-     * @param docvec
-     *            The scope of the numbering by means of a
-     *            {@link Bits} vector
-     * @param field
-     *            The field containing the textual data and the
-     *            annotations as a string.
-     * @param type
-     *            The type of meta information,
-     *            e.g. <i>documents</i> or <i>sentences</i> as a
-     *            string.
-     * @return The number of the occurrences.
-     * @throws IOException
-     */
-    /*
-    @Deprecated
-    public long numberOf (Bits docvec, String field, String type)
-        throws IOException {
-    // Shortcut for documents
-    if (type.equals("documents")) {
-        FixedBitSet os = (FixedBitSet) docvec;
-        return os.cardinality();
-    };
-    
-    Term term = new Term(field, "-:" + type);
-    
-    int occurrences = 0;
-    try {
-        for (LeafReaderContext atomic : this.reader().leaves()) {
-            occurrences += this._numberOfAtomic(docvec, atomic, term);
-        };
-    }
-    catch (IOException e) {
-        log.warn(e.getLocalizedMessage());
-    };
-    
-    return occurrences;
-    };
-    */
-
-
-    // Search for meta information in term vectors
-    // This will create the sum of all numerical payloads
-    // of the term in the document vector
-    @Deprecated
-    private long _numberOfAtomic (Bits docvec, LeafReaderContext atomic,
-            Term term) throws IOException {
-
-        // This reimplements docsAndPositionsEnum with payloads
-        final Terms terms = atomic.reader().fields().terms(term.field());
-
-        // No terms were found
-        if (terms != null) {
-            // Todo: Maybe reuse a termsEnum!
-            final TermsEnum termsEnum = terms.iterator(null);
-
-            // Set the position in the iterator to the term that is seeked
-            if (termsEnum.seekExact(term.bytes())) {
-
-                // Start an iterator to fetch all payloads of the term
-                DocsAndPositionsEnum docs = termsEnum.docsAndPositions(docvec,
-                        null, DocsAndPositionsEnum.FLAG_PAYLOADS);
-
-                // The iterator is empty
-                // This may even be an error, but we return 0
-                if (docs.docID() == DocsAndPositionsEnum.NO_MORE_DOCS)
-                    return 0;
-
-                // Init some variables for data copying
-                long occurrences = 0;
-                BytesRef payload;
-
-                // Init nextDoc()
-                while (docs.nextDoc() != DocsAndPositionsEnum.NO_MORE_DOCS) {
-
-                    // Initialize (go to first term)
-                    docs.nextPosition();
-
-                    // Copy payload with the offset of the BytesRef
-                    payload = docs.getPayload();
-                    System.arraycopy(payload.bytes, payload.offset, pl, 0, 4);
-
-                    // Add payload as integer
-                    occurrences += bb.wrap(pl).getInt();
-                };
-
-                // Return the sum of all occurrences
-                return occurrences;
-            };
-        };
-
-        // Nothing found
-        return 0;
     };
 
 
