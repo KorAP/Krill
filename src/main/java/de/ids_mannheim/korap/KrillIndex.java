@@ -11,10 +11,6 @@ import java.util.zip.GZIPInputStream;
 import java.time.LocalDate;
 
 import org.apache.lucene.analysis.Analyzer;
-/*
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-*/
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -165,7 +161,7 @@ public final class KrillIndex {
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
 
-    private static ByteBuffer bbTerm = ByteBuffer.allocate(32);
+    // private ByteBuffer bbTerm;
 
     // Some initializations ...
     {
@@ -960,6 +956,7 @@ public final class KrillIndex {
         Filter filter = (Filter) new QueryWrapperFilter(bool);
 
         CompiledAutomaton fst = null;
+        ByteBuffer bbTerm = ByteBuffer.allocate(32);
 
         if (info) {
             /* Create an automaton for prefixed terms of interest.

@@ -1,7 +1,9 @@
-0.58.8 2019-11-05
+0.58.8 2019-11-06
     - [bugfix] Fix offset retrieval in concurrent searches
       (diewald)
     - [cleanup] Removed deprecated numberOf() method from index
+      (diewald)
+    - [bugfix] Fix offset retrieval in concurrent getMatchInfo requests
       (diewald)
 
 0.58.7 2019-09-16
