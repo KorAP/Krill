@@ -46,7 +46,7 @@ most of the protocols features, including ...
 
 ## Prerequisites
 
-Java 7 or 8 SDK,
+Java 8 (OpenJDK or Oracle JDK),
 [Git](http://git-scm.com/),
 [Maven 3](https://maven.apache.org/).
 Further dependencies are resolved using Maven.
