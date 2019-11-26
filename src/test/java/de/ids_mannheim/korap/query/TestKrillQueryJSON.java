@@ -597,6 +597,71 @@ public class TestKrillQueryJSON {
         };
     };
 
+    @Test
+    public void queryJSONtermVector () throws QueryException {
+        // base=foo|base=bar|base=xyz|base=abc
+        try {
+            String json = getJsonString(getClass()
+                    .getResource(
+                            "/queries/segment/vector.jsonld")
+                    .getFile());
+            KrillQuery kq = new KrillQuery("tokens");
+
+            assertEquals("spanOr([tokens:s:foo, tokens:s:bar, tokens:s:xyz, tokens:s:abc])",
+                         kq.fromKoral(json).toQuery().toString());
+        }
+        catch (QueryException e) {
+            fail(e.getMessage());
+        };
+    };
+
+    @Test
+    public void queryJSONwildcardVector () throws QueryException {
+        // base=f?o|base=bar|base=x*z|base=abc
+        try {
+            String json = getJsonString(getClass()
+                    .getResource(
+                            "/queries/segment/vector-wildcards.jsonld")
+                    .getFile());
+            KrillQuery kq = new KrillQuery("tokens");
+
+            assertEquals("spanOr([" +
+                         "SpanMultiTermQueryWrapper(tokens:s:f?o), " +
+                         "SpanMultiTermQueryWrapper(tokens:s:bar), " +
+                         "SpanMultiTermQueryWrapper(tokens:s:x*z), " +
+                         "SpanMultiTermQueryWrapper(tokens:s:abc)" +
+                         "])",
+                         kq.fromKoral(json).toQuery().toString());
+        }
+        catch (QueryException e) {
+            fail(e.getMessage());
+        };
+    };    
+
+
+    @Test
+    public void queryJSONregexVector () throws QueryException {
+        // base=f.?o|base=b[au]r|base=x(yz)*|base=ab+c
+        try {
+            String json = getJsonString(getClass()
+                    .getResource(
+                            "/queries/segment/vector-regex.jsonld")
+                    .getFile());
+            KrillQuery kq = new KrillQuery("tokens");
+
+            assertEquals("spanOr([" +
+                         "SpanMultiTermQueryWrapper(tokens:/s:f.?o/), " +
+                         "SpanMultiTermQueryWrapper(tokens:/s:b[au]r/), " +
+                         "SpanMultiTermQueryWrapper(tokens:/s:x(yz)*/), " +
+                         "SpanMultiTermQueryWrapper(tokens:/s:ab+c/)" +
+                         "])",
+                         kq.fromKoral(json).toQuery().toString());
+        }
+        catch (QueryException e) {
+            fail(e.getMessage());
+        };
+    };    
+    
 
     @Test
     public void queryJSONregexRewrite1 () throws QueryException {
