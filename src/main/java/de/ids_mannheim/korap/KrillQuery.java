@@ -2,6 +2,7 @@ package de.ids_mannheim.korap;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 
@@ -316,7 +317,7 @@ public final class KrillQuery extends Notifications {
                 // Get wrapped token
                 return this._segFromJson(json.get("wrap"));
 
-            case "koral:span":
+            case "koral:span":                
                 // EM: what to do with empty koral:span? 
                 // it is allowed only in relation queries
                 if (isOperationRelation && !json.has("key") && !json.has("wrap") && !json.has("attr")) {
@@ -1123,15 +1124,31 @@ public final class KrillQuery extends Notifications {
         Boolean isTerm = termType.equals("koral:term") ? true
                 : false;
         Boolean isCaseInsensitive = false;
-
-        if (!json.has("key") || json.get("key").asText().length() < 1) {
-            // why must it have an attr?
+       
+        if (!json.has("key") ||
+            (json.get("key").size() == 1 && json.get("key").asText().length() < 1)) {
+            
+            // It may have no key but an attribute
             if (!json.has("attr")) {
 //                return new SpanRepetitionQueryWrapper();
                 throw new QueryException(740,
                         "Key definition is missing in term or span");
             }
         };
+
+        
+        // Term is represented as a list of keys
+        LinkedList<String> keys = new LinkedList<String>();
+
+        if (json.has("key")) {
+            if (json.get("key").size() > 1) {
+                for (JsonNode value : json.get("key")) {
+                    keys.push(value.asText());
+                }
+            } else {
+                keys.push(json.get("key").asText());
+            }
+        }
         
         // Empty koral:span hack
         if (isSpan) {
@@ -1159,44 +1176,50 @@ public final class KrillQuery extends Notifications {
             };
         };
 
-        StringBuilder value = new StringBuilder();
-
-        if (direction != null)
-            value.append(direction.value());
-
         // expect orth? expect lemma? 
         // s:den | i:den | cnx/l:die | mate/m:mood:ind | cnx/syn:@PREMOD |
         // mate/m:number:sg | opennlp/p:ART
 
-        if (json.has("foundry") && json.get("foundry").asText().length() > 0) {
+        StringBuilder value = new StringBuilder();
+        LinkedList<String> values = new LinkedList<String>();
+
+        if (direction != null)
+            value.append(direction.value());
+            
+        if (json.has("foundry") &&
+            json.get("foundry").asText().length() > 0) {
             value.append(json.get("foundry").asText()).append('/');
         };
 
+
         // No default foundry defined
-        if (json.has("layer") && json.get("layer").asText().length() > 0) {
+        if (json.has("layer") &&
+            json.get("layer").asText().length() > 0) {
             String layer = json.get("layer").asText();
             switch (layer) {
 
-                case "lemma":
-                    layer = "l";
-                    break;
+            case "lemma":
+                layer = "l";
+                break;
 
-                case "pos":
-                    layer = "p";
-                    break;
+            case "pos":
+                layer = "p";
+                break;
 
-                case "orth":
-                    // TODO: THIS IS AN UGLY HACK! AND SHOULD BE NAMED "SURFACE" or . OR *
-                    layer = ".";
-                    break;
+            case "orth":
+                // TODO:
+                //   THIS IS AN UGLY HACK!
+                //   AND SHOULD BE NAMED "SURFACE" or . OR *
+                layer = ".";
+                break;
 
-                case "struct":
-                    layer = "s";
-                    break;
+            case "struct":
+                layer = "s";
+                break;
 
-                case "const":
-                    layer = "c";
-                    break;
+            case "const":
+                layer = "c";
+                break;
             };
 
             if (isCaseInsensitive && isTerm) {
@@ -1204,7 +1227,7 @@ public final class KrillQuery extends Notifications {
                     layer = "i";
                 else {
                     this.addWarning(767,
-                            "Case insensitivity is currently not supported for this layer");
+                                    "Case insensitivity is currently not supported for this layer");
                 };
             };
 
@@ -1220,17 +1243,33 @@ public final class KrillQuery extends Notifications {
             value.append(layer).append(':');
         };
 
-        if (json.has("key") && json.get("key").asText().length() > 0) {
-            String key = json.get("key").asText();
-            value.append(isCaseInsensitive ? key.toLowerCase() : key);
-        };
+        // Remember the common prefix for all values
+        int offset = value.length();
 
-        if (json.has("value") && json.get("value").asText().length() > 0)
-            value.append(':').append(json.get("value").asText());
+        // Iterate over all keys
+        for (String key : keys) {
+
+            // Reset to common prefix
+            value.setLength(offset);
+
+            // Add key to value
+            value.append(isCaseInsensitive ? key.toLowerCase() : key);
+
+            // TODO:
+            //   This should iterate over all values as well
+            if (json.has("value") && json.get("value").asText().length() > 0)
+                value.append(':').append(json.get("value").asText());
+
+            // Add to value list
+            values.push(value.toString());
+        };
 
         // Regular expression or wildcard
         if (isTerm) {
 
+            // Create alter query
+            SpanAlterQueryWrapper saqw = new SpanAlterQueryWrapper(this.field);
+            
 			String match = "match:eq";
 			if (json.has("match")) {
 				match = json.get("match").asText();
@@ -1243,37 +1282,43 @@ public final class KrillQuery extends Notifications {
 				switch (json.get("type").asText()) {
                 case "type:regex": {
 
-                    // The regex can be rewritten to an any token
-                    if (value.toString().matches("^[si]:\\.[\\+\\*]\\??$")) {
-                        return new SpanRepetitionQueryWrapper();
+                    for (String v : values) {
+                        
+                        // The regex can be rewritten to an any token
+                        if (v.matches("^[si]:\\.[\\+\\*]\\??$")) {
+                            return new SpanRepetitionQueryWrapper();
+                        };
+                        
+                        saqw.or(qb.re(v, isCaseInsensitive));
                     };
-
-					SpanRegexQueryWrapper srqw = qb.re(value.toString(), isCaseInsensitive);
 
 					if (match.equals("match:ne")) {
 						if (DEBUG)
 							log.trace("Term is negated");
-						// ssqw.makeNegative();
-						return this.builder().seg().without(srqw);
+                        saqw.setNegative(true);
+						return saqw;
 					}
 					else if (match.equals("match:eq")) {
-						return srqw;
+						return saqw;
 					}
 					throw new QueryException(741, "Match relation unknown");
                 }
                 case "type:wildcard": {
 
-					SpanWildcardQueryWrapper swcqw =
-						qb.wc(value.toString(), isCaseInsensitive);
+                    // Wildcard queries are deprecated in KoralQuery since 9/2017
+                    
+                    for (String v : values) {
+                        saqw.or(qb.wc(v, isCaseInsensitive));
+                    };
 
 					if (match.equals("match:ne")) {
 						if (DEBUG)
 							log.trace("Term is negated");
-						// ssqw.makeNegative();
-						return this.builder().seg().without(swcqw);
+                        saqw.setNegative(true);
+						return saqw;
 					}
 					else if (match.equals("match:eq")) {
-						return swcqw;
+						return saqw;
 					};
 					throw new QueryException(741, "Match relation unknown");
 				}
@@ -1286,21 +1331,39 @@ public final class KrillQuery extends Notifications {
 				};
 			};
 
-			SpanSegmentQueryWrapper ssqw = this.builder().seg(value.toString());
+            // TODO:
+            //   This could alternatively use
+            //   https://github.com/tokuhirom/regexp-trie
+            for (String v : values) {
+                saqw.or(v);
+            };
+                
 			if (match.equals("match:ne")) {
 				if (DEBUG)
 					log.trace("Term is negated");
-				ssqw.makeNegative();
-				return this.builder().seg().without(ssqw);
+
+                // Segment "without" doesn't work in
+                // attribute contexts
+                saqw.setNegative(true);
+				return saqw;
 			}
 			else if (match.equals("match:eq")) {
-				return ssqw;
+				return saqw;
 			}
 			else {
 				throw new QueryException(741, "Match relation unknown");
 			}
 		};
 
+        if (values.size() > 1) {
+            throw new QueryException(
+                0,
+                "List representation for spans not yet supported"
+                );
+            
+        };
+
+        // Term has attribute
         if (json.has("attr")) {
             JsonNode attrNode = json.get("attr");
             if (!attrNode.has("@type")) {
@@ -1331,11 +1394,12 @@ public final class KrillQuery extends Notifications {
     private SpanQueryWrapper _createElementAttrFromJson (
             SpanQueryWrapper elementWithIdWrapper, JsonNode json,
             JsonNode attrNode) throws QueryException {
-
+        
         if (attrNode.get("@type").asText().equals("koral:term")) {
             SpanQueryWrapper attrWrapper = _attrFromJson(json.get("attr"));
+
             if (attrWrapper != null) {
-                if (elementWithIdWrapper != null) {
+                if (elementWithIdWrapper != null) {                  
                     return new SpanWithAttributeQueryWrapper(
                             elementWithIdWrapper, attrWrapper);
                 }
@@ -1430,10 +1494,8 @@ public final class KrillQuery extends Notifications {
             String rootValue = attrNode.get("root").asText();
             if (rootValue.equals("true") || rootValue.equals("false")) {
 
-                // TODO: Here do not refer to 'tokens'!!!
-                // EM: what should it be? property?
                 return new SpanAttributeQueryWrapper(new SpanSimpleQueryWrapper(
-                        "tokens", "@root", Boolean.valueOf(rootValue)));
+                        this.field, "@root", Boolean.valueOf(rootValue)));
             }
         }
         return null;

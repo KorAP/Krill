@@ -1,0 +1,12 @@
+{
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.3/context.jsonld",
+  "query": {
+	  "@type": "koral:token", 
+	  "wrap": {
+	    "@type": "koral:term", 
+	    "layer": "orth",
+	    "key": ["f.?o","b[au]r","x(yz)*","ab+c"],
+      "type":"type:regex"
+	  }
+  }
+}
