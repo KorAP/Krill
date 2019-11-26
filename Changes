@@ -1,12 +1,14 @@
-0.59.0 2019-11-07
+0.59.0 2019-11-27
     - [bugfix] Fix offset retrieval in concurrent searches
       (diewald)
     - [cleanup] Removed deprecated numberOf() method from index
       (diewald)
     - [bugfix] Fix offset retrieval in concurrent getMatchInfo requests
       (diewald)
-    - Updated readme and the version of java and some plugins & libraries. 
-      (margaretha)
+    - [cleanup] Updated readme and the version of java and some plugins
+      & libraries (margaretha)
+    - [feature] Support for vector representation of terms in KoralQuery
+      (diewald)
 
 0.58.7 2019-09-16
     - [bugfix] Fix the behaviour of negative operands in virtual
