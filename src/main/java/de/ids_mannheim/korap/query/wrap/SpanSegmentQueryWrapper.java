@@ -205,6 +205,7 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
         else if (this.inclusive.size() == 0 && this.exclusive.size() >= 1) {
             return (SpanQuery) this._listToQuery(this.exclusive);
         }
+
         else if (this.inclusive.size() >= 1 && this.exclusive.size() == 0) {
             return (SpanQuery) this._listToQuery(this.inclusive);
         };
@@ -215,6 +216,11 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 
     private SpanQuery _listToQuery (ArrayList<SpanQueryWrapper> list)
             throws QueryException {
+
+        if (list.size() == 1) {
+            return (SpanQuery) list.get(0).toFragmentQuery();
+        };
+        
         SpanQuery query = list.get(0).toFragmentQuery();
 
         for (int i = 1; i < list.size(); i++) {

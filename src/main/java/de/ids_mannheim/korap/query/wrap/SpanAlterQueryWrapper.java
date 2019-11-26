@@ -39,8 +39,14 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
         };
     };
 
+    public SpanAlterQueryWrapper setNegative (Boolean neg) {
+        this.isNegative = neg;
+        return this;
+    };
 
     public SpanAlterQueryWrapper or (String term) {
+        // TODO:
+        //   Potential optimizable by directly add()ing
         SpanQueryWrapper sqw = new SpanSimpleQueryWrapper(this.field, term);
         return this.or(sqw);
     };
@@ -50,6 +56,7 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
         if (term.isNull())
             return this;
 
+        // Check! This seems to render the whole group negative!
         if (term.isNegative())
             this.isNegative = true;
 
@@ -103,7 +110,7 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
     public SpanQuery toFragmentQuery () throws QueryException {
         if (this.isNull || this.alternatives.size() == 0)
             return (SpanQuery) null;
-
+        
         if (this.alternatives.size() == 1) {
             return (SpanQuery) this.alternatives.get(0)
                     .retrieveNode(this.retrieveNode).toFragmentQuery();
