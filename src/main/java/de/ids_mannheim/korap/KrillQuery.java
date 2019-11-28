@@ -1288,8 +1288,17 @@ public final class KrillQuery extends Notifications {
                         if (v.matches("^[si]:\\.[\\+\\*]\\??$")) {
                             return new SpanRepetitionQueryWrapper();
                         };
+
+                        SpanRegexQueryWrapper srqw = qb.re(v, isCaseInsensitive);
+
+                        if (srqw.error != null) {
+                            throw new QueryException(
+                                StatusCodes.INVALID_QUERY,
+                                "Invalid regex"
+                                );
+                        };
                         
-                        saqw.or(qb.re(v, isCaseInsensitive));
+                        saqw.or(srqw);
                     };
 
 					if (match.equals("match:ne")) {

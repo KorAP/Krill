@@ -694,6 +694,22 @@ public class TestKrillQueryJSON {
                 "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 1}, right)}))");
     };
 
+    @Test
+    public void queryJSONregexFail () {
+        // "Leserin.{,3}"
+        String json = getJsonString(getClass()
+                .getResource("/queries/segment/regex-simple.jsonld")
+                .getFile());
+        KrillQuery kq = new KrillQuery("tokens");
+
+        try {
+            String res = kq.fromKoral(json).toQuery().toString();
+            fail("Regex not expected to work");
+        }
+        catch (QueryException e) {
+        };
+    };
+    
 
     @Test
     public void queryJSONregexVectorRewrite () throws QueryException {

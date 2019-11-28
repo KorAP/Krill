@@ -12,7 +12,7 @@ import org.apache.lucene.util.automaton.RegExp;
 
 public class SpanRegexQueryWrapper extends SpanQueryWrapper {
     private SpanQuery query;
-
+    public String error = null;
 
     public SpanRegexQueryWrapper (String field, String re) {
         this(field, re, RegExp.ALL, false);
@@ -38,11 +38,18 @@ public class SpanRegexQueryWrapper extends SpanQueryWrapper {
             };
             re = re.toLowerCase();
         };
-        RegexpQuery requery = new RegexpQuery(new Term(field, re), flags);
-        query = new SpanMultiTermQueryWrapper<RegexpQuery>(requery);
 
+        try {
+            RegexpQuery requery = new RegexpQuery(new Term(field, re), flags);
+            query = new SpanMultiTermQueryWrapper<RegexpQuery>(requery);
+        } catch (Exception e) {
+            this.error = e.getLocalizedMessage();
+        }
     };
 
+    public SpanRegexQueryWrapper (RegexpQuery requery) {
+        query = new SpanMultiTermQueryWrapper<RegexpQuery>(requery);
+    };    
 
     public SpanQuery toFragmentQuery () {
         return this.query;
