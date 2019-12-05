@@ -780,6 +780,38 @@ public class TestMatchIdentifier {
         */
     };
 
+    @Test
+    public void indexExample7SentenceExpansionWarning ()
+        throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(getClass().getResourceAsStream("/wiki/WUD17-C94-39360.json.gz"), true);
+        ki.commit();
+        Match km;
+
+        km = ki.getMatchInfo("match-WUD17/C94/39360-p395-396",
+                             "tokens",
+                             null,
+                             null,
+                             false,
+                             false,
+                             true); // extendToSentence
+
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("Unable to extend context", res.at("/warnings/0/1").asText());
+
+        QueryBuilder kq = new QueryBuilder("tokens");
+        Krill ks = new Krill(kq.tag("base/s:s"));
+        Result kr = ki.search(ks);
+        
+        assertEquals("<tokens:base/s:s />", ks.getSpanQuery().toString());
+        assertEquals("totalResults", kr.getTotalResults(), 29);
+
+        assertEquals(360, kr.getMatch(22).getStartPos());
+        assertEquals(362, kr.getMatch(22).getEndPos());
+        assertEquals(411, kr.getMatch(23).getStartPos());
+        assertEquals(450, kr.getMatch(23).getEndPos());
+    }
 
     @Test
     public void indexExample7Dependencies ()
