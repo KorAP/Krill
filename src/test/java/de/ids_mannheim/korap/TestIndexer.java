@@ -43,7 +43,7 @@ public class TestIndexer {
     public void testMultipleInputFiles () throws IOException {
         Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
                                     "-i", "src/test/resources/wiki"});
-        assertEquals("Added or updated 18 files.\n", outputStream.toString());
+        assertEquals("Added or updated 19 files.\n", outputStream.toString());
     }
 
 
