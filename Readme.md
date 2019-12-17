@@ -104,7 +104,7 @@ Krill is developed as part of the [KorAP](http://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Institute for German Language
 ([IDS](http://ids-mannheim.de/)),
 funded by the
-[Leibniz-Gemeinschaft](http://www.leibniz-gemeinschaft.de/en/about-us/leibniz-competition/projekte-2011/2011-funding-line-2/)
+[Leibniz-Gemeinschaft](https://www.leibniz-gemeinschaft.de/)
 and supported by the [KobRA](http://www.kobra.tu-dortmund.de) project,
 funded by the Federal Ministry of Education and Research
 ([BMBF](http://www.bmbf.de/en/)).
