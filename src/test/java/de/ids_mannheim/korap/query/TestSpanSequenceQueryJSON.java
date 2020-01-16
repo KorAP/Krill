@@ -411,7 +411,16 @@ public class TestSpanSequenceQueryJSON {
 					 "(base/s:s[0:0], ordered, notExcluded)])");
     };
 
+	@Test
+    public void queryJSONcosmas2Bug2 () throws QueryException {
 
+        SpanQueryWrapper sqwi = getJsonQuery(getClass().getResource("/queries/bugs/cosmas-exclude.jsonld").getFile());
+        
+        SpanQuery sq = sqwi.toQuery();
+
+        // (Pop-up OR Pop-ups) %s0 (Internet OR  Programm)
+        assertEquals(sq.toString(),"spanElementDistance({129: spanOr([tokens:s:Pop-up, tokens:s:Pop-ups])}, {129: spanOr([tokens:s:Internet, tokens:s:Programm])}, [(base/s:s[0:0], notOrdered, excluded)])");
+    };
 	
 
     // get query wrapper based on json file
