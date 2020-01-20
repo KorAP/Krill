@@ -419,7 +419,7 @@ public class TestSpanSequenceQueryJSON {
         SpanQuery sq = sqwi.toQuery();
 
         // (Pop-up OR Pop-ups) %s0 (Internet OR  Programm)
-        assertEquals(sq.toString(),"spanElementDistance({129: spanOr([tokens:s:Pop-up, tokens:s:Pop-ups])}, {129: spanOr([tokens:s:Internet, tokens:s:Programm])}, [(base/s:s[0:0], notOrdered, excluded)])");
+        assertEquals(sq.toString(),"spanElementDistance({129: spanOr([tokens:s:Blatt, tokens:s:Augen])}, {129: spanOr([tokens:s:Wald, tokens:s:Baum])}, [(base/s:s[0:0], notOrdered, excluded)])");
     };
 	
 
