@@ -1,4 +1,5 @@
-0.59.1 2019-01-20
+0.59.1 2020-01-28
+    - [bugfix] Fix bug in classed group queries (diewald)
 
 0.59.0 2019-11-28
     - [bugfix] Fix offset retrieval in concurrent searches

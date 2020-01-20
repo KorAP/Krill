@@ -1230,6 +1230,36 @@ public class TestKrill {
     };
 
 
+    @Test
+    public void queryJSONcosmasSentenceNegationBug () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        // Indexing test files
+        for (String i : new String[] {
+                "00001",
+                "00002",
+                "00003",
+                "00004",
+                "00005",
+                "00006",
+                "02439"
+            }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                      true);
+        };
+
+        ki.commit();
+
+        String json = getJsonString(getClass()
+                .getResource("/queries/bugs/cosmas-exclude.jsonld")
+                .getFile());
+       
+        Result kr = new Krill(json).apply(ki);
+
+        assertEquals(0, kr.getTotalResults());
+    };
+   
+
     /**
      * This is a Schreibgebrauch ressource that didn't work for
      * element queries.

@@ -10,7 +10,9 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.util.Bits;
+
 
 import de.ids_mannheim.korap.query.SpanDistanceQuery;
 
@@ -68,7 +70,7 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
                                           Map<Term, TermContext> termContexts)
             throws IOException {
         super(query, context, acceptDocs, termContexts);
-
+        
         elements = query.getElementQuery().getSpans(context, acceptDocs,
                 termContexts);
         hasMoreElements = elements.next();
@@ -79,7 +81,11 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
         this.isOrdered = query.isOrdered();
         candidateList = new ArrayList<CandidateSpan>();
         targetList = new ArrayList<CandidateSpan>();
-        currentDocNum = firstSpans.doc();
+        
+        if (hasMoreSpans)
+            currentDocNum = firstSpans.doc();
+        else
+            currentDocNum = DocIdSetIterator.NO_MORE_DOCS;
 
         minDistance = query.getMinDistance();
         maxDistance = query.getMaxDistance();

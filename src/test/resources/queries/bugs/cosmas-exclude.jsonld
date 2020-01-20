@@ -7,7 +7,7 @@
           "wrap":{
             "@type":"koral:term",
             "match":"match:eq",
-            "key":"Pop-up",
+            "key":"Blatt",
             "layer":"orth"
           }
         },{
@@ -15,7 +15,7 @@
           "wrap":{
             "@type":"koral:term",
             "match":"match:eq",
-            "key":"Pop-ups",
+            "key":"Augen",
             "layer":"orth"
           }
         }],
@@ -33,7 +33,7 @@
           "wrap":{
             "@type":"koral:term",
             "match":"match:eq",
-            "key":"Internet",
+            "key":"Wald",
             "layer":"orth"
           }
         },{
@@ -41,7 +41,7 @@
           "wrap":{
             "@type":"koral:term",
             "match":"match:eq",
-            "key":"Programm",
+            "key":"Baum",
             "layer":"orth"
           }
         }],
