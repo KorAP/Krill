@@ -1070,6 +1070,7 @@ public final class KrillQuery extends Notifications {
 
                         for (JsonNode operand : operands) {
                             SpanQueryWrapper part = this._segFromJson(operand);
+                           
                             if (part instanceof SpanAlterQueryWrapper) {
                                 ssegqw.with((SpanAlterQueryWrapper) part);
                             }
@@ -1347,7 +1348,7 @@ public final class KrillQuery extends Notifications {
                 saqw.or(v);
             };
                 
-			if (match.equals("match:ne")) {
+			if (match.equals("match:ne")) {                
 				if (DEBUG)
 					log.trace("Term is negated");
 

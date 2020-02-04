@@ -1,5 +1,6 @@
-0.59.1 2020-01-28
+0.59.1 2020-02-04
     - [bugfix] Fix bug in classed group queries (diewald)
+    - [bugfix] Fix bug in segments with negated components (diewald)
 
 0.59.0 2019-11-28
     - [bugfix] Fix offset retrieval in concurrent searches

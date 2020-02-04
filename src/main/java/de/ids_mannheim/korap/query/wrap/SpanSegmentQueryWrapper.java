@@ -119,9 +119,12 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 
     public SpanSegmentQueryWrapper with (SpanAlterQueryWrapper alter) {
         if (!alter.isNull()) {
-            if (alter.isNegative())
-                this.isNegative = true;
-            this.inclusive.add(alter);
+            if (alter.isNegative()) {
+                this.exclusive.add(alter);
+            }
+            else {
+                this.inclusive.add(alter);
+            };
             this.isNull = false;
         };
         return this;
@@ -167,18 +170,14 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
 
 
     public SpanSegmentQueryWrapper without (SpanAlterQueryWrapper alter) {
-        if (!alter.isNull()) {
-            if (alter.isNegative()) {
-                this.inclusive.add(alter);
-            }
-            else {
-                this.exclusive.add(alter);
-            };
-            this.isNull = false;
-        };
-        return this;
+        if (alter.isNegative()) {
+            alter.setNegative(false);
+        } else {
+            alter.setNegative(true);
+        }
+        return this.with(alter);
     };
-
+   
 
     public SpanSegmentQueryWrapper without (SpanSegmentQueryWrapper seg) {
         if (!seg.isNull()) {

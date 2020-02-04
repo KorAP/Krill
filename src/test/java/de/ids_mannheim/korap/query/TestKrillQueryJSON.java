@@ -709,8 +709,55 @@ public class TestKrillQueryJSON {
         catch (QueryException e) {
         };
     };
-    
 
+    @Test
+    public void queryJSONnegationInGroup () throws QueryException {
+        // [orth=laufe/i & base!=Lauf]
+        String json = getJsonString(getClass()
+                                    .getResource("/queries/segment/negation-in-group.jsonld")
+                                    .getFile());
+
+        KrillQuery kq = new KrillQuery("tokens");
+        assertEquals("spanNot(tokens:i:laufe, tokens:tt/l:Lauf, 0, 0)",
+                     kq.fromKoral(json).toQuery().toString());
+    };   
+
+    @Test
+    public void queryJSONnegationInGroupAlt () throws QueryException {
+        // [orth=laufe/i & base!=Lauf & opennlp/l!=Lauf]
+        String json = getJsonString(getClass()
+                                    .getResource("/queries/segment/negation-in-group-alt.jsonld")
+                                    .getFile());
+
+        KrillQuery kq = new KrillQuery("tokens");
+        assertEquals("spanNot(tokens:i:laufe, spanOr([tokens:tt/l:Lauf, tokens:opennlp/l:Lauf]), 0, 0)",
+                     kq.fromKoral(json).toQuery().toString());
+    };   
+
+    @Test
+    public void queryJSONnegationInGroupAlt2 () throws QueryException {
+        // [orth=laufe/i & base!=Lauf & opennlp/l=Lauf]
+        String json = getJsonString(getClass()
+                                    .getResource("/queries/segment/negation-in-group-alt-2.jsonld")
+                                    .getFile());
+
+        KrillQuery kq = new KrillQuery("tokens");
+        assertEquals("spanNot(spanSegment(tokens:i:laufe, tokens:opennlp/l:Lauf), tokens:tt/l:Lauf, 0, 0)",
+                     kq.fromKoral(json).toQuery().toString());
+    };   
+    
+    @Test
+    public void queryJSONnegationInGroupRegex () throws QueryException {
+        // [orth=laufe/i & base!=/Lauf/]
+        String json = getJsonString(getClass()
+                                    .getResource("/queries/segment/negation-in-group-regex.jsonld")
+                                    .getFile());
+
+        KrillQuery kq = new KrillQuery("tokens");
+        assertEquals("spanNot(tokens:i:laufe, SpanMultiTermQueryWrapper(tokens:/tt/l:Lauf/), 0, 0)",
+                     kq.fromKoral(json).toQuery().toString());
+    };   
+    
     @Test
     public void queryJSONregexVectorRewrite () throws QueryException {
         // der [base=f.?o|base=b[au]r|base=.*|base=ab+c]

@@ -1,0 +1,37 @@
+{
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query": {
+    "@type": "koral:token",
+    "wrap": {
+      "@type": "koral:termGroup",
+      "operands": [
+        {
+          "@type": "koral:term",
+          "flags": [
+            "flags:caseInsensitive"
+          ],
+          "foundry": "opennlp",
+          "key": "laufe",
+          "layer": "orth",
+          "match": "match:eq"
+        },
+        {
+          "@type": "koral:term",
+          "foundry": "tt",
+          "key": "Lauf",
+          "layer": "lemma",
+          "match": "match:ne"
+        },
+        {
+          "@type": "koral:term",
+          "foundry": "opennlp",
+          "key": "Lauf",
+          "layer": "lemma",
+          "match": "match:ne"
+        }
+
+      ],
+      "relation": "relation:and"
+    }
+  }
+}
