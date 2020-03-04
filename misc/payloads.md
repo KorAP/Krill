@@ -1,5 +1,11 @@
 # Payload Handling in Krill
-Apache Lucene supports payloads as arbitrary byte sequences to store information for terms specific to any token position. Krill uses payloads to store various information in a compact way. This documents describes the payload information for index payloads (payloads stored in the index for different term concepts) and computed payloads (payloads created during the retrieval phase).
+Apache Lucene supports payloads as arbitrary byte sequences to store information for terms specific to any token position. Krill uses payloads to store various information in a compact way. This document describes the payload information for index payloads (payloads stored in the index for different term concepts) and computed payloads (payloads created on-the-fly during the retrieval phase).
+
+## Token positions
+Token positions mark the positions between tokens. All tokens are indexed
+at the start position. A simple token always has implicitely an end position of start position ```+ 1```.
+That means, the end position of a span will always be the token position of the
+final token of the span ```+ 1```.
 
 ## Payload Type Identifier (PTI)
 Payloads (both indexed and computed) have a leading byte indicating the type of the payload sequence. This is necessary because the origin (i.e. the requested term) of a payload is lost during the retrieval phase. Payload type identifiers range between 0 and 255 and have the length of a byte (\<b\>). In case a token has no payload, no payload type identifier is stored.
@@ -10,7 +16,7 @@ Tokens, spans and relations in the index may contain token-unique identifiers (T
 ## Index Payloads
 
 ### Token position payloads
-A token always has a special character payload storing the start and end offset of the token. The special character is a reference symbol for this payload, which is an underscore followed by the corresponding token position. For example, the _1$\<i\>0\<i\>3 is the special character payload for the token in position 1 describing that the token ranges from 0 to 3. This offset information is stored in integer.
+A token always has a special character payload storing the start and end offset of the token. The special character is a reference symbol for this payload, which is an underscore followed by the corresponding token position. For example, the _1$\<i\>0\<i\>3 is the special character payload for the token starting at position 1 describing that the token ranges from character 0 to 3. This offset information is stored in integer.
 Token payloads are not retrieved via SpanQueries and therefore do not have a PTI.
 
 ### Token payloads

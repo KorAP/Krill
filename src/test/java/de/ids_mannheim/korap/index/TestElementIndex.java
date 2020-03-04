@@ -4,7 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -26,7 +29,7 @@ public class TestElementIndex {
         // <a>x<a>y<a>zhij</a>hij</a>hij</a>hij</a>
         FieldDocument fd = new FieldDocument();
         fd.addTV("base", "x  y  z  h  i  j  h  i  j  h  i  j  ",
-                "[(0-3)s:x|<>:a$<b>64<i>0<i>3<i>12<b>0]"
+                "[(0-3)s:x|<>:a$<b>64<i>0<i>3<i>12<b>0||<>:b$<b>64<i>0<i>3<i>1<b>0]"
                         + "[(3-6)s:y|<>:a$<b>64<i>3<i>6<i>9<b>0]"
                         + "[(6-9)s:z|<>:a$<b>64<i>6<i>9<i>6]"
                         + "[(9-12)s:h<b>0]" + "[(12-15)s:i]" + "[(15-18)s:j]"
@@ -70,7 +73,23 @@ public class TestElementIndex {
         assertEquals("StartPos (2)", 2, kr.getMatch(5).startPos);
         assertEquals("EndPos (2)", 6, kr.getMatch(5).endPos);
 
-        // System.err.println(kr.toJSON());
+        sq = new SpanTermQuery(new Term("base", "s:x"));
+
+        kr = ki.search(sq, (short) 10);
+
+        assertEquals("totalResults", kr.getTotalResults(), 2);
+        
+        assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
+        assertEquals("EndPos (0)", 1, kr.getMatch(0).endPos);
+
+        sq = new SpanElementQuery("base", "b");
+
+        kr = ki.search(sq, (short) 10);
+
+        assertEquals("totalResults", kr.getTotalResults(), 1);
+
+        assertEquals("StartPos (0)", 0, kr.getMatch(0).startPos);
+        assertEquals("EndPos (0)", 1, kr.getMatch(0).endPos);
     };
 
 

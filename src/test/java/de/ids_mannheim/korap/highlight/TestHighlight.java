@@ -444,6 +444,50 @@ public class TestHighlight { // extends LuceneTestCase {
                 km.getSnippetHTML());
     };
 
+
+    @Test
+    public void checkSpanHighlights () throws IOException, QueryException {
+
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addString("UID", "1");
+        fd.addString("textSigle", "c1/d1/1");
+        fd.addTV("base", "abc",
+                "[(0-1)s:a|i:a|_0#0-1|-:t$<i>3|<>:base/t:t$<b>64<i>0<i>3<i>3<b>0]" +
+                 "[(1-2)s:b|i:b|base/l:B|_1#1-2|<>:corenlp/x:a$<b>64<i>1<i>2<i>2<b0>]" +
+                 "[(2-3)s:c|i:c|base/l:C|_2#2-3]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+        Result kr = ki
+            .search((SpanQuery) kq.tag("base/t:t").toQuery());
+
+        Match km = kr.getMatch(0);
+        assertEquals(km.getStartPos(), 0);
+        assertEquals(km.getEndPos(), 3);
+        assertEquals("match-c1/d1/1-p0-3",km.getID());
+
+        km = ki.getMatchInfo("match-c1/d1/1-p0-3", "base", true,
+                (ArrayList) null, (ArrayList) null, true, true, false);
+        assertEquals(0, km.getStartPos());
+        assertEquals(3, km.getEndPos());
+        assertEquals("<span class=\"context-left\"></span>" +
+                     "<span class=\"match\">"+
+                     "<mark>"+
+                     "<span title=\"base/t:t\">a"+
+                     "<span title=\"base/l:B\">"+
+                     "<span title=\"corenlp/x:a\">b</span>"+
+                     "</span>"+
+                     "<span title=\"base/l:C\">c</span>"+
+                     "</span>"+
+                     "</mark>"+
+                     "</span>"+
+                     "<span class=\"context-right\"></span>", km.getSnippetHTML());
+    };
+    
 	
     @Test
     public void highlightEmptySpan () throws IOException, QueryException {
