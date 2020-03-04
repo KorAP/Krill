@@ -39,7 +39,7 @@
 	<packaging>jar</packaging>
 
 	<name>Krill</name>
-	<url>http://www.ids-mannheim.de/</url>
+	<url>https://korap.ids-mannheim.de/</url>
 
 	<organization>
 		<name>IDS Mannheim</name>
