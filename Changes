@@ -1,6 +1,8 @@
-0.59.1 2020-02-04
+0.59.1 2020-04-08
     - [bugfix] Fix bug in classed group queries (diewald)
     - [bugfix] Fix bug in segments with negated components (diewald)
+    - [bugfix] Try to fix problem with early closed readers
+      in upsert transactions (diewald)
 
 0.59.0 2019-11-28
     - [bugfix] Fix offset retrieval in concurrent searches

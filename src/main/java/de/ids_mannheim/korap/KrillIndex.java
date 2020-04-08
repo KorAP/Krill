@@ -142,7 +142,9 @@ public final class KrillIndex {
 
     // TODO: Use configuration instead.
     // Last line of defense against DOS
-    private int autoCommit = 500;
+    // Keep in mind - upsert requires 2 commits
+    // and isn't atomic
+    private int autoCommit = 10000;
     private String version = "Unknown";
     private String name = "Unknown";
 
@@ -240,11 +242,12 @@ public final class KrillIndex {
      * @return The {@link IndexReader} object.
      */
     public IndexReader reader () {
-        // Todo: Maybe use DirectoryReader.openIfChanged(DirectoryReader)
+        // Todo: Maybe use DirectoryReader.openIfChanged(DirectoryReader)       
         if (!readerOpen)
             this.openReader();
         if (!readerOpen)
             return null;
+
         return this.reader;
     };
 
@@ -300,7 +303,6 @@ public final class KrillIndex {
     // Open index reader
     private void openReader () {
         if (readerOpen) {
-            // this.reader = DirectoryReader.openIfChanged(this.reader)
             return;
         };
 
@@ -376,6 +378,7 @@ public final class KrillIndex {
      * @throws IOException
      */
     public void commit () throws IOException {
+        log.info("Internal committing index ... ");
         this.writer().commit();
         commitCounter = 0;
         this.closeReader();
@@ -436,53 +439,72 @@ public final class KrillIndex {
             try {
                 // Iterate over all atomic indices and find the matching document
 
-                if (this.reader() != null) {
+            UPSERT:
+                while (true) {
+
+                    if (this.reader() != null) {
                 
-                    for (LeafReaderContext atomic : this.reader().leaves()) {
-
-                        // Retrieve the single document of interest
-                        DocIdSet filterSet = filter.getDocIdSet(
-                            atomic,
-                            atomic.reader().getLiveDocs());
+                        for (LeafReaderContext atomic : this.reader().leaves()) {
                         
-                        DocIdSetIterator filterIterator = filterSet.iterator();
+                            // The reader is closed
+                            /*
+                            if (this.reader.getRefCount() == 0) {
 
-                        if (filterIterator == null)
-                            continue;
-                    
-                        // Go to the matching doc - and remember its ID
-                        int localDocID = filterIterator.nextDoc();
-
-                        if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
-                            continue;
-
-                        // We've found the correct document! Hurray!
-                        if (DEBUG)
-                            log.trace("We've found a matching document");
-
-                        // TODO: Probably use
-                        // document(int docID, StoredFieldVisitor visitor)
-                        Document storedDoc = atomic.reader().document(localDocID);
-
-                        // Document is loadable
-                        if (storedDoc != null) {
-                            IndexableField indexCreationField =
-                                storedDoc.getField("indexCreationDate");
-                        
-                            if (indexCreationField == null) {
-                                indexCreationDate = current;
-                            }
-                            else {
-                                indexCreationDate = new KrillDate(
-                                    indexCreationField.numericValue().toString()
-                                    );
+                                // Retry update
+                                // System.err.println("Retry update!");
+                                break;
                             };
+                            */
+                        
+                            // Retrieve the single document of interest
+                            DocIdSet filterSet = filter.getDocIdSet(
+                                atomic,
+                                atomic.reader().getLiveDocs());
+                        
+                            DocIdSetIterator filterIterator = filterSet.iterator();
+
+                            if (filterIterator == null) {
+                                continue;
+                            };
+                    
+                            // Go to the matching doc - and remember its ID
+                            int localDocID = filterIterator.nextDoc();
+
+                            if (localDocID == DocIdSetIterator.NO_MORE_DOCS) {
+                                continue;
+                            };
+
+                            // We've found the correct document! Hurray!
+                            if (DEBUG)
+                                log.trace("We've found a matching document");
+                            
+                            // TODO: Probably use
+                            // document(int docID, StoredFieldVisitor visitor)
+                            Document storedDoc = atomic.reader().document(localDocID);
+
+                            // Document is loadable
+                            if (storedDoc != null) {
+                                IndexableField indexCreationField =
+                                    storedDoc.getField("indexCreationDate");
+                        
+                                if (indexCreationField == null) {
+                                    indexCreationDate = current;
+                                }
+                                else {
+                                    indexCreationDate = new KrillDate(
+                                        indexCreationField.numericValue().toString()
+                                        );
+                                };
+                            };
+
+                            this.delDocs("textSigle", textSigle);
+                            break UPSERT;
                         };
-                        this.delDocs("textSigle", textSigle);
+                    }
+                    else {
+                        log.warn("Reader is null");
                     };
-                }
-                else {
-                    log.warn("Reader is null");
+                    break;
                 };
             }
 
