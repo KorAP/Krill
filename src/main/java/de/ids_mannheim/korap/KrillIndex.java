@@ -10,6 +10,9 @@ import java.util.zip.GZIPInputStream;
 
 import java.time.LocalDate;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.MessageDigest;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
@@ -148,6 +151,8 @@ public final class KrillIndex {
     private String version = "Unknown";
     private String name = "Unknown";
 
+    private String indexRevision;
+    
     // Temp:
     private IndexReader reader;
 
@@ -554,6 +559,7 @@ public final class KrillIndex {
                 this.commit();
                 commitCounter = 0;
             };
+            this.indexRevision = null;
         }
 
         // Failed to add document
@@ -582,10 +588,11 @@ public final class KrillIndex {
                 commitCounter = 0;
             };
 
+            this.indexRevision = null;
             return true;
         }
 
-        // Failed to add document
+        // Failed to delete document
         catch (IOException e) {
             log.error("Unable to delete documents");
         };
@@ -1687,11 +1694,50 @@ public final class KrillIndex {
     };
 
 
-	
     public void getValues (String field) {
-
+            
     };
 
+
+	/**
+     * Return a fingerprint of the current state of the index.
+     * Contains information about the number of segments, docs per segment
+     * and deletions per segment.
+     */
+    public String getFingerprint () {
+
+        // indexRevision is cached
+        if (this.indexRevision != null) {
+            return this.indexRevision;
+        };
+
+        // Reader is empty
+        if (this.reader() == null) {
+            return "null";
+        }
+
+        MessageDigest md;
+        try {
+            // MD5 used for fingerprinting (no security implications here)
+            md = MessageDigest.getInstance("MD5");
+        }
+        catch (NoSuchAlgorithmException e) {
+            log.error(e.getMessage());
+            return e.getMessage();
+        };
+        
+        String hash = this.reader().getCombinedCoreAndDeletesKey().toString();
+
+        md.update(hash.getBytes());
+
+        // Turn bytes into Base64 string
+        this.indexRevision = new String(
+            Base64.getEncoder().encode(md.digest())
+            );
+
+        return this.indexRevision;
+    };
+    
 
     // Collect matches
     public MatchCollector collect (Krill ks, MatchCollector mc) {
