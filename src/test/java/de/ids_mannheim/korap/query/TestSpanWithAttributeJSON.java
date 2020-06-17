@@ -29,6 +29,18 @@ public class TestSpanWithAttributeJSON {
                 sq.toString());
     }
 
+    @Test
+    public void testElementSingleAttributeBug () throws QueryException {
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-single-attribute-2.jsonld")
+                .getFile();
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "spanElementWithAttribute(<tokens:dereko/s:said />, spanAttribute(tokens:mode:indirects))",
+                sq.toString());
+    }
 
     @Test
     public void testElementSingleNotAttribute () throws QueryException {
@@ -43,6 +55,19 @@ public class TestSpanWithAttributeJSON {
                 sq.toString());
     }
 
+    @Test
+    public void testElementSingleNotAttribute2 () throws QueryException {
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-single-not-attribute-2.jsonld")
+                .getFile();
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "spanElementWithAttribute(<tokens:head />, spanAttribute(!tokens:type:top))",
+                sq.toString());
+    }
+    
 
     @Test
     public void testElementMultipleAndNotAttributes () throws QueryException {
@@ -58,6 +83,20 @@ public class TestSpanWithAttributeJSON {
                 sq.toString());
     }
 
+    @Test
+    public void testElementMultipleAndNotAttributes2 () throws QueryException {
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-multiple-and-not-attributes-2.jsonld")
+                .getFile();
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "spanElementWithAttribute(<tokens:div />, [spanAttribute(tokens:type:Zeitschrift), "
+                        + "spanAttribute(!tokens:complete:Y), spanAttribute(tokens:n:0)])",
+                sq.toString());
+    }
+    
 
     @Test
     public void testElementMultipleOrAttributes () throws QueryException {
@@ -76,6 +115,22 @@ public class TestSpanWithAttributeJSON {
 
 
     @Test
+    public void testElementMultipleOrAttributes2 () throws QueryException {
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-multiple-or-attributes-2.jsonld")
+                .getFile();
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "spanOr([spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:type:Zeitschrift)), "
+                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:complete:Y)), "
+                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:n:0))])",
+                sq.toString());
+    }
+    
+
+    @Test
     public void testAnyElementWithAttribute () throws QueryException {
         String filepath = getClass()
                 .getResource(
@@ -86,7 +141,6 @@ public class TestSpanWithAttributeJSON {
         assertEquals("spanWithAttribute(spanAttribute(tokens:type:top))",
                 sq.toString());
     }
-
 
     @Test
     public void testAnyElementWithMultipleOrAttributes ()

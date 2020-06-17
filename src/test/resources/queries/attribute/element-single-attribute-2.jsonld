@@ -1,0 +1,23 @@
+{
+  "@context": "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+  "errors": [],
+  "warnings": [],
+  "messages": [],
+  "collection": {},
+  "query": {
+    "@type": "koral:span",
+    "attr": {
+      "@type": "koral:term",
+      "key": "mode",
+      "match": "match:eq",
+      "value": "indirects"
+    },
+    "wrap": {
+      "@type": "koral:term",
+      "foundry": "dereko",
+      "key": "said",
+      "layer": "s"
+    }
+  },
+  "meta": {}
+}

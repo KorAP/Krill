@@ -314,6 +314,15 @@ public final class KrillQuery extends Notifications {
                 if (!json.has("wrap"))
                     return new SpanRepetitionQueryWrapper();
 
+                // Workaround so that "attr" can be wrapped (legacy) and be
+                // next to wrap as well (spec)
+
+                // Term has attribute
+                if (json.has("attr")) {
+                    JsonNode attrNode = json.get("attr");
+                    ((ObjectNode)json.get("wrap")).put("attr",attrNode);
+                };
+                
                 // Get wrapped token
                 return this._segFromJson(json.get("wrap"));
 
@@ -326,6 +335,15 @@ public final class KrillQuery extends Notifications {
                 if (!json.has("wrap"))
                     return this._termFromJson(json);
 
+                // Workaround so that "attr" can be wrapped (legacy) and be
+                // next to wrap as well (spec)
+
+                // Term has attribute
+                if (json.has("attr")) {
+                    JsonNode attrNode = json.get("attr");
+                    ((ObjectNode)json.get("wrap")).put("attr",attrNode);
+                };
+                
                 // This is an ugly hack
                 return this._termFromJson(json.get("wrap"), true);
         };
