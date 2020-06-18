@@ -10,7 +10,7 @@
       "@type": "koral:term",
       "key": "mode",
       "match": "match:eq",
-      "value": "indirects"
+      "value": "direct"
     },
     "wrap": {
       "@type": "koral:term",

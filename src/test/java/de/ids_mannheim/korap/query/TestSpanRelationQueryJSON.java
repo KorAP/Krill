@@ -29,7 +29,7 @@ public class TestSpanRelationQueryJSON {
         assertEquals(
                 "focus(#[1,2]spanSegment(<tokens:c:vp />, "
                         + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
-                        + "spanWithAttribute(spanAttribute(tokens:type:case:accusative))),sorting)),sorting)",
+                        + "spanWithAttribute(spanAttribute(tokens:@:type:case:accusative))),sorting)),sorting)",
                 sq.toString());
     }
 
@@ -47,7 +47,7 @@ public class TestSpanRelationQueryJSON {
                 // +
                 // "<tokens:c:vp />)), spanWithAttribute(spanAttribute(tokens:type:case:accusative))))",
                 //
-                "focus(#[1,2]spanSegment(spanWithAttribute(spanAttribute(tokens:type:case:accusative)), "
+                "focus(#[1,2]spanSegment(spanWithAttribute(spanAttribute(tokens:@:type:case:accusative)), "
                         + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
                         + "<tokens:c:vp />),sorting)),sorting)",
                 sq.toString());
@@ -70,7 +70,7 @@ public class TestSpanRelationQueryJSON {
                 "focus(#[1,2]spanSegment(<tokens:c:vp />, "
                         + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
                         + "spanElementWithAttribute(<tokens:c:np />, "
-                        + "spanAttribute(tokens:type:case:accusative))),sorting)),sorting)",
+                        + "spanAttribute(tokens:@:type:case:accusative))),sorting)),sorting)",
                 sq.toString());
     }
 
@@ -86,10 +86,10 @@ public class TestSpanRelationQueryJSON {
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "focus(#[1,2]spanSegment(spanElementWithAttribute(<tokens:c: />, "
-                        + "spanAttribute(tokens:type:case:accusative)), "
+                        + "spanAttribute(tokens:@:type:case:accusative)), "
                         + "focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
                         + "spanElementWithAttribute(<tokens:c: />, "
-                        + "spanAttribute(tokens:type:case:accusative))),sorting)),sorting)",
+                        + "spanAttribute(tokens:@:type:case:accusative))),sorting)),sorting)",
                 sq.toString());
     }
 
@@ -173,7 +173,7 @@ public class TestSpanRelationQueryJSON {
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "focus(#[1,2]spanSegment(<tokens:c:vp />, focus(#2: spanSegment(spanRelation(tokens:>:mate/d:HEAD), "
-                        + "spanElementWithAttribute(<tokens:c:s />, spanAttribute(tokens:type:top))),sorting)),sorting)",
+                        + "spanElementWithAttribute(<tokens:c:s />, spanAttribute(tokens:@:type:top))),sorting)),sorting)",
                 sq.toString());
     }
 

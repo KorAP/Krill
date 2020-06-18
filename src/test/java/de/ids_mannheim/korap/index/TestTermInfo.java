@@ -124,5 +124,20 @@ public class TestTermInfo {
         assertEquals("startChar", term.getStartChar(), 20);
         assertEquals("endChar", term.getEndChar(), 25);
         assertEquals("depth", term.getDepth(), 0);
+
+        bb.clear();
+        bb.put((byte) 17);   // att PTI
+        bb.putShort((short)1);
+        bb.putInt(25);
+        term = new TermInfo("@:dereko/s:mode:direct", 20, bb).analyze();
+        assertEquals("type", term.getType(), "attr");
+        assertEquals("value", term.getValue(), "mode:direct");
+        assertEquals("foundry", term.getFoundry(), "dereko");
+        assertEquals("layer", term.getLayer(), "s");
+        assertEquals("startPos", term.getStartPos(), 20);
+        assertEquals("endPos", term.getEndPos(), 20);
+        assertEquals("startChar", term.getStartChar(), -1);
+        assertEquals("endChar", term.getEndChar(), -1);
+        assertEquals("depth", term.getDepth(), 0);
     };
 };

@@ -25,7 +25,7 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanElementWithAttribute(<tokens:head />, spanAttribute(tokens:type:top))",
+                "spanElementWithAttribute(<tokens:head />, spanAttribute(tokens:@:type:top))",
                 sq.toString());
     }
 
@@ -38,7 +38,8 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanElementWithAttribute(<tokens:dereko/s:said />, spanAttribute(tokens:mode:indirects))",
+                "spanElementWithAttribute(<tokens:dereko/s:said />, " +
+                "spanAttribute(tokens:@:dereko/s:mode:direct))",
                 sq.toString());
     }
 
@@ -51,7 +52,7 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanElementWithAttribute(<tokens:head />, spanAttribute(!tokens:type:top))",
+                "spanElementWithAttribute(<tokens:head />, spanAttribute(!tokens:@:type:top))",
                 sq.toString());
     }
 
@@ -64,7 +65,7 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanElementWithAttribute(<tokens:head />, spanAttribute(!tokens:type:top))",
+                "spanElementWithAttribute(<tokens:head />, spanAttribute(!tokens:@:type:top))",
                 sq.toString());
     }
     
@@ -78,8 +79,8 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanElementWithAttribute(<tokens:div />, [spanAttribute(tokens:type:Zeitschrift), "
-                        + "spanAttribute(!tokens:complete:Y), spanAttribute(tokens:n:0)])",
+                "spanElementWithAttribute(<tokens:div />, [spanAttribute(tokens:@:type:Zeitschrift), "
+                        + "spanAttribute(!tokens:@:complete:Y), spanAttribute(tokens:@:n:0)])",
                 sq.toString());
     }
 
@@ -92,8 +93,8 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanElementWithAttribute(<tokens:div />, [spanAttribute(tokens:type:Zeitschrift), "
-                        + "spanAttribute(!tokens:complete:Y), spanAttribute(tokens:n:0)])",
+                "spanElementWithAttribute(<tokens:div />, [spanAttribute(tokens:@:type:Zeitschrift), "
+                        + "spanAttribute(!tokens:@:complete:Y), spanAttribute(tokens:@:n:0)])",
                 sq.toString());
     }
     
@@ -107,9 +108,9 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanOr([spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:type:Zeitschrift)), "
-                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:complete:Y)), "
-                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:n:0))])",
+                "spanOr([spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:@:type:Zeitschrift)), "
+                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:@:complete:Y)), "
+                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:@:n:0))])",
                 sq.toString());
     }
 
@@ -123,9 +124,9 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanOr([spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:type:Zeitschrift)), "
-                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:complete:Y)), "
-                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:n:0))])",
+                "spanOr([spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:@:type:Zeitschrift)), "
+                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:@:complete:Y)), "
+                        + "spanElementWithAttribute(<tokens:div />, spanAttribute(tokens:@:n:0))])",
                 sq.toString());
     }
     
@@ -138,7 +139,7 @@ public class TestSpanWithAttributeJSON {
                 .getFile();
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
-        assertEquals("spanWithAttribute(spanAttribute(tokens:type:top))",
+        assertEquals("spanWithAttribute(spanAttribute(tokens:@:type:top))",
                 sq.toString());
     }
 
@@ -152,9 +153,9 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanOr([spanWithAttribute(spanAttribute(tokens:type:Zeitschrift)), "
-                        + "spanWithAttribute(spanAttribute(tokens:complete:Y)), "
-                        + "spanWithAttribute(spanAttribute(tokens:n:0))])",
+                "spanOr([spanWithAttribute(spanAttribute(tokens:@:type:Zeitschrift)), "
+                        + "spanWithAttribute(spanAttribute(tokens:@:complete:Y)), "
+                        + "spanWithAttribute(spanAttribute(tokens:@:n:0))])",
                 sq.toString());
     }
 
@@ -169,8 +170,8 @@ public class TestSpanWithAttributeJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
-                "spanWithAttribute([spanAttribute(tokens:type:Zeitschrift), "
-                        + "spanAttribute(!tokens:complete:Y), spanAttribute(tokens:n:0)])",
+                "spanWithAttribute([spanAttribute(tokens:@:type:Zeitschrift), "
+                        + "spanAttribute(!tokens:@:complete:Y), spanAttribute(tokens:@:n:0)])",
                 sq.toString());
     }
 
@@ -187,5 +188,4 @@ public class TestSpanWithAttributeJSON {
         SpanQuery sq = sqwi.toQuery();
         //        assertEquals("tokens:???", sq.toString());
     }
-
 }

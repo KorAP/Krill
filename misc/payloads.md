@@ -194,7 +194,7 @@ Each attribute has two payloads:
 
 For example:
 
-    @:class=header$<b>17<i>6<s>1
+    @:dereko/s:mode:direct$<b>17<s>1<i>6
 
 means the attribute belongs to the span in the
 same token position whose TUI is 1 and end position is 6.

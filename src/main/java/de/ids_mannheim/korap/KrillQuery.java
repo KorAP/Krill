@@ -319,11 +319,19 @@ public final class KrillQuery extends Notifications {
 
                 // Term has attribute
                 if (json.has("attr")) {
+
+                    JsonNode wrap = json.get("wrap");
                     JsonNode attrNode = json.get("attr");
+                    if (wrap.has("foundry")) {
+                        ((ObjectNode)attrNode).put("foundry", wrap.get("foundry"));
+                    };
+                    if (wrap.has("layer")) {
+                        ((ObjectNode)attrNode).put("layer", wrap.get("layer"));
+                    };
                     ((ObjectNode)json.get("wrap")).put("attr",attrNode);
                 };
                 
-                // Get wrapped token
+// Get wrapped token
                 return this._segFromJson(json.get("wrap"));
 
             case "koral:span":                
@@ -340,7 +348,15 @@ public final class KrillQuery extends Notifications {
 
                 // Term has attribute
                 if (json.has("attr")) {
+
+                    JsonNode wrap = json.get("wrap");
                     JsonNode attrNode = json.get("attr");
+                    if (wrap.has("foundry")) {
+                        ((ObjectNode)attrNode).put("foundry", wrap.get("foundry"));
+                    };
+                    if (wrap.has("layer")) {
+                        ((ObjectNode)attrNode).put("layer", wrap.get("layer"));
+                    };
                     ((ObjectNode)json.get("wrap")).put("attr",attrNode);
                 };
                 
@@ -609,7 +625,7 @@ public final class KrillQuery extends Notifications {
             }
             else{
                 relationTermWrapper =
-                        _termFromJson(relation.get("wrap"), false, direction);
+                    _termFromJson(relation.get("wrap"), false, false, direction);
                 spanRelationWrapper = new SpanRelationWrapper(relationTermWrapper, operand1, operand2);
             }
             
@@ -1121,16 +1137,22 @@ public final class KrillQuery extends Notifications {
 
     private SpanQueryWrapper _termFromJson (JsonNode json)
             throws QueryException {
-        return this._termFromJson(json, false, null);
+        return this._termFromJson(json, false, false, null);
     }
     private SpanQueryWrapper _termFromJson (JsonNode json, boolean isSpan)
             throws QueryException {
-        return this._termFromJson(json, isSpan, null);
+        return this._termFromJson(json, isSpan, false, null);
     }
 
+    // Attribute term
+    private SpanQueryWrapper _termFromJson (JsonNode json, boolean isSpan, boolean isAttr)
+            throws QueryException {
+        return this._termFromJson(json, isSpan, true, null);
+    }
+    
     // Deserialize koral:term
     // TODO: Not optimal as it does not respect non-term
-    private SpanQueryWrapper _termFromJson (JsonNode json, boolean isSpan, RelationDirection direction)
+    private SpanQueryWrapper _termFromJson (JsonNode json, boolean isSpan, boolean isAttr, RelationDirection direction)
             throws QueryException {
 
         if (!json.has("@type")) {
@@ -1204,7 +1226,9 @@ public final class KrillQuery extends Notifications {
 
         if (direction != null)
             value.append(direction.value());
-            
+        else if (isAttr)
+            value.append("@:");
+        
         if (json.has("foundry") &&
             json.get("foundry").asText().length() > 0) {
             value.append(json.get("foundry").asText()).append('/');
@@ -1467,7 +1491,7 @@ public final class KrillQuery extends Notifications {
         if ("relation:and".equals(relation)) {
             List<SpanQueryWrapper> wrapperList = new ArrayList<SpanQueryWrapper>();
             for (JsonNode operand : operands) {
-                attrWrapper = _termFromJson(operand);
+                attrWrapper = _termFromJson(operand, false, true);
                 if (attrWrapper == null) {
                     throw new QueryException(747, "Attribute is null");
                 }
@@ -1486,7 +1510,7 @@ public final class KrillQuery extends Notifications {
             SpanAlterQueryWrapper saq = new SpanAlterQueryWrapper(field);
             SpanWithAttributeQueryWrapper saqw;
             for (JsonNode operand : operands) {
-                attrWrapper = _termFromJson(operand);
+                attrWrapper = _termFromJson(operand, false, true);
                 if (attrWrapper == null) {
                     throw new QueryException(747, "Attribute is null");
                 }
@@ -1512,7 +1536,7 @@ public final class KrillQuery extends Notifications {
             throws QueryException {
 
         if (attrNode.has("key")) {
-            return _termFromJson(attrNode);
+            return _termFromJson(attrNode, false, true);
         }
         else if (attrNode.has("tokenarity") || attrNode.has("arity")) {
             this.addWarning(770, "Arity attributes are currently not supported"

@@ -2,6 +2,8 @@ package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.assertEquals;
 
+import static de.ids_mannheim.korap.TestSimple.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +13,16 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
+import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
+
+import de.ids_mannheim.korap.util.QueryException;
 
 public class TestAttributeIndex {
 
@@ -37,28 +43,28 @@ public class TestAttributeIndex {
                 + "<>:s$<b>64<i>0<i>5<i>5<b>0<s>3|"
                 + "<>:div$<b>64<i>0<i>2<i>2<b>0<s>2|"
                 + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>1|"
-                + "@:class=header$<b>17<i>3<s>1|@:class=header$<b>17<i>2<s>2]"
+                + "@:class=header$<b>17<s>1<i>3|@:class=header$<b>17<s>2<i>2]"
 
                 + "[(1-2)s:e|_2$<i>1<i>2|"
-                + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>1|@:class=header$<b>17<i>2<s>1]"
+                + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>1|@:class=header$<b>17<s>1<i>2]"
 
                 + "[(2-3)s:e|_3$<i>2<i>3|"
-                + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=time$<b>17<i>5<s>1]"
+                + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=time$<b>17<s>1<i>5]"
 
                 + "[(3-4)s:a|_4$<i>3<i>4|"
-                + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1]"
+                + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=header$<b>17<s>1<i>5]"
 
                 + "[(4-5)s:b|_5$<i>4<i>5|" + "<>:a$<b>64<i>4<i>5<i>5<b>0<s>2|"
                 + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|"
-                + "@:class=header$<b>17<i>5<s>2]"
+                + "@:class=header$<b>17<s>2<i>5]"
 
                 + "[(5-6)s:d|_6$<i>5<i>6|" + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>2|"
                 + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>1|"
-                + "@:class=header$<b>17<i>6<s>1]"
+                + "@:class=header$<b>17<s>1<i>6]"
 
                 + "[(6-7)s:d|_7$<i>6<i>7|" + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
                 + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1"
-                + "|@:class=header$<b>17<i>7<s>1|@:class=header$<b>17<i>7<s>2]");
+                + "|@:class=header$<b>17<s>1<i>7|@:class=header$<b>17<s>2<i>7]");
 
         return fd;
     }
@@ -70,26 +76,26 @@ public class TestAttributeIndex {
         fd.addTV("base", "bcbabd", "[(0-1)s:b|_1$<i>0<i>1|"
                 + "<>:s<b>64<i>0<i>5<i>5<b>0<s>2|"
                 + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>1|"
-                + "@:class=header$<b>17<i>3<s>1|@:class=title$<b>17<i>3<s>1|@:class=book$<b>17<i>3<s>1]"
+                + "@:class=header$<b>17<s>1<i>3|@:class=title$<b>17<s>1<i>3|@:class=book$<b>17<s>1<i>3]"
 
                 + "[(1-2)s:c|_2$<i>1<i>2|" + "<>:div$<b>64<i>1<i>2<i>2<b>0<s>1|"
-                + "@:class=header$<b>17<i>2<s>1|@:class=title$<b>17<i>2<s>1]"
+                + "@:class=header$<b>17<s>1<i>2|@:class=title$<b>17<s>1<i>2]"
 
                 + "[(2-3)s:b|_3$<i>2<i>3|"
-                + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=book$<b>17<i>5<s>1]"
+                + "<>:div$<b>64<i>2<i>5<i>5<b>0<s>1|@:class=book$<b>17<s>1<i>5]"
 
                 + "[(3-4)s:a|_4$<i>3<i>4|"
-                + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
+                + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<s>1<i>5]"
 
                 + "[(4-5)s:b|_5$<i>4<i>5|" + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|"
-                + "@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1|@:class=title$<b>17<i>5<s>1]"
+                + "@:class=header$<b>17<s>1<i>5|@:class=book$<b>17<s>1<i>5|@:class=title$<b>17<s>1<i>5]"
 
                 + "[(5-6)s:d|_6$<i>5<i>6|" + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>2|"
-                + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
+                + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<s>1<i>6]"
 
                 + "[(6-7)s:d|_7$<i>6<i>7|" + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
                 + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1|"
-                + "@:class=header$<b>17<i>7<s>1|@:class=title$<b>17<i>7<s>1]");
+                + "@:class=header$<b>17<s>1<i>7|@:class=title$<b>17<s>1<i>7]");
 
         return fd;
     }
@@ -101,28 +107,28 @@ public class TestAttributeIndex {
         fd.addTV("base", "bcbabd", "[(0-1)s:b|_1$<i>0<i>1|"
                 + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>2|"
                 + "<>:s$<b>64<i>0<i>5<i>5<b>0<s>1|"
-                + "@:class=header$<b>17<i>3<s>2|@:class=book$<b>17<i>5<s>1|@:class=book$<b>17<i>3<s>2]"
+                + "@:class=header$<b>17<s>2<i>3|@:class=book$<b>17<s>1<i>5|@:class=book$<b>17<s>2<i>3]"
 
                 + "[(1-2)s:e|_2$<i>1<i>2|" + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>2|"
                 + "<>:div$<b>64<i>1<i>2<i>2<b>0<s>1|"
-                + "@:class=book$<b>17<i>2<s>2|@:class=header$<b>17<i>2<s>1]"
+                + "@:class=book$<b>17<s>2<i>2|@:class=header$<b>17<s>1<i>2]"
 
                 + "[(2-3)s:b|_3$<i>2<i>3|" + "<>:a$<b>64<i>1<i>2<i>2<b>0<s>2|"
                 + "<>:div$<b>64<i>2<i>3<i>5<b>0<s>1|"
-                + "@:class=header$<b>17<i>2<s>2|@:class=book$<b>17<i>5<s>1]"
+                + "@:class=header$<b>17<s>2<i>2|@:class=book$<b>17<s>1<i>5]"
 
                 + "[(3-4)s:a|_4$<i>3<i>4|"
-                + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<i>5<s>1]"
+                + "<>:div$<b>64<i>3<i>5<i>5<b>0<s>1|@:class=title$<b>17<s>1<i>5]"
 
                 + "[(4-5)s:b|_5$<i>4<i>5|"
-                + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|@:class=header$<b>17<i>5<s>1|@:class=book$<b>17<i>5<s>1]"
+                + "<>:div$<b>64<i>4<i>5<i>5<b>0<s>1|@:class=header$<b>17<s>1<i>5|@:class=book$<b>17<s>1<i>5]"
 
                 + "[(5-6)s:d|_6$<i>5<i>6|" + "<>:s$<b>64<i>5<i>6<i>6<b>0<s>1|"
-                + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<i>6<s>1]"
+                + "<>:div$<b>64<i>5<i>6<i>6<b>0<s>1|@:class=header$<b>17<s>1<i>6]"
 
                 + "[(6-7)s:d|_7$<i>6<i>7|" + "<>:s$<b>64<i>6<i>7<i>7<b>0<s>2|"
                 + "<>:div$<b>64<i>6<i>7<i>7<b>0<s>1|"
-                + "@:class=header$<b>17<i>7<s>1|@:class=book$<b>17<i>7<s>2]");
+                + "@:class=header$<b>17<s>1<i>7|@:class=book$<b>17<s>2<i>7]");
 
         return fd;
     }
@@ -223,6 +229,11 @@ public class TestAttributeIndex {
         sq = new SpanWithAttributeQuery(new SpanElementQuery("base", "div"),
                 sql, true);
 
+        assertEquals("spanElementWithAttribute(<base:div />, "+
+                     "[spanAttribute(base:@:class=header), "+
+                     "spanAttribute(!base:@:class=book), "+
+                     "spanAttribute(!base:@:class=title)])", sq.toString());
+        
         kr = ki.search(sq, (short) 10);
         assertEquals((long) 1, kr.getTotalResults());
         assertEquals(5, kr.getMatch(0).getStartPos());
@@ -452,4 +463,45 @@ public class TestAttributeIndex {
         kr = ki.search(swaq, (short) 10);
     }
 
+
+    @Test
+    public void testAttributeRealIndex () throws QueryException, IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        ki.addDoc(getClass().getResourceAsStream("/others/REDEW-DOC1-00001.json.gz"),
+                    true);
+        ki.commit();
+
+        SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "@:dereko/s:mode:direct"));
+        kr = ki.search(stq, (short) 10);
+        assertEquals((long) 4, kr.getTotalResults());
+        
+
+        SpanAttributeQuery saq = new SpanAttributeQuery(
+            new SpanTermQuery(new Term("tokens", "@:dereko/s:mode:direct")), true);
+
+        SpanElementQuery seq = new SpanElementQuery("tokens", "dereko/s:said");
+
+        // div with @class=header
+        SpanQuery sq = new SpanWithAttributeQuery(seq, saq, true);
+        assertEquals("spanElementWithAttribute(<tokens:dereko/s:said />, " +
+                     "spanAttribute(tokens:@:dereko/s:mode:direct))", sq.toString());
+
+        kr = ki.search(sq, (short) 10);
+        assertEquals((long) 4, kr.getTotalResults());
+
+
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-single-attribute-2.jsonld")
+                .getFile();
+
+        SpanQueryWrapper sqw = getJsonQuery(filepath);        
+        Krill krill = new Krill(sqw);
+        assertEquals("spanElementWithAttribute(<tokens:dereko/s:said />, " +
+                     "spanAttribute(tokens:@:dereko/s:mode:direct))", krill.getSpanQuery().toString());
+        Result kr = krill.apply(ki);
+        assertEquals(kr.getTotalResults(), 4);
+    }
 }

@@ -164,8 +164,10 @@ public class AttributeSpans extends SimpleSpans {
         ByteBuffer payloadBuffer = ByteBuffer.wrap(payload.get(0));
 
         byte payloadTypeIdentifier = payloadBuffer.get(0);
-        short spanId = payloadBuffer.getShort(5);
-        int end = payloadBuffer.getInt(1);
+        // short spanId = payloadBuffer.getShort(5);
+        // int end = payloadBuffer.getInt(1);
+        short spanId = payloadBuffer.getShort(1);
+        int end = payloadBuffer.getInt(3);
 
         return new CandidateAttributeSpan(firstSpans, payloadTypeIdentifier,
                 spanId, end);

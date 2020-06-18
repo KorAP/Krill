@@ -94,7 +94,7 @@ public class TermInfo implements Comparable<TermInfo> {
                 // pos
                 this.type = "attr";
                 ttype = 4;
-                tterm = tterm.substring(1);
+                tterm = tterm.substring(2);
                 break;
 
             default:

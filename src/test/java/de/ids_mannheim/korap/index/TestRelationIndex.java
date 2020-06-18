@@ -161,8 +161,8 @@ public class TestRelationIndex {
                         + "<:child-of$<b>35<i>0<i>38<i>0<i>3<i>7<i>0<i>1<s>2<s>3<s>0|"
                         + "<:child-of$<b>35<i>0<i>38<i>4<i>9<i>7<i>1<i>7<s>2<s>2<s>0|"
                         + "<:dep$<b>32<i>0<s>1<s>1<s>0|"
-                        + "@:func=sbj$<b>18<i>7<s>4|" // attribute belongs to a relation
-                        + "@:case=nominative$<b>18<i>1<s>3]" // attribute belongs to a relation node
+                        + "@:func=sbj$<b>18<s>4<i>7|" // attribute belongs to a relation
+                        + "@:case=nominative$<b>18<s>3<i>1]" // attribute belongs to a relation node
 
                         + "[(1-2)s:kaufe|_1$<i>4<i>9|pos:V$<s>1|<>:vp$<b>64<i>4<i>38<i>7<b>0<s>2|"
                         + ">:child-of$<b>35<i>4<i>38<i>0<i>38<i>7<i>0<i>7<s>2<s>2<s>0|"
@@ -185,16 +185,16 @@ public class TestRelationIndex {
                         + "<:child-of$<b>35<i>10<i>38<i>21<i>38<i>7<i>4<i>7<s>4<s>2<s>0|"
                         + ">:parent-of$<b>35<i>10<i>38<i>21<i>38<i>7<i>4<i>7<s>4<s>2<s>0|"
                         + "<:dep$<b>32<i>3<s>1<s>1<s>3|"
-                        + "@:func=head$<b>18<i>4<s>3|"
-                        + "@:case=accusative$<b>18<i>4<s>3|" // attribute belongs to a relation node
-                        + "@:case=accusative$<b>18<i>7<s>2]" // attribute belongs to a relation node
+                        + "@:func=head$<b>18<s>3<i>4|"
+                        + "@:case=accusative$<b>18<s>3<i>4|" // attribute belongs to a relation node
+                        + "@:case=accusative$<b>18<s>2<i>7]" // attribute belongs to a relation node
 
                         + "[(3-4)s:Blümen|_3$<i>14<i>20|pos:NN$<s>1|"
                         + ">:child-of$<b>33<i>10<i>24<i>2<i>4<s>1<s>3<s>0|"
                         + "<:dep$<b>32<i>1<s>1<s>1<s>0|"
                         + ">:dep$<b>32<i>2<s>1<s>1<s>2|"
                         + ">:dep$<b>32<i>4<s>1<s>1<s>0|"
-                        + "@:func=obj$<b>18<i>4<s>2]"
+                        + "@:func=obj$<b>18<s>2<i>4]"
 
                         + "[(4-5)s:für|_4$<i>21<i>24|pos:PREP$<s>1|<>:pp$<b>64<i>21<i>38<i>7<b>0<s>2|"
                         + ">:child-of$<b>33<i>21<i>38<i>4<i>7<s>1<s>2<s>0|"
@@ -212,8 +212,8 @@ public class TestRelationIndex {
                         + "<:child-of$<b>34<i>25<i>38<i>7<i>5<s>2<s>1<s>0|"
                         + "<:child-of$<b>34<i>25<i>38<i>7<i>6<s>2<s>1<s>0|"
                         + "<:dep$<b>32<i>6<s>1<s>1<s>3<s>0|"
-                        + "@:func=head$<b>18<i>7<s>3|"
-                        + "@:case=accusative$<b>18<i>7<s>2]" // attribute belongs to a relation node
+                        + "@:func=head$<b>18<s>3<i>7|"
+                        + "@:case=accusative$<b>18<s>2<i>7]" // attribute belongs to a relation node
 
                         + "[(6-7)s:Mutter.|_6$<i>31<i>38|pos:NN$<s>1|"
                         + ">:child-of$<b>33<i>25<i>38<i>5<i>7<s>1<s>2<s>0|"
