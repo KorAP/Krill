@@ -1,8 +1,11 @@
-0.59.2 2020-06-18
+0.59.2 2020-07-24
     - [feature] Add fingerprint method to index (diewald)
     - [bugfix] Fix deserialization of spans with attributes (diewald)
     - [bugfix] Change order of attribute payloads in attribute queries
       (diewald)
+    - [bugfix] Security upgrade of Log4J for CVE-2020-9488
+      (dependabot, diewald)
+    
       Warning: This may break compatibility for attribute queries
                in indices not created using KorAP::XML::Krill.
 
