@@ -40,6 +40,7 @@ public class StatusCodes {
     public static final int MISSING_RELATION_NODE = 717;
     public static final int MISSING_RELATION_TERM = 718;
     public static final int INVALID_QUERY = 719;
+    public static final int MISSING_QUERY_REFERENCE = 721;
     
     public static final int INVALID_MATCH_ID = 730;
     public static final int MISSING_KEY = 740;

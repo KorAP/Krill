@@ -35,7 +35,7 @@
 
 	<groupId>de.ids_mannheim.korap</groupId>
 	<artifactId>Krill</artifactId>
-	<version>0.59.2</version>
+	<version>0.59.3</version>
 	<packaging>jar</packaging>
 
 	<name>Krill</name>
@@ -82,7 +82,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
 

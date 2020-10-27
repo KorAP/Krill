@@ -40,6 +40,7 @@
 716: "Unknown relation"
 717: "Missing relation node"
 718: "Missing relation term"
+721: "Missing query reference"
 730: "Invalid match identifier"
 740: "Key definition is missing in term or span"
 741: "Match relation unknown"

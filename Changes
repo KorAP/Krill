@@ -1,3 +1,6 @@
+0.59.3 2020-10-27
+    - [feature] Added "missing query reference" status code (diewald)
+
 0.59.2 2020-07-24
     - [feature] Add fingerprint method to index (diewald)
     - [bugfix] Fix deserialization of spans with attributes (diewald)
