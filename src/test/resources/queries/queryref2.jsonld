@@ -1,0 +1,29 @@
+{
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.1/context.jsonld",
+  "query" : {
+    "@type" : "koral:group",
+    "operation" : "operation:sequence",
+    "operands" : [
+      {
+        "@type" : "koral:token",
+        "wrap" : {
+          "@type" : "koral:term",
+          "foundry" : "tt",
+          "key" : "NN",
+          "layer" : "p"
+        }
+	    },
+      {
+        "@type" : "koral:queryRef",
+        "ref" : "admin/example"
+      },
+      {
+        "@type" : "koral:token",
+        "wrap" : {
+          "@type" : "koral:term",
+          "key" : "Baum"
+        }
+	    }
+    ]
+  }
+}

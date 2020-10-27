@@ -776,7 +776,6 @@ public class TestKrillQueryJSON {
         };
     };    
 
-
     @Test
     public void queryJSONmerge () throws QueryException {
         // treat merging gracefully
@@ -787,5 +786,33 @@ public class TestKrillQueryJSON {
         assertEquals(kq.fromKoral(json).toQuery().toString(),
                 "spanNext(tokens:s:der, tokens:s:Baum)");
 		assertEquals(kq.getWarning(0).getCode(), 774);
+    };
+
+    @Test
+    public void queryJSONqueryref1 () {       
+        try {
+            String json = getJsonString(getClass()
+                    .getResource("/queries/queryref1.jsonld")
+                    .getFile());
+            new KrillQuery("tokens").fromKoral(json);
+        }
+        catch (QueryException e) {
+            assertEquals(713, e.getErrorCode());
+            assertEquals("Query type is not supported", e.getMessage());
+        };
+    };
+
+    @Test
+    public void queryJSONqueryref2 () {       
+        try {
+            String json = getJsonString(getClass()
+                    .getResource("/queries/queryref2.jsonld")
+                    .getFile());
+            new KrillQuery("tokens").fromKoral(json);
+        }
+        catch (QueryException e) {
+            // assertEquals(713, e.getErrorCode());
+            assertEquals("Query type is not supported", e.getMessage());
+        };
     };
 };
