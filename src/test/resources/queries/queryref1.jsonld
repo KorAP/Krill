@@ -1,0 +1,7 @@
+{
+  "query":{
+    "@type":"koral:queryRef",
+    "ref":"admin/example"
+  },
+  "@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld"
+}
