@@ -1,5 +1,7 @@
-0.59.3 2020-10-27
+0.59.3 2020-11-11
     - [feature] Added "missing query reference" status code (diewald)
+    - [cleanup] Added test coverage checking with
+      $ mvn cobertura:cobertura (diewald, kupietz)
 
 0.59.2 2020-07-24
     - [feature] Add fingerprint method to index (diewald)
