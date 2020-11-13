@@ -1,0 +1,54 @@
+name: CI + Coverage Test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Kustvakt
+        uses: actions/checkout@v2
+        with:
+          path: Kustvakt
+
+      - name: Checkout Krill
+        uses: actions/checkout@v2
+        with:
+          repository: KorAP/Krill
+          path: Krill
+
+      - name: Checkout Koral
+        uses: actions/checkout@v2
+        with:
+          repository: KorAP/Koral
+          path: Koral
+
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Build and install Krill
+        run: mvn --file Krill/pom.xml install
+
+      - name: Build and install Koral
+        run: mvn --file Koral/pom.xml install
+
+      - name: Build and install Kustvakt core
+        run: mvn --file Kustvakt/core/pom.xml install
+
+      - name: Build and package Kustvakt lite
+        run: mvn --file Kustvakt/lite/pom.xml package
+
+      - name: Build and package Kustvakt full
+        run: mvn --file Kustvakt/full/pom.xml package
+
+      - name: Generate code coverage report
+        run: mvn --file Krill/pom.xml mvn cobertura:cobertura
+
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v1
+          with:
+            token: ${{ secrets.CODECOV_TOKEN }}
+            directory: ./Krill/
+            verbose: true
