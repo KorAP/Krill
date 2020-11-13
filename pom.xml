@@ -238,7 +238,6 @@
 				<version>3.8.1</version>
 				<inherited>true</inherited>
 				<configuration>
-				    <argLine>-Xms512m</argLine>
 					<showWarnings>true</showWarnings>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
