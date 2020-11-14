@@ -1,3 +1,10 @@
+[![Last commit](https://img.shields.io/github/last-commit/KorAP/Krill.svg)](https://github.com/KorAP/Krill/commits/master)
+[![Tests](https://img.shields.io/github/workflow/status/KorAP/Krill/CI%20+%20Coverage%20Test)](https://github.com/KorAP/Krill/actions?query=workflow%3A%22CI+%2B+Coverage+Test%22)
+[![Codecov test coverage](https://img.shields.io/codecov/c/github/KorAP/Krill)](https://codecov.io/gh/KorAP/Krill/master)
+[![GitHub issues](https://img.shields.io/github/issues-raw/KorAP/Krill.svg)](https://github.com/KorAP/Krill/issues)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/KorAP/Krill.svg)](https://github.com/KorAP/Krill/issues)
+[![Github Stars](https://img.shields.io/github/stars/KorAP/Krill)](https://github.com/KorAP/Krill)
+
 ![Krill](https://raw.githubusercontent.com/KorAP/Krill/master/misc/krill.png)
 
 A Corpusdata Retrieval Index using Lucene for Look-Ups
