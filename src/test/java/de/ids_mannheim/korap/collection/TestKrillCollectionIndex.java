@@ -1,35 +1,32 @@
 package de.ids_mannheim.korap.collection;
 
-import java.io.IOException;
+import static de.ids_mannheim.korap.TestSimple.getJsonString;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Properties;
 
-import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KrillCollection;
-import de.ids_mannheim.korap.collection.CollectionBuilder;
-import de.ids_mannheim.korap.index.FieldDocument;
-import de.ids_mannheim.korap.response.Result;
-import de.ids_mannheim.korap.response.SearchContext;
-import de.ids_mannheim.korap.util.StatusCodes;
-import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.util.KrillProperties;
-import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.query.QueryBuilder;
-
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import static de.ids_mannheim.korap.TestSimple.*;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.index.FieldDocument;
+import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.SearchContext;
+import de.ids_mannheim.korap.util.KrillProperties;
+import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.StatusCodes;
 import net.sf.ehcache.Element;
 
 
@@ -747,6 +744,8 @@ public class TestKrillCollectionIndex {
 	@Test
 	@Ignore
     public void testNestedNamedVCs () throws IOException {
+	    KrillCollection.initializeCache();
+	    
         Properties prop = KrillProperties.loadDefaultProperties();
 
         String vcPath = getClass().getResource(path + "named-vcs").getFile();
@@ -858,6 +857,7 @@ public class TestKrillCollectionIndex {
 	@Test
 	@Ignore
     public void testNamedVCsAfterQueryWithMissingDocs () throws IOException {
+	    KrillCollection.initializeCache();
         Properties prop = KrillProperties.loadDefaultProperties();
 
         String vcPath = getClass().getResource(path + "named-vcs").getFile();
@@ -1032,6 +1032,35 @@ public class TestKrillCollectionIndex {
         prop.setProperty("krill.namedVC", tempVC);
     };
     
+    @Test
+    public void testCollectionWithVCRefAndPubDate () throws IOException {
+
+        KrillCollection.initializeCache();
+
+        ki = new KrillIndex();
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc3());
+        ki.addDoc(createDoc5000());
+        ki.commit();
+
+        testManualAddToCache(ki, "named-vcs/named-vc3.jsonld", "named-vc3");
+
+        Element element = KrillCollection.cache.get("named-vc3");
+        CachedVCData cc = (CachedVCData) element.getObjectValue();
+        assertTrue(cc.getDocIdMap().size() > 0);
+            
+        String json = _getJSONString("collection-with-vc-ref-and-pubDate.jsonld");
+
+        KrillCollection kc = new KrillCollection(json);
+        kc.setIndex(ki);
+        assertEquals(2, kc.numberOf("documents"));
+        
+        // testAddDocToIndex();
+        ki.addDoc(createDoc1());
+        ki.commit();
+        // Cache is removed after index change
+
+    }
     
 
     @Test
