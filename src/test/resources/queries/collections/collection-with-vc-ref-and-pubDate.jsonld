@@ -1,0 +1,26 @@
+{
+    "meta": {},
+    "warnings": [],
+    "query": {},
+    "messages": [],
+    "collection": {
+        "operands": [
+            {
+                "@type": "koral:doc",
+                "match": "match:eq",
+                "type": "type:date",
+                "value": "2005",
+                "key": "pubDate"
+            },
+            {
+                "ref": "named-vc3",
+                "@type": "koral:docGroupRef"
+            }
+        ],
+        "@type": "koral:docGroup",
+        "operation": "operation:and"
+    },
+    "@context": "http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+    "errors": []
+}
+
