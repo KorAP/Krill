@@ -747,6 +747,8 @@ public class TestKrillCollectionIndex {
 	@Test
 	@Ignore
     public void testNestedNamedVCs () throws IOException {
+	    KrillCollection.initializeCache();
+	    
         Properties prop = KrillProperties.loadDefaultProperties();
 
         String vcPath = getClass().getResource(path + "named-vcs").getFile();
@@ -858,6 +860,7 @@ public class TestKrillCollectionIndex {
 	@Test
 	@Ignore
     public void testNamedVCsAfterQueryWithMissingDocs () throws IOException {
+	    KrillCollection.initializeCache();
         Properties prop = KrillProperties.loadDefaultProperties();
 
         String vcPath = getClass().getResource(path + "named-vcs").getFile();
@@ -1032,6 +1035,35 @@ public class TestKrillCollectionIndex {
         prop.setProperty("krill.namedVC", tempVC);
     };
     
+    @Test
+    public void testCollectionWithVCRefAndPubDate () throws IOException {
+
+        KrillCollection.initializeCache();
+
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc3());
+        ki.commit();
+
+        testManualAddToCache(ki, "named-vcs/named-vc1.jsonld", "named-vc1");
+
+        Element element = KrillCollection.cache.get("named-vc1");
+        CachedVCData cc = (CachedVCData) element.getObjectValue();
+        assertTrue(cc.getDocIdMap().size() > 0);
+            
+        String json = _getJSONString("collection-with-vc-ref-and-pubDate.jsonld");
+
+        KrillCollection kc = new KrillCollection(json);
+        kc.setIndex(ki);
+        assertEquals(2, kc.numberOf("documents"));
+        
+        // testAddDocToIndex();
+        ki.addDoc(createDoc5000());
+        ki.commit();
+        // Cache is removed after index change
+
+    }
     
 
     @Test
