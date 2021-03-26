@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6f9f816_878721e2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-03-26T16:37:05Z",
+      "side": 1,
+      "message": "Sry I have just found this commit. \nHm, I am not sure if the shields gives me much information. It is not quite clear what build passing and coverage means from the shields. Other shields are quite easily found in the project page. Are closed issues quite interesting for users?\n",
+      "revId": "10ea30edac4273f9a3ee06237318fce3d29e1908",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
