@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1744a39d_c7c2f7fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-04-12T09:02:26Z",
+      "side": 1,
+      "message": "It seems that the tests were not atomically. Maybe we should check that the caches are destroyed after each test?",
+      "revId": "8ed214cf1b0bbaffb1fc3ae86e31618edec0bba4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
