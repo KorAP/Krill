@@ -15,6 +15,7 @@ public class TestCollectionCache {
 
     @Test
     public void testNullCache() throws IOException{
+        KrillCollection kc = new KrillCollection();
         Cache temp = KrillCollection.cache;
         assertTrue(KrillCollection.cache != null);
         

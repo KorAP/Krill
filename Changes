@@ -3,6 +3,7 @@
     - [cleanup] Added test coverage checking with
       $ mvn cobertura:cobertura (diewald, kupietz)
     - [cleanup] Added test statistics with referTo and pubDate (margaretha)
+    - [cleanup] Fixed TestCollectionCache (margaretha)
 
 0.59.2 2020-07-24
     - [feature] Add fingerprint method to index (diewald)
