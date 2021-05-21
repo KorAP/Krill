@@ -411,6 +411,16 @@ public class TestSpanSequenceQueryJSON {
 					 "(base/s:s[0:0], ordered, notExcluded)])");
     };
 
+
+	@Test
+    public void queryJSONdistanceMultipleOps () throws QueryException {
+
+        SpanQueryWrapper sqwi = getJsonQuery(getClass().getResource("/queries/sequence/distance-with-multiple-ops.jsonld").getFile());
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(sq.toString(),"spanDistance(spanDistance(tokens:s:der, tokens:s:alte, [(w[2:2], ordered, notExcluded)]), tokens:s:Baum, [(w[2:2], ordered, notExcluded)])");
+    };
+
+    
 	@Test
     public void queryJSONcosmas2Bug2 () throws QueryException {
 
