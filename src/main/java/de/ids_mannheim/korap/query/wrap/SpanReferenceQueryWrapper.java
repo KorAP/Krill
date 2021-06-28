@@ -12,7 +12,7 @@ public class SpanReferenceQueryWrapper extends SpanQueryWrapper {
 
 
     public SpanReferenceQueryWrapper (SpanQueryWrapper subQueryWrapper,
-                                      byte classNum) {
+                                      int classNum) {
         this.subQuery = subQueryWrapper;
         if (subQuery != null) {
             this.isNull = false;
@@ -29,7 +29,7 @@ public class SpanReferenceQueryWrapper extends SpanQueryWrapper {
             throw new IllegalArgumentException(
                     "Class number must be bigger than 0.");
         }
-        this.classNum = classNum;
+        this.classNum = (byte) classNum;
         this.maybeUnsorted = subQueryWrapper.maybeUnsorted();
     }
 

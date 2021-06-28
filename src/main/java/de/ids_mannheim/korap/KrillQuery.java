@@ -538,8 +538,8 @@ public final class KrillQuery extends Notifications {
         if (isReference) {
             JsonNode resolvedNode = _resolveReference(node, operands,
                     refOperandNum, classNum);
-            return new SpanReferenceQueryWrapper(this._fromKoral(resolvedNode),
-                    (byte) classNum);
+            SpanQueryWrapper queryWrapper = this._fromKoral(resolvedNode);
+            return new SpanReferenceQueryWrapper(queryWrapper,classNum);
         }
 
         return null;

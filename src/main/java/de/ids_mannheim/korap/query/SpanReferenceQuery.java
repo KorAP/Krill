@@ -20,7 +20,7 @@ import de.ids_mannheim.korap.query.spans.ReferenceSpans;
  * For instance in the following Annis query
  * 
  * <pre>
- * cat="vb" & cat="prp" & cat="nn" & #1 .{0,1} #2 & #1 .{0,2} #3
+ * cat="vb" & cat="prp" & cat="nn" & #1 .1 #2 & #1 .{1,2} #3
  * & #3 -> #2
  * </pre>
  * 
@@ -36,8 +36,11 @@ import de.ids_mannheim.korap.query.spans.ReferenceSpans;
  * SpanReferenceQuery ensures that cat="prp" spans in the third
  * operation are the same as the those in the first operation by
  * matching their positions using the class number 2 payloads kept in
- * spans focussing on the class number 3 (it keeps all the payloads
+ * spans focusing on the class number 3 (it keeps all the payloads
  * from previous operations).
+ * 
+ * Distance in ANNIS starts with 1. 
+ * "VB" .1 "NN" means VB is directly on the left side of (next to) NN.
  * 
  * @author margaretha
  *
