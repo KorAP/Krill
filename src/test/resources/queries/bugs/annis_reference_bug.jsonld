@@ -1,0 +1,86 @@
+{
+    "operands": [
+        {
+            "operands": [
+                {
+                    "operands": [
+                        {
+                            "operands": [
+                                {
+                                    "@type": "koral:token",
+                                    "wrap": {
+                                        "@type": "koral:term",
+                                        "match": "match:eq",
+                                        "layer": "orth",
+                                        "key": "ich",
+                                        "foundry": "opennlp",
+                                        "rewrites": [
+                                            {
+                                                "@type": "koral:rewrite",
+                                                "src": "Kustvakt",
+                                                "operation": "operation:injection",
+                                                "scope": "foundry"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "classOut": 129,
+                            "@type": "koral:group",
+                            "operation": "operation:class"
+                        },
+                        {
+                            "operands": [
+                                {
+                                    "@type": "koral:token",
+                                    "wrap": {
+                                        "@type": "koral:term",
+                                        "match": "match:eq",
+                                        "layer": "p",
+                                        "key": "VVFIN",
+                                        "foundry": "tt",
+                                        "rewrites": [
+                                            {
+                                                "@type": "koral:rewrite",
+                                                "src": "Kustvakt",
+                                                "operation": "operation:injection",
+                                                "scope": "foundry"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "classOut": 130,
+                            "@type": "koral:group",
+                            "operation": "operation:class"
+                        }
+                    ],
+                    "@type": "koral:group",
+                    "relType": {
+                        "@type": "koral:relation",
+                        "wrap": {
+                            "foundry": "malt",
+                            "@type": "koral:term",
+                            "match": "match:eq",
+                            "layer": "d",
+                            "key": "SUBJ"
+                        }
+                    },
+                    "operation": "operation:relation"
+                }
+            ],
+            "@type": "koral:reference",
+            "operation": "operation:focus",
+            "classRef": [129]
+        },
+        {
+            "@type": "koral:reference",
+            "operation": "operation:focus",
+            "classRef": [130]
+        }
+    ],
+    "@type": "koral:group",
+    "inOrder": true,
+    "operation": "operation:sequence"
+}
+
