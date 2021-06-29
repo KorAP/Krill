@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b6bc35f_9be143c0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-06-29T08:04:54Z",
+      "side": 1,
+      "message": "The -126 with the positive values like 130 seems to be a bit confusing, but otherwise it\u0027s fine!",
+      "revId": "2aeb3a3a38033626ceb34eb0d425ae10101d60d7",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
