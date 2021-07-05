@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KrillCollection;
+import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.response.Result;
@@ -34,6 +35,7 @@ public class TestBenchmarkSamples {
         // Construct index
 
         KrillIndex ki = new KrillIndex();
+        double seconds;
 
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
@@ -51,7 +53,7 @@ public class TestBenchmarkSamples {
             assertEquals(kr.getTotalResults(), 497);
         };
         t2 = System.nanoTime();
-        double seconds = (double) (t2 - t1) / 1000000000.0;
+        seconds = (double) (t2 - t1) / 1000000000.0;
         System.err.println("Seconds: " + seconds);
 
         // Seconds: 9.465514311
@@ -62,5 +64,20 @@ public class TestBenchmarkSamples {
         // Seconds: 8.700548842
         // Seconds: 9.390980437
         // Seconds: 8.817503952
+        // New machine (ND):
+        // Seconds: 3.679194927
+
+        t1 = System.nanoTime();
+        for (int i = 1; i <= rounds; i++) {
+            final QueryBuilder qb = new QueryBuilder("tokens");
+            final Krill ks = new Krill(qb.seg("mate/m:gender:masc").toQuery());
+            KrillMeta meta = ks.getMeta();
+            meta.setSnippets(false);
+            final Result kr = ks.apply(ki);
+            assertEquals(kr.getTotalResults(), 497);
+        };
+        t2 = System.nanoTime();
+        seconds = (double) (t2 - t1) / 1000000000.0;
+        System.err.println("No snippets - Seconds: " + seconds);
     };
 };
