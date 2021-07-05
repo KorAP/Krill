@@ -365,6 +365,19 @@ public class TestMetaFields {
         assertEquals("base/p", ks.getMeta().getContext().getSpanContext());
     };
 
+  
+    @Test
+    public void searchMetaAndSnippets () throws IOException {
+
+        // All fields
+        String jsonString = getJsonString(getClass()
+                .getResource("/queries/metas/no-snippets.jsonld")
+                .getFile());
+
+        Krill ks = new Krill(jsonString);
+        assertFalse(ks.getMeta().hasSnippets());
+    };
+
 
     @Test
     public void searchMetaAssets () throws IOException {

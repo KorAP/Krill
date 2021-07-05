@@ -1,0 +1,103 @@
+{
+    "meta": {
+        "startIndex": 0,
+        "snippets": false,
+        "count": 50,
+        "cutOff": true,
+        "fields": [
+            "corpusSigle",
+            "textSigle",
+            "pubDate",
+            "pubPlace",
+            "availability",
+            "textClass"
+        ],
+        "timeout": 90000
+    },
+    "query": {
+        "@type": "koral:token",
+        "wrap": {
+            "@type": "koral:term",
+            "match": "match:eq",
+            "layer": "orth",
+            "key": "Sockenpuppe",
+            "foundry": "opennlp",
+            "rewrites": [
+                {
+                    "@type": "koral:rewrite",
+                    "src": "Kustvakt",
+                    "operation": "operation:injection",
+                    "scope": "foundry"
+                }
+            ]
+        }
+    },
+    "collection": {
+        "@type": "koral:docGroup",
+        "operation": "operation:and",
+        "operands": [
+            {
+                "operands": [
+                    {
+                        "@type": "koral:doc",
+                        "match": "match:eq",
+                        "type": "type:regex",
+                        "value": "CC-BY.*",
+                        "key": "availability"
+                    },
+                    {
+                        "operands": [
+                            {
+                                "@type": "koral:doc",
+                                "match": "match:eq",
+                                "type": "type:regex",
+                                "value": "ACA.*",
+                                "key": "availability"
+                            },
+                            {
+                                "operands": [
+                                    {
+                                        "@type": "koral:doc",
+                                        "match": "match:eq",
+                                        "type": "type:regex",
+                                        "value": "QAO-NC",
+                                        "key": "availability"
+                                    },
+                                    {
+                                        "@type": "koral:doc",
+                                        "match": "match:eq",
+                                        "type": "type:regex",
+                                        "value": "QAO.*",
+                                        "key": "availability"
+                                    }
+                                ],
+                                "@type": "koral:docGroup",
+                                "operation": "operation:or"
+                            }
+                        ],
+                        "@type": "koral:docGroup",
+                        "operation": "operation:or"
+                    }
+                ],
+                "@type": "koral:docGroup",
+                "operation": "operation:or"
+            },
+            {
+                "@type": "koral:doc",
+                "match": "match:eq",
+                "type": "type:regex",
+                "value": "W.D.*",
+                "key": "corpusSigle"
+            }
+        ],
+        "rewrites": [
+            {
+                "@type": "koral:rewrite",
+                "src": "Kustvakt",
+                "operation": "operation:insertion",
+                "scope": "availability(ALL)"
+            }
+        ]
+    },
+    "@context": "http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld"
+}
