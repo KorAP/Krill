@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "82f8f8c4_a1f52dec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-07-16T09:58:51Z",
+      "side": 1,
+      "message": "I added minor changes. The test cannot really detect problems, but still nice to have.",
+      "revId": "223ea458c6ca95dcbcfa5916d4d4b0000c844ada",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
