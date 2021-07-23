@@ -7,7 +7,7 @@ A Corpusdata Retrieval Index using Lucene for Look-Ups
 
 Krill is a [Lucene](https://lucene.apache.org/) based search
 engine for large annotated corpora,
-used as a backend component of the [KorAP Corpus Analysis Platform](http://korap.ids-mannheim.de/) at the [IDS Mannheim](http://ids-mannheim.de/).
+used as a backend component of the [KorAP Corpus Analysis Platform](https://korap.ids-mannheim.de/) at the [IDS Mannheim](https://www.ids-mannheim.de/).
 
 **! This software is in its early stages and not stable yet! Use it on your own risk!**
 
@@ -95,14 +95,14 @@ index, but this is likely to change.
 
 ## Development and License
 
-**Authors**: [Nils Diewald](http://nils-diewald.de/),
-	     [Eliza Margaretha](http://www1.ids-mannheim.de/direktion/personal/margaretha.html)
+**Authors**: [Nils Diewald](https://www.nils-diewald.de/),
+	     [Eliza Margaretha](https://perso.ids-mannheim.de/seiten/margaretha.html)
 
-Copyright (c) 2013-2020, [IDS Mannheim](http://ids-mannheim.de/), Germany
+Copyright (c) 2013-2021, [IDS Mannheim](https://www.ids-mannheim.de/), Germany
 
-Krill is developed as part of the [KorAP](http://korap.ids-mannheim.de/)
+Krill is developed as part of the [KorAP](https://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Institute for German Language
-([IDS](http://ids-mannheim.de/)),
+([IDS](https://www.ids-mannheim.de/)),
 funded by the
 [Leibniz-Gemeinschaft](https://www.leibniz-gemeinschaft.de/)
 and supported by the [KobRA](http://www.kobra.tu-dortmund.de) project,
@@ -118,7 +118,7 @@ Krill is published under the
 The Eclipse format style is based on the default style in Eclipse,
 licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10.html).
 Parts of the test corpus by courtesy of the
-[DeReKo](http://ids-mannheim.de/kl/projekte/korpora/) project.
+[DeReKo](https://www.ids-mannheim.de/digspra/kl/projekte/korpora/) project.
 
 **To cite this work, please refer to:**<br>
 Diewald, Nils and Margaretha, Eliza (2017): ‎[Krill: KorAP search and analysis engine](http://www.jlcl.org/2016_Heft1/jlcl-2016-1-4DiewaldMargaretha.pdf).
