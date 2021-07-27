@@ -196,8 +196,6 @@ public class TestDatabase {
         assertEquals(rs.getInt("text_id"), 94);
         assertEquals(rs.getInt("match_count"), 456);
         assertFalse(rs.next());
-
-        stat.close();
     };
 
 
