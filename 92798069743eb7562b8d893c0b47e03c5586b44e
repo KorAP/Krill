@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3e16700_7828f0ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-07-27T10:46:45Z",
+      "side": 1,
+      "message": "These changes don\u0027t break anything and still work - some upgrades to major versions are obviously breaking. Some I will try to do in separate commits - though I may fail.",
+      "revId": "92798069743eb7562b8d893c0b47e03c5586b44e",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
