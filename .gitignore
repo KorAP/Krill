@@ -17,6 +17,7 @@
 /misc/web-api.md
 *~
 .*
+*\#
 !.github
 !.gitignore
 # /src/main/resources/
