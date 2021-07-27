@@ -16,7 +16,7 @@ import java.util.logging.LogManager;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.net.URI;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriBuilder;
 import java.beans.PropertyVetoException;
 
 import de.ids_mannheim.korap.KrillIndex;
