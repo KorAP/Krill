@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.charset.StandardCharsets;
 import java.nio.ByteBuffer;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
