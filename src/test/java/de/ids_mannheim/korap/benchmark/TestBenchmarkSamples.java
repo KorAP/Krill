@@ -1,25 +1,20 @@
 package de.ids_mannheim.korap.benchmark;
 
-import java.util.*;
-import java.io.*;
+import static org.junit.Assert.assertEquals;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 
-import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.KrillCollection;
-import de.ids_mannheim.korap.KrillMeta;
-import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.response.Result;
-import de.ids_mannheim.korap.util.QueryException;
-
-import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.KrillMeta;
+import de.ids_mannheim.korap.query.QueryBuilder;
+import de.ids_mannheim.korap.response.Result;
 
 
 @RunWith(JUnit4.class)
@@ -28,15 +23,53 @@ public class TestBenchmarkSamples {
     private final ObjectMapper mapper = new ObjectMapper();
     private final int rounds = 1000;
     private long t1 = 0, t2 = 0;
+    private double duration;
+    
+    @Test
+    public void testSnippetAndAvailabilityAll() throws IOException {
+    	KrillIndex ki = new KrillIndex();
+    	ki.addDoc(getClass().getResourceAsStream("/goe/AGA-03828.json.gz"),
+                true);
+    	ki.addDoc(getClass().getResourceAsStream("/bzk/D59-00089.json.gz"),
+                true);
+    	ki.commit();
+    	
+    	String json = TestBenchmarkSpans.getString(
+                getClass().getResource("/queries/benchmark6-availability.jsonld").getFile());
 
+    	// with snippet
+    	
+    	Krill ks = new Krill(json);
+    	Result kr1 = new Result();
+    	
+    	ks.getMeta().setSnippets(false);
+    	for (int i=0; i<10;i++) {
+    		t1=System.nanoTime();
+	    	kr1 = ks.apply(ki);
+	    	t2=System.nanoTime();
+	    	duration = (double) (t2 - t1)/ 1000000000.0;;
+	        System.out.println("no snippet: "+ duration);
+    	}
+        
+    	// without snippet
+    	Result kr2 = new Result();
+        ks.getMeta().setSnippets(true);
+        for (int i=0; i<10;i++) {
+	        t1=System.nanoTime();
+	        kr2 = ks.apply(ki);
+	    	t2=System.nanoTime();
+	    	duration = (double) (t2 - t1)/ 1000000000.0;;
+	        System.out.println("with snippet: "+duration);
+        }
+        assertEquals(kr1.getTotalResults(),kr2.getTotalResults());
+        System.out.println("Total Results: "+ kr1.getTotalResults());
+    	
+	}
 
     @Test
     public void simpleSegmentQuery () throws Exception {
-        // Construct index
-
-        KrillIndex ki = new KrillIndex();
-        double seconds;
-
+    	// Construct index
+    	KrillIndex ki = new KrillIndex();
         // Indexing test files
         for (String i : new String[] { "00001", "00002", "00003", "00004",
                 "00005", "00006", "02439" }) {
@@ -44,7 +77,8 @@ public class TestBenchmarkSamples {
                     true);
         };
         ki.commit();
-
+        
+        double seconds;
         t1 = System.nanoTime();
         for (int i = 1; i <= rounds; i++) {
             final QueryBuilder qb = new QueryBuilder("tokens");

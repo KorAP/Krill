@@ -1,0 +1,71 @@
+{
+    "meta": {
+        "snippets": true,
+        "timeout": 90000
+    },
+    "query": {
+        "@type": "koral:token",
+        "wrap": {
+            "foundry": "tt",
+            "@type": "koral:term",
+            "match": "match:eq",
+            "key": "ADJA",
+            "layer": "p"
+        }
+    },
+    "@context": "http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld",
+    "collection": {
+        "operands": [
+            {
+                "@type": "koral:doc",
+                "match": "match:eq",
+                "type": "type:regex",
+                "value": "CC-BY.*",
+                "key": "license"
+            },
+            {
+                "operands": [
+                    {
+                        "@type": "koral:doc",
+                        "match": "match:eq",
+                        "type": "type:regex",
+                        "value": "ACA.*",
+                        "key": "license"
+                    },
+                    {
+                        "operands": [
+                            {
+                                "@type": "koral:doc",
+                                "match": "match:eq",
+                                "type": "type:regex",
+                                "value": "QAO-NC",
+                                "key": "license"
+                            },
+                            {
+                                "@type": "koral:doc",
+                                "match": "match:eq",
+                                "type": "type:regex",
+                                "value": "QAO.*",
+                                "key": "license"
+                            }
+                        ],
+                        "@type": "koral:docGroup",
+                        "operation": "operation:or"
+                    }
+                ],
+                "@type": "koral:docGroup",
+                "operation": "operation:or"
+            }
+        ],
+        "@type": "koral:docGroup",
+        "operation": "operation:or",
+        "rewrites": [
+            {
+                "@type": "koral:rewrite",
+                "src": "Kustvakt",
+                "operation": "operation:insertion",
+                "scope": "license(ALL)"
+            }
+        ]
+    }
+}
