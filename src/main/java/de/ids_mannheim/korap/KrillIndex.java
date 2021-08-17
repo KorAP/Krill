@@ -1433,6 +1433,7 @@ public final class KrillIndex {
 			if (DEBUG)
 				log.trace("Rewritten query is {}", query.toString());
 
+            int readerCount = 0;
 
             // Todo: run this in a separated thread
             for (LeafReaderContext atomic : this.reader().leaves()) {
@@ -1441,13 +1442,17 @@ public final class KrillIndex {
 
                 if (isTimeout)
                     break;
-
                 
                 /*
                  * Todo: There may be a way to know early if the bitset is emty
                  * by using LongBitSet - but this may not be as fast as I think.
                  */
+                long t3 = System.nanoTime();
                 final FixedBitSet bitset = collection.bits(atomic);
+
+                if (DEBUG) {
+                    log.debug("Load VC [" + readerCount++ + "]: " + ((double) (System.nanoTime() - t3) * 1e-6) + " ms");
+                };
 
 				if (bitset.nextSetBit(0) == DocIdSetIterator.NO_MORE_DOCS) {
 					continue;
