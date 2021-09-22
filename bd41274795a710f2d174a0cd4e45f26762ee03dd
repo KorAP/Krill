@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "79867eb7_6353a516",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-09-22T15:03:23Z",
+      "side": 1,
+      "message": "I hope this test really represents the bug presented by Rainer Perkuhn. It occurs for example when running `(a OR b) /+w1 (x OR y)` (without login or VC). Error message is:\n\n  \u003cmeta http-equiv\u003d\"Content-Type\" content\u003d\"text/html;charset\u003dutf-8\"/\u003e\n  \u003ctitle\u003eError 500 java.lang.NullPointerException\u003c/title\u003e\n  \u003c/head\u003e\n  \u003cbody\u003e\u003ch2\u003eHTTP ERROR 500 java.lang.NullPointerException\u003c/h2\u003e\n  \u003ctable\u003e\n  \u003ctr\u003e\u003cth\u003eURI:\u003c/th\u003e\u003ctd\u003e/api/v1.0/search\u003c/td\u003e\u003c/tr\u003e\n  \u003ctr\u003e\u003cth\u003eSTATUS:\u003c/th\u003e\u003ctd\u003e500\u003c/td\u003e\u003c/tr\u003e\n  \u003ctr\u003e\u003cth\u003eMESSAGE:\u003c/th\u003e\u003ctd\u003ejava.lang.NullPointerException\u003c/td\u003e\u003c/tr\u003e\n  \u003ctr\u003e\u003cth\u003eSERVLET:\u003c/th\u003e\u003ctd\u003ecom.sun.jersey.spi.spring.container.servlet.SpringServlet-59d016c9\u003c/td\u003e\u003c/tr\u003e\n  \u003ctr\u003e\u003cth\u003eCAUSED BY:\u003c/th\u003e\u003ctd\u003ejava.lang.NullPointerException\u003c/td\u003e\u003c/tr\u003e\n  \u003c/table\u003e\n  \u003ch3\u003eCaused by:\u003c/h3\u003e\u003cpre\u003ejava.lang.NullPointerException\n  \\x09at org.apache.lucene.search.spans.SpanOrQuery$1.doc(SpanOrQuery.java:234)\n  \\x09at de.ids_mannheim.korap.query.spans.ClassSpans.doc(ClassSpans.java:100)\n  \\x09at de.ids_mannheim.korap.query.spans.TokenDistanceSpans.setCandidateList(TokenDistanceSpans.java:51)\n  \\x09at de.ids_mannheim.korap.query.spans.OrderedDistanceSpans.advance(OrderedDistanceSpans.java:75)\n  \\x09at de.ids_mannheim.korap.query.spans.DistanceSpans.next(DistanceSpans.java:77)\n  \\x09at de.ids_mannheim.korap.KrillIndex.search(KrillIndex.java:1472)\n  \\x09at de.ids_mannheim.korap.Krill.apply(Krill.java:305)\n  \\x09at de.ids_mannheim.korap.Krill.apply(Krill.java:275)\n  \\x09at de.ids_mannheim.korap.web.SearchKrill.search(SearchKrill.java:88)\n  \\x09at de.ids_mannheim.korap.service.SearchService.search(SearchService.java:193)\n  \\x09at de.ids_mannheim.korap.web.controller.SearchController.searchGet(SearchController.java:233)",
+      "revId": "bd41274795a710f2d174a0cd4e45f26762ee03dd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
