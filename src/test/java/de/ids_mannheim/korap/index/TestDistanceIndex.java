@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.search.spans.SpanOrQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -28,9 +29,12 @@ public class TestDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
         fd.addTV("base", "text",
-                "[(0-1)s:b|s:c|_1$<i>0<i>1]" + "[(1-2)s:b|_2$<i>1<i>2]"
-                        + "[(2-3)s:c|_3$<i>2<i>3]" + "[(3-4)s:c|_4$<i>3<i>4]"
-                        + "[(4-5)s:d|_5$<i>4<i>5]" + "[(5-6)s:d|_6$<i>5<i>6]");
+                 "[(0-1)s:b|s:c|_1$<i>0<i>1]" +
+                 "[(1-2)s:b|_2$<i>1<i>2]" +
+                 "[(2-3)s:c|_3$<i>2<i>3]" +
+                 "[(3-4)s:c|_4$<i>3<i>4]" +
+                 "[(4-5)s:d|_5$<i>4<i>5]" +
+                 "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
     }
 
@@ -39,15 +43,16 @@ public class TestDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("base", "text",
-                "[(0-1)s:c|_1$<i>0<i>1]" + "[(1-2)s:e|_2$<i>1<i>2]"
-                        + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
-                        + "[(3-4)s:c|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
-                        + "[(4-5)s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
-                        + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8<b>0]"
-                        + "[(6-7)s:d|_7$<i>6<i>7]"
-                        + "[(7-8)s:e|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
-                        + "[(8-9)s:e|_9$<i>8<i>9|<>:x$<b>64<i>8<i>10<i>10<b>0]"
-                        + "[(9-10)s:d|_10$<i>9<i>10]");
+                "[(0-1)s:c|_1$<i>0<i>1]"
+                 + "[(1-2)s:e|_2$<i>1<i>2]"
+                 + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
+                 + "[(3-4)s:c|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
+                 + "[(4-5)s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
+                 + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8<b>0]"
+                 + "[(6-7)s:d|_7$<i>6<i>7]"
+                 + "[(7-8)s:e|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
+                 + "[(8-9)s:e|_9$<i>8<i>9|<>:x$<b>64<i>8<i>10<i>10<b>0]"
+                 + "[(9-10)s:d|_10$<i>9<i>10]");
         return fd;
     }
 
@@ -323,4 +328,36 @@ public class TestDistanceIndex {
         assertEquals(kr.getTotalResults(), 2);
     }
 
+    @Test
+    public void testCaseOr () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc1());
+        ki.commit();
+
+        SpanQuery sq = new SpanDistanceQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:c")),
+                new SpanTermQuery(new Term("base", "s:d"))
+                ),
+            new SpanTermQuery(new Term("base", "s:e")),
+            new DistanceConstraint(0, 1, true, false), true);
+
+        kr = ki.search(sq, (short) 10);
+        assertEquals(kr.getTotalResults(), 2);
+
+        sq = new SpanDistanceQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:c")),
+                new SpanTermQuery(new Term("base", "s:d"))
+                ),
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:e")),
+                new SpanTermQuery(new Term("base", "s:c"))
+                ),
+            new DistanceConstraint(0, 1, true, false), true);
+
+        kr = ki.search(sq, (short) 10);
+        assertEquals(kr.getTotalResults(), 4);
+        ki.close();
+    }
 }
