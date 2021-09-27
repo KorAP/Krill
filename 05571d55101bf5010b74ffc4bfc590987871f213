@@ -22,6 +22,30 @@
       },
       "revId": "05571d55101bf5010b74ffc4bfc590987871f213",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be6d93de_aa4b25ff",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/TokenDistanceSpans.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-09-27T13:48:06Z",
+      "side": 1,
+      "message": "hasMoreSpans is actually thought for the whole span. It will be false if either firstSpans or secondSpans is false.\n\nIn this test, hasMoreSpans is false because secondSpans.next() was false.\n\nMaybe it is more appropriate to check it before setting candidates. I\u0027ll upload another patch.",
+      "parentUuid": "a045f8af_97163dd7",
+      "range": {
+        "startLine": 58,
+        "startChar": 16,
+        "endLine": 58,
+        "endChar": 49
+      },
+      "revId": "05571d55101bf5010b74ffc4bfc590987871f213",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
