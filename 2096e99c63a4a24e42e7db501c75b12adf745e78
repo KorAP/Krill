@@ -16,6 +16,23 @@
       "message": "The final solution now looks way clearer! The element distance probably should be tested as well.",
       "revId": "2096e99c63a4a24e42e7db501c75b12adf745e78",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea0aff37_a9a2e35e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-09-27T16:46:00Z",
+      "side": 1,
+      "message": "Following the reply by Rainer, this doesn\u0027t seem to fix all issues regarding the distance operands. The meantioned example `(Click or click) /+w1 (Bait or bait)` returns:\n\n  \u003ctitle\u003eError 500 java.lang.NullPointerException\u003c/title\u003e\n  \u003c/head\u003e\n  \u003cbody\u003e\u003ch2\u003eHTTP ERROR 500 java.lang.NullPointerException\u003c/h2\u003e\n  \u003ctable\u003e\n  \u003ctr\u003e\u003cth\u003eURI:\u003c/th\u003e\u003ctd\u003e/api/v1.0/search\u003c/td\u003e\u003c/tr\u003e\n  \u003ctr\u003e\u003cth\u003eSTATUS:\u003c/th\u003e\u003ctd\u003e500\u003c/td\u003e\u003c/tr\u003e\n  \u003ctr\u003e\u003cth\u003eMESSAGE:\u003c/th\u003e\u003ctd\u003ejava.lang.NullPointerException\u003c/td\u003e\u003c/tr\u003e\n  \u003ctr\u003e\u003cth\u003eSERVLET:\u003c/th\u003e\u003ctd\u003ecom.sun.jersey.spi.spring.container.servlet.SpringServlet-59d016c9\u003c/td\u003e\u003c/tr\u003e\n  \u003ctr\u003e\u003cth\u003eCAUSED BY:\u003c/th\u003e\u003ctd\u003ejava.lang.NullPointerException\u003c/td\u003e\u003c/tr\u003e\n  \u003c/table\u003e\n  \u003ch3\u003eCaused by:\u003c/h3\u003e\u003cpre\u003ejava.lang.NullPointerException\n  \\x09at org.apache.lucene.search.spans.SpanOrQuery$1.doc(SpanOrQuery.java:234)\n  \\x09at de.ids_mannheim.korap.query.spans.ClassSpans.doc(ClassSpans.java:100)\n  \\x09at  de.ids_mannheim.korap.query.spans.TokenDistanceSpans.setCandidateList(TokenDistanceSpans.java:51)\n  \\x09at de.ids_mannheim.korap.query.spans.OrderedDistanceSpans.advance(OrderedDistanceSpans.java:75)\n  \\x09at de.ids_mannheim.korap.query.spans.DistanceSpans.next(DistanceSpans.java:77)\n  \\x09at de.ids_mannheim.korap.KrillIndex.search(KrillIndex.java:1472)\n  \\x09at de.ids_mannheim.korap.Krill.apply(Krill.java:305)\n  \\x09at de.ids_mannheim.korap.Krill.apply(Krill.java:275)\n  \\x09at de.ids_mannheim.korap.web.SearchKrill.search(SearchKrill.java:88)\n  \\x09at de.ids_mannheim.korap.service.SearchService.search(SearchService.java:193)\n  \\x09at de.ids_mannheim.korap.web.controller.SearchController.searchGet(SearchController.java:233)\n  ...",
+      "revId": "2096e99c63a4a24e42e7db501c75b12adf745e78",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
