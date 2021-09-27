@@ -48,19 +48,20 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
 
     @Override
     protected void setCandidateList () throws IOException {
-        if (candidateListDocNum == secondSpans.doc()) {
-            copyPossibleCandidates();
-            addNewCandidates();
-            candidateListIndex = -1;
-        }
-        else {
-            candidateList.clear();
-            if (hasMoreFirstSpans && ensureSameDoc(firstSpans, secondSpans)) {
-                candidateListDocNum = firstSpans.doc();
-                addNewCandidates();
-                candidateListIndex = -1;
-            }
-        }
+		if (hasMoreSpans) {
+			if (candidateListDocNum == secondSpans.doc()) {
+				copyPossibleCandidates();
+				addNewCandidates();
+				candidateListIndex = -1;
+			} else {
+				candidateList.clear();
+				if (hasMoreFirstSpans && ensureSameDoc(firstSpans, secondSpans)) {
+					candidateListDocNum = firstSpans.doc();
+					addNewCandidates();
+					candidateListIndex = -1;
+				}
+			}
+		}
     }
 
 
