@@ -46,6 +46,30 @@
       },
       "revId": "05571d55101bf5010b74ffc4bfc590987871f213",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dabe2037_3009aa32",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/TokenDistanceSpans.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-09-27T15:02:06Z",
+      "side": 1,
+      "message": "There is no need to set a candidate list when there is no more spans of either first span, second span or element span. but i cannot check them altogether all the time, so it is only set once one of them doesn\u0027t have a span anymore.\n\nI have also updated ElementDistanceSpan now.",
+      "parentUuid": "be6d93de_aa4b25ff",
+      "range": {
+        "startLine": 58,
+        "startChar": 16,
+        "endLine": 58,
+        "endChar": 49
+      },
+      "revId": "05571d55101bf5010b74ffc4bfc590987871f213",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
