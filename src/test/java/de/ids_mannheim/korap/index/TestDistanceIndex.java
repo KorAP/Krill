@@ -42,7 +42,7 @@ public class TestDistanceIndex {
     private FieldDocument createFieldDoc1 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
-        fd.addTV("base", "text",
+        fd.addTV("base", "ceccdcdeed",
                 "[(0-1)s:c|_1$<i>0<i>1]"
                  + "[(1-2)s:e|_2$<i>1<i>2]"
                  + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
@@ -333,8 +333,10 @@ public class TestDistanceIndex {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc1());
         ki.commit();
+        SpanQuery sq;
 
-        SpanQuery sq = new SpanDistanceQuery(
+        // c or d /+w1 e
+        sq = new SpanDistanceQuery(
             new SpanOrQuery(
                 new SpanTermQuery(new Term("base", "s:c")),
                 new SpanTermQuery(new Term("base", "s:d"))
@@ -343,8 +345,21 @@ public class TestDistanceIndex {
             new DistanceConstraint(0, 1, true, false), true);
 
         kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(2,kr.getTotalResults());
 
+        // c or d /+w1 c
+        sq = new SpanDistanceQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:c")),
+                new SpanTermQuery(new Term("base", "s:d"))
+                ),
+            new SpanTermQuery(new Term("base", "s:c")),
+            new DistanceConstraint(0, 1, true, false), true);
+
+        kr = ki.search(sq, (short) 10);
+        assertEquals(6,kr.getTotalResults());
+
+        
         sq = new SpanDistanceQuery(
             new SpanOrQuery(
                 new SpanTermQuery(new Term("base", "s:c")),
@@ -357,7 +372,7 @@ public class TestDistanceIndex {
             new DistanceConstraint(0, 1, true, false), true);
 
         kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getTotalResults(), 4);
+        assertEquals(kr.getTotalResults(), 8);
         ki.close();
     }
 }
