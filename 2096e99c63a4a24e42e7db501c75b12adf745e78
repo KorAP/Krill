@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38a0d446_d76410ba",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-09-27T16:26:06Z",
+      "side": 1,
+      "message": "The final solution now looks way clearer! The element distance probably should be tested as well.",
+      "revId": "2096e99c63a4a24e42e7db501c75b12adf745e78",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
