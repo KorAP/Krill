@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a045f8af_97163dd7",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/TokenDistanceSpans.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-09-27T12:24:51Z",
+      "side": 1,
+      "message": "Can you explain hasMoreSpans to me? Is it always true if either secondSpans.Next() or firstSpans.Next() is true - or when both are true?\nI can remove `hasMoreFirstSpans` and the test suite runs just fine.",
+      "range": {
+        "startLine": 58,
+        "startChar": 16,
+        "endLine": 58,
+        "endChar": 49
+      },
+      "revId": "05571d55101bf5010b74ffc4bfc590987871f213",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
