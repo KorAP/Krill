@@ -51,6 +51,24 @@
       "parentUuid": "ea0aff37_a9a2e35e",
       "revId": "2096e99c63a4a24e42e7db501c75b12adf745e78",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4dcadb1e_06bdc1df",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-09-28T08:35:04Z",
+      "side": 1,
+      "message": "Sorry - that\u0027s the wrong return. I was checking the main instance accidentally.\nThe error is\n\n  java.lang.NullPointerException: null\n\tat org.apache.lucene.search.spans.SpanOrQuery$1.doc(SpanOrQuery.java:234) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.query.spans.ClassSpans.doc(ClassSpans.java:100) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.query.spans.SimpleSpans.ensureSameDoc(SimpleSpans.java:84) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.query.spans.TokenDistanceSpans.setCandidateList(TokenDistanceSpans.java:58) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.query.spans.OrderedDistanceSpans.advance(OrderedDistanceSpans.java:75) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.query.spans.DistanceSpans.next(DistanceSpans.java:77) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.KrillIndex.search(KrillIndex.java:1472) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.Krill.apply(Krill.java:305) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.Krill.apply(Krill.java:275) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.web.SearchKrill.search(SearchKrill.java:88) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.service.SearchService.search(SearchService.java:193) ~[Kustvakt-full-0.64.jar:?]\n\tat de.ids_mannheim.korap.web.controller.SearchController.searchGet(SearchController.java:233) ~[Kustvakt-full-0.64.jar:?]\n\tat sun.reflect.GeneratedMethodAccessor71.invoke(Unknown Source) ~[?:?]\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_302]",
+      "parentUuid": "403988f2_5dc6223d",
+      "revId": "2096e99c63a4a24e42e7db501c75b12adf745e78",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
