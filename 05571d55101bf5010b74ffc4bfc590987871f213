@@ -70,6 +70,30 @@
       },
       "revId": "05571d55101bf5010b74ffc4bfc590987871f213",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f90eff50_1c8c5bc9",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/TokenDistanceSpans.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-09-29T07:32:27Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "dabe2037_3009aa32",
+      "range": {
+        "startLine": 58,
+        "startChar": 16,
+        "endLine": 58,
+        "endChar": 49
+      },
+      "revId": "05571d55101bf5010b74ffc4bfc590987871f213",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
