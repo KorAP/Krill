@@ -41,6 +41,30 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "05abe5ab_71e3a0c8",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/ElementDistanceSpans.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-09-30T11:42:04Z",
+      "side": 1,
+      "message": "I have added it and also hasMoreElements.",
+      "parentUuid": "c54da2b9_3f746fed",
+      "range": {
+        "startLine": 90,
+        "startChar": 8,
+        "endLine": 90,
+        "endChar": 20
+      },
+      "revId": "4d2f474effdebafc6685393dcb148867e89cfba4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1c01eb6e_cd39a262",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-09-28T10:12:57Z",
       "side": 1,
       "message": "This was still necessary, as firstSpans may not exist, even hasMoreSpans is true.",
+      "range": {
+        "startLine": 58,
+        "startChar": 8,
+        "endLine": 58,
+        "endChar": 25
+      },
+      "revId": "4d2f474effdebafc6685393dcb148867e89cfba4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "01209b87_fbf504d1",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/TokenDistanceSpans.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-09-30T11:42:04Z",
+      "side": 1,
+      "message": "Right.",
+      "parentUuid": "1c01eb6e_cd39a262",
       "range": {
         "startLine": 58,
         "startChar": 8,
