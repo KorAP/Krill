@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9720fdb2_d289703c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-09-30T11:47:57Z",
+      "side": 1,
+      "message": "I have removed changes in ElementDistanceSpans.",
+      "revId": "afb4cb3a598c4935dfce032194bfadaa5c9f34a9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
