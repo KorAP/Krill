@@ -1,5 +1,7 @@
-0.59.5 2021-09-28
+0.59.5 2021-09-30
     - [bugfix] Fixed candidate settings in token distance spans
+      (margaretha, diewald)
+    - [bugfix] Fixed setting candidates in element distance spans.
       (margaretha, diewald)
 
 0.59.4 2021-07-27

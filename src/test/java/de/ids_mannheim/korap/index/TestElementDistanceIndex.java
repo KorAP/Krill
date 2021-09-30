@@ -8,6 +8,7 @@ import java.io.*;
 import static de.ids_mannheim.korap.TestSimple.*;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
@@ -83,7 +84,7 @@ public class TestElementDistanceIndex {
                 "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
                         + "[(1-2)s:d|_2$<i>1<i>2]"
                         + "[(2-3)s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
-                        + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4<b>0]"
+                        + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>5<i>5<b>0]"
                         + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
                         + "[(5-6)s:d|_6$<i>5<i>6]");
         return fd;
@@ -99,6 +100,17 @@ public class TestElementDistanceIndex {
                         + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>5<i>4<b>0]"
                         + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
                         + "[(5-6)s:d|_6$<i>5<i>6]");
+        return fd;
+    }
+    
+    private FieldDocument createFieldDoc5 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-5");
+        fd.addTV("tokens", "edef",
+                 "[(0-1)s:e|_1$<i>0<i>1]"
+                 + "[(1-2)s:d|_2$<i>1<i>2]"
+                 + "[(2-3)s:e|_3$<i>2<i>3]"
+                 + "[(3-4)s:f|_4$<i>3<i>4]");
         return fd;
     }
 
@@ -294,5 +306,73 @@ public class TestElementDistanceIndex {
                                                // should it not be
                                                // ordered?
         assertEquals("[[ec]]ebdc", kr.getMatch(0).getSnippetBrackets());
+    }
+    
+    @Test
+    public void testNoMoreFirstSpans () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc3());
+        ki.addDoc(createFieldDoc5());
+        ki.commit();
+
+        // c or b
+        SpanOrQuery soq = new SpanOrQuery(
+                new SpanTermQuery(new Term("tokens", "s:c")),
+                new SpanTermQuery(new Term("tokens", "s:b")));
+        
+        // (c or b) /s0 d
+        SpanElementQuery e = new SpanElementQuery("tokens", "s");
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+                soq,
+                new SpanTermQuery(new Term("tokens", "s:d")),
+                new DistanceConstraint(e, 0, 0, true, false), true);
+
+        kr = ki.search(sdq, (short) 10);
+        assertEquals(1, kr.getTotalResults());
+    }
+    
+    @Test
+    public void testNoMoreSecondSpans () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc3());
+        ki.addDoc(createFieldDoc5());
+        ki.commit();
+
+        // c or b
+        SpanOrQuery soq = new SpanOrQuery(
+                new SpanTermQuery(new Term("tokens", "s:c")),
+                new SpanTermQuery(new Term("tokens", "s:b")));
+        
+        // d /s0(c or b)
+        SpanElementQuery e = new SpanElementQuery("tokens", "s");
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+                new SpanTermQuery(new Term("tokens", "s:d")),
+                soq,
+                new DistanceConstraint(e, 0, 0, true, false), true);
+
+        kr = ki.search(sdq, (short) 10);
+        assertEquals(0, kr.getTotalResults());
+    }
+    
+    @Test
+    public void testNoElementSpans () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc3());
+        ki.addDoc(createFieldDoc5());
+        ki.commit();
+
+        // c or e
+        SpanOrQuery soq = new SpanOrQuery(
+                new SpanTermQuery(new Term("tokens", "s:c")),
+                new SpanTermQuery(new Term("tokens", "s:e")));
+        
+        // (c or e) /s0 d
+        SpanElementQuery e = new SpanElementQuery("tokens", "s");
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+                soq,
+                new SpanTermQuery(new Term("tokens", "s:d")),
+                new DistanceConstraint(e, 0, 0, true, false), true);
+
+        kr = ki.search(sdq, (short) 10);
     }
 }
