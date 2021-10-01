@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4778421f_c5c64d06",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/ElementDistanceSpans.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-10-01T09:56:25Z",
+      "side": 1,
+      "message": "This is not tested - is it just to be sure? I guess it has no performance impact to put it here though.",
+      "range": {
+        "startLine": 84,
+        "startChar": 28,
+        "endLine": 84,
+        "endChar": 43
+      },
+      "revId": "40d22489e8c8f709a1241911d5e155658a92b48c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
