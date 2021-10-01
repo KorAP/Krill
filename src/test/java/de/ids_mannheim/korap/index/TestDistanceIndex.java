@@ -47,7 +47,7 @@ public class TestDistanceIndex {
                  + "[(1-2)s:e|_2$<i>1<i>2]"
                  + "[(2-3)s:c|_3$<i>2<i>3|<>:y$<b>64<i>2<i>4<i>4<b>0]"
                  + "[(3-4)s:c|_4$<i>3<i>4|<>:x$<b>64<i>3<i>7<i>7<b>0]"
-                 + "[(4-5)s:d|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
+                 + "[(4-5)s:d|s:a|_5$<i>4<i>5|<>:y$<b>64<i>4<i>6<i>6<b>0]"
                  + "[(5-6)s:c|_6$<i>5<i>6|<>:y$<b>64<i>5<i>8<i>8<b>0]"
                  + "[(6-7)s:d|_7$<i>6<i>7]"
                  + "[(7-8)s:e|_8$<i>7<i>8|<>:x$<b>64<i>7<i>9<i>9<b>0]"
@@ -61,9 +61,12 @@ public class TestDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV("base", "text",
-                "[(0-1)s:b|_1$<i>0<i>1]" + "[(1-2)s:b|_2$<i>1<i>2]"
-                        + "[(2-3)s:d|_3$<i>2<i>3]" + "[(3-4)s:e|_4$<i>3<i>4]"
-                        + "[(4-5)s:d|_5$<i>4<i>5]" + "[(5-6)s:e|_6$<i>5<i>6]");
+                "[(0-1)s:b|_1$<i>0<i>1]" 
+                        + "[(1-2)s:b|_2$<i>1<i>2]"
+                        + "[(2-3)s:d|_3$<i>2<i>3]" 
+                        + "[(3-4)s:e|_4$<i>3<i>4]"
+                        + "[(4-5)s:d|_5$<i>4<i>5]" 
+                        + "[(5-6)s:e|_6$<i>5<i>6]");
         return fd;
     }
 
@@ -285,9 +288,8 @@ public class TestDistanceIndex {
     }
 
 
-    /** Skip to */
     @Test
-    public void testCase6 () throws IOException {
+    public void testSkipTo () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc2());
         ki.addDoc(createFieldDoc1());
@@ -317,10 +319,29 @@ public class TestDistanceIndex {
         assertEquals(9, kr.getMatch(0).endPos);
     }
 
-
-    /** Same tokens */
     @Test
-    public void testCase7 () throws IOException {
+    public void testSkipToAndHasNoMoreFirstSpan () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc1());
+        ki.addDoc(createFieldDoc3());
+        ki.commit();
+
+        SpanQuery firstClause = createQuery("s:a", "s:c", 1, 1, true);
+        kr = ki.search(firstClause, (short) 10);
+        
+        SpanDistanceQuery sdq = new SpanDistanceQuery(firstClause, 
+                new SpanTermQuery(new Term("base", "s:f")), 
+                new DistanceConstraint(1, 1, true, false), true);
+        
+        kr = ki.search(sdq, (short) 10);
+    }
+    
+//    testSkipToAndHasNoMoreSecondSpan 
+//    cannot happen because immediately after a second span is advanced, 
+//    hasMoreSpans (=hasMoreSecondSpans) is checked.
+    
+    @Test
+    public void testDistanceOfIdenticalTokens () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc1());
         ki.commit();
@@ -352,8 +373,12 @@ public class TestDistanceIndex {
         assertEquals(kr.getTotalResults(), 2);
     }
 
+    /** doc() cannot be called when SpanOr has reached an end.
+     * 
+     * @throws IOException
+     */
     @Test
-    public void testCaseOr () throws IOException {
+    public void testSpanOr () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc1());
         ki.commit();
@@ -382,6 +407,14 @@ public class TestDistanceIndex {
 
         kr = ki.search(sq, (short) 10);
         assertEquals(6,kr.getTotalResults());
+    }
+    
+    @Test
+    public void testHasNoMoreSecondSpans () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc1());
+        ki.commit();
+        SpanQuery sq;
 
         // (c or d) /+w1 (e or c)
         sq = new SpanDistanceQuery(
@@ -397,13 +430,18 @@ public class TestDistanceIndex {
 
         kr = ki.search(sq, (short) 10);
         assertEquals(kr.getTotalResults(), 8);
-
+    }
+    
+    @Test
+    public void testHasNoMoreFirstSpans() throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc1());
         ki.addDoc(createFieldDoc3());
         ki.addDoc(createFieldDoc4());
         ki.commit();
 
         // (c or d) /+w1 (e or f)
-        sq = new SpanDistanceQuery(
+        SpanQuery sq = new SpanDistanceQuery(
             new SpanOrQuery(
                 new SpanTermQuery(new Term("base", "s:c")),
                 new SpanTermQuery(new Term("base", "s:d"))
