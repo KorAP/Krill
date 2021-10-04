@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "18d512e4_4af820c7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-10-04T13:28:21Z",
+      "side": 1,
+      "message": "Is this an additional test in reaction to my comment on #5031?",
+      "revId": "8677a82ff830322eb5df614aa49233e413136e96",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
