@@ -16,6 +16,24 @@
       "message": "Is this an additional test in reaction to my comment on #5031?",
       "revId": "8677a82ff830322eb5df614aa49233e413136e96",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f574baa_0c9a32a6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-10-04T16:25:11Z",
+      "side": 1,
+      "message": "No, I just added a test for skipTo because there is also setCandidate there. Besides, I divided some tests and gave them \"names\" to get an idea and understand the testcase faster next time.",
+      "parentUuid": "18d512e4_4af820c7",
+      "revId": "8677a82ff830322eb5df614aa49233e413136e96",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
