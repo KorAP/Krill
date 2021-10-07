@@ -2,10 +2,12 @@ package de.ids_mannheim.korap.query;
 
 import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
 
+import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -54,7 +56,16 @@ public class TestSpanSubspanQueryJSON {
         String filepath = getClass()
                 .getResource("/queries/submatch/simpleElement.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJsonQuery(filepath);
+        // SpanQueryWrapper sqwi = getJsonQuery(filepath);
+
+        String jsonPQuery = getJsonString(filepath);
+        KrillQuery kq = new KrillQuery("tokens");
+        SpanQueryWrapper sqwi = kq.fromKoral(jsonPQuery);
+
+        assertTrue(!kq.hasErrors());
+        assertTrue(!kq.hasWarnings());
+        assertTrue(!kq.hasMessages());
+        
         SpanQuery sq = sqwi.toQuery();
         assertEquals(
                 "subspan(spanContain(<tokens:s />, tokens:tt/l:Haus), 1, 4)",
