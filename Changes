@@ -3,6 +3,9 @@
       (margaretha, diewald)
     - [bugfix] Fixed setting candidates in element distance spans.
       (margaretha, diewald)
+    - [cleanup] Change contains' frame to be only "contains", for
+      compatibility with future changes; isAround is deprecated
+      for now (diewald)
 
 0.59.4 2021-07-27
     - [cleanup] Upgrade dependencies (diewald)

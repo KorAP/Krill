@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.*;
@@ -1105,8 +1106,9 @@ public class TestWithinIndex {
     public void queryJSONpoly2 () throws QueryException, IOException {
         String jsonPath = getClass().getResource("/queries/poly2.json").getFile();
         String jsonPQuery = getJsonString(jsonPath);
-        SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(jsonPQuery);
-
+        KrillQuery kq = new KrillQuery("tokens");
+        SpanQueryWrapper sqwi = kq.fromKoral(jsonPQuery);
+        
         SpanWithinQuery sq = (SpanWithinQuery) sqwi.toQuery();
 
         KrillIndex ki = new KrillIndex();
@@ -1118,6 +1120,12 @@ public class TestWithinIndex {
 
         ki.commit();
         Result kr = ki.search(sq, (short) 10);
+        assertTrue(!kq.hasErrors());
+        assertTrue(!kq.hasWarnings());
+        assertTrue(kq.hasMessages());
+        assertEquals("'isAround' will have a different meaning in the future and is therefore temporarily deprecated in favor of 'contains'",
+                     kq.getMessage(0).getMessage());
+
         assertEquals(2, kr.getTotalResults());
         assertEquals(0, kr.getMatch(0).getLocalDocID());
         assertEquals(76, kr.getMatch(0).getStartPos());
