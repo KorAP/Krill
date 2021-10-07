@@ -87,6 +87,30 @@
       },
       "revId": "40d22489e8c8f709a1241911d5e155658a92b48c",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "adc0d2b9_0e821a81",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/ElementDistanceSpans.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-10-07T09:13:27Z",
+      "side": 1,
+      "message": "But all tests pass - with or without it.",
+      "parentUuid": "720e1415_c7ecd8cd",
+      "range": {
+        "startLine": 84,
+        "startChar": 28,
+        "endLine": 84,
+        "endChar": 43
+      },
+      "revId": "40d22489e8c8f709a1241911d5e155658a92b48c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
