@@ -111,6 +111,30 @@
       },
       "revId": "40d22489e8c8f709a1241911d5e155658a92b48c",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "68acda9e_f72355aa",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/ElementDistanceSpans.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-10-07T12:45:45Z",
+      "side": 1,
+      "message": "That\u0027s true because it will be tested within another method, just a bit later in advanceElementTo() within addNewCandidates()",
+      "parentUuid": "adc0d2b9_0e821a81",
+      "range": {
+        "startLine": 84,
+        "startChar": 28,
+        "endLine": 84,
+        "endChar": 43
+      },
+      "revId": "40d22489e8c8f709a1241911d5e155658a92b48c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
