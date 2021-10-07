@@ -16,7 +16,7 @@
          {
             "@type" : "koral:group",
             "frames" : [
-               "frames:isAround"
+               "frames:contains"
             ],
             "operands" : [
                {

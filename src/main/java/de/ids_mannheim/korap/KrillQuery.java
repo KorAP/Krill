@@ -663,7 +663,7 @@ public final class KrillQuery extends Notifications {
             throw new QueryException(705,
                     "Number of operands is not acceptable");
 
-        String frame = "isAround";
+        String frame = "contains";
         // Temporary workaround for wrongly set overlaps
         if (json.has("frames")) {
             JsonNode frameN = json.get("frames");
@@ -688,13 +688,26 @@ public final class KrillQuery extends Notifications {
 
         // Byte flag - should cover all 13 cases, i.e. two bytes long
         byte flag = WITHIN;
+        JsonNode operand;
         switch (frame) {
-            case "isAround":
-                JsonNode operand = operands.get(0);
+            case "contains":
+                operand = operands.get(0);
                 if (operand.get("@type").asText().equals("koral:token")){
                     throw new QueryException(StatusCodes.INVALID_QUERY, 
                             "Token cannot contain another token or element.");
                 }
+                break;
+            case "isAround":
+                operand = operands.get(0);
+                if (operand.get("@type").asText().equals("koral:token")){
+                    throw new QueryException(StatusCodes.INVALID_QUERY, 
+                            "Token cannot contain another token or element.");
+                }
+                this.addMessage(
+                    0,
+                    "isAround is deprecated as a frame and will have a different meaning in the future"
+                    );
+
                 break;
             case "strictlyContains":
                 flag = REAL_WITHIN;
