@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9f107dc1_85bdbb9d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-10-07T08:00:40Z",
+      "side": 1,
+      "message": "I rem",
+      "revId": "40d22489e8c8f709a1241911d5e155658a92b48c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4778421f_c5c64d06",
@@ -38,6 +55,30 @@
       "side": 1,
       "message": "I think it improves the performance minimally, because elements.doc will return the doc where latest element was, so the code may end later when there are still some secondSpans.\n\nI will add a test.",
       "parentUuid": "4778421f_c5c64d06",
+      "range": {
+        "startLine": 84,
+        "startChar": 28,
+        "endLine": 84,
+        "endChar": 43
+      },
+      "revId": "40d22489e8c8f709a1241911d5e155658a92b48c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "720e1415_c7ecd8cd",
+        "filename": "src/main/java/de/ids_mannheim/korap/query/spans/ElementDistanceSpans.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-10-07T08:00:40Z",
+      "side": 1,
+      "message": "I have looked into the test again. It has actually been tested within de.ids_mannheim.korap.index.TestElementDistanceIndex.testNoElementSpans() wherein it happends that hasMoreSpans\u003dtrue and hasMoreElements\u003dfalse.",
+      "parentUuid": "c09e682b_df840be1",
       "range": {
         "startLine": 84,
         "startChar": 28,
