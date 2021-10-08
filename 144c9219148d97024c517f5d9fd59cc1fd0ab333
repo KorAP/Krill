@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e3d1ecf_03508c0f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-10-08T09:44:34Z",
+      "side": 1,
+      "message": "Thanks for the code, Nils! Please take a look at my comment.",
+      "revId": "144c9219148d97024c517f5d9fd59cc1fd0ab333",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11ab1d28_39a8c87f",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillQuery.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 708,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-10-08T09:44:34Z",
+      "side": 1,
+      "message": "Will the deprecation message not a bit misleading? I suppose we will keep it frame, but it will have a different meaning. \n\nSuggesstion:\nThe use of isAround is discouraged for the time being, since it will have a different meaning in the future. Please use \"contains\" instead.",
+      "range": {
+        "startLine": 708,
+        "startChar": 21,
+        "endLine": 708,
+        "endChar": 29
+      },
+      "revId": "144c9219148d97024c517f5d9fd59cc1fd0ab333",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
