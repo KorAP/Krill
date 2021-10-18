@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d637f4ac_ea12e520",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-10-18T17:14:42Z",
+      "side": 1,
+      "message": "You can use the same mechanism for leafs as for the index. It\u0027s stable.",
+      "revId": "b19755b28aeb5bc82f1d89adc597ac1d9da3bb31",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
