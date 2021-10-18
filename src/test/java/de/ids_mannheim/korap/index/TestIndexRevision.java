@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Files;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -90,9 +92,50 @@ public class TestIndexRevision {
 
         String x2 = ki.getFingerprint();
         assertNotEquals(x1, x2);
-
     };
 
+    @Test
+    public void testIndexRevisionTempFile () throws IOException {
+
+        Path tmpdir = Files.createTempDirectory("wiki");
+        KrillIndex ki = new KrillIndex(new MMapDirectory(tmpdir));
+
+        assertEquals("null", ki.getFingerprint());
+        
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
+        ki.commit();
+
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00003.json.gz"), true);
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00004.json.gz"), true);
+        ki.commit();
+
+        ki.addDoc(getClass().getResourceAsStream("/wiki/00006.json.gz"), true);
+        ki.commit();
+
+        assertTrue(ki.delDocs("title", "A"));
+        ki.commit();
+
+        assertEquals(false, ki.isReaderOpen());
+
+        String fingerp = "aoD2zQvZKa8oQPjFJlji1g==";
+        assertEquals(fingerp, ki.getFingerprint());
+
+        assertEquals(true, ki.isReaderOpen());
+        assertEquals(4, ki.numberOf("base", "documents"));
+
+        assertEquals(fingerp, ki.getFingerprint());
+
+        ki.close();
+
+        // Reload index
+        ki = new KrillIndex(new MMapDirectory(tmpdir));
+
+        assertEquals(fingerp, ki.getFingerprint());
+
+        ki.close();
+    };
+    
     @Ignore
     public void testIndexRevisionSample () throws IOException {
         KrillIndex ki = new KrillIndex(new MMapDirectory(
