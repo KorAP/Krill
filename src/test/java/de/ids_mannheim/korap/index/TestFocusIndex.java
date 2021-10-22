@@ -23,6 +23,8 @@ import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
 
+import static de.ids_mannheim.korap.TestSimple.simpleFieldDoc;
+
 public class TestFocusIndex {
     private KrillIndex ki;
     private Result kr;
@@ -171,6 +173,43 @@ public class TestFocusIndex {
         assertEquals(1, kr.getTotalResults());
     }
 
+
+    @Test
+    public void testFocusInNext () throws QueryException, IOException {
+        ki = new KrillIndex();
+
+        ki.addDoc(simpleFieldDoc("abcd")); // 1xMatch
+        ki.addDoc(simpleFieldDoc("acbcbcacb"));
+        ki.addDoc(simpleFieldDoc("yyy"));
+        ki.addDoc(simpleFieldDoc("acbcbcacbabcdcabcd"));  // 2xMatch
+        ki.addDoc(simpleFieldDoc("acbcbcacb"));
+        ki.addDoc(simpleFieldDoc("bca"));
+        ki.addDoc(simpleFieldDoc("bcadbcadbcadbcadabcdbcadbca")); // 1xMatch
+        ki.commit();
+
+        ki.addDoc(simpleFieldDoc("bca"));
+        ki.addDoc(simpleFieldDoc("adbca"));
+        ki.addDoc(simpleFieldDoc("dbc"));
+        ki.addDoc(simpleFieldDoc("bca"));
+        ki.addDoc(simpleFieldDoc("abcd")); // 1xMatch
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+
+        SpanQueryWrapper focus = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("s:b"),kq.nr(1, kq.seg("s:c")))));
+        assertEquals("spanNext(base:s:b, focus(1: spanNext(spanNext(base:s:a, base:s:b), {1: base:s:c})))", focus.toQuery().toString());
+
+        kr = ki.search(focus.toQuery(), (short) 10);
+        /*
+        assertEquals("a[[b{1:c}]]d", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("a[[b{1:c}]]dcabcd", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("abcdca[[b{1:c}]]d", kr.getMatch(2).getSnippetBrackets());
+        assertEquals("a[[b{1:c}]]d", kr.getMatch(3).getSnippetBrackets());
+        */
+        assertEquals(5, kr.getTotalResults());
+    }
+
+    
     
     public static FieldDocument createFieldDoc () {
         FieldDocument fd = new FieldDocument();
