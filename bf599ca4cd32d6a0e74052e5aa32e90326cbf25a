@@ -33,6 +33,23 @@
       "message": "I wasn\u0027t able to find a broken test for #78.",
       "revId": "bf599ca4cd32d6a0e74052e5aa32e90326cbf25a",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6adc7da_12c1de9a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-10-25T07:24:12Z",
+      "side": 1,
+      "message": "Maybe the failing has to do with a VC .. so we should add VCs to the query tests.",
+      "revId": "bf599ca4cd32d6a0e74052e5aa32e90326cbf25a",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
