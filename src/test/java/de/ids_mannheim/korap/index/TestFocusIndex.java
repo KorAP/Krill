@@ -171,7 +171,45 @@ public class TestFocusIndex {
         assertEquals(1, kr.getTotalResults());
     }
 
-    
+    @Test
+    public void testFocusInNextBug () throws QueryException, IOException {
+        ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "bbc",
+                 "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0|_0$<i>0<i>1]"+
+                 "[(1-2)s:b|a:d|a:d|_1$<i>1<i>2]"+
+                 "[(2-3)s:c|_2$<i>2<i>3]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "c",
+                 "[(0-1)s:c|<>:base/s:t$<b>64<i>0<i>1<i>1<b>0|a:b|_0$<i>0<i>1]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-3");
+        fd.addTV("base", "bcc",
+                 "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0|a:b|_0$<i>0<i>1]"+
+                 "[(1-2)s:c|a:d|a:b|_1$<i>1<i>2]"+
+                 "[(2-3)s:c|_2$<i>2<i>3]"
+            );
+        ki.addDoc(fd);
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+
+        SpanQueryWrapper focus = kq.seq(kq.seg("a:b"),kq.focus(kq.seq(kq.seg("s:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+        assertEquals(1, kr.getTotalResults());
+    }    
+
+
     public static FieldDocument createFieldDoc () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
