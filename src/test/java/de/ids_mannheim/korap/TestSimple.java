@@ -99,6 +99,7 @@ public class TestSimple {
         fd.addTV("base",surface, annotation);
         return fd;
     };
+    
 
     // Create a new FieldDocument with random data
     public static FieldDocument simpleFuzzyFieldDoc (List<String> chars, int minLength, int maxLength) {
@@ -110,6 +111,35 @@ public class TestSimple {
         };
         return simpleFieldDoc(surface);
 
+    };
+
+    // Create a new FieldDocument with random data
+    public static FieldDocument annotatedFuzzyFieldDoc (List<String> chars, int minLength, int maxLength) {
+        FieldDocument fd = new FieldDocument();
+        String annotation = "";
+        String surface = "";
+
+        int l = (int)(Math.random() * (maxLength - minLength)) + minLength;
+        
+        for (int i = 0; i < l; i++) {
+            String fixChar = chars.get((int)(Math.random() * chars.size()));
+            surface += fixChar;
+            annotation += "[("+i+"-"+(i+1)+")s:"+fixChar;
+            if (i == 0)
+                annotation += "|<>:base/s:t$<b>64<i>0<i>" + l + "<i>" + l + "<b>0";
+
+            for (int j = 0; j < (int)(Math.random() * 3); j++) {
+                fixChar = chars.get((int)(Math.random() * chars.size()));
+                annotation += "|a:" + fixChar;
+            };
+
+            annotation += "|_"+i+"$<i>"+i+"<i>"+(i+1)+"]";
+        };
+
+        
+        fd.addTV("base",surface, annotation);
+        fd.addString("copy", annotation);
+        return fd;
     };
 
     // Get Term Vector
