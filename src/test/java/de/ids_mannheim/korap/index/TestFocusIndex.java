@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -10,7 +11,14 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
+
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.TestSimple;
 import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanClassQuery;
@@ -134,9 +142,6 @@ public class TestFocusIndex {
         focus.setWindowSize(2);
         kr = ki.search(focus, (short) 10);
         
-//        for (Match m: kr.getMatches()){
-//            System.out.println(m.getDocID() + " "+m.getSnippetBrackets());
-//        }
         assertEquals("a[[{1:b}]]cd", kr.getMatch(0).getSnippetBrackets());
         assertEquals("a[[{1:b}]]cd", kr.getMatch(1).getSnippetBrackets());
         assertEquals("ab[[{1:c}]]d", kr.getMatch(2).getSnippetBrackets());
@@ -200,16 +205,61 @@ public class TestFocusIndex {
         assertEquals("spanNext(base:s:b, focus(1: spanNext(spanNext(base:s:a, base:s:b), {1: base:s:c})))", focus.toQuery().toString());
 
         kr = ki.search(focus.toQuery(), (short) 10);
-        /*
-        assertEquals("a[[b{1:c}]]d", kr.getMatch(0).getSnippetBrackets());
-        assertEquals("a[[b{1:c}]]dcabcd", kr.getMatch(1).getSnippetBrackets());
-        assertEquals("abcdca[[b{1:c}]]d", kr.getMatch(2).getSnippetBrackets());
-        assertEquals("a[[b{1:c}]]d", kr.getMatch(3).getSnippetBrackets());
-        */
         assertEquals(5, kr.getTotalResults());
+    };
+
+
+    @Test
+    public void testFocusInNextWithAnnotations () throws QueryException, IOException {
+        ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "acc",
+                 "[(0-1)s:a|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0|a:b|_0$<i>0<i>1]"+
+                 "[(1-2)s:c|a:b|_1$<i>1<i>2]"+
+                 "[(2-3)s:c|a:a|_2$<i>2<i>3]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "bea",
+                 "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0|a:c|_0$<i>0<i>1]"+
+                 "[(1-2)s:e|_1$<i>1<i>2]"+
+                 "[(2-3)s:a|_2$<i>2<i>3]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-3");
+        fd.addTV("base", "babc",
+                 "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>4<i>4<b>0|a:c|_0$<i>0<i>1]"+
+                 "[(1-2)s:a|a:b|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|a:b|_2$<i>2<i>3]"+
+                 "[(3-4)s:c|a:a|_3$<i>3<i>4]"
+            );
+        ki.addDoc(fd);
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+
+        // Compare
+        // [a:b] focus(a,b,{c})
+        // b focus(a,[a:b],{c})
+        
+        SpanQueryWrapper focus = kq.seq(kq.seg("a:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("s:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+        long total = kr.getTotalResults();
+        assertTrue(total >= 1);
+
+        focus = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("a:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+        assertEquals(total, kr.getTotalResults());
     }
 
-        
     @Test
     public void testFocusInNextBug () throws QueryException, IOException {
         ki = new KrillIndex();
@@ -250,6 +300,21 @@ public class TestFocusIndex {
     }    
 
 
+    // @Test
+    public void testFocusInNextWithAnnotationsFuzzy () throws QueryException, IOException {
+
+        QueryBuilder kq = new QueryBuilder("base");
+        
+        SpanQueryWrapper focus1 = kq.seq(kq.seg("a:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("s:b"),kq.nr(1, kq.seg("s:c")))));
+
+        SpanQueryWrapper focus2 = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("a:b"),kq.nr(1, kq.seg("s:c")))));
+
+        List<String> chars = Arrays.asList("a", "b", "c", "d", "e");
+
+        fuzzingTestCompareTotal(chars, focus1.toQuery(), focus2.toQuery(), 5, 20, 20);
+    };
+
+
     public static FieldDocument createFieldDoc () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
@@ -271,14 +336,59 @@ public class TestFocusIndex {
         fd.addString("ID", "doc-1");
         fd.addTV("tokens", "abcd",
 
-                "[(0-1)s:a|_0$<i>0<i>1|"
-                + "<>:x$<b>64<i>0<i>4<i>4<b>0]"
-                + "[(1-2)s:b|_1$<i>1<i>2]"
-                + "[(2-3)s:c|_2$<i>2<i>3|"
-                + "<>:x$<b>64<i>2<i>4<i>4<b>0]"
-                + "[(3-4)s:d|_3$<i>3<i>4]"
+                 "[(0-1)s:a|_0$<i>0<i>1|"
+                 + "<>:x$<b>64<i>0<i>4<i>4<b>0]"
+                 + "[(1-2)s:b|_1$<i>1<i>2]"
+                 + "[(2-3)s:c|_2$<i>2<i>3|"
+                 + "<>:x$<b>64<i>2<i>4<i>4<b>0]"
+                 + "[(3-4)s:d|_3$<i>3<i>4]"
                  );
         
         return fd;
     }
-}
+
+    // Annotated fuzzing test
+    public static void fuzzingTestCompareTotal (List<String> chars, SpanQuery sq1, SpanQuery sq2, int minTextLength, int maxTextLength, int maxDocs)
+            throws IOException, QueryException {
+
+        Krill ks1 = new Krill(sq1);
+        Krill ks2 = new Krill(sq2);
+        String lastFailureConf = "";
+
+        // Multiple runs of corpus creation and query checks
+        for (int x = 0; x < 100000; x++) {
+            KrillIndex ki = new KrillIndex();
+            ArrayList<String> list = new ArrayList<String>();
+            int c = 0;
+
+            // Create a corpus of <= maxDocs fuzzy docs
+            for (int i = 0; i < (int) (Math.random() * maxDocs); i++) {
+                FieldDocument testDoc = TestSimple.annotatedFuzzyFieldDoc(chars,
+                        minTextLength, maxTextLength);
+
+                ki.addDoc(testDoc);
+                String testString = testDoc.doc.getField("copy").stringValue();
+                list.add(testString);
+            };
+
+            ki.commit();
+
+            // Search and compare both queries
+            Result kr1 = ks1.apply(ki);
+            Result kr2 = ks2.apply(ki);
+
+            if (kr1.getTotalResults() != kr2.getTotalResults()) {
+                String failureConf = "Failure:" + list.toString();
+
+                // Try to keep the failing configuration small
+                if (lastFailureConf.length() == 0
+                    || failureConf.length() < lastFailureConf.length()) {
+                    System.err.println(failureConf);
+                    lastFailureConf = failureConf;
+                    minTextLength--;
+                    maxDocs--;
+                };
+            };
+        };
+    };
+};

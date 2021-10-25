@@ -2,7 +2,7 @@
     - [bugfix] Fixed skipping of focus spans (fixed #78; margaretha,
       diewald)
 
-0.59.5 2021-09-30
+0.59.5 2021-10-26
     - [bugfix] Fixed candidate settings in token distance spans
       (margaretha, diewald)
     - [bugfix] Fixed setting candidates in element distance spans.
@@ -10,6 +10,7 @@
     - [cleanup] Change contains' frame to be only "contains", for
       compatibility with future changes; isAround is deprecated
       for now (diewald)
+    - [feature] Added fuzzing test for equivalent queries (diewald)
 
 0.59.4 2021-07-27
     - [cleanup] Upgrade dependencies (diewald)
