@@ -10,7 +10,14 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 
+
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.TestSimple;
 import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.SpanClassQuery;
@@ -171,6 +178,94 @@ public class TestFocusIndex {
         assertEquals(1, kr.getTotalResults());
     }
 
+    @Test
+    public void testFocusInNextWithAnnotations () throws QueryException, IOException {
+        ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "accaae",
+                 "[(0-1)s:a|<>:base/s:t$<b>64<i>0<i>6<i>6<b>0|a:b|_0$<i>0<i>1]"+
+                 "[(1-2)s:c|a:b|_1$<i>1<i>2]"+
+                 "[(2-3)s:c|a:a|_2$<i>2<i>3]"+
+                 "[(3-4)s:a|_3$<i>3<i>4]"+
+                 "[(4-5)s:a|a:d|_4$<i>4<i>5]"+
+                 "[(5-6)s:e|a:d|_5$<i>5<i>6]"
+            );
+        ki.addDoc(fd);
+        
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "dca",
+                 "[(0-1)s:d|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0|_0$<i>0<i>1]"+
+                 "[(1-2)s:c|_1$<i>1<i>2]"+
+                 "[(2-3)s:a|_2$<i>2<i>3]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-3");
+        fd.addTV("base", "beaec",
+                 "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>5<i>5<b>0|a:c|_0$<i>0<i>1]"+
+                 "[(1-2)s:e|_1$<i>1<i>2]"+
+                 "[(2-3)s:a|_2$<i>2<i>3]"+
+                 "[(3-4)s:e|_3$<i>3<i>4]"+
+                 "[(4-5)s:c|a:c|a:d|_4$<i>4<i>5]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-4");
+        fd.addTV("base", "babcdabebdb",
+                 "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>11<i>11<b>0|a:c|_0$<i>0<i>1]"+
+                 "[(1-2)s:a|a:b|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|a:b|_2$<i>2<i>3]"+
+                 "[(3-4)s:c|a:a|_3$<i>3<i>4]"+
+                 "[(4-5)s:d|_4$<i>4<i>5]"+
+                 "[(5-6)s:a|a:b|_5$<i>5<i>6]"+
+                 "[(6-7)s:b|_6$<i>6<i>7]"+
+                 "[(7-8)s:e|_7$<i>7<i>8]"+
+                 "[(8-9)s:b|_8$<i>8<i>9]"+
+                 "[(9-10)s:d|a:d|_9$<i>9<i>10]"+
+                 "[(10-11)s:b|a:c|a:e|_10$<i>10<i>11]"
+            );
+        ki.addDoc(fd);
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+
+        // Compare
+        // [a:b] focus(a,b,{c})
+        // b focus(a,[a:b],{c})
+        
+        SpanQueryWrapper focus = kq.seq(kq.seg("a:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("s:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+        long total = kr.getTotalResults();
+        assertEquals(1, total);
+
+        focus = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("a:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+
+        assertEquals(total, kr.getTotalResults());
+    }
+
+
+    // @Test
+    public void testFocusInNextWithAnnotationsFuzzy () throws QueryException, IOException {
+
+        QueryBuilder kq = new QueryBuilder("base");
+        
+        SpanQueryWrapper focus1 = kq.seq(kq.seg("a:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("s:b"),kq.nr(1, kq.seg("s:c")))));
+
+        SpanQueryWrapper focus2 = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("a:b"),kq.nr(1, kq.seg("s:c")))));
+
+        List<String> chars = Arrays.asList("a", "b", "c", "d", "e");
+
+        fuzzingTestCompareTotal(chars, focus1.toQuery(), focus2.toQuery(), 5, 20, 20);
+    }
+
     
     public static FieldDocument createFieldDoc () {
         FieldDocument fd = new FieldDocument();
@@ -178,11 +273,15 @@ public class TestFocusIndex {
         fd.addTV("tokens", "abcd",
 
                 "[(0-1)s:a|_0$<i>0<i>1|"
+                + "tt/l:b1|"
                 + "<>:x$<b>64<i>0<i>3<i>3<b>0]"
                 + "[(1-2)s:b|_1$<i>1<i>2|"
+                + "tt/l:b1|"
                 + "<>:x$<b>64<i>1<i>4<i>4<b>0]"
-                + "[(2-3)s:c|_2$<i>2<i>3]"
-                + "[(3-4)s:d|_3$<i>3<i>4]"
+                + "[(2-3)s:c|_2$<i>2<i>3|"
+                + "tt/l:b1]"
+                + "[(3-4)s:d|_3$<i>3<i>4|"
+                + "tt/l:b1]"
                  );
         
         return fd;
@@ -193,14 +292,62 @@ public class TestFocusIndex {
         fd.addString("ID", "doc-1");
         fd.addTV("tokens", "abcd",
 
-                "[(0-1)s:a|_0$<i>0<i>1|"
-                + "<>:x$<b>64<i>0<i>4<i>4<b>0]"
-                + "[(1-2)s:b|_1$<i>1<i>2]"
-                + "[(2-3)s:c|_2$<i>2<i>3|"
-                + "<>:x$<b>64<i>2<i>4<i>4<b>0]"
-                + "[(3-4)s:d|_3$<i>3<i>4]"
+                 "[(0-1)s:a|_0$<i>0<i>1|"
+                 + "tt/l:a1|"
+                 + "<>:x$<b>64<i>0<i>4<i>4<b>0]"
+                 + "[(1-2)s:b|_1$<i>1<i>2|"
+                 + "tt/l:b1]"
+                 + "[(2-3)s:c|_2$<i>2<i>3|"
+                 + "tt/l:c1|"
+                 + "<>:x$<b>64<i>2<i>4<i>4<b>0]"
+                 + "[(3-4)s:d|_3$<i>3<i>4|tt/l:d1]"
                  );
         
         return fd;
     }
-}
+
+    // Annotated fuzzing test
+    public static void fuzzingTestCompareTotal (List<String> chars, SpanQuery sq1, SpanQuery sq2, int minTextLength, int maxTextLength, int maxDocs)
+            throws IOException, QueryException {
+
+        Krill ks1 = new Krill(sq1);
+        Krill ks2 = new Krill(sq2);
+        String lastFailureConf = "";
+
+        // Multiple runs of corpus creation and query checks
+        for (int x = 0; x < 100000; x++) {
+            KrillIndex ki = new KrillIndex();
+            ArrayList<String> list = new ArrayList<String>();
+            int c = 0;
+
+            // Create a corpus of <= maxDocs fuzzy docs
+            for (int i = 0; i < (int) (Math.random() * maxDocs); i++) {
+                FieldDocument testDoc = TestSimple.annotatedFuzzyFieldDoc(chars,
+                        minTextLength, maxTextLength);
+
+                ki.addDoc(testDoc);
+                String testString = testDoc.doc.getField("copy").stringValue();
+                list.add(testString);
+            };
+
+            ki.commit();
+
+            // Search and compare both queries
+            Result kr1 = ks1.apply(ki);
+            Result kr2 = ks2.apply(ki);
+
+            if (kr1.getTotalResults() != kr2.getTotalResults()) {
+                String failureConf = "Failure:" + list.toString();
+
+                // Try to keep the failing configuration small
+                if (lastFailureConf.length() == 0
+                    || failureConf.length() < lastFailureConf.length()) {
+                    System.err.println(failureConf);
+                    lastFailureConf = failureConf;
+                    minTextLength--;
+                    maxDocs--;
+                };
+            };
+        };
+    };
+};
