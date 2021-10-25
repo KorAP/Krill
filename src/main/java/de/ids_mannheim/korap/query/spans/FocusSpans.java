@@ -14,6 +14,9 @@ import org.apache.lucene.index.TermState;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.util.Bits;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.SpanFocusQuery;
 
@@ -45,6 +48,9 @@ public class FocusSpans extends SimpleSpans {
     private List<Byte> classNumbers;
     private SpanQuery query;
 
+    // Logger
+    private final Logger log = LoggerFactory.getLogger(FocusSpans.class);
+    
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
@@ -99,6 +105,11 @@ public class FocusSpans extends SimpleSpans {
         matchPayload.clear();
         spanId = 0;
         CandidateSpan cs;
+
+        if (DEBUG) {
+            log.debug("FirstSpan: ({}) {}-{}", firstSpans.doc(), firstSpans.start(), firstSpans.end());
+        }
+        
         while (hasMoreSpans || candidates.size() > 0) {
             if (isSorted) {
 
@@ -266,7 +277,7 @@ public class FocusSpans extends SimpleSpans {
                 }
             }
         }
-        if (firstSpans.doc() == target) {
+        if (firstSpans.doc() == target || firstSpans.doc() > target) {
             return next();
         }
         if (firstSpans.doc() < target && firstSpans.skipTo(target)) {
