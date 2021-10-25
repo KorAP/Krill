@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac201495_0320c3b4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-10-25T14:28:20Z",
+      "side": 1,
+      "message": "This does not fix the issue yet - it\u0027s just a preparation.",
+      "revId": "9e7b081418f92cbcb41b3c93f51d8a4bf704fdb9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
