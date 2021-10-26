@@ -103,15 +103,17 @@ public class NextSpans extends SimpleSpans {
             };
 
             if (!matchList.isEmpty()) {                
-                matchDocNumber = firstSpans.doc();
                 matchStartPosition = firstSpans.start();
                 matchEndPosition = matchList.get(0).getEnd();
-                
-                spanId = matchList.get(0).getSpanId();
-                if (collectPayloads)
-                    matchPayload.addAll(matchList.get(0).getPayloads());
-                matchList.remove(0);
-                return true;
+
+                if (matchStartPosition < matchEndPosition) {
+                    matchDocNumber = firstSpans.doc();
+                    spanId = matchList.get(0).getSpanId();
+                    if (collectPayloads)
+                        matchPayload.addAll(matchList.get(0).getPayloads());
+                    matchList.remove(0);
+                    return true;
+                }
             }
             
             // Forward firstspan
@@ -156,6 +158,9 @@ public class NextSpans extends SimpleSpans {
                               firstSpans.doc(),
                               secondSpans.doc()
                         );
+                    log.debug("First span [{}]",firstSpans.toString());
+                    log.debug("Second span [{}]",secondSpans.toString());
+
                 }
                 candidateListDocNum = firstSpans.doc();
                 searchMatches();
