@@ -156,6 +156,9 @@ public class NextSpans extends SimpleSpans {
                               firstSpans.doc(),
                               secondSpans.doc()
                         );
+                    log.debug("First span [{}]",firstSpans.toString());
+                    log.debug("Second span [{}]",secondSpans.toString());
+
                 }
                 candidateListDocNum = firstSpans.doc();
                 searchMatches();
@@ -267,7 +270,11 @@ public class NextSpans extends SimpleSpans {
             if (!firstSpans.skipTo(target)) {
                 hasMoreSpans = false;
                 return false;
-            };
+            }
+            else {
+                // removed all matches found in the previous doc.
+                matchList.clear();
+            }
 
             if (DEBUG) {
                 log.debug("Skip firstSpans to {}={} succeed with positions {}-{}",

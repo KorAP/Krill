@@ -299,6 +299,96 @@ public class TestFocusIndex {
         assertEquals(1, kr.getTotalResults());
     }    
 
+    @Test
+    public void testFocusInNextBug2 () throws QueryException, IOException {
+        ki = new KrillIndex();
+
+        FieldDocument fd;
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "c",
+                 "[(0-1)s:c|<>:base/s:t$<b>64<i>0<i>1<i>1<b>0|_0$<i>0<i>1]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "bab",
+                 "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0|_0$<i>0<i>1]"+
+                 "[(1-2)s:a|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|a:b|a:b|_2$<i>2<i>3]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-3");
+        fd.addTV("base", "ddbcebcea",
+                 "[(0-1)s:d|<>:base/s:t$<b>64<i>0<i>9<i>9<b>0|_0$<i>0<i>1]"+
+                 "[(1-2)s:d|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|_2$<i>2<i>3]"+
+                 "[(3-4)s:c|_3$<i>3<i>4]"+
+                 "[(4-5)s:e|_4$<i>4<i>5]"+
+                 "[(5-6)s:b|_5$<i>5<i>6]"+
+                 "[(6-7)s:c|a:b|_6$<i>6<i>7]"+
+                 "[(7-8)s:e|_7$<i>7<i>8]"+
+                 "[(8-9)s:a|a:d|_8$<i>8<i>9]"
+            );
+        ki.addDoc(fd);
+
+        ki.commit();
+
+        // assertEquals("", kr.getMatch(0).getSnippetBrackets());
+
+        QueryBuilder kq = new QueryBuilder("base");
+        
+        SpanQueryWrapper focus = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("a:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+        assertEquals(0, kr.getTotalResults());
+    }
+
+
+    @Test
+    public void testFocusInNextBug3 () throws QueryException, IOException {
+        ki = new KrillIndex();
+
+        FieldDocument fd;
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "e",
+                 "[(0-1)s:e|<>:base/s:t$<b>64<i>0<i>1<i>1<b>0|a:e|a:e|_0$<i>0<i>1]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "eae",
+                 "[(0-1)s:e|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0|a:d|_0$<i>0<i>1]"+
+                 "[(1-2)s:a|a:d|_1$<i>1<i>2]"+
+                 "[(2-3)s:e|a:b|a:b|_2$<i>2<i>3]"
+            );
+        ki.addDoc(fd);
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-3");
+        fd.addTV("base", "abbc",
+                 "[(0-1)s:a|<>:base/s:t$<b>64<i>0<i>4<i>4<b>0|_0$<i>0<i>1]"+
+                 "[(1-2)s:b|a:d|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|a:a|a:b|_2$<i>2<i>3]"+
+                 "[(3-4)s:c|a:c|a:c|_3$<i>3<i>4]"
+            );
+        ki.addDoc(fd);
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+                 
+        SpanQueryWrapper focus = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("a:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+        assertEquals(0, kr.getTotalResults());
+    }
+
+    
 
     // @Test
     public void testFocusInNextWithAnnotationsFuzzy () throws QueryException, IOException {
