@@ -299,6 +299,72 @@ public class TestFocusIndex {
         assertEquals(1, kr.getTotalResults());
     }    
 
+    @Test
+    public void testFocusInNextBug2 () throws QueryException, IOException {
+        ki = new KrillIndex();
+
+        FieldDocument fd;
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "cbdab",
+                 "[(0-1)s:c|<>:base/s:t$<b>64<i>0<i>5<i>5<b>0|a:d|a:b|_0$<i>0<i>1]"+
+                 "[(1-2)s:b|_1$<i>1<i>2]"+
+                 "[(2-3)s:d|a:c|_2$<i>2<i>3]"+
+                 "[(3-4)s:a|a:a|_3$<i>3<i>4]"+
+                 "[(4-5)s:b|_4$<i>4<i>5]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "babeedeedb",
+                 "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>10<i>10<b>0|a:b|a:a|_0$<i>0<i>1]"+
+                 "[(1-2)s:a|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|a:b|a:b|_2$<i>2<i>3]"+
+                 "[(3-4)s:e|a:d|_3$<i>3<i>4]"+
+                 "[(4-5)s:e|a:a|a:e|_4$<i>4<i>5]"+
+                 "[(5-6)s:d|a:a|_5$<i>5<i>6]"+
+                 "[(6-7)s:e|_6$<i>6<i>7]"+
+                 "[(7-8)s:e|a:c|_7$<i>7<i>8]"+
+                 "[(8-9)s:d|a:e|_8$<i>8<i>9]"+
+                 "[(9-10)s:b|a:c|_9$<i>9<i>10]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-3");
+        fd.addTV("base", "ddbcebceadaeadbc",
+                 "[(0-1)s:d|<>:base/s:t$<b>64<i>0<i>16<i>16<b>0|a:d|a:a|_0$<i>0<i>1]"+
+                 "[(1-2)s:d|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|_2$<i>2<i>3]"+
+                 "[(3-4)s:c|_3$<i>3<i>4]"+
+                 "[(4-5)s:e|_4$<i>4<i>5]"+
+                 "[(5-6)s:b|_5$<i>5<i>6]"+
+                 "[(6-7)s:c|a:b|_6$<i>6<i>7]"+
+                 "[(7-8)s:e|_7$<i>7<i>8]"+
+                 "[(8-9)s:a|a:d|_8$<i>8<i>9]"+
+                 "[(9-10)s:d|a:e|a:c|_9$<i>9<i>10]"+
+                 "[(10-11)s:a|_10$<i>10<i>11]"+
+                 "[(11-12)s:e|_11$<i>11<i>12]"+
+                 "[(12-13)s:a|_12$<i>12<i>13]"+
+                 "[(13-14)s:d|_13$<i>13<i>14]"+
+                 "[(14-15)s:b|a:a|_14$<i>14<i>15]"+
+                 "[(15-16)s:c|_15$<i>15<i>16]"
+            );
+        ki.addDoc(fd);
+
+        ki.commit();
+
+        // assertEquals("", kr.getMatch(0).getSnippetBrackets());
+
+        QueryBuilder kq = new QueryBuilder("base");
+        
+        SpanQueryWrapper focus = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("a:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+        assertEquals(0, kr.getTotalResults());
+    }
+    
 
     // @Test
     public void testFocusInNextWithAnnotationsFuzzy () throws QueryException, IOException {
