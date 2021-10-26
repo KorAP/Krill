@@ -299,6 +299,125 @@ public class TestFocusIndex {
         assertEquals(1, kr.getTotalResults());
     }    
 
+    @Test
+    public void testFocusInNextBug2 () throws QueryException, IOException {
+        ki = new KrillIndex();
+
+        FieldDocument fd;
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "c",
+                 "[(0-1)s:c|<>:base/s:t$<b>64<i>0<i>1<i>1<b>0|_0$<i>0<i>1]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "bab",
+                 "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0|_0$<i>0<i>1]"+
+                 "[(1-2)s:a|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|a:b|a:b|_2$<i>2<i>3]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-3");
+        fd.addTV("base", "ddbcebcea",
+                 "[(0-1)s:d|<>:base/s:t$<b>64<i>0<i>9<i>9<b>0|_0$<i>0<i>1]"+
+                 "[(1-2)s:d|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|_2$<i>2<i>3]"+
+                 "[(3-4)s:c|_3$<i>3<i>4]"+
+                 "[(4-5)s:e|_4$<i>4<i>5]"+
+                 "[(5-6)s:b|_5$<i>5<i>6]"+
+                 "[(6-7)s:c|a:b|_6$<i>6<i>7]"+
+                 "[(7-8)s:e|_7$<i>7<i>8]"+
+                 "[(8-9)s:a|a:d|_8$<i>8<i>9]"
+            );
+        ki.addDoc(fd);
+
+        ki.commit();
+
+        // assertEquals("", kr.getMatch(0).getSnippetBrackets());
+
+        QueryBuilder kq = new QueryBuilder("base");
+        
+        SpanQueryWrapper focus = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("a:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+        assertEquals(0, kr.getTotalResults());
+    }
+
+
+    @Test
+    public void testFocusInNextBug3 () throws QueryException, IOException {
+        ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "eceedbcecdcc",
+                 "[(0-1)s:e|<>:base/s:t$<b>64<i>0<i>12<i>12<b>0|a:e|a:e|_0$<i>0<i>1]"+
+                 "[(1-2)s:c|a:a|a:c|_1$<i>1<i>2]"+
+                 "[(2-3)s:e|a:b|a:a|_2$<i>2<i>3]"+
+                 "[(3-4)s:e|_3$<i>3<i>4]"+
+                 "[(4-5)s:d|a:e|_4$<i>4<i>5]"+
+                 "[(5-6)s:b|a:a|_5$<i>5<i>6]"+
+                 "[(6-7)s:c|a:c|_6$<i>6<i>7]"+
+                 "[(7-8)s:e|_7$<i>7<i>8]"+
+                 "[(8-9)s:c|a:a|_8$<i>8<i>9]"+
+                 "[(9-10)s:d|a:e|a:e|_9$<i>9<i>10]"+
+                 "[(10-11)s:c|_10$<i>10<i>11]"+
+                 "[(11-12)s:c|a:c|_11$<i>11<i>12]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "eaedadbd",
+
+                 "[(0-1)s:e|<>:base/s:t$<b>64<i>0<i>8<i>8<b>0|a:d|_0$<i>0<i>1]"+
+                 "[(1-2)s:a|a:d|_1$<i>1<i>2]"+
+                 "[(2-3)s:e|a:b|a:b|_2$<i>2<i>3]"+
+                 "[(3-4)s:d|a:d|_3$<i>3<i>4]"+
+                 "[(4-5)s:a|a:c|_4$<i>4<i>5]"+
+                 "[(5-6)s:d|a:c|_5$<i>5<i>6]"+
+                 "[(6-7)s:b|a:a|a:d|_6$<i>6<i>7]"+
+                 "[(7-8)s:d|a:e|_7$<i>7<i>8]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-3");
+        fd.addTV("base", "abbcbeaaabddddcda",
+                 "[(0-1)s:a|<>:base/s:t$<b>64<i>0<i>17<i>17<b>0|_0$<i>0<i>1]"+
+                 "[(1-2)s:b|a:d|_1$<i>1<i>2]"+
+                 "[(2-3)s:b|a:a|a:b|_2$<i>2<i>3]"+
+                 "[(3-4)s:c|a:c|a:c|_3$<i>3<i>4]"+
+                 "[(4-5)s:b|a:a|_4$<i>4<i>5]"+
+                 "[(5-6)s:e|_5$<i>5<i>6]"+
+                 "[(6-7)s:a|a:c|a:d|_6$<i>6<i>7]"+
+                 "[(7-8)s:a|a:c|_7$<i>7<i>8]"+
+                 "[(8-9)s:a|a:b|_8$<i>8<i>9]"+
+                 "[(9-10)s:b|_9$<i>9<i>10]"+
+                 "[(10-11)s:d|_10$<i>10<i>11]"+
+                 "[(11-12)s:d|_11$<i>11<i>12]"+
+                 "[(12-13)s:d|_12$<i>12<i>13]"+
+                 "[(13-14)s:d|_13$<i>13<i>14]"+
+                 "[(14-15)s:c|a:a|_14$<i>14<i>15]"+
+                 "[(15-16)s:d|_15$<i>15<i>16]"+
+                 "[(16-17)s:a|a:c|a:d|_16$<i>16<i>17]"
+            );
+        ki.addDoc(fd);
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+                 
+        SpanQueryWrapper focus = kq.seq(kq.seg("s:b"),kq.focus(kq.seq(kq.seg("s:a"),kq.seg("a:b"),kq.nr(1, kq.seg("s:c")))));
+        kr = ki.search(focus.toQuery(), (short) 10);
+
+        assertEquals(0, kr.getTotalResults());
+    }
+
+    
 
     // @Test
     public void testFocusInNextWithAnnotationsFuzzy () throws QueryException, IOException {
