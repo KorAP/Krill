@@ -1,6 +1,8 @@
 0.59.6 2021-10-26
     - [bugfix] Fixed skipping of focus spans (fixed #78; margaretha,
       diewald)
+    - [bugfix] Clear matchlist if skip fails in NextSpans
+      (margaretha, diewald)
 
 0.59.5 2021-10-26
     - [bugfix] Fixed candidate settings in token distance spans

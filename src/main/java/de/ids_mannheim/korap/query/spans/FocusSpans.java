@@ -107,6 +107,7 @@ public class FocusSpans extends SimpleSpans {
         CandidateSpan cs;
 
         if (DEBUG) {
+            log.debug("FirstSpan [{}]", firstSpans.toString());
             log.debug("FirstSpan: ({}) {}-{}", firstSpans.doc(), firstSpans.start(), firstSpans.end());
         }
         
