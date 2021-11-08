@@ -463,6 +463,55 @@ public class TestAttributeIndex {
         kr = ki.search(swaq, (short) 10);
     }
 
+    @Test
+    public void testIndexOutOfBoundsBug () throws IOException {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "abc",
+                 "[(0-1)s:a|_1$<i>0<i>1|<>:a$<b>64<i>0<i>3<i>3<b>0<s>1|@:x=y$<b>17<s>1<i>3]"
+                + "[(1-2)s:b|_2$<i>1<i>2]"
+                + "[(2-3)s:c|_3$<i>2<i>3|<>:a$<b>64<i>2<i>3<i>3<b>0<s>2]");
+
+        ki.addDoc(fd);
+        ki.commit();
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-2");
+        fd.addTV("base", "abc",
+                 "[(0-1)s:a|_1$<i>0<i>1|<>:a$<b>64<i>0<i>3<i>3<b>0<s>1|@:x=y$<b>17<s>1<i>3]"
+                + "[(1-2)s:b|_2$<i>1<i>2]"
+                + "[(2-3)s:c|_3$<i>2<i>3]");
+
+        ki.addDoc(fd);
+        ki.commit();
+
+        SpanElementQuery seq = new SpanElementQuery("base", "a");
+        kr = ki.search(seq, (short) 10);
+        assertEquals(3,kr.getTotalResults());
+        
+        SpanAttributeQuery saq = new SpanAttributeQuery(
+                new SpanTermQuery(new Term("base", "@:x=y")), true);
+        kr = ki.search(saq, (short) 10);
+        assertEquals(2,kr.getTotalResults());
+        
+        // Check <a x=y>
+        SpanQuery sq = new SpanWithAttributeQuery(
+            new SpanElementQuery("base", "a"),
+            new SpanAttributeQuery(new SpanTermQuery(new Term("base", "@:x=y")), true),
+            true
+            );
+        
+        assertEquals("spanElementWithAttribute(<base:a />, spanAttribute(base:@:x=y))", sq.toString());
+        kr = ki.search(sq, (short) 10);
+
+        assertEquals(2, kr.getTotalResults());
+
+        assertEquals(0, kr.getMatch(0).getStartPos());
+        assertEquals(3, kr.getMatch(0).getEndPos());
+        assertEquals(0, kr.getMatch(1).getStartPos());
+        assertEquals(3, kr.getMatch(1).getEndPos());
+    }
+    
 
     @Test
     public void testAttributeRealIndex () throws QueryException, IOException {
