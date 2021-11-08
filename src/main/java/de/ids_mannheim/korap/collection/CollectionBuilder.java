@@ -1,15 +1,9 @@
 package de.ids_mannheim.korap.collection;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.queries.TermsFilter;
 import org.apache.lucene.search.Filter;
@@ -20,14 +14,11 @@ import org.apache.lucene.search.RegexpQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.ids_mannheim.korap.IndexInfo;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.index.TextPrependedTokenStream;
 import de.ids_mannheim.korap.util.KrillDate;
-import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 
 
 /*
@@ -41,17 +32,20 @@ import net.sf.ehcache.Element;
  */
 
 public class CollectionBuilder {
-
-    public final static CacheManager cacheManager = CacheManager.newInstance();
-    public final static Cache cache = cacheManager.getCache("named_vc");
-
-	
     // Logger
     private final static Logger log = LoggerFactory
             .getLogger(KrillCollection.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
+    
+    protected IndexInfo indexInfo;
+
+    public CollectionBuilder () {}
+
+    public CollectionBuilder (IndexInfo indexInfo) {
+        this.indexInfo = indexInfo;
+    }
 
 
     public CollectionBuilder.Interface term (String field, String term) {
@@ -138,7 +132,7 @@ public class CollectionBuilder {
     };
 
 	public CollectionBuilder.Interface referTo (String reference) {
-        return new CollectionBuilder.Reference(reference);
+        return new CollectionBuilder.VirtualCorpusReference(reference);
     };
 
 
@@ -275,55 +269,25 @@ public class CollectionBuilder {
     };
 
 
-    public class Reference implements CollectionBuilder.Interface {
+    public class VirtualCorpusReference implements CollectionBuilder.Interface {
         private boolean isNegative = false;
-        private String reference;
-		private Map<Integer, DocBits> docIdMap =
-			new HashMap<Integer, DocBits>();
-
-        public Reference (String reference) {
-            this.reference = reference;
+        private String vcId;
+        private VirtualCorpusReferenceFilter vcRefFilter;
+        
+                
+        public VirtualCorpusReference (String vcId) {
+            this.vcId = vcId;
+            vcRefFilter = new VirtualCorpusReferenceFilter(vcId);
+//            VirtualCorpusCache.setIndexInfo(indexInfo);
         };
 
         public Filter toFilter () throws QueryException {
-            Element element = null;
-            if (KrillCollection.cache != null){
-                element = KrillCollection.cache.get(this.reference);
-            }
-            if (element == null) {
-                if (DEBUG) {
-                    log.debug(reference + " is NOT found in the cache");
-                }
-                KrillCollection kc = new KrillCollection();
-
-				kc.fromStore(this.reference);
-
-				if (kc.hasErrors()) {                    
-                    throw new QueryException(
-						kc.getError(0).getCode(),
-						kc.getError(0).getMessage()
-						);
-				};
-
-				return new ToCacheVCFilter(
-					this.reference,
-					docIdMap,
-					kc.getBuilder(),
-					kc.toFilter()
-					);
-			}
-            else {
-                if (DEBUG) { 
-                    log.debug(reference + " is FOUND in the cache."); 
-                }
-                CachedVCData cc = (CachedVCData) element.getObjectValue();
-                return new CachedVCFilter(this.reference, cc);
-            }
+            return vcRefFilter;
         };
 
 
         public String toString () {
-			return "referTo(" + this.reference + ")";
+			return "referTo(" + this.vcId + ")";
         };
 
 
@@ -336,37 +300,6 @@ public class CollectionBuilder {
             this.isNegative = true;
             return this;
         };
-
-		private String loadVCFile (String ref) {
-			Properties prop = KrillProperties.loadDefaultProperties();
-			if (prop == null){
-				/*
-				  this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
-							  "krill.properties is not found.");
-				*/
-				return null;
-			}
-			
-			String namedVCPath = prop.getProperty("krill.namedVC");
-			if (!namedVCPath.endsWith("/")){
-				namedVCPath += "/";
-			}
-			File file = new File(namedVCPath+ref+".jsonld");
-			
-			String json = null;
-			try {
-				FileInputStream fis = new FileInputStream(file);
-				json = IOUtils.toString(fis);
-			}
-			catch (IOException e) {
-				/*
-				this.addError(StatusCodes.MISSING_COLLECTION,
-							  "Collection is not found.");
-				*/
-				return null;
-			}
-			return json;
-		}	
     };
 	
 	
@@ -494,82 +427,4 @@ public class CollectionBuilder {
             return this;
         };
     };
-    
-    /** Builder for virtual corpus / collection existing in the cache
-     * 
-     * @author margaretha
-     *
-     */
-    public class CachedVC implements CollectionBuilder.Interface {
-
-        private String cacheKey;
-        private CachedVCData cachedCollection;
-        private boolean isNegative = false;
-
-        public CachedVC (String vcRef, CachedVCData cc) {
-            this.cacheKey = vcRef;
-			this.cachedCollection = cc;
-        }
-
-        @Override
-        public Filter toFilter () {
-            return new CachedVCFilter(this.cacheKey, cachedCollection);
-        }
-
-        @Override
-        public boolean isNegative () {
-            return this.isNegative;
-        }
-
-        @Override
-        public CollectionBuilder.Interface not () {
-            this.isNegative = true;
-            return this;
-        }
-        
-    }
-    
-    /** Wraps a sub CollectionBuilder.Interface to allows VC caching
-     *  
-     * @author margaretha
-     *
-     */
-    public class ToCacheVC implements CollectionBuilder.Interface {
-
-        private CollectionBuilder.Interface child;
-        private String cacheKey;
-        
-        private Map<Integer, DocBits> docIdMap;
-
-        public ToCacheVC (String vcRef, Interface cbi) {
-            this.child = cbi;
-            this.cacheKey = vcRef;
-            this.docIdMap  = new HashMap<Integer, DocBits>();
-        }
-
-        @Override
-        public Filter toFilter () throws QueryException {
-            return new ToCacheVCFilter(cacheKey,docIdMap, child, child.toFilter());
-        }
-
-        @Override
-        public boolean isNegative () {
-            return child.isNegative();
-        }
-
-        @Override
-        public CollectionBuilder.Interface not () {
-            // not supported
-            return this;
-        }
-    }
-
-	// Maybe irrelevant
-    public Interface namedVC (String vcRef, CachedVCData cc) {
-        return new CollectionBuilder.CachedVC(vcRef, cc);
-    }
-    
-    public Interface toCacheVC (String vcRef, Interface cbi) {
-        return new CollectionBuilder.ToCacheVC(vcRef, cbi);
-    }
 };

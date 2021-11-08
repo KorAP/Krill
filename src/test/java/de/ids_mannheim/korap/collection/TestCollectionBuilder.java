@@ -97,10 +97,8 @@ public class TestCollectionBuilder {
     public void builderReferenceNested () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
 
-        // The group can't stringify, because the filtering
-        // phase won't work. This is acceptable.
         assertEquals(
-            "",
+            "OrGroup(VirtualCorpusReferenceFilter(example) opennlp:check)",
             kc.orGroup().with(
                 kc.referTo("example")
                 ).with(

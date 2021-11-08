@@ -1,3 +1,6 @@
+0.59.7 2021-11-08
+    - Implemented a new cache with on disk storage and auto-update (margaretha).
+
 0.59.6 2021-10-26
     - [bugfix] Fixed skipping of focus spans (fixed #78; margaretha,
       diewald)

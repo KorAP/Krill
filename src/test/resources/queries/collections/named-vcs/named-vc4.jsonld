@@ -1,0 +1,11 @@
+{"collection": {
+    "@type": "koral:doc",
+    "key": "textSigle",
+    "match": "match:eq",
+    "type" : "type:string",
+    "value": [
+          "WPD/AAA/00001",
+          "WPD/AAA/00002",
+          "WPD/AAA/00003"
+    ]
+}}
