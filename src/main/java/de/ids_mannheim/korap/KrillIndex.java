@@ -3,15 +3,21 @@ package de.ids_mannheim.korap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 // Java core classes
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
-
-import java.time.LocalDate;
-
-import java.security.NoSuchAlgorithmException;
-import java.security.MessageDigest;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
@@ -51,6 +57,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.ids_mannheim.korap.cache.VirtualCorpusCache;
+import de.ids_mannheim.korap.collection.Fingerprinter;
+import de.ids_mannheim.korap.collection.IndexInfo;
 // Krill classes
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.KeywordAnalyzer;
@@ -65,8 +74,8 @@ import de.ids_mannheim.korap.response.MetaFields;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.Text;
-import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.KrillDate;
+import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
@@ -135,7 +144,7 @@ import de.ids_mannheim.korap.util.QueryException;
   -> search for frequencies of VVFIN/gehen
   -> c:VVFIN:[^:]*?:gehen:past:...
 */
-public final class KrillIndex {
+public final class KrillIndex implements IndexInfo {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(KrillIndex.class);
@@ -387,8 +396,6 @@ public final class KrillIndex {
         this.writer().commit();
         commitCounter = 0;
         this.closeReader();
-        if (KrillCollection.cache != null)
-            KrillCollection.cache.removeAll();
     };
 
 
@@ -1856,4 +1863,18 @@ public final class KrillIndex {
     public boolean isReaderOpen () {
         return readerOpen;
     }
+
+
+    @Override
+    public Set<String> getAllLeafFingerprints () {
+        List<LeafReaderContext> leaves = this.reader().leaves();
+        Set<String> fingerprints = new HashSet<>(leaves.size() * 2);
+        for (LeafReaderContext context : leaves) {
+            String fp = Fingerprinter.create(
+                    context.reader().getCombinedCoreAndDeletesKey().toString());
+            fingerprints.add(fp);
+        }
+        return fingerprints;
+    }
+    
 };
