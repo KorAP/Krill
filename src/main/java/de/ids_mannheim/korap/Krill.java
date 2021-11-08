@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import de.ids_mannheim.korap.cache.VirtualCorpusCache;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Response;
 import de.ids_mannheim.korap.response.Result;
@@ -256,6 +257,7 @@ public class Krill extends Response {
      */
     public Krill setIndex (KrillIndex index) {
         this.index = index;
+        VirtualCorpusCache.setIndexInfo(index);
         return this;
     };
 
@@ -272,6 +274,7 @@ public class Krill extends Response {
      * @return The result as a {@link Result} object.
      */
     public Result apply (KrillIndex index) {
+        VirtualCorpusCache.setIndexInfo(index);
         return this.setIndex(index).apply();
     };
 

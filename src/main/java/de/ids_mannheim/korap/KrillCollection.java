@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -32,16 +33,14 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.ids_mannheim.korap.collection.CachedVCData;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.collection.DocBits;
+import de.ids_mannheim.korap.collection.Fingerprinter;
+import de.ids_mannheim.korap.collection.IndexInfo;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.StatusCodes;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 
 /**
  * Create a Virtual Collection of documents by means of a KoralQuery
@@ -61,10 +60,10 @@ import net.sf.ehcache.Element;
  * See http://mail-archives.apache.org/mod_mbox/lucene-java-user/
  *     200805.mbox/%3C17080852.post@talk.nabble.com%3E
  */
-public final class KrillCollection extends Notifications {
+public final class KrillCollection extends Notifications implements IndexInfo {
     private KrillIndex index;
     private JsonNode json;
-    private CollectionBuilder cb = new CollectionBuilder();
+    private final CollectionBuilder cb = new CollectionBuilder(this);
     private CollectionBuilder.Interface cbi;
     private byte[] pl = new byte[4];
 
@@ -74,22 +73,17 @@ public final class KrillCollection extends Notifications {
     // private static ByteBuffer bb = ByteBuffer.allocate(4);
 
     // Logger
-    private final static Logger log =
+     private final static Logger log =
             LoggerFactory.getLogger(KrillCollection.class);
-
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-
-    public static CacheManager cacheManager;
-    public static Cache cache;
+    private double start, end; // for debugging
 
     /**
      * Construct a new KrillCollection.
      * 
      */
-    public KrillCollection () {
-        initializeCache();
-    };
+    public KrillCollection () {};
 
 
     /**
@@ -99,7 +93,6 @@ public final class KrillCollection extends Notifications {
      *            The {@link KrillIndex} object.
      */
     public KrillCollection (KrillIndex index) {
-        initializeCache();
         this.index = index;
     };
 
@@ -110,7 +103,6 @@ public final class KrillCollection extends Notifications {
      *            The KoralQuery document as a JSON string.
      */
     public KrillCollection (String jsonString) {
-        initializeCache();
         try {
             JsonNode json = mapper.readTree(jsonString);
 
@@ -145,16 +137,7 @@ public final class KrillCollection extends Notifications {
         };
     };
 
-    public static void initializeCache () {
-        if (cacheManager == null) {
-            cacheManager = CacheManager.newInstance();
-        }
-        if (cache == null) {
-            cache = cacheManager.getCache("named_vc");
-        }
-    }
-    
-    
+
     /**
      * Set the {@link KrillIndex} the virtual collection refers to.
      * 
@@ -175,7 +158,7 @@ public final class KrillCollection extends Notifications {
      * @throws QueryException
      */
     public KrillCollection fromKoral (String jsonString) throws QueryException {
-		this.prefiltered = null;
+        this.prefiltered = null;
         try {
             this.fromKoral((JsonNode) mapper.readTree(jsonString));
         }
@@ -581,9 +564,35 @@ public final class KrillCollection extends Notifications {
      */
     public FixedBitSet bits (LeafReaderContext atomic) throws IOException, QueryException {
 
+        // EM: really need a fixedBitset? 
+        // maybe better use org.apache.lucene.util.BitDocIdSet.Builder
+        // for automatic sparse bitset support
+        // appears possible by implementing a SparseDocBits class extending
+        // SparseFixedBitSet and implementing Serializable (only as marker interface)
         LeafReader r = atomic.reader();
         FixedBitSet bitset = new FixedBitSet(r.maxDoc());
-        DocIdSet docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
+
+        if (DEBUG) {
+            start = System.currentTimeMillis();
+        }
+        DocIdSet docids = null;
+        try {
+            docids = this.getDocIdSet(atomic, (Bits) r.getLiveDocs());
+        }
+        catch (RuntimeException e) {
+            Throwable t = e.getCause();
+            if (t instanceof IOException) {
+                throw new IOException(t);
+            }
+            else if (t instanceof QueryException) {
+                throw new QueryException(((QueryException) t).getErrorCode(), t.getLocalizedMessage());
+            }
+        }
+
+        if (DEBUG) {
+            end = System.currentTimeMillis();
+            log.info("getDocIdSet in bits: " + (end - start));
+        }
 
 
         if (docids == null) {
@@ -619,11 +628,13 @@ public final class KrillCollection extends Notifications {
         int maxDoc = atomic.reader().maxDoc();
         FixedBitSet bitset = new FixedBitSet(maxDoc);
 
-        Filter filter;
-		if (this.cbi == null || (filter = this.toFilter()) == null) {
-			if (acceptDocs == null) return null;
-			bitset.set(0, maxDoc);
-		}
+        final Filter filter = this.toFilter();
+
+        if (filter == null) {
+            if (acceptDocs == null)
+                return null;
+            bitset.set(0, maxDoc);
+        }
 		else {
 
 			// Init vector
@@ -838,30 +849,13 @@ public final class KrillCollection extends Notifications {
         };
         return str;
     };
-
-
-    public void storeInCache (String cacheKey) throws IOException, QueryException {
-        if (cacheKey ==null || cacheKey.isEmpty()) {
-            this.addError(StatusCodes.MISSING_ID,
-                    "Collection name is required for caching.");
-        }
+    public void storeInCache (String vcId) throws IOException, QueryException {
         
-        List<LeafReaderContext> leaves = this.index.reader().leaves();
-        Map<Integer, DocBits> docIdMap =
-                new HashMap<Integer, DocBits>(leaves.size());
+    }
 
-        for (LeafReaderContext context : leaves) {
-            if (docIdMap.get(context.hashCode()) == null) {
-                FixedBitSet bitset = bits(context);
-                DocBits docBits = new DocBits(bitset.getBits(), bitset.length());
-                docIdMap.put(context.hashCode(),
-                        docBits);
-            }
-        }
-
-        CachedVCData cc = new CachedVCData(docIdMap);
-        cache.put(new Element(cacheKey, cc));
-        this.cbi = cb.namedVC(cacheKey, cc);
+    @Override
+    public Set<String> getAllLeafFingerprints () {
+        return index.getAllLeafFingerprints();
     }
     
     /*
