@@ -167,7 +167,17 @@ public class AttributeSpans extends SimpleSpans {
         // short spanId = payloadBuffer.getShort(5);
         // int end = payloadBuffer.getInt(1);
         short spanId = payloadBuffer.getShort(1);
-        int end = payloadBuffer.getInt(3);
+
+        int end;
+
+        if (payload.get(0).length >= 7) {
+            end = payloadBuffer.getInt(3);
+        }
+
+        // Associated with a milestone element
+        else {
+            end = firstSpans.start();
+        }
 
         return new CandidateAttributeSpan(firstSpans, payloadTypeIdentifier,
                 spanId, end);
