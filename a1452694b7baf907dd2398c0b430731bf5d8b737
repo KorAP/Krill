@@ -16,6 +16,24 @@
       "message": "A lot of code to review ... but at least I tried. ;-)\n\nThe serialization and deserialization approach is fine. I think mmap or a key-value store would\u0027ve been simpler, but the solution is appropriate.\n\nWe may reuse the Fingerprinter object for the index fingerprint as well - no need to duplicate that code.\n\nI like your use of Lambda expressions! I use them rarely, but I always like it, when I see them. ;-)\n\nYour comment regarding org.apache.lucene.util.BitDocIdSet.Builder is probably exactly what we should try. I don\u0027t know, why we didn\u0027t try that back then. Or did we try and fail? We should definitely try to adopt this and see if it speeds up the VC building.",
       "revId": "a1452694b7baf907dd2398c0b430731bf5d8b737",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "229891c6_b88d9afe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-11-11T09:35:50Z",
+      "side": 1,
+      "message": "Thank you very much for your effort in reviewing my codes! It was a lot of work :-) I will merge this when Kustvakt is ready.\n\nI think it is still better to have a few VC in RAM since Mmap only loads once, so the VC is not cached at all. \n\nThanks for your remark regarding Fingerprinter. I have updated KrillIndex. I also moved the class to the korap.util package.\n\nThe lambda is handy there 😊\n\nI can\u0027t remember trying BitDocIdSet.Builder myself. Maybe you did 😊",
+      "parentUuid": "ca8602bc_9ee97bc8",
+      "revId": "a1452694b7baf907dd2398c0b430731bf5d8b737",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
