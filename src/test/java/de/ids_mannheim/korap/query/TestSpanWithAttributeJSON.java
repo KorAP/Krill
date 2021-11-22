@@ -1,20 +1,32 @@
 package de.ids_mannheim.korap.query;
 
-import static de.ids_mannheim.korap.TestSimple.*;
+import static de.ids_mannheim.korap.TestSimple.getJsonQuery;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import org.apache.lucene.search.spans.SpanQuery;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.StatusCodes;
 
 public class TestSpanWithAttributeJSON {
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    @Test
+    public void testElementRegexAttribute () throws QueryException {
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-regex-attribute.jsonld")
+                .getFile();
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
 
+        QueryException exception = assertThrows(QueryException.class, () -> {
+            sqwi.toQuery();
+        });
+        assertEquals("SpanAttributeQuery only supports SpanTermQuery.",
+                exception.getMessage());
+        assertEquals(StatusCodes.UNSUPPORTED_QUERY, exception.getErrorCode());
+    }
 
     @Test
     public void testElementSingleAttribute () throws QueryException {
@@ -179,13 +191,16 @@ public class TestSpanWithAttributeJSON {
     @Test
     public void testAnyElementSingleNotAttribute () throws QueryException {
 
-        exception.expectMessage("The query requires a positive attribute.");
         String filepath = getClass()
                 .getResource(
                         "/queries/attribute/any-element-with-single-not-attribute.jsonld")
                 .getFile();
-        SpanQueryWrapper sqwi = getJsonQuery(filepath);
-        SpanQuery sq = sqwi.toQuery();
+        
+        Exception exception = assertThrows(QueryException.class, () -> {
+            getJsonQuery(filepath);
+        });
+        assertEquals("The query requires a positive attribute.",
+                exception.getMessage());
         //        assertEquals("tokens:???", sq.toString());
     }
 }

@@ -51,8 +51,8 @@ public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
             return new SpanAttributeQuery((SpanTermQuery) sq, isNegative, true);
         }
         else {
-            throw new IllegalArgumentException(
-                    "The subquery is not a SpanTermQuery.");
+            throw new QueryException(
+                    "SpanAttributeQuery only supports SpanTermQuery.");
         }
     }
 }
