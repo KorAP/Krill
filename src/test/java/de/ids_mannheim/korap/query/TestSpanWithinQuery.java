@@ -1,19 +1,14 @@
 package de.ids_mannheim.korap.query;
 
-import java.util.*;
-import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
-import de.ids_mannheim.korap.query.SpanWithinQuery;
-import de.ids_mannheim.korap.query.SpanElementQuery;
-import de.ids_mannheim.korap.query.QueryBuilder;
+import static org.junit.Assert.assertEquals;
 
 import org.apache.lucene.search.spans.SpanQuery;
-import de.ids_mannheim.korap.util.QueryException;
-
-import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
 public class TestSpanWithinQuery {

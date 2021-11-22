@@ -1,17 +1,16 @@
 package de.ids_mannheim.korap.query;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.Collection;
 
-import de.ids_mannheim.korap.query.FrameConstraint;
-import de.ids_mannheim.korap.util.QueryException;
 import org.apache.lucene.search.spans.Spans;
-
-import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import de.ids_mannheim.korap.util.QueryException;
 
 /**
  * @author diewald
