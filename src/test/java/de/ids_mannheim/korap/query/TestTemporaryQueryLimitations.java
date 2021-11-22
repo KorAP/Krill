@@ -1,26 +1,19 @@
 package de.ids_mannheim.korap.query;
 
-import java.util.*;
+import static de.ids_mannheim.korap.TestSimple.getJsonString;
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 
-import org.apache.lucene.search.spans.SpanQuery;
-
-import de.ids_mannheim.korap.KrillIndex;
-import de.ids_mannheim.korap.KrillQuery;
-import de.ids_mannheim.korap.response.Result;
-import de.ids_mannheim.korap.Krill;
-import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.index.FieldDocument;
-
-import de.ids_mannheim.korap.util.QueryException;
-
-import static de.ids_mannheim.korap.TestSimple.*;
-
-import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.index.FieldDocument;
+import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.QueryException;
 
 /**
  * These tests are meant to fail in a predictable way - but they

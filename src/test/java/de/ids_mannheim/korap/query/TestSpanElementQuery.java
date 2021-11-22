@@ -1,13 +1,8 @@
 package de.ids_mannheim.korap.query;
 
-import java.util.*;
-import org.apache.lucene.index.Term;
+import static org.junit.Assert.assertEquals;
 
-import de.ids_mannheim.korap.query.SpanElementQuery;
-
-import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 

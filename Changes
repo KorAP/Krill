@@ -5,6 +5,7 @@
       (fixed #72; diewald)
     - [cleanup] Added error messages to unsupported queries in 
       SpanAttributeQuery (margaretha) 
+    - [cleanup] Cleaned up imports (margaretha)  
 
 0.59.6 2021-11-10
     - [bugfix] Fixed skipping of focus spans (fixed #78; margaretha,

@@ -1,18 +1,19 @@
 package de.ids_mannheim.korap.query;
 
-import java.util.*;
-import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanElementQueryWrapper;
-import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-import de.ids_mannheim.korap.util.QueryException;
-
-import static org.junit.Assert.*;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import de.ids_mannheim.korap.query.wrap.SpanClassQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanRepetitionQueryWrapper;
+import de.ids_mannheim.korap.query.wrap.SpanSequenceQueryWrapper;
+import de.ids_mannheim.korap.util.QueryException;
 
 
 /**
