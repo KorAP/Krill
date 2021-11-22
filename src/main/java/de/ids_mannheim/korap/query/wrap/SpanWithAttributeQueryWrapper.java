@@ -10,6 +10,7 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.StatusCodes;
 
 /**
  * No optimization using expansion
@@ -182,8 +183,8 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
                         attrQueryWrapper.isNegative, true);
             }
             else {
-                throw new IllegalArgumentException(
-                        "The subquery is not a SpanTermQuery.");
+                throw new QueryException(StatusCodes.UNSUPPORTED_QUERY,
+                        "SpanAttributeQuery only supports SpanTermQuery.");
             }
         }
         return null;
