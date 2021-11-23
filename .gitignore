@@ -15,6 +15,7 @@
 /wiki.org
 /test-output
 /misc/web-api.md
+*.code-workspace
 *~
 .*
 *\#

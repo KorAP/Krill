@@ -153,6 +153,8 @@ public class TestMatchIdentifier {
 
         assertEquals("SnippetBrackets (0)", "... bcabca[[{2:b{1:a}}]]c",
                 km.getSnippetBrackets());
+        assertEquals("SnippetTokens (0)", "{\"left\":[\"b\",\"c\",\"a\",\"b\",\"c\",\"a\"],\"match\":[\"b\",\"a\"],\"right\":[\"c\"],\"classes\":[[2,0,1],[1,1,1]]}",
+                     km.getSnippetTokens().toString());
         assertEquals("ID (0)", "match-c1!d1-p7-9(2)7-8(1)8-8", km.getID());
     };
 
@@ -1012,7 +1014,11 @@ public class TestMatchIdentifier {
 		assertEquals("SnippetBrackets (with Spans)",
 					 "[[{x/tag:a:{x/tag:b:{x/tag:c:{x/tag:v:x}}y}}z]]",
 					 km.getSnippetBrackets());
-		
+
+		assertEquals("SnippetTokens (without Spans)",
+					 "{\"match\":[\"x\",\"y\",\"z\"]}",
+					 km.getSnippetTokens().toString());
+        
         assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
         assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
 
