@@ -1351,6 +1351,172 @@ public class Match extends AbstractDocument {
         };
     };
 
+    /*
+     * Return the snippet as a list of tokens
+     */
+    @JsonIgnore
+    public ObjectNode getSnippetTokens () {
+        ObjectNode json = mapper.createObjectNode();
+        
+        if (DEBUG)
+            log.trace("--- Process tokens");
+                    
+        if (this.positionsToOffset == null || this.localDocID == -1)
+            return null;
+
+        PositionsToOffset pto = this.positionsToOffset;
+        int ldid = this.localDocID;
+
+        int startContext = -1;
+        int endContext = -1;
+        int startContextChar = -1;
+        int endContextChar = -1;
+
+        int pdl = this.getPrimaryDataLength();
+        
+        // Get context based on a span definition
+        if (this.getContext().isSpanDefined()) {
+
+            if (DEBUG)
+                log.debug("Context defined by span");
+            
+            int[] spanContext = this.expandContextToSpan(
+                this.positionsToOffset.getLeafReader(), (Bits) null,
+                "tokens", this.context.getSpanContext());
+            startContext = spanContext[0];
+            endContext = spanContext[1];
+            startContextChar = spanContext[2];
+            endContextChar = spanContext[3];
+        }
+
+        // The offset is not yet defined - and defined by tokens
+        if (endContext == -1) {
+
+            if (DEBUG)
+                log.debug("No context defined by span");
+
+            if (this.context.left.isToken() && this.context.left.getLength() > 0) {
+                startContext = this.startPos - this.context.left.getLength();
+                if (startContext < 0)
+                    startContext = 0;
+            };
+        
+            if (this.context.right.isToken() && this.context.right.getLength() > 0) {
+                endContext = this.endPos + this.context.right.getLength() - 1;
+            };
+        };
+       
+        if (startContext == -1) {
+            startContext = this.startPos;
+            if (DEBUG)
+                log.debug("Set startContext {}", endContext);
+        };
+
+        if (endContext == -1) {
+            endContext = this.endPos - 1;
+            if (DEBUG)
+                log.debug("Set endContext {}", endContext);
+        };
+        
+        // Retrieve the character offsets for all tokens
+        for (int i = startContext; i < endContext; i++) {
+            pto.add(ldid, i);
+        };
+
+        if (startContextChar == -1)
+            startContextChar = pto.start(ldid, startContext);
+
+        if (endContextChar == -1)
+            endContextChar = pto.end(ldid, endContext);
+            
+        if (DEBUG)
+            log.debug("Match is {}/{} - {}/{}",startContext,startContextChar,endContext,endContextChar);
+
+        if (endContextChar == -1 || endContextChar == 0 || endContextChar > pdl) {
+            this.tempSnippet = this.getPrimaryData(startContextChar);
+            this.endMore = false;
+        } else  {
+            this.tempSnippet = this.getPrimaryData(startContextChar,endContextChar);
+        }
+
+        if (startContext == 0) {
+            this.startMore = false;
+        }
+        
+        Integer[] offsets;
+        ArrayNode tokens;
+        int i;
+
+        // Create left context token list
+        if (startContext < this.startPos) {
+            tokens = json.putArray("left");
+            for (i = startContext; i < this.startPos; i++) {
+                offsets = pto.span(ldid,i);
+                tokens.add(
+                    this.tempSnippet.substring(
+                        offsets[0]- startContextChar, offsets[1] - startContextChar)
+                    );
+            };
+        };
+
+        tokens = json.putArray("match");
+        for (i = this.startPos; i < this.endPos; i++) {
+            offsets = pto.span(ldid,i);
+            if (offsets == null) {
+                continue;
+            }
+            tokens.add(
+                this.tempSnippet.substring(
+                    offsets[0]- startContextChar, offsets[1] - startContextChar)
+                );
+        };
+
+        // Create right context token list
+        if (endContext > this.endPos) {
+            tokens = null;
+            for (i = this.endPos; i < endContext; i++) {
+                offsets = pto.span(ldid,i);
+                if (offsets == null) {
+                    break;
+                };
+
+                if (tokens == null)
+                    tokens = json.putArray("right");
+                
+                tokens.add(
+                    this.tempSnippet.substring(
+                        offsets[0]- startContextChar, offsets[1] - startContextChar)
+                    );
+            };
+        };
+
+        // Add class arrays to JSON
+        if (this.highlight != null) {
+
+            ArrayNode classes = null;
+            for (Highlight highlight : this.highlight) {
+
+                if (highlight.number < 0 || highlight.number > 255)
+                    continue;
+
+                // Highlight is a pagebreak
+                if (highlight.end == PB_MARKER)
+                    continue;
+
+                if (classes == null)
+                    classes = json.putArray("classes");
+                
+                ArrayNode cls = mapper.createArrayNode();                
+                cls.add(highlight.number);
+                cls.add(highlight.start - this.startPos);
+                cls.add(highlight.end - this.startPos);
+                classes.add(cls);
+            };
+        };
+
+        return json;
+    };
+    
 
     @JsonProperty("snippet")
     public String getSnippetHTML () {
@@ -1642,7 +1808,7 @@ public class Match extends AbstractDocument {
      * Sometimes the match start and end positions are inside the
      * matching region, e.g. when the match was expanded.
      * This will override the original matching positions
-     * And matrk the real matching.
+     * And mark the real matching.
      */
     public void overrideMatchPosition (int start, int end) {
         if (DEBUG)
