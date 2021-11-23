@@ -308,7 +308,6 @@ public class Krill extends Response {
         };
 
         kr.setQuery(this.getQuery());
-
         kr.setCollection(this.getCollection());
         kr.setMeta(this.getMeta());
 
