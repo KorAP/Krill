@@ -102,6 +102,7 @@ public class TestKrill {
         meta.setStartIndex(5);
         meta.getContext().left.setLength(1);
         meta.getContext().right.setLength(1);
+        assertTrue(meta.hasSnippets());
 
         Result kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 6);
@@ -110,20 +111,49 @@ public class TestKrill {
                 "... dem [[Buchstaben]] A ...");
 
         JsonNode res = ks.toJsonNode();
+        
         assertEquals(3, res.at("/meta/count").asInt());
         assertEquals(5, res.at("/meta/startIndex").asInt());
         assertEquals("token", res.at("/meta/context/left/0").asText());
         assertEquals(1, res.at("/meta/context/left/1").asInt());
         assertEquals("token", res.at("/meta/context/right/0").asText());
         assertEquals(1, res.at("/meta/context/right/1").asInt());
+        assertTrue(res.at("/matches/0/snippet").isMissingNode());
+        assertTrue(res.at("/matches/0/tokens").isMissingNode());
+
+        res = kr.toJsonNode();
+
+        assertFalse(res.at("/matches/0/snippet").isMissingNode());
+        assertTrue(res.at("/matches/0/tokens").isMissingNode());
+
 
         // Handle count=0 correctly
         meta = ks.getMeta();
         meta.setCount(0);
+
         kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 6);
         assertEquals(kr.getItemsPerPage(), 0);
         assertEquals(kr.getMatches().size(), 0);
+
+        // Handle tokens=true and
+        // snippet=false correctly
+        meta = ks.getMeta();
+        meta.setCount(1);
+        meta.setTokens(true);
+        meta.setSnippets(false);
+
+        kr = ks.apply(ki);
+        assertEquals(kr.getTotalResults(), 6);
+        assertEquals(kr.getMatches().size(), 1);
+
+        res = kr.toJsonNode();
+
+        assertFalse(res.at("/matches/0/hasSnippet").asBoolean());
+        assertTrue(res.at("/matches/0/hasTokens").asBoolean());
+        assertTrue(res.at("/matches/0/snippet").isMissingNode());
+        assertEquals("dem", res.at("/matches/0/tokens/left/0").asText());
+        assertEquals("Buchstaben", res.at("/matches/0/tokens/match/0").asText());
     };
 
 

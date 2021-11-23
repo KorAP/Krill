@@ -153,6 +153,8 @@ public class TestMatchIdentifier {
 
         assertEquals("SnippetBrackets (0)", "... bcabca[[{2:b{1:a}}]]c",
                 km.getSnippetBrackets());
+        assertEquals("SnippetTokens (0)", "{\"left\":[\"b\",\"c\",\"a\",\"b\",\"c\",\"a\"],\"match\":[\"b\",\"a\"],\"right\":[\"c\"],\"classes\":[[2,0,1],[1,1,1]]}",
+                     km.getSnippetTokens().toString());
         assertEquals("ID (0)", "match-c1!d1-p7-9(2)7-8(1)8-8", km.getID());
     };
 
@@ -170,6 +172,8 @@ public class TestMatchIdentifier {
 
         assertEquals("SnippetBrackets (0)", "... [[{2:b{a}}]] ...",
                 km.getSnippetBrackets());
+        assertEquals("SnippetTokens (0)", "{\"match\":[\"b\",\"a\"],\"classes\":[[0,1,1],[2,0,1]]}",
+                     km.getSnippetTokens().toString());
 
         assertEquals("ID (0)", "match-c1!d1-p7-9(0)8-8(2)7-8", km.getID());
 
@@ -179,6 +183,8 @@ public class TestMatchIdentifier {
         assertEquals("SnippetBrackets (1)",
                 "... [[{f/m:acht:b}{f/m:neun:a}]] ...",
                 km.getSnippetBrackets());
+        assertEquals("SnippetTokens (1)", "{\"match\":[\"b\",\"a\"]}",
+                     km.getSnippetTokens().toString());
 
 		// Mirror identifier when passed
         km = ki.getMatchInfo("match-c1!d1-p7-9(0)8-8(2)7-8", "tokens", "f",
@@ -186,6 +192,8 @@ public class TestMatchIdentifier {
         assertEquals("SnippetBrackets (1b)",
                 "... [[{f/m:acht:{f/y:eight:b}}{f/m:neun:{f/y:nine:a}}]] ...",
                 km.getSnippetBrackets());
+        assertEquals("SnippetTokens (1b)", "{\"match\":[\"b\",\"a\"]}",
+                     km.getSnippetTokens().toString());
 
         JsonNode res = mapper.readTree(km.toJsonString());
         assertEquals("match-c1!d1-p7-9(0)8-8(2)7-8",
@@ -197,6 +205,8 @@ public class TestMatchIdentifier {
         assertEquals("SnippetBrackets (2)",
                 "... [[{2:{f/m:acht:b}{{f/m:neun:a}}}]] ...",
                 km.getSnippetBrackets());
+        assertEquals("SnippetTokens (2)", "{\"match\":[\"b\",\"a\"],\"classes\":[[0,1,1],[2,0,1]]}",
+                     km.getSnippetTokens().toString());
 
         km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8", "tokens", "f", "m",
                 false, true);
@@ -204,6 +214,8 @@ public class TestMatchIdentifier {
         assertEquals("SnippetBrackets (3)",
                 "... [[{2:{f/m:acht:b}{4:{f/m:neun:a}}}]] ...",
                 km.getSnippetBrackets());
+        assertEquals("SnippetTokens (3)", "{\"match\":[\"b\",\"a\"],\"classes\":[[4,1,1],[2,0,1]]}",
+                     km.getSnippetTokens().toString());
 
         km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8", "tokens", "f",
                 null, false, true);
@@ -211,6 +223,8 @@ public class TestMatchIdentifier {
         assertEquals("SnippetBrackets (4)",
                 "... [[{2:{f/m:acht:{f/y:eight:b}}{4:{f/m:neun:{f/y:nine:a}}}}]] ...",
                 km.getSnippetBrackets());
+        assertEquals("SnippetTokens (4)", "{\"match\":[\"b\",\"a\"],\"classes\":[[4,1,1],[2,0,1]]}",
+                     km.getSnippetTokens().toString());
 
         assertEquals("SnippetHTML (4)",
                 "<span class=\"context-left\">" + "<span class=\"more\">"
@@ -1012,7 +1026,11 @@ public class TestMatchIdentifier {
 		assertEquals("SnippetBrackets (with Spans)",
 					 "[[{x/tag:a:{x/tag:b:{x/tag:c:{x/tag:v:x}}y}}z]]",
 					 km.getSnippetBrackets());
-		
+
+		assertEquals("SnippetTokens (without Spans)",
+					 "{\"match\":[\"x\",\"y\",\"z\"]}",
+					 km.getSnippetTokens().toString());
+        
         assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
         assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
 

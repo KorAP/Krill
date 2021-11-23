@@ -1,7 +1,10 @@
-0.59.7 2021-11-08
-    - Implemented a new cache with on disk storage and auto-update (margaretha).
+0.59.7 2021-12-01
+    - [feature] Implemented a new cache with on disk
+      storage and auto-update (margaretha).
+    - [feature] Support for tokenized snippet output
+      (fixed #72; diewald)
 
-0.59.6 2021-11-10
+0.59.6 
     - [bugfix] Fixed skipping of focus spans (fixed #78; margaretha,
       diewald)
     - [bugfix] Clear matchlist if skip fails in NextSpans
