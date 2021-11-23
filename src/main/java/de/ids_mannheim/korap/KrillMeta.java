@@ -29,6 +29,8 @@ public final class KrillMeta extends Notifications {
     // Per default snippets are requested
     private boolean snippets = true;
 
+    private boolean tokens = false;
+
     private ArrayList<String> fields;
     HashSet<Integer> highlights;
 
@@ -144,9 +146,14 @@ public final class KrillMeta extends Notifications {
         if (json.has("itemsPerResource"))
             this.setItemsPerResource(json.get("itemsPerResource").asInt());
 
-        // Defined context
+        // Defined snippets
         if (json.has("snippets")) {
             this.snippets = json.get("snippets").asBoolean();
+        };
+
+        // Defined tokens
+        if (json.has("tokens")) {
+            this.tokens = json.get("tokens").asBoolean();
         };
         
         // Defined context
@@ -282,6 +289,23 @@ public final class KrillMeta extends Notifications {
      */
     public KrillMeta setSnippets (boolean snippets) {
         this.snippets = snippets;
+        return this;
+    };
+
+
+    /**
+     * Get if tokens should be retrieved.
+     */
+    public boolean hasTokens () {
+        return this.tokens;
+    };
+
+
+    /**
+     * Set if tokens should be retrieved.
+     */
+    public KrillMeta setTokens (boolean tokens) {
+        this.tokens = tokens;
         return this;
     };
     

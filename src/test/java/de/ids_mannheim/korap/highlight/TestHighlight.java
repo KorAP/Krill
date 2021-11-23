@@ -533,4 +533,34 @@ public class TestHighlight { // extends LuceneTestCase {
 			km.getSnippetHTML());
 
 	};
+
+        @Test
+        public void checkTokenArray () throws IOException, QueryException {
+    
+            KrillIndex ki = new KrillIndex();
+            String json = new String("{" + "  \"fields\" : [" + "    { "
+                    + "      \"primaryData\" : \"abc\"" + "    }," + "    {"
+                    + "      \"name\" : \"tokens\"," + "      \"data\" : ["
+                    + "         [ \"s:a\", \"i:a\", \"_0#0-1\", \"-:t$<i>3\"],"
+                    + "         [ \"s:b\", \"i:b\", \"_1#1-2\" ],"
+                    + "         [ \"s:c\", \"i:c\", \"_2#2-3\" ]" + "      ]"
+                    + "    }" + "  ]" + "}");
+    
+            ki.addDoc(json);
+            ki.commit();
+    
+            QueryBuilder kq = new QueryBuilder("tokens");
+            Result kr = ki
+                    .search((SpanQuery) kq.seq(kq.nr(1, kq.seg("s:b")), kq.seg("s:c")).toQuery());
+            Match km = kr.getMatch(0);
+            assertEquals(km.getStartPos(), 1);
+            assertEquals(km.getEndPos(), 3);
+            assertEquals(km.getStartPos(1), 1);
+            assertEquals(km.getEndPos(1), 2);
+            
+            assertEquals(
+                     "{\"match\":[\"b\",\"c\"],\"classes\":[[1,0,0]]}",
+            km.getSnippetTokens().toString());
+                    
+        }    
 };

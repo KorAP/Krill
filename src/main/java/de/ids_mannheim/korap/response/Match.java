@@ -1351,6 +1351,60 @@ public class Match extends AbstractDocument {
         };
     };
 
+    @JsonProperty("tokens")
+    public ObjectNode getSnippetTokens () {
+        ObjectNode json = mapper.createObjectNode();
+        
+        // TODO:
+        // This should return a struct like
+        // tokens: {
+        //   list: ["the","old","man"],
+        //   match:[0,2],
+        //   classes:[[1,4,7],[2,4,6]]
+        // }
+
+        if (DEBUG)
+            log.trace("--- Process tokens");
+                    
+        if (this.positionsToOffset == null || this.localDocID == -1)
+            return null;
+
+        int ldid = this.localDocID;
+
+        // Retrieve the tokens
+        PositionsToOffset pto = this.positionsToOffset;
+        for (int i = this.getStartPos(); i < this.getEndPos(); i++) {
+            pto.add(ldid, i);
+        };
+
+        // TODO: This is fairly naive and should better be part of _processOffsetChars
+        int startOffsetChar = pto.start(ldid, this.getStartPos());
+        int endOffsetChar = pto.end(ldid, this.getEndPos()-1);
+
+        this.tempSnippet = this.getPrimaryData(startOffsetChar,endOffsetChar);
+
+        ArrayNode tokens = json.putArray("match");
+        Integer[] offsets;
+        for (int i = this.getStartPos(); i < this.getEndPos(); i++) {
+             offsets = pto.span(ldid,i);
+             tokens.add(this.tempSnippet.substring(offsets[0]- startOffsetChar, offsets[1] - startOffsetChar));
+        }
+        
+        ArrayNode classes = json.putArray("classes");
+        if (this.highlight != null) {
+            
+            for (Highlight highlight : this.highlight) {
+                ArrayNode cls = mapper.createArrayNode();                
+                cls.add(highlight.number);
+                cls.add(highlight.start-this.getStartPos());
+                cls.add(highlight.end-this.getStartPos());
+                classes.add(cls);
+            };
+        };
+
+        return json;
+    };
+    
 
     @JsonProperty("snippet")
     public String getSnippetHTML () {
@@ -1642,7 +1696,7 @@ public class Match extends AbstractDocument {
      * Sometimes the match start and end positions are inside the
      * matching region, e.g. when the match was expanded.
      * This will override the original matching positions
-     * And matrk the real matching.
+     * And mark the real matching.
      */
     public void overrideMatchPosition (int start, int end) {
         if (DEBUG)
