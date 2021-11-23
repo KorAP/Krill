@@ -957,6 +957,10 @@ public final class KrillIndex {
         if (match.getStartPos() == -1)
             return match;
 
+        // For the moment, direct match retrievals will always include
+        // snippets. But this may change in the future.
+        match.hasSnippet = true;
+        
         // Create a filter based on the corpusID and the docID
         BooleanQuery bool = new BooleanQuery();
         if (match.getTextSigle() != null) {
@@ -1313,13 +1317,16 @@ public final class KrillIndex {
      * Search in the index.
      */
     public Result search (SpanQuery query) {
-        return this.search(new Krill(query));
+        final Krill krill = new Krill(query);
+        krill.getMeta().setSnippets(true);
+        return this.search(krill);
     };
 
 
     public Result search (SpanQuery query, short count) {
         final Krill krill = new Krill(query);
         krill.getMeta().setCount(count);
+        krill.getMeta().setSnippets(true);
         return this.search(krill);
     };
 
@@ -1334,6 +1341,7 @@ public final class KrillIndex {
         meta.setStartIndex(startIndex).setCount(count);
         meta.setContext(new SearchContext(leftTokenContext, leftContext,
                 rightTokenContext, rightContext));
+        meta.setSnippets(true);
         return this.search(ks);
     };
 
@@ -1373,7 +1381,7 @@ public final class KrillIndex {
         // The following fields should be lifted for matches
         List<String> fields = (ArrayList<String>) meta.getFields().clone();
         HashSet<String> fieldsSet = new HashSet<String>(fields);
-        boolean snippets = meta.hasSnippets();
+        boolean snippets = meta.hasSnippets() || meta.hasTokens();
 
         // Lift all fields
         if (fields.contains("@all")) {
@@ -1441,7 +1449,6 @@ public final class KrillIndex {
 
                 if (isTimeout)
                     break;
-
                 
                 /*
                  * Todo: There may be a way to know early if the bitset is emty
@@ -1519,7 +1526,7 @@ public final class KrillIndex {
                     // Create new Match
                     final Match match = new Match(pto, localDocID,
                             spans.start(), spans.end());
-
+                    
                     // Add snippet if existing
                     if (snippets) {
                         match.setContext(kr.getContext());
@@ -1530,7 +1537,15 @@ public final class KrillIndex {
 
                         if (spans.isPayloadAvailable())
                             match.addPayload((List<byte[]>) spans.getPayload());
-                    }
+                        
+                        if (meta.hasSnippets()) {
+                            match.hasSnippet = true;
+                        };
+                        
+                        if (meta.hasTokens()) {
+                            match.hasTokens = true;
+                        };
+                    };
 
                     // Add match to Result
                     kr.add(match);

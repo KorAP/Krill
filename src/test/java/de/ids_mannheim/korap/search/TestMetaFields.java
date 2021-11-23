@@ -239,7 +239,7 @@ public class TestMetaFields {
         assertTrue(resultJson.indexOf("\"textSigle\":\"GOE_AGX.00002\"") > 0);
         assertTrue(resultJson.indexOf("\"docSigle\":\"GOE_AGX\"") > 0);
         assertTrue(resultJson.indexOf("\"corpusSigle\":\"GOE\"") > 0);
-        assertTrue(resultJson.indexOf("\"UID\":") > 0);
+        // assertTrue(resultJson.indexOf("\"UID\":") > 0);
         assertTrue(resultJson.indexOf("\"availability\":") > 0);
         
         assertEquals(

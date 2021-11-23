@@ -274,8 +274,16 @@ public final class Result extends Krill {
         this._addMeta(json);
 
         // Add matches
-        if (this.matches != null)
-            json.putPOJO("matches", this.getMatches());
+        if (this.matches != null) {
+
+            // Initiate matches
+            ArrayNode matches = json.putArray("matches");
+
+            // Add matches
+            for (Match km : this.getMatches()) {
+                matches.add(km.toJsonNode());
+            };
+        };
 
         return json;
     };
