@@ -35,6 +35,7 @@ public class VirtualCorpusFilter extends Filter {
             throws IOException {
         String leafFingerprint = Fingerprinter.create(
                 context.reader().getCombinedCoreAndDeletesKey().toString());
+        leafFingerprint = Fingerprinter.normalizeSlash(leafFingerprint);
         
         DocBits docBits = VirtualCorpusCache.getDocBits(vcId, leafFingerprint,
                 () -> {
