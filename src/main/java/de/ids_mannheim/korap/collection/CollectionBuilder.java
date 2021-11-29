@@ -272,17 +272,17 @@ public class CollectionBuilder {
     public class VirtualCorpusReference implements CollectionBuilder.Interface {
         private boolean isNegative = false;
         private String vcId;
-        private VirtualCorpusReferenceFilter vcRefFilter;
+        private VirtualCorpusFilter vcFilter;
         
                 
         public VirtualCorpusReference (String vcId) {
             this.vcId = vcId;
-            vcRefFilter = new VirtualCorpusReferenceFilter(vcId);
+            vcFilter = new VirtualCorpusFilter(vcId);
 //            VirtualCorpusCache.setIndexInfo(indexInfo);
         };
 
         public Filter toFilter () throws QueryException {
-            return vcRefFilter;
+            return vcFilter;
         };
 
 
