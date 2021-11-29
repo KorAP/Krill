@@ -1,6 +1,7 @@
 0.59.7 2021-11-29
-    - Implemented a new cache with on disk storage and auto-update (margaretha).
-    - Added a delete method to VirtualCorpusCache (margaretha)
+    - [feature] Implemented a new cache with on disk storage and auto-update (margaretha).
+    - [feature] Added a delete method to VirtualCorpusCache (margaretha)
+    - [feature] Added normalization for slash in Fingerprinter (margaretha)
 
 0.59.6 2021-11-10
     - [bugfix] Fixed skipping of focus spans (fixed #78; margaretha,

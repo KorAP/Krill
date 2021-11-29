@@ -29,5 +29,9 @@ public class Fingerprinter {
         return code;
 
     }
+    
+    public static String normalizeSlash (String code) {
+        return code.replace("/", "_");
+    }
 
 }

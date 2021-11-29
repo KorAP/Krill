@@ -1855,6 +1855,7 @@ public final class KrillIndex implements IndexInfo {
         for (LeafReaderContext context : leaves) {
             String fp = Fingerprinter.create(
                     context.reader().getCombinedCoreAndDeletesKey().toString());
+            fp = Fingerprinter.normalizeSlash(fp);
             fingerprints.add(fp);
         }
         return fingerprints;
