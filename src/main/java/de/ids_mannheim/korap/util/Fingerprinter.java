@@ -26,7 +26,15 @@ public class Fingerprinter {
         md.update(key.getBytes());
         String code = new String(Base64.getEncoder().encode(md.digest()));
         md.reset();
+        
+        code = normalizeSlash(code);
         return code;
 
     }
+
+    private static String normalizeSlash (String code) {
+        return code.replace("/", "_");
+    }
+    
+    
 }
