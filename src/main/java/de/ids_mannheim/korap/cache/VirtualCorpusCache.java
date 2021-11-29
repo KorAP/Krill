@@ -17,10 +17,11 @@ import java.util.function.Supplier;
 import org.apache.lucene.index.LeafReaderContext;
 
 import de.ids_mannheim.korap.IndexInfo;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.collection.DocBits;
-import de.ids_mannheim.korap.collection.VirtualCorpusReferenceFilter;
-import de.ids_mannheim.korap.collection.VirtualCorpusReferenceFilter.DocBitsSupplier;
+import de.ids_mannheim.korap.collection.VirtualCorpusFilter;
+import de.ids_mannheim.korap.collection.VirtualCorpusFilter.DocBitsSupplier;
 import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -64,7 +65,7 @@ public class VirtualCorpusCache {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        
+
         String filepath = dir + "/" + leafFingerprint;
         File f = new File(filepath);
         if (f.exists()) {
@@ -94,7 +95,7 @@ public class VirtualCorpusCache {
     public static void store (String vcId, KrillIndex index)
             throws QueryException, IOException {
         
-        DocBitsSupplier docBitsSupplier = new VirtualCorpusReferenceFilter(
+        DocBitsSupplier docBitsSupplier = new VirtualCorpusFilter(
                 vcId).new DocBitsSupplier();
         String leafFingerprint;
         for (LeafReaderContext context : index.reader().leaves()) {
@@ -151,12 +152,25 @@ public class VirtualCorpusCache {
         }
     }
 
+    public static void delete (String vcId) {
+        vcToCleanUp.remove(vcId);
+        map.remove(vcId);
+        File vc = new File(CACHE_LOCATION + "/" + vcId);
+        if (vc.exists()) {
+            for (File f : vc.listFiles()) {
+                if (f.exists()) {
+                    f.delete();
+                }
+            }
+            vc.delete();
+        }
+    }
 
     public static void reset () {
         vcToCleanUp.clear();
         map.clear();
 
-        File vcCache = new File(VirtualCorpusCache.CACHE_LOCATION + "/");
+        File vcCache = new File(CACHE_LOCATION + "/");
         for (File vc : vcCache.listFiles()) {
             for (File f : vc.listFiles()) {
                 if (f.exists()) {
@@ -168,10 +182,14 @@ public class VirtualCorpusCache {
         vcCache.delete();
     }
     
+
     /**
+     * Sets IndexInfo and checks if there is any VC to clean up. This
+     * method is called every time an index is used in {@link Krill}.
+     * 
      * When the VC cache knows that a leaf-fingerprint is not in the
      * map of a VC, it is marked for clean up. The cached VC will be
-     * cleaned up, next time a VC Reference is created.
+     * cleaned up, next time the index is used in {@link Krill}.
      * see {@link #getDocBits(String, String, Supplier)}
      */
     public static void setIndexInfo (IndexInfo indexInfo) {
