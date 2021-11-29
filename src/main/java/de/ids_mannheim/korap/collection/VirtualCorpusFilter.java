@@ -15,16 +15,16 @@ import de.ids_mannheim.korap.cache.VirtualCorpusCache;
 import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.QueryException;
 
-public class VirtualCorpusReferenceFilter extends Filter {
+public class VirtualCorpusFilter extends Filter {
 
     public final static Logger log = LoggerFactory
-            .getLogger(VirtualCorpusReferenceFilter.class);
+            .getLogger(VirtualCorpusFilter.class);
     public static boolean DEBUG = false;
 
     private String vcId;
     private DocBitsSupplier docBitsSupplier;
 
-    public VirtualCorpusReferenceFilter (String vcId) {
+    public VirtualCorpusFilter (String vcId) {
         this.vcId = vcId;
         docBitsSupplier = new DocBitsSupplier();
     }
