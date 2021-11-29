@@ -190,7 +190,7 @@ Each attribute has two payloads:
 
 * the TUI of the token, span or relation to which the attribute
   belongs to (stored in short)
-* for spans: the corresponding span end position (stored in integer)
+* for non-milestone spans: the corresponding span end position (stored in integer)
 
 For example:
 
