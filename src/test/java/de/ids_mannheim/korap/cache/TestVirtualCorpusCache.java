@@ -64,7 +64,8 @@ public class TestVirtualCorpusCache {
         Map<String, DocBits> docIdMap = VirtualCorpusCache.retrieve(vcId);
         assertEquals(2, docIdMap.size());
 
-        VirtualCorpusCache.reset();
+        VirtualCorpusCache.delete(vcId);
+        assertFalse(VirtualCorpusCache.contains(vcId));
     }
 
 
@@ -81,12 +82,14 @@ public class TestVirtualCorpusCache {
         Map<String, DocBits> vc1 = VirtualCorpusCache.retrieve(vcId);
         assertNotNull(vc1);
 
-        VirtualCorpusCache.reset();
+        VirtualCorpusCache.delete(vcId);
+        assertFalse(VirtualCorpusCache.contains(vcId));
     }
 
 
     @Test
     public void testUpdateCachedVC () throws IOException {
+        String vcId = "named-vc1";
         // VC cache will be marked for cleaning up 
         // because of storing a new VC
         KrillIndex ki = createIndex();
@@ -95,7 +98,7 @@ public class TestVirtualCorpusCache {
         assertEquals(27, result.getTotalResults());
 
         assertEquals(2,
-                VirtualCorpusCache.map.get("named-vc1").keySet().size());
+                VirtualCorpusCache.map.get(vcId).keySet().size());
 
         ki.delDoc(2);
         ki.commit();
@@ -110,7 +113,7 @@ public class TestVirtualCorpusCache {
         // should have the same size. But the fingerprints should be 
         // different from before the 1st cleaning up
         assertEquals(2,
-                VirtualCorpusCache.map.get("named-vc1").keySet().size());
+                VirtualCorpusCache.map.get(vcId).keySet().size());
 
         // VC cache will be cleaned up for the 2nd time 
         // resulting the same leaf-fingerprints
@@ -119,11 +122,12 @@ public class TestVirtualCorpusCache {
         assertEquals(17, result.getTotalResults());
 
         assertEquals(2,
-                VirtualCorpusCache.map.get("named-vc1").keySet().size());
+                VirtualCorpusCache.map.get(vcId).keySet().size());
 
         ki.close();
 
-        VirtualCorpusCache.reset();
+        VirtualCorpusCache.delete(vcId);
+        assertFalse(VirtualCorpusCache.contains(vcId));
     }
 
 

@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
@@ -34,9 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.collection.CollectionBuilder;
-import de.ids_mannheim.korap.collection.DocBits;
 import de.ids_mannheim.korap.response.Notifications;
-import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
 import de.ids_mannheim.korap.util.StatusCodes;
@@ -848,10 +843,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
         };
         return str;
     };
-    public void storeInCache (String vcId) throws IOException, QueryException {
-        
-    }
-
+    
     @Override
     public Set<String> getAllLeafFingerprints () {
         return index.getAllLeafFingerprints();
