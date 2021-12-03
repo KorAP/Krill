@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1772b03b_009bafa6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-03T14:18:46Z",
+      "side": 1,
+      "message": "Deletion is not tested (i.e. it\u0027s not tested whether the delete is successful or not.).",
+      "revId": "c984db1b16c35e057dfa56248dbbfb68ea7b5fb2",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
