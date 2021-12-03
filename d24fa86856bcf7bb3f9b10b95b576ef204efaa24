@@ -34,6 +34,24 @@
       "parentUuid": "a3688f37_0bd2fe51",
       "revId": "d24fa86856bcf7bb3f9b10b95b576ef204efaa24",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5549f530_7ca2c058",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-03T14:00:18Z",
+      "side": 1,
+      "message": "Yes - \"this\" was not clear in my sentence. I meant if we switch to base64url it would affect all, unless the Fingerprinter just keeps the numerical value and has `toBase64()` and `toBase64url()` methods.",
+      "parentUuid": "6b702393_325dc374",
+      "revId": "d24fa86856bcf7bb3f9b10b95b576ef204efaa24",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
