@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b9510a1_8e4199ed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-03T14:40:10Z",
+      "side": 1,
+      "message": "Fails for me with\n`[ERROR] Tests run: 13, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.001 s \u003c\u003c\u003c FAILURE! - in de.ids_mannheim.korap.query.TestSpanWithAttributeJSON\n[ERROR] testAnyElementSingleNotAttribute(de.ids_mannheim.korap.query.TestSpanWithAttributeJSON)  Time elapsed: 0.001 s  \u003c\u003c\u003c ERROR!\nde.ids_mannheim.korap.util.QueryException: The query requires a positive attribute.\n\tat de.ids_mannheim.korap.query.TestSpanWithAttributeJSON.testAnyElementSingleNotAttribute(TestSpanWithAttributeJSON.java:198)`",
+      "revId": "b7380e09e2742a1957756397fc1a3a1dc2e4cd16",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
