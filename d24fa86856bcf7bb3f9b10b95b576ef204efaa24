@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a3688f37_0bd2fe51",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-03T12:37:59Z",
+      "side": 1,
+      "message": "Wouldn\u0027t it be preferable to use base64url instead of base64 then? I don\u0027t mind if it invalidates the index fingerprint. And I guess this commit is a good playce to discuss that. I add Marc as a reviewer.\n\nFor explanation: This change would alter index fingerprints, meaning calculations by clients would become invalid, although the index itself wouldn\u0027t change. Is that problematic?",
+      "revId": "d24fa86856bcf7bb3f9b10b95b576ef204efaa24",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
