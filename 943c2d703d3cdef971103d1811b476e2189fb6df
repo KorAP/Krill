@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d5c656da_6600d514",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-03T15:10:23Z",
+      "side": 1,
+      "message": "Didn\u0027t know about org.junit.Assert.assertThrows - pretty cool!\n\nWill this be wrapped in the KQ error message properly?",
+      "revId": "943c2d703d3cdef971103d1811b476e2189fb6df",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
