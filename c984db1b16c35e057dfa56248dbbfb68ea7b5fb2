@@ -16,6 +16,24 @@
       "message": "Deletion is not tested (i.e. it\u0027s not tested whether the delete is successful or not.).",
       "revId": "c984db1b16c35e057dfa56248dbbfb68ea7b5fb2",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "573d9e40_3967ce13",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-12-08T08:51:19Z",
+      "side": 1,
+      "message": "Thanks for the review. Now it is tested in patch set 6.",
+      "parentUuid": "1772b03b_009bafa6",
+      "revId": "c984db1b16c35e057dfa56248dbbfb68ea7b5fb2",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
