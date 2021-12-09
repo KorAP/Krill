@@ -8,6 +8,7 @@
     - [cleanup] Cleaned up imports (margaretha)
     - Added a delete method to VirtualCorpusCache (margaretha)
     - [feature] Added normalization for slash in Fingerprinter (margaretha)
+    - [feature] Support for field value vector method (fixes #81; diewald)
 
 0.59.6 2021-11-10
     - [bugfix] Fixed skipping of focus spans (fixed #78; margaretha,
