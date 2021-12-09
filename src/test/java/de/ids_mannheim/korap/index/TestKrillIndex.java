@@ -20,6 +20,8 @@ import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.MultiTermTokenStream;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.collection.CollectionBuilder;
+import de.ids_mannheim.korap.KrillCollection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -375,4 +377,57 @@ public class TestKrillIndex {
         assertEquals(1, checkC);
         
     }
+
+    @Test
+    public void indexFieldVector () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("textSigle", "aaaa");
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("textSigle", "bbbb");
+        fd.setUID("05678");
+        ki.addDoc(fd);
+
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
+        
+        List fieldValues = ki.getFieldVector("textSigle", kcn);
+        assertEquals(2, fieldValues.size());
+        assertEquals("aaaa", fieldValues.get(0));
+        assertEquals("bbbb", fieldValues.get(1));
+
+        fieldValues = ki.getFieldVector("UID", kcn);
+        assertEquals(1, fieldValues.size(), 1);
+        assertEquals("5678", fieldValues.get(0));
+        
+        kcn.fromBuilder(cb.term("textSigle","bbbb"));
+        fieldValues = ki.getFieldVector("textSigle", kcn);
+        assertEquals(1, fieldValues.size());
+        assertEquals("bbbb", fieldValues.get(0));
+
+        
+        fd = new FieldDocument();
+        fd.addString("textSigle", "cccc");
+        ki.addDoc(fd);
+
+        ki.commit();
+        
+        kcn.fromBuilder(null);
+        fieldValues = ki.getFieldVector("textSigle", kcn);
+        assertEquals(3, fieldValues.size());
+        assertEquals("aaaa", fieldValues.get(0));
+        assertEquals("bbbb", fieldValues.get(1));
+        assertEquals("cccc", fieldValues.get(2));
+
+        kcn.fromBuilder(cb.orGroup().with(cb.term("textSigle","aaaa")).with(cb.term("textSigle","cccc")));
+        fieldValues = ki.getFieldVector("textSigle", kcn);
+        assertEquals(2, fieldValues.size());
+        assertEquals("aaaa", fieldValues.get(0));
+        assertEquals("cccc", fieldValues.get(1));
+    };
 };
