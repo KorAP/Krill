@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "514a9546_4084e98f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-09T15:57:16Z",
+      "side": 1,
+      "message": "This establishes a method to serialize all field values of a virtual corpus. Its main use is for the LZA and may not be publicly available.\n\nPossible changes to discuss: Instead of a list it may better be a set.",
+      "revId": "5cfa18589052974280cd3a91cc25d051eb1bbeb3",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
