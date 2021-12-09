@@ -28,6 +28,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
@@ -1874,5 +1875,74 @@ public final class KrillIndex implements IndexInfo {
         }
         return fingerprints;
     }
-    
+
+
+    // Return a vector representation of all
+    // different values for a certain field.
+    // This is a simplified "group" API and should in the future be
+    // succeeded by group.
+    public List<String> getFieldVector (String field, KrillCollection collection) {
+        collection.setIndex(this);
+       
+        List fieldValues = new ArrayList<String>();
+        String fieldValue;
+
+        try {
+            final Filter filter = collection.toFilter();
+
+            // Get from filtered index
+            if (filter != null) {
+            
+                // Iterate over all atomic readers and collect occurrences
+                for (LeafReaderContext atomic : this.reader().leaves()) {
+
+                    LeafReader lreader = atomic.reader();
+
+                    DocIdSet docids = filter.getDocIdSet(atomic, null);
+                
+                    DocIdSetIterator docs = (docids == null) ? null : docids.iterator();
+
+                    if (docs == null)
+                        continue;
+                
+                    while (docs.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
+                        fieldValue = lreader.document(docs.docID()).get(field);
+                        if (fieldValue != null && fieldValue != "")
+                            fieldValues.add(fieldValue);
+                    };
+                    
+                }
+            } else { // Get from unfiltered index
+
+                // Iterate over all atomic readers and collect occurrences
+                for (LeafReaderContext atomic : this.reader().leaves()) {
+
+                    LeafReader lreader = atomic.reader();
+                    Bits live = lreader.getLiveDocs();
+
+                    for (int i=0; i<lreader.maxDoc(); i++) {
+                        if (live != null && !live.get(i))
+                            continue;
+                        
+                        Document doc = lreader.document(i);
+                        fieldValue = doc.get(field);
+                        if (fieldValue != null && fieldValue != "")
+                            fieldValues.add(fieldValue);
+                    };
+                };
+            };
+        }
+
+        // Something went wrong
+        catch (IOException e) {
+            log.warn(e.getLocalizedMessage());
+		}
+
+        // E.g. reference corpus not found
+        catch (QueryException e) {
+            log.warn(e.getLocalizedMessage());
+        };
+
+        return fieldValues;
+    };
 };
