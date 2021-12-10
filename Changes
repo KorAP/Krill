@@ -1,4 +1,8 @@
-0.60 2021-12-13
+0.60.1 2021-12-13
+    - [feature] Added vc loading from classpath (margaretha)
+
+
+0.60 2021-12-10
     - [feature] Implemented a new cache with on disk
       storage and auto-update (margaretha).
     - [feature] Support for tokenized snippet output
@@ -9,7 +13,6 @@
     - [feature] Added a delete method to VirtualCorpusCache (margaretha)
     - [feature] Added normalization for slash in Fingerprinter (margaretha)
     - [security] Updated log4j due to CVE-2021-44228 (diewald)
-    - [feature] Added vc loading from classpath (margaretha)
 
     !!! This is a security fix - please update!
 
