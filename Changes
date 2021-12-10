@@ -1,12 +1,13 @@
-0.60 2021-12-03
+0.60 2021-12-08
     - [feature] Implemented a new cache with on disk
       storage and auto-update (margaretha).
     - [feature] Support for tokenized snippet output
       (fixed #72; diewald)
     - [cleanup] Added error messages to unsupported queries in 
       SpanAttributeQuery (margaretha) 
-    - [cleanup] Cleaned up imports (margaretha)  
-
+    - [cleanup] Cleaned up imports (margaretha)
+    - Added a delete method to VirtualCorpusCache (margaretha)
+      
 0.59.6 2021-11-10
     - [bugfix] Fixed skipping of focus spans (fixed #78; margaretha,
       diewald)
