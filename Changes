@@ -6,8 +6,11 @@
     - [cleanup] Added error messages to unsupported queries in 
       SpanAttributeQuery (margaretha) 
     - [cleanup] Cleaned up imports (margaretha)
-    - Added a delete method to VirtualCorpusCache (margaretha)
+    - [feature] Added a delete method to VirtualCorpusCache (margaretha)
     - [feature] Added normalization for slash in Fingerprinter (margaretha)
+    - [security] Updated log4j due to CVE-2021-44228 (diewald)
+
+    !!! This is a security fix - please update!
 
 0.59.6 2021-11-10
     - [bugfix] Fixed skipping of focus spans (fixed #78; margaretha,
