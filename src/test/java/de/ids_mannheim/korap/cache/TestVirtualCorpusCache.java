@@ -68,7 +68,6 @@ public class TestVirtualCorpusCache {
         assertFalse(VirtualCorpusCache.contains(vcId));
     }
 
-
     @Test
     public void testReferToUncachedVC () throws IOException, QueryException {
         String vcId = "named-vc1";
