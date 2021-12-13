@@ -18,6 +18,24 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bab1a575_2d54b020",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-12-13T10:08:23Z",
+      "side": 1,
+      "message": "User has to specify the VC location in the Krill properties, like this: \n\nkrill.namedVC \u003d /queries/collections/named-vcs/\n\nso unless the actual VC are located in the same path, the location wouldn\u0027t be found in the classpath.\n\nBesides, in Kustvakt, it only has a few test VC defnitions in KoralQuery using Goethe textSigle, so I think it is not dangerous.\n\nBut the idea to restrict it to test only is great. Can we make a new properties like \"krill.test\u003dtrue\" or do you have any other idea?",
+      "parentUuid": "193cc095_407df41f",
+      "revId": "60db21990f0935e6e55a24ebce31641f01869a12",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e92675df_dc212fad",
