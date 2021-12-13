@@ -22,6 +22,30 @@
       },
       "revId": "41681af7c61c1c4c2946356511579e184c02a213",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "213cee38_a7fffcf2",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillCollection.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-12-13T10:42:29Z",
+      "side": 1,
+      "message": "I dont think the File API would help in this case. If the fileName doesn\u0027t start with \"/\", I wouldn\u0027t be able to get even the resource URL from classpath.",
+      "parentUuid": "20c33b47_29933ccc",
+      "range": {
+        "startLine": 236,
+        "startChar": 8,
+        "endLine": 237,
+        "endChar": 35
+      },
+      "revId": "41681af7c61c1c4c2946356511579e184c02a213",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
