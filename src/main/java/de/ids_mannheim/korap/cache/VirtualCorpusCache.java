@@ -208,7 +208,7 @@ public class VirtualCorpusCache {
                 .getAllLeafFingerprints();
         Map<String, DocBits> vcData;
         for (String vcId : vcToCleanUp) {
-            vcData = map.get(vcId);
+            vcData = retrieve(vcId);
             vcData.keySet()
                     .removeIf(storedFingerPrint -> currentLeafFingerprints
                             .contains(storedFingerPrint) == false);
