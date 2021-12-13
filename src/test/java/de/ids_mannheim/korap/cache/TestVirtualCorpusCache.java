@@ -129,5 +129,22 @@ public class TestVirtualCorpusCache {
         assertFalse(VirtualCorpusCache.contains(vcId));
     }
 
-
+    @Test
+    public void testCleanUpVC () throws QueryException, IOException {
+        VirtualCorpusCache.CAPACITY = 3;
+        
+        VirtualCorpusCache.store("named-vc1", ki);
+        VirtualCorpusCache.store("named-vc2", ki);
+        VirtualCorpusCache.store("named-vc3", ki);
+        VirtualCorpusCache.store("named-vc4", ki);
+        
+        assertEquals(3, VirtualCorpusCache.map.size());
+        assertEquals(4, VirtualCorpusCache.vcToCleanUp.size());
+        
+        Krill krill = new Krill(queryRefJson);
+        Result result = krill.apply(ki);
+        assertEquals(27, result.getTotalResults());
+        
+        VirtualCorpusCache.reset();
+    }
 }
