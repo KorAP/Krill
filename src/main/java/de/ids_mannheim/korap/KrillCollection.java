@@ -3,6 +3,7 @@ package de.ids_mannheim.korap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Properties;
 import java.util.Set;
@@ -184,6 +185,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
 		String fileName = namedVCPath + ref + ".jsonld";
 		File file; 
         String json = null;
+        InputStream is = null;
         if ((file= new File(fileName)).exists()) {
             try (FileInputStream fis = new FileInputStream(file)) {
                 json = IOUtils.toString(fis,"utf-8");
@@ -209,6 +211,17 @@ public final class KrillCollection extends Notifications implements IndexInfo {
 				return this;
             }
         }
+        // for testing
+        else if ((is = retrieveInputStreamFromClasspath(fileName))!=null) {
+             try {
+                json = IOUtils.toString(is, "utf-8");
+            }
+            catch (IOException e) {
+                this.addError(StatusCodes.READING_COLLECTION_FAILED,
+                        e.getMessage());
+                return this;
+            }
+        }
         else{
             this.addError(StatusCodes.MISSING_COLLECTION,
                     "Collection is not found " + fileName);
@@ -217,6 +230,14 @@ public final class KrillCollection extends Notifications implements IndexInfo {
 
         return this.fromKoral(json);
 	};
+
+
+    private InputStream retrieveInputStreamFromClasspath (String fileName) {
+        if (!fileName.startsWith("/")) {
+            fileName = "/"+fileName;
+        }
+        return KrillCollection.class.getResourceAsStream(fileName);
+    }
 
 
     /**
