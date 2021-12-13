@@ -94,6 +94,30 @@
       },
       "revId": "41681af7c61c1c4c2946356511579e184c02a213",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72282550_9d44e9c6",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillCollection.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-13T12:45:18Z",
+      "side": 1,
+      "message": "You may be right regarding portability with Java here, but how about the security comment? Not only classpath related.",
+      "parentUuid": "e767217c_c10c7c83",
+      "range": {
+        "startLine": 236,
+        "startChar": 8,
+        "endLine": 237,
+        "endChar": 35
+      },
+      "revId": "41681af7c61c1c4c2946356511579e184c02a213",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
