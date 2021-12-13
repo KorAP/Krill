@@ -33,7 +33,7 @@ import de.ids_mannheim.korap.util.QueryException;
 public class VirtualCorpusCache {
 
     public static final String CACHE_LOCATION = "vc-cache";
-    public static final int CAPACITY = 5;
+    public static int CAPACITY = 5;
     public static final Map<String, Map<String, DocBits>> map = Collections
             .synchronizedMap(new LinkedHashMap<String, Map<String, DocBits>>(
                     CAPACITY, (float) 0.75, true) {
@@ -49,7 +49,7 @@ public class VirtualCorpusCache {
 
     private static IndexInfo indexInfo;
 
-    private static final Set<String> vcToCleanUp = Collections
+    public static final Set<String> vcToCleanUp = Collections
             .synchronizedSet(new HashSet<>());
 
 
@@ -208,7 +208,7 @@ public class VirtualCorpusCache {
                 .getAllLeafFingerprints();
         Map<String, DocBits> vcData;
         for (String vcId : vcToCleanUp) {
-            vcData = map.get(vcId);
+            vcData = retrieve(vcId);
             vcData.keySet()
                     .removeIf(storedFingerPrint -> currentLeafFingerprints
                             .contains(storedFingerPrint) == false);
