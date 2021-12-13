@@ -142,6 +142,30 @@
       },
       "revId": "41681af7c61c1c4c2946356511579e184c02a213",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c863a98_ee08111e",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillCollection.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-13T15:14:28Z",
+      "side": 1,
+      "message": "Well - if the ref is used as a filename (including .jsonld) it should prevent any variant of path traversal attacks. If you want to allow something like \u0027/user/vc-name\u0027 this needs to be handled specially. This problem is - as I said - not only classPath related.",
+      "parentUuid": "a3b0fbe8_ae3b4172",
+      "range": {
+        "startLine": 236,
+        "startChar": 8,
+        "endLine": 237,
+        "endChar": 35
+      },
+      "revId": "41681af7c61c1c4c2946356511579e184c02a213",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
