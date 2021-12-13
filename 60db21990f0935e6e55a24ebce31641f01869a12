@@ -75,6 +75,30 @@
       },
       "revId": "60db21990f0935e6e55a24ebce31641f01869a12",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b187a07_111ab637",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillCollection.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-12-13T16:30:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e92675df_dc212fad",
+      "range": {
+        "startLine": 188,
+        "startChar": 8,
+        "endLine": 188,
+        "endChar": 29
+      },
+      "revId": "60db21990f0935e6e55a24ebce31641f01869a12",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
