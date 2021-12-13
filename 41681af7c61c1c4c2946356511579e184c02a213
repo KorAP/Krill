@@ -118,6 +118,30 @@
       },
       "revId": "41681af7c61c1c4c2946356511579e184c02a213",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a3b0fbe8_ae3b4172",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillCollection.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-12-13T15:00:56Z",
+      "side": 1,
+      "message": "Generally, if fileName comes from users, it could be insecure. Although in this case, we restrict vcId to alphabets, dashes and full stops only. Full stops can possibly be problematic. I think File isn\u0027t enough to handle problematic characters though. For that, we would need to replace/sanitize the filename. \n\nOr we disallow it from the VC names :) but drukola VC name uses full stops.\n\nImho it isn\u0027t really problematic for classpath and File isn\u0027t really suitable for classpath.",
+      "parentUuid": "72282550_9d44e9c6",
+      "range": {
+        "startLine": 236,
+        "startChar": 8,
+        "endLine": 237,
+        "endChar": 35
+      },
+      "revId": "41681af7c61c1c4c2946356511579e184c02a213",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
