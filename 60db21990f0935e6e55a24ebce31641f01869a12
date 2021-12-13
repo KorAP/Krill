@@ -36,6 +36,24 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d387a52a_5acc62a3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-13T11:04:33Z",
+      "side": 1,
+      "message": "I guess the best way to do this is to use a property, or set an environment in the maven goal, that can be checked in the code.\n\nAnd regarding the path: I am sure Kustvakt restricts this, but is anything stopping users from passing a \"../../../myref\" to fromStore()?",
+      "parentUuid": "bab1a575_2d54b020",
+      "revId": "60db21990f0935e6e55a24ebce31641f01869a12",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e92675df_dc212fad",

@@ -46,6 +46,30 @@
       },
       "revId": "41681af7c61c1c4c2946356511579e184c02a213",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3620d8a0_c982f437",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillCollection.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 237,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-13T11:04:33Z",
+      "side": 1,
+      "message": "I thought the fileName should already be a FileObject for security. Checking isAbsolute() should be simple and if in the end only a concatenation is needed, that\u0027s fine I guess.",
+      "parentUuid": "213cee38_a7fffcf2",
+      "range": {
+        "startLine": 236,
+        "startChar": 8,
+        "endLine": 237,
+        "endChar": 35
+      },
+      "revId": "41681af7c61c1c4c2946356511579e184c02a213",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
