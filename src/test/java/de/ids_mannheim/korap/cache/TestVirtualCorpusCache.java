@@ -85,6 +85,18 @@ public class TestVirtualCorpusCache {
         assertFalse(VirtualCorpusCache.contains(vcId));
     }
 
+    @Test
+    public void testCheckPathTraversal () throws IOException, QueryException {
+        String vcId = "named-vc1";
+
+        String file = "/queries/collections/vc-ref/dangerous-vc-ref.jsonld";
+        InputStream is = getClass().getResourceAsStream(file);
+
+        Krill krill = new Krill(IOUtils.toString(is, "utf-8"));
+        Result result = krill.apply(ki);
+        assertEquals(0, result.getTotalResults());
+    }
+
 
     @Test
     public void testUpdateCachedVC () throws IOException {
