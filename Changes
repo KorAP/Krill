@@ -1,6 +1,9 @@
-0.60.1 2021-12-16
+0.60.1 2021-12-17
     - [feature] Added vc loading from classpath (margaretha)
     - [cleanup] Fixed missing VC to cleanup in VC Cache (margaretha)
+    - [security] Updated log4j due to CVE-2021-45046 (diewald)
+
+    !!! This is a security fix - please update!
 
 0.60 2021-12-10
     - [feature] Implemented a new cache with on disk
