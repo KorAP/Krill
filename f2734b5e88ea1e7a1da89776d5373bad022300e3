@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c36f7687_e45deeeb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2021-12-14T16:19:54Z",
+      "side": 1,
+      "message": "This will also create a directory in the root of the project when running the test.",
+      "revId": "f2734b5e88ea1e7a1da89776d5373bad022300e3",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
