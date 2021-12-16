@@ -22,6 +22,30 @@
       },
       "revId": "101057a24c16415b4122e002973bb49ba32ad067",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "913e9fad_8efecffd",
+        "filename": "Changes",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2021-12-16T14:47:10Z",
+      "side": 1,
+      "message": "Fixed in patch 3",
+      "parentUuid": "90286fe2_828e3ac2",
+      "range": {
+        "startLine": 12,
+        "startChar": 7,
+        "endLine": 13,
+        "endChar": 68
+      },
+      "revId": "101057a24c16415b4122e002973bb49ba32ad067",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
