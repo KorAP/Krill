@@ -1,4 +1,5 @@
-0.60.2 2021-12-17
+0.60.2 2022-01-03
+    - [security] More log4j updates (diewald)
 
 0.60.1 2021-12-17
     - [feature] Added vc loading from classpath (margaretha)
