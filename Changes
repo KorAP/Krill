@@ -1,5 +1,8 @@
-0.60.2 2022-01-03
+0.60.2 2022-01-04
     - [security] More log4j updates (diewald)
+    - [cleanup] Moved and updated cache-tests from
+      TestKrillCollectionIndex to TestVirtualCorpusCache
+      (resolved #44; margaretha)
 
 0.60.1 2021-12-17
     - [feature] Added vc loading from classpath (margaretha)

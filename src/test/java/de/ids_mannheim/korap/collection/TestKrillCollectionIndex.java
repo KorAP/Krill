@@ -619,7 +619,7 @@ public class TestKrillCollectionIndex {
         KrillCollection kc = new KrillCollection(json);
 		assertEquals("referTo(https://korap.ids-mannheim.de/@ndiewald/MyCorpus)", kc.getBuilder().toString());
 
-		assertEquals("VirtualCorpusReferenceFilter(https://korap.ids-mannheim.de/@ndiewald/MyCorpus)",kc.toString());
+		assertEquals("vcFilter(https://korap.ids-mannheim.de/@ndiewald/MyCorpus)",kc.toString());
 		
         QueryBuilder kq = new QueryBuilder("field");
 		
@@ -631,6 +631,430 @@ public class TestKrillCollectionIndex {
 		assertEquals(StatusCodes.MISSING_COLLECTION, result.getError(0).getCode());
 		assertTrue(result.getError(0).getMessage().startsWith("Collection is not found"));
 	};
+	
+//	@Test
+//    @Ignore
+//    public void testCache () throws IOException {
+//
+//        Properties prop = KrillProperties.loadDefaultProperties();
+//
+//        String vcPath = getClass().getResource(path + "named-vcs").getFile();
+//        String tempVC = prop.getProperty("krill.namedVC");
+//        prop.setProperty("krill.namedVC", vcPath);
+//
+//        ki = new KrillIndex();
+//        ki.addDoc(createDoc1());
+//        ki.addDoc(createDoc2());
+//        ki.commit();
+//        
+//        testManualAddToCache(ki, "named-vcs/named-vc1.jsonld", "named-vc1");
+//        testManualAddToCache(ki, "named-vcs/named-vc2.jsonld", "named-vc2");
+//        
+//        Element element = KrillCollection.cache.get("named-vc1");
+//        CachedVCData cc = (CachedVCData) element.getObjectValue();
+//        assertTrue(cc.getDocIdMap().size() > 0);
+//
+//        element = KrillCollection.cache.get("named-vc2");
+//        cc = (CachedVCData) element.getObjectValue();
+//        assertTrue(cc.getDocIdMap().size() > 0);
+//
+//        // Check for cache location
+//        assertFalse(KrillCollection.cache.isElementInMemory("named-vc1"));
+//        assertTrue(KrillCollection.cache.isElementOnDisk("named-vc1"));
+//        assertTrue(KrillCollection.cache.isElementInMemory("named-vc2"));
+//        assertTrue(KrillCollection.cache.isElementOnDisk("named-vc2"));
+//
+//        // testSearchCachedVC();
+//        String json = _getJSONString("query-with-vc-ref.jsonld");
+//        // references named-vc1: ID eq ["doc-2","doc-3"]
+//
+//        Krill krill = new Krill(json);
+//        // TODO: Better keep the reference
+//        testManualAddToCache(ki, "named-vcs/named-vc1.jsonld", "named-vc1");
+//        assertEquals("referTo(cached:named-vc1)", krill.getCollection().toString());
+//
+//        Result result = krill.apply(ki);
+//        assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+//        assertEquals(result.getMatch(0).getUID(), 2);
+//        assertEquals(result.getMatches().size(), 1);
+//        
+//        // testAddDocToIndex();
+//        ki.addDoc(createDoc3());
+//        ki.commit();
+//
+//        // Cache is removed after index change
+//        element = KrillCollection.cache.get("named-vc1");
+//        assertNull(element);
+//
+//        // Restart search - this time it's not precached
+//        krill = new Krill(json);
+//        assertEquals("referTo(named-vc1)", krill.getCollection().toString());
+//        result = krill.apply(ki);
+//
+//        assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+//        assertEquals(result.getMatches().size(), 2);
+//
+//        // testAutoCachingMatch
+//        // Check autocache
+//        element = KrillCollection.cache.get("named-vc1");
+//        cc = (CachedVCData) element.getObjectValue();
+//        assertTrue(cc.getDocIdMap().size() > 0);
+//        
+//        // Because of autocaching, this should work now
+//        krill = new Krill(json);
+//        assertEquals("referTo(cached:named-vc1)", krill.getCollection().toString());
+//        result = krill.apply(ki);
+//        assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+//        assertEquals(result.getMatches().size(), 2);
+//
+//        // Cache is removed on deletion
+//        ki.addDoc(createDoc1());
+//        ki.commit();
+//
+//        // Check cache
+//        element = KrillCollection.cache.get("named-vc1");
+//        assertNull(element);
+//
+//        // Rerun query
+//        krill = new Krill(json);
+//        assertEquals("referTo(named-vc1)", krill.getCollection().toString());
+//        result = krill.apply(ki);
+//        assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+//        assertEquals(result.getMatches().size(), 2);
+//        
+//        // testClearCache
+//        KrillCollection.cache.removeAll();
+//
+//        element = KrillCollection.cache.get("named-vc1");
+//        assertNull(element);
+//
+//        prop.setProperty("krill.namedVC", tempVC);
+//    };
+//
+//    @Test
+//    @Ignore
+//    public void testNestedNamedVCs () throws IOException {
+//        KrillCollection.initializeCache();
+//        
+//        Properties prop = KrillProperties.loadDefaultProperties();
+//
+//        String vcPath = getClass().getResource(path + "named-vcs").getFile();
+//        String tempVC = prop.getProperty("krill.namedVC");
+//        prop.setProperty("krill.namedVC", vcPath);
+//        
+//        ki = new KrillIndex();
+//        ki.addDoc(createDoc1());
+//        ki.addDoc(createDoc2());
+//        ki.addDoc(createDoc3());
+//        ki.commit();
+//
+//        // Check cache
+//        Element element = KrillCollection.cache.get("named-vc1");
+//        assertNull(element);
+//
+//        element = KrillCollection.cache.get("named-vc2");
+//        assertNull(element);
+//
+//        QueryBuilder kq = new QueryBuilder("tokens");
+//        KrillCollection kc = new KrillCollection(ki);
+//        CollectionBuilder cb = kc.build();
+//        Krill krill = new Krill(kq.seg("i:a"));
+//
+//        kc.fromBuilder(
+//            cb.orGroup().with(
+//                cb.referTo("named-vc1")
+//                ).with(
+//                    cb.referTo("named-vc2")
+//                    )
+//            );
+//        krill.setCollection(kc);
+//        // named-vc1: UID:[2,3]
+//        // named-vc2: author:Frank (doc-1)
+//
+//        assertEquals("OrGroup(referTo(named-vc1) referTo(named-vc2))",
+//                     krill.getCollection().toString());
+//
+//        assertEquals("tokens:i:a", krill.getSpanQuery().toString());
+//        
+//        Result result = krill.apply(ki);
+//        assertEquals("[[a]] b c", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] c d", result.getMatch(1).getSnippetBrackets());
+//        assertEquals("[[a]] d e", result.getMatch(2).getSnippetBrackets());
+//        assertEquals(3, result.getMatches().size());
+//
+//        element = KrillCollection.cache.get("named-vc2");
+//        CachedVCData cc = (CachedVCData) element.getObjectValue();
+//        assertTrue(cc.getDocIdMap().size() > 0);
+//        
+//        kc.fromBuilder(
+//            cb.orGroup().with(
+//                cb.referTo("named-vc1")
+//                ).with(
+//                    cb.referTo("named-vc2")
+//                    )
+//            );
+//        
+//        assertEquals("OrGroup(referTo(cached:named-vc1) referTo(cached:named-vc2))",
+//                     krill.getCollection().toString());
+//
+//        result = krill.apply(ki);
+//        assertEquals("[[a]] b c", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] c d", result.getMatch(1).getSnippetBrackets());
+//        assertEquals("[[a]] d e", result.getMatch(2).getSnippetBrackets());
+//        assertEquals(3, result.getMatches().size());
+//
+//        kc.fromBuilder(
+//            cb.orGroup().with(
+//                cb.referTo("named-vc1")
+//                ).with(
+//                    cb.referTo("named-vc2")
+//                    )
+//            );
+//        
+//        assertEquals("OrGroup(referTo(cached:named-vc1) referTo(cached:named-vc2))",
+//                     krill.getCollection().toString());
+//
+//        result = krill.apply(ki);
+//        assertEquals("[[a]] b c", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] c d", result.getMatch(1).getSnippetBrackets());
+//        assertEquals("[[a]] d e", result.getMatch(2).getSnippetBrackets());
+//        assertEquals(3, result.getMatches().size());
+//
+//        kc.fromBuilder(cb.referTo("named-vc1"));
+//        
+//        assertEquals("referTo(cached:named-vc1)",
+//                     krill.getCollection().toString());
+//
+//        result = krill.apply(ki);
+//        assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
+//        assertEquals(2, result.getMatches().size());
+//
+//
+//        kc.fromBuilder(cb.referTo("named-vc2"));
+//        
+//        assertEquals("referTo(cached:named-vc2)",
+//                     krill.getCollection().toString());
+//
+//        result = krill.apply(ki);
+//        assertEquals("[[a]] b c", result.getMatch(0).getSnippetBrackets());
+//        assertEquals(1, result.getMatches().size());
+//        
+//        prop.setProperty("krill.namedVC", tempVC);
+//    };
+//
+//
+//    @Test
+//    @Ignore
+//    public void testNamedVCsAfterQueryWithMissingDocs () throws IOException {
+//        KrillCollection.initializeCache();
+//        Properties prop = KrillProperties.loadDefaultProperties();
+//
+//        String vcPath = getClass().getResource(path + "named-vcs").getFile();
+//        String tempVC = prop.getProperty("krill.namedVC");
+//        prop.setProperty("krill.namedVC", vcPath);
+//        
+//        ki = new KrillIndex();
+//        ki.addDoc(createDoc1());
+//        ki.commit();
+//        ki.addDoc(createDoc2());
+//        ki.commit();
+//        ki.addDoc(createDoc3());
+//        ki.commit();
+//
+//        // Check cache
+//        Element element = KrillCollection.cache.get("named-vc1");
+//        assertNull(element);
+//
+//        element = KrillCollection.cache.get("named-vc2");
+//        assertNull(element);
+//
+//        QueryBuilder kq = new QueryBuilder("tokens");
+//        KrillCollection kc = new KrillCollection(ki);
+//        CollectionBuilder cb = kc.build();
+//
+//        // Check only for c and cache
+//        Krill krill = new Krill(kq.seg("i:c"));
+//
+//        kc.fromBuilder(
+//            cb.orGroup().with(
+//                cb.referTo("named-vc1")
+//                ).with(
+//                    cb.referTo("named-vc2")
+//                    )
+//            );
+//        krill.setCollection(kc);
+//        // named-vc1: UID:[2,3]
+//        // named-vc2: author:Frank (doc-1)
+//
+//        assertEquals("OrGroup(referTo(named-vc1) referTo(named-vc2))",
+//                     krill.getCollection().toString());
+//
+//        assertEquals("tokens:i:c", krill.getSpanQuery().toString());
+//        
+//        Result result = krill.apply(ki);
+//        assertEquals("a b [[c]]", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("a [[c]] d", result.getMatch(1).getSnippetBrackets());
+//        assertEquals(2, result.getMatches().size());
+//
+//        element = KrillCollection.cache.get("named-vc2");
+//        CachedVCData cc = (CachedVCData) element.getObjectValue();
+//        assertTrue(cc.getDocIdMap().size() > 0);
+//        
+//        kc.fromBuilder(
+//            cb.orGroup().with(
+//                cb.referTo("named-vc1")
+//                ).with(
+//                    cb.referTo("named-vc2")
+//                    )
+//            );
+//        
+//        assertEquals("OrGroup(referTo(cached:named-vc1) referTo(cached:named-vc2))",
+//                     krill.getCollection().toString());
+//
+//        // Check again for c with cache
+//        result = krill.apply(ki);
+//        assertEquals("a b [[c]]", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("a [[c]] d", result.getMatch(1).getSnippetBrackets());
+//        assertEquals(2, result.getMatches().size());
+//
+//        // Check for a with cache
+//        krill = new Krill(kq.seg("i:a"));
+//        krill.setCollection(kc);
+//
+//        assertEquals("OrGroup(referTo(cached:named-vc1) referTo(cached:named-vc2))",
+//                     krill.getCollection().toString());
+//
+//        // Check again for c with cache
+//        result = krill.apply(ki);
+//        assertEquals("[[a]] b c", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] c d", result.getMatch(1).getSnippetBrackets());
+//        assertEquals("[[a]] d e", result.getMatch(2).getSnippetBrackets());
+//        assertEquals(3, result.getMatches().size());
+//                
+//        prop.setProperty("krill.namedVC", tempVC);
+//    };
+//
+//
+//    @Ignore
+//    public void testNamedVCsAfterCorpusWithMissingDocs () throws IOException {
+//        Properties prop = KrillProperties.loadDefaultProperties();
+//
+//        String vcPath = getClass().getResource(path + "named-vcs").getFile();
+//        String tempVC = prop.getProperty("krill.namedVC");
+//        prop.setProperty("krill.namedVC", vcPath);
+//        
+//        ki = new KrillIndex();
+//        ki.addDoc(createDoc1());
+//        ki.commit();
+//        ki.addDoc(createDoc2());
+//        ki.commit();
+//        ki.addDoc(createDoc3());
+//        ki.commit();
+//
+//        // Check cache
+//        Element element = KrillCollection.cache.get("named-vc1");
+//        assertNull(element);
+//
+//        element = KrillCollection.cache.get("named-vc2");
+//        assertNull(element);
+//
+//        QueryBuilder kq = new QueryBuilder("tokens");
+//        KrillCollection kc = new KrillCollection(ki);
+//        CollectionBuilder cb = kc.build();
+//
+//        // Check only for c and cache
+//        Krill krill = new Krill(kq.seg("i:a"));
+//
+//        kc.fromBuilder(
+//            cb.andGroup().with(
+//                cb.term("textClass","kultur")
+//                ).with(
+//                    cb.orGroup().with(
+//                        cb.referTo("named-vc1")
+//                        ).with(
+//                            cb.referTo("named-vc2")
+//                            )
+//                    )
+//            );
+//        krill.setCollection(kc);
+//        // named-vc1: UID:[2,3]
+//        // named-vc2: author:Frank (doc-1)
+//        // textClass:kultur (doc-1,doc-2)
+//
+//        assertEquals(
+//            "AndGroup(textClass:kultur OrGroup(referTo(named-vc1) referTo(named-vc2)))",
+//            krill.getCollection().toString());
+//        
+//        assertEquals("tokens:i:a", krill.getSpanQuery().toString());
+//        
+//        Result result = krill.apply(ki);
+//        assertEquals("[[a]] b c", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] c d", result.getMatch(1).getSnippetBrackets());
+//        assertEquals(2, result.getMatches().size());
+//
+//        element = KrillCollection.cache.get("named-vc1");
+//        CachedVCData cc = (CachedVCData) element.getObjectValue();
+//        assertTrue(cc.getDocIdMap().size() > 0);
+//
+//        element = KrillCollection.cache.get("named-vc2");
+//        cc = (CachedVCData) element.getObjectValue();
+//        assertTrue(cc.getDocIdMap().size() > 0);
+//
+//        kc.fromBuilder(
+//            cb.orGroup().with(
+//                cb.referTo("named-vc1")
+//                ).with(
+//                    cb.referTo("named-vc2")
+//                    )
+//            );
+//        
+//        assertEquals("OrGroup(referTo(cached:named-vc1) referTo(cached:named-vc2))",
+//                     krill.getCollection().toString());
+//
+//        // Check again for c with cache
+//        result = krill.apply(ki);
+//        assertEquals("[[a]] b c", result.getMatch(0).getSnippetBrackets());
+//        assertEquals("[[a]] c d", result.getMatch(1).getSnippetBrackets());
+//        assertEquals("[[a]] d e", result.getMatch(2).getSnippetBrackets());
+//        assertEquals(3, result.getMatches().size());
+//
+//        prop.setProperty("krill.namedVC", tempVC);
+//    };
+//    
+//    @Test
+//    public void testCollectionWithVCRefAndPubDate () throws IOException {
+//
+//        KrillCollection.initializeCache();
+//
+//        ki = new KrillIndex();
+//        ki.addDoc(createDoc2());
+//        ki.addDoc(createDoc3());
+//        ki.addDoc(createDoc5000());
+//        ki.commit();
+//
+//        testManualAddToCache(ki, "named-vcs/named-vc3.jsonld", "named-vc3");
+//
+//        Element element = KrillCollection.cache.get("named-vc3");
+//        CachedVCData cc = (CachedVCData) element.getObjectValue();
+//        assertTrue(cc.getDocIdMap().size() > 0);
+//            
+//        String json = _getJSONString("collection-with-vc-ref-and-pubDate.jsonld");
+//
+//        KrillCollection kc = new KrillCollection(json);
+//        kc.setIndex(ki);
+//        assertEquals(2, kc.numberOf("documents"));
+//        
+//        // testAddDocToIndex();
+//        ki.addDoc(createDoc1());
+//        ki.commit();
+//        // Cache is removed after index change
+//
+//    }
+    
 
     @Test
     public void filterExampleFromLegacy () throws Exception {
@@ -1210,7 +1634,7 @@ public class TestKrillCollectionIndex {
         return fd;
     };
 
-    private FieldDocument createDoc5000 () {
+    public static FieldDocument createDoc5000 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("UID", "5000");
 		fd.addString("ID", "doc-5000");

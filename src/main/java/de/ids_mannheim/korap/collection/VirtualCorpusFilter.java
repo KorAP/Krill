@@ -100,6 +100,6 @@ public class VirtualCorpusFilter extends Filter {
     
     @Override
     public String toString () {
-        return "VirtualCorpusReferenceFilter("+vcId+")";
+        return "vcFilter("+vcId+")";
     }
 }

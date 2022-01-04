@@ -98,7 +98,7 @@ public class TestCollectionBuilder {
         CollectionBuilder kc = new CollectionBuilder();
 
         assertEquals(
-            "OrGroup(VirtualCorpusReferenceFilter(example) opennlp:check)",
+            "OrGroup(vcFilter(example) opennlp:check)",
             kc.orGroup().with(
                 kc.referTo("example")
                 ).with(
