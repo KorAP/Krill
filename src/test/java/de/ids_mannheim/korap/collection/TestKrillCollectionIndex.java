@@ -619,7 +619,7 @@ public class TestKrillCollectionIndex {
         KrillCollection kc = new KrillCollection(json);
 		assertEquals("referTo(https://korap.ids-mannheim.de/@ndiewald/MyCorpus)", kc.getBuilder().toString());
 
-		assertEquals("VirtualCorpusReferenceFilter(https://korap.ids-mannheim.de/@ndiewald/MyCorpus)",kc.toString());
+		assertEquals("vcFilter(https://korap.ids-mannheim.de/@ndiewald/MyCorpus)",kc.toString());
 		
         QueryBuilder kq = new QueryBuilder("field");
 		
@@ -631,7 +631,7 @@ public class TestKrillCollectionIndex {
 		assertEquals(StatusCodes.MISSING_COLLECTION, result.getError(0).getCode());
 		assertTrue(result.getError(0).getMessage().startsWith("Collection is not found"));
 	};
-
+	
     @Test
     public void filterExampleFromLegacy () throws Exception {
 
@@ -1210,7 +1210,7 @@ public class TestKrillCollectionIndex {
         return fd;
     };
 
-    private FieldDocument createDoc5000 () {
+    public static FieldDocument createDoc5000 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("UID", "5000");
 		fd.addString("ID", "doc-5000");
