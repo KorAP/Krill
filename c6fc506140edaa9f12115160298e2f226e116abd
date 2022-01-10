@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc97977f_8ab9afea",
+        "filename": "src/test/java/de/ids_mannheim/korap/collection/TestKrillCollectionIndex.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-01-10T17:25:42Z",
+      "side": 1,
+      "message": "I think, this whole section should be deleted.",
+      "range": {
+        "startLine": 635,
+        "startChar": 1,
+        "endLine": 642,
+        "endChar": 60
+      },
+      "revId": "c6fc506140edaa9f12115160298e2f226e116abd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
