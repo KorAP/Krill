@@ -3,6 +3,52 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ebffd8d4_b0a8f275",
+        "filename": "src/test/java/de/ids_mannheim/korap/cache/TestVirtualCorpusCache.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-01-11T07:46:58Z",
+      "side": 1,
+      "message": "Isn\u0027t this part redundant?",
+      "range": {
+        "startLine": 290,
+        "startChar": 8,
+        "endLine": 300,
+        "endChar": 52
+      },
+      "revId": "c6fc506140edaa9f12115160298e2f226e116abd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87a5be9e_1b6e3750",
+        "filename": "src/test/java/de/ids_mannheim/korap/cache/TestVirtualCorpusCache.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-01-11T07:46:58Z",
+      "side": 1,
+      "message": "Isn\u0027t this part redundant?",
+      "range": {
+        "startLine": 366,
+        "startChar": 8,
+        "endLine": 376,
+        "endChar": 52
+      },
+      "revId": "c6fc506140edaa9f12115160298e2f226e116abd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dc97977f_8ab9afea",
         "filename": "src/test/java/de/ids_mannheim/korap/collection/TestKrillCollectionIndex.java",
         "patchSetId": 4
