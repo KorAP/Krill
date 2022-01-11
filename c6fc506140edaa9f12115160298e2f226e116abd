@@ -68,6 +68,30 @@
       },
       "revId": "c6fc506140edaa9f12115160298e2f226e116abd",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8a097d98_9e5aaaed",
+        "filename": "src/test/java/de/ids_mannheim/korap/collection/TestKrillCollectionIndex.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 642,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-01-11T07:48:01Z",
+      "side": 1,
+      "message": "Done in Patch 5",
+      "parentUuid": "dc97977f_8ab9afea",
+      "range": {
+        "startLine": 635,
+        "startChar": 1,
+        "endLine": 642,
+        "endChar": 60
+      },
+      "revId": "c6fc506140edaa9f12115160298e2f226e116abd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
