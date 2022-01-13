@@ -48,6 +48,30 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "90c51b96_efa7142e",
+        "filename": "src/test/java/de/ids_mannheim/korap/cache/TestVirtualCorpusCache.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 300,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-01-13T07:26:47Z",
+      "side": 1,
+      "message": "The tests were from you according to the history :) Okay I\u0027ll leave it as it is then.",
+      "parentUuid": "1d71a1b6_aa158874",
+      "range": {
+        "startLine": 290,
+        "startChar": 8,
+        "endLine": 300,
+        "endChar": 52
+      },
+      "revId": "c6fc506140edaa9f12115160298e2f226e116abd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "87a5be9e_1b6e3750",
@@ -85,6 +109,30 @@
       "side": 1,
       "message": "The first search isn\u0027t from the cache, if I see this correctly, so no - it\u0027s not redundant.",
       "parentUuid": "87a5be9e_1b6e3750",
+      "range": {
+        "startLine": 366,
+        "startChar": 8,
+        "endLine": 376,
+        "endChar": 52
+      },
+      "revId": "c6fc506140edaa9f12115160298e2f226e116abd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc99d57d_8c646345",
+        "filename": "src/test/java/de/ids_mannheim/korap/cache/TestVirtualCorpusCache.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 376,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-01-13T07:26:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00f46650_cebd463a",
       "range": {
         "startLine": 366,
         "startChar": 8,
