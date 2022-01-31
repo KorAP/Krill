@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
@@ -336,5 +337,12 @@ public class Krill extends Response {
     public void setSpanQuery (SpanQuery sq) {
         this.spanQuery = sq;
         
+    }
+    
+    public JsonNode createTextSigles (String corpusQuery, KrillIndex index) {
+        KrillCollection kc = new KrillCollection(corpusQuery);
+        List<String> textSigles = index.getFieldVector("textSigle", kc);
+        setTextSigles(textSigles);
+        return createTextSigleResponse();
     }
 };

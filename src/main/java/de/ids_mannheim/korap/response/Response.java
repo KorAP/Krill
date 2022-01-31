@@ -1,20 +1,23 @@
 package de.ids_mannheim.korap.response;
 
-import java.util.*;
-import java.io.*;
+import static de.ids_mannheim.korap.util.KrillString.quote;
 
-import com.fasterxml.jackson.annotation.*;
+import java.util.HashMap;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.KrillStats;
-import de.ids_mannheim.korap.response.Notifications;
-import static de.ids_mannheim.korap.util.KrillString.quote;
 
 /**
  * Base class for objects meant to be responded by the server.
@@ -54,7 +57,9 @@ public class Response extends Notifications {
 
     private HashMap<String, ObjectNode> jsonFields;
 
-    private static final String KORAL_VERSION = "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld";
+    private List<String> textSigles;
+    
+    public static final String KORAL_VERSION = "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld";
 
 
     /**
@@ -475,6 +480,31 @@ public class Response extends Notifications {
         // Move messages from the stats
         return (Response) this.moveNotificationsFrom(stats);
     };
+    
+    
+    public void setTextSigles(List<String> textSigles) {
+        this.textSigles = textSigles;
+    } 
+    
+    protected JsonNode createTextSigleResponse () {
+        
+        ArrayNode arrayNode = mapper.createArrayNode();
+        for (String ts : textSigles) {
+            arrayNode.add(ts);
+        }
+        
+        ObjectNode collectionNode = mapper.createObjectNode();
+        collectionNode.put("@type","koral:doc");
+        collectionNode.put("key","textSigle");
+        collectionNode.put("type","type:string");
+        collectionNode.set("value", arrayNode);
+        
+        ObjectNode root = mapper.createObjectNode();
+        root.put("@context", KORAL_VERSION);
+        root.set("collection", collectionNode);
+        
+        return (JsonNode) root;
+    }
 
 
     public void addJsonNode (String key, ObjectNode value) {
