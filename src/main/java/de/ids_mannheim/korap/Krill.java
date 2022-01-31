@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.lucene.search.spans.SpanQuery;
 
@@ -11,6 +12,7 @@ import de.ids_mannheim.korap.cache.VirtualCorpusCache;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Response;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.VirtualCorpusResponse;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
@@ -336,5 +338,13 @@ public class Krill extends Response {
     public void setSpanQuery (SpanQuery sq) {
         this.spanQuery = sq;
         
+    }
+
+    public JsonNode retrieveFieldValues (String corpusQuery, KrillIndex index,
+            String fieldName) {
+        KrillCollection kc = new KrillCollection(corpusQuery);
+        List<String> fieldValues = index.getFieldVector(fieldName, kc);
+        VirtualCorpusResponse r = new VirtualCorpusResponse();
+        return r.createKoralQueryForField(fieldName, fieldValues);
     }
 };
