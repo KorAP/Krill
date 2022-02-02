@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4549c85_57a9d8b7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-02-02T11:26:44Z",
+      "side": 1,
+      "message": "That was a very good hint!! I am currently reviewing where this field problem may occur as well ...",
+      "revId": "73b2de82215c2419e303850c2424a459fa6a50e4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
