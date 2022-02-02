@@ -118,8 +118,13 @@ public abstract class AbstractDocument extends Response {
     public void populateDocument (Document doc, String field) {
         List<String> fieldList = new ArrayList<>(32);
         Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
-        while (fieldIterator.hasNext())
-            fieldList.add(fieldIterator.next().name());
+        String name;
+        while (fieldIterator.hasNext()) {
+            name = fieldIterator.next().name();
+            // if (name.equals("tokens") || name.equals("base"))
+            //    continue;
+            fieldList.add(name);
+        }
 
         this.populateDocument(doc, field, fieldList);
     };
@@ -139,6 +144,7 @@ public abstract class AbstractDocument extends Response {
             List<String> fields) {
         if (field != null)
             this.setPrimaryData(doc.get(field));
+
         this.populateFields(doc, fields);
     };
 
@@ -146,8 +152,12 @@ public abstract class AbstractDocument extends Response {
     public void populateFields (Document doc) {
         ArrayList<String> fieldList = new ArrayList<>(32);
         Iterator<IndexableField> fieldIterator = doc.getFields().iterator();
+        String name;
         while (fieldIterator.hasNext()) {
-            fieldList.add(fieldIterator.next().name());
+            name = fieldIterator.next().name();
+            if (name.equals("tokens") || name.equals("base"))
+                continue;
+            fieldList.add(name);
         };
 
         // TODO: Sort alphabetically!
@@ -170,7 +180,7 @@ public abstract class AbstractDocument extends Response {
             String name = fieldsIter.next();
 
             // Remember - never serialize "tokens"
-            if (name.equals("tokens") || name.equals("UID"))
+            if (name.equals("tokens") || name.equals("base") || name.equals("UID"))
                 continue;
 
             mFields.fieldsOrder.add(name);
