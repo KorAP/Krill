@@ -51,6 +51,23 @@
       "message": "But good point - currently this gives access to tokens!! :-( Will fix that.",
       "revId": "98d3d48351b545413abce5fc34c52b8e5308a064",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "622b9595_faa3c703",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-02-02T14:50:10Z",
+      "side": 1,
+      "message": "One thing is, that we try to move away from the term \"collection\" to \"corpus\". I think the query parser already accepts (and prefers) that. Maybe it\u0027s better to use corpus for the lza at this point already.",
+      "revId": "98d3d48351b545413abce5fc34c52b8e5308a064",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
