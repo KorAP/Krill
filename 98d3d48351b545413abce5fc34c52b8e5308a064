@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "738d9171_d24582de",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-02-02T09:22:25Z",
+      "side": 1,
+      "message": "Is there any restrictions on fields? Kustvakt doesn\u0027t add any rewrite for this API currently.",
+      "revId": "98d3d48351b545413abce5fc34c52b8e5308a064",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
