@@ -430,4 +430,31 @@ public class TestKrillIndex {
         assertEquals("aaaa", fieldValues.get(0));
         assertEquals("cccc", fieldValues.get(1));
     };
+
+    @Test
+    public void indexFieldVectorReal () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+		// Test with real document
+        ki.addDoc(getClass().getResourceAsStream("/wiki/wdd17-982-72848.json.gz"),true);
+
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
+        
+        List fieldValues = ki.getFieldVector("textSigle", kcn);
+        assertEquals(1, fieldValues.size());
+        assertEquals("WDD17/982/72848", fieldValues.get(0));
+
+        fieldValues = ki.getFieldVector("author", kcn);
+        assertEquals(1, fieldValues.size());
+        assertEquals("ArchivBot, u.a.", fieldValues.get(0));
+
+        fieldValues = ki.getFieldVector("base", kcn);
+        assertEquals(0, fieldValues.size());
+
+        fieldValues = ki.getFieldVector("tokens", kcn);
+        assertEquals(0, fieldValues.size());
+    };
 };

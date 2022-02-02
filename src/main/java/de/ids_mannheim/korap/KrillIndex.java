@@ -1888,6 +1888,12 @@ public final class KrillIndex implements IndexInfo {
         List fieldValues = new ArrayList<String>();
         String fieldValue;
 
+        // Do not return fieldValues for token fields
+        if (field.equals("tokens") || field.equals("base")) {
+            return fieldValues;
+        };
+
+        
         try {
             final Filter filter = collection.toFilter();
 
