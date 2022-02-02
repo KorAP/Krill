@@ -16,6 +16,24 @@
       "message": "I have 2 comments:\n\n1) I think the response methods should be in a separate class. Response actually contains only top-level attributes of KoralQuery - while this method decorates a special form of the virtual corpus.\n\n2) Specializing on textSiglen doesn\u0027t seem useful to me - the field name could also be passed directly, so you would have a method that could also be used to easily return different licenses in a corpus, for example.",
       "revId": "a40312fbc8f3dbb9e8b819ccd8cc62d1594e1e18",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f9f00fe6_9a654ac5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-02-02T09:18:33Z",
+      "side": 1,
+      "message": "Thanks for your comments. I have updated the codes in Patch 2 according to your comments.",
+      "parentUuid": "d8b6f66b_de760735",
+      "revId": "a40312fbc8f3dbb9e8b819ccd8cc62d1594e1e18",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
