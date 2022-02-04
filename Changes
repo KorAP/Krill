@@ -1,4 +1,4 @@
-0.60.2 2022-01-31
+0.60.2 2022-01-04
     - [security] More log4j updates (diewald)
     - [feature] Support for field value vector method (fixes #81; diewald)
 	- [cleanup] Moved and updated cache-tests from TestKrillCollectionIndex 
