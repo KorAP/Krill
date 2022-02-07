@@ -90,7 +90,7 @@ public class TestVcField {
     private void testRetrieveTokensOfVc1 (String json) {
         JsonNode n = new Krill().retrieveFieldValues(json, ki, "tokens");
         assertEquals("tokens", n.at("/corpus/key").asText());
-        assertEquals("[\"a b c\"]", n.at("/corpus/value").toString());
+        assertEquals("[]", n.at("/corpus/value").toString());
     }
 
     private void testRetrieveNullOfVc1 (String json) {
