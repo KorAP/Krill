@@ -1,8 +1,7 @@
 package de.ids_mannheim.korap.index;
 
+import static de.ids_mannheim.korap.TestSimple.getJsonQuery;
 import static org.junit.Assert.assertEquals;
-
-import static de.ids_mannheim.korap.TestSimple.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
-
 import de.ids_mannheim.korap.util.QueryException;
 
 public class TestAttributeIndex {
@@ -446,7 +444,7 @@ public class TestAttributeIndex {
     /**
      * Arbitrary elements with only not attributes.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCase8 () throws IOException {
         ki.addDoc(createFieldDoc2());
         ki.commit();
@@ -461,6 +459,11 @@ public class TestAttributeIndex {
 
         SpanWithAttributeQuery swaq = new SpanWithAttributeQuery(sql, true);
         kr = ki.search(swaq, (short) 10);
+        
+        assertEquals(1, kr.getErrors().size());
+        assertEquals(104, kr.getError(0).getCode());
+        assertEquals("No (positive) attribute is defined.",kr.getError(0).getMessage());
+        
     }
 
     @Test
