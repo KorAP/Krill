@@ -16,6 +16,23 @@
       "message": "This will also create a directory in the root of the project when running the test.",
       "revId": "f2734b5e88ea1e7a1da89776d5373bad022300e3",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d06c8c9b_96fe3f97",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-02-11T10:04:23Z",
+      "side": 1,
+      "message": "I think the best solution would be not using the input (ref) from user to create directories. It should be rewritten e.g. to hashcode. It\u0027s just not human-friendly, so we cannot simply delete a specific VC cache, but is it even necessary? \n\nI think we can still create a folder for username for organizing his/her VC. There shouldn\u0027t be a problem with auto-caching if the named-VC are all system VC.",
+      "revId": "f2734b5e88ea1e7a1da89776d5373bad022300e3",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
