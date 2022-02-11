@@ -606,6 +606,9 @@ public final class KrillCollection extends Notifications implements IndexInfo {
             else if (t instanceof QueryException) {
                 throw new QueryException(((QueryException) t).getErrorCode(), t.getLocalizedMessage());
             }
+            else {
+                throw e;
+            }
         }
 
         if (DEBUG) {

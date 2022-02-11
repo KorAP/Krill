@@ -77,6 +77,7 @@ import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.StatusCodes;
 
 /**
  * <p>KrillIndex implements a simple API for searching in and writing
@@ -1643,7 +1644,13 @@ public final class KrillIndex implements IndexInfo {
 		catch (QueryException e) {
             kr.addError(e.getErrorCode(),e.getLocalizedMessage());
             log.warn(e.getLocalizedMessage());			
-		};
+		}
+		catch (Exception e) {
+		    // 104 ILLEGAL_ARGUMENT, see Kustvakt core
+		    // de.ids_mannheim.korap.exceptions.StatusCodes.ILLEGAL_ARGUMENT
+		    kr.addError(104,e.getLocalizedMessage());
+            log.warn(e.getLocalizedMessage());
+        }
 
         // Stop timer thread
         tthread.stopTimer();
