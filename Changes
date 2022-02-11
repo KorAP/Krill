@@ -1,17 +1,21 @@
-0.60.3 2022-03-17
+0.60.3 2022-03-30
     - [cleanup] Updated fingerprints to base64url (closed #83)
     - [bugfix] Fixed ConcurrentModificationException in VC cache
       handling (margaretha)
+    - [feature] Added restrictions to VC ID and handled non-existent VC
+      (margaretha)  
 
     !!! This will invalidate all VC caches. Please recache!
 
-0.60.2 2022-01-04
+0.60.2 2022-02-04
     - [security] More log4j updates (diewald)
     - [feature] Support for field value vector method (fixes #81; diewald)
 	- [cleanup] Moved and updated cache-tests from TestKrillCollectionIndex 
 	  to TestVirtualCorpusCache (resolved #44; margaretha)
     - [feature] Added a Krill API returning textSigles for a given 
       corpus query (margaretha)
+    - [cleanup] Replaced array nodes of field values with a simple string
+      (margaretha)
 
 0.60.1 2021-12-17
     - [feature] Added vc loading from classpath (margaretha)
