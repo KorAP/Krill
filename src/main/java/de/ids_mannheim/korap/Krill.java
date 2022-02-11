@@ -257,7 +257,7 @@ public class Krill extends Response {
      */
     public Krill setIndex (KrillIndex index) {
         this.index = index;
-        VirtualCorpusCache.setIndexInfo(index);
+            VirtualCorpusCache.setIndexInfo(index);
         return this;
     };
 
@@ -274,7 +274,13 @@ public class Krill extends Response {
      * @return The result as a {@link Result} object.
      */
     public Result apply (KrillIndex index) {
-        VirtualCorpusCache.setIndexInfo(index);
+        try {
+            VirtualCorpusCache.setIndexInfo(index);
+        }
+        catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return this.setIndex(index).apply();
     };
 
