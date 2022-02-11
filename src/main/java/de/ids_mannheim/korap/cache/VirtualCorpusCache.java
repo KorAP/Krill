@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import org.apache.lucene.index.LeafReaderContext;
 
@@ -31,6 +32,8 @@ import de.ids_mannheim.korap.util.QueryException;
  *
  */
 public class VirtualCorpusCache {
+
+    public static Pattern vcNamePattern = Pattern.compile("[-\\w.]+");
 
     public static final String CACHE_LOCATION = "vc-cache";
     public static int CAPACITY = 5;
@@ -59,8 +62,45 @@ public class VirtualCorpusCache {
     }
 
 
+    /**
+     * Path traversal must not be allowed using the VC ID.
+     * 
+     * VC id may only have one slash with the following format:
+     * [username]/[vc-name]
+     * 
+     * VC name may only contains alphabets, numbers, dashes and
+     * full-stops. See {@link #vcNamePattern}
+     * 
+     * @param vcId
+     * @return true if the given VC id is valid, false otherwise
+     */
+    private static boolean isVcIdValid (String vcId) {
+//        if (vcId.contains("./")) {
+//            return false;
+//        }
+
+        String[] parts = vcId.split("/");
+        if (parts.length > 2) {
+            vcToCleanUp.remove(vcId);
+            return false;
+        }
+
+        String vcName = parts.length == 2 ? parts[1] : parts[0];
+        if (!vcNamePattern.matcher(vcName).matches()) {
+            vcToCleanUp.remove(vcId);
+            return false;
+        }
+
+        return true;
+    }
+
+
     public static void storeOnDisk (String vcId, String leafFingerprint,
             DocBits docBits) {
+        if (!isVcIdValid(vcId)) {
+            throw new IllegalArgumentException("Cannot cache VC due to invalid VC ID");
+        }
+
         File dir = new File(CACHE_LOCATION + "/" + vcId);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -84,7 +124,7 @@ public class VirtualCorpusCache {
     }
 
 
-    public static void store (String vcId, Map<String, DocBits> vcData) {
+    public static void store (String vcId, Map<String, DocBits> vcData){
         map.put(vcId, vcData);
         for (String leafFingerprint : vcData.keySet()) {
             storeOnDisk(vcId, leafFingerprint, vcData.get(leafFingerprint));
@@ -92,9 +132,9 @@ public class VirtualCorpusCache {
 
     }
 
-    public static void store (String vcId, KrillIndex index)
-            throws QueryException, IOException {
-        
+
+    public static void store (String vcId, KrillIndex index) {
+
         DocBitsSupplier docBitsSupplier = new VirtualCorpusFilter(
                 vcId).new DocBitsSupplier();
         String leafFingerprint;
@@ -102,7 +142,7 @@ public class VirtualCorpusCache {
             leafFingerprint = Fingerprinter.create(
                     context.reader().getCombinedCoreAndDeletesKey().toString());
             leafFingerprint = Fingerprinter.normalizeSlash(leafFingerprint);
-            
+
             getDocBits(vcId, leafFingerprint, () -> {
                 try {
                     return docBitsSupplier.supplyDocBits(context,
@@ -144,6 +184,10 @@ public class VirtualCorpusCache {
 
 
     public static boolean contains (String vcId) {
+        if (!isVcIdValid(vcId)) {
+            return false;
+        }
+
         if (map.containsKey(vcId)) {
             return true;
         }
@@ -153,7 +197,19 @@ public class VirtualCorpusCache {
         }
     }
 
+
+    /**
+     * Deletes the VC from memory cache and disk cache. If VC doesn't
+     * exist, the method keeps silent about it and no error will be
+     * thrown because the deletion purpose has been achieved.
+     * 
+     * @param vcId
+     */
     public static void delete (String vcId) {
+        if (!isVcIdValid(vcId)) {
+            return;
+        }
+
         vcToCleanUp.remove(vcId);
         map.remove(vcId);
         File vc = new File(CACHE_LOCATION + "/" + vcId);
@@ -166,6 +222,7 @@ public class VirtualCorpusCache {
             vc.delete();
         }
     }
+
 
     public static void reset () {
         vcToCleanUp.clear();
@@ -182,7 +239,7 @@ public class VirtualCorpusCache {
         }
         vcCache.delete();
     }
-    
+
 
     /**
      * Sets IndexInfo and checks if there is any VC to clean up. This
@@ -192,6 +249,8 @@ public class VirtualCorpusCache {
      * map of a VC, it is marked for clean up. The cached VC will be
      * cleaned up, next time the index is used in {@link Krill}.
      * see {@link #getDocBits(String, String, Supplier)}
+     * 
+     * @throws QueryException
      */
     public static void setIndexInfo (IndexInfo indexInfo) {
         VirtualCorpusCache.indexInfo = indexInfo;
@@ -241,6 +300,7 @@ public class VirtualCorpusCache {
      * @param calculateDocBits
      *            a supplier calculating the DocBits
      * @return DocBits
+     * @throws QueryException
      */
     public static DocBits getDocBits (String vcId, String leafFingerprint,
             Supplier<DocBits> calculateDocBits) {

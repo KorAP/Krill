@@ -1,10 +1,12 @@
-0.60.2 2022-01-04
+0.60.2 2022-02-11
     - [security] More log4j updates (diewald)
     - [feature] Support for field value vector method (fixes #81; diewald)
 	- [cleanup] Moved and updated cache-tests from TestKrillCollectionIndex 
 	  to TestVirtualCorpusCache (resolved #44; margaretha)
     - [feature] Added a Krill API returning textSigles for a given 
-      corpus query (margaretha)  
+      corpus query (margaretha)
+    - [feature] Added restrictions to VC ID and handled non-existent VC
+      (margaretha)  
 
 0.60.1 2021-12-17
     - [feature] Added vc loading from classpath (margaretha)

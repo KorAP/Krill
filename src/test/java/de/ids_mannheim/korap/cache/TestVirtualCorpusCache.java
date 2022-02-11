@@ -47,19 +47,18 @@ public class TestVirtualCorpusCache {
     }
 
 
-    private KrillIndex createIndex () throws IOException {
+    public static KrillIndex createIndex () throws IOException {
         KrillIndex ki = new KrillIndex();
         String[] docIds = new String[] { "00001", "00002", "00003" };
         int uid = 1;
         for (String i : docIds) {
-            ki.addDoc(uid++,
-                    getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
-                    true);
+            ki.addDoc(uid++, TestVirtualCorpusCache.class
+                    .getResourceAsStream("/wiki/" + i + ".json.gz"), true);
         }
         ki.commit();
 
-        ki.addDoc(uid++, getClass().getResourceAsStream("/wiki/00004.json.gz"),
-                true);
+        ki.addDoc(uid++, TestVirtualCorpusCache.class
+                .getResourceAsStream("/wiki/00004.json.gz"), true);
         ki.commit();
         return ki;
     }
@@ -99,7 +98,6 @@ public class TestVirtualCorpusCache {
         VirtualCorpusCache.delete(vcId);
         assertFalse(VirtualCorpusCache.contains(vcId));
     }
-
 
     @Test
     public void testUpdateCachedVC () throws IOException {
