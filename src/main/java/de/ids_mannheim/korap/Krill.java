@@ -257,7 +257,7 @@ public class Krill extends Response {
      */
     public Krill setIndex (KrillIndex index) {
         this.index = index;
-        VirtualCorpusCache.setIndexInfo(index);
+            VirtualCorpusCache.setIndexInfo(index);
         return this;
     };
 
