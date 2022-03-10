@@ -101,7 +101,6 @@ public class VirtualCorpusCache {
         for (LeafReaderContext context : index.reader().leaves()) {
             leafFingerprint = Fingerprinter.create(
                     context.reader().getCombinedCoreAndDeletesKey().toString());
-            leafFingerprint = Fingerprinter.normalizeSlash(leafFingerprint);
             
             getDocBits(vcId, leafFingerprint, () -> {
                 try {
