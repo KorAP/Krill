@@ -24,14 +24,10 @@ public class Fingerprinter {
         };
 
         md.update(key.getBytes());
-        String code = new String(Base64.getEncoder().encode(md.digest()));
+        String code = new String(Base64.getUrlEncoder().encode(md.digest()));
+        
         md.reset();
         return code;
 
     }
-    
-    public static String normalizeSlash (String code) {
-        return code.replace("/", "_");
-    }
-
 }
