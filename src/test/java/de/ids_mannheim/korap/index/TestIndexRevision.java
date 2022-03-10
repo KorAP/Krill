@@ -44,7 +44,7 @@ public class TestIndexRevision {
         ki.commit();
 
         String x3 = ki.getFingerprint();
-        assertEquals("fS3GqnKynhPQ5wFyC9/XWw==",x3);
+        assertEquals("fS3GqnKynhPQ5wFyC9_XWw==",x3);
 
 
         // Check if the same changes will have the same effect

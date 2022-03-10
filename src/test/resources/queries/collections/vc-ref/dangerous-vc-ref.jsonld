@@ -1,0 +1,15 @@
+{
+  "query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "layer":"orth",
+      "key":"der",
+      "match":"match:eq"
+    }
+  },
+  "collection": {
+    "@type": "koral:docGroupRef",
+    "ref": "../collection_with_vector_ne"
+  }
+}
