@@ -86,10 +86,9 @@ public class VirtualCorpusCache {
 
     public static void store (String vcId, Map<String, DocBits> vcData) {
         map.put(vcId, vcData);
-        for (String leafFingerprint : vcData.keySet()) {
+        vcData.keySet().forEach(leafFingerprint -> {
             storeOnDisk(vcId, leafFingerprint, vcData.get(leafFingerprint));
-        }
-
+        });
     }
 
     public static void store (String vcId, KrillIndex index)
@@ -116,10 +115,10 @@ public class VirtualCorpusCache {
 
 
     public static Map<String, DocBits> retrieve (String vcId) {
-        if (map.containsKey(vcId)) {
-            return map.get(vcId);
+        Map<String, DocBits> vcData = map.get(vcId);
+        if (vcData != null) {
+            return vcData;
         }
-        Map<String, DocBits> vcData = null;
         File dir = new File(CACHE_LOCATION + "/" + vcId);
         if (dir.exists()) {
             vcData = new HashMap<String, DocBits>();
@@ -135,6 +134,7 @@ public class VirtualCorpusCache {
                     return null;
                 }
             }
+            vcData = Collections.synchronizedMap(vcData);
             map.put(vcId, vcData);
         }
         return vcData;
