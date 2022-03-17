@@ -1,5 +1,7 @@
-0.60.3 2022-03-10
+0.60.3 2022-03-17
     - [cleanup] Updated fingerprints to base64url (closed #83)
+    - [bugfix] Fixed ConcurrentModificationException in VC cache
+      handling (margaretha)
 
     !!! This will invalidate all VC caches. Please recache!
 
