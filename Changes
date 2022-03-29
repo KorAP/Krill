@@ -1,5 +1,9 @@
-0.60.3 2022-03-30
-    - [cleanup] Updated fingerprints to base64url (closed #83)
+0.60.4 2022-03-31
+    - [security] Update dependencies (diewald)
+
+0.60.3 2022-03-31
+    - [cleanup] Updated fingerprints to base64url
+      (closed #83; margaretha)
     - [bugfix] Fixed ConcurrentModificationException in VC cache
       handling (margaretha)
     - [feature] Added restrictions to VC ID and handled non-existent VC
