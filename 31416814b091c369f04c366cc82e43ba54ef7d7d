@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e2023d0_779255af",
+        "filename": "src/main/java/de/ids_mannheim/korap/Krill.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-03-30T07:30:03Z",
+      "side": 1,
+      "message": "I guess this should be handled in a meaningful way, right?",
+      "range": {
+        "startLine": 282,
+        "startChar": 12,
+        "endLine": 282,
+        "endChar": 32
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f00eb93_4fae6882",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-03-30T07:30:03Z",
+      "side": 1,
+      "message": "Maybe restrict to a-z and 0-9?\nAnd this does not explicitely disallow \u0027..\u0027.",
+      "range": {
+        "startLine": 36,
+        "startChar": 62,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
