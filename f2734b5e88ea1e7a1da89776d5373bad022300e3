@@ -33,6 +33,23 @@
       "message": "I think the best solution would be not using the input (ref) from user to create directories. It should be rewritten e.g. to hashcode. It\u0027s just not human-friendly, so we cannot simply delete a specific VC cache, but is it even necessary? \n\nI think we can still create a folder for username for organizing his/her VC. There shouldn\u0027t be a problem with auto-caching if the named-VC are all system VC.",
       "revId": "f2734b5e88ea1e7a1da89776d5373bad022300e3",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b4ef2ce7_3e3e3f15",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-03-30T07:07:15Z",
+      "side": 1,
+      "message": "Well - not relying on paths is definitely the best approach. Keep using user handles for folder names is probably a good idea, just to make it more transparent and easy to modify/archive them.\n\nI think it\u0027s best to treat the parameter not as a path but as a slash delimited parameter.",
+      "revId": "f2734b5e88ea1e7a1da89776d5373bad022300e3",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
