@@ -69,6 +69,30 @@
       },
       "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08cfcc3c_2d7a2291",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-03-30T11:20:39Z",
+      "side": 1,
+      "message": "I added two tests to explain what I mean.\n\n- \u0027..\u0027 is a bad name for a VC, even when hashed at the end.\n- nonASCII-characters can be problematic, because their serialization depends on the local environment and what is allowed as a file name depends on the file system and may not be portable.",
+      "parentUuid": "69d10d84_14efea50",
+      "range": {
+        "startLine": 36,
+        "startChar": 62,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
