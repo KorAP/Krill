@@ -45,6 +45,30 @@
       },
       "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69d10d84_14efea50",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-03-30T09:49:42Z",
+      "side": 1,
+      "message": "Yes . is allowed.\n\\w also allows underscore, explicitly it is the same as [a-zA-Z_0-9]\n\nI think it has nicely summarizes the patterns we need partially.",
+      "parentUuid": "8f00eb93_4fae6882",
+      "range": {
+        "startLine": 36,
+        "startChar": 62,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }

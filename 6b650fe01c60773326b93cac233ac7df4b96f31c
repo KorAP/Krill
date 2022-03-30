@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3dafbc6c_4944c545",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-03-30T09:49:42Z",
+      "side": 1,
+      "message": "The commit has just been rebased in patch 2.",
+      "revId": "6b650fe01c60773326b93cac233ac7df4b96f31c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
