@@ -24,6 +24,30 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e566a64f_14cd94c2",
+        "filename": "src/main/java/de/ids_mannheim/korap/Krill.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-03-31T06:28:59Z",
+      "side": 1,
+      "message": "This has been handled in KrillIndex.",
+      "parentUuid": "9e2023d0_779255af",
+      "range": {
+        "startLine": 282,
+        "startChar": 12,
+        "endLine": 282,
+        "endChar": 32
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8f00eb93_4fae6882",
@@ -85,6 +109,30 @@
       "side": 1,
       "message": "I added two tests to explain what I mean.\n\n- \u0027..\u0027 is a bad name for a VC, even when hashed at the end.\n- nonASCII-characters can be problematic, because their serialization depends on the local environment and what is allowed as a file name depends on the file system and may not be portable.",
       "parentUuid": "69d10d84_14efea50",
+      "range": {
+        "startLine": 36,
+        "startChar": 62,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "442e64f5_5da95e07",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-03-31T06:28:59Z",
+      "side": 1,
+      "message": "Thanks for the tests!\n\nI don\u0027t mind removing fullstop from VC name pattern. We agreed to include it because of the drukola.20180909.1b_words corpus. Is it okay to change the name of the corpus then?\n\nI dont really get your 2nd argument in terms of fullstop though, since it is an ASCII character.\n\nBtw, this commit hasn\u0027t resolved the path traversal problem yet.",
+      "parentUuid": "08cfcc3c_2d7a2291",
       "range": {
         "startLine": 36,
         "startChar": 62,
