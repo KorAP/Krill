@@ -213,6 +213,30 @@
       },
       "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac1e0c9f_e2f30bb4",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-03-31T08:01:09Z",
+      "side": 1,
+      "message": "hm. that was i am afraid of. so should we just add a restriction that vc name should not start with a full stop?\n\nbtw i think slack is faster for discussion, but we get a better history here ;)",
+      "parentUuid": "f304c9ff_4313da3e",
+      "range": {
+        "startLine": 36,
+        "startChar": 62,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
