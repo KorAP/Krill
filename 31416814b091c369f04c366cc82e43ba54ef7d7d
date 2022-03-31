@@ -261,6 +261,30 @@
       },
       "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d2b0c0e9_6ed4e195",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-03-31T08:27:31Z",
+      "side": 1,
+      "message": "\"VC names consists of alphanumerical characters (limited to ASCII), underscores, dashes and periods. The name has to start with an alphanumerical character.\"",
+      "parentUuid": "3db1f11c_5c2f783e",
+      "range": {
+        "startLine": 36,
+        "startChar": 62,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
