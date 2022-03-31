@@ -141,6 +141,30 @@
       },
       "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2c8f24d6_11747aec",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-03-31T07:13:22Z",
+      "side": 1,
+      "message": "I don\u0027t mind the full stop - but the regex should prevent \"..\" and probably \".\" as well. So how about `[a-zA-Z0-9]+[-a-zA-Z0-9_\\.]+`? Not allowing \".abcd\" etc. is probably also beneficial if the vcname is used as a file, as files starting with a dot are sometimes treated special.",
+      "parentUuid": "442e64f5_5da95e07",
+      "range": {
+        "startLine": 36,
+        "startChar": 62,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
