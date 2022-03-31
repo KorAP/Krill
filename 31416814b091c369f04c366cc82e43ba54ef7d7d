@@ -285,6 +285,30 @@
       },
       "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "580faa34_2575e6ea",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-03-31T08:52:10Z",
+      "side": 1,
+      "message": "Okay 👍 Thanks for formulating it beautifully 😊 I will update the pattern in Kustvakt too.",
+      "parentUuid": "d2b0c0e9_6ed4e195",
+      "range": {
+        "startLine": 36,
+        "startChar": 62,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
