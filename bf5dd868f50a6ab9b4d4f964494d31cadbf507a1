@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "58127d3e_bccf8a3e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-03-31T07:40:08Z",
+      "side": 1,
+      "message": "I have just merged https://korap.ids-mannheim.de/gerrit/c/KorAP/Krill/+/5487, so I rebased this commit in Patch 6.",
+      "revId": "bf5dd868f50a6ab9b4d4f964494d31cadbf507a1",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
