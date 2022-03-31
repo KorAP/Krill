@@ -237,6 +237,30 @@
       },
       "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3db1f11c_5c2f783e",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-03-31T08:16:23Z",
+      "side": 1,
+      "message": "your suggestion:`[a-zA-Z0-9]+[-a-zA-Z0-9_\\.]+` is a bit hard to formulate as vc name restrictions for users.\n\nIf we encode the vcId to hashcode, I think it won\u0027t really be a matter in Krill anyway, but an issue in Kustvakt only.",
+      "parentUuid": "ac1e0c9f_e2f30bb4",
+      "range": {
+        "startLine": 36,
+        "startChar": 62,
+        "endLine": 36,
+        "endChar": 64
+      },
+      "revId": "31416814b091c369f04c366cc82e43ba54ef7d7d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
