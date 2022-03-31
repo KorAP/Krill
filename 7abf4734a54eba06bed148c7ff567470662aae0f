@@ -16,6 +16,24 @@
       "message": "You removed the tests again?",
       "revId": "7abf4734a54eba06bed148c7ff567470662aae0f",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "367d0dcd_f7eab1bf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-03-31T07:23:59Z",
+      "side": 1,
+      "message": "Sorry I uploaded the patch 4 before seeing your patch. That\u0027s why the tests were gone. I have added them in Patch 5.\n\nThe ASCII test should work. The program search existing collections for the given vcID first, that\u0027s why collection not found was thrown.  I have added the check to the store method too so the test is fine now.\n\nThis commit hasn\u0027t handled the path traversal problem, so the other test won\u0027t be resolved, unless we remove full stop from the regex.",
+      "parentUuid": "609717e1_be8bf544",
+      "revId": "7abf4734a54eba06bed148c7ff567470662aae0f",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
