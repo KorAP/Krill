@@ -16,6 +16,23 @@
       "message": "I cannot push tags for Krill so I added Administrators group to the priviledges for refs/tags. Are the changes okay?",
       "revId": "b552257d9f85eff0fb956b5c2f70a80cbe63326e",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f0f3df5_79d26a16",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2022-04-04T12:33:16Z",
+      "side": 1,
+      "message": "But the access rights in Kustvakt is inherited from Krill, and I can push tags to Kustvakt... so there should be no need to change the access in Krill.",
+      "revId": "b552257d9f85eff0fb956b5c2f70a80cbe63326e",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
