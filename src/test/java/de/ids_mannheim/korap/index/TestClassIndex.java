@@ -226,6 +226,7 @@ public class TestClassIndex {
         assertEquals(10, ki.numberOf("base", "t"));
     };
 
+    
 
     @Test
     public void indexExample2 () throws IOException {
@@ -284,4 +285,60 @@ public class TestClassIndex {
         */
 
     }
+
+    /*
+    public void fuzzyTest () throws IOException, QueryException {
+        List<String> chars = Arrays.asList("a", "b", "c", "c","d", "e");
+
+        // c c a
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:c"));
+        SpanTermQuery stq2 = new SpanOrQuery(
+            new SpanTermQuery(new Term("base", "s:a")),
+            new SpanTermQuery(new Term("base", "s:b"))
+            );
+
+        //SpanNextQuery snq = new SpanNextQuery(stq, stq);
+        // SpanNextQuery snq2 = new SpanNextQuery(snq, stq2);
+
+        Pattern resultPattern = Pattern.compile("cca");
+        TestSimple.fuzzingTest(chars, resultPattern, snq2,
+                5, 10, 8);
+    }
+
+
+    @Test
+    public void indexExample3 () throws IOException {
+
+        fuzzyTest();
+    */
+        
+/*
+        
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(simpleFieldDoc("abccde"));
+        ki.addDoc(simpleFieldDoc("cdecde"));
+        ki.addDoc(simpleFieldDoc("abcabc"));
+        ki.commit();
+        ki.addDoc(simpleFieldDoc("abccde"));
+        ki.addDoc(simpleFieldDoc("cdecde"));
+        ki.addDoc(simpleFieldDoc("abcabc"));
+
+        
+
+        // abcabcabac
+        sq = new SpanNextQuery(
+                new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")),
+                        (byte) 2),
+                new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")),
+                        (byte) 3));
+
+
+        
+        ki.commit();
+
+        SpanQuery sq;
+        Result kr;
+    };
+*/
 };
