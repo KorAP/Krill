@@ -4,17 +4,27 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import de.ids_mannheim.korap.TestSimple;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanDistanceQuery;
+import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.QueryException;
 
 // mvn -Dtest=TestWithinIndex#indexExample1 test
 
@@ -226,6 +236,7 @@ public class TestClassIndex {
         assertEquals(10, ki.numberOf("base", "t"));
     };
 
+    
 
     @Test
     public void indexExample2 () throws IOException {
@@ -284,4 +295,66 @@ public class TestClassIndex {
         */
 
     }
+
+    @Test
+    public void indexExample3 () throws IOException, QueryException {
+        List<String> chars = Arrays.asList("a", "b", "c", "d", "e");
+
+        // spanElementDistance({129: tokens:s:halbrunden}, {129: spanOr([tokens:s:Geburtstag, tokens:s:Geburtstags])}, [(base/s:s[0:0], ordered, notExcluded)])
+        SpanQuery stq = new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 129);
+        SpanQuery stq2 = new SpanClassQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:a")),
+                new SpanTermQuery(new Term("base", "s:b"))
+                ), (byte) 129);
+
+        DistanceConstraint dc = new DistanceConstraint(new SpanElementQuery("base", "base/s:s"), 0, 0, true, false);
+       
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+            stq, stq2, dc, true
+            );
+
+        assertEquals("spanElementDistance({129: base:s:c}, " +
+                      "{129: spanOr([base:s:a, base:s:b])}, " +
+                      "[(base/s:s[0:0], ordered, notExcluded)])", sdq.toString());
+
+        Pattern resultPattern = Pattern.compile("c[^\\|]*[ab]");
+        try {
+        TestSimple.fuzzingTest(chars, resultPattern, sdq,
+                               5, 10, 8, 2);
+        } catch(Exception e)  {
+            e.printStackTrace();
+        };
+
+        // fuzzyTest();
+        
+/*
+        
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(simpleFieldDoc("abccde"));
+        ki.addDoc(simpleFieldDoc("cdecde"));
+        ki.addDoc(simpleFieldDoc("abcabc"));
+        ki.commit();
+        ki.addDoc(simpleFieldDoc("abccde"));
+        ki.addDoc(simpleFieldDoc("cdecde"));
+        ki.addDoc(simpleFieldDoc("abcabc"));
+
+        
+
+        // abcabcabac
+        sq = new SpanNextQuery(
+                new SpanClassQuery(new SpanTermQuery(new Term("base", "s:a")),
+                        (byte) 2),
+                new SpanClassQuery(new SpanTermQuery(new Term("base", "s:b")),
+                        (byte) 3));
+
+
+        
+        ki.commit();
+
+        SpanQuery sq;
+        Result kr;
+*/
+    };
 };
