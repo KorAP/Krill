@@ -4,17 +4,32 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import de.ids_mannheim.korap.TestSimple;
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.query.SpanElementQuery;
+import de.ids_mannheim.korap.query.SpanDistanceQuery;
+import de.ids_mannheim.korap.query.DistanceConstraint;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.SearchContext;
+import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.collection.CollectionBuilder;
+import de.ids_mannheim.korap.KrillCollection;
 
 // mvn -Dtest=TestWithinIndex#indexExample1 test
 
@@ -226,6 +241,7 @@ public class TestClassIndex {
         assertEquals(10, ki.numberOf("base", "t"));
     };
 
+    
 
     @Test
     public void indexExample2 () throws IOException {
@@ -284,4 +300,246 @@ public class TestClassIndex {
         */
 
     }
+
+    @Ignore
+    public void indexFuzzy () throws IOException, QueryException {
+        List<String> chars = Arrays.asList("a", "b", "c", "d", "e","f","g","h","i","j","k","l","m");
+
+        // spanElementDistance({129: tokens:s:halbrunden}, {129: spanOr([tokens:s:Geburtstag, tokens:s:Geburtstags])}, [(base/s:s[0:0], ordered, notExcluded)])
+        SpanQuery stq = new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 129);
+        SpanQuery stq2 = new SpanClassQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:a")),
+                new SpanTermQuery(new Term("base", "s:b"))
+                ), (byte) 129);
+
+        DistanceConstraint dc = new DistanceConstraint(new SpanElementQuery("base", "base/s:s"), 0, 0, true, false);
+       
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+            stq, stq2, dc, true
+            );
+
+        assertEquals("spanElementDistance({129: base:s:c}, " +
+                      "{129: spanOr([base:s:a, base:s:b])}, " +
+                      "[(base/s:s[0:0], ordered, notExcluded)])", sdq.toString());
+
+        String resultPattern = "c[^~]*[ab]";
+        try {
+            TestSimple.fuzzingTest(chars, "", resultPattern, sdq,
+                                   20, 100, 100, 2);
+        } catch(Exception e)  {
+            e.printStackTrace();
+        };        
+    };
+
+
+    @Test
+    public void indexWithVCFuzzy () throws IOException, QueryException {
+        List<String> chars = Arrays.asList("a", "b", "c", "d"); // , "e","f","g","h","i","j","k","l","m");
+
+        // spanElementDistance({129: tokens:s:halbrunden}, {129: spanOr([tokens:s:Geburtstag, tokens:s:Geburtstags])}, [(base/s:s[0:0], ordered, notExcluded)])
+        Krill ks = new Krill();
+        
+        SpanQuery stq = new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 129);
+        SpanQuery stq2 = new SpanClassQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:a")),
+                new SpanTermQuery(new Term("base", "s:b"))
+                ), (byte) 129);
+
+        DistanceConstraint dc = new DistanceConstraint(new SpanElementQuery("base", "base/s:s"), 0, 0, true, false);
+       
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+            stq, stq2, dc, true
+            );
+
+        // Create Virtual collections:
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection();
+        kc.filter(kc.build().term("docGroup", "a"));
+        ks.setCollection(kc).getMeta().setStartIndex(0).setCount((short) 20)
+            .setContext(
+                new SearchContext(true, (short) 5, true, (short) 5));
+
+        ks.setSpanQuery(sdq);        
+
+        assertEquals("spanElementDistance({129: base:s:c}, " +
+                     "{129: spanOr([base:s:a, base:s:b])}, " +
+                     "[(base/s:s[0:0], ordered, notExcluded)])", sdq.toString());
+
+        String resultPattern = "c[^~]*[ab]";
+        try {
+            TestSimple.fuzzingTest(chars, "a", resultPattern, ks,
+                                   2, 5, 5, 2);
+        } catch(Exception e)  {
+            e.printStackTrace();
+        };        
+    };
+
+    
+
+    @Test
+    public void indexFuzzyBug1 () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+
+        // abcabcabac
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base", "ca", "[(0-1)s:c|i:c|_0$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>1|-:t$<i>10]"
+                 + "[(1-2)s:a|i:a|_1$<i>1<i>2]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addTV("base", "cb", "[(0-1)s:c|i:c|_0$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>1|-:t$<i>10]"
+                 + "[(1-2)s:b|i:b|_1$<i>1<i>2]"
+            );
+        ki.addDoc(fd);
+
+        ki.commit();
+
+        SpanQuery stq = new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 129);
+        SpanQuery stq2 = new SpanClassQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:a")),
+                new SpanTermQuery(new Term("base", "s:b"))
+                ), (byte) 129);
+
+        DistanceConstraint dc = new DistanceConstraint(new SpanElementQuery("base", "s"), 0, 0, true, false);
+       
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+            stq, stq2, dc, true
+            );
+
+        assertEquals("spanElementDistance({129: base:s:c}, " +
+                      "{129: spanOr([base:s:a, base:s:b])}, " +
+                      "[(s[0:0], ordered, notExcluded)])", sdq.toString());
+        
+        Result kr = ki.search(sdq, (short) 10);
+
+        assertEquals("totalResults", 2, kr.getTotalResults());
+    };
+
+    @Test
+    public void indexFuzzyBug2 () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+
+        // ca
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base", "ca",
+                   "[(0-1)s:c|i:c|_0$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1<b>1|-:t$<i>10]"
+                 + "[(1-2)s:a|i:a|_1$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2<b>1]"
+            );
+        ki.addDoc(fd);
+
+        ki.commit();
+
+        SpanQuery stq = new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 129);
+        SpanQuery stq2 = new SpanClassQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:a")),
+                new SpanTermQuery(new Term("base", "s:b"))
+                ), (byte) 129);
+
+        DistanceConstraint dc = new DistanceConstraint(new SpanElementQuery("base", "base/s:s"), 0, 0, true, false);
+       
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+            stq, stq2, dc, true
+            );
+
+        assertEquals("spanElementDistance({129: base:s:c}, " +
+                      "{129: spanOr([base:s:a, base:s:b])}, " +
+                      "[(base/s:s[0:0], ordered, notExcluded)])", sdq.toString());
+        
+        Result kr = ki.search(sdq, (short) 10);
+
+        assertEquals("totalResults", 0, kr.getTotalResults());
+    };
+
+    @Test
+    public void indexFuzzyBug3 () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+
+        // cbbc
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base", "cbbc",
+                 "[[(0-1)s:c|<>:base/s:t$<b>64<i>0<i>4<i>4<b>0|a:e|<>:base/s:s$<b>64<i>0<i>4<i>4<b>1|_0$<i>0<i>1]"
+               + "[(1-2)s:b|a:b|<>:base/s:s$<b>64<i>1<i>4<i>4<b>1|_1$<i>1<i>2]"
+               + "[(2-3)s:b|a:d|a:c|_2$<i>2<i>3]"
+               + "[(3-4)s:c|_3$<i>3<i>4]]"
+            );
+        ki.addDoc(fd);
+
+        ki.commit();
+
+        SpanQuery stq = new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 129);
+        SpanQuery stq2 = new SpanClassQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:a")),
+                new SpanTermQuery(new Term("base", "s:b"))
+                ), (byte) 129);
+
+        DistanceConstraint dc = new DistanceConstraint(new SpanElementQuery("base", "base/s:s"), 0, 0, true, false);
+       
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+            stq, stq2, dc, true
+            );
+
+        assertEquals("spanElementDistance({129: base:s:c}, " +
+                      "{129: spanOr([base:s:a, base:s:b])}, " +
+                      "[(base/s:s[0:0], ordered, notExcluded)])", sdq.toString());
+
+        Result kr = ki.search(sdq, (short) 10);
+
+        assertEquals("totalResults", 0, kr.getTotalResults());
+    };
+
+
+    @Test
+    public void indexFuzzyBug4 () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+
+        // expected:3, actual:0,
+        // c[ab]
+        
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("base","bb",
+            "[(0-1)s:b|<>:base/s:t$<b>64<i>0<i>2<i>2<b>0|a:a|<>:base/s:s$<b>64<i>0<i>2<i>2<b>1|_0$<i>0<i>1][(1-2)s:b|a:c|a:b|_1$<i>1<i>2]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addTV("base","cccd",
+            "[(0-1)s:c|<>:base/s:t$<b>64<i>0<i>4<i>4<b>0|a:a|<>:base/s:s$<b>64<i>0<i>4<i>4<b>1|_0$<i>0<i>1][(1-2)s:c|_1$<i>1<i>2][(2-3)s:c|_2$<i>2<i>3][(3-4)s:d|_3$<i>3<i>4]"
+            );
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addTV("base","dca",
+            "[(0-1)s:d|<>:base/s:t$<b>64<i>0<i>3<i>3<b>0|<>:base/s:s$<b>64<i>0<i>1<i>1<b>1|_0$<i>0<i>1][(1-2)s:c|a:d|<>:base/s:s$<b>64<i>1<i>3<i>3<b>1|_1$<i>1<i>2][(2-3)s:a|a:b|_2$<i>2<i>3]"
+            );
+        ki.addDoc(fd);
+        ki.commit();
+
+        SpanQuery stq = new SpanClassQuery(new SpanTermQuery(new Term("base", "s:c")), (byte) 129);
+        SpanQuery stq2 = new SpanClassQuery(
+            new SpanOrQuery(
+                new SpanTermQuery(new Term("base", "s:a")),
+                new SpanTermQuery(new Term("base", "s:b"))
+                ), (byte) 129);
+
+        DistanceConstraint dc = new DistanceConstraint(new SpanElementQuery("base", "base/s:s"), 0, 0, true, false);
+       
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+            stq, stq2, dc, true
+            );
+
+        assertEquals("spanElementDistance({129: base:s:c}, " +
+                      "{129: spanOr([base:s:a, base:s:b])}, " +
+                      "[(base/s:s[0:0], ordered, notExcluded)])", sdq.toString());
+
+        Result kr = ki.search(sdq, (short) 10);
+
+        assertEquals("totalResults", 1, kr.getTotalResults());
+    };
+
 };
