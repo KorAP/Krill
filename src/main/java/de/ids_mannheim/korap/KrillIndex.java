@@ -1649,7 +1649,7 @@ public final class KrillIndex implements IndexInfo {
 		    // 104 ILLEGAL_ARGUMENT, see Kustvakt core
 		    // de.ids_mannheim.korap.exceptions.StatusCodes.ILLEGAL_ARGUMENT
 		    kr.addError(104,e.getLocalizedMessage());
-            log.warn(e.getLocalizedMessage());
+            log.warn(e.getStackTrace());
         }
 
         // Stop timer thread
