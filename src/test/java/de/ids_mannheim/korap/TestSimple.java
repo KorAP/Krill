@@ -110,8 +110,9 @@ public class TestSimple {
             String randomChar = chars.get((int)(Math.random() * chars.size()));
             surface += randomChar;
         };
-        return simpleFieldDoc(surface);
-
+        FieldDocument fd = simpleFieldDoc(surface);
+        fd.addStored("copy", surface);
+        return fd;
     };
 
     // Create a new FieldDocument with random data
@@ -139,21 +140,21 @@ public class TestSimple {
 
         
         fd.addTV("base",surface, annotation);
-        fd.addString("copy", annotation);
+        fd.addStored("copy", surface);
         return fd;
     };
-
 
     // Create a new FieldDocument with random data
     public static FieldDocument annotatedFuzzyWithSentencesFieldDoc (List<String> chars, int minLength, int maxLength) {
         FieldDocument fd = new FieldDocument();
         String annotation = "";
         String surface = "";
+        String surface2 = "";
 
         int l = (int)(Math.random() * (maxLength - minLength)) + minLength;
 
-        boolean sentences[] = new boolean[l];
-        Arrays.fill(sentences, true);
+        boolean sentences[] = new boolean[l+1];
+        Arrays.fill(sentences, false);
         sentences[0] = true;
 
         for (int i = 1; i < l; i++) {
@@ -161,17 +162,18 @@ public class TestSimple {
                 sentences[i] = true;
             };
         };
-        
+       
+        String fixChar, fixChar2;
         for (int i = 0; i < l; i++) {
-            String fixChar = chars.get((int)(Math.random() * chars.size()));
+            fixChar = chars.get((int)(Math.random() * chars.size()));
             surface += fixChar;
             annotation += "[("+i+"-"+(i+1)+")s:"+fixChar;
             if (i == 0)
                 annotation += "|<>:base/s:t$<b>64<i>0<i>" + l + "<i>" + l + "<b>0";
 
             for (int j = 0; j < (int)(Math.random() * 3); j++) {
-                fixChar = chars.get((int)(Math.random() * chars.size()));
-                annotation += "|a:" + fixChar;
+                fixChar2 = chars.get((int)(Math.random() * chars.size()));
+                annotation += "|a:" + fixChar2;
             };
 
             if (sentences[i]) {
@@ -188,14 +190,15 @@ public class TestSimple {
                     sl = l;
 
                 annotation += "|<>:base/s:s$<b>64<i>" + sl + "<i>" + sl + "<b>1";
+                surface2 += "|";
             };
+            surface2 += fixChar;
 
             annotation += "|_"+i+"$<i>"+i+"<i>"+(i+1)+"]";
         };
-
         
         fd.addTV("base",surface, annotation);
-        fd.addString("copy", annotation);
+        fd.addStored("copy", surface2);
         return fd;
     };
 
@@ -321,7 +324,7 @@ public class TestSimple {
                     testDoc = annotatedFuzzyFieldDoc(
                         chars,
                         minTextLength, maxTextLength);
-                } else if (docType == 1) {
+                } else if (docType == 2) {
                     testDoc = annotatedFuzzyWithSentencesFieldDoc(
                         chars,
                         minTextLength, maxTextLength);
@@ -330,7 +333,7 @@ public class TestSimple {
                         chars,
                         minTextLength, maxTextLength);
                 };
-                String testString = testDoc.doc.getField("base").stringValue();
+                String testString = testDoc.getFieldValue("copy");
                 Matcher m = resultPattern.matcher(testString);
                 list.add(testString);
                 int offset = 0;
