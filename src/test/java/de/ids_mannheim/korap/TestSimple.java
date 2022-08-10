@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +143,63 @@ public class TestSimple {
         return fd;
     };
 
+
+    // Create a new FieldDocument with random data
+    public static FieldDocument annotatedFuzzyWithSentencesFieldDoc (List<String> chars, int minLength, int maxLength) {
+        FieldDocument fd = new FieldDocument();
+        String annotation = "";
+        String surface = "";
+
+        int l = (int)(Math.random() * (maxLength - minLength)) + minLength;
+
+        boolean sentences[] = new boolean[l];
+        Arrays.fill(sentences, true);
+        sentences[0] = true;
+
+        for (int i = 1; i < l; i++) {
+            if (Math.random() > 0.7) {
+                sentences[i] = true;
+            };
+        };
+        
+        for (int i = 0; i < l; i++) {
+            String fixChar = chars.get((int)(Math.random() * chars.size()));
+            surface += fixChar;
+            annotation += "[("+i+"-"+(i+1)+")s:"+fixChar;
+            if (i == 0)
+                annotation += "|<>:base/s:t$<b>64<i>0<i>" + l + "<i>" + l + "<b>0";
+
+            for (int j = 0; j < (int)(Math.random() * 3); j++) {
+                fixChar = chars.get((int)(Math.random() * chars.size()));
+                annotation += "|a:" + fixChar;
+            };
+
+            if (sentences[i]) {
+                int sl = 0;
+                if (i != l - 1) {
+                    for (int x = i+1; x < l; x++) {
+                        if (sentences[x]) {
+                            sl = x - 1;
+                            break;
+                        };
+                    }
+                };
+                if (sl == 0)
+                    sl = l;
+
+                annotation += "|<>:base/s:s$<b>64<i>" + sl + "<i>" + sl + "<b>1";
+            };
+
+            annotation += "|_"+i+"$<i>"+i+"<i>"+(i+1)+"]";
+        };
+
+        
+        fd.addTV("base",surface, annotation);
+        fd.addString("copy", annotation);
+        return fd;
+    };
+
+    
     // Get Term Vector
     public static MultiTermTokenStream getTermVector (String stream) {
         MultiTermTokenStream ts = new MultiTermTokenStream();
@@ -244,7 +302,7 @@ public class TestSimple {
 
     // Simple fuzzing test
     public static void fuzzingTest (List<String> chars, Pattern resultPattern,
-            SpanQuery sq, int minTextLength, int maxTextLength, int maxDocs)
+                                    SpanQuery sq, int minTextLength, int maxTextLength, int maxDocs, int docType)
             throws IOException, QueryException {
 
         Krill ks = new Krill(sq);
@@ -258,8 +316,20 @@ public class TestSimple {
 
             // Create a corpus of <= maxDocs fuzzy docs
             for (int i = 0; i < (int) (Math.random() * maxDocs); i++) {
-                FieldDocument testDoc = simpleFuzzyFieldDoc(chars,
+                FieldDocument testDoc;
+                if (docType == 1) {
+                    testDoc = annotatedFuzzyFieldDoc(
+                        chars,
                         minTextLength, maxTextLength);
+                } else if (docType == 1) {
+                    testDoc = annotatedFuzzyWithSentencesFieldDoc(
+                        chars,
+                        minTextLength, maxTextLength);
+                } else {
+                    testDoc = simpleFuzzyFieldDoc(
+                        chars,
+                        minTextLength, maxTextLength);
+                };
                 String testString = testDoc.doc.getField("base").stringValue();
                 Matcher m = resultPattern.matcher(testString);
                 list.add(testString);

@@ -45,7 +45,7 @@ public class TestNextIndex {
 
         Pattern resultPattern = Pattern.compile("cca");
         TestSimple.fuzzingTest(chars, resultPattern, snq2,
-                5, 10, 8);
+                               5, 10, 8, 0);
     }
     
     @Test

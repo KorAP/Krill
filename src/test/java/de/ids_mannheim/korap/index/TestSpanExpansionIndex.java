@@ -62,7 +62,7 @@ public class TestSpanExpansionIndex {
 
         Pattern resultPattern = Pattern.compile("c[a-e]{0,2}a");
         TestSimple.fuzzingTest(chars, resultPattern, snq,
-                6, 20, 8);
+                               6, 20, 8, 0);
     }
     
     @Test
