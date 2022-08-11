@@ -112,6 +112,7 @@ public class TestSimple {
         };
         FieldDocument fd = simpleFieldDoc(surface);
         fd.addStored("copy", surface);
+        fd.addStored("plain", surface);
         return fd;
     };
 
@@ -141,6 +142,7 @@ public class TestSimple {
         
         fd.addTV("base",surface, annotation);
         fd.addStored("copy", surface);
+        fd.addStored("plain", annotation);
         return fd;
     };
 
@@ -154,6 +156,7 @@ public class TestSimple {
         int l = (int)(Math.random() * (maxLength - minLength)) + minLength;
 
         boolean sentences[] = new boolean[l+1];
+
         Arrays.fill(sentences, false);
         sentences[0] = true;
 
@@ -177,8 +180,8 @@ public class TestSimple {
             };
 
             if (sentences[i]) {
-                int sl = 0;
-                if (i != l - 1) {
+                int sl = -1;
+                if (i < l) {
                     for (int x = i+1; x < l; x++) {
                         if (sentences[x]) {
                             sl = x - 1;
@@ -186,11 +189,11 @@ public class TestSimple {
                         };
                     }
                 };
-                if (sl == 0)
+                if (sl == -1)
                     sl = l;
 
-                annotation += "|<>:base/s:s$<b>64<i>" + sl + "<i>" + sl + "<b>1";
-                surface2 += "|";
+                annotation += "|<>:base/s:s$<b>64<i>" + i + "<i>" + sl + "<i>" + sl + "<b>1";
+                surface2 += "~";
             };
             surface2 += fixChar;
 
@@ -199,6 +202,7 @@ public class TestSimple {
         
         fd.addTV("base",surface, annotation);
         fd.addStored("copy", surface2);
+        fd.addStored("plain", annotation);
         return fd;
     };
 
@@ -311,15 +315,24 @@ public class TestSimple {
         Krill ks = new Krill(sq);
         String lastFailureConf = "";
 
+        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> annoList = new ArrayList<String>();
+        
         // Multiple runs of corpus creation and query checks
         for (int x = 0; x < 100000; x++) {
             KrillIndex ki = new KrillIndex();
-            ArrayList<String> list = new ArrayList<String>();
             int c = 0;
 
+            list.clear();
+            annoList.clear();
+
+            if (minTextLength == 0)
+                minTextLength = 1;
+            
             // Create a corpus of <= maxDocs fuzzy docs
             for (int i = 0; i < (int) (Math.random() * maxDocs); i++) {
                 FieldDocument testDoc;
+                
                 if (docType == 1) {
                     testDoc = annotatedFuzzyFieldDoc(
                         chars,
@@ -334,17 +347,46 @@ public class TestSimple {
                         minTextLength, maxTextLength);
                 };
                 String testString = testDoc.getFieldValue("copy");
+                String annoString = testDoc.getFieldValue("plain");
                 Matcher m = resultPattern.matcher(testString);
                 list.add(testString);
+                annoList.add(annoString);
                 int offset = 0;
                 while (m.find(offset)) {
                     c++;
                     offset = Math.max(0, m.start() + 1);
                 }
                 ki.addDoc(testDoc);
+
+
+                // Randomly create new index fragments
+                if (Math.random() > 0.7) {
+                    ki.commit();
+                };
             };
 
             ki.commit();
+
+            /*
+            try {
+                ks.apply(ki);
+            } catch (Exception e) {
+                String failureConf = "Fatal in docs:" + annoList.toString();
+
+                // Try to keep the failing configuration small
+                if (lastFailureConf.length() == 0
+                    || failureConf.length() < lastFailureConf.length()) {
+                    System.err.println(failureConf);
+                    lastFailureConf = failureConf;
+                    minTextLength--;
+                    maxDocs--;
+                    System.err.println("???????????????????");
+                    return;
+                };
+            };
+            */
+            
+            
             Result kr = ks.apply(ki);
             
             // Check if the regex-calculated matches are correct,
@@ -352,7 +394,7 @@ public class TestSimple {
             // spit out the corpus configurations
             if (c != kr.getTotalResults()) {
                 String failureConf = "expected:" + c + ", actual:"
-                        + kr.getTotalResults() + ", docs:" + list.toString();
+                        + kr.getTotalResults() + ", docs:" + annoList.toString();
 
                 // Try to keep the failing configuration small
                 if (lastFailureConf.length() == 0
