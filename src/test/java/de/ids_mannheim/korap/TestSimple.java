@@ -111,8 +111,10 @@ public class TestSimple {
             surface += randomChar;
         };
         FieldDocument fd = simpleFieldDoc(surface);
-        fd.addStored("copy", surface);
-        fd.addStored("plain", surface);
+        String docGroup = chars.get((int)(Math.random() * 3));
+        fd.addString("docGroup", docGroup);
+        fd.addStored("test", docGroup + ":" + surface);
+        fd.addStored("plain", docGroup + ":" + surface);
         return fd;
     };
 
@@ -139,14 +141,18 @@ public class TestSimple {
             annotation += "|_"+i+"$<i>"+i+"<i>"+(i+1)+"]";
         };
 
-        
+        String docGroup = chars.get((int)(Math.random() * 3));
+        fd.addString("docGroup", docGroup);
         fd.addTV("base",surface, annotation);
-        fd.addStored("copy", surface);
-        fd.addStored("plain", annotation);
+        fd.addStored("test", docGroup + ":" + surface);
+        fd.addStored("plain", docGroup + ":" + annotation);
         return fd;
     };
 
-    // Create a new FieldDocument with random data
+    // Create a new FieldDocument with random data.
+    // Sentences will be indicated by a '~' symbol (and are continuous).
+    // docGroups (i.e. metadata fields called 'docGroup' with one character from the 3 characters listed)
+    // will be at the beginning of the doc and splitted by a ':' symbol.
     public static FieldDocument annotatedFuzzyWithSentencesFieldDoc (List<String> chars, int minLength, int maxLength) {
         FieldDocument fd = new FieldDocument();
         String annotation = "";
@@ -199,10 +205,12 @@ public class TestSimple {
 
             annotation += "|_"+i+"$<i>"+i+"<i>"+(i+1)+"]";
         };
-        
-        fd.addTV("base",surface, annotation);
-        fd.addStored("copy", surface2);
-        fd.addStored("plain", annotation);
+
+        String docGroup = chars.get((int)(Math.random() * 3));
+        fd.addString("docGroup", docGroup);
+        fd.addTV("base", surface, annotation);
+        fd.addStored("test", docGroup + ":" + surface2);
+        fd.addStored("plain", docGroup + ":" + annotation);
         return fd;
     };
 
@@ -306,13 +314,18 @@ public class TestSimple {
         return spanArray;
     };
 
-
-    // Simple fuzzing test
+        // Simple fuzzing test
     public static void fuzzingTest (List<String> chars, Pattern resultPattern,
                                     SpanQuery sq, int minTextLength, int maxTextLength, int maxDocs, int docType)
             throws IOException, QueryException {
+        fuzzingTest(chars, resultPattern, new Krill(sq), minTextLength, maxTextLength, maxDocs, docType);
+    };
 
-        Krill ks = new Krill(sq);
+    // Simple fuzzing test
+    public static void fuzzingTest (List<String> chars, Pattern resultPattern,
+                                    Krill ks, int minTextLength, int maxTextLength, int maxDocs, int docType)
+            throws IOException, QueryException {
+
         String lastFailureConf = "";
 
         ArrayList<String> list = new ArrayList<String>();
@@ -346,7 +359,7 @@ public class TestSimple {
                         chars,
                         minTextLength, maxTextLength);
                 };
-                String testString = testDoc.getFieldValue("copy");
+                String testString = testDoc.getFieldValue("test");
                 String annoString = testDoc.getFieldValue("plain");
                 Matcher m = resultPattern.matcher(testString);
                 list.add(testString);
@@ -384,8 +397,7 @@ public class TestSimple {
                     return;
                 };
             };
-            */
-            
+            */            
             
             Result kr = ks.apply(ki);
             
