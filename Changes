@@ -1,3 +1,8 @@
+0.60.5 2022-10-05
+    - [security] Update dependencies (diewald)
+
+    !!! Please update!
+
 0.60.4 2022-08-10
     - [security] Update dependencies (diewald)
     - [feature] Improved fuzzing for annotated documents
