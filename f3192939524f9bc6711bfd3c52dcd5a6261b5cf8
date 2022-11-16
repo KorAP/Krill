@@ -70,6 +70,24 @@
       "parentUuid": "44e0ac42_af858654",
       "revId": "f3192939524f9bc6711bfd3c52dcd5a6261b5cf8",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b81ead69_b2e0f51f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2022-11-16T13:56:25Z",
+      "side": 1,
+      "message": "I do get notified – on multiple e-mail addresses, so it should be possible, but I don\u0027t know where to apply the setting.",
+      "parentUuid": "bbcf80bb_6b327811",
+      "revId": "f3192939524f9bc6711bfd3c52dcd5a6261b5cf8",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
