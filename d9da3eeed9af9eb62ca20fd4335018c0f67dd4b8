@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2a81f09_39b2668f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-11-16T14:03:42Z",
+      "side": 1,
+      "message": "I guess that needs to be removed now that cobertura is removed as well. Do we also need to change the yaml-filename?",
+      "revId": "d9da3eeed9af9eb62ca20fd4335018c0f67dd4b8",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
