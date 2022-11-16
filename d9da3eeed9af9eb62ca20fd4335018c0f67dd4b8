@@ -16,6 +16,23 @@
       "message": "I guess that needs to be removed now that cobertura is removed as well. Do we also need to change the yaml-filename?",
       "revId": "d9da3eeed9af9eb62ca20fd4335018c0f67dd4b8",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3400c405_4823dd74",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2022-11-16T14:07:28Z",
+      "side": 1,
+      "message": "Thanks! How about renaming to ci_test.yml?",
+      "revId": "d9da3eeed9af9eb62ca20fd4335018c0f67dd4b8",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
