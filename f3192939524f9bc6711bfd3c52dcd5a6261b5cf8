@@ -52,6 +52,24 @@
       "parentUuid": "9df70cd9_80eca2b7",
       "revId": "f3192939524f9bc6711bfd3c52dcd5a6261b5cf8",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbcf80bb_6b327811",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2022-11-16T13:54:31Z",
+      "side": 1,
+      "message": "Is there a way to get notified (via email or RSS) on failed builds by GH-CI?",
+      "parentUuid": "44e0ac42_af858654",
+      "revId": "f3192939524f9bc6711bfd3c52dcd5a6261b5cf8",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
