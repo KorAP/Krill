@@ -34,6 +34,24 @@
       "parentUuid": "4a8c7b1a_588e48a0",
       "revId": "f3192939524f9bc6711bfd3c52dcd5a6261b5cf8",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44e0ac42_af858654",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2022-11-16T13:40:44Z",
+      "side": 1,
+      "message": "Let\u0027s put a subsequent Kustvakt build (with -Dmaven.test.skip) later into to the Krill-GH-CI script to notice problems. (We had the problem already with jackson)",
+      "parentUuid": "9df70cd9_80eca2b7",
+      "revId": "f3192939524f9bc6711bfd3c52dcd5a6261b5cf8",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
