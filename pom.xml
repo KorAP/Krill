@@ -35,7 +35,7 @@
 
   <groupId>de.ids_mannheim.korap</groupId>
   <artifactId>Krill</artifactId>
-  <version>0.60.6</version>
+  <version>0.61.0</version>
   <packaging>jar</packaging>
 
   <name>Krill</name>
@@ -116,13 +116,7 @@
       <artifactId>jul-to-slf4j</artifactId>
       <version>1.7.32</version>
     </dependency>
-    
-    <dependency>
-      <groupId>net.sf.ehcache</groupId>
-      <artifactId>ehcache</artifactId>
-      <version>2.10.9.2</version>
-    </dependency>
-    
+
     <!-- SQLite for database connection tests -->
     <dependency>
       <groupId>org.xerial</groupId>
