@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a8c7b1a_588e48a0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2022-11-16T11:25:35Z",
+      "side": 1,
+      "message": "One of the depenendcy upgrades breaks Kustvakt core build for me:\n\n[ERROR] /home/kupietz/KorAP/Kustvakt/core/src/main/java/de/ids_mannheim/korap/web/SearchKrill.java:[13,31] package org.apache.lucene.store does not exist\n",
+      "revId": "f3192939524f9bc6711bfd3c52dcd5a6261b5cf8",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
