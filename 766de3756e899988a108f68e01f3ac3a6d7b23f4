@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3157ffe8_b4b8982a",
+        "filename": "src/test/java/de/ids_mannheim/korap/index/TestClassIndex.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2023-02-13T15:51:25Z",
+      "side": 1,
+      "message": "The pattern seems to be incorrect since it cannot match multiple occurrences in a single sentence. For instance, for the doc below created by the fuzzy test \n\na:~mfiae~i~lceech~cbimm~m~i~dm~cgdbhjbhefb~jbhd~jgl~i~jm\n\nthe program expects 1 match \nwhereas the actual results are 3 matches.\n\n... ceech[[cb]]immmi ...\n... mmidm[[cgdb]]hjbhe ...\n... mmidm[[cgdbhjb]]hefb\n\n\nI think there are even 4 matches for the example above. The 4th match should be ... mmidm[[cgdbhjbhefb]]. The program doesn\u0027t found the 4th match because the sentence is index as follows:\n\n\"[(21-22)s:c|\u003c\u003e:base/s:s$\u003cb\u003e64\u003ci\u003e21\u003ci\u003e31\u003ci\u003e31\u003cb\u003e1|_21$\u003ci\u003e21\u003ci\u003e22]\"\n\nwhereas the last b is indexed as\n\n\"[(31-32)s:b|a:d|_31$\u003ci\u003e31\u003ci\u003e32]\");\n\nso the end offset of b is one position higher than the end position of the sentence, that is 32 instead of 31.\n\nThe incorrect sentence boundary could be the problem that there are no matches found for element distance queries.",
+      "range": {
+        "startLine": 370,
+        "startChar": 8,
+        "endLine": 370,
+        "endChar": 70
+      },
+      "revId": "766de3756e899988a108f68e01f3ac3a6d7b23f4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
