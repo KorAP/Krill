@@ -22,6 +22,30 @@
       },
       "revId": "766de3756e899988a108f68e01f3ac3a6d7b23f4",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "42b1a594_df83063d",
+        "filename": "src/test/java/de/ids_mannheim/korap/index/TestClassIndex.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 370,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-02-13T16:20:14Z",
+      "side": 1,
+      "message": "Ah - You are right. There should be a corpus matcher pattern separate to the span matcher pattern to make this work. And then the offset restriction needs to be removed, because the match can occur at the same position with an increasing span.\n\nThat the calculation of the sentenceborder is incorrect is also a good finding. I\u0027ll check if I can fix that tomorrow.",
+      "parentUuid": "3157ffe8_b4b8982a",
+      "range": {
+        "startLine": 370,
+        "startChar": 8,
+        "endLine": 370,
+        "endChar": 70
+      },
+      "revId": "766de3756e899988a108f68e01f3ac3a6d7b23f4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
