@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db98bec7_7512144e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2023-02-13T15:58:08Z",
+      "side": 1,
+      "message": "TestSentenceBoundary includes a failing test case described in my previous comment.",
+      "revId": "3147e4cb76d72d876a4c799aea5a75c10ab3a1ff",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
