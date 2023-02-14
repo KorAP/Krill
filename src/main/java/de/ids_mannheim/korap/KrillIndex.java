@@ -3,12 +3,9 @@ package de.ids_mannheim.korap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 // Java core classes
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,7 +55,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import de.ids_mannheim.korap.cache.VirtualCorpusCache;
 // Krill classes
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.KeywordAnalyzer;
@@ -77,7 +73,6 @@ import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.util.StatusCodes;
 
 /**
  * <p>KrillIndex implements a simple API for searching in and writing
@@ -1643,13 +1638,19 @@ public final class KrillIndex implements IndexInfo {
 
 		catch (QueryException e) {
             kr.addError(e.getErrorCode(),e.getLocalizedMessage());
-            log.warn(e.getLocalizedMessage());			
-		}
-		catch (Exception e) {
-		    // 104 ILLEGAL_ARGUMENT, see Kustvakt core
-		    // de.ids_mannheim.korap.exceptions.StatusCodes.ILLEGAL_ARGUMENT
-		    kr.addError(104,e.getLocalizedMessage());
-            log.warn(e.getLocalizedMessage());
+            log.warn(e.getLocalizedMessage());          
+        }
+        catch (IllegalArgumentException e) {
+            // 104 ILLEGAL_ARGUMENT, see Kustvakt core
+            // de.ids_mannheim.korap.exceptions.StatusCodes.ILLEGAL_ARGUMENT
+            kr.addError(104,e.getLocalizedMessage());
+            log.warn(e.getMessage());
+        }
+        catch (Exception e) {
+            // 100 GENERAL ERROR, see Kustvakt core StatusCodes
+            kr.addError(100,e.getMessage());
+            log.error(e.getMessage());
+            e.printStackTrace();
         }
 
         // Stop timer thread

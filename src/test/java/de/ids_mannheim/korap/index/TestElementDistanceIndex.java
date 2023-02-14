@@ -40,14 +40,14 @@ public class TestElementDistanceIndex {
     private FieldDocument createFieldDoc0 () {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-0");
-        fd.addTV("tokens", "bbcbbb",
-                "[(0-1)s:b|s:c|_1$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1<b>0]"
-                        + "[(1-2)s:b|_2$<i>1<i>2]"
-                        + "[(2-3)s:c|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
-                        + "[(3-4)s:b|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4<b>0]"
-                        + "[(4-5)s:b|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
-                        + "[(5-6)s:b|_6$<i>5<i>6]"
-                        + "[(6-7)s:c|_7$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>7<b>0]");
+        fd.addTV("tokens", "bbcbbbc",
+                "[(0-1)s:b|s:c|_0$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
+                        + "[(1-2)s:b|_1$<i>1<i>2]"
+                        + "[(2-3)s:c|_2$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
+                        + "[(3-4)s:b|_3$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4<b>0]"
+                        + "[(4-5)s:b|_4$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
+                        + "[(5-6)s:b|_5$<i>5<i>6]"
+                        + "[(6-7)s:c|_6$<i>6<i>7|<>:s$<b>64<i>6<i>7<i>7<b>0]");
         return fd;
     }
 
@@ -55,12 +55,12 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-1");
         fd.addTV("tokens", "ecebdc",
-                "[(0-1)s:e|_1$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>6<i>6<b>0|<>:s$<b>64<i>0<i>2<i>1<b>0]"
-                        + "[(1-2)s:c|s:b|_2$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2<b>0]"
-                        + "[(2-3)s:e|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
-                        + "[(3-4)s:b|_4$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4<b>0]"
-                        + "[(4-5)s:c|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
-                        + "[(5-6)s:c|_6$<i>5<i>6|<>:s$<b>64<i>5<i>6<i>6<b>0]");
+                "[(0-1)s:e|_0$<i>0<i>1|<>:base/s:t$<b>64<i>0<i>6<i>6<b>0|<>:s$<b>64<i>0<i>1<i>1<b>0]"
+                        + "[(1-2)s:c|s:b|_1$<i>1<i>2|<>:s$<b>64<i>1<i>2<i>2<b>0]"
+                        + "[(2-3)s:e|_2$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
+                        + "[(3-4)s:b|_3$<i>3<i>4|<>:s$<b>64<i>3<i>4<i>4<b>0]"
+                        + "[(4-5)s:c|_4$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
+                        + "[(5-6)s:c|_5$<i>5<i>6|<>:s$<b>64<i>5<i>6<i>6<b>0]");
         return fd;
     }
 
@@ -68,12 +68,12 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-2");
         fd.addTV("tokens", "bbbddd",
-                "[(0-1)s:b|_1$<i>0<i>1|<>:p$<b>64<i>0<i>2<i>1<b>0]"
-                        + "[(1-2)s:b|_2$<i>1<i>2]"
-                        + "[(2-3)s:b|_3$<i>2<i>3|<>:p$<b>64<i>2<i>3<i>3<b>0]"
-                        + "[(3-4)s:d|_4$<i>3<i>4|<>:p$<b>64<i>3<i>4<i>4<b>0]"
-                        + "[(4-5)s:d|_5$<i>4<i>5|<>:p$<b>64<i>4<i>5<i>5<b>0]"
-                        + "[(5-6)s:d|_6$<i>5<i>6]");
+                "[(0-1)s:b|_0$<i>0<i>1|<>:p$<b>64<i>0<i>1<i>1<b>0]"
+                        + "[(1-2)s:b|_1$<i>1<i>2]"
+                        + "[(2-3)s:b|_2$<i>2<i>3|<>:p$<b>64<i>2<i>3<i>3<b>0]"
+                        + "[(3-4)s:d|_3$<i>3<i>4|<>:p$<b>64<i>3<i>4<i>4<b>0]"
+                        + "[(4-5)s:d|_4$<i>4<i>5|<>:p$<b>64<i>4<i>5<i>5<b>0]"
+                        + "[(5-6)s:d|_5$<i>5<i>6]");
         return fd;
     }
 
@@ -81,12 +81,12 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-3");
         fd.addTV("tokens", "bdbcdd",
-                "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
-                        + "[(1-2)s:d|_2$<i>1<i>2]"
-                        + "[(2-3)s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
-                        + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>5<i>5<b>0]"
-                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
-                        + "[(5-6)s:d|_6$<i>5<i>6]");
+                "[(0-1)s:b|_0$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>2<b>0]"
+                        + "[(1-2)s:d|_1$<i>1<i>2]"
+                        + "[(2-3)s:b|_2$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
+                        + "[(3-4)s:c|_3$<i>3<i>4|<>:s$<b>64<i>3<i>5<i>5<b>0]"
+                        + "[(4-5)s:d|_4$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
+                        + "[(5-6)s:d|_5$<i>5<i>6]");
         return fd;
     }
 
@@ -94,12 +94,12 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-4");
         fd.addTV("tokens", "bdbcdd",
-                "[(0-1)s:b|_1$<i>0<i>1|<>:s$<b>64<i>0<i>2<i>1<b>0]"
-                        + "[(1-2)s:d|_2$<i>1<i>2]"
-                        + "[(2-3)s:c|s:b|_3$<i>2<i>3|<>:s$<b>64<i>2<i>5<i>3<b>0]"
-                        + "[(3-4)s:c|_4$<i>3<i>4|<>:s$<b>64<i>3<i>5<i>4<b>0]"
-                        + "[(4-5)s:d|_5$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
-                        + "[(5-6)s:d|_6$<i>5<i>6]");
+                "[(0-1)s:b|_0$<i>0<i>1|<>:s$<b>64<i>0<i>1<i>1<b>0]"
+                        + "[(1-2)s:d|_1$<i>1<i>2]"
+                        + "[(2-3)s:c|s:b|_2$<i>2<i>3|<>:s$<b>64<i>2<i>3<i>3<b>0]"
+                        + "[(3-4)s:c|_3$<i>3<i>4|<>:s$<b>64<i>3<i>5<i>5<b>0]"
+                        + "[(4-5)s:d|_4$<i>4<i>5|<>:s$<b>64<i>4<i>5<i>5<b>0]"
+                        + "[(5-6)s:d|_5$<i>5<i>6]");
         return fd;
     }
     
@@ -107,12 +107,37 @@ public class TestElementDistanceIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("ID", "doc-5");
         fd.addTV("tokens", "edef",
-                 "[(0-1)s:e|_1$<i>0<i>1]"
-                 + "[(1-2)s:d|_2$<i>1<i>2]"
-                 + "[(2-3)s:e|_3$<i>2<i>3]"
-                 + "[(3-4)s:f|_4$<i>3<i>4]");
+                 "[(0-1)s:e|_0$<i>0<i>1]"
+                 + "[(1-2)s:d|_1$<i>1<i>2]"
+                 + "[(2-3)s:e|_2$<i>2<i>3]"
+                 + "[(3-4)s:f|_3$<i>3<i>4]");
         return fd;
     }
+    
+    private FieldDocument createFieldDoc6 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-6");
+        fd.addTV("tokens", "bebcee",
+                "[(0-1)s:b|_0$<i>0<i>1|<>:s$<b>64<i>0<i>4<i>4<b>0]"
+                        + "[(1-2)s:e|_1$<i>1<i>2]"
+                        + "[(2-3)s:b|_2$<i>2<i>3]"
+                        + "[(3-4)s:c|_3$<i>3<i>4]"
+                        + "[(4-5)s:e|_4$<i>4<i>5|<>:s$<b>64<i>4<i>6<i>6<b>0]"
+                        + "[(5-6)s:e|_5$<i>5<i>6]");
+        return fd;
+    }
+    
+    private FieldDocument createFieldDoc7 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-5");
+        fd.addTV("tokens", "beef",
+                 "[(0-1)s:b|_0$<i>0<i>1|<>:s$<b>64<i>0<i>4<i>4<b>0]"
+                 + "[(1-2)s:e|_1$<i>1<i>2]"
+                 + "[(2-3)s:e|_2$<i>2<i>3]"
+                 + "[(3-4)s:f|_3$<i>3<i>4]");
+        return fd;
+    }
+    
 
     public SpanQuery createQuery (String elementType, String x, String y,
             int min, int max, boolean isOrdered) {
@@ -161,7 +186,7 @@ public class TestElementDistanceIndex {
         ki = new KrillIndex();
         ki.addDoc(createFieldDoc4());
         ki.commit();
-
+        // b~d~b/c~c~dd
         SpanQuery sq;
         sq = createQuery("s", "s:b", "s:c", 1, 1, true);
 
@@ -305,7 +330,7 @@ public class TestElementDistanceIndex {
         assertEquals(1, kr.getTotalResults()); // Is 1 correct or
                                                // should it not be
                                                // ordered?
-        assertEquals("[[ec]]ebdc", kr.getMatch(0).getSnippetBrackets());
+        assertEquals("e[[ce]]bdc", kr.getMatch(0).getSnippetBrackets());
     }
     
     @Test
@@ -328,7 +353,7 @@ public class TestElementDistanceIndex {
                 new DistanceConstraint(e, 0, 0, true, false), true);
 
         kr = ki.search(sdq, (short) 10);
-        assertEquals(1, kr.getTotalResults());
+        assertEquals(2, kr.getTotalResults());
     }
     
     @Test
@@ -354,6 +379,8 @@ public class TestElementDistanceIndex {
         assertEquals(0, kr.getTotalResults());
     }
     
+    
+    
     @Test
     public void testNoElementSpans () throws IOException {
         ki = new KrillIndex();
@@ -374,5 +401,59 @@ public class TestElementDistanceIndex {
                 new DistanceConstraint(e, 0, 0, true, false), true);
 
         kr = ki.search(sdq, (short) 10);
+        assertEquals(1, kr.getTotalResults());
+    }
+    
+    @Test
+    public void testNoMoreFirstSpanWithSpanOrQuery () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc3());
+        ki.addDoc(createFieldDoc5());
+        ki.commit();
+
+        // c or d
+        SpanOrQuery soq = new SpanOrQuery(
+                new SpanTermQuery(new Term("tokens", "s:c")),
+                new SpanTermQuery(new Term("tokens", "s:d")));
+        
+        // b /s0 (c or d)
+        SpanElementQuery e = new SpanElementQuery("tokens", "s");
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+                new SpanTermQuery(new Term("tokens", "s:b")),
+                soq,
+                new DistanceConstraint(e, 0, 0, true, false), true);
+
+        kr = ki.search(sdq, (short) 10);
+        assertEquals(1, kr.getTotalResults());
+    }
+    
+    @Test
+    public void testNoMoreSecondSpansOrQuery () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc6());
+        ki.addDoc(createFieldDoc5());
+        ki.addDoc(createFieldDoc7());
+        ki.commit();
+
+        // c or d
+        SpanOrQuery soq = new SpanOrQuery(
+                new SpanTermQuery(new Term("tokens", "s:c")),
+                new SpanTermQuery(new Term("tokens", "s:d")));
+        
+        // b /s0(c or d)
+        SpanElementQuery e = new SpanElementQuery("tokens", "s");
+        SpanDistanceQuery sdq = new SpanDistanceQuery(
+                new SpanTermQuery(new Term("tokens", "s:b")),
+                soq,
+                new DistanceConstraint(e, 0, 0, true, false), true);
+
+        kr = ki.search(sdq, (short) 10);
+        
+        assertEquals(2, kr.getTotalResults());
+        
+//        System.out.println(kr.getTotalResults());
+//        for (Match m : kr.getMatches()) {
+//            System.out.println(m.getSnippetBrackets());
+//        }
     }
 }

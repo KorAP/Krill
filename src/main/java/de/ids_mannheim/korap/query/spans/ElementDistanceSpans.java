@@ -81,7 +81,8 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
 
     @Override
     protected void setCandidateList () throws IOException {
-        if (hasMoreSpans && hasMoreElements) {
+        if (hasMoreSpans && hasMoreElements
+                && (hasMoreFirstSpans || !candidateList.isEmpty())) {
             if (candidateListDocNum == elements.doc()
                     && candidateListDocNum == secondSpans.doc()) {
                 candidateListIndex = -1;
