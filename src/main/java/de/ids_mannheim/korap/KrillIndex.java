@@ -2,6 +2,8 @@ package de.ids_mannheim.korap;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -1643,13 +1645,18 @@ public final class KrillIndex implements IndexInfo {
 
 		catch (QueryException e) {
             kr.addError(e.getErrorCode(),e.getLocalizedMessage());
-            log.warn(e.getLocalizedMessage());			
-		}
-		catch (Exception e) {
-		    // 104 ILLEGAL_ARGUMENT, see Kustvakt core
-		    // de.ids_mannheim.korap.exceptions.StatusCodes.ILLEGAL_ARGUMENT
-		    kr.addError(104,e.getLocalizedMessage());
-            log.warn(e.getLocalizedMessage());
+            log.warn(e.getLocalizedMessage());          
+        }
+        catch (IllegalArgumentException e) {
+            // 104 ILLEGAL_ARGUMENT, see Kustvakt core
+            // de.ids_mannheim.korap.exceptions.StatusCodes.ILLEGAL_ARGUMENT
+            kr.addError(104,e.getLocalizedMessage());
+            log.warn(e.getMessage());
+        }
+        catch (Exception e) {
+            kr.addError(104,e.getMessage());
+            log.error(e.getMessage());
+            e.printStackTrace();
         }
 
         // Stop timer thread

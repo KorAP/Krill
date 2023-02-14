@@ -81,7 +81,7 @@ public abstract class SimpleSpans extends Spans {
      * @return true iff such a document exists.
      */
     protected boolean ensureSameDoc (Spans x, Spans y) throws IOException {
-        while (x.doc() != y.doc()) {
+        while (hasMoreSpans && x.doc() != y.doc()) {
             if (x.doc() < y.doc()) {
                 if (!x.skipTo(y.doc())) {
                     hasMoreSpans = false;
