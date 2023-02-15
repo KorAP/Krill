@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "76500ad7_ff0c020d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-02-15T16:18:24Z",
+      "side": 1,
+      "message": "Hm ... the fuzzing results are still not correct.",
+      "revId": "df0869570a676d15962ceae6e65cf2356d232018",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
