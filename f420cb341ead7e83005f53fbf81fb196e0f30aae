@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6d8eb384_6d3de9a1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-02-15T14:47:40Z",
+      "side": 1,
+      "message": "You are brilliant and it looks all good! Took me a couple of days to fail and you succeeded immediately!\n\nI understand the changes in SimpleSpans, but I don\u0027t see any difference in the behaviour of the test suite, when I revert the changes in ElementDistanceSpans though. Is this change relevant and a test is missing - or is it irrelevant?\n\nI am wondering if I can find a failing test with a fixed fuzzy suite. It\u0027s not so complex.",
+      "revId": "f420cb341ead7e83005f53fbf81fb196e0f30aae",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
