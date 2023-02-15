@@ -16,6 +16,23 @@
       "message": "This should fix the issue you reported. Thank you!",
       "revId": "e1b7aa89bf76b18638b6953b90538154ff3bf5a3",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2b76d84_2ea9db77",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-02-15T14:32:15Z",
+      "side": 1,
+      "message": "I haven\u0027t reviewed your complaint regarding sentence lengths though. Will do that in a separate commit.",
+      "revId": "e1b7aa89bf76b18638b6953b90538154ff3bf5a3",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
