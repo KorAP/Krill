@@ -43,8 +43,8 @@ public class TestNextIndex {
         SpanNextQuery snq = new SpanNextQuery(stq, stq);
         SpanNextQuery snq2 = new SpanNextQuery(snq, stq2);
 
-        Pattern resultPattern = Pattern.compile("cca");
-        TestSimple.fuzzingTest(chars, resultPattern, snq2,
+        String resultPattern = "cca";
+        TestSimple.fuzzingTest(chars, "", resultPattern, snq2,
                                5, 10, 8, 0);
     }
     
