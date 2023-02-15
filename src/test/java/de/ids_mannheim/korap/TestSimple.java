@@ -159,13 +159,17 @@ public class TestSimple {
         String surface = "";
         String surface2 = "";
 
+        // Token and character length of the sequence
         int l = (int)(Math.random() * (maxLength - minLength)) + minLength;
 
+        // Prepopulate booleans
         boolean sentences[] = new boolean[l+1];
-
         Arrays.fill(sentences, false);
+
+        // Start with sentences
         sentences[0] = true;
 
+        // For every position possible, check if there is a sentence marker to introduce
         for (int i = 1; i < l; i++) {
             if (Math.random() > 0.7) {
                 sentences[i] = true;
@@ -173,24 +177,36 @@ public class TestSimple {
         };
        
         String fixChar, fixChar2;
+
+        // Iterate over all token/character positions
         for (int i = 0; i < l; i++) {
             fixChar = chars.get((int)(Math.random() * chars.size()));
             surface += fixChar;
+
+            // start new token
             annotation += "[("+i+"-"+(i+1)+")s:"+fixChar;
+
+            // Initialize text size
             if (i == 0)
                 annotation += "|<>:base/s:t$<b>64<i>0<i>" + l + "<i>" + l + "<b>0";
 
+            // Add some annotations maybe
             for (int j = 0; j < (int)(Math.random() * 3); j++) {
                 fixChar2 = chars.get((int)(Math.random() * chars.size()));
                 annotation += "|a:" + fixChar2;
             };
 
+            // Is there a sentence boundary? Then check the length
             if (sentences[i]) {
                 int sl = -1;
+
+                // It's not the end of the text
                 if (i < l) {
+
+                    // Check when the next true sentence occurs
                     for (int x = i+1; x < l; x++) {
                         if (sentences[x]) {
-                            sl = x - 1;
+                            sl = x;
                             break;
                         };
                     }
@@ -314,15 +330,61 @@ public class TestSimple {
         return spanArray;
     };
 
-        // Simple fuzzing test
-    public static void fuzzingTest (List<String> chars, Pattern resultPattern,
+    // Count all matches based on patterns
+    // Expects all patterns to be greedy
+    public static int countAllMatches (String input, String vcPattern, String qPattern) {
+
+        Pattern cp = Pattern.compile(qPattern);
+        if (!vcPattern.equals("")) {
+            cp = Pattern.compile("(?<=" + vcPattern + ":.*)" + qPattern);
+        }
+        Pattern p = Pattern.compile(qPattern);
+
+        Matcher m = cp.matcher(input);
+        Matcher rm = p.matcher(input);
+
+        int start, end;
+        int count = 0;
+
+        // Iterate over all results greedily
+        while (m.find()) {
+
+            int initEnd = m.end();
+                
+            end = initEnd - 1;
+            start = m.start();
+            count++;
+
+            // System.err.println(count + "a: " + m.start() + " -- " + m.end());
+
+            // Shrink the region
+            while (end > start) {
+                rm = rm.region(start, end);
+                if (rm.lookingAt()) {
+                    count++;
+                    // System.err.println(count + "b: " + rm.start() + " -- " + rm.end());
+                    end = rm.end() - 1;
+                } else {
+                    start++;
+                    end = initEnd;
+                };
+            };
+
+        };
+
+        return count;
+    };
+
+
+    // Simple fuzzing test
+    public static void fuzzingTest (List<String> chars, String vcPattern, String qPattern,
                                     SpanQuery sq, int minTextLength, int maxTextLength, int maxDocs, int docType)
             throws IOException, QueryException {
-        fuzzingTest(chars, resultPattern, new Krill(sq), minTextLength, maxTextLength, maxDocs, docType);
+        fuzzingTest(chars, vcPattern, qPattern, new Krill(sq), minTextLength, maxTextLength, maxDocs, docType);
     };
 
     // Simple fuzzing test
-    public static void fuzzingTest (List<String> chars, Pattern resultPattern,
+    public static void fuzzingTest (List<String> chars, String vcPattern, String qPattern,
                                     Krill ks, int minTextLength, int maxTextLength, int maxDocs, int docType)
             throws IOException, QueryException {
 
@@ -361,14 +423,11 @@ public class TestSimple {
                 };
                 String testString = testDoc.getFieldValue("test");
                 String annoString = testDoc.getFieldValue("plain");
-                Matcher m = resultPattern.matcher(testString);
+                // Matcher m = resultPattern.matcher(testString);
                 list.add(testString);
                 annoList.add(annoString);
-                int offset = 0;
-                while (m.find(offset)) {
-                    c++;
-                    offset = Math.max(0, m.start() + 1);
-                }
+
+                c += countAllMatches(testString, vcPattern, qPattern);
                 ki.addDoc(testDoc);
 
 
