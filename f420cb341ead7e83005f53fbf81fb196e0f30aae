@@ -16,6 +16,24 @@
       "message": "You are brilliant and it looks all good! Took me a couple of days to fail and you succeeded immediately!\n\nI understand the changes in SimpleSpans, but I don\u0027t see any difference in the behaviour of the test suite, when I revert the changes in ElementDistanceSpans though. Is this change relevant and a test is missing - or is it irrelevant?\n\nI am wondering if I can find a failing test with a fixed fuzzy suite. It\u0027s not so complex.",
       "revId": "f420cb341ead7e83005f53fbf81fb196e0f30aae",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6d6cee69_976befe0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2023-02-20T07:59:31Z",
+      "side": 1,
+      "message": "Thank you 😊 It also took me two days to fix. The error message in https://korap.ids-mannheim.de/gerrit/c/KorAP/Krill/+/5994/comments/2bdc1224_05981bb1 helps a lot. I first thought it has been fixed already because it is marked as resolved (probably automatically).\n\n\nThanks for pointing out the changes in ElementDistanceSpans. That was another finding unrelated to the bug. It just helps ending the search faster because I found a case where there the firstSpans has ended already but the program still keep searching. It is not very important though since there is a check for hasMoreFirstSpans in addNewCandidates() too.",
+      "parentUuid": "6d8eb384_6d3de9a1",
+      "revId": "f420cb341ead7e83005f53fbf81fb196e0f30aae",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
