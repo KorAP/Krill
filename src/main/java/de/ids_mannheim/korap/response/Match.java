@@ -501,7 +501,6 @@ public class Match extends AbstractDocument {
 		};
     };
 
-
 	public void addPagebreak (int start, int pagenumber) {
 		this.addHighlight(new Highlight(start, pagenumber));
 	};
@@ -864,11 +863,13 @@ public class Match extends AbstractDocument {
 
 		int charOffset = 0, pagenumber = 0, start = 0;
 
-		if (DEBUG)
+		if (DEBUG) {
+            log.debug("=================================");
 			log.debug("Retrieve pagebreaks between {}-{}",
 					  this.getStartPos(),
 					  this.getEndPos());
-
+        };
+        
 		try {
 
             // Store character offsets in ByteBuffer
@@ -890,19 +891,26 @@ public class Match extends AbstractDocument {
 			while (pagebreakSpans.next() == true) {
 
 				if (DEBUG) {
-					log.debug("There is a pagebreak at {}/{}",
+					log.debug("There is a pagebreak at {}/{} and we are at {}",
 							  pagebreakSpans.doc(),
-							  pagebreakSpans.start());
+							  pagebreakSpans.start(),
+                              this.localDocID);
 				};
 				
 				// Current pagebreak is not in the correct document
-				if (pagebreakSpans.doc() != this.localDocID) {
-					pagebreakSpans.skipTo(this.localDocID);
-
-					// No pagebreaks in this document
-					if (pagebreakSpans.doc() != this.localDocID)
-						break;
-				};
+                if (pagebreakSpans.doc() != this.localDocID) {
+                    if (pagebreakSpans.doc() < this.localDocID) {
+                        pagebreakSpans.skipTo(this.localDocID);
+                        
+                        // No pagebreaks in this document
+                        if (pagebreakSpans.doc() != this.localDocID)
+                            break;
+                    }
+                    else {
+                        break;
+                    };
+                    continue;
+                };
 
 				if (DEBUG)
 					log.debug("The pagebreak occurs in the document");
@@ -911,16 +919,18 @@ public class Match extends AbstractDocument {
 				// if it is in the correct area
 				if (pagebreakSpans.start() <= this.getStartPos()) {
 
-					if (DEBUG)
-						log.debug("PB start position is before match at {}",
-								  pagebreakSpans.start());
-					
 					// Only the first payload is relevant
 					b = pagebreakSpans.getPayload().iterator().next();
 					start = pagebreakSpans.start();
+
+                    if (DEBUG)
+						log.debug("PB start position is before match at {}:{}",
+								  pagebreakSpans.start(),
+                                  b);
+					
 				}
 
-				// This is the first pagebreak!
+				// This is the first pagebreak inside the match!
 				else {
 
 					// b is already defined!
@@ -937,6 +947,7 @@ public class Match extends AbstractDocument {
 						
 						// This is the first pagebreak!
 						pagebreaks.add(new int[]{charOffset, pagenumber});
+                        
 						if (start >= this.getStartPos()) {
 
 							if (DEBUG)
@@ -945,6 +956,7 @@ public class Match extends AbstractDocument {
 										  pagenumber);
 							this.addPagebreak(charOffset, pagenumber);
 						};
+                        b = null;
 					}
 
 					// b wasn't used yet
@@ -963,17 +975,41 @@ public class Match extends AbstractDocument {
 						// This is the first pagebreak!
 						pagebreaks.add(new int[]{charOffset, pagenumber});
 						this.addPagebreak(charOffset,pagenumber);
+                        b = null;
 					}
 
 					// Pagebreak beyond the current position
 					else {
 						break;
 					};
-
-					// Reset byte
-					b = null;
 				};
 			};
+
+            if (b != null) {
+                bb.rewind();
+                bb.put(b);
+                bb.rewind();
+
+                pagenumber = bb.getInt();
+                charOffset = bb.getInt();
+
+                if (DEBUG)
+                    log.debug("Add pagebreak to list: {}-{}", charOffset, pagenumber);
+						
+                // This is a remembered pagebreak!
+                pagebreaks.add(new int[]{charOffset, pagenumber});
+
+                if (start >= this.getStartPos()) {
+                                            
+                    if (DEBUG)
+                        log.debug("Add pagebreak to rendering: {}-{}",
+                                  charOffset,
+                                  pagenumber);
+                    this.addPagebreak(charOffset, pagenumber);
+                };
+
+                b = null;
+            };
 		}
 		catch (Exception e) {
 			log.warn("Some problems with ByteBuffer: {}", e.getMessage());
@@ -987,7 +1023,6 @@ public class Match extends AbstractDocument {
 		
 		return pagebreaks;
 	};
-
 
     // Expand the context to a span
     public int[] expandContextToSpan (String element) {

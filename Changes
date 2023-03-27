@@ -1,3 +1,6 @@
+0.61.2 2023-03-28
+    - [bugfix] Fix pagebreak retrieval (margaretha, diewald)
+
 0.61.1 2023-02-14
     - [bugfix] Fixed ensuring same documents of spans (solved #87, 
     margaretha)
