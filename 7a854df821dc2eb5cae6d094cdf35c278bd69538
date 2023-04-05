@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4d83a60e_2fa3eef6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-04-05T13:26:16Z",
+      "side": 1,
+      "message": "There was actually a bug when no snippets were generated.",
+      "revId": "7a854df821dc2eb5cae6d094cdf35c278bd69538",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
