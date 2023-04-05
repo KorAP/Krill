@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f6ac451_4be83034",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-04-05T10:15:35Z",
+      "side": 1,
+      "message": "The API is pretty crowded now - we should probably simplify it soon (maybe also using KrillMeta) and get rid of all the deprecated methods.",
+      "revId": "05d79056bd77b9e349eeffc35a313e30ae95bf06",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
