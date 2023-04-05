@@ -1364,6 +1364,9 @@ public class Match extends AbstractDocument {
     public ObjectNode getSnippetTokens () {
         ObjectNode json = mapper.createObjectNode();
 
+        if (!this._processHighlight())
+            return null;
+
         if (this.processed && this.snippetTokens != null)
             return this.snippetTokens;
         
