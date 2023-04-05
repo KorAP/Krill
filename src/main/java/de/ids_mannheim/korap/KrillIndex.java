@@ -933,6 +933,18 @@ public final class KrillIndex implements IndexInfo {
                 includeSpans, includeHighlights, extendToSentence);
     };
 
+    public Match getMatchInfo (String idString, String field, boolean info,
+                               List<String> foundry, List<String> layer, boolean includeSpans,
+                               boolean includeHighlights, boolean extendToSentence)
+        throws QueryException {
+        return getMatchInfo(
+            idString, field, info,
+            foundry, layer, includeSpans,
+            true, // include Snippets
+            false, // include Tokens
+            includeHighlights, extendToSentence
+            );
+    }
 
     /**
      * Get a match.
@@ -943,7 +955,8 @@ public final class KrillIndex implements IndexInfo {
     */
     public Match getMatchInfo (String idString, String field, boolean info,
             List<String> foundry, List<String> layer, boolean includeSpans,
-            boolean includeHighlights, boolean extendToSentence)
+                               boolean includeSnippets, boolean includeTokens,
+                               boolean includeHighlights, boolean extendToSentence)
             throws QueryException {
 
         if (DEBUG)
@@ -960,9 +973,16 @@ public final class KrillIndex implements IndexInfo {
         if (match.getStartPos() == -1)
             return match;
 
-        // For the moment, direct match retrievals will always include
-        // snippets. But this may change in the future.
-        match.hasSnippet = true;
+        if (includeTokens)
+            match.hasTokens = true;
+
+        if (includeSnippets) {
+            match.hasSnippet = true;
+        } else {
+            includeHighlights = false;
+            includeSpans = false;
+            info = false;
+        };
         
         // Create a filter based on the corpusID and the docID
         BooleanQuery bool = new BooleanQuery();

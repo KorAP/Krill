@@ -1,6 +1,10 @@
+0.61.2 2023-04-05
+    - [feature] Support token lists for match infos (solved #88,
+      diewald)
+
 0.61.1 2023-02-14
     - [bugfix] Fixed ensuring same documents of spans (solved #87, 
-    margaretha)
+       margaretha)
 
 0.61.0 2022-11-16
     - [cleanup] Remove ehcache from dependencies (diewald)

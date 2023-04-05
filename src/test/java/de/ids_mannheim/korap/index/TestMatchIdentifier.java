@@ -878,10 +878,46 @@ public class TestMatchIdentifier {
 					 "</span>"+
 					 "<span class=\"context-right\">"+
 					 "<span class=\"more\"></span>"+
-					 "</span>",
-					 km.getSnippetHTML());
+                     "</span>",
+                     km.getSnippetHTML());
     };
 
+    @Test
+    public void indexExample8Tokens ()
+            throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createSimpleFieldDoc2());
+        ki.commit();
+
+        ArrayList<String> foundryList = new ArrayList<>(2);
+        foundryList.add("f");
+        foundryList.add("x");
+
+        ArrayList<String> layerList = new ArrayList<>(2);
+        layerList.add("is");
+        
+        Match km = ki.getMatchInfo(
+            "match-c1!d1-p0-4",
+            "tokens",
+            true,
+            null, //foundryList,
+            null, // layerList,
+            true,
+            false,
+            true,
+            true,
+            true);
+
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("c1", res.at("/corpusID").asText());
+        assertEquals("d1", res.at("/docID").asText());
+        assertFalse(res.at("/hasSnippet").asBoolean());
+        assertTrue(res.at("/hasTokens").asBoolean());
+        assertEquals("a", res.at("/tokens/match/0").asText());
+        assertEquals("b", res.at("/tokens/match/1").asText());
+        assertEquals("c", res.at("/tokens/match/2").asText());
+    };
+    
 
     @Test
     public void indexExampleMultipleFoundries ()
