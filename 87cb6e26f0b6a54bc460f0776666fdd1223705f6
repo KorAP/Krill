@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1407346a_b929c47b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-05-10T15:19:29Z",
+      "side": 1,
+      "message": "This is a minor change to the description, as I found out that KorAP::XML::Krill sometimes doubles the information.",
+      "revId": "87cb6e26f0b6a54bc460f0776666fdd1223705f6",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
