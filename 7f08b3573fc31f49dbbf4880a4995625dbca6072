@@ -16,6 +16,23 @@
       "message": "This feature follows a request by Marc.\n\nIt adds a totalResource count to all search results, that may be useful for statistics and can be shown in the frontend as \"found X matches in Y documents\".\n\nI think we had this feature in the past and removed it (as fragments were still there in the meta object), because of lack of interest. It\u0027s now available (again). The performance may suffer only mildly - I guess neglectable.\n\nIt\u0027s important that this feature may require changes in the caching codes as well.",
       "revId": "7f08b3573fc31f49dbbf4880a4995625dbca6072",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea52c941_9d974dd1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-07-11T12:12:06Z",
+      "side": 1,
+      "message": "It may also be nice to support itemsPerResource via API.",
+      "revId": "7f08b3573fc31f49dbbf4880a4995625dbca6072",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
