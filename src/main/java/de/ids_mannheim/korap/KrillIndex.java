@@ -459,7 +459,6 @@ public final class KrillIndex implements IndexInfo {
                             if (this.reader.getRefCount() == 0) {
 
                                 // Retry update
-                                // System.err.println("Retry update!");
                                 break;
                             };
                             */
@@ -1416,7 +1415,8 @@ public final class KrillIndex implements IndexInfo {
         };
         
         // Some initializations ...
-        int i = 0;
+        int i = 0; // matchcount
+        int j = 0; // matchdoccount
         int startIndex = kr.getStartIndex();
         int count = kr.getItemsPerPage();
         int hits = kr.getItemsPerPage() + startIndex;
@@ -1464,7 +1464,6 @@ public final class KrillIndex implements IndexInfo {
 			if (DEBUG)
 				log.trace("Rewritten query is {}", query.toString());
 
-
             // Todo: run this in a separated thread
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
@@ -1479,9 +1478,8 @@ public final class KrillIndex implements IndexInfo {
                  */
                 final FixedBitSet bitset = collection.bits(atomic);
 
-				if (bitset.nextSetBit(0) == DocIdSetIterator.NO_MORE_DOCS) {
+				if (bitset.nextSetBit(0) == DocIdSetIterator.NO_MORE_DOCS)
 					continue;
-				};
 
                 final PositionsToOffset pto = snippets ? new PositionsToOffset(atomic, field) : null;
 				
@@ -1497,11 +1495,14 @@ public final class KrillIndex implements IndexInfo {
 
                     if (DEBUG)
                         log.trace("Match Nr {}/{}", i, count);
-
+                   
                     // There are no more spans to find
                     if (!spans.next())
                         break;
 
+                    // Increment resource counter
+                    itemsPerResourceCounter++;
+                    
                     // Timeout!
                     if (tthread.getTime() > timeout) {
                         kr.setTimeExceeded(true);
@@ -1511,30 +1512,38 @@ public final class KrillIndex implements IndexInfo {
 
                     localDocID = spans.doc();
 
-                    // Count hits per resource
-                    if (itemsPerResource > 0) {
+                    // IDS are identical
+                    if (localDocID == oldLocalDocID
+                        || oldLocalDocID == -1) {
 
-                        // IDS are identical
-                        if (localDocID == oldLocalDocID
-                                || oldLocalDocID == -1) {
-                            if (itemsPerResourceCounter++ >= itemsPerResource) {
+                        // Count hits per resource
+                        if (itemsPerResource > 0) {
+                            
+                            // End of resourcecounter is reached
+                            if (itemsPerResourceCounter > itemsPerResource) {
+
+                                // Skip to next resource
                                 if (spans.skipTo(localDocID + 1) != true) {
                                     break;
                                 }
-                                else {
-                                    itemsPerResourceCounter = 1;
-                                    localDocID = spans.doc();
-                                };
+
+                                itemsPerResourceCounter = 1;
+                                localDocID = spans.doc();
                             };
                         }
+                    }
 
-                        // Reset counter
-                        else
-                            itemsPerResourceCounter = 0;
+                    // localDoc is new
+                    else
+                        itemsPerResourceCounter = 1;
 
-                        oldLocalDocID = localDocID;
-                    };
 
+                    if (itemsPerResourceCounter == 1)
+                        j++;
+
+                    oldLocalDocID = localDocID;
+                    
+                    
                     // The next matches are not yet part of the result
                     if (startIndex > i)
                         continue;
@@ -1612,20 +1621,26 @@ public final class KrillIndex implements IndexInfo {
                         break;
                     };
 
-                    // Count hits per resource
-                    if (itemsPerResource > 0) {
-                        localDocID = spans.doc();
+                    // Increment resource counter
+                    itemsPerResourceCounter++;
+                    
+                    localDocID = spans.doc();
 
-                        if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+                    if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
+                        break;
+
+                    // IDS are identical
+                    if (localDocID == oldLocalDocID
+                        || oldLocalDocID == -1) {
+                                
+                        if (localDocID == -1)
                             break;
+                        
+                        // Count hits per resource
+                        if (itemsPerResource > 0) {
 
-                        // IDS are identical
-                        if (localDocID == oldLocalDocID
-                                || oldLocalDocID == -1) {
-                            if (localDocID == -1)
-                                break;
-
-                            if (itemsPerResourceCounter++ >= itemsPerResource) {
+                            // End of resourcecounter is reached
+                            if (itemsPerResourceCounter > itemsPerResource) {
                                 if (spans.skipTo(localDocID + 1) != true) {
                                     break;
                                 };
@@ -1633,13 +1648,15 @@ public final class KrillIndex implements IndexInfo {
                                 localDocID = spans.doc();
                             };
                         }
+                    }
+                    // Reset counter
+                    else
+                        itemsPerResourceCounter = 1;
 
-                        // Reset counter
-                        else
-                            itemsPerResourceCounter = 0;
-
-                        oldLocalDocID = localDocID;
-                    };
+                    if (itemsPerResourceCounter == 1)
+                        j++;
+                    
+                    oldLocalDocID = localDocID;
                     i++;
                 };
                 atomicMatches.clear();
@@ -1649,6 +1666,7 @@ public final class KrillIndex implements IndexInfo {
                 kr.setItemsPerResource(itemsPerResource);
 
             kr.setTotalResults(cutoff ? (long) -1 : (long) i);
+            kr.setTotalResources(cutoff ? (long) -1 : (long) j);
         }
 
         catch (IOException e) {

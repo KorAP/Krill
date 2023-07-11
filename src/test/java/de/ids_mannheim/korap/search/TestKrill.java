@@ -440,8 +440,12 @@ public class TestKrill {
         String json = getJsonString(getClass()
                 .getResource("/queries/bsp-itemsPerResource.jsonld").getFile());
 
-        Krill ks = new Krill(json);
-        Result kr = ks.apply(ki);
+        Krill ks;
+        Result kr;
+        KrillMeta meta;
+
+        ks = new Krill(json);
+        kr = ks.apply(ki);
         assertEquals(kr.getTotalResults(), 10);
         assertEquals(0, kr.getStartIndex());
         assertEquals(20, kr.getItemsPerPage());
@@ -452,6 +456,7 @@ public class TestKrill {
         assertEquals("WPD_AAA.00002", kr.getMatch(7).getDocID());
         assertEquals("WPD_AAA.00002", kr.getMatch(8).getDocID());
         assertEquals("WPD_AAA.00004", kr.getMatch(9).getDocID());
+        assertEquals(kr.getTotalResources(), 3);
 
         ks = new Krill(json);
         ks.getMeta().setItemsPerResource(1);
@@ -463,6 +468,7 @@ public class TestKrill {
         assertEquals("WPD_AAA.00004", kr.getMatch(2).getDocID());
 
         assertEquals(kr.getTotalResults(), 3);
+        assertEquals(kr.getTotalResources(), 3);
         assertEquals(0, kr.getStartIndex());
         assertEquals(20, kr.getItemsPerPage());
 
@@ -478,11 +484,12 @@ public class TestKrill {
         assertEquals("WPD_AAA.00004", kr.getMatch(4).getDocID());
 
         assertEquals(kr.getTotalResults(), 5);
+        assertEquals(kr.getTotalResources(), 3);
         assertEquals(0, kr.getStartIndex());
         assertEquals(20, kr.getItemsPerPage());
 
         ks = new Krill(json);
-        KrillMeta meta = ks.getMeta();
+        meta = ks.getMeta();
         meta.setItemsPerResource(1);
         meta.setStartIndex(1);
         meta.setCount(1);
@@ -492,10 +499,28 @@ public class TestKrill {
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
 
         assertEquals(kr.getTotalResults(), 3);
+        assertEquals(kr.getTotalResources(), 3);
         assertEquals(1, kr.getStartIndex());
         assertEquals(1, kr.getItemsPerPage());
 
         assertEquals((short) 1, kr.getItemsPerResource());
+
+        ks = new Krill(json);
+        meta = ks.getMeta();
+        meta.setItemsPerResource(2);
+        meta.setStartIndex(2);
+        meta.setCount(1);
+
+        kr = ks.apply(ki);
+
+        assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
+
+        assertEquals(kr.getTotalResults(), 5);
+        assertEquals(kr.getTotalResources(), 3);
+        assertEquals(2, kr.getStartIndex());
+        assertEquals(1, kr.getItemsPerPage());
+
+
     };
 
 
