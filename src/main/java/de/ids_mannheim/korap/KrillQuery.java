@@ -1309,7 +1309,22 @@ public final class KrillQuery extends Notifications {
             value.setLength(offset);
 
             // Add key to value
-            value.append(isCaseInsensitive ? key.toLowerCase() : key);
+
+            if (isCaseInsensitive) {
+
+                // This supports both legacy search and locale-dependent case-folding.
+                // It mimics the Perl fc behaviour probably better than icu4j.
+                if (key.toLowerCase().equals(key.toUpperCase().toLowerCase())) {
+                    value.append(key.toLowerCase());
+                } else {
+                    value.append(key.toLowerCase());
+                    values.push(value.toString());
+                    value.setLength(offset);
+                    value.append(key.toUpperCase().toLowerCase());
+                };
+            } else {
+                value.append(key);
+            };
 
             // TODO:
             //   This should iterate over all values as well

@@ -1,5 +1,7 @@
-0.61.3 2023-07-11
+0.61.3 2023-07-17
     - Add totalResources to results (diewald)
+    - [bugfix] Fix casefolding for case-insensitive queries
+      (diewald).
 
 0.61.2 2023-04-05
     - [bugfix] Fix pagebreak retrieval (margaretha, diewald)
