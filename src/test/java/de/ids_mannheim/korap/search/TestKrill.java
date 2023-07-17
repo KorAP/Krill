@@ -154,6 +154,32 @@ public class TestKrill {
         assertTrue(res.at("/matches/0/snippet").isMissingNode());
         assertEquals("dem", res.at("/matches/0/tokens/left/0").asText());
         assertEquals("Buchstaben", res.at("/matches/0/tokens/match/0").asText());
+
+        String json = "{\"query\":{\"@type\":\"koral:token\",\"wrap\":{\"@type\":\"koral:term\",\"flags\": [\"flags:caseInsensitive\"],\"key\": \"Grösstenteils\",\"layer\":\"orth\",\"match\": \"match:eq\"}}}";
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        ks = new Krill(json);
+        kr = ks.apply(ki);
+        assertEquals(kr.getTotalResults(), 0);
+        assertEquals(kr.getItemsPerPage(), 25);
+        assertEquals(kr.getMatches().size(), 0);
+
+        res = mapper.readTree(kr.toJsonString());
+        assertEquals(res.at("/meta/serialQuery").asText(),"tokens:i:grösstenteils");
+
+        json = "{\"query\":{\"@type\":\"koral:token\",\"wrap\":{\"@type\":\"koral:term\",\"flags\": [\"flags:caseInsensitive\"],\"key\": \"Größtenteils\",\"layer\":\"orth\",\"match\": \"match:eq\"}}}";
+        
+        ks = new Krill(json);
+        kr = ks.apply(ki);
+
+        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(kr.getItemsPerPage(), 25);
+        assertEquals(kr.getMatches().size(), 2);
+
+        res = mapper.readTree(kr.toJsonString());
+        assertEquals(res.at("/meta/serialQuery").asText(),
+                     "spanOr([tokens:i:grösstenteils, tokens:i:größtenteils])");
     };
 
 

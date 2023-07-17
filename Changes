@@ -1,3 +1,7 @@
+0.61.3 2023-07-17
+    - [bugfix] Fix casefolding for case-insensitive queries
+      (diewald).
+
 0.61.2 2023-04-05
     - [bugfix] Fix pagebreak retrieval (margaretha, diewald)
     - [feature] Support token lists for match infos (solved #88,
