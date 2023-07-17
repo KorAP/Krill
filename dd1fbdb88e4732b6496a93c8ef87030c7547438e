@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0eecca49_3ed1cbff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-07-17T14:41:14Z",
+      "side": 1,
+      "message": "This is not perfect regarding casefolding - but probably the best regarding recall.\n\nThis fixes the error issued by Mark-Christoph Müller.",
+      "revId": "dd1fbdb88e4732b6496a93c8ef87030c7547438e",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
