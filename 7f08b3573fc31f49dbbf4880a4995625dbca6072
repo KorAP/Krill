@@ -33,6 +33,24 @@
       "message": "It may also be nice to support itemsPerResource via API.",
       "revId": "7f08b3573fc31f49dbbf4880a4995625dbca6072",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "afef089a_725f4802",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2023-08-04T11:22:55Z",
+      "side": 1,
+      "message": "Good idea.",
+      "parentUuid": "ea52c941_9d974dd1",
+      "revId": "7f08b3573fc31f49dbbf4880a4995625dbca6072",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
