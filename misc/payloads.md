@@ -66,11 +66,18 @@ means \<s\> has an additional certainty value.
 means \<s\> has an additional TUI and a certainty value.
 
 Spans may also be empty - meaning they behave as milestones.
-In that case, character offsets are only given once.
+In that case, character offsets may only given once.
 
     <>:s$<b>65<i>38<b>0
 
 means \<s\> is a milestone at position 38 in root.
+
+This is identical to a milestone including character
+end and position end information.
+
+    <>:s$<b>65<i>38<i>38<i>12<b>0
+    
+Here the milestone annotation is at position 12.
 
 *PTIs* (It is a span payload if the second bit is set):
 
