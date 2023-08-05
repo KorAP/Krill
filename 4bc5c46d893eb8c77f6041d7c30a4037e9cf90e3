@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5cb5ec1f_73cb67de",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2023-08-05T09:55:24Z",
+      "side": 1,
+      "message": "Thanks for the fix! It is quite a specific case, so that it cannot be handled with a usual normalization method.",
+      "revId": "4bc5c46d893eb8c77f6041d7c30a4037e9cf90e3",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
