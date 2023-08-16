@@ -1,3 +1,6 @@
+0.61.4 2023-08-16
+    - [cleanup] Updated to Java 17 (margaretha)
+
 0.61.3 2023-07-17
     - Add totalResources to results (diewald)
     - [bugfix] Fix casefolding for case-insensitive queries
