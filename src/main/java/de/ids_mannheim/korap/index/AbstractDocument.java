@@ -216,7 +216,7 @@ public abstract class AbstractDocument extends Response {
     public void setUID (int UID) {
         if (UID != 0) {
             this.UID = UID;
-            this.addString("UID", new Integer(UID).toString());
+            this.addString("UID", Integer.valueOf(UID).toString());
         }       
     };
 
@@ -233,7 +233,7 @@ public abstract class AbstractDocument extends Response {
     public void setUID (String UID) throws NumberFormatException {
         if (UID != null) {
             this.UID = Integer.parseInt(UID);
-            this.addString("UID", new Integer(this.UID).toString());
+            this.addString("UID", Integer.valueOf(this.UID).toString());
         };
     };
 
@@ -511,7 +511,7 @@ public abstract class AbstractDocument extends Response {
 
     @JsonIgnore
     public void addInt (String key, int value) {
-        this.addInt(key, new Integer(value).toString());
+        this.addInt(key, Integer.valueOf(value).toString());
     };
 
     
@@ -594,6 +594,6 @@ public abstract class AbstractDocument extends Response {
 
     @JsonIgnore
     public void addDate (String key, int value) {
-        this.addDate(key, new Integer(value).toString());
+        this.addDate(key, Integer.valueOf(value).toString());
     };
 };

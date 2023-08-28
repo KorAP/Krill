@@ -45,7 +45,7 @@ public class PositionsToOffset {
         public int hashCode () {
             long hashCode;
             hashCode = (docID * Integer.MAX_VALUE) - Integer.MAX_VALUE + pos;
-            return new Long(hashCode).hashCode();
+            return Long.valueOf(hashCode).hashCode();
         };
 
 
