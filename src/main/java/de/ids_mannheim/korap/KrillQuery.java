@@ -323,12 +323,12 @@ public final class KrillQuery extends Notifications {
                     JsonNode wrap = json.get("wrap");
                     JsonNode attrNode = json.get("attr");
                     if (wrap.has("foundry")) {
-                        ((ObjectNode)attrNode).put("foundry", wrap.get("foundry"));
+                        ((ObjectNode)attrNode).set("foundry", wrap.get("foundry"));
                     };
                     if (wrap.has("layer")) {
-                        ((ObjectNode)attrNode).put("layer", wrap.get("layer"));
+                        ((ObjectNode)attrNode).set("layer", wrap.get("layer"));
                     };
-                    ((ObjectNode)json.get("wrap")).put("attr",attrNode);
+                    ((ObjectNode)json.get("wrap")).set("attr",attrNode);
                 };
                 
 // Get wrapped token
@@ -352,12 +352,12 @@ public final class KrillQuery extends Notifications {
                     JsonNode wrap = json.get("wrap");
                     JsonNode attrNode = json.get("attr");
                     if (wrap.has("foundry")) {
-                        ((ObjectNode)attrNode).put("foundry", wrap.get("foundry"));
+                        ((ObjectNode)attrNode).set("foundry", wrap.get("foundry"));
                     };
                     if (wrap.has("layer")) {
-                        ((ObjectNode)attrNode).put("layer", wrap.get("layer"));
+                        ((ObjectNode)attrNode).set("layer", wrap.get("layer"));
                     };
-                    ((ObjectNode)json.get("wrap")).put("attr",attrNode);
+                    ((ObjectNode)json.get("wrap")).set("attr",attrNode);
                 };
                 
                 // This is an ugly hack

@@ -492,11 +492,11 @@ public class Notifications {
 
         // Add messages
         if (this.hasWarnings())
-            json.put("warnings", this.getWarnings().toJsonNode());
+            json.set("warnings", this.getWarnings().toJsonNode());
         if (this.hasErrors())
-            json.put("errors", this.getErrors().toJsonNode());
+            json.set("errors", this.getErrors().toJsonNode());
         if (this.hasMessages())
-            json.put("messages", this.getMessages().toJsonNode());
+            json.set("messages", this.getMessages().toJsonNode());
 
         return (JsonNode) json;
     };

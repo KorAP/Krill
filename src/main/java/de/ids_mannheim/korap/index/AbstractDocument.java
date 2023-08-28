@@ -447,7 +447,7 @@ public abstract class AbstractDocument extends Response {
     @Override
     public JsonNode toJsonNode () {
         ObjectNode json = (ObjectNode) super.toJsonNode();
-        json.putAll((ObjectNode) mapper.valueToTree(this));
+        json.setAll((ObjectNode) mapper.valueToTree(this));
 
         if (this.getUID() == 0)
             json.remove("UID");
