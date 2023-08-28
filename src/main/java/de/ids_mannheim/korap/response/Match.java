@@ -2126,7 +2126,7 @@ public class Match extends AbstractDocument {
         ObjectNode json = (ObjectNode) super.toJsonNode();
 
         if (this.context != null)
-            json.put("context", this.getContext().toJsonNode());
+            json.set("context", this.getContext().toJsonNode());
 
         if (this.version != null)
             json.put("version", this.getVersion());
@@ -2137,14 +2137,14 @@ public class Match extends AbstractDocument {
 			if (this.endPage != -1 && this.endPage != this.startPage)
 				pages.add(this.endPage);
 
-			json.put("pages", pages);
+			json.set("pages", pages);
 		};
         
         if (this.hasSnippet)
             json.put("snippet", this.getSnippetHTML());
 
         if (this.hasTokens)
-            json.put("tokens", this.getSnippetTokens());
+            json.set("tokens", this.getSnippetTokens());
 
         return json;
     };
