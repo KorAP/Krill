@@ -819,7 +819,7 @@ public final class KrillIndex implements IndexInfo {
         Text text = new Text();
 
         // Rewrite parse ID
-        uid = new Integer(Integer.parseInt(uid)).toString();
+        uid = Integer.valueOf(Integer.parseInt(uid)).toString();
 
         Filter filter = (Filter) new QueryWrapperFilter(
             new TermQuery(new Term("UID", uid)));
