@@ -161,8 +161,8 @@ public class SearchContext {
         rightContext.add(this.right.getLength());
 
         ObjectNode context = mapper.createObjectNode();
-        context.put("left", leftContext);
-        context.put("right", rightContext);
+        context.set("left", leftContext);
+        context.set("right", rightContext);
 
         return context;
     };

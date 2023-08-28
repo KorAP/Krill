@@ -404,14 +404,14 @@ public final class KrillMeta extends Notifications {
         json.put("timeout", this.getTimeOut());
 
         // Add context attribute
-        json.put("context", this.getContext().toJsonNode());
+        json.set("context", this.getContext().toJsonNode());
 
         // Add fields attribute
         ArrayNode fieldNode = mapper.createArrayNode();
         Iterator<String> field = this.fields.iterator();
         while (field.hasNext())
             fieldNode.add(field.next());
-        json.put("fields", fieldNode);
+        json.set("fields", fieldNode);
 
         // Add itemsPerResource attribute
         if (this.itemsPerResource > 0)
@@ -421,7 +421,7 @@ public final class KrillMeta extends Notifications {
         if (!this.highlights.isEmpty()) {
             ArrayNode highlightNode = mapper.createArrayNode();
             highlightNode.addPOJO(this.highlights);
-            json.put("highlight", highlightNode);
+            json.set("highlight", highlightNode);
         };
 
         return json;

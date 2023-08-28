@@ -512,7 +512,7 @@ public class Response extends Notifications {
         if (this.meta != null) {
             JsonNode metaNode = this.meta.toJsonNode();
             if (metaNode != null)
-                json.put("meta", metaNode);
+                json.set("meta", metaNode);
         };
 
         ObjectNode meta = json.has("meta") ? (ObjectNode) json.get("meta")
@@ -543,14 +543,14 @@ public class Response extends Notifications {
 
         // Add json fields as passed to the object
         if (this.jsonFields != null) {
-            json.putAll(this.jsonFields);
+            json.setAll(this.jsonFields);
         };
 
         // KoralQuery query object
         if (this.query != null) {
             JsonNode queryNode = this.getQuery().toJsonNode();
             if (queryNode != null)
-                json.put("query", queryNode);
+                json.set("query", queryNode);
         };
 
         // KoralQuery collection object
@@ -558,7 +558,7 @@ public class Response extends Notifications {
             // && this.collection.getFilters().toArray().length > 0) {
             JsonNode collNode = this.collection.toJsonNode();
             if (collNode != null)
-                json.put("collection", collNode);
+                json.set("collection", collNode);
         };
 
         return (JsonNode) json;

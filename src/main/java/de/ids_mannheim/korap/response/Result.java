@@ -360,10 +360,10 @@ public final class Result extends Krill {
         meta.put("itemsPerPage", this.itemsPerPage);
 
         if (json.has("meta")) {
-            ((ObjectNode) json.get("meta")).putAll(meta);
+            ((ObjectNode) json.get("meta")).setAll(meta);
         }
         else {
-            json.put("meta", meta);
+            json.set("meta", meta);
         };
     };
 };
