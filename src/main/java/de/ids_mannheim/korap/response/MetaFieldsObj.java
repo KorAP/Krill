@@ -115,7 +115,7 @@ public class MetaFieldsObj implements Iterable<MetaField> {
 			// Field is a number
 			else {
                 mf.type = "type:integer";
-                mf.values.add(new Integer(n.intValue()).toString());
+                mf.values.add(Integer.valueOf(n.intValue()).toString());
 			};
 		}
 		

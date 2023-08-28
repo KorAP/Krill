@@ -187,7 +187,7 @@ public class Indexer {
                 .desc("input directories separated by semicolons. The input files "
                         + "have to be in <filename>.json.gz format. ")
                 .hasArgs().argName("input directories").required()
-                .valueSeparator(new Character(';')).build());
+                .valueSeparator(Character.valueOf(';')).build());
         options.addOption(Option.builder("o").longOpt("outputDir")
                 .desc("index output directory (defaults to "
                         + "krill.indexDir in the configuration.")
