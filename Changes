@@ -1,3 +1,6 @@
+0.62.0 2023-09-11
+    - [cleanup] Change of groupID.
+
 0.61.3 2023-07-17
     - Add totalResources to results (diewald)
     - [bugfix] Fix casefolding for case-insensitive queries

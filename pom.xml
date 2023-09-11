@@ -33,9 +33,9 @@
 		 		
 		-->
 
-  <groupId>de.ids_mannheim.korap</groupId>
+  <groupId>de.ids-mannheim.korap.krill</groupId>
   <artifactId>Krill</artifactId>
-  <version>0.61.3</version>
+  <version>0.62.0</version>
   <packaging>jar</packaging>
 
   <name>Krill</name>
