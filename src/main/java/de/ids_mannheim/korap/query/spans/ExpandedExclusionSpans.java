@@ -206,7 +206,8 @@ public class ExpandedExclusionSpans extends SimpleSpans {
 
         CandidateSpan firstNotClause = null;
         // System.out.println("main start:"+firstSpans.start());
-        while (hasMoreNotClause && notClause.start() < expansionEnd) {
+        while (hasMoreNotClause && notClause.doc() == firstSpans.doc() &&
+                notClause.start() < expansionEnd) {
             // between firstspan.end() and expansionEnd
             if (!isFound && notClause.start() >= firstSpans.end()) {
                 maxPos = notClause.start() - firstSpans.end() - 1;

@@ -27,6 +27,8 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanExpansionQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
+import de.ids_mannheim.korap.query.SpanSegmentQuery;
+import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
@@ -174,6 +176,8 @@ public class TestSpanExpansionIndex {
      */
     @Test
     public void testRightExpansionWithExclusion () throws IOException {
+        // [pos=tt/p:NN][orth=Buchstabe]
+        
         byte classNumber = 1;
         SpanTermQuery stq = new SpanTermQuery(new Term("tokens", "tt/p:NN"));
         SpanTermQuery notQuery =
@@ -195,12 +199,29 @@ public class TestSpanExpansionIndex {
         assertEquals(13, kr.getMatch(3).getEndPos());
         assertEquals(10, kr.getMatch(3).getStartPos(1));
         assertEquals(13, kr.getMatch(3).getEndPos(1));
+    }
+    
+    @Test
+    public void testNextRightExpansion () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        //ki.addDoc(simpleFieldDoc("daaec"));
+        ki.addDoc(simpleFieldDoc("deaccaab"));
+        ki.addDoc(simpleFieldDoc("cabdadceedc"));
+        //ki.addDoc(simpleFieldDoc("aadaeaeea"));
+        ki.commit();
+        
+        SpanTermQuery a = new SpanTermQuery(new Term("base", "s:c"));
+        SpanTermQuery stq = new SpanTermQuery(new Term("base", "s:a"));
+        SpanTermQuery notQuery = new SpanTermQuery(new Term("base", "s:b"));
 
-        /*
-         * for (Match km : kr.getMatches()){
-         * System.out.println(km.getStartPos() +","+km.getEndPos()+" "
-         * +km.getSnippetBrackets()); }
-         */
+
+        SpanExpansionQuery seq = new SpanExpansionQuery(stq, notQuery, 1, 1, 0,
+                true);
+
+        SpanNextQuery nq = new SpanNextQuery(a, seq);
+
+        kr = ki.search(nq);
+        assertEquals(1, kr.getMatches().size());
     }
 
     /**

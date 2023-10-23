@@ -2,6 +2,7 @@
     - Add totalResources to results (diewald)
     - [bugfix] Fix casefolding for case-insensitive queries
       (diewald).
+    - [bugfix] Fixed expansion query (margaretha)
 
 0.61.2 2023-04-05
     - [bugfix] Fix pagebreak retrieval (margaretha, diewald)
