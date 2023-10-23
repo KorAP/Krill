@@ -22,6 +22,30 @@
       },
       "revId": "44491f71ef99bd47231dc55806beffcdb6b50e27",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "631b4ca6_8a1e159a",
+        "filename": "src/test/java/de/ids_mannheim/korap/index/TestSpanExpansionIndex.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 209,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2023-10-23T12:50:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "612d07b5_52faddc2",
+      "range": {
+        "startLine": 208,
+        "startChar": 34,
+        "endLine": 209,
+        "endChar": 45
+      },
+      "revId": "44491f71ef99bd47231dc55806beffcdb6b50e27",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
