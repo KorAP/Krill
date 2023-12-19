@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import static de.ids_mannheim.korap.util.KrillByte.*;
+import static de.ids_mannheim.korap.util.KrillString.codePointSubstring;
 import de.ids_mannheim.korap.index.AbstractDocument;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -1359,7 +1360,7 @@ public class Match extends AbstractDocument {
 
 				// Add partial string
 				if (pos > 0 && pos > oldPos) {
-					snippetArray.addString(clean.substring(oldPos, pos));
+					snippetArray.addString(codePointSubstring(clean, oldPos, pos));
 				};
 
 				// Remember the new position
@@ -1388,7 +1389,7 @@ public class Match extends AbstractDocument {
         };
 
         if (clean.length() > pos && pos >= 0) {
-            snippetArray.addString(clean.substring(pos));
+            snippetArray.addString(codePointSubstring(clean, pos));
         };
     };
 
@@ -1500,8 +1501,8 @@ public class Match extends AbstractDocument {
             for (i = startContext; i < this.startPos; i++) {
                 offsets = pto.span(ldid,i);
                 tokens.add(
-                    this.tempSnippet.substring(
-                        offsets[0]- startContextChar, offsets[1] - startContextChar)
+                    codePointSubstring(this.tempSnippet,
+                                       offsets[0]- startContextChar, offsets[1] - startContextChar)
                     );
             };
         };
@@ -1513,8 +1514,8 @@ public class Match extends AbstractDocument {
                 continue;
             }
             tokens.add(
-                this.tempSnippet.substring(
-                    offsets[0]- startContextChar, offsets[1] - startContextChar)
+                codePointSubstring(this.tempSnippet,
+                                   offsets[0]- startContextChar, offsets[1] - startContextChar)
                 );
         };
 
@@ -1531,7 +1532,7 @@ public class Match extends AbstractDocument {
                     tokens = json.putArray("right");
                 
                 tokens.add(
-                    this.tempSnippet.substring(
+                    codePointSubstring(this.tempSnippet,
                         offsets[0]- startContextChar, offsets[1] - startContextChar)
                     );
             };

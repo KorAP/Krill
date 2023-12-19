@@ -1,5 +1,6 @@
-0.62.0 2023-09-11
+0.62.0 2023-12-19
     - [cleanup] Change of groupID.
+    - Fix for emojis in snippets (diewald)
 
 0.61.3 2023-07-17
     - Add totalResources to results (diewald)
