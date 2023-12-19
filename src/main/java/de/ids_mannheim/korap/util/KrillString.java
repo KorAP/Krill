@@ -88,4 +88,37 @@ public class KrillString {
     public static String quote (String text) {
         return '"' + text.replaceAll("([\"\\\\])", "\\\\$1") + '"';
     };
+
+
+    /**
+     * Provide a substring method that works well with surrogate pairs.
+     * 
+     * @param text
+     *            The string to substring.
+     * @param start
+     *            The start offset.
+     * @param end
+     *            The end offset.
+     * @return The substring.
+     */
+    public static String codePointSubstring(String text, int start, int end) {
+        int a = text.offsetByCodePoints(0, start);
+        return text.substring(
+            a,
+            text.offsetByCodePoints(a, end - start)
+            );
+    };
+
+    /**
+     * Provide a substring method that works well with surrogate pairs.
+     * 
+     * @param text
+     *            The string to substring.
+     * @param start
+     *            The start offset.
+     * @return The substring.
+     */
+    public static String codePointSubstring(String text, int start) {
+        return text.substring(text.offsetByCodePoints(0, start));
+    };
 };

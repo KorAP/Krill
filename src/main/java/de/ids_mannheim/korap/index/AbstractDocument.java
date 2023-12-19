@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.index;
 import java.util.*;
 
 import de.ids_mannheim.korap.util.KrillDate;
+import static de.ids_mannheim.korap.util.KrillString.*;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.Response;
 import de.ids_mannheim.korap.response.MetaField;
@@ -262,7 +263,7 @@ public abstract class AbstractDocument extends Response {
      */
     @JsonIgnore
     public String getPrimaryData (int startOffset) {
-        return this.primaryData.substring(startOffset);
+        return codePointSubstring(this.primaryData, startOffset);
     };
 
 
@@ -280,7 +281,7 @@ public abstract class AbstractDocument extends Response {
      */
     @JsonIgnore
     public String getPrimaryData (int startOffset, int endOffset) {
-        return this.primaryData.substring(startOffset, endOffset);
+        return codePointSubstring(this.primaryData,startOffset, endOffset);
     };
 
 
@@ -292,12 +293,7 @@ public abstract class AbstractDocument extends Response {
      *            as a string.
      */
     public void setPrimaryData (String primary) {
-        // Java can't work with utf-8 substrings as defined in the input data,
-        // That's why substringing fails on surrogates. This is a workaround
-        // to remove surrogates to make substringing work again.
-        // It would probably be better to fix this before the data hits the index,
-        // but we have to work with old indices as well.
-        this.primaryData = primary.replaceAll("[^\u0000-\uffff]", "?");
+        this.primaryData = primary;
     };
 
     /**

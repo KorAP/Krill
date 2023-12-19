@@ -1469,4 +1469,28 @@ public class TestKrill {
         assertEquals(kr.getMatch(0).getTextSigle(), "GOE_AGX.00002");
     };
 
+    @Test
+    public void emojiSearch () throws IOException {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        ki.addDoc(
+                getClass().getResourceAsStream("/others/KYC-MAI-001888-censored.json"),
+                false);
+        ki.commit();
+
+        Krill k = new Krill(new QueryBuilder("tokens").seg("s:🎉"));
+
+        assertEquals(k.getSpanQuery().toString(), "tokens:s:🎉");
+
+        Result kr = k.apply(ki);
+        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(kr.getMatch(0).getSnippetBrackets(),
+                     "... Strasse antreffe.😊 Versprochen Xxx-Xxx [[🎉]]");
+        assertEquals(kr.getMatch(0).getSnippetHTML(),
+                     "<span class=\"context-left\"><span class=\"more\"></span>Strasse antreffe.😊 Versprochen Xxx-Xxx </span><span class=\"match\"><mark>🎉</mark></span><span class=\"context-right\"></span>");
+        assertEquals(kr.getMatch(0).getTextSigle(), "KYC/MAI/001888");
+    };
+
 };
