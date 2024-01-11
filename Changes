@@ -1,9 +1,10 @@
-0.62.0 2023-12-19
-    - [cleanup] Change of groupID.
-    - Fix for emojis in snippets (diewald)
+0.62.0 2024-01-19
+    - [cleanup] Change of groupID
+    - [bugfix] Fix for emojis in snippets (diewald)
+    - [cleanup] Upgrade dependency to Java 17
 
 0.61.3 2023-07-17
-    - Add totalResources to results (diewald)
+    - [feature] Add totalResources to results (diewald)
     - [bugfix] Fix casefolding for case-insensitive queries
       (diewald).
     - [bugfix] Fixed expansion query (margaretha)
