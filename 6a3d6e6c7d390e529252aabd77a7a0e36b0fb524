@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20438bf8_58b678ec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-01-11T20:45:40Z",
+      "side": 1,
+      "message": "I copied and modified the dependabot config from Koral.",
+      "revId": "6a3d6e6c7d390e529252aabd77a7a0e36b0fb524",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
