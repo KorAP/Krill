@@ -1,3 +1,7 @@
+0.62.1 2024-01-25
+    - [security] Introduction of dependabot alerts (margaretha)
+    - [security] Update dependencies (diewald)
+
 0.62.0 2024-01-19
     - [cleanup] Change of groupID
     - [bugfix] Fix for emojis in snippets (diewald)
