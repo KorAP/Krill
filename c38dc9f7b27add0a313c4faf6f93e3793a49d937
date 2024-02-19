@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89fde586_fdc57257",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-02-19T15:06:15Z",
+      "side": 1,
+      "message": "Resolves `Error:  /home/runner/work/Kustvakt/Kustvakt/Kustvakt/src/main/java/de/ids_mannheim/korap/web/SearchKrill.java:[13,31] package org.apache.lucene.store does not exist`",
+      "revId": "c38dc9f7b27add0a313c4faf6f93e3793a49d937",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
