@@ -3,6 +3,7 @@ package de.ids_mannheim.korap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Path;
 import java.time.LocalDate;
 // Java core classes
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.FixedBitSet;
@@ -223,6 +225,19 @@ public final class KrillIndex implements IndexInfo {
         this.directory = directory;
     };
 
+
+    /**
+     * Constructs a new KrillIndex bound to a persistant index,
+     * that will be lifted as an mmap.
+     * 
+     * @param path
+     *            A path pointing to an mmapable index
+     * @throws IOException
+     */
+    public KrillIndex (Path path) throws IOException {
+        this.directory = new MMapDirectory(path);
+    };
+    
 
     /**
      * Get the version number of the index.

@@ -93,7 +93,7 @@ public class TestIndexRevision {
     public void testIndexRevisionTempFile () throws IOException {
 
         Path tmpdir = Files.createTempDirectory("wiki");
-        KrillIndex ki = new KrillIndex(new MMapDirectory(tmpdir));
+        KrillIndex ki = new KrillIndex(tmpdir);
 
         assertEquals("null", ki.getFingerprint());
         
@@ -204,8 +204,8 @@ public class TestIndexRevision {
 
     @Ignore
     public void testIndexRevisionSample () throws IOException {
-        KrillIndex ki = new KrillIndex(new MMapDirectory(
-                Paths.get(getClass().getResource("/sample-index").getFile())));
+        KrillIndex ki = new KrillIndex(
+                Paths.get(getClass().getResource("/sample-index").getFile()));
 
         assertEquals("Wes8Bd4h1OypPqbWF5njeQ==",ki.getFingerprint());
     };
