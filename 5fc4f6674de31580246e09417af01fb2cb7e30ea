@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4de61d2e_620812e4",
+        "filename": ".github/workflows/ci_test.yml",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-02-20T07:46:14Z",
+      "side": 1,
+      "message": "Doesn\u0027t this require a repository as well?",
+      "range": {
+        "startLine": 17,
+        "startChar": 9,
+        "endLine": 17,
+        "endChar": 24
+      },
+      "revId": "5fc4f6674de31580246e09417af01fb2cb7e30ea",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
