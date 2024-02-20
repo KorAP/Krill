@@ -22,6 +22,30 @@
       },
       "revId": "5fc4f6674de31580246e09417af01fb2cb7e30ea",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e2bc6b3_89697330",
+        "filename": ".github/workflows/ci_test.yml",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-02-20T09:06:02Z",
+      "side": 1,
+      "message": "Good point 😊 It works well without, but then just tests Krill twice",
+      "parentUuid": "4de61d2e_620812e4",
+      "range": {
+        "startLine": 17,
+        "startChar": 9,
+        "endLine": 17,
+        "endChar": 24
+      },
+      "revId": "5fc4f6674de31580246e09417af01fb2cb7e30ea",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
