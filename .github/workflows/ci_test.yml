@@ -7,14 +7,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Krill
-        # Reference the major version of a release
         uses: actions/checkout@v4
+        with:
+          path: Krill
+
+      - name: Checkout Kustvakt
+        uses: actions/checkout@v4
+        with:
+          path: Kustvakt
+
+      - name: Checkout Koral
+        uses: actions/checkout@v4
+        with:
+          repository: KorAP/Koral
+          path: Koral
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 17
+          cache: 'maven'
+
 
       - name: Build and install Krill
-        run: mvn install
+        run: mvn --file Krill/pom.xml install
+
+      - name: Build and install Koral
+        run: mvn --file Koral/pom.xml install
+
+      - name: Build and package Kustvakt full
+        run: mvn --file Kustvakt/pom.xml package
