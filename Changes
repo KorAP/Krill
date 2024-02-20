@@ -1,7 +1,8 @@
-0.62.2 2024-02-19
+0.62.2 2024-02-20
     - [feature] Support MMap directory parameters directly
       for KrillIndex (without the need for Lucene dependencies)
       (diewald)
+    - [bugfix] Don't let shade plugin reduce pom (kupietz)
 
 0.62.1 2024-01-25
     - [security] Introduction of dependabot alerts (margaretha)
