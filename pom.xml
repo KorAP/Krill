@@ -62,7 +62,7 @@
     <java.version>17</java.version>
     <jersey.version>3.1.5</jersey.version>
     <jackson.version>2.17.0</jackson.version>
-    <log4j.version>[2.19.0,)</log4j.version>
+    <log4j.version>2.23.1</log4j.version>
     <lucene.version>5.0.0</lucene.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -317,22 +317,35 @@
 	</configuration>
       </plugin>
 
-      <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>exec-maven-plugin</artifactId>
-	<version>3.2.0</version>
-	<executions>
-	  <execution>
-	    <goals>
-	      <goal>java</goal>
-	    </goals>
-	  </execution>
-	</executions>
-	<configuration>
-	  <mainClass>de.ids_mannheim.korap.server.Node</mainClass>
-	</configuration>
-      </plugin>
-
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>de.ids_mannheim.korap.server.Node</mainClass>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>run-krill-indexer-jar</id>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>exec</goal>
+                    </goals>
+                    <configuration>
+                        <executable>java</executable>
+                        <arguments>
+                            <argument>-jar</argument>
+                            <argument>${project.build.directory}/Krill-Indexer.jar</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
 
     <resources>
