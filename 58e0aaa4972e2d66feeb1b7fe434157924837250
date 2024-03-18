@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d101297_494b5527",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-03-18T06:58:54Z",
+      "side": 1,
+      "message": "Great - Thank you! Can you be test this in CI?",
+      "revId": "58e0aaa4972e2d66feeb1b7fe434157924837250",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
