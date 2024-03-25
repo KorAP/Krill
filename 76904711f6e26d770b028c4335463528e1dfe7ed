@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9808888_6bb06423",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 33
+      },
+      "writtenOn": "2024-03-25T12:48:11Z",
+      "side": 1,
+      "message": "See https://korap.ids-mannheim.de/gerrit/c/KorAP/Kalamar-Plugin-Export/+/8435, https://korap.ids-mannheim.de/gerrit/c/KorAP/Kalamar/+/8366",
+      "revId": "76904711f6e26d770b028c4335463528e1dfe7ed",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
