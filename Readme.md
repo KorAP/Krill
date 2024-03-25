@@ -57,28 +57,28 @@ Further dependencies are resolved using Maven.
 To install the latest version of Krill from scratch, do ...
 
 ```
-$ git clone https://github.com/KorAP/Krill
-$ cd Krill
+git clone https://github.com/KorAP/Krill
+cd Krill
 ```
 
 Then run the test suite ...
 
 ```
-$ mvn clean test
+mvn clean test
 ```
 
 To build a Krill library and install it in your local Maven repository
 (needed for Kustvakt) ...
 
 ```
-$ mvn install
+mvn install
 ```
 
-To update an existing repository, pull the latest version at the Krill 
+To update an existing repository, pull the latest version at the Krill
 installation directory
 
 ```
-$ git pull origin master
+git pull origin master
 ```
 
 Afterwards, rerun the test suite and install the library.
@@ -134,7 +134,7 @@ You can either reformat using [Eclipse](http://eclipse.org/) or (recommended) us
 [Maven](https://maven.apache.org/) with the command
 
 ```
-  $ mvn java-formatter:format
+  mvn java-formatter:format
 ```
 
 Your contributions should ideally be committed via our [Gerrit server](https://korap.ids-mannheim.de/gerrit/)
