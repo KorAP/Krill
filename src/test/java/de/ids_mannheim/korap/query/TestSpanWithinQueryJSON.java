@@ -27,4 +27,17 @@ public class TestSpanWithinQueryJSON {
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
         SpanQuery sq = sqwi.toQuery();
     }
+
+    @Test
+    public void testSequenceContainSentence () throws QueryException {
+        String filepath = getClass()
+                .getResource(
+                        "/queries/position/sequence-contain-sentence.json")
+                .getFile();
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+
+        assertEquals("focus(129: spanContain(<tokens:base/s />, {129: spanNext(tokens:marmot/p:ADJA, tokens:i:baum)}),sorting)", sq.toString());
+    }
+
 }
