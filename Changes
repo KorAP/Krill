@@ -1,3 +1,7 @@
+0.62.2 2024-03-26
+    - [bugfix] Improve handling of C2 #IN frames serialization
+      (diewald)
+
 0.62.2 2024-02-20
     - [feature] Support MMap directory parameters directly
       for KrillIndex (without the need for Lucene dependencies)

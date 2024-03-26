@@ -1,0 +1,85 @@
+{
+  "@context": "http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld",
+  "query": {
+    "@type": "koral:reference",
+    "classRef": [
+      129
+    ],
+    "operands": [
+      {
+        "@type": "koral:group",
+        "frames": [
+          "frames:matches",
+          "frames:startsWith",
+          "frames:endsWith",
+          "frames:isAround"
+        ],
+        "operands": [
+          {
+            "@type": "koral:span",
+            "rewrites": [
+              {
+                "@type": "koral:rewrite",
+                "operation": "operation:injection",
+                "scope": "foundry",
+                "src": "Kustvakt"
+              }
+            ],
+            "wrap": {
+              "@type": "koral:term",
+              "foundry": "base",
+              "key": "s",
+              "match": "match:eq"
+            }
+          },
+          {
+            "@type": "koral:group",
+            "classOut": 129,
+            "operands": [
+              {
+                "@type": "koral:group",
+                "operands": [
+                  {
+                    "@type": "koral:token",
+                    "wrap": {
+                      "@type": "koral:term",
+                      "foundry": "marmot",
+                      "key": "ADJA",
+                      "layer": "p",
+                      "match": "match:eq"
+                    }
+                  },
+                  {
+                    "@type": "koral:token",
+                    "wrap": {
+                      "@type": "koral:term",
+                      "flags": [
+                        "flags:caseInsensitive"
+                      ],
+                      "foundry": "opennlp",
+                      "key": "Baum",
+                      "layer": "orth",
+                      "match": "match:eq",
+                      "rewrites": [
+                        {
+                          "@type": "koral:rewrite",
+                          "operation": "operation:injection",
+                          "scope": "foundry",
+                          "src": "Kustvakt"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "operation": "operation:sequence"
+              }
+            ],
+            "operation": "operation:class"
+          }
+        ],
+        "operation": "operation:position"
+      }
+    ],
+    "operation": "operation:focus"
+  }
+}
