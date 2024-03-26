@@ -668,9 +668,46 @@ public final class KrillQuery extends Notifications {
         if (json.has("frames")) {
             JsonNode frameN = json.get("frames");
             if (frameN.isArray()) {
-                frameN = json.get("frames").get(0);
-                if (frameN != null && frameN.isValueNode())
-                    frame = frameN.asText().substring(7);
+
+                // Treat the following temporarilly as "contains"
+                // "frames:matches",
+                // "frames:startsWith",
+                // "frames:endsWith",
+                // "frames:isAround"
+                // This ignores nonunique frames
+
+                int fs = 0;
+                for (JsonNode frameS : frameN) {
+                    switch (frameS.asText()) {
+                    case "frames:matches":
+                        fs++;
+                        break;
+                    case "frames:startsWith":
+                        fs++;
+                        break;
+                    case "frames:isAround":
+                        fs++;
+                        break;
+                    case "frames:endsWith":
+                        fs++;
+                        break;
+                    default:
+                        fs+=7;
+                    }
+                };
+
+                
+                if (fs == 4) {
+                    frame = "contains";
+                } else {
+                    if (frameN.size() > 1) {
+                        this.addMessage(0, "Frames not fully supported yet");
+                    };
+                    
+                    frameN = frameN.get(0);
+                    if (frameN != null && frameN.isValueNode())
+                        frame = frameN.asText().substring(7);
+                };
             };
         }
         // <legacyCode>
