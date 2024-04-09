@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a29a9e6_99e8aa7d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-04-09T10:45:35Z",
+      "side": 1,
+      "message": "Refers to https://gitlab.ids-mannheim.de/ids-kl/dereko/-/issues/21",
+      "revId": "31e5cbd4d26df63b79eb07211cb2fe1786c131f4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ede3bf1_df3975a7",
+        "filename": "src/main/java/de/ids_mannheim/korap/index/MultiTerm.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-04-09T10:45:35Z",
+      "side": 1,
+      "message": "This is the restriction used by COSMAS II. We could extend it up to ~32.000, but I would suggest 1028 or 4096.",
+      "range": {
+        "startLine": 59,
+        "startChar": 47,
+        "endLine": 59,
+        "endChar": 50
+      },
+      "revId": "31e5cbd4d26df63b79eb07211cb2fe1786c131f4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
