@@ -3,6 +3,8 @@
     - [feature] Make VC cache location customizable (margaretha)
     - [bugfix] Improve handling of C2 #IN frames serialization
       (diewald)
+    - [bugfix] Restrict term length to never exceed Lucene
+      boundaries (diewald)
 
 0.62.2 2024-02-20
     - [feature] Support MMap directory parameters directly

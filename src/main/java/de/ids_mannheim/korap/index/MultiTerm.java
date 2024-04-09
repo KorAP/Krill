@@ -56,6 +56,8 @@ public class MultiTerm implements Comparable<MultiTerm> {
 
     private static short i, l;
 
+    private static final int MAX_TERM_LENGTH = 1024;
+    
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
     private final Logger log = LoggerFactory
@@ -122,6 +124,11 @@ public class MultiTerm implements Comparable<MultiTerm> {
      * @return The {@link MultIterm} object for chaining.
      */
     public MultiTerm setTerm (String term) {
+        if (term.length() > (MAX_TERM_LENGTH - 2)) {
+            term = term.substring(0, MAX_TERM_LENGTH - 2);
+            log.warn("Term %s... exceeds %i cahracters - cutted", term, MAX_TERM_LENGTH);
+        }
+
         this.term = term;
         return this;
     };
@@ -468,7 +475,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
                                 + termSurface[0]);
             };
         };
-        this.term = _unescape(stringOffset[0]);
+        this.setTerm(_unescape(stringOffset[0]));
     };
 
 

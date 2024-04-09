@@ -24,6 +24,7 @@ public class TestIndexer {
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private String info = "usage: Krill indexer";
     private File outputDirectory = new File("test-index");
+    private File outputDirectory2 = new File("test-index2");
 
     @Test
     public void testArguments () throws IOException {
@@ -91,6 +92,17 @@ public class TestIndexer {
         assertEquals(true, outputStream.toString().startsWith(info));
     }
 
+    @Test
+    public void testUnicodeProblem () throws IOException {
+        Indexer.main(new String[] {
+                "-c", "src/test/resources/krill.properties",
+                "-i", "src/test/resources/bug",
+                "-o", "test-index2"
+            });
+        logger.info(outputStream.toString());
+        assertEquals(outputStream.toString(), "Added 1 file.\n");
+    }
+
     @Before
     public void setOutputStream () {
         System.setOut(new PrintStream(outputStream));
@@ -107,6 +119,11 @@ public class TestIndexer {
         if (outputDirectory.exists()) {
             logger.debug("Output directory exists");
             deleteFile(outputDirectory);
+            deleteFile(outputDirectory2);
+        }
+        if (outputDirectory2.exists()) {
+            logger.debug("Output directory 2 exists");
+            deleteFile(outputDirectory2);
         }
     }
 
