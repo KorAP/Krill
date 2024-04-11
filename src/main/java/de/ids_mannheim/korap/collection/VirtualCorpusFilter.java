@@ -48,6 +48,15 @@ public class VirtualCorpusFilter extends Filter {
         return docBits.createBitDocIdSet();
     }
 
+    @Override
+    public String toString () {
+        return "vcFilter("+vcId+")";
+    }
+    
+    public DocBitsSupplier getDocBitsSupplier () {
+        return docBitsSupplier;
+    }
+    
     public class DocBitsSupplier {
 
         private Filter filter;
@@ -97,8 +106,4 @@ public class VirtualCorpusFilter extends Filter {
         }
     }
     
-    @Override
-    public String toString () {
-        return "vcFilter("+vcId+")";
-    }
 }
