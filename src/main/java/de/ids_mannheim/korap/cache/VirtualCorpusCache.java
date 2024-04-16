@@ -35,7 +35,8 @@ public class VirtualCorpusCache {
 
     public static Pattern vcNamePattern = Pattern.compile("[a-zA-Z0-9]+[a-zA-Z_0-9-.]+");
 
-    public static final String CACHE_LOCATION = "vc-cache";
+    public static String CACHE_LOCATION = "vc-cache";
+    
     public static int CAPACITY = 5;
     public static final Map<String, Map<String, DocBits>> map = Collections
             .synchronizedMap(new LinkedHashMap<String, Map<String, DocBits>>(
@@ -60,7 +61,6 @@ public class VirtualCorpusCache {
         File dir = new File(CACHE_LOCATION);
         dir.mkdirs();
     }
-
 
     /**
      * Path traversal must not be allowed using the VC ID.

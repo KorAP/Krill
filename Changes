@@ -1,5 +1,6 @@
-0.62.3 2024-04-11
+0.62.3 2024-04-16
     - [cleanup] Added getDocBitsSupplier to VirtualCorpusFilter (margaretha)
+    - [feature] Make VC cache location customizable (margaretha)
 
 0.62.2 2024-02-20
     - [feature] Support MMap directory parameters directly
