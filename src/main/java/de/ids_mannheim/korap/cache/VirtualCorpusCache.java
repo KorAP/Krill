@@ -139,7 +139,7 @@ public class VirtualCorpusCache {
         }
         
         DocBitsSupplier docBitsSupplier = new VirtualCorpusFilter(
-                vcId).new DocBitsSupplier();
+                vcId).getDocBitsSupplier();
         String leafFingerprint;
         for (LeafReaderContext context : index.reader().leaves()) {
             leafFingerprint = Fingerprinter.create(
