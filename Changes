@@ -1,4 +1,4 @@
-0.62.3 2024-04-16
+0.62.3 2024-04-17
     - [cleanup] Added getDocBitsSupplier to VirtualCorpusFilter (margaretha)
     - [feature] Make VC cache location customizable (margaretha)
     - [bugfix] Improve handling of C2 #IN frames serialization
