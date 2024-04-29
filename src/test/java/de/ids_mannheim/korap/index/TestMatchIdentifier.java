@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.Ignore;
@@ -30,6 +31,7 @@ import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.match.MatchIdentifier;
 import de.ids_mannheim.korap.response.match.PosIdentifier;
+import de.ids_mannheim.korap.util.KrillConfiguration;
 import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)

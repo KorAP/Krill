@@ -2,15 +2,13 @@ package de.ids_mannheim.korap.search;
 
 import static de.ids_mannheim.korap.TestSimple.getJsonString;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
@@ -24,9 +22,10 @@ import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.Match;
+import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
+import de.ids_mannheim.korap.util.KrillConfiguration;
 
 @RunWith(JUnit4.class)
 public class TestKrill {
