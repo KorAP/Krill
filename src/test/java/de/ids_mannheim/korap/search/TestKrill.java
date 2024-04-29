@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Properties;
 
 import org.junit.Test;
 import org.junit.Ignore;
@@ -27,6 +28,8 @@ import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.SearchContext;
+import de.ids_mannheim.korap.util.KrillConfiguration;
+import de.ids_mannheim.korap.util.KrillProperties;
 
 @RunWith(JUnit4.class)
 public class TestKrill {
@@ -416,6 +419,52 @@ public class TestKrill {
                 kr.getMatch(0).getSnippetBrackets());
     };
 
+
+    @Test
+    public void searchJSONmatchSize () throws IOException {
+        // Limiting default match token size
+        KrillIndex ki = new KrillIndex();
+        KrillConfiguration config = new KrillConfiguration();
+        config.setMaxMatchTokens(2);
+        ki.setKrillConfig(config);
+        
+        // Indexing test files
+        for (String i : new String[] { "00001" }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+        String json = getJsonString(getClass()
+                .getResource("/queries/position/sentence-contain-token.json").getFile());
+
+        Krill ks = new Krill(json);
+        Result kr = ks.apply(ki);
+        assertEquals(78, kr.getTotalResults());
+        Match match = kr.getMatch(0);
+        System.out.println(match);
+        assertEquals(
+                "... des lateinischen Alphabets und ein Vokal. [[Der Buchstabe]<!>] A hat in deutschen Texten eine ...",
+                kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+                "<span class=\"context-left\"><span class=\"more\"></span>des lateinischen Alphabets und ein Vokal. </span><span class=\"match\"><mark>Der Buchstabe</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> A hat in deutschen Texten eine<span class=\"more\"></span></span>",
+                kr.getMatch(0).getSnippetHTML());
+        
+        // Change limit via Krill
+        Krill ks2 = new Krill(json);
+        KrillConfiguration config2 = new KrillConfiguration();
+        config.setMaxMatchTokens(3);
+        ks2.setConfig(config2);
+        Result kr2 = ks.apply(ki);
+        
+        assertEquals(
+                "... des lateinischen Alphabets und ein Vokal. [[Der Buchstabe A]<!>] hat in deutschen Texten eine durchschnittliche ...",
+                kr2.getMatch(0).getSnippetBrackets());
+        assertEquals(
+                "<span class=\"context-left\"><span class=\"more\"></span>des lateinischen Alphabets und ein Vokal. </span><span class=\"match\"><mark>Der Buchstabe A</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> hat in deutschen Texten eine durchschnittliche<span class=\"more\"></span></span>",
+                kr2.getMatch(0).getSnippetHTML());
+    };
+    
 
     @Test
     public void searchJSONstartPage () throws IOException {

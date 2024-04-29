@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.Ignore;
@@ -30,6 +31,7 @@ import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.match.MatchIdentifier;
 import de.ids_mannheim.korap.response.match.PosIdentifier;
+import de.ids_mannheim.korap.util.KrillConfiguration;
 import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
@@ -943,6 +945,55 @@ public class TestMatchIdentifier {
         assertEquals("a", res.at("/tokens/match/3").asText());
         assertTrue(res.at("/tokens/match/4").isMissingNode());
     };
+    
+    @Test
+    public void testMatchInfoWithKrillConfig () throws IOException, QueryException {
+        KrillIndex ki = new KrillIndex();
+//        KrillConfiguration config = new KrillConfiguration();
+//        config.setMaxMatchTokens(2);
+//        ki.setKrillConfig(config);
+        
+        // Indexing test files
+        ki.addDoc(getClass().getResourceAsStream("/wiki/WUD17-C94-39360.json.gz"), true);
+        ki.commit();
+        Match km;
+        
+        ArrayList<String> foundry = new ArrayList<String>();
+        foundry.add("opennlp");
+        ArrayList<String> layer = new ArrayList<String>();
+        layer.add("opennlp");
+
+        km = ki.getMatchInfo("match-WUD17/C94/39360-p390-396",
+                "tokens",
+                false,
+                foundry,
+                layer,
+                false,
+                false,
+                false,
+                false,
+                true); 
+
+        assertEquals("... [[g. Artikel vornimmst, wäre es fein]] ...", km.getSnippetBrackets());
+
+        
+        KrillConfiguration config = new KrillConfiguration();
+        config.setMaxMatchTokens(2);
+        Match km2 = ki.getMatchInfo("match-WUD17/C94/39360-p390-396",
+                "tokens",
+                false,
+                foundry,
+                layer,
+                false,
+                false,
+                false,
+                false,
+                true, // extendToSentence
+                config); 
+        
+        assertEquals("... [[g. Artikel vornimmst, wäre es fein]] ...", km2.getSnippetBrackets());
+
+    }
     
 
     @Test

@@ -180,7 +180,7 @@ public class Indexer {
         Options options = new Options();
         options.addOption(Option.builder("c").longOpt("config")
                 .desc("configuration file (defaults to "
-                        + KrillProperties.defaultPropertiesLocation
+                        + KrillProperties.DEFAULT_PROPERTIES_LOCATION
                         + ").")
                 .hasArg().argName("properties file").required().build());
         options.addOption(Option.builder("i").longOpt("inputDir")
