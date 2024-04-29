@@ -72,6 +72,7 @@ import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.Text;
 import de.ids_mannheim.korap.util.Fingerprinter;
+import de.ids_mannheim.korap.util.KrillConfiguration;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
@@ -174,6 +175,8 @@ public final class KrillIndex implements IndexInfo {
     private int commitCounter = 0;
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
+
+    private KrillConfiguration krillConfig;
 
     // private ByteBuffer bbTerm;
 
@@ -429,6 +432,18 @@ public final class KrillIndex implements IndexInfo {
     public void setAutoCommit (int value) {
         this.autoCommit = value;
     };
+    
+    public KrillConfiguration getKrillConfig () {
+        if (this.krillConfig == null) {
+            setKrillConfig(KrillConfiguration.createDefaultConfiguration());
+        }
+        return krillConfig;
+    }
+
+
+    public void setKrillConfig (KrillConfiguration config) {
+        this.krillConfig = config;
+    }
 
 
     /**
@@ -972,11 +987,20 @@ public final class KrillIndex implements IndexInfo {
                                boolean includeSnippets, boolean includeTokens,
                                boolean includeHighlights, boolean extendToSentence)
             throws QueryException {
-
+        return getMatchInfo(idString, field, info, foundry, layer, includeSpans,
+                includeSnippets, includeTokens, includeHighlights,
+                extendToSentence, getKrillConfig());
+    };
+        
+    public Match getMatchInfo (String idString, String field, boolean info,
+            List<String> foundry, List<String> layer, boolean includeSpans,
+            boolean includeSnippets, boolean includeTokens,
+            boolean includeHighlights, boolean extendToSentence,
+            KrillConfiguration config) throws QueryException {
         if (DEBUG)
             log.trace("Get info on {}", idString);
-
-        Match match = new Match(idString, includeHighlights);
+        
+        Match match = new Match(config, idString, includeHighlights);
 
         if (this.getVersion() != null)
             match.setVersion(this.getVersion());
@@ -1202,8 +1226,8 @@ public final class KrillIndex implements IndexInfo {
                             && spanContext[0] < spanContext[1]) {
 
                         // Match needs to be cutted!
-                        if ((spanContext[1] - spanContext[0]) > match.getMaxMatchTokens()) {
-                            int contextLength = match.getMaxMatchTokens() - match.getLength();
+                        if ((spanContext[1] - spanContext[0]) > config.getMaxMatchTokens()) {
+                            int contextLength = config.getMaxMatchTokens() - match.getLength();
                             int halfContext = contextLength / 2;
 
                             // This is the extended context calculated
@@ -1216,8 +1240,8 @@ public final class KrillIndex implements IndexInfo {
                             }
                         }
 
-                        match.setStartPos(spanContext[0]);
-                        match.setEndPos(spanContext[1]);
+                        match.setStartPos(config.getMaxMatchTokens(),spanContext[0]);
+                        match.setEndPos(config.getMaxMatchTokens(),spanContext[1]);
 						match.potentialStartPosChar = spanContext[2];
 						match.potentialEndPosChar = spanContext[3];
                         match.startMore = false;
@@ -1570,8 +1594,12 @@ public final class KrillIndex implements IndexInfo {
                             ? lreader.document(localDocID, fieldsSet)
                             : lreader.document(localDocID);
 
+                    KrillConfiguration config = ks.getConfig();
+                    if (config == null) {
+                        config = getKrillConfig();
+                    }
                     // Create new Match
-                    final Match match = new Match(pto, localDocID,
+                    final Match match = new Match(config, pto, localDocID,
                             spans.start(), spans.end());
                     
                     // Add snippet if existing

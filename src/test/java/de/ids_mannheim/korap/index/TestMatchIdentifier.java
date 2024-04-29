@@ -1,33 +1,30 @@
 package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.junit.Test;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanTermQuery;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import de.ids_mannheim.korap.response.Result;
-
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.QueryBuilder;
-import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.match.MatchIdentifier;
 import de.ids_mannheim.korap.response.match.PosIdentifier;
 import de.ids_mannheim.korap.util.QueryException;
