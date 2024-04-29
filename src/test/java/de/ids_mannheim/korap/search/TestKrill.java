@@ -418,6 +418,34 @@ public class TestKrill {
 
 
     @Test
+    public void searchJSONmatchSize () throws IOException {
+        de.ids_mannheim.korap.response.Match.MAX_MATCH_TOKENS = 2;
+        assertEquals(2,de.ids_mannheim.korap.response.Match.getMaxMatchTokens());
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        for (String i : new String[] { "00001" }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+        String json = getJsonString(getClass()
+                .getResource("/queries/position/sentence-contain-token.json").getFile());
+
+        Krill ks = new Krill(json);
+        Result kr = ks.apply(ki);
+        assertEquals(78, kr.getTotalResults());
+        assertEquals(
+                "... des lateinischen Alphabets und ein Vokal. [[Der Buchstabe A hat in deutschen Texten eine durchschnittliche Häufigkeit von 6,51 %.]] Er ist damit der sechsthäufigste Buchstabe ...",
+                kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+                "<span class=\"context-left\"><span class=\"more\"></span>des lateinischen Alphabets und ein Vokal. </span><span class=\"match\"><mark>Der Buchstabe</mark> A hat in deutschen Texten eine durchschnittliche Häufigkeit von 6,51 %.</span><span class=\"context-right\"> Er ist damit der sechsthäufigste Buchstabe<span class=\"more\"></span></span>",
+                kr.getMatch(0).getSnippetHTML());
+    };
+    
+
+    @Test
     public void searchJSONstartPage () throws IOException {
         // Construct index
         KrillIndex ki = new KrillIndex();

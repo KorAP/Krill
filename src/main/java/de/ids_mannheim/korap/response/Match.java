@@ -33,6 +33,7 @@ import de.ids_mannheim.korap.response.match.HighlightCombinatorElement;
 import de.ids_mannheim.korap.response.match.MatchIdentifier;
 import de.ids_mannheim.korap.response.match.PosIdentifier;
 import de.ids_mannheim.korap.response.match.Relation;
+import de.ids_mannheim.korap.util.KrillProperties;
 
 /*
  * The snippet building algorithm is quite complicated for now
@@ -84,8 +85,6 @@ public class Match extends AbstractDocument {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Match.class);
-
-	private static final int MAX_MATCH_TOKENS = 50;
 	
 	// end marker of highlights that are pagebreaks
 	private static final int PB_MARKER = -99999;
@@ -157,6 +156,29 @@ public class Match extends AbstractDocument {
 
     private PositionsToOffset positionsToOffset;
     private boolean processed = false;
+
+    // Some initializations ...
+
+    @JsonIgnore
+	public static int MAX_MATCH_TOKENS = 50;
+
+    {
+        Properties prop = KrillProperties.loadDefaultProperties();
+        Properties info = KrillProperties.loadInfo();
+        if (info != null) {
+            String maxMatchTokens = prop.getProperty("krill.match.max_token_size", "50");
+
+            if (maxMatchTokens != null) {
+                try {
+                    MAX_MATCH_TOKENS = Integer.parseInt(maxMatchTokens);
+                }
+                catch (NumberFormatException e) {
+                    log.error(
+                        "krill.match.max_token_size expected to be a numerical value");
+                };
+            };
+        };
+    };
 
 
     /**
@@ -507,7 +529,7 @@ public class Match extends AbstractDocument {
 	};
 
     @JsonIgnore
-    public int getMaxMatchTokens () {
+    public static int getMaxMatchTokens () {
         return MAX_MATCH_TOKENS;
     }
     
@@ -577,8 +599,8 @@ public class Match extends AbstractDocument {
     @JsonIgnore
     public void setStartPos (int pos) {
         this.startPos = pos;
-		if (this.endPos != -1 && (this.endPos - pos) > MAX_MATCH_TOKENS) {
-			this.endPos = pos + MAX_MATCH_TOKENS;
+		if (this.endPos != -1 && (this.endPos - pos) > getMaxMatchTokens()) {
+			this.endPos = pos + getMaxMatchTokens();
 			this.endCutted = true;
 		};
     };
