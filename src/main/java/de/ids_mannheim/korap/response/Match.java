@@ -1,14 +1,23 @@
 package de.ids_mannheim.korap.response;
 
+import static de.ids_mannheim.korap.util.KrillByte.unsignedByte;
+import static de.ids_mannheim.korap.util.KrillString.codePointSubstring;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
 import org.slf4j.Logger;
@@ -18,13 +27,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import static de.ids_mannheim.korap.util.KrillByte.*;
-import static de.ids_mannheim.korap.util.KrillString.codePointSubstring;
 import de.ids_mannheim.korap.index.AbstractDocument;
 import de.ids_mannheim.korap.index.PositionsToOffset;
 import de.ids_mannheim.korap.query.SpanElementQuery;
@@ -33,6 +40,7 @@ import de.ids_mannheim.korap.response.match.HighlightCombinatorElement;
 import de.ids_mannheim.korap.response.match.MatchIdentifier;
 import de.ids_mannheim.korap.response.match.PosIdentifier;
 import de.ids_mannheim.korap.response.match.Relation;
+import de.ids_mannheim.korap.util.KrillConfiguration;
 
 /*
  * The snippet building algorithm is quite complicated for now
@@ -84,8 +92,6 @@ public class Match extends AbstractDocument {
 
     // Logger
     private final static Logger log = LoggerFactory.getLogger(Match.class);
-
-	private static final int MAX_MATCH_TOKENS = 50;
 	
 	// end marker of highlights that are pagebreaks
 	private static final int PB_MARKER = -99999;
@@ -151,17 +157,17 @@ public class Match extends AbstractDocument {
     @JsonIgnore
     public boolean startMore = true, endMore = true;
 
-    private Collection<byte[]> payload;
+//    private Collection<byte[]> payload;
     private ArrayList<Highlight> highlight;
     private LinkedList<int[]> span;
 
     private PositionsToOffset positionsToOffset;
     private boolean processed = false;
-
-
+    
     /**
      * Constructs a new Match object.
      * Todo: Maybe that's not necessary!
+     * @param config configuration e.g. maxMatchTokens
      * 
      * @param pto
      *            The PositionsToOffset object, containing relevant
@@ -177,12 +183,12 @@ public class Match extends AbstractDocument {
      * @see #snippetBrackets()
      * @see PositionsToOffset
      */
-    public Match (PositionsToOffset pto, int localDocID, int startPos,
-                  int endPos) {
+    public Match (KrillConfiguration config, PositionsToOffset pto,
+                  int localDocID, int startPos, int endPos) {
         this.positionsToOffset = pto;
         this.localDocID = localDocID;
-        this.setStartPos(startPos);
-        this.setEndPos(endPos);
+        this.setStartPos(config, startPos);
+        this.setEndPos(config, endPos);
     };
 
 
@@ -201,7 +207,7 @@ public class Match extends AbstractDocument {
      *            Boolean value indicating if possible provided
      *            highlight information should be ignored or not.
      */
-    public Match (String idString, boolean includeHighlights) {
+    public Match (KrillConfiguration config, String idString, boolean includeHighlights) {
         MatchIdentifier id = new MatchIdentifier(idString);
 
         if (id.getStartPos() > -1) {
@@ -215,8 +221,8 @@ public class Match extends AbstractDocument {
             this.addString("ID", id.getDocID());
             // </legacy>
 
-            this.setStartPos(id.getStartPos());
-            this.setEndPos(id.getEndPos());
+            this.setStartPos(config, id.getStartPos());
+            this.setEndPos(config, id.getEndPos());
 
             if (includeHighlights)
                 for (int[] pos : id.getPos()) {
@@ -506,11 +512,6 @@ public class Match extends AbstractDocument {
 		this.addHighlight(new Highlight(start, pagenumber));
 	};
 
-    @JsonIgnore
-    public int getMaxMatchTokens () {
-        return MAX_MATCH_TOKENS;
-    }
-    
     /**
      * Get document id.
      */
@@ -575,10 +576,11 @@ public class Match extends AbstractDocument {
      *            The positional offset.
      */
     @JsonIgnore
-    public void setStartPos (int pos) {
+    public void setStartPos (KrillConfiguration config, int pos) {
+        int maxMatchTokens = config.getMaxMatchTokens();
         this.startPos = pos;
-		if (this.endPos != -1 && (this.endPos - pos) > MAX_MATCH_TOKENS) {
-			this.endPos = pos + MAX_MATCH_TOKENS;
+		if (this.endPos != -1 && (this.endPos - pos) > maxMatchTokens) {
+			this.endPos = pos + maxMatchTokens;
 			this.endCutted = true;
 		};
     };
@@ -623,9 +625,10 @@ public class Match extends AbstractDocument {
      *            The positional offset.
      */
     @JsonIgnore
-    public void setEndPos (int pos) {
-		if (this.startPos != -1 && (pos - this.startPos) > MAX_MATCH_TOKENS) {
-			pos = this.startPos + MAX_MATCH_TOKENS;
+    public void setEndPos (KrillConfiguration config, int pos) {
+        int maxMatchTokens = config.getMaxMatchTokens();
+		if (this.startPos != -1 && (pos - this.startPos) > maxMatchTokens) {
+			pos = this.startPos + maxMatchTokens;
 			this.endCutted = true;
 		};
         this.endPos = pos;

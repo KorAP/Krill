@@ -1,0 +1,29 @@
+{
+    "query": {
+        "operands": [
+            {
+                "@type": "koral:span",
+                "wrap": {
+                    "foundry": "base",
+                    "@type": "koral:term",
+                    "layer": "s",
+                    "key": "s"
+                }
+            },
+            {
+                "@type": "koral:token",
+                "wrap": {
+                    "foundry": "opennlp",
+                    "@type": "koral:term",
+                    "match": "match:eq",
+                    "key": "ADJA",
+                    "layer": "p"
+                }
+            }
+        ],
+        "frames": ["frames:contains"],
+        "@type": "koral:group",
+        "operation": "operation:position"
+    },
+    "@context": "http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld"
+}

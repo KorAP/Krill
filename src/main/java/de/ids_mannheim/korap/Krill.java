@@ -13,6 +13,8 @@ import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Response;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.VirtualCorpusResponse;
+import de.ids_mannheim.korap.util.KrillConfiguration;
+import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
@@ -59,6 +61,7 @@ public class Krill extends Response {
     private KrillIndex index;
     private SpanQuery spanQuery;
     private JsonNode request;
+    private KrillConfiguration config;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -346,5 +349,14 @@ public class Krill extends Response {
         List<String> fieldValues = index.getFieldVector(fieldName, kc);
         VirtualCorpusResponse r = new VirtualCorpusResponse();
         return r.createKoralQueryForField(fieldName, fieldValues);
+    }
+
+
+    public KrillConfiguration getConfig () {
+        return config;
+    }
+    
+    public void setConfig (KrillConfiguration config) {
+        this.config = config;
     }
 };
