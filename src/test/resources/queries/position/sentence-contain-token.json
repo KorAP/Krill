@@ -1,6 +1,6 @@
 {
   "meta":{
-    "startPage" : 2,
+    "startPage" : 1,
     "count" : 5,
     "context" : {
       "left" : [ "token", 5 ],
@@ -24,7 +24,7 @@
                     "foundry": "opennlp",
                     "@type": "koral:term",
                     "match": "match:eq",
-                    "key": "ADJA",
+                    "key": "PROAV",
                     "layer": "p"
                 }
             }
