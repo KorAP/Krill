@@ -12,6 +12,8 @@ public class KrillConfiguration {
             .getLogger(KrillConfiguration.class);
 
     public int maxMatchTokens = 50;
+    public int maxContextTokens = 25;
+    public int maxContextChars = 500;
     
     public static KrillConfiguration createDefaultConfiguration() {
         return new KrillConfiguration();
@@ -19,21 +21,21 @@ public class KrillConfiguration {
     
     public static KrillConfiguration createNewConfiguration (Properties prop) {
         KrillConfiguration config = new KrillConfiguration();
-        
-         String maxMatchTokens = prop.getProperty("krill.match.max_token_size",
-                 "50");
 
-         if (maxMatchTokens != null) {
-             try {
-                 config.maxMatchTokens = Integer.parseInt(maxMatchTokens);
-             }
-             catch (NumberFormatException e) {
-                 log.error(
-                         "krill.match.max_token_size expected to be a numerical value");
-             };
-         };
-         return config;
-     }
+        String maxMatchTokens = prop.getProperty("krill.max.match.tokens",
+                "50");
+        String maxContextTokens = prop.getProperty("krill.max.context.tokens",
+                "500");
+
+        try {
+            config.maxMatchTokens = Integer.parseInt(maxMatchTokens);
+            config.maxContextTokens = Integer.parseInt(maxContextTokens);
+        }
+        catch (NumberFormatException e) {
+            log.error("A Krill property expects numerical values: "+e.getMessage());
+        };
+        return config;
+    }
     
     public int getMaxMatchTokens () {
         return maxMatchTokens;
@@ -43,5 +45,12 @@ public class KrillConfiguration {
         this.maxMatchTokens = maxMatchTokens;
     }
     
+    public int getMaxContextTokens () {
+        return maxContextTokens;
+    }
+    
+    public void setMaxContextTokens (int maxContextTokens) {
+        this.maxContextTokens = maxContextTokens;
+    }
     
 }
