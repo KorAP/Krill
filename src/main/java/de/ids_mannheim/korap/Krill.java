@@ -12,9 +12,9 @@ import de.ids_mannheim.korap.cache.VirtualCorpusCache;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Response;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.VirtualCorpusResponse;
 import de.ids_mannheim.korap.util.KrillConfiguration;
-import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
 
 /**
@@ -304,9 +304,17 @@ public class Krill extends Response {
         else if (this.index == null) {
             kr.addError(601, "Unable to find index");
         }
-
+        
         // Apply search
         else {
+            
+            KrillConfiguration config = getConfig();
+            if (config != null) {
+                KrillMeta meta = this.getMeta();
+                SearchContext context = meta.getContext();
+                context.updateContext(config);
+            }
+            
             // This contains meta and matches
             kr = this.index.search(this);
             // this.getCollection().setIndex(this.index);

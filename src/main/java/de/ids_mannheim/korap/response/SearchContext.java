@@ -1,11 +1,13 @@
 package de.ids_mannheim.korap.response;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.*;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
+import de.ids_mannheim.korap.util.KrillConfiguration;
 
 public class SearchContext {
     ObjectMapper mapper = new ObjectMapper();
@@ -25,14 +27,14 @@ public class SearchContext {
 
 
     public SearchContext () {};
-
-
+    
+    // EM: not used?
     public SearchContext (String spanContext) {
         this.spanType = true;
         this.spanContext = spanContext;
     };
 
-
+    // EM: seems to be deprecated. used in a deprecated search method
     public SearchContext (boolean leftTokenContext, short leftContext,
                           boolean rightTokenContext, short rightContext) {
         this.spanType = false;
@@ -69,40 +71,62 @@ public class SearchContext {
         return this;
     };
 
+    public void updateContext (KrillConfiguration krillConfig) {
+        left.setMaxLength(krillConfig.getMaxContextTokens());
+        right.setMaxLength(krillConfig.getMaxContextTokens());
+        
+        // update token length
+        if (left.isToken) {
+            left.setLength(left.getLength());
+        }
+        if (right.isToken) {
+            right.setLength(right.getLength());
+        }
+    }
+    
+    
     public class SearchContextSide {
-        private boolean type = true;
-        private short length = 6;
-        private short maxLength = 500;
+        private boolean isToken = true;
+        private int length = 6;
+        private int maxLength = 500;
 
-
+        public SearchContextSide () {}
+        
+        public int getMaxLength () {
+            return maxLength;
+        }
+        public void setMaxLength (int maxLength) {
+            this.maxLength = maxLength;
+        }
+        
         public boolean isToken () {
-            return this.type;
+            return this.isToken;
         };
 
 
         public boolean isCharacter () {
-            return !(this.type);
+            return !(this.isToken);
         };
 
 
         public SearchContextSide setToken (boolean value) {
-            this.type = value;
+            this.isToken = value;
             return this;
         };
 
 
         public SearchContextSide setCharacter (boolean value) {
-            this.type = !(value);
+            this.isToken = !(value);
             return this;
         };
 
 
-        public short getLength () {
+        public int getLength () {
             return this.length;
         };
 
 
-        public SearchContextSide setLength (short value) {
+        public SearchContextSide setLength (int value) {
             if (value >= 0) {
                 if (value <= maxLength) {
                     this.length = value;
@@ -112,11 +136,6 @@ public class SearchContext {
                 };
             };
             return this;
-        };
-
-
-        public SearchContextSide setLength (int value) {
-            return this.setLength((short) value);
         };
 
 

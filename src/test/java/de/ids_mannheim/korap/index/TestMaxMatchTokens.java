@@ -46,13 +46,15 @@ public class TestMaxMatchTokens {
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
-        assertEquals(78, kr.getTotalResults());
+        assertEquals(3, kr.getTotalResults());
 
+        assertTrue(kr.getMatch(0).endCutted);
+        
         assertEquals(
-                "... sechsthäufigste Buchstabe in deutschen Texten. [[Mit Ausnahme]<!>] von Fremdwörtern und Namen ist ...",
+                "... eine durchschnittliche Häufigkeit von 6,51 %. [[Er ist]<!>] damit der sechsthäufigste Buchstabe in ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals(
-                "<span class=\"context-left\"><span class=\"more\"></span>sechsthäufigste Buchstabe in deutschen Texten. </span><span class=\"match\"><mark>Mit Ausnahme</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> von Fremdwörtern und Namen ist<span class=\"more\"></span></span>",
+                "<span class=\"context-left\"><span class=\"more\"></span>eine durchschnittliche Häufigkeit von 6,51 %. </span><span class=\"match\"><mark>Er ist</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> damit der sechsthäufigste Buchstabe in<span class=\"more\"></span></span>",
                 kr.getMatch(0).getSnippetHTML());
     }
     
@@ -67,10 +69,10 @@ public class TestMaxMatchTokens {
         Result kr = ks.apply(ki);
 
         assertEquals(
-                "... sechsthäufigste Buchstabe in deutschen Texten. [[Mit Ausnahme von]<!>] Fremdwörtern und Namen ist das ...",
+                "... eine durchschnittliche Häufigkeit von 6,51 %. [[Er ist damit]<!>] der sechsthäufigste Buchstabe in deutschen ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals(
-                "<span class=\"context-left\"><span class=\"more\"></span>sechsthäufigste Buchstabe in deutschen Texten. </span><span class=\"match\"><mark>Mit Ausnahme von</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> Fremdwörtern und Namen ist das<span class=\"more\"></span></span>",
+                "<span class=\"context-left\"><span class=\"more\"></span>eine durchschnittliche Häufigkeit von 6,51 %. </span><span class=\"match\"><mark>Er ist damit</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> der sechsthäufigste Buchstabe in deutschen<span class=\"more\"></span></span>",
                 kr.getMatch(0).getSnippetHTML());
     };
     
@@ -86,12 +88,12 @@ public class TestMaxMatchTokens {
         ks.setConfig(config);
         
         Result kr = ks.apply(ki);
-
+        
         assertEquals(
-                "... sechsthäufigste Buchstabe in deutschen Texten. [[Mit]<!>] Ausnahme von Fremdwörtern und Namen ...",
+                "... Häufigkeit von 6,51 %. [[Er]<!>] ist damit der ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals(
-                "<span class=\"context-left\"><span class=\"more\"></span>sechsthäufigste Buchstabe in deutschen Texten. </span><span class=\"match\"><mark>Mit</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> Ausnahme von Fremdwörtern und Namen<span class=\"more\"></span></span>",
+                "<span class=\"context-left\"><span class=\"more\"></span>Häufigkeit von 6,51 %. </span><span class=\"match\"><mark>Er</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> ist damit der<span class=\"more\"></span></span>",
                 kr.getMatch(0).getSnippetHTML());
     };
 
