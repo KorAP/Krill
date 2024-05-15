@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21d9fdb4_668da81c",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 579,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-05-15T07:10:16Z",
+      "side": 1,
+      "message": "Passing the config to the setter, when this is part of the constructor already is a weird choice.",
+      "range": {
+        "startLine": 579,
+        "startChar": 29,
+        "endLine": 579,
+        "endChar": 56
+      },
+      "revId": "da169750b54a68021f5ca8750739a6dfb9e12e21",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f0544cb_71cc05be",
+        "filename": "src/main/java/de/ids_mannheim/korap/util/KrillConfiguration.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-05-15T07:10:16Z",
+      "side": 1,
+      "message": "What is the benefit of having a separate file instead of extending KrillProperties? This is currently used by the indexer and could also benefit from the integer conversion mechanism here.",
+      "range": {
+        "startLine": 8,
+        "startChar": 13,
+        "endLine": 8,
+        "endChar": 31
+      },
+      "revId": "da169750b54a68021f5ca8750739a6dfb9e12e21",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
