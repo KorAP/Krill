@@ -26,10 +26,13 @@ public class KrillConfiguration {
                 "50");
         String maxContextTokens = prop.getProperty("krill.max.context.tokens",
                 "500");
+        String maxContextChars = prop.getProperty("krill.max.context.chars",
+                "500");
 
         try {
             config.maxMatchTokens = Integer.parseInt(maxMatchTokens);
             config.maxContextTokens = Integer.parseInt(maxContextTokens);
+            config.maxContextChars = Integer.parseInt(maxContextChars);
         }
         catch (NumberFormatException e) {
             log.error("A Krill property expects numerical values: "+e.getMessage());
@@ -53,4 +56,11 @@ public class KrillConfiguration {
         this.maxContextTokens = maxContextTokens;
     }
     
+    public int getMaxContextChars () {
+        return maxContextChars;
+    }
+    
+    public void setMaxContextChars (int maxContextChars) {
+        this.maxContextChars = maxContextChars;
+    }
 }

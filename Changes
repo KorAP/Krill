@@ -1,7 +1,9 @@
 0.62.4 2024-05-15
     - [feature] Make match size configurable (address #128, 
       diewald & margaretha)
-    - [feature] Make context size configurable (#128)
+    - [feature] Make context size configurable (#128, margaretha)
+    - [enhancement] Make separate max length variables for token and 
+      char context (margaretha) 
     
 0.62.3 2024-04-16
     - [cleanup] Added getDocBitsSupplier to VirtualCorpusFilter (margaretha)

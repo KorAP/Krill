@@ -72,32 +72,42 @@ public class SearchContext {
     };
 
     public void updateContext (KrillConfiguration krillConfig) {
-        left.setMaxLength(krillConfig.getMaxContextTokens());
-        right.setMaxLength(krillConfig.getMaxContextTokens());
+        int maxContextTokens = krillConfig.getMaxContextTokens();
+        left.setMaxTokenLength(maxContextTokens);
+        right.setMaxTokenLength(maxContextTokens);
+        
+        int maxContextChars = krillConfig.getMaxContextChars();
+        left.setMaxCharLength(maxContextChars);
+        right.setMaxCharLength(maxContextChars);
         
         // update token length
-        if (left.isToken) {
-            left.setLength(left.getLength());
-        }
-        if (right.isToken) {
-            right.setLength(right.getLength());
-        }
+        left.setLength(left.getLength());
+        right.setLength(right.getLength());
     }
     
     
     public class SearchContextSide {
         private boolean isToken = true;
         private int length = 6;
-        private int maxLength = 500;
+        private int maxTokenLength = 60;
+        private int maxCharLength=500;
 
         public SearchContextSide () {}
         
-        public int getMaxLength () {
-            return maxLength;
+        public int getMaxTokenLength () {
+            return maxTokenLength;
         }
-        public void setMaxLength (int maxLength) {
-            this.maxLength = maxLength;
+        public void setMaxTokenLength (int maxLength) {
+            this.maxTokenLength = maxLength;
         }
+        
+        public int getMaxCharLength () {
+            return maxCharLength;
+        }
+        public void setMaxCharLength (int maxCharLength) {
+            this.maxCharLength = maxCharLength;
+        }
+       
         
         public boolean isToken () {
             return this.isToken;
@@ -127,12 +137,14 @@ public class SearchContext {
 
 
         public SearchContextSide setLength (int value) {
+            int maxLength = (isToken) ? maxTokenLength : maxCharLength;
+                    
             if (value >= 0) {
                 if (value <= maxLength) {
                     this.length = value;
                 }
                 else {
-                    this.length = this.maxLength;
+                    this.length = maxLength;
                 };
             };
             return this;
@@ -141,13 +153,15 @@ public class SearchContext {
 
         public void fromJson (JsonNode json) {
             String type = json.get(0).asText();
+            int length = json.get(1).asInt(this.length);
             if (type.equals("token")) {
                 this.setToken(true);
+                
             }
             else if (type.equals("char")) {
                 this.setCharacter(true);
             };
-            this.setLength(json.get(1).asInt(this.length));
+            this.setLength(length);
         };
     };
 
