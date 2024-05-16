@@ -24,6 +24,30 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "05bf13e3_c036e648",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 579,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-05-16T09:07:31Z",
+      "side": 1,
+      "message": "Right. Update in patch 7",
+      "parentUuid": "21d9fdb4_668da81c",
+      "range": {
+        "startLine": 579,
+        "startChar": 29,
+        "endLine": 579,
+        "endChar": 56
+      },
+      "revId": "da169750b54a68021f5ca8750739a6dfb9e12e21",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1f0544cb_71cc05be",
