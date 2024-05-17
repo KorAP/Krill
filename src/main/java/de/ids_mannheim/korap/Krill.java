@@ -60,6 +60,7 @@ public class Krill extends Response {
     private SpanQuery spanQuery;
     private JsonNode request;
 
+    private int maxTokenMatchSize;
     private final ObjectMapper mapper = new ObjectMapper();
 
     /**
@@ -346,5 +347,15 @@ public class Krill extends Response {
         List<String> fieldValues = index.getFieldVector(fieldName, kc);
         VirtualCorpusResponse r = new VirtualCorpusResponse();
         return r.createKoralQueryForField(fieldName, fieldValues);
+    }
+
+
+    public int getMaxTokenMatchSize () {
+        return maxTokenMatchSize;
+    }
+
+
+    public void setMaxTokenMatchSize (int maxMatchTokens) {
+        this.maxTokenMatchSize = maxMatchTokens;
     }
 };
