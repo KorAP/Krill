@@ -44,8 +44,8 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.MMapDirectory;
+import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.FixedBitSet;
@@ -175,12 +175,15 @@ public final class KrillIndex implements IndexInfo {
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
 
+    private int maxTokenMatchSize;
+
     // private ByteBuffer bbTerm;
 
     // Some initializations ...
     {
         Properties prop = KrillProperties.loadDefaultProperties();
         Properties info = KrillProperties.loadInfo();
+        
         if (info != null) {
             this.version = info.getProperty("krill.version");
             this.name = info.getProperty("krill.name");
@@ -188,9 +191,11 @@ public final class KrillIndex implements IndexInfo {
 
         // Check for auto commit value
         String autoCommitStr = null;
-        if (prop != null)
+        if (prop != null) {
             autoCommitStr = prop.getProperty("krill.index.commit.auto");
-
+            this.maxTokenMatchSize = KrillProperties.maxTokenMatchSize;
+        }
+        
         if (autoCommitStr != null) {
             try {
                 this.autoCommit = Integer.parseInt(autoCommitStr);
@@ -429,8 +434,15 @@ public final class KrillIndex implements IndexInfo {
     public void setAutoCommit (int value) {
         this.autoCommit = value;
     };
-
-
+    
+    public int getMaxTokenMatchSize () {
+        return maxTokenMatchSize;
+    }
+    
+    public void setMaxTokenMatchSize (int maxMatchTokens) {
+        this.maxTokenMatchSize = maxMatchTokens;
+    }
+    
     /**
      * Update a document in the index as a {@link FieldDocument}
      * if it already exists (based on the textSigle), otherwise
@@ -972,11 +984,20 @@ public final class KrillIndex implements IndexInfo {
                                boolean includeSnippets, boolean includeTokens,
                                boolean includeHighlights, boolean extendToSentence)
             throws QueryException {
-
+        return getMatchInfo(idString, field, info, foundry, layer, includeSpans,
+                includeSnippets, includeTokens, includeHighlights,
+                extendToSentence, maxTokenMatchSize);
+    };
+        
+    public Match getMatchInfo (String idString, String field, boolean info,
+            List<String> foundry, List<String> layer, boolean includeSpans,
+            boolean includeSnippets, boolean includeTokens,
+            boolean includeHighlights, boolean extendToSentence,
+            int maxMatchTokens) throws QueryException {
         if (DEBUG)
             log.trace("Get info on {}", idString);
-
-        Match match = new Match(idString, includeHighlights);
+        
+        Match match = new Match(maxMatchTokens, idString, includeHighlights);
 
         if (this.getVersion() != null)
             match.setVersion(this.getVersion());
@@ -1202,8 +1223,8 @@ public final class KrillIndex implements IndexInfo {
                             && spanContext[0] < spanContext[1]) {
 
                         // Match needs to be cutted!
-                        if ((spanContext[1] - spanContext[0]) > match.getMaxMatchTokens()) {
-                            int contextLength = match.getMaxMatchTokens() - match.getLength();
+                        if ((spanContext[1] - spanContext[0]) > maxMatchTokens) {
+                            int contextLength = maxMatchTokens - match.getLength();
                             int halfContext = contextLength / 2;
 
                             // This is the extended context calculated
@@ -1216,8 +1237,8 @@ public final class KrillIndex implements IndexInfo {
                             }
                         }
 
-                        match.setStartPos(spanContext[0]);
-                        match.setEndPos(spanContext[1]);
+                        match.setStartPos(maxMatchTokens,spanContext[0]);
+                        match.setEndPos(maxMatchTokens,spanContext[1]);
 						match.potentialStartPosChar = spanContext[2];
 						match.potentialEndPosChar = spanContext[3];
                         match.startMore = false;
@@ -1569,9 +1590,14 @@ public final class KrillIndex implements IndexInfo {
                     final Document doc = (fields != null)
                             ? lreader.document(localDocID, fieldsSet)
                             : lreader.document(localDocID);
-
+                    
+                    int maxMatchSize = maxTokenMatchSize;
+                    if (ks.getMaxTokenMatchSize() > 0) {
+                        maxMatchSize = ks.getMaxTokenMatchSize();
+                    };
+                    
                     // Create new Match
-                    final Match match = new Match(pto, localDocID,
+                    final Match match = new Match(maxMatchSize, pto, localDocID,
                             spans.start(), spans.end());
                     
                     // Add snippet if existing
