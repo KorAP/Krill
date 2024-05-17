@@ -15,10 +15,14 @@ import org.slf4j.LoggerFactory;
  */
 public class KrillProperties {
 
-    public static final String defaultPropertiesLocation = "krill.properties";
-    public static final String defaultInfoLocation = "krill.info";
+    public static final String DEFAULT_PROPERTIES_LOCATION = "krill.properties";
+    public static final String DEFAULT_INFO_LOCATION = "krill.info";
     private static Properties prop, info;
-
+    
+    public static int maxMatchTokens = 50;
+    public static int maxTokenContextLength = 60;
+    public static int maxCharContextLength = 500;
+    
     // Logger
     private final static Logger log = LoggerFactory
             .getLogger(KrillProperties.class);
@@ -28,7 +32,7 @@ public class KrillProperties {
         if (prop != null)
             return prop;
 
-        prop = loadProperties(defaultPropertiesLocation);
+        prop = loadProperties(DEFAULT_PROPERTIES_LOCATION);
         return prop;
     };
 
@@ -66,19 +70,40 @@ public class KrillProperties {
                 return null;
             };
         };
+        updateConfigurations(prop);
         return prop;
     };
 
+    private static void updateConfigurations (Properties  prop) {
+        String maxMatchTokens = prop.getProperty("krill.max.token.match");
+        String maxContextTokens = prop.getProperty("krill.max.token.context");
+
+        try {
+            if (maxMatchTokens != null) {
+                KrillProperties.maxMatchTokens = Integer
+                        .parseInt(maxMatchTokens);
+            }
+            if (maxContextTokens != null) {
+                KrillProperties.maxTokenContextLength = Integer
+                        .parseInt(maxContextTokens);
+            }
+        }
+        catch (NumberFormatException e) {
+            log.error("A Krill property expects numerical values: "
+                    + e.getMessage());
+        };
+    }
+    
 
     // Load version info from file
     public static Properties loadInfo () {
         try {
             info = new Properties();
             InputStream iFile = KrillProperties.class.getClassLoader()
-                    .getResourceAsStream(defaultInfoLocation);
+                    .getResourceAsStream(DEFAULT_INFO_LOCATION);
 
             if (iFile == null) {
-                log.error("Cannot find {}.", defaultInfoLocation);
+                log.error("Cannot find {}.", DEFAULT_INFO_LOCATION);
                 return null;
             };
 
