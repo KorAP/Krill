@@ -24,6 +24,30 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "73b1989b_247682a1",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-05-21T11:39:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b50bc2cd_fb74e56f",
+      "range": {
+        "startLine": 170,
+        "startChar": 14,
+        "endLine": 170,
+        "endChar": 57
+      },
+      "revId": "9b8ec14b2a0ef21bb309c436f1d46af982ce67fd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7f71e1e0_90c655f1",
@@ -37,6 +61,30 @@
       "writtenOn": "2024-05-21T10:32:07Z",
       "side": 1,
       "message": "Wouldn\u0027t it be better to reorder this to: krill.match.max.token and krill.context.max.token - so additional values can be krill.match.max.char and krill.context.max.char?",
+      "range": {
+        "startLine": 78,
+        "startChar": 8,
+        "endLine": 79,
+        "endChar": 81
+      },
+      "revId": "9b8ec14b2a0ef21bb309c436f1d46af982ce67fd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f843c59_a47f7f9b",
+        "filename": "src/main/java/de/ids_mannheim/korap/util/KrillProperties.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-05-21T11:39:10Z",
+      "side": 1,
+      "message": "My thought was to add \"krill.max.char.match\" and \"krill.max.char.context\" for the chars. Your suggestions are fine for the properties. \n\nI would keep the order for the code though. I think it is easier to read \"max token context size\" than \"max context tokens\" or \"max context token size\". I did that in my previous commits and changed them here.",
+      "parentUuid": "7f71e1e0_90c655f1",
       "range": {
         "startLine": 78,
         "startChar": 8,
