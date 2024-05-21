@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b50bc2cd_fb74e56f",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 170,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-05-21T10:32:07Z",
+      "side": 1,
+      "message": "Not a config anymore.",
+      "range": {
+        "startLine": 170,
+        "startChar": 14,
+        "endLine": 170,
+        "endChar": 57
+      },
+      "revId": "9b8ec14b2a0ef21bb309c436f1d46af982ce67fd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f71e1e0_90c655f1",
+        "filename": "src/main/java/de/ids_mannheim/korap/util/KrillProperties.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-05-21T10:32:07Z",
+      "side": 1,
+      "message": "Wouldn\u0027t it be better to reorder this to: krill.match.max.token and krill.context.max.token - so additional values can be krill.match.max.char and krill.context.max.char?",
+      "range": {
+        "startLine": 78,
+        "startChar": 8,
+        "endLine": 79,
+        "endChar": 81
+      },
+      "revId": "9b8ec14b2a0ef21bb309c436f1d46af982ce67fd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
