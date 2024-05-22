@@ -175,8 +175,6 @@ public final class KrillIndex implements IndexInfo {
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
 
-    private int maxTokenMatchSize;
-
     // private ByteBuffer bbTerm;
 
     // Some initializations ...
@@ -193,7 +191,6 @@ public final class KrillIndex implements IndexInfo {
         String autoCommitStr = null;
         if (prop != null) {
             autoCommitStr = prop.getProperty("krill.index.commit.auto");
-            this.maxTokenMatchSize = KrillProperties.maxTokenMatchSize;
         }
         
         if (autoCommitStr != null) {
@@ -243,7 +240,6 @@ public final class KrillIndex implements IndexInfo {
         this.directory = new MMapDirectory(path);
     };
     
-
     /**
      * Get the version number of the index.
      * 
@@ -434,14 +430,6 @@ public final class KrillIndex implements IndexInfo {
     public void setAutoCommit (int value) {
         this.autoCommit = value;
     };
-    
-    public int getMaxTokenMatchSize () {
-        return maxTokenMatchSize;
-    }
-    
-    public void setMaxTokenMatchSize (int maxMatchTokens) {
-        this.maxTokenMatchSize = maxMatchTokens;
-    }
     
     /**
      * Update a document in the index as a {@link FieldDocument}
@@ -984,20 +972,12 @@ public final class KrillIndex implements IndexInfo {
                                boolean includeSnippets, boolean includeTokens,
                                boolean includeHighlights, boolean extendToSentence)
             throws QueryException {
-        return getMatchInfo(idString, field, info, foundry, layer, includeSpans,
-                includeSnippets, includeTokens, includeHighlights,
-                extendToSentence, maxTokenMatchSize);
-    };
-        
-    public Match getMatchInfo (String idString, String field, boolean info,
-            List<String> foundry, List<String> layer, boolean includeSpans,
-            boolean includeSnippets, boolean includeTokens,
-            boolean includeHighlights, boolean extendToSentence,
-            int maxMatchTokens) throws QueryException {
+
         if (DEBUG)
             log.trace("Get info on {}", idString);
         
-        Match match = new Match(maxMatchTokens, idString, includeHighlights);
+        int maxTokenMatchSize = KrillProperties.maxTokenMatchSize;
+        Match match = new Match(maxTokenMatchSize, idString, includeHighlights);
 
         if (this.getVersion() != null)
             match.setVersion(this.getVersion());
@@ -1223,8 +1203,8 @@ public final class KrillIndex implements IndexInfo {
                             && spanContext[0] < spanContext[1]) {
 
                         // Match needs to be cutted!
-                        if ((spanContext[1] - spanContext[0]) > maxMatchTokens) {
-                            int contextLength = maxMatchTokens - match.getLength();
+                        if ((spanContext[1] - spanContext[0]) > maxTokenMatchSize) {
+                            int contextLength = maxTokenMatchSize - match.getLength();
                             int halfContext = contextLength / 2;
 
                             // This is the extended context calculated
@@ -1237,8 +1217,8 @@ public final class KrillIndex implements IndexInfo {
                             }
                         }
 
-                        match.setStartPos(maxMatchTokens,spanContext[0]);
-                        match.setEndPos(maxMatchTokens,spanContext[1]);
+                        match.setStartPos(maxTokenMatchSize,spanContext[0]);
+                        match.setEndPos(maxTokenMatchSize,spanContext[1]);
 						match.potentialStartPosChar = spanContext[2];
 						match.potentialEndPosChar = spanContext[3];
                         match.startMore = false;
@@ -1591,9 +1571,10 @@ public final class KrillIndex implements IndexInfo {
                             ? lreader.document(localDocID, fieldsSet)
                             : lreader.document(localDocID);
                     
-                    int maxMatchSize = maxTokenMatchSize;
-                    if (ks.getMaxTokenMatchSize() > 0) {
-                        maxMatchSize = ks.getMaxTokenMatchSize();
+                    int maxMatchSize = ks.getMaxTokenMatchSize();
+                    if (maxMatchSize <= 0
+                            || maxMatchSize > KrillProperties.maxTokenMatchSize) {
+                        maxMatchSize = KrillProperties.maxTokenMatchSize;
                     };
                     
                     // Create new Match

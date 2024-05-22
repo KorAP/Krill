@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.Krill;
@@ -34,34 +35,21 @@ public class TestMaxMatchTokens {
                 .getResource("/queries/position/sentence-contain-token.json")
                 .getFile());
     }
+    
+    @AfterClass
+    public static void resetMaxTokenMatchSize() {
+        KrillProperties.maxTokenMatchSize = 50;
+    }
 
     @Test
     public void testLimitingMatchWithProperties () throws IOException {
-        // from properties
-        assertEquals(50, ki.getMaxTokenMatchSize());
-
+        // default properties file
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
         Match km = kr.getMatch(0);
-        assertTrue(km.getLength()<ki.getMaxTokenMatchSize());
+        assertEquals(40, KrillProperties.maxTokenMatchSize);
+        assertTrue(km.getLength() < 40);
     };
-
-    @Test
-    public void testLimitingMatchInKrillIndex () throws IOException {
-        // Limiting default match token size in KrillIndex
-        ki.setMaxTokenMatchSize(2);
-
-        Krill ks = new Krill(json);
-        Result kr = ks.apply(ki);
-        assertEquals(78, kr.getTotalResults());
-
-        assertEquals(
-                "... sechsthäufigste Buchstabe in deutschen Texten. [[Mit Ausnahme]<!>] von Fremdwörtern und Namen ist ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals(
-                "<span class=\"context-left\"><span class=\"more\"></span>sechsthäufigste Buchstabe in deutschen Texten. </span><span class=\"match\"><mark>Mit Ausnahme</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> von Fremdwörtern und Namen ist<span class=\"more\"></span></span>",
-                kr.getMatch(0).getSnippetHTML());
-    }
 
     @Test
     public void testLimitingMatchInKrill () throws IOException {
@@ -80,7 +68,7 @@ public class TestMaxMatchTokens {
     };
 
     @Test
-    public void testMatchInfoWithKrillConfig ()
+    public void testMatchInfo ()
             throws IOException, QueryException {
         KrillIndex ki = new KrillIndex();
         // Indexing test files
@@ -95,27 +83,25 @@ public class TestMaxMatchTokens {
         ArrayList<String> layer = new ArrayList<String>();
         layer.add("opennlp");
 
-        // maxMatchTokens from properties = 5
+        // maxMatchTokens from properties = 40
         km = ki.getMatchInfo("match-WUD17/C94/39360-p390-396", "tokens", false,
                 foundry, layer, false, false, false, false, false);
 
         assertEquals("... [[g. Artikel vornimmst, wäre es fein]] ...",
                 km.getSnippetBrackets());
         
-        // lower than limit
-        int maxMatchTokens = 2;
-        km = ki.getMatchInfo("match-WUD17/C94/39360-p390-396", "tokens",
-                false, foundry, layer, false, false, false, false, true, // extendToSentence
-                maxMatchTokens);
+        // request lower than limit
+        // int maxMatchTokens = 2;
+        km = ki.getMatchInfo("match-WUD17/C94/39360-p390-392", "tokens",
+                false, foundry, layer, false, false, false, false, true);
 
-        assertTrue(km.endCutted);
-        assertEquals("... [[g. Artikel]<!>] ...", km.getSnippetBrackets());
+        assertEquals("... [[g. Artikel]] ...", km.getSnippetBrackets());
         
-        // more than limit
-        maxMatchTokens = 51;
+        // request more than limit
+        // maxMatchTokens = 51;
         km = ki.getMatchInfo("match-WUD17/C94/39360-p380-431", "tokens",
-                false, foundry, layer, false, false, false, false, true, // extendToSentence
-                maxMatchTokens);
-        assertEquals(KrillProperties.maxTokenMatchSize, (km.getSnippetBrackets().split(" ").length -2));
+                false, foundry, layer, false, false, false, false, false);
+        assertTrue(km.endCutted);
+        assertEquals(420, km.getEndPos());
     }
 }
