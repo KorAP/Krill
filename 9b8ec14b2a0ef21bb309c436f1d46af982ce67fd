@@ -93,6 +93,30 @@
       },
       "revId": "9b8ec14b2a0ef21bb309c436f1d46af982ce67fd",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf2dea62_c3301fb5",
+        "filename": "src/main/java/de/ids_mannheim/korap/util/KrillProperties.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-05-22T06:43:21Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f843c59_a47f7f9b",
+      "range": {
+        "startLine": 78,
+        "startChar": 8,
+        "endLine": 79,
+        "endChar": 81
+      },
+      "revId": "9b8ec14b2a0ef21bb309c436f1d46af982ce67fd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
