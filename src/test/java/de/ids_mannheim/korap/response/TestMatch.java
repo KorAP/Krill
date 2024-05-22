@@ -6,10 +6,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import de.ids_mannheim.korap.util.KrillProperties;
+
 @RunWith(JUnit4.class)
 public class TestMatch {
 
     int maxMatchTokens = 50;
+    
+    public TestMatch () {
+        KrillProperties.maxTokenMatchSize = 50;
+    }
+    
             
     @Test
     public void testNoMatch () {
