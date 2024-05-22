@@ -16,6 +16,24 @@
       "message": "So - this means it\u0027s only possible to set one max value, right? I thought when both are set, the lowest real value will be taken. So - when really long tokens exist, the character cuttof can still be used. This may not be a requirement now, but may be wanted in the future, possibly?",
       "revId": "2fc240aa77298dada6172117c02a0a0eeac9c883",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6214c429_42952d73",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-05-22T06:35:31Z",
+      "side": 1,
+      "message": "Yes this has not been implemented yet. I have created an issue about that. https://github.com/KorAP/Krill/issues/140",
+      "parentUuid": "43d10000_3e983eed",
+      "revId": "2fc240aa77298dada6172117c02a0a0eeac9c883",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
