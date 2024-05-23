@@ -1,7 +1,8 @@
-0.62.4 2024-05-22
+0.62.4 2024-05-27
     - [feature] Make match and context size configurable (address #128, 
       diewald & margaretha)
     - [enhancement] Separate max length for token and char context (margaretha)  
+    - [feature] Support for inline markers (fixes #132, diewald)
     
 0.62.3 2024-04-16
     - [cleanup] Added getDocBitsSupplier to VirtualCorpusFilter (margaretha)
