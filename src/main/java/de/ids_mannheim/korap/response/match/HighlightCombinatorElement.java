@@ -2,10 +2,8 @@ package de.ids_mannheim.korap.response.match;
 
 import org.apache.lucene.util.FixedBitSet;
 import de.ids_mannheim.korap.response.Match;
-import de.ids_mannheim.korap.response.match.Relation;
 import static de.ids_mannheim.korap.util.KrillString.*;
 import java.util.*;
-import java.io.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +14,14 @@ import org.slf4j.LoggerFactory;
 public class HighlightCombinatorElement {
 
 	// Number -1:     Match
-	// Number -99998: Context
-	private final static int CONTEXT = -99998;
+	// Number -99997: Context
+	private final static int CONTEXT = -99997;
 	
     // Type 0: Textual data
     // Type 1: Opening
     // Type 2: Closing
-	// Type 3: Empty
+	// Type 3: Empty (pagebreak)
+    // Type 4: Empty (marker)
     public byte type;
 
     public int number = 0;
@@ -168,6 +167,12 @@ public class HighlightCombinatorElement {
 		// Empty element
 		else if (this.type == 3) {
 			return "<span class=\"pb\" data-after=\"" + number + "\"></span>";
+		}
+        
+        // Marker
+		else if (this.type == 4) {
+            String[] parts = match.getAnnotationID(this.number).split(":", 2);
+			return "<span class=\"inline-marker\" data-key=\"" + escapeHTML(parts[0]) + "\" data-value=\"" + escapeHTML(parts[1]) + "\"></span>";
 		};
 
         // HTML encode primary data

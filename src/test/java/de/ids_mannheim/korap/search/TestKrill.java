@@ -740,6 +740,29 @@ public class TestKrill {
 		assertEquals(529, res.at("/pages/0").asInt());
     };
 
+    @Test
+    public void searchJSONwithUtteranceAttributes () throws IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        FieldDocument fd = ki.addDoc(1,
+                getClass().getResourceAsStream("/others/kokokom-example.json.gz"), true);
+        ki.commit();
+
+        assertEquals(fd.getUID(), 1);
+        assertEquals(fd.getTextSigle(), "KTC/001/000001");
+
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("s:Räuspern"));
+        Result kr = ks.apply(ki);
+
+        assertEquals(1, kr.getTotalResults());
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(25, kr.getItemsPerPage());
+        Match m = kr.getMatch(0);
+        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><span class=\"inline-marker\" data-key=\"who\" data-value=\"Mai Thi Nguyen-Kim\"></span><span class=\"inline-marker\" data-key=\"start\" data-value=\"0:00\"></span><span class=\"inline-marker\" data-key=\"end\" data-value=\"01:20\"></span>(<mark>Räuspern</mark></span><span class=\"context-right\">) Wie viele Geschlechter gibt es? Wenn<span class=\"more\"></span></span>", m.getSnippetHTML());
+    };
+
+    
 
     @Test
     public void searchJSONnewJSON2 () throws IOException {
@@ -1461,11 +1484,12 @@ public class TestKrill {
         Result kr = k.apply(ki);
         assertEquals(kr.getTotalResults(), 1);
         assertEquals(2, kr.getMatch(0).getStartPos());
-        assertEquals(52, kr.getMatch(0).getEndPos());
+        assertEquals(42, kr.getMatch(0).getEndPos());
         assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "Maximen und [[Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur]<!>], so hat er sie gleich in ...");
+                     "Maximen und [[Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's]<!>] nicht. stark aber ist Gott; denn ..."); // Maximen und [[Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's]<!> nicht. stark aber ist Gott; denn sucht er die Kreatur, so hat er sie gleich in ...
         assertEquals(kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\">Maximen und </span><span class=\"match\"><mark>Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur</mark><span class=\"cutted\"></span></span><span class=\"context-right\">, so hat er sie gleich in<span class=\"more\"></span></span>");
+                "<span class=\"context-left\">Maximen und </span><span class=\"match\"><mark>Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> nicht. stark aber ist Gott; denn<span class=\"more\"></span></span>");
+        // <span class=\"context-left\">Maximen und </span><span class=\"match\"><mark>Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur</mark><span class=\"cutted\"></span></span><span class=\"context-right\">, so hat er sie gleich in<span class=\"more\"></span></span>
         assertEquals(kr.getMatch(0).getTextSigle(), "GOE_AGX.00002");
     };
 
