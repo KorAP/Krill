@@ -97,6 +97,12 @@ public class TermInfo implements Comparable<TermInfo> {
                 tterm = tterm.substring(2);
                 break;
 
+            case '~':
+                this.type = "mark";
+                ttype = 5;
+                tterm = tterm.substring(2);
+                break;
+
             default:
                 // term
                 this.type = "term";
@@ -129,6 +135,18 @@ public class TermInfo implements Comparable<TermInfo> {
                 this.layer = matcher.group(2);
                 this.value = matcher.group(3);
             };
+        }
+
+        else if (ttype == 5) {
+            pti = this.payload.get(); // Ignore PTI - temporary!!!
+            this.value = tterm;
+
+            // This also means that the startchar may contain
+            // the position (aka page number) of the marker
+            this.startChar = this.payload.getInt();
+            this.endChar = this.payload.getInt();
+
+            // This is interesting, because we may have an <x> here!
         }
 
         // for positions (aka offset tokens)

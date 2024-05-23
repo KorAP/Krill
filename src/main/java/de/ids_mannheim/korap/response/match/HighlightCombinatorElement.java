@@ -16,13 +16,14 @@ import org.slf4j.LoggerFactory;
 public class HighlightCombinatorElement {
 
 	// Number -1:     Match
-	// Number -99998: Context
-	private final static int CONTEXT = -99998;
+	// Number -99997: Context
+	private final static int CONTEXT = -99997;
 	
     // Type 0: Textual data
     // Type 1: Opening
     // Type 2: Closing
-	// Type 3: Empty
+	// Type 3: Empty (pagebreak)
+    // Type 4: Empty (marker)
     public byte type;
 
     public int number = 0;
@@ -168,6 +169,11 @@ public class HighlightCombinatorElement {
 		// Empty element
 		else if (this.type == 3) {
 			return "<span class=\"pb\" data-after=\"" + number + "\"></span>";
+		}
+        
+        // Marker
+		else if (this.type == 4) {
+			return "<span class=\"marker\" data-info=\"" + escapeHTML(match.getAnnotationID(this.number)) + "\"></span>";
 		};
 
         // HTML encode primary data

@@ -75,7 +75,7 @@ public class TestPagebreakIndex {
 
         assertEquals(5, kr.getMatch(2).getStartPos());
 		assertEquals(6, kr.getMatch(2).getEndPos());
-		assertEquals(529, kr.getMatch(2).getStartPage());
+		assertEquals(528, kr.getMatch(2).getStartPage());
 		assertEquals(-1, kr.getMatch(2).getEndPage());
 
         assertEquals(9, kr.getMatch(3).getStartPos());

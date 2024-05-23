@@ -740,6 +740,29 @@ public class TestKrill {
 		assertEquals(529, res.at("/pages/0").asInt());
     };
 
+    @Test
+    public void searchJSONwithUtteranceAttributes () throws IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        FieldDocument fd = ki.addDoc(1,
+                getClass().getResourceAsStream("/others/kokokom-example.json.gz"), true);
+        ki.commit();
+
+        assertEquals(fd.getUID(), 1);
+        assertEquals(fd.getTextSigle(), "KTC/001/000001");
+
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("s:Räuspern"));
+        Result kr = ks.apply(ki);
+
+        assertEquals(1, kr.getTotalResults());
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(25, kr.getItemsPerPage());
+        Match m = kr.getMatch(0);
+        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><span class=\"marker\" data-info=\"who:Mai Thi Nguyen-Kim\"></span><span class=\"marker\" data-info=\"start:0:00\"></span><span class=\"marker\" data-info=\"end:01:20\"></span>(<mark>Räuspern</mark></span><span class=\"context-right\">) Wie viele Geschlechter gibt es? Wenn<span class=\"more\"></span></span>", m.getSnippetHTML());
+    };
+
+    
 
     @Test
     public void searchJSONnewJSON2 () throws IOException {
