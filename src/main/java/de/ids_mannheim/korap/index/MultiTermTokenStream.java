@@ -56,7 +56,7 @@ public class MultiTermTokenStream extends TokenStream {
     private int mttIndex = 0, mtIndex = 0;
     private short i = 0;
 
-    private ByteBuffer payload = ByteBuffer.allocate(36);
+    private ByteBuffer payload = ByteBuffer.allocate(512);
 
 
     /**
