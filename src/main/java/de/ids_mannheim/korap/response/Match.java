@@ -1,4 +1,4 @@
-package de.ids_mannheim.korap.response;
+ package de.ids_mannheim.korap.response;
 
 import static de.ids_mannheim.korap.util.KrillByte.unsignedByte;
 import static de.ids_mannheim.korap.util.KrillString.codePointSubstring;
@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
@@ -95,9 +97,10 @@ public class Match extends AbstractDocument {
 	
 	// end marker of highlights that are pagebreaks
 	private static final int PB_MARKER = -99999;
+    private static final int ALL_MARKER = -99998;
 
 	// Textual elements that are in context
-	private static final int CONTEXT = -99998;
+	private static final int CONTEXT = -99997;
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
@@ -237,7 +240,7 @@ public class Match extends AbstractDocument {
     /**
      * Private class of highlights.
 	 * TODO: This should probably be renamed, as it not only contains highlights
-	 * but also annotations, pagebreaks and relations
+	 * but also annotations, markers, pagebreaks and relations
      */
     private class Highlight {
         public int start, end;
@@ -285,6 +288,19 @@ public class Match extends AbstractDocument {
 			this.end = PB_MARKER;
 			this.number = pagenumber;
 		};
+
+		// Marker
+		public Highlight (int start, String marker) {
+			this.start = start;
+			this.end = ALL_MARKER;
+
+            // TODO: This can overflow!
+            if (annotationNumberCounter < 2048) {
+                this.number = annotationNumberCounter++;
+                annotationNumber.put(this.number, marker);
+            };
+		};
+
     };
 
 
@@ -513,6 +529,16 @@ public class Match extends AbstractDocument {
 		this.addHighlight(new Highlight(start, pagenumber));
 	};
 
+	public void addMarker (int start, String data) {
+		this.addHighlight(new Highlight(start, data));
+	};
+
+
+    @JsonIgnore
+    public int getMaxMatchTokens () {
+        return MAX_MATCH_TOKENS;
+    }
+    
     /**
      * Get document id.
      */
@@ -562,7 +588,7 @@ public class Match extends AbstractDocument {
 
         // Iterate over highlights to find matching class
         for (Highlight h : this.highlight) {
-            if (h.number == number && h.end != PB_MARKER)
+            if (h.number == number && h.end != PB_MARKER && h.end != ALL_MARKER)
                 return h.start;
         };
 
@@ -734,7 +760,7 @@ public class Match extends AbstractDocument {
         // There are highlights to integrate
         if (this.highlight != null) {
             for (Highlight h : this.highlight) {
-                if (h.number >= 256 || h.end == PB_MARKER)
+                if (h.number >= 256 || h.end == PB_MARKER || h.end == ALL_MARKER)
                     continue;
 
                 // Add highlight to the snippet
@@ -767,7 +793,11 @@ public class Match extends AbstractDocument {
 	@JsonIgnore
     public String getPosID (String pos) {
 
-		String[] startEnd = pos.split("-");
+        if (pos == null) {
+            return "";
+        };
+
+        String[] startEnd = pos.split("-");
 		if (startEnd.length == 2) {
 			return this.getPosID(
 				Integer.parseInt(startEnd[0]),
@@ -845,35 +875,35 @@ public class Match extends AbstractDocument {
     };  
 
 	
-	// Retrieve pagebreaks in a certain area
-	public List<int[]> retrievePagebreaks (String pb) {
+	// Retrieve markers in a certain area
+	public List<int[]> retrieveMarkers (String marker) {
 		if (this.positionsToOffset != null) {
-			return this.retrievePagebreaks(
+			return this.retrieveMarkers(
 				this.positionsToOffset.getLeafReader(),
 				(Bits) null,
 				"tokens",
-				pb
+				marker
 				);
 		};
 
 		return null;
 	};
 
-	// Retrieve pagebreaks in a certain area
+	// Retrieve markers in a certain area
     // THIS IS NOT VERY CLEVER - MAKE IT MORE CLEVER!
-    public List<int[]> retrievePagebreaks (LeafReaderContext atomic,
+    public List<int[]> retrieveMarkers (LeafReaderContext atomic,
 										   Bits bitset,
 										   String field,
-										   String pb) {
+										   String marker) {
 
-		// List of relevant pagebreaks
+		// List of relevant pagebreaks - only used for pagebreak markers!
 		List<int[]> pagebreaks = new ArrayList<>(24);
 
 		int charOffset = 0, pagenumber = 0, start = 0;
 
 		if (DEBUG) {
             log.debug("=================================");
-			log.debug("Retrieve pagebreaks between {}-{}",
+			log.debug("Retrieve markers between {}-{}",
 					  this.getStartPos(),
 					  this.getEndPos());
         };
@@ -881,37 +911,37 @@ public class Match extends AbstractDocument {
 		try {
 
             // Store character offsets in ByteBuffer
-            ByteBuffer bb = ByteBuffer.allocate(16);
+            ByteBuffer bb = ByteBuffer.allocate(256);
 
-			// Store last relevant pagebreak in byte array
+			// Store last relevant marker in byte array
 			byte[] b = null;
 
-			SpanTermQuery stq = new SpanTermQuery(new Term(field, pb));
+			SpanTermQuery stq = new SpanTermQuery(new Term(field, marker));
 
 			if (DEBUG)
-				log.trace("Check pagebreaks with {}", stq.toString());
+				log.trace("Check markers with {}", stq.toString());
 
-			Spans pagebreakSpans = stq.getSpans(
+			Spans markerSpans = stq.getSpans(
 				atomic, bitset, new HashMap<Term, TermContext>()
 				);
 
 			// Iterate over all pagebreaks
-			while (pagebreakSpans.next() == true) {
+			while (markerSpans.next() == true) {
 
 				if (DEBUG) {
 					log.debug("There is a pagebreak at {}/{} and we are at {}",
-							  pagebreakSpans.doc(),
-							  pagebreakSpans.start(),
+							  markerSpans.doc(),
+							  markerSpans.start(),
                               this.localDocID);
 				};
 				
 				// Current pagebreak is not in the correct document
-                if (pagebreakSpans.doc() != this.localDocID) {
-                    if (pagebreakSpans.doc() < this.localDocID) {
-                        pagebreakSpans.skipTo(this.localDocID);
+                if (markerSpans.doc() != this.localDocID) {
+                    if (markerSpans.doc() < this.localDocID) {
+                        markerSpans.skipTo(this.localDocID);
                         
                         // No pagebreaks in this document
-                        if (pagebreakSpans.doc() != this.localDocID)
+                        if (markerSpans.doc() != this.localDocID)
                             break;
                     }
                     else {
@@ -921,19 +951,19 @@ public class Match extends AbstractDocument {
                 };
 
 				if (DEBUG)
-					log.debug("The pagebreak occurs in the document");
-				
-				// There is a pagebreak found - check,
+					log.debug("The marker occurs in the document");
+
+				// There is a marker found - check,
 				// if it is in the correct area
-				if (pagebreakSpans.start() <= this.getStartPos()) {
+				if (markerSpans.start() < this.getStartPos()) {
 
 					// Only the first payload is relevant
-					b = pagebreakSpans.getPayload().iterator().next();
-					start = pagebreakSpans.start();
+					b = markerSpans.getPayload().iterator().next();
+					start = markerSpans.start();
 
                     if (DEBUG)
-						log.debug("PB start position is before match at {}:{}",
-								  pagebreakSpans.start(),
+						log.debug("Marker start position is before match at {}:{}",
+								  markerSpans.start(),
                                   b);
 					
 				}
@@ -941,48 +971,85 @@ public class Match extends AbstractDocument {
 				// This is the first pagebreak inside the match!
 				else {
 
-					// b is already defined!
+                    // b is already defined!
+                    // This may be due to the last next
 					if (b != null) {
 						bb.rewind();
 						bb.put(b);
 						bb.rewind();
 
 						pagenumber = bb.getInt();
-						charOffset = bb.getInt();
+                        charOffset = bb.getInt();
 
-						if (DEBUG)
-							log.debug("Add pagebreak to list: {}-{}", charOffset, pagenumber);
+                        // This marker is a pagebreak
+                        if (pagenumber != 0) {
+                            if (DEBUG)
+						    	log.debug("Add pagebreak to list: {}-{}", charOffset, pagenumber);
 						
-						// This is the first pagebreak!
-						pagebreaks.add(new int[]{charOffset, pagenumber});
+						    // This is the first pagebreak!
+						    pagebreaks.add(new int[]{charOffset, pagenumber});
                         
-						if (start >= this.getStartPos()) {
+						    if (start >= this.getStartPos()) {
+    							if (DEBUG)
+	    							log.debug("Add marker to rendering: {}-{}",
+		    								  charOffset,
+			    							  pagenumber);
+				    			this.addPagebreak(charOffset, pagenumber);
+					    	};
 
-							if (DEBUG)
-								log.debug("Add pagebreak to rendering: {}-{}",
-										  charOffset,
-										  pagenumber);
-							this.addPagebreak(charOffset, pagenumber);
-						};
+                            // This marker is no pagebreak
+                        } else {
+                            int bytelength = bb.getInt();
+                            byte[] anno = new byte[bytelength];
+                            bb.get(anno, 0, bytelength);
+                            String annoStr = new String(anno, StandardCharsets.UTF_8);
+                            this.addMarker(charOffset, annoStr);
+                        }
+
                         b = null;
 					}
 
 					// b wasn't used yet
-					if (pagebreakSpans.start() <= this.getEndPos()) {
+					if (markerSpans.start() <= this.getEndPos()) {
 
 						// Set new pagebreak
 						// Only the first payload is relevant
-						b = pagebreakSpans.getPayload().iterator().next();
+						b = markerSpans.getPayload().iterator().next();
 						bb.rewind();
 						bb.put(b);
 						bb.rewind();
 							
 						pagenumber = bb.getInt();
 						charOffset = bb.getInt();
+
+                        // This marker is a pagebreak
+                        if (pagenumber != 0) {
+                            if (DEBUG)
+						    	log.debug("Add pagebreak to list: {}-{}", charOffset, pagenumber);
 						
-						// This is the first pagebreak!
-						pagebreaks.add(new int[]{charOffset, pagenumber});
-						this.addPagebreak(charOffset,pagenumber);
+						    // This is the first pagebreak!
+						    pagebreaks.add(new int[]{charOffset, pagenumber});
+                        
+						    if (start >= this.getStartPos()) {
+    							if (DEBUG)
+	    							log.debug("Add pagebreak to rendering: {}-{}",
+		    								  charOffset,
+			    							  pagenumber);
+				    			this.addPagebreak(charOffset, pagenumber);
+					    	};
+
+                        
+                        }
+                            // This marker is no pagebreak
+                        else {
+                            int bytelength = bb.getInt();
+
+                            byte[] anno = new byte[bytelength];
+                            bb.get(anno);
+                            String annoStr = new String(anno, StandardCharsets.UTF_8);
+                            this.addMarker(charOffset, annoStr);
+                        }
+
                         b = null;
 					}
 
@@ -993,6 +1060,7 @@ public class Match extends AbstractDocument {
 				};
 			};
 
+            // That's identical to the above approach and should only occur once
             if (b != null) {
                 bb.rewind();
                 bb.put(b);
@@ -1001,21 +1069,34 @@ public class Match extends AbstractDocument {
                 pagenumber = bb.getInt();
                 charOffset = bb.getInt();
 
-                if (DEBUG)
-                    log.debug("Add pagebreak to list: {}-{}", charOffset, pagenumber);
-						
-                // This is a remembered pagebreak!
-                pagebreaks.add(new int[]{charOffset, pagenumber});
+                // This marker is a pagebreak
+                if (pagenumber != 0) {
 
-                if (start >= this.getStartPos()) {
-                                            
                     if (DEBUG)
-                        log.debug("Add pagebreak to rendering: {}-{}",
-                                  charOffset,
-                                  pagenumber);
-                    this.addPagebreak(charOffset, pagenumber);
-                };
+                        log.debug("Add pagebreak to list: {}-{}", charOffset, pagenumber);
+						
+                    // This is a remembered pagebreak!
+                    pagebreaks.add(new int[]{charOffset, pagenumber});
 
+                    if (start >= this.getStartPos()) {
+                                            
+                        if (DEBUG)
+                            log.debug("Add pagebreak to rendering: {}-{}",
+                                      charOffset,
+                                      pagenumber);
+                        this.addPagebreak(charOffset, pagenumber);
+                    };
+                }
+                // This marker is no pagebreak
+                else {
+                    int bytelength = bb.getInt();
+                    
+                    byte[] anno = new byte[bytelength];
+                    bb.get(anno);
+                    String annoStr = new String(anno, StandardCharsets.UTF_8);
+                    this.addMarker(charOffset, annoStr);
+                }
+                
                 b = null;
             };
 		}
@@ -1218,7 +1299,7 @@ public class Match extends AbstractDocument {
                         && hl.end <= this.getEndPos()) {
 
 					// Highlight is no pagebreak
-					if (hl.end != PB_MARKER) {
+					if (hl.end != PB_MARKER && hl.end != ALL_MARKER) {
 						pto.add(this.localDocID, hl.start);
 						pto.add(this.localDocID, hl.end);
 
@@ -1381,13 +1462,19 @@ public class Match extends AbstractDocument {
                 snippetArray.addClose(element[2]);
             }
 
-			// empty tag
+			// empty tag (pagebreak)
 			else if (element[3] == 2) {
 
 				// Add Empty (pagebreak)
                 snippetArray.addEmpty(element[2]);
-			}
-			
+			}            
+
+            // empty tag (marker)
+            else if (element[3] == 3) {
+
+                // Add Empty (pagebreak)
+                snippetArray.addMarker(element[2]);
+            } 
 
 			// open tag
             else {
@@ -1555,7 +1642,7 @@ public class Match extends AbstractDocument {
                     continue;
 
                 // Highlight is a pagebreak
-                if (highlight.end == PB_MARKER)
+                if (highlight.end == PB_MARKER || highlight.end == ALL_MARKER)
                     continue;
 
                 if (classes == null)
@@ -1769,7 +1856,9 @@ public class Match extends AbstractDocument {
 				if (DEBUG)
 					log.debug("No more open tags -- close all non pagebreaks");
 
-				if (closeList.peekFirst()[1] != PB_MARKER) {
+                int pf = closeList.peekFirst()[1];
+
+				if (pf != PB_MARKER && pf != ALL_MARKER) {
 					stack.add(closeList.removeFirst());
 				}
 				else if (DEBUG) {
@@ -1785,26 +1874,34 @@ public class Match extends AbstractDocument {
                 break;
             };
 
-			// Closener is pagebreak
-			if (closeList.peekFirst()[1] == PB_MARKER) {
+            int clpf = closeList.peekFirst()[1];
+            int olpf = openList.peekFirst()[1];
+
+			// Closener is pagebreak or marker
+			if (clpf == PB_MARKER || clpf == ALL_MARKER) {
 
 				if (DEBUG)
-					log.debug("Close is pagebreak -- ignore (2)");
+					log.debug("Close is pagebreak or a marker -- ignore (2)");
 
 				// Remove closing pagebreak
 				closeList.removeFirst();
 			}
 
-			// Opener is pagebreak
-			else if (openList.peekFirst()[1] == PB_MARKER) {
+			// Opener is pagebreak or marker
+			else if (olpf == PB_MARKER || olpf == ALL_MARKER) {
 				int[] e = openList.removeFirst().clone();
 
 				if (DEBUG)
-					log.debug("Open is pagebreak");
+					log.debug("Open is pagebreak or a marker");
 
 				// Mark as empty
                 e[1] = e[0]; // Remove pagebreak marker
-                e[3] = 2;
+
+                if (olpf == PB_MARKER) {
+                    e[3] =  2;
+                } else {
+                    e[3] = 3;
+                };
 
 				// Add empty pagebreak
 				stack.add(e);
@@ -1958,7 +2055,7 @@ public class Match extends AbstractDocument {
                 int end = -1;
 
 				// Highlight is a pagebreak
-				if (highlight.end != PB_MARKER) {
+				if (highlight.end != PB_MARKER && highlight.end != ALL_MARKER) {
 					start = this.positionsToOffset.start(ldid, highlight.start);
 					end = this.positionsToOffset.end(ldid, highlight.end);
 				}
@@ -1980,14 +2077,14 @@ public class Match extends AbstractDocument {
                 start -= startOffsetChar;
 
 				// Keep end equal -1
-				if (end != PB_MARKER) {
+				if (end != PB_MARKER && end != ALL_MARKER) {
 					end -= startOffsetChar;
 				}
 				else if (DEBUG) {
 					log.debug("Pagebreak keeps end position");
 				};
 
-                if (start < 0 || (end < 0 && end != PB_MARKER))
+                if (start < 0 || (end < 0 && end != PB_MARKER && end != ALL_MARKER))
                     continue;
 
                 // Create intArray for highlight
