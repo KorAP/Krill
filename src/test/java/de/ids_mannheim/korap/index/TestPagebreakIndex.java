@@ -63,11 +63,13 @@ public class TestPagebreakIndex {
         Result kr = ki.search(sq, (short) 10);
         assertEquals(4, kr.getMatches().size());
 
+        // Doc 0
         assertEquals(2, kr.getMatch(0).getStartPos());
 		assertEquals(3, kr.getMatch(0).getEndPos());
 		assertEquals(-1, kr.getMatch(0).getStartPage());
 		assertEquals(-1, kr.getMatch(0).getEndPage());
 
+        // Doc 1
         assertEquals(2, kr.getMatch(1).getStartPos());
 		assertEquals(3, kr.getMatch(1).getEndPos());
 		assertEquals(528, kr.getMatch(1).getStartPage());
@@ -75,8 +77,10 @@ public class TestPagebreakIndex {
 
         assertEquals(5, kr.getMatch(2).getStartPos());
 		assertEquals(6, kr.getMatch(2).getEndPos());
-		assertEquals(529, kr.getMatch(2).getStartPage());
-		assertEquals(-1, kr.getMatch(2).getEndPage());
+		assertEquals(528, kr.getMatch(2).getStartPage());
+        assertEquals("<span class=\"context-left\">abcab</span><span class=\"match\"><mark>c</mark></span><span class=\"context-right\">abac</span>",
+                     kr.getMatch(2).getSnippetHTML());
+		assertEquals(529, kr.getMatch(2).getEndPage()); // Debatable
 
         assertEquals(9, kr.getMatch(3).getStartPos());
 		assertEquals(10, kr.getMatch(3).getEndPos());
