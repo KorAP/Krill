@@ -83,6 +83,11 @@ public class HighlightCombinator {
         this.combine.add(new HighlightCombinatorElement((byte) 3, pagenumber));
     };
 
+    // Add marker highlight to the stack
+    public void addMarker (int annonumber) {
+        this.combine.add(new HighlightCombinatorElement((byte) 4, annonumber));
+    };
+
 
     // Add closing highlight combinator to the stack
     public void addClose (int number) {
