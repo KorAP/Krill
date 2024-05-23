@@ -1,10 +1,8 @@
 package de.ids_mannheim.korap.index;
 
-import static de.ids_mannheim.korap.util.KrillArray.*;
 import de.ids_mannheim.korap.util.CorpusDataException;
 import org.apache.lucene.util.BytesRef;
 import java.nio.ByteBuffer;
-import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +49,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
     private boolean storeOffsets = false;
     public BytesRef payload = null;
 
-    private static ByteBuffer bb = ByteBuffer.allocate(8);
+    private static ByteBuffer bb = ByteBuffer.allocate(64);
     private static String[] stringOffset;
 
     private static short i, l;
@@ -403,7 +401,6 @@ public class MultiTerm implements Comparable<MultiTerm> {
 
                 try {
                     for (i = 1; i < pls.length;) {
-
                         // Resize the bytebuffer
                         if ((bb.capacity() - l) < 8) {
                             bb = ByteBuffer.allocate(bb.capacity() + 8)
@@ -427,6 +424,19 @@ public class MultiTerm implements Comparable<MultiTerm> {
                             case "<l>": // long
                                 bb.putLong(Long.parseLong(pls[i]));
                                 l += 8;
+                                break;
+                            case "<x>": // bytes
+
+                                byte[] data = pls[i].getBytes();
+                                
+                                if ((bb.capacity() - l) < data.length) {
+                                    bb = ByteBuffer.allocate(bb.capacity() + 8)
+                                            .put(bb.array());
+                                    bb.position(l);
+                                };
+
+                                bb.put(data);
+                                l += data.length;
                                 break;
                         };
                         i += 2;

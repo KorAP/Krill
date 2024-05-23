@@ -740,6 +740,38 @@ public class TestKrill {
 		assertEquals(529, res.at("/pages/0").asInt());
     };
 
+    @Test
+    public void searchJSONwithUtteranceAttributes () throws IOException {
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        FieldDocument fd = ki.addDoc(1,
+                getClass().getResourceAsStream("/others/kokokom-example.json.gz"), true);
+        ki.commit();
+
+        assertEquals(fd.getUID(), 1);
+        assertEquals(fd.getTextSigle(), "KTC/001/000001");
+
+        Krill ks = new Krill(new QueryBuilder("tokens").seg("s:Räuspern"));
+        Result kr = ks.apply(ki);
+
+        assertEquals(1, kr.getTotalResults());
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(25, kr.getItemsPerPage());
+        Match m = kr.getMatch(0);
+        assertEquals("", m.getSnippetHTML());
+/* 
+	
+	assertEquals("Start page", m.getStartPage(), 529);
+
+
+		ObjectMapper mapper = new ObjectMapper();
+        JsonNode res = mapper.readTree(m.toJsonString());
+		assertEquals(529, res.at("/pages/0").asInt());
+                */
+    };
+
+    
 
     @Test
     public void searchJSONnewJSON2 () throws IOException {

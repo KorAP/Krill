@@ -1577,7 +1577,8 @@ public final class KrillIndex implements IndexInfo {
                     // Add snippet if existing
                     if (snippets) {
                         match.setContext(kr.getContext());
-                        match.retrievePagebreaks("~:base/s:pb");
+                        match.retrieveMarkers("~:base/s:pb");
+                        match.retrieveMarkers("~:base/s:marker");
 
                         if (DEBUG)
                             log.trace("Retrieve pagebreaks from index");

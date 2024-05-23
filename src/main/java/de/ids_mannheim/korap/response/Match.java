@@ -838,26 +838,26 @@ public class Match extends AbstractDocument {
     };  
 
 	
-	// Retrieve pagebreaks in a certain area
-	public List<int[]> retrievePagebreaks (String pb) {
+	// Retrieve markers in a certain area
+	public List<int[]> retrieveMarkers (String marker) {
 		if (this.positionsToOffset != null) {
-			return this.retrievePagebreaks(
+			return this.retrieveMarkers(
 				this.positionsToOffset.getLeafReader(),
 				(Bits) null,
 				"tokens",
-				pb
+				marker
 				);
 		};
 
 		return null;
 	};
 
-	// Retrieve pagebreaks in a certain area
+	// Retrieve markers in a certain area
     // THIS IS NOT VERY CLEVER - MAKE IT MORE CLEVER!
-    public List<int[]> retrievePagebreaks (LeafReaderContext atomic,
+    public List<int[]> retrieveMarkers (LeafReaderContext atomic,
 										   Bits bitset,
 										   String field,
-										   String pb) {
+										   String marker) {
 
 		// List of relevant pagebreaks
 		List<int[]> pagebreaks = new ArrayList<>(24);
@@ -879,7 +879,7 @@ public class Match extends AbstractDocument {
 			// Store last relevant pagebreak in byte array
 			byte[] b = null;
 
-			SpanTermQuery stq = new SpanTermQuery(new Term(field, pb));
+			SpanTermQuery stq = new SpanTermQuery(new Term(field, marker));
 
 			if (DEBUG)
 				log.trace("Check pagebreaks with {}", stq.toString());
@@ -915,7 +915,7 @@ public class Match extends AbstractDocument {
 
 				if (DEBUG)
 					log.debug("The pagebreak occurs in the document");
-				
+
 				// There is a pagebreak found - check,
 				// if it is in the correct area
 				if (pagebreakSpans.start() <= this.getStartPos()) {
@@ -923,6 +923,11 @@ public class Match extends AbstractDocument {
 					// Only the first payload is relevant
 					b = pagebreakSpans.getPayload().iterator().next();
 					start = pagebreakSpans.start();
+
+                    if (start == 0) {
+                        System.err.println("Marker is not a pagebreak");
+                        // That means, the marker has more payload!
+                    }
 
                     if (DEBUG)
 						log.debug("PB start position is before match at {}:{}",
@@ -939,6 +944,8 @@ public class Match extends AbstractDocument {
 						bb.rewind();
 						bb.put(b);
 						bb.rewind();
+
+                        System.err.println("Huhu");
 
 						pagenumber = bb.getInt();
 						charOffset = bb.getInt();
