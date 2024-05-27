@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "063db0a1_2e738532",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-05-27T15:16:01Z",
+      "side": 1,
+      "message": "This introduces a test fix (accidentally?) introduced by https://korap.ids-mannheim.de/gerrit/c/KorAP/Krill/+/8619",
+      "revId": "119b98f69e2081f1b25870267272fe00ca4f86da",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
