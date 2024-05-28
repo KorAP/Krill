@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.Krill;
@@ -34,6 +35,11 @@ public class TestMaxMatchTokens {
         json = getJsonString(getClass()
                 .getResource("/queries/position/sentence-contain-token.json")
                 .getFile());
+    }
+    
+    @Before
+    public void init() {
+        KrillProperties.maxTokenMatchSize = 40;
     }
     
     @AfterClass
