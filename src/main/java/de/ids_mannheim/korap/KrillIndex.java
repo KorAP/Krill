@@ -1194,39 +1194,10 @@ public final class KrillIndex implements IndexInfo {
                 if (extendToSentence) {
                     
                     String element = "base/s:s";
-                    int[] spanContext = match.expandContextToSpan(element);
+                    match.expandContextToSpan(element);
 
                     if (DEBUG)
                         log.trace("Extend to sentence element '{}'", element);
-
-                    if (spanContext[0] >= 0
-                            && spanContext[0] < spanContext[1]) {
-
-                        // Match needs to be cutted!
-                        if ((spanContext[1] - spanContext[0]) > maxTokenMatchSize) {
-                            int contextLength = maxTokenMatchSize - match.getLength();
-                            int halfContext = contextLength / 2;
-
-                            // This is the extended context calculated
-                            int realLeftLength = match.getStartPos() - spanContext[0];
-
-                            // The length is too large - cut!
-                            if (realLeftLength > halfContext) {
-                                match.startCutted = true;
-                                spanContext[0] = match.getStartPos() - halfContext;
-                            }
-                        }
-
-                        match.setStartPos(maxTokenMatchSize,spanContext[0]);
-                        match.setEndPos(maxTokenMatchSize,spanContext[1]);
-						match.potentialStartPosChar = spanContext[2];
-						match.potentialEndPosChar = spanContext[3];
-                        match.startMore = false;
-                        match.endMore = false;
-                    }
-                    else {
-                        match.addWarning(651, "Unable to extend context");
-                    };
                 }
                 else {
                     if (DEBUG)

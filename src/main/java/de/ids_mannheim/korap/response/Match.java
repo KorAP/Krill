@@ -5,6 +5,7 @@ import static de.ids_mannheim.korap.util.KrillString.codePointSubstring;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,8 +13,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-
-import java.nio.charset.StandardCharsets;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
@@ -647,11 +646,6 @@ public class Match extends AbstractDocument {
      */
     @JsonIgnore
     public void setEndPos (int maxTokenMatchSize, int pos) {
-        if (maxTokenMatchSize > KrillProperties.maxTokenMatchSize) {
-            maxTokenMatchSize = KrillProperties.maxTokenMatchSize;
-            this.endCutted = true;
-        }
-        
         if (this.startPos != -1 && (pos - this.startPos) > maxTokenMatchSize) {
 			pos = this.startPos + maxTokenMatchSize;
 			    this.endCutted = true;
@@ -1109,15 +1103,73 @@ public class Match extends AbstractDocument {
 	};
 
     // Expand the context to a span
-    public int[] expandContextToSpan (String element) {
+    public void expandContextToSpan (String element) {
 
         // TODO: THE BITS HAVE TO BE SET!
 
-        if (this.positionsToOffset != null)
-            return this.expandContextToSpan(
+        int[] spanContext = new int[] { 0, 0, 0, 0 };
+        
+        if (this.positionsToOffset != null) {
+            spanContext = this.expandContextToSpan(
                     this.positionsToOffset.getLeafReader(), (Bits) null,
                     "tokens", element);
-        return new int[] { 0, 0, 0, 0 };
+        }
+        
+        if (spanContext[0] >= 0
+                && spanContext[0] < spanContext[1]) {
+
+            int maxExpansionSize = KrillProperties.maxTokenMatchSize
+                    + KrillProperties.maxTokenContextSize;
+
+            // Match needs to be cutted!
+            boolean cutExpansion = false;
+            if ((spanContext[1] - spanContext[0]) > maxExpansionSize) {
+                cutExpansion=true;
+                int contextLength = maxExpansionSize - this.getLength();
+                int halfContext = contextLength / 2;
+
+                // This is the extended context calculated
+                int realLeftLength = this.getStartPos() - spanContext[0];
+
+                // The length is too large - cut!
+                if (realLeftLength > halfContext) {
+                    this.startCutted = true;
+                    spanContext[0] = this.getStartPos() - halfContext;
+                }
+                
+                int realRightLength = spanContext[1] - this.getEndPos();
+                
+                // The length is too large - cut!
+                if (realRightLength > halfContext) {
+                    this.endCutted = true;
+                    spanContext[1] = this.getEndPos() + halfContext;
+                }
+            }
+
+            this.setStartPos(maxExpansionSize,spanContext[0]);
+            this.setEndPos(maxExpansionSize,spanContext[1]);
+            // EM: update char offsets
+            
+            if (cutExpansion) {
+                this.positionsToOffset.add(localDocID, startPos);
+                this.positionsToOffset.add(localDocID, endPos);
+                
+                int start = this.positionsToOffset.start(localDocID, startPos);
+                int end = this.positionsToOffset.start(localDocID, endPos)-1;
+                spanContext[2] = start; //spanContext[2];
+                spanContext[3] = end; // spanContext[3];
+            }
+
+            this.potentialStartPosChar = spanContext[2];
+            this.potentialEndPosChar = spanContext[3];
+            this.startMore = false;
+            this.endMore = false;
+            
+            this.positionsToOffset.clear();
+        }
+        else {
+            this.addWarning(651, "Unable to extend context");
+        };
     };
 
 	
