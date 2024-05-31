@@ -1234,11 +1234,18 @@ public class TestMatchIdentifier {
         assertEquals("... a a a a a a [[b]] a a a a a a ...", kr.getMatch(0).getSnippetBrackets());
             
         // see TestNextIndex#corolaNextTest
+
         Match km = ki.getMatchInfo("match-Corola-blog/BlogPost/370281_a_371610-p70-71", "tokens", null, null,false, false, true);
 
-        // The match needs to be cutted on both sides!
         String str = km.getSnippetBrackets();
-        assertTrue(str.contains("[<!>a"));
+        assertTrue(str.contains("[<!>{drukola/l:au:a}"));
+        assertFalse(str.contains("<!>]"));
+        
+        km = ki.getMatchInfo("match-Corola-blog/BlogPost/370281_a_371610-p50-51", "tokens", null, null,false, false, true);
+
+        // The match needs to be cutted on both sides!
+        str = km.getSnippetBrackets();
+        assertTrue(str.contains("[<!>{d"));
         assertTrue(str.contains("a}<!>]"));
     };
     
