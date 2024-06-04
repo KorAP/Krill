@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5b3b4648_6ec3e64d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-06-04T09:09:47Z",
+      "side": 1,
+      "message": "OK, I changed the artifacts config so that only Krill-Indexer.jar is exported",
+      "revId": "3bac45120ba1a278c77e765a6376636302d97027",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
