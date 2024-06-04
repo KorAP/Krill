@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "01a836cd_491c4029",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-04T08:37:42Z",
+      "side": 1,
+      "message": "It\u0027s hard for me to judge, as I don\u0027t know much about the CI system of GitLab. But it doesn\u0027t interfer with the rest of the system, so it\u0027s fine with me. The only relevant artefact is Krill-Indexer.jar though - everything else can be dismissed.",
+      "revId": "1948e6fcabf34e553556fb124ccf15b821ab8014",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
