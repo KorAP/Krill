@@ -21,6 +21,7 @@
 *\#
 !.github
 !.gitignore
+!.gitlab-ci.yml
 # /src/main/resources/
 /src/main/resources/server.properties
 /src/main/resources/krill.properties
