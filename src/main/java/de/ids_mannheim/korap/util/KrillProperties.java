@@ -23,6 +23,9 @@ public class KrillProperties {
     public static int maxTokenContextSize = 60;
     public static int maxCharContextSize = 500;
     
+    public static String namedVCPath = "";
+    public static boolean isTest = false;
+    
     // Logger
     private final static Logger log = LoggerFactory
             .getLogger(KrillProperties.class);
@@ -74,7 +77,7 @@ public class KrillProperties {
         return prop;
     };
 
-    private static void updateConfigurations (Properties  prop) {
+    public static void updateConfigurations (Properties  prop) {
         String maxTokenMatchSize = prop.getProperty("krill.match.max.token");
         String maxTokenContextSize = prop.getProperty("krill.context.max.token");
 
@@ -92,6 +95,11 @@ public class KrillProperties {
             log.error("A Krill property expects numerical values: "
                     + e.getMessage());
         };
+        
+        String p = prop.getProperty("krill.test", "false");
+        isTest = Boolean.parseBoolean(p);
+        
+        namedVCPath = prop.getProperty("krill.namedVC", "");
     }
     
 
