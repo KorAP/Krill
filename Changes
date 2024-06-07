@@ -1,9 +1,10 @@
-0.62.5 2024-05-31
+0.62.5 2024-06-11
     - [bugfix] cut primary data according to max values (margaretha, #143)
     - [enhancement] restrict match expansion by max token and context 
       size (margaretha, #144)
+    - [bugfix] Set the default value for named-vc path (margaretha, 
+      fixes #146)
     
-
 0.62.4 2024-05-27
     - [feature] Make match and context size configurable (address #128, 
       diewald & margaretha)
