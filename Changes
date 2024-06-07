@@ -3,6 +3,8 @@
       diewald & margaretha)
     - [enhancement] Separate max length for token and char context (margaretha)  
     - [feature] Support for inline markers (fixes #132, diewald)
+    - [bugfix] Set the default value for named-vc path (fixes #146)
+    
     
 0.62.3 2024-04-16
     - [cleanup] Added getDocBitsSupplier to VirtualCorpusFilter (margaretha)
