@@ -167,20 +167,8 @@ public final class KrillCollection extends Notifications implements IndexInfo {
 
 
 	public KrillCollection fromStore (String ref) throws QueryException {
-        Properties prop = KrillProperties.loadDefaultProperties();
 		this.prefiltered = null;
-	
-        if (prop == null) {
-            this.addError(StatusCodes.MISSING_KRILL_PROPERTIES,
-						  "krill.properties is not found.");
-			return null;
-        }
-
-        String p = prop.getProperty("krill.test", "false");
-        boolean isTest = Boolean.parseBoolean(p);
-                
-        String namedVCPath = prop.getProperty("krill.namedVC");
-
+		String namedVCPath = KrillProperties.namedVCPath;
 		if (!namedVCPath.endsWith("/")) {
             namedVCPath += "/";
         };
@@ -215,7 +203,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
             }
         }
         // for testing
-        else if (isTest
+        else if (KrillProperties.isTest
                 && (is = retrieveInputStreamFromClasspath(fileName)) != null) {
             try {
                 json = IOUtils.toString(is, "utf-8");
