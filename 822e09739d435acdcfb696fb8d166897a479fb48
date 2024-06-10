@@ -16,6 +16,24 @@
       "message": "The actual problem case seems not to be tested, where there was a mismatch between annotations and primary data due to the expansion. I think, that should be added to the test case.\n\nThe behaviour change may be problematic for API requests relying on sentence boundaries - but I think there are more pros than cons to return larger contexts even if there is no sentence boundary existing.",
       "revId": "822e09739d435acdcfb696fb8d166897a479fb48",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aed7255d_6589cffb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-10T19:44:10Z",
+      "side": 1,
+      "message": "I have added annotations to one of the tests in patch 4.",
+      "parentUuid": "85fe9334_cfe2b03f",
+      "revId": "822e09739d435acdcfb696fb8d166897a479fb48",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }

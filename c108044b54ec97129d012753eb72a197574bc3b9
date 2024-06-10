@@ -34,6 +34,24 @@
       "parentUuid": "532b9097_e8e6230f",
       "revId": "c108044b54ec97129d012753eb72a197574bc3b9",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a35034d1_1b0837ff",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-10T19:44:10Z",
+      "side": 1,
+      "message": "Hm I don\u0027t see any sentence annotations in corola-bug.json. I think it is not really related to sentence boundary...\n\nI have investigate the test and it seems not quite correct because it expects the following snippet brackets:\n\n[\u003c!\u003ea a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} [{drukola/l:bu:b}] {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a} {drukola/l:au:a}\u003c!\u003e]\n\nwhich actually show the bug with the primary data because the character offset positions are not correctly updated after an expansion.\n\nBesides, the test fails because of this commit enlarge the maxExpansionSize. It was the same as maxTokenMatchSize before, and it is now maxTokenMatchSize + maxTokenContextSize. So the result doesn\u0027t need to be cut on the right side anymore.",
+      "parentUuid": "0ed87096_e0e948ff",
+      "revId": "c108044b54ec97129d012753eb72a197574bc3b9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
