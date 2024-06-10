@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ed5712e_1f6737bd",
+        "filename": "src/test/java/de/ids_mannheim/korap/collection/TestKrillCollection.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-10T11:18:21Z",
+      "side": 1,
+      "message": "Maybe check with an assert in this @test.",
+      "range": {
+        "startLine": 17,
+        "startChar": 7,
+        "endLine": 17,
+        "endChar": 40
+      },
+      "revId": "e7d0dd247a917cfbacf5d825654e32ee3e10f3ad",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
