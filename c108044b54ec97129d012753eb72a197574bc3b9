@@ -70,6 +70,24 @@
       "parentUuid": "a35034d1_1b0837ff",
       "revId": "c108044b54ec97129d012753eb72a197574bc3b9",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "805eeffd_41836372",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-11T07:20:56Z",
+      "side": 1,
+      "message": "That there are no sentence boundaries is exactly the point. The patch changes the default behaviour for that case.",
+      "parentUuid": "4748f030_4ea44fc9",
+      "revId": "c108044b54ec97129d012753eb72a197574bc3b9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }

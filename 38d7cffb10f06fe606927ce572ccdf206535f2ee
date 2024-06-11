@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d29c13b3_abe22c8d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-11T07:20:56Z",
+      "side": 1,
+      "message": "I really don\u0027t know how this change will effectively change the default behaviour and if it is in a weird way (like the 1-match restriction). I am fine with the commit, but I am curious how this would look like in real life in no-sentence scenarios.",
+      "revId": "38d7cffb10f06fe606927ce572ccdf206535f2ee",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
