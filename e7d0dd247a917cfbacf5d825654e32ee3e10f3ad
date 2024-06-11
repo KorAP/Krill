@@ -22,6 +22,30 @@
       },
       "revId": "e7d0dd247a917cfbacf5d825654e32ee3e10f3ad",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc941ef8_f0f63548",
+        "filename": "src/test/java/de/ids_mannheim/korap/collection/TestKrillCollection.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-11T07:39:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1ed5712e_1f6737bd",
+      "range": {
+        "startLine": 17,
+        "startChar": 7,
+        "endLine": 17,
+        "endChar": 40
+      },
+      "revId": "e7d0dd247a917cfbacf5d825654e32ee3e10f3ad",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
