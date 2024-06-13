@@ -759,7 +759,16 @@ public class TestKrill {
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
         Match m = kr.getMatch(0);
-        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><span class=\"inline-marker\" data-key=\"who\" data-value=\"Mai Thi Nguyen-Kim\"></span><span class=\"inline-marker\" data-key=\"start\" data-value=\"0:00\"></span><span class=\"inline-marker\" data-key=\"end\" data-value=\"01:20\"></span>(<mark>Räuspern</mark></span><span class=\"context-right\">) Wie viele Geschlechter gibt es? Wenn<span class=\"more\"></span></span>", m.getSnippetHTML());
+        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><span class=\"inline-marker\" data-key=\"who\" data-value=\"Mai Thi Nguyen-Kim\"></span><span class=\"inline-marker\" data-key=\"start\" data-value=\"0:00\"></span><span class=\"inline-marker\" data-key=\"end\" data-value=\"01:20\"></span>(<mark>Räuspern</mark></span><span class=\"context-right\">) Wie viele Geschlechter gibt es? Wenn<span class=\"more\"></span></span>", m.getSnippetHTML());      
+
+        ks = new Krill(new QueryBuilder("tokens").seg("s:Geschlechter"));
+        kr = ks.apply(ki);
+
+        assertEquals(5, kr.getTotalResults());
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(25, kr.getItemsPerPage());
+        m = kr.getMatch(0);
+        assertEquals("<span class=\"context-left\"></span><span class=\"match\"><span class=\"inline-marker\" data-key=\"who\" data-value=\"Mai Thi Nguyen-Kim\"></span><span class=\"inline-marker\" data-key=\"start\" data-value=\"0:00\"></span><span class=\"inline-marker\" data-key=\"end\" data-value=\"01:20\"></span>(Räuspern) Wie viele <mark>Geschlechter</mark></span><span class=\"context-right\"> gibt es? Wenn man hierzu öffentliche<span class=\"more\"></span></span>", m.getSnippetHTML());
     };
 
     

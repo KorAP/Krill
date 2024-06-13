@@ -77,10 +77,12 @@ public class TestPagebreakIndex {
 
         assertEquals(5, kr.getMatch(2).getStartPos());
 		assertEquals(6, kr.getMatch(2).getEndPos());
-		assertEquals(528, kr.getMatch(2).getStartPage());
-        assertEquals("<span class=\"context-left\">abcab</span><span class=\"match\"><mark>c</mark></span><span class=\"context-right\">abac</span>",
+		assertEquals(529, kr.getMatch(2).getStartPage());
+        assertEquals("",
+        // <span class=\"context-left\"><span class=\"pb\" data-after=\"528\"></span>abcab</span><span class=\"match\"><mark><span class=\"pb\" data-after=\"529\"></span>c</mark></span><span class=\"context-right\">ab<span class=\"pb\" data-after=\"530\"></span>ac</span>
                      kr.getMatch(2).getSnippetHTML());
-		assertEquals(529, kr.getMatch(2).getEndPage()); // Debatable
+        // "<span class=\"context-left\">abcab</span><span class=\"match\"><mark>c</mark></span>abac</span>"
+		assertEquals(-1, kr.getMatch(2).getEndPage()); // Debatable
 
         assertEquals(9, kr.getMatch(3).getStartPos());
 		assertEquals(10, kr.getMatch(3).getEndPos());

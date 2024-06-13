@@ -186,8 +186,8 @@ public class HighlightCombinator {
                 lastComb = this.combine.peekLast();
             };
         }
-		else if (lastComb.type == 3) {
-			System.err.println("öööööööööööööööööööööööö");
+		else if (lastComb.type == 3 || lastComb.type == 4) {
+			// Do nothing
 		}
         else {
             if (DEBUG)
