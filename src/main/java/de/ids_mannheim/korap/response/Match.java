@@ -227,12 +227,13 @@ public class Match extends AbstractDocument {
             this.setStartPos(maxTokenMatchSize, id.getStartPos());
             this.setEndPos(maxTokenMatchSize, id.getEndPos());
 
-            if (includeHighlights)
+            if (includeHighlights) {
                 for (int[] pos : id.getPos()) {
                     if (pos[0] < id.getStartPos() || pos[1] > id.getEndPos())
                         continue;
                     this.addHighlight(pos[0], pos[1], pos[2]);
 				};
+            };
         };
     };
 
@@ -890,6 +891,9 @@ public class Match extends AbstractDocument {
 
 		int charOffset = 0, pagenumber = 0, start = 0;
 
+        int minStartPos = this.getStartPos() - KrillProperties.maxTokenContextSize;
+        int maxEndPos = this.getEndPos() + KrillProperties.maxTokenContextSize;
+
 		if (DEBUG) {
             log.debug("=================================");
 			log.debug("Retrieve markers between {}-{}",
@@ -944,8 +948,8 @@ public class Match extends AbstractDocument {
 
 				// There is a marker found - check,
 				// if it is in the correct area
-				if (markerSpans.start() < this.getStartPos()) {
-
+				if (markerSpans.start() < minStartPos) {
+                    
 					// Only the first payload is relevant
 					b = markerSpans.getPayload().iterator().next();
 					start = markerSpans.start();
@@ -969,7 +973,7 @@ public class Match extends AbstractDocument {
 
 						pagenumber = bb.getInt();
                         charOffset = bb.getInt();
-
+                        
                         // This marker is a pagebreak
                         if (pagenumber != 0) {
                             if (DEBUG)
@@ -978,7 +982,7 @@ public class Match extends AbstractDocument {
 						    // This is the first pagebreak!
 						    pagebreaks.add(new int[]{charOffset, pagenumber});
                         
-						    if (start >= this.getStartPos()) {
+						    if (start >= minStartPos) {
     							if (DEBUG)
 	    							log.debug("Add marker to rendering: {}-{}",
 		    								  charOffset,
@@ -996,10 +1000,10 @@ public class Match extends AbstractDocument {
                         }
 
                         b = null;
-					}
+					};
 
 					// b wasn't used yet
-					if (markerSpans.start() <= this.getEndPos()) {
+					if (markerSpans.start() <= maxEndPos) {
 
 						// Set new pagebreak
 						// Only the first payload is relevant
@@ -1010,7 +1014,7 @@ public class Match extends AbstractDocument {
 							
 						pagenumber = bb.getInt();
 						charOffset = bb.getInt();
-
+                       
                         // This marker is a pagebreak
                         if (pagenumber != 0) {
                             if (DEBUG)
@@ -1019,7 +1023,9 @@ public class Match extends AbstractDocument {
 						    // This is the first pagebreak!
 						    pagebreaks.add(new int[]{charOffset, pagenumber});
                         
-						    if (start >= this.getStartPos()) {
+						    if (start >= minStartPos) {
+
+                                
     							if (DEBUG)
 	    							log.debug("Add pagebreak to rendering: {}-{}",
 		    								  charOffset,
@@ -1067,7 +1073,7 @@ public class Match extends AbstractDocument {
                     // This is a remembered pagebreak!
                     pagebreaks.add(new int[]{charOffset, pagenumber});
 
-                    if (start >= this.getStartPos()) {
+                    if (start >= minStartPos) {
                                             
                         if (DEBUG)
                             log.debug("Add pagebreak to rendering: {}-{}",
@@ -1093,11 +1099,25 @@ public class Match extends AbstractDocument {
 			log.warn("Some problems with ByteBuffer: {}", e.getMessage());
 		};
 
+        // For references calculate the page for the match
 		if (pagebreaks.size() > 0) {
-			this.startPage = pagebreaks.get(0)[1];
-			if (pagebreaks.size() > 1 && pagebreaks.get(pagebreaks.size()-1) != null)
-				this.endPage = pagebreaks.get(pagebreaks.size()-1)[1];
-		}
+            int i = 0;
+            for (; i < pagebreaks.size(); i++) {
+                if (pagebreaks.get(i)[0] <= this.getStartPos()) {
+                    this.startPage = pagebreaks.get(i)[1];
+                } else {
+                    i++;
+                    break;
+                };
+            };
+            for (; i < pagebreaks.size(); i++) {
+                if (pagebreaks.get(i)[0] < this.getEndPos()) {
+                    this.endPage = pagebreaks.get(i)[1];
+                } else {
+                    break;
+                };
+            };
+		};
 		
 		return pagebreaks;
 	};
@@ -1343,7 +1363,7 @@ public class Match extends AbstractDocument {
         if (this.highlight != null) {
             for (Highlight hl : this.highlight) {
                 if (hl.start >= this.getStartPos()
-                        && hl.end <= this.getEndPos()) {
+                    && hl.end <= this.getEndPos()) {
 
 					// Highlight is no pagebreak
 					if (hl.end != PB_MARKER && hl.end != ALL_MARKER) {
@@ -1352,13 +1372,13 @@ public class Match extends AbstractDocument {
 
 						if (DEBUG)
 							log.trace(
-                                "PTO will retrieve {} & {} (Highlight boundary)",
+                                "PTO will retrieve offsets from token {} & {} (Highlight boundary)",
                                 hl.start, hl.end);
 						
 					}
 
 					else if (DEBUG) {
-						log.trace("Highlight is a pagebreak - do not retrieve PTO");
+						log.trace("Highlight is a pagebreak or marker - do not retrieve PTO");
 					};					
                 };
             };
@@ -1401,12 +1421,24 @@ public class Match extends AbstractDocument {
             if (arg0[0] > arg1[0]) {
                 return 1;
             }
+
             else if (arg0[0] == arg1[0]) {
+
+                int end0 = arg0[1];
+                int end1 = arg1[1];            
+
+                if (arg0[1] == PB_MARKER || arg0[1] == ALL_MARKER) {
+                    end0 = arg0[0];
+                };
+                if (arg1[1] == PB_MARKER || arg1[1] == ALL_MARKER) {
+                    end1 = arg1[0];
+                };
+                
                 // Check endpositions
-                if (arg0[1] > arg1[1]) {
+                if (end0 > end1) {
                     return -1;
                 }
-                else if (arg0[1] == arg1[1]) {
+                else if (end0 == end1) {
 
                     // Compare class number
                     if (arg0[2] > arg1[2])
@@ -1428,11 +1460,23 @@ public class Match extends AbstractDocument {
     private class ClosingTagComparator implements Comparator<int[]> {
         @Override
         public int compare (int[] arg0, int[] arg1) {
+
+            int end0 = arg0[1];
+            int end1 = arg1[1];
+            
+            if (arg0[1] == PB_MARKER || arg0[1] == ALL_MARKER) {
+                end0 = arg0[0];
+            };
+
+            if (arg1[1] == PB_MARKER || arg1[1] == ALL_MARKER) {
+                end1 = arg1[0];
+            };
+            
             // Check end positions
-            if (arg0[1] > arg1[1]) {
+            if (end0 > end1) {
                 return 1;
             }
-            else if (arg0[1] == arg1[1]) {
+            else if (end0 == end1) {
 
                 // Check start positions
                 if (arg0[0] < arg1[0]) {
@@ -1464,22 +1508,30 @@ public class Match extends AbstractDocument {
 
         this.snippetArray = new HighlightCombinator();
 
+        // The snippetArray can have preceeding and following pagebreaks
+        // and markers that need to be removed
+
+        
         // Iterate over all elements of the stack
         for (int[] element : stack) {
 
             // The position is the start position for opening and
-			// empty elements and the end position for closing elements
+			// empty/marker elements and the end position for closing elements
             pos = element[3] != 0 ? element[0] : element[1];
 
-			if (DEBUG)
-				log.trace("Add tag at position {} (was {})",
+			if (DEBUG) {
+				log.trace("Check tag at position {} (was {}) [{},{},{},{}]",
 						  pos,
-						  oldPos);
-
+						  oldPos,
+						  element[0],
+						  element[1],
+                          element[2],
+                          element[3]);
+            };
 			
 			// The new position is behind the old position
             if (pos > oldPos) {
-
+                
 				// The position is behind the string length,
 				// which may end when an element ends beyond
                 if (pos > clean.length()) {
@@ -1495,6 +1547,8 @@ public class Match extends AbstractDocument {
 
 				// Add partial string
 				if (pos > 0 && pos > oldPos) {
+                    if (DEBUG)
+                        log.trace("Add string {}", codePointSubstring(clean, oldPos, pos));
 					snippetArray.addString(codePointSubstring(clean, oldPos, pos));
 				};
 
@@ -1505,6 +1559,9 @@ public class Match extends AbstractDocument {
 			// close tag
             if (element[3] == 0) {
 
+                if (DEBUG)
+                    log.trace("Add closer: {}", element[2]);
+                
 				// Add close
                 snippetArray.addClose(element[2]);
             }
@@ -1531,6 +1588,8 @@ public class Match extends AbstractDocument {
 
         if (clean.length() > pos && pos >= 0) {
             snippetArray.addString(codePointSubstring(clean, pos));
+            if (DEBUG)
+                log.trace("Add rest string {}", codePointSubstring(clean, pos));
         };
     };
 
@@ -1730,65 +1789,65 @@ public class Match extends AbstractDocument {
         short start = (short) 0;
         short end = this.snippetArray.size();
 
-		// Create context
-        sb.append("<span class=\"context-left\">");
-        if (this.startMore)
-            sb.append("<span class=\"more\"></span>");
-
 		// Set levels for highlights 
 		FixedBitSet level = new FixedBitSet(255);
 		level.set(0, 255);
 		byte[] levelCache = new byte[255];
 
 		HighlightCombinatorElement elem;
+        
+		// Create context
+        sb.append("<span class=\"context-left\">");
+        if (this.startMore)
+            sb.append("<span class=\"more\"></span>");
 
-		end--;
-		if (end > 0) {
+        // Iterate over the snippet array
+        // Start with left context
+        end--;
+		while (end > 0) {
 
 			// First element of sorted array
-			elem = this.snippetArray.getFirst();
+			elem = this.snippetArray.get(start);
 
-			// First element is textual
-			if (elem.type == 0) {
-				sb.append(elem.toHTML(this, level, levelCache, joins));
-				// Move start position
-				start++;
-			};
-			sb.append("</span>");
+            // Context ends - The match starts!
+            if (elem.type == 1 && elem.number == CONTEXT) {
+                // Keep elem by not increasing start
+                break;
+            }
 
-			// Last element of sorted array
-			elem = this.snippetArray.getLast();
+			// Element is in context - but only markers are allowed!
+            // The problem with other elements is, that the may span the whole range
+            // around the match, so we have overlaps.
+			else if (elem.type == 1 || elem.type == 2) {
+                break;
+            }
 
-			// Create right context, if there is any
-			rightContext.append("<span class=\"context-right\">");
+            // Text or marker
+            else {
+                String elemString = elem.toHTML(this, level, levelCache, joins);
+				sb.append(elemString);
 
-			// Last element is textual
-			if (elem != null && elem.type == 0) {
-				rightContext.append(
-					elem.toHTML(this, level, levelCache, joins)
-					);
+                if (DEBUG)
+                    log.trace("Add node {}", elemString);
 
-				// decrement end
-				end--;
+                // Move start position
+                start++;
 			};
 		};
 
-		if (this.endMore)
-            rightContext.append("<span class=\"more\"></span>");
+        // end of context
+        sb.append("</span>");
 
-        rightContext.append("</span>");
-
-        // Iterate through all remaining elements
+        // Iterate through all the match
         sb.append("<span class=\"match\">");
 
 		if (this.startCutted) {
 			sb.append("<span class=\"cutted\"></span>");
 		};
         
-        for (short i = start; i <= end; i++) {
+        for (; start <= end; start++) {
+			elem = this.snippetArray.get(start);
 
-			elem = this.snippetArray.get(i);
-			// UNTESTED
 			if (elem != null) {
 				String elemString = elem.toHTML(
 					this, level, levelCache, joins
@@ -1797,13 +1856,52 @@ public class Match extends AbstractDocument {
 					log.trace("Add node {}", elemString);
 				};
 				sb.append(elemString);
-			}
+
+                // The match closes
+                if (elem.type == 2 && elem.number == CONTEXT) {
+                    start++;
+                    break;
+                };
+			};
         };
+
+        // Warning! TODO:
+        // Check that all elements are closed that are opened at this point and only inline markers
+        // can follow in the context!
+        
+
 		if (this.endCutted) {
 			sb.append("<span class=\"cutted\"></span>");
 		};
+
+        
         sb.append("</span>");
-        sb.append(rightContext);
+
+
+        // There is the right context
+        // if (start <= end) {
+        sb.append("<span class=\"context-right\">");
+
+        for (; start <= end; start++) {
+            elem = this.snippetArray.get(start);
+
+            // UNTESTED
+            if (elem != null) {                
+                String elemString = elem.toHTML(
+                    this, level, levelCache, joins
+                    );
+                if (DEBUG) {
+                    log.trace("Add node {}", elemString);
+                };
+                sb.append(elemString);
+            };
+        };
+        
+        if (this.endMore)
+            sb.append("<span class=\"more\"></span>");
+
+        // End of context
+        sb.append("</span>");
 
         return (this.snippetHTML = sb.toString());
     };
@@ -1883,6 +1981,9 @@ public class Match extends AbstractDocument {
         // result in invalid xml
         this._filterMultipleIdentifiers();
 
+        // the start and end of the snippet is currently stored in span[0]
+        // this should be trimmed here!
+
         // Add highlight spans to balance lists
         openList.addAll(this.span);
         closeList.addAll(this.span);
@@ -1890,6 +1991,11 @@ public class Match extends AbstractDocument {
         // Sort balance lists
         Collections.sort(openList, new OpeningTagComparator());
         Collections.sort(closeList, new ClosingTagComparator());
+
+        if (DEBUG) {
+            log.trace("OpenList: {}", openList);
+            log.trace("CloseList: {}", closeList);
+        };
 
         // New stack array
         ArrayList<int[]> stack = new ArrayList<>(openList.size() * 2);
@@ -1906,40 +2012,76 @@ public class Match extends AbstractDocument {
                 int pf = closeList.peekFirst()[1];
 
 				if (pf != PB_MARKER && pf != ALL_MARKER) {
-					stack.add(closeList.removeFirst());
+                    //closeList.removeFirst();
+                    
+                    int[] e = closeList.removeFirst().clone();
+
+                    if (DEBUG) {
+                        log.trace(
+                            "Add close with number {} to stack at {}-{} as {}",
+                            e[2], e[0], e[1], e[3]
+                            );
+                    }
+					stack.add(e);
 				}
 				else if (DEBUG) {
-					if (DEBUG)
-						log.debug("Close is pagebreak -- ignore (1)");
+                    closeList.removeFirst();
+                    log.debug("Close is pagebreak -- ignore (1)");
 				};
-
+                
                 continue;
             }
 
             // Not sure about this, but it can happen
             else if (closeList.isEmpty()) {
-                break;
+
+                if (DEBUG)
+                    log.debug("Closelist is empty");
+
+                int[] e = openList.removeFirst().clone();
+
+				if (e[1] == PB_MARKER || e[1] == ALL_MARKER) {
+
+                    if (e[1] == PB_MARKER) {
+                        e[3] =  2;
+                    } else {
+                        e[3] = 3;
+                    };
+
+                    // Mark as empty
+                    e[1] = e[0]; // Remove pagebreak marker
+                    
+                    if (DEBUG)
+                        log.trace(
+                            "Add pagebreak or marker with {} to stack at {}-{} as {}",
+                            e[2], e[0], e[1], e[3]
+                            );
+
+                    // Add empty pagebreak
+                    stack.add(e);
+				};
+                
+                continue;
             };
 
             int clpf = closeList.peekFirst()[1];
             int olpf = openList.peekFirst()[1];
 
-			// Closener is pagebreak or marker
-			if (clpf == PB_MARKER || clpf == ALL_MARKER) {
 
+            // Closener is pagebreak or marker
+            if (clpf == PB_MARKER || clpf == ALL_MARKER) {
+                
 				if (DEBUG)
-					log.debug("Close is pagebreak or a marker -- ignore (2)");
+					log.debug("Close is pagebreak or a marker -- remove (2)");
 
 				// Remove closing pagebreak
 				closeList.removeFirst();
 			}
 
 			// Opener is pagebreak or marker
-			else if (olpf == PB_MARKER || olpf == ALL_MARKER) {
-				int[] e = openList.removeFirst().clone();
-
-				if (DEBUG)
-					log.debug("Open is pagebreak or a marker");
+            else if ((olpf == PB_MARKER || olpf == ALL_MARKER) && closeList.peekFirst()[1] >= openList.peekFirst()[0]) {
+                
+                int[] e = openList.removeFirst().clone();
 
 				// Mark as empty
                 e[1] = e[0]; // Remove pagebreak marker
@@ -1949,14 +2091,21 @@ public class Match extends AbstractDocument {
                 } else {
                     e[3] = 3;
                 };
+                
+                if (DEBUG)
+					log.trace(
+						"Add pagebreak or marker with {} to stack at {}-{} as {}",
+						e[2], e[0], e[1], e[3]
+						);
 
+                
 				// Add empty pagebreak
 				stack.add(e);
 			}
-
+            
 			// check if the opener is smaller than the closener
 			else if (openList.peekFirst()[0] < closeList.peekFirst()[1]) {
-
+                
 				if (DEBUG)
 					log.debug("Open tag starts before close tag ends");
 
@@ -1985,9 +2134,9 @@ public class Match extends AbstractDocument {
 
 			else {
 				int[] e = closeList.removeFirst();
-				
+
 				if (DEBUG) {
-					log.debug("Close ends before open");
+					log.debug("Close ends before next opens or at the same position");
 
 					log.trace(
 						"Add close with number {} to stack at {}-{}",
@@ -2020,6 +2169,7 @@ public class Match extends AbstractDocument {
 
     /**
      * This will retrieve character offsets for all spans.
+     * This includes pagebreaks and markers.
      */
     private boolean _processHighlightSpans () {
 
@@ -2073,6 +2223,7 @@ public class Match extends AbstractDocument {
 
         // Recalculate startOffsetChar
         int startOffsetChar = startPosChar - intArray[0];
+        int endRelOffsetChar = intArray[1];
 
         // Add match span, in case no inner match is defined
         if (this.innerMatchEndPos == -1) {
@@ -2082,7 +2233,18 @@ public class Match extends AbstractDocument {
 		};
 
 		// Add context highlight
-		this.span.add(new int[]{intArray[0], intArray[1], CONTEXT, 0});
+        intArray = new int[]{intArray[0], intArray[1], CONTEXT, 0};
+
+		this.span.add(intArray);
+
+        if (DEBUG)
+            log.debug("Added array to context span with {} (1)", intArray);
+
+        
+        // All spans starting before startOffsetChar and end before
+        // endOffsetChar can be dismissed, as they are not part of tempSnippet
+        // This can actually be seen based on the first element of this.span
+        // at the moment.
 
         // highlights
         // -- I'm not sure about this.
@@ -2090,13 +2252,12 @@ public class Match extends AbstractDocument {
             if (DEBUG)
                 log.trace("There are highlights!");
 
-            for (Highlight highlight : this.highlight) {
-				if (DEBUG && highlight.start > highlight.end) {
-					log.warn("Start position is before end position {}-{}!",
+            for (Highlight highlight : this.highlight) {                
+				if (DEBUG && (highlight.start > highlight.end)) {
+					log.warn("Start position is before end position {} - {}!",
 							 highlight.start,
 							 highlight.end);
 				};
-
 				
 				int start = -1;
                 int end = -1;
@@ -2114,25 +2275,38 @@ public class Match extends AbstractDocument {
 					// In pagebreak highlights
 					// there is already a character
 					start = highlight.start;
-					end = highlight.end;
-				};
 
-                if (DEBUG)
-                    log.trace("PTO has retrieved {}-{} for class {}", start,
-							  end, highlight.number);
+                    // Ignore highlights outside the snippet
+                    /*
+                    if (start < startOffsetChar || start > endOffsetChar) {
+                        continue;
+                    };
+                    */                  
+					end = highlight.end;
+                };
 
                 start -= startOffsetChar;
 
 				// Keep end equal -1
 				if (end != PB_MARKER && end != ALL_MARKER) {
-					end -= startOffsetChar;
+                    if (DEBUG)
+                        log.trace("PTO whas retrieved {}-{} for class {}", start,
+                                  end, highlight.number);
+                    end -= startOffsetChar;
+
+                    // Cut longer spans (e.g. from relation references)
+                    if (end > endRelOffsetChar) {
+                        end = endRelOffsetChar;
+                    };
 				}
 				else if (DEBUG) {
 					log.debug("Pagebreak keeps end position");
 				};
 
-                if (start < 0 || (end < 0 && end != PB_MARKER && end != ALL_MARKER))
+                if (start < 0 ||
+                    (end < 0 && end != PB_MARKER && end != ALL_MARKER)) {
                     continue;
+                };
 
                 // Create intArray for highlight
                 intArray = new int[] {
@@ -2143,7 +2317,7 @@ public class Match extends AbstractDocument {
                 };
 
 				if (DEBUG)
-					log.debug("Added array to span with {} (2)", intArray);
+					log.debug("Added array to span with {} (2a)", intArray);
 
                 this.span.add(intArray);
             };
@@ -2207,7 +2381,6 @@ public class Match extends AbstractDocument {
                     log.trace("PTO will retrieve {} (Right context)",
                             endOffset);
                 pto.add(ldid, endOffset);
-
             }
 
             // The right context is defined by characters
