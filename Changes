@@ -1,9 +1,12 @@
-0.62.5 2024-06-11
+0.62.5 2024-06-19
     - [bugfix] cut primary data according to max values (margaretha, #143)
     - [enhancement] restrict match expansion by max token and context 
       size (margaretha, #144)
     - [bugfix] Set the default value for named-vc path (margaretha, 
       fixes #146)
+    - [bugfix] Show all inline markers and pagebreaks at match borders (diewald).
+    - [feature] Show inline markers and pagebreaks in contexts (diewald).
+    - [bugfix] Prevent broken relational spans in contexts (diewald).
     
 0.62.4 2024-05-27
     - [feature] Make match and context size configurable (address #128, 
