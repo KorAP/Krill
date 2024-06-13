@@ -88,11 +88,10 @@ public class HighlightCombinator {
         this.combine.add(new HighlightCombinatorElement((byte) 4, annonumber));
     };
 
-
     // Add closing highlight combinator to the stack
     public void addClose (int number) {
         HighlightCombinatorElement lastComb;
-
+        
         // Clean up temporary stack
         this.tempStack.clear();
 
@@ -119,8 +118,8 @@ public class HighlightCombinator {
         int eold = this.balanceStack.pop();
 
         // the closing element is not balanced, i.e. the last element differs
-        while (eold != number) {
-
+        while (eold != number) {       
+            
             // Retrieve last combinator on stack
             lastComb = this.combine.peekLast();
 
@@ -178,7 +177,7 @@ public class HighlightCombinator {
             log.trace("Stack for checking 2: {}|{}|{}|{}", lastComb.type,
                     lastComb.number, lastComb.characters, number);
         };
-
+        
         if (lastComb.type == 1 && lastComb.number == number) {
             while (lastComb.type == 1 && lastComb.number == number) {
                 // Remove the damn thing - It's empty and uninteresting!
@@ -186,9 +185,7 @@ public class HighlightCombinator {
                 lastComb = this.combine.peekLast();
             };
         }
-		else if (lastComb.type == 3) {
-			System.err.println("öööööööööööööööööööööööö");
-		}
+
         else {
             if (DEBUG)
                 log.trace("close element b) {}", number);

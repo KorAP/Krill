@@ -77,10 +77,12 @@ public class TestPagebreakIndex {
 
         assertEquals(5, kr.getMatch(2).getStartPos());
 		assertEquals(6, kr.getMatch(2).getEndPos());
-		assertEquals(528, kr.getMatch(2).getStartPage());
-        assertEquals("<span class=\"context-left\">abcab</span><span class=\"match\"><mark>c</mark></span><span class=\"context-right\">abac</span>",
+		assertEquals(529, kr.getMatch(2).getStartPage());
+        assertEquals("<span class=\"context-left\"><span class=\"pb\" data-after=\"528\"></span>abcab</span><span class=\"match\"><mark><span class=\"pb\" data-after=\"529\"></span>c</mark></span><span class=\"context-right\">ab<span class=\"pb\" data-after=\"530\"></span>ac</span>",
                      kr.getMatch(2).getSnippetHTML());
-		assertEquals(529, kr.getMatch(2).getEndPage()); // Debatable
+        assertEquals("{%528}abcab[[{%529}c]]ab{%530}ac",
+                     kr.getMatch(2).getSnippetBrackets());
+		assertEquals(-1, kr.getMatch(2).getEndPage()); // Debatable
 
         assertEquals(9, kr.getMatch(3).getStartPos());
 		assertEquals(10, kr.getMatch(3).getEndPos());
@@ -106,10 +108,11 @@ public class TestPagebreakIndex {
 		assertEquals(3, kr.getMatch(0).getEndPos());
 		assertEquals(528, kr.getMatch(0).getStartPage());
 		assertEquals(-1, kr.getMatch(0).getEndPage());
+
 		assertEquals(
 			"snippetHTML",
 			"<span class=\"context-left\">"+
-			// "<span class=\"pb\" data-after=\"528\"></span>"+
+            "<span class=\"pb\" data-after=\"528\"></span>"+
 			"ab"+
 			"</span>"+
 			"<span class=\"match\">"+
@@ -119,15 +122,17 @@ public class TestPagebreakIndex {
 			"</span>"+
 			"<span class=\"context-right\">"+
 			"ab"+
-			// "<span class=\"pb\" data-after=\"528\"></span>"+
+            "<span class=\"pb\" data-after=\"529\"></span>"+
 			"cab"+
-			// "<span class=\"pb\" data-after=\"528\"></span>"+
+            "<span class=\"pb\" data-after=\"530\"></span>"+
 			"a"+
 			"<span class=\"more\">"+
 			"</span>"+
 			"</span>",
 			kr.getMatch(0).getSnippetHTML());
 
+		assertEquals("snippetBrackets","{%528}ab[[c]]ab{%529}cab{%530}a ...",kr.getMatch(0).getSnippetBrackets());
+        
 		QueryBuilder qb = new QueryBuilder("tokens");
 		sq = qb.seq().append(
 			qb.repeat(
@@ -139,11 +144,10 @@ public class TestPagebreakIndex {
 
 		assertEquals(sq.toString(), "spanNext(spanRepetition(spanNext(spanNext(tokens:s:a, tokens:s:b), tokens:s:c){2,2}), tokens:s:a)");
 
-
 		kr = ki.search(sq, (short) 10);
 		
 		assertEquals(528, kr.getMatch(0).getStartPage());
-		assertEquals(529, kr.getMatch(0).getEndPage());
+		assertEquals(-1, kr.getMatch(0).getEndPage());
 
 		assertEquals(
 			"snippetHTML",
@@ -157,8 +161,10 @@ public class TestPagebreakIndex {
 			"</mark>"+
 			"</span>"+
 			"<span class=\"context-right\">"+
-			"bac"+
+			"b<span class=\"pb\" data-after=\"530\"></span>ac"+
 			"</span>",
 			kr.getMatch(0).getSnippetHTML());
+
+		assertEquals("snippetBrackets","[[{%528}abcab{%529}ca]]b{%530}ac",kr.getMatch(0).getSnippetBrackets());
 	};
 };
