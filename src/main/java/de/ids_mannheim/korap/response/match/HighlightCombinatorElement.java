@@ -224,6 +224,18 @@ public class HighlightCombinatorElement {
 
             return sb.toString();
         }
+
+        else if (this.type == 4) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("{");
+            /*
+              sb.append(escapeBrackets(parts[0]));
+              sb.append(escapeBrackets(parts[1]));
+            */
+            sb.append(":}");
+            return sb.toString();
+        }
+
         else if (this.type == 2) {
 
 			// This is context
@@ -233,6 +245,10 @@ public class HighlightCombinatorElement {
             if (this.number == -1)
                 return "]";
             return "}";
+        };
+
+        if (this.characters == null) {
+            return "";
         };
         return escapeBrackets(this.characters);
     };
