@@ -1,3 +1,10 @@
+0.63.0 2024-06-21
+    - [bugfix] Show all inline markers and pagebreaks at match borders (diewald).
+    - [feature] Show inline markers and pagebreaks in contexts (diewald).
+    - [bugfix] Prevent matches in contexts (diewald).
+    - [bugfix] Prevent showing empty elements and opening tags past primary data
+      (diewald).
+
 0.62.6 2024-06-13
     - [feature] Make match expansion configurable (close #150, margaretha)
 
