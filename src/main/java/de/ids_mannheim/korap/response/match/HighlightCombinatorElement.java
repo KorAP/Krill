@@ -224,6 +224,26 @@ public class HighlightCombinatorElement {
 
             return sb.toString();
         }
+
+        else if (this.type == 3) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("{%");
+            sb.append(this.number);
+            sb.append("}");
+            return sb.toString();
+        }
+
+        else if (this.type == 4) {
+            String[] parts = match.getAnnotationID(this.number).split(":", 2);
+            StringBuilder sb = new StringBuilder();
+            sb.append("{*");
+            sb.append(escapeBrackets(parts[0]));
+            sb.append("=");
+            sb.append(escapeBrackets(parts[1]));
+            sb.append("}");
+            return sb.toString();
+        }
+
         else if (this.type == 2) {
 
 			// This is context
@@ -233,6 +253,10 @@ public class HighlightCombinatorElement {
             if (this.number == -1)
                 return "]";
             return "}";
+        };
+
+        if (this.characters == null) {
+            return "";
         };
         return escapeBrackets(this.characters);
     };

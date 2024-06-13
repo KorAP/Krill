@@ -457,7 +457,7 @@ public class TestMatchIdentifier {
 			snippet
 			);
 
-		// Expansion - no context
+		// Expansion - no context but inner match
 		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
 								   "xyz", "s", true, true, true);
 		snippet = km.getSnippetHTML();
@@ -1137,40 +1137,39 @@ public class TestMatchIdentifier {
         	"match-Corpus/Doc/0002-p0-6",
         					 "tokens", "malt", null, true, false);
 
-		        assertEquals(
-					"SnippetHTML (1)",
-					"<span class=\"context-left\">"+
-					"</span>"+
-					"<span class=\"match\">"+
-					"<span xml:id=\"token-Corpus/Doc/0002-p0-6\">"+
-					"<mark>"+
-					"<span xml:id=\"token-Corpus/Doc/0002-p0\">"+
-					"<span xlink:title=\"malt/d:ROOT\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p0-6\">Maximen</span>"+
-					"</span>"+
-					" "+
-					"<span xml:id=\"token-Corpus/Doc/0002-p1\">"+
-					"<span xlink:title=\"malt/d:KON\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p0\">und</span>"+
-					"</span>"+
-					" "+
-					"<span xlink:title=\"malt/d:CJ\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p1\">Reflexionen</span>"+
-					" "+
-					"<span xml:id=\"token-Corpus/Doc/0002-p3\">"+
-					"<span xlink:title=\"malt/d:KON\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p0\">Religion</span>"+
-					"</span>"+
-					" "+
-					"<span xml:id=\"token-Corpus/Doc/0002-p4\">"+
-					"<span xlink:title=\"malt/d:KON\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p3\">und</span>"+
-					"</span>"+
-					" "+
-					"<span xlink:title=\"malt/d:CJ\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p4\">Christentum</span>"+
-					"</mark>"+
-					"</span>"+
-					"</span>"+
-					"<span class=\"context-right\">"+
-					"<span class=\"more\"></span>"+
-					"</span>",
-					km.getSnippetHTML()
-					);
+        assertEquals("SnippetHTML (1)",
+                     "<span class=\"context-left\"></span>"+
+                     "<span class=\"match\">"+
+                     "<span xml:id=\"token-Corpus/Doc/0002-p0-6\">"+
+                     "<mark>"+
+                     "<span xml:id=\"token-Corpus/Doc/0002-p0\">"+
+                     "<span xlink:title=\"malt/d:ROOT\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p0-6\">Maximen</span>"+
+                     "</span>"+
+                     " "+
+                     "<span xml:id=\"token-Corpus/Doc/0002-p1\">"+
+                     "<span xlink:title=\"malt/d:KON\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p0\">und</span>"+
+                     "</span>"+
+                     " "+
+                     "<span xlink:title=\"malt/d:CJ\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p1\">Reflexionen</span>"+
+                     " "+
+                     "<span xml:id=\"token-Corpus/Doc/0002-p3\">"+
+                     "<span xlink:title=\"malt/d:KON\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p0\">Religion</span>"+
+                     "</span>"+
+                     " "+
+                     "<span xml:id=\"token-Corpus/Doc/0002-p4\">"+
+                     "<span xlink:title=\"malt/d:KON\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p3\">und</span>"+
+                     "</span>"+
+                     " "+
+                     "<span xlink:title=\"malt/d:CJ\" xlink:show=\"none\" xlink:href=\"#token-Corpus/Doc/0002-p4\">Christentum</span>"+
+                     "</mark>"+
+                     "</span>"+
+                     "</span>"+
+                     "<span class=\"context-right\">"+
+                     "<span class=\"more\"></span>"+
+                     "</span>",
+                     km.getSnippetHTML()
+            );
+        
 	};
 
 
