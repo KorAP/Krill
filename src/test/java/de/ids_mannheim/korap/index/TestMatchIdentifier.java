@@ -30,6 +30,7 @@ import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.match.MatchIdentifier;
 import de.ids_mannheim.korap.response.match.PosIdentifier;
+import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
 
 @RunWith(JUnit4.class)
@@ -1219,6 +1220,8 @@ public class TestMatchIdentifier {
 
     @Test
     public void indexCorolaTokensBugReplicated () throws IOException, QueryException {
+        KrillProperties.matchExpansionIncludeContextSize=false;
+        
         KrillIndex ki = new KrillIndex();
 
         ki.addDoc(getClass().getResourceAsStream("/others/corola-bug.json"), false);
@@ -1239,7 +1242,7 @@ public class TestMatchIdentifier {
 
         String str = km.getSnippetBrackets();
         assertTrue(str.contains("[<!>{drukola/l:au:a}"));
-        assertFalse(str.contains("<!>]"));
+        assertTrue(str.contains("<!>]"));
         
         km = ki.getMatchInfo("match-Corola-blog/BlogPost/370281_a_371610-p50-51", "tokens", null, null,false, false, true);
 
@@ -1247,6 +1250,8 @@ public class TestMatchIdentifier {
         str = km.getSnippetBrackets();
         assertTrue(str.contains("[<!>{d"));
         assertTrue(str.contains("a}<!>]"));
+        
+        KrillProperties.matchExpansionIncludeContextSize=true;
     };
     
 

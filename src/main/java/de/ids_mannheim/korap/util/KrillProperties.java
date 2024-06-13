@@ -23,6 +23,8 @@ public class KrillProperties {
     public static int maxTokenContextSize = 60;
     public static int maxCharContextSize = 500;
     
+    public static boolean matchExpansionIncludeContextSize = false;
+    
     public static String namedVCPath = "";
     public static boolean isTest = false;
     
@@ -100,6 +102,10 @@ public class KrillProperties {
         isTest = Boolean.parseBoolean(p);
         
         namedVCPath = prop.getProperty("krill.namedVC", "");
+        
+        String matchExpansion = prop.getProperty(
+                "krill.match." + "expansion.includeContextSize", "false");
+        matchExpansionIncludeContextSize = Boolean.parseBoolean(matchExpansion);
     }
     
 

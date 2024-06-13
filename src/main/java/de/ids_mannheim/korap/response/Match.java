@@ -1117,9 +1117,11 @@ public class Match extends AbstractDocument {
         
         if (spanContext[0] >= 0
                 && spanContext[0] < spanContext[1]) {
-
-            int maxExpansionSize = KrillProperties.maxTokenMatchSize
-                    + KrillProperties.maxTokenContextSize;
+            
+            int maxExpansionSize = KrillProperties.maxTokenMatchSize;
+            if (KrillProperties.matchExpansionIncludeContextSize) {
+                maxExpansionSize += KrillProperties.maxTokenContextSize;
+            }
 
             // Match needs to be cutted!
             boolean cutExpansion = false;
