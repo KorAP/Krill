@@ -890,6 +890,9 @@ public class Match extends AbstractDocument {
 
 		int charOffset = 0, pagenumber = 0, start = 0;
 
+        int minStartPos = this.getStartPos() - KrillProperties.maxTokenContextSize;
+        int maxEndPos = this.getEndPos() + KrillProperties.maxTokenContextSize;
+
 		if (DEBUG) {
             log.debug("=================================");
 			log.debug("Retrieve markers between {}-{}",
@@ -944,7 +947,7 @@ public class Match extends AbstractDocument {
 
 				// There is a marker found - check,
 				// if it is in the correct area
-				if (markerSpans.start() < this.getStartPos()) {
+				if (markerSpans.start() < minStartPos) {
 
 					// Only the first payload is relevant
 					b = markerSpans.getPayload().iterator().next();
@@ -978,7 +981,7 @@ public class Match extends AbstractDocument {
 						    // This is the first pagebreak!
 						    pagebreaks.add(new int[]{charOffset, pagenumber});
                         
-						    if (start >= this.getStartPos()) {
+						    if (start >= minStartPos) {
     							if (DEBUG)
 	    							log.debug("Add marker to rendering: {}-{}",
 		    								  charOffset,
@@ -999,7 +1002,7 @@ public class Match extends AbstractDocument {
 					}
 
 					// b wasn't used yet
-					if (markerSpans.start() <= this.getEndPos()) {
+					if (markerSpans.start() <= maxEndPos) {
 
 						// Set new pagebreak
 						// Only the first payload is relevant
@@ -1019,7 +1022,7 @@ public class Match extends AbstractDocument {
 						    // This is the first pagebreak!
 						    pagebreaks.add(new int[]{charOffset, pagenumber});
                         
-						    if (start >= this.getStartPos()) {
+						    if (start >= minStartPos) {
     							if (DEBUG)
 	    							log.debug("Add pagebreak to rendering: {}-{}",
 		    								  charOffset,
@@ -1067,7 +1070,7 @@ public class Match extends AbstractDocument {
                     // This is a remembered pagebreak!
                     pagebreaks.add(new int[]{charOffset, pagenumber});
 
-                    if (start >= this.getStartPos()) {
+                    if (start >= minStartPos) {
                                             
                         if (DEBUG)
                             log.debug("Add pagebreak to rendering: {}-{}",
@@ -1093,11 +1096,25 @@ public class Match extends AbstractDocument {
 			log.warn("Some problems with ByteBuffer: {}", e.getMessage());
 		};
 
+        // For references calculate the page for the match
 		if (pagebreaks.size() > 0) {
-			this.startPage = pagebreaks.get(0)[1];
-			if (pagebreaks.size() > 1 && pagebreaks.get(pagebreaks.size()-1) != null)
-				this.endPage = pagebreaks.get(pagebreaks.size()-1)[1];
-		}
+            int i = 0;
+            for (; i < pagebreaks.size(); i++) {
+                if (pagebreaks.get(i)[0] <= this.getStartPos()) {
+                    this.startPage = pagebreaks.get(i)[1];
+                } else {
+                    i++;
+                    break;
+                };
+            };
+            for (; i < pagebreaks.size(); i++) {
+                if (pagebreaks.get(i)[0] < this.getEndPos()) {
+                    this.endPage = pagebreaks.get(i)[1];
+                } else {
+                    break;
+                };
+            };
+		};
 		
 		return pagebreaks;
 	};
@@ -1464,11 +1481,15 @@ public class Match extends AbstractDocument {
 
         this.snippetArray = new HighlightCombinator();
 
+        // The snippetArray can have preceeding and following pagebreaks
+        // and markers that need to be removed
+
+        
         // Iterate over all elements of the stack
         for (int[] element : stack) {
 
             // The position is the start position for opening and
-			// empty elements and the end position for closing elements
+			// empty/marker elements and the end position for closing elements
             pos = element[3] != 0 ? element[0] : element[1];
 
 			if (DEBUG)
@@ -1883,10 +1904,13 @@ public class Match extends AbstractDocument {
         // result in invalid xml
         this._filterMultipleIdentifiers();
 
+        // the start and end of the snippet is currently stored in span[0]
+        // this should be trimmed here!
+
         // Add highlight spans to balance lists
         openList.addAll(this.span);
-        closeList.addAll(this.span);
-
+        closeList.addAll(this.span);      
+        
         // Sort balance lists
         Collections.sort(openList, new OpeningTagComparator());
         Collections.sort(closeList, new ClosingTagComparator());
@@ -2020,6 +2044,7 @@ public class Match extends AbstractDocument {
 
     /**
      * This will retrieve character offsets for all spans.
+     * This includes pagebreaks and markers.
      */
     private boolean _processHighlightSpans () {
 
@@ -2073,6 +2098,7 @@ public class Match extends AbstractDocument {
 
         // Recalculate startOffsetChar
         int startOffsetChar = startPosChar - intArray[0];
+        int endOffsetChar = endPosChar - intArray[0];
 
         // Add match span, in case no inner match is defined
         if (this.innerMatchEndPos == -1) {
@@ -2083,6 +2109,11 @@ public class Match extends AbstractDocument {
 
 		// Add context highlight
 		this.span.add(new int[]{intArray[0], intArray[1], CONTEXT, 0});
+
+        // All spans starting before startOffsetChar and end before
+        // endOffsetChar can be dismissed, as they are not part of tempSnippet
+        // This can actually be seen based on the first element of this.span
+        // at the moment.
 
         // highlights
         // -- I'm not sure about this.
@@ -2114,8 +2145,13 @@ public class Match extends AbstractDocument {
 					// In pagebreak highlights
 					// there is already a character
 					start = highlight.start;
+
+                    // Ignore highlights outside the snippet
+                    if (start < startOffsetChar || start > endOffsetChar) {
+                        continue;
+                    };                  
 					end = highlight.end;
-				};
+                };
 
                 if (DEBUG)
                     log.trace("PTO has retrieved {}-{} for class {}", start,
