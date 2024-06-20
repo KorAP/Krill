@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b9647d3_17f00dec",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-20T13:07:46Z",
+      "side": 1,
+      "message": "Was first confused by the defaults, but it\u0027s fine!",
+      "revId": "ba307f2343d244cde42f2b1b02ea7e32b73a1b9c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
