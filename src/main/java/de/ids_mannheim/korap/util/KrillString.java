@@ -74,6 +74,8 @@ public class KrillString {
      * @return The secured string.
      */
     public static String escapeBrackets (String text) {
+        if (text == null)
+            return "";
         return text.replaceAll("([\\{\\}\\[\\]\\\\])", "\\\\$1");
     };
 
