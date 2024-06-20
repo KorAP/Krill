@@ -32,6 +32,16 @@ public class TestKrillString {
     };
 
     @Test
+    public void testBrackets () {
+        assertEquals("hu\\[hu", escapeBrackets("hu[hu"));
+        assertEquals("hu\\]hu", escapeBrackets("hu]hu"));
+        assertEquals("hu\\}hu", escapeBrackets("hu}hu"));
+        assertEquals("hu\\{hu", escapeBrackets("hu{hu"));
+        assertEquals("", escapeBrackets(null));
+    };
+
+    
+    @Test
     public void testSurrogateSubstrings () {
 
         // Follows https://stackoverflow.com/questions/55663213/java-substring-by-code-point-indices-treating-pairs-of-surrogate-code-units-as
