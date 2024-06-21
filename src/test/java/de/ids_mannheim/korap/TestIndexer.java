@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -23,8 +24,9 @@ public class TestIndexer {
     private Logger logger = LoggerFactory.getLogger(TestIndexer.class);
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     private String info = "usage: Krill indexer";
-    private File outputDirectory = new File("test-index");
-    private File outputDirectory2 = new File("test-index2");
+    private static File outputDirectory = new File("test-index");
+    private static File outputDirectory2 = new File("test-index2");
+    private static File outputDirectory3 = new File("test-output");
 
     @Test
     public void testArguments () throws IOException {
@@ -113,27 +115,43 @@ public class TestIndexer {
         System.setOut(null);
     }
 
+    @AfterClass
+    public static void cleanup() {
+        if (outputDirectory.exists()) {
+            deleteFile(outputDirectory);
+        }
+        if (outputDirectory2.exists()) {
+            deleteFile(outputDirectory2);
+        }
+        if (outputDirectory3.exists()) {
+            deleteFile(outputDirectory2);
+        }
+    }
+
+    
     @Before
     public void cleanOutputDirectory () {
 
         if (outputDirectory.exists()) {
             logger.debug("Output directory exists");
             deleteFile(outputDirectory);
-            deleteFile(outputDirectory2);
         }
         if (outputDirectory2.exists()) {
             logger.debug("Output directory 2 exists");
             deleteFile(outputDirectory2);
         }
+        if (outputDirectory3.exists()) {
+            logger.debug("Output directory 3 exists");
+            deleteFile(outputDirectory3);
+        }
     }
 
-    private void deleteFile (File path) {
+    private static void deleteFile (File path) {
         if (path.isDirectory()) {
             File file;
             for (String filename : path.list()) {
                 file = new File(path + "/" + filename);
                 deleteFile(file);
-                logger.debug(file.getAbsolutePath());
             }
         }
         path.delete();
