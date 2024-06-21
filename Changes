@@ -1,5 +1,6 @@
-0.62.6 2024-06-13
+0.62.6 2024-06-21
     - [feature] Make match expansion configurable (close #150, margaretha)
+    - [cleanup] Cleanup test generated directories after run (diewald)
 
 0.62.5 2024-06-11
     - [bugfix] cut primary data according to max values (margaretha, #143)
