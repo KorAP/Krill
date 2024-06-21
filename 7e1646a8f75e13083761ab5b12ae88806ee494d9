@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef191cd3_164d4019",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 964,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-21T10:02:43Z",
+      "side": 1,
+      "message": "now also inside context.",
+      "range": {
+        "startLine": 964,
+        "startChar": 4,
+        "endLine": 964,
+        "endChar": 52
+      },
+      "revId": "7e1646a8f75e13083761ab5b12ae88806ee494d9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5f82b8c7_1a514708",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 983,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-21T10:02:43Z",
+      "side": 1,
+      "message": "Is the comment still correct? It looks to me that every pagebreak will be added to the list.",
+      "range": {
+        "startLine": 982,
+        "startChar": 10,
+        "endLine": 983,
+        "endChar": 60
+      },
+      "revId": "7e1646a8f75e13083761ab5b12ae88806ee494d9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f0e40379_59705946",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 1047,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-21T10:02:43Z",
+      "side": 1,
+      "message": "This looks redundant. Maybe it can be written as a method?",
+      "range": {
+        "startLine": 1019,
+        "startChar": 1,
+        "endLine": 1047,
+        "endChar": 1
+      },
+      "revId": "7e1646a8f75e13083761ab5b12ae88806ee494d9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3cf2a571_8eb3043c",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 1119,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-21T10:02:43Z",
+      "side": 1,
+      "message": "how can the endPage \u003d -1 then?",
+      "range": {
+        "startLine": 1113,
+        "startChar": 12,
+        "endLine": 1119,
+        "endChar": 14
+      },
+      "revId": "7e1646a8f75e13083761ab5b12ae88806ee494d9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
