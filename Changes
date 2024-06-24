@@ -1,3 +1,6 @@
+0.63.0 2024-06-24
+    - [feature] Add fields array to matches in search responses (diewald)
+
 0.62.6 2024-06-13
     - [feature] Make match expansion configurable (close #150, margaretha)
 
