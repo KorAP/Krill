@@ -1,4 +1,7 @@
-0.63.0 2024-06-21
+0.63.1 2024-06-24
+    - [feature] Add fields array to matches in search responses (diewald)
+
+0.63.0 2024-06-24
     - [bugfix] Show all inline markers and pagebreaks at match borders (diewald).
     - [feature] Show inline markers and pagebreaks in contexts (diewald).
     - [bugfix] Prevent matches in contexts (diewald).

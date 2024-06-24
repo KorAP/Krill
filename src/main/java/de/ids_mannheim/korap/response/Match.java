@@ -6,13 +6,7 @@ import static de.ids_mannheim.korap.util.KrillString.codePointSubstring;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
@@ -2488,6 +2482,15 @@ public class Match extends AbstractDocument {
         if (this.hasTokens)
             json.set("tokens", this.getSnippetTokens());
 
+		ArrayNode fields = json.putArray("fields");
+       
+		// Iterate over all fields
+		Iterator<MetaField> fIter = mFields.iterator();
+		while (fIter.hasNext()) {
+            MetaField mf = fIter.next();
+            fields.add(mf.toJsonNode());
+		};
+        
         return json;
     };
 

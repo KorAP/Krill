@@ -1,0 +1,22 @@
+{
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+  "announcements" : [],
+  "errors" : [],
+  "meta" : {
+    "count":9,
+    "fields": [
+      "UID",
+      "KED.corpusRcpntLabel",
+      "textSigle"
+    ]
+  },
+  "query" : {
+    "@type" : "koral:token",
+    "wrap" : {
+      "@type" : "koral:term",
+      "key" : "beispielsweise",
+      "layer":"orth"
+    }
+  },
+  "warnings" : []
+}
