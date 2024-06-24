@@ -82,12 +82,16 @@ public class TestPagebreakIndex {
                      kr.getMatch(2).getSnippetHTML());
         assertEquals("{%528}abcab[[{%529}c]]ab{%530}ac",
                      kr.getMatch(2).getSnippetBrackets());
-		assertEquals(-1, kr.getMatch(2).getEndPage()); // Debatable
+		assertEquals(-1, kr.getMatch(2).getEndPage());
 
         assertEquals(9, kr.getMatch(3).getStartPos());
 		assertEquals(10, kr.getMatch(3).getEndPos());
 		assertEquals(530, kr.getMatch(3).getStartPage());
 		assertEquals(-1, kr.getMatch(3).getEndPage());
+        assertEquals("<span class=\"context-left\"><span class=\"more\"></span>ab<span class=\"pb\" data-after=\"529\"></span>cab<span class=\"pb\" data-after=\"530\"></span>a</span><span class=\"match\"><mark>c</mark></span><span class=\"context-right\"></span>",
+                     kr.getMatch(3).getSnippetHTML());
+        assertEquals("... ab{%529}cab{%530}a[[c]]",
+                     kr.getMatch(3).getSnippetBrackets());
     };
 
     @Test
@@ -147,7 +151,7 @@ public class TestPagebreakIndex {
 		kr = ki.search(sq, (short) 10);
 		
 		assertEquals(528, kr.getMatch(0).getStartPage());
-		assertEquals(-1, kr.getMatch(0).getEndPage());
+		assertEquals(529, kr.getMatch(0).getEndPage());
 
 		assertEquals(
 			"snippetHTML",
