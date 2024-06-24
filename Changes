@@ -6,6 +6,8 @@
       (diewald).
     - [cleanup] Cleanup test generated directories after run (diewald)
     - [feature] Add fields array to matches in search responses (diewald)
+    - [feature] Temporarily add all requested fields in flat legacy fields
+      maps (diewald)
 
 0.62.6 2024-06-13
     - [feature] Make match expansion configurable (close #150, margaretha)

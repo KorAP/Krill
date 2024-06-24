@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import de.ids_mannheim.korap.index.AbstractDocument;
 import de.ids_mannheim.korap.index.PositionsToOffset;
@@ -2489,7 +2490,15 @@ public class Match extends AbstractDocument {
 		while (fIter.hasNext()) {
             MetaField mf = fIter.next();
             fields.add(mf.toJsonNode());
+
+            // Legacy flat field support
+            String mfs = mf.key;
+            String value = this.getFieldValue(mfs);
+            if (value != null)
+                json.set(mfs, new TextNode(value));
 		};
+
+        this.addWarning(0, "Support for flat field values is eprecated");
         
         return json;
     };
