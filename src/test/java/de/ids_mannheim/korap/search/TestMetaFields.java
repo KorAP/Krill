@@ -216,6 +216,22 @@ public class TestMetaFields {
         // assertEquals("372-377", res.at("/matches/0/pages").asText());
         assertEquals("match-GOE_AGX.00002-p7-8",
                 res.at("/matches/0/matchID").asText());
+
+
+        // Missing field
+        jsonString = getJsonString(getClass()
+                .getResource("/queries/metas/fields_missing.jsonld").getFile());
+
+        ks = new Krill(jsonString);
+        kr = ks.apply(ki);
+        mapper = new ObjectMapper();
+        res = mapper.readTree(kr.toJsonString());
+
+        assertTrue(res.at("/matches/0/publisher").isMissingNode());
+        assertEquals("Goethe-Korpus", res.at("/matches/0/corpusTitle").asText());
+        assertTrue(res.at("/matches/0/textType").isMissingNode());
+        assertEquals("", res.at("/matches/0/UID").asText());
+        assertTrue(res.at("/matches/0/namespace.new").isMissingNode());
     };
 
 
