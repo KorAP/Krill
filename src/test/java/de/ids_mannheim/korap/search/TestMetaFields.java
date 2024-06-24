@@ -234,6 +234,72 @@ public class TestMetaFields {
         assertTrue(res.at("/matches/0/namespace.new").isMissingNode());
     };
 
+    @Test
+    public void searchMetaFieldsWithPeriods () throws IOException {
+
+        // Construct index
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(getClass().getResourceAsStream("/others/KED-KLX-03212.json.gz"), true);
+        
+        ki.commit();
+
+        String jsonString = getJsonString(getClass()
+                .getResource("/queries/metas/fields_with_periods.jsonld").getFile());
+
+        Krill ks = new Krill(jsonString);
+        Result kr = ks.apply(ki);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode res = mapper.readTree(kr.toJsonString());
+
+		String sv = fd.doc.getField("textSigle").stringValue();
+		assertEquals("KED/KLX/03212", sv);
+
+        sv = fd.doc.getField("KED.corpusRcpntLabel").stringValue();
+		assertEquals("data:,Kinder", sv);
+        
+        assertEquals(1, res.at("/meta/totalResults").asInt());
+
+        assertEquals(0, res.at("/matches/0/UID").asInt());
+        assertEquals("KED/KLX/03212", res.at("/matches/0/textSigle").asText());
+        assertTrue(res.at("/matches/0/title").isMissingNode());
+        // assertEquals("data:,Kinder", res.at("/matches/0/KED.corpusRcpntLabel").asText());
+        assertTrue(res.at("/matches/0/KED.corpusRcpntLabel").isMissingNode());
+        assertFalse(res.at("/matches/0/fields").isMissingNode());
+
+        Iterator fieldIter = res.at("/matches/0/fields").elements();
+
+		int checkC = 0;
+		int checkF = 0;
+		while (fieldIter.hasNext()) {
+			JsonNode field = (JsonNode) fieldIter.next();
+
+			String key = field.at("/key").asText();
+
+			switch (key) {
+			case "KED.corpusRcpntLabel":
+				assertEquals("type:attachement", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("data:,Kinder", field.at("/value").asText());
+				checkC++;
+				break;
+            case "UID":
+				checkF++;
+				break;
+            case "textSigle":
+				assertEquals("type:string", field.at("/type").asText());
+				assertEquals("koral:field", field.at("/@type").asText());
+				assertEquals("KED/KLX/03212", field.at("/value").asText());
+				checkC++;
+				break;
+            default:
+                checkF++;
+            }
+        };
+
+        assertEquals(2, checkC);
+        assertEquals(0, checkF);
+    };
+
 
     @Test
     public void searchMetaFieldsDuplicateKeys () throws IOException {
