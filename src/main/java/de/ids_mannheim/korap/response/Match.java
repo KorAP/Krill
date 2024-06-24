@@ -1106,7 +1106,7 @@ public class Match extends AbstractDocument {
                 if (pagebreaks.get(i)[0] <= this.getStartPos()) {
                     this.startPage = pagebreaks.get(i)[1];
                 } else {
-                    i++;
+                    // i++;
                     break;
                 };
             };

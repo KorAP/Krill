@@ -147,7 +147,7 @@ public class TestPagebreakIndex {
 		kr = ki.search(sq, (short) 10);
 		
 		assertEquals(528, kr.getMatch(0).getStartPage());
-		assertEquals(-1, kr.getMatch(0).getEndPage());
+		assertEquals(529, kr.getMatch(0).getEndPage());
 
 		assertEquals(
 			"snippetHTML",
