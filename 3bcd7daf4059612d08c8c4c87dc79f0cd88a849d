@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3b6fb970_40dc8bcb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-24T16:03:47Z",
+      "side": 1,
+      "message": "This is based on #8698 so needs cherry picking when that commit requires changes. This is a legacy support update that should give the KorAP Clients some time to adopt to the fields object for search.",
+      "revId": "3bcd7daf4059612d08c8c4c87dc79f0cd88a849d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
