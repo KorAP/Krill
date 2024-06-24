@@ -142,6 +142,30 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6822ffc9_d98d4f59",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 1047,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-24T08:03:47Z",
+      "side": 1,
+      "message": "Ok. It seems that I missed that comment at line 1058 before.",
+      "parentUuid": "08ed2fb4_47b94b12",
+      "range": {
+        "startLine": 1019,
+        "startChar": 1,
+        "endLine": 1047,
+        "endChar": 1
+      },
+      "revId": "7e1646a8f75e13083761ab5b12ae88806ee494d9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3cf2a571_8eb3043c",
@@ -179,6 +203,30 @@
       "side": 1,
       "message": "In case there are no more pagebreaks.",
       "parentUuid": "3cf2a571_8eb3043c",
+      "range": {
+        "startLine": 1113,
+        "startChar": 12,
+        "endLine": 1119,
+        "endChar": 14
+      },
+      "revId": "7e1646a8f75e13083761ab5b12ae88806ee494d9",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a24c6857_613be1f0",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 1119,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-24T08:03:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dda3d3a5_72ec992d",
       "range": {
         "startLine": 1113,
         "startChar": 12,
