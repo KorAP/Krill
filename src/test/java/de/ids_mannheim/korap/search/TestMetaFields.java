@@ -262,8 +262,7 @@ public class TestMetaFields {
         assertEquals(0, res.at("/matches/0/UID").asInt());
         assertEquals("KED/KLX/03212", res.at("/matches/0/textSigle").asText());
         assertTrue(res.at("/matches/0/title").isMissingNode());
-        // assertEquals("data:,Kinder", res.at("/matches/0/KED.corpusRcpntLabel").asText());
-        assertTrue(res.at("/matches/0/KED.corpusRcpntLabel").isMissingNode());
+        assertEquals("data:,Kinder", res.at("/matches/0/KED.corpusRcpntLabel").asText());
         assertFalse(res.at("/matches/0/fields").isMissingNode());
 
         Iterator fieldIter = res.at("/matches/0/fields").elements();

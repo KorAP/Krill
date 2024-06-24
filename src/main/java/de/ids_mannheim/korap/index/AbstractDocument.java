@@ -361,7 +361,9 @@ public abstract class AbstractDocument extends Response {
         return this.getFieldValue("ID");
     };
 
-    @JsonAnyGetter
+    //@JsonAnyGetter
+    @Deprecated
+    @JsonIgnore
     public Map<String, JsonNode> getLegacyMetaFields () {
 
         Iterator<MetaField> mfIterator = mFields.iterator();
