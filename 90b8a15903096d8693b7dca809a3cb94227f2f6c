@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0cdf784e_c247966c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-25T05:49:18Z",
+      "side": 1,
+      "message": "After rethinking \"addMessage()\" is probably more appropriate, as there is no way to update to the non-deprecated behaviour.",
+      "revId": "90b8a15903096d8693b7dca809a3cb94227f2f6c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
