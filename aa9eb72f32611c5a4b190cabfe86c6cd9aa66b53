@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "40241a93_1aeb5efc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-25T11:18:09Z",
+      "side": 1,
+      "message": "As you see in the test before (I added the snippet generation) it results in -1 as expected. Or do I misunderstand your question?",
+      "revId": "aa9eb72f32611c5a4b190cabfe86c6cd9aa66b53",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
