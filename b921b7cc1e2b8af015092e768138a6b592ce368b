@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f3172be_e61f8ffa",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-26T12:40:46Z",
+      "side": 1,
+      "message": "While it seems we already prevented `pages` from being served (that\u0027s why there is no valid test) - let\u0027s better be save than sorry.",
+      "revId": "b921b7cc1e2b8af015092e768138a6b592ce368b",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
