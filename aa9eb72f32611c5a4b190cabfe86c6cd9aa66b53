@@ -16,6 +16,24 @@
       "message": "As you see in the test before (I added the snippet generation) it results in -1 as expected. Or do I misunderstand your question?",
       "revId": "aa9eb72f32611c5a4b190cabfe86c6cd9aa66b53",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e2f69ab1_4d361467",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-26T07:16:52Z",
+      "side": 1,
+      "message": "I am bit confused with -1. I suppose endPage \u003d -1 when the endPage \u003d startPage. But you said the test before is correct although the endPage !\u003d startPage.",
+      "parentUuid": "40241a93_1aeb5efc",
+      "revId": "aa9eb72f32611c5a4b190cabfe86c6cd9aa66b53",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
