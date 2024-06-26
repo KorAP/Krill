@@ -51,6 +51,24 @@
       "message": "The test is correct as it is now and the commit can be merged. We can discuss further in Slack, if you like.",
       "revId": "aa9eb72f32611c5a4b190cabfe86c6cd9aa66b53",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "795de5e6_4bef8077",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-26T09:12:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e2f69ab1_4d361467",
+      "revId": "aa9eb72f32611c5a4b190cabfe86c6cd9aa66b53",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
