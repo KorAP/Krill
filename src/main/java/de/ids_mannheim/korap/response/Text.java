@@ -55,11 +55,11 @@ public class Text extends AbstractDocument {
             // Legacy flat field support
             String mfs = mf.key;
             String value = this.getFieldValue(mfs);
-            if (value != null)
+            if (value != null && !json.has(mfs))
                 json.set(mfs, new TextNode(value));
 		};
 
-        this.addMessage(0, "Support for flat field values is eprecated");
+        this.addMessage(0, "Support for flat field values is deprecated");
 
         
         // Match was no match
