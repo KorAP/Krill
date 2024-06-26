@@ -16,6 +16,24 @@
       "message": "This one is false because startPage !\u003d endPage. The update is correct.",
       "revId": "a102c343da3a9620e1fa14700accb5d71b1beef5",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dad11a42_bfe558cd",
+        "filename": "src/test/java/de/ids_mannheim/korap/index/TestPagebreakIndex.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-26T08:54:15Z",
+      "side": 0,
+      "message": "Ah - that was a misunderstanding. Thanks.",
+      "parentUuid": "89b026f7_0307b623",
+      "revId": "a102c343da3a9620e1fa14700accb5d71b1beef5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
