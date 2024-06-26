@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "757fd1b0_e558e954",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-26T06:55:40Z",
+      "side": 1,
+      "message": "Is it fine to add KED data to the test? \n\nWere fields with periods problematic?",
+      "revId": "5fda49c747baf29595c68cdd90963452ab5a93e1",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
