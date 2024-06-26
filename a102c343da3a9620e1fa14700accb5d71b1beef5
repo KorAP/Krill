@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89b026f7_0307b623",
+        "filename": "src/test/java/de/ids_mannheim/korap/index/TestPagebreakIndex.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-26T08:51:32Z",
+      "side": 0,
+      "message": "This one is false because startPage !\u003d endPage. The update is correct.",
+      "revId": "a102c343da3a9620e1fa14700accb5d71b1beef5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
