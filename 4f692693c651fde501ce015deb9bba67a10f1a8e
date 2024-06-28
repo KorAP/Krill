@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9b4087b_07cf9d4d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-28T08:28:22Z",
+      "side": 1,
+      "message": "Test suite is fine! There are only some typos in the code. Please fix them. Thanks!",
+      "revId": "4f692693c651fde501ce015deb9bba67a10f1a8e",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2aadaa1b_1be564a0",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 2501,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-28T08:28:22Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 2501,
+        "startChar": 61,
+        "endLine": 2501,
+        "endChar": 70
+      },
+      "revId": "4f692693c651fde501ce015deb9bba67a10f1a8e",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1ea97e7b_f0b8932b",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Text.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-06-28T08:28:22Z",
+      "side": 1,
+      "message": "typo",
+      "range": {
+        "startLine": 62,
+        "startChar": 61,
+        "endLine": 62,
+        "endChar": 70
+      },
+      "revId": "4f692693c651fde501ce015deb9bba67a10f1a8e",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
