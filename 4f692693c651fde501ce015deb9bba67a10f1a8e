@@ -41,6 +41,30 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e02b26c_03e08684",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Match.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 2501,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-28T08:58:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2aadaa1b_1be564a0",
+      "range": {
+        "startLine": 2501,
+        "startChar": 61,
+        "endLine": 2501,
+        "endChar": 70
+      },
+      "revId": "4f692693c651fde501ce015deb9bba67a10f1a8e",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1ea97e7b_f0b8932b",
@@ -54,6 +78,30 @@
       "writtenOn": "2024-06-28T08:28:22Z",
       "side": 1,
       "message": "typo",
+      "range": {
+        "startLine": 62,
+        "startChar": 61,
+        "endLine": 62,
+        "endChar": 70
+      },
+      "revId": "4f692693c651fde501ce015deb9bba67a10f1a8e",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "30074530_55640b50",
+        "filename": "src/main/java/de/ids_mannheim/korap/response/Text.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-06-28T08:58:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1ea97e7b_f0b8932b",
       "range": {
         "startLine": 62,
         "startChar": 61,
