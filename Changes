@@ -3,6 +3,7 @@
     - [feature] Temporarily add all requested fields in flat legacy fields
       maps (diewald)
     - [bugfix] Fix empty DocIdSetIterator (margaretha)
+    - [bugfix] Don't throw warnings on expansion failure (diewald)
 
 0.63.0 2024-06-24
     - [bugfix] Show all inline markers and pagebreaks at match borders (diewald).

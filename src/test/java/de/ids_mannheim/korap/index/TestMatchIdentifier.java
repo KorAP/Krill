@@ -813,7 +813,7 @@ public class TestMatchIdentifier {
                              true); // extendToSentence
 
         JsonNode res = mapper.readTree(km.toJsonString());
-        assertEquals("Unable to extend context", res.at("/warnings/0/1").asText());
+        assertEquals("Unable to extend context", res.at("/messages/0/1").asText());
 
         QueryBuilder kq = new QueryBuilder("tokens");
         Krill ks = new Krill(kq.tag("base/s:s"));
