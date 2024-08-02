@@ -16,6 +16,8 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.index.LeafReaderContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.IndexInfo;
 import de.ids_mannheim.korap.Krill;
@@ -33,6 +35,9 @@ import de.ids_mannheim.korap.util.QueryException;
  */
 public class VirtualCorpusCache {
 
+    public final static Logger log = LoggerFactory
+            .getLogger(VirtualCorpusCache.class);
+    
     public static Pattern vcNamePattern = Pattern.compile("[a-zA-Z0-9]+[a-zA-Z_0-9-.]+");
 
     public static String CACHE_LOCATION = "vc-cache";
@@ -150,7 +155,7 @@ public class VirtualCorpusCache {
                     return docBitsSupplier.supplyDocBits(context,
                             context.reader().getLiveDocs());
                 }
-                catch (IOException | QueryException e) {
+                catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });

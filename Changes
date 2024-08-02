@@ -1,7 +1,8 @@
-0.63.1 2024-06-24
+0.63.1 2024-08-02
     - [feature] Add fields array to matches in search responses (diewald)
     - [feature] Temporarily add all requested fields in flat legacy fields
       maps (diewald)
+    - [bugfix] Fix empty DocIdSetIterator (margaretha)
 
 0.63.0 2024-06-24
     - [bugfix] Show all inline markers and pagebreaks at match borders (diewald).

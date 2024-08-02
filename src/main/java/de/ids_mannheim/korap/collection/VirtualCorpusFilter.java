@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.DocIdSet;
+import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
@@ -96,7 +97,10 @@ public class VirtualCorpusFilter extends Filter {
                 }
             }
             else {
-                bitset.or(docIdSet.iterator());
+                DocIdSetIterator docIdSetIterator = docIdSet.iterator();
+                if (docIdSetIterator != null) {
+                    bitset.or(docIdSetIterator);
+                }
                 if (cbi.isNegative()) {
                     bitset.flip(0, maxDoc);
                 }
