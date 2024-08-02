@@ -18,6 +18,24 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f7b4d2d_124e0673",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-08-02T09:30:32Z",
+      "side": 1,
+      "message": "ok. It should be written into a log file in Kustvakt, but Krill simply print everything to console.",
+      "parentUuid": "168d0f48_52d21966",
+      "revId": "72704c5c1c224775c6fdfd9273718c1a3b024174",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "641fc121_8cb7d38e",
@@ -101,6 +119,30 @@
       "writtenOn": "2024-08-02T09:18:07Z",
       "side": 1,
       "message": "Done",
+      "parentUuid": "0e78de1a_30ade7cb",
+      "range": {
+        "startLine": 102,
+        "startChar": 30,
+        "endLine": 102,
+        "endChar": 49
+      },
+      "revId": "72704c5c1c224775c6fdfd9273718c1a3b024174",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43a3ee95_42804c8f",
+        "filename": "src/main/java/de/ids_mannheim/korap/collection/VirtualCorpusFilter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-08-02T09:30:32Z",
+      "side": 1,
+      "message": "sure. i thought i have updated it...",
       "parentUuid": "0e78de1a_30ade7cb",
       "range": {
         "startLine": 102,
