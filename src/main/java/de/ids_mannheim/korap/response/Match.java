@@ -1185,7 +1185,7 @@ public class Match extends AbstractDocument {
             this.positionsToOffset.clear();
         }
         else {
-            this.addWarning(651, "Unable to extend context");
+            this.addMessage(651, "Unable to extend context");
         };
     };
 
