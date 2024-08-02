@@ -41,6 +41,30 @@
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c725a9d6_8cf2dec3",
+        "filename": "Changes",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-08-02T09:18:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "641fc121_8cb7d38e",
+      "range": {
+        "startLine": 5,
+        "startChar": 25,
+        "endLine": 5,
+        "endChar": 41
+      },
+      "revId": "72704c5c1c224775c6fdfd9273718c1a3b024174",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0e78de1a_30ade7cb",
@@ -54,6 +78,30 @@
       "writtenOn": "2024-08-02T08:51:36Z",
       "side": 1,
       "message": "I\u0027m not sure if that\u0027s just a getter - if not, it\u0027s probably better to use docIdSetIterator instead of calling the iterator again (usually iterator() instantiates a new iterator object).",
+      "range": {
+        "startLine": 102,
+        "startChar": 30,
+        "endLine": 102,
+        "endChar": 49
+      },
+      "revId": "72704c5c1c224775c6fdfd9273718c1a3b024174",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "276ae174_2ec16ca0",
+        "filename": "src/main/java/de/ids_mannheim/korap/collection/VirtualCorpusFilter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-08-02T09:18:07Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0e78de1a_30ade7cb",
       "range": {
         "startLine": 102,
         "startChar": 30,
