@@ -633,6 +633,24 @@ public class TestKrillCollectionIndex {
 	};
 	
     @Test
+    public void testEmptyDocIdSetIterator () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        // Indexing test files
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
+                "00005", "00006", "02439" }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+        String filename = "/queries/collections/vc-ref/query-with-vc-ref-klznkz66.jsonld";
+        String json = getJsonString(getClass().getResource(filename).getFile());
+        KrillCollection kc = new KrillCollection(json);
+        kc.setIndex(ki);
+        assertEquals(0, kc.numberOf("documents"));
+    }
+	
+    @Test
     public void filterExampleFromLegacy () throws Exception {
 
         // Construct index
