@@ -1,0 +1,1 @@
+{"@context":"http://korap.ids-mannheim.de/ns/KoralQuery/v0.3/context.jsonld","collection":{"@type":"koral:doc","type":"type:regex","match":"match:eq","key":"corpusSigle","value":"(K|O)[0-9][0-9]","comment":"name:\"klznkz66\",desc:\"klz und nkz 66%\""},"comment":"name:\"klznkz66\",desc:\"klz und nkz 66%\""}

@@ -1,0 +1,1 @@
+{"meta":{},"warnings":[],"query":{},"messages":[],"collection":{"@type":"koral:docGroup","operation":"operation:and","operands":[{"ref":"klznkz66","@type":"koral:docGroupRef"},{"@type":"koral:doc","match":"match:eq","type":"type:regex","value":"QAO.*","key":"availability"}]},"@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld","errors":[]}
