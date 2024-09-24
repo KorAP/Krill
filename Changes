@@ -1,3 +1,7 @@
+0.63.3 2024-09-24
+    - [performance] Improve short circuit on count=0 and
+      cutoff=true (diewald)
+
 0.63.2 2024-08-02
     - [bugfix] Fix empty DocIdSetIterator (margaretha)
     - [bugfix] Don't throw warnings on expansion failure (diewald)
