@@ -1423,6 +1423,12 @@ public final class KrillIndex implements IndexInfo {
                 return kr;
         };
 
+        if (cutoff && count == 0) {
+            kr.setTotalResults(-1);
+            kr.setTotalResources(-1);
+            return kr;
+        };
+
         // Collect matches from atomic readers
         final ArrayList<Match> atomicMatches = new ArrayList<Match>(
                 kr.getItemsPerPage());

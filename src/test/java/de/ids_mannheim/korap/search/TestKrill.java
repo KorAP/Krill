@@ -136,9 +136,20 @@ public class TestKrill {
         assertEquals(kr.getItemsPerPage(), 0);
         assertEquals(kr.getMatches().size(), 0);
 
+        // Handle count=0 correctly
+        meta = ks.getMeta();
+        meta.setCount(0);
+        meta.setCutOff(true);
+
+        kr = ks.apply(ki);
+        assertEquals(kr.getTotalResults(), -1);
+        assertEquals(kr.getItemsPerPage(), 0);
+        assertEquals(kr.getMatches().size(), 0);
+        
         // Handle tokens=true and
         // snippet=false correctly
         meta = ks.getMeta();
+        meta.setCutOff(false);
         meta.setCount(1);
         meta.setTokens(true);
         meta.setSnippets(false);
