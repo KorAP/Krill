@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "189870a5_b0808add",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2024-09-24T15:36:00Z",
+      "side": 1,
+      "message": "This improves the shortcut for query expansion we discussed.",
+      "revId": "96f2e07f1d41e48ecd8d25174cb1952ca598aa4c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
