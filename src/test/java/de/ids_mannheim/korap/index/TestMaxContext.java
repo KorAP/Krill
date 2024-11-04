@@ -42,7 +42,7 @@ public class TestMaxContext {
     }
 
     @Test
-    public void testTokenContextSize () throws IOException {
+    public void testSmallerTokenContextSize () throws IOException {
         
         assertEquals(25, KrillProperties.maxTokenContextSize);
 
@@ -61,7 +61,7 @@ public class TestMaxContext {
         assertEquals(5, km.getContext().left.getLength());
         assertEquals(5, km.getContext().right.getLength());
     };
-
+    
     @Test
     public void searchWithLargerContextTokenSize ()
             throws JsonMappingException, JsonProcessingException {
@@ -123,4 +123,19 @@ public class TestMaxContext {
         String rightContext = km.getSnippetBrackets().split("]]")[1];
         assertEquals(KrillProperties.maxCharContextSize,rightContext.length() -4);
     }
+    
+    // for Kokokom
+    @Test
+    public void testIncreaseDefaultSearchContextSize () throws IOException {
+        KrillProperties.defaultSearchContextLength = 1000000000;
+        
+        String jsonQuery = getJsonString(TestMaxContext.class
+                .getResource("/queries/flags/caseInsensitive.jsonld")
+                .getFile());
+        Krill ks = new Krill(jsonQuery);
+        Result kr = ks.apply(ki);
+        Match km = kr.getMatch(0);
+        assertEquals(6089, km.getSnippetBrackets().length());
+        KrillProperties.defaultSearchContextLength = 6;
+    };
 }
