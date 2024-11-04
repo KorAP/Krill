@@ -18,6 +18,6 @@
     "startPage":1,
     "count":25,
     "cutOff":true,
-    "context":"paragraph"
+    "context":"text"
   }
 }

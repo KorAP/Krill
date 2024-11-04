@@ -73,7 +73,7 @@ public class SearchContext {
 
     public class SearchContextSide {
         private boolean isToken = true;
-        private int length = 6;
+        private int length = KrillProperties.defaultSearchContextLength;
         private int maxTokenLength = KrillProperties.maxTokenContextSize;
         private int maxCharLength = KrillProperties.maxCharContextSize;
 
