@@ -22,6 +22,7 @@ public class KrillProperties {
     public static int maxTokenMatchSize = 50;
     public static int maxTokenContextSize = 60;
     public static int maxCharContextSize = 500;
+    public static int defaultSearchContextLength = 6;
     
     public static boolean matchExpansionIncludeContextSize = false;
     
@@ -82,6 +83,8 @@ public class KrillProperties {
     public static void updateConfigurations (Properties  prop) {
         String maxTokenMatchSize = prop.getProperty("krill.match.max.token");
         String maxTokenContextSize = prop.getProperty("krill.context.max.token");
+        String maxCharContextSize = prop.getProperty("krill.context.max.char");
+        String defaultSearchContextLength = prop.getProperty("krill.search.context.default");
 
         try {
             if (maxTokenMatchSize != null) {
@@ -91,6 +94,14 @@ public class KrillProperties {
             if (maxTokenContextSize != null) {
                 KrillProperties.maxTokenContextSize = Integer
                         .parseInt(maxTokenContextSize);
+            }
+            if (maxCharContextSize != null) {
+                KrillProperties.maxCharContextSize = Integer
+                        .parseInt(maxCharContextSize);
+            }
+            if (defaultSearchContextLength != null) {
+                KrillProperties.defaultSearchContextLength = Integer
+                        .parseInt(defaultSearchContextLength);
             }
         }
         catch (NumberFormatException e) {
