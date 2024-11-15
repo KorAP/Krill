@@ -1,0 +1,23 @@
+{
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+  "collection" : {
+    "@type": "koral:doc",
+    "key": "corpusID",
+    "match": "match:eq",
+    "value": "WPD",
+    "type": "type:string"
+  },
+  "meta" : {
+    "timeout":1000000000
+  },
+  "query" : {
+    "@type" : "koral:token",
+    "wrap" : {
+      "@type" : "koral:term",
+      "key" : "Buchstabe",
+      "foundry" : "tt",
+      "layer" : "lemma",
+      "match" : "match:eq"
+    }
+  }
+}
