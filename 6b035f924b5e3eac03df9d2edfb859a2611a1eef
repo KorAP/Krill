@@ -22,6 +22,30 @@
       },
       "revId": "6b035f924b5e3eac03df9d2edfb859a2611a1eef",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "06d0ade8_27349550",
+        "filename": "src/main/java/de/ids_mannheim/korap/util/KrillProperties.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2024-12-02T14:46:16Z",
+      "side": 1,
+      "message": "Nope. Actually it has not been implemented yet. I can just remove it. Thanks for reviewing.",
+      "parentUuid": "dc5c06d6_ffeec1b4",
+      "range": {
+        "startLine": 86,
+        "startChar": 53,
+        "endLine": 86,
+        "endChar": 76
+      },
+      "revId": "6b035f924b5e3eac03df9d2edfb859a2611a1eef",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
