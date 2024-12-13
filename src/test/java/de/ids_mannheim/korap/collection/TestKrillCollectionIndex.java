@@ -586,6 +586,37 @@ public class TestKrillCollectionIndex {
         assertEquals(1, kcn.docCount());
 	};
 
+    @Test
+    public void testIndexWithIntegers () throws IOException {
+        ki = new KrillIndex();
+
+        FieldDocument fd = ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc5001());
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
+
+        assertEquals("toks:[2000.0 TO 4000.0]", cb.between("toks", 2000, 4000).toString());
+        
+        kcn.fromBuilder(cb.between("toks", 2000, 4000));
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.geq("toks", 2000));
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.leq("toks", 4000));
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.leq("toks", 2000));
+        assertEquals(0, kcn.docCount());
+
+        kcn.fromBuilder(cb.geq("toks", 4000));
+        assertEquals(0, kcn.docCount());
+    };
+
+    
 	@Test
     public void testIndexWithTextStringQueries () throws IOException {
 		ki = new KrillIndex();
@@ -1241,6 +1272,18 @@ public class TestKrillCollectionIndex {
         return fd;
     };
 
+    public static FieldDocument createDoc5001 () {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("UID", "5001");
+		fd.addString("ID", "doc-5001");
+        fd.addInt("toks", 3000);
+        fd.addDate("pubDate", 20180202);
+        fd.addText("text", "Der alte  Mann ging über die Straße");
+        fd.addTV("tokens", "a b c", "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>3]"
+				 + "[(2-3)s:b|i:b|_1$<i>2<i>3]" + "[(4-5)s:c|i:c|_2$<i>4<i>5]");
+        return fd;
+    };
+    
     private String _getJSONString (String file) {
         return getJsonString(getClass().getResource(path + file).getFile());
     };

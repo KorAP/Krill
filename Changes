@@ -1,8 +1,10 @@
-0.63.3 2024-11-04
+0.63.3 2024-12-13
     - [performance] Improve short circuit on count=0 and
       cutoff=true (diewald)
     - [feature] Make defaultSearchContextLength and maxCharContextSize 
-      customizable (margaretha)  
+      customizable (margaretha)
+    - [feature] Improve support for range queries on numerical values
+      (diewald)
 
 0.63.2 2024-08-02
     - [bugfix] Fix empty DocIdSetIterator (margaretha)

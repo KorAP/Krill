@@ -71,7 +71,7 @@ public class CollectionBuilder {
 
         return new CollectionBuilder.Range(field, since, KrillDate.END);
     };
-
+    
 	public CollectionBuilder.Interface nothing () {
 
 		// Requires that a field with name "0---" does not exist
@@ -109,6 +109,26 @@ public class CollectionBuilder {
         return this.andGroup().with(startObj).with(endObj);
     };
 
+    public CollectionBuilder.Interface leq (String field, Integer end) {
+        return this.between(field, Integer.MIN_VALUE, end);
+    };
+
+    public CollectionBuilder.Interface geq (String field, Integer start) {
+        return this.between(field, start, Integer.MAX_VALUE);
+    };    
+    
+    // This will be optimized away in future versions
+    public CollectionBuilder.Interface between (String field, Integer start,
+            Integer end) {
+
+        try {
+            return new CollectionBuilder.NumRange(field, start, end);
+        }
+        catch (NumberFormatException e) {
+            log.warn("Parameter of between(int,int) is invalid");
+        };
+        return null;
+    };   
 
     public CollectionBuilder.Interface date (String field, String date) {
         KrillDate dateDF = new KrillDate(date);
@@ -419,6 +439,43 @@ public class CollectionBuilder {
         public Filter toFilter () {
             return NumericRangeFilter.newIntRange(this.field, this.start,
                     this.end, true, true);
+        };
+
+
+        public CollectionBuilder.Interface not () {
+            this.isNegative = true;
+            return this;
+        };
+    };
+
+    public class NumRange implements CollectionBuilder.Interface {
+        private boolean isNegative = false;
+        private String field;
+        private int start, end;
+
+        public NumRange (String field, int start, int end) {
+            this.field = field;
+            this.start = start;
+            this.end = end;
+        };
+
+
+        public boolean isNegative () {
+            return this.isNegative;
+        };
+
+
+        public String toString () {
+            Filter filter = this.toFilter();
+            if (filter == null)
+                return "";
+            return filter.toString();
+        };
+
+
+        public Filter toFilter () {
+            return NumericRangeFilter.newDoubleRange(this.field, (double) this.start,
+                                                     (double) this.end, true, true);
         };
 
 
