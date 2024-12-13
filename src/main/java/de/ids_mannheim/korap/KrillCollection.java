@@ -296,7 +296,36 @@ public final class KrillCollection extends Notifications implements IndexInfo {
                 };
 
                 throw new QueryException(841,
-                        "Match relation unknown for type");
+                        "Match relation `" + match+ "' unknown for type:date");
+            }
+
+            // Filter based on integer
+            else if (valtype.equals("type:integer")) {
+
+                if (!json.has("value"))
+                    throw new QueryException(820, "Integers require value fields");
+
+                int value = json.get("value").asInt();
+
+                if (json.has("match")) match = json.get("match").asText();
+
+                switch (match) {
+                    case "match:geq":
+                        return this.cb.geq(key, value);
+                    case "match:leq":
+                        return this.cb.leq(key, value);
+                    case "match:eq":
+                        return this.cb.eq(key, value);
+                    case "match:ne":
+                        return this.cb.eq(key, value).not();
+                    case "match:gt":
+                        return this.cb.gt(key, value);
+                    case "match:lt":
+                        return this.cb.lt(key, value);
+                };
+
+                throw new QueryException(841,
+                        "Match relation `" + match+ "' unknown for type:integer");
             }
 
             // Filter based on string
