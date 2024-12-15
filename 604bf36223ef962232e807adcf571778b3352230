@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a99d270_48f55e1b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2024-12-15T17:03:10Z",
+      "side": 1,
+      "message": "Don´t know if optimal, but works: \nhttps://korap.ids-mannheim.de/instance/ked/api/v1.0/search?q\u003dFreund\u0026cq\u003dKED.nToks%3E%3d%20200%20%26%20KED.nToks%3C%3d%202001\u0026ql\u003dpoliqarp\n\nSubmit together:\nhttps://korap.ids-mannheim.de/gerrit/q/topic:%22integer-cq%22",
+      "revId": "604bf36223ef962232e807adcf571778b3352230",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
