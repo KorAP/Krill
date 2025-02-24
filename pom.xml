@@ -232,7 +232,7 @@
     <plugins>
       <plugin>
 	<artifactId>maven-compiler-plugin</artifactId>
-	<version>3.13.0</version>
+	<version>3.14.0</version>
 	<inherited>true</inherited>
 	<configuration>
 	  <showWarnings>true</showWarnings>
