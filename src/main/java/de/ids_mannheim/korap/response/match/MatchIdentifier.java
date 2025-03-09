@@ -2,21 +2,103 @@ package de.ids_mannheim.korap.response.match;
 
 import java.util.*;
 import java.util.regex.*;
+import java.util.Base64;
+import com.google.crypto.tink.subtle.Hex;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import com.google.crypto.tink.Aead;
+import com.google.crypto.tink.InsecureSecretKeyAccess;
+import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.RegistryConfiguration;
+import com.google.crypto.tink.TinkJsonProtoKeysetFormat;
+import com.google.crypto.tink.aead.AeadConfig;
+
+import java.security.GeneralSecurityException;
+
+import de.ids_mannheim.korap.util.KrillProperties;
 
 public class MatchIdentifier extends DocIdentifier {
     private int startPos, endPos = -1;
 
+    // Logger
+    private final static Logger log = LoggerFactory.getLogger(MatchIdentifier.class);
+    
     private ArrayList<int[]> pos = new ArrayList<>(8);
 
+    String idRegexPos = "p([0-9]+)-([0-9]+)"
+        + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)"
+        + "(?:c.+?)?";
+    
     // Remember: "contains" is necessary for a compatibility bug in Kustvakt
 	// Identifier pattern is "match-
     Pattern idRegex = Pattern.compile("^(?:match-|contains-)"
 									  + "(?:([^!]+?)[!\\.])?"
-									  + "([^!]+)[-/]p([0-9]+)-([0-9]+)"
-									  + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)"
-									  + "(?:c.+?)?$");
-    Pattern posRegex = Pattern.compile("\\(([0-9]+)\\)([0-9]+)-([0-9]+)");
+									  + "([^!]+)[-/]"
+                                      + idRegexPos
+                                      + "$");
 
+
+    
+    Pattern idRegexCompat = Pattern.compile("^(?:match-|contains-)"
+                                            + "(?:([^!]+?)[!\\.])?"
+                                            + "([^!]+)[-/]"
+                                            + "(?:"
+                                            // Not encrypted
+                                            + idRegexPos
+                                            +   "|"
+                                            // Encrypted
+                                            +   "x(.+?)"                                           
+                                            + ")"
+                                            + "$");
+
+    Pattern idRegexDecrypt = Pattern.compile("^"
+                                             + "([^:]+?)" // TextSigle
+                                             + "(::)"     // Separator
+                                             + idRegexPos
+                                             + "$");
+
+    
+    Pattern posRegex = Pattern.compile("\\(([0-9]+)\\)([0-9]+)-([0-9]+)");
+    
+    private Aead aead = null;
+
+        {
+            // Load the secret key from the properties file
+            Properties prop = KrillProperties.loadDefaultProperties();
+
+            // The secret is only fix, if the matchIDs need to be treated as
+            // persistant identifiers, otherwise it only needs to be stable temporarily
+            String secretKey = prop.getProperty("krill.secretB64");
+
+            if (secretKey != null) {
+                
+                try {
+            
+                    // Register Tink configurations
+                    AeadConfig.register();
+
+                
+                    // Decode the base64-encoded secret key
+                    byte[] secretKeyBytes = Base64.getDecoder().decode(secretKey);
+
+                    // Read the keyset into a KeysetHandle.
+                    KeysetHandle keysetHandle =
+                        TinkJsonProtoKeysetFormat.parseKeyset(
+                            new String(secretKeyBytes, UTF_8), InsecureSecretKeyAccess.get());
+            
+                    // Initialize the AEAD primitive
+                    aead = keysetHandle.getPrimitive(RegistryConfiguration.get(), Aead.class);
+
+                } catch (GeneralSecurityException e) {
+                    log.error("Can't initialize match id encryption: {}", e);
+                };
+            };
+        };
+    
 
     public MatchIdentifier () {};
 
@@ -30,10 +112,11 @@ public class MatchIdentifier extends DocIdentifier {
      */
     public MatchIdentifier (String id) {
 
+        
         // Replace for legacy reasons with incompatible versions of Kustvakt
         id = id.replaceAll("^(contains-|match-)([^!_\\.]+?)!\\2_", "$1$2_");
 
-        Matcher matcher = idRegex.matcher(id);
+        Matcher matcher = idRegexCompat.matcher(id);
         if (matcher.matches()) {
 
             // textSigle is provided directly
@@ -56,6 +139,27 @@ public class MatchIdentifier extends DocIdentifier {
             };
             // </legacy>
 
+            if (aead != null) {
+                try {
+                    String matchid = decrypt(matcher.group(3));
+                    matcher = idRegexDecrypt.matcher(id);
+
+                    String textSigleCheck = matcher.group(1);
+
+                    // Ignore group 2!
+
+                    // Needs to contain the textSigle, so the encrypted position
+                    // Can't be reused for another match
+                    if (this.getTextSigle().equals(textSigleCheck))
+                        return;
+                }
+                catch (GeneralSecurityException e) {
+                    return;
+                };
+                // Check that textSigle matches
+            }
+
+            // No en/decryption support
             this.setStartPos(Integer.parseInt(matcher.group(3)));
             this.setEndPos(Integer.parseInt(matcher.group(4)));
 
@@ -63,8 +167,8 @@ public class MatchIdentifier extends DocIdentifier {
                 matcher = posRegex.matcher(matcher.group(5));
                 while (matcher.find()) {
                     this.addPos(Integer.parseInt(matcher.group(2)),
-                            Integer.parseInt(matcher.group(3)),
-                            Integer.parseInt(matcher.group(1)));
+                                Integer.parseInt(matcher.group(3)),
+                                Integer.parseInt(matcher.group(1)));
                 };
             };
         };
@@ -123,13 +227,35 @@ public class MatchIdentifier extends DocIdentifier {
             sb.append(this.docID);
         };
 
-        sb.append('-').append(this.getPositionString());
+        sb.append('-');
+
+        // Add matchID with fallback.
+        // This should be changed, once matchid encryption is an established standard!
+        if (aead != null) {
+            try {
+                // Encryption marker
+                sb.append('x')
+                    .append(
+                    encrypt(
+                        this.getPositionString()
+                        + "::"
+                        + this.getTextSigle()
+                        )
+                    );
+            }
+            catch (GeneralSecurityException e) {
+                return null;
+            };
+        } else {
+            sb.append(this.getPositionString());
+        };
+        
         return sb.toString();
     };
 
 
     public String getPositionString () {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();        
         sb.append('p').append(this.startPos).append('-').append(this.endPos);
 
         // Get Position information
@@ -139,5 +265,21 @@ public class MatchIdentifier extends DocIdentifier {
         };
 
         return sb.toString();
+    };
+    
+    public String encrypt(String plaintext) throws GeneralSecurityException {
+        if (aead == null)
+            return null;
+        
+        byte[] ciphertext = aead.encrypt(plaintext.getBytes(), null);
+        return Hex.encode(ciphertext);
+    };
+
+    public String decrypt(String ciphertext) throws GeneralSecurityException {
+        if (aead == null)
+            return null;
+
+        byte[] plaintext = aead.decrypt(Hex.decode(ciphertext), null);
+        return new String(plaintext);
     };
 };
