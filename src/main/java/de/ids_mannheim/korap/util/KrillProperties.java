@@ -28,6 +28,9 @@ public class KrillProperties {
     
     public static String namedVCPath = "";
     public static boolean isTest = false;
+
+    public static String secret = "";
+
     
     // Logger
     private final static Logger log = LoggerFactory
@@ -118,6 +121,8 @@ public class KrillProperties {
         String matchExpansion = prop.getProperty(
                 "krill.match." + "expansion.includeContextSize", "false");
         matchExpansionIncludeContextSize = Boolean.parseBoolean(matchExpansion);
+
+        secret = prop.getProperty("krill.secretB64", "");
     }
     
 
