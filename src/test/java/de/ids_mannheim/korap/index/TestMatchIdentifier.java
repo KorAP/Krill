@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -107,7 +108,6 @@ public class TestMatchIdentifier {
         assertEquals("corpus-1/doc-1/text-1", id.getTextSigle());
     };
 
-
     @Test
     public void posIdentifierExample1 () throws IOException {
         PosIdentifier id = new PosIdentifier();
@@ -120,6 +120,60 @@ public class TestMatchIdentifier {
         assertEquals(id.toString(), "token-c1!d1-p8");
     };
 
+    @Test
+    public void posIdentifierExampleSign () throws IOException {
+
+        MatchIdentifier.initMac("tree");
+        
+        MatchIdentifier id = new MatchIdentifier();
+        id.setTextSigle("aaa/bbb/ccc");
+        id.setStartPos(8);
+        id.setEndPos(10);
+        assertEquals(id.toString(), "match-aaa/bbb/ccc-p8-10x_ibY-h1k-VJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
+
+        id = new MatchIdentifier("match-aaa/bbb/ccc-p8-10x_ibY-h1k-VJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
+
+        assertNotNull(id);
+        assertEquals(id.getTextSigle(),"aaa/bbb/ccc");
+        assertEquals(id.getStartPos(),8);
+        assertEquals(id.getEndPos(),10);
+
+        // Fail
+        id = new MatchIdentifier("match-aaa/bbb/ccc-p9-10x_ibY-h1k-VJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
+
+        assertNotNull(id);
+        assertEquals(id.getTextSigle(),"");
+        assertEquals(id.getStartPos(),0);
+        assertEquals(id.getEndPos(),-1);
+
+        // Fail
+        id = new MatchIdentifier("match-aaa/bbb/ccc-p8-10x_ibY-h1k-VJ4aZjBFgTu8N4Ou6xqcp-PkUrjQ9080Kr8");
+
+        assertNotNull(id);
+        assertEquals(id.getTextSigle(),"");
+        assertEquals(id.getStartPos(),0);
+        assertEquals(id.getEndPos(),-1);
+        
+        // Fail
+        id = new MatchIdentifier("match-aaa/bbb/ccc-p8-10x_ibY-h1k-vJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
+
+        assertNotNull(id);
+        assertEquals(id.getTextSigle(),"");
+        assertEquals(id.getStartPos(),0);
+        assertEquals(id.getEndPos(),-1);
+
+        // Fail
+        id = new MatchIdentifier("match-aab/bbb/ccc-p8-10x_ibY-h1k-VJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
+
+        assertNotNull(id);
+        assertEquals(id.getTextSigle(),"");
+        assertEquals(id.getStartPos(),0);
+        assertEquals(id.getEndPos(),-1);
+
+
+        MatchIdentifier.initMac("");
+    };
+    
 	@Test
     public void posIdentifierExample2 () throws IOException {
         PosIdentifier id = new PosIdentifier();
@@ -159,6 +213,35 @@ public class TestMatchIdentifier {
         assertEquals("ID (0)", "match-c1!d1-p7-9(2)7-8(1)8-8", km.getID());
     };
 
+    @Test
+    public void indexExample1Sign () throws IOException {
+        MatchIdentifier.initMac("tree");
+
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createSimpleFieldDoc());
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("tokens");
+        Krill ks = new Krill(
+                kq.nr(2, kq.seq(kq.seg("s:b")).append(kq.nr(kq.seg("s:a")))));
+        Result kr = ki.search(ks);
+
+        assertEquals("totalResults", kr.getTotalResults(), 1);
+        assertEquals("StartPos (0)", kr.getMatch(0).startPos, 7);
+        assertEquals("EndPos (0)", kr.getMatch(0).endPos, 9);
+
+        Match km = kr.getMatch(0);
+
+        assertEquals("SnippetBrackets (0)", "... bcabca[[{2:b{1:a}}]]c",
+                km.getSnippetBrackets());
+        assertEquals("SnippetTokens (0)", "{\"left\":[\"b\",\"c\",\"a\",\"b\",\"c\",\"a\"],\"match\":[\"b\",\"a\"],\"right\":[\"c\"],\"classes\":[[2,0,1],[1,1,1]]}",
+                     km.getSnippetTokens().toString());
+        assertEquals("ID (0)", "match-c1!d1-p7-9(2)7-8(1)8-8x_07WRwmjA5EigwG8wYcURhnz_WkL9cepvU96hC2mp6SE", km.getID());
+
+        MatchIdentifier.initMac("");
+    };
+
+    
 
     @Test
     public void indexExample2 () throws IOException, QueryException {
