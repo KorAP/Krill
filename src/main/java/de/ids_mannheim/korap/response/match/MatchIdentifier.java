@@ -2,21 +2,67 @@ package de.ids_mannheim.korap.response.match;
 
 import java.util.*;
 import java.util.regex.*;
+import java.util.Base64;
+import com.google.crypto.tink.subtle.Hex;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+
+import java.security.GeneralSecurityException;
+
+import de.ids_mannheim.korap.util.KrillProperties;
 
 public class MatchIdentifier extends DocIdentifier {
     private int startPos, endPos = -1;
 
+    // Logger
+    private final static Logger log = LoggerFactory.getLogger(MatchIdentifier.class);
+    
     private ArrayList<int[]> pos = new ArrayList<>(8);
 
+    String idRegexPos = "(p([0-9]+)-([0-9]+)"
+        + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)"
+        + "(?:c.+?)?)";
+    
     // Remember: "contains" is necessary for a compatibility bug in Kustvakt
 	// Identifier pattern is "match-
     Pattern idRegex = Pattern.compile("^(?:match-|contains-)"
 									  + "(?:([^!]+?)[!\\.])?"
-									  + "([^!]+)[-/]p([0-9]+)-([0-9]+)"
-									  + "((?:\\(-?[0-9]+\\)-?[0-9]+--?[0-9]+)*)"
-									  + "(?:c.+?)?$");
+									  + "([^!]+)[-/]"
+                                      + idRegexPos
+                                      + "(?:x_([a-zA-Z-_]+))?"
+                                      + "$");
+        
     Pattern posRegex = Pattern.compile("\\(([0-9]+)\\)([0-9]+)-([0-9]+)");
+    
+    private Mac mac = null;
 
+        {
+            // Load the secret key from the properties file
+            Properties prop = KrillProperties.loadDefaultProperties();
+
+            // The secret is only fix, if the matchIDs need to be treated as
+            // persistant identifiers, otherwise it only needs to be stable temporarily
+            String secretKey = prop.getProperty("krill.secretB64");
+
+            if (secretKey != null) {                
+                try {
+
+                    mac = Mac.getInstance("HmacSHA256");
+                    SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+                    mac.init(keySpec);
+                } catch (Exception e) {
+                    log.error("Can't initialize match id signing: {}", e);
+                };
+            };
+        };
+    
 
     public MatchIdentifier () {};
 
@@ -29,7 +75,7 @@ public class MatchIdentifier extends DocIdentifier {
      * compatibility.
      */
     public MatchIdentifier (String id) {
-
+        
         // Replace for legacy reasons with incompatible versions of Kustvakt
         id = id.replaceAll("^(contains-|match-)([^!_\\.]+?)!\\2_", "$1$2_");
 
@@ -56,17 +102,37 @@ public class MatchIdentifier extends DocIdentifier {
             };
             // </legacy>
 
-            this.setStartPos(Integer.parseInt(matcher.group(3)));
-            this.setEndPos(Integer.parseInt(matcher.group(4)));
+            
+            if (mac != null) {
+                String posString = matcher.group(3);
+                String message = this.getTextSigle() + "::" + posString;
+                    
+                String hmac = matcher.group(6);
 
-            if (matcher.group(5) != null) {
-                matcher = posRegex.matcher(matcher.group(5));
+                if (hmac == null)
+                    return;
+
+                byte[] hmacBytes = Base64.getUrlDecoder().decode(hmac);
+
+                // Generate the HMAC hash
+                byte[] hmacCompare = mac.doFinal(message.getBytes(StandardCharsets.UTF_8));
+
+                if (!hmacBytes.equals(hmacCompare))
+                    return;
+            };
+
+            this.setStartPos(Integer.parseInt(matcher.group(4)));
+            this.setEndPos(Integer.parseInt(matcher.group(5)));
+
+            if (matcher.group(6) != null) {
+
+                matcher = posRegex.matcher(matcher.group(6));
                 while (matcher.find()) {
                     this.addPos(Integer.parseInt(matcher.group(2)),
-                            Integer.parseInt(matcher.group(3)),
-                            Integer.parseInt(matcher.group(1)));
+                                Integer.parseInt(matcher.group(3)),
+                                Integer.parseInt(matcher.group(1)));
                 };
-            };
+            };            
         };
     };
 
@@ -123,13 +189,31 @@ public class MatchIdentifier extends DocIdentifier {
             sb.append(this.docID);
         };
 
-        sb.append('-').append(this.getPositionString());
+        sb.append('-');
+
+        sb.append(this.getPositionString());
+
+        // Add signature
+        if (mac != null) {
+            String message = this.getTextSigle() + "::" + this.getPositionString();
+
+            // Generate the HMAC hash
+            byte[] hmac = mac.doFinal(message.getBytes(StandardCharsets.UTF_8));
+
+            String hmacStr = Base64.getUrlEncoder()
+                .withoutPadding()
+                .encodeToString(hmac);
+                
+            // Signature marker
+            sb.append("x_").append(hmacStr);
+        };
+        
         return sb.toString();
     };
 
 
     public String getPositionString () {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();        
         sb.append('p').append(this.startPos).append('-').append(this.endPos);
 
         // Get Position information
