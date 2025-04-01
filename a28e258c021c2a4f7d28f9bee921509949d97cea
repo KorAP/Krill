@@ -16,6 +16,46 @@
       "message": "I have switched to signing.",
       "revId": "a28e258c021c2a4f7d28f9bee921509949d97cea",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d84106f_19034b92",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2025-04-01T07:36:32Z",
+      "side": 1,
+      "message": "Otherwise it looks fine to me",
+      "revId": "a28e258c021c2a4f7d28f9bee921509949d97cea",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8d506fed_311a1fc7",
+        "filename": "src/test/java/de/ids_mannheim/korap/index/TestMatchIdentifier.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2025-04-01T07:36:32Z",
+      "side": 1,
+      "message": "why do these matchId fail? Can you give some hints?",
+      "range": {
+        "startLine": 149,
+        "startChar": 8,
+        "endLine": 171,
+        "endChar": 38
+      },
+      "revId": "a28e258c021c2a4f7d28f9bee921509949d97cea",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
