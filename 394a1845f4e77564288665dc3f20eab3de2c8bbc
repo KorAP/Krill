@@ -16,6 +16,23 @@
       "message": "Will test later on the problematic data. Maybe make this configurable?",
       "revId": "394a1845f4e77564288665dc3f20eab3de2c8bbc",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad8d0d94_1857c7c6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-04-17T07:39:59Z",
+      "side": 1,
+      "message": "It works! Now testing if I can mix both indexers…",
+      "revId": "394a1845f4e77564288665dc3f20eab3de2c8bbc",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
