@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -103,6 +104,24 @@ public class TestIndexer {
             });
         logger.info(outputStream.toString());
         assertEquals(outputStream.toString(), "Added 1 file.\n");
+    }
+
+    @Test
+    public void testMaxTextSize () throws IOException {
+        // Create a temporary properties file with the max text size setting
+        File tempPropertiesFile = File.createTempFile("krill", ".properties");
+        FileWriter writer = new FileWriter(tempPropertiesFile);
+        writer.write("krill.version = ${project.version}\n");
+        writer.write("krill.name = ${project.name}\n");
+        writer.write("krill.indexDir = test-output\n");
+        writer.write("krill.index.textSize.max = 25000000\n");
+        writer.close();
+        
+        Indexer.main(new String[] { "-c", tempPropertiesFile.getAbsolutePath(),
+                "-i", "src/test/resources/bzk", "-o", "test-output-1"});
+        assertEquals("Added or updated 1 file.\n", outputStream.toString());
+        
+        tempPropertiesFile.delete();
     }
 
     @Before

@@ -6,6 +6,8 @@ import java.io.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRING_LEN;
+
 /**
  * 
  * Todo: Properties may be loaded twice - although Java may cache automatically
@@ -23,6 +25,7 @@ public class KrillProperties {
     public static int maxTokenContextSize = 60;
     public static int maxCharContextSize = 500;
     public static int defaultSearchContextLength = 6;
+    public static int maxTextSize = DEFAULT_MAX_STRING_LEN; // Default max text size
     
     public static boolean matchExpansionIncludeContextSize = false;
     
@@ -89,6 +92,7 @@ public class KrillProperties {
         // EM: not implemented yet
 //        String maxCharContextSize = prop.getProperty("krill.context.max.char");
         String defaultSearchContextLength = prop.getProperty("krill.search.context.default");
+        String maxTextSizeValue = prop.getProperty("krill.index.textSize.max");
 
         try {
             if (maxTokenMatchSize != null) {
@@ -106,6 +110,18 @@ public class KrillProperties {
             if (defaultSearchContextLength != null) {
                 KrillProperties.defaultSearchContextLength = Integer
                         .parseInt(defaultSearchContextLength);
+            }
+            if (maxTextSizeValue != null) {
+                int userMaxTextLength = Integer
+                        .parseInt(maxTextSizeValue);
+                if (userMaxTextLength < DEFAULT_MAX_STRING_LEN) {
+                    log.warn("Specified krill.index.text.max.char is too small. Using default value: "
+                            + DEFAULT_MAX_STRING_LEN);
+                    KrillProperties.maxTextSize = DEFAULT_MAX_STRING_LEN;
+                } else {
+                    KrillProperties.maxTextSize = userMaxTextLength;
+                }
+
             }
         }
         catch (NumberFormatException e) {

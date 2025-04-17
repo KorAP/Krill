@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.util.KrillProperties;
 
+import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRING_LEN;
+
 /**
  * Standalone indexer tool for Krill.
  * Although the preferred index method
@@ -195,7 +197,7 @@ public class Indexer {
         options.addOption(Option.builder("a").longOpt("addInsteadofUpsert")
                 .desc("Always add files to the index, never update")
                 .build());
-        
+
         CommandLineParser parser = new DefaultParser();
 
         String propFile = null;
@@ -216,7 +218,6 @@ public class Indexer {
             if (cmd.hasOption("a")) {
                 addInsteadOfUpsert = true;
             };
-
         }
         catch (MissingOptionException e) {
             HelpFormatter formatter = new HelpFormatter();
@@ -237,6 +238,12 @@ public class Indexer {
         try {
             // Get indexer object
             Indexer indexer = new Indexer(prop);
+            
+            // Apply max text size from configuration
+            if (KrillProperties.maxTextSize > DEFAULT_MAX_STRING_LEN) {
+                log.info("Setting max text length to " + KrillProperties.maxTextSize);
+                indexer.index.setMaxStringLength(KrillProperties.maxTextSize);
+            }
 
             // Iterate over list of directories
             for (String arg : inputDirectories) {
