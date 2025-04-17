@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.StreamReadConstraints;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
@@ -173,7 +175,7 @@ public final class KrillIndex implements IndexInfo {
     // It does not represent real unstaged documents.
     private int commitCounter = 0;
     private HashMap termContexts;
-    private ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     // private ByteBuffer bbTerm;
 
@@ -181,7 +183,15 @@ public final class KrillIndex implements IndexInfo {
     {
         Properties prop = KrillProperties.loadDefaultProperties();
         Properties info = KrillProperties.loadInfo();
-        
+
+        StreamReadConstraints constraints = StreamReadConstraints.builder()
+                .maxStringLength(40_000_000)
+                .build();
+        JsonFactory factory = JsonFactory.builder()
+                .streamReadConstraints(constraints)
+                .build();
+        mapper = new ObjectMapper(factory);
+
         if (info != null) {
             this.version = info.getProperty("krill.version");
             this.name = info.getProperty("krill.name");
