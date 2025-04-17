@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.util.KrillProperties;
 
+import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRING_LEN;
+
 /**
  * Standalone indexer tool for Krill.
  * Although the preferred index method
@@ -63,6 +65,7 @@ public class Indexer {
     // Init logger
     private final static Logger log = LoggerFactory.getLogger(Indexer.class);
     private static final boolean DEBUG = false;
+    private static int maxTextLength = DEFAULT_MAX_STRING_LEN;
 
     /**
      * Construct a new indexer object.
@@ -195,7 +198,14 @@ public class Indexer {
         options.addOption(Option.builder("a").longOpt("addInsteadofUpsert")
                 .desc("Always add files to the index, never update")
                 .build());
-        
+        options.addOption(Option.builder("m").longOpt("maxTextLength")
+                .desc("Maximum text length in characters for processing (default: "
+                        + DEFAULT_MAX_STRING_LEN
+                        + "). Increase this only if you know what you are doing. "
+                        +"The default is sufficient for " + DEFAULT_MAX_STRING_LEN/1500
+                        + " standard pages.")
+                .hasArg().argName("max text length").type(Number.class).build());
+
         CommandLineParser parser = new DefaultParser();
 
         String propFile = null;
@@ -217,6 +227,16 @@ public class Indexer {
                 addInsteadOfUpsert = true;
             };
 
+            if (cmd.hasOption("m")) {
+                int userMaxTextLength = Integer.parseInt(cmd.getOptionValue("m"));
+                if (userMaxTextLength < DEFAULT_MAX_STRING_LEN) {
+                    log.warn("Specified maxTextLength is too small. Using default value: "
+                            + DEFAULT_MAX_STRING_LEN);
+                    maxTextLength = DEFAULT_MAX_STRING_LEN;
+                } else {
+                    maxTextLength = userMaxTextLength;
+                }
+            }
         }
         catch (MissingOptionException e) {
             HelpFormatter formatter = new HelpFormatter();
@@ -237,6 +257,10 @@ public class Indexer {
         try {
             // Get indexer object
             Indexer indexer = new Indexer(prop);
+            if (maxTextLength > DEFAULT_MAX_STRING_LEN) {
+                log.info("Setting max text length to " + maxTextLength);
+                indexer.index.setMaxStringLength(maxTextLength);
+            }
 
             // Iterate over list of directories
             for (String arg : inputDirectories) {

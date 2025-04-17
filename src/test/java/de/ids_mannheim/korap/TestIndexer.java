@@ -105,6 +105,14 @@ public class TestIndexer {
         assertEquals(outputStream.toString(), "Added 1 file.\n");
     }
 
+    @Test
+    public void testMaxTextLengthArgument () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                "-m", "25000000",
+                "-i", "src/test/resources/bzk", "-o", "test-output-1"});
+        assertEquals("Added 1 file.\n", outputStream.toString());
+    }
+
     @Before
     public void setOutputStream () {
         System.setOut(new PrintStream(outputStream));
