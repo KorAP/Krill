@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc6273de_e08a8cb6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-04-17T12:53:03Z",
+      "side": 1,
+      "message": "Damn, now, that I think of it, it could also be a configuration option.",
+      "revId": "2a124ef547f967400006771dcab8244b02d1f5d4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
