@@ -17,6 +17,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.StreamReadConstraints;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
@@ -75,6 +77,8 @@ import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
+
+import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRING_LEN;
 
 /**
  * <p>KrillIndex implements a simple API for searching in and writing
@@ -249,6 +253,23 @@ public final class KrillIndex implements IndexInfo {
         return this.version;
     };
 
+    public void setMaxStringLength(int maxStringLength) {
+        if (maxStringLength < DEFAULT_MAX_STRING_LEN) {
+            throw new IllegalArgumentException("Maximum string length must not be smaller than the default value: "
+                    + DEFAULT_MAX_STRING_LEN);
+        }
+
+        StreamReadConstraints constraints = StreamReadConstraints.builder()
+                .maxStringLength(maxStringLength)
+                .build();
+
+        JsonFactory factory = JsonFactory.builder()
+                .streamReadConstraints(constraints)
+                .build();
+
+        this.mapper = new ObjectMapper(factory);
+        log.info("Maximum string length set to {}.", maxStringLength);
+    }
 
     /**
      * Get the name of the index.
