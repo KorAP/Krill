@@ -14,3 +14,4 @@ krill.index.commit.count = 134217000
 krill.index.commit.log = log/krill.commit.log
 krill.index.commit.auto = 500
 krill.index.relations.max = 100
+krill.index.textSize.max = 20000000
