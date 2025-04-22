@@ -16,6 +16,23 @@
       "message": "Damn, now, that I think of it, it could also be a configuration option.",
       "revId": "2a124ef547f967400006771dcab8244b02d1f5d4",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a42de409_2986c9da",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-04-22T14:36:24Z",
+      "side": 1,
+      "message": "Looks good, but I agree that a config would be more appropriate.",
+      "revId": "2a124ef547f967400006771dcab8244b02d1f5d4",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
