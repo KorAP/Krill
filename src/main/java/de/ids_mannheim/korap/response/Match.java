@@ -208,6 +208,9 @@ public class Match extends AbstractDocument {
     public Match (int maxTokenMatchSize, String idString, boolean includeHighlights) {
         MatchIdentifier id = new MatchIdentifier(idString);
 
+        if (id.getTextSigle() == "" && id.getDocID() == "")
+            return;
+        
         if (id.getStartPos() > -1) {
 			this.mirrorIdentifier = id.toString();
 
