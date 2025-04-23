@@ -387,6 +387,37 @@ public class TestMatchIdentifier {
                 km.getSnippetHTML());
     };
 
+    @Test
+    public void indexExampleSign () throws IOException, QueryException {
+
+        MatchIdentifier.initMac("tree");
+
+        
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createSimpleFieldDoc());
+        ki.commit();
+
+        Match km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8", "tokens",
+                                   null, null, false, false);
+
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("Invalid match identifier", res.at("/errors/0/1").asText());
+        assertEquals("", res.at("/matchID").asText());
+        assertEquals("", res.at("/fields/0/key").asText());
+
+
+        km = ki.getMatchInfo("match-c1!d1-p7-9(2)7-8(1)8-8x_07WRwmjA5EigwG8wYcURhnz_WkL9cepvU96hC2mp6SE", "tokens",
+                                   null, null, false, false);
+
+        res = mapper.readTree(km.toJsonString());
+        assertEquals("", res.at("/errors/0/1").asText());
+        assertEquals("match-c1!d1-p7-9(2)7-8(1)8-8x_07WRwmjA5EigwG8wYcURhnz_WkL9cepvU96hC2mp6SE", res.at("/matchID").asText());
+        assertEquals("ID", res.at("/fields/0/key").asText());
+
+        MatchIdentifier.initMac("");
+    };
+
+    
 
     @Test
     public void indexNewStructure () throws IOException, QueryException {

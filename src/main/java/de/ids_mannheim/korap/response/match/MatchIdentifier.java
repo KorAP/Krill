@@ -105,6 +105,7 @@ public class MatchIdentifier extends DocIdentifier {
                 // No signature returned
                 if (hmacStr == null) {
                     this.textSigle = "";
+                    this.docID = "";
                     return;
                 };
 
@@ -115,6 +116,7 @@ public class MatchIdentifier extends DocIdentifier {
                 
                 if (!MessageDigest.isEqual(hmacBytes, hmacVerify)) {
                     this.textSigle = "";
+                    this.docID = "";
                     return;
                 };
             };
