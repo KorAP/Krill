@@ -1,6 +1,7 @@
-0.64.0 2025-03-28
+0.64.0 2025-04-30
     - [feature] Support signed matchids to prevent consecutive
       positional requests (diewald)
+    - [feature] Add support for krill.index.textSize.max (kupietz)
 
 0.63.3 2024-12-15
     - [performance] Improve short circuit on count=0 and
