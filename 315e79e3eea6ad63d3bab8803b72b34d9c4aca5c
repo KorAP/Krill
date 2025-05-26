@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1a76f9dc_338de336",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-05-26T13:50:06Z",
+      "side": 1,
+      "message": "You are right - this only fixes #206. Can you have a look at https://korap.ids-mannheim.de/gerrit/c/KorAP/Krill/+/9396 for #207?",
+      "revId": "315e79e3eea6ad63d3bab8803b72b34d9c4aca5c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
