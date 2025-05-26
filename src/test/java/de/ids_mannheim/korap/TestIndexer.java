@@ -29,6 +29,7 @@ public class TestIndexer {
     private static File outputDirectory = new File("test-index");
     private static File outputDirectory2 = new File("test-index2");
     private static File outputDirectory3 = new File("test-output");
+    private static File outputDirectory4 = new File("test-output-1");
 
     @Test
     public void testArguments () throws IOException {
@@ -144,7 +145,10 @@ public class TestIndexer {
             deleteFile(outputDirectory2);
         }
         if (outputDirectory3.exists()) {
-            deleteFile(outputDirectory2);
+            deleteFile(outputDirectory3);
+        }
+        if (outputDirectory4.exists()) {
+            deleteFile(outputDirectory4);
         }
     }
 
@@ -163,6 +167,10 @@ public class TestIndexer {
         if (outputDirectory3.exists()) {
             logger.debug("Output directory 3 exists");
             deleteFile(outputDirectory3);
+        }
+        if (outputDirectory4.exists()) {
+            logger.debug("Output directory 4 exists");
+            deleteFile(outputDirectory4);
         }
     }
 
