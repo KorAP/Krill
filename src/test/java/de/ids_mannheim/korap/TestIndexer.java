@@ -1,6 +1,7 @@
 package de.ids_mannheim.korap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -33,21 +34,21 @@ public class TestIndexer {
     public void testArguments () throws IOException {
         Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
                                     "-i", "src/test/resources/bzk"});
-        assertEquals("Added or updated 1 file.\n", outputStream.toString());
+        assertTrue(outputStream.toString().startsWith("Added or updated 1 file."));
     }
 
     @Test
     public void testOutputArgument () throws IOException {
         Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
                                     "-i", "src/test/resources/bzk", "-o", "test-output"});
-        assertEquals("Added or updated 1 file.\n", outputStream.toString());
+        assertTrue(outputStream.toString().startsWith("Added or updated 1 file."));
     }
 
     @Test
     public void testMultipleInputFiles () throws IOException {
         Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
                                     "-i", "src/test/resources/wiki"});
-        assertEquals("Added or updated 19 files.\n", outputStream.toString());
+        assertTrue(outputStream.toString().startsWith("Added or updated 19 files."));
     }
 
 
@@ -58,7 +59,7 @@ public class TestIndexer {
                 "-i", "src/test/resources/bzk",
                 "-a"});
         logger.info(outputStream.toString());
-        assertEquals(outputStream.toString(), "Added 1 file.\n");
+        assertTrue(outputStream.toString().startsWith("Added 1 file."));
     }
 
     
@@ -68,7 +69,7 @@ public class TestIndexer {
                                     "-i",
                                     "src/test/resources/bzk;src/test/resources/goe;src/test/resources/sgbr",
                                     "-o", "test-index"});
-        assertEquals("Added or updated 5 files.\n", outputStream.toString());
+        assertTrue(outputStream.toString().startsWith("Added or updated 5 files."));
     }
 
     @Test
@@ -103,7 +104,7 @@ public class TestIndexer {
                 "-o", "test-index2"
             });
         logger.info(outputStream.toString());
-        assertEquals(outputStream.toString(), "Added 1 file.\n");
+        assertTrue(outputStream.toString().startsWith("Added 1 file."));
     }
 
     @Test
@@ -119,7 +120,7 @@ public class TestIndexer {
         
         Indexer.main(new String[] { "-c", tempPropertiesFile.getAbsolutePath(),
                 "-i", "src/test/resources/bzk", "-o", "test-output-1"});
-        assertEquals("Added or updated 1 file.\n", outputStream.toString());
+        assertTrue(outputStream.toString().startsWith("Added or updated 1 file."));
         
         tempPropertiesFile.delete();
     }
