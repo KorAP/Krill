@@ -34,6 +34,8 @@ public final class KrillMeta extends Notifications {
     private ArrayList<String> fields;
     HashSet<Integer> highlights;
 
+    private JsonNode rewrites;
+    
     // Timeout search after milliseconds
     private long timeout = (long) 120_000;
     // private long timeoutStart = Long.MIN_VALUE;
@@ -160,6 +162,9 @@ public final class KrillMeta extends Notifications {
         if (json.has("context"))
             this.context.fromJson(json.get("context"));
 
+        if (json.has("rewrites"))
+            this.rewrites = json.get("rewrites");
+        
         // Defined highlights
         if (json.has("highlight")) {
 
@@ -270,6 +275,11 @@ public final class KrillMeta extends Notifications {
     };
 
 
+    public JsonNode getRewrites () {
+        return this.rewrites;
+    };    
+
+    
     public KrillMeta setContext (SearchContext context) {
         this.context = context;
         return this;
@@ -424,6 +434,9 @@ public final class KrillMeta extends Notifications {
             json.set("highlight", highlightNode);
         };
 
+        if (this.getRewrites() != null)
+            json.set("rewrites", this.getRewrites());
+        
         return json;
     };
 };

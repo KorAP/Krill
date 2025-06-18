@@ -151,6 +151,10 @@ public class TestMetaFields {
         assertEquals("match-GOE_AGX.00002-p7-8",
                 res.at("/matches/0/matchID").asText());
 
+        assertFalse(res.at("/meta/rewrites").isMissingNode());
+        assertEquals("Kustvakt", res.at("/meta/rewrites/0/src").asText());
+
+        
         // All fields
         jsonString = getJsonString(getClass()
                 .getResource("/queries/metas/fields_all.jsonld").getFile());
@@ -182,6 +186,7 @@ public class TestMetaFields {
         // assertEquals("372-377", res.at("/matches/0/pages").asText());
         assertEquals("match-GOE_AGX.00002-p7-8",
                 res.at("/matches/0/matchID").asText());
+        assertTrue(res.at("/meta/rewrites").isMissingNode());
 
 
         // @All fields

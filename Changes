@@ -1,3 +1,6 @@
+0.64.2 2025-06-18
+    - [bugfix] Restore rewrites in Meta. (diewald)
+
 0.64.1 2025-05-26
     - [bugfix] Ignore line endings in indexer tests. (diewald)
     - [bugfix] Correctly cleanup test directories. (diewald)

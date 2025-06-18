@@ -3,7 +3,16 @@
   "announcements" : [],
   "errors" : [],
   "meta" : {
-    "count":9
+    "count":9,
+    "rewrites":[
+      {
+       "@type" : "koral:rewrite",
+        "src" : "Kustvakt",
+        "origin" : "Kustvakt",
+        "scope" : "count",
+        "source" : 10
+      }
+    ]
   },
   "query" : {
     "@type" : "koral:token",
