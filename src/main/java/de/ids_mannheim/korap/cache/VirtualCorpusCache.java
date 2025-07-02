@@ -60,6 +60,8 @@ public class VirtualCorpusCache {
 
     public static final Set<String> vcToCleanUp = Collections
             .synchronizedSet(new HashSet<>());
+    
+    public static volatile boolean isCleaning = false;
 
 
     public VirtualCorpusCache () {
@@ -86,13 +88,11 @@ public class VirtualCorpusCache {
 
         String[] parts = vcId.split("/");
         if (parts.length > 2) {
-            vcToCleanUp.remove(vcId);
             return false;
         }
 
         String vcName = parts.length == 2 ? parts[1] : parts[0];
         if (!vcNamePattern.matcher(vcName).matches()) {
-            vcToCleanUp.remove(vcId);
             return false;
         }
 
@@ -163,6 +163,11 @@ public class VirtualCorpusCache {
     }
 
 
+    /** Retrieve a VC from the cache, either from the memory map or disk.
+     * 
+     * @param vcId
+     * @return a map of index leaves and DocBits, otherwise null if not found.
+     */
     public static Map<String, DocBits> retrieve (String vcId) {
         Map<String, DocBits> vcData = map.get(vcId);
         if (vcData != null) {
@@ -218,8 +223,11 @@ public class VirtualCorpusCache {
             return;
         }
 
-        vcToCleanUp.remove(vcId);
         map.remove(vcId);
+        if (!isCleaning) { 
+        	vcToCleanUp.remove(vcId);
+        }
+        
         File vc = new File(CACHE_LOCATION + "/" + vcId);
         if (vc.exists()) {
             for (File f : vc.listFiles()) {
@@ -262,14 +270,20 @@ public class VirtualCorpusCache {
      */
     public static void setIndexInfo (IndexInfo indexInfo) {
         VirtualCorpusCache.indexInfo = indexInfo;
-        synchronized (vcToCleanUp) {
-            if (!vcToCleanUp.isEmpty()) {
+        //synchronized (vcToCleanUp) {
+            if (!vcToCleanUp.isEmpty() && !isCleaning) {
+            	isCleaning = true;
                 cleanup();
+                isCleaning = false;
             }
-        }
+        //}
     }
 
 
+    /** Remove out-dated leaves that are not used anymore due to index update 
+     * (i.e., by sending a close-index-reader-API request)
+     * 
+     */
     private static void cleanup () {
         final Set<String> currentLeafFingerprints = indexInfo
                 .getAllLeafFingerprints();
@@ -314,6 +328,8 @@ public class VirtualCorpusCache {
             Supplier<DocBits> calculateDocBits) {
         DocBits docBits = null;
         Map<String, DocBits> leafToDocBitMap = retrieve(vcId);
+        // if VC is not in the cache (both memory and disk), 
+        // put it in the memory map
         if (leafToDocBitMap == null) {
             leafToDocBitMap = Collections
                     .synchronizedMap(new HashMap<String, DocBits>());
@@ -321,11 +337,23 @@ public class VirtualCorpusCache {
         }
         else {
             docBits = leafToDocBitMap.get(leafFingerprint);
-            if (docBits == null) {
+            // VC-id is the cache but there is no data for the leaf
+            if (docBits == null && !isCleaning) {
                 vcToCleanUp.add(vcId);
             }
         }
         if (docBits == null) {
+        	/* Calculating docBits and storing in the cache
+        	 * 
+        	 * This process is triggered when finding a JSON-LD file at 
+        	 * the named-vc folder that doesn't exist in the cache.
+        	 * 
+        	 * It should only happens at server start-up, or index update
+        	 * for a small number of new leaves.
+        	 * 
+        	 * New named VC should *not* be added at a running instance, as 
+        	 * it would trigger this process.
+        	 */   
             docBits = calculateDocBits.get();
             leafToDocBitMap.put(leafFingerprint, docBits);
             storeOnDisk(vcId, leafFingerprint, docBits);
