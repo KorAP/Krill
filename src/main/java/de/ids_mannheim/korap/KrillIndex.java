@@ -57,6 +57,8 @@ import org.apache.lucene.util.automaton.RegExp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.benmanes.caffeine.cache.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 // Krill classes
@@ -179,6 +181,21 @@ public final class KrillIndex implements IndexInfo {
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
 
+    // Prelim CacheKey
+    record PrelimCacheKey(int queryHash, int collHash, short itemsPerRessource) {}
+
+    // CacheKey
+    record SearchCacheKey(PrelimCacheKey prelimck, String atomicHash) {}
+
+    // CacheValue
+    record SearchCacheValue(int matchCount, int matchDocCount) {}
+
+    Cache<SearchCacheKey, SearchCacheValue> searchCache = Caffeine.newBuilder()
+        .maximumWeight(64 * 1024 * 1024) // 64 MB
+        .weigher((SearchCacheKey key, SearchCacheValue value) -> 80) // estimate per-entry size
+        .build();
+
+    
     // private ByteBuffer bbTerm;
 
     // Some initializations ...
@@ -1459,7 +1476,7 @@ public final class KrillIndex implements IndexInfo {
         tthread.start();
         final long timeout = meta.getTimeOut();
         boolean isTimeout = false;
-
+       
         // See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
         long t1 = System.nanoTime();
 
@@ -1478,6 +1495,14 @@ public final class KrillIndex implements IndexInfo {
 			if (DEBUG)
 				log.trace("Rewritten query is {}", query.toString());
 
+            int collHash = 0;
+            Filter collf = collection.toFilter();
+            if (collf != null) {
+                collHash = collf.hashCode();
+            };
+            
+            PrelimCacheKey prelim = new PrelimCacheKey(query.hashCode(), collHash, itemsPerResource);
+            
             // Todo: run this in a separated thread
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
@@ -1485,7 +1510,16 @@ public final class KrillIndex implements IndexInfo {
 
                 if (isTimeout)
                     break;
-                
+
+                SearchCacheKey finalCacheKey = new SearchCacheKey(prelim, atomic.reader().getCombinedCoreAndDeletesKey().toString());
+                SearchCacheValue foundCache = searchCache.getIfPresent(finalCacheKey);
+
+                if (foundCache != null && startIndex > (i + foundCache.matchCount)) {
+                    i += foundCache.matchCount;
+                    j += foundCache.matchDocCount;
+                    continue;
+                };                
+
                 /*
                  * Todo: There may be a way to know early if the bitset is emty
                  * by using LongBitSet - but this may not be as fast as I think.
@@ -1504,6 +1538,9 @@ public final class KrillIndex implements IndexInfo {
                 final IndexReader lreader = atomic.reader();
                 int localDocID, docID;
 
+                int li = i;
+                int lj = j;
+                
                 // TODO: Get document information from Cache! Fieldcache?
                 for (; i < hits; i++) {
 
@@ -1511,9 +1548,12 @@ public final class KrillIndex implements IndexInfo {
                         log.trace("Match Nr {}/{}", i, count);
                    
                     // There are no more spans to find
-                    if (!spans.next())
+                    if (!spans.next()) {
+                        // This may already be stored though!                                       
+                        searchCache.put(finalCacheKey, new SearchCacheValue(i - li, j - lj));
                         break;
-
+                    };
+                    
                     // Increment resource counter
                     itemsPerResourceCounter++;
                     
