@@ -1409,7 +1409,99 @@ public class TestKrill {
 
         assertEquals(0, kr.getTotalResults());
     };
-   
+
+    @Test
+    public void queryJSONcachedResults () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        // Indexing test files
+        for (String i : new String[] {
+                "00001",
+                "00002",
+            }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                      true);
+        };
+
+        ki.commit();
+
+        // Indexing test files
+        for (String i : new String[] {
+                "00003",
+            }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                      true);
+        };
+
+        ki.commit();
+
+        // Indexing test files
+        for (String i : new String[] {
+                "00004",
+                "00005",
+            }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                      true);
+        };
+
+        ki.commit();
+
+        
+        // Indexing test files
+        for (String i : new String[] {
+                "00006",
+                "02439"
+            }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                      true);
+        };
+
+        ki.commit();
+
+        
+        Krill k = new Krill(new QueryBuilder("tokens").seg("s:der"));
+        Result kr = k.apply(ki);
+
+        KrillMeta meta = k.getMeta();
+        assertEquals(86, kr.getTotalResults());
+
+        meta.setStartIndex(25);
+        assertNull(kr.getMessage(0));
+        
+        kr = k.apply(ki);
+        assertEquals(86, kr.getTotalResults());
+        assertNull(kr.getMessage(0));
+
+        k = new Krill(new QueryBuilder("tokens").seg("s:der"));
+        meta = k.getMeta();
+        meta.setStartIndex(50);
+        
+        kr = k.apply(ki);
+        assertEquals(86, kr.getTotalResults());
+        assertEquals(kr.getMessage(0).getMessage(), "Some results were cached");
+
+        k = new Krill(new QueryBuilder("tokens").seg("s:die"));
+        meta = k.getMeta();
+        meta.setStartIndex(50);
+        
+        kr = k.apply(ki);
+        assertEquals(59, kr.getTotalResults());
+        assertNull(kr.getMessage(0));
+
+        k = new Krill(new QueryBuilder("tokens").seg("s:Buchstabe"));
+        meta = k.getMeta();
+        meta.setStartIndex(50);
+        
+        kr = k.apply(ki);
+        assertEquals(12, kr.getTotalResults());
+        assertNull(kr.getMessage(0));        
+
+        kr = k.apply(ki);
+        assertEquals(12, kr.getTotalResults());
+        assertEquals(kr.getMessage(0).getMessage(), "Some results were cached");
+    };
+
+    
 
     /**
      * This is a Schreibgebrauch ressource that didn't work for

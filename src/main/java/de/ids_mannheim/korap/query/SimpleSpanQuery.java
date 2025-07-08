@@ -428,7 +428,10 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
     /** {@inheritDoc} */
     @Override
     public int hashCode () {
-        int hc = firstClause.hashCode();
+        int hc = 0;
+        if (firstClause != null)
+            hc += firstClause.hashCode();
+
         if (secondClause != null) {
             hc += secondClause.hashCode();
         }
