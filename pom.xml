@@ -163,6 +163,13 @@
       <version>1.1</version>
     </dependency>
 
+    <!-- Caffeine -->
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+      <version>3.1.8</version>
+    </dependency>
+
     <!-- Jersey -->
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
