@@ -1,3 +1,5 @@
+    - [performance] Add leaf cache. (diewald)
+
 0.64.5 2025-12-03
     - [maintenance] Update to Java 21 (diewald)
     - [enhancement] Alter vcNamePattern to allow system VC names with less 

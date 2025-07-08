@@ -35,7 +35,7 @@
 
   <groupId>de.ids-mannheim.korap.krill</groupId>
   <artifactId>Krill</artifactId>
-  <version>0.64.5</version>
+  <version>0.64.6</version>
   <packaging>jar</packaging>
 
   <name>Krill</name>
@@ -161,6 +161,13 @@
       <groupId>net.sf.jsr107cache</groupId>
       <artifactId>jsr107cache</artifactId>
       <version>1.1</version>
+    </dependency>
+
+    <!-- Caffeine -->
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+      <version>3.1.8</version>
     </dependency>
 
     <!-- Jersey -->
