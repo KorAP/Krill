@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ac024fc_59f7f77c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-07-09T14:04:53Z",
+      "side": 1,
+      "message": "I am not sure I fully understand it, but it works fine.",
+      "revId": "66088ac14c8bb811cd4005697b404b7df98e7c79",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72eafaf9_f0ea0857",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-07-09T14:04:53Z",
+      "side": 1,
+      "message": "Is that required?",
+      "range": {
+        "startLine": 275,
+        "startChar": 13,
+        "endLine": 275,
+        "endChar": 30
+      },
+      "revId": "66088ac14c8bb811cd4005697b404b7df98e7c79",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a39c2fac_e6f631f2",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-07-09T14:04:53Z",
+      "side": 1,
+      "message": "Shouldn\u0027t that be set in cleanup()?",
+      "range": {
+        "startLine": 277,
+        "startChar": 16,
+        "endLine": 277,
+        "endChar": 35
+      },
+      "revId": "66088ac14c8bb811cd4005697b404b7df98e7c79",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
