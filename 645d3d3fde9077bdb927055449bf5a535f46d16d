@@ -22,6 +22,30 @@
       },
       "revId": "645d3d3fde9077bdb927055449bf5a535f46d16d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e1736bcf_a0885da6",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillIndex.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1549,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-07-10T09:13:48Z",
+      "side": 1,
+      "message": "If I understand it correctly, caffeine uses hashCode of the key, so - a very small chance of collisions already is calculated. Do you think it could be a real problem with a small (64mb) cache?",
+      "parentUuid": "a93eec0d_5dc0d38a",
+      "range": {
+        "startLine": 1549,
+        "startChar": 24,
+        "endLine": 1549,
+        "endChar": 40
+      },
+      "revId": "645d3d3fde9077bdb927055449bf5a535f46d16d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
