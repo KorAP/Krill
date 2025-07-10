@@ -46,6 +46,30 @@
       },
       "revId": "645d3d3fde9077bdb927055449bf5a535f46d16d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "89da2d87_be38a507",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillIndex.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1549,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2025-07-10T10:51:00Z",
+      "side": 1,
+      "message": "Potential problem is that similar SpanQuery objects would have the same hashcode and thus the same cache key. \n\nThis has happened in Kustvakt for some queries that have slight property differences, e.g. pubDate in 1976 and pubDate in 1975. That was the cause of an issue reported by Rainer regarding inconsistency of the number of search results. https://github.com/KorAP/Kustvakt/issues/774",
+      "parentUuid": "e1736bcf_a0885da6",
+      "range": {
+        "startLine": 1549,
+        "startChar": 24,
+        "endLine": 1549,
+        "endChar": 40
+      },
+      "revId": "645d3d3fde9077bdb927055449bf5a535f46d16d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
