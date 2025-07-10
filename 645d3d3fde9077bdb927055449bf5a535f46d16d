@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a93eec0d_5dc0d38a",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillIndex.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1549,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2025-07-10T08:56:40Z",
+      "side": 1,
+      "message": "I would suggest getting a hashcode from query string instead of object because similar objects might get the same hashcode.",
+      "range": {
+        "startLine": 1549,
+        "startChar": 24,
+        "endLine": 1549,
+        "endChar": 40
+      },
+      "revId": "645d3d3fde9077bdb927055449bf5a535f46d16d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
