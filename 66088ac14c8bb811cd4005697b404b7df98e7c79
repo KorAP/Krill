@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1558e9d7_af0e169d",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2025-07-10T07:30:04Z",
+      "side": 1,
+      "message": "Yes because the vcToCleanUp set should not be updated during clean up.",
+      "parentUuid": "72eafaf9_f0ea0857",
+      "range": {
+        "startLine": 275,
+        "startChar": 13,
+        "endLine": 275,
+        "endChar": 30
+      },
+      "revId": "66088ac14c8bb811cd4005697b404b7df98e7c79",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a39c2fac_e6f631f2",
         "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
         "patchSetId": 2
@@ -54,6 +78,30 @@
       "writtenOn": "2025-07-09T14:04:53Z",
       "side": 1,
       "message": "Shouldn\u0027t that be set in cleanup()?",
+      "range": {
+        "startLine": 277,
+        "startChar": 16,
+        "endLine": 277,
+        "endChar": 35
+      },
+      "revId": "66088ac14c8bb811cd4005697b404b7df98e7c79",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d5e0b4e_05afb3b1",
+        "filename": "src/main/java/de/ids_mannheim/korap/cache/VirtualCorpusCache.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 277,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2025-07-10T07:30:04Z",
+      "side": 1,
+      "message": "I suppose it is more visible here instead of within a method.",
+      "parentUuid": "a39c2fac_e6f631f2",
       "range": {
         "startLine": 277,
         "startChar": 16,
