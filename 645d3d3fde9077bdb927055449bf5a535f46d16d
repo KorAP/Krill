@@ -70,6 +70,30 @@
       },
       "revId": "645d3d3fde9077bdb927055449bf5a535f46d16d",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94ed3063_3e90a036",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillIndex.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 1549,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-07-10T11:58:45Z",
+      "side": 1,
+      "message": "Oh - I remember! You are right. I guess that caffeine uses the hashcode of the key may mean that they also generate a checksum stored in the cache to ensure the cache is valid. So we should try not to use fingerprints - but the real data. I will change that!",
+      "parentUuid": "89da2d87_be38a507",
+      "range": {
+        "startLine": 1549,
+        "startChar": 24,
+        "endLine": 1549,
+        "endChar": 40
+      },
+      "revId": "645d3d3fde9077bdb927055449bf5a535f46d16d",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
