@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1383a89_ee4ff303",
+        "filename": "src/main/java/de/ids_mannheim/korap/KrillIndex.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 1519,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2025-07-11T07:36:43Z",
+      "side": 1,
+      "message": "If you like, it can also be hashed. \n\nquery.toString().hashCode()\n\nWe just shouldn\u0027t hash an object but a string is fine.",
+      "range": {
+        "startLine": 1519,
+        "startChar": 55,
+        "endLine": 1519,
+        "endChar": 71
+      },
+      "revId": "82465e897c5070f0ab7e8afa82f15f860b4a9acd",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
