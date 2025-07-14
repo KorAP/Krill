@@ -30,6 +30,13 @@ public class TestIndexer {
     private static File outputDirectory2 = new File("test-index2");
     private static File outputDirectory3 = new File("test-output");
     private static File outputDirectory4 = new File("test-output-1");
+    private static File zipIndexDirectory = new File("test-zip-index");
+    private static File zipIndexAddDirectory = new File("test-zip-index-add");
+    private static File mixedIndexDirectory = new File("test-mixed-index");
+    private static File multipleZipIndexDirectory = new File("test-multiple-zip-index");
+    private static File invalidZipIndexDirectory = new File("test-invalid-zip-index");
+    private static File mixedValidInvalidIndexDirectory = new File("test-mixed-valid-invalid-index");
+    private static File mixedContentZipIndexDirectory = new File("test-mixed-content-zip-index");
 
     @Test
     public void testArguments () throws IOException {
@@ -126,6 +133,68 @@ public class TestIndexer {
         tempPropertiesFile.delete();
     }
 
+    @Test
+    public void testZipFileInput () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/rei/rei_sample_krill.zip",
+                                    "-o", "test-zip-index"});
+        assertTrue(outputStream.toString().startsWith("Added or updated 3 files."));
+    }
+
+    @Test
+    public void testZipFileWithAdding () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/rei/rei_sample_krill.zip",
+                                    "-o", "test-zip-index-add",
+                                    "-a"});
+        assertTrue(outputStream.toString().startsWith("Added 3 files."));
+    }
+
+    @Test
+    public void testMixedDirectoryAndZipInput () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/bzk;src/test/resources/rei/rei_sample_krill.zip",
+                                    "-o", "test-mixed-index"});
+        assertTrue(outputStream.toString().startsWith("Added or updated 4 files."));
+    }
+
+    @Test
+    public void testMultipleZipFiles () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/rei/rei_sample_krill.zip;src/test/resources/rei/rei_sample_krill.zip",
+                                    "-o", "test-multiple-zip-index"});
+        // Should process 6 files total (3 from each zip)
+        assertTrue(outputStream.toString().startsWith("Added or updated 6 files."));
+    }
+
+    @Test
+    public void testInvalidZipFile () throws IOException {
+        // Test with a non-existent zip file
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/nonexistent.zip",
+                                    "-o", "test-invalid-zip-index"});
+        // Should handle gracefully and process 0 files
+        assertTrue(outputStream.toString().startsWith("Added or updated 0 file"));
+    }
+
+    @Test
+    public void testMixedValidAndInvalidInputs () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/bzk;src/test/resources/nonexistent.zip;src/test/resources/rei/rei_sample_krill.zip",
+                                    "-o", "test-mixed-valid-invalid-index"});
+        // Should process files from valid inputs only (1 from bzk + 3 from zip = 4 files)
+        assertTrue(outputStream.toString().startsWith("Added"));
+    }
+
+    @Test
+    public void testMixedContentZipFile () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/rei/mixed_test.zip",
+                                    "-o", "test-mixed-content-zip-index"});
+        // Should process 2 JSON files (1 plain + 1 gzipped) and skip the .txt file
+        assertTrue(outputStream.toString().startsWith("Added"));
+    }
+
     @Before
     public void setOutputStream () {
         System.setOut(new PrintStream(outputStream));
@@ -138,39 +207,35 @@ public class TestIndexer {
 
     @AfterClass
     public static void cleanup() {
-        if (outputDirectory.exists()) {
-            deleteFile(outputDirectory);
-        }
-        if (outputDirectory2.exists()) {
-            deleteFile(outputDirectory2);
-        }
-        if (outputDirectory3.exists()) {
-            deleteFile(outputDirectory3);
-        }
-        if (outputDirectory4.exists()) {
-            deleteFile(outputDirectory4);
+        File[] directories = {
+            outputDirectory, outputDirectory2, outputDirectory3, outputDirectory4,
+            zipIndexDirectory, zipIndexAddDirectory, mixedIndexDirectory,
+            multipleZipIndexDirectory, invalidZipIndexDirectory, mixedValidInvalidIndexDirectory,
+            mixedContentZipIndexDirectory
+        };
+        
+        for (File dir : directories) {
+            if (dir.exists()) {
+                deleteFile(dir);
+            }
         }
     }
 
     
     @Before
     public void cleanOutputDirectory () {
-
-        if (outputDirectory.exists()) {
-            logger.debug("Output directory exists");
-            deleteFile(outputDirectory);
-        }
-        if (outputDirectory2.exists()) {
-            logger.debug("Output directory 2 exists");
-            deleteFile(outputDirectory2);
-        }
-        if (outputDirectory3.exists()) {
-            logger.debug("Output directory 3 exists");
-            deleteFile(outputDirectory3);
-        }
-        if (outputDirectory4.exists()) {
-            logger.debug("Output directory 4 exists");
-            deleteFile(outputDirectory4);
+        File[] directories = {
+            outputDirectory, outputDirectory2, outputDirectory3, outputDirectory4,
+            zipIndexDirectory, zipIndexAddDirectory, mixedIndexDirectory,
+            multipleZipIndexDirectory, invalidZipIndexDirectory, mixedValidInvalidIndexDirectory,
+            mixedContentZipIndexDirectory
+        };
+        
+        for (File dir : directories) {
+            if (dir.exists()) {
+                logger.debug("Output directory " + dir.getName() + " exists");
+                deleteFile(dir);
+            }
         }
     }
 

@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -34,7 +38,9 @@ import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRIN
  * this tool may be more suitable for your needs
  * (especially as it is way faster).
  * <br><br>
- * Input directories should contain files in the json.gz format. Files
+ * Input can be directories containing files in the json.gz format, or
+ * zip files containing .json or .json.gz files. The indexer automatically
+ * detects whether each input path is a directory or zip file. Files
  * of other formats will be skipped or not indexed. The output
  * directory can be specified in the config file. See
  * src/main/resources/krill.properties.info to create a config file.
@@ -42,11 +48,16 @@ import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRIN
  * <pre>
  * Usage:
  * 
- * java -jar Krill-Indexer.jar -c [propfile] -i [input directories] -o
+ * java -jar Krill-Indexer.jar -c [propfile] -i [input paths] -o
  * [output directory]
  * 
- * java -jar Krill-Indexer.jar --config [propfile] --input [input
- * directories] --output [output directory]
+ * java -jar Krill-Indexer.jar --config [propfile] --input [input paths]
+ * --output [output directory]
+ * 
+ * Input paths can be:
+ * - Directories containing .json.gz files
+ * - Zip files containing .json or .json.gz files
+ * - Mix of both, separated by semicolons
  * </pre>
  * 
  * 
@@ -61,6 +72,7 @@ public class Indexer {
     private static String path = null;
     private static boolean addInsteadOfUpsert = false;
     private Pattern jsonFilePattern;
+    private Pattern plainJsonFilePattern;
 
     // Init logger
     private final static Logger log = LoggerFactory.getLogger(Indexer.class);
@@ -90,6 +102,7 @@ public class Indexer {
         this.commitCount = Integer.parseInt(commitCount);
 
         jsonFilePattern = Pattern.compile(".*\\.json\\.gz$");
+        plainJsonFilePattern = Pattern.compile(".*\\.json$");
     }
 
 
@@ -150,6 +163,77 @@ public class Indexer {
 
 
     /**
+     * Parse a zip file for document files.
+     * 
+     * @param zipFile
+     *            The {@link File} zip file containing
+     *            JSON documents (plain .json or gzipped .json.gz) to index.
+     */
+    private void parseZip (File zipFile) {
+        try (ZipFile zip = new ZipFile(zipFile)) {
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            
+            while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                
+                // Skip directories
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                
+                String entryName = entry.getName();
+                Matcher gzipMatcher = jsonFilePattern.matcher(entryName);
+                Matcher plainMatcher = plainJsonFilePattern.matcher(entryName);
+                
+                boolean isGzipped = gzipMatcher.find();
+                boolean isPlainJson = plainMatcher.find();
+                
+                if (isGzipped || isPlainJson) {
+                    try (InputStream entryStream = zip.getInputStream(entry)) {
+                        if (addInsteadOfUpsert) {
+                            log.info("{} Add {} from zip {} to the index. ", 
+                                    this.count, entryName, zipFile.getName());
+                            if (this.index.addDoc(entryStream, isGzipped) == null) {
+                                log.warn("fail.");
+                                continue;
+                            }
+                        }
+                        else {
+                            log.info("{} Add or update {} from zip {} to the index. ", 
+                                    this.count, entryName, zipFile.getName());
+                            if (this.index.upsertDoc(entryStream, isGzipped) == null) {
+                                log.warn("fail.");
+                                continue;
+                            }
+                        }
+                        
+                        this.count++;
+                        if (DEBUG) {
+                            log.debug("Finished adding files. (" + count + ").");
+                        }
+
+                        // Commit in case the commit count is reached
+                        if ((this.count % this.commitCount) == 0) {
+                            this.commit();
+                        }
+                    }
+                    catch (IOException e) {
+                        log.error("Error reading entry " + entryName + " from zip file " + zipFile.getName(), e);
+                    }
+                }
+                else {
+                    log.warn("Skip " + entryName + " from zip " + zipFile.getName()
+                            + " since it does not have .json or .json.gz format.");
+                }
+            }
+        }
+        catch (IOException e) {
+            log.error("Error reading zip file " + zipFile.getName(), e);
+        }
+    }
+
+
+    /**
      * Commit changes to the index.
      */
     private void commit () {
@@ -185,10 +269,11 @@ public class Indexer {
                         + KrillProperties.DEFAULT_PROPERTIES_LOCATION
                         + ").")
                 .hasArg().argName("properties file").required().build());
-        options.addOption(Option.builder("i").longOpt("inputDir")
-                .desc("input directories separated by semicolons. The input files "
-                        + "have to be in <filename>.json.gz format. ")
-                .hasArgs().argName("input directories").required()
+        options.addOption(Option.builder("i").longOpt("input")
+                .desc("input paths separated by semicolons. Can be directories containing "
+                        + "<filename>.json.gz files, or zip files containing .json or .json.gz files. "
+                        + "The indexer will automatically detect the type.")
+                .hasArgs().argName("input paths").required()
                 .valueSeparator(Character.valueOf(';')).build());
         options.addOption(Option.builder("o").longOpt("outputDir")
                 .desc("index output directory (defaults to "
@@ -201,14 +286,15 @@ public class Indexer {
         CommandLineParser parser = new DefaultParser();
 
         String propFile = null;
-        String[] inputDirectories = null;
+        String[] inputPaths = null;
         try {
             CommandLine cmd = parser.parse(options, argv);
             log.info("Configuration file: " + cmd.getOptionValue("c"));
             propFile = cmd.getOptionValue("c");
-            log.info("Input directories: "
+            
+            log.info("Input paths: "
                     + StringUtils.join(cmd.getOptionValues("i"), ";"));
-            inputDirectories = cmd.getOptionValues("i");
+            inputPaths = cmd.getOptionValues("i");
 
             if (cmd.hasOption("o")) {
                 log.info("Output directory: " + cmd.getOptionValue("o"));
@@ -222,7 +308,7 @@ public class Indexer {
         catch (MissingOptionException e) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(
-                    "Krill indexer\n java -jar -c <properties file> -i <input directories> "
+                    "Krill indexer\n java -jar -c <properties file> -i <input paths> "
                             + "[-o <output directory> -a]",
                     options);
             return;
@@ -245,12 +331,21 @@ public class Indexer {
                 indexer.index.setMaxStringLength(KrillProperties.maxTextSize);
             }
 
-            // Iterate over list of directories
-            for (String arg : inputDirectories) {
-                log.info("Indexing files in " + arg);
+            // Iterate over list of input paths (auto-detect directories vs zip files)
+            for (String arg : inputPaths) {
                 File f = new File(arg);
-                if (f.isDirectory())
+                
+                if (f.isDirectory()) {
+                    log.info("Indexing files in directory " + arg);
                     indexer.parse(f);
+                }
+                else if (f.isFile() && f.getName().toLowerCase().endsWith(".zip")) {
+                    log.info("Indexing files in zip " + arg);
+                    indexer.parseZip(f);
+                }
+                else {
+                    log.warn("Skipping " + arg + " - not a valid directory or zip file");
+                }
             }
             indexer.closeIndex();
 
