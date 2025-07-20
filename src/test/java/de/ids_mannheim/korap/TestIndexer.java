@@ -37,6 +37,10 @@ public class TestIndexer {
     private static File invalidZipIndexDirectory = new File("test-invalid-zip-index");
     private static File mixedValidInvalidIndexDirectory = new File("test-mixed-valid-invalid-index");
     private static File mixedContentZipIndexDirectory = new File("test-mixed-content-zip-index");
+    private static File tarIndexDirectory = new File("test-tar-index");
+    private static File tarGzIndexDirectory = new File("test-tar-gz-index");
+    private static File multipleTarIndexDirectory = new File("test-multiple-tar-index");
+    private static File mixedZipTarIndexDirectory = new File("test-mixed-zip-tar-index");
 
     @Test
     public void testArguments () throws IOException {
@@ -193,6 +197,40 @@ public class TestIndexer {
                                     "-o", "test-mixed-content-zip-index"});
         // Should process 2 JSON files (1 plain + 1 gzipped) and skip the .txt file
         assertTrue(outputStream.toString().startsWith("Added"));
+    }
+
+    @Test
+    public void testTarFileInput () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/rei/rei_sample_krill.tar",
+                                    "-o", "test-tar-index"});
+        assertTrue(outputStream.toString().contains("Added or updated 3 files"));
+    }
+
+    @Test
+    public void testTarGzFileInput () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/rei/rei_sample_krill.tar.gz",
+                                    "-o", "test-tar-gz-index"});
+        assertTrue(outputStream.toString().contains("Added or updated 3 files"));
+    }
+
+    @Test
+    public void testMultipleTarFiles () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/rei/rei_sample_krill.tar;src/test/resources/rei/rei_sample_krill.tar.gz",
+                                    "-o", "test-multiple-tar-index"});
+        // Should process 6 files total (3 from each tar)
+        assertTrue(outputStream.toString().contains("Added or updated 6 files"));
+    }
+
+    @Test
+    public void testMixedZipAndTarFiles () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                                    "-i", "src/test/resources/rei/rei_sample_krill.zip;src/test/resources/rei/rei_sample_krill.tar",
+                                    "-o", "test-mixed-zip-tar-index"});
+        // Should process 6 files total (3 from zip + 3 from tar)
+        assertTrue(outputStream.toString().contains("Added or updated 6 files"));
     }
 
     @Before
