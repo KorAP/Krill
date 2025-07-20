@@ -13,6 +13,10 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -39,8 +43,8 @@ import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRIN
  * (especially as it is way faster).
  * <br><br>
  * Input can be directories containing files in the json.gz format, or
- * zip files containing .json or .json.gz files. The indexer automatically
- * detects whether each input path is a directory or zip file. Files
+ * zip/tar files containing .json or .json.gz files. The indexer automatically
+ * detects whether each input path is a directory, zip file, or tar file. Files
  * of other formats will be skipped or not indexed. The output
  * directory can be specified in the config file. See
  * src/main/resources/krill.properties.info to create a config file.
@@ -57,7 +61,8 @@ import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRIN
  * Input paths can be:
  * - Directories containing .json.gz files
  * - Zip files containing .json or .json.gz files
- * - Mix of both, separated by semicolons
+ * - Tar files (including .tar.gz) containing .json or .json.gz files
+ * - Mix of any of the above, separated by semicolons
  * </pre>
  * 
  * 
@@ -161,6 +166,90 @@ public class Indexer {
         }
     }
 
+
+    /**
+     * Parse a tar file for document files.
+     * 
+     * @param tarFile
+     *            The {@link File} tar file containing
+     *            JSON documents (plain .json or gzipped .json.gz) to index.
+     */
+    private void parseTar (File tarFile) {
+        try {
+            InputStream fileInputStream = new FileInputStream(tarFile);
+            
+            // Check if it's a gzipped tar file
+            if (tarFile.getName().toLowerCase().endsWith(".tar.gz") || 
+                tarFile.getName().toLowerCase().endsWith(".tgz")) {
+                fileInputStream = new GzipCompressorInputStream(fileInputStream);
+            }
+            
+            try (TarArchiveInputStream tarInputStream = new TarArchiveInputStream(fileInputStream)) {
+                TarArchiveEntry entry;
+                
+                while ((entry = tarInputStream.getNextTarEntry()) != null) {
+                    // Skip directories
+                    if (entry.isDirectory()) {
+                        continue;
+                    }
+                    
+                    String entryName = entry.getName();
+                    Matcher gzipMatcher = jsonFilePattern.matcher(entryName);
+                    Matcher plainMatcher = plainJsonFilePattern.matcher(entryName);
+                    
+                    boolean isGzipped = gzipMatcher.find();
+                    boolean isPlainJson = plainMatcher.find();
+                    
+                    if (isGzipped || isPlainJson) {
+                        // Read the entry content into a byte array to avoid stream closure issues
+                        byte[] entryData = new byte[(int) entry.getSize()];
+                        int totalRead = 0;
+                        while (totalRead < entryData.length) {
+                            int bytesRead = tarInputStream.read(entryData, totalRead, entryData.length - totalRead);
+                            if (bytesRead == -1) break;
+                            totalRead += bytesRead;
+                        }
+                        
+                        try (InputStream entryStream = new java.io.ByteArrayInputStream(entryData)) {
+                            if (addInsteadOfUpsert) {
+                                log.info("{} Add {} from tar {} to the index. ", 
+                                        this.count, entryName, tarFile.getName());
+                                if (this.index.addDoc(entryStream, isGzipped) == null) {
+                                    log.warn("fail.");
+                                    continue;
+                                }
+                            }
+                            else {
+                                log.info("{} Add or update {} from tar {} to the index. ", 
+                                        this.count, entryName, tarFile.getName());
+                                if (this.index.upsertDoc(entryStream, isGzipped) == null) {
+                                    log.warn("fail.");
+                                    continue;
+                                }
+                            }
+                            
+                            this.count++;
+                            if (DEBUG) {
+                                log.debug("Finished adding files. (" + count + ").");
+                            }
+
+                            // Commit in case the commit count is reached
+                            if ((this.count % this.commitCount) == 0) {
+                                this.commit();
+                            }
+                        }
+                    }
+                    else {
+                        log.warn("Skip " + entryName + " from tar " + tarFile.getName()
+                                + " since it does not have .json or .json.gz format.");
+                    }
+                }
+            }
+        }
+        catch (IOException e) {
+            log.error("Error reading tar file " + tarFile.getName(), e);
+        }
+    }
 
     /**
      * Parse a zip file for document files.
@@ -271,7 +360,8 @@ public class Indexer {
                 .hasArg().argName("properties file").required().build());
         options.addOption(Option.builder("i").longOpt("input")
                 .desc("input paths separated by semicolons. Can be directories containing "
-                        + "<filename>.json.gz files, or zip files containing .json or .json.gz files. "
+                        + "<filename>.json.gz files, zip files containing .json or .json.gz files, "
+                        + "or tar files (including .tar.gz) containing .json or .json.gz files. "
                         + "The indexer will automatically detect the type.")
                 .hasArgs().argName("input paths").required()
                 .valueSeparator(Character.valueOf(';')).build());
@@ -331,7 +421,7 @@ public class Indexer {
                 indexer.index.setMaxStringLength(KrillProperties.maxTextSize);
             }
 
-            // Iterate over list of input paths (auto-detect directories vs zip files)
+            // Iterate over list of input paths (auto-detect directories vs zip/tar files)
             for (String arg : inputPaths) {
                 File f = new File(arg);
                 
@@ -343,8 +433,14 @@ public class Indexer {
                     log.info("Indexing files in zip " + arg);
                     indexer.parseZip(f);
                 }
+                else if (f.isFile() && (f.getName().toLowerCase().endsWith(".tar") || 
+                                       f.getName().toLowerCase().endsWith(".tar.gz") ||
+                                       f.getName().toLowerCase().endsWith(".tgz"))) {
+                    log.info("Indexing files in tar " + arg);
+                    indexer.parseTar(f);
+                }
                 else {
-                    log.warn("Skipping " + arg + " - not a valid directory or zip file");
+                    log.warn("Skipping " + arg + " - not a valid directory, zip file, or tar file");
                 }
             }
             indexer.closeIndex();
