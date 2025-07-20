@@ -1,6 +1,7 @@
-0.64.2 2025-07-02
+0.64.2 2025-07-25
     - [bugfix] Restore rewrites in Meta. (diewald)
     - [bugfix] Fixed deadlock on synchronized vcToCleanUp. (margaretha)
+    - [feature] Support tar files as indexer input (kupietz)
 
 0.64.1 2025-05-26
     - [bugfix] Ignore line endings in indexer tests. (diewald)
