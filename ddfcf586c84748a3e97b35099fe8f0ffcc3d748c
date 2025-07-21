@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80495aa7_45b2d4bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-07-21T14:59:42Z",
+      "side": 1,
+      "message": "Tests working fine with all dependency updates fetched from dependabot",
+      "revId": "ddfcf586c84748a3e97b35099fe8f0ffcc3d748c",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
