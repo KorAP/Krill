@@ -16,6 +16,46 @@
       "message": "NOTE: based on zip input addition",
       "revId": "5756a8ed1cf57d16387deef642ad1773c43a8797",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6f9dfcc_d90ebed1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-07-21T13:41:16Z",
+      "side": 1,
+      "message": "Please update Changes file.",
+      "revId": "5756a8ed1cf57d16387deef642ad1773c43a8797",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8817dbd_2b62e290",
+        "filename": "src/main/java/de/ids_mannheim/korap/index/Indexer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-07-21T13:41:16Z",
+      "side": 1,
+      "message": "Doesn\u0027t make much sense in practice, but I don\u0027t mind.",
+      "range": {
+        "startLine": 182,
+        "startChar": 12,
+        "endLine": 185,
+        "endChar": 13
+      },
+      "revId": "5756a8ed1cf57d16387deef642ad1773c43a8797",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
