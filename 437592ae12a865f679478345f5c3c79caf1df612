@@ -22,6 +22,30 @@
       },
       "revId": "437592ae12a865f679478345f5c3c79caf1df612",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14d9c20f_ccff6c75",
+        "filename": "src/test/java/de/ids_mannheim/korap/TestIndexer.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-07-24T08:04:30Z",
+      "side": 1,
+      "message": "Thanks! I have fixed the whole test borked file creation in TestIndex, now. All temp files are now in dirs inside a base temp dir and the base temp dir is deleted with all contens after the tests.",
+      "parentUuid": "8e934002_6215c5c9",
+      "range": {
+        "startLine": 40,
+        "startChar": 3,
+        "endLine": 43,
+        "endChar": 89
+      },
+      "revId": "437592ae12a865f679478345f5c3c79caf1df612",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
