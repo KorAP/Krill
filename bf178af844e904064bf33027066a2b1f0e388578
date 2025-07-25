@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "471f3e25_4dbd557b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-07-25T10:43:43Z",
+      "side": 1,
+      "message": "It\u0027s better to keep it contained in the changeset.",
+      "revId": "bf178af844e904064bf33027066a2b1f0e388578",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
