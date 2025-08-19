@@ -677,7 +677,7 @@ public class TestKrillCollectionIndex {
 		Result result = krill.apply(ki);
 
 		assertEquals(StatusCodes.MISSING_COLLECTION, result.getError(0).getCode());
-		assertTrue(result.getError(0).getMessage().startsWith("Collection is not found"));
+		assertTrue(result.getError(0).getMessage().startsWith("VC is not found"));
 	};
 	
     @Test

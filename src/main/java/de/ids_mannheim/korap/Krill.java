@@ -211,7 +211,17 @@ public class Krill extends Response {
 
         // Parse "collection" or "collections" attribute
         try {
-            if (json.has("collection")) {
+        	if (json.has("corpus")) {
+                final JsonNode collNode = json.get("corpus");
+
+                // TODO: Temporary
+                if (collNode.fieldNames().hasNext()) {
+                    this.setCollection(
+                            new KrillCollection().fromKoral(collNode));
+                };
+            }
+        	// EM: legacy
+        	else if (json.has("collection")) {
                 final JsonNode collNode = json.get("collection");
 
                 // TODO: Temporary
