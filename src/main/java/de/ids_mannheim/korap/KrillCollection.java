@@ -104,6 +104,10 @@ public final class KrillCollection extends Notifications implements IndexInfo {
             if (json.has("errors") && json.get("errors").size() > 0) {
                 this.addError(StatusCodes.INVALID_QUERY, "Json has errors.");
             }
+            else if (json.has("corpus")) {
+                this.fromKoral(json.get("corpus"));
+            }
+            // EM: legacy
             else if (json.has("collection")) {
                 this.fromKoral(json.get("collection"));
             }
@@ -113,7 +117,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
             }
             else {
                 this.addError(StatusCodes.MISSING_COLLECTION,
-                        "Collection is not found");
+                        "VC is not found");
                 this.fromBuilder(this.build().nothing());
             }
         }
@@ -216,7 +220,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
         }
         else{
             this.addError(StatusCodes.MISSING_COLLECTION,
-                    "Collection is not found " + fileName);
+                    "VC is not found " + fileName);
 			return this;
         };
 
@@ -251,6 +255,10 @@ public final class KrillCollection extends Notifications implements IndexInfo {
     private CollectionBuilder.Interface _fromKoral (JsonNode json)
 		throws QueryException {
 
+    	if (json.has("corpus")) {
+			return this._fromKoral(json.at("/corpus"));
+		};
+		
 		if (json.has("collection")) {
 			return this._fromKoral(json.at("/collection"));
 		};

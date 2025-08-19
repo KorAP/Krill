@@ -1,3 +1,7 @@
+0.64.3
+	- [enhancement] Add support for "corpus" in deserialization, "collection" 
+	  is marked as legacy (margaretha). 
+
 0.64.2 2025-07-02
     - [bugfix] Restore rewrites in Meta. (diewald)
     - [bugfix] Fixed deadlock on synchronized vcToCleanUp. (margaretha)

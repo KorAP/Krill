@@ -30,7 +30,7 @@ public class TestInvalidVcId {
             VirtualCorpusCache.store(vcId, ki);
         });
         assertEquals("de.ids_mannheim.korap.util.QueryException: "
-                + "Collection is not found queries/collections/named-vcs/snx.jsonld",
+                + "VC is not found queries/collections/named-vcs/snx.jsonld",
                 ex.getMessage());
     }
 
@@ -46,7 +46,7 @@ public class TestInvalidVcId {
         Message m = result.getError(0);
         assertEquals(StatusCodes.MISSING_COLLECTION, m.getCode());
         assertEquals(
-                "Collection is not found queries/collections/named-vcs/unknown-vc.jsonld",
+                "VC is not found queries/collections/named-vcs/unknown-vc.jsonld",
                 m.getMessage());
         assertEquals(0, result.getTotalResults());
     }
