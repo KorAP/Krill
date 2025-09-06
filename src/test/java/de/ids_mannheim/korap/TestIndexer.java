@@ -235,6 +235,30 @@ public class TestIndexer {
         assertTrue(outputStream.toString().contains("Added or updated 6 files"));
     }
 
+    @Test
+    public void testProgressOption () throws IOException {
+        java.io.PrintStream originalErr = System.err;
+        ByteArrayOutputStream errStream = new ByteArrayOutputStream();
+        System.setErr(new java.io.PrintStream(errStream));
+        try {
+            Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                    "-i", "src/test/resources/bzk",
+                    "-o", getTestOutputPath("test-progress-index"),
+                    "--progress"});
+        }
+        finally {
+            System.err.flush();
+            System.setErr(originalErr);
+        }
+
+        String progressOutput = errStream.toString();
+        // Expect progress bar renders with bracketed bar, percentage, count, and ETA
+        assertTrue(progressOutput.contains("[==="));
+        assertTrue(progressOutput.contains("100.0%"));
+        assertTrue(progressOutput.contains("1/1"));
+        assertTrue(progressOutput.contains("ETA"));
+    }
+
     @Before
     public void setOutputStream () {
         System.setOut(new PrintStream(outputStream));
