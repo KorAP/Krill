@@ -114,10 +114,15 @@ public class Indexer {
     }
 
     private void initProgress (long total) {
-        if (total > 0) {
-            this.progressEnabled = true;
-            this.progressBar = new SimpleProgressBar(total);
-        }
+        this.progressEnabled = true;
+        this.progressBar = new SimpleProgressBar(total);
+        this.progressBar.start();
+    }
+
+    private void initProgressIndeterminate () {
+        this.progressEnabled = true;
+        this.progressBar = new SimpleProgressBar(0);
+        this.progressBar.start();
     }
 
     private void stepProgress () {
@@ -459,12 +464,19 @@ public class Indexer {
                 indexer.index.setMaxStringLength(KrillProperties.maxTextSize);
             }
 
-            // Initialize progress if requested
+            // Initialize progress bar and start counting in background if requested
+            Thread counterThread = null;
             if (showProgress) {
-                long total = countTargetFiles(inputPaths);
-                if (total > 0) {
-                    indexer.initProgress(total);
-                }
+                indexer.initProgressIndeterminate();
+                final String[] inputsForCounter = inputPaths;
+                counterThread = new Thread(() -> {
+                    long total = countTargetFiles(inputsForCounter);
+                    if (total > 0 && indexer.progressBar != null) {
+                        indexer.progressBar.setTotal(total);
+                    }
+                }, "krill-indexer-counter");
+                counterThread.setDaemon(true);
+                counterThread.start();
             }
 
             // Iterate over list of input paths (auto-detect directories vs zip/tar files)
@@ -573,32 +585,92 @@ public class Indexer {
         return total;
     }
 
-    // Simple console progress bar with ETA
-    private static class SimpleProgressBar {
-        private final long total;
-        private long current = 0;
+    // Simple console progress bar with ETA; supports indeterminate mode until total is known
+    private static class SimpleProgressBar implements Runnable {
+        private volatile long total; // 0 means indeterminate
+        private volatile long current = 0;
+        private volatile boolean running = false;
+        private volatile boolean finished = false;
         private final long startTimeMs;
         private final int barWidth = 40;
+        private final Thread thread;
+        private int slidePos = 0;
+        private int slideDir = 1; // 1 right, -1 left
 
         SimpleProgressBar (long total) {
             this.total = total;
             this.startTimeMs = System.currentTimeMillis();
-            render();
+            this.thread = new Thread(this, "krill-progress-bar");
+            this.thread.setDaemon(true);
+        }
+
+        void start () {
+            running = true;
+            thread.start();
         }
 
         void step () {
             current++;
-            render();
+        }
+
+        void setTotal (long total) {
+            if (total < 0) total = 0;
+            this.total = total;
         }
 
         void finish () {
-            current = Math.max(current, total);
+            finished = true;
+            running = false;
+            try {
+                thread.join(500);
+            }
+            catch (InterruptedException e) {
+                // ignore
+            }
+            // Final render as completed line if determinate
+            if (total > 0 && current < total) {
+                current = total;
+            }
             render();
             System.err.println();
         }
 
+        @Override
+        public void run () {
+            // periodic render loop
+            while (running && !finished) {
+                render();
+                try {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e) {
+                    // ignore
+                }
+            }
+        }
+
         private void render () {
-            double percent = total > 0 ? (double) current / (double) total : 0d;
+            if (total <= 0) {
+                // indeterminate: sliding bar
+                slidePos += slideDir;
+                if (slidePos >= barWidth - 5) {
+                    slideDir = -1;
+                }
+                else if (slidePos <= 0) {
+                    slideDir = 1;
+                }
+                StringBuilder bar = new StringBuilder(barWidth);
+                for (int i = 0; i < barWidth; i++) bar.append('-');
+                // draw a 5-char slider
+                for (int i = slidePos; i < Math.min(slidePos + 5, barWidth); i++) {
+                    bar.setCharAt(i, '=');
+                }
+                String line = String.format(Locale.US, "\r[%s]   %d processed | ETA calculating...", bar, current);
+                System.err.print(line);
+                return;
+            }
+
+            double percent = (double) current / (double) Math.max(total, 1);
             int filled = (int) Math.round(percent * barWidth);
             StringBuilder bar = new StringBuilder(barWidth);
             for (int i = 0; i < barWidth; i++) {
@@ -610,7 +682,7 @@ public class Indexer {
             double rate = elapsedSec > 0 ? current / elapsedSec : 0.0; // docs/sec
             long etaSec = (rate > 0 && total > current) ? (long) Math.ceil((total - current) / rate) : 0;
 
-            String etaStr = formatDuration(etaSec);
+            String etaStr = (rate > 0) ? formatDuration(etaSec) : "NA";
             String pctStr = String.format(Locale.US, "%5.1f%%", percent * 100.0);
             String rateStr = String.format(Locale.US, "%.1f/s", rate);
 
