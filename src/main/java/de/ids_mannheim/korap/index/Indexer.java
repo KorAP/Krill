@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -73,6 +74,8 @@ public class Indexer {
     private KrillIndex index;
     private int count;
     private int commitCount;
+    private boolean progressEnabled = false;
+    private SimpleProgressBar progressBar;
 
     private static String path = null;
     private static boolean addInsteadOfUpsert = false;
@@ -110,6 +113,25 @@ public class Indexer {
         plainJsonFilePattern = Pattern.compile(".*\\.json$");
     }
 
+    private void initProgress (long total) {
+        if (total > 0) {
+            this.progressEnabled = true;
+            this.progressBar = new SimpleProgressBar(total);
+        }
+    }
+
+    private void stepProgress () {
+        if (this.progressEnabled && this.progressBar != null) {
+            this.progressBar.step();
+        }
+    }
+
+    private void finishProgress () {
+        if (this.progressEnabled && this.progressBar != null) {
+            this.progressBar.finish();
+        }
+    }
+
 
     /**
      * Parse a directory for document files.
@@ -127,7 +149,8 @@ public class Indexer {
 
                 try {
                     if (addInsteadOfUpsert) {
-                        log.info("{} Add {} to the index. ", this.count, file);
+                        if (!progressEnabled)
+                            log.info("{} Add {} to the index. ", this.count, file);
                         if (this.index.addDoc(new FileInputStream(file),
                                               true) == null) {
                             log.warn("fail.");
@@ -135,7 +158,8 @@ public class Indexer {
                         }
                     }
                     else {
-                        log.info("{} Add or update {} to the index. ", this.count, file);
+                        if (!progressEnabled)
+                            log.info("{} Add or update {} to the index. ", this.count, file);
                         if (this.index.upsertDoc(new FileInputStream(file),
                                                  true) == null) {
                             log.warn("fail.");
@@ -154,6 +178,7 @@ public class Indexer {
                         // autocommit initiated by KrillIndex
                         this.commit();
                     }
+                    this.stepProgress();
                 }
                 catch (FileNotFoundException e) {
                     log.error("File " + file + " is not found!");
@@ -212,16 +237,18 @@ public class Indexer {
                         
                         try (InputStream entryStream = new java.io.ByteArrayInputStream(entryData)) {
                             if (addInsteadOfUpsert) {
-                                log.info("{} Add {} from tar {} to the index. ", 
-                                        this.count, entryName, tarFile.getName());
+                                if (!progressEnabled)
+                                    log.info("{} Add {} from tar {} to the index. ", 
+                                            this.count, entryName, tarFile.getName());
                                 if (this.index.addDoc(entryStream, isGzipped) == null) {
                                     log.warn("fail.");
                                     continue;
                                 }
                             }
                             else {
-                                log.info("{} Add or update {} from tar {} to the index. ", 
-                                        this.count, entryName, tarFile.getName());
+                                if (!progressEnabled)
+                                    log.info("{} Add or update {} from tar {} to the index. ", 
+                                            this.count, entryName, tarFile.getName());
                                 if (this.index.upsertDoc(entryStream, isGzipped) == null) {
                                     log.warn("fail.");
                                     continue;
@@ -237,6 +264,7 @@ public class Indexer {
                             if ((this.count % this.commitCount) == 0) {
                                 this.commit();
                             }
+                            this.stepProgress();
                         }
                     }
                     else {
@@ -280,16 +308,18 @@ public class Indexer {
                 if (isGzipped || isPlainJson) {
                     try (InputStream entryStream = zip.getInputStream(entry)) {
                         if (addInsteadOfUpsert) {
-                            log.info("{} Add {} from zip {} to the index. ", 
-                                    this.count, entryName, zipFile.getName());
+                            if (!progressEnabled)
+                                log.info("{} Add {} from zip {} to the index. ", 
+                                        this.count, entryName, zipFile.getName());
                             if (this.index.addDoc(entryStream, isGzipped) == null) {
                                 log.warn("fail.");
                                 continue;
                             }
                         }
                         else {
-                            log.info("{} Add or update {} from zip {} to the index. ", 
-                                    this.count, entryName, zipFile.getName());
+                            if (!progressEnabled)
+                                log.info("{} Add or update {} from zip {} to the index. ", 
+                                        this.count, entryName, zipFile.getName());
                             if (this.index.upsertDoc(entryStream, isGzipped) == null) {
                                 log.warn("fail.");
                                 continue;
@@ -305,6 +335,7 @@ public class Indexer {
                         if ((this.count % this.commitCount) == 0) {
                             this.commit();
                         }
+                        this.stepProgress();
                     }
                     catch (IOException e) {
                         log.error("Error reading entry " + entryName + " from zip file " + zipFile.getName(), e);
@@ -372,11 +403,15 @@ public class Indexer {
         options.addOption(Option.builder("a").longOpt("addInsteadofUpsert")
                 .desc("Always add files to the index, never update")
                 .build());
+        options.addOption(Option.builder().longOpt("progress")
+                .desc("Show progress bar with ETA")
+                .build());
 
         CommandLineParser parser = new DefaultParser();
 
         String propFile = null;
         String[] inputPaths = null;
+        boolean showProgress = false;
         try {
             CommandLine cmd = parser.parse(options, argv);
             log.info("Configuration file: " + cmd.getOptionValue("c"));
@@ -394,12 +429,15 @@ public class Indexer {
             if (cmd.hasOption("a")) {
                 addInsteadOfUpsert = true;
             };
+            if (cmd.hasOption("progress")) {
+                showProgress = true;
+            }
         }
         catch (MissingOptionException e) {
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(
                     "Krill indexer\n java -jar -c <properties file> -i <input paths> "
-                            + "[-o <output directory> -a]",
+                            + "[-o <output directory> -a --progress]",
                     options);
             return;
         }
@@ -414,11 +452,19 @@ public class Indexer {
         try {
             // Get indexer object
             Indexer indexer = new Indexer(prop);
-            
+
             // Apply max text size from configuration
             if (KrillProperties.maxTextSize > DEFAULT_MAX_STRING_LEN) {
                 log.info("Setting max text length to " + KrillProperties.maxTextSize);
                 indexer.index.setMaxStringLength(KrillProperties.maxTextSize);
+            }
+
+            // Initialize progress if requested
+            if (showProgress) {
+                long total = countTargetFiles(inputPaths);
+                if (total > 0) {
+                    indexer.initProgress(total);
+                }
             }
 
             // Iterate over list of input paths (auto-detect directories vs zip/tar files)
@@ -443,6 +489,7 @@ public class Indexer {
                     log.warn("Skipping " + arg + " - not a valid directory, zip file, or tar file");
                 }
             }
+            indexer.finishProgress();
             indexer.closeIndex();
 
             // Final commit
@@ -461,6 +508,128 @@ public class Indexer {
         catch (IOException e) {
             log.error("Unexpected error: " + e);
             e.printStackTrace();
+        }
+    }
+
+    private static long countTargetFiles (String[] inputPaths) {
+        if (inputPaths == null)
+            return 0;
+        Pattern gzPattern = Pattern.compile(".*\\.json\\.gz$");
+        Pattern jsonPattern = Pattern.compile(".*\\.json$");
+        long total = 0L;
+        for (String arg : inputPaths) {
+            File f = new File(arg);
+            if (f.isDirectory()) {
+                String[] list = f.list();
+                if (list != null) {
+                    for (String name : list) {
+                        if (gzPattern.matcher(name).find())
+                            total++;
+                    }
+                }
+            }
+            else if (f.isFile() && f.getName().toLowerCase().endsWith(".zip")) {
+                try (ZipFile zip = new ZipFile(f)) {
+                    Enumeration<? extends ZipEntry> entries = zip.entries();
+                    while (entries.hasMoreElements()) {
+                        ZipEntry entry = entries.nextElement();
+                        if (!entry.isDirectory()) {
+                            String entryName = entry.getName();
+                            if (gzPattern.matcher(entryName).find() ||
+                                jsonPattern.matcher(entryName).find()) {
+                                total++;
+                            }
+                        }
+                    }
+                }
+                catch (IOException e) {
+                    log.warn("Unable to count entries in zip " + arg, e);
+                }
+            }
+            else if (f.isFile() && (f.getName().toLowerCase().endsWith(".tar") ||
+                                    f.getName().toLowerCase().endsWith(".tar.gz") ||
+                                    f.getName().toLowerCase().endsWith(".tgz"))) {
+                try (InputStream fis = new FileInputStream(f);
+                     InputStream in = (f.getName().toLowerCase().endsWith(".tar.gz") || f.getName().toLowerCase().endsWith(".tgz"))
+                             ? new GzipCompressorInputStream(fis)
+                             : fis;
+                     TarArchiveInputStream tis = new TarArchiveInputStream(in)) {
+                    TarArchiveEntry entry;
+                    while ((entry = tis.getNextTarEntry()) != null) {
+                        if (!entry.isDirectory()) {
+                            String entryName = entry.getName();
+                            if (gzPattern.matcher(entryName).find() ||
+                                jsonPattern.matcher(entryName).find()) {
+                                total++;
+                            }
+                        }
+                    }
+                }
+                catch (IOException e) {
+                    log.warn("Unable to count entries in tar " + arg, e);
+                }
+            }
+        }
+        return total;
+    }
+
+    // Simple console progress bar with ETA
+    private static class SimpleProgressBar {
+        private final long total;
+        private long current = 0;
+        private final long startTimeMs;
+        private final int barWidth = 40;
+
+        SimpleProgressBar (long total) {
+            this.total = total;
+            this.startTimeMs = System.currentTimeMillis();
+            render();
+        }
+
+        void step () {
+            current++;
+            render();
+        }
+
+        void finish () {
+            current = Math.max(current, total);
+            render();
+            System.err.println();
+        }
+
+        private void render () {
+            double percent = total > 0 ? (double) current / (double) total : 0d;
+            int filled = (int) Math.round(percent * barWidth);
+            StringBuilder bar = new StringBuilder(barWidth);
+            for (int i = 0; i < barWidth; i++) {
+                bar.append(i < filled ? '=' : '-');
+            }
+
+            long now = System.currentTimeMillis();
+            double elapsedSec = (now - startTimeMs) / 1000.0;
+            double rate = elapsedSec > 0 ? current / elapsedSec : 0.0; // docs/sec
+            long etaSec = (rate > 0 && total > current) ? (long) Math.ceil((total - current) / rate) : 0;
+
+            String etaStr = formatDuration(etaSec);
+            String pctStr = String.format(Locale.US, "%5.1f%%", percent * 100.0);
+            String rateStr = String.format(Locale.US, "%.1f/s", rate);
+
+            String line = String.format(Locale.US, "\r[%s] %s %d/%d | %s | ETA %s", bar, pctStr, current, total, rateStr, etaStr);
+            System.err.print(line);
+        }
+
+        private static String formatDuration (long seconds) {
+            long h = seconds / 3600;
+            long m = (seconds % 3600) / 60;
+            long s = seconds % 60;
+            if (h > 99) {
+                // cap to avoid silly widths
+                return String.format(Locale.US, ">99h");
+            }
+            if (h > 0)
+                return String.format(Locale.US, "%02d:%02d:%02d", h, m, s);
+            else
+                return String.format(Locale.US, "%02d:%02d", m, s);
         }
     }
 }
