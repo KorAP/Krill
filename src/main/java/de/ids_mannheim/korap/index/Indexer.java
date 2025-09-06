@@ -114,15 +114,20 @@ public class Indexer {
     }
 
     private void initProgress (long total) {
-        if (total > 0) {
-            this.progressEnabled = true;
-            this.progressBar = new SimpleProgressBar(total);
-        }
+        this.progressEnabled = true;
+        this.progressBar = new SimpleProgressBar(total);
+        this.progressBar.start();
     }
 
-    private void stepProgress () {
+    private void initProgressIndeterminate () {
+        this.progressEnabled = true;
+        this.progressBar = new SimpleProgressBar(0);
+        this.progressBar.start();
+    }
+
+    private void stepProgress (long bytes) {
         if (this.progressEnabled && this.progressBar != null) {
-            this.progressBar.step();
+            this.progressBar.addBytes(bytes);
         }
     }
 
@@ -178,7 +183,7 @@ public class Indexer {
                         // autocommit initiated by KrillIndex
                         this.commit();
                     }
-                    this.stepProgress();
+                    this.stepProgress(new File(file).length());
                 }
                 catch (FileNotFoundException e) {
                     log.error("File " + file + " is not found!");
@@ -201,8 +206,10 @@ public class Indexer {
      */
     private void parseTar (File tarFile) {
         try {
-            InputStream fileInputStream = new FileInputStream(tarFile);
-            
+            CountingInputStream countingStream = new CountingInputStream(new FileInputStream(tarFile));
+            InputStream fileInputStream = countingStream;
+            long prevCompressedBytes = 0;
+
             // Check if it's a gzipped tar file
             if (tarFile.getName().toLowerCase().endsWith(".tar.gz") || 
                 tarFile.getName().toLowerCase().endsWith(".tgz")) {
@@ -264,7 +271,9 @@ public class Indexer {
                             if ((this.count % this.commitCount) == 0) {
                                 this.commit();
                             }
-                            this.stepProgress();
+                            long nowBytes = countingStream.getBytesRead();
+                            this.stepProgress(nowBytes - prevCompressedBytes);
+                            prevCompressedBytes = nowBytes;
                         }
                     }
                     else {
@@ -335,7 +344,8 @@ public class Indexer {
                         if ((this.count % this.commitCount) == 0) {
                             this.commit();
                         }
-                        this.stepProgress();
+                        long compSize = entry.getCompressedSize();
+                        this.stepProgress(compSize > 0 ? compSize : entry.getSize());
                     }
                     catch (IOException e) {
                         log.error("Error reading entry " + entryName + " from zip file " + zipFile.getName(), e);
@@ -480,12 +490,10 @@ public class Indexer {
                 indexer.index.setMaxStringLength(KrillProperties.maxTextSize);
             }
 
-            // Initialize progress if requested
-            if (showProgress && inputPaths != null) {
-                long total = countTargetFiles(inputPaths);
-                if (total > 0) {
-                    indexer.initProgress(total);
-                }
+            // Initialize progress bar; total is computed instantly from compressed file sizes
+            if (showProgress) {
+                long totalBytes = computeTotalBytes(inputPaths);
+                indexer.initProgress(totalBytes);
             }
 
             // Iterate over list of input paths (auto-detect directories vs zip/tar files)
@@ -607,32 +615,171 @@ public class Indexer {
         return total;
     }
 
-    // Simple console progress bar with ETA
-    private static class SimpleProgressBar {
-        private final long total;
-        private long current = 0;
+    /**
+     * Compute total compressed bytes for a set of input paths (instant: uses file sizes only).
+     * For directories, sums the sizes of all .json.gz files.
+     * For archive files (zip, tar, tar.gz), uses the file size directly.
+     */
+    public static long computeTotalBytes (String[] inputPaths) {
+        if (inputPaths == null) return 0;
+        Pattern gzPattern = Pattern.compile(".*\\.json\\.gz$");
+        long total = 0L;
+        for (String arg : inputPaths) {
+            File f = new File(arg);
+            if (f.isDirectory()) {
+                String[] list = f.list();
+                if (list != null) {
+                    for (String name : list) {
+                        if (gzPattern.matcher(name).find())
+                            total += new File(f, name).length();
+                    }
+                }
+            }
+            else if (f.isFile()) {
+                total += f.length();
+            }
+        }
+        return total;
+    }
+
+    /**
+     * Format a duration in seconds into a human-readable string.
+     * Durations under 1 hour display as MM:SS,
+     * durations under 1 day display as HH:MM:SS,
+     * and longer durations display as Xd HH:MM:SS.
+     *
+     * @param seconds duration in seconds
+     * @return formatted duration string
+     */
+    public static String formatDuration (long seconds) {
+        long d = seconds / 86400;
+        long h = (seconds % 86400) / 3600;
+        long m = (seconds % 3600) / 60;
+        long s = seconds % 60;
+        if (d > 0)
+            return String.format(Locale.US, "%dd %02d:%02d:%02d", d, h, m, s);
+        if (h > 0)
+            return String.format(Locale.US, "%02d:%02d:%02d", h, m, s);
+        else
+            return String.format(Locale.US, "%02d:%02d", m, s);
+    }
+
+    // Minimal counting wrapper to track compressed bytes read from a stream
+    private static class CountingInputStream extends InputStream {
+        private final InputStream wrapped;
+        private volatile long bytesRead = 0;
+
+        CountingInputStream (InputStream wrapped) {
+            this.wrapped = wrapped;
+        }
+
+        @Override
+        public int read () throws IOException {
+            int b = wrapped.read();
+            if (b != -1) bytesRead++;
+            return b;
+        }
+
+        @Override
+        public int read (byte[] buf, int off, int len) throws IOException {
+            int n = wrapped.read(buf, off, len);
+            if (n > 0) bytesRead += n;
+            return n;
+        }
+
+        long getBytesRead () { return bytesRead; }
+    }
+
+    // Simple console progress bar with ETA; supports indeterminate mode until total is known
+    private static class SimpleProgressBar implements Runnable {
+        private volatile long total; // 0 means indeterminate
+        private volatile long current = 0;
+        private volatile boolean running = false;
+        private volatile boolean finished = false;
         private final long startTimeMs;
         private final int barWidth = 40;
+        private final Thread thread;
+        private int slidePos = 0;
+        private int slideDir = 1; // 1 right, -1 left
 
         SimpleProgressBar (long total) {
             this.total = total;
             this.startTimeMs = System.currentTimeMillis();
-            render();
+            this.thread = new Thread(this, "krill-progress-bar");
+            this.thread.setDaemon(true);
         }
 
-        void step () {
-            current++;
-            render();
+        void start () {
+            running = true;
+            thread.start();
+        }
+
+        void addBytes (long bytes) {
+            current += bytes;
+        }
+
+        void setTotal (long total) {
+            if (total < 0) total = 0;
+            this.total = total;
         }
 
         void finish () {
-            current = Math.max(current, total);
+            finished = true;
+            running = false;
+            try {
+                thread.join(500);
+            }
+            catch (InterruptedException e) {
+                // ignore
+            }
+            // Final render as completed line if determinate
+            if (total > 0 && current < total) {
+                current = total;
+            }
             render();
             System.err.println();
         }
 
+        @Override
+        public void run () {
+            // periodic render loop
+            while (running && !finished) {
+                render();
+                try {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e) {
+                    // ignore
+                }
+            }
+        }
+
         private void render () {
-            double percent = total > 0 ? (double) current / (double) total : 0d;
+            if (total <= 0) {
+                // indeterminate: sliding bar
+                slidePos += slideDir;
+                if (slidePos >= barWidth - 5) {
+                    slideDir = -1;
+                }
+                else if (slidePos <= 0) {
+                    slideDir = 1;
+                }
+                StringBuilder bar = new StringBuilder(barWidth);
+                for (int i = 0; i < barWidth; i++) bar.append('-');
+                // draw a 5-char slider
+                for (int i = slidePos; i < Math.min(slidePos + 5, barWidth); i++) {
+                    bar.setCharAt(i, '=');
+                }
+                long now = System.currentTimeMillis();
+                double elapsedSec = (now - startTimeMs) / 1000.0;
+                double rateMBs = elapsedSec > 0 ? current / 1_000_000.0 / elapsedSec : 0.0;
+                String rateStr = rateMBs > 0 ? String.format(Locale.US, "%.2f MB/s", rateMBs) : "NA";
+                String line = String.format(Locale.US, "\r[%s]   %.1f MB processed | %s | ETA calculating...", bar, current / 1_000_000.0, rateStr);
+                System.err.print(line);
+                return;
+            }
+
+            double percent = (double) current / (double) Math.max(total, 1);
             int filled = (int) Math.round(percent * barWidth);
             StringBuilder bar = new StringBuilder(barWidth);
             for (int i = 0; i < barWidth; i++) {
@@ -641,29 +788,17 @@ public class Indexer {
 
             long now = System.currentTimeMillis();
             double elapsedSec = (now - startTimeMs) / 1000.0;
-            double rate = elapsedSec > 0 ? current / elapsedSec : 0.0; // docs/sec
-            long etaSec = (rate > 0 && total > current) ? (long) Math.ceil((total - current) / rate) : 0;
+            double rateBytesPerSec = elapsedSec > 0 ? current / elapsedSec : 0.0;
+            long etaSec = (rateBytesPerSec > 0 && total > current) ? (long) Math.ceil((total - current) / rateBytesPerSec) : 0;
 
-            String etaStr = formatDuration(etaSec);
+            String etaStr = (rateBytesPerSec > 0) ? Indexer.formatDuration(etaSec) : "NA";
             String pctStr = String.format(Locale.US, "%5.1f%%", percent * 100.0);
-            String rateStr = String.format(Locale.US, "%.1f/s", rate);
+            String rateStr = String.format(Locale.US, "%.2f MB/s", rateBytesPerSec / 1_000_000.0);
+            double processedMB = current / 1_000_000.0;
+            double totalMB = total / 1_000_000.0;
 
-            String line = String.format(Locale.US, "\r[%s] %s %d/%d | %s | ETA %s", bar, pctStr, current, total, rateStr, etaStr);
+            String line = String.format(Locale.US, "\r[%s] %s %.1f/%.1f MB | %s | ETA %s", bar, pctStr, processedMB, totalMB, rateStr, etaStr);
             System.err.print(line);
-        }
-
-        private static String formatDuration (long seconds) {
-            long h = seconds / 3600;
-            long m = (seconds % 3600) / 60;
-            long s = seconds % 60;
-            if (h > 99) {
-                // cap to avoid silly widths
-                return String.format(Locale.US, ">99h");
-            }
-            if (h > 0)
-                return String.format(Locale.US, "%02d:%02d:%02d", h, m, s);
-            else
-                return String.format(Locale.US, "%02d:%02d", m, s);
         }
     }
 }

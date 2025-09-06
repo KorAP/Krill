@@ -259,11 +259,27 @@ public class TestIndexer {
         }
 
         String progressOutput = errStream.toString();
-        // Expect progress bar renders with bracketed bar, percentage, count, and ETA
+        // Expect progress bar renders with bracketed bar, percentage, MB throughput, and ETA
         assertTrue(progressOutput.contains("[==="));
         assertTrue(progressOutput.contains("100.0%"));
-        assertTrue(progressOutput.contains("1/1"));
+        assertTrue(progressOutput.contains("MB"));
         assertTrue(progressOutput.contains("ETA"));
+    }
+
+    @Test
+    public void testFormatDuration () {
+        // seconds only
+        assertEquals("00:45", Indexer.formatDuration(45));
+        // minutes and seconds
+        assertEquals("05:30", Indexer.formatDuration(330));
+        // hours
+        assertEquals("02:30:00", Indexer.formatDuration(9000));
+        // exactly 24h → 1 day
+        assertEquals("1d 00:00:00", Indexer.formatDuration(86400));
+        // more than 24h
+        assertEquals("2d 03:45:12", Indexer.formatDuration(2 * 86400 + 3 * 3600 + 45 * 60 + 12));
+        // large multi-day (previously capped at >99h)
+        assertEquals("10d 05:00:00", Indexer.formatDuration(10 * 86400 + 5 * 3600));
     }
 
     @Test
