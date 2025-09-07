@@ -9,6 +9,10 @@ import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Locale;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -587,19 +591,33 @@ public class Indexer {
 
     // Simple console progress bar with ETA; supports indeterminate mode until total is known
     private static class SimpleProgressBar implements Runnable {
+        private static final DateTimeFormatter ETR_FORMATTER =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withLocale(Locale.US);
         private volatile long total; // 0 means indeterminate
         private volatile long current = 0;
         private volatile boolean running = false;
         private volatile boolean finished = false;
         private final long startTimeMs;
-        private final int barWidth = 40;
+        // Progress bar width adapts to terminal size; volatile to allow live changes
+        private volatile int barWidth;
         private final Thread thread;
         private int slidePos = 0;
         private int slideDir = 1; // 1 right, -1 left
+        private int lastLineLength = 0;
+        // Cache for rate/ETA/ETR to avoid recomputing too often
+        private long lastEtaCurrent = 0;
+        private long lastEtaTimeMs = 0L;
+        private String cachedRate = "0.0/s";
+        private String cachedEta = "NA";
+        private String cachedEtr = "NA";
+        // Tuneable intervals (can be overridden via system properties)
+        private final int etaStepInterval = Integer.getInteger("progress.eta.stepInterval", 10);
+        private final long etaTimeIntervalMs = Long.getLong("progress.eta.timeIntervalMs", 1000L);
 
         SimpleProgressBar (long total) {
             this.total = total;
             this.startTimeMs = System.currentTimeMillis();
+            this.barWidth = computeBarWidth();
             this.thread = new Thread(this, "krill-progress-bar");
             this.thread.setDaemon(true);
         }
@@ -650,6 +668,14 @@ public class Indexer {
         }
 
         private void render () {
+            // Recompute bar width on each render to adapt to window size
+            int newBarWidth = computeBarWidth();
+            if (newBarWidth != this.barWidth) {
+                this.barWidth = newBarWidth;
+                // Reset slider position to stay within bounds after resize
+                if (slidePos >= barWidth) slidePos = Math.max(0, barWidth - 5);
+            }
+
             if (total <= 0) {
                 // indeterminate: sliding bar
                 slidePos += slideDir;
@@ -665,8 +691,8 @@ public class Indexer {
                 for (int i = slidePos; i < Math.min(slidePos + 5, barWidth); i++) {
                     bar.setCharAt(i, '=');
                 }
-                String line = String.format(Locale.US, "\r[%s]   %d processed | ETA calculating...", bar, current);
-                System.err.print(line);
+                String line = String.format(Locale.US, "\r[%s]   %d processed | ETA calculating... | ETR NA", bar, current);
+                printLine(line);
                 return;
             }
 
@@ -677,17 +703,29 @@ public class Indexer {
                 bar.append(i < filled ? '=' : '-');
             }
 
+            // Optionally throttle expensive ETA/ETR computations
             long now = System.currentTimeMillis();
-            double elapsedSec = (now - startTimeMs) / 1000.0;
-            double rate = elapsedSec > 0 ? current / elapsedSec : 0.0; // docs/sec
-            long etaSec = (rate > 0 && total > current) ? (long) Math.ceil((total - current) / rate) : 0;
-
-            String etaStr = (rate > 0) ? formatDuration(etaSec) : "NA";
+            boolean updateEta = (current - lastEtaCurrent) >= etaStepInterval || (now - lastEtaTimeMs) >= etaTimeIntervalMs || lastEtaTimeMs == 0L;
+            if (updateEta) {
+                double elapsedSec = (now - startTimeMs) / 1000.0;
+                double rate = elapsedSec > 0 ? current / elapsedSec : 0.0; // docs/sec
+                long etaSec = (rate > 0 && total > current) ? (long) Math.ceil((total - current) / rate) : 0;
+                cachedRate = String.format(Locale.US, "%.1f/s", rate);
+                cachedEta = (rate > 0) ? formatDuration(etaSec) : "NA";
+                if (rate > 0) {
+                    long finishEpochMs = now + (etaSec * 1000L);
+                    ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(finishEpochMs), ZoneId.systemDefault());
+                    cachedEtr = ETR_FORMATTER.format(zdt);
+                } else {
+                    cachedEtr = "NA";
+                }
+                lastEtaCurrent = current;
+                lastEtaTimeMs = now;
+            }
             String pctStr = String.format(Locale.US, "%5.1f%%", percent * 100.0);
-            String rateStr = String.format(Locale.US, "%.1f/s", rate);
 
-            String line = String.format(Locale.US, "\r[%s] %s %d/%d | %s | ETA %s", bar, pctStr, current, total, rateStr, etaStr);
-            System.err.print(line);
+            String line = String.format(Locale.US, "\r[%s] %s %d/%d | %s | ETA %s | ETR %s", bar, pctStr, current, total, cachedRate, cachedEta, cachedEtr);
+            printLine(line);
         }
 
         private static String formatDuration (long seconds) {
@@ -702,6 +740,92 @@ public class Indexer {
                 return String.format(Locale.US, "%02d:%02d:%02d", h, m, s);
             else
                 return String.format(Locale.US, "%02d:%02d", m, s);
+        }
+
+        // Compute an adaptive bar width based on terminal width when available.
+        // Fallback to a sane default if unknown.
+        private int computeBarWidth () {
+            int cols = detectTerminalColumns();
+            // Reserve space for the textual suffix (percentage, counts, rate, ETA, ETR)
+            // This is a conservative estimate to avoid wrapping.
+            int reserved = (total <= 0) ? 38 : 52;
+            int width = cols - reserved;
+            // Clamp to practical bounds
+            if (width < 10) width = 10;
+            if (width > 200) width = 200;
+            return width;
+        }
+
+        // Try to detect terminal width without external deps
+        private static volatile long lastColsCheckMs = 0L;
+        private static volatile int lastDetectedCols = 80;
+
+        private static int detectTerminalColumns () {
+            // 1) COLUMNS env var (commonly set by shells)
+            String envCols = System.getenv("COLUMNS");
+            if (envCols != null) {
+                try {
+                    int c = Integer.parseInt(envCols.trim());
+                    if (c > 0) return c;
+                }
+                catch (NumberFormatException ignore) {}
+            }
+            // 2) System property (allow override)
+            String propCols = System.getProperty("terminal.columns");
+            if (propCols != null) {
+                try {
+                    int c = Integer.parseInt(propCols.trim());
+                    if (c > 0) return c;
+                }
+                catch (NumberFormatException ignore) {}
+            }
+            // 3) On Unix-like systems, try `stty size` occasionally (<= 1 Hz)
+            long now = System.currentTimeMillis();
+            if ((now - lastColsCheckMs) >= 1000L) {
+                lastColsCheckMs = now;
+                try {
+                    Process p = new ProcessBuilder("/bin/sh", "-lc", "stty size < /dev/tty 2>/dev/null || true").redirectErrorStream(true).start();
+                    try (java.io.BufferedReader r = new java.io.BufferedReader(new java.io.InputStreamReader(p.getInputStream()))) {
+                        String line = r.readLine();
+                        if (line != null) {
+                            String[] parts = line.trim().split("\\s+");
+                            if (parts.length == 2) {
+                                int cols = Integer.parseInt(parts[1]);
+                                if (cols > 0) lastDetectedCols = cols;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ignore) {}
+            }
+            // 4) Fallback to last detected or default 80
+            return lastDetectedCols > 0 ? lastDetectedCols : 80;
+        }
+
+        // Print the line, ensuring remnants from longer previous lines are cleared.
+        private void printLine (String line) {
+            int len = visibleLength(line);
+            if (lastLineLength > len) {
+                // Clear previous content to end of line when shrinking
+                StringBuilder clear = new StringBuilder(lastLineLength + 5);
+                clear.append('\r');
+                for (int i = 0; i < lastLineLength; i++) clear.append(' ');
+                clear.append('\r');
+                System.err.print(clear.toString());
+            }
+            System.err.print(line);
+            lastLineLength = len;
+        }
+
+        // Rough visible length (ignores carriage return and non-printing chars)
+        private static int visibleLength (String s) {
+            int n = 0;
+            for (int i = 0; i < s.length(); i++) {
+                char ch = s.charAt(i);
+                if (ch == '\r' || ch == '\n' || ch == '\u001B') continue; // skip CR/LF/ESC
+                n++;
+            }
+            return n;
         }
     }
 }
