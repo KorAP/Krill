@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0716faa4_1493109c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-09-08T09:37:10Z",
+      "side": 1,
+      "message": "The changes depend on each other. Unavoidable, in this case, I guess.",
+      "revId": "c33bded4a0ebe2a9b54c18bc5b38ffd99c3aa5b5",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
