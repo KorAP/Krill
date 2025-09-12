@@ -1,0 +1,13 @@
+{
+  "@context" : "http://ids-mannheim.de/ns/KorAP/json-ld/v0.2/context.jsonld",
+  "errors" : [ ],
+  "warnings" : [ ],
+  "announcements" : [ ],
+  "corpus" : {
+    "@type" : "koral:doc",
+    "key" : "pubDate",
+    "type" : "type:date",
+    "value" : "2000-01-01",
+    "match" : "match:eq"
+  }
+}

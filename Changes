@@ -1,6 +1,8 @@
-0.64.3 2025-07-25
+0.64.3 2025-08-19
     - [feature] Add tar and zip archive input support to Krill-Indexer (kupietz)
     - [security] Update dependencies (kupietz)
+	- [enhancement] Add support for "corpus" in deserialization, "collection" 
+	  is marked as legacy (margaretha). 
 
 0.64.2 2025-07-02
     - [bugfix] Restore rewrites in Meta. (diewald)

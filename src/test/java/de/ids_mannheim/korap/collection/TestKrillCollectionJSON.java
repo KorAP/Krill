@@ -32,6 +32,12 @@ public class TestKrillCollectionJSON {
         assertEquals(kc.toString(), "pubDate:[20000101 TO 20000101]");
     };
 
+    @Test
+    public void corpus1 () {
+        String metaQuery = _getJSONString("corpus_1.jsonld");
+        KrillCollection kc = new KrillCollection(metaQuery);
+        assertEquals(kc.toString(), "pubDate:[20000101 TO 20000101]");
+    };   
 
     @Test
     public void collection2 () {
