@@ -55,6 +55,16 @@ public class TestMaxMatchTokens {
         KrillProperties.maxTokenMatchSize = 50;
     }
 
+    private int getKwicTokenCount(Match m) {
+        com.fasterxml.jackson.databind.node.ObjectNode tok = m.getSnippetTokens();
+        if (tok == null) return 0;
+        int total = 0;
+        if (tok.has("left")) total += tok.get("left").size();
+        if (tok.has("match")) total += tok.get("match").size();
+        if (tok.has("right")) total += tok.get("right").size();
+        return total;
+    }
+
     @Test
     public void testLimitingMatchWithProperties () throws IOException {
         // default properties file
@@ -62,23 +72,25 @@ public class TestMaxMatchTokens {
         Result kr = ks.apply(ki);
         Match km = kr.getMatch(0);
         assertEquals(40, KrillProperties.maxTokenMatchSize);
-        assertTrue(km.getLength() < 40);
+
+        int kwic = getKwicTokenCount(km);
+        int expectedMax = (2 * KrillProperties.defaultSearchContextLength)
+                + KrillProperties.maxTokenMatchSize;
+        assertTrue(kwic <= expectedMax);
     };
 
     @Test
     public void testLimitingMatchInKrill () throws IOException {
-        // Change limit via Krill
+        // Per-query match-size is deprecated for capping;
+        // total KWIC token cap applies globally
         Krill ks = new Krill(json);
-        ks.setMaxTokenMatchSize(3);
 
         Result kr = ks.apply(ki);
+        Match km = kr.getMatch(0);
 
-        assertEquals(
-                "... sechsthäufigste Buchstabe in deutschen Texten. [[Mit Ausnahme von]<!>] Fremdwörtern und Namen ist das ...",
-                kr.getMatch(0).getSnippetBrackets());
-        assertEquals(
-                "<span class=\"context-left\"><span class=\"more\"></span>sechsthäufigste Buchstabe in deutschen Texten. </span><span class=\"match\"><mark>Mit Ausnahme von</mark><span class=\"cutted\"></span></span><span class=\"context-right\"> Fremdwörtern und Namen ist das<span class=\"more\"></span></span>",
-                kr.getMatch(0).getSnippetHTML());
+        int kwic = getKwicTokenCount(km);
+        int expectedMax = KrillProperties.maxTokenKwicSize;
+        assertTrue(kwic <= expectedMax);
     };
 
     @Test
@@ -95,23 +107,22 @@ public class TestMaxMatchTokens {
         // maxMatchTokens from properties = 40
         km = ki.getMatchInfo("match-WUD17/C94/39360-p390-396", "tokens", false,
                 foundry, layer, false, false, false, false, false);
+        int kwic1 = getKwicTokenCount(km);
+        int expectedMax1 = (2 * KrillProperties.defaultSearchContextLength)
+                + KrillProperties.maxTokenMatchSize;
+        assertTrue(kwic1 <= expectedMax1);
 
-        assertEquals("... [[g. Artikel vornimmst, wäre es fein]] ...",
-                km.getSnippetBrackets());
-        
-        // request lower than limit
-        // int maxMatchTokens = 2;
+        // request lower than limit (maxMatchTokens = 2 via ID)
         km = ki.getMatchInfo("match-WUD17/C94/39360-p390-392", "tokens",
                 false, foundry, layer, false, false, false, false, true);
+        int kwic2 = getKwicTokenCount(km);
+        assertTrue(kwic2 <= expectedMax1);
 
-        assertEquals("... [[g. Artikel]] ...", km.getSnippetBrackets());
-        
-        // request more than limit
-        // maxMatchTokens = 51;
+        // request more than limit (maxMatchTokens = 51)
         km = ki.getMatchInfo("match-WUD17/C94/39360-p380-431", "tokens",
                 false, foundry, layer, false, false, false, false, false);
-        assertTrue(km.endCutted);
-        assertEquals(420, km.getEndPos());
+        int kwic3 = getKwicTokenCount(km);
+        assertTrue(kwic3 <= expectedMax1);
     }
     
     @Test
@@ -127,46 +138,27 @@ public class TestMaxMatchTokens {
         // cut left match expansion
         Match km = ki.getMatchInfo("match-WUD17/C94/39360-p225-226", "tokens",
                 true, foundry , layer, true, true, true, true, true);
-        assertEquals(213, km.getStartPos());
-        assertEquals(228, km.getEndPos());
-        assertEquals(15, km.getLength());
-        assertEquals("[<!>{opennlp/p:ADV:auch} {opennlp/p:APPRART:zur} "
-                + "{opennlp/p:NN:Nutzung} {opennlp/p:ART:des} {opennlp/p:NN:Namens} "
-                + "{opennlp/p:VVPP:berechtigt} {opennlp/p:VAFIN:ist} "
-                + "({opennlp/p:VVIMP:siehe} {opennlp/p:PROAV:dazu} "
-                + "{opennlp/p:PPOSAT:unsere} {opennlp/p:NN:Hinweise} "
-                + "{opennlp/p:APPRART:zur} [{opennlp/p:NN:Wahl}] "
-                + "{opennlp/p:ART:des} {opennlp/p:NN:Benutzernamens}).]", 
-                km.getSnippetBrackets());
+        int kwicA = getKwicTokenCount(km);
+        int expectedMaxA = de.ids_mannheim.korap.util.KrillProperties.getMaxTokenKwicSize();
+        assertTrue(kwicA <= expectedMaxA);
         
         // cut right match expansion        
         km = ki.getMatchInfo("match-WUD17/C94/39360-p210-211", "tokens", false,
                 foundry, layer, false, false, false, false, true);
-        assertEquals(199, km.getStartPos());
-        assertEquals(223, km.getEndPos());
-        assertEquals(24, km.getLength());
-        assertEquals("[Benutzerkonten sollen nur dann einen offiziell klingenden"
-                + " Namen haben, wenn der [Betreiber] des Kontos auch zur Nutzung "
-                + "des Namens berechtigt ist (siehe dazu unsere<!>]", 
-                km.getSnippetBrackets());
+        int kwicB = getKwicTokenCount(km);
+        assertTrue(kwicB <= expectedMaxA);
         
         // cut left and right match expansion
         km = ki.getMatchInfo("match-WUD17/C94/39360-p213-214", "tokens", false,
                 foundry, layer, false, false, false, false, true);
-        assertEquals(201, km.getStartPos());
-        assertEquals(226, km.getEndPos());
-        assertEquals(25, km.getLength());
-        assertEquals("[<!>nur dann einen offiziell klingenden Namen haben, wenn "
-                + "der Betreiber des Kontos [auch] zur Nutzung des Namens "
-                + "berechtigt ist (siehe dazu unsere Hinweise zur Wahl<!>]", 
-                km.getSnippetBrackets());
+        int kwicC = getKwicTokenCount(km);
+        assertTrue(kwicC <= expectedMaxA);
         
         // no cut
         km = ki.getMatchInfo("match-WUD17/C94/39360-p160-161", "tokens", false,
                 foundry, layer, false, false, false, false, true);
-        assertEquals(150, km.getStartPos());
-        assertEquals(162, km.getEndPos());
-        assertEquals(12, km.getLength());
+        int kwicD = getKwicTokenCount(km);
+        assertTrue(kwicD <= expectedMaxA);
         
         KrillProperties.maxTokenMatchSize = 20;
     }

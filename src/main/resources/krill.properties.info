@@ -15,3 +15,15 @@ krill.index.commit.log = log/krill.commit.log
 krill.index.commit.auto = 500
 krill.index.relations.max = 100
 krill.index.textSize.max = 20000000
+
+# Snippet (KWIC) settings
+# New: Maximum total number of tokens per KWIC snippet (left + match + right)
+# If unset, and deprecated properties below are set, Krill will compute this as
+# 2*krill.context.max.token + krill.match.max.token and log a deprecation warning.
+# krill.kwic.max.token = 100
+
+# Deprecated: These are ignored when 'krill.kwic.max.token' is set and will be removed.
+# They were previously used to cap match length and per-side context lengths, but
+# licensing limits apply to the total snippet size, not to the match alone.
+#krill.match.max.token = [DEPRECATED]
+#krill.context.max.token = [DEPRECATED]
