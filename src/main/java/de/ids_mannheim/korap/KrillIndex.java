@@ -997,8 +997,9 @@ public final class KrillIndex implements IndexInfo {
         if (DEBUG)
             log.trace("Get info on {}", idString);
         
-        int maxTokenMatchSize = KrillProperties.maxTokenMatchSize;
-        Match match = new Match(maxTokenMatchSize, idString, includeHighlights);
+        // Use total KWIC cap to limit match size at most to the total snippet cap
+        int kwicMax = de.ids_mannheim.korap.util.KrillProperties.getMaxTokenKwicSize();
+        Match match = new Match(kwicMax, idString, includeHighlights);
 
         if (this.getVersion() != null)
             match.setVersion(this.getVersion());
@@ -1569,11 +1570,8 @@ public final class KrillIndex implements IndexInfo {
                             ? lreader.document(localDocID, fieldsSet)
                             : lreader.document(localDocID);
                     
-                    int maxMatchSize = ks.getMaxTokenMatchSize();
-                    if (maxMatchSize <= 0
-                            || maxMatchSize > KrillProperties.maxTokenMatchSize) {
-                        maxMatchSize = KrillProperties.maxTokenMatchSize;
-                    };
+                    // Use total KWIC cap for match capping, ignore per-query match limits
+                    int maxMatchSize = KrillProperties.maxTokenKwicSize;
                     
                     // Create new Match
                     final Match match = new Match(maxMatchSize, pto, localDocID,
