@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "826670db_4d22f368",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-09-14T18:10:32Z",
+      "side": 1,
+      "message": "Already running (fine) here: \nhttps://korap.dnb.de/deliko?q\u003daber+gut+%5B%5D%7B0%252C3%7D+dass\n\nCompare to the old flawed match cut here:\nhttps://korap.dnb.de/?q\u003daber+gut+%5B%5D%7B0%252C3%7D+dass\n\nTests missing but in Kustvakt dnb branch on gitlab",
+      "revId": "01bced3d0a8622fe8817648ba3a1b667b3132d64",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
