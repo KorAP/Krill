@@ -1,3 +1,8 @@
+0.64.4 2025-09-17
+    - [feature] Added --progress option to Krill-Indexer (kupietz)
+    - [bugfix] Fixed vc cache tests (kupietz)
+    - [security] Dependencies updated (diewald, margaretha, kupietz)
+
 0.64.3 2025-08-19
     - [feature] Add tar and zip archive input support to Krill-Indexer (kupietz)
     - [security] Update dependencies (kupietz)
