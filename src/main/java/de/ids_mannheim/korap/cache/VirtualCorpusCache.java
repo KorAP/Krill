@@ -245,13 +245,22 @@ public class VirtualCorpusCache {
         map.clear();
 
         File vcCache = new File(CACHE_LOCATION + "/");
-        for (File vc : vcCache.listFiles()) {
-            for (File f : vc.listFiles()) {
-                if (f.exists()) {
-                    f.delete();
+        if (!vcCache.exists()) {
+            return;
+        }
+        File[] vcs = vcCache.listFiles();
+        if (vcs != null) {
+            for (File vc : vcs) {
+                File[] files = vc.listFiles();
+                if (files != null) {
+                    for (File f : files) {
+                        if (f.exists()) {
+                            f.delete();
+                        }
+                    }
                 }
+                vc.delete();
             }
-            vc.delete();
         }
         vcCache.delete();
     }

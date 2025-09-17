@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
 
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillCollection;
@@ -44,6 +46,19 @@ public class TestVirtualCorpusCache {
         file = "/queries/collections/vc-ref/query-with-vc-ref2.jsonld";
         is = getClass().getResourceAsStream(file);
         queryRefJson2 = IOUtils.toString(is, "utf-8");
+    }
+
+    @Before
+    public void setUpCacheLocation() {
+        // Use an isolated cache directory per test run to avoid cross-test interference
+        VirtualCorpusCache.CACHE_LOCATION = "target/vc-cache-test-" + System.nanoTime();
+        VirtualCorpusCache.reset();
+        new VirtualCorpusCache();
+    }
+
+    @After
+    public void tearDownCache() {
+        VirtualCorpusCache.reset();
     }
 
 
