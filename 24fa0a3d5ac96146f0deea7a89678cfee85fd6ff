@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80465999_fdb2c19c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-09-17T07:57:18Z",
+      "side": 1,
+      "message": "Please note that this depends on the previous unmerged changes",
+      "revId": "24fa0a3d5ac96146f0deea7a89678cfee85fd6ff",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
