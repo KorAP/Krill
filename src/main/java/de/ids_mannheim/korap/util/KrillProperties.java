@@ -23,11 +23,16 @@ public class KrillProperties {
     
     public static int maxTokenMatchSize = 50;
     public static int maxTokenContextSize = 60;
+    // Total KWIC size cap (match + left + right)
+    // Default derived from legacy match/context sizes
+    public static int maxTokenKwicSize = (2 * maxTokenContextSize) + maxTokenMatchSize;
     public static int maxCharContextSize = 500;
     public static int defaultSearchContextLength = 6;
     public static int maxTextSize = DEFAULT_MAX_STRING_LEN; // Default max text size
     
     public static boolean matchExpansionIncludeContextSize = false;
+    // Testing/diagnostic flag: whether kwic cap was derived from deprecated properties
+    public static boolean kwicDerivedFromDeprecatedProperties = false;
     
     public static String namedVCPath = "";
     public static boolean isTest = false;
@@ -89,19 +94,22 @@ public class KrillProperties {
     public static void updateConfigurations (Properties  prop) {
         String maxTokenMatchSize = prop.getProperty("krill.match.max.token");
         String maxTokenContextSize = prop.getProperty("krill.context.max.token");
+        String maxTokenKwicSize = prop.getProperty("krill.kwic.max.token");
         // EM: not implemented yet
 //        String maxCharContextSize = prop.getProperty("krill.context.max.char");
         String defaultSearchContextLength = prop.getProperty("krill.search.context.default");
         String maxTextSizeValue = prop.getProperty("krill.index.textSize.max");
+        // Removed properties: krill.kwic.max.char, krill.kwic.enforce.html, krill.snippet.safeCharBounds
 
         try {
             if (maxTokenMatchSize != null) {
-                KrillProperties.maxTokenMatchSize = Integer
-                        .parseInt(maxTokenMatchSize);
+                KrillProperties.maxTokenMatchSize = Integer.parseInt(maxTokenMatchSize);
             }
             if (maxTokenContextSize != null) {
-                KrillProperties.maxTokenContextSize = Integer
-                        .parseInt(maxTokenContextSize);
+                KrillProperties.maxTokenContextSize = Integer.parseInt(maxTokenContextSize);
+            }
+            if (maxTokenKwicSize != null) {
+                KrillProperties.maxTokenKwicSize = Integer.parseInt(maxTokenKwicSize);
             }
 //            if (maxCharContextSize != null) {
 //                KrillProperties.maxCharContextSize = Integer
@@ -123,11 +131,38 @@ public class KrillProperties {
                 }
 
             }
+            // Removed handling for deprecated snippet properties
         }
         catch (NumberFormatException e) {
             log.error("A Krill property expects numerical values: "
                     + e.getMessage());
         };
+
+        // Compute kwic cap from deprecated properties if explicit kwic cap is unset
+        boolean kwicCapExplicit = (maxTokenKwicSize != null && !maxTokenKwicSize.isEmpty());
+        boolean deprecatedProvided = (maxTokenMatchSize != null && !maxTokenMatchSize.isEmpty())
+                || (maxTokenContextSize != null && !maxTokenContextSize.isEmpty());
+
+        if (!kwicCapExplicit && deprecatedProvided) {
+            int computedKwic = (2 * KrillProperties.maxTokenContextSize) + KrillProperties.maxTokenMatchSize;
+            KrillProperties.maxTokenKwicSize = computedKwic;
+            KrillProperties.kwicDerivedFromDeprecatedProperties = true;
+            log.warn(
+                "Deprecated properties 'krill.match.max.token' and 'krill.context.max.token' are used to derive 'krill.kwic.max.token' = {} (2*{} + {}). Please set 'krill.kwic.max.token' and remove deprecated properties.",
+                computedKwic, KrillProperties.maxTokenContextSize, KrillProperties.maxTokenMatchSize
+            );
+        }
+        else if (kwicCapExplicit && deprecatedProvided) {
+            KrillProperties.kwicDerivedFromDeprecatedProperties = false;
+            log.warn(
+                "Deprecated properties 'krill.match.max.token' and 'krill.context.max.token' are ignored because 'krill.kwic.max.token' is set. Please remove deprecated properties."
+            );
+        }
+        else {
+            KrillProperties.kwicDerivedFromDeprecatedProperties = false;
+        }
+
+        // Keep default unless explicitly overridden by property
         
         String p = prop.getProperty("krill.test", "false");
         isTest = Boolean.parseBoolean(p);
@@ -139,6 +174,12 @@ public class KrillProperties {
         matchExpansionIncludeContextSize = Boolean.parseBoolean(matchExpansion);
 
         secret = prop.getProperty("krill.secretB64", "");
+
+        log.info("Effective krill.kwic.max.token = {}", KrillProperties.maxTokenKwicSize);
+    }
+
+    public static int getMaxTokenKwicSize() {
+        return maxTokenKwicSize;
     }
     
 
