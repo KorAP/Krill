@@ -1354,10 +1354,24 @@ public class Match extends AbstractDocument {
             log.trace("PTO will retrieve {} & {} (Match boundary)",
                     this.getStartPos(), this.getEndPos());
 
-        // Set inner match
-        if (this.innerMatchEndPos != 1)
-            this.addHighlight(this.innerMatchStartPos, this.innerMatchEndPos,
-                    -1);
+        // Set inner match (ensure it's not added twice)
+        if (this.innerMatchEndPos != 1) {
+            boolean alreadyHasInnerMatch = false;
+            if (this.highlight != null) {
+                for (Highlight hl : this.highlight) {
+                    if (hl.number == -1 &&
+                        hl.start == this.innerMatchStartPos &&
+                        hl.end == this.innerMatchEndPos) {
+                        alreadyHasInnerMatch = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!alreadyHasInnerMatch) {
+                this.addHighlight(this.innerMatchStartPos, this.innerMatchEndPos, -1);
+            }
+        }
 
         // Add all highlights for character retrieval
         if (this.highlight != null) {
@@ -1629,6 +1643,13 @@ public class Match extends AbstractDocument {
         int pdl = this.getPrimaryDataLength();
         
         // Get context based on a span definition
+        log.info(
+            "KWIC tokens begin: spanDefined={} left(token={},len={}) right(token={},len={}) startPos={} endPos={} id={} uid={}",
+            this.getContext().isSpanDefined(),
+            this.getContext().left.isToken(), this.getContext().left.getLength(),
+            this.getContext().right.isToken(), this.getContext().right.getLength(),
+            this.getStartPos(), this.getEndPos(), this.getID(), this.getUID()
+        );
         if (this.getContext().isSpanDefined()) {
 
             if (DEBUG)
@@ -1656,7 +1677,8 @@ public class Match extends AbstractDocument {
             };
         
             if (this.context.right.isToken() && this.context.right.getLength() > 0) {
-                endContext = this.endPos + this.context.right.getLength() - 1;
+                // Use exclusive bound for endContext to simplify iteration
+                endContext = this.endPos + this.context.right.getLength();
             };
         };
        
@@ -1671,6 +1693,88 @@ public class Match extends AbstractDocument {
             if (DEBUG)
                 log.debug("Set endContext {}", endContext);
         };
+        
+        // Report raw token window before cap
+        int rawLeftLen = (startContext < this.startPos) ? (this.startPos - startContext) : 0;
+        int rawMatchLen = (this.endPos > this.startPos) ? (this.endPos - this.startPos) : 0;
+        int rawRightLen = (endContext > this.endPos) ? ((endContext == -1 ? this.endPos : endContext) - this.endPos) : 0;
+        log.info(
+            "KWIC tokens raw: L/M/R={}/{}/{} startCtxTok={} endCtxTok={} id={} uid={}",
+            rawLeftLen, rawMatchLen, rawRightLen, startContext, endContext, this.getID(), this.getUID()
+        );
+
+        // Enforce total KWIC token cap (left + match + right)
+        int kwicMax = KrillProperties.getMaxTokenKwicSize();
+        if (kwicMax > 0) {
+            // Convert endContext to exclusive bound for iteration ease
+            int leftLen = (startContext < this.startPos) ? (this.startPos - startContext) : 0;
+            int matchLen = (this.endPos > this.startPos) ? (this.endPos - this.startPos) : 0;
+            int rightLen = (endContext > this.endPos) ? (endContext - this.endPos) : 0;
+            int total = leftLen + matchLen + rightLen;
+            if (DEBUG)
+                log.info("KWIC tokens pre-cap: total={} (L/M/R={}/{}/{}) cap={} id={} uid={}",
+                         total, leftLen, matchLen, rightLen, kwicMax, this.getID(), this.getUID());
+
+            // 1) Regel: Nur wenn das Match allein größer als das Limit ist, wird das Match gekürzt
+            if (matchLen > kwicMax) { // strict > laut Anforderung
+                this.endPos = this.startPos + kwicMax;
+                this.endCutted = true;
+                startContext = this.startPos; // Alle Kontexte entfallen
+                endContext = this.endPos;     // exklusives Ende
+                if (DEBUG)
+                    log.info("KWIC cap applied: match trimmed to {} tokens, no context retained (id={})", kwicMax, this.getID());
+            }
+            // 2) Gesamtfenster (links+match+rechts) zu groß: Kontexte symmetrisch gegen ein gemeinsames Maximum kappen
+            else if (total > kwicMax) {
+                int allowedContext = kwicMax - matchLen; // max Anzahl Kontext-Tokens insgesamt
+                if (allowedContext < 0) {
+                    // Sicherheit: kein Kontext zulassen
+                    allowedContext = 0;
+                }
+                int allowedPerSide = allowedContext / 2; // Basismarke pro Seite
+
+                int newLeft = Math.min(leftLen, allowedPerSide);
+                int newRight = Math.min(rightLen, allowedPerSide);
+
+                int consumed = newLeft + newRight;
+                int remaining = allowedContext - consumed; // Restbudget (ungerade oder weil eine Seite kürzer war)
+
+                if (remaining > 0) {
+                    // Versuche Rest zuerst der Seite zu geben, die noch Kapazität hat (Originalseite größer als bereits zugewiesen)
+                    int leftCap = leftLen - newLeft;
+                    if (leftCap > 0) {
+                        int add = Math.min(remaining, leftCap);
+                        newLeft += add;
+                        remaining -= add;
+                    }
+                    if (remaining > 0) {
+                        int rightCap = rightLen - newRight;
+                        if (rightCap > 0) {
+                            int add = Math.min(remaining, rightCap);
+                            newRight += add;
+                            remaining -= add;
+                        }
+                    }
+                }
+
+                // Rechne neue Start-/End-Kontext-Grenzen aus (endContext bleibt exklusiv)
+                // Aktueller leftLen = this.startPos - startContext
+                if (newLeft != leftLen) {
+                    startContext = this.startPos - newLeft;
+                    if (startContext < 0) startContext = 0; // Sicherheit
+                }
+                if (newRight != rightLen) {
+                    endContext = this.endPos + newRight; // exklusiv
+                }
+
+                if (DEBUG)
+                    log.info("KWIC cap applied sym-context: allowedContext={} allowedPerSide={} finalLeft={} finalRight={} matchLen={} id={} uid={}", allowedContext, allowedPerSide, newLeft, newRight, matchLen, this.getID(), this.getUID());
+            }
+            else {
+                if (DEBUG)
+                    log.debug("KWIC cap not reached: total={} ≤ cap={}", total, kwicMax);
+            }
+        }
         
         // Retrieve the character offsets for all tokens
         for (int i = startContext; i < endContext; i++) {
@@ -1688,14 +1792,12 @@ public class Match extends AbstractDocument {
 
         if (endContextChar == -1 || endContextChar == 0 || endContextChar > pdl) {
             this.tempSnippet = this.getPrimaryData(startContextChar);
-            this.endMore = false;
+            // Do not alter endMore here; HTML/Brackets decide based on char offsets
         } else  {
-            this.tempSnippet = this.getPrimaryData(startContextChar,endContextChar);
+            this.tempSnippet = this.getPrimaryData(startContextChar, endContextChar);
         }
 
-        if (startContext == 0) {
-            this.startMore = false;
-        }
+        // Do not alter startMore here; HTML/Brackets decide based on char offsets
         
         Integer[] offsets;
         ArrayNode tokens;
@@ -1706,6 +1808,9 @@ public class Match extends AbstractDocument {
             tokens = json.putArray("left");
             for (i = startContext; i < this.startPos; i++) {
                 offsets = pto.span(ldid,i);
+                if (offsets == null) {
+                    continue;
+                }
                 tokens.add(
                     codePointSubstring(this.tempSnippet,
                                        offsets[0]- startContextChar, offsets[1] - startContextChar)
@@ -1768,15 +1873,39 @@ public class Match extends AbstractDocument {
             };
         };
 
+        int finalLeft = json.has("left") ? json.get("left").size() : 0;
+        int finalMatch = json.has("match") ? json.get("match").size() : 0;
+        int finalRight = json.has("right") ? json.get("right").size() : 0;
+        log.info("KWIC tokens post-cap: total={} (L/M/R={}/{}/{}) id={} uid={}",
+                 finalLeft + finalMatch + finalRight, finalLeft, finalMatch, finalRight, this.getID(), this.getUID());
+
         return (this.snippetTokens = json);
     };
     
 
     @JsonIgnore
     public String getSnippetHTML () {
+        // Entry log: Show context and cap (helps verify HTML path executes)
+        log.info(
+            "Enter getSnippetHTML: id={} uid={} spanDefined={} left(token={},len={}) right(token={},len={}) cap={}",
+            this.getID(), this.getUID(), this.getContext().isSpanDefined(),
+            this.getContext().left.isToken(), this.getContext().left.getLength(),
+            this.getContext().right.isToken(), this.getContext().right.getLength(),
+            KrillProperties.getMaxTokenKwicSize()
+        );
 
-        if (!this._processHighlight())
+        if (this.getContext().left.getLength() + this.getContext().right.getLength() > KrillProperties.getMaxTokenKwicSize()) {
+            log.warn("getSnippetHTML: Context too large: left={} right={} max={}",
+                     this.getContext().left.getLength(), this.getContext().right.getLength(),
+                     KrillProperties.getMaxTokenKwicSize());
+           //  return null;
+        }
+        // Removed enforced HTML KWIC alignment; default behavior remains
+
+        if (!this._processHighlight()) {
+            log.warn("getSnippetHTML: _processHighlight() returned false id={} uid={}", this.getID(), this.getUID());
             return null;
+        }
 
         if (this.processed && this.snippetHTML != null)
             return this.snippetHTML;
@@ -1794,6 +1923,7 @@ public class Match extends AbstractDocument {
         // Snippet stack sizes
         short start = (short) 0;
         short end = this.snippetArray.size();
+        log.info("KWIC HTML snippet elements: count={} id={} uid={}", end, this.getID(), this.getUID());
         end--;
 
 		// Set levels for highlights 
@@ -1810,6 +1940,7 @@ public class Match extends AbstractDocument {
 
         // Iterate over the snippet array
         // Start with left context
+        int leftTextChars = 0, leftNodes = 0;
 		while (end > 0) {
 
 			// Get element of sorted array
@@ -1825,6 +1956,9 @@ public class Match extends AbstractDocument {
             
             String elemString = elem.toHTML(this, level, levelCache, joins);
             sb.append(elemString);
+            if (elem.type == 0 && elem.characters != null)
+                leftTextChars += elem.characters.length();
+            leftNodes++;
 
             if (DEBUG)
                 log.trace("Add node {}", elemString);
@@ -1842,6 +1976,7 @@ public class Match extends AbstractDocument {
 		if (this.startCutted) {
 			sb.append("<span class=\"cutted\"></span>");
 		};
+        int matchTextChars = 0, matchNodes = 0;
         
         for (; start <= end; start++) {
 			elem = this.snippetArray.get(start);
@@ -1856,6 +1991,9 @@ public class Match extends AbstractDocument {
                 log.trace("Add node {}", elemString);
             };
             sb.append(elemString);
+            if (elem.type == 0 && elem.characters != null)
+                matchTextChars += elem.characters.length();
+            matchNodes++;
 
             // The match closes
             if (elem.type == 2 && elem.number == CONTEXT) {
@@ -1880,6 +2018,7 @@ public class Match extends AbstractDocument {
         // There is the right context
         // if (start <= end) {
         sb.append("<span class=\"context-right\">");
+        int rightTextChars = 0, rightNodes = 0;
 
         for (; start <= end; start++) {
             elem = this.snippetArray.get(start);
@@ -1894,6 +2033,9 @@ public class Match extends AbstractDocument {
                 log.trace("Add node {}", elemString);
             };
             sb.append(elemString);
+            if (elem.type == 0 && elem.characters != null)
+                rightTextChars += elem.characters.length();
+            rightNodes++;
         };
         
         if (this.endMore)
@@ -1902,7 +2044,21 @@ public class Match extends AbstractDocument {
         // End of context
         sb.append("</span>");
 
-        return (this.snippetHTML = sb.toString());
+        this.snippetHTML = sb.toString();
+        log.info("KWIC HTML append: leftChars={} matchChars={} rightChars={} leftNodes={} matchNodes={} rightNodes={} startCutted={} endCutted={} endMore={} snippetLen={} id={} uid={}",
+                 leftTextChars, matchTextChars, rightTextChars, leftNodes, matchNodes, rightNodes,
+                 this.startCutted, this.endCutted, this.endMore,
+                 (this.snippetHTML != null ? this.snippetHTML.length() : -1),
+                 this.getID(), this.getUID());
+        // Finalize logging: HTML snippet size and ellipsis flags
+        log.info(
+            "KWIC HTML finalize: snippetLen={} startMore={} endMore={} containsMoreTag={} id={} uid={}",
+            (this.snippetHTML != null ? this.snippetHTML.length() : -1),
+            this.startMore, this.endMore,
+            (this.snippetHTML != null && this.snippetHTML.contains("class=\"more\"")),
+            this.getID(), this.getUID()
+        );
+        return this.snippetHTML;
     };
 
 
@@ -2347,6 +2503,7 @@ public class Match extends AbstractDocument {
 
         int startOffsetChar = -1, endOffsetChar = -1;
         int startOffset = -1, endOffset = -1;
+        PositionsToOffset pto = this.positionsToOffset;
 
         // The offset is defined by a span
         if (this.getContext().isSpanDefined()) {
@@ -2368,12 +2525,15 @@ public class Match extends AbstractDocument {
             if (DEBUG)
                 log.trace("Got context based on span {}-{}/{}-{}",
                         startOffset, endOffset, startOffsetChar, endOffsetChar);
+            // Make sure we can (re)compute character offsets after adjustments
+            this.positionsToOffset.add(ldid, startOffset);
+            this.positionsToOffset.add(ldid, endOffset);
         };
 
         // The offset is defined by tokens or characters
         if (endOffset == -1) {
 
-            PositionsToOffset pto = this.positionsToOffset;
+            PositionsToOffset ptoTok = pto;
 
             // The left offset is defined by tokens
             if (this.context.left.isToken()) {
@@ -2381,7 +2541,7 @@ public class Match extends AbstractDocument {
                 if (DEBUG)
                     log.trace("PTO will retrieve {} (Left context)",
                             startOffset);
-                pto.add(ldid, startOffset);
+                ptoTok.add(ldid, startOffset);
             }
 
             // The left offset is defined by characters
@@ -2395,7 +2555,7 @@ public class Match extends AbstractDocument {
                 if (DEBUG)
                     log.trace("PTO will retrieve {} (Right context)",
                             endOffset);
-                pto.add(ldid, endOffset);
+                ptoTok.add(ldid, endOffset);
             }
 
             // The right context is defined by characters
@@ -2404,16 +2564,38 @@ public class Match extends AbstractDocument {
                         : endPosChar + this.context.right.getLength();
             };
 
-            if (startOffset != -1)
-                startOffsetChar = pto.start(ldid, startOffset);
+        // Enforce total KWIC token cap (left + match + right) on token offsets (removed dead guard)
+            }
 
-            if (endOffset != -1)
-                endOffsetChar = pto.end(ldid, endOffset);
-        };
+        // Enforce total KWIC token cap (left + match + right), regardless of span or token context (removed dead guard)
 
+        // Ensure PTO knows the adjusted token boundaries before resolving chars
+        if (startOffset != -1)
+            pto.add(ldid, startOffset);
+        if (endOffset != -1)
+            pto.add(ldid, endOffset);
+
+        // Compute character offsets according to potentially adjusted token offsets
+        if (startOffset != -1)
+            startOffsetChar = pto.start(ldid, startOffset);
+        if (endOffset != -1)
+            endOffsetChar = pto.end(ldid, endOffset);
+
+        // Diagnostic: show computed offsets and context (debug only)
         if (DEBUG)
-            log.trace("Premature found offsets at {}-{}", startOffsetChar,
-                    endOffsetChar);
+            log.trace("_processOffsetChars: startOffset={} endOffset={} startOffsetChar={} endOffsetChar={} startPos={} endPos={} leftTok?{} leftLen={} rightTok?{} rightLen={} id={}",
+                      startOffset, endOffset, startOffsetChar, endOffsetChar,
+                      this.startPos, this.endPos,
+                      this.context.left.isToken(), this.context.left.getLength(),
+                      this.context.right.isToken(), this.context.right.getLength(),
+                      this.getID());
+
+        // Ensure zero-context means match-only and not full document
+        if (startOffset == -1 && (startOffsetChar < 0 || this.context.left.getLength() == 0))
+            startOffsetChar = startPosChar;
+        if (endOffset == -1 && (endOffsetChar < 0 || this.context.right.getLength() == 0))
+            endOffsetChar = endPosChar;
+
 
 
         // This can happen in case of non-token characters
@@ -2421,7 +2603,7 @@ public class Match extends AbstractDocument {
         if (startOffsetChar > startPosChar)
             startOffsetChar = startPosChar;
         else if (startOffsetChar < 0)
-            startOffsetChar = 0;
+            startOffsetChar = startPosChar;
 
         // No "..." at the beginning
         if (startOffsetChar == 0)
@@ -2434,16 +2616,32 @@ public class Match extends AbstractDocument {
             log.trace("The context spans from chars {}-{}", startOffsetChar,
                     endOffsetChar);
 
+        // Removed optional hard character cap for the HTML window
+
+        // One-line summary of the final HTML character window
+        int charWinLen = (endOffsetChar > -1) ? Math.max(0, endOffsetChar - startOffsetChar) : -1;
+        log.info("KWIC HTML char window: length={} (start={} end={}) id={} uid={}",
+                 charWinLen, startOffsetChar, endOffsetChar, this.getID(), this.getUID());
+
         // Get snippet information from the primary data
-        if (endOffsetChar > -1
-                && (endOffsetChar < this.getPrimaryDataLength())) {
-            this.tempSnippet = this.getPrimaryData(startOffsetChar,
-                    endOffsetChar);
+        boolean htmlCharFallback = false;
+        // Use legacy behavior: no safe char bounds clamping
+        if (endOffsetChar > -1 && (endOffsetChar < this.getPrimaryDataLength())) {
+            this.tempSnippet = this.getPrimaryData(startOffsetChar, endOffsetChar);
         }
         else {
             this.tempSnippet = this.getPrimaryData(startOffsetChar);
             this.endMore = false;
+            htmlCharFallback = true;
         };
+
+        log.info("KWIC HTML chars: startChar={} endChar={} pdl={} fallback={} snippetLen={} id={} uid={}",
+                 startOffsetChar,
+                 (endOffsetChar > -1 ? endOffsetChar : -1),
+                 this.getPrimaryDataLength(),
+                 htmlCharFallback,
+                 (this.tempSnippet != null ? this.tempSnippet.length() : -1),
+                 this.getID(), this.getUID());
 
         if (DEBUG)
             log.trace("Snippet: '{}'", this.tempSnippet);
