@@ -58,45 +58,49 @@ public class TestFieldDocument {
 
         Document doc = fd.compile();
         
-        assertEquals(doc.getField("title").name(), "title");
-        assertEquals(doc.getField("title").stringValue(), "Wikipedia");
+        assertEquals("title", doc.getField("title").name());
+        assertEquals("Wikipedia", doc.getField("title").stringValue());
        
-        assertEquals(doc.getField("corpusID").name(), "corpusID");
-        assertEquals(doc.getField("corpusID").stringValue(), "WPD");
+        assertEquals("corpusID", doc.getField("corpusID").name());
+        assertEquals("WPD", doc.getField("corpusID").stringValue());
 
-        assertEquals(doc.getField("ID").name(), "ID");
-        assertEquals(doc.getField("ID").stringValue(), "WPD-AAA-00001");
+        assertEquals("ID", doc.getField("ID").name());
+        assertEquals("WPD-AAA-00001", doc.getField("ID").stringValue());
 
-        assertEquals(doc.getField("subTitle").name(), "subTitle");
-        assertEquals(doc.getField("subTitle").stringValue(),
-                "Die freie Enzyklopädie");
+        assertEquals("subTitle", doc.getField("subTitle").name());
+        assertEquals(
+            "Die freie Enzyklopädie",
+            doc.getField("subTitle").stringValue());
 
-        assertEquals(doc.getField("pubPlace").name(), "pubPlace");
-        assertEquals(doc.getField("pubPlace").stringValue(), "Bochum");
+        assertEquals("pubPlace", doc.getField("pubPlace").name());
+        assertEquals("Bochum", doc.getField("pubPlace").stringValue());
 
-        assertEquals(doc.getField("lastModified").name(), "lastModified");
-        assertEquals(doc.getField("lastModified").stringValue(), "20130717");
+        assertEquals("lastModified", doc.getField("lastModified").name());
+        assertEquals("20130717", doc.getField("lastModified").stringValue());
 
-        assertEquals(doc.getField("tokens").name(), "tokens");
-        assertEquals(doc.getField("tokens").stringValue(), "abc");
+        assertEquals("tokens", doc.getField("tokens").name());
+        assertEquals("abc", doc.getField("tokens").stringValue());
 
-        assertEquals(doc.getField("author").name(), "author");
-        assertEquals(doc.getField("author").stringValue(),
-                "Peter Frankenfeld");
+        assertEquals("author", doc.getField("author").name());
+        assertEquals(
+            "Peter Frankenfeld",
+            doc.getField("author").stringValue());
 
-        assertEquals(doc.getField("layerInfo").name(), "layerInfo");
-        assertEquals(doc.getField("layerInfo").stringValue(),
-                "opennlp/p=pos");
+        assertEquals("layerInfo", doc.getField("layerInfo").name());
+        assertEquals(
+            "opennlp/p=pos",
+            doc.getField("layerInfo").stringValue());
 
-        assertEquals(doc.getField("textClass").name(), "textClass");
-        assertEquals(doc.getField("textClass").stringValue(),
-                "music entertainment");
-        assertEquals(doc.getField("Wikilink").name(), "Wikilink");
-        assertEquals(doc.getField("Wikilink").stringValue(),
-                     "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel"
-            );
+        assertEquals("textClass", doc.getField("textClass").name());
+        assertEquals(
+            "music entertainment",
+            doc.getField("textClass").stringValue());
+        assertEquals("Wikilink", doc.getField("Wikilink").name());
+        assertEquals(
+            "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel",
+            doc.getField("Wikilink").stringValue());
 
-        assertEquals(doc.getField("justanumber").numericValue().intValue(), 12345678);
+        assertEquals(12345678, doc.getField("justanumber").numericValue().intValue());
 
     };
 
@@ -124,15 +128,15 @@ public class TestFieldDocument {
 
         ki.commit();
 
-        assertEquals(fd.getPrimaryData(), "abc");
-        assertEquals(fd.getCorpusID(), "WPD");
-        assertEquals(fd.getID(), "WPD-AAA-00001");
-        assertEquals(fd.getFieldValue("textClass"), "music entertainment");
-        assertEquals(fd.getFieldValue("author"), "Peter Frankenfeld");
-        assertEquals(fd.getFieldValue("title"), "Wikipedia");
-        assertEquals(fd.getFieldValue("subTitle"), "Die freie Enzyklopädie");
-        assertEquals(fd.getFieldValue("pubPlace"), "Bochum");
-        assertEquals(fd.getFieldValueAsDate("pubDate").toDisplay(), "2013-06-17");
+        assertEquals("abc", fd.getPrimaryData());
+        assertEquals("WPD", fd.getCorpusID());
+        assertEquals("WPD-AAA-00001", fd.getID());
+        assertEquals("music entertainment", fd.getFieldValue("textClass"));
+        assertEquals("Peter Frankenfeld", fd.getFieldValue("author"));
+        assertEquals("Wikipedia", fd.getFieldValue("title"));
+        assertEquals("Die freie Enzyklopädie", fd.getFieldValue("subTitle"));
+        assertEquals("Bochum", fd.getFieldValue("pubPlace"));
+        assertEquals("2013-06-17", fd.getFieldValueAsDate("pubDate").toDisplay());
 
         QueryBuilder kq = new QueryBuilder("tokens");
         Result kr = ki
@@ -140,17 +144,17 @@ public class TestFieldDocument {
 
         Match km = kr.getMatch(0);
 
-        assertEquals(km.getPrimaryData(), "abc");
-        assertEquals(km.getCorpusID(), "WPD");
-        assertEquals(km.getDocID(), "WPD-AAA-00001");
-        assertEquals(km.getFieldValue("textClass"), "music entertainment");
-        assertEquals(km.getFieldValue("author"), "Peter Frankenfeld");
-        assertEquals(km.getFieldValue("title"), "Wikipedia");
-        assertEquals(km.getFieldValue("subTitle"), "Die freie Enzyklopädie");
-        assertEquals(km.getFieldValue("pubPlace"), "Bochum");
-        assertEquals(km.getFieldValueAsDate("pubDate").toDisplay(), "2013-06-17");
+        assertEquals("abc", km.getPrimaryData());
+        assertEquals("WPD", km.getCorpusID());
+        assertEquals("WPD-AAA-00001", km.getDocID());
+        assertEquals("music entertainment", km.getFieldValue("textClass"));
+        assertEquals("Peter Frankenfeld", km.getFieldValue("author"));
+        assertEquals("Wikipedia", km.getFieldValue("title"));
+        assertEquals("Die freie Enzyklopädie", km.getFieldValue("subTitle"));
+        assertEquals("Bochum", km.getFieldValue("pubPlace"));
+        assertEquals("2013-06-17", km.getFieldValueAsDate("pubDate").toDisplay());
 
-        assertEquals(km.getSnippetBrackets(), "a[[{3:b}]]c");
+        assertEquals("a[[{3:b}]]c", km.getSnippetBrackets());
     };
 
 
@@ -263,15 +267,15 @@ public class TestFieldDocument {
 
         ki.commit();
 
-        assertEquals(fd.getPrimaryData(), "abc");
-        assertEquals(fd.getCorpusID(), "WPD");
-        assertEquals(fd.getID(), "WPD-AAA-00001");
-        assertEquals(fd.getFieldValue("textClass"), "music entertainment");
-        assertEquals(fd.getFieldValue("author"), "Peter Frankenfeld");
-        assertEquals(fd.getFieldValue("title"), "Wikipedia");
-        assertEquals(fd.getFieldValue("subTitle"), "Die freie Enzyklopädie");
-        assertEquals(fd.getFieldValue("pubPlace"), "Bochum");
-        assertEquals(fd.getFieldValueAsDate("pubDate").toDisplay(), "");
+        assertEquals("abc", fd.getPrimaryData());
+        assertEquals("WPD", fd.getCorpusID());
+        assertEquals("WPD-AAA-00001", fd.getID());
+        assertEquals("music entertainment", fd.getFieldValue("textClass"));
+        assertEquals("Peter Frankenfeld", fd.getFieldValue("author"));
+        assertEquals("Wikipedia", fd.getFieldValue("title"));
+        assertEquals("Die freie Enzyklopädie", fd.getFieldValue("subTitle"));
+        assertEquals("Bochum", fd.getFieldValue("pubPlace"));
+        assertEquals("", fd.getFieldValueAsDate("pubDate").toDisplay());
 	};
 
     @Test
@@ -357,17 +361,19 @@ public class TestFieldDocument {
 
         ki.commit();
 
-        assertEquals(fd.getPrimaryData(), "abc");
-        // assertEquals(fd.doc.getField("corpusID").stringValue(), "WPD");
-        assertEquals(fd.doc.getField("textSigle").stringValue(), "x/y/z");
-        assertEquals(fd.doc.getField("ID").stringValue(), "WPD-AAA-00001");
-        assertEquals(fd.doc.getField("textClass").stringValue(), "music entertainment");
-        assertEquals(fd.doc.getField("author").stringValue(), "Peter Frankenfeld");
-        assertEquals(fd.doc.getField("title").stringValue(), "Wikipedia");
-        assertEquals(fd.doc.getField("subTitle").stringValue(), "Die freie Enzyklopädie");
-        assertEquals(fd.doc.getField("pubPlace").stringValue(), "Bochum");
-        assertEquals(fd.doc.getField("pubDate").stringValue(), "20150501");
-        assertEquals(fd.doc.getField("link").stringValue(), "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel");
+        assertEquals("abc", fd.getPrimaryData());
+        // assertEquals("WPD", fd.doc.getField("corpusID").stringValue());
+        assertEquals("x/y/z", fd.doc.getField("textSigle").stringValue());
+        assertEquals("WPD-AAA-00001", fd.doc.getField("ID").stringValue());
+        assertEquals("music entertainment", fd.doc.getField("textClass").stringValue());
+        assertEquals("Peter Frankenfeld", fd.doc.getField("author").stringValue());
+        assertEquals("Wikipedia", fd.doc.getField("title").stringValue());
+        assertEquals("Die freie Enzyklopädie", fd.doc.getField("subTitle").stringValue());
+        assertEquals("Bochum", fd.doc.getField("pubPlace").stringValue());
+        assertEquals("20150501", fd.doc.getField("pubDate").stringValue());
+        assertEquals(
+            "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel",
+            fd.doc.getField("link").stringValue());
 
         JsonNode res = ki.getFields("x/y/z").toJsonNode();
 
@@ -467,15 +473,15 @@ public class TestFieldDocument {
 
         ki.commit();
 
-        assertEquals(fd.getPrimaryData(), "abc");
-        assertEquals(fd.doc.getField("alter").stringValue(), "40.0");
-        assertEquals(fd.doc.getField("name").stringValue(), "Frank");
-        assertEquals(fd.doc.getField("schluesselwoerter").stringValue(), "musik unterhaltung");
-        assertEquals(fd.doc.getField("tags").stringValue(), "nachrichten feuilleton sport raetsel");
-        assertEquals(fd.doc.getField("titel").stringValue(), "Der alte Baum");
-        assertEquals(fd.doc.getField("anhang").stringValue(), "data:application/x.korap-link,http://spiegel.de/");
-        assertEquals(fd.doc.getField("referenz").stringValue(), "So war das");
-        assertEquals(fd.doc.getField("datum").stringValue(), "20180403");
+        assertEquals("abc", fd.getPrimaryData());
+        assertEquals("40.0", fd.doc.getField("alter").stringValue());
+        assertEquals("Frank", fd.doc.getField("name").stringValue());
+        assertEquals("musik unterhaltung", fd.doc.getField("schluesselwoerter").stringValue());
+        assertEquals("nachrichten feuilleton sport raetsel", fd.doc.getField("tags").stringValue());
+        assertEquals("Der alte Baum", fd.doc.getField("titel").stringValue());
+        assertEquals("data:application/x.korap-link,http://spiegel.de/", fd.doc.getField("anhang").stringValue());
+        assertEquals("So war das", fd.doc.getField("referenz").stringValue());
+        assertEquals("20180403", fd.doc.getField("datum").stringValue());
 
         JsonNode res = ki.getFields("aa/bb/cc").toJsonNode();
 
@@ -643,13 +649,13 @@ public class TestFieldDocument {
         ki.commit();
 
         MetaFields mfs = ki.getFields("AAA/BBB/001");
-        assertEquals(mfs.getFieldValue("indexCreationDate").length(), 10);
+        assertEquals(10, mfs.getFieldValue("indexCreationDate").length());
         assertTrue(mfs.getFieldValue("indexCreationDate").matches("\\d{4}-\\d{2}-\\d{2}"));
         assertEquals(
             mfs.getFieldValue("indexCreationDate"),
             mfs.getFieldValue("indexLastModified")
             );
-        assertEquals(mfs.getFieldValue("content"), "Example1");
+        assertEquals("Example1", mfs.getFieldValue("content"));
 
 
         // Add new document
@@ -661,10 +667,10 @@ public class TestFieldDocument {
         ki.commit();
 
         mfs = ki.getFields("AAA/BBB/002");
-        assertEquals(mfs.getFieldValue("indexCreationDate").length(), 10);
+        assertEquals(10, mfs.getFieldValue("indexCreationDate").length());
        
         assertTrue(mfs.getFieldValue("indexCreationDate").matches("\\d{4}-\\d{2}-\\d{2}"));
-        assertEquals(mfs.getFieldValue("content"), "Example2");
+        assertEquals("Example2", mfs.getFieldValue("content"));
 
         fd = new FieldDocument();
         fd.addString("textSigle", "AAA/BBB/001");
@@ -674,16 +680,16 @@ public class TestFieldDocument {
         ki.commit();
 
         mfs = ki.getFields("AAA/BBB/001");
-        assertEquals(mfs.getFieldValue("indexCreationDate").length(), 10);
+        assertEquals(10, mfs.getFieldValue("indexCreationDate").length());
         assertTrue(mfs.getFieldValue("indexCreationDate").matches("\\d{4}-\\d{2}-\\d{2}"));
-        assertEquals(mfs.getFieldValue("content"), "Example3");
+        assertEquals("Example3", mfs.getFieldValue("content"));
 
-        assertEquals(ki.numberOf("documents"), 2);
+        assertEquals(2, ki.numberOf("documents"));
 
         // Test Inputstream method
         ki.upsertDoc(getClass().getResourceAsStream("/wiki/WPD17-H81-63495.json.gz"), true);
         ki.commit();
-        assertEquals(ki.numberOf("documents"), 3);
+        assertEquals(3, ki.numberOf("documents"));
 
         ki.close();
 
@@ -694,7 +700,7 @@ public class TestFieldDocument {
         ki.upsertDoc(fd);
         ki.commit();
 
-        assertEquals(ki.numberOf("documents"), 4);
+        assertEquals(4, ki.numberOf("documents"));
 
     };
 
