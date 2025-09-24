@@ -53,6 +53,6 @@ public class TestMessage {
         for (Message msg : km)
             test += msg.getCode();
 
-        assertEquals(test, "612613614");
+        assertEquals("612613614", test);
     };
 };
