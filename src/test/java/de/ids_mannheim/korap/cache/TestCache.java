@@ -36,8 +36,8 @@ public class TestCache {
         cache.put("beispiel2", "Das ist ein Versuch");
         cache.put("beispiel3", "Das ist ein Beispiel");
 
-        assertEquals(cache.get("beispiel1"), "Das ist ein Test");
-        assertEquals(cache.get("beispiel2"), "Das ist ein Versuch");
-        assertEquals(cache.get("beispiel3"), "Das ist ein Beispiel");
+        assertEquals("Das ist ein Test", cache.get("beispiel1"));
+        assertEquals("Das ist ein Versuch", cache.get("beispiel2"));
+        assertEquals("Das ist ein Beispiel", cache.get("beispiel3"));
     };
 };
