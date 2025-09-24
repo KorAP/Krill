@@ -321,7 +321,7 @@ public class TestNextIndex {
                 new SpanElementQuery("base", "x"));
 
         kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
         assertEquals("ab[[cabca]]bac", kr.getMatch(0).getSnippetBrackets());
 
         sq = new SpanNextQuery(new SpanTermQuery(new Term("base", "s:z")),
