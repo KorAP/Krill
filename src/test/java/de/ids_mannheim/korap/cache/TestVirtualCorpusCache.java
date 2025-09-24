@@ -213,8 +213,8 @@ public class TestVirtualCorpusCache {
 
         Result result = krill.apply(ki);
         assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
-        assertEquals(result.getMatch(0).getUID(), 2);
-        assertEquals(result.getMatches().size(), 1);
+        assertEquals(2, result.getMatch(0).getUID());
+        assertEquals(1, result.getMatches().size());
 
         ki.addDoc(TestKrillCollectionIndex.createDoc3());
         ki.commit();
@@ -228,7 +228,7 @@ public class TestVirtualCorpusCache {
 
         assertEquals("[[a]] c d", result.getMatch(0).getSnippetBrackets());
         assertEquals("[[a]] d e", result.getMatch(1).getSnippetBrackets());
-        assertEquals(result.getMatches().size(), 2);
+        assertEquals(2, result.getMatches().size());
 
         // Cache is not removed on deletion
         ki.delDoc(2);
@@ -242,7 +242,7 @@ public class TestVirtualCorpusCache {
         assertEquals("vcFilter(named-vc1)", krill.getCollection().toString());
         result = krill.apply(ki);
         assertEquals("[[a]] d e", result.getMatch(0).getSnippetBrackets());
-        assertEquals(result.getMatches().size(), 1);
+        assertEquals(1, result.getMatches().size());
 
         VirtualCorpusCache.reset();
         assertFalse(VirtualCorpusCache.contains(named_vc1));
