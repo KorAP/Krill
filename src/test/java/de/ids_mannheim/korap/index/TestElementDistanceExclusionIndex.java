@@ -97,7 +97,7 @@ public class TestElementDistanceExclusionIndex {
         SpanQuery sq;
         sq = createQuery("s", "s:d", "s:c", 0, 0, false, true);
         kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
         assertEquals(6, kr.getMatch(0).startPos);
         assertEquals(7, kr.getMatch(0).endPos);
     }
@@ -117,7 +117,7 @@ public class TestElementDistanceExclusionIndex {
         sq = createQuery("s", "s:c", "s:d", 0, 0, false, true);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 4);
+        assertEquals(4, kr.getTotalResults());
         assertEquals(0, kr.getMatch(0).startPos);
         assertEquals(1, kr.getMatch(0).endPos);
         assertEquals(2, kr.getMatch(1).startPos);
@@ -141,14 +141,14 @@ public class TestElementDistanceExclusionIndex {
         // unordered
         sq = createQuery("s", "s:c", "s:e", 0, 1, false, true);
         kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
         assertEquals(5, kr.getMatch(0).startPos);
         assertEquals(6, kr.getMatch(0).endPos);
 
         //ordered 
         sq = createQuery("s", "s:c", "s:e", 0, 1, true, true);
         kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(3, kr.getTotalResults());
         assertEquals(2, kr.getMatch(0).startPos);
         assertEquals(3, kr.getMatch(0).endPos);
         assertEquals(3, kr.getMatch(1).startPos);
@@ -171,7 +171,7 @@ public class TestElementDistanceExclusionIndex {
         sq = createQuery("s", "s:d", "s:e", 1, 1, true, true);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(3, kr.getTotalResults());
         assertEquals(4, kr.getMatch(0).startPos);
         assertEquals(5, kr.getMatch(0).endPos);
         assertEquals(1, kr.getMatch(1).getLocalDocID());
@@ -197,7 +197,7 @@ public class TestElementDistanceExclusionIndex {
         SpanQuery sq = createQuery("s", "s:c", "s:d", 1, 1, false, true);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(3, kr.getTotalResults());
         assertEquals(3, kr.getMatch(2).getLocalDocID());
         assertEquals(3, kr.getMatch(2).startPos);
         assertEquals(4, kr.getMatch(2).endPos);
@@ -207,7 +207,7 @@ public class TestElementDistanceExclusionIndex {
                 new SpanTermQuery(new Term("base", "s:a")));
 
         kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
         assertEquals(3, kr.getMatch(0).getLocalDocID());
         assertEquals(3, kr.getMatch(0).startPos);
         assertEquals(5, kr.getMatch(0).endPos);
