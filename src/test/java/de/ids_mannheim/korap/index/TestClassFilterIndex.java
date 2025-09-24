@@ -37,9 +37,10 @@ public class TestClassFilterIndex {
         SpanClassFilterQuery sq = new SpanClassFilterQuery(sdq,
                 ClassOperation.INCLUDE, 2, 1, true);
 
-        assertEquals(sq.toString(),
-                "spanClassFilter(spanDistance({1: <tokens:np />}, {2: <tokens:vp />}, "
-                        + "[(w[0:1], notOrdered, notExcluded)]),INCLUDE,2,1)");
+        assertEquals(
+            "spanClassFilter(spanDistance({1: <tokens:np />}, {2: <tokens:vp />}, "
+                        + "[(w[0:1], notOrdered, notExcluded)]),INCLUDE,2,1)",
+            sq.toString());
 
         kr = ki.search(sq, (short) 10);
         // for (Match km : kr.getMatches()) {
