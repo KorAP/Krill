@@ -79,34 +79,34 @@ public class TestIndex { // extends LuceneTestCase {
     @Test
     public void multiTerm () throws CorpusDataException {
         MultiTerm test = new MultiTerm("test");
-        assertEquals(test.getTerm(), "test");
-        assertEquals(test.getPayload(), null);
-        assertEquals(test.getStart(), 0);
-        assertEquals(test.getEnd(), 0);
+        assertEquals("test", test.getTerm());
+        assertEquals(null, test.getPayload());
+        assertEquals(0, test.getStart());
+        assertEquals(0, test.getEnd());
         assertFalse(test.hasStoredOffsets());
-        assertEquals(test.toString(), "test");
+        assertEquals("test", test.toString());
 
         test = new MultiTerm("test#0-4");
-        assertEquals(test.getTerm(), "test");
-        assertEquals(test.getPayload(), null);
-        assertEquals(test.getStart(), 0);
-        assertEquals(test.getEnd(), 4);
+        assertEquals("test", test.getTerm());
+        assertEquals(null, test.getPayload());
+        assertEquals(0, test.getStart());
+        assertEquals(4, test.getEnd());
         assertFalse(test.hasStoredOffsets());
-        assertEquals(test.toString(), "test#0-4");
+        assertEquals("test#0-4", test.toString());
 
         test = new MultiTerm("<>:s:test#0-4$<i>67");
-        assertEquals(test.getTerm(), "<>:s:test");
-        assertEquals(test.getPayload().toString(), "[0 0 0 43]");
-        assertEquals(test.getStart(), 0);
-        assertEquals(test.getEnd(), 4);
+        assertEquals("<>:s:test", test.getTerm());
+        assertEquals("[0 0 0 43]", test.getPayload().toString());
+        assertEquals(0, test.getStart());
+        assertEquals(4, test.getEnd());
         assertFalse(test.hasStoredOffsets());
         assertTrue(test.toString().startsWith("<>:s:test#0-4$"));
 
         test = new MultiTerm("xip/l:\\#normal#0-5$<i>3999");
-        assertEquals(test.getTerm(), "xip/l:#normal");
-        assertEquals(test.getPayload().toString(), "[0 0 f 9f]");
-        assertEquals(test.getStart(), 0);
-        assertEquals(test.getEnd(), 5);
+        assertEquals("xip/l:#normal", test.getTerm());
+        assertEquals("[0 0 f 9f]", test.getPayload().toString());
+        assertEquals(0, test.getStart());
+        assertEquals(5, test.getEnd());
         assertFalse(test.hasStoredOffsets());
         assertTrue(test.toString().startsWith("xip/l:\\#normal#0-5$"));
     };
@@ -115,14 +115,14 @@ public class TestIndex { // extends LuceneTestCase {
     @Test
     public void multiTermToken () throws CorpusDataException {
         MultiTermToken test = new MultiTermToken("hunde", "pos:n", "m:gen:pl");
-        assertEquals(test.terms.get(0).term, "hunde");
-        assertEquals(test.terms.get(1).term, "pos:n");
-        assertEquals(test.terms.get(2).term, "m:gen:pl");
+        assertEquals("hunde", test.terms.get(0).term);
+        assertEquals("pos:n", test.terms.get(1).term);
+        assertEquals("m:gen:pl", test.terms.get(2).term);
 
         test = new MultiTermToken("hunde", "pos:n", "m:gen:pl");
-        assertEquals(test.terms.get(0).term, "hunde");
-        assertEquals(test.terms.get(1).term, "pos:n");
-        assertEquals(test.terms.get(2).term, "m:gen:pl");
+        assertEquals("hunde", test.terms.get(0).term);
+        assertEquals("pos:n", test.terms.get(1).term);
+        assertEquals("m:gen:pl", test.terms.get(2).term);
     };
 
 
