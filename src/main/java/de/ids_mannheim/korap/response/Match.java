@@ -1171,13 +1171,8 @@ public class Match extends AbstractDocument {
             // EM: update char offsets
             
             if (cutExpansion) {
-                this.positionsToOffset.add(localDocID, startPos);
-                this.positionsToOffset.add(localDocID, endPos);
-                
-                int start = this.positionsToOffset.start(localDocID, startPos);
-                int end = this.positionsToOffset.start(localDocID, endPos)-1;
-                spanContext[2] = start; //spanContext[2];
-                spanContext[3] = end; // spanContext[3];
+                this.startCutted = true; // left trimmed
+                this.endCutted = true;   // right trimmed
             }
 
             this.potentialStartPosChar = spanContext[2];
@@ -1636,13 +1631,13 @@ public class Match extends AbstractDocument {
         int ldid = this.localDocID;
 
         int startContext = -1;
-        int endContext = -1;
+        int endContext = -1;         // exclusive
         int startContextChar = -1;
         int endContextChar = -1;
 
         int pdl = this.getPrimaryDataLength();
         
-        // Get context based on a span definition
+        // Context based on span definition
         log.info(
             "KWIC tokens begin: spanDefined={} left(token={},len={}) right(token={},len={}) startPos={} endPos={} id={} uid={}",
             this.getContext().isSpanDefined(),
@@ -1651,10 +1646,8 @@ public class Match extends AbstractDocument {
             this.getStartPos(), this.getEndPos(), this.getID(), this.getUID()
         );
         if (this.getContext().isSpanDefined()) {
-
             if (DEBUG)
                 log.debug("Context defined by span");
-            
             int[] spanContext = this.expandContextToSpan(
                 this.positionsToOffset.getLeafReader(), (Bits) null,
                 "tokens", this.context.getSpanContext());
@@ -1664,83 +1657,62 @@ public class Match extends AbstractDocument {
             endContextChar = spanContext[3];
         }
 
-        // The offset is not yet defined - and defined by tokens
+        // Otherwise defined by token lengths
         if (endContext == -1) {
-
-            if (DEBUG)
-                log.debug("No context defined by span");
-
             if (this.context.left.isToken() && this.context.left.getLength() > 0) {
                 startContext = this.startPos - this.context.left.getLength();
                 if (startContext < 0)
                     startContext = 0;
-            };
-        
+            }
             if (this.context.right.isToken() && this.context.right.getLength() > 0) {
-                // Use exclusive bound for endContext to simplify iteration
-                endContext = this.endPos + this.context.right.getLength();
-            };
-        };
-       
-        if (startContext == -1) {
-            startContext = this.startPos;
-            if (DEBUG)
-                log.debug("Set startContext {}", endContext);
-        };
+                endContext = this.endPos + this.context.right.getLength(); // exclusive
+            }
+        }
 
-        if (endContext == -1) {
-            endContext = this.endPos - 1;
-            if (DEBUG)
-                log.debug("Set endContext {}", endContext);
-        };
-        
-        // Report raw token window before cap
+        if (startContext == -1)
+            startContext = this.startPos;
+        if (endContext == -1)
+            endContext = this.endPos; // exclusive
+
+        // Raw window stats
         int rawLeftLen = (startContext < this.startPos) ? (this.startPos - startContext) : 0;
         int rawMatchLen = (this.endPos > this.startPos) ? (this.endPos - this.startPos) : 0;
-        int rawRightLen = (endContext > this.endPos) ? ((endContext == -1 ? this.endPos : endContext) - this.endPos) : 0;
+        int rawRightLen = (endContext > this.endPos) ? (endContext - this.endPos) : 0;
         log.info(
             "KWIC tokens raw: L/M/R={}/{}/{} startCtxTok={} endCtxTok={} id={} uid={}",
             rawLeftLen, rawMatchLen, rawRightLen, startContext, endContext, this.getID(), this.getUID()
         );
 
-        // Enforce total KWIC token cap (left + match + right)
+        // Apply total KWIC cap (left + match + right)
         int kwicMax = KrillProperties.getMaxTokenKwicSize();
         if (kwicMax > 0) {
-            // Convert endContext to exclusive bound for iteration ease
-            int leftLen = (startContext < this.startPos) ? (this.startPos - startContext) : 0;
-            int matchLen = (this.endPos > this.startPos) ? (this.endPos - this.startPos) : 0;
-            int rightLen = (endContext > this.endPos) ? (endContext - this.endPos) : 0;
+            int leftLen = rawLeftLen;
+            int matchLen = rawMatchLen;
+            int rightLen = rawRightLen;
             int total = leftLen + matchLen + rightLen;
             if (DEBUG)
                 log.info("KWIC tokens pre-cap: total={} (L/M/R={}/{}/{}) cap={} id={} uid={}",
                          total, leftLen, matchLen, rightLen, kwicMax, this.getID(), this.getUID());
 
-            // 1) Regel: Nur wenn das Match allein größer als das Limit ist, wird das Match gekürzt
-            if (matchLen > kwicMax) { // strict > laut Anforderung
+            // Rule 1: Trim match only if it alone exceeds the cap
+            if (matchLen > kwicMax) {
                 this.endPos = this.startPos + kwicMax;
                 this.endCutted = true;
-                startContext = this.startPos; // Alle Kontexte entfallen
-                endContext = this.endPos;     // exklusives Ende
-                if (DEBUG)
-                    log.info("KWIC cap applied: match trimmed to {} tokens, no context retained (id={})", kwicMax, this.getID());
+                startContext = this.startPos;
+                endContext = this.endPos; // exclusive
+                leftLen = 0;
+                rightLen = 0;
             }
-            // 2) Gesamtfenster (links+match+rechts) zu groß: Kontexte symmetrisch gegen ein gemeinsames Maximum kappen
+            // Rule 2: Otherwise trim contexts symmetrically
             else if (total > kwicMax) {
-                int allowedContext = kwicMax - matchLen; // max Anzahl Kontext-Tokens insgesamt
-                if (allowedContext < 0) {
-                    // Sicherheit: kein Kontext zulassen
-                    allowedContext = 0;
-                }
-                int allowedPerSide = allowedContext / 2; // Basismarke pro Seite
-
+                int allowedContext = kwicMax - matchLen;
+                if (allowedContext < 0) allowedContext = 0;
+                int allowedPerSide = allowedContext / 2;
                 int newLeft = Math.min(leftLen, allowedPerSide);
                 int newRight = Math.min(rightLen, allowedPerSide);
-
                 int consumed = newLeft + newRight;
-                int remaining = allowedContext - consumed; // Restbudget (ungerade oder weil eine Seite kürzer war)
-
+                int remaining = allowedContext - consumed;
                 if (remaining > 0) {
-                    // Versuche Rest zuerst der Seite zu geben, die noch Kapazität hat (Originalseite größer als bereits zugewiesen)
                     int leftCap = leftLen - newLeft;
                     if (leftCap > 0) {
                         int add = Math.min(remaining, leftCap);
@@ -1756,122 +1728,73 @@ public class Match extends AbstractDocument {
                         }
                     }
                 }
-
-                // Rechne neue Start-/End-Kontext-Grenzen aus (endContext bleibt exklusiv)
-                // Aktueller leftLen = this.startPos - startContext
-                if (newLeft != leftLen) {
+                if (newLeft != leftLen)
                     startContext = this.startPos - newLeft;
-                    if (startContext < 0) startContext = 0; // Sicherheit
-                }
-                if (newRight != rightLen) {
-                    endContext = this.endPos + newRight; // exklusiv
-                }
-
-                if (DEBUG)
-                    log.info("KWIC cap applied sym-context: allowedContext={} allowedPerSide={} finalLeft={} finalRight={} matchLen={} id={} uid={}", allowedContext, allowedPerSide, newLeft, newRight, matchLen, this.getID(), this.getUID());
-            }
-            else {
-                if (DEBUG)
-                    log.debug("KWIC cap not reached: total={} ≤ cap={}", total, kwicMax);
+                if (newRight != rightLen)
+                    endContext = this.endPos + newRight; // exclusive
             }
         }
         
-        // Retrieve the character offsets for all tokens
-        for (int i = startContext; i < endContext; i++) {
+        // Collect positional offsets for all tokens
+        for (int i = startContext; i < endContext; i++)
             pto.add(ldid, i);
-        };
 
         if (startContextChar == -1)
             startContextChar = pto.start(ldid, startContext);
-
         if (endContextChar == -1)
             endContextChar = pto.end(ldid, endContext);
-            
-        if (DEBUG)
-            log.debug("Match is {}/{} - {}/{}",startContext,startContextChar,endContext,endContextChar);
 
+        // Retrieve primary data slice
         if (endContextChar == -1 || endContextChar == 0 || endContextChar > pdl) {
             this.tempSnippet = this.getPrimaryData(startContextChar);
-            // Do not alter endMore here; HTML/Brackets decide based on char offsets
-        } else  {
+        }
+        else {
             this.tempSnippet = this.getPrimaryData(startContextChar, endContextChar);
         }
 
-        // Do not alter startMore here; HTML/Brackets decide based on char offsets
-        
-        Integer[] offsets;
-        ArrayNode tokens;
-        int i;
-
-        // Create left context token list
+        // Left context tokens
         if (startContext < this.startPos) {
-            tokens = json.putArray("left");
-            for (i = startContext; i < this.startPos; i++) {
-                offsets = pto.span(ldid,i);
-                if (offsets == null) {
-                    continue;
-                }
-                tokens.add(
-                    codePointSubstring(this.tempSnippet,
-                                       offsets[0]- startContextChar, offsets[1] - startContextChar)
-                    );
-            };
-        };
-
-        tokens = json.putArray("match");
-        for (i = this.startPos; i < this.endPos; i++) {
-            offsets = pto.span(ldid,i);
-            if (offsets == null) {
-                continue;
+            ArrayNode leftArr = json.putArray("left");
+            for (int i = startContext; i < this.startPos; i++) {
+                Integer[] span = pto.span(ldid, i);
+                if (span == null) continue;
+                leftArr.add(codePointSubstring(this.tempSnippet, span[0] - startContextChar, span[1] - startContextChar));
             }
-            tokens.add(
-                codePointSubstring(this.tempSnippet,
-                                   offsets[0]- startContextChar, offsets[1] - startContextChar)
-                );
-        };
+        }
 
-        // Create right context token list
+        // Match tokens
+        ArrayNode matchArr = json.putArray("match");
+        for (int i = this.startPos; i < this.endPos; i++) {
+            Integer[] span = pto.span(ldid, i);
+            if (span == null) continue;
+            matchArr.add(codePointSubstring(this.tempSnippet, span[0] - startContextChar, span[1] - startContextChar));
+        }
+
+        // Right context tokens
         if (endContext > this.endPos) {
-            tokens = null;
-            for (i = this.endPos; i < endContext; i++) {
-                offsets = pto.span(ldid,i);
-                if (offsets == null) {
-                    break;
-                };
+            ArrayNode rightArr = null;
+            for (int i = this.endPos; i < endContext; i++) {
+                Integer[] span = pto.span(ldid, i);
+                if (span == null) break;
+                if (rightArr == null) rightArr = json.putArray("right");
+                rightArr.add(codePointSubstring(this.tempSnippet, span[0] - startContextChar, span[1] - startContextChar));
+            }
+        }
 
-                if (tokens == null)
-                    tokens = json.putArray("right");
-                
-                tokens.add(
-                    codePointSubstring(this.tempSnippet,
-                        offsets[0]- startContextChar, offsets[1] - startContextChar)
-                    );
-            };
-        };
-
-        // Add class arrays to JSON
+        // Classes (highlights inside match window)
         if (this.highlight != null) {
-
             ArrayNode classes = null;
-            for (Highlight highlight : this.highlight) {
-
-                if (highlight.number < 0 || highlight.number > 255)
-                    continue;
-
-                // Highlight is a pagebreak
-                if (highlight.end == PB_MARKER || highlight.end == ALL_MARKER)
-                    continue;
-
-                if (classes == null)
-                    classes = json.putArray("classes");
-                
-                ArrayNode cls = mapper.createArrayNode();                
-                cls.add(highlight.number);
-                cls.add(highlight.start - this.startPos);
-                cls.add(highlight.end - this.startPos);
+            for (Highlight hl : this.highlight) {
+                if (hl.number < 0 || hl.number > 255) continue;
+                if (hl.end == PB_MARKER || hl.end == ALL_MARKER) continue;
+                if (classes == null) classes = json.putArray("classes");
+                ArrayNode cls = mapper.createArrayNode();
+                cls.add(hl.number);
+                cls.add(hl.start - this.startPos);
+                cls.add(hl.end - this.startPos);
                 classes.add(cls);
-            };
-        };
+            }
+        }
 
         int finalLeft = json.has("left") ? json.get("left").size() : 0;
         int finalMatch = json.has("match") ? json.get("match").size() : 0;
@@ -1880,782 +1803,6 @@ public class Match extends AbstractDocument {
                  finalLeft + finalMatch + finalRight, finalLeft, finalMatch, finalRight, this.getID(), this.getUID());
 
         return (this.snippetTokens = json);
-    };
-    
-
-    @JsonIgnore
-    public String getSnippetHTML () {
-        // Entry log: Show context and cap (helps verify HTML path executes)
-        log.info(
-            "Enter getSnippetHTML: id={} uid={} spanDefined={} left(token={},len={}) right(token={},len={}) cap={}",
-            this.getID(), this.getUID(), this.getContext().isSpanDefined(),
-            this.getContext().left.isToken(), this.getContext().left.getLength(),
-            this.getContext().right.isToken(), this.getContext().right.getLength(),
-            KrillProperties.getMaxTokenKwicSize()
-        );
-
-        if (this.getContext().left.getLength() + this.getContext().right.getLength() > KrillProperties.getMaxTokenKwicSize()) {
-            log.warn("getSnippetHTML: Context too large: left={} right={} max={}",
-                     this.getContext().left.getLength(), this.getContext().right.getLength(),
-                     KrillProperties.getMaxTokenKwicSize());
-           //  return null;
-        }
-        // Removed enforced HTML KWIC alignment; default behavior remains
-
-        if (!this._processHighlight()) {
-            log.warn("getSnippetHTML: _processHighlight() returned false id={} uid={}", this.getID(), this.getUID());
-            return null;
-        }
-
-        if (this.processed && this.snippetHTML != null)
-            return this.snippetHTML;
-
-        if (DEBUG)
-            log.trace("Create HTML Snippet");
-
-        StringBuilder sb = new StringBuilder();
-		StringBuilder rightContext = new StringBuilder();
-
-		// Remember ids already defined to
-		// have joined elements
-		HashSet<String> joins = new HashSet<>(100);
-
-        // Snippet stack sizes
-        short start = (short) 0;
-        short end = this.snippetArray.size();
-        log.info("KWIC HTML snippet elements: count={} id={} uid={}", end, this.getID(), this.getUID());
-        end--;
-
-		// Set levels for highlights 
-		FixedBitSet level = new FixedBitSet(255);
-		level.set(0, 255);
-		byte[] levelCache = new byte[255];
-
-		HighlightCombinatorElement elem;
-        
-		// Create context
-        sb.append("<span class=\"context-left\">");
-        if (this.startMore)
-            sb.append("<span class=\"more\"></span>");
-
-        // Iterate over the snippet array
-        // Start with left context
-        int leftTextChars = 0, leftNodes = 0;
-		while (end > 0) {
-
-			// Get element of sorted array
-			elem = this.snippetArray.get(start);
-
-			// Element is in context - but only markers are allowed!
-            // The problem with other elements is, that they may span the whole range
-            // around the match, so we have overlaps.
-            if (elem.type == 1 || elem.type == 2)
-                break;
-
-            // Text or marker
-            
-            String elemString = elem.toHTML(this, level, levelCache, joins);
-            sb.append(elemString);
-            if (elem.type == 0 && elem.characters != null)
-                leftTextChars += elem.characters.length();
-            leftNodes++;
-
-            if (DEBUG)
-                log.trace("Add node {}", elemString);
-
-            // Move start position
-            start++;
-		};
-
-        // end of context
-        sb.append("</span>");
-
-        // Iterate through all the match
-        sb.append("<span class=\"match\">");
-
-		if (this.startCutted) {
-			sb.append("<span class=\"cutted\"></span>");
-		};
-        int matchTextChars = 0, matchNodes = 0;
-        
-        for (; start <= end; start++) {
-			elem = this.snippetArray.get(start);
-
-			if (elem == null)
-                continue;
-                
-            String elemString = elem.toHTML(
-                this, level, levelCache, joins
-                );
-            if (DEBUG) {
-                log.trace("Add node {}", elemString);
-            };
-            sb.append(elemString);
-            if (elem.type == 0 && elem.characters != null)
-                matchTextChars += elem.characters.length();
-            matchNodes++;
-
-            // The match closes
-            if (elem.type == 2 && elem.number == CONTEXT) {
-                start++;
-                break;
-            };
-        };
-
-        // Warning! TODO:
-        // Check that all elements are closed that are opened at this point
-        // and only inline markers
-        // can follow in the context!
-
-		if (this.endCutted) {
-			sb.append("<span class=\"cutted\"></span>");
-		};
-
-        
-        sb.append("</span>");
-
-
-        // There is the right context
-        // if (start <= end) {
-        sb.append("<span class=\"context-right\">");
-        int rightTextChars = 0, rightNodes = 0;
-
-        for (; start <= end; start++) {
-            elem = this.snippetArray.get(start);
-
-            if (elem == null)
-                continue;
-                
-            String elemString = elem.toHTML(
-                this, level, levelCache, joins
-                );
-            if (DEBUG) {
-                log.trace("Add node {}", elemString);
-            };
-            sb.append(elemString);
-            if (elem.type == 0 && elem.characters != null)
-                rightTextChars += elem.characters.length();
-            rightNodes++;
-        };
-        
-        if (this.endMore)
-            sb.append("<span class=\"more\"></span>");
-
-        // End of context
-        sb.append("</span>");
-
-        this.snippetHTML = sb.toString();
-        log.info("KWIC HTML append: leftChars={} matchChars={} rightChars={} leftNodes={} matchNodes={} rightNodes={} startCutted={} endCutted={} endMore={} snippetLen={} id={} uid={}",
-                 leftTextChars, matchTextChars, rightTextChars, leftNodes, matchNodes, rightNodes,
-                 this.startCutted, this.endCutted, this.endMore,
-                 (this.snippetHTML != null ? this.snippetHTML.length() : -1),
-                 this.getID(), this.getUID());
-        // Finalize logging: HTML snippet size and ellipsis flags
-        log.info(
-            "KWIC HTML finalize: snippetLen={} startMore={} endMore={} containsMoreTag={} id={} uid={}",
-            (this.snippetHTML != null ? this.snippetHTML.length() : -1),
-            this.startMore, this.endMore,
-            (this.snippetHTML != null && this.snippetHTML.contains("class=\"more\"")),
-            this.getID(), this.getUID()
-        );
-        return this.snippetHTML;
-    };
-
-
-    @JsonIgnore
-    public String getSnippetBrackets () {
-
-        if (!this._processHighlight())
-            return null;
-
-        if (this.processed && this.snippetBrackets != null)
-            return this.snippetBrackets;
-
-        // Snippet stack sizes
-        short start = (short) 0;
-        short end = this.snippetArray.size();
-        end--;
-
-        StringBuilder sb = new StringBuilder();
-
-        if (this.startMore)
-            sb.append("... ");
-
-        // First element of sorted array
-        HighlightCombinatorElement elem = this.snippetArray.getFirst();
-
-        while (end > 0) {
-
-			// Get element of sorted array
-			elem = this.snippetArray.get(start);
-
-            if (elem.type == 1 || elem.type == 2) {
-                break;
-            }
-            else {
-                sb.append(elem.toBrackets(this));
-                start++;
-            };
-        };
-
-        sb.append("[");
-
-		if (this.startCutted) {
-			sb.append("<!>");
-		};
-        
-  
-        for (; start <= end; start++) {
-			elem = this.snippetArray.get(start);
-            
-			if (elem == null)
-                continue;
-            
-            sb.append(elem.toBrackets(this));
-
-            // The match closes
-            if (elem.type == 2 && elem.number == CONTEXT) {
-                start++;
-                break;
-            };
-        };
-      
-		if (this.endCutted) {
-			sb.append("<!>");
-		};
-        sb.append("]");
-
-        for (; start <= end; start++) {
-			elem = this.snippetArray.get(start);
-            
-			if (elem != null)
-				sb.append(elem.toBrackets(this));
-        };
-        
-        if (this.endMore)
-            sb.append(" ...");
-
-        return (this.snippetBrackets = sb.toString());
-    };
-
-
-    // This sorts all highlight and match spans to make them nesting correctly,
-    // even in case they overlap
-    // TODO: Not very fast - improve!
-    private ArrayList<int[]> _processHighlightStack () {
-        if (DEBUG)
-            log.trace("--- Process Highlight stack");
-
-        LinkedList<int[]> openList = new LinkedList<int[]>();
-        LinkedList<int[]> closeList = new LinkedList<int[]>();
-
-        // Filter multiple identifiers, that may be introduced and would
-        // result in invalid xml
-        this._filterMultipleIdentifiers();
-
-        // the start and end of the snippet is currently stored in span[0]
-        // this should be trimmed here!
-
-        // Add highlight spans to balance lists
-        openList.addAll(this.span);
-        closeList.addAll(this.span);
-
-        // Sort balance lists
-        Collections.sort(openList, new OpeningTagComparator());
-        Collections.sort(closeList, new ClosingTagComparator());
-
-        if (DEBUG) {
-            log.trace("OpenList: {}", openList);
-            log.trace("CloseList: {}", closeList);
-        };
-
-        // New stack array
-        ArrayList<int[]> stack = new ArrayList<>(openList.size() * 2);
-
-        // Create stack unless both lists are empty
-        while (!openList.isEmpty() || !closeList.isEmpty()) {
-
-			// Nothing more to open -- close all
-            if (openList.isEmpty()) {
-
-				if (DEBUG)
-					log.debug("No more open tags -- close all non pagebreaks");
-
-                int pf = closeList.peekFirst()[1];
-
-				if (pf != PB_MARKER && pf != ALL_MARKER) {
-                    //closeList.removeFirst();
-                    
-                    int[] e = closeList.removeFirst().clone();
-
-                    if (DEBUG) {
-                        log.trace(
-                            "Add close with number {} to stack at {}-{} as {}",
-                            e[2], e[0], e[1], e[3]
-                            );
-                    }
-					stack.add(e);
-				}
-				else {
-                    closeList.removeFirst();
-
-                    if (DEBUG)
-                        log.debug("Close is pagebreak -- ignore (1)");
-				};
-                
-                continue;
-            }
-
-            // Not sure about this, but it can happen
-            else if (closeList.isEmpty()) {
-
-                if (DEBUG)
-                    log.debug("Closelist is empty");
-
-                int[] e = openList.removeFirst().clone();
-
-				if (e[1] == PB_MARKER || e[1] == ALL_MARKER) {
-
-                    if (e[1] == PB_MARKER) {
-                        e[3] =  2;
-                    } else {
-                        e[3] = 3;
-                    };
-
-                    // Mark as empty
-                    e[1] = e[0]; // Remove pagebreak marker
-                    
-                    if (DEBUG)
-                        log.trace(
-                            "Add pagebreak or marker with {} to stack at {}-{} as {}",
-                            e[2], e[0], e[1], e[3]
-                            );
-
-                    // Add empty pagebreak
-                    stack.add(e);
-				};
-                
-                continue;
-            };
-
-            int clpf = closeList.peekFirst()[1];
-            int olpf = openList.peekFirst()[1];
-
-
-            // Closener is pagebreak or marker
-            if (clpf == PB_MARKER || clpf == ALL_MARKER) {
-                
-				if (DEBUG)
-					log.debug("Close is pagebreak or a marker -- remove (2)");
-
-				// Remove closing pagebreak
-				closeList.removeFirst();
-			}
-
-			// Opener is pagebreak or marker
-            else if ((olpf == PB_MARKER || olpf == ALL_MARKER) && closeList.peekFirst()[1] >= openList.peekFirst()[0]) {
-                
-                int[] e = openList.removeFirst().clone();
-
-				// Mark as empty
-                e[1] = e[0]; // Remove pagebreak marker
-
-                if (olpf == PB_MARKER) {
-                    e[3] =  2;
-                } else {
-                    e[3] = 3;
-                };
-                
-                if (DEBUG)
-					log.trace(
-						"Add pagebreak or marker with {} to stack at {}-{} as {}",
-						e[2], e[0], e[1], e[3]
-						);
-
-                
-				// Add empty pagebreak
-				stack.add(e);
-			}
-            
-			// check if the opener is smaller than the closener
-			else if (openList.peekFirst()[0] < closeList.peekFirst()[1]) {
-                
-				if (DEBUG)
-					log.debug("Open tag starts before close tag ends");
-
-                int[] e = openList.removeFirst().clone();
-
-				// Mark as opener
-				e[3] = 1;
-
-				if (DEBUG) {
-
-					//      -1: match
-					//    < -1: relation target
-					//  -99998: context
-					// >= 2048: relation source
-					// >=  256: annotation
-					
-					log.trace(
-						"Add open with number {} to stack at {}-{} as {}",
-						e[2], e[0], e[1], e[3]
-						);
-				};
-
-				// Add opener to stack
-                stack.add(e);
-            }
-
-			else {
-				int[] e = closeList.removeFirst();
-
-				if (DEBUG) {
-					log.debug("Close ends before next opens or at the same position");
-
-					log.trace(
-						"Add close with number {} to stack at {}-{}",
-						e[2], e[0], e[1]
-						);
-				};
-
-				// Add closener to stack
-                stack.add(e);
-            };
-        };
-        return stack;
-    };
-
-
-    /**
-     * Sometimes the match start and end positions are inside the
-     * matching region, e.g. when the match was expanded.
-     * This will override the original matching positions
-     * And mark the real matching.
-     */
-    public void overrideMatchPosition (int start, int end) {
-        if (DEBUG)
-            log.trace("--- Override match position");
-
-        this.innerMatchStartPos = start;
-        this.innerMatchEndPos = end;
-    };
-
-
-    /**
-     * This will retrieve character offsets for all spans.
-     * This includes pagebreaks and markers.
-     */
-    private boolean _processHighlightSpans () {
-
-        if (DEBUG)
-            log.trace("--- Process Highlight spans");
-
-        // Local document ID
-        int ldid = this.localDocID;
-
-        int startPosChar = -1, endPosChar = -1;
-
-        // No positionsToOffset object found
-        if (this.positionsToOffset == null)
-            return false;
-
-        // Match position
-        startPosChar = this.positionsToOffset.start(ldid, this.startPos);
-
-        if (DEBUG)
-            log.trace("Unaltered startPosChar is {}", startPosChar);
-
-        // Check potential differing start characters
-        // e.g. from element spans
-        if (potentialStartPosChar != -1
-                && (startPosChar > this.potentialStartPosChar))
-            startPosChar = this.potentialStartPosChar;
-
-        endPosChar = this.positionsToOffset.end(ldid, this.endPos - 1);
-
-        if (DEBUG)
-            log.trace("Unaltered endPosChar is {}", endPosChar);
-
-        // Potential end characters may come from spans with
-        // defined character offsets like sentences including .", ... etc.
-        if (endPosChar < potentialEndPosChar)
-            endPosChar = potentialEndPosChar;
-
-        if (DEBUG)
-            log.trace("Refined: Match offset is pos {}-{} (chars {}-{})",
-                    this.startPos, this.endPos, startPosChar, endPosChar);
-
-        this.identifier = null;
-
-        // No spans yet
-        if (this.span == null)
-            this.span = new LinkedList<int[]>();
-
-        // Process offset char findings
-        int[] intArray = this._processOffsetChars(ldid, startPosChar,
-                endPosChar);
-
-        // Recalculate startOffsetChar
-        int startOffsetChar = startPosChar - intArray[0];
-        int endRelOffsetChar = intArray[1];
-
-        // Add match span, in case no inner match is defined
-        if (this.innerMatchEndPos == -1) {
-			if (DEBUG)
-				log.debug("Added array to match span with {} (1)", intArray);
-            this.span.add(intArray);
-		};
-
-		// Add context highlight
-        intArray = new int[]{intArray[0], intArray[1], CONTEXT, 0};
-
-		this.span.add(intArray);
-
-        if (DEBUG)
-            log.debug("Added array to context span with {} (1)", intArray);
-
-        
-        // All spans starting before startOffsetChar and end before
-        // endOffsetChar can be dismissed, as they are not part of tempSnippet
-        // This can actually be seen based on the first element of this.span
-        // at the moment.
-
-        // highlights
-        // -- I'm not sure about this.
-        if (this.highlight != null) {
-            if (DEBUG)
-                log.trace("There are highlights!");
-
-            for (Highlight highlight : this.highlight) {                
-				if (DEBUG && (highlight.start > highlight.end)) {
-					log.warn("Start position is before end position {} - {}!",
-							 highlight.start,
-							 highlight.end);
-				};
-				
-				int start = -1;
-                int end = -1;
-
-				// Highlight is a pagebreak
-				if (highlight.end != PB_MARKER && highlight.end != ALL_MARKER) {
-					start = this.positionsToOffset.start(ldid, highlight.start);
-					end = this.positionsToOffset.end(ldid, highlight.end);
-				}
-				else {
-
-					if (DEBUG)
-						log.trace("Highlight is pagebreak -- do not retrieve offset");
-
-					// In pagebreak highlights
-					// there is already a character
-					start = highlight.start;
-					end = highlight.end;
-                };
-
-                start -= startOffsetChar;
-
-				// Keep end equal -1
-				if (end != PB_MARKER && end != ALL_MARKER) {
-                    if (DEBUG)
-                        log.trace("PTO whas retrieved {}-{} for class {}", start,
-                                  end, highlight.number);
-                    end -= startOffsetChar;
-
-                    // Cut longer spans (e.g. from relation references)
-                    if (end > endRelOffsetChar) {
-                        end = endRelOffsetChar;
-                    };
-				}
-				else if (DEBUG) {
-					log.debug("Pagebreak keeps end position");
-				};
-
-                if (start < 0 ||
-                    ((end < 0 | start > endRelOffsetChar) && end != PB_MARKER && end != ALL_MARKER)) {
-                    continue;
-                };
-
-                if (DEBUG && (start > endRelOffsetChar))
-                    log.debug("Ignore marker {}/{}/{}/{}", start, end, highlight.number, endRelOffsetChar);
-
-                
-                // Create intArray for highlight
-                intArray = new int[] {
-					start,
-					end,
-					highlight.number,
-					0 // Dummy value for later use
-                };
-
-				if (DEBUG)
-					log.debug("Added array to span with {} (2)", intArray);
-
-                this.span.add(intArray);
-            };
-        };
-        return true;
-    };
-
-
-    // Pass the local docid to retrieve character positions for the offset
-    private int[] _processOffsetChars (int ldid, int startPosChar,
-            int endPosChar) {
-
-        int startOffsetChar = -1, endOffsetChar = -1;
-        int startOffset = -1, endOffset = -1;
-        PositionsToOffset pto = this.positionsToOffset;
-
-        // The offset is defined by a span
-        if (this.getContext().isSpanDefined()) {
-
-            if (DEBUG)
-                log.trace("Try to expand to <{}>",
-                        this.context.getSpanContext());
-
-            this.startMore = false;
-            this.endMore = false;
-
-            int[] spanContext = this.expandContextToSpan(
-                    this.positionsToOffset.getLeafReader(), (Bits) null,
-                    "tokens", this.context.getSpanContext());
-            startOffset = spanContext[0];
-            endOffset = spanContext[1];
-            startOffsetChar = spanContext[2];
-            endOffsetChar = spanContext[3];
-            if (DEBUG)
-                log.trace("Got context based on span {}-{}/{}-{}",
-                        startOffset, endOffset, startOffsetChar, endOffsetChar);
-            // Make sure we can (re)compute character offsets after adjustments
-            this.positionsToOffset.add(ldid, startOffset);
-            this.positionsToOffset.add(ldid, endOffset);
-        };
-
-        // The offset is defined by tokens or characters
-        if (endOffset == -1) {
-
-            PositionsToOffset ptoTok = pto;
-
-            // The left offset is defined by tokens
-            if (this.context.left.isToken()) {
-                startOffset = this.startPos - this.context.left.getLength();
-                if (DEBUG)
-                    log.trace("PTO will retrieve {} (Left context)",
-                            startOffset);
-                ptoTok.add(ldid, startOffset);
-            }
-
-            // The left offset is defined by characters
-            else {
-                startOffsetChar = startPosChar - this.context.left.getLength();
-            };
-
-            // The right context is defined by tokens
-            if (this.context.right.isToken()) {
-                endOffset = this.endPos + this.context.right.getLength() - 1;
-                if (DEBUG)
-                    log.trace("PTO will retrieve {} (Right context)",
-                            endOffset);
-                ptoTok.add(ldid, endOffset);
-            }
-
-            // The right context is defined by characters
-            else {
-                endOffsetChar = (endPosChar == -1) ? -1
-                        : endPosChar + this.context.right.getLength();
-            };
-
-        // Enforce total KWIC token cap (left + match + right) on token offsets (removed dead guard)
-            }
-
-        // Enforce total KWIC token cap (left + match + right), regardless of span or token context (removed dead guard)
-
-        // Ensure PTO knows the adjusted token boundaries before resolving chars
-        if (startOffset != -1)
-            pto.add(ldid, startOffset);
-        if (endOffset != -1)
-            pto.add(ldid, endOffset);
-
-        // Compute character offsets according to potentially adjusted token offsets
-        if (startOffset != -1)
-            startOffsetChar = pto.start(ldid, startOffset);
-        if (endOffset != -1)
-            endOffsetChar = pto.end(ldid, endOffset);
-
-        // Diagnostic: show computed offsets and context (debug only)
-        if (DEBUG)
-            log.trace("_processOffsetChars: startOffset={} endOffset={} startOffsetChar={} endOffsetChar={} startPos={} endPos={} leftTok?{} leftLen={} rightTok?{} rightLen={} id={}",
-                      startOffset, endOffset, startOffsetChar, endOffsetChar,
-                      this.startPos, this.endPos,
-                      this.context.left.isToken(), this.context.left.getLength(),
-                      this.context.right.isToken(), this.context.right.getLength(),
-                      this.getID());
-
-        // Ensure zero-context means match-only and not full document
-        if (startOffset == -1 && (startOffsetChar < 0 || this.context.left.getLength() == 0))
-            startOffsetChar = startPosChar;
-        if (endOffset == -1 && (endOffsetChar < 0 || this.context.right.getLength() == 0))
-            endOffsetChar = endPosChar;
-
-
-
-        // This can happen in case of non-token characters
-        // in the match and null offsets
-        if (startOffsetChar > startPosChar)
-            startOffsetChar = startPosChar;
-        else if (startOffsetChar < 0)
-            startOffsetChar = startPosChar;
-
-        // No "..." at the beginning
-        if (startOffsetChar == 0)
-            this.startMore = false;
-
-        if (endOffsetChar != -1 && endOffsetChar < endPosChar)
-            endOffsetChar = endPosChar;
-
-        if (DEBUG)
-            log.trace("The context spans from chars {}-{}", startOffsetChar,
-                    endOffsetChar);
-
-        // Removed optional hard character cap for the HTML window
-
-        // One-line summary of the final HTML character window
-        int charWinLen = (endOffsetChar > -1) ? Math.max(0, endOffsetChar - startOffsetChar) : -1;
-        log.info("KWIC HTML char window: length={} (start={} end={}) id={} uid={}",
-                 charWinLen, startOffsetChar, endOffsetChar, this.getID(), this.getUID());
-
-        // Get snippet information from the primary data
-        boolean htmlCharFallback = false;
-        // Use legacy behavior: no safe char bounds clamping
-        if (endOffsetChar > -1 && (endOffsetChar < this.getPrimaryDataLength())) {
-            this.tempSnippet = this.getPrimaryData(startOffsetChar, endOffsetChar);
-        }
-        else {
-            this.tempSnippet = this.getPrimaryData(startOffsetChar);
-            this.endMore = false;
-            htmlCharFallback = true;
-        };
-
-        log.info("KWIC HTML chars: startChar={} endChar={} pdl={} fallback={} snippetLen={} id={} uid={}",
-                 startOffsetChar,
-                 (endOffsetChar > -1 ? endOffsetChar : -1),
-                 this.getPrimaryDataLength(),
-                 htmlCharFallback,
-                 (this.tempSnippet != null ? this.tempSnippet.length() : -1),
-                 this.getID(), this.getUID());
-
-        if (DEBUG)
-            log.trace("Snippet: '{}'", this.tempSnippet);
-
-        if (DEBUG)
-            log.trace(
-                    "The match entry is {}-{} ({}-{}) with absolute offsetChars {}-{}",
-                    startPosChar - startOffsetChar,
-                    endPosChar - startOffsetChar, startPosChar, endPosChar,
-                    startOffsetChar, endOffsetChar);
-
-        // TODO: Simplify
-        return new int[] { startPosChar - startOffsetChar,
-                endPosChar - startOffsetChar, -1, 0 };
     };
 
 
@@ -2677,7 +1824,7 @@ public class Match extends AbstractDocument {
 
 			json.set("pages", pages);
 		};
-        
+
         if (this.hasSnippet)
             json.put("snippet", this.getSnippetHTML());
 
@@ -2685,7 +1832,7 @@ public class Match extends AbstractDocument {
             json.set("tokens", this.getSnippetTokens());
 
 		ArrayNode fields = json.putArray("fields");
-       
+
 		// Iterate over all fields
 		Iterator<MetaField> fIter = mFields.iterator();
 		while (fIter.hasNext()) {
@@ -2700,7 +1847,7 @@ public class Match extends AbstractDocument {
 		};
 
         this.addMessage(0, "Support for flat field values is deprecated");
-        
+
         return json;
     };
 
@@ -2769,8 +1916,7 @@ public class Match extends AbstractDocument {
             if (highlightNumber < -1) {
 
                 // Get the real identifier
-                String idNumber =
-					identifierNumber.get(highlightNumber);
+                String idNumber = identifierNumber.get(highlightNumber);
                 if (identifiers.contains(idNumber)) {
                     removeDuplicate.add(i);
                 }
@@ -2816,4 +1962,342 @@ public class Match extends AbstractDocument {
     public Relation getRelationID (int nr) {
         return this.relationNumber.get(nr);
     };
-};
+
+    // Reintroduce missing method: Expand spans to build snippet structures
+    private boolean _processHighlightSpans () {
+        if (DEBUG)
+            log.trace("--- Process Highlight spans");
+        int ldid = this.localDocID;
+        int startPosChar;
+        int endPosChar;
+        if (this.positionsToOffset == null)
+            return false;
+        startPosChar = this.positionsToOffset.start(ldid, this.startPos);
+        if (potentialStartPosChar != -1 && startPosChar > this.potentialStartPosChar)
+            startPosChar = this.potentialStartPosChar;
+        endPosChar = this.positionsToOffset.end(ldid, this.endPos - 1);
+        if (endPosChar < potentialEndPosChar)
+            endPosChar = potentialEndPosChar;
+        this.identifier = null;
+        if (this.span == null)
+            this.span = new LinkedList<int[]>();
+        int[] intArray = this._processOffsetChars(ldid, startPosChar, endPosChar);
+        int startOffsetChar = startPosChar - intArray[0];
+        int endRelOffsetChar = intArray[1];
+        if (this.innerMatchEndPos == -1)
+            this.span.add(intArray);
+        intArray = new int[]{intArray[0], intArray[1], CONTEXT, 0};
+        this.span.add(intArray);
+        if (this.highlight != null) {
+            for (Highlight hl : this.highlight) {
+                int start = -1;
+                int end = -1;
+                if (hl.end != PB_MARKER && hl.end != ALL_MARKER) {
+                    start = this.positionsToOffset.start(ldid, hl.start);
+                    end = this.positionsToOffset.end(ldid, hl.end);
+                }
+                else {
+                    start = hl.start;
+                    end = hl.end; // Keep marker
+                }
+                start -= startOffsetChar;
+                if (end != PB_MARKER && end != ALL_MARKER) {
+                    end -= startOffsetChar;
+                    if (end > endRelOffsetChar)
+                        end = endRelOffsetChar;
+                }
+                if (start < 0 || ((end < 0 || start > endRelOffsetChar) && end != PB_MARKER && end != ALL_MARKER))
+                    continue;
+                intArray = new int[]{start, end, hl.number, 0};
+                this.span.add(intArray);
+            }
+        }
+        return true;
+    }
+
+    // Reintroduce missing stack building method
+    private ArrayList<int[]> _processHighlightStack () {
+        if (DEBUG)
+            log.trace("--- Process Highlight stack");
+        LinkedList<int[]> openList = new LinkedList<>();
+        LinkedList<int[]> closeList = new LinkedList<>();
+        this._filterMultipleIdentifiers();
+        openList.addAll(this.span);
+        closeList.addAll(this.span);
+        Collections.sort(openList, new OpeningTagComparator());
+        Collections.sort(closeList, new ClosingTagComparator());
+        ArrayList<int[]> stack = new ArrayList<>(openList.size() * 2);
+        while (!openList.isEmpty() || !closeList.isEmpty()) {
+            if (openList.isEmpty()) {
+                int[] e = closeList.removeFirst();
+                if (e[1] != PB_MARKER && e[1] != ALL_MARKER)
+                    stack.add(e);
+                continue;
+            }
+            else if (closeList.isEmpty()) {
+                int[] e = openList.removeFirst().clone();
+                if (e[1] == PB_MARKER || e[1] == ALL_MARKER) {
+                    e[3] = (e[1] == PB_MARKER) ? (short) 2 : (short) 3;
+                    e[1] = e[0];
+                    stack.add(e);
+                }
+                continue;
+            }
+            int clpf = closeList.peekFirst()[1];
+            int olpf = openList.peekFirst()[1];
+            if (clpf == PB_MARKER || clpf == ALL_MARKER) {
+                closeList.removeFirst();
+            }
+            else if ((olpf == PB_MARKER || olpf == ALL_MARKER) && closeList.peekFirst()[1] >= openList.peekFirst()[0]) {
+                int[] e = openList.removeFirst().clone();
+                e[1] = e[0];
+                e[3] = (olpf == PB_MARKER) ? 2 : 3;
+                stack.add(e);
+            }
+            else if (openList.peekFirst()[0] < closeList.peekFirst()[1]) {
+                int[] e = openList.removeFirst().clone();
+                e[3] = 1;
+                stack.add(e);
+            }
+            else {
+                int[] e = closeList.removeFirst();
+                stack.add(e);
+            }
+        }
+        return stack;
+    }
+
+    // Reintroduce override for inner match position
+    public void overrideMatchPosition (int start, int end) {
+        if (DEBUG)
+            log.trace("Override inner match position {}-{}", start, end);
+        this.innerMatchStartPos = start;
+        this.innerMatchEndPos = end;
+    }
+
+    // Reintroduce HTML snippet generator
+    @JsonIgnore
+    public String getSnippetHTML () {
+        if (!this._processHighlight())
+            return null;
+        if (this.processed && this.snippetHTML != null)
+            return this.snippetHTML;
+        StringBuilder sb = new StringBuilder();
+        StringBuilder rightContext = new StringBuilder();
+        HashSet<String> joins = new HashSet<>(64);
+        short start = 0;
+        short end = this.snippetArray.size();
+        end--;
+        FixedBitSet level = new FixedBitSet(255);
+        level.set(0, 255);
+        byte[] levelCache = new byte[255];
+        HighlightCombinatorElement elem;
+        sb.append("<span class=\"context-left\">");
+        if (this.startMore)
+            sb.append("<span class=\"more\"></span>");
+        while (end > 0) {
+            elem = this.snippetArray.get(start);
+            if (elem.type == 1 || elem.type == 2)
+                break;
+            sb.append(elem.toHTML(this, level, levelCache, joins));
+            start++;
+        }
+        sb.append("</span>");
+        sb.append("<span class=\"match\">");
+        if (this.startCutted)
+            sb.append("<span class=\"cutted\"></span>");
+        for (; start <= end; start++) {
+            elem = this.snippetArray.get(start);
+            if (elem == null) continue;
+            sb.append(elem.toHTML(this, level, levelCache, joins));
+            if (elem.type == 2 && elem.number == CONTEXT) {
+                start++;
+                break;
+            }
+        }
+        if (this.endCutted)
+            sb.append("<span class=\"cutted\"></span>");
+        sb.append("</span>");
+        sb.append("<span class=\"context-right\">");
+        for (; start <= end; start++) {
+            elem = this.snippetArray.get(start);
+            if (elem == null) continue;
+            sb.append(elem.toHTML(this, level, levelCache, joins));
+        }
+        if (this.endMore)
+            sb.append("<span class=\"more\"></span>");
+        sb.append("</span>");
+        this.snippetHTML = sb.toString();
+        return this.snippetHTML;
+    }
+
+    // Reintroduce bracket snippet generator
+    @JsonIgnore
+    public String getSnippetBrackets () {
+        if (!this._processHighlight())
+            return null;
+        if (this.processed && this.snippetBrackets != null)
+            return this.snippetBrackets;
+        short start = 0;
+        short end = this.snippetArray.size();
+        end--;
+        StringBuilder sb = new StringBuilder();
+        if (this.startMore)
+            sb.append("... ");
+        HighlightCombinatorElement elem = this.snippetArray.getFirst();
+        while (end > 0) {
+            elem = this.snippetArray.get(start);
+            if (elem.type == 1 || elem.type == 2)
+                break;
+            else {
+                sb.append(elem.toBrackets(this));
+                start++;
+            }
+        }
+        sb.append("[");
+        if (this.startCutted)
+            sb.append("<!>");
+        for (; start <= end; start++) {
+            elem = this.snippetArray.get(start);
+            if (elem == null) continue;
+            sb.append(elem.toBrackets(this));
+            if (elem.type == 2 && elem.number == CONTEXT) {
+                start++;
+                break;
+            }
+        }
+        if (this.endCutted)
+            sb.append("<!>");
+        sb.append("]");
+        for (; start <= end; start++) {
+            elem = this.snippetArray.get(start);
+            if (elem != null)
+                sb.append(elem.toBrackets(this));
+        }
+        if (this.endMore)
+            sb.append(" ...");
+        return (this.snippetBrackets = sb.toString());
+    }
+
+    // Compute context character window and enforce HTML KWIC cap
+    private int[] _processOffsetChars (int ldid, int startPosChar, int endPosChar) {
+        int startOffsetChar = -1, endOffsetChar = -1;
+        int startOffset = -1, endOffset = -1; // token offsets (endOffset inclusive)
+        PositionsToOffset pto = this.positionsToOffset;
+
+        // Span-based context
+        if (this.getContext().isSpanDefined()) {
+            this.startMore = false;
+            this.endMore = false;
+            int[] spanContext = this.expandContextToSpan(
+                this.positionsToOffset.getLeafReader(), (Bits) null,
+                "tokens", this.context.getSpanContext());
+            startOffset = spanContext[0];
+            endOffset = spanContext[1] - 1; // spanContext end is exclusive
+            startOffsetChar = spanContext[2];
+            endOffsetChar = spanContext[3];
+            if (startOffset >= 0) pto.add(ldid, startOffset);
+            if (endOffset >= 0) pto.add(ldid, endOffset);
+        }
+        // Token/char mixed context
+        if (endOffset == -1) {
+            if (this.context.left.isToken()) {
+                startOffset = this.startPos - this.context.left.getLength();
+                if (startOffset < 0) startOffset = 0;
+                pto.add(ldid, startOffset);
+            } else if (this.context.left.getLength() > 0) {
+                startOffsetChar = startPosChar - this.context.left.getLength();
+                if (startOffsetChar < 0) startOffsetChar = 0;
+            }
+            if (this.context.right.isToken()) {
+                endOffset = this.endPos + this.context.right.getLength() - 1; // inclusive
+                if (endOffset >= this.endPos) pto.add(ldid, endOffset);
+            } else if (this.context.right.getLength() > 0) {
+                endOffsetChar = (endPosChar == -1) ? -1 : endPosChar + this.context.right.getLength();
+            }
+        }
+
+        // HTML KWIC token cap enforcement (left + match + right) similar to token path
+        int cap = KrillProperties.getMaxTokenKwicSize();
+        if (cap > 0) {
+            int matchLen = this.endPos - this.startPos; // exclusive
+            if (matchLen > cap && !this.endCutted) {
+                this.endPos = this.startPos + cap;
+                this.endCutted = true;
+                if (endOffset != -1 && endOffset >= this.endPos)
+                    endOffset = this.endPos - 1; // keep endOffset inside trimmed match
+            }
+            else if (matchLen <= cap) {
+                // Only trim contexts symmetrically for HTML if total window exceeds cap
+                int leftLen = (startOffset != -1) ? (this.startPos - startOffset) : 0;
+                if (leftLen < 0) leftLen = 0;
+                int rightLen = (endOffset != -1) ? (endOffset - this.endPos + 1) : 0;
+                if (rightLen < 0) rightLen = 0;
+                int total = leftLen + matchLen + rightLen;
+                if (total > cap) {
+                    int allowedContext = cap - matchLen;
+                    if (allowedContext < 0) allowedContext = 0;
+                    int allowedPerSide = allowedContext / 2;
+                    int newLeft = Math.min(leftLen, allowedPerSide);
+                    int newRight = Math.min(rightLen, allowedPerSide);
+                    int consumed = newLeft + newRight;
+                    int remaining = allowedContext - consumed;
+                    if (remaining > 0) {
+                        int leftCapRemain = leftLen - newLeft;
+                        if (leftCapRemain > 0) {
+                            int add = Math.min(remaining, leftCapRemain);
+                            newLeft += add; remaining -= add;
+                        }
+                        if (remaining > 0) {
+                            int rightCapRemain = rightLen - newRight;
+                            if (rightCapRemain > 0) {
+                                int add = Math.min(remaining, rightCapRemain);
+                                newRight += add; remaining -= add;
+                            }
+                        }
+                    }
+                    // Apply context trimming (only adjust offsets, don't set cut flags)
+                    if (startOffset != -1 && newLeft != leftLen)
+                        startOffset = this.startPos - newLeft;
+                    if (endOffset != -1 && newRight != rightLen)
+                        endOffset = this.endPos + newRight - 1; // inclusive
+                }
+            }
+            // Else: matchLen > cap handled above
+        }
+
+        // Register for PTO
+        if (startOffset != -1) pto.add(ldid, startOffset);
+        if (endOffset != -1) pto.add(ldid, endOffset);
+
+        // Derive character offsets from tokens if not explicitly set
+        if (startOffset != -1) startOffsetChar = pto.start(ldid, startOffset);
+        if (endOffset != -1) endOffsetChar = pto.end(ldid, endOffset);
+
+        // Fallbacks if zero context requested
+        if (startOffset == -1 && (startOffsetChar < 0 || this.context.left.getLength() == 0))
+            startOffsetChar = startPosChar;
+        if (endOffset == -1 && (endOffsetChar < 0 || this.context.right.getLength() == 0))
+            endOffsetChar = endPosChar;
+
+        // Normalize
+        if (startOffsetChar > startPosChar) startOffsetChar = startPosChar;
+        else if (startOffsetChar < 0) startOffsetChar = startPosChar;
+        if (startOffsetChar == 0) this.startMore = false;
+        if (endOffsetChar != -1 && endOffsetChar < endPosChar) endOffsetChar = endPosChar;
+
+        // Build temp snippet primary data window (HTML version of window)
+        int charWinLen = (endOffsetChar > -1) ? Math.max(0, endOffsetChar - startOffsetChar) : -1;
+        if (endOffsetChar > -1 && endOffsetChar < this.getPrimaryDataLength()) {
+            this.tempSnippet = this.getPrimaryData(startOffsetChar, endOffsetChar);
+        } else {
+            this.tempSnippet = this.getPrimaryData(startOffsetChar);
+            this.endMore = false;
+        }
+        if (DEBUG)
+            log.trace("HTML char window start={} end={} len={}", startOffsetChar, endOffsetChar, charWinLen);
+
+        // Return relative match boundaries inside tempSnippet
+        return new int[]{ startPosChar - startOffsetChar, endPosChar - startOffsetChar, -1, 0 };
+    }
+}
