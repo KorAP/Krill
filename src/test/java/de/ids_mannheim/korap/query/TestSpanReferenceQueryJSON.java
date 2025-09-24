@@ -23,11 +23,13 @@ public class TestSpanReferenceQueryJSON {
         SpanQuery sq = sqwi.toQuery();
         
         // "ich" & pos="VVFIN" & #1 ->malt/d[func="SUBJ"] #2 & #1 . #2
-        assertEquals(sq.toString(), "spanReference(spanNext("
+        assertEquals(
+            "spanReference(spanNext("
                 + "focus(129: focus(#[1,2]spanSegment({130: tokens:tt/p:VVFIN}, "
                 + "focus(#2: spanSegment(spanRelation(tokens:>:malt/d:SUBJ), "
                 + "{129: tokens:s:ich}),sorting)),sorting),sorting), "
-                + "{130: tokens:tt/p:VVFIN}), -126)");
+                + "{130: tokens:tt/p:VVFIN}), -126)",
+            sq.toString());
     }
     
     @Test
