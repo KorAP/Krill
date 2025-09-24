@@ -146,7 +146,9 @@ public class TestPagebreakIndex {
 			).append(qb.seg("s:a"))
 			.toQuery();
 
-		assertEquals(sq.toString(), "spanNext(spanRepetition(spanNext(spanNext(tokens:s:a, tokens:s:b), tokens:s:c){2,2}), tokens:s:a)");
+		assertEquals(
+		    "spanNext(spanRepetition(spanNext(spanNext(tokens:s:a, tokens:s:b), tokens:s:c){2,2}), tokens:s:a)",
+		    sq.toString());
 
 		kr = ki.search(sq, (short) 10);
 		
