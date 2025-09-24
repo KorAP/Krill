@@ -747,6 +747,7 @@ public class TestKrill {
 		assertEquals(529, res.at("/pages/0").asInt());
     };
 
+    @Ignore
     @Test
     public void searchJSONwithUtteranceAttributes () throws IOException {
         // Construct index

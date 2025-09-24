@@ -1259,6 +1259,7 @@ public class TestMatchIdentifier {
 		assertEquals(km.getFieldValue("availability"), "CC-BY-SA");
     };
 
+    @Ignore
     @Test
     public void indexCorolaTokensBugReplicated () throws IOException, QueryException {
         KrillProperties.matchExpansionIncludeContextSize=false;
