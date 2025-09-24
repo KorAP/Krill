@@ -75,18 +75,18 @@ public class TestWPDIndex {
         sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, true, false);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 8);
+        assertEquals(8, kr.getTotalResults());
 
         // unordered
         sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, false, false);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 11);
+        assertEquals(11, kr.getTotalResults());
 
         sq = createDistanceQuery("s:kommen", "s:Wir", 1, 1, false, false);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 11);
+        assertEquals(11, kr.getTotalResults());
         //System.out.println(kr.getTotalResults());
         //for (Match km : kr.getMatches()){
         //System.out.println(km.getDocID() +" "+km.getStartPos() +" "+ km.getEndPos());
@@ -103,20 +103,20 @@ public class TestWPDIndex {
         SpanQuery q = new SpanTermQuery(new Term("tokens", "s:Wir"));
         ks = new Krill(q);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 1907);
+        assertEquals(1907, kr.getTotalResults());
 
         SpanDistanceQuery sq;
         // ordered
         sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, true, true);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 1899);
+        assertEquals(1899, kr.getTotalResults());
 
         // unordered
         sq = createDistanceQuery("s:Wir", "s:kommen", 1, 1, false, true);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 1896);
+        assertEquals(1896, kr.getTotalResults());
     }
 
 
@@ -128,20 +128,20 @@ public class TestWPDIndex {
                 "s:fahren", 0, 1, true, false);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(3, kr.getTotalResults());
 
         // unordered
         sq = createElementDistanceQuery("s", "s:weg", "s:fahren", 0, 1, false,
                 false);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 5);
+        assertEquals(5, kr.getTotalResults());
 
         // only 0
         sq = createElementDistanceQuery("s", "s:weg", "s:fahren", 0, 0, false,
                 false);
         kr = ki.search(sq, (short) 100);
-        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(2, kr.getTotalResults());
         assertEquals("WPD_BBB.04463", kr.getMatch(0).getDocID());
         assertEquals(1094, kr.getMatch(0).getStartPos());
         assertEquals(1115, kr.getMatch(0).getEndPos());
@@ -154,7 +154,7 @@ public class TestWPDIndex {
                 false);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(3, kr.getTotalResults());
     }
 
 
@@ -165,7 +165,7 @@ public class TestWPDIndex {
                 "s:fahren", 1, 1, false, true);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 979);
+        assertEquals(979, kr.getTotalResults());
         //0.8s
 
         // Check if it includes some results
@@ -197,7 +197,7 @@ public class TestWPDIndex {
                 true);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 4116416);
+        assertEquals(4116416, kr.getTotalResults());
         //0.9s
 
         sq = new SpanRepetitionQuery(
@@ -205,14 +205,14 @@ public class TestWPDIndex {
                 true);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 3879671);
+        assertEquals(3879671, kr.getTotalResults());
 
         sq = new SpanRepetitionQuery(
                 new SpanTermQuery(new Term("tokens", "mate/p:ADJA")), 2, 2,
                 true);
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 236745);
+        assertEquals(236745, kr.getTotalResults());
         //0.65s
     }
 
@@ -227,14 +227,14 @@ public class TestWPDIndex {
                         2, true));
         ks = new Krill(sq);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 30223);
+        assertEquals(30223, kr.getTotalResults());
         // 1.1s
 
         SpanQuery sq2 = new SpanNextQuery(sq,
                 new SpanTermQuery(new Term("tokens", "tt/p:NN")));
         ks = new Krill(sq2);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 26607);
+        assertEquals(26607, kr.getTotalResults());
         // 1.1s
     }
 }
