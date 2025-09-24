@@ -29,22 +29,23 @@ public class TestKrillCollectionJSON {
     public void collection1 () {
         String metaQuery = _getJSONString("collection_1.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(kc.toString(), "pubDate:[20000101 TO 20000101]");
+        assertEquals("pubDate:[20000101 TO 20000101]", kc.toString());
     };
 
     @Test
     public void corpus1 () {
         String metaQuery = _getJSONString("corpus_1.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(kc.toString(), "pubDate:[20000101 TO 20000101]");
+        assertEquals("pubDate:[20000101 TO 20000101]", kc.toString());
     };   
 
     @Test
     public void collection2 () {
         String metaQuery = _getJSONString("collection_2.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(kc.toString(),
-                "AndGroup(pubDate:[19900000 TO 99999999] pubDate:[0 TO 20061099])");
+        assertEquals(
+            "AndGroup(pubDate:[19900000 TO 99999999] pubDate:[0 TO 20061099])",
+            kc.toString());
     };
 
 
@@ -52,7 +53,7 @@ public class TestKrillCollectionJSON {
     public void collection3 () {
         String metaQuery = _getJSONString("collection_3.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(kc.toString(), "");
+        assertEquals("", kc.toString());
     };
 
 
@@ -60,8 +61,9 @@ public class TestKrillCollectionJSON {
     public void collection5 () {
         String metaQuery = _getJSONString("collection_5.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(kc.toString(),
-                "OrGroup(pubDate:[19900000 TO 99999999] title:Mannheim)");
+        assertEquals(
+            "OrGroup(pubDate:[19900000 TO 99999999] title:Mannheim)",
+            kc.toString());
     };
 
 
@@ -102,8 +104,9 @@ public class TestKrillCollectionJSON {
     public void collectionWithMultipleNe () {
         String metaQuery = _getJSONString("collection_multine.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
-        assertEquals(kc.toString(),
-                "AndGroup(QueryWrapperFilter(availability:/CC-BY.*/) AndGroup(-corpusSigle:WUD17 -corpusSigle:WDD17))");
+        assertEquals(
+            "AndGroup(QueryWrapperFilter(availability:/CC-BY.*/) AndGroup(-corpusSigle:WUD17 -corpusSigle:WDD17))",
+            kc.toString());
     };
 
 
@@ -203,7 +206,7 @@ public class TestKrillCollectionJSON {
 
         Krill krill = new Krill(_getJSONString("collection_6.jsonld"));
         Result kr = krill.apply(ki);
-        assertEquals(kr.getTotalResults(), 86);
+        assertEquals(86, kr.getTotalResults());
 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode res = mapper.readTree(kr.toJsonString());
@@ -212,7 +215,7 @@ public class TestKrillCollectionJSON {
         krill = new Krill(_getJSONString("collection_6_withCollection.jsonld"));
 
         kr = krill.apply(ki);
-        assertEquals(kr.getTotalResults(), 57);
+        assertEquals(57, kr.getTotalResults());
 
         res = mapper.readTree(kr.toJsonString());
         assertFalse(res.at("/collection").isMissingNode());
