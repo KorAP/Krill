@@ -24,8 +24,9 @@ public class TestKrillQueryJSON {
 
         // There is a repetition in here
         // ([base=foo]|[base=bar])[base=foobar]
-        assertEquals(sqwi.toQuery().toString(),
-                "spanOr([tokens:base:foo, spanRepetition(spanNext(tokens:base:foo, tokens:base:bar){1,100})])");
+        assertEquals(
+            "spanOr([tokens:base:foo, spanRepetition(spanNext(tokens:base:foo, tokens:base:bar){1,100})])",
+            sqwi.toQuery().toString());
         assertTrue(sqwi.isOptional());
     };
 
@@ -37,8 +38,9 @@ public class TestKrillQueryJSON {
 
         // There is a repetition in here
         // ([base=foo]|[base=bar])[base=foobar]
-        assertEquals(sqwi.toQuery().toString(),
-                "spanOr([tokens:base:foo, spanRepetition(spanNext(tokens:base:foo, tokens:base:bar){1,100})])");
+        assertEquals(
+            "spanOr([tokens:base:foo, spanRepetition(spanNext(tokens:base:foo, tokens:base:bar){1,100})])",
+            sqwi.toQuery().toString());
         assertTrue(sqwi.isOptional());
     };
 
@@ -50,8 +52,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp1b.jsonld").getFile());
 
         // [base=foo]|([base=foo][base=bar]) meta author=Goethe&year=1815
-        assertEquals(sqwi.toQuery().toString(),
-                "spanOr([tokens:mate/l:foo, spanNext(tokens:mate/l:foo, tokens:mate/l:bar)])");
+        assertEquals(
+            "spanOr([tokens:mate/l:foo, spanNext(tokens:mate/l:foo, tokens:mate/l:bar)])",
+            sqwi.toQuery().toString());
     };
 
 
@@ -61,8 +64,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp2.jsonld").getFile());
 
         // ([base=foo]|[base=bar])[base=foobar]
-        assertEquals(sqwi.toQuery().toString(),
-                "spanNext(spanOr([tokens:mate/l:foo, tokens:mate/l:bar]), tokens:mate/l:foobar)");
+        assertEquals(
+            "spanNext(spanOr([tokens:mate/l:foo, tokens:mate/l:bar]), tokens:mate/l:foobar)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -72,8 +76,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp3.jsonld").getFile());
 
         // focus({[base=Mann]})
-        assertEquals(sqwi.toQuery().toString(),
-                "focus(1: {1: tokens:mate/l:Mann})");
+        assertEquals(
+            "focus(1: {1: tokens:mate/l:Mann})",
+            sqwi.toQuery().toString());
     };
 
 
@@ -83,8 +88,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp4.jsonld").getFile());
 
         // focus({[base=foo]}[orth=bar])
-        assertEquals(sqwi.toQuery().toString(),
-                "focus(1: spanNext({1: tokens:mate/l:foo}, tokens:s:bar))");
+        assertEquals(
+            "focus(1: spanNext({1: tokens:mate/l:foo}, tokens:s:bar))",
+            sqwi.toQuery().toString());
     };
 
 
@@ -94,8 +100,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp5.jsonld").getFile());
 
         // focus(1:[base=Der]{1:[base=Mann]}) 
-        assertEquals(sqwi.toQuery().toString(),
-                "focus(1: spanNext(tokens:mate/l:Der, {1: tokens:mate/l:Mann}))");
+        assertEquals(
+            "focus(1: spanNext(tokens:mate/l:Der, {1: tokens:mate/l:Mann}))",
+            sqwi.toQuery().toString());
     };
 
 
@@ -105,7 +112,7 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp6.jsonld").getFile());
 
         // [base=katze]
-        assertEquals(sqwi.toQuery().toString(), "tokens:mate/l:Katze");
+        assertEquals("tokens:mate/l:Katze", sqwi.toQuery().toString());
     };
 
 
@@ -126,8 +133,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp9.jsonld").getFile());
 
         // [base=Katze&orth=Katzen]
-        assertEquals(sqwi.toQuery().toString(),
-                "spanSegment(tokens:mate/l:Katze, tokens:s:Katzen)");
+        assertEquals(
+            "spanSegment(tokens:mate/l:Katze, tokens:s:Katzen)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -137,8 +145,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp9b.jsonld").getFile());
 
         // [base=Katze&orth=Katzen]
-        assertEquals(sqwi.toQuery().toString(),
-                "spanSegment(tokens:mate/m:number:pl, tokens:tt/p:NN)");
+        assertEquals(
+            "spanSegment(tokens:mate/m:number:pl, tokens:tt/p:NN)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -148,8 +157,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp10.jsonld").getFile());
 
         // [base=Katze][orth=und][orth=Hunde]
-        assertEquals(sqwi.toQuery().toString(),
-                "spanNext(spanNext(tokens:mate/l:Katze, tokens:s:und), tokens:s:Hunde)");
+        assertEquals(
+            "spanNext(spanNext(tokens:mate/l:Katze, tokens:s:und), tokens:s:Hunde)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -164,8 +174,9 @@ public class TestKrillQueryJSON {
           Matches abd and acd
           Interpretation would be not(spanAnd(...))
         */
-        assertEquals(sqwi.toQuery().toString(),
-                "spanOr([tokens:mate/l:Katze, tokens:s:Katzen])");
+        assertEquals(
+            "spanOr([tokens:mate/l:Katze, tokens:s:Katzen])",
+            sqwi.toQuery().toString());
         assertTrue(sqwi.isNegative());
     };
 
@@ -176,8 +187,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp12.jsonld").getFile());
 
         // contains(<np>,[base=Mann])
-        assertEquals(sqwi.toQuery().toString(),
-                "spanContain(<tokens:np />, tokens:mate/l:Mann)");
+        assertEquals(
+            "spanContain(<tokens:np />, tokens:mate/l:Mann)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -186,8 +198,9 @@ public class TestKrillQueryJSON {
         SpanQueryWrapper sqwi = getJsonQuery(
                 getClass().getResource("/queries/bsp13.jsonld").getFile());
 
-        assertEquals(sqwi.toQuery().toString(),
-                "spanStartsWith(<tokens:np />, tokens:p:Det)");
+        assertEquals(
+            "spanStartsWith(<tokens:np />, tokens:p:Det)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -197,8 +210,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp13b.jsonld").getFile());
 
         // startswith(<np>,[pos=Det])
-        assertEquals(sqwi.toQuery().toString(),
-                "spanStartsWith(<tokens:np />, tokens:mate/p:Det)");
+        assertEquals(
+            "spanStartsWith(<tokens:np />, tokens:mate/p:Det)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -208,8 +222,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp14.jsonld").getFile());
 
         // 'vers{2,3}uch'
-        assertEquals(sqwi.toQuery().toString(),
-                "SpanMultiTermQueryWrapper(tokens:/s:vers{2,3}uch/)");
+        assertEquals(
+            "SpanMultiTermQueryWrapper(tokens:/s:vers{2,3}uch/)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -219,8 +234,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp15.jsonld").getFile());
 
         // [orth='vers.*ch']
-        assertEquals(sqwi.toQuery().toString(),
-                "SpanMultiTermQueryWrapper(tokens:/s:vers.*ch/)");
+        assertEquals(
+            "SpanMultiTermQueryWrapper(tokens:/s:vers.*ch/)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -230,8 +246,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp16.jsonld").getFile());
 
         // [(base=bar|base=foo)&orth=foobar]
-        assertEquals(sqwi.toQuery().toString(),
-                "spanSegment(spanOr([tokens:mate/l:bar, tokens:mate/l:foo]), tokens:s:foobar)");
+        assertEquals(
+            "spanSegment(spanOr([tokens:mate/l:bar, tokens:mate/l:foo]), tokens:s:foobar)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -241,8 +258,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp17.jsonld").getFile());
 
         // within(<np>,[base=Mann])
-        assertEquals(sqwi.toQuery().toString(),
-                "spanContain(<tokens:np />, tokens:mate/l:Mann)");
+        assertEquals(
+            "spanContain(<tokens:np />, tokens:mate/l:Mann)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -251,7 +269,7 @@ public class TestKrillQueryJSON {
         SpanQueryWrapper sqwi = new KrillQuery("tokens").fromKoral(
                 "{ \"query\" : { \"@type\" : \"koral:token\", \"wrap\" : { \"@type\" : \"koral:term\", \"foundry\" : \"base\", \"layer\" : \"p\", \"key\" : \"foo\", \"match\" : \"match:eq\" }}}");
 
-        assertEquals(sqwi.toQuery().toString(), "tokens:base/p:foo");
+        assertEquals("tokens:base/p:foo", sqwi.toQuery().toString());
     };
 
 
@@ -261,8 +279,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp-class.jsonld").getFile());
 
         // within(<np>,[base=Mann])
-        assertEquals(sqwi.toQuery().toString(),
-                "{1: spanNext(tokens:tt/p:ADJA, tokens:mate/p:NN)}");
+        assertEquals(
+            "{1: spanNext(tokens:tt/p:ADJA, tokens:mate/p:NN)}",
+            sqwi.toQuery().toString());
     };
 
 
@@ -272,8 +291,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/cosmas3.json").getFile());
 
         // "das /+w1:3 Buch"
-        assertEquals(sqwi.toQuery().toString(),
-                "spanDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded)])");
+        assertEquals(
+            "spanDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded)])",
+            sqwi.toQuery().toString());
     };
 
 
@@ -283,8 +303,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/cosmas4.json").getFile());
 
         // "das /+w1:3,s1:1 Buch"
-        assertEquals(sqwi.toQuery().toString(),
-                "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (base/s:s[1:1], ordered, notExcluded)])");
+        assertEquals(
+            "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (base/s:s[1:1], ordered, notExcluded)])",
+            sqwi.toQuery().toString());
     };
 
 
@@ -294,8 +315,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/cosmas4b.json").getFile());
 
         // "das /+w1:3,s1 Buch"
-        assertEquals(sqwi.toQuery().toString(),
-                "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (base/s:s[0:1], ordered, notExcluded)])");
+        assertEquals(
+            "spanMultipleDistance(tokens:s:das, tokens:s:Buch, [(w[1:3], ordered, notExcluded), (base/s:s[0:1], ordered, notExcluded)])",
+            sqwi.toQuery().toString());
     };
 
 
@@ -305,8 +327,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/cosmas10.json").getFile());
 
         // "Institut für $deutsche Sprache"
-        assertEquals(sqwi.toQuery().toString(),
-                "spanNext(spanNext(spanNext(tokens:s:Institut, tokens:s:für), tokens:i:deutsche), tokens:s:Sprache)");
+        assertEquals(
+            "spanNext(spanNext(spanNext(tokens:s:Institut, tokens:s:für), tokens:i:deutsche), tokens:s:Sprache)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -316,8 +339,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/cosmas10b.json").getFile());
 
         // "Institut $FÜR $deutsche Sprache"
-        assertEquals(sqwi.toQuery().toString(),
-                "spanNext(spanNext(spanNext(tokens:s:Institut, tokens:i:für), tokens:i:deutsche), tokens:s:Sprache)");
+        assertEquals(
+            "spanNext(spanNext(spanNext(tokens:s:Institut, tokens:i:für), tokens:i:deutsche), tokens:s:Sprache)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -327,8 +351,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/cosmas16.json").getFile());
 
         // "$wegen #IN(L) <s>"
-        assertEquals(sqwi.toQuery().toString(),
-                "focus(1: spanStartsWith(<tokens:s />, {1: tokens:i:wegen}))");
+        assertEquals(
+            "focus(1: spanStartsWith(<tokens:s />, {1: tokens:i:wegen}))",
+            sqwi.toQuery().toString());
     };
 
 
@@ -338,8 +363,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/cosmas17.json").getFile());
 
         // "#BED($wegen , +sa)"
-        assertEquals(sqwi.toQuery().toString(),
-                "spanStartsWith(<tokens:s />, tokens:i:wegen)");
+        assertEquals(
+            "spanStartsWith(<tokens:s />, tokens:i:wegen)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -349,8 +375,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/cosmas20.json").getFile());
 
         //     "MORPH(V) #IN(R) #ELEM(S)"
-        assertEquals(sqwi.toQuery().toString(),
-                "focus(1: spanEndsWith(<tokens:s />, {1: tokens:p:V}),sorting)");
+        assertEquals(
+            "focus(1: spanEndsWith(<tokens:s />, {1: tokens:p:V}),sorting)",
+            sqwi.toQuery().toString());
     };
 
     @Test
@@ -359,8 +386,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/cosmas21.json").getFile());
 
         // die %+w1:1 Gegenwart
-        assertEquals(sqwi.toQuery().toString(),
-                "spanDistance({129: tokens:s:die}, {129: tokens:s:Gegenwart}, [(w[1:1], ordered, excluded)])");
+        assertEquals(
+            "spanDistance({129: tokens:s:die}, {129: tokens:s:Gegenwart}, [(w[1:1], ordered, excluded)])",
+            sqwi.toQuery().toString());
     };
 
     
@@ -371,8 +399,9 @@ public class TestKrillQueryJSON {
                 .getResource("/queries/bsp-repetition.jsonld").getFile());
 
         // der[cnx/p=A]{0,2}[tt/p=NN]
-        assertEquals(sqwi.toQuery().toString(),
-                "spanNext(tokens:s:der, spanOr([tokens:tt/p:NN, spanNext(spanRepetition(tokens:cnx/p:A{1,2}), tokens:tt/p:NN)]))");
+        assertEquals(
+            "spanNext(tokens:s:der, spanOr([tokens:tt/p:NN, spanNext(spanRepetition(tokens:cnx/p:A{1,2}), tokens:tt/p:NN)]))",
+            sqwi.toQuery().toString());
     };
 
 
@@ -382,8 +411,9 @@ public class TestKrillQueryJSON {
                 .getResource("/queries/bsp-boundary.jsonld").getFile());
 
         // Tal []{1,} Wald
-        assertEquals(sqwi.toQuery().toString(),
-                "spanDistance(tokens:s:Tal, tokens:s:Wald, [(w[2:101], ordered, notExcluded)])");
+        assertEquals(
+            "spanDistance(tokens:s:Tal, tokens:s:Wald, [(w[2:101], ordered, notExcluded)])",
+            sqwi.toQuery().toString());
     };
 
 
@@ -393,8 +423,9 @@ public class TestKrillQueryJSON {
                 .getResource("/queries/bugs/cosmas_boundary.jsonld").getFile());
 
         // Namen /s1 Leben
-        assertEquals(sqwi.toQuery().toString(),
-                "focus(129: spanElementDistance({129: tokens:s:Namen}, {129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]),sorting)");
+        assertEquals(
+            "focus(129: spanElementDistance({129: tokens:s:Namen}, {129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]),sorting)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -405,7 +436,7 @@ public class TestKrillQueryJSON {
                         .getFile());
 
         // opennlp/orth:Baum
-        assertEquals(sqwi.toQuery().toString(), "tokens:s:Baum");
+        assertEquals("tokens:s:Baum", sqwi.toQuery().toString());
     };
 
 
@@ -416,7 +447,7 @@ public class TestKrillQueryJSON {
                 .getFile());
 
         // baum/i
-        assertEquals(sqwi.toQuery().toString(), "tokens:i:baum");
+        assertEquals("tokens:i:baum", sqwi.toQuery().toString());
     };
 
 
@@ -439,8 +470,9 @@ public class TestKrillQueryJSON {
     public void queryJSONspecialLayerBug () throws QueryException {
         SpanQueryWrapper sqwi = getJsonQuery(getClass()
                 .getResource("/queries/bugs/special_layer.jsonld").getFile());
-        assertEquals(sqwi.toQuery().toString(),
-                "spanNext(spanNext(spanNext(tokens:s:Baum, tokens:cnx/p:CC), tokens:tt/l:Baum), <tokens:xip/c:MC />)");
+        assertEquals(
+            "spanNext(spanNext(spanNext(tokens:s:Baum, tokens:cnx/p:CC), tokens:tt/l:Baum), <tokens:xip/c:MC />)",
+            sqwi.toQuery().toString());
     };
 
 
@@ -451,8 +483,9 @@ public class TestKrillQueryJSON {
                 .getResource("/queries/bugs/repetition_group_rewrite.jsonld")
                 .getFile());
 
-        assertEquals(sqwi.toQuery().toString(),
-                "spanRepetition(spanExpansion(SpanMultiTermQueryWrapper(tokens:/cnx/p:A/), []{1, 1}, right){2,2})");
+        assertEquals(
+            "spanRepetition(spanExpansion(SpanMultiTermQueryWrapper(tokens:/cnx/p:A/), []{1, 1}, right){2,2})",
+            sqwi.toQuery().toString());
     };
 
 
@@ -463,8 +496,9 @@ public class TestKrillQueryJSON {
                 .getResource("/queries/bugs/overlaps_frame_workaround.jsonld")
                 .getFile());
 
-        assertEquals(sqwi.toQuery().toString(),
-                "spanOverlap(<tokens:s />, spanNext(tokens:tt/p:CARD, SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/)))");
+        assertEquals(
+            "spanOverlap(<tokens:s />, spanNext(tokens:tt/p:CARD, SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/)))",
+            sqwi.toQuery().toString());
     };
 
 
@@ -475,7 +509,7 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/flags/caseInsensitive.jsonld")
                         .getFile());
 
-        assertEquals(sqwi.toQuery().toString(), "tokens:i:buchstabe");
+        assertEquals("tokens:i:buchstabe", sqwi.toQuery().toString());
     };
 
 
@@ -486,8 +520,9 @@ public class TestKrillQueryJSON {
                 .getResource("/queries/bugs/unspecified_key_bug.jsonld")
                 .getFile());
 
-        assertEquals(sqwi.toQuery().toString(),
-                "spanContain(<tokens:s />, spanDistance(tokens:s:Erde, tokens:s:Sonne, [(w[1:101], ordered, notExcluded)]))");
+        assertEquals(
+            "spanContain(<tokens:s />, spanDistance(tokens:s:Erde, tokens:s:Sonne, [(w[1:101], ordered, notExcluded)]))",
+            sqwi.toQuery().toString());
     };
 
 
@@ -498,23 +533,26 @@ public class TestKrillQueryJSON {
             String json = getJsonString(getClass()
                     .getResource("/queries/flags/unknown1.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
-            assertEquals(kq.fromKoral(json).toQuery().toString(),
-                    "tokens:s:buchstabe");
-            assertEquals(kq.getWarning(0).getCode(), 748);
+            assertEquals(
+                "tokens:s:buchstabe",
+                kq.fromKoral(json).toQuery().toString());
+            assertEquals(748, kq.getWarning(0).getCode());
 
             json = getJsonString(getClass()
                     .getResource("/queries/flags/unknown2.jsonld").getFile());
             kq = new KrillQuery("tokens");
-            assertEquals(kq.fromKoral(json).toQuery().toString(),
-                    "tokens:i:buchstabe");
-            assertEquals(kq.getWarning(0).getCode(), 748);
+            assertEquals(
+                "tokens:i:buchstabe",
+                kq.fromKoral(json).toQuery().toString());
+            assertEquals(748, kq.getWarning(0).getCode());
 
             json = getJsonString(getClass()
                     .getResource("/queries/flags/unknown3.jsonld").getFile());
             kq = new KrillQuery("tokens");
-            assertEquals(kq.fromKoral(json).toQuery().toString(),
-                    "tokens:i:buchstabe");
-            assertEquals(kq.getWarning(0).getCode(), 748);
+            assertEquals(
+                "tokens:i:buchstabe",
+                kq.fromKoral(json).toQuery().toString());
+            assertEquals(748, kq.getWarning(0).getCode());
 
         }
         catch (QueryException e) {
@@ -532,8 +570,9 @@ public class TestKrillQueryJSON {
                     .getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(kq.fromKoral(json).toQuery().toString(),
-                    "<tokens:base/s:s />");
+            assertEquals(
+                "<tokens:base/s:s />",
+                kq.fromKoral(json).toQuery().toString());
         }
         catch (QueryException e) {
             fail(e.getMessage());
@@ -550,8 +589,9 @@ public class TestKrillQueryJSON {
                     .getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(kq.fromKoral(json).toQuery().toString(),
-                    "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:c, []{0, 4}, right)}))");
+            assertEquals(
+                "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:c, []{0, 4}, right)}))",
+                kq.fromKoral(json).toQuery().toString());
         }
         catch (QueryException e) {
             fail(e.getMessage());
@@ -567,8 +607,9 @@ public class TestKrillQueryJSON {
                     .getResource("/queries/bugs/span_or_bug.jsonld").getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(kq.fromKoral(json).toQuery().toString(),
-                    "spanStartsWith(<tokens:base/s:s />, spanOr([tokens:s:Er, tokens:s:Sie]))");
+            assertEquals(
+                "spanStartsWith(<tokens:base/s:s />, spanOr([tokens:s:Er, tokens:s:Sie]))",
+                kq.fromKoral(json).toQuery().toString());
         }
         catch (QueryException e) {
             fail(e.getMessage());
@@ -586,8 +627,9 @@ public class TestKrillQueryJSON {
                     .getFile());
             KrillQuery kq = new KrillQuery("tokens");
 
-            assertEquals(kq.fromKoral(json).toQuery().toString(),
-                    "spanDistance(SpanMultiTermQueryWrapper(tokens:/s:der/), SpanMultiTermQueryWrapper(tokens:/opennlp/p:NN/), [(w[3:4], ordered, notExcluded)])");
+            assertEquals(
+                "spanDistance(SpanMultiTermQueryWrapper(tokens:/s:der/), SpanMultiTermQueryWrapper(tokens:/opennlp/p:NN/), [(w[3:4], ordered, notExcluded)])",
+                kq.fromKoral(json).toQuery().toString());
         }
         catch (QueryException e) {
             fail(e.getMessage());
@@ -687,8 +729,9 @@ public class TestKrillQueryJSON {
                 .getFile());
         KrillQuery kq = new KrillQuery("tokens");
 
-        assertEquals(kq.fromKoral(json).toQuery().toString(),
-                "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 1}, right)}))");
+        assertEquals(
+            "focus(254: spanContain(<tokens:base/s:t />, {254: spanExpansion(tokens:s:der, []{1, 1}, right)}))",
+            kq.fromKoral(json).toQuery().toString());
     };
 
     @Test
@@ -780,9 +823,10 @@ public class TestKrillQueryJSON {
                 .getResource("/queries/merge.jsonld")
                 .getFile());
         KrillQuery kq = new KrillQuery("tokens");
-        assertEquals(kq.fromKoral(json).toQuery().toString(),
-                "spanNext(tokens:s:der, tokens:s:Baum)");
-		assertEquals(kq.getWarning(0).getCode(), 774);
+        assertEquals(
+            "spanNext(tokens:s:der, tokens:s:Baum)",
+            kq.fromKoral(json).toQuery().toString());
+		assertEquals(774, kq.getWarning(0).getCode());
     };
 
     @Test
