@@ -317,8 +317,9 @@ public class TestRepetitionIndex {
         
         Krill ks = new Krill(sq);
 
-        assertEquals(ks.getSpanQuery().toString(),
-                     "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)");
+        assertEquals(
+            "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)",
+            ks.getSpanQuery().toString());
 
         // simpleDocTest
         KrillIndex ki = new KrillIndex();
@@ -368,8 +369,9 @@ public class TestRepetitionIndex {
         
         Krill ks = new Krill(sq);
 
-        assertEquals(ks.getSpanQuery().toString(),
-                     "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)");
+        assertEquals(
+            "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)",
+            ks.getSpanQuery().toString());
 
         // fuzzingRepetitionBug();
 
@@ -402,8 +404,9 @@ public class TestRepetitionIndex {
         
         Krill ks = new Krill(sq);
 
-        assertEquals(ks.getSpanQuery().toString(),
-                     "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)");
+        assertEquals(
+            "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)",
+            ks.getSpanQuery().toString());
 
         // fuzzingRepetitionBug();
 
@@ -445,8 +448,9 @@ public class TestRepetitionIndex {
         
         Krill ks = new Krill(sq);
 
-        assertEquals(ks.getSpanQuery().toString(),
-                     "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)");
+        assertEquals(
+            "spanNext(spanNext(base:s:b, spanRepetition(base:s:c{2,3})), base:s:d)",
+            ks.getSpanQuery().toString());
 
         String lastFailureConf = "";
 
