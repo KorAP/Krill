@@ -214,7 +214,7 @@ public class TestElementDistanceIndex {
         sq = createQuery("p", "s:b", "s:d", 1, 1, true);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
         assertEquals(2, kr.getMatch(0).getLocalDocID());
         assertEquals(2, kr.getMatch(0).startPos);
         assertEquals(4, kr.getMatch(0).endPos);
@@ -256,7 +256,7 @@ public class TestElementDistanceIndex {
         sq = createQuery("s", "s:b", "s:b", 1, 2, true);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(2, kr.getTotalResults());
         assertEquals(0, kr.getMatch(0).startPos);
         assertEquals(4, kr.getMatch(0).endPos);
         assertEquals(3, kr.getMatch(1).startPos);
@@ -315,7 +315,7 @@ public class TestElementDistanceIndex {
         sqwi = new QueryBuilder("tokens").tag("base/s:t");
 
         kr = ki.search(sqwi.toQuery(), (short) 10);
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
         assertEquals("[[ecebdc]]", kr.getMatch(0).getSnippetBrackets());
 
         String jsonPath = getClass()
