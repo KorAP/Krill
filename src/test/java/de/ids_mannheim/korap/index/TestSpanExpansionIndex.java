@@ -444,8 +444,9 @@ public class TestSpanExpansionIndex {
         String json = getJsonString(jsonPath);
         KrillQuery kq = new KrillQuery("base");
         SpanQuery sq = kq.fromKoral(json).toQuery();
-        assertEquals(sq.toString(),
-                "focus(254: spanContain(<base:base/s:t />, {254: spanExpansion(base:s:c, []{0, 4}, right)}))");
+        assertEquals(
+            "focus(254: spanContain(<base:base/s:t />, {254: spanExpansion(base:s:c, []{0, 4}, right)}))",
+            sq.toString());
 
         kr = ki.search(sq, (short) 10);
         assertEquals("[[c]]ab", kr.getMatch(0).getSnippetBrackets());
@@ -457,7 +458,7 @@ public class TestSpanExpansionIndex {
         assertEquals(5, kr.getTotalResults());
 
         sq = kq.builder().tag("base/s:t").toQuery();
-        assertEquals(sq.toString(), "<base:base/s:t />");
+        assertEquals("<base:base/s:t />", sq.toString());
         kr = ki.search(sq, (short) 5);
         assertEquals("[[cab]]", kr.getMatch(0).getSnippetBrackets());
         assertEquals("[[ce]]", kr.getMatch(1).getSnippetBrackets());
