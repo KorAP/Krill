@@ -24,7 +24,7 @@ public class TestIndexRevision {
     public void testIndexRevisionAdd () throws IOException {
         KrillIndex ki = new KrillIndex();
 
-        assertEquals(ki.getFingerprint(),"null");
+        assertEquals("null", ki.getFingerprint());
         
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
@@ -74,7 +74,7 @@ public class TestIndexRevision {
     public void testIndexRevisionDel () throws IOException {
         KrillIndex ki = new KrillIndex();
 
-        assertEquals(ki.getFingerprint(),"null");
+        assertEquals("null", ki.getFingerprint());
         
         ki.addDoc(getClass().getResourceAsStream("/wiki/00001.json.gz"), true);
         ki.commit();
