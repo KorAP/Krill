@@ -46,10 +46,10 @@ public class TestHighlight { // extends LuceneTestCase {
         Result kr = ki
                 .search((SpanQuery) kq.seq(kq.nr(1, kq.seg("s:b"))).toQuery());
         Match km = kr.getMatch(0);
-        assertEquals(km.getStartPos(), 1);
-        assertEquals(km.getEndPos(), 2);
-        assertEquals(km.getStartPos(1), 1);
-        assertEquals(km.getEndPos(1), 2);
+        assertEquals(1, km.getStartPos());
+        assertEquals(2, km.getEndPos());
+        assertEquals(1, km.getStartPos(1));
+        assertEquals(2, km.getEndPos(1));
         assertEquals(
                 "<span class=\"context-left\">a</span><span class=\"match\"><mark><mark class=\"class-1 level-0\">b</mark></mark></span><span class=\"context-right\">c</span>",
                 km.getSnippetHTML());
@@ -57,12 +57,12 @@ public class TestHighlight { // extends LuceneTestCase {
         kr = ki.search((SpanQuery) kq.seq(kq.nr(1, kq.seg("s:b")))
                 .append(kq.nr(2, kq.seg("s:c"))).toQuery());
         km = kr.getMatch(0);
-        assertEquals(km.getStartPos(), 1);
-        assertEquals(km.getEndPos(), 3);
-        assertEquals(km.getStartPos(1), 1);
-        assertEquals(km.getEndPos(1), 2);
-        assertEquals(km.getStartPos(2), 2);
-        assertEquals(km.getEndPos(2), 3);
+        assertEquals(1, km.getStartPos());
+        assertEquals(3, km.getEndPos());
+        assertEquals(1, km.getStartPos(1));
+        assertEquals(2, km.getEndPos(1));
+        assertEquals(2, km.getStartPos(2));
+        assertEquals(3, km.getEndPos(2));
         assertEquals(
                 "<span class=\"context-left\">a</span><span class=\"match\"><mark><mark class=\"class-1 level-0\">b</mark><mark class=\"class-2 level-0\">c</mark></mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
@@ -72,12 +72,12 @@ public class TestHighlight { // extends LuceneTestCase {
                 .seq(kq.nr(1, kq.seq(kq.seg("s:a")).append(kq.seg("s:b"))))
                 .append(kq.nr(2, kq.seg("s:c"))).toQuery());
         km = kr.getMatch(0);
-        assertEquals(km.getStartPos(), 0);
-        assertEquals(km.getEndPos(), 3);
-        assertEquals(km.getStartPos(1), 0);
-        assertEquals(km.getEndPos(1), 2);
-        assertEquals(km.getStartPos(2), 2);
-        assertEquals(km.getEndPos(2), 3);
+        assertEquals(0, km.getStartPos());
+        assertEquals(3, km.getEndPos());
+        assertEquals(0, km.getStartPos(1));
+        assertEquals(2, km.getEndPos(1));
+        assertEquals(2, km.getStartPos(2));
+        assertEquals(3, km.getEndPos(2));
         assertEquals(
                 "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-1 level-0\">ab</mark><mark class=\"class-2 level-0\">c</mark></mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
@@ -92,14 +92,14 @@ public class TestHighlight { // extends LuceneTestCase {
                                 .append(kq.nr(2, kq.seg("s:c"))))
                         .toQuery());
         km = kr.getMatch(0);
-        assertEquals(km.getStartPos(), 0);
-        assertEquals(km.getEndPos(), 3);
-        assertEquals(km.getStartPos(1), 0);
-        assertEquals(km.getEndPos(1), 2);
-        assertEquals(km.getStartPos(2), 2);
-        assertEquals(km.getEndPos(2), 3);
-        assertEquals(km.getStartPos(3), 0);
-        assertEquals(km.getEndPos(3), 3);
+        assertEquals(0, km.getStartPos());
+        assertEquals(3, km.getEndPos());
+        assertEquals(0, km.getStartPos(1));
+        assertEquals(2, km.getEndPos(1));
+        assertEquals(2, km.getStartPos(2));
+        assertEquals(3, km.getEndPos(2));
+        assertEquals(0, km.getStartPos(3));
+        assertEquals(3, km.getEndPos(3));
         assertEquals(
                 "<span class=\"context-left\"></span><span class=\"match\"><mark><mark class=\"class-3 level-0\"><mark class=\"class-1 level-1\">ab</mark><mark class=\"class-2 level-1\">c</mark></mark></mark></span><span class=\"context-right\"></span>",
                 km.getSnippetHTML());
@@ -287,13 +287,15 @@ public class TestHighlight { // extends LuceneTestCase {
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(), "{15: tokens:s:Alphabet}");
-        assertEquals(kr.getTotalResults(), 7);
-        assertEquals(kr.getStartIndex(), 0);
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... 2. Herkunft Die aus dem proto-semitischen [[{15:Alphabet}]] stammende Urform des Buchstaben ist wahrscheinlich ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-15 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+        assertEquals("{15: tokens:s:Alphabet}", kr.getSerialQuery());
+        assertEquals(7, kr.getTotalResults());
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(
+            "... 2. Herkunft Die aus dem proto-semitischen [[{15:Alphabet}]] stammende Urform des Buchstaben ist wahrscheinlich ...",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+            "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-15 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>",
+            kr.getMatch(0).getSnippetHTML());
 
         json = getJsonString(getClass()
                 .getResource("/queries/bugs/greater_highlights_16.jsonld")
@@ -302,13 +304,15 @@ public class TestHighlight { // extends LuceneTestCase {
         // 16
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(), "{16: tokens:s:Alphabet}");
-        assertEquals(kr.getTotalResults(), 7);
-        assertEquals(kr.getStartIndex(), 0);
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... 2. Herkunft Die aus dem proto-semitischen [[{16:Alphabet}]] stammende Urform des Buchstaben ist wahrscheinlich ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-16 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+        assertEquals("{16: tokens:s:Alphabet}", kr.getSerialQuery());
+        assertEquals(7, kr.getTotalResults());
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(
+            "... 2. Herkunft Die aus dem proto-semitischen [[{16:Alphabet}]] stammende Urform des Buchstaben ist wahrscheinlich ...",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+            "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-16 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>",
+            kr.getMatch(0).getSnippetHTML());
 
         // 127
         json = getJsonString(getClass()
@@ -317,13 +321,15 @@ public class TestHighlight { // extends LuceneTestCase {
 
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(), "{127: tokens:s:Alphabet}");
-        assertEquals(kr.getTotalResults(), 7);
-        assertEquals(kr.getStartIndex(), 0);
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... 2. Herkunft Die aus dem proto-semitischen [[{127:Alphabet}]] stammende Urform des Buchstaben ist wahrscheinlich ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-127 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+        assertEquals("{127: tokens:s:Alphabet}", kr.getSerialQuery());
+        assertEquals(7, kr.getTotalResults());
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(
+            "... 2. Herkunft Die aus dem proto-semitischen [[{127:Alphabet}]] stammende Urform des Buchstaben ist wahrscheinlich ...",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+            "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark><mark class=\"class-127 level-0\">Alphabet</mark></mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>",
+            kr.getMatch(0).getSnippetHTML());
 
         // 255
         json = getJsonString(getClass()
@@ -332,13 +338,15 @@ public class TestHighlight { // extends LuceneTestCase {
 
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(), "{255: tokens:s:Alphabet}");
-        assertEquals(kr.getTotalResults(), 7);
-        assertEquals(kr.getStartIndex(), 0);
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... 2. Herkunft Die aus dem proto-semitischen [[Alphabet]] stammende Urform des Buchstaben ist wahrscheinlich ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark>Alphabet</mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>");
+        assertEquals("{255: tokens:s:Alphabet}", kr.getSerialQuery());
+        assertEquals(7, kr.getTotalResults());
+        assertEquals(0, kr.getStartIndex());
+        assertEquals(
+            "... 2. Herkunft Die aus dem proto-semitischen [[Alphabet]] stammende Urform des Buchstaben ist wahrscheinlich ...",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+            "<span class=\"context-left\"><span class=\"more\"></span>2. Herkunft Die aus dem proto-semitischen </span><span class=\"match\"><mark>Alphabet</mark></span><span class=\"context-right\"> stammende Urform des Buchstaben ist wahrscheinlich<span class=\"more\"></span></span>",
+            kr.getMatch(0).getSnippetHTML());
 
         // 300
         json = getJsonString(getClass()
@@ -351,8 +359,9 @@ public class TestHighlight { // extends LuceneTestCase {
         assertEquals("Valid class numbers exceeded",
                 kr.getError(0).getMessage());
 
-        assertEquals(kr.getError(0).getMessage(),
-                "Valid class numbers exceeded");
+        assertEquals(
+            "Valid class numbers exceeded",
+            kr.getError(0).getMessage());
     };
 
     @Test
@@ -373,25 +382,25 @@ public class TestHighlight { // extends LuceneTestCase {
         Match km;
         
         km = ki.getMatch("match-WUD17/G97/20422-p1020-1021");
-        assertEquals(km.getSnippetBrackets(), "... [[Madonna]] ...");
+        assertEquals("... [[Madonna]] ...", km.getSnippetBrackets());
 
         km = ki.getMatch("match-WUD17/G97/20422-p1030-1031");
-        assertEquals(km.getSnippetBrackets(), "... [[Kurier]] ...");
+        assertEquals("... [[Kurier]] ...", km.getSnippetBrackets());
 
         km = ki.getMatch("match-WUD17/G97/20422-p1032-1033");
-        assertEquals(km.getSnippetBrackets(), "... [[Spalte]] ...");
+        assertEquals("... [[Spalte]] ...", km.getSnippetBrackets());
 
         // There is a surrogate between 6500, 6600 that makes the substring
         // broken, as the original substring works on utf-8, but Java works on utf-16
 
         km = ki.getMatch("match-WUD17/G97/20422-p1033-1034");
-        assertEquals(km.getSnippetBrackets(), "... [[Neue]] ...");
+        assertEquals("... [[Neue]] ...", km.getSnippetBrackets());
         
         km = ki.getMatch("match-WUD17/G97/20422-p1034-1035");
-        assertEquals(km.getSnippetBrackets(), "... [[Artikel]] ...");        
+        assertEquals("... [[Artikel]] ...", km.getSnippetBrackets());        
         
         km = ki.getMatch("match-WUD17/G97/20422-p5707-5708");
-        assertEquals(km.getSnippetBrackets(), "... [[Sockenpuppe]] ...");
+        assertEquals("... [[Sockenpuppe]] ...", km.getSnippetBrackets());
     }
     
 
@@ -466,8 +475,8 @@ public class TestHighlight { // extends LuceneTestCase {
             .search((SpanQuery) kq.tag("base/t:t").toQuery());
 
         Match km = kr.getMatch(0);
-        assertEquals(km.getStartPos(), 0);
-        assertEquals(km.getEndPos(), 3);
+        assertEquals(0, km.getStartPos());
+        assertEquals(3, km.getEndPos());
         assertEquals("match-c1/d1/1-p0-3",km.getID());
 
         km = ki.getMatchInfo("match-c1/d1/1-p0-3", "base", true,
@@ -553,10 +562,10 @@ public class TestHighlight { // extends LuceneTestCase {
             Result kr = ki
                     .search((SpanQuery) kq.seq(kq.nr(1, kq.seg("s:b")), kq.seg("s:c")).toQuery());
             Match km = kr.getMatch(0);
-            assertEquals(km.getStartPos(), 1);
-            assertEquals(km.getEndPos(), 3);
-            assertEquals(km.getStartPos(1), 1);
-            assertEquals(km.getEndPos(1), 2);
+            assertEquals(1, km.getStartPos());
+            assertEquals(3, km.getEndPos());
+            assertEquals(1, km.getStartPos(1));
+            assertEquals(2, km.getEndPos(1));
             
             assertEquals(
                      "{\"left\":[\"a\"],\"match\":[\"b\",\"c\"],\"classes\":[[1,0,0]]}",
@@ -566,8 +575,8 @@ public class TestHighlight { // extends LuceneTestCase {
             kr = ki
                 .search((SpanQuery) kq.seq(kq.seg("s:a"), kq.seg("s:b"), kq.seg("s:c")).toQuery());
             km = kr.getMatch(0);
-            assertEquals(km.getStartPos(), 0);
-            assertEquals(km.getEndPos(), 3);
+            assertEquals(0, km.getStartPos());
+            assertEquals(3, km.getEndPos());
             
             assertEquals(
                      "{\"match\":[\"a\",\"b\",\"c\"]}",
