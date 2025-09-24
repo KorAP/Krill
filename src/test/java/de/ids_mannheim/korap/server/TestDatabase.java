@@ -59,13 +59,13 @@ public class TestDatabase {
 
         rs.next();
 
-        assertEquals(rs.getString("name"), "Peter");
-        assertEquals(rs.getInt("age"), 24);
+        assertEquals("Peter", rs.getString("name"));
+        assertEquals(24, rs.getInt("age"));
 
         rs.next();
 
-        assertEquals(rs.getString("name"), "Klaus");
-        assertEquals(rs.getInt("age"), 31);
+        assertEquals("Klaus", rs.getString("name"));
+        assertEquals(31, rs.getInt("age"));
 
         rs.close();
     };
@@ -100,8 +100,8 @@ public class TestDatabase {
 
         ResultSet rs = stat.executeQuery("SELECT * FROM result_a;");
         rs.next();
-        assertEquals(rs.getInt("text_id"), 5);
-        assertEquals(rs.getInt("match_count"), 8000);
+        assertEquals(5, rs.getInt("text_id"));
+        assertEquals(8000, rs.getInt("match_count"));
         rs.close();
 
         MatchCollectorDB mc = new MatchCollectorDB(2000, "result_a");
@@ -115,17 +115,17 @@ public class TestDatabase {
 
         rs = stat.executeQuery("SELECT * FROM result_a;");
         assertTrue(rs.next());
-        assertEquals(rs.getInt("text_id"), 5);
-        assertEquals(rs.getInt("match_count"), 8000);
+        assertEquals(5, rs.getInt("text_id"));
+        assertEquals(8000, rs.getInt("match_count"));
         rs.next();
-        assertEquals(rs.getInt("text_id"), 9);
-        assertEquals(rs.getInt("match_count"), 5000);
+        assertEquals(9, rs.getInt("text_id"));
+        assertEquals(5000, rs.getInt("match_count"));
         rs.next();
-        assertEquals(rs.getInt("text_id"), 12);
-        assertEquals(rs.getInt("match_count"), 6785);
+        assertEquals(12, rs.getInt("text_id"));
+        assertEquals(6785, rs.getInt("match_count"));
         rs.next();
-        assertEquals(rs.getInt("text_id"), 39);
-        assertEquals(rs.getInt("match_count"), 56576);
+        assertEquals(39, rs.getInt("text_id"));
+        assertEquals(56576, rs.getInt("match_count"));
 
         rs.close();
     };
@@ -175,26 +175,26 @@ public class TestDatabase {
         rs = stat.executeQuery("SELECT text_id, match_count FROM matchXYZ;");
         assertTrue(rs.next());
 
-        assertEquals(rs.getInt("text_id"), 9);
-        assertEquals(rs.getInt("match_count"), 5000);
+        assertEquals(9, rs.getInt("text_id"));
+        assertEquals(5000, rs.getInt("match_count"));
         assertTrue(rs.next());
-        assertEquals(rs.getInt("text_id"), 12);
-        assertEquals(rs.getInt("match_count"), 6785);
+        assertEquals(12, rs.getInt("text_id"));
+        assertEquals(6785, rs.getInt("match_count"));
         assertTrue(rs.next());
-        assertEquals(rs.getInt("text_id"), 39);
-        assertEquals(rs.getInt("match_count"), 56576);
+        assertEquals(39, rs.getInt("text_id"));
+        assertEquals(56576, rs.getInt("match_count"));
         assertTrue(rs.next());
-        assertEquals(rs.getInt("text_id"), 45);
-        assertEquals(rs.getInt("match_count"), 5000);
+        assertEquals(45, rs.getInt("text_id"));
+        assertEquals(5000, rs.getInt("match_count"));
         assertTrue(rs.next());
-        assertEquals(rs.getInt("text_id"), 67);
-        assertEquals(rs.getInt("match_count"), 6785);
+        assertEquals(67, rs.getInt("text_id"));
+        assertEquals(6785, rs.getInt("match_count"));
         assertTrue(rs.next());
-        assertEquals(rs.getInt("text_id"), 81);
-        assertEquals(rs.getInt("match_count"), 56576);
+        assertEquals(81, rs.getInt("text_id"));
+        assertEquals(56576, rs.getInt("match_count"));
         assertTrue(rs.next());
-        assertEquals(rs.getInt("text_id"), 94);
-        assertEquals(rs.getInt("match_count"), 456);
+        assertEquals(94, rs.getInt("text_id"));
+        assertEquals(456, rs.getInt("match_count"));
         assertFalse(rs.next());
     };
 
@@ -207,8 +207,8 @@ public class TestDatabase {
         mc.add(9, 10);
         mc.add(16, 90);
         mc.commit();
-        assertEquals(mc.getTotalResults(), 109);
-        assertEquals(mc.getTotalResultDocs(), 4);
+        assertEquals(109, mc.getTotalResults());
+        assertEquals(4, mc.getTotalResultDocs());
     };
 
 
