@@ -43,48 +43,48 @@ public class TestMatchIdentifier {
     @Test
     public void identifierExample1 () throws IOException, QueryException {
         MatchIdentifier id = new MatchIdentifier("match-c1!d1-p4-20");
-        assertEquals(id.getCorpusID(), "c1");
-        assertEquals(id.getDocID(), "d1");
-        assertEquals(id.getStartPos(), 4);
-        assertEquals(id.getEndPos(), 20);
+        assertEquals("c1", id.getCorpusID());
+        assertEquals("d1", id.getDocID());
+        assertEquals(4, id.getStartPos());
+        assertEquals(20, id.getEndPos());
 
-        assertEquals(id.toString(), "match-c1!d1-p4-20");
+        assertEquals("match-c1!d1-p4-20", id.toString());
         id.addPos(10, 14, 2);
-        assertEquals(id.toString(), "match-c1!d1-p4-20(2)10-14");
+        assertEquals("match-c1!d1-p4-20(2)10-14", id.toString());
         id.addPos(11, 12, 5);
-        assertEquals(id.toString(), "match-c1!d1-p4-20(2)10-14(5)11-12");
+        assertEquals("match-c1!d1-p4-20(2)10-14(5)11-12", id.toString());
         // Ignore
         id.addPos(11, 12, -8);
-        assertEquals(id.toString(), "match-c1!d1-p4-20(2)10-14(5)11-12");
+        assertEquals("match-c1!d1-p4-20(2)10-14(5)11-12", id.toString());
         id.addPos(11, -12, 8);
-        assertEquals(id.toString(), "match-c1!d1-p4-20(2)10-14(5)11-12");
+        assertEquals("match-c1!d1-p4-20(2)10-14(5)11-12", id.toString());
         id.addPos(-11, 12, 8);
-        assertEquals(id.toString(), "match-c1!d1-p4-20(2)10-14(5)11-12");
+        assertEquals("match-c1!d1-p4-20(2)10-14(5)11-12", id.toString());
 
         id = new MatchIdentifier("matc-c1!d1-p4-20");
         assertNull(id.toString());
         id = new MatchIdentifier("match-d1-p4-20");
         assertNull(id.getCorpusID());
-        assertEquals(id.getDocID(), "d1");
+        assertEquals("d1", id.getDocID());
         id = new MatchIdentifier("match-p4-20");
         assertNull(id.toString());
 
         id = new MatchIdentifier("match-c1!d1-p4-20");
-        assertEquals(id.toString(), "match-c1!d1-p4-20");
+        assertEquals("match-c1!d1-p4-20", id.toString());
 
         id = new MatchIdentifier("match-c1!d1-p4-20(5)7-8");
-        assertEquals(id.toString(), "match-c1!d1-p4-20(5)7-8");
+        assertEquals("match-c1!d1-p4-20(5)7-8", id.toString());
 
         id = new MatchIdentifier("match-c1!d1-p4-20(5)7-8(-2)9-10");
-        assertEquals(id.toString(), "match-c1!d1-p4-20(5)7-8");
+        assertEquals("match-c1!d1-p4-20(5)7-8", id.toString());
 
         id = new MatchIdentifier(
                 "match-c1!d1-p4-20(5)7-8(-2)9-10(2)3-4(3)-5-6");
-        assertEquals(id.toString(), "match-c1!d1-p4-20(5)7-8(2)3-4");
+        assertEquals("match-c1!d1-p4-20(5)7-8(2)3-4", id.toString());
 
         id = new MatchIdentifier(
                 "match-c1!d1-p4-20(5)7-8(-2)9-10(2)3-4(3)-5-6(4)7-8");
-        assertEquals(id.toString(), "match-c1!d1-p4-20(5)7-8(2)3-4(4)7-8");
+        assertEquals("match-c1!d1-p4-20(5)7-8(2)3-4(4)7-8", id.toString());
 
         id = new MatchIdentifier(
                 "match-c1!d1-p4-20(5)7-8(-2)9-10(2)3-4(3)-5-6(4)7-8(5)9--10");
@@ -93,7 +93,7 @@ public class TestMatchIdentifier {
         assertEquals("c1", id.getCorpusID());
         assertEquals("d1", id.getDocID());
         assertEquals(null, id.getTextSigle());
-        assertEquals(id.toString(), "match-c1!d1-p4-20(5)7-8(2)3-4(4)7-8");
+        assertEquals("match-c1!d1-p4-20(5)7-8(2)3-4(4)7-8", id.toString());
 
         id = new MatchIdentifier("match-GOE!GOE_AGF.02286-p2105-2106");
         assertEquals(2105, id.getStartPos());
@@ -114,10 +114,10 @@ public class TestMatchIdentifier {
         id.setCorpusID("c1");
         id.setDocID("d1");
         id.setStart(8);
-        assertEquals(id.getCorpusID(), "c1");
-        assertEquals(id.getDocID(), "d1");
-        assertEquals(id.getStart(), 8);
-        assertEquals(id.toString(), "token-c1!d1-p8");
+        assertEquals("c1", id.getCorpusID());
+        assertEquals("d1", id.getDocID());
+        assertEquals(8, id.getStart());
+        assertEquals("token-c1!d1-p8", id.toString());
     };
 
     @Test
@@ -129,46 +129,46 @@ public class TestMatchIdentifier {
         id.setTextSigle("aaa/bbb/ccc");
         id.setStartPos(8);
         id.setEndPos(10);
-        assertEquals(id.toString(), "match-aaa/bbb/ccc-p8-10x_ibY-h1k-VJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
+        assertEquals("match-aaa/bbb/ccc-p8-10x_ibY-h1k-VJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8", id.toString());
 
         id = new MatchIdentifier("match-aaa/bbb/ccc-p8-10x_ibY-h1k-VJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
 
         assertNotNull(id);
-        assertEquals(id.getTextSigle(),"aaa/bbb/ccc");
-        assertEquals(id.getStartPos(),8);
-        assertEquals(id.getEndPos(),10);
+        assertEquals("aaa/bbb/ccc", id.getTextSigle());
+        assertEquals(8, id.getStartPos());
+        assertEquals(10, id.getEndPos());
 
         // Fail - match wrong: p9 instead of p8
         id = new MatchIdentifier("match-aaa/bbb/ccc-p9-10x_ibY-h1k-VJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
 
         assertNotNull(id);
-        assertEquals(id.getTextSigle(),"");
-        assertEquals(id.getStartPos(),0);
-        assertEquals(id.getEndPos(),-1);
+        assertEquals("", id.getTextSigle());
+        assertEquals(0, id.getStartPos());
+        assertEquals(-1, id.getEndPos());
 
         // Fail - signature wrong: 4Ou6 instead of 40I6
         id = new MatchIdentifier("match-aaa/bbb/ccc-p8-10x_ibY-h1k-VJ4aZjBFgTu8N4Ou6xqcp-PkUrjQ9080Kr8");
 
         assertNotNull(id);
-        assertEquals(id.getTextSigle(),"");
-        assertEquals(id.getStartPos(),0);
-        assertEquals(id.getEndPos(),-1);
+        assertEquals("", id.getTextSigle());
+        assertEquals(0, id.getStartPos());
+        assertEquals(-1, id.getEndPos());
         
         // Fail - signature wrong: vJ instead of VJ
         id = new MatchIdentifier("match-aaa/bbb/ccc-p8-10x_ibY-h1k-vJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
 
         assertNotNull(id);
-        assertEquals(id.getTextSigle(),"");
-        assertEquals(id.getStartPos(),0);
-        assertEquals(id.getEndPos(),-1);
+        assertEquals("", id.getTextSigle());
+        assertEquals(0, id.getStartPos());
+        assertEquals(-1, id.getEndPos());
 
         // Fail - match wrong: aab instead of aaa
         id = new MatchIdentifier("match-aab/bbb/ccc-p8-10x_ibY-h1k-VJ4aZjBFgTu8N4OI6xqcp-PkUrjQ9080Kr8");
 
         assertNotNull(id);
-        assertEquals(id.getTextSigle(),"");
-        assertEquals(id.getStartPos(),0);
-        assertEquals(id.getEndPos(),-1);
+        assertEquals("", id.getTextSigle());
+        assertEquals(0, id.getStartPos());
+        assertEquals(-1, id.getEndPos());
 
 
         MatchIdentifier.initMac("");
@@ -181,11 +181,11 @@ public class TestMatchIdentifier {
         id.setDocID("d1");
         id.setStart(8);
         id.setEnd(12);
-        assertEquals(id.getCorpusID(), "c1");
-        assertEquals(id.getDocID(), "d1");
-        assertEquals(id.getStart(), 8);
-        assertEquals(id.getEnd(), 12);
-        assertEquals(id.toString(), "token-c1!d1-p8-12");
+        assertEquals("c1", id.getCorpusID());
+        assertEquals("d1", id.getDocID());
+        assertEquals(8, id.getStart());
+        assertEquals(12, id.getEnd());
+        assertEquals("token-c1!d1-p8-12", id.toString());
     };
 
 
@@ -1208,8 +1208,8 @@ public class TestMatchIdentifier {
 					 "{\"match\":[\"x\",\"y\",\"z\"]}",
 					 km.getSnippetTokens().toString());
         
-        assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
-        assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
+        assertEquals("GOE/AGA/03828", fd.getTextSigle());
+        assertEquals("Autobiographische Einzelheiten", fd.getFieldValue("title"));
 
 		
         Krill ks = new Krill(new QueryBuilder("tokens").seg("marmot/m:case:nom").with("marmot/m:degree:pos"));
@@ -1328,7 +1328,7 @@ public class TestMatchIdentifier {
 
         Match km = ki.getMatchInfo("match-c1!d1-p7-9(4)8-8(2)7-8", "tokens",
                 null, null, false, false);
-		assertEquals(km.getFieldValue("availability"), "CC-BY-SA");
+		assertEquals("CC-BY-SA", km.getFieldValue("availability"));
     };
 
     @Test
