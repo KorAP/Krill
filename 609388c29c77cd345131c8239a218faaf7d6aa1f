@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cd4b7a24_1aa154d6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-09-24T07:38:58Z",
+      "side": 1,
+      "message": "This introduces the problem, that it\u0027s quite trivial to download a whole dokument by just searching for sentences: https://korap.dnb.de/deliko?q\u003d%3Cbase%2Fs%3Ds%3E\u0026ql\u003dpoliqarp . While there may be some sentences exceeding this limit, with a combination of \"endsWith\" and \"\u003cbase/s\u003ds\u003e\" it\u0027s rather trivial to fetch complete documents.",
+      "revId": "609388c29c77cd345131c8239a218faaf7d6aa1f",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
