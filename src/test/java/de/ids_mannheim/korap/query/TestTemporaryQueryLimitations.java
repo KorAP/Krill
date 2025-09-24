@@ -48,10 +48,11 @@ public class TestTemporaryQueryLimitations {
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(),
-                "focus(130: {131: spanContain({129: <tokens:s />}, {130: tokens:s:wegen})},sorting)");
-        assertEquals(kr.getTotalResults(), 0);
-        assertEquals(kr.getStartIndex(), 0);
+        assertEquals(
+            "focus(130: {131: spanContain({129: <tokens:s />}, {130: tokens:s:wegen})},sorting)",
+            kr.getSerialQuery());
+        assertEquals(0, kr.getTotalResults());
+        assertEquals(0, kr.getStartIndex());
 
         assertEquals("This is a warning coming from the serialization",
                 kr.getWarning(1).getMessage());
