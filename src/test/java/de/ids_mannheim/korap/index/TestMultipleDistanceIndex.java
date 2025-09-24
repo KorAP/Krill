@@ -217,7 +217,7 @@ public class TestMultipleDistanceIndex {
         SpanMultiTermQueryWrapper<WildcardQuery> mtq =
                 new SpanMultiTermQueryWrapper<WildcardQuery>(wcquery);
 
-        assertEquals(wcquery.toString(), "tokens:s:Meine*");
+        assertEquals("tokens:s:Meine*", wcquery.toString());
 
         kr = ki.search(mtq, (short) 10);
         assertEquals(4, kr.getMatches().size());
@@ -236,10 +236,11 @@ public class TestMultipleDistanceIndex {
 
         SpanQuery mdsq =
                 new SpanMultipleDistanceQuery(mtq, sq, constraints, true, true);
-        assertEquals(mdsq.toString(),
-                "spanMultipleDistance(SpanMultiTermQueryWrapper(tokens:s:Meine*), "
+        assertEquals(
+            "spanMultipleDistance(SpanMultiTermQueryWrapper(tokens:s:Meine*), "
                         + "tokens:l:Erfahrung, [(w[1:2], ordered, notExcluded), (s[0:0], "
-                        + "ordered, notExcluded)])");
+                        + "ordered, notExcluded)])",
+            mdsq.toString());
 
         kr = ki.search(mdsq, (short) 10);
         assertEquals(3, kr.getMatches().size());
@@ -268,7 +269,7 @@ public class TestMultipleDistanceIndex {
 			getClass().getResource("/queries/bugs/cosmas_wildcards_missingfoundry.jsonld")
 			.getFile());
 		SpanQuery sq = sqw.toQuery();
-		assertEquals(sq.toString(),"SpanMultiTermQueryWrapper(tokens:l:Erfahr*)");
+		assertEquals("SpanMultiTermQueryWrapper(tokens:l:Erfahr*)", sq.toString());
 
 		kr = ki.search(sq, (short) 10);
         assertEquals(4, kr.getMatches().size());
