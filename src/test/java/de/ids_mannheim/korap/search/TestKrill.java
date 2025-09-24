@@ -39,15 +39,15 @@ public class TestKrill {
 
         // Count:
         meta.setCount(30);
-        assertEquals(meta.getCount(), 30);
+        assertEquals(30, meta.getCount());
         meta.setCount(20);
-        assertEquals(meta.getCount(), 20);
+        assertEquals(20, meta.getCount());
         meta.setCount(-50);
-        assertEquals(meta.getCount(), 20);
+        assertEquals(20, meta.getCount());
         meta.setCount(500);
         assertEquals(meta.getCount(), meta.getCountMax());
         meta.setCount(0);
-        assertEquals(meta.getCount(), 0);
+        assertEquals(0, meta.getCount());
     };
 
     @Test
@@ -58,15 +58,15 @@ public class TestKrill {
 
         // startIndex
         meta.setStartIndex(5);
-        assertEquals(meta.getStartIndex(), 5);
+        assertEquals(5, meta.getStartIndex());
         meta.setStartIndex(1);
-        assertEquals(meta.getStartIndex(), 1);
+        assertEquals(1, meta.getStartIndex());
         meta.setStartIndex(0);
-        assertEquals(meta.getStartIndex(), 0);
+        assertEquals(0, meta.getStartIndex());
         meta.setStartIndex(70);
-        assertEquals(meta.getStartIndex(), 70);
+        assertEquals(70, meta.getStartIndex());
         meta.setStartIndex(-5);
-        assertEquals(meta.getStartIndex(), 0);
+        assertEquals(0, meta.getStartIndex());
     };
 
 
@@ -74,8 +74,9 @@ public class TestKrill {
     public void searchQuery () {
         Krill ks = new Krill(new QueryBuilder("field1").seg("a").with("b"));
         // query
-        assertEquals(ks.getSpanQuery().toString(),
-                "spanSegment(field1:a, field1:b)");
+        assertEquals(
+            "spanSegment(field1:a, field1:b)",
+            ks.getSpanQuery().toString());
     };
 
 
@@ -105,10 +106,11 @@ public class TestKrill {
         assertTrue(meta.hasSnippets());
 
         Result kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 6);
-        assertEquals(kr.getMatches().size(), 1);
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... dem [[Buchstaben]] A ...");
+        assertEquals(6, kr.getTotalResults());
+        assertEquals(1, kr.getMatches().size());
+        assertEquals(
+            "... dem [[Buchstaben]] A ...",
+            kr.getMatch(0).getSnippetBrackets());
 
         JsonNode res = ks.toJsonNode();
         
@@ -132,9 +134,9 @@ public class TestKrill {
         meta.setCount(0);
 
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 6);
-        assertEquals(kr.getItemsPerPage(), 0);
-        assertEquals(kr.getMatches().size(), 0);
+        assertEquals(6, kr.getTotalResults());
+        assertEquals(0, kr.getItemsPerPage());
+        assertEquals(0, kr.getMatches().size());
 
         // Handle count=0 correctly
         meta = ks.getMeta();
@@ -142,9 +144,9 @@ public class TestKrill {
         meta.setCutOff(true);
 
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), -1);
-        assertEquals(kr.getItemsPerPage(), 0);
-        assertEquals(kr.getMatches().size(), 0);
+        assertEquals(-1, kr.getTotalResults());
+        assertEquals(0, kr.getItemsPerPage());
+        assertEquals(0, kr.getMatches().size());
         
         // Handle tokens=true and
         // snippet=false correctly
@@ -155,8 +157,8 @@ public class TestKrill {
         meta.setSnippets(false);
 
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 6);
-        assertEquals(kr.getMatches().size(), 1);
+        assertEquals(6, kr.getTotalResults());
+        assertEquals(1, kr.getMatches().size());
 
         res = kr.toJsonNode();
 
@@ -174,25 +176,26 @@ public class TestKrill {
 
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 0);
-        assertEquals(kr.getItemsPerPage(), 25);
-        assertEquals(kr.getMatches().size(), 0);
+        assertEquals(0, kr.getTotalResults());
+        assertEquals(25, kr.getItemsPerPage());
+        assertEquals(0, kr.getMatches().size());
 
         res = mapper.readTree(kr.toJsonString());
-        assertEquals(res.at("/meta/serialQuery").asText(),"tokens:i:grösstenteils");
+        assertEquals("tokens:i:grösstenteils", res.at("/meta/serialQuery").asText());
 
         json = "{\"query\":{\"@type\":\"koral:token\",\"wrap\":{\"@type\":\"koral:term\",\"flags\": [\"flags:caseInsensitive\"],\"key\": \"Größtenteils\",\"layer\":\"orth\",\"match\": \"match:eq\"}}}";
         
         ks = new Krill(json);
         kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 2);
-        assertEquals(kr.getItemsPerPage(), 25);
-        assertEquals(kr.getMatches().size(), 2);
+        assertEquals(2, kr.getTotalResults());
+        assertEquals(25, kr.getItemsPerPage());
+        assertEquals(2, kr.getMatches().size());
 
         res = mapper.readTree(kr.toJsonString());
-        assertEquals(res.at("/meta/serialQuery").asText(),
-                     "spanOr([tokens:i:grösstenteils, tokens:i:größtenteils])");
+        assertEquals(
+            "spanOr([tokens:i:grösstenteils, tokens:i:größtenteils])",
+            res.at("/meta/serialQuery").asText());
     };
 
 
@@ -213,7 +216,7 @@ public class TestKrill {
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 66);
+        assertEquals(66, kr.getTotalResults());
         assertEquals(5, kr.getItemsPerPage());
         assertEquals(5, kr.getStartIndex());
         assertEquals("... a: A ist [[der klangreichste]] der V ...",
@@ -245,27 +248,27 @@ public class TestKrill {
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
 
         ks = new Krill(json);
         // Ignore the collection part of the query!
         ks.setCollection(new KrillCollection());
         kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 5);
+        assertEquals(5, kr.getTotalResults());
 
         json = getJsonString(
                 getClass().getResource("/queries/metaquery5.jsonld").getFile());
 
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
 
         json = getJsonString(
                 getClass().getResource("/queries/metaquery6.jsonld").getFile());
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 1);        
+        assertEquals(1, kr.getTotalResults());        
     };
 
 
@@ -290,8 +293,8 @@ public class TestKrill {
         };
         ki.commit();
         Result kr = new Krill("{ query").apply(ki);
-        assertEquals(kr.getTotalResults(), 0);
-        assertEquals(kr.getError(0).getMessage(), "Unable to parse JSON");
+        assertEquals(0, kr.getTotalResults());
+        assertEquals("Unable to parse JSON", kr.getError(0).getMessage());
     };
 
 
@@ -312,7 +315,7 @@ public class TestKrill {
 
         Result kr = new Krill(json).apply(ki);
         assertEquals(0, kr.getStartIndex());
-        assertEquals(kr.getTotalResults(), 0);
+        assertEquals(0, kr.getTotalResults());
         assertEquals(25, kr.getItemsPerPage());
     };
 
@@ -335,7 +338,7 @@ public class TestKrill {
         Result kr = new Krill(json).apply(ki);
         assertEquals(50, kr.getItemsPerPage());
         assertEquals(49950, kr.getStartIndex());
-        assertEquals(kr.getTotalResults(), 0);
+        assertEquals(0, kr.getTotalResults());
     };
 
 
@@ -391,7 +394,7 @@ public class TestKrill {
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 10);
+        assertEquals(10, kr.getTotalResults());
         assertEquals(
                 "A bzw. a ist der erste Buchstabe des"
                         + " lateinischen [[Alphabets]] und ein Vokal."
@@ -402,7 +405,7 @@ public class TestKrill {
         ks.getMeta().setCount(5);
         ks.getMeta().setStartPage(2);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 10);
+        assertEquals(10, kr.getTotalResults());
         assertEquals(5, kr.getStartIndex());
         assertEquals(5, kr.getItemsPerPage());
 
@@ -411,7 +414,7 @@ public class TestKrill {
 
         kr = new Krill(json).apply(ki);
 
-        assertEquals(kr.getTotalResults(), -1);
+        assertEquals(-1, kr.getTotalResults());
         assertEquals(
                 "... lls seit den Griechen beibehalten worden."
                         + " 3. Bedeutungen in der Biologie steht A für"
@@ -445,7 +448,7 @@ public class TestKrill {
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 10);
+        assertEquals(10, kr.getTotalResults());
         assertEquals(5, kr.getStartIndex());
         assertEquals(5, kr.getItemsPerPage());
 
@@ -453,7 +456,7 @@ public class TestKrill {
                 getClass().getResource("/queries/bsp-cutoff.jsonld").getFile());
         ks = ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), -1);
+        assertEquals(-1, kr.getTotalResults());
         assertEquals(2, kr.getStartIndex());
         assertEquals(2, kr.getItemsPerPage());
 
@@ -485,7 +488,7 @@ public class TestKrill {
 
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 10);
+        assertEquals(10, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(20, kr.getItemsPerPage());
 
@@ -495,7 +498,7 @@ public class TestKrill {
         assertEquals("WPD_AAA.00002", kr.getMatch(7).getDocID());
         assertEquals("WPD_AAA.00002", kr.getMatch(8).getDocID());
         assertEquals("WPD_AAA.00004", kr.getMatch(9).getDocID());
-        assertEquals(kr.getTotalResources(), 3);
+        assertEquals(3, kr.getTotalResources());
 
         ks = new Krill(json);
         ks.getMeta().setItemsPerResource(1);
@@ -506,8 +509,8 @@ public class TestKrill {
         assertEquals("WPD_AAA.00002", kr.getMatch(1).getDocID());
         assertEquals("WPD_AAA.00004", kr.getMatch(2).getDocID());
 
-        assertEquals(kr.getTotalResults(), 3);
-        assertEquals(kr.getTotalResources(), 3);
+        assertEquals(3, kr.getTotalResults());
+        assertEquals(3, kr.getTotalResources());
         assertEquals(0, kr.getStartIndex());
         assertEquals(20, kr.getItemsPerPage());
 
@@ -522,8 +525,8 @@ public class TestKrill {
         assertEquals("WPD_AAA.00002", kr.getMatch(3).getDocID());
         assertEquals("WPD_AAA.00004", kr.getMatch(4).getDocID());
 
-        assertEquals(kr.getTotalResults(), 5);
-        assertEquals(kr.getTotalResources(), 3);
+        assertEquals(5, kr.getTotalResults());
+        assertEquals(3, kr.getTotalResources());
         assertEquals(0, kr.getStartIndex());
         assertEquals(20, kr.getItemsPerPage());
 
@@ -537,8 +540,8 @@ public class TestKrill {
 
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
 
-        assertEquals(kr.getTotalResults(), 3);
-        assertEquals(kr.getTotalResources(), 3);
+        assertEquals(3, kr.getTotalResults());
+        assertEquals(3, kr.getTotalResources());
         assertEquals(1, kr.getStartIndex());
         assertEquals(1, kr.getItemsPerPage());
 
@@ -554,8 +557,8 @@ public class TestKrill {
 
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
 
-        assertEquals(kr.getTotalResults(), 5);
-        assertEquals(kr.getTotalResources(), 3);
+        assertEquals(5, kr.getTotalResults());
+        assertEquals(3, kr.getTotalResources());
         assertEquals(2, kr.getStartIndex());
         assertEquals(1, kr.getItemsPerPage());
 
@@ -594,7 +597,7 @@ public class TestKrill {
 
         Result kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(2, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
     };
@@ -609,61 +612,65 @@ public class TestKrill {
                 getClass().getResourceAsStream("/goe/AGA-03828.json.gz"), true);
         ki.commit();
 
-        assertEquals(fd.getUID(), 1);
-        assertEquals(fd.getTextSigle(), "GOE_AGA.03828");
-        assertEquals(fd.getDocSigle(), "GOE_AGA");
-        assertEquals(fd.getCorpusSigle(), "GOE");
-        assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
+        assertEquals(1, fd.getUID());
+        assertEquals("GOE_AGA.03828", fd.getTextSigle());
+        assertEquals("GOE_AGA", fd.getDocSigle());
+        assertEquals("GOE", fd.getCorpusSigle());
+        assertEquals("Autobiographische Einzelheiten", fd.getFieldValue("title"));
         assertNull(fd.getFieldValue("subTitle"));
-        assertEquals(fd.getFieldValue("textType"), "Autobiographie");
+        assertEquals("Autobiographie", fd.getFieldValue("textType"));
         assertNull(fd.getFieldValue("textTypeArt"));
         assertNull(fd.getFieldValue("textTypeRef"));
         assertNull(fd.getFieldValue("textColumn"));
         assertNull(fd.getFieldValue("textDomain"));
-        // assertEquals(fd.getPages(), "529-547");
-        assertEquals(fd.getFieldValue("availability"), "QAO-NC");
-        assertEquals(fd.getFieldValue("creationDate"), "1820");
-        assertEquals(fd.getFieldValue("pubDate"), "1982");
-        assertEquals(fd.getFieldValue("author"), "Goethe, Johann Wolfgang von");
+        // assertEquals("529-547", fd.getPages());
+        assertEquals("QAO-NC", fd.getFieldValue("availability"));
+        assertEquals("1820", fd.getFieldValue("creationDate"));
+        assertEquals("1982", fd.getFieldValue("pubDate"));
+        assertEquals("Goethe, Johann Wolfgang von", fd.getFieldValue("author"));
         assertNull(fd.getFieldValue("textClass"));
-        assertEquals(fd.getFieldValue("language"), "de");
-        assertEquals(fd.getFieldValue("pubPlace"), "München");
-        assertEquals(fd.getFieldValue("reference"),
-                "Goethe, Johann Wolfgang von:"
+        assertEquals("de", fd.getFieldValue("language"));
+        assertEquals("München", fd.getFieldValue("pubPlace"));
+        assertEquals(
+            "Goethe, Johann Wolfgang von:"
                         + " Autobiographische Einzelheiten,"
                         + " (Geschrieben bis 1832), In: Goethe,"
                         + " Johann Wolfgang von: Goethes Werke,"
                         + " Bd. 10, Autobiographische Schriften"
                         + " II, Hrsg.: Trunz, Erich. München: "
-                        + "Verlag C. H. Beck, 1982, S. 529-547");
-        assertEquals(fd.getFieldValue("publisher"), "Verlag C. H. Beck");
+                        + "Verlag C. H. Beck, 1982, S. 529-547",
+            fd.getFieldValue("reference"));
+        assertEquals("Verlag C. H. Beck", fd.getFieldValue("publisher"));
         assertNull(fd.getFieldValue("editor"));
         assertNull(fd.getFieldValue("fileEditionStatement"));
         assertNull(fd.getFieldValue("biblEditionStatement"));
         assertNull(fd.getFieldValue("keywords"));
 
-        assertEquals(fd.getFieldValue("tokenSource"), "opennlp#tokens");
-        assertEquals(fd.getFieldValue("foundries"),
-                "base base/paragraphs base/sentences corenlp "
+        assertEquals("opennlp#tokens", fd.getFieldValue("tokenSource"));
+        assertEquals(
+            "base base/paragraphs base/sentences corenlp "
                         + "corenlp/constituency corenlp/morpho "
                         + "corenlp/namedentities corenlp/sentences "
                         + "glemm glemm/morpho mate mate/morpho"
                         + " opennlp opennlp/morpho opennlp/sentences"
                         + " treetagger treetagger/morpho "
-                        + "treetagger/sentences");
-        assertEquals(fd.getFieldValue("layerInfos"),
-                "base/s=spans corenlp/c=spans corenlp/ne=tokens"
+                        + "treetagger/sentences",
+            fd.getFieldValue("foundries"));
+        assertEquals(
+            "base/s=spans corenlp/c=spans corenlp/ne=tokens"
                         + " corenlp/p=tokens corenlp/s=spans glemm/l=tokens"
                         + " mate/l=tokens mate/m=tokens mate/p=tokens"
                         + " opennlp/p=tokens opennlp/s=spans tt/l=tokens"
-                        + " tt/p=tokens tt/s=spans");
+                        + " tt/p=tokens tt/s=spans",
+            fd.getFieldValue("layerInfos"));
 
-        assertEquals(fd.getFieldValue("corpusTitle"), "Goethes Werke");
+        assertEquals("Goethes Werke", fd.getFieldValue("corpusTitle"));
         assertNull(fd.getFieldValue("corpusSubTitle"));
-        assertEquals(fd.getFieldValue("corpusAuthor"), "Goethe, Johann Wolfgang von");
-        assertEquals(fd.getFieldValue("corpusEditor"), "Trunz, Erich");
-        assertEquals(fd.getFieldValue("docTitle"),
-                "Goethe: Autobiographische Schriften II, (1817-1825, 1832)");
+        assertEquals("Goethe, Johann Wolfgang von", fd.getFieldValue("corpusAuthor"));
+        assertEquals("Trunz, Erich", fd.getFieldValue("corpusEditor"));
+        assertEquals(
+            "Goethe: Autobiographische Schriften II, (1817-1825, 1832)",
+            fd.getFieldValue("docTitle"));
         assertNull(fd.getFieldValue("docSubTitle"));
         assertNull(fd.getFieldValue("docEditor"));
         assertNull(fd.getFieldValue("docAuthor"));
@@ -672,7 +679,7 @@ public class TestKrill {
                 .with("mate/m:number:pl"));
         Result kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 148);
+        assertEquals(148, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
     };
@@ -687,51 +694,54 @@ public class TestKrill {
                 getClass().getResourceAsStream("/goe/AGA-03828-pb.json.gz"), true);
         ki.commit();
 
-        assertEquals(fd.getUID(), 1);
-        assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
-        assertEquals(fd.getDocSigle(), "GOE/AGA");
-        assertEquals(fd.getCorpusSigle(), "GOE");
-        assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
+        assertEquals(1, fd.getUID());
+        assertEquals("GOE/AGA/03828", fd.getTextSigle());
+        assertEquals("GOE/AGA", fd.getDocSigle());
+        assertEquals("GOE", fd.getCorpusSigle());
+        assertEquals("Autobiographische Einzelheiten", fd.getFieldValue("title"));
         assertNull(fd.getFieldValue("subTitle"));
-        assertEquals(fd.getFieldValue("textType"), "Autobiographie");
+        assertEquals("Autobiographie", fd.getFieldValue("textType"));
         assertNull(fd.getFieldValue("textTypeArt"));
         assertNull(fd.getFieldValue("textTypeRef"));
         assertNull(fd.getFieldValue("textColumn"));
         assertNull(fd.getFieldValue("textDomain"));
-        // assertEquals(fd.getPages(), "529-547");
-		// assertEquals(fd.getFieldValue("availability"), "QAO-NC");
-        assertEquals(fd.getFieldValue("creationDate"), "1820");
-        assertEquals(fd.getFieldValue("pubDate"), "1982");
-        assertEquals(fd.getFieldValue("author"), "Goethe, Johann Wolfgang von");
+        // assertEquals("529-547", fd.getPages());
+		// assertEquals("QAO-NC", fd.getFieldValue("availability"));
+        assertEquals("1820", fd.getFieldValue("creationDate"));
+        assertEquals("1982", fd.getFieldValue("pubDate"));
+        assertEquals("Goethe, Johann Wolfgang von", fd.getFieldValue("author"));
         assertNull(fd.getFieldValue("textClass"));
-        assertEquals(fd.getFieldValue("language"), "de");
-        assertEquals(fd.getFieldValue("pubPlace"), "München");
-        assertEquals(fd.getFieldValue("reference"),
-                "Goethe, Johann Wolfgang von:"
+        assertEquals("de", fd.getFieldValue("language"));
+        assertEquals("München", fd.getFieldValue("pubPlace"));
+        assertEquals(
+            "Goethe, Johann Wolfgang von:"
                         + " Autobiographische Einzelheiten,"
                         + " (Geschrieben bis 1832), In: Goethe,"
                         + " Johann Wolfgang von: Goethes Werke,"
                         + " Bd. 10, Autobiographische Schriften"
                         + " II, Hrsg.: Trunz, Erich. München: "
-                        + "Verlag C. H. Beck, 1982, S. 529-547");
-        assertEquals(fd.getFieldValue("publisher"), "Verlag C. H. Beck");
+                        + "Verlag C. H. Beck, 1982, S. 529-547",
+            fd.getFieldValue("reference"));
+        assertEquals("Verlag C. H. Beck", fd.getFieldValue("publisher"));
         assertNull(fd.getFieldValue("editor"));
         assertNull(fd.getFieldValue("fileEditionStatement"));
         assertNull(fd.getFieldValue("biblEditionStatement"));
         assertNull(fd.getFieldValue("keywords"));
 
-        assertEquals(fd.getFieldValue("tokenSource"), "base#tokens_aggr");
-        assertEquals(fd.getFieldValue("foundries"),
-                "dereko dereko/structure "+
-					 "dereko/structure/base-sentences-paragraphs-pagebreaks");
-        assertEquals(fd.getFieldValue("layerInfos"), "dereko/s=spans");
+        assertEquals("base#tokens_aggr", fd.getFieldValue("tokenSource"));
+        assertEquals(
+            "dereko dereko/structure "+
+					 "dereko/structure/base-sentences-paragraphs-pagebreaks",
+            fd.getFieldValue("foundries"));
+        assertEquals("dereko/s=spans", fd.getFieldValue("layerInfos"));
 
-        assertEquals(fd.getFieldValue("corpusTitle"), "Goethes Werke");
+        assertEquals("Goethes Werke", fd.getFieldValue("corpusTitle"));
         assertNull(fd.getFieldValue("corpusSubTitle"));
-        assertEquals(fd.getFieldValue("corpusAuthor"), "Goethe, Johann Wolfgang von");
-        assertEquals(fd.getFieldValue("corpusEditor"), "Trunz, Erich");
-        assertEquals(fd.getFieldValue("docTitle"),
-                "Goethe: Autobiographische Schriften II, (1817-1825, 1832)");
+        assertEquals("Goethe, Johann Wolfgang von", fd.getFieldValue("corpusAuthor"));
+        assertEquals("Trunz, Erich", fd.getFieldValue("corpusEditor"));
+        assertEquals(
+            "Goethe: Autobiographische Schriften II, (1817-1825, 1832)",
+            fd.getFieldValue("docTitle"));
         assertNull(fd.getFieldValue("docSubTitle"));
         assertNull(fd.getFieldValue("docEditor"));
         assertNull(fd.getFieldValue("docAuthor"));
@@ -739,7 +749,7 @@ public class TestKrill {
         Krill ks = new Krill(new QueryBuilder("tokens").seg("s:der"));
         Result kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 97);
+        assertEquals(97, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
 
@@ -760,8 +770,8 @@ public class TestKrill {
                 getClass().getResourceAsStream("/others/kokokom-example.json.gz"), true);
         ki.commit();
 
-        assertEquals(fd.getUID(), 1);
-        assertEquals(fd.getTextSigle(), "KTC/001/000001");
+        assertEquals(1, fd.getUID());
+        assertEquals("KTC/001/000001", fd.getTextSigle());
 
         Krill ks = new Krill(new QueryBuilder("tokens").seg("s:Räuspern"));
         Result kr = ks.apply(ki);
@@ -818,63 +828,67 @@ public class TestKrill {
                 getClass().getResourceAsStream("/bzk/D59-00089.json.gz"), true);
         ki.commit();
 
-        assertEquals(fd.getUID(), 1);
-        assertEquals(fd.getTextSigle(), "BZK_D59.00089");
-        assertEquals(fd.getDocSigle(), "BZK_D59");
-        assertEquals(fd.getCorpusSigle(), "BZK");
-        assertEquals(fd.getFieldValue("title"), "Saragat-Partei zerfällt");
-        assertEquals(fd.getFieldValue("pubDate"), "1959-02-19");
+        assertEquals(1, fd.getUID());
+        assertEquals("BZK_D59.00089", fd.getTextSigle());
+        assertEquals("BZK_D59", fd.getDocSigle());
+        assertEquals("BZK", fd.getCorpusSigle());
+        assertEquals("Saragat-Partei zerfällt", fd.getFieldValue("title"));
+        assertEquals("1959-02-19", fd.getFieldValue("pubDate"));
 
         assertNull(fd.getFieldValue("subTitle"));
         assertNull(fd.getFieldValue("author"));
         assertNull(fd.getFieldValue("editor"));
-        assertEquals(fd.getFieldValue("pubPlace"), "Berlin");
+        assertEquals("Berlin", fd.getFieldValue("pubPlace"));
         assertNull(fd.getFieldValue("publisher"));
-        assertEquals(fd.getFieldValue("textType"), "Zeitung: Tageszeitung");
+        assertEquals("Zeitung: Tageszeitung", fd.getFieldValue("textType"));
         assertNull(fd.getFieldValue("textTypeArt"));
-        assertEquals(fd.getFieldValue("textTypeRef"), "Tageszeitung");
-        assertEquals(fd.getFieldValue("textDomain"), "Politik");
-        assertEquals(fd.getFieldValue("creationDate"), "1959-02-19");
-        assertEquals(fd.getFieldValue("availability"), "ACA-NC-LC");
-        assertEquals(fd.getFieldValue("textColumn"), "POLITIK");
+        assertEquals("Tageszeitung", fd.getFieldValue("textTypeRef"));
+        assertEquals("Politik", fd.getFieldValue("textDomain"));
+        assertEquals("1959-02-19", fd.getFieldValue("creationDate"));
+        assertEquals("ACA-NC-LC", fd.getFieldValue("availability"));
+        assertEquals("POLITIK", fd.getFieldValue("textColumn"));
         // assertNull(fd.getPages());
-        assertEquals(fd.getFieldValue("textClass"), "politik ausland");
+        assertEquals("politik ausland", fd.getFieldValue("textClass"));
         assertNull(fd.getFieldValue("fileEditionStatement"));
         assertNull(fd.getFieldValue("biblEditionStatement"));
 
-        assertEquals(fd.getFieldValue("language"), "de");
-        assertEquals(fd.getFieldValue("reference"),
-                "Neues Deutschland, [Tageszeitung], 19.02.1959, Jg. 14,"
+        assertEquals("de", fd.getFieldValue("language"));
+        assertEquals(
+            "Neues Deutschland, [Tageszeitung], 19.02.1959, Jg. 14,"
                         + " Berliner Ausgabe, S. 7. - Sachgebiet: Politik, "
-                        + "Originalressort: POLITIK; Saragat-Partei zerfällt");
+                        + "Originalressort: POLITIK; Saragat-Partei zerfällt",
+            fd.getFieldValue("reference"));
         assertNull(fd.getFieldValue("publisher"));
         assertNull(fd.getFieldValue("keywords"));
 
-        assertEquals(fd.getFieldValue("tokenSource"), "opennlp#tokens");
+        assertEquals("opennlp#tokens", fd.getFieldValue("tokenSource"));
 
-        assertEquals(fd.getFieldValue("foundries"),
-                "base base/paragraphs base/sentences corenlp "
+        assertEquals(
+            "base base/paragraphs base/sentences corenlp "
                         + "corenlp/constituency corenlp/morpho corenlp/namedentities"
                         + " corenlp/sentences glemm glemm/morpho mate mate/morpho"
                         + " opennlp opennlp/morpho opennlp/sentences treetagger"
-                        + " treetagger/morpho treetagger/sentences");
+                        + " treetagger/morpho treetagger/sentences",
+            fd.getFieldValue("foundries"));
 
-        assertEquals(fd.getFieldValue("layerInfos"),
-                "base/s=spans corenlp/c=spans corenlp/ne=tokens"
+        assertEquals(
+            "base/s=spans corenlp/c=spans corenlp/ne=tokens"
                         + " corenlp/p=tokens corenlp/s=spans glemm/l=tokens"
                         + " mate/l=tokens mate/m=tokens mate/p=tokens"
                         + " opennlp/p=tokens opennlp/s=spans tt/l=tokens"
-                        + " tt/p=tokens tt/s=spans");
+                        + " tt/p=tokens tt/s=spans",
+            fd.getFieldValue("layerInfos"));
 
-        assertEquals(fd.getFieldValue("corpusTitle"), "Bonner Zeitungskorpus");
+        assertEquals("Bonner Zeitungskorpus", fd.getFieldValue("corpusTitle"));
         assertNull(fd.getFieldValue("corpusSubTitle"));
         assertNull(fd.getFieldValue("corpusAuthor"));
         assertNull(fd.getFieldValue("corpusEditor"));
 
-        assertEquals(fd.getFieldValue("docTitle"), "Neues Deutschland");
-        assertEquals(fd.getFieldValue("docSubTitle"),
-                "Organ des Zentralkomitees der Sozialistischen "
-                        + "Einheitspartei Deutschlands");
+        assertEquals("Neues Deutschland", fd.getFieldValue("docTitle"));
+        assertEquals(
+            "Organ des Zentralkomitees der Sozialistischen "
+                        + "Einheitspartei Deutschlands",
+            fd.getFieldValue("docSubTitle"));
         assertNull(fd.getFieldValue("docEditor"));
         assertNull(fd.getFieldValue("docAuthor"));
 
@@ -882,7 +896,7 @@ public class TestKrill {
                 .with("mate/m:number:sg"));
         Result kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 6);
+        assertEquals(6, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
     };
@@ -905,36 +919,42 @@ public class TestKrill {
                 kq.contains(kq.tag("base/s:s"), kq.nr(1, kq.seg("s:Leben")))));
 
         Result kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(),
-                "focus(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}),sorting)");
+        assertEquals(
+            "focus(1: spanContain(<tokens:base/s:s />, {1: tokens:s:Leben}),sorting)",
+            kr.getSerialQuery());
         assertEquals(40, kr.getMatch(0).getStartPos());
         assertEquals(41, kr.getMatch(0).getEndPos());
 
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... Initiative\" eine neue politische Gruppierung ins "
-                        + "[[{1:Leben}]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
+        assertEquals(
+            "... Initiative\" eine neue politische Gruppierung ins "
+                        + "[[{1:Leben}]] gerufen hatten. Pressemeldungen zufolge haben sich ...",
+            kr.getMatch(0).getSnippetBrackets());
 
         // Try with high class - don't highlight
         ks = new Krill(kq.focus(129,
                 kq.contains(kq.tag("base/s:s"), kq.nr(129, kq.seg("s:Leben")))));
 
         kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(),
-                "focus(129: spanContain(<tokens:base/s:s />, {129: tokens:s:Leben}),sorting)");
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... Initiative\" eine neue politische Gruppierung ins "
-                        + "[[Leben]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
+        assertEquals(
+            "focus(129: spanContain(<tokens:base/s:s />, {129: tokens:s:Leben}),sorting)",
+            kr.getSerialQuery());
+        assertEquals(
+            "... Initiative\" eine neue politische Gruppierung ins "
+                        + "[[Leben]] gerufen hatten. Pressemeldungen zufolge haben sich ...",
+            kr.getMatch(0).getSnippetBrackets());
 
         ks = new Krill(json);
         kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(),
-                "focus(129: spanElementDistance({129: tokens:s:Namen}, "
-                        + "{129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]),sorting)");
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... ihren Austritt erklärt und unter dem [[Namen \"Einheitsbewegung "
+        assertEquals(
+            "focus(129: spanElementDistance({129: tokens:s:Namen}, "
+                        + "{129: tokens:s:Leben}, [(base/s:s[0:1], notOrdered, notExcluded)]),sorting)",
+            kr.getSerialQuery());
+        assertEquals(
+            "... ihren Austritt erklärt und unter dem [[Namen \"Einheitsbewegung "
                         + "der sozialistischen Initiative\" eine neue politische Gruppierung "
-                        + "ins Leben]] gerufen hatten. Pressemeldungen zufolge haben sich ...");
-        assertEquals(kr.getTotalResults(), 1);
+                        + "ins Leben]] gerufen hatten. Pressemeldungen zufolge haben sich ...",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(1, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
     };
 
@@ -957,14 +977,16 @@ public class TestKrill {
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
-        assertEquals(kr.getSerialQuery(),
-                "{4: spanNext({1: spanNext({2: tokens:s:ins}, "
-                        + "{3: tokens:s:Leben})}, tokens:s:gerufen)}");
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "... sozialistischen Initiative\" eine neue politische"
+        assertEquals(
+            "{4: spanNext({1: spanNext({2: tokens:s:ins}, "
+                        + "{3: tokens:s:Leben})}, tokens:s:gerufen)}",
+            kr.getSerialQuery());
+        assertEquals(
+            "... sozialistischen Initiative\" eine neue politische"
                         + " Gruppierung [[{4:{1:{2:ins} {3:Leben}} gerufen}]] hatten. "
-                        + "Pressemeldungen zufolge haben sich in ...");
-        assertEquals(kr.getTotalResults(), 2);
+                        + "Pressemeldungen zufolge haben sich in ...",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(2, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
     };
 
@@ -1014,14 +1036,14 @@ public class TestKrill {
         // Construct index
         KrillIndex ki = new KrillIndex();
 
-        assertEquals(ki.numberOf("documents"), 0);
+        assertEquals(0, ki.numberOf("documents"));
 
         // Indexing test files
         FieldDocument fd = ki.addDoc(1,
                 getClass().getResourceAsStream("/bzk/D59-00089.json.gz"), true);
         ki.commit();
 
-        assertEquals(ki.numberOf("documents"), 1);
+        assertEquals(1, ki.numberOf("documents"));
         assertEquals("BZK", fd.getCorpusSigle());
 
         // [tt/p="A.*"]{0,3}[tt/p="N.*"]
@@ -1051,25 +1073,30 @@ public class TestKrill {
 
         Result kr = ks.apply(ki);
 
-        assertEquals(kr.getSerialQuery(),
-                "spanOr([SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/), "
+        assertEquals(
+            "spanOr([SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/), "
                         + "spanNext(spanRepetition(SpanMultiTermQueryWrapper"
                         + "(tokens:/tt/p:A.*/){1,3}), "
-                        + "SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/))])");
+                        + "SpanMultiTermQueryWrapper(tokens:/tt/p:N.*/))])",
+            kr.getSerialQuery());
 
         assertEquals(68,kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
 
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "[[Saragat-Partei]] zerfällt Rom (ADN) die von dem ...");
-        assertEquals(kr.getMatch(1).getSnippetBrackets(),
-                "[[Saragat-Partei]] zerfällt Rom (ADN) die von dem ...");
-        assertEquals(kr.getMatch(2).getSnippetBrackets(),
-                "Saragat-Partei zerfällt [[Rom]] (ADN) "
-                        + "die von dem Rechtssozialisten Saragat ...");
-        assertEquals(kr.getMatch(3).getSnippetBrackets(),
-                "Saragat-Partei zerfällt Rom ([[ADN]]) "
-                        + "die von dem Rechtssozialisten Saragat geführte ...");
+        assertEquals(
+            "[[Saragat-Partei]] zerfällt Rom (ADN) die von dem ...",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+            "[[Saragat-Partei]] zerfällt Rom (ADN) die von dem ...",
+            kr.getMatch(1).getSnippetBrackets());
+        assertEquals(
+            "Saragat-Partei zerfällt [[Rom]] (ADN) "
+                        + "die von dem Rechtssozialisten Saragat ...",
+            kr.getMatch(2).getSnippetBrackets());
+        assertEquals(
+            "Saragat-Partei zerfällt Rom ([[ADN]]) "
+                        + "die von dem Rechtssozialisten Saragat geführte ...",
+            kr.getMatch(3).getSnippetBrackets());
         assertEquals("... auseinander, nachdem vor einiger Zeit mehrere "
                 + "[[prominente Mitglieder]] ihren Austritt erklärt "
                 + "und unter dem ...", kr.getMatch(23).getSnippetBrackets());
@@ -1116,7 +1143,7 @@ public class TestKrill {
 
         Krill ks = new Krill(json);
         Result kr = ks.apply(ki);
-        assertEquals(kr.getTotalResults(), 276);
+        assertEquals(276, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
 
@@ -1126,7 +1153,7 @@ public class TestKrill {
         ks = new Krill(json);
         kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 147);
+        assertEquals(147, kr.getTotalResults());
         assertEquals("WPD_AAA.00001", kr.getMatch(0).getDocID());
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
@@ -1137,7 +1164,7 @@ public class TestKrill {
         ks = new Krill(json);
         kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 28);
+        assertEquals(28, kr.getTotalResults());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
@@ -1149,7 +1176,7 @@ public class TestKrill {
         ks = new Krill(json);
         kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 0);
+        assertEquals(0, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
 
@@ -1171,7 +1198,7 @@ public class TestKrill {
                 "AndGroup(OrGroup(ID:WPD_AAA.00001 ID:WPD_AAA.00002) OrGroup(ID:WPD_AAA.00003 AndGroup(tokens:s:die tokens:s:Schriftzeichen)))",
                 ks.getCollection().toString());
 
-        assertEquals(kr.getTotalResults(), 119);
+        assertEquals(119, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(10, kr.getItemsPerPage());
     };
@@ -1200,9 +1227,10 @@ public class TestKrill {
 
         Result kr = ks.apply(ki);
 
-        assertEquals(kr.getMatch(1).getSnippetBrackets(),
-                "... dezimalen [[Wert]] 65 sowohl ...");
-        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(
+            "... dezimalen [[Wert]] 65 sowohl ...",
+            kr.getMatch(1).getSnippetBrackets());
+        assertEquals(3, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
 
@@ -1213,18 +1241,21 @@ public class TestKrill {
                 .getResource("/queries/bsp-context-sentence.jsonld").getFile());
 
         kr = new Krill(json).apply(ki);
-        assertEquals(kr.getContext().toJsonNode().toString(), "\"base/s:s\"");
+        assertEquals("\"base/s:s\"", kr.getContext().toJsonNode().toString());
 
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "steht a für den dezimalen [[Wert]] 97 sowohl im ASCII-"
-                        + " als auch im Unicode-Zeichensatz");
-        assertEquals(kr.getMatch(1).getSnippetBrackets(),
-                "steht A für den dezimalen [[Wert]] 65 sowohl im ASCII-"
-                        + " als auch im Unicode-Zeichensatz");
-        assertEquals(kr.getMatch(2).getSnippetBrackets(),
-                "In einem Zahlensystem mit einer Basis größer "
+        assertEquals(
+            "steht a für den dezimalen [[Wert]] 97 sowohl im ASCII-"
+                        + " als auch im Unicode-Zeichensatz",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+            "steht A für den dezimalen [[Wert]] 65 sowohl im ASCII-"
+                        + " als auch im Unicode-Zeichensatz",
+            kr.getMatch(1).getSnippetBrackets());
+        assertEquals(
+            "In einem Zahlensystem mit einer Basis größer "
                         + "als 10 steht A oder a häufig für den dezimalen"
-                        + " [[Wert]] 10, siehe auch Hexadezimalsystem.");
+                        + " [[Wert]] 10, siehe auch Hexadezimalsystem.",
+            kr.getMatch(2).getSnippetBrackets());
     };
 
 
@@ -1245,8 +1276,9 @@ public class TestKrill {
 
         Result kr = new Krill(json).apply(ki);
 
-        assertEquals(kr.getError(0).getMessage(),
-                "Operation needs operand list");
+        assertEquals(
+            "Operation needs operand list",
+            kr.getError(0).getMessage());
     };
 
 
@@ -1269,8 +1301,9 @@ public class TestKrill {
 
         Result kr = new Krill(json).apply(ki);
 
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "Mit Ausnahme von Fremdwörtern und Namen ist das A der einzige Buchstabe im Deutschen, [[der zweifach am Anfang]] eines Wortes stehen darf, etwa im Wort Aal.");
+        assertEquals(
+            "Mit Ausnahme von Fremdwörtern und Namen ist das A der einzige Buchstabe im Deutschen, [[der zweifach am Anfang]] eines Wortes stehen darf, etwa im Wort Aal.",
+            kr.getMatch(0).getSnippetBrackets());
 
     };
 
@@ -1298,13 +1331,13 @@ public class TestKrill {
                         + "in Eigennamen und Ortsnamen ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
 
 
         // TODO: base/s:t needs to be defined!!!
         QueryBuilder qb = new QueryBuilder("tokens");
         kr = new Krill(qb.tag("base/s:t")).apply(ki);
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
 
 
         // der alte Digraph Aa durch []
@@ -1322,7 +1355,7 @@ public class TestKrill {
                         + "in Eigennamen und Ortsnamen ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
 
         // Now try with one file ahead
         ki = new KrillIndex();
@@ -1345,7 +1378,7 @@ public class TestKrill {
                         + "in Eigennamen und Ortsnamen ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
 
         // der alte Digraph Aa durch []
         json = getJsonString(getClass()
@@ -1358,7 +1391,7 @@ public class TestKrill {
                         + "in Eigennamen und Ortsnamen ...",
                 kr.getMatch(0).getSnippetBrackets());
         assertEquals("WPD_AAA.00002", kr.getMatch(0).getDocID());
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
     };
 
 
@@ -1427,14 +1460,15 @@ public class TestKrill {
 
         Krill k = new Krill(new QueryBuilder("tokens").tag("base/s:s"));
 
-        assertEquals(k.getSpanQuery().toString(), "<tokens:base/s:s />");
+        assertEquals("<tokens:base/s:s />", k.getSpanQuery().toString());
 
         Result kr = k.apply(ki);
-        assertEquals(kr.getTotalResults(), 1);
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "[[Selbst ist der Jeck]]");
+        assertEquals(1, kr.getTotalResults());
+        assertEquals(
+            "[[Selbst ist der Jeck]]",
+            kr.getMatch(0).getSnippetBrackets());
 
-        assertEquals(kr.getMatch(0).getTextSigle(), "PRO-DUD_BSP-2013-01.32");
+        assertEquals("PRO-DUD_BSP-2013-01.32", kr.getMatch(0).getTextSigle());
     };
 
 
@@ -1453,51 +1487,55 @@ public class TestKrill {
                 true);
         ki.commit();
 
-        assertEquals(fd.getUID(), 1);
-        assertEquals(fd.getTextSigle(), "GOE/AGA/03828");
-        assertEquals(fd.getDocSigle(), "GOE/AGA");
-        assertEquals(fd.getCorpusSigle(), "GOE");
-        assertEquals(fd.getFieldValue("title"), "Autobiographische Einzelheiten");
+        assertEquals(1, fd.getUID());
+        assertEquals("GOE/AGA/03828", fd.getTextSigle());
+        assertEquals("GOE/AGA", fd.getDocSigle());
+        assertEquals("GOE", fd.getCorpusSigle());
+        assertEquals("Autobiographische Einzelheiten", fd.getFieldValue("title"));
         assertNull(fd.getFieldValue("subTitle"));
-        assertEquals(fd.getFieldValue("textType"), "Autobiographie");
+        assertEquals("Autobiographie", fd.getFieldValue("textType"));
         assertNull(fd.getFieldValue("textTypeArt"));
         assertNull(fd.getFieldValue("textTypeRef"));
         assertNull(fd.getFieldValue("textColumn"));
         assertNull(fd.getFieldValue("textDomain"));
-        // assertEquals(fd.getPages(), "529-547");
-        assertEquals(fd.getFieldValue("availability"), "QAO-NC");
-        assertEquals(fd.getFieldValue("creationDate"), "1820");
-        assertEquals(fd.getFieldValue("pubDate"), "1982");
-        assertEquals(fd.getFieldValue("author"), "Goethe, Johann Wolfgang von");
+        // assertEquals("529-547", fd.getPages());
+        assertEquals("QAO-NC", fd.getFieldValue("availability"));
+        assertEquals("1820", fd.getFieldValue("creationDate"));
+        assertEquals("1982", fd.getFieldValue("pubDate"));
+        assertEquals("Goethe, Johann Wolfgang von", fd.getFieldValue("author"));
         assertNull(fd.getFieldValue("textClass"));
-        assertEquals(fd.getFieldValue("language"), "de");
-        assertEquals(fd.getFieldValue("pubPlace"), "München");
-        assertEquals(fd.getFieldValue("reference"),
-                "Goethe, Johann Wolfgang von:"
+        assertEquals("de", fd.getFieldValue("language"));
+        assertEquals("München", fd.getFieldValue("pubPlace"));
+        assertEquals(
+            "Goethe, Johann Wolfgang von:"
                         + " Autobiographische Einzelheiten,"
                         + " (Geschrieben bis 1832), In: Goethe,"
                         + " Johann Wolfgang von: Goethes Werke,"
                         + " Bd. 10, Autobiographische Schriften"
                         + " II, Hrsg.: Trunz, Erich. München: "
-                        + "Verlag C. H. Beck, 1982, S. 529-547");
-        assertEquals(fd.getFieldValue("publisher"), "Verlag C. H. Beck");
+                        + "Verlag C. H. Beck, 1982, S. 529-547",
+            fd.getFieldValue("reference"));
+        assertEquals("Verlag C. H. Beck", fd.getFieldValue("publisher"));
         assertNull(fd.getFieldValue("editor"));
         assertNull(fd.getFieldValue("fileEditionStatement"));
         assertNull(fd.getFieldValue("biblEditionStatement"));
         assertNull(fd.getFieldValue("keywords"));
 
-        assertEquals(fd.getFieldValue("tokenSource"), "base#tokens");
-        assertEquals(fd.getFieldValue("foundries"),
-                "corenlp corenlp/constituency corenlp/morpho corenlp/sentences dereko dereko/structure dereko/structure/base-sentences-paragraphs-pagebreaks malt malt/dependency marmot marmot/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho");
-        assertEquals(fd.getFieldValue("layerInfos"),
-                "corenlp/c=spans corenlp/p=tokens corenlp/s=spans dereko/s=spans malt/d=rels marmot/m=tokens marmot/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens");
+        assertEquals("base#tokens", fd.getFieldValue("tokenSource"));
+        assertEquals(
+            "corenlp corenlp/constituency corenlp/morpho corenlp/sentences dereko dereko/structure dereko/structure/base-sentences-paragraphs-pagebreaks malt malt/dependency marmot marmot/morpho opennlp opennlp/morpho opennlp/sentences treetagger treetagger/morpho",
+            fd.getFieldValue("foundries"));
+        assertEquals(
+            "corenlp/c=spans corenlp/p=tokens corenlp/s=spans dereko/s=spans malt/d=rels marmot/m=tokens marmot/p=tokens opennlp/p=tokens opennlp/s=spans tt/l=tokens tt/p=tokens",
+            fd.getFieldValue("layerInfos"));
 
-        assertEquals(fd.getFieldValue("corpusTitle"), "Goethes Werke");
+        assertEquals("Goethes Werke", fd.getFieldValue("corpusTitle"));
         assertNull(fd.getFieldValue("corpusSubTitle"));
-        assertEquals(fd.getFieldValue("corpusAuthor"), "Goethe, Johann Wolfgang von");
-        assertEquals(fd.getFieldValue("corpusEditor"), "Trunz, Erich");
-        assertEquals(fd.getFieldValue("docTitle"),
-                "Goethe: Autobiographische Schriften II, (1817-1825, 1832)");
+        assertEquals("Goethe, Johann Wolfgang von", fd.getFieldValue("corpusAuthor"));
+        assertEquals("Trunz, Erich", fd.getFieldValue("corpusEditor"));
+        assertEquals(
+            "Goethe: Autobiographische Schriften II, (1817-1825, 1832)",
+            fd.getFieldValue("docTitle"));
         assertNull(fd.getFieldValue("docSubTitle"));
         assertNull(fd.getFieldValue("docEditor"));
         assertNull(fd.getFieldValue("docAuthor"));
@@ -1506,7 +1544,7 @@ public class TestKrill {
                 .with("marmot/m:number:pl"));
         Result kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 141);
+        assertEquals(141, kr.getTotalResults());
         assertEquals(0, kr.getStartIndex());
         assertEquals(25, kr.getItemsPerPage());
     };
@@ -1524,17 +1562,19 @@ public class TestKrill {
 
         Krill k = new Krill(new QueryBuilder("tokens").tag("xy/z:long"));
 
-        assertEquals(k.getSpanQuery().toString(), "<tokens:xy/z:long />");
+        assertEquals("<tokens:xy/z:long />", k.getSpanQuery().toString());
 
         Result kr = k.apply(ki);
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
         assertEquals(2, kr.getMatch(0).getStartPos());
         assertEquals(52, kr.getMatch(0).getEndPos());
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                     "Maximen und [[Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur]<!>], so hat er sie gleich in ...");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),
-                "<span class=\"context-left\">Maximen und </span><span class=\"match\"><mark>Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur</mark><span class=\"cutted\"></span></span><span class=\"context-right\">, so hat er sie gleich in<span class=\"more\"></span></span>");
-        assertEquals(kr.getMatch(0).getTextSigle(), "GOE_AGX.00002");
+        assertEquals(
+            "Maximen und [[Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur]<!>], so hat er sie gleich in ...",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+            "<span class=\"context-left\">Maximen und </span><span class=\"match\"><mark>Reflexionen Religion und Christentum. wir sind naturforschend Pantheisten, dichtend Polytheisten, sittlich Monotheisten. Gott, wenn wir hoch stehen, ist alles; stehen wir niedrig, so ist er ein Supplement unsrer Armseligkeit. die Kreatur ist sehr schwach; denn sucht sie etwas, findet sie's nicht. stark aber ist Gott; denn sucht er die Kreatur</mark><span class=\"cutted\"></span></span><span class=\"context-right\">, so hat er sie gleich in<span class=\"more\"></span></span>",
+            kr.getMatch(0).getSnippetHTML());
+        assertEquals("GOE_AGX.00002", kr.getMatch(0).getTextSigle());
     };
 
     @Test
@@ -1550,15 +1590,17 @@ public class TestKrill {
 
         Krill k = new Krill(new QueryBuilder("tokens").seg("s:🎉"));
 
-        assertEquals(k.getSpanQuery().toString(), "tokens:s:🎉");
+        assertEquals("tokens:s:🎉", k.getSpanQuery().toString());
 
         Result kr = k.apply(ki);
-        assertEquals(kr.getTotalResults(), 1);
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                     "... Strasse antreffe.😊 Versprochen Xxx-Xxx [[🎉]]");
-        assertEquals(kr.getMatch(0).getSnippetHTML(),
-                     "<span class=\"context-left\"><span class=\"more\"></span>Strasse antreffe.😊 Versprochen Xxx-Xxx </span><span class=\"match\"><mark>🎉</mark></span><span class=\"context-right\"></span>");
-        assertEquals(kr.getMatch(0).getTextSigle(), "KYC/MAI/001888");
+        assertEquals(1, kr.getTotalResults());
+        assertEquals(
+            "... Strasse antreffe.😊 Versprochen Xxx-Xxx [[🎉]]",
+            kr.getMatch(0).getSnippetBrackets());
+        assertEquals(
+            "<span class=\"context-left\"><span class=\"more\"></span>Strasse antreffe.😊 Versprochen Xxx-Xxx </span><span class=\"match\"><mark>🎉</mark></span><span class=\"context-right\"></span>",
+            kr.getMatch(0).getSnippetHTML());
+        assertEquals("KYC/MAI/001888", kr.getMatch(0).getTextSigle());
     };
 
 };
