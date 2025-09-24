@@ -545,6 +545,6 @@ public class TestAttributeIndex {
         assertEquals("spanElementWithAttribute(<tokens:dereko/s:said />, " +
                      "spanAttribute(tokens:@:dereko/s:mode:direct))", krill.getSpanQuery().toString());
         Result kr = krill.apply(ki);
-        assertEquals(kr.getTotalResults(), 4);
+        assertEquals(4, kr.getTotalResults());
     }
 }
