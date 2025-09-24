@@ -434,11 +434,13 @@ public class TestMatchIndex {
                 (byte) 3);
 
         kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getSerialQuery(),
-                "focus(3: spanContain({2: <base:s />}, {3: base:s:b}))");
+        assertEquals(
+            "focus(3: spanContain({2: <base:s />}, {3: base:s:b}))",
+            kr.getSerialQuery());
 
-        assertEquals(kr.getMatch(0).getSnippetBrackets(),
-                "a[[{3:b}]]cabcab ...");
+        assertEquals(
+            "a[[{3:b}]]cabcab ...",
+            kr.getMatch(0).getSnippetBrackets());
     };
 
 
@@ -524,8 +526,9 @@ public class TestMatchIndex {
         kr = ks.apply(ki);
         // kr = ki.search(kc, sq, 0, (short) 20, true, (short) 5, true, (short) 5);
 
-        assertEquals(kr.getSerialQuery(),
-                "spanContain(<base:p />, focus(3: spanContain({2: <base:s />}, {3: base:s:a})))");
+        assertEquals(
+            "spanContain(<base:p />, focus(3: spanContain({2: <base:s />}, {3: base:s:a})))",
+            kr.getSerialQuery());
         assertEquals(12, kr.getTotalResults());
         assertEquals("[a{2:bc{3:a}b}cabac]",
                 kr.getMatch(0).getSnippetBrackets());
