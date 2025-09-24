@@ -54,7 +54,7 @@ public class TestSpanWithinQuery {
 			SpanQuery sq = qb.startswith(qb.tag("base/s"), qb.empty()).toQuery();
 		}
 		catch (QueryException qe) {
-			assertEquals(qe.getErrorCode(), 772);
+			assertEquals(772, qe.getErrorCode());
 		};
     };
 };
