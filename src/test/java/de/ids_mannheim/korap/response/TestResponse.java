@@ -156,14 +156,16 @@ public class TestResponse {
         assertTrue(kresp.hasWarnings());
         assertTrue(kresp.hasErrors());
         assertFalse(kresp.hasMessages());
-        assertEquals(kresp.getError(0).getMessage(), "This is a single error");
+        assertEquals("This is a single error", kresp.getError(0).getMessage());
 
         // THIS MAY BREAK!
-        assertEquals(kresp.getWarning(0).getMessage(), "This is a warning");
-        assertEquals(kresp.getWarning(1).getMessage(),
-                "This is a second warning");
-        assertEquals(kresp.getWarning(2).getMessage(),
-                "Response time exceeded");
+        assertEquals("This is a warning", kresp.getWarning(0).getMessage());
+        assertEquals(
+            "This is a second warning",
+            kresp.getWarning(1).getMessage());
+        assertEquals(
+            "Response time exceeded",
+            kresp.getWarning(2).getMessage());
         assertEquals("0.49", kresp.getVersion());
         assertEquals("seaweed", kresp.getName());
         assertEquals("40.5s", kresp.getBenchmark());
