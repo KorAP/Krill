@@ -50,7 +50,7 @@ public class TestBenchmarkSamples {
             final QueryBuilder qb = new QueryBuilder("tokens");
             final Krill ks = new Krill(qb.seg("mate/m:gender:masc").toQuery());
             final Result kr = ks.apply(ki);
-            assertEquals(kr.getTotalResults(), 497);
+            assertEquals(497, kr.getTotalResults());
         };
         t2 = System.nanoTime();
         seconds = (double) (t2 - t1) / 1000000000.0;
@@ -77,7 +77,7 @@ public class TestBenchmarkSamples {
             KrillMeta meta = ks.getMeta();
             meta.setSnippets(false);
             final Result kr = ks.apply(ki);
-            assertEquals(kr.getTotalResults(), 497);
+            assertEquals(497, kr.getTotalResults());
         };
         t2 = System.nanoTime();
         seconds = (double) (t2 - t1) / 1000000000.0;
