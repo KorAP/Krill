@@ -650,7 +650,7 @@ public class TestKrillCollectionIndex {
         assertEquals(1, kcn.docCount());
 
 		kcn.fromBuilder(cb.text("text", "Der alte Mann"));
-		assertEquals(kcn.toString(), "QueryWrapperFilter(text:\"der alte mann\")");
+		assertEquals("QueryWrapperFilter(text:\"der alte mann\")", kcn.toString());
         assertEquals(1, kcn.docCount());
 	};
 
@@ -774,7 +774,7 @@ public class TestKrillCollectionIndex {
         Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
                 (short) 5);
         */
-        assertEquals(kr.getTotalResults(), 70);
+        assertEquals(70, kr.getTotalResults());
 
 
         kc.extend(kc.build().term("textClass", "uninteresting"));
@@ -888,7 +888,7 @@ public class TestKrillCollectionIndex {
         Result kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
                 (short) 5);
         */
-        assertEquals(kr.getTotalResults(), 70);
+        assertEquals(70, kr.getTotalResults());
 
         // kc.extend(kf.and("textClass", "uninteresting"));
         kc.extend(kc.build().term("textClass", "uninteresting"));
@@ -976,7 +976,7 @@ public class TestKrillCollectionIndex {
 
         Result kr = ks.apply(ki);
 
-        assertEquals(kr.getTotalResults(), 369);
+        assertEquals(369, kr.getTotalResults());
 
         // kc.filter(kf.and("corpusID", "QQQ"));
         kc.filter(cb.term("corpusID", "QQQ"));
@@ -994,7 +994,7 @@ public class TestKrillCollectionIndex {
         kr = ki.search(kc, query, 0, (short) 20, true, (short) 5, true,
                 (short) 5);
         */
-        assertEquals(kr.getTotalResults(), 0);
+        assertEquals(0, kr.getTotalResults());
     };
 
 
@@ -1098,7 +1098,7 @@ public class TestKrillCollectionIndex {
         CollectionBuilder cb = kc.build();
 
 		kc.fromBuilder(cb.term("textClass","reisen"));
-		assertEquals(kc.toString(), "textClass:reisen");
+		assertEquals("textClass:reisen", kc.toString());
         assertEquals("Documents", 2, kc.numberOf("documents"));
 
 		kc.fromBuilder(cb.andGroup().with(
@@ -1106,7 +1106,7 @@ public class TestKrillCollectionIndex {
 						   ).with(
 							   cb.term("textClass","nachricht").not()
 							   ));
-		assertEquals(kc.toString(), "AndGroup(textClass:reisen -textClass:nachricht)");
+		assertEquals("AndGroup(textClass:reisen -textClass:nachricht)", kc.toString());
         assertEquals("Documents", 1, kc.numberOf("documents"));
 
 		
@@ -1115,7 +1115,7 @@ public class TestKrillCollectionIndex {
 						   ).with(
 							   cb.term("textClass","reisen").not()
 							   ));
-		assertEquals(kc.toString(), "AndGroup(textClass:reisen -textClass:reisen)");
+		assertEquals("AndGroup(textClass:reisen -textClass:reisen)", kc.toString());
         assertEquals("Documents", 0, kc.numberOf("documents"));
 
 		kc.fromBuilder(cb.andGroup().with(
@@ -1123,7 +1123,7 @@ public class TestKrillCollectionIndex {
 						   ).with(
 							   cb.term("textClass","finanzen").not()
 							   ));
-		assertEquals(kc.toString(), "AndGroup(textClass:kultur -textClass:finanzen)");
+		assertEquals("AndGroup(textClass:kultur -textClass:finanzen)", kc.toString());
         assertEquals("Documents", 1, kc.numberOf("documents"));
 
 		kc.fromBuilder(cb.andGroup().with(
@@ -1131,7 +1131,7 @@ public class TestKrillCollectionIndex {
 						   ).with(
 							   cb.term("textClass","Blabla").not()
 							   ));
-		assertEquals(kc.toString(), "AndGroup(textClass:reisen -textClass:Blabla)");
+		assertEquals("AndGroup(textClass:reisen -textClass:Blabla)", kc.toString());
         assertEquals("Documents", 2, kc.numberOf("documents"));
     }
 
