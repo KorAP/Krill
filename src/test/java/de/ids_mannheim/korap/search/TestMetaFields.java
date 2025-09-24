@@ -479,12 +479,14 @@ public class TestMetaFields {
         ki.addDoc(fd);
         ki.commit();
 
-        assertEquals(fd.doc.getField("textSigle").stringValue(), "ABC-123-0002");
-        assertEquals(fd.doc.getField("title").stringValue(), "Die Wahlverwandtschaften");
-        assertEquals(fd.doc.getField("author").stringValue(), "Johann Wolfgang von Goethe");
-        assertEquals(fd.doc.getField("textClass").stringValue(), "reisen wissenschaft");
-        assertEquals(fd.doc.getField("pubDate").stringValue(), "20130617");
-        assertEquals(fd.doc.getField("WikiLink").stringValue(), "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel");
+        assertEquals("ABC-123-0002", fd.doc.getField("textSigle").stringValue());
+        assertEquals("Die Wahlverwandtschaften", fd.doc.getField("title").stringValue());
+        assertEquals("Johann Wolfgang von Goethe", fd.doc.getField("author").stringValue());
+        assertEquals("reisen wissenschaft", fd.doc.getField("textClass").stringValue());
+        assertEquals("20130617", fd.doc.getField("pubDate").stringValue());
+        assertEquals(
+            "data:application/x.korap-link,https://de.wikipedia.org/wiki/Beispiel",
+            fd.doc.getField("WikiLink").stringValue());
     }
 
 };
