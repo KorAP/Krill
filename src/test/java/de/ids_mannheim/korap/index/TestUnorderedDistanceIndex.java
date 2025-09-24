@@ -103,7 +103,7 @@ public class TestUnorderedDistanceIndex {
         SpanQuery sq = createQuery("s:c", "s:d", 0, 3, false);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 5);
+        assertEquals(5, kr.getTotalResults());
     }
 
 
@@ -128,7 +128,7 @@ public class TestUnorderedDistanceIndex {
         SpanQuery sq = createQuery("s:c", "s:d", 1, 2, false);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 6);
+        assertEquals(6, kr.getTotalResults());
     }
 
 
@@ -150,7 +150,7 @@ public class TestUnorderedDistanceIndex {
         SpanQuery sq = createQuery("s:e", "s:f", 1, 2, false);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(3, kr.getTotalResults());
         assertEquals(0, kr.getMatch(0).getLocalDocID());
         assertEquals(7, kr.getMatch(0).getStartPos());
         assertEquals(9, kr.getMatch(0).getEndPos());
@@ -174,7 +174,7 @@ public class TestUnorderedDistanceIndex {
                 new SpanTermQuery(new Term("base", "s:f")));
 
         kr = ki.search(sq, (short) 10);
-        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(2, kr.getTotalResults());
         assertEquals(2, kr.getMatch(0).getLocalDocID());
         assertEquals(2, kr.getMatch(0).getStartPos());
         assertEquals(6, kr.getMatch(0).getEndPos());
@@ -195,7 +195,7 @@ public class TestUnorderedDistanceIndex {
         SpanQuery sq = createElementQuery("x", "y", 0, 0, false);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 4);
+        assertEquals(4, kr.getTotalResults());
         assertEquals(2, kr.getMatch(0).startPos);
         assertEquals(7, kr.getMatch(0).endPos);
         assertEquals(3, kr.getMatch(1).startPos);
@@ -208,7 +208,7 @@ public class TestUnorderedDistanceIndex {
         sq = createElementQuery("x", "y", 1, 1, false);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 1);
+        assertEquals(1, kr.getTotalResults());
         assertEquals(5, kr.getMatch(0).startPos);
         assertEquals(10, kr.getMatch(0).endPos);
 
@@ -217,7 +217,7 @@ public class TestUnorderedDistanceIndex {
         sq = createElementQuery("x", "y", 1, 2, false);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 2);
+        assertEquals(2, kr.getTotalResults());
         assertEquals(4, kr.getMatch(0).startPos);
         assertEquals(9, kr.getMatch(0).endPos);
         assertEquals(5, kr.getMatch(1).startPos);
@@ -248,7 +248,7 @@ public class TestUnorderedDistanceIndex {
         SpanQuery sq = createElementQuery("x", "x", 1, 2, false);
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 4);
+        assertEquals(4, kr.getTotalResults());
     }
 
 
@@ -268,7 +268,7 @@ public class TestUnorderedDistanceIndex {
                 new SpanTermQuery(new Term("base", "s:e")),
                 new DistanceConstraint(1, 2, true, false), true);
         kr = ki.search(sq2, (short) 10);
-        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(3, kr.getTotalResults());
         assertEquals(5, kr.getMatch(0).getStartPos());
         assertEquals(9, kr.getMatch(0).getEndPos());
         assertEquals(1, kr.getMatch(1).getLocalDocID());
@@ -292,7 +292,7 @@ public class TestUnorderedDistanceIndex {
                 createQuery("s:c", "s:e", 1, 2, false));
         kr = ki.search(sq, (short) 10);
 
-        assertEquals(kr.getTotalResults(), 3);
+        assertEquals(3, kr.getTotalResults());
         assertEquals(0, kr.getMatch(1).getStartPos());
         assertEquals(4, kr.getMatch(1).getEndPos());
 
