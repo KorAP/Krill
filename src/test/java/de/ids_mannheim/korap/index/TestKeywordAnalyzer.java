@@ -32,14 +32,14 @@ public class TestKeywordAnalyzer {
 		assertTrue(ts.incrementToken());
 		CharTermAttribute term = ts.getAttribute(CharTermAttribute.class);
 
-		assertEquals(term.toString(), "alpha");
+		assertEquals("alpha", term.toString());
 		assertTrue(ts.incrementToken());
 		term = ts.getAttribute(CharTermAttribute.class);
-		assertEquals(term.toString(), "beta");
+		assertEquals("beta", term.toString());
 
 		assertTrue(ts.incrementToken());
 		term = ts.getAttribute(CharTermAttribute.class);
-		assertEquals(term.toString(), "gamma");
+		assertEquals("gamma", term.toString());
 
 		assertTrue(!ts.incrementToken());
 	};
