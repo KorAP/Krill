@@ -58,7 +58,7 @@ public class TestMatchCollector {
         krill.getMeta().setCount((short) 10);
         MatchCollector mc = ki.collect(krill, new MatchCollector());
 
-        assertEquals(mc.getTotalResults(), 5);
-        assertEquals(mc.getTotalResultDocs(), 2);
+        assertEquals(5, mc.getTotalResults());
+        assertEquals(2, mc.getTotalResultDocs());
     };
 };
