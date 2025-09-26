@@ -34,6 +34,24 @@
       "parentUuid": "f8277ce4_64610c13",
       "revId": "f695824e0965048611dd4322180d0e2f86b41d55",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb9a0afb_3e3fe46f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 6
+      },
+      "writtenOn": "2025-09-26T14:19:29Z",
+      "side": 1,
+      "message": "The restriction of max match size is indeed needed, as I said. Users, in the sense of people who try to run KorAP, should just get a hint for what.\n\nWhat is not needed, IMHO, is max context size. Max KWIC size is a better alternative, I think, and everything else can be computed on the fly for an optimal or easy solution. But you can try to explain it to me on Monday, if I\u0027m wrong 😊",
+      "parentUuid": "689da91d_0822c3d0",
+      "revId": "f695824e0965048611dd4322180d0e2f86b41d55",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
