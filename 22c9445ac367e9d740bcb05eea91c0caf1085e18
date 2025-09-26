@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2edcbaa9_82e746b5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-09-26T09:06:20Z",
+      "side": 1,
+      "message": "This allows for max matchsize to be equal to KWIC size, by having a shrinking context. In addition to that, it allows a maximum match size by keeping the maximum allowed contexts, as discussed on wednesday.\n\nThe tests are temporarily wrong for right contexts in token lists, as https://github.com/KorAP/Krill/issues/141 is not fixed in this commit.\n\nExpansion by spans need further tests.",
+      "revId": "22c9445ac367e9d740bcb05eea91c0caf1085e18",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
