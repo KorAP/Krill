@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55871790_d19ae306",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-09-26T09:38:41Z",
+      "side": 1,
+      "message": "More tests in https://korap.ids-mannheim.de/gerrit/c/KorAP/Krill/+/9883",
+      "revId": "d4417e2671226940d5ece23450ae71b4aad4be60",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    }
+  ]
+}
