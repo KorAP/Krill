@@ -52,6 +52,24 @@
       "parentUuid": "689da91d_0822c3d0",
       "revId": "f695824e0965048611dd4322180d0e2f86b41d55",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "089ccefb_aea7fc99",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-09-26T16:21:56Z",
+      "side": 1,
+      "message": "It\u0027s probably easier to understand, but it removes the flexibility to still have fixed context (if I understand your proposal), regardless of the match length. It also - and that\u0027s usual my main issue - removes the option of the current behaviour. What would be a behaviour that the current option can\u0027t achieve?",
+      "parentUuid": "eb9a0afb_3e3fe46f",
+      "revId": "f695824e0965048611dd4322180d0e2f86b41d55",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
