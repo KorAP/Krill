@@ -24,6 +24,8 @@ public class KrillProperties {
     public static int maxTokenMatchSize = 50;
     public static int maxTokenContextSize = 60;
     public static int maxCharContextSize = 500;
+    public static int leftContextAdjustment = 0;
+    public static int rightContextAdjustment = 0;
     public static int defaultSearchContextLength = 6;
     public static int maxTextSize = DEFAULT_MAX_STRING_LEN; // Default max text size
     
@@ -88,9 +90,18 @@ public class KrillProperties {
 
     public static void updateConfigurations (Properties  prop) {
         String maxTokenMatchSize = prop.getProperty("krill.match.max.token");
+
+        // TODO:
+        // Should be separated for left and right!
         String maxTokenContextSize = prop.getProperty("krill.context.max.token");
+
+        // Shrink by X, so it can be used by the match
+        // This will for now only work for tokens
+        String leftContextAdjustment = prop.getProperty("krill.context.left.adjust");
+        String rightContextAdjustment = prop.getProperty("krill.context.right.adjust");
+
         // EM: not implemented yet
-//        String maxCharContextSize = prop.getProperty("krill.context.max.char");
+        // String maxCharContextSize = prop.getProperty("krill.context.max.char");
         String defaultSearchContextLength = prop.getProperty("krill.search.context.default");
         String maxTextSizeValue = prop.getProperty("krill.index.textSize.max");
 
@@ -123,6 +134,31 @@ public class KrillProperties {
                 }
 
             }
+            if (leftContextAdjustment != null) {
+                if (leftContextAdjustment.equals("max")) {
+                    KrillProperties.leftContextAdjustment = KrillProperties.maxTokenContextSize;
+                } else {
+                    KrillProperties.leftContextAdjustment = Integer
+                        .parseInt(leftContextAdjustment);
+                    if (KrillProperties.leftContextAdjustment > KrillProperties.maxTokenContextSize)
+                        KrillProperties.leftContextAdjustment = KrillProperties.maxTokenContextSize;
+                    else if (KrillProperties.leftContextAdjustment < 0)
+                        KrillProperties.leftContextAdjustment = 0;
+                };
+            };
+            if (rightContextAdjustment != null) {
+                if (rightContextAdjustment.equals("max")) {
+                    KrillProperties.rightContextAdjustment = KrillProperties.maxTokenContextSize;
+                } else {
+                    KrillProperties.rightContextAdjustment = Integer
+                        .parseInt(rightContextAdjustment);
+                    if (KrillProperties.rightContextAdjustment > KrillProperties.maxTokenContextSize)
+                        KrillProperties.rightContextAdjustment = KrillProperties.maxTokenContextSize;
+                    else if (KrillProperties.rightContextAdjustment < 0)
+                        KrillProperties.rightContextAdjustment = 0;
+                };
+            };
+
         }
         catch (NumberFormatException e) {
             log.error("A Krill property expects numerical values: "
