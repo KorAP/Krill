@@ -53,6 +53,5 @@ public class TestMatch {
                 false);
         assertEquals(326, m.getStartPos());
         assertEquals(376, m.getEndPos());
-    };
-
+    };   
 };

@@ -863,7 +863,6 @@ public class Match extends AbstractDocument {
         return this;
     };
 
-
     @JsonIgnore
     public SearchContext getContext () {
         if (this.context == null)
@@ -876,6 +875,36 @@ public class Match extends AbstractDocument {
         return this.getEndPos() - this.getStartPos();
     };  
 
+    // adjustContext to ensure, only markers in the relevant context
+    // are retrieved
+    // (not very Java-y tbh.)
+    private int[] adjustContext (int startContext, int endContext) {
+
+        // Subtract the matchLength from the context
+        if (KrillProperties.leftContextMaxShrink == 0 &&
+            KrillProperties.rightContextMaxShrink == 0) {
+
+            return new int[]{startContext, endContext};
+        };
+      
+        int matchLength = this.endPos - this.startPos;
+
+        int maxShrinkLeft = KrillProperties.leftContextMaxShrink;
+
+        int maxShrink = maxShrinkLeft +
+            KrillProperties.rightContextMaxShrink;
+
+        // Calculate proportionate reduction
+        int requiredShrink = Math.min(matchLength, maxShrink);                
+        int shrinkLeft = (int) Math.round(requiredShrink * ((double) maxShrinkLeft / maxShrink));
+        int shrinkRight = requiredShrink - shrinkLeft;
+
+        // Guard: never shrink more context than actually available
+        shrinkLeft = Math.min(shrinkLeft, Math.max(0, this.startPos - startContext));
+        shrinkRight = Math.min(shrinkRight, Math.max(0, endContext - this.endPos));
+
+        return new int[]{startContext + shrinkLeft, endContext - shrinkRight};
+    };
 	
 	// Retrieve markers in a certain area
 	public List<int[]> retrieveMarkers (String marker) {
@@ -906,6 +935,12 @@ public class Match extends AbstractDocument {
         int minStartPos = this.getStartPos() - KrillProperties.maxTokenContextSize;
         int maxEndPos = this.getEndPos() + KrillProperties.maxTokenContextSize;
 
+        // Not very efficient, to adjust the context for every retrieval,
+        // but there is no IO involved, therefore not too bad
+        int[] adjustedContext = this.adjustContext(minStartPos, maxEndPos);
+        minStartPos = adjustedContext[0];
+        maxEndPos = adjustedContext[1];
+        
 		if (DEBUG) {
             log.debug("=================================");
 			log.debug("Retrieve markers between {}-{}",
@@ -1194,6 +1229,11 @@ public class Match extends AbstractDocument {
                 spanContext[3] = end; // spanContext[3];
             }
 
+            // Context adjustment is not needed here: span expansion changes
+            // match boundaries, not context boundaries. Context adjustment is
+            // applied when rendering the snippet (getSnippetTokens,
+            // _processOffsetChars, retrieveMarkers).
+            
             this.potentialStartPosChar = spanContext[2];
             this.potentialEndPosChar = spanContext[3];
             this.startMore = false;
@@ -1656,7 +1696,7 @@ public class Match extends AbstractDocument {
             startContextChar = spanContext[2];
             endContextChar = spanContext[3];
         }
-
+        
         // The offset is not yet defined - and defined by tokens
         if (endContext == -1) {
 
@@ -1685,6 +1725,11 @@ public class Match extends AbstractDocument {
             if (DEBUG)
                 log.debug("Set endContext {}", endContext);
         };
+
+        // Adjust the context
+        int[] adjustedContext = this.adjustContext(startContext, endContext);
+        startContext = adjustedContext[0];
+        endContext = adjustedContext[1];
         
         // Retrieve the character offsets for all tokens
         for (int i = startContext; i < endContext; i++) {
@@ -1694,8 +1739,10 @@ public class Match extends AbstractDocument {
         if (startContextChar == -1)
             startContextChar = pto.start(ldid, startContext);
 
-        if (endContextChar == -1)
-            endContextChar = pto.end(ldid, endContext);
+        if (endContextChar == -1) {
+            int lastPos = Math.max(endContext, this.endPos) - 1;
+            endContextChar = pto.end(ldid, lastPos);
+        }
             
         if (DEBUG)
             log.debug("Match is {}/{} - {}/{}",startContext,startContextChar,endContext,endContextChar);
@@ -1720,6 +1767,9 @@ public class Match extends AbstractDocument {
             tokens = json.putArray("left");
             for (i = startContext; i < this.startPos; i++) {
                 offsets = pto.span(ldid,i);
+                if (offsets == null) {
+                    continue;
+                }
                 tokens.add(
                     codePointSubstring(this.tempSnippet,
                                        offsets[0]- startContextChar, offsets[1] - startContextChar)
@@ -1728,6 +1778,8 @@ public class Match extends AbstractDocument {
         };
 
         tokens = json.putArray("match");
+
+        // Create right context token list
         for (i = this.startPos; i < this.endPos; i++) {
             offsets = pto.span(ldid,i);
             if (offsets == null) {
@@ -2397,17 +2449,29 @@ public class Match extends AbstractDocument {
 
             PositionsToOffset pto = this.positionsToOffset;
 
+            // TODO:
+            //   The best approach is probably to primarily focus on
+            //   token contexts and in case they exceed the maxCharacter
+            //   contexts, these should be cut at the end.
+            //   This doesn't work with token list matches though,
+            //   so we may need to deprecate the option to set character
+            //   contexts altogether ...
+
+            boolean retrieveStart = false;
+            boolean retrieveEnd = false;
+            
             // The left offset is defined by tokens
             if (this.context.left.isToken()) {
                 startOffset = this.startPos - this.context.left.getLength();
                 if (DEBUG)
                     log.trace("PTO will retrieve {} (Left context)",
                             startOffset);
-                pto.add(ldid, startOffset);
+                retrieveStart = true;
             }
 
             // The left offset is defined by characters
             else {
+                // TODO: This is therefore not adjusted
                 startOffsetChar = startPosChar - this.context.left.getLength();
             };
 
@@ -2417,15 +2481,30 @@ public class Match extends AbstractDocument {
                 if (DEBUG)
                     log.trace("PTO will retrieve {} (Right context)",
                             endOffset);
-                pto.add(ldid, endOffset);
+                retrieveEnd = true;
             }
 
             // The right context is defined by characters
             else {
+                // TODO: This is therefore not adjusted
                 endOffsetChar = (endPosChar == -1) ? -1
                         : endPosChar + this.context.right.getLength();
             };
 
+            // Adjust token contexts (convert endOffset to exclusive for adjustContext)
+            int[] adjustedContexts = this.adjustContext(startOffset,
+                endOffset == -1 ? endOffset : endOffset + 1);
+            
+            if (retrieveStart) {
+                startOffset = adjustedContexts[0];
+                pto.add(ldid, startOffset);
+            };
+
+            if (retrieveEnd) {
+                endOffset = adjustedContexts[1] - 1;
+                pto.add(ldid, endOffset);
+            };
+                
             if (startOffset != -1)
                 startOffsetChar = pto.start(ldid, startOffset);
 

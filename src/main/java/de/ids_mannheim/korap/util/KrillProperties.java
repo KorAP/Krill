@@ -24,6 +24,9 @@ public class KrillProperties {
     public static int maxTokenMatchSize = 50;
     public static int maxTokenContextSize = 60;
     public static int maxCharContextSize = 500;
+    public static int leftContextMaxShrink = 0;
+    public static int rightContextMaxShrink = 0;
+    public static int kwicMaxToken = -1;
     public static int defaultSearchContextLength = 6;
     public static int maxTextSize = DEFAULT_MAX_STRING_LEN; // Default max text size
     
@@ -88,9 +91,20 @@ public class KrillProperties {
 
     public static void updateConfigurations (Properties  prop) {
         String maxTokenMatchSize = prop.getProperty("krill.match.max.token");
+
+        // TODO:
+        // Should be separated for left and right!
         String maxTokenContextSize = prop.getProperty("krill.context.max.token");
+
+        // Maximum number of tokens to shrink from context based on match size
+        // (only affects token-based contexts)
+        String leftContextMaxShrink = prop.getProperty("krill.context.left.maxShrink");
+        String rightContextMaxShrink = prop.getProperty("krill.context.right.maxShrink");
+
+        String kwicMaxToken = prop.getProperty("krill.kwic.max.token");
+
         // EM: not implemented yet
-//        String maxCharContextSize = prop.getProperty("krill.context.max.char");
+        // String maxCharContextSize = prop.getProperty("krill.context.max.char");
         String defaultSearchContextLength = prop.getProperty("krill.search.context.default");
         String maxTextSizeValue = prop.getProperty("krill.index.textSize.max");
 
@@ -123,6 +137,49 @@ public class KrillProperties {
                 }
 
             }
+            if (leftContextMaxShrink != null) {
+                if (leftContextMaxShrink.equals("max")) {
+                    KrillProperties.leftContextMaxShrink = KrillProperties.maxTokenContextSize;
+                } else {
+                    KrillProperties.leftContextMaxShrink = Integer
+                        .parseInt(leftContextMaxShrink);
+                    if (KrillProperties.leftContextMaxShrink > KrillProperties.maxTokenContextSize)
+                        KrillProperties.leftContextMaxShrink = KrillProperties.maxTokenContextSize;
+                    else if (KrillProperties.leftContextMaxShrink < 0)
+                        KrillProperties.leftContextMaxShrink = 0;
+                };
+            };
+            if (rightContextMaxShrink != null) {
+                if (rightContextMaxShrink.equals("max")) {
+                    KrillProperties.rightContextMaxShrink = KrillProperties.maxTokenContextSize;
+                } else {
+                    KrillProperties.rightContextMaxShrink = Integer
+                        .parseInt(rightContextMaxShrink);
+                    if (KrillProperties.rightContextMaxShrink > KrillProperties.maxTokenContextSize)
+                        KrillProperties.rightContextMaxShrink = KrillProperties.maxTokenContextSize;
+                    else if (KrillProperties.rightContextMaxShrink < 0)
+                        KrillProperties.rightContextMaxShrink = 0;
+                };
+            };
+
+            if (kwicMaxToken != null) {
+                KrillProperties.kwicMaxToken = Integer.parseInt(kwicMaxToken);
+
+                if (leftContextMaxShrink != null || rightContextMaxShrink != null) {
+                    log.warn("krill.kwic.max.token is set: individual "
+                             + "krill.context.left.maxShrink / krill.context.right.maxShrink "
+                             + "values will be ignored");
+                };
+
+                int totalAllowance = KrillProperties.maxTokenMatchSize
+                    + 2 * KrillProperties.maxTokenContextSize;
+                int totalShrink = Math.max(0,
+                    Math.min(totalAllowance - KrillProperties.kwicMaxToken,
+                             2 * KrillProperties.maxTokenContextSize));
+                KrillProperties.leftContextMaxShrink = totalShrink / 2;
+                KrillProperties.rightContextMaxShrink = totalShrink - totalShrink / 2;
+            };
+
         }
         catch (NumberFormatException e) {
             log.error("A Krill property expects numerical values: "

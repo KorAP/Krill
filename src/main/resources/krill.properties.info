@@ -15,3 +15,59 @@ krill.index.commit.log = log/krill.commit.log
 krill.index.commit.auto = 500
 krill.index.relations.max = 100
 krill.index.textSize.max = 20000000
+
+# Token retrieval settings:
+#
+# krill.match.max.token = 5
+#
+##  Maximum number (i.e. length) of tokens to be retrievable.
+##  Matches longer than that will be cut.
+##  Defaults to 50
+
+# krill.context.max.token = 
+#
+##  Maximum number (i.e. length) of tokens to be retrieved (left and right) of a match.
+##  Defaults to 60
+
+# krill.kwic.max.token =
+#
+## Maximum total number of tokens in a KWIC snippet (left + match + right).
+## When set, this derives krill.context.left.maxShrink and
+## krill.context.right.maxShrink automatically:
+##   totalShrink = (krill.match.max.token + 2 * krill.context.max.token) - kwic.max.token
+## Split evenly between left and right.
+## When this property is set, individual maxShrink values are ignored.
+## The existing krill.match.max.token remains in effect as a separate cap
+## on match length, preventing data leakage from sentence-level queries.
+## Not set by default (no KWIC cap - backward compatible).
+
+# krill.context.left.maxShrink = 0
+#
+## Maximum number of tokens the left context may shrink based on match length.
+## Defaults to 0 (no shrinking - full context is always returned).
+## When a match is long, the context shrinks by up to this many tokens,
+## keeping the total KWIC width manageable.
+## The total shrink is distributed proportionally between left and right
+## according to their respective maxShrink values.
+## Use the string "max" to allow the context to shrink entirely
+## (up to krill.context.max.token tokens).
+## Ignored when krill.kwic.max.token is set.
+## Note: Only token-based contexts are affected; character-based contexts
+## are currently not adjusted by this feature.
+
+# krill.context.right.maxShrink = 0
+#
+## Maximum number of tokens the right context may shrink based on match length.
+## Defaults to 0 (no shrinking - full context is always returned).
+## When a match is long, the context shrinks by up to this many tokens,
+## keeping the total KWIC width manageable.
+## The total shrink is distributed proportionally between left and right
+## according to their respective maxShrink values.
+## Use the string "max" to allow the context to shrink entirely
+## (up to krill.context.max.token tokens).
+## Ignored when krill.kwic.max.token is set.
+## Note: Only token-based contexts are affected; character-based contexts
+## are currently not adjusted by this feature.
+
+
+

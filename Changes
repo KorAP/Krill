@@ -1,4 +1,4 @@
-0.64.7 2026-04-29
+0.64.7 2026-05-05
     - [bugfix] Keep highlights that extend beyond a cut match
       (diewald; fixes #177; diewald; AI-assisted Claude Opus 4.6)
     - [bugfix] Correctly handle foundry and layer in attribute groups
@@ -12,6 +12,12 @@
       (fixes #243; diewald; AI-assisted Claude Opus 4.6)
     - [bugfix] Preserve negation of a single operand inside a
       collection group (fixes #178; diewald; AI-assisted Claude Opus 4.6))
+    - [feature] Allow the context to shrink based on the match size
+      via krill.context.left.maxShrink / krill.context.right.maxShrink
+      (fixes #229; diewald)
+    - [feature] Add krill.kwic.max.token as a convenience property
+      to cap total KWIC width; derives maxShrink values automatically
+      (diewald; AI-assisted Claude Opus 4.6)
 
 0.64.6 2026-03-09
     - [performance] Add leaf cache. (diewald)
