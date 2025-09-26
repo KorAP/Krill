@@ -1656,7 +1656,7 @@ public class Match extends AbstractDocument {
             };
         
             if (this.context.right.isToken() && this.context.right.getLength() > 0) {
-                endContext = this.endPos + this.context.right.getLength() - 1;
+                endContext = this.endPos + this.context.right.getLength();
             };
         };
        
