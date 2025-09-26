@@ -16,6 +16,24 @@
       "message": "Seems to work well in the sense that KWICs are capped (approximately?) reliably, without capping the match unnecessarily 👍. Tested with Kalamar and API (tokens and snippets). However, I don\u0027t know what the old and new properties now actually mean. Please explain everything in `src/main/resources/krill.properties.info`.\n\nWhat I liked more in my initial attempt was that the `krill.kwic.max.token` property reflects 1:1 what users need and is thus easily understandable without much explanation (but see https://korap.ids-mannheim.de/gerrit/c/KorAP/Krill/+/9704/6/src/main/resources/krill.properties.info#29). \n\nFor what purpose users might indeed also still need `krill.match.max.token` might need some explanation. I still cannot figure out `krill.kwic.context.token` could be used for 😜.",
       "revId": "f695824e0965048611dd4322180d0e2f86b41d55",
       "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "689da91d_0822c3d0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 19
+      },
+      "writtenOn": "2025-09-26T14:10:44Z",
+      "side": 1,
+      "message": "I agree, that the semantics are more complicated, but as users don\u0027t need to care, I don\u0027t think it\u0027s an issue.\n\nWhat wasn\u0027t possible with the KWIC solution, that we discussed on wednesday, was the restriction to match sizes of e.g. 10 (to prevent the reconstruction of texts based on sentences), while still allowing the maximum context size.",
+      "parentUuid": "f8277ce4_64610c13",
+      "revId": "f695824e0965048611dd4322180d0e2f86b41d55",
+      "serverId": "626241b7-b7d0-4197-b843-1ee23887649c"
     }
   ]
 }
