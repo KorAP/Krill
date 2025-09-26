@@ -1,3 +1,7 @@
+0.64.5 2025-09-26
+    - [feature] Allow the context to shrink based on the match size
+      (#229; diewald)
+
 0.64.4 2025-09-17
     - [feature] Added --progress option to Krill-Indexer (kupietz)
     - [bugfix] Fixed vc cache tests (kupietz)

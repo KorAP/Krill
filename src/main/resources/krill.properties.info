@@ -15,3 +15,35 @@ krill.index.commit.log = log/krill.commit.log
 krill.index.commit.auto = 500
 krill.index.relations.max = 100
 krill.index.textSize.max = 20000000
+
+# Token retrieval settings:
+#
+# krill.match.max.token = 5
+#
+##  Maximum number (i.e. length) of tokens to be retrievable.
+##  Matches longer than that will be cut.
+##  Defaults to 50
+
+# krill.context.max.token = 
+#
+##  Maximum number (i.e. length) of tokens to be retrieved (left and right) of a match.
+##  Defaults to 60
+
+# krill.context.left.adjust = 0
+#
+## Number of tokens (for now) from the match that will reduce the left context to be retrieved.
+## Defaults to 0, meaning the maximum context will be retrieved if requested, unaltered by the match size.
+## Supported is also "max", which means the whole context can be reduced, if the match is large
+## (That means, if both context adjustments are set to "max", the maximum KWIC length equals match.max.token).
+## Adjustment by match length will be done evenly for both sides of the context.
+
+# krill.context.right.adjust
+#
+## Number of tokens (for now) from the match that will reduce the right context to be retrieved.
+## Defaults to 0, meaning the maximum context will be retrieved if requested, unaltered by the match size.
+## Supported is also "max", which means the whole context can be reduced, if the match is large
+## (That means, if both context adjustments are set to "max", the maximum KWIC length equals match.max.token).
+## Adjustment by match length will be done evenly for both sides of the context.
+
+
+
