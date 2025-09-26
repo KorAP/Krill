@@ -572,6 +572,12 @@ public class TestMatchIdentifier {
 			snippet
 			);
 
+        String snippetTokens = km.getSnippetTokens().toString();
+        assertEquals("{\"left\":[\"angesehen\",\"wurde\"]," +
+                     "\"match\":[\"Der\",\"alte\",\"Baum\"]," +
+                     "\"right\":[\"war\",\"eine\"]}",
+                     snippetTokens);
+
 		// Expansion - no context but inner match
 		km = ki.getMatchInfo("match-WPD17/H81/63495-p88-91", "tokens",
 								   "xyz", "s", true, true, true);

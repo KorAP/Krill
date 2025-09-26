@@ -4,6 +4,7 @@
       than 3 characters (margaretha)
     - [bugfix] Making totalResult counter long to prevent overflows (diewald)
     - [bugfix] Do not allow optional Lucene Regex extensions (diewald)
+    - [bugfix] Fix right context in token list retrieval (#141; diewald)
 
 0.64.4 2025-09-17
     - [feature] Added --progress option to Krill-Indexer (kupietz)
@@ -14,8 +15,8 @@
 0.64.3 2025-08-19
     - [feature] Add tar and zip archive input support to Krill-Indexer (kupietz)
     - [security] Update dependencies (kupietz)
-	- [enhancement] Add support for "corpus" in deserialization, "collection" 
-	  is marked as legacy (margaretha). 
+    - [enhancement] Add support for "corpus" in deserialization, "collection" 
+      is marked as legacy (margaretha). 
 
 0.64.2 2025-07-02
     - [bugfix] Restore rewrites in Meta. (diewald)
