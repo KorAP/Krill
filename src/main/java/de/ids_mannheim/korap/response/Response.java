@@ -558,9 +558,13 @@ public class Response extends Notifications {
             // && this.collection.getFilters().toArray().length > 0) {
             JsonNode collNode = this.collection.toJsonNode();
             if (collNode != null) {
-                json.set("corpus", collNode);
+            	if (collection.isCorpus) {
+            		json.set("corpus", collNode);
+            	}
                 // EM: legacy
-                json.set("collection", collNode);
+            	else {
+            		json.set("collection", collNode);
+            	}
             };
         };
 

@@ -74,6 +74,8 @@ public final class KrillCollection extends Notifications implements IndexInfo {
     public static final boolean DEBUG = false;
     private double start, end; // for debugging
 
+    public boolean isCorpus = true;
+    
     /**
      * Construct a new KrillCollection.
      * 
@@ -256,10 +258,12 @@ public final class KrillCollection extends Notifications implements IndexInfo {
 		throws QueryException {
 
     	if (json.has("corpus")) {
+    		isCorpus=true;
 			return this._fromKoral(json.at("/corpus"));
 		};
 		
 		if (json.has("collection")) {
+			isCorpus=false;
 			return this._fromKoral(json.at("/collection"));
 		};
 
