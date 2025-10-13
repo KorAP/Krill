@@ -216,8 +216,9 @@ public class Krill extends Response {
 
                 // TODO: Temporary
                 if (collNode.fieldNames().hasNext()) {
-                    this.setCollection(
-                            new KrillCollection().fromKoral(collNode));
+                	KrillCollection kc = new KrillCollection().fromKoral(collNode);
+                	kc.isCorpus=true;
+                    this.setCollection(kc);
                 };
             }
         	// EM: legacy
@@ -226,8 +227,9 @@ public class Krill extends Response {
 
                 // TODO: Temporary
                 if (collNode.fieldNames().hasNext()) {
-                    this.setCollection(
-                            new KrillCollection().fromKoral(collNode));
+                	KrillCollection kc = new KrillCollection().fromKoral(collNode);
+                	kc.isCorpus=false;
+                    this.setCollection(kc);
                 };
             }
 
