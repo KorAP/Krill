@@ -5,7 +5,9 @@
     - [feature] Added --progress option to Krill-Indexer (kupietz)
     - [bugfix] Fixed vc cache tests (kupietz)
     - [security] Dependencies updated (diewald, margaretha, kupietz)
-    - [enhancement] Keep corpus or collection node name from json 
+    - [enhancement] Keep corpus or collection node name from json (margaretha) 
+    - [enhancement] Alter vcNamePattern to allow system VC names with less 
+      than 3 characters (margaretha)
 
 0.64.3 2025-08-19
     - [feature] Add tar and zip archive input support to Krill-Indexer (kupietz)

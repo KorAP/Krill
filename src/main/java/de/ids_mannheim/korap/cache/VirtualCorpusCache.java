@@ -38,7 +38,7 @@ public class VirtualCorpusCache {
     public final static Logger log = LoggerFactory
             .getLogger(VirtualCorpusCache.class);
     
-    public static Pattern vcNamePattern = Pattern.compile("[a-zA-Z0-9]+[a-zA-Z_0-9-.]+");
+    public static Pattern vcNamePattern = Pattern.compile("[a-zA-Z0-9]+[a-zA-Z_0-9-.]*");
 
     public static String CACHE_LOCATION = "vc-cache";
     
@@ -103,7 +103,8 @@ public class VirtualCorpusCache {
     public static void storeOnDisk (String vcId, String leafFingerprint,
             DocBits docBits) {
         if (!isVcIdValid(vcId)) {
-            throw new IllegalArgumentException("Cannot cache VC due to invalid VC ID");
+            throw new IllegalArgumentException("Cannot cache VC due to invalid "
+            		+ "VC ID");
         }
 
         File dir = new File(CACHE_LOCATION + "/" + vcId);
