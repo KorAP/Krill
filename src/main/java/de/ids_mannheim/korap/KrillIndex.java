@@ -1423,8 +1423,8 @@ public final class KrillIndex implements IndexInfo {
         };
         
         // Some initializations ...
-        int i = 0; // matchcount
-        int j = 0; // matchdoccount
+        long i = 0; // matchcount
+        long j = 0; // matchdoccount
         int startIndex = kr.getStartIndex();
         int count = kr.getItemsPerPage();
         int hits = kr.getItemsPerPage() + startIndex;
@@ -1686,8 +1686,8 @@ public final class KrillIndex implements IndexInfo {
             if (itemsPerResource > 0)
                 kr.setItemsPerResource(itemsPerResource);
 
-            kr.setTotalResults(cutoff ? (long) -1 : (long) i);
-            kr.setTotalResources(cutoff ? (long) -1 : (long) j);
+            kr.setTotalResults(cutoff ? (long) -1 : i);
+            kr.setTotalResources(cutoff ? (long) -1 : j);
         }
 
         catch (IOException e) {

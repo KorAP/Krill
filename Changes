@@ -1,7 +1,8 @@
-0.64.5 2025-11-14
+0.64.5 2025-11-21
     - [maintenance] Update to Java 21 (diewald)
     - [enhancement] Alter vcNamePattern to allow system VC names with less 
       than 3 characters (margaretha)
+    - [bugfix] Making totalResult counter long to prevent overflows (diewald)
 
 0.64.4 2025-09-17
     - [feature] Added --progress option to Krill-Indexer (kupietz)
