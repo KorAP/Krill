@@ -34,7 +34,7 @@ public class QueryBuilder {
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-
+   
     // <legacy>
     public static final byte OVERLAP = SpanWithinQuery.OVERLAP,
             REAL_OVERLAP = SpanWithinQuery.REAL_OVERLAP,
@@ -69,7 +69,7 @@ public class QueryBuilder {
      * @return A {@link SpanRegexQueryWrapper} object.
      */
     public SpanRegexQueryWrapper re (String re) {
-        return new SpanRegexQueryWrapper(this.field, re, RegExp.ALL, false);
+        return new SpanRegexQueryWrapper(this.field, re);
     };
 
 
@@ -154,7 +154,7 @@ public class QueryBuilder {
      * @return A {@link SpanRegexQueryWrapper} object.
      */
     public SpanRegexQueryWrapper re (String re, boolean caseinsensitive) {
-        return new SpanRegexQueryWrapper(this.field, re, RegExp.ALL,
+        return new SpanRegexQueryWrapper(this.field, re,
                 caseinsensitive);
     };
 

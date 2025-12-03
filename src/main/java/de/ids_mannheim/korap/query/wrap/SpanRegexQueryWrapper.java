@@ -14,8 +14,10 @@ public class SpanRegexQueryWrapper extends SpanQueryWrapper {
     private SpanQuery query;
     public String error = null;
 
+    private static int regexFlag = RegExp.NONE;
+
     public SpanRegexQueryWrapper (String field, String re) {
-        this(field, re, RegExp.ALL, false);
+        this(field, re, regexFlag, false);
     };
 
 
@@ -26,7 +28,7 @@ public class SpanRegexQueryWrapper extends SpanQueryWrapper {
 
     public SpanRegexQueryWrapper (String field, String re,
                                   boolean caseinsensitive) {
-        this(field, re, RegExp.ALL, caseinsensitive);
+        this(field, re, regexFlag, caseinsensitive);
     };
 
 

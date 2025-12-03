@@ -172,6 +172,10 @@ public class TestKrillCollectionIndex {
 		kcn.fromBuilder(cb.re("author", ".*an.*"));
         assertEquals(2, kcn.docCount());
 
+		// No optional regex support enabled
+		kcn.fromBuilder(cb.re("author", "@an@"));
+        assertEquals(0, kcn.docCount());
+        
 		// Kultur & Reisen,
 		// Reisen & Finanzen,
 		// Nachricht & Kultur & Reisen

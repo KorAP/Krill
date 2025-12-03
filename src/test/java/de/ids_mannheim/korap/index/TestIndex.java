@@ -318,6 +318,13 @@ public class TestIndex { // extends LuceneTestCase {
         srquery = new RegexpQuery(new Term("text", "s:.*ng.*"));
         assertEquals(2, searcher.search(srquery, 10).totalHits);
 
+        // All docs containing "ng"/x (optional Regex enabled by default)
+        srquery = new RegexpQuery(new Term("text", "s:@ng@"));
+        assertEquals(2, searcher.search(srquery, 10).totalHits);
+
+        // All docs containing "@ng@" (no optional query operators enabled)
+        ssrquery = new SpanRegexQueryWrapper("text", "s:@ng@");
+        assertEquals(0, searcher.search(ssrquery.toQuery(), 10).totalHits);
 
         // Check http://comments.gmane.org/gmane.comp.jakarta.lucene.user/52283
         // for Carstens question on wildcards

@@ -11,6 +11,7 @@ import org.apache.lucene.search.NumericRangeFilter;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.RegexpQuery;
+import org.apache.lucene.util.automaton.RegExp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,7 +216,7 @@ public class CollectionBuilder {
             if (this.regex)
                 return new QueryWrapperFilter(
                         new RegexpQuery(new org.apache.lucene.index.Term(
-                                this.field, this.term)));
+                                            this.field, this.term), RegExp.NONE));
 
             // Simple term
             return new TermsFilter(
