@@ -62,7 +62,7 @@
     <java.version>21</java.version>
     <jersey.version>4.0.2</jersey.version>
     <log4j.version>2.25.3</log4j.version>
-    <jackson.version>2.20.1</jackson.version>
+    <jackson.version>2.21.0</jackson.version>
     <jackson.mainversion>2.21</jackson.mainversion>
     <lucene.version>5.0.0</lucene.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
