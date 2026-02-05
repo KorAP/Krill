@@ -12,22 +12,15 @@ public class Fingerprinter {
     private final static Logger log = LoggerFactory
             .getLogger(Fingerprinter.class);
 
-    private static MessageDigest md;
-
     public static String create (String key) {
         try {
-            md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(key.getBytes());
+            return new String(Base64.getUrlEncoder().encode(md.digest()));
         }
         catch (NoSuchAlgorithmException e) {
             log.error(e.getMessage());
             return e.getMessage();
-        };
-
-        md.update(key.getBytes());
-        String code = new String(Base64.getUrlEncoder().encode(md.digest()));
-        
-        md.reset();
-        return code;
-
+        }
     }
 }
