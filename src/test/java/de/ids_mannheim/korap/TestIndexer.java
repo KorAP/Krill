@@ -7,9 +7,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.zip.GZIPOutputStream;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -293,6 +297,38 @@ public class TestIndexer {
         assertEquals(0L, invalidZip);
     }
 
+    @Test
+    public void testDeleteByTextSigleOption () throws IOException {
+        Path inputDir = Files.createTempDirectory(tempBaseDirectory.toPath(),
+                "delete-input");
+        Path jsonPath = Paths.get("src/test/resources/goe/AGX-00002.json");
+        Path gzPath = inputDir.resolve("AGX-00002.json.gz");
+        gzipFile(jsonPath, gzPath);
+
+        String outputDir = getTestOutputPath("test-delete-index");
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                "-i", inputDir.toString(), "-o", outputDir });
+        assertTrue(outputStream.toString().startsWith("Added or updated 1 file."));
+
+        outputStream.reset();
+
+
+        KrillIndex ki = new KrillIndex(Paths.get(outputDir));
+        assertEquals(1, ki.numberOf("documents"));
+
+
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                "-o", outputDir, "-D", "textSigle", "GOE_AGX.00002" });
+        assertTrue(outputStream.toString()
+                .startsWith("Deleted documents where textSigle=GOE_AGX.00002."));
+
+        ki = new KrillIndex(Paths.get(outputDir));
+        
+        assertEquals(0, ki.numberOf("documents"));
+        ki.close();
+        
+    }
+
     @Before
     public void setOutputStream () {
         System.setOut(new PrintStream(outputStream));
@@ -321,5 +357,17 @@ public class TestIndexer {
             }
         }
         path.delete();
+    }
+
+    private static void gzipFile (Path input, Path output) throws IOException {
+        try (InputStream in = Files.newInputStream(input);
+                OutputStream out = new GZIPOutputStream(
+                        Files.newOutputStream(output))) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+        }
     }
 }

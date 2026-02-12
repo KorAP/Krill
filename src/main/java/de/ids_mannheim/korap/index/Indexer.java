@@ -394,12 +394,16 @@ public class Indexer {
                         + "<filename>.json.gz files, zip files containing .json or .json.gz files, "
                         + "or tar files (including .tar.gz) containing .json or .json.gz files. "
                         + "The indexer will automatically detect the type.")
-                .hasArgs().argName("input paths").required()
+                .hasArgs().argName("input paths")
                 .valueSeparator(Character.valueOf(';')).build());
         options.addOption(Option.builder("o").longOpt("outputDir")
                 .desc("index output directory (defaults to "
                         + "krill.indexDir in the configuration.")
                 .hasArg().argName("output directory").build());
+        options.addOption(Option.builder("D").longOpt("delete")
+                .desc("delete documents from the index by field and value "
+                        + "(example: -D textSigle GOE/AGX/00002).")
+                .numberOfArgs(2).argName("field value").build());
         options.addOption(Option.builder("a").longOpt("addInsteadofUpsert")
                 .desc("Always add files to the index, never update")
                 .build());
@@ -411,19 +415,34 @@ public class Indexer {
 
         String propFile = null;
         String[] inputPaths = null;
+        String deleteField = null;
+        String deleteValue = null;
         boolean showProgress = false;
         try {
             CommandLine cmd = parser.parse(options, argv);
             log.info("Configuration file: " + cmd.getOptionValue("c"));
             propFile = cmd.getOptionValue("c");
-            
-            log.info("Input paths: "
-                    + StringUtils.join(cmd.getOptionValues("i"), ";"));
-            inputPaths = cmd.getOptionValues("i");
+
+            if (cmd.hasOption("i")) {
+                inputPaths = cmd.getOptionValues("i");
+                log.info("Input paths: " + StringUtils.join(inputPaths, ";"));
+            }
 
             if (cmd.hasOption("o")) {
                 log.info("Output directory: " + cmd.getOptionValue("o"));
                 path = cmd.getOptionValue("o");
+            }
+
+            if (cmd.hasOption("D")) {
+                String[] deleteArgs = cmd.getOptionValues("D");
+                deleteField = deleteArgs[0];
+                deleteValue = deleteArgs[1];
+                log.info("Delete documents with {}={}", deleteField, deleteValue);
+            }
+
+            if (inputPaths == null && !cmd.hasOption("D")) {
+                throw new MissingOptionException(
+                        "Missing required option: either -i/--input or -D/--delete");
             }
 
             if (cmd.hasOption("a")) {
@@ -435,9 +454,11 @@ public class Indexer {
         }
         catch (MissingOptionException e) {
             HelpFormatter formatter = new HelpFormatter();
+            String helpSyntax = "Krill indexer\n java -jar Krill-Indexer.jar -c <properties file> "
+                    + "[-i <input paths>] [-D <field> <value>] "
+                    + "[-o <output directory> -a --progress]";
             formatter.printHelp(
-                    "Krill indexer\n java -jar -c <properties file> -i <input paths> "
-                            + "[-o <output directory> -a --progress]",
+                    helpSyntax,
                     options);
             return;
         }
@@ -460,7 +481,7 @@ public class Indexer {
             }
 
             // Initialize progress if requested
-            if (showProgress) {
+            if (showProgress && inputPaths != null) {
                 long total = countTargetFiles(inputPaths);
                 if (total > 0) {
                     indexer.initProgress(total);
@@ -468,41 +489,54 @@ public class Indexer {
             }
 
             // Iterate over list of input paths (auto-detect directories vs zip/tar files)
-            for (String arg : inputPaths) {
-                File f = new File(arg);
-                
-                if (f.isDirectory()) {
-                    log.info("Indexing files in directory " + arg);
-                    indexer.parse(f);
-                }
-                else if (f.isFile() && f.getName().toLowerCase().endsWith(".zip")) {
-                    log.info("Indexing files in zip " + arg);
-                    indexer.parseZip(f);
-                }
-                else if (f.isFile() && (f.getName().toLowerCase().endsWith(".tar") || 
-                                       f.getName().toLowerCase().endsWith(".tar.gz") ||
-                                       f.getName().toLowerCase().endsWith(".tgz"))) {
-                    log.info("Indexing files in tar " + arg);
-                    indexer.parseTar(f);
-                }
-                else {
-                    log.warn("Skipping " + arg + " - not a valid directory, zip file, or tar file");
+            if (inputPaths != null) {
+                for (String arg : inputPaths) {
+                    File f = new File(arg);
+                    
+                    if (f.isDirectory()) {
+                        log.info("Indexing files in directory " + arg);
+                        indexer.parse(f);
+                    }
+                    else if (f.isFile() && f.getName().toLowerCase().endsWith(".zip")) {
+                        log.info("Indexing files in zip " + arg);
+                        indexer.parseZip(f);
+                    }
+                    else if (f.isFile() && (f.getName().toLowerCase().endsWith(".tar") || 
+                                           f.getName().toLowerCase().endsWith(".tar.gz") ||
+                                           f.getName().toLowerCase().endsWith(".tgz"))) {
+                        log.info("Indexing files in tar " + arg);
+                        indexer.parseTar(f);
+                    }
+                    else {
+                        log.warn("Skipping " + arg + " - not a valid directory, zip file, or tar file");
+                    }
                 }
             }
+
+            if (deleteField != null && deleteValue != null) {
+                indexer.index.delDocs(deleteField, deleteValue);
+            }
+
             indexer.finishProgress();
             indexer.closeIndex();
 
             // Final commit
             log.info("Finished indexing.");
-            // Finish indexing
-            String message = "Added ";
-            if (!addInsteadOfUpsert)
-                message += "or updated ";
-            message += indexer.count + " file";
-            if (indexer.count > 1) {
-                message += "s";
+            // Finish indexing/deletion
+            if (inputPaths != null) {
+                String message = "Added ";
+                if (!addInsteadOfUpsert)
+                    message += "or updated ";
+                message += indexer.count + " file";
+                if (indexer.count > 1) {
+                    message += "s";
+                }
+                System.out.println(message + ".");
             }
-            System.out.println(message + ".");
+            else {
+                System.out.println("Deleted documents where " + deleteField + "="
+                        + deleteValue + ".");
+            }
         }
 
         catch (IOException e) {

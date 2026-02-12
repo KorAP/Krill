@@ -1,5 +1,6 @@
     - [performance] Add leaf cache. (diewald)
     - [bugfix] Fix fingerprinter (wasn't threadsafe; diewald)
+    - [feature] Add --delete option to Krill-Indexer (diewald)
 
 0.64.5 2025-12-03
     - [maintenance] Update to Java 21 (diewald)
