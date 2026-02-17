@@ -13,6 +13,9 @@ import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 import org.junit.After;
@@ -329,6 +332,74 @@ public class TestIndexer {
         
     }
 
+    /** Test two identical index and check that the leaf readers return 
+     *  the same fingerprints. After deleting a document, check again if the 
+     *  leaf fingerprints are identical.
+     *  
+     *  This is to make sure that cached leaf-readers are can be copied across
+     *  multiple identical indexes with the same index updates, to avoid 
+     *  the overhead of re-caching leaf readers for each index.
+     */
+    @Test
+    public  void testLeafReader () throws IOException {
+    	String outputDir1 = createWikiIndex("wiki1",1,3);
+    	outputDir1 = createWikiIndex("wiki1",4,5);
+    	KrillIndex ki1 = new KrillIndex(Paths.get(outputDir1));
+    	assertEquals(5, ki1.numberOf("documents"));
+    	
+        List<String> fp1 = new ArrayList<>(ki1.getAllLeafFingerprints());
+        Collections.sort(fp1);
+        
+        delWikiDoc(outputDir1, "WPD_AAA.00001");
+               
+        ki1 = new KrillIndex(Paths.get(outputDir1));
+        assertEquals(4, ki1.numberOf("documents"));
+        List<String> fp1a = new ArrayList<>(ki1.getAllLeafFingerprints());
+        Collections.sort(fp1a);
+        
+        // 2nd index identical to the 1st index
+		String outputDir2 = createWikiIndex("wiki2", 1, 3);
+		outputDir2 = createWikiIndex("wiki2", 4, 5);
+		KrillIndex ki2 = new KrillIndex(Paths.get(outputDir2));
+		assertEquals(5, ki2.numberOf("documents"));
+
+		List<String> fp2 = new ArrayList<>(ki2.getAllLeafFingerprints());
+		Collections.sort(fp2);
+		assertEquals(fp1, fp2);
+		
+		delWikiDoc(outputDir2, "WPD_AAA.00001");
+		
+		ki2 = new KrillIndex(Paths.get(outputDir2));
+        assertEquals(4, ki2.numberOf("documents"));
+        List<String> fp2a = new ArrayList<>(ki1.getAllLeafFingerprints());
+        Collections.sort(fp2a);
+        assertEquals(fp1a, fp2a);
+        ki1.close();
+        ki2.close();
+	}
+    
+    private void delWikiDoc(String outputDir, String textSigle) throws IOException {
+    	outputStream.reset();
+    	Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                "-o", outputDir, "-D", "ID", textSigle });
+        //assertTrue(outputStream.toString()
+        //        .startsWith("Deleted documents where textSigle="+textSigle+"."));
+    }
+    
+    private String createWikiIndex (String input, int startId, int endId) throws IOException {
+    	Path inputDir = Files.createTempDirectory(tempBaseDirectory.toPath(),
+                input);
+    	for (int i = startId; i <= endId; i++) {
+			Path jsonPath = Paths.get("src/test/resources/wiki/0000" + i + ".json");
+			Path gzPath = inputDir.resolve("0000" + i + ".json.gz");
+			gzipFile(jsonPath, gzPath);
+		}
+        String outputDir = getTestOutputPath(input + "-index");
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                "-i", inputDir.toString(), "-o", outputDir });
+        return outputDir;
+	}
+    
     @Before
     public void setOutputStream () {
         System.setOut(new PrintStream(outputStream));

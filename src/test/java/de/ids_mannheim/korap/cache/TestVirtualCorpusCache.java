@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.cache;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -125,9 +127,14 @@ public class TestVirtualCorpusCache {
         assertEquals(27, result.getTotalResults());
 
         assertEquals(2, VirtualCorpusCache.map.get(vcId).keySet().size());
-
+        Set<String> fp1 = ki.getAllLeafFingerprints();
+        
         ki.delDoc(2);
         ki.commit();
+        
+        Set<String> fp2 = ki.getAllLeafFingerprints();
+        
+        assertNotEquals(fp1, fp2);
 
         // VC cache will be marked for cleaning up again
         // because of index change.
