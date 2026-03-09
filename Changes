@@ -1,3 +1,4 @@
+0.64.6 2026-03-09
     - [performance] Add leaf cache. (diewald)
     - [bugfix] Fix fingerprinter (wasn't threadsafe; diewald)
     - [feature] Add --delete option to Krill-Indexer (diewald)
