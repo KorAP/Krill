@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Locale;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
@@ -746,7 +748,7 @@ public class Indexer {
             while (running && !finished) {
                 render();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(1000);
                 }
                 catch (InterruptedException e) {
                     // ignore
@@ -774,7 +776,7 @@ public class Indexer {
                 double elapsedSec = (now - startTimeMs) / 1000.0;
                 double rateMBs = elapsedSec > 0 ? current / 1_000_000.0 / elapsedSec : 0.0;
                 String rateStr = rateMBs > 0 ? String.format(Locale.US, "%.2f MB/s", rateMBs) : "NA";
-                String line = String.format(Locale.US, "\r[%s]   %.1f MB processed | %s | ETA calculating...", bar, current / 1_000_000.0, rateStr);
+                String line = String.format(Locale.US, "\r[%s]   %.1f MB processed | %s | ETA calculating...\033[K", bar, current / 1_000_000.0, rateStr);
                 System.err.print(line);
                 return;
             }
@@ -791,13 +793,27 @@ public class Indexer {
             double rateBytesPerSec = elapsedSec > 0 ? current / elapsedSec : 0.0;
             long etaSec = (rateBytesPerSec > 0 && total > current) ? (long) Math.ceil((total - current) / rateBytesPerSec) : 0;
 
-            String etaStr = (rateBytesPerSec > 0) ? Indexer.formatDuration(etaSec) : "NA";
+            String etaStr;
+            String finishAt;
+            if (rateBytesPerSec > 0) {
+                etaStr = Indexer.formatDuration(etaSec);
+                LocalDateTime now2 = LocalDateTime.now();
+                LocalDateTime finishTime = now2.plusSeconds(etaSec);
+                if (finishTime.toLocalDate().equals(now2.toLocalDate())) {
+                    finishAt = finishTime.format(DateTimeFormatter.ofPattern("HH:mm"));
+                } else {
+                    finishAt = finishTime.format(DateTimeFormatter.ofPattern("EEE MM-dd HH:mm", Locale.US));
+                }
+            } else {
+                etaStr = "NA";
+                finishAt = "?";
+            }
             String pctStr = String.format(Locale.US, "%5.1f%%", percent * 100.0);
             String rateStr = String.format(Locale.US, "%.2f MB/s", rateBytesPerSec / 1_000_000.0);
             double processedMB = current / 1_000_000.0;
             double totalMB = total / 1_000_000.0;
 
-            String line = String.format(Locale.US, "\r[%s] %s %.1f/%.1f MB | %s | ETA %s", bar, pctStr, processedMB, totalMB, rateStr, etaStr);
+            String line = String.format(Locale.US, "\r[%s] %s %.1f/%.1f MB | %s | ETA %s (done ~%s)\033[K", bar, pctStr, processedMB, totalMB, rateStr, etaStr, finishAt);
             System.err.print(line);
         }
     }
