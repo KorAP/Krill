@@ -1,0 +1,44 @@
+{
+  "query": {
+    "operands": [
+      {
+        "@type": "koral:token",
+        "wrap": {
+          "foundry": "tt",
+          "@type": "koral:term",
+          "match": "match:eq",
+          "type": "type:regex",
+          "key": "NN",
+          "layer": "p"
+        }
+      },
+      {
+        "operands": [
+          {
+            "@type": "koral:token"
+          }
+        ],
+        "boundary": {
+          "min": 0,
+          "@type": "koral:boundary"
+        },
+        "@type": "koral:group",
+        "operation": "operation:repetition"
+      },
+      {
+        "@type": "koral:token",
+        "wrap": {
+          "foundry": "tt",
+          "@type": "koral:term",
+          "match": "match:eq",
+          "type": "type:regex",
+          "key": "NN",
+          "layer": "p"
+        }
+      }
+    ],
+    "@type": "koral:group",
+    "operation": "operation:sequence"
+  },
+  "@context": "http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld"
+}

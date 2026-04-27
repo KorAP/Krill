@@ -5,6 +5,9 @@
       (diewald; AI-assisted Claude Opus 4.6)
     - [bugfix] Support regular expressions in attribute queries
       (fixes #80; diewald; AI-assisted Claude Opus 4.6)
+    - [bugfix] Fix StackOverflowError in ExpandedSpans by turning
+      a recursive call into a loop
+      (fixes #121; diewald; AI-assisted Claude Opus 4.6)
 
 0.64.6 2026-03-09
     - [performance] Add leaf cache. (diewald)

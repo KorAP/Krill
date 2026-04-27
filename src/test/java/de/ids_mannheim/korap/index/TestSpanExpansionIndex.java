@@ -3,6 +3,8 @@ package de.ids_mannheim.korap.index;
 import static de.ids_mannheim.korap.TestSimple.getJsonString;
 import static de.ids_mannheim.korap.TestSimple.simpleFieldDoc;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -731,7 +733,51 @@ public class TestSpanExpansionIndex {
         assertEquals(14, kr.getTotalResults());
 
     }
-    
+
+     // Issue #121:
+     // StackOverflowError in ExpandedSpans.setCandidateList()
+     // when searching [tt/p="NN"] []* [tt/p="NN"] on a large document.
+     @Test
+     public void testExpansionOverflowBug () throws IOException, QueryException {
+ 
+         FieldDocument fd = new FieldDocument();
+         fd.addString("ID", "doc-overflow");
+ 
+         int tokenCount = 5000;
+         StringBuilder surface = new StringBuilder();
+         StringBuilder annotation = new StringBuilder();
+ 
+         for (int i = 0; i < tokenCount; i++) {
+             String word = "tok" + i;
+             surface.append(word);
+             annotation.append("[(").append(i).append("-").append(i + 1).append(")");
+             annotation.append("s:").append(word);
+             annotation.append("|tt/p:NN");
+             if (i == 0) {
+                 annotation.append("|<>:base/s:t$<b>64<i>0<i>")
+                         .append(tokenCount).append("<i>")
+                         .append(tokenCount).append("<b>0");
+             }
+             annotation.append("|_").append(i).append("$<i>").append(i)
+                     .append("<i>").append(i + 1);
+             annotation.append("]");
+         }
+ 
+         fd.addTV("tokens", surface.toString(), annotation.toString());
+ 
+         KrillIndex ki = new KrillIndex();
+         ki.addDoc(fd);
+         ki.commit();
+ 
+         String json = getJsonString(getClass()
+                 .getResource("/queries/bugs/expansion_overflow.jsonld").getFile());
+         Krill krill = new Krill(json);
+ 
+         Result kr = krill.apply(ki);
+         assertFalse("Search should not produce errors", kr.hasErrors());
+         assertEquals("Should find matches", 499849, kr.getTotalResults());
+     }
+     
     
     private FieldDocument createFieldDoc6 () {
         FieldDocument fd = new FieldDocument();

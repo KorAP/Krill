@@ -118,53 +118,63 @@ public class ExpandedSpans extends SimpleSpans {
         CandidateSpan cs;
         int counter, start, end = 0;
 
+        boolean continueCandidateLoop = true;
+
         if (direction < 0) { // left
-            counter = max;
-            while (counter >= min) {
-                start = firstSpans.start() - counter;
-                if (start >= 0) {
-                    cs = new CandidateSpan(start, firstSpans.end(),
-                            firstSpans.doc(), firstSpans.cost(),
-                            createPayloads(start, firstSpans.start()));
+            while (continueCandidateLoop) {
+                continueCandidateLoop = false;
 
-                    candidateSpans.add(cs);
+                counter = max;
+                while (counter >= min) {
+                    start = firstSpans.start() - counter;
+                    if (start >= 0) {
+                        cs = new CandidateSpan(start, firstSpans.end(),
+                                firstSpans.doc(), firstSpans.cost(),
+                                createPayloads(start, firstSpans.start()));
+
+                        candidateSpans.add(cs);
+                    }
+                    counter--;
                 }
-                counter--;
-            }
 
-            int lastPosition = firstSpans.start();
-            if (hasMoreSpans && (hasMoreSpans = firstSpans.next())) {
-                start = Math.max(0, firstSpans.start() - max);
-                if (DEBUG) {
-                    log.debug("next candidate start: " + start + ", lastPosition "
-                              + lastPosition);
-                };
-                if (start <= lastPosition) {
-                    setCandidateList();
+                int lastPosition = firstSpans.start();
+                if (hasMoreSpans && (hasMoreSpans = firstSpans.next())) {
+                    start = Math.max(0, firstSpans.start() - max);
+                    if (DEBUG) {
+                        log.debug("next candidate start: " + start + ", lastPosition "
+                                  + lastPosition);
+                    };
+                    if (start <= lastPosition) {
+                        continueCandidateLoop = true;
+                    }
                 }
             }
         }
         else {
-            counter = min;
-            while (counter <= max) {
-                // TODO: How do I know if the end is already too far
-                // (over the end of the doc)?
-                end = firstSpans.end() + counter;
-                cs = new CandidateSpan(firstSpans.start(), end,
-                        firstSpans.doc(), firstSpans.cost(),
-                        createPayloads(firstSpans.end(), end));
-                candidateSpans.add(cs);
-                counter++;
-            }
+            while (continueCandidateLoop) {
+                continueCandidateLoop = false;
 
-            int lastPosition = end;
-            if (hasMoreSpans && (hasMoreSpans = firstSpans.next())) {
-                if (DEBUG) {
-                    log.debug("next candidate start: " + firstSpans.start()
-                              + ", lastPosition " + lastPosition);
-                };
-                if (firstSpans.start() <= lastPosition) {
-                    setCandidateList();
+                counter = min;
+                while (counter <= max) {
+                    // TODO: How do I know if the end is already too far
+                    // (over the end of the doc)?
+                    end = firstSpans.end() + counter;
+                    cs = new CandidateSpan(firstSpans.start(), end,
+                            firstSpans.doc(), firstSpans.cost(),
+                            createPayloads(firstSpans.end(), end));
+                    candidateSpans.add(cs);
+                    counter++;
+                }
+
+                int lastPosition = end;
+                if (hasMoreSpans && (hasMoreSpans = firstSpans.next())) {
+                    if (DEBUG) {
+                        log.debug("next candidate start: " + firstSpans.start()
+                                  + ", lastPosition " + lastPosition);
+                    };
+                    if (firstSpans.start() <= lastPosition) {
+                        continueCandidateLoop = true;
+                    }
                 }
             }
         }

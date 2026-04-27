@@ -856,4 +856,15 @@ public class TestKrillQueryJSON {
             assertEquals("Query type is not supported", e.getMessage());
         };
     };
+
+    @Test
+    public void queryJSONexpansionOverflow () throws QueryException {
+        SpanQueryWrapper sqwi = getJsonQuery(
+                getClass().getResource("/queries/bugs/expansion_overflow.jsonld").getFile());
+
+        // [tt/p="NN"] []* [tt/p="NN"]
+        assertEquals(
+            "spanNext(SpanMultiTermQueryWrapper(tokens:/tt/p:NN/), spanExpansion(SpanMultiTermQueryWrapper(tokens:/tt/p:NN/), []{0, 100}, left))",
+            sqwi.toQuery().toString());
+    };
 };
