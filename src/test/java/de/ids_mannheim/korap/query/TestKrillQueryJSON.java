@@ -735,6 +735,19 @@ public class TestKrillQueryJSON {
     };
 
     @Test
+    public void queryJSONregexAlternation () throws QueryException {
+        // /der|die/
+        String json = getJsonString(getClass()
+                .getResource("/queries/segment/regex-alternation.jsonld")
+                .getFile());
+        KrillQuery kq = new KrillQuery("tokens");
+
+        assertEquals(
+            "SpanMultiTermQueryWrapper(tokens:/s:(der|die)/)",
+            kq.fromKoral(json).toQuery().toString());
+    };
+
+    @Test
     public void queryJSONregexFail () {
         // "Leserin.{,3}"
         String json = getJsonString(getClass()

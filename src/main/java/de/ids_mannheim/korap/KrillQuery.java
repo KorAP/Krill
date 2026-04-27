@@ -1396,6 +1396,12 @@ public final class KrillQuery extends Notifications {
                             return new SpanRepetitionQueryWrapper();
                         };
 
+                        // The regex contains a pipe and needs to be wrapped in a group
+                        if (offset > 0 && v.length() > offset
+                                && v.substring(offset).contains("|")) {
+                            v = v.substring(0, offset) + "(" + v.substring(offset) + ")";
+                        }
+
                         SpanRegexQueryWrapper srqw = qb.re(v, isCaseInsensitive);
 
                         if (srqw.error != null) {

@@ -1,0 +1,13 @@
+{
+  "query":{
+    "@type":"koral:token",
+    "wrap":{
+      "@type":"koral:term",
+      "match":"match:eq",
+      "type":"type:regex",
+      "layer":"orth",
+      "key":"der|die"
+    }
+  },
+  "@context":"http://korap.ids-mannheim.de/ns/koral/0.3/context.jsonld"
+}
