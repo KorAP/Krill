@@ -1,6 +1,8 @@
 0.64.7 2026-04-28
     - [bugfix] Keep highlights that extend beyond a cut match
       (diewald; fixes #177; diewald; AI-assisted Claude Opus 4.6)
+    - [bugfix] Correctly handle foundry and layer in attribute groups
+      (diewald; AI-assisted Claude Opus 4.6)
 
 0.64.6 2026-03-09
     - [performance] Add leaf cache. (diewald)

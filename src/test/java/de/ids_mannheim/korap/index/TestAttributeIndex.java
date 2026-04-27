@@ -547,4 +547,51 @@ public class TestAttributeIndex {
         Result kr = krill.apply(ki);
         assertEquals(4, kr.getTotalResults());
     }
+
+    @Test
+    public void testAttributeRealIndexAndGroup () throws QueryException, IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/others/REDEW-DOC1-00001.json.gz"),
+                    true);
+        ki.commit();
+
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/said-and-attributes.jsonld")
+                .getFile();
+
+        SpanQueryWrapper sqw = getJsonQuery(filepath);
+        Krill krill = new Krill(sqw);
+        assertEquals(
+                "spanElementWithAttribute(<tokens:dereko/s:said />, "
+                        + "[spanAttribute(tokens:@:dereko/s:mode:direct), "
+                        + "spanAttribute(tokens:@:dereko/s:content:speech)])",
+                krill.getSpanQuery().toString());
+        Result kr = krill.apply(ki);
+        assertEquals(2, kr.getTotalResults());
+    }
+
+    @Test
+    public void testAttributeRealIndexOrGroup () throws QueryException, IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(getClass().getResourceAsStream("/others/REDEW-DOC1-00001.json.gz"),
+                    true);
+        ki.commit();
+
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/said-or-attributes.jsonld")
+                .getFile();
+
+        SpanQueryWrapper sqw = getJsonQuery(filepath);
+        Krill krill = new Krill(sqw);
+        assertEquals(
+                "spanOr([spanElementWithAttribute(<tokens:dereko/s:said />, "
+                        + "spanAttribute(tokens:@:dereko/s:mode:direct)), "
+                        + "spanElementWithAttribute(<tokens:dereko/s:said />, "
+                        + "spanAttribute(tokens:@:dereko/s:mode:indirect))])",
+                krill.getSpanQuery().toString());
+        Result kr = krill.apply(ki);
+        assertEquals(6, kr.getTotalResults());
+    }
 }

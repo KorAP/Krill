@@ -189,6 +189,37 @@ public class TestSpanWithAttributeJSON {
 
 
     @Test
+    public void testElementMultipleAndAttributesWithFoundryAndLayer () throws QueryException {
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-multiple-and-attributes-with-fl.jsonld")
+                .getFile();
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "spanElementWithAttribute(<tokens:dereko/s:head />, "
+                        + "[spanAttribute(tokens:@:dereko/s:type:top), "
+                        + "spanAttribute(tokens:@:dereko/s:type:main)])",
+                sq.toString());
+    }
+
+    @Test
+    public void testElementMultipleOrAttributesWithFoundryAndLayer () throws QueryException {
+        String filepath = getClass()
+                .getResource(
+                        "/queries/attribute/element-multiple-or-attributes-with-fl.jsonld")
+                .getFile();
+        SpanQueryWrapper sqwi = getJsonQuery(filepath);
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "spanOr([spanElementWithAttribute(<tokens:dereko/s:head />, "
+                        + "spanAttribute(tokens:@:dereko/s:type:top)), "
+                        + "spanElementWithAttribute(<tokens:dereko/s:head />, "
+                        + "spanAttribute(tokens:@:dereko/s:type:main))])",
+                sq.toString());
+    }
+
+    @Test
     public void testAnyElementSingleNotAttribute () throws QueryException {
 
         String filepath = getClass()

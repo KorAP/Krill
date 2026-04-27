@@ -1551,6 +1551,18 @@ public final class KrillQuery extends Notifications {
         String relation = attrNode.get("relation").asText();
         JsonNode operands = attrNode.get("operands");
 
+        // Copy foundry and layer from the attribute group to the operands
+        if (attrNode.has("foundry") || attrNode.has("layer")) {
+            for (JsonNode operand : operands) {
+                if (attrNode.has("foundry") && !operand.has("foundry")) {
+                    ((ObjectNode) operand).set("foundry", attrNode.get("foundry"));
+                }
+                if (attrNode.has("layer") && !operand.has("layer")) {
+                    ((ObjectNode) operand).set("layer", attrNode.get("layer"));
+                }
+            }
+        }
+
         SpanQueryWrapper attrWrapper;
         if ("relation:and".equals(relation)) {
             List<SpanQueryWrapper> wrapperList = new ArrayList<SpanQueryWrapper>();
