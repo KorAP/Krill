@@ -1,7 +1,6 @@
 package de.ids_mannheim.korap.query.wrap;
 
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
 
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.util.QueryException;
@@ -47,12 +46,6 @@ public class SpanAttributeQueryWrapper extends SpanQueryWrapper {
             return null;
         }
 
-        if (sq instanceof SpanTermQuery) {
-            return new SpanAttributeQuery((SpanTermQuery) sq, isNegative, true);
-        }
-        else {
-            throw new QueryException(
-                    "SpanAttributeQuery only supports SpanTermQuery.");
-        }
+        return new SpanAttributeQuery(sq, isNegative, true);
     }
 }

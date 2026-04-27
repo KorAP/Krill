@@ -7,7 +7,6 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
@@ -50,19 +49,19 @@ public class SpanAttributeQuery extends SimpleSpanQuery {
 
     /**
      * Constructs a SpanAttributeQuery based on the specified
-     * {@link SpanTermQuery} and set whether payloads are to be
+     * {@link SpanQuery} and set whether payloads are to be
      * collected or
      * not.
      * 
      * @param firstClause
-     *            a {@link SpanTermQuery}
+     *            a {@link SpanQuery}
      * @param collectPayloads
      *            a boolean flag representing the value
      *            <code>true</code> if payloads are to be collected,
      *            otherwise
      *            <code>false</code>.
      */
-    public SpanAttributeQuery (SpanTermQuery firstClause,
+    public SpanAttributeQuery (SpanQuery firstClause,
                                boolean collectPayloads) {
         super(firstClause, collectPayloads);
     }
@@ -70,7 +69,7 @@ public class SpanAttributeQuery extends SimpleSpanQuery {
 
     /**
      * Constructs a SpanAttributeQuery based on the specified
-     * {@link SpanTermQuery}, which is also marked for
+     * {@link SpanQuery}, which is also marked for
      * negation/omission when
      * matching to element/relation spans. Additionally set whether
      * payloads are
@@ -90,7 +89,7 @@ public class SpanAttributeQuery extends SimpleSpanQuery {
      *            otherwise
      *            <code>false</code>.
      */
-    public SpanAttributeQuery (SpanTermQuery firstClause, boolean negation,
+    public SpanAttributeQuery (SpanQuery firstClause, boolean negation,
                                boolean collectPayloads) {
         super(firstClause, collectPayloads);
         this.negation = negation;
@@ -101,7 +100,7 @@ public class SpanAttributeQuery extends SimpleSpanQuery {
     @Override
     public SimpleSpanQuery clone () {
         SpanAttributeQuery sq = new SpanAttributeQuery(
-                (SpanTermQuery) this.firstClause.clone(), this.negation,
+                (SpanQuery) this.firstClause.clone(), this.negation,
                 this.collectPayloads);
         sq.setBoost(getBoost());
         return sq;

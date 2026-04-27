@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
 
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.util.StatusCodes;
 
 /**
  * No optimization using expansion
@@ -178,14 +176,8 @@ public class SpanWithAttributeQueryWrapper extends SpanQueryWrapper {
         if (sq != null) {
             if (sq instanceof SpanAttributeQuery)
                 return (SpanAttributeQuery) sq;
-            if (sq instanceof SpanTermQuery) {
-                return new SpanAttributeQuery((SpanTermQuery) sq,
-                        attrQueryWrapper.isNegative, true);
-            }
-            else {
-                throw new QueryException(StatusCodes.UNSUPPORTED_QUERY,
-                        "SpanAttributeQuery only supports SpanTermQuery.");
-            }
+            return new SpanAttributeQuery(sq,
+                    attrQueryWrapper.isNegative, true);
         }
         return null;
     }

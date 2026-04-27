@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
-import de.ids_mannheim.korap.util.StatusCodes;
 
 public class TestSpanWithAttributeJSON {
     @Test
@@ -19,13 +18,10 @@ public class TestSpanWithAttributeJSON {
                         "/queries/attribute/element-regex-attribute.jsonld")
                 .getFile();
         SpanQueryWrapper sqwi = getJsonQuery(filepath);
-
-        QueryException exception = assertThrows(QueryException.class, () -> {
-            sqwi.toQuery();
-        });
-        assertEquals("SpanAttributeQuery only supports SpanTermQuery.",
-                exception.getMessage());
-        assertEquals(StatusCodes.UNSUPPORTED_QUERY, exception.getErrorCode());
+        SpanQuery sq = sqwi.toQuery();
+        assertEquals(
+                "spanElementWithAttribute(<tokens:head />, spanAttribute(SpanMultiTermQueryWrapper(tokens:/@:type:top.*/)))",
+                sq.toString());
     }
 
     @Test
