@@ -543,6 +543,106 @@ public class TestHighlight { // extends LuceneTestCase {
 
 	};
 
+    @Test
+    public void highlightCutMatchSerializationBug ()
+            throws IOException, QueryException {
+
+        // Test for issue #177: Match cut removes highlights when extended
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addString("UID", "1");
+        fd.addTV("base",
+                "abcdefghij",
+                "[(0-1)s:a|i:a|_0#0-1|-:t$<i>10]"
+                        + "[(1-2)s:b|i:b|_1#1-2]"
+                        + "[(2-3)s:c|i:c|_2#2-3]"
+                        + "[(3-4)s:d|i:d|_3#3-4]"
+                        + "[(4-5)s:e|i:e|_4#4-5]"
+                        + "[(5-6)s:f|i:f|_5#5-6]"
+                        + "[(6-7)s:g|i:g|_6#6-7]"
+                        + "[(7-8)s:h|i:h|_7#7-8]"
+                        + "[(8-9)s:i|i:i|_8#8-9]"
+                        + "[(9-10)s:j|i:j|_9#9-10]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("base");
+
+        // {1: seq(c, d, e, f, g)} - class wrapping 5 tokens
+        SpanQuery q = (SpanQuery) kq.nr(1,
+                kq.seq(kq.seg("s:c")).append(kq.seg("s:d"))
+                        .append(kq.seg("s:e")).append(kq.seg("s:f"))
+                        .append(kq.seg("s:g")))
+                .toQuery();
+
+        assertEquals("{1: spanNext(spanNext(spanNext(spanNext(base:s:c, base:s:d), base:s:e), base:s:f), base:s:g)}",
+                q.toString());
+
+        Krill ks = new Krill(q);
+        ks.setMaxTokenMatchSize(3);
+
+        Result kr = ks.apply(ki);
+        assertEquals(1, kr.getTotalResults());
+
+        Match km = kr.getMatch(0);
+        assertTrue(km.endCutted);
+
+        assertEquals("ab[[{1:cde}]<!>]fghij",
+                km.getSnippetBrackets());
+        assertEquals(
+                "<span class=\"context-left\">ab</span>"
+                        + "<span class=\"match\"><mark>"
+                        + "<mark class=\"class-1 level-0\">cde</mark>"
+                        + "</mark><span class=\"cutted\"></span></span>"
+                        + "<span class=\"context-right\">fghij</span>",
+                km.getSnippetHTML());
+    };
+
+
+    @Test
+    public void highlightCutMatchIndexBug ()
+            throws IOException, QueryException {
+
+        // Test for issue #177: Match cut removes highlights when extended
+        // Search in a real index with highlight on cut snippet
+        KrillIndex ki = new KrillIndex();
+        for (String i : new String[] { "00001", "00002" }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+        };
+        ki.commit();
+
+        QueryBuilder kq = new QueryBuilder("tokens");
+
+        SpanQuery q = (SpanQuery) kq.nr(1,
+                kq.seq(kq.seg("s:Mit")).append(kq.seg("s:Ausnahme"))
+                        .append(kq.seg("s:von")).append(kq.seg("s:Fremdwörtern")))
+                .toQuery();
+
+        Krill ks = new Krill(q);
+        ks.setMaxTokenMatchSize(2);
+        Result kr = ks.apply(ki);
+        assertTrue("Should find at least one match", kr.getTotalResults() > 0);
+
+        Match km = kr.getMatch(0);
+        assertTrue(km.endCutted);
+
+        String brackets = km.getSnippetBrackets();
+        // The class-1 highlight must appear in the cut match
+        assertTrue("Brackets should contain class 1 highlight: " + brackets,
+                brackets.contains("{1:"));
+        assertTrue("Brackets should contain cut marker: " + brackets,
+                brackets.contains("<!>"));
+
+        String html = km.getSnippetHTML();
+        assertTrue("HTML should contain class-1 highlight: " + html,
+                html.contains("class-1"));
+        assertTrue("HTML should contain cutted marker: " + html,
+                html.contains("cutted"));
+    };
+
+
         @Test
         public void checkTokenArray () throws IOException, QueryException {
     

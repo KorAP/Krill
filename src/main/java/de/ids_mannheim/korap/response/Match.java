@@ -351,6 +351,20 @@ public class Match extends AbstractDocument {
 
                         this.addHighlight(start, end - 1, number);
                     }
+                    // Cut highlights that extend beyond a cut match
+                    else if (this.endCutted
+                            && unsignedByte(number) <= 128
+                            && start >= this.getStartPos()
+                            && start < this.getEndPos()
+                            && end > this.getEndPos()) {
+
+                        if (DEBUG) {
+                            log.trace("Add clamped highlight with class {}!",
+                                    unsignedByte(number));
+                        };
+
+                        this.addHighlight(start, this.getEndPos() - 1, number);
+                    }
                     else if (DEBUG) {
                         log.trace("Don't add highlight of class {}!",
                                 unsignedByte(number));
@@ -2314,8 +2328,16 @@ public class Match extends AbstractDocument {
 					log.debug("Pagebreak keeps end position");
 				};
 
-                if (start < 0 ||
-                    ((end < 0 | start > endRelOffsetChar) && end != PB_MARKER && end != ALL_MARKER)) {
+                if (start < 0) {
+
+                    // Change start to 0 if end is positive and not a pagebreak or marker
+                    if (end >= 0 && end != PB_MARKER && end != ALL_MARKER) {
+                        start = 0;
+                    } else {
+                        continue;
+                    }
+                }
+                else if ((end < 0 | start > endRelOffsetChar) && end != PB_MARKER && end != ALL_MARKER) {
                     continue;
                 };
 
