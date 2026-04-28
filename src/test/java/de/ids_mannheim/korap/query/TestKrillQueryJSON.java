@@ -880,4 +880,39 @@ public class TestKrillQueryJSON {
             "spanNext(SpanMultiTermQueryWrapper(tokens:/tt/p:NN/), spanExpansion(SpanMultiTermQueryWrapper(tokens:/tt/p:NN/), []{0, 100}, left))",
             sqwi.toQuery().toString());
     };
+
+    @Test
+    public void queryJSONrepetitionClass () throws QueryException {
+        // {Wald}+ repetition wrapping class
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
+                .getResource("/queries/bugs/repetition_class.jsonld").getFile());
+
+        assertEquals(
+            "spanRepetition({1: tokens:s:Wald}{1,100})",
+            sqwi.toQuery().toString());
+    };
+
+
+    @Test
+    public void queryJSONclassRepetition () throws QueryException {
+        // {Wald+} class wrapping repetition
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
+                .getResource("/queries/bugs/class_repetition.jsonld").getFile());
+
+        assertEquals(
+            "{1: spanRepetition(tokens:s:Wald{1,100})}",
+            sqwi.toQuery().toString());
+    };
+
+
+    @Test
+    public void queryJSONrepetitionClassWithBounds () throws QueryException {
+        // {Wald}{2,3} repetition wrapping class with explicit bounds
+        SpanQueryWrapper sqwi = getJsonQuery(getClass()
+                .getResource("/queries/bugs/repetition_class_2.jsonld").getFile());
+
+        assertEquals(
+            "spanRepetition({2: tokens:s:Wald}{2,3})",
+            sqwi.toQuery().toString());
+    };
 };

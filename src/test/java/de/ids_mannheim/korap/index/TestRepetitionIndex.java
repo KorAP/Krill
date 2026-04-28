@@ -19,6 +19,7 @@ import org.junit.Ignore;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.query.SpanClassQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
 import de.ids_mannheim.korap.query.SpanRepetitionQuery;
 import de.ids_mannheim.korap.response.Match;
@@ -419,6 +420,28 @@ public class TestRepetitionIndex {
         ki.commit();
         kr = ks.apply(ki);
         assertEquals(1,kr.getTotalResults());
+    };
+
+
+    @Test
+    public void testRepetitionWithClassHighlights () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(simpleFieldDoc("aab"));
+        ki.commit();
+
+        // spanRepetition({1: a}{1,2}) — repetition wrapping class ({a}+)
+        SpanQuery sq = new SpanRepetitionQuery(
+                new SpanClassQuery(
+                        new SpanTermQuery(new Term("base", "s:a")),
+                        (byte) 1),
+                1, 2, true);
+
+        Result kr = ki.search(sq, (short) 10);
+        assertEquals(3, kr.getTotalResults());
+        assertEquals("[[{1:a}]]ab", kr.getMatch(0).getSnippetBrackets());
+        // This still separates the two 'a's
+        assertEquals("[[{1:a}{1:a}]]b", kr.getMatch(1).getSnippetBrackets());
+        assertEquals("a[[{1:a}]]b", kr.getMatch(2).getSnippetBrackets());
     };
 
 

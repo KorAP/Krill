@@ -1,0 +1,28 @@
+{
+  "query": {
+    "@type": "koral:group",
+    "classOut": 1,
+    "operands": [
+      {
+        "@type": "koral:group",
+        "boundary": {
+          "@type": "koral:boundary",
+          "min": 1
+        },
+        "operands": [
+          {
+            "@type": "koral:token",
+            "wrap": {
+              "@type": "koral:term",
+              "key": "Wald",
+              "layer": "orth",
+              "match": "match:eq"
+            }
+          }
+        ],
+        "operation": "operation:repetition"
+      }
+    ],
+    "operation": "operation:class"
+  }
+}

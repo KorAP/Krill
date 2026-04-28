@@ -188,8 +188,6 @@ public class RepetitionSpans extends SimpleSpans {
                 if (i == 1) {
                     try {
                         matchSpan = startSpan.clone();
-                        matchSpan.setPayloads(computeMatchPayload(adjacentSpans,
-                                0, endIndex - 1));
 
                         if (DEBUG) {
                             log.debug("1. Add span to matchlist: {}-{} at {}",
@@ -210,8 +208,8 @@ public class RepetitionSpans extends SimpleSpans {
                         startSpan.getStart(),
                         endSpan.getEnd(),
                         startSpan.getDoc(),
-                        computeMatchCost(adjacentSpans, 0, endIndex),
-                        computeMatchPayload(adjacentSpans, 0, endIndex)
+                        computeMatchCost(adjacentSpans, j, endIndex),
+                        computeMatchPayload(adjacentSpans, j, endIndex)
                         );
                     //System.out.println("c:"+matchSpan.getCost() +" p:"+ matchSpan.getPayloads().size());
                     //System.out.println(startSpan.getStart() +","+endSpan.getEnd());
