@@ -169,13 +169,9 @@ public class TestKrillQueryJSON {
                 getClass().getResource("/queries/bsp11.jsonld").getFile());
 
         // [base!=Katze | orth!=Katzen]
-        /*
-          Imagine a([^b]|[^c])d
-          Matches abd and acd
-          Interpretation would be not(spanAnd(...))
-        */
+        // De Morgan: NOT(Katze) OR NOT(Katzen) = NOT(Katze AND Katzen)
         assertEquals(
-            "spanOr([tokens:mate/l:Katze, tokens:s:Katzen])",
+            "spanSegment(tokens:mate/l:Katze, tokens:s:Katzen)",
             sqwi.toQuery().toString());
         assertTrue(sqwi.isNegative());
     };
@@ -745,6 +741,52 @@ public class TestKrillQueryJSON {
         assertEquals(
             "SpanMultiTermQueryWrapper(tokens:/s:(der|die)/)",
             kq.fromKoral(json).toQuery().toString());
+    };
+
+    public void queryJSONallNegationInGroup () throws QueryException {
+        // [orth!="des" & orth!="ihres"]
+        String json = getJsonString(getClass()
+                                    .getResource("/queries/segment/all-negation-in-group.jsonld")
+                                    .getFile());
+
+        KrillQuery kq = new KrillQuery("tokens");
+        SpanQueryWrapper sqwi = kq.fromKoral(json);
+        assertEquals(
+            "spanOr([SpanMultiTermQueryWrapper(tokens:/s:des/), SpanMultiTermQueryWrapper(tokens:/s:ihres/)])",
+            sqwi.toQuery().toString());
+        assertTrue(sqwi.isNegative());
+    };
+
+    @Test
+    public void queryJSONallNegationInGroupThree () throws QueryException {
+        // [orth!="des" & orth!="ihres" & orth!="eines"]
+        // By De Morgan's law: NOT(A) AND NOT(B) AND NOT(C) = NOT(A OR B OR C)
+        String json = getJsonString(getClass()
+                                    .getResource("/queries/segment/all-negation-in-group-three.jsonld")
+                                    .getFile());
+
+        KrillQuery kq = new KrillQuery("tokens");
+        SpanQueryWrapper sqwi = kq.fromKoral(json);
+        assertEquals(
+            "spanOr([SpanMultiTermQueryWrapper(tokens:/s:des/), SpanMultiTermQueryWrapper(tokens:/s:ihres/), SpanMultiTermQueryWrapper(tokens:/s:eines/)])",
+            sqwi.toQuery().toString());
+        assertTrue(sqwi.isNegative());
+    };
+
+    @Test
+    public void queryJSONallNegationInGroupOrThree () throws QueryException {
+        // [orth!="des" | orth!="ihres" | orth!="eines"]
+        // By De Morgan's law: NOT(A) OR NOT(B) OR NOT(C) = NOT(A AND B AND C)
+        String json = getJsonString(getClass()
+                                    .getResource("/queries/segment/all-negation-in-group-or-three.jsonld")
+                                    .getFile());
+
+        KrillQuery kq = new KrillQuery("tokens");
+        SpanQueryWrapper sqwi = kq.fromKoral(json);
+        assertEquals(
+            "spanSegment(spanSegment(SpanMultiTermQueryWrapper(tokens:/s:des/), SpanMultiTermQueryWrapper(tokens:/s:ihres/)), SpanMultiTermQueryWrapper(tokens:/s:eines/))",
+            sqwi.toQuery().toString());
+        assertTrue(sqwi.isNegative());
     };
 
     @Test

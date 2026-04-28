@@ -24,6 +24,8 @@
       (diewald; tests AI-assisted Claude Opus 4.6)
     - [bugfix] Keep classes in repetition queries
       (diewald; fixes #59; diewald; AI-assisted Claude Opus 4.6)
+    - [bugfix] Fix negation in segment queries following De Morgan's law
+      (diewald; fixes #93; diewald; AI-assisted Claude Opus 4.6)
 
 0.64.6 2026-03-09
     - [performance] Add leaf cache. (diewald)

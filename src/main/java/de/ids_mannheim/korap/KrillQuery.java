@@ -1172,10 +1172,34 @@ public final class KrillQuery extends Notifications {
 
                     case "relation:or":
 
+                        // Collect all OR operands, e.g. [pos=NN | pos!=VV], and check if all are negated
+                        ArrayList<SpanQueryWrapper> orParts = new ArrayList<>();
+                        boolean allNeg = true;
+                        for (JsonNode operand : operands) {
+                            SpanQueryWrapper part = this._segFromJson(operand);
+                            orParts.add(part);
+                            if (!part.isNegative())
+                                allNeg = false;
+                        };
+
+                        // De Morgan: e.g. [!pos=NN | !pos=VV] -> NOT([pos=NN & pos=VV])
+                        if (allNeg && orParts.size() > 0) {
+                            SpanSegmentQueryWrapper ssegOr = this.builder().seg();
+                            for (SpanQueryWrapper part : orParts) {
+                                ssegOr.without((SpanAlterQueryWrapper) part);
+                            };
+                            SpanAlterQueryWrapper negWrapper =
+                                new SpanAlterQueryWrapper(this.field);
+                            negWrapper.or(ssegOr);
+                            negWrapper.setNegative(true);
+                            return negWrapper;
+                        }
+
+                        // Normal case, e.g. [pos=NN | pos=VV] - build a standard OR
                         SpanAlterQueryWrapper ssaq = new SpanAlterQueryWrapper(
                                 this.field);
-                        for (JsonNode operand : operands) {
-                            ssaq.or(this._segFromJson(operand));
+                        for (SpanQueryWrapper part : orParts) {
+                            ssaq.or(part);
                         };
                         return ssaq;
                 };

@@ -194,17 +194,19 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
                 || (this.inclusive.size() + this.exclusive.size() == 0)) {
             return (SpanQuery) null;
         }
+        // Both inclusive and exclusive, e.g. [orth=Baum & pos!=NN]
         else if (this.inclusive.size() >= 1 && this.exclusive.size() >= 1) {
             return (SpanQuery) new SpanNotQuery(
                     this._listToQuery(this.inclusive),
                     this._listToOrQuery(this.exclusive));
         }
 
-        // These are now identical but may be negative
+        // Exclusives only, e.g. [pos!=NN & pos!=VV] -- OR-combine for exclusion
         else if (this.inclusive.size() == 0 && this.exclusive.size() >= 1) {
-            return (SpanQuery) this._listToQuery(this.exclusive);
+            return (SpanQuery) this._listToOrQuery(this.exclusive);
         }
 
+        // Inclusives only, e.g. [orth=Baum & pos=NN] -- AND-combine into segment
         else if (this.inclusive.size() >= 1 && this.exclusive.size() == 0) {
             return (SpanQuery) this._listToQuery(this.inclusive);
         };
