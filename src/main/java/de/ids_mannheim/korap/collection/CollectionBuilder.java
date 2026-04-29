@@ -382,7 +382,11 @@ public class CollectionBuilder {
             if (this.operands == null || this.operands.isEmpty())
                 return null;
 
-            if (this.operands.size() == 1)
+            // Shortcut for a single positive operand. A negative
+            // operand must go through the BooleanGroupFilter so that
+            // its negation is preserved.
+            if (this.operands.size() == 1
+                    && !this.operands.get(0).isNegative())
                 return this.operands.get(0).toFilter();
 
             // BooleanFilter bool = new BooleanFilter();

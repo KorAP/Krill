@@ -101,6 +101,17 @@ public class TestKrillCollectionJSON {
     };
 
     @Test
+    public void collectionWithNegativeDateYear () {
+        // pubDate ne 2017 must serialize to a Lucene query that excludes
+        // documents whose pubDate is in 2017.
+        String json = "{\"collection\":{\"@type\":\"koral:doc\","
+                + "\"key\":\"pubDate\",\"type\":\"type:date\","
+                + "\"value\":\"2017\",\"match\":\"match:ne\"}}";
+        KrillCollection kc = new KrillCollection(json);
+        assertEquals("-pubDate:[20170000 TO 20179999]", kc.toString());
+    };
+
+    @Test
     public void collectionWithMultipleNe () {
         String metaQuery = _getJSONString("collection_multine.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);

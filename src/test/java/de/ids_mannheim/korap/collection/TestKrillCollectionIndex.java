@@ -552,6 +552,80 @@ public class TestKrillCollectionIndex {
 
 
     @Test
+    public void testIndexWithNegativeYearDateRangeIssue178 () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc3());
+        ki.commit();
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
+
+        // All three docs are in 2005, so positive match returns 3
+        kcn.fromBuilder(cb.date("pubDate", "2005"));
+        assertEquals(3, kcn.docCount());
+
+        // Negation must exclude all docs in 2005
+        kcn.fromBuilder(cb.date("pubDate", "2005").not());
+        assertEquals(0, kcn.docCount());
+
+        // Negation of a year that does not contain any doc keeps all docs
+        kcn.fromBuilder(cb.date("pubDate", "2006").not());
+        assertEquals(3, kcn.docCount());
+
+        // Month check
+        kcn.fromBuilder(cb.date("pubDate", "2005-12"));
+        assertEquals(3, kcn.docCount());
+
+        // Negation of a month
+        kcn.fromBuilder(cb.date("pubDate", "2005-12").not());
+        assertEquals(0, kcn.docCount());
+
+        // Day check
+        kcn.fromBuilder(cb.date("pubDate", "2005-12-10"));
+        assertEquals(1, kcn.docCount());
+
+        // Negation of a day
+        kcn.fromBuilder(cb.date("pubDate", "2005-12-10").not());
+        assertEquals(2, kcn.docCount());
+
+
+        // Negation via the JSON KoralQuery path
+        String json = "{\"collection\":{\"@type\":\"koral:doc\","
+                + "\"key\":\"pubDate\",\"type\":\"type:date\","
+                + "\"value\":\"2005\",\"match\":\"match:ne\"}}";
+        KrillCollection kc = new KrillCollection(json);
+        kc.setIndex(ki);
+        assertEquals(0, kc.docCount());
+
+        // Negation as a single-operand docGroup (this is the actual
+        // problematic case described in issue #178).
+        String groupJson = "{\"collection\":{\"@type\":\"koral:docGroup\","
+                + "\"operation\":\"operation:and\",\"operands\":[{"
+                + "\"@type\":\"koral:doc\",\"key\":\"pubDate\","
+                + "\"type\":\"type:date\",\"value\":\"2005\","
+                + "\"match\":\"match:ne\"}]}}";
+        KrillCollection kcGroup = new KrillCollection(groupJson);
+        kcGroup.setIndex(ki);
+        assertEquals(0, kcGroup.docCount());
+
+        // Negation combined with another (positive) operand in an
+        // AndGroup must still exclude matching dates.
+        String mixJson = "{\"collection\":{\"@type\":\"koral:docGroup\","
+                + "\"operation\":\"operation:and\",\"operands\":[{"
+                + "\"@type\":\"koral:doc\",\"key\":\"author\","
+                + "\"type\":\"type:string\",\"value\":\"Frank\","
+                + "\"match\":\"match:eq\"},{"
+                + "\"@type\":\"koral:doc\",\"key\":\"pubDate\","
+                + "\"type\":\"type:date\",\"value\":\"2005\","
+                + "\"match\":\"match:ne\"}]}}";
+        KrillCollection kcMix = new KrillCollection(mixJson);
+        kcMix.setIndex(ki);
+        assertEquals(0, kcMix.docCount());
+    };
+
+
+    @Test
     public void testIndexWithRegexes () throws IOException {
         ki = new KrillIndex();
 

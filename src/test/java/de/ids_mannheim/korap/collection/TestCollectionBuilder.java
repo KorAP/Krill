@@ -220,14 +220,18 @@ public class TestCollectionBuilder {
         assertEquals("author:tree", kbi.toString());
         assertTrue(kbi.isNegative());
 
+        // A negative single operand inside a group must keep its
+        // negation. The outer .not() then negates
+        // again, semantically yielding a positive `author:tree`,
+        // expressed as a negated group around a negative operand.
         kbi = kc.andGroup().with(kc.term("author", "tree").not());
         kbi.not();
-        assertEquals("author:tree", kbi.toString());
+        assertEquals("AndGroup(-author:tree)", kbi.toString());
         assertTrue(kbi.isNegative());
 
         kbi = kc.orGroup().with(kc.term("author", "tree").not());
         kbi.not();
-        assertEquals("author:tree", kbi.toString());
+        assertEquals("OrGroup(-author:tree)", kbi.toString());
         assertTrue(kbi.isNegative());
     };
 
