@@ -16,6 +16,9 @@ krill.index.commit.auto = 500
 krill.index.relations.max = 100
 krill.index.textSize.max = 20000000
 
+# Maximum JVM heap memory used (in MB) before a search is aborted (0 = disabled)
+krill.search.memory.max = 0
+
 # Token retrieval settings:
 #
 # krill.match.max.token = 5
@@ -77,3 +80,4 @@ krill.index.textSize.max = 20000000
 ## the client chooses one or the other per request. When character context
 ## is used, token-based maxShrink adjustment does NOT apply.
 ## Defaults to 500
+

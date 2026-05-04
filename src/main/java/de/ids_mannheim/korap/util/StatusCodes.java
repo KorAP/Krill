@@ -18,6 +18,7 @@ public class StatusCodes {
     public static final int DOC_ADDED = 681;
     public static final int RESPONSE_TIME_EXCEEDED = 682;
     public static final int STAGED_DATA_COMMITTED = 683;
+    public static final int MEMORY_LIMIT_EXCEEDED = 684;
 
     // 700 - 799 - KoralQuery Deserialization errors
     public static final int NO_QUERY_GIVEN = 700;

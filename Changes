@@ -1,3 +1,7 @@
+0.65.2 2026-07-08
+    - Add memory limit (#267, margaretha, AI assisted) 
+
+
 0.65.1 2026-06-16
     - [feature] Prevent indexation of documents without
       a token stream (diewald; AI-assisted Claude Opus 4.6)
@@ -36,6 +40,8 @@
       (diewald; fixes #59; diewald; AI-assisted Claude Opus 4.6)
     - [bugfix] Fix negation in segment queries following De Morgan's law
       (diewald; fixes #93; diewald; AI-assisted Claude Opus 4.6)
+
+
 
 0.64.6 2026-03-09
     - [performance] Add leaf cache. (diewald)

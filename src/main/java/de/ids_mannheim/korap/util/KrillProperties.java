@@ -29,6 +29,13 @@ public class KrillProperties {
     public static int kwicMaxToken = -1;
     public static int defaultSearchContextLength = 6;
     public static int maxTextSize = DEFAULT_MAX_STRING_LEN; // Default max text size
+
+    /** AI generated
+     * 
+     * Maximum JVM heap memory used (in MB) before a search is aborted.
+     * 0 means the check is disabled.
+     */
+    public static long maxMemoryMB = 0;
     
     public static boolean matchExpansionIncludeContextSize = false;
     
@@ -108,6 +115,7 @@ public class KrillProperties {
         String maxCharContextSize = prop.getProperty("krill.context.max.char");
         String defaultSearchContextLength = prop.getProperty("krill.search.context.default");
         String maxTextSizeValue = prop.getProperty("krill.index.textSize.max");
+        String maxMemoryMBValue = prop.getProperty("krill.search.memory.max");
 
         try {
             if (maxTokenMatchSize != null) {
@@ -136,7 +144,15 @@ public class KrillProperties {
                 } else {
                     KrillProperties.maxTextSize = userMaxTextLength;
                 }
-
+            }
+            if (maxMemoryMBValue != null) {
+                long parsedMemoryMB = Long.parseLong(maxMemoryMBValue.trim());
+                if (parsedMemoryMB < 0) {
+                    log.warn("krill.search.memory.max must be >= 0. Memory limit check disabled.");
+                    KrillProperties.maxMemoryMB = 0;
+                } else {
+                    KrillProperties.maxMemoryMB = parsedMemoryMB;
+                }
             }
             if (leftContextMaxShrink != null) {
                 if (leftContextMaxShrink.equals("max")) {

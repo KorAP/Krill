@@ -52,6 +52,7 @@ public class Response extends Notifications {
             totalResults = -2; // Not set
     private String benchmark;
     private boolean timeExceeded = false;
+    private boolean memoryExceeded = false;
 
     private HashMap<String, ObjectNode> jsonFields;
 
@@ -178,6 +179,26 @@ public class Response extends Notifications {
         if (timeout)
             this.addWarning(682, "Response time exceeded");
         this.timeExceeded = timeout;
+        return this;
+    };
+
+
+    /** AI generated
+     * 
+     * Set to <tt>true</tt> if the memory limit is exceeded.
+     * 
+     * <p>
+     * Will add a warning (683) to the output.
+     * 
+     * @param exceeded
+     *            Either <tt>true</tt> or <tt>false</tt>,
+     *            in case the memory limit was exceeded
+     * @return Response object for chaining
+     */
+    public Response setMemoryExceeded (boolean exceeded) {
+        if (exceeded)
+            this.addWarning(684, "Memory limit exceeded");
+        this.memoryExceeded = exceeded;
         return this;
     };
 
@@ -523,6 +544,9 @@ public class Response extends Notifications {
 
         if (this.timeExceeded)
             meta.put("timeExceeded", true);
+
+        if (this.memoryExceeded)
+            meta.put("memoryExceeded", true);
 
         if (this.getNode() != null)
             meta.put("node", this.getNode());

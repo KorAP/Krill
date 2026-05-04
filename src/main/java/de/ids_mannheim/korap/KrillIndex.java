@@ -347,6 +347,22 @@ public final class KrillIndex implements IndexInfo {
     };
     
 
+    /** AI generated
+     * 
+     * Check whether JVM heap usage exceeds the configured memory limit.
+     * Returns <tt>false</tt> when the limit is 0 (disabled).
+     *
+     * @param limitMB Maximum allowed heap usage in megabytes (0 = disabled)
+     * @return <tt>true</tt> if heap usage exceeds the limit
+     */
+    private static boolean isMemoryExceeded (long limitMB) {
+        if (limitMB <= 0)
+            return false;
+        Runtime rt = Runtime.getRuntime();
+        long usedMB = (rt.totalMemory() - rt.freeMemory()) / (1024L * 1024L);
+        return usedMB > limitMB;
+    };
+
     // Open index reader
     private void openWriter () {
         if (writerOpen) {
@@ -1527,7 +1543,7 @@ public final class KrillIndex implements IndexInfo {
         final TimeOutThread tthread = new TimeOutThread();
         tthread.start();
         final long timeout = meta.getTimeOut();
-        boolean isTimeout = false;
+        boolean stopSearching = false;
        
         // See: http://www.ibm.com/developerworks/java/library/j-benchmark1/index.html
         long t1 = System.nanoTime();
@@ -1563,7 +1579,7 @@ public final class KrillIndex implements IndexInfo {
 
                 int oldLocalDocID = -1;
 
-                if (isTimeout)
+                if (stopSearching)
                     break;
 
                 SearchCacheKey finalCacheKey = new SearchCacheKey(prelim, atomic.reader().getCombinedCoreAndDeletesKey().toString());
@@ -1662,7 +1678,14 @@ public final class KrillIndex implements IndexInfo {
                     // Timeout!
                     if (tthread.getTime() > timeout) {
                         kr.setTimeExceeded(true);
-                        isTimeout=true;
+                        stopSearching=true;
+                        break;
+                    };
+
+                    // Memory limit!
+                    if (isMemoryExceeded(KrillProperties.maxMemoryMB)) {
+                        kr.setMemoryExceeded(true);
+                        stopSearching = true;
                         break;
                     };
 
@@ -1771,7 +1794,7 @@ public final class KrillIndex implements IndexInfo {
                 };
 
                 // Can be disabled TEMPORARILY
-                while (!cutoff && !isTimeout && spans.next()) {
+                while (!cutoff && !stopSearching && spans.next()) {
 
                     // TODO: Deprecated
                     if (limit > 0 && i >= limit)
@@ -1780,7 +1803,14 @@ public final class KrillIndex implements IndexInfo {
                     // Timeout!
                     if (tthread.getTime() > timeout) {
                         kr.setTimeExceeded(true);
-                        isTimeout=true;
+                        stopSearching=true;
+                        break;
+                    };
+
+                    // Memory limit!
+                    if (isMemoryExceeded(KrillProperties.maxMemoryMB)) {
+                        kr.setMemoryExceeded(true);
+                        stopSearching = true;
                         break;
                     };
 
@@ -1823,7 +1853,7 @@ public final class KrillIndex implements IndexInfo {
                     i++;
                 };
 
-                if (!isTimeout && !cutoff) {
+                if (!stopSearching && !cutoff) {
                     if (foundCache == null) {
                         searchCache.put(
                             finalCacheKey,
