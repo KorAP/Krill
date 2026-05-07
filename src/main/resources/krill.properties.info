@@ -20,7 +20,7 @@ krill.index.textSize.max = 20000000
 #
 # krill.match.max.token = 5
 #
-##  Maximum number (i.e. length) of tokens to be retrievable.
+##  Maximum number (i.e. length) of tokens to be retrievable in a match.
 ##  Matches longer than that will be cut.
 ##  Defaults to 50
 
@@ -69,5 +69,11 @@ krill.index.textSize.max = 20000000
 ## Note: Only token-based contexts are affected; character-based contexts
 ## are currently not adjusted by this feature.
 
-
-
+# krill.context.max.char =
+#
+## Maximum number of characters to be retrieved (left and right) of a match
+## when the client requests character-based context.
+## Character-based contexts are independent of token-based contexts:
+## the client chooses one or the other per request. When character context
+## is used, token-based maxShrink adjustment does NOT apply.
+## Defaults to 500

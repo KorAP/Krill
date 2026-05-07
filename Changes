@@ -1,4 +1,4 @@
-0.64.7 2026-05-06
+0.64.7 2026-05-07
     - [bugfix] Keep highlights that extend beyond a cut match
       (diewald; fixes #177; diewald; AI-assisted Claude Opus 4.6)
     - [bugfix] Correctly handle foundry and layer in attribute groups
@@ -20,6 +20,8 @@
       (diewald; AI-assisted Claude Opus 4.6)
     - [enhancement] Improve low-level protection against data breaches
       (diewald)
+    - [feature] Uncomment krill.context.max.char property
+      (diewald; tests AI-assisted Claude Opus 4.6)
 
 0.64.6 2026-03-09
     - [performance] Add leaf cache. (diewald)

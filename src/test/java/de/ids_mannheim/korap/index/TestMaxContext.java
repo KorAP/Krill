@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -551,6 +551,42 @@ public class TestMaxContext {
     };
 
     @Test
+    public void testMaxCharContextSizeProperty () {
+        Properties props = new Properties();
+        props.setProperty("krill.context.max.char", "100");
+        KrillProperties.updateConfigurations(props);
+        assertEquals(100, KrillProperties.maxCharContextSize);
+    };
+
+    @Test
+    public void testMaxCharContextClampsBracketsSnippet ()
+            throws JsonMappingException, JsonProcessingException {
+        KrillProperties.maxCharContextSize = 50;
+
+        JsonNode jsonNode = mapper.readTree(jsonQuery);
+        ArrayNode leftNode = (ArrayNode) jsonNode.at("/meta/context/left");
+        ArrayNode rightNode = (ArrayNode) jsonNode.at("/meta/context/right");
+        leftNode.set(0, "char");
+        rightNode.set(0, "char");
+        leftNode.set(1, "200");
+        rightNode.set(1, "200");
+
+        Krill ks = new Krill(jsonNode);
+        Result kr = ks.apply(ki);
+
+        SearchContext context = kr.getContext();
+        assertEquals(50, context.left.getLength());
+        assertEquals(50, context.right.getLength());
+
+        Match km = kr.getMatch(0);
+        assertEquals(50, km.getContext().left.getLength());
+        assertEquals(50, km.getContext().right.getLength());
+
+        String rightContext = km.getSnippetBrackets().split("]]")[1];
+        assertEquals(50, rightContext.length() - 4);
+    };
+
+    @Test
     public void testKwicMaxTokenBasic () {
         // kwic.max.token = matchMax + 2*contextMax - totalShrink
         // Setting kwicMaxToken=60 with matchMax=50 and contextMax=25:
@@ -662,4 +698,105 @@ public class TestMaxContext {
         assertEquals(3, KrillProperties.leftContextMaxShrink);
         assertEquals(7, KrillProperties.rightContextMaxShrink);
     };
-};
+
+    @Test
+    public void testMaxCharContextClampsHTMLSnippet ()
+            throws JsonMappingException, JsonProcessingException {
+        KrillProperties.maxCharContextSize = 50;
+
+        JsonNode jsonNode = mapper.readTree(jsonQuery);
+        ArrayNode leftNode = (ArrayNode) jsonNode.at("/meta/context/left");
+        ArrayNode rightNode = (ArrayNode) jsonNode.at("/meta/context/right");
+        leftNode.set(0, "char");
+        rightNode.set(0, "char");
+        leftNode.set(1, "200");
+        rightNode.set(1, "200");
+
+        Krill ks = new Krill(jsonNode);
+        Result kr = ks.apply(ki);
+        Match km = kr.getMatch(0);
+
+        String html = km.getSnippetHTML();
+        assertTrue(html.contains("<span class=\"context-left\">"));
+        assertTrue(html.contains("<span class=\"match\">"));
+        assertTrue(html.contains("<span class=\"context-right\">"));
+    };
+
+    @Test
+    public void testCharContextBelowMaxIsNotClamped ()
+            throws JsonMappingException, JsonProcessingException {
+        assertEquals(500, KrillProperties.maxCharContextSize);
+
+        JsonNode jsonNode = mapper.readTree(jsonQuery);
+        ArrayNode leftNode = (ArrayNode) jsonNode.at("/meta/context/left");
+        ArrayNode rightNode = (ArrayNode) jsonNode.at("/meta/context/right");
+        leftNode.set(0, "char");
+        rightNode.set(0, "char");
+        leftNode.set(1, "30");
+        rightNode.set(1, "30");
+
+        Krill ks = new Krill(jsonNode);
+        Result kr = ks.apply(ki);
+
+        SearchContext context = kr.getContext();
+        assertEquals(30, context.left.getLength());
+        assertEquals(30, context.right.getLength());
+
+        Match km = kr.getMatch(0);
+        assertEquals(30, km.getContext().left.getLength());
+        assertEquals(30, km.getContext().right.getLength());
+
+        String rightContext = km.getSnippetBrackets().split("]]")[1];
+        assertEquals(30, rightContext.length() - 4);
+    };
+
+    @Test
+    public void testMaxCharContextViaPropertiesAffectsSearch ()
+            throws JsonMappingException, JsonProcessingException {
+        Properties props = new Properties();
+        props.setProperty("krill.context.max.char", "80");
+        KrillProperties.updateConfigurations(props);
+        assertEquals(80, KrillProperties.maxCharContextSize);
+
+        JsonNode jsonNode = mapper.readTree(jsonQuery);
+        ArrayNode leftNode = (ArrayNode) jsonNode.at("/meta/context/left");
+        ArrayNode rightNode = (ArrayNode) jsonNode.at("/meta/context/right");
+        leftNode.set(0, "char");
+        rightNode.set(0, "char");
+        leftNode.set(1, "200");
+        rightNode.set(1, "200");
+
+        Krill ks = new Krill(jsonNode);
+        Result kr = ks.apply(ki);
+
+        SearchContext context = kr.getContext();
+        assertEquals(80, context.left.getLength());
+        assertEquals(80, context.right.getLength());
+
+        Match km = kr.getMatch(0);
+        assertEquals(80, km.getContext().left.getLength());
+        assertEquals(80, km.getContext().right.getLength());
+
+        String rightContext = km.getSnippetBrackets().split("]]")[1];
+        assertEquals(80, rightContext.length() - 4);
+    };
+
+    @Test
+    public void testMaxCharContextDoesNotAffectTokenContext ()
+            throws JsonMappingException, JsonProcessingException {
+        KrillProperties.maxCharContextSize = 10;
+
+        Krill ks = new Krill(jsonQuery);
+        Result kr = ks.apply(ki);
+
+        SearchContext context = kr.getContext();
+        assertEquals(5, context.left.getLength());
+        assertEquals(5, context.right.getLength());
+        assertTrue(context.left.isToken());
+        assertTrue(context.right.isToken());
+
+        Match km = kr.getMatch(0);
+        assertEquals(5, km.getContext().left.getLength());
+        assertEquals(5, km.getContext().right.getLength());
+    };
+}

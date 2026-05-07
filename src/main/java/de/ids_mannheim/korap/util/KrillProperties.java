@@ -105,6 +105,7 @@ public class KrillProperties {
 
         // EM: not implemented yet
         // String maxCharContextSize = prop.getProperty("krill.context.max.char");
+        String maxCharContextSize = prop.getProperty("krill.context.max.char");
         String defaultSearchContextLength = prop.getProperty("krill.search.context.default");
         String maxTextSizeValue = prop.getProperty("krill.index.textSize.max");
 
@@ -117,10 +118,10 @@ public class KrillProperties {
                 KrillProperties.maxTokenContextSize = Integer
                         .parseInt(maxTokenContextSize);
             }
-//            if (maxCharContextSize != null) {
-//                KrillProperties.maxCharContextSize = Integer
-//                        .parseInt(maxCharContextSize);
-//            }
+            if (maxCharContextSize != null) {
+                KrillProperties.maxCharContextSize = Integer
+                        .parseInt(maxCharContextSize);
+            }
             if (defaultSearchContextLength != null) {
                 KrillProperties.defaultSearchContextLength = Integer
                         .parseInt(defaultSearchContextLength);
