@@ -1,3 +1,6 @@
+0.65 2026-05-12
+includes all changes in 0.64.7
+
 0.64.7 2026-05-07
     - [bugfix] Keep highlights that extend beyond a cut match
       (diewald; fixes #177; diewald; AI-assisted Claude Opus 4.6)
