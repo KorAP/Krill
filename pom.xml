@@ -29,8 +29,23 @@
          for example:
          
          $ java -jar target/Krill-Indexer.jar -c src/test/resources/krill.properties
-		 -i src/test/resources/bzk -o index/ 
-		 		
+		 -i src/test/resources/bzk -o index/
+
+         ** MetaExporter
+		 # after packaging (see above)
+		 # dumps the stored per-document metadata of an existing index,
+		 # without using the web service API.
+
+		 $ java -jar target/Krill-MetaExporter.jar -i [index directory]
+		 -f [comma-separated fields] [format tsv|csv|json] [-o output file]
+
+         for example (list fields, then dump text sigles for diffing instances):
+
+         $ java -jar target/Krill-MetaExporter.jar -i index/ (option) list-fields
+         $ java -jar target/Krill-MetaExporter.jar -i index/ -f textSigle (option) no-header
+
+         (full option names use a double-dash prefix; see the MetaExporter Javadoc)
+
 		-->
 
   <groupId>de.ids-mannheim.korap.krill</groupId>
@@ -275,6 +290,23 @@
 		</transformer>
 	      </transformers>
 	      <finalName>${project.artifactId}-Indexer</finalName>
+	    </configuration>
+	  </execution>
+	  <execution>
+	    <id>metaexporter</id>
+	    <phase>package</phase>
+	    <goals>
+	      <goal>shade</goal>
+	    </goals>
+	    <configuration>
+            <createDependencyReducedPom>false</createDependencyReducedPom>
+	      <transformers>
+		<transformer
+		    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+		  <mainClass>de.ids_mannheim.korap.index.MetaExporter</mainClass>
+		</transformer>
+	      </transformers>
+	      <finalName>${project.artifactId}-MetaExporter</finalName>
 	    </configuration>
 	  </execution>
 	  <execution>

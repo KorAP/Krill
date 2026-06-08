@@ -3,6 +3,8 @@
       a token stream (diewald; AI-assisted Claude Opus 4.6)
     - [bugfix] Fix "force" in commit method
       (diewald; AI-assisted Claude Opus 4.6)
+    - [tool] Add standalone MetaExporter tool
+      (kupietz; AI-assistend Claude Opus 4.8)
 
 0.65 2026-05-12
     - [bugfix] Keep highlights that extend beyond a cut match
