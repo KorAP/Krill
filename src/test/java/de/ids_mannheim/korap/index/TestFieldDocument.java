@@ -21,9 +21,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import static de.ids_mannheim.korap.TestSimple.*;
 import de.ids_mannheim.korap.Krill;
+import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillMeta;
 import de.ids_mannheim.korap.KrillQuery;
+import de.ids_mannheim.korap.collection.CollectionBuilder;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Match;
@@ -951,7 +953,873 @@ public class TestFieldDocument {
 
     };
 
-    
+
+    private static FieldDocument createSimpleDoc (String textSigle,
+            String author, int tokenCount) {
+        FieldDocument fd = new FieldDocument();
+        fd.addString("textSigle", textSigle);
+        fd.addString("author", author);
+
+        StringBuilder primaryData = new StringBuilder();
+        StringBuilder tvBuilder = new StringBuilder();
+        for (int i = 0; i < tokenCount; i++) {
+            char c = (char) ('a' + (i % 26));
+            if (i > 0) primaryData.append(' ');
+            primaryData.append(c);
+            int start = i * 2;
+            int end = start + 1;
+            tvBuilder.append("[(").append(start).append("-").append(end)
+                .append(")s:").append(c).append("|i:").append(c)
+                .append("|_").append(i).append("$<i>").append(start)
+                .append("<i>").append(end);
+            if (i == 0) {
+                tvBuilder.append("|-:tokens$<i>").append(tokenCount);
+            }
+            tvBuilder.append("]");
+        }
+        fd.addTV("tokens", primaryData.toString(), tvBuilder.toString());
+        return fd;
+    }
+
+
+    @Test
+    public void testStatsAfterDeleteSingleSegment () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        assertEquals(3, ki.numberOf("documents"));
+        assertEquals(22, ki.numberOf("tokens"));
+
+        ki.delDocs("textSigle", "A/B/002");
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(12, ki.numberOf("tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsAfterDeleteMultipleSegments () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        assertEquals(3, ki.numberOf("documents"));
+        assertEquals(22, ki.numberOf("tokens"));
+
+        ki.delDocs("textSigle", "A/B/002");
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(12, ki.numberOf("tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsAfterUpsertSingleSegment () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(15, ki.numberOf("tokens"));
+
+        FieldDocument updated = createSimpleDoc("A/B/001", "Frank", 3);
+        ki.upsertDoc(updated);
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(13, ki.numberOf("tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsAfterUpsertMultipleSegments () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        assertEquals(3, ki.numberOf("documents"));
+        assertEquals(22, ki.numberOf("tokens"));
+
+        FieldDocument updated = createSimpleDoc("A/B/002", "Peter", 4);
+        ki.upsertDoc(updated);
+        ki.commit();
+
+        assertEquals(3, ki.numberOf("documents"));
+        assertEquals(16, ki.numberOf("tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsWithVCAfterDelete () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+
+        assertEquals(2, kc.docCount());
+        assertEquals(12, kc.numberOf("tokens", "tokens"));
+
+        ki.delDocs("textSigle", "A/B/001");
+        ki.commit();
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+
+        assertEquals(1, kc.docCount());
+        assertEquals(7, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsWithVCAfterDeleteMultipleSegments ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+
+        assertEquals(2, kc.docCount());
+        assertEquals(12, kc.numberOf("tokens", "tokens"));
+
+        ki.delDocs("textSigle", "A/B/001");
+        ki.commit();
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+
+        assertEquals(1, kc.docCount());
+        assertEquals(7, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsWithVCAfterUpsert () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+
+        assertEquals(2, kc.docCount());
+        assertEquals(12, kc.numberOf("tokens", "tokens"));
+
+        FieldDocument updated = createSimpleDoc("A/B/001", "Frank", 3);
+        ki.upsertDoc(updated);
+        ki.commit();
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+
+        assertEquals(2, kc.docCount());
+        assertEquals(10, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsWithVCAfterUpsertMultipleSegments ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+
+        assertEquals(2, kc.docCount());
+        assertEquals(12, kc.numberOf("tokens", "tokens"));
+
+        FieldDocument updated = createSimpleDoc("A/B/002", "Peter", 4);
+        ki.upsertDoc(updated);
+        ki.commit();
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Peter"));
+
+        assertEquals(1, kc.docCount());
+        assertEquals(4, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsConsistencyAfterMultipleUpserts ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(15, ki.numberOf("tokens"));
+
+        ki.upsertDoc(createSimpleDoc("A/B/001", "Frank", 3));
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(13, ki.numberOf("tokens"));
+
+        ki.upsertDoc(createSimpleDoc("A/B/001", "Frank", 8));
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(18, ki.numberOf("tokens"));
+
+        ki.upsertDoc(createSimpleDoc("A/B/002", "Peter", 2));
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(10, ki.numberOf("tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsAfterDeleteAllInSegment () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(15, ki.numberOf("tokens"));
+
+        ki.delDocs("textSigle", "A/B/001");
+        ki.commit();
+
+        assertEquals(1, ki.numberOf("documents"));
+        assertEquals(10, ki.numberOf("tokens"));
+
+        ki.delDocs("textSigle", "A/B/002");
+        ki.commit();
+
+        assertEquals(0, ki.numberOf("documents"));
+        assertEquals(0, ki.numberOf("tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsDocCountAndTokensConsistentWithVC ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        ki.upsertDoc(createSimpleDoc("A/B/001", "Frank", 3));
+        ki.commit();
+
+        ki.delDocs("textSigle", "A/B/002");
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(10, ki.numberOf("tokens"));
+
+        CollectionBuilder cb = new CollectionBuilder();
+
+        KrillCollection kcFrank = new KrillCollection(ki);
+        kcFrank.fromBuilder(cb.term("author", "Frank"));
+        assertEquals(2, kcFrank.docCount());
+        assertEquals(10, kcFrank.numberOf("tokens", "tokens"));
+
+        KrillCollection kcPeter = new KrillCollection(ki);
+        kcPeter.fromBuilder(cb.term("author", "Peter"));
+        assertEquals(0, kcPeter.docCount());
+        assertEquals(0, kcPeter.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsWithNegatedVCAfterDelete () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        ki.delDocs("textSigle", "A/B/002");
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Peter").not());
+
+        assertEquals(2, kc.docCount());
+        assertEquals(12, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsAfterUpsertChangingAuthor () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        ki.upsertDoc(createSimpleDoc("A/B/001", "Peter", 5));
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+
+        KrillCollection kcFrank = new KrillCollection(ki);
+        kcFrank.fromBuilder(cb.term("author", "Frank"));
+        assertEquals(0, kcFrank.docCount());
+        assertEquals(0, kcFrank.numberOf("tokens", "tokens"));
+
+        KrillCollection kcPeter = new KrillCollection(ki);
+        kcPeter.fromBuilder(cb.term("author", "Peter"));
+        assertEquals(2, kcPeter.docCount());
+        assertEquals(15, kcPeter.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsAfterManyUpsertsAcrossSegments () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        for (int i = 1; i <= 10; i++) {
+            ki.addDoc(createSimpleDoc(
+                "C/D/" + String.format("%03d", i),
+                i <= 5 ? "Frank" : "Peter",
+                i * 2));
+            ki.commit();
+        }
+
+        assertEquals(10, ki.numberOf("documents"));
+        assertEquals(110, ki.numberOf("tokens"));
+
+        for (int i = 1; i <= 10; i++) {
+            ki.upsertDoc(createSimpleDoc(
+                "C/D/" + String.format("%03d", i),
+                i <= 5 ? "Frank" : "Peter",
+                i));
+            ki.commit();
+        }
+
+        assertEquals(10, ki.numberOf("documents"));
+        assertEquals(55, ki.numberOf("tokens"));
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcFrank = new KrillCollection(ki);
+        kcFrank.fromBuilder(cb.term("author", "Frank"));
+        assertEquals(5, kcFrank.docCount());
+        assertEquals(15, kcFrank.numberOf("tokens", "tokens"));
+
+        KrillCollection kcPeter = new KrillCollection(ki);
+        kcPeter.fromBuilder(cb.term("author", "Peter"));
+        assertEquals(5, kcPeter.docCount());
+        assertEquals(40, kcPeter.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsDocCountVsNumberOfDocumentsAfterUpsert ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        ki.upsertDoc(createSimpleDoc("A/B/001", "Frank", 3));
+        ki.commit();
+
+        ki.upsertDoc(createSimpleDoc("A/B/002", "Peter", 8));
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+
+        long docCountMethod = kc.docCount();
+        long numberOfDocuments = kc.numberOf("documents");
+        assertEquals(docCountMethod, numberOfDocuments);
+        assertEquals(2, docCountMethod);
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(
+            cb.orGroup()
+                .with(cb.term("author", "Frank"))
+                .with(cb.term("author", "Peter")));
+        long allDocs = kc.docCount();
+        long allDocsNumberOf = kc.numberOf("documents");
+        assertEquals(allDocs, allDocsNumberOf);
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsWithDateFilterAfterUpsert () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd1 = createSimpleDoc("A/B/001", "Frank", 5);
+        fd1.addDate("pubDate", 20180315);
+        ki.addDoc(fd1);
+
+        FieldDocument fd2 = createSimpleDoc("A/B/002", "Peter", 10);
+        fd2.addDate("pubDate", 20180620);
+        ki.addDoc(fd2);
+
+        FieldDocument fd3 = createSimpleDoc("A/B/003", "Frank", 7);
+        fd3.addDate("pubDate", 20190101);
+        ki.addDoc(fd3);
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.date("pubDate", "2018"));
+
+        assertEquals(2, kc.docCount());
+        assertEquals(15, kc.numberOf("tokens", "tokens"));
+
+        FieldDocument updated = createSimpleDoc("A/B/001", "Frank", 3);
+        updated.addDate("pubDate", 20180315);
+        ki.upsertDoc(updated);
+        ki.commit();
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.date("pubDate", "2018"));
+
+        assertEquals(2, kc.docCount());
+        assertEquals(13, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsWithDateFilterAndMultipleSegmentsAfterUpsert ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd1 = createSimpleDoc("A/B/001", "Frank", 5);
+        fd1.addDate("pubDate", 20180315);
+        ki.addDoc(fd1);
+        ki.commit();
+
+        FieldDocument fd2 = createSimpleDoc("A/B/002", "Peter", 10);
+        fd2.addDate("pubDate", 20180620);
+        ki.addDoc(fd2);
+        ki.commit();
+
+        FieldDocument fd3 = createSimpleDoc("A/B/003", "Frank", 7);
+        fd3.addDate("pubDate", 20190101);
+        ki.addDoc(fd3);
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.date("pubDate", "2018"));
+        assertEquals(2, kc.docCount());
+        assertEquals(15, kc.numberOf("tokens", "tokens"));
+
+        FieldDocument updated = createSimpleDoc("A/B/001", "Frank", 3);
+        updated.addDate("pubDate", 20180315);
+        ki.upsertDoc(updated);
+        ki.commit();
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.date("pubDate", "2018"));
+        assertEquals(2, kc.docCount());
+        assertEquals(13, kc.numberOf("tokens", "tokens"));
+
+        FieldDocument updated2 = createSimpleDoc("A/B/002", "Peter", 4);
+        updated2.addDate("pubDate", 20180620);
+        ki.upsertDoc(updated2);
+        ki.commit();
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.date("pubDate", "2018"));
+        assertEquals(2, kc.docCount());
+        assertEquals(7, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsWithComplexVCAfterMultipleUpserts ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        for (int i = 1; i <= 5; i++) {
+            FieldDocument fd = createSimpleDoc(
+                "X/Y/" + String.format("%03d", i),
+                i <= 3 ? "Frank" : "Peter",
+                i * 3);
+            fd.addDate("pubDate", 20180100 + i);
+            ki.addDoc(fd);
+            ki.commit();
+        }
+
+        assertEquals(5, ki.numberOf("documents"));
+        assertEquals(45, ki.numberOf("tokens"));
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(
+            cb.andGroup()
+                .with(cb.date("pubDate", "2018"))
+                .with(cb.term("author", "Frank")));
+        assertEquals(3, kc.docCount());
+        assertEquals(18, kc.numberOf("tokens", "tokens"));
+
+        for (int i = 1; i <= 5; i++) {
+            FieldDocument fd = createSimpleDoc(
+                "X/Y/" + String.format("%03d", i),
+                i <= 3 ? "Frank" : "Peter",
+                i);
+            fd.addDate("pubDate", 20180100 + i);
+            ki.upsertDoc(fd);
+            ki.commit();
+        }
+
+        assertEquals(5, ki.numberOf("documents"));
+        assertEquals(15, ki.numberOf("tokens"));
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(
+            cb.andGroup()
+                .with(cb.date("pubDate", "2018"))
+                .with(cb.term("author", "Frank")));
+        assertEquals(3, kc.docCount());
+        assertEquals(6, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsWithNegationAndDeletedDocs ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        ki.addDoc(createSimpleDoc("A/B/004", "Maria", 3));
+        ki.commit();
+
+        ki.delDocs("textSigle", "A/B/002");
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank").not());
+
+        assertEquals(1, kc.docCount());
+        assertEquals(3, kc.numberOf("tokens", "tokens"));
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Peter").not());
+
+        assertEquals(3, kc.docCount());
+        assertEquals(15, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsUpsertThenBatchDelete () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        for (int i = 1; i <= 5; i++) {
+            ki.addDoc(createSimpleDoc(
+                "A/B/" + String.format("%03d", i), "Frank", i * 2));
+            ki.commit();
+        }
+
+        assertEquals(5, ki.numberOf("documents"));
+        assertEquals(30, ki.numberOf("tokens"));
+
+        ki.upsertDoc(createSimpleDoc("A/B/003", "Frank", 1));
+        ki.commit();
+
+        assertEquals(5, ki.numberOf("documents"));
+        assertEquals(25, ki.numberOf("tokens"));
+
+        ki.delDocs("textSigle", "A/B/001");
+        ki.delDocs("textSigle", "A/B/002");
+        ki.delDocs("textSigle", "A/B/004");
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(11, ki.numberOf("tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsVCMatchesOnlyDeletedDocs () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        ki.delDocs("textSigle", "A/B/002");
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Peter"));
+        assertEquals(0, kc.docCount());
+        assertEquals(0, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsAfterCloseAndReopen () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(15, ki.numberOf("tokens"));
+
+        ki.close();
+
+        ki.upsertDoc(createSimpleDoc("A/B/001", "Frank", 3));
+        ki.commit();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(13, ki.numberOf("tokens"));
+
+        ki.close();
+
+        assertEquals(2, ki.numberOf("documents"));
+        assertEquals(13, ki.numberOf("tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsMultipleUpsertsWithoutIntermediateCommit ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        assertEquals(3, ki.numberOf("documents"));
+        assertEquals(22, ki.numberOf("tokens"));
+
+        ki.upsertDoc(createSimpleDoc("A/B/001", "Frank", 3));
+        ki.upsertDoc(createSimpleDoc("A/B/002", "Peter", 4));
+        ki.upsertDoc(createSimpleDoc("A/B/003", "Frank", 2));
+        ki.commit();
+
+        assertEquals(3, ki.numberOf("documents"));
+        assertEquals(9, ki.numberOf("tokens"));
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+        assertEquals(2, kc.docCount());
+        assertEquals(5, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsAfterForceMerge () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        ki.addDoc(createSimpleDoc("A/B/001", "Frank", 5));
+        ki.commit();
+        ki.addDoc(createSimpleDoc("A/B/002", "Peter", 10));
+        ki.commit();
+        ki.addDoc(createSimpleDoc("A/B/003", "Frank", 7));
+        ki.commit();
+
+        ki.upsertDoc(createSimpleDoc("A/B/001", "Frank", 3));
+        ki.commit();
+        ki.upsertDoc(createSimpleDoc("A/B/002", "Peter", 4));
+        ki.commit();
+
+        ki.writer().forceMerge(1);
+        ki.commit();
+
+        assertEquals(3, ki.numberOf("documents"));
+        assertEquals(14, ki.numberOf("tokens"));
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+        assertEquals(2, kc.docCount());
+        assertEquals(10, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
+
+    @Test
+    public void testStatsStressWithManySegments () throws IOException {
+        KrillIndex ki = new KrillIndex();
+
+        int numDocs = 100;
+        long expectedTotalTokens = 0;
+
+        for (int i = 1; i <= numDocs; i++) {
+            String author = (i % 3 == 0) ? "Peter" : "Frank";
+            int tokenCount = (i % 7) + 1;
+            FieldDocument fd = createSimpleDoc(
+                "S/T/" + String.format("%04d", i), author, tokenCount);
+            fd.addDate("pubDate", 20180100 + (i % 28) + 1);
+            ki.addDoc(fd);
+            if (i % 10 == 0) ki.commit();
+            expectedTotalTokens += tokenCount;
+        }
+        ki.commit();
+
+        assertEquals(numDocs, ki.numberOf("documents"));
+        assertEquals(expectedTotalTokens, ki.numberOf("tokens"));
+
+        long newTotalTokens = 0;
+        int newFrankDocs = 0;
+        long newFrankTokens = 0;
+
+        for (int i = 1; i <= numDocs; i++) {
+            String author = (i % 3 == 0) ? "Peter" : "Frank";
+            int tokenCount = (i % 5) + 1;
+            FieldDocument fd = createSimpleDoc(
+                "S/T/" + String.format("%04d", i), author, tokenCount);
+            fd.addDate("pubDate", 20180100 + (i % 28) + 1);
+            ki.upsertDoc(fd);
+            if (i % 10 == 0) ki.commit();
+            newTotalTokens += tokenCount;
+            if (author.equals("Frank")) {
+                newFrankDocs++;
+                newFrankTokens += tokenCount;
+            }
+        }
+        ki.commit();
+
+        assertEquals(numDocs, ki.numberOf("documents"));
+        assertEquals(newTotalTokens, ki.numberOf("tokens"));
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kc = new KrillCollection(ki);
+        kc.fromBuilder(cb.term("author", "Frank"));
+        assertEquals(newFrankDocs, kc.docCount());
+        assertEquals(newFrankTokens, kc.numberOf("tokens", "tokens"));
+
+        kc = new KrillCollection(ki);
+        kc.fromBuilder(
+            cb.andGroup()
+                .with(cb.date("pubDate", "2018"))
+                .with(cb.term("author", "Frank")));
+        assertEquals(newFrankDocs, kc.docCount());
+        assertEquals(newFrankTokens, kc.numberOf("tokens", "tokens"));
+
+        ki.close();
+    }
+
     private static String createDocString1 () {
         return new String(
             "{"
