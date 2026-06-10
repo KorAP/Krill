@@ -444,7 +444,7 @@ public final class KrillIndex implements IndexInfo {
      */
     public void commit (boolean force) throws IOException {
         // There is something to commit
-        if (commitCounter > 0 || !force)
+        if (commitCounter > 0 || force)
             this.commit();
     };
 

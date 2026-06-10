@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.index;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
@@ -208,5 +209,51 @@ public class TestIndexRevision {
                 Paths.get(getClass().getResource("/sample-index").getFile()));
 
         assertEquals("Wes8Bd4h1OypPqbWF5njeQ==",ki.getFingerprint());
+    };
+
+    @Test
+    public void testCommitForceFalseDoesNotCloseReaderWhenNoChanges ()
+                  throws IOException {
+              KrillIndex ki = new KrillIndex();
+        
+            FieldDocument fd = new FieldDocument();
+            fd.addString("textSigle", "TEST/DOC/001");
+            fd.addString("content", "Example1");
+            ki.addDoc(fd);
+            ki.commit();
+    
+            // Ensure reader is open (and there are no pending changes)
+            ki.reader();
+            assertTrue(ki.isReaderOpen());
+    
+            // With no pending changes, force=false must NOT trigger a commit
+            // (and therefore must not close the reader)
+            ki.commit(false);
+            assertTrue(ki.isReaderOpen());
+    
+            ki.close();
+    }
+    
+    @Test
+    public void testCommitForceTrueClosesReaderWhenNoChanges ()
+                throws IOException {
+            KrillIndex ki = new KrillIndex();
+    
+            FieldDocument fd = new FieldDocument();
+            fd.addString("textSigle", "TEST/DOC/001");
+            fd.addString("content", "Example1");
+            ki.addDoc(fd);
+            ki.commit();
+    
+            // Ensure reader is open (and there are no pending changes)
+            ki.reader();
+            assertTrue(ki.isReaderOpen());
+    
+            // With no pending changes, force=true must still trigger a commit,
+            // which closes the reader
+            ki.commit(true);
+            assertFalse(ki.isReaderOpen());
+    
+            ki.close();
     };
 };

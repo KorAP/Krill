@@ -1,10 +1,12 @@
 0.65.1 2026-06-10
     - [feature] Prevent indexation of documents without
       a token stream (diewald; AI-assisted Claude Opus 4.6)
+    - [bugfix] Fix "force" in commit method
+      (diewald; AI-assisted Claude Opus 4.6)
 
 0.65 2026-05-12
     - [bugfix] Keep highlights that extend beyond a cut match
-      (diewald; fixes #177; diewald; AI-assisted Claude Opus 4.6)
+      (diewald; fixes #177; AI-assisted Claude Opus 4.6)
     - [bugfix] Correctly handle foundry and layer in attribute groups
       (diewald; AI-assisted Claude Opus 4.6)
     - [bugfix] Support regular expressions in attribute queries
