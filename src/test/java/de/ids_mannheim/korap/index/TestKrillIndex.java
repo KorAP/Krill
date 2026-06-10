@@ -114,12 +114,16 @@ public class TestKrillIndex {
 
         FieldDocument fd = new FieldDocument();
         fd.addString("name", "Peter");
+        fd.addTV("tokens", "x",
+            "[(0-1)s:x|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.addDoc(fd);
 
         assertEquals(0, ki.numberOf("base", "documents"));
 
         fd = new FieldDocument();
         fd.addString("name", "Michael");
+        fd.addTV("tokens", "y",
+            "[(0-1)s:y|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.addDoc(fd);
 
         assertEquals(0, ki.numberOf("base", "documents"));
@@ -170,11 +174,15 @@ public class TestKrillIndex {
         FieldDocument fd = new FieldDocument();
         fd.addText("title", "Peter");
         fd.setUID(22);
+        fd.addTV("tokens", "x",
+            "[(0-1)s:x|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.addDoc(fd);
 
         fd = new FieldDocument();
         fd.addText("title", "Akron");
         fd.setUID("05678");
+        fd.addTV("tokens", "y",
+            "[(0-1)s:y|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.addDoc(fd);
 
         ki.commit();
@@ -211,6 +219,8 @@ public class TestKrillIndex {
 
 		fd.addText("title", "Der Name der Rose");
 
+        fd.addTV("tokens", "x",
+            "[(0-1)s:x|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.addDoc(fd);
 
         /* Save documents */
@@ -335,6 +345,8 @@ public class TestKrillIndex {
         FieldDocument fd = new FieldDocument();
         fd.addString("name", "Peter");
         fd.addString("textSigle", "a/b/c");
+        fd.addTV("tokens", "x",
+            "[(0-1)s:x|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.upsertDoc(fd);
 
         /* Save documents */
@@ -343,6 +355,8 @@ public class TestKrillIndex {
         fd = new FieldDocument();
         fd.addString("name", "Frank");
         fd.addString("textSigle", "a/b/d");
+        fd.addTV("tokens", "y",
+            "[(0-1)s:y|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.upsertDoc(fd);
 
         /* Save documents */
@@ -351,6 +365,8 @@ public class TestKrillIndex {
         fd = new FieldDocument();
         fd.addString("name", "Franz");
         fd.addString("textSigle", "a/b/c");
+        fd.addTV("tokens", "z",
+            "[(0-1)s:z|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.upsertDoc(fd);
 
         /* Save documents */
@@ -384,11 +400,15 @@ public class TestKrillIndex {
 
         FieldDocument fd = new FieldDocument();
         fd.addString("textSigle", "aaaa");
+        fd.addTV("tokens", "x",
+            "[(0-1)s:x|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.addDoc(fd);
 
         fd = new FieldDocument();
         fd.addString("textSigle", "bbbb");
         fd.setUID("05678");
+        fd.addTV("tokens", "y",
+            "[(0-1)s:y|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.addDoc(fd);
 
         ki.commit();
@@ -413,6 +433,8 @@ public class TestKrillIndex {
         
         fd = new FieldDocument();
         fd.addString("textSigle", "cccc");
+        fd.addTV("tokens", "z",
+            "[(0-1)s:z|_0$<i>0<i>1|-:tokens$<i>1]");
         ki.addDoc(fd);
 
         ki.commit();

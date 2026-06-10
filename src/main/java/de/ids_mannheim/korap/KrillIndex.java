@@ -496,6 +496,15 @@ public final class KrillIndex implements IndexInfo {
         if (doc == null)
             return doc;
 
+        if (!hasTokenField(doc)) {
+            log.error(
+                "Rejecting upsert for document '{}': no token stream - "
+                + "existing document (if any) will not be removed",
+                doc.getTextSigle()
+            );
+            return doc;
+        }
+
         // Create a filter based on the corpusID and the docID
         String textSigle = doc.getTextSigle();
         KrillDate current = new KrillDate(LocalDate.now());
@@ -608,6 +617,26 @@ public final class KrillIndex implements IndexInfo {
     
 
     /**
+     * Check if a FieldDocument has a known token stream field.
+     * Checks for "tokens" first (current KorAP-XML-Krill format),
+     * then falls back to "base" (legacy format).
+     * A document without either field will not contribute
+     * to token/sentence/paragraph statistics and cannot be searched.
+     *
+     * @param doc The FieldDocument to check
+     * @return true if the document has a known token field with term vectors
+     */
+    public boolean hasTokenField (FieldDocument doc) {
+        if (doc == null)
+            return false;
+        IndexableField field = doc.doc.getField("tokens");
+        if (field == null)
+            field = doc.doc.getField("base");
+        return field != null && field.fieldType().storeTermVectors();
+    }
+
+
+    /**
      * Add a document to the index as a {@link FieldDocument}.
      * 
      * @param doc
@@ -618,6 +647,16 @@ public final class KrillIndex implements IndexInfo {
     public FieldDocument addDoc (FieldDocument doc) {
         if (doc == null)
             return doc;
+
+        if (!hasTokenField(doc)) {
+            log.error(
+                "Rejecting document '{}': no token stream - "
+                + "the document would not contribute to statistics "
+                + "and cannot be searched",
+                doc.getTextSigle()
+            );
+            return doc;
+        }
 
         try {
 

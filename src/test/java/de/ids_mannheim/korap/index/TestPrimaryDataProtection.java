@@ -385,6 +385,10 @@ public class TestPrimaryDataProtection {
         fd.addString("textSigle", "TST-004-0001");
         fd.addText("title", "Custom Field Document");
         fd.setUID(45);
+        fd.addTV("tokens", "some indexed text",
+                "[(0-4)s:some|_0#0-4|-:t$<i>3]"
+                + "[(5-12)s:indexed|_1#5-12]"
+                + "[(13-17)s:text|_2#13-17]");
         fd.addTV("customTokens", "leaked custom text",
                 "[(0-6)s:leaked|_0#0-6|-:t$<i>3]"
                 + "[(7-13)s:custom|_1#7-13]"

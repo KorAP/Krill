@@ -637,6 +637,245 @@ public class TestFieldDocument {
     };
 
 
+    /**
+     * A document with only metadata (no token stream / no "data" section)
+     * should be rejected by addDoc with an error.
+     */
+    @Test
+    public void testAddDocRejectsMetadataOnlyDocument () throws Exception {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("textSigle", "TEST/META/001");
+        fd.addString("author", "Test Author");
+        fd.addDate("pubDate", 20200101);
+
+        FieldDocument result = ki.addDoc(fd);
+        ki.commit();
+
+        assertEquals(0, ki.numberOf("documents"));
+        assertTrue(
+            "addDoc should return the doc even when rejected",
+            result != null
+        );
+    }
+
+    /**
+     * A document with only metadata should also be rejected via upsertDoc.
+     */
+    @Test
+    public void testUpsertDocRejectsMetadataOnlyDocument () throws Exception {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("textSigle", "TEST/META/002");
+        fd.addString("author", "Test Author");
+
+        FieldDocument result = ki.upsertDoc(fd);
+        ki.commit();
+
+        assertEquals(0, ki.numberOf("documents"));
+    }
+
+    /**
+     * A JSON document with fields but no data section should be rejected.
+     */
+    @Test
+    public void testAddDocRejectsJsonWithoutTokenStream () throws Exception {
+        String json = "{"
+            + "  \"fields\" : ["
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"textSigle\","
+            + "      \"value\" : \"TEST/NODATA/001\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:text\","
+            + "      \"key\" : \"author\","
+            + "      \"value\" : \"Nobody\""
+            + "    },"
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:date\","
+            + "      \"key\" : \"pubDate\","
+            + "      \"value\" : \"2020-01-01\""
+            + "    }"
+            + "  ]"
+            + "}";
+
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(json);
+        ki.commit();
+
+        assertEquals(
+            "Metadata-only document should not be indexed",
+            0, ki.numberOf("documents")
+        );
+    }
+
+    /**
+     * A document with a token stream on an unknown field name
+     * (neither "tokens" nor "base") should be rejected.
+     */
+    @Test
+    public void testAddDocRejectsUnknownTokenFieldName () throws Exception {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("textSigle", "TEST/WRONG/001");
+        fd.addTV("other", "hello world",
+            "[(0-5)s:hello|i:hello|_0$<i>0<i>5|-:tokens$<i>2]"
+            + "[(6-11)s:world|i:world|_1$<i>6<i>11]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        assertEquals(
+            "Document with token stream on unknown field should be rejected",
+            0, ki.numberOf("documents")
+        );
+    }
+
+    /**
+     * A document with a token stream on the legacy "base" field
+     * should be accepted.
+     */
+    @Test
+    public void testAddDocAcceptsLegacyBaseField () throws Exception {
+        KrillIndex ki = new KrillIndex();
+
+        FieldDocument fd = new FieldDocument();
+        fd.addString("textSigle", "TEST/BASE/001");
+        fd.addTV("base", "hello world",
+            "[(0-5)s:hello|i:hello|_0$<i>0<i>5|-:t$<i>2]"
+            + "[(6-11)s:world|i:world|_1$<i>6<i>11]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        assertEquals(
+            "Document with legacy 'base' field should be accepted",
+            1, ki.numberOf("documents")
+        );
+    }
+
+    /**
+     * When metadata-only documents are mixed with proper documents,
+     * only proper documents should be indexed and contribute to stats.
+     */
+    @Test
+    public void testStatsWithMixedValidAndMetadataOnlyDocuments () throws Exception {
+        KrillIndex ki = new KrillIndex();
+
+        // Valid document with token stream
+        FieldDocument fd1 = new FieldDocument();
+        fd1.addString("textSigle", "TEST/OK/001");
+        fd1.addString("author", "Good Author");
+        fd1.addTV("tokens", "hello world",
+            "[(0-5)s:hello|i:hello|_0$<i>0<i>5|-:tokens$<i>2]"
+            + "[(6-11)s:world|i:world|_1$<i>6<i>11]");
+        ki.addDoc(fd1);
+
+        // Metadata-only document (should be rejected)
+        FieldDocument fd2 = new FieldDocument();
+        fd2.addString("textSigle", "TEST/BAD/001");
+        fd2.addString("author", "Bad Author");
+        ki.addDoc(fd2);
+
+        // Another valid document
+        FieldDocument fd3 = new FieldDocument();
+        fd3.addString("textSigle", "TEST/OK/002");
+        fd3.addString("author", "Another Author");
+        fd3.addTV("tokens", "foo bar baz",
+            "[(0-3)s:foo|i:foo|_0$<i>0<i>3|-:tokens$<i>3]"
+            + "[(4-7)s:bar|i:bar|_1$<i>4<i>7]"
+            + "[(8-11)s:baz|i:baz|_2$<i>8<i>11]");
+        ki.addDoc(fd3);
+
+        ki.commit();
+
+        assertEquals(
+            "Only valid documents should be counted",
+            2, ki.numberOf("documents")
+        );
+        assertEquals(5, ki.numberOf("tokens"));
+    }
+
+    /**
+     * A document with an empty stream (data section present but stream
+     * is empty) has a token stream field but no tokens. This is allowed
+     * through indexing since the document structure is valid (it has a
+     * "data" section), but it contributes 0 to token statistics.
+     */
+    @Test
+    public void testAddDocAcceptsEmptyTokenStream () throws Exception {
+        String json = "{"
+            + "  \"data\" : {"
+            + "    \"text\" : \"\","
+            + "    \"name\" : \"tokens\","
+            + "    \"stream\" : []"
+            + "  },"
+            + "  \"fields\" : ["
+            + "    {"
+            + "      \"@type\" : \"koral:field\","
+            + "      \"type\" : \"type:string\","
+            + "      \"key\" : \"textSigle\","
+            + "      \"value\" : \"TEST/EMPTY/001\""
+            + "    }"
+            + "  ]"
+            + "}";
+
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = ki.addDoc(json);
+        ki.commit();
+
+        assertEquals(
+            "Document with empty stream is accepted (has token field)",
+            1, ki.numberOf("documents")
+        );
+        assertEquals(
+            "Empty stream contributes 0 tokens",
+            0, ki.numberOf("tokens")
+        );
+    }
+
+    /**
+     * Upserting a valid document with a metadata-only replacement should
+     * NOT remove the original and should reject the new one.
+     */
+    @Test
+    public void testUpsertDoesNotReplaceValidDocWithMetadataOnly () throws Exception {
+        KrillIndex ki = new KrillIndex();
+
+        // First: add a valid document
+        FieldDocument fd1 = new FieldDocument();
+        fd1.addString("textSigle", "TEST/UPSERT/001");
+        fd1.addString("author", "Original");
+        fd1.addTV("tokens", "good data",
+            "[(0-4)s:good|i:good|_0$<i>0<i>4|-:tokens$<i>2]"
+            + "[(5-9)s:data|i:data|_1$<i>5<i>9]");
+        ki.addDoc(fd1);
+        ki.commit();
+
+        assertEquals(1, ki.numberOf("documents"));
+        assertEquals(2, ki.numberOf("tokens"));
+
+        // Now try to upsert with metadata-only (should be rejected)
+        FieldDocument fd2 = new FieldDocument();
+        fd2.addString("textSigle", "TEST/UPSERT/001");
+        fd2.addString("author", "Replacement Without Tokens");
+        ki.upsertDoc(fd2);
+        ki.commit();
+
+        // The original document should still be there since the upsert
+        // was rejected before the delete could happen
+        assertEquals(1, ki.numberOf("documents"));
+        assertEquals(2, ki.numberOf("tokens"));
+
+        MetaFields mfs = ki.getFields("TEST/UPSERT/001");
+        assertEquals("Original", mfs.getFieldValue("author"));
+    }
+
     @Test
     public void indexUpsert () throws Exception {
         KrillIndex ki = new KrillIndex();
@@ -645,6 +884,8 @@ public class TestFieldDocument {
         FieldDocument fd = new FieldDocument();
         fd.addString("textSigle", "AAA/BBB/001");
         fd.addString("content", "Example1");
+        fd.addTV("tokens", "Example1",
+            "[(0-8)s:Example1|i:example1|_0$<i>0<i>8|-:tokens$<i>1]");
         ki.upsertDoc(fd);
         ki.commit();
 
@@ -662,6 +903,8 @@ public class TestFieldDocument {
         fd = new FieldDocument();
         fd.addString("textSigle", "AAA/BBB/002");
         fd.addString("content", "Example2");
+        fd.addTV("tokens", "Example2",
+            "[(0-8)s:Example2|i:example2|_0$<i>0<i>8|-:tokens$<i>1]");
 
         ki.upsertDoc(fd);
         ki.commit();
@@ -675,6 +918,8 @@ public class TestFieldDocument {
         fd = new FieldDocument();
         fd.addString("textSigle", "AAA/BBB/001");
         fd.addString("content", "Example3");
+        fd.addTV("tokens", "Example3",
+            "[(0-8)s:Example3|i:example3|_0$<i>0<i>8|-:tokens$<i>1]");
 
         ki.upsertDoc(fd);
         ki.commit();
@@ -696,6 +941,8 @@ public class TestFieldDocument {
         fd = new FieldDocument();
         fd.addString("textSigle", "AAA/DDD/005");
         fd.addString("content", "Example4");
+        fd.addTV("tokens", "Example4",
+            "[(0-8)s:Example4|i:example4|_0$<i>0<i>8|-:tokens$<i>1]");
         
         ki.upsertDoc(fd);
         ki.commit();

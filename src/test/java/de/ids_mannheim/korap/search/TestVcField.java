@@ -24,6 +24,8 @@ public class TestVcField {
         FieldDocument fd = new FieldDocument();
         fd.addString("textSigle", textSigle);
         fd.setUID(uid);
+        fd.addTV("tokens", "x",
+            "[(0-1)s:x|_0$<i>0<i>1|-:tokens$<i>1]");
         return fd;
     }
 
