@@ -204,17 +204,31 @@ public class WithinSpans extends Spans {
                     log.trace("In the next embedded branch");
 
                 WithinSpan current = null;
+                WithinSpan candidate;
 
-                // New - fetch until theres a span in the correct doc or bigger
+                // Skip stale entries, stop at future documents
                 while (!this.spanStore2.isEmpty()) {
-                    current = spanStore2.removeFirst();
-                    if (current.doc >= this.wrapDoc)
+                    candidate = spanStore2.peekFirst();
+                    if (candidate.doc < this.wrapDoc) {
+                        spanStore2.removeFirst();
+                    }
+                    else if (candidate.doc == this.wrapDoc) {
+                        current = spanStore2.removeFirst();
                         break;
-                };
+                    }
+                    else {
+                        break;
+                    }
+                }
 
-
-                // There is nothing in the second store
                 if (current == null) {
+
+                    // Future-doc entries remain: advance wrap instead
+                    if (!this.spanStore2.isEmpty()) {
+                        this.nextSpanA();
+                        continue;
+                    }
+
                     if (DEBUG)
                         log.trace("SpanStore 2 is empty");
 
@@ -626,32 +640,49 @@ public class WithinSpans extends Spans {
             log.trace("skipTo document {}/{} -> {}", this.embeddedDoc,
                     this.wrapDoc, target);
 
-        // Initialize spans
         if (!this.init())
             return false;
 
-        assert target > this.embeddedDoc;
+        // Already at or past target: just find next match
+        if (this.matchDoc >= target)
+            return this.next() && this.matchDoc >= target;
 
-        // Only forward embedded spans
-        if (this.more && (this.embeddedDoc < target)) {
-            if (this.embeddedSpans.skipTo(target)) {
-                this.inSameDoc = false;
-                this.embeddedStart = -1;
-                this.embeddedEnd = -1;
-                this.embeddedPayload = null;
-                this.embeddedDoc = this.embeddedSpans.doc();
-            }
+        // Fast-forward operands when both are behind target
+        if (this.embeddedDoc >= 0 && this.wrapDoc < target
+                && this.embeddedDoc < target) {
 
-            // Can't be skipped to target
-            else {
-                this.inSameDoc = false;
-                this.more = false;
+            if (!this.wrapSpans.skipTo(target))
                 return false;
-            };
-        };
+            this.wrapDoc = this.wrapSpans.doc();
+            if (this.wrapDoc == DocIdSetIterator.NO_MORE_DOCS)
+                return false;
 
-        // Move to same doc
-        return this.toSameDoc();
+            if (!this.embeddedSpans.skipTo(this.wrapDoc))
+                return false;
+            this.embeddedDoc = this.embeddedSpans.doc();
+            if (this.embeddedDoc == DocIdSetIterator.NO_MORE_DOCS)
+                return false;
+
+            // Reset internal state after skip
+            this.spanStore1.clear();
+            this.spanStore2.clear();
+            this.wrapStart = this.wrapSpans.start();
+            this.embeddedStart = this.embeddedSpans.start();
+            this.wrapEnd = -1;
+            this.embeddedEnd = -1;
+            this.embeddedPayload = null;
+            this.inSameDoc = (this.wrapDoc == this.embeddedDoc);
+            this.more = true;
+            this.tryMatch = true;
+            this.nextSpanB = true;
+        }
+
+        while (true) {
+            if (!this.next())
+                return false;
+            if (this.matchDoc >= target)
+                return true;
+        }
     };
 
 
