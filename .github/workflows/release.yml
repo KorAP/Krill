@@ -64,7 +64,7 @@ jobs:
         with:
           body: ${{ steps.changelog.outputs.notes }}
           tag_name: ${{ steps.get_version.outputs.tag_name }}
-          name: Release ${{ steps.get_version.outputs.tag_name }}
+          name: ${{ steps.get_version.outputs.tag_name }}
           prerelease: ${{ steps.get_version.outputs.prerelease }}
           files: |
             target/Krill-Indexer.jar
