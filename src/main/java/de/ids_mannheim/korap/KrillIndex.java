@@ -1062,7 +1062,20 @@ public final class KrillIndex implements IndexInfo {
             foundry, layer, includeSpans,
             true, // include Snippets
             false, // include Tokens
-            includeHighlights, extendToSentence
+            includeHighlights, extendToSentence, false
+            );
+    }
+
+    public Match getMatchInfo (String idString, String field, boolean info,
+            List<String> foundry, List<String> layer, boolean includeSpans,
+                               boolean includeSnippets, boolean includeTokens,
+                               boolean includeHighlights, boolean extendToSentence)
+        throws QueryException {
+        return getMatchInfo(
+            idString, field, info,
+            foundry, layer, includeSpans,
+            includeSnippets, includeTokens,
+            includeHighlights, extendToSentence, false
             );
     }
 
@@ -1076,7 +1089,8 @@ public final class KrillIndex implements IndexInfo {
     public Match getMatchInfo (String idString, String field, boolean info,
             List<String> foundry, List<String> layer, boolean includeSpans,
                                boolean includeSnippets, boolean includeTokens,
-                               boolean includeHighlights, boolean extendToSentence)
+                               boolean includeHighlights, boolean extendToSentence,
+                               boolean extendToMax)
             throws QueryException {
 
         if (DEBUG)
@@ -1297,8 +1311,14 @@ public final class KrillIndex implements IndexInfo {
 
 
                 // Search for minimal surrounding sentences
-                if (extendToSentence) {
-                    
+                if (extendToMax) {
+                    String element = "base/s:s";
+                    match.expandContextToMax(element);
+
+                    if (DEBUG)
+                        log.trace("Extend to max element '{}'", element);
+                }
+                else if (extendToSentence) {
                     String element = "base/s:s";
                     match.expandContextToSpan(element);
 

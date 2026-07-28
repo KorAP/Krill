@@ -2,9 +2,12 @@ package de.ids_mannheim.korap.index;
 
 import static de.ids_mannheim.korap.TestSimple.getJsonString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 
 import org.junit.After;
@@ -24,6 +27,7 @@ import de.ids_mannheim.korap.response.Match;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.util.KrillProperties;
+import de.ids_mannheim.korap.util.QueryException;
 import org.apache.lucene.search.spans.SpanTermQuery;
 
 
@@ -798,5 +802,193 @@ public class TestMaxContext {
         Match km = kr.getMatch(0);
         assertEquals(5, km.getContext().left.getLength());
         assertEquals(5, km.getContext().right.getLength());
+    };
+
+    @Test
+    public void testExpandToMaxUsesKwicCap ()
+            throws IOException, QueryException {
+        // Match at pos 210-211 (1 token) inside sentence 199-228 (29 tokens)
+        // expandToMax cap = 1 + 2*25 = 51, sentence fits without cutting.
+        KrillProperties.maxTokenMatchSize = 1;
+
+        KrillIndex kiWud = new KrillIndex();
+        kiWud.addDoc(getClass().getResourceAsStream(
+                "/wiki/WUD17-C94-39360.json.gz"), true);
+        kiWud.commit();
+
+        ArrayList<String> foundry = new ArrayList<>();
+        foundry.add("opennlp");
+        ArrayList<String> layer = new ArrayList<>();
+        layer.add("p");
+
+        Match km = kiWud.getMatchInfo("match-WUD17/C94/39360-p210-211",
+                "tokens", true, foundry, layer, false, true, false, true,
+                false, true); // extendToMax=true
+
+        // Full sentence should be returned (29 tokens ≤ 51 cap)
+        assertEquals(199, km.getStartPos());
+        assertEquals(228, km.getEndPos());
+        assertEquals(29, km.getLength());
+
+        assertFalse(km.startCutted);
+        assertFalse(km.endCutted);
+    };
+
+    @Test
+    public void testExpandToMaxRespectsKwicMaxToken ()
+            throws IOException, QueryException {
+        // Match at pos 210-211 inside sentence 199-228 (29 tokens)
+        // With kwicMaxToken=10, expansion cap = 10, sentence will be cut.
+        KrillProperties.maxTokenMatchSize = 1;
+        KrillProperties.kwicMaxToken = 10;
+
+        KrillIndex kiWud = new KrillIndex();
+        kiWud.addDoc(getClass().getResourceAsStream(
+                "/wiki/WUD17-C94-39360.json.gz"), true);
+        kiWud.commit();
+
+        ArrayList<String> foundry = new ArrayList<>();
+        foundry.add("opennlp");
+        ArrayList<String> layer = new ArrayList<>();
+        layer.add("p");
+
+        Match km = kiWud.getMatchInfo("match-WUD17/C94/39360-p210-211",
+                "tokens", true, foundry, layer, false, true, false, true,
+                false, true); // extendToMax=true
+
+        // Sentence is 29 tokens, but cap is 10, so it should be cut
+        assertTrue(km.getLength() <= 10);
+        assertTrue(km.getLength() > 1);
+
+        assertTrue(km.startCutted);
+        assertTrue(km.endCutted);
+
+        String snippetHtml = km.getSnippetHTML();
+        assertTrue(snippetHtml.contains("<span class=\"cutted\"></span>"));
+
+        String snippetBrackets = km.getSnippetBrackets();
+        assertTrue(snippetBrackets.contains("<!>"));
+    };
+
+    @Test
+    public void testExpandToMaxSetsContextToZero ()
+            throws IOException, QueryException {
+        // After expansion, context should be 0 on both sides
+        KrillProperties.maxTokenMatchSize = 1;
+
+        KrillIndex kiWud = new KrillIndex();
+        kiWud.addDoc(getClass().getResourceAsStream(
+                "/wiki/WUD17-C94-39360.json.gz"), true);
+        kiWud.commit();
+
+        ArrayList<String> foundry = new ArrayList<>();
+        foundry.add("opennlp");
+        ArrayList<String> layer = new ArrayList<>();
+        layer.add("p");
+
+        Match km = kiWud.getMatchInfo("match-WUD17/C94/39360-p210-211",
+                "tokens", true, foundry, layer, false, true, false, true,
+                false, true); // extendToMax=true
+
+        SearchContext context = km.getContext();
+        assertEquals(0, context.left.getLength());
+        assertEquals(0, context.right.getLength());
+    };
+
+    @Test
+    public void testExpandToMaxShortSentenceNoCut ()
+            throws IOException, QueryException {
+        // Match at pos 173-174 inside sentence 173-175 (2 tokens)
+        // Cap = 1 + 2*25 = 51, sentence is only 2 tokens, no cutting
+        KrillProperties.maxTokenMatchSize = 1;
+
+        KrillIndex kiWud = new KrillIndex();
+        kiWud.addDoc(getClass().getResourceAsStream(
+                "/wiki/WUD17-C94-39360.json.gz"), true);
+        kiWud.commit();
+
+        ArrayList<String> foundry = new ArrayList<>();
+        foundry.add("opennlp");
+        ArrayList<String> layer = new ArrayList<>();
+        layer.add("p");
+
+        Match km = kiWud.getMatchInfo("match-WUD17/C94/39360-p173-174",
+                "tokens", true, foundry, layer, false, true, false, true,
+                false, true); // extendToMax=true
+
+        // Full sentence should be returned without cutting
+        assertEquals(173, km.getStartPos());
+        assertEquals(175, km.getEndPos());
+        assertEquals(2, km.getLength());
+
+        assertFalse(km.startCutted);
+        assertFalse(km.endCutted);
+    };
+
+    @Test
+    public void testExpandToMaxVsExpandToSpan ()
+            throws IOException, QueryException {
+        // Compare expandToMax vs expandToSpan with maxTokenMatchSize=1
+        // Match at pos 210-211 inside sentence 199-228 (29 tokens)
+        // expandToSpan cap = 1 + 25 = 26 (matchExpansionIncludeContextSize=true)
+        //   -> sentence 29 > 26, gets cut
+        // expandToMax cap = 1 + 2*25 = 51
+        //   -> sentence 29 ≤ 51, no cut
+        KrillProperties.maxTokenMatchSize = 1;
+
+        KrillIndex kiWud = new KrillIndex();
+        kiWud.addDoc(getClass().getResourceAsStream(
+                "/wiki/WUD17-C94-39360.json.gz"), true);
+        kiWud.commit();
+
+        ArrayList<String> foundry = new ArrayList<>();
+        foundry.add("opennlp");
+        ArrayList<String> layer = new ArrayList<>();
+        layer.add("p");
+
+        // expandToSpan: cap=26, sentence 29 tokens -> cut
+        Match kmSpan = kiWud.getMatchInfo("match-WUD17/C94/39360-p210-211",
+                "tokens", true, foundry, layer, false, true, false, true,
+                true, false); // extendToSentence=true
+
+        // expandToMax: cap=51, sentence 29 tokens -> no cut
+        Match kmMax = kiWud.getMatchInfo("match-WUD17/C94/39360-p210-211",
+                "tokens", true, foundry, layer, false, true, false, true,
+                false, true); // extendToMax=true
+
+        // expandToMax returns more tokens than expandToSpan
+        assertTrue(kmMax.getLength() > kmSpan.getLength());
+
+        // expandToMax covers the full sentence, no cuts
+        assertEquals(199, kmMax.getStartPos());
+        assertEquals(228, kmMax.getEndPos());
+        assertEquals(29, kmMax.getLength());
+        assertFalse(kmMax.startCutted);
+        assertFalse(kmMax.endCutted);
+
+        // expandToSpan is cut on the right (29 > 26)
+        assertTrue(kmSpan.getLength() < 29);
+        assertTrue(kmSpan.endCutted);
+    };
+
+    @Test
+    public void testExpandToMaxNoSurroundingSpan ()
+            throws IOException, QueryException {
+        // Position 395-396 has no surrounding sentence span
+        KrillIndex kiWud = new KrillIndex();
+        kiWud.addDoc(getClass().getResourceAsStream(
+                "/wiki/WUD17-C94-39360.json.gz"), true);
+        kiWud.commit();
+
+        ArrayList<String> foundry = new ArrayList<>();
+        ArrayList<String> layer = new ArrayList<>();
+
+        Match km = kiWud.getMatchInfo("match-WUD17/C94/39360-p395-396",
+                "tokens", false, foundry, layer, false, true, false, true,
+                false, true); // extendToMax=true
+
+        JsonNode res = mapper.readTree(km.toJsonString());
+        assertEquals("Unable to extend context",
+                res.at("/messages/0/1").asText());
     };
 }

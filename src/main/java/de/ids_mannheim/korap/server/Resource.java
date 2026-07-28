@@ -363,7 +363,7 @@ public class Resource {
         MultivaluedMap<String, String> qp = uri.getQueryParameters();
 
         boolean includeSpans = false, includeHighlights = true,
-                extendToSentence = false, info = false;
+                extendToSentence = false, extendToMax = false, info = false;
 
         // Optional query parameter "info" for more information on the match
         if (!_isNull(qp.getFirst("info")))
@@ -380,9 +380,15 @@ public class Resource {
         if (highlights != null && _isNull(highlights))
             includeHighlights = false;
 
-        // Optional query parameter "extended" for sentence expansion
-        if (!_isNull(qp.getFirst("extended")))
-            extendToSentence = true;
+        // Optional query parameter "extended" for sentence/max expansion
+        String extended = qp.getFirst("extended");
+        if (!_isNull(extended)) {
+            if ("max".equalsIgnoreCase(extended)) {
+                extendToMax = true;
+            } else {
+                extendToSentence = true;
+            }
+        }
 
         List<String> foundries = qp.get("foundry");
         List<String> layers = qp.get("layer");
@@ -391,7 +397,8 @@ public class Resource {
             // Get match info
             return index
                     .getMatchInfo(id, "tokens", info, foundries, layers,
-                            includeSpans, includeHighlights, extendToSentence)
+                            includeSpans, true, false,
+                            includeHighlights, extendToSentence, extendToMax)
                     .toJsonString();
         }
 

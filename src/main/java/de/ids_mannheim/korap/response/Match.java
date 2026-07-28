@@ -1169,10 +1169,29 @@ public class Match extends AbstractDocument {
 		return pagebreaks;
 	};
 
-    // Expand the context to a span
+    // Expand the context to a span using match-cap
     public void expandContextToSpan (String element) {
+        int maxExpansionSize = KrillProperties.maxTokenMatchSize;
+        if (KrillProperties.matchExpansionIncludeContextSize) {
+            maxExpansionSize += KrillProperties.maxTokenContextSize;
+        }
+        expandContextToSpanWithCap(element, maxExpansionSize);
+    };
 
-        // TODO: THE BITS HAVE TO BE SET!
+    // Expand the context to a span using KWIC-cap (match + 2*context)
+    public void expandContextToMax (String element) {
+        int maxExpansionSize;
+        if (KrillProperties.kwicMaxToken > 0) {
+            maxExpansionSize = KrillProperties.kwicMaxToken;
+        } else {
+            maxExpansionSize = KrillProperties.maxTokenMatchSize
+                + 2 * KrillProperties.maxTokenContextSize;
+        }
+        expandContextToSpanWithCap(element, maxExpansionSize);
+    };
+
+    // Shared helper for span expansion with a configurable cap
+    private void expandContextToSpanWithCap (String element, int maxExpansionSize) {
 
         int[] spanContext = new int[] { 0, 0, 0, 0 };
         
@@ -1184,11 +1203,6 @@ public class Match extends AbstractDocument {
         
         if (spanContext[0] >= 0
                 && spanContext[0] < spanContext[1]) {
-            
-            int maxExpansionSize = KrillProperties.maxTokenMatchSize;
-            if (KrillProperties.matchExpansionIncludeContextSize) {
-                maxExpansionSize += KrillProperties.maxTokenContextSize;
-            }
 
             // Match needs to be cutted!
             boolean cutExpansion = false;
@@ -1217,7 +1231,6 @@ public class Match extends AbstractDocument {
 
             this.setStartPos(maxExpansionSize,spanContext[0]);
             this.setEndPos(maxExpansionSize,spanContext[1]);
-            // EM: update char offsets
             
             if (cutExpansion) {
                 this.positionsToOffset.add(localDocID, startPos);
@@ -1225,8 +1238,8 @@ public class Match extends AbstractDocument {
                 
                 int start = this.positionsToOffset.start(localDocID, startPos);
                 int end = this.positionsToOffset.start(localDocID, endPos)-1;
-                spanContext[2] = start; //spanContext[2];
-                spanContext[3] = end; // spanContext[3];
+                spanContext[2] = start;
+                spanContext[3] = end;
             }
 
             // Context adjustment is not needed here: span expansion changes
