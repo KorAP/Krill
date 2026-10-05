@@ -75,7 +75,7 @@
 
   <properties>
     <java.version>21</java.version>
-    <jersey.version>4.0.2</jersey.version>
+    <jersey.version>4.0.3</jersey.version>
     <log4j.version>2.26.1</log4j.version>
     <jackson.version>2.22.2</jackson.version>
     <jackson.mainversion>2.22</jackson.mainversion>
