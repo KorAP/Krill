@@ -54,7 +54,9 @@ public class KrillProperties {
         if (prop != null)
             return prop;
 
+        System.out.println("Loading default properties from " + DEFAULT_PROPERTIES_LOCATION);
         prop = loadProperties(DEFAULT_PROPERTIES_LOCATION);
+        System.out.println("Named VC path: " + namedVCPath);
         return prop;
     };
 

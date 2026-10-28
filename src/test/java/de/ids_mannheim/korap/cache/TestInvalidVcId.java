@@ -7,12 +7,14 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Message;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.StatusCodes;
 
 public class TestInvalidVcId {
@@ -21,6 +23,11 @@ public class TestInvalidVcId {
     
     public TestInvalidVcId () throws IOException {
         ki = TestVirtualCorpusCache.createIndex();
+    }
+
+    @Before
+    public void setup() {
+        KrillProperties.loadDefaultProperties();
     }
 
     @Test
