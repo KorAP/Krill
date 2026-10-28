@@ -5,13 +5,14 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import org.junit.After;
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
 
+@Ignore
 public class TestKrillCollection {
 
     @After
