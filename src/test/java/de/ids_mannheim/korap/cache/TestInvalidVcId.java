@@ -28,6 +28,10 @@ public class TestInvalidVcId {
     @Before
     public void setup() {
         KrillProperties.loadDefaultProperties();
+        // Use an isolated cache directory per test run to avoid cross-test interference
+        VirtualCorpusCache.CACHE_LOCATION = "target/vc-cache-test-" + System.nanoTime();
+        VirtualCorpusCache.reset();
+        new VirtualCorpusCache();
     }
 
     @Test
