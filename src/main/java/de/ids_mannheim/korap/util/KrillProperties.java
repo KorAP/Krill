@@ -20,6 +20,7 @@ public class KrillProperties {
     public static final String DEFAULT_PROPERTIES_LOCATION = "krill.properties";
     public static final String DEFAULT_INFO_LOCATION = "krill.info";
     private static Properties prop, info;
+    private static String loadedPropertiesSource;
     
     public static int maxTokenMatchSize = 50;
     public static int maxTokenContextSize = 60;
@@ -51,7 +52,8 @@ public class KrillProperties {
 
     // Load properties from file
     public static Properties loadDefaultProperties () {
-        if (prop != null)
+        if (prop != null
+                && DEFAULT_PROPERTIES_LOCATION.equals(loadedPropertiesSource))
             return prop;
 
         return loadProperties(DEFAULT_PROPERTIES_LOCATION);
@@ -76,6 +78,7 @@ public class KrillProperties {
             iFile.close();
             if (tempProp != null && !tempProp.isEmpty()) {
                 prop = tempProp;
+                loadedPropertiesSource = propFile;
                 updateConfigurations(prop);
                 return prop;
             }
@@ -102,6 +105,7 @@ public class KrillProperties {
             
             if (tempProp != null && !tempProp.isEmpty()) {
                 prop = tempProp;
+                loadedPropertiesSource = propFile;
                 updateConfigurations(prop);
                 return prop;
             }
@@ -259,5 +263,8 @@ public class KrillProperties {
     
     public static void setProp (Properties prop) {
         KrillProperties.prop = prop;
+        if (prop == null) {
+            loadedPropertiesSource = null;
+        }
     }
 };
