@@ -70,21 +70,26 @@ public class KrillProperties {
         
         // -- start AI modification (checking empty properties to avoid 
         // stale cache) --
-        // First try to load from file system (production preference)
-        try {
-            iFile = new FileInputStream(propFile);
-            tempProp = new Properties();
-            tempProp.load(iFile);
-            iFile.close();
-            if (tempProp != null && !tempProp.isEmpty()) {
-                prop = tempProp;
-                loadedPropertiesSource = propFile;
-                updateConfigurations(prop);
-                return prop;
+        // Only prefer filesystem when an explicit path is provided.
+        // For plain resource names (e.g. "krill.properties"), prefer classpath.
+        boolean hasExplicitPath = propFile.contains("/") || propFile.contains("\\")
+                || new File(propFile).isAbsolute();
+        if (hasExplicitPath) {
+            try {
+                iFile = new FileInputStream(propFile);
+                tempProp = new Properties();
+                tempProp.load(iFile);
+                iFile.close();
+                if (tempProp != null && !tempProp.isEmpty()) {
+                    prop = tempProp;
+                    loadedPropertiesSource = propFile;
+                    updateConfigurations(prop);
+                    return prop;
+                }
             }
-        }
-        catch (IOException t) {
-            // File system load failed, try classpath
+            catch (IOException t) {
+                // File system load failed, try classpath
+            }
         }
 
         // Fall back to load from classpath (for tests/CI)
