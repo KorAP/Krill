@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,5 +51,25 @@ public class TestKrillProperties {
         finally {
             tempPropertiesFile.delete();
         }
+    }
+
+    @Test
+    public void testLoadDefaultPropertiesRestoresRuntimeConfiguration () {
+        assertNotNull(KrillProperties.loadDefaultProperties());
+        assertEquals("queries/collections/named-vcs/",
+                KrillProperties.namedVCPath);
+        assertTrue(KrillProperties.isTest);
+
+        Properties props = new Properties();
+        props.setProperty("krill.index.textSize.max", "25000000");
+        KrillProperties.updateConfigurations(props);
+
+        assertEquals("", KrillProperties.namedVCPath);
+        assertTrue(!KrillProperties.isTest);
+
+        assertNotNull(KrillProperties.loadDefaultProperties());
+        assertEquals("queries/collections/named-vcs/",
+                KrillProperties.namedVCPath);
+        assertTrue(KrillProperties.isTest);
     }
 }

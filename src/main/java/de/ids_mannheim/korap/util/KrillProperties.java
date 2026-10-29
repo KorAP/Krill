@@ -53,8 +53,10 @@ public class KrillProperties {
     // Load properties from file
     public static Properties loadDefaultProperties () {
         if (prop != null
-                && DEFAULT_PROPERTIES_LOCATION.equals(loadedPropertiesSource))
+                && DEFAULT_PROPERTIES_LOCATION.equals(loadedPropertiesSource)) {
+            updateConfigurations(prop);
             return prop;
+        }
 
         return loadProperties(DEFAULT_PROPERTIES_LOCATION);
     };
