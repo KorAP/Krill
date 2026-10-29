@@ -51,4 +51,26 @@ public class TestKrillProperties {
             tempPropertiesFile.delete();
         }
     }
+
+
+    @Test
+    public void testLoadDefaultPropertiesPrefersClasspathForDefaultName ()
+            throws IOException {
+        File localDefaultProperties = new File("krill.properties");
+        try (FileWriter writer = new FileWriter(localDefaultProperties)) {
+            writer.write("krill.test = false\n");
+            writer.write("krill.index.textSize.max = 25000000\n");
+        }
+
+        try {
+            KrillProperties.setProp(null);
+            assertNotNull(KrillProperties.loadDefaultProperties());
+            assertEquals("queries/collections/named-vcs/",
+                    KrillProperties.namedVCPath);
+            assertTrue(KrillProperties.isTest);
+        }
+        finally {
+            localDefaultProperties.delete();
+        }
+    }
 }
