@@ -75,9 +75,9 @@
 
   <properties>
     <java.version>25</java.version>
-    <jersey.version>4.0.2</jersey.version>
+    <jersey.version>4.0.3</jersey.version>
     <log4j.version>2.26.1</log4j.version>
-    <jackson.version>2.22.2</jackson.version>
+    <jackson.version>2.22.3</jackson.version>
     <jackson.mainversion>2.22</jackson.mainversion>
     <lucene.version>5.0.0</lucene.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -130,7 +130,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jul-to-slf4j</artifactId>
-      <version>2.0.19</version>
+      <version>2.0.20</version>
     </dependency>
 
     <!-- SQLite for database connection tests -->
@@ -182,7 +182,7 @@
     <dependency>
       <groupId>com.github.ben-manes.caffeine</groupId>
       <artifactId>caffeine</artifactId>
-      <version>3.2.4</version>
+      <version>3.3.0</version>
     </dependency>
 
     <!-- Jersey -->
