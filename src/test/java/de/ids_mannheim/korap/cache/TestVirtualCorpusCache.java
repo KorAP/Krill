@@ -60,6 +60,7 @@ public class TestVirtualCorpusCache {
 
     @After
     public void tearDownCache() {
+    	VirtualCorpusCache.CACHE_LOCATION = "vc-cache";
         VirtualCorpusCache.reset();
     }
 
@@ -192,7 +193,7 @@ public class TestVirtualCorpusCache {
 
     @Test
     public void testCache () throws IOException, QueryException {
-        KrillProperties.loadDefaultProperties();
+        KrillProperties.resetDefaultProperties();
 
         KrillIndex ki = new KrillIndex();
         ki.addDoc(TestKrillCollectionIndex.createDoc1());

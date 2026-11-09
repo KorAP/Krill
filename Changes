@@ -1,6 +1,9 @@
-0.65.2 2026-07-08
+0.66 2026-11-09
     - Add memory limit (#267, margaretha, AI assisted) 
-
+    - Add methods to reset Krill properties. (margaretha)
+    - Add resetDefaultProperties to TestInvalidVcId  (margaretha)
+	- Bump Java version to 25 (margaretha)
+	- Update Java and actions node versions in CI test (margaretha)
 
 0.65.1 2026-06-16
     - [feature] Prevent indexation of documents without

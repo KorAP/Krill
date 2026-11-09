@@ -7,27 +7,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Krill
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: Krill
 
       - name: Checkout Kustvakt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: KorAP/Kustvakt
           path: Kustvakt
 
       - name: Checkout Koral
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: KorAP/Koral
           path: Koral
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - name: Set up JDK 25
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
-          java-version: 21
+          java-version: 25
           cache: 'maven'
 
 
