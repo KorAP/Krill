@@ -20,7 +20,6 @@ public class KrillProperties {
     public static final String DEFAULT_PROPERTIES_LOCATION = "krill.properties";
     public static final String DEFAULT_INFO_LOCATION = "krill.info";
     private static Properties prop, info;
-    private static String loadedPropertiesSource;
     
     public static int maxTokenMatchSize = 50;
     public static int maxTokenContextSize = 60;
@@ -52,11 +51,11 @@ public class KrillProperties {
 
     // Load properties from file
     public static Properties loadDefaultProperties () {
-        if (prop != null
-                && DEFAULT_PROPERTIES_LOCATION.equals(loadedPropertiesSource))
+        if (prop != null)
             return prop;
 
-        return loadProperties(DEFAULT_PROPERTIES_LOCATION);
+        prop = loadProperties(DEFAULT_PROPERTIES_LOCATION);
+        return prop;
     };
 
 
@@ -65,58 +64,36 @@ public class KrillProperties {
         if (propFile == null)
             return loadDefaultProperties();
 
-        Properties tempProp = null;
-        InputStream iFile = null;
-        
-        // -- start AI modification (checking empty properties to avoid 
-        // stale cache) --
-        // First try to load from file system (production preference)
+        InputStream iFile;
         try {
             iFile = new FileInputStream(propFile);
-            tempProp = new Properties();
-            tempProp.load(iFile);
-            iFile.close();
-            if (tempProp != null && !tempProp.isEmpty()) {
-                prop = tempProp;
-                loadedPropertiesSource = propFile;
-                updateConfigurations(prop);
-                return prop;
-            }
+            prop = new Properties();
+            prop.load(iFile);
+
         }
         catch (IOException t) {
-            // File system load failed, try classpath
-        }
+            try {
+                iFile = KrillProperties.class.getClassLoader()
+                        .getResourceAsStream(propFile);
+                if (iFile == null) {
+                    log.warn(
+                            "Cannot find {}. Please create it using "
+                            + "\"src/main/resources/krill.properties.info\" as template.",
+                            propFile, propFile);
+                    return null;
+                };
 
-        // Fall back to load from classpath (for tests/CI)
-        try {
-            iFile = KrillProperties.class.getClassLoader()
-                    .getResourceAsStream(propFile);
-            if (iFile == null) {
-                log.warn(
-                        "Cannot find {}. Please create it using "
-                        + "\"src/main/resources/krill.properties.info\" as template.",
-                        propFile, propFile);
+                prop = new Properties();
+                prop.load(iFile);
+                iFile.close();
+            }
+            catch (IOException e) {
+                log.error(e.getLocalizedMessage());
                 return null;
-            }
-
-            tempProp = new Properties();
-            tempProp.load(iFile);
-            iFile.close();
-            
-            if (tempProp != null && !tempProp.isEmpty()) {
-                prop = tempProp;
-                loadedPropertiesSource = propFile;
-                updateConfigurations(prop);
-                return prop;
-            }
-        }
-        catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-            return null;
-        }
-        
-        return null;
-        // -- end AI modification --
+            };
+        };
+        updateConfigurations(prop);
+        return prop;
     };
 
     public static void updateConfigurations (Properties  prop) {
@@ -263,8 +240,5 @@ public class KrillProperties {
     
     public static void setProp (Properties prop) {
         KrillProperties.prop = prop;
-        if (prop == null) {
-            loadedPropertiesSource = null;
-        }
     }
 };
