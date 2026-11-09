@@ -9,8 +9,6 @@ Krill is a [Lucene](https://lucene.apache.org/) based search
 engine for large annotated corpora,
 used as a backend component of the [KorAP Corpus Analysis Platform](https://korap.ids-mannheim.de/) at the [IDS Mannheim](https://www.ids-mannheim.de/).
 
-**! This software is in its early stages and not stable yet! Use it on your own risk!**
-
 ## Features
 
 Krill is the reference implementation for
@@ -74,14 +72,92 @@ To build a Krill library and install it in your local Maven repository
 mvn install
 ```
 
-To update an existing repository, pull the latest version at the Krill
-installation directory
+## Command-line Tools
+
+Besides running as a search server, Krill ships two standalone
+command-line tools, both packaged as executable jars by `mvn package`.
+
+### Indexer
+
+The `Indexer` reads corpus documents and adds/updates them in a Krill
+(Lucene) index.
 
 ```
-git pull origin master
+java -jar Krill-Indexer.jar -c <properties file> \
+     [-i <input paths>] [-D <field> <value>] \
+     [-o <output directory>] [-a] [--progress]
 ```
 
-Afterwards, rerun the test suite and install the library.
+- `-c`, `--config <properties file>` — configuration file (required),
+  see `src/main/resources/krill.properties.info`.
+- `-i`, `--input <input paths>` — semicolon-separated list of input
+  paths. Each path can be a directory of `*.json.gz` files, a zip
+  file, or a tar file (including `.tar.gz`/`.tgz`), containing
+  `.json` or `.json.gz` documents; the type is auto-detected.
+- `-o`, `--outputDir <directory>` — index output directory (defaults
+  to `krill.indexDir` from the configuration).
+- `-D`, `--delete <field> <value>` — delete documents matching
+  `field=value` instead of indexing (example: `-D textSigle
+  GOE/AGX/00002`).
+- `-a`, `--addInsteadofUpsert` — always add documents, never update
+  existing ones (upsert is the default).
+- `--progress` — show a progress bar with ETA while indexing.
+
+Documents are upserted by default, so an interrupted run can simply
+be restarted with the same input paths.
+
+### Metadata Exporter
+
+The `MetaExporter` dumps the per-document metadata stored in an
+existing index as TSV, CSV or line-delimited JSON, without going
+through the search API.
+
+```
+java -jar Krill-MetaExporter.jar -i <index dir> \
+     [-f <field,field,...>] [--format tsv|csv|json] \
+     [-o <file>] [--list-fields]
+```
+
+- `-i`, `--index <index dir>` — index directory to read (required).
+- `-f`, `--fields <field,field,...>` — metadata fields/columns to
+  export (defaults to all stored fields).
+- `--format tsv|csv|json` — output format (default `tsv`).
+- `-o`, `--output <file>` — output file (defaults to stdout).
+- `--no-header` — omit the header row (TSV/CSV only).
+- `--multi-sep <sep>` — separator for multi-valued fields in TSV/CSV
+  output (default `|`).
+- `--list-fields` — only list the metadata field names present in the
+  index and exit.
+
+Example: dump the text sigles of two index instances and diff the
+sorted lists to find documents missing from / surplus in one of them:
+
+```
+java -jar Krill-MetaExporter.jar -i /path/to/indexA -f textSigle > a.txt
+java -jar Krill-MetaExporter.jar -i /path/to/indexB -f textSigle > b.txt
+diff <(sort a.txt) <(sort b.txt)
+```
+
+### Checking and Repairing an Index
+
+Krill indices are plain Lucene indices, so Lucene's bundled
+`CheckIndex` tool (included in the shaded jars) can be used to verify
+or repair one directly, without any Krill-specific tooling:
+
+```
+java -cp Krill-Server.jar org.apache.lucene.index.CheckIndex /path/to/indexDir
+```
+
+This reports the state of every segment without changing anything.
+Only if it reports actual corruption, re-run with `-exorcise` to drop
+the broken segments and make the index consistent again; note that
+this permanently discards the documents in those segments, so prefer
+restoring from a backup or re-indexing the affected documents if
+possible:
+
+```
+java -cp Krill-Server.jar org.apache.lucene.index.CheckIndex -exorcise /path/to/indexDir
+```
 
 ## Caveats
 
@@ -98,7 +174,7 @@ index, but this is likely to change.
 **Authors**: [Nils Diewald](https://www.nils-diewald.de/),
 	     [Eliza Margaretha](https://perso.ids-mannheim.de/seiten/margaretha.html)
 
-Copyright (c) 2013-2024, [IDS Mannheim](https://www.ids-mannheim.de/), Germany
+Copyright (c) 2013-2026, [IDS Mannheim](https://www.ids-mannheim.de/), Germany
 
 Krill is developed as part of the [KorAP](https://korap.ids-mannheim.de/)
 Corpus Analysis Platform at the Institute for German Language
@@ -120,9 +196,8 @@ licensed under the [Eclipse Public License](http://www.eclipse.org/legal/epl-v10
 Parts of the test corpus by courtesy of the
 [DeReKo](https://www.ids-mannheim.de/digspra/kl/projekte/korpora/) project.
 
-**To cite this work, please refer to:**<br>
-Diewald, Nils and Margaretha, Eliza (2017): ‎[Krill: KorAP search and analysis engine](http://www.jlcl.org/2016_Heft1/jlcl-2016-1-4DiewaldMargaretha.pdf).
-In: Journal for Language Technology and Computational Linguistics (JLCL), 31 (1), pp. 63-80.
+**To cite this work, please refer to:**
+Diewald/Margaretha (2017).
 
 ## Contributions
 
@@ -148,22 +223,8 @@ as Krill itself – be under the [BSD-2 License](https://raw.githubusercontent.c
 
 ## References
 
-Annotation tools and models used in preparation of the test corpora are based on the following work:
+Diewald, Nils / Margaretha, Eliza (2017): ‎[Krill: KorAP search and analysis engine](https://doi.org/10.21248/jlcl.31.2016.202).
+In: Journal for Language Technology and Computational Linguistics (JLCL), 31 (1), pp. 63-80.
 
-Belica, Cyril (1994): *A German Lemmatizer*. MECOLB Final Report MLAP93-21/WP2. Luxemburg.
-
-Bohnet, Bernd (2010): *Top accuracy and fast dependency parsing is not a contradiction*. In *Proceedings of COLING*, pp 89–97, Beijing, China.
-
-Bohnet, Bernd, Joakim Nivre, Igor Boguslavsky, Richard Farkas, Filip Ginter, and Jan Hajic (2013): *Joint Morphological and Syntactic Analysis for Richly Inflected Languages*. Transactions of the Association for Computational Linguistics, 1, pp. 415-428.        
-
-Faruqui, Manaal and Sebastian Padó (2010): *Training and Evaluating a German Named Entity Recognizer with Semantic Generalization*. In *Proceedings of KONVENS 2010*, Saarbrücken, Germany.
-
-Finkel, Jenny R. and Christopher D. Manning (2009): *Joint parsing and named entity recognition*. In *Proceedings of Human Language Technologies: The 2009 Annual Conference of the North American Chapter of the Association for Computational Linguistics, NAACL ’09*, pp. 326–334, Stroudsburg, PA, USA.
-
-Hockenmaier, Julia, Gann Bierner, and Jason Baldridge (2000): *Providing Robustness for a CCG system*. In *Proceedings of the ESSLLI Workshop on Linguistic Theory and Grammar Implementation*, Birmingham, United Kingdom.
-
-Manning, Christopher D., Mihai Surdeanu, John Bauer, Jenny Finkel, Steven J. Bethard, and David McClosky (2014): *The Stanford CoreNLP Natural Language Processing Toolkit*. In *Proceedings of 52nd Annual Meeting of the Association for Computational Linguistics: System Demonstrations*, pp. 55-60.
-
-Schmid, Helmut (1995): *Improvements in Part-of-Speech Tagging with an Application to German*. In *Proceedings of the ACL SIGDAT-Workshop*. Dublin, Ireland.
-
-Schmid, Helmut (1994): *Probabilistic Part-of-Speech Tagging Using Decision Trees*. In *Proceedings of International Conference on New Methods in Language Processing*. Manchester, United Kingdom.
+Kupietz, Marc / Diewald, Nils / Lüngen, Harald / Margaretha Illig, Eliza / Stallkamp, Helge / Tran, Uyen-Nhu / Yaddehige, Rameela (2026): [EuReCo, KorAP and DeReKo: Updates on Ingestion and Annotation Pipelines, Backend, Interfaces, Operation, and Corpora](https://doi.org/10.63317/2xcbb5knp2mi).
+In: Proceedings of the 12th Workshop on Challenges in the Management of Large Corpora, pp. 106-112, Palma, Mallorca, Spain: European Language Resources Association (ELRA).

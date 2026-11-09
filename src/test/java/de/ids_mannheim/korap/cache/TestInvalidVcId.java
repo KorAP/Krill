@@ -13,6 +13,7 @@ import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.response.Message;
 import de.ids_mannheim.korap.response.Result;
+import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.StatusCodes;
 
 public class TestInvalidVcId {
@@ -20,6 +21,7 @@ public class TestInvalidVcId {
     private KrillIndex ki;
     
     public TestInvalidVcId () throws IOException {
+    	KrillProperties.resetDefaultProperties();
         ki = TestVirtualCorpusCache.createIndex();
     }
 
