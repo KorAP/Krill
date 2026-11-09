@@ -49,22 +49,12 @@ public class KrillProperties {
     private final static Logger log = LoggerFactory
             .getLogger(KrillProperties.class);
 
-    // Load properties from file
-    public static Properties loadDefaultProperties () {
-        if (prop != null)
-            return prop;
-
-        prop = loadProperties(DEFAULT_PROPERTIES_LOCATION);
-        return prop;
-    };
-
-
-    // Load properties from file
-    public static Properties loadProperties (String propFile) {
-        if (propFile == null)
-            return loadDefaultProperties();
-
-        InputStream iFile;
+    public static Properties resetDefaultProperties () {
+    	return resetProperties(DEFAULT_PROPERTIES_LOCATION);
+    }
+    
+    public static Properties resetProperties (String propFile) {
+    	InputStream iFile;
         try {
             iFile = new FileInputStream(propFile);
             prop = new Properties();
@@ -94,6 +84,26 @@ public class KrillProperties {
         };
         updateConfigurations(prop);
         return prop;
+	}
+    
+    // Load properties from file
+    public static Properties loadDefaultProperties () {
+        if (prop != null)
+            return prop;
+
+        prop = loadProperties(DEFAULT_PROPERTIES_LOCATION);
+        return prop;
+    };
+
+
+    // Load properties from file
+    public static Properties loadProperties (String propFile) {
+        if (propFile == null) {
+            return loadDefaultProperties();
+        }
+        else {
+        	return resetProperties(propFile);
+        }
     };
 
     public static void updateConfigurations (Properties  prop) {

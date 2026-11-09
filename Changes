@@ -1,5 +1,6 @@
 0.65.2 2026-07-08
     - Add memory limit (#267, margaretha, AI assisted) 
+    - Fix test suite by adding methods to reset Krill properties. (margaretha)  
 
 
 0.65.1 2026-06-16

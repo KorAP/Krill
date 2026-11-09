@@ -21,6 +21,6 @@ public class TestKrillCollection {
         assertEquals(-1, kc.numberOf("documents"));
         assertEquals(-1, kc.numberOf("sentences"));
         KrillProperties.setProp(null);
-        KrillProperties.loadDefaultProperties();
+        KrillProperties.resetDefaultProperties();
     }
 }
