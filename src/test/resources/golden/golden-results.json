@@ -1,0 +1,1178 @@
+{
+  "index" : {
+    "documents" : 10,
+    "tokens" : 5317,
+    "sentences" : 281,
+    "paragraphs" : 174
+  },
+  "corpora" : {
+    "textClass=reisen" : {
+      "documents" : 6,
+      "tokens" : 3300,
+      "sentences" : 194,
+      "paragraphs" : 139
+    },
+    "pubDate since 2010" : {
+      "documents" : 3,
+      "tokens" : 2656,
+      "sentences" : 0,
+      "paragraphs" : 0
+    },
+    "pubDate till 2009" : {
+      "documents" : 7,
+      "tokens" : 2661,
+      "sentences" : 281,
+      "paragraphs" : 174
+    },
+    "author=/.*an.*/" : {
+      "documents" : 3,
+      "tokens" : 823,
+      "sentences" : 22,
+      "paragraphs" : 11
+    }
+  },
+  "queries" : [ {
+    "name" : "term [s:der]",
+    "totalResults" : 207,
+    "totalResources" : 10,
+    "matches" : 207,
+    "idDigest" : "215c69ba91ebd787c6f76300a38c955301351b792e52b328b41f5f6a3cc5b8ee",
+    "snippetDigest" : "6c7b03fc20ed4bab3739bdf300a9052cb86f93cf71537225b26a54991e5cc744",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "snippet" : "A bzw. a ist [[der]] erste Buchstabe des lateinischen Alphabets und ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-29",
+      "snippet" : "... Häufigkeit von 6,51 %. Er ist damit [[der]] sechsthäufigste Buchstabe in deutschen Texten. Mit ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-44",
+      "snippet" : "... Fremdwörtern und Namen ist das A [[der]] einzige Buchstabe im Deutschen, der zweifach ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p48-49",
+      "snippet" : "... A der einzige Buchstabe im Deutschen, [[der]] zweifach am Anfang eines Wortes stehen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p69-70",
+      "snippet" : "... Deutschen und vielen anderen Sprachen steht [[der]] Buchstabe für den offenen vorderen ungerundeten ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p80-81",
+      "snippet" : "... vorderen ungerundeten Vokal a: A ist [[der]] klangreichste der Vokale, bei dessen Hervorbringen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p82-83",
+      "snippet" : "... Vokal a: A ist der klangreichste [[der]] Vokale, bei dessen Hervorbringen der Stimmton ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p87-88",
+      "snippet" : "... klangreichste der Vokale, bei dessen Hervorbringen [[der]] Stimmton frei aus den weit geöffneten ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p109-110",
+      "snippet" : "... niedergedrückt wird. Stellt man das Verhältnis [[der]] drei Hauptvokale a, i, u durch ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p124-125",
+      "snippet" : "... Linie dar, so kommt i als [[der]] hellste an das obere, u als ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-29",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-44",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "annotation [mate/m:gender:masc]",
+    "totalResults" : 497,
+    "totalResources" : 7,
+    "matches" : 497,
+    "idDigest" : "da08668cba6216963039b3f3aa20ac7e99af8a528f56a51d045dceabf42a7f92",
+    "snippetDigest" : "54c96c6db037220fc460b4328a7b785a51124c1824641b6aee5db484454683bf",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "snippet" : "A bzw. a ist [[der]] erste Buchstabe des lateinischen Alphabets und ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p5-6",
+      "snippet" : "A bzw. a ist der [[erste]] Buchstabe des lateinischen Alphabets und ein ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p6-7",
+      "snippet" : "A bzw. a ist der erste [[Buchstabe]] des lateinischen Alphabets und ein Vokal ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p7-8",
+      "snippet" : "... bzw. a ist der erste Buchstabe [[des]] lateinischen Alphabets und ein Vokal. Der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p8-9",
+      "snippet" : "... a ist der erste Buchstabe des [[lateinischen]] Alphabets und ein Vokal. Der Buchstabe ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p9-10",
+      "snippet" : "... ist der erste Buchstabe des lateinischen [[Alphabets]] und ein Vokal. Der Buchstabe A ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p13-14",
+      "snippet" : "... des lateinischen Alphabets und ein Vokal. [[Der]] Buchstabe A hat in deutschen Texten ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p14-15",
+      "snippet" : "... lateinischen Alphabets und ein Vokal. Der [[Buchstabe]] A hat in deutschen Texten eine ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p25-26",
+      "snippet" : "... Texten eine durchschnittliche Häufigkeit von 6,51 %. [[Er]] ist damit der sechsthäufigste Buchstabe in ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-29",
+      "snippet" : "... Häufigkeit von 6,51 %. Er ist damit [[der]] sechsthäufigste Buchstabe in deutschen Texten. Mit ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p5-6",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p6-7",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "segment [tt/p:NN & mate/m:number:pl]",
+    "totalResults" : 120,
+    "totalResources" : 7,
+    "matches" : 120,
+    "idDigest" : "2e34058e7791b004d7dd174e617fbbda142b65b007a831f9fd9cc0897c975abe",
+    "snippetDigest" : "ebd7f77e5e539c073cfceb3ad1a4f5ef2fe333f8f33acc6a17c8e55d7463f60a",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p19-20",
+      "snippet" : "... Der Buchstabe A hat in deutschen [[Texten]] eine durchschnittliche Häufigkeit von 6,51 %. Er ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p33-34",
+      "snippet" : "... damit der sechsthäufigste Buchstabe in deutschen [[Texten]]. Mit Ausnahme von Fremdwörtern und Namen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p37-38",
+      "snippet" : "... in deutschen Texten. Mit Ausnahme von [[Fremdwörtern]] und Namen ist das A der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p39-40",
+      "snippet" : "... Texten. Mit Ausnahme von Fremdwörtern und [[Namen]] ist das A der einzige Buchstabe ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p67-68",
+      "snippet" : "... Aussprache Im Deutschen und vielen anderen [[Sprachen]] steht der Buchstabe für den offenen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p94-95",
+      "snippet" : "... Stimmton frei aus den weit geöffneten [[Lippen]] hervorkommt, während die Zunge in eine ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p111-112",
+      "snippet" : "... Stellt man das Verhältnis der drei [[Hauptvokale]] a, i, u durch eine senkrechte ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p155-156",
+      "snippet" : "... Im Deutschen gibt es zwei verschiedene [[Phoneme]] des Vokals: den Kurzvokal a, wie ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p212-213",
+      "snippet" : "... des folgenden Konsonanten: Matte Mehrere folgende [[Konsonanten]]: Matsch Aus einem A kann sich ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p221-222",
+      "snippet" : "... einem A kann sich unter bestimmten [[Bedingungen]] ein Umlaut \"ä\" bilden. hat hätte ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p19-20",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p33-34",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p37-38",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "alternation [s:der | s:die]",
+    "totalResults" : 326,
+    "totalResources" : 10,
+    "matches" : 326,
+    "idDigest" : "4937a47ba48cf325ffacb5a01f30fae97012eeaee12e1018eded84319518340c",
+    "snippetDigest" : "2636dee78ee5ded60fa3013e052888e41250d4669334c084ab98407b244fa5b3",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "snippet" : "A bzw. a ist [[der]] erste Buchstabe des lateinischen Alphabets und ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-29",
+      "snippet" : "... Häufigkeit von 6,51 %. Er ist damit [[der]] sechsthäufigste Buchstabe in deutschen Texten. Mit ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-44",
+      "snippet" : "... Fremdwörtern und Namen ist das A [[der]] einzige Buchstabe im Deutschen, der zweifach ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p48-49",
+      "snippet" : "... A der einzige Buchstabe im Deutschen, [[der]] zweifach am Anfang eines Wortes stehen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p69-70",
+      "snippet" : "... Deutschen und vielen anderen Sprachen steht [[der]] Buchstabe für den offenen vorderen ungerundeten ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p80-81",
+      "snippet" : "... vorderen ungerundeten Vokal a: A ist [[der]] klangreichste der Vokale, bei dessen Hervorbringen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p82-83",
+      "snippet" : "... Vokal a: A ist der klangreichste [[der]] Vokale, bei dessen Hervorbringen der Stimmton ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p87-88",
+      "snippet" : "... klangreichste der Vokale, bei dessen Hervorbringen [[der]] Stimmton frei aus den weit geöffneten ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p97-98",
+      "snippet" : "... den weit geöffneten Lippen hervorkommt, während [[die]] Zunge in eine flache Stellung niedergedrückt ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p109-110",
+      "snippet" : "... niedergedrückt wird. Stellt man das Verhältnis [[der]] drei Hauptvokale a, i, u durch ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-29",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-44",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "regex [s:.*ung]",
+    "totalResults" : 69,
+    "totalResources" : 8,
+    "matches" : 69,
+    "idDigest" : "9e93a25f18e3f9785c69784464522c84cef26a568bb1e48e1173c4e9711551e6",
+    "snippetDigest" : "160524bef61c963a23c71ff103fb6779db3b2e02bec7f97ec98a819a16b854a7",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p102-103",
+      "snippet" : "... während die Zunge in eine flache [[Stellung]] niedergedrückt wird. Stellt man das Verhältnis ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p190-191",
+      "snippet" : "... ist unterschiedlich gekennzeichnet. Langer Vokal: Keine [[Kennzeichnung]]: Rat Verdopplung des Vokals: Aar, Haar ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p192-193",
+      "snippet" : "... gekennzeichnet. Langer Vokal: Keine Kennzeichnung: Rat [[Verdopplung]] des Vokals: Aar, Haar folgendes h ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p203-204",
+      "snippet" : "... folgendes h: Bahre Kurzer Vokal: Keine [[Kennzeichnung]]: hat Verdopplung des folgenden Konsonanten: Matte ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p205-206",
+      "snippet" : "... Bahre Kurzer Vokal: Keine Kennzeichnung: hat [[Verdopplung]] des folgenden Konsonanten: Matte Mehrere folgende ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p358-359",
+      "snippet" : "... es größtenteils unverändert. Lediglich zur besseren [[Schreibung]] (von rechts nach links) versahen sie ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p369-370",
+      "snippet" : "... versahen sie das Zeichen mit einem [[Abschwung]] nach links. Als die Römer das ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p581-582",
+      "snippet" : "... bezeichnet a die physikalische Größe der [[Beschleunigung]] bezeichnet A die physikalische Größe Arbeit ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p617-618",
+      "snippet" : "... ist im SI-Einheitensystem ist a die [[Abkürzung]] für die Vorsilbe Atto ist A ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p736-737",
+      "snippet" : "... eine Blutgruppe. A steht als internationale [[Abkürzung]] bei Eisenbahnwagen für 1. Wagenklasse. A ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p102-103",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p190-191",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p192-193",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "regex case insensitive [i:sprach.*]",
+    "totalResults" : 4,
+    "totalResources" : 2,
+    "matches" : 4,
+    "idDigest" : "b7d11dc05c294828ec9a6a7219936c5bfff43d84c6417c6c3b92feae53624fee",
+    "snippetDigest" : "269fc1c233391a8a600e0fd644979bd16aea29a657edbe1e37c33fedac9df428",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p67-68",
+      "snippet" : "... Aussprache Im Deutschen und vielen anderen [[Sprachen]] steht der Buchstabe für den offenen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p824-825",
+      "snippet" : "... 4. Fremdwörter A hat in verschiedenen [[Sprachen]] als Wort eine Bedeutung. Im Griechischen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p879-880",
+      "snippet" : "... à „je/je zu“. In der portugiesischen [[Sprache]] heißt es „die“ oder „sie“. 5. ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p103-104",
+      "snippet" : "... Isländischen verwendet wird. in der dänischen [[Sprache]] ein Ausdruck des Erstaunens, vergleiche deutsch ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p67-68",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p824-825",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p879-880",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "sequence [tt/p:ART][tt/p:ADJA][tt/p:NN]",
+    "totalResults" : 127,
+    "totalResources" : 9,
+    "matches" : 127,
+    "idDigest" : "2f54bde1829a455aab2c3c629d813db642039b701c15138f32af2acf186ce187",
+    "snippetDigest" : "e529e9d346c651bdbe19fef9bb0e14d421b8e1aa0917ada03be4bd7c884535f5",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-7",
+      "snippet" : "A bzw. a ist [[der erste Buchstabe]] des lateinischen Alphabets und ein Vokal ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p7-10",
+      "snippet" : "... bzw. a ist der erste Buchstabe [[des lateinischen Alphabets]] und ein Vokal. Der Buchstabe A ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p20-23",
+      "snippet" : "... Buchstabe A hat in deutschen Texten [[eine durchschnittliche Häufigkeit]] von 6,51 %. Er ist damit der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-31",
+      "snippet" : "... Häufigkeit von 6,51 %. Er ist damit [[der sechsthäufigste Buchstabe]] in deutschen Texten. Mit Ausnahme von ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-46",
+      "snippet" : "... Fremdwörtern und Namen ist das A [[der einzige Buchstabe]] im Deutschen, der zweifach am Anfang ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p100-103",
+      "snippet" : "... Lippen hervorkommt, während die Zunge in [[eine flache Stellung]] niedergedrückt wird. Stellt man das Verhältnis ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p116-119",
+      "snippet" : "... drei Hauptvokale a, i, u durch [[eine senkrechte Linie]] dar, so kommt i als der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p134-137",
+      "snippet" : "... obere, u als der dumpfeste an [[das untere Ende]], a als der mittlere Vokal genau ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p139-142",
+      "snippet" : "... an das untere Ende, a als [[der mittlere Vokal]] genau in die Mitte derselben zu ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p206-209",
+      "snippet" : "... Kurzer Vokal: Keine Kennzeichnung: hat Verdopplung [[des folgenden Konsonanten]]: Matte Mehrere folgende Konsonanten: Matsch Aus ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-7",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p7-10",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p20-23",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "repetition [tt/p:ADJA]{2,3}[tt/p:NN]",
+    "totalResults" : 29,
+    "totalResources" : 8,
+    "matches" : 29,
+    "idDigest" : "3be60dbcf48e756840f7b79ab20ff1543e9fb8bd3e4eef0cad03600015833c08",
+    "snippetDigest" : "4538cba6139f3113100526bf55fa1c735d117a19a88e12d7491f6f08be2307fd",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p73-77",
+      "snippet" : "... Sprachen steht der Buchstabe für den [[offenen vorderen ungerundeten Vokal]] a: A ist der klangreichste der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p74-77",
+      "snippet" : "... steht der Buchstabe für den offenen [[vorderen ungerundeten Vokal]] a: A ist der klangreichste der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p8-11",
+      "snippet" : "... Å - Kleinbuchstabe å - steht für den [[offenen, tiefen Vokal]] A mit einer Tendenz zum O ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p17-20",
+      "snippet" : "... A mit einer Tendenz zum O ([[langes nordisches A]]), wie er im Dänischen, Norwegischen vorkommt ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p169-172",
+      "snippet" : "... aus dem Buchstaben A und einem [[kleinen übergeschriebenen O]], welches die Vokalqualität andeutet. Im Schwedischen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00003-p588-591",
+      "snippet" : "... zweite Band heißt The Lucky Nine. [[5. Ehemalige Mitglieder]] Steve Swindon (Bassist bis 1997) 6. ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00004-p178-181",
+      "snippet" : "... erste Modus der ersten Schlussfigur des [[einfachen kategorischen Syllogismus]], der aus drei allgemein bejahenden Urteilen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00004-p250-253",
+      "snippet" : "... zweite Modus der ersten Schlussfigur des [[einfachen kategorischen Syllogismus]] wird mit dem Wort Celarent bezeichnet ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00004-p313-316",
+      "snippet" : "... allgemein verneinende Urteile sind. Erstmals wurden [[derartige symbolische Buchstabenbezeichnungen]] für Quantität und Qualität von Aussagen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.02439-p99-102",
+      "snippet" : "... 1937 hat Ahn Eak-tae, ein international [[bekannter koreanischer Musiker]] aus Spanien, eine neue Melodie für ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p73-77",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p74-77",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p8-11",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "optionality [tt/p:ART][tt/p:ADJA]?[tt/p:NN]",
+    "totalResults" : 577,
+    "totalResources" : 10,
+    "matches" : 577,
+    "idDigest" : "1e8c3f13c09ed9806d48a5f231aa7547ed52d2e695e1eca7f70fea831849fa3d",
+    "snippetDigest" : "606c2908ed67fd372658af928e456d37fbafef2194c78f9163d3d8e054298ba8",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-7",
+      "snippet" : "A bzw. a ist [[der erste Buchstabe]] des lateinischen Alphabets und ein Vokal ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p7-10",
+      "snippet" : "... bzw. a ist der erste Buchstabe [[des lateinischen Alphabets]] und ein Vokal. Der Buchstabe A ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p11-13",
+      "snippet" : "... erste Buchstabe des lateinischen Alphabets und [[ein Vokal]]. Der Buchstabe A hat in deutschen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p13-15",
+      "snippet" : "... des lateinischen Alphabets und ein Vokal. [[Der Buchstabe]] A hat in deutschen Texten eine ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p20-23",
+      "snippet" : "... Buchstabe A hat in deutschen Texten [[eine durchschnittliche Häufigkeit]] von 6,51 %. Er ist damit der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-31",
+      "snippet" : "... Häufigkeit von 6,51 %. Er ist damit [[der sechsthäufigste Buchstabe]] in deutschen Texten. Mit Ausnahme von ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p41-43",
+      "snippet" : "... Ausnahme von Fremdwörtern und Namen ist [[das A]] der einzige Buchstabe im Deutschen, der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-46",
+      "snippet" : "... Fremdwörtern und Namen ist das A [[der einzige Buchstabe]] im Deutschen, der zweifach am Anfang ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p52-54",
+      "snippet" : "... im Deutschen, der zweifach am Anfang [[eines Wortes]] stehen darf, etwa im Wort Aal ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p69-71",
+      "snippet" : "... Deutschen und vielen anderen Sprachen steht [[der Buchstabe]] für den offenen vorderen ungerundeten Vokal ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-7",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p7-10",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p11-13",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "class {1:[tt/p:ADJA]}[s:Sprache]",
+    "totalResults" : 2,
+    "totalResources" : 2,
+    "matches" : 2,
+    "idDigest" : "97502cb1ff72174ceb4bc273e05a64d20dc5f7deb9391d5fe0f9b1735b4e746b",
+    "snippetDigest" : "f34fe7eb79d345c3f951438f4e88f9b79b79c5d01973326960694ea4cef3ece0",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p878-880(1)878-878",
+      "snippet" : "... bedeutet à „je/je zu“. In der [[{1:portugiesischen} Sprache]] heißt es „die“ oder „sie“. 5. ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p102-104(1)102-102",
+      "snippet" : "... und Isländischen verwendet wird. in der [[{1:dänischen} Sprache]] ein Ausdruck des Erstaunens, vergleiche deutsch ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p878-880(1)878-878",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p102-104(1)102-102",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "focus(1: {1:[tt/p:ADJA]}[tt/p:NN])",
+    "totalResults" : 347,
+    "totalResources" : 9,
+    "matches" : 347,
+    "idDigest" : "ba6142365c6c64655b086453892c67fbe6a51602d22232969f1972188e231bb1",
+    "snippetDigest" : "c1a2c11aff9e0cba60e8d10d9cd00696de97ed24c4480bc3a72f8445b78c2e95",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p5-6(1)5-5",
+      "snippet" : "A bzw. a ist der [[{1:erste}]] Buchstabe des lateinischen Alphabets und ein ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p8-9(1)8-8",
+      "snippet" : "... a ist der erste Buchstabe des [[{1:lateinischen}]] Alphabets und ein Vokal. Der Buchstabe ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p18-19(1)18-18",
+      "snippet" : "... Vokal. Der Buchstabe A hat in [[{1:deutschen}]] Texten eine durchschnittliche Häufigkeit von 6,51 ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p21-22(1)21-21",
+      "snippet" : "... A hat in deutschen Texten eine [[{1:durchschnittliche}]] Häufigkeit von 6,51 %. Er ist damit ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p29-30(1)29-29",
+      "snippet" : "... von 6,51 %. Er ist damit der [[{1:sechsthäufigste}]] Buchstabe in deutschen Texten. Mit Ausnahme ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p32-33(1)32-32",
+      "snippet" : "... ist damit der sechsthäufigste Buchstabe in [[{1:deutschen}]] Texten. Mit Ausnahme von Fremdwörtern und ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p44-45(1)44-44",
+      "snippet" : "... und Namen ist das A der [[{1:einzige}]] Buchstabe im Deutschen, der zweifach am ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p60-61(1)60-60",
+      "snippet" : "... stehen darf, etwa im Wort Aal. [[{1:1.}]] Aussprache Im Deutschen und vielen anderen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p66-67(1)66-66",
+      "snippet" : "... 1. Aussprache Im Deutschen und vielen [[{1:anderen}]] Sprachen steht der Buchstabe für den ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p75-76(1)75-75",
+      "snippet" : "... der Buchstabe für den offenen vorderen [[{1:ungerundeten}]] Vokal a: A ist der klangreichste ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p5-6(1)5-5",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p8-9(1)8-8",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p18-19(1)18-18",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "element <base/s:s>",
+    "totalResults" : 386,
+    "totalResources" : 9,
+    "matches" : 386,
+    "idDigest" : "643a292d64c952bf1b180e33dedbbad607b38944ee59fc78442486d010757f8d",
+    "snippetDigest" : "b1e41be96154baa38f0aa1134ea125fe208111f4225a7270b6627936900162cc",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p13-25",
+      "snippet" : "... des lateinischen Alphabets und ein Vokal. [[Der Buchstabe A hat in deutschen Texten eine durchschnittliche Häufigkeit von 6,51 %.]] Er ist damit der sechsthäufigste Buchstabe ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p25-34",
+      "snippet" : "... Texten eine durchschnittliche Häufigkeit von 6,51 %. [[Er ist damit der sechsthäufigste Buchstabe in deutschen Texten]]. Mit Ausnahme von Fremdwörtern und Namen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p34-60",
+      "snippet" : "... der sechsthäufigste Buchstabe in deutschen Texten. [[Mit Ausnahme von Fremdwörtern und Namen ist das A der einzige Buchstabe im Deutschen, der zweifach am Anfang eines Wortes stehen darf, etwa im Wort Aal]]. 1. Aussprache Im Deutschen und vielen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p60-62",
+      "snippet" : "... stehen darf, etwa im Wort Aal. [[1. Aussprache]] Im Deutschen und vielen anderen Sprachen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p62-105",
+      "snippet" : "... etwa im Wort Aal. 1. Aussprache [[Im Deutschen und vielen anderen Sprachen steht der Buchstabe für den offenen vorderen ungerundeten Vokal a: A ist der klangreichste der Vokale, bei dessen Hervorbringen der Stimmton frei aus den weit geöffneten Lippen hervorkommt, während die Zunge in eine flache Stellung niedergedrückt wird]]. Stellt man das Verhältnis der drei ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p105-149",
+      "snippet" : "... in eine flache Stellung niedergedrückt wird. [[Stellt man das Verhältnis der drei Hauptvokale a, i, u durch eine senkrechte Linie dar, so kommt i als der hellste an das obere, u als der dumpfeste an das untere Ende, a als der mittlere Vokal genau in die Mitte derselben zu stehen]]. Im Deutschen gibt es zwei verschiedene ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p149-180",
+      "snippet" : "... in die Mitte derselben zu stehen. [[Im Deutschen gibt es zwei verschiedene Phoneme des Vokals: den Kurzvokal a, wie z. B. in satt, und den weiter hinten im Rachenraum gebildeten Langvokal a, wie z. B. in Rat]]. Die Länge des Vokals ist unterschiedlich ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p180-187",
+      "snippet" : "... a, wie z. B. in Rat. [[Die Länge des Vokals ist unterschiedlich gekennzeichnet.]] Langer Vokal: Keine Kennzeichnung: Rat Verdopplung ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p187-189",
+      "snippet" : "... Länge des Vokals ist unterschiedlich gekennzeichnet. [[Langer Vokal:]] Keine Kennzeichnung: Rat Verdopplung des Vokals ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p189-192",
+      "snippet" : "... Vokals ist unterschiedlich gekennzeichnet. Langer Vokal: [[Keine Kennzeichnung: Rat]] Verdopplung des Vokals: Aar, Haar folgendes ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p13-25",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p25-34",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p34-60",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "contains(<base/s:s>, [tt/p:NE][tt/p:NE])",
+    "totalResults" : 133,
+    "totalResources" : 9,
+    "matches" : 133,
+    "idDigest" : "44ab1a722c498c6aa9a1ad8c3903fa371a4997934964c5c767ea9f077d48aa78",
+    "snippetDigest" : "a50c3cfeaf46c09c6de1fd445f1501e83d903c72d93c06080f796bd8a340f362",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p105-149",
+      "snippet" : "... in eine flache Stellung niedergedrückt wird. [[Stellt man das Verhältnis der drei Hauptvokale a, i, u durch eine senkrechte Linie dar, so kommt i als der hellste an das obere, u als der dumpfeste an das untere Ende, a als der mittlere Vokal genau in die Mitte derselben zu stehen]]. Im Deutschen gibt es zwei verschiedene ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p401-407",
+      "snippet" : "... worden. 3. Bedeutungen in der Biologie [[steht A für das Nukleosid Adenosin]] steht A die Base Adenin steht ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p480-486",
+      "snippet" : "... in Spanien für die Provinz Almería. [[auf internationalen Kennzeichen für Österreich (Austria).]] in der Mathematik wird a gerne ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p681-691",
+      "snippet" : "... bis 1794 für die Amberger Münze. [[im Königreich Hannover im 19. Jh. für die Münze Clausthal]]. bei mexikanischen Münzen für die Münzstätte ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p713-725",
+      "snippet" : "... Österreich zum Fahren von Motorrädern berechtigt [[A + Zahl steht in Deutschland, Österreich und der Schweiz für eine Autobahn.]] A ist in der Medizin eine ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p887-892",
+      "snippet" : "... es „die“ oder „sie“. 5. Literatur [[Harald Haarmann: Geschichte der Schrift]]. Beck, München 2002 ISBN 3-406-47998-7 6. ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p892-897",
+      "snippet" : "... Literatur Harald Haarmann: Geschichte der Schrift. [[Beck, München 2002 ISBN 3-406-47998-7]] 6. Weblinks http://www.wam.umd.edu/~rfradkin/alphapage.html ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p113-136",
+      "snippet" : "... Erstaunens, vergleiche deutsch ach! oder oh! [[Å bzw. vollständig Å i Lofoten ist der Name eines Ortes auf der Inselgruppe Lofoten in Norwegen, unter anderem Endpunkt der Europastraße E10.]] Außer Å i Lofoten gibt es ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p113-136",
+      "snippet" : "... Erstaunens, vergleiche deutsch ach! oder oh! [[Å bzw. vollständig Å i Lofoten ist der Name eines Ortes auf der Inselgruppe Lofoten in Norwegen, unter anderem Endpunkt der Europastraße E10.]] Außer Å i Lofoten gibt es ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p136-150",
+      "snippet" : "... unter anderem Endpunkt der Europastraße E10. [[Außer Å i Lofoten gibt es in Norwegen noch andere Orte, die Å heißen]]. Auch in Schweden gibt es mehrere ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p105-149",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p401-407",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p480-486",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "startswith(<base/s:s>, [tt/p:ART])",
+    "totalResults" : 43,
+    "totalResources" : 8,
+    "matches" : 43,
+    "idDigest" : "d485ad8f26af1f70af98dc0f6037630a28bd74b3bc782f24ca3f42a8a8f0d022",
+    "snippetDigest" : "f1f20d4e1a409889562ea158a420934eb5fc6740cc4ab75c0d28390aa07a7e43",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p13-25",
+      "snippet" : "... des lateinischen Alphabets und ein Vokal. [[Der Buchstabe A hat in deutschen Texten eine durchschnittliche Häufigkeit von 6,51 %.]] Er ist damit der sechsthäufigste Buchstabe ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p180-187",
+      "snippet" : "... a, wie z. B. in Rat. [[Die Länge des Vokals ist unterschiedlich gekennzeichnet.]] Langer Vokal: Keine Kennzeichnung: Rat Verdopplung ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p238-253",
+      "snippet" : "... au (Haut) äu (Häute) 2. Herkunft [[Die aus dem proto-semitischen Alphabet stammende Urform des Buchstaben ist wahrscheinlich der Kopf eines Ochsen]]. Die Phönizier gaben diesem Buchstaben den ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p253-262",
+      "snippet" : "... ist wahrscheinlich der Kopf eines Ochsen. [[Die Phönizier gaben diesem Buchstaben den Namen Aleph (Ochse).]] Im phönizischen Alphabet im 9. Jahrhundert ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p287-298",
+      "snippet" : "... durch zwei Striche nach rechts angedeutet. [[Der Lautwert des Aleph bei den Phöniziern war der Knacklaut ʔ.]] Bereits bei den Phöniziern hatte Aleph ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p915-922",
+      "snippet" : "... mit dem Buchstaben A oder a [[@, ein aus dem Buchstaben a entstandenes Zeichen]] Funkalphabet"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p7-26",
+      "snippet" : "... Buchstabe Å - Kleinbuchstabe å - steht für [[den offenen, tiefen Vokal A mit einer Tendenz zum O (langes nordisches A), wie er im Dänischen, Norwegischen vorkommt.]] Früher wurde er im Dänischen Aa ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p43-52",
+      "snippet" : "... 22. März 1948 wurde Å eingeführt. [[den Vokal o (wie langes/kurzes deutsches \"o\") im Schwedischen.]] die Abkürzung für Ångström (Einheit) das ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p52-57",
+      "snippet" : "... wie langes/kurzes deutsches \"o\") im Schwedischen. [[die Abkürzung für Ångström (Einheit)]] das Suffix -aa im Schwedischen Å ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p57-62",
+      "snippet" : "... Schwedischen. die Abkürzung für Ångström (Einheit) [[das Suffix -aa im Schwedischen]] Å bedeutet auf schwedisch, norwegisch und ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p13-25",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p180-187",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p238-253",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "endswith(<base/s:s>, [tt/p:NN])",
+    "totalResults" : 155,
+    "totalResources" : 8,
+    "matches" : 155,
+    "idDigest" : "16bd3538616057847ea2251e3b046b515e3bba2a1a9d68708242c297e0264625",
+    "snippetDigest" : "b515d2451f4bc26f2ade07459c7adfa2dd58bea15dd507586c85bd3008c6d5cd",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p25-34",
+      "snippet" : "... Texten eine durchschnittliche Häufigkeit von 6,51 %. [[Er ist damit der sechsthäufigste Buchstabe in deutschen Texten]]. Mit Ausnahme von Fremdwörtern und Namen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p34-60",
+      "snippet" : "... der sechsthäufigste Buchstabe in deutschen Texten. [[Mit Ausnahme von Fremdwörtern und Namen ist das A der einzige Buchstabe im Deutschen, der zweifach am Anfang eines Wortes stehen darf, etwa im Wort Aal]]. 1. Aussprache Im Deutschen und vielen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p60-62",
+      "snippet" : "... stehen darf, etwa im Wort Aal. [[1. Aussprache]] Im Deutschen und vielen anderen Sprachen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p149-180",
+      "snippet" : "... in die Mitte derselben zu stehen. [[Im Deutschen gibt es zwei verschiedene Phoneme des Vokals: den Kurzvokal a, wie z. B. in satt, und den weiter hinten im Rachenraum gebildeten Langvokal a, wie z. B. in Rat]]. Die Länge des Vokals ist unterschiedlich ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p187-189",
+      "snippet" : "... Länge des Vokals ist unterschiedlich gekennzeichnet. [[Langer Vokal:]] Keine Kennzeichnung: Rat Verdopplung des Vokals ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p189-192",
+      "snippet" : "... Vokals ist unterschiedlich gekennzeichnet. Langer Vokal: [[Keine Kennzeichnung: Rat]] Verdopplung des Vokals: Aar, Haar folgendes ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p192-197",
+      "snippet" : "... gekennzeichnet. Langer Vokal: Keine Kennzeichnung: Rat [[Verdopplung des Vokals: Aar, Haar]] folgendes h: Bahre Kurzer Vokal: Keine ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p197-200",
+      "snippet" : "... Rat Verdopplung des Vokals: Aar, Haar [[folgendes h: Bahre]] Kurzer Vokal: Keine Kennzeichnung: hat Verdopplung ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p200-202",
+      "snippet" : "... Vokals: Aar, Haar folgendes h: Bahre [[Kurzer Vokal]]: Keine Kennzeichnung: hat Verdopplung des folgenden ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p205-210",
+      "snippet" : "... Bahre Kurzer Vokal: Keine Kennzeichnung: hat [[Verdopplung des folgenden Konsonanten: Matte]] Mehrere folgende Konsonanten: Matsch Aus einem ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p25-34",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p34-60",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p60-62",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "matches(<base/s:s>, [tt/p:NN]{1,3})",
+    "totalResults" : 10,
+    "totalResources" : 6,
+    "matches" : 10,
+    "idDigest" : "37446945575f349865f47749d29b8201afe4d72b56ff634ea5271571f1a1a17f",
+    "snippetDigest" : "3bce65aed31472a14d6940e028597b784695d27eaa0d1b4a147c588df5e7c57e",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p922-923",
+      "snippet" : "... aus dem Buchstaben a entstandenes Zeichen [[Funkalphabet]]"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00003-p4-5",
+      "snippet" : "1. Chartplatzierungen 2. Singles [[Foghorn]] UK: 63 - 7. Februar 1998 - 1 ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00003-p21-22",
+      "snippet" : "... 47 - 11. April 1998 - 1 Woche [[Sing-a-long]] UK: 57 - 27. Juni 1998 - 1 ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00004-p78-79",
+      "snippet" : "... Schlusses, der aus mehreren Urteilen besteht. [[Beispiel:]] Der Schluss (A) \"Alle Elementarteilchen sind ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.02439-p283-284",
+      "snippet" : "... chungseongeul dahayeo goerouna jeulgeouna nara saranghase [[Refrain]] mugunghwa samcheolli hwaryeogangsan Daehan saram Daehaneuro ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.02439-p377-378",
+      "snippet" : "... ebenso wie in Zeiten des Glücks. [[Refrain]] Wir Koreaner werden immer wachen über ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p146-147",
+      "snippet" : "... dessen Südrand sich ein Trinkbrunnen befindet. [[ Geschichte]]  Die historische Heinrichslinde wurde wahrscheinlich 1492 ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p1334-1335",
+      "snippet" : "... letzten – Welfen auf dem Braunschweigischen Herzogsthron. [[ Literatur ]] Jürgen Hodemacher: Braunschweigs Straßen – ihre Namen ..."
+    }, {
+      "id" : "match-WUD17/C94/39360-p172-173",
+      "snippet" : "... dir  16:21, 3. Mai 2016 (CEST) [[ Benutzername]]  Hallo „CS-StiftungHH“,  dein Benutzername impliziert, dass ..."
+    }, {
+      "id" : "match-WUD17/C94/39360-p566-567",
+      "snippet" : "... ich werde sie im Auge behalten. [[Grüße]], -- 17:15, 4. Mai 2016 (CEST)"
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p922-923",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00003-p4-5",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00003-p21-22",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "token distance [tt/p:ART] /+w1:3 [tt/p:NN]",
+    "totalResults" : 546,
+    "totalResources" : 10,
+    "matches" : 546,
+    "idDigest" : "0a130bdff7e29a65d31a4b632e7fc439db0cc4ee157a520f103b61d8cd93ad26",
+    "snippetDigest" : "a4d18c64af5141dd15fac1d908c7f5e7d283c60be7b15c32adbf0aa5e3f1c27f",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-7",
+      "snippet" : "A bzw. a ist [[der erste Buchstabe]] des lateinischen Alphabets und ein Vokal ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p7-10",
+      "snippet" : "... bzw. a ist der erste Buchstabe [[des lateinischen Alphabets]] und ein Vokal. Der Buchstabe A ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p11-15",
+      "snippet" : "... erste Buchstabe des lateinischen Alphabets und [[ein Vokal. Der Buchstabe]] A hat in deutschen Texten eine ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p11-16",
+      "snippet" : "... erste Buchstabe des lateinischen Alphabets und [[ein Vokal. Der Buchstabe A]] hat in deutschen Texten eine durchschnittliche ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p13-16",
+      "snippet" : "... des lateinischen Alphabets und ein Vokal. [[Der Buchstabe A]] hat in deutschen Texten eine durchschnittliche ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p20-23",
+      "snippet" : "... Buchstabe A hat in deutschen Texten [[eine durchschnittliche Häufigkeit]] von 6,51 %. Er ist damit der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-31",
+      "snippet" : "... Häufigkeit von 6,51 %. Er ist damit [[der sechsthäufigste Buchstabe]] in deutschen Texten. Mit Ausnahme von ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p41-46",
+      "snippet" : "... Ausnahme von Fremdwörtern und Namen ist [[das A der einzige Buchstabe]] im Deutschen, der zweifach am Anfang ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-46",
+      "snippet" : "... Fremdwörtern und Namen ist das A [[der einzige Buchstabe]] im Deutschen, der zweifach am Anfang ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-48",
+      "snippet" : "... Fremdwörtern und Namen ist das A [[der einzige Buchstabe im Deutschen]], der zweifach am Anfang eines Wortes ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-7",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p7-10",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p11-15",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "unordered token distance [tt/p:NE] /w1:2 [tt/p:VVFIN]",
+    "totalResults" : 106,
+    "totalResources" : 9,
+    "matches" : 106,
+    "idDigest" : "fbcce3f87e4cdf4c44241c443d52ef02b2a593394afa1c3f68e2a13a7ecb0ed3",
+    "snippetDigest" : "5e87c4ce7330ff862a9ee1b8b297cf004ba6dcf671a2dbb44d66df1537942a9d",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p405-408",
+      "snippet" : "... der Biologie steht A für das [[Nukleosid Adenosin steht]] A die Base Adenin steht A ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p451-455",
+      "snippet" : "... als auch im Unicode-Zeichensatz als Kfz-Kennzeichen [[steht A in Deutschland]] für Augsburg. in Österreich auf Fahrzeugen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p715-718",
+      "snippet" : "... Fahren von Motorrädern berechtigt A + Zahl [[steht in Deutschland]], Österreich und der Schweiz für eine ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p715-719",
+      "snippet" : "... Fahren von Motorrädern berechtigt A + Zahl [[steht in Deutschland, Österreich]] und der Schweiz für eine Autobahn ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p2-5",
+      "snippet" : "Der Buchstabe [[Å - Kleinbuchstabe å]] - steht für den offenen, tiefen Vokal ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p2-5",
+      "snippet" : "Der Buchstabe [[Å - Kleinbuchstabe å]] - steht für den offenen, tiefen Vokal ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p2-6",
+      "snippet" : "Der Buchstabe [[Å - Kleinbuchstabe å - steht]] für den offenen, tiefen Vokal A ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p59-63",
+      "snippet" : "... Abkürzung für Ångström (Einheit) das Suffix [[-aa im Schwedischen Å]] bedeutet auf schwedisch, norwegisch und dänisch ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p80-84",
+      "snippet" : "... Wasser ist urverwandt mit lateinisch aqua, [[erhalten im Ortsnamen Århus]], vergleiche deutsch Au. den altnordischen Buchstaben ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00002-p83-87",
+      "snippet" : "... mit lateinisch aqua, erhalten im Ortsnamen [[Århus, vergleiche deutsch Au]]. den altnordischen Buchstaben á, wie er ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p405-408",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p451-455",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p715-718",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "sentence distance [tt/p:NE] /+s1:1 [tt/p:NE]",
+    "totalResults" : 544,
+    "totalResources" : 9,
+    "matches" : 544,
+    "idDigest" : "f541123947579dee98d151b84bda037906bdd7fa495c9fc1c823efdad41ccb90",
+    "snippetDigest" : "206dc98dfcfe4d09b284c1f5a65fe31e9542770e2c676188c9c18cbfa74a5e92",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p230-235",
+      "snippet" : "... \"ä\" bilden. hat hätte Abgeleitete Zwielaute ([[Diphthonge) sind: au (Haut) äu]] (Häute) 2. Herkunft Die aus dem ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p260-291",
+      "snippet" : "... Phönizier gaben diesem Buchstaben den Namen [[Aleph (Ochse). Im phönizischen Alphabet im 9. Jahrhundert v. Chr. war das Schriftzeichen bereits stark stilisiert, die Hörner des Ochsen wurden durch zwei Striche nach rechts angedeutet. Der Lautwert des Aleph]] bei den Phöniziern war der Knacklaut ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p405-418",
+      "snippet" : "... der Biologie steht A für das [[Nukleosid Adenosin steht A die Base Adenin steht A für die Aminosäure Alanin]] in der Informatik steht a für ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p406-418",
+      "snippet" : "... Biologie steht A für das Nukleosid [[Adenosin steht A die Base Adenin steht A für die Aminosäure Alanin]] in der Informatik steht a für ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p454-472",
+      "snippet" : "... Unicode-Zeichensatz als Kfz-Kennzeichen steht A in [[Deutschland für Augsburg. in Österreich auf Fahrzeugen des Bundespräsidenten, Nationalratspräsidenten, Bundeskanzlers, von Ministern, Gerichtshofpräsidenten etc.. in der Schweiz]] für Administration. in Spanien für die ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p456-472",
+      "snippet" : "... Kfz-Kennzeichen steht A in Deutschland für [[Augsburg. in Österreich auf Fahrzeugen des Bundespräsidenten, Nationalratspräsidenten, Bundeskanzlers, von Ministern, Gerichtshofpräsidenten etc.. in der Schweiz]] für Administration. in Spanien für die ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p458-476",
+      "snippet" : "... A in Deutschland für Augsburg. in [[Österreich auf Fahrzeugen des Bundespräsidenten, Nationalratspräsidenten, Bundeskanzlers, von Ministern, Gerichtshofpräsidenten etc.. in der Schweiz für Administration. in Spanien]] für die Provinz Almería. auf internationalen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p458-480",
+      "snippet" : "... A in Deutschland für Augsburg. in [[Österreich auf Fahrzeugen des Bundespräsidenten, Nationalratspräsidenten, Bundeskanzlers, von Ministern, Gerichtshofpräsidenten etc.. in der Schweiz für Administration. in Spanien für die Provinz Almería]]. auf internationalen Kennzeichen für Österreich (Austria ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p471-485",
+      "snippet" : "... von Ministern, Gerichtshofpräsidenten etc.. in der [[Schweiz für Administration. in Spanien für die Provinz Almería. auf internationalen Kennzeichen für Österreich]] (Austria). in der Mathematik wird a ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p471-486",
+      "snippet" : "... von Ministern, Gerichtshofpräsidenten etc.. in der [[Schweiz für Administration. in Spanien für die Provinz Almería. auf internationalen Kennzeichen für Österreich (Austria]]). in der Mathematik wird a gerne ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p230-235",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p260-291",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p405-418",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "expansion [tt/p:ART][][tt/p:NN]",
+    "totalResults" : 182,
+    "totalResources" : 9,
+    "matches" : 182,
+    "idDigest" : "bf5091c318134830977d63b72a38bc82db55058c919ca07d5ca0547ed74d01d5",
+    "snippetDigest" : "f57f42c14d2b052b9b0fa9721a2f37a75b3ad3edba2ad0c127a9b8cc733b028d",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-7",
+      "snippet" : "A bzw. a ist [[der erste Buchstabe]] des lateinischen Alphabets und ein Vokal ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p7-10",
+      "snippet" : "... bzw. a ist der erste Buchstabe [[des lateinischen Alphabets]] und ein Vokal. Der Buchstabe A ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p13-16",
+      "snippet" : "... des lateinischen Alphabets und ein Vokal. [[Der Buchstabe A]] hat in deutschen Texten eine durchschnittliche ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p20-23",
+      "snippet" : "... Buchstabe A hat in deutschen Texten [[eine durchschnittliche Häufigkeit]] von 6,51 %. Er ist damit der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-31",
+      "snippet" : "... Häufigkeit von 6,51 %. Er ist damit [[der sechsthäufigste Buchstabe]] in deutschen Texten. Mit Ausnahme von ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-46",
+      "snippet" : "... Fremdwörtern und Namen ist das A [[der einzige Buchstabe]] im Deutschen, der zweifach am Anfang ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p100-103",
+      "snippet" : "... Lippen hervorkommt, während die Zunge in [[eine flache Stellung]] niedergedrückt wird. Stellt man das Verhältnis ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p109-112",
+      "snippet" : "... niedergedrückt wird. Stellt man das Verhältnis [[der drei Hauptvokale]] a, i, u durch eine senkrechte ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p116-119",
+      "snippet" : "... drei Hauptvokale a, i, u durch [[eine senkrechte Linie]] dar, so kommt i als der ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p134-137",
+      "snippet" : "... obere, u als der dumpfeste an [[das untere Ende]], a als der mittlere Vokal genau ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-7",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p7-10",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p13-16",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "[s:der] in textClass=reisen",
+    "totalResults" : 133,
+    "totalResources" : 6,
+    "matches" : 133,
+    "idDigest" : "ee4b040750f28757156c26418dea92f6ff33947cecd179c1c3099d06c1b4e418",
+    "snippetDigest" : "1a1a57a786ecf937a0d0ff9e02d71b82f59a86df0f62446e5e94df89d36db1dd",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "snippet" : "A bzw. a ist [[der]] erste Buchstabe des lateinischen Alphabets und ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-29",
+      "snippet" : "... Häufigkeit von 6,51 %. Er ist damit [[der]] sechsthäufigste Buchstabe in deutschen Texten. Mit ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-44",
+      "snippet" : "... Fremdwörtern und Namen ist das A [[der]] einzige Buchstabe im Deutschen, der zweifach ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p48-49",
+      "snippet" : "... A der einzige Buchstabe im Deutschen, [[der]] zweifach am Anfang eines Wortes stehen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p69-70",
+      "snippet" : "... Deutschen und vielen anderen Sprachen steht [[der]] Buchstabe für den offenen vorderen ungerundeten ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p80-81",
+      "snippet" : "... vorderen ungerundeten Vokal a: A ist [[der]] klangreichste der Vokale, bei dessen Hervorbringen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p82-83",
+      "snippet" : "... Vokal a: A ist der klangreichste [[der]] Vokale, bei dessen Hervorbringen der Stimmton ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p87-88",
+      "snippet" : "... klangreichste der Vokale, bei dessen Hervorbringen [[der]] Stimmton frei aus den weit geöffneten ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p109-110",
+      "snippet" : "... niedergedrückt wird. Stellt man das Verhältnis [[der]] drei Hauptvokale a, i, u durch ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p124-125",
+      "snippet" : "... Linie dar, so kommt i als [[der]] hellste an das obere, u als ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-29",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-44",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "[s:der] in pubDate since 2010",
+    "totalResults" : 121,
+    "totalResources" : 3,
+    "matches" : 121,
+    "idDigest" : "efa9d5cb461d23c9ec475723fe43dbd79fa5ea929e47486a29292bd498614e21",
+    "snippetDigest" : "feb4f71daeeb6495523e89ef3f50044768984b7bd622b41a0b7aed26fd84b87b",
+    "first" : [ {
+      "id" : "match-WPD17/H81/63495-p50-51",
+      "snippet" : "... und gilt als ein grünes Wahrzeichen [[der]] Stadt. Die heutige Linde ersetzt die ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p58-59",
+      "snippet" : "... Die heutige Linde ersetzt die historische, [[der]] Sage nach 1173, vor Beginn der ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p64-65",
+      "snippet" : "... der Sage nach 1173, vor Beginn [[der]] Bauarbeiten am Braunschweiger Dom durch Heinrich ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p84-85",
+      "snippet" : "... ihrem Zusammenbruch 1894 als ältester Baum [[der]] Stadt angesehen wurde. Der alte Baum ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p96-97",
+      "snippet" : "... Baum war eine Sommerlinde (Tilia platyphyllos) , [[der]] neue ist eine Winterlinde (Tilia cordata ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p129-130",
+      "snippet" : "... steht auf dem Westteil des Domplatzes, [[der]] Südseite des Doms und ist von ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p156-157",
+      "snippet" : "... wurde wahrscheinlich 1492 erstmals urkundlich in [[der]] dem Braunschweiger Chronisten Kort Bote zugeschriebenen ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p164-165",
+      "snippet" : "... Braunschweiger Chronisten Kort Bote zugeschriebenen Cronecken [[der]] Sassen erwähnt. In der Chronik wurde ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p168-169",
+      "snippet" : "... zugeschriebenen Cronecken der Sassen erwähnt. In [[der]] Chronik wurde berichtet, dass die „lynden ..."
+    }, {
+      "id" : "match-WPD17/H81/63495-p188-189",
+      "snippet" : "... Der Baum wurde über die Tore [[der]] Stadt hinaus so genannt. Er stand ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD17/H81/63495-p50-51",
+      "tt/p" : "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span title=\"tt/p:ART\">der</span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>",
+      "base/s with spans" : "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark>der</mark></span><span class=\"context-right\"><span class=\"more\"></span></span>"
+    }, {
+      "id" : "match-WPD17/H81/63495-p58-59",
+      "tt/p" : "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span title=\"tt/p:ART\"><span title=\"tt/p:PRELS\">der</span></span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>",
+      "base/s with spans" : "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark>der</mark></span><span class=\"context-right\"><span class=\"more\"></span></span>"
+    }, {
+      "id" : "match-WPD17/H81/63495-p64-65",
+      "tt/p" : "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark><span title=\"tt/p:ART\">der</span></mark></span><span class=\"context-right\"><span class=\"more\"></span></span>",
+      "base/s with spans" : "<span class=\"context-left\"><span class=\"more\"></span></span><span class=\"match\"><mark>der</mark></span><span class=\"context-right\"><span class=\"more\"></span></span>"
+    } ]
+  }, {
+    "name" : "[s:der] in textClass=reisen & author=/.*an.*/",
+    "totalResults" : 1,
+    "totalResources" : 1,
+    "matches" : 1,
+    "idDigest" : "0906cd96d849876cc7468ca08561074c52a023f07d5dbe442cce8380e0e7ee11",
+    "snippetDigest" : "2a8302de7135603eeebb7de1fb9bda56df2ba932fb11c25cb2a4b24ad9d9a6a1",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00005-p2-3",
+      "snippet" : "Å ist [[der]] Name mehrerer Orte in Norwegen: Å ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00005-p2-3",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  }, {
+    "name" : "[s:der] in textClass=reisen | textClass=wissenschaft",
+    "totalResults" : 145,
+    "totalResources" : 7,
+    "matches" : 145,
+    "idDigest" : "0895b1476c2a56c4e964c7cd0d46367e10530c7ffb82a8bd3ded62a9a8aeab05",
+    "snippetDigest" : "6d955e856bd8d54e8ac02ba63c1e990531bf967d162d9fcf8a0f3a301979bd01",
+    "first" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "snippet" : "A bzw. a ist [[der]] erste Buchstabe des lateinischen Alphabets und ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-29",
+      "snippet" : "... Häufigkeit von 6,51 %. Er ist damit [[der]] sechsthäufigste Buchstabe in deutschen Texten. Mit ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-44",
+      "snippet" : "... Fremdwörtern und Namen ist das A [[der]] einzige Buchstabe im Deutschen, der zweifach ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p48-49",
+      "snippet" : "... A der einzige Buchstabe im Deutschen, [[der]] zweifach am Anfang eines Wortes stehen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p69-70",
+      "snippet" : "... Deutschen und vielen anderen Sprachen steht [[der]] Buchstabe für den offenen vorderen ungerundeten ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p80-81",
+      "snippet" : "... vorderen ungerundeten Vokal a: A ist [[der]] klangreichste der Vokale, bei dessen Hervorbringen ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p82-83",
+      "snippet" : "... Vokal a: A ist der klangreichste [[der]] Vokale, bei dessen Hervorbringen der Stimmton ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p87-88",
+      "snippet" : "... klangreichste der Vokale, bei dessen Hervorbringen [[der]] Stimmton frei aus den weit geöffneten ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p109-110",
+      "snippet" : "... niedergedrückt wird. Stellt man das Verhältnis [[der]] drei Hauptvokale a, i, u durch ..."
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p124-125",
+      "snippet" : "... Linie dar, so kommt i als [[der]] hellste an das obere, u als ..."
+    } ],
+    "matchInfo" : [ {
+      "id" : "match-WPD!WPD_AAA.00001-p4-5",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p28-29",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    }, {
+      "id" : "match-WPD!WPD_AAA.00001-p43-44",
+      "tt/p" : "null",
+      "base/s with spans" : "null"
+    } ]
+  } ]
+}
