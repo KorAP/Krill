@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: de.ids_mannheim.korap.index.TestWithinIndex
+-------------------------------------------------------------------------------
+Tests run: 29, Failures: 0, Errors: 0, Skipped: 6, Time elapsed: 0.243 s -- in de.ids_mannheim.korap.index.TestWithinIndex

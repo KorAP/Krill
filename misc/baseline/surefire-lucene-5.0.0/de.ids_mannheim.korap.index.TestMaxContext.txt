@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: de.ids_mannheim.korap.index.TestMaxContext
+-------------------------------------------------------------------------------
+Tests run: 36, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.552 s -- in de.ids_mannheim.korap.index.TestMaxContext

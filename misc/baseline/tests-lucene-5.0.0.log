@@ -1,0 +1,248 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] -----------------< de.ids-mannheim.korap.krill:Krill >------------------
+[INFO] Building Krill 0.66
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ Krill ---
+[INFO] Deleting /home/elma/git/Krill/target
+[INFO] Deleting /home/elma/git/Krill/bin
+[INFO] 
+[INFO] --- resources:3.4.0:resources (default-resources) @ Krill ---
+[INFO] Copying 1 resource from src/main/resources to bin
+[INFO] Copying 2 resources from src/main/resources to bin
+[INFO] 
+[INFO] --- compiler:3.16.0:compile (default-compile) @ Krill ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 132 source files with javac [debug target 25] to bin
+[INFO] /home/elma/git/Krill/src/main/java/de/ids_mannheim/korap/KrillIndex.java: Some input files use or override a deprecated API.
+[INFO] /home/elma/git/Krill/src/main/java/de/ids_mannheim/korap/KrillIndex.java: Recompile with -Xlint:deprecation for details.
+[INFO] /home/elma/git/Krill/src/main/java/de/ids_mannheim/korap/KrillIndex.java: Some input files use unchecked or unsafe operations.
+[INFO] /home/elma/git/Krill/src/main/java/de/ids_mannheim/korap/KrillIndex.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.4.0:testResources (default-testResources) @ Krill ---
+[INFO] Copying 1 resource from src/test/resources to target/test-classes
+[INFO] Copying 343 resources from src/test/resources to target/test-classes
+[INFO] The encoding used to copy filtered properties files has not been set. This means that the same encoding will be used to copy filtered properties files as when copying other filtered resources. This might not be what you want! Run your build with --debug to see which files might be affected. Read more at https://maven.apache.org/plugins/maven-resources-plugin/examples/filtering-properties-files.html
+[INFO] 
+[INFO] --- compiler:3.16.0:testCompile (default-testCompile) @ Krill ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 94 source files with javac [debug target 25] to target/test-classes
+[INFO] /home/elma/git/Krill/src/test/java/de/ids_mannheim/korap/cache/TestVirtualCorpusCache.java: Some input files use or override a deprecated API.
+[INFO] /home/elma/git/Krill/src/test/java/de/ids_mannheim/korap/cache/TestVirtualCorpusCache.java: Recompile with -Xlint:deprecation for details.
+[INFO] /home/elma/git/Krill/src/test/java/de/ids_mannheim/korap/highlight/TestHighlight.java: Some input files use unchecked or unsafe operations.
+[INFO] /home/elma/git/Krill/src/test/java/de/ids_mannheim/korap/highlight/TestHighlight.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:3.6.0:test (default-test) @ Krill ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running de.ids_mannheim.korap.response.TestNotifications
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.191 s -- in de.ids_mannheim.korap.response.TestNotifications
+[INFO] Running de.ids_mannheim.korap.response.TestMessage
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in de.ids_mannheim.korap.response.TestMessage
+[INFO] Running de.ids_mannheim.korap.response.TestResponse
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in de.ids_mannheim.korap.response.TestResponse
+[INFO] Running de.ids_mannheim.korap.response.TestMatch
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.268 s -- in de.ids_mannheim.korap.response.TestMatch
+[INFO] Running de.ids_mannheim.korap.TestMetaExporter
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by org.apache.lucene.util.RamUsageEstimator (file:/home/elma/.m2/repository/org/apache/lucene/lucene-core/5.0.0/lucene-core-5.0.0.jar)
+WARNING: Please consider reporting this to the maintainers of class org.apache.lucene.util.RamUsageEstimator
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Exported 1 documents.
+Exported 1 documents.
+
+Missing required option: i
+Exported 1 documents.
+Exported 1 documents.
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.415 s -- in de.ids_mannheim.korap.TestMetaExporter
+[INFO] Running de.ids_mannheim.korap.TestIndexer
+ERROR (KrillIndex.java:668) -> Rejecting document 'null': no token stream - the document would not contribute to statistics and cannot be searched
+ERROR (KrillIndex.java:668) -> Rejecting document 'null': no token stream - the document would not contribute to statistics and cannot be searched
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.147 s -- in de.ids_mannheim.korap.TestIndexer
+[INFO] Running de.ids_mannheim.korap.server.TestResource
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.369 s -- in de.ids_mannheim.korap.server.TestResource
+[INFO] Running de.ids_mannheim.korap.server.TestDatabase
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.sqlite.SQLiteJDBCLoader in an unnamed module (file:/home/elma/.m2/repository/org/xerial/sqlite-jdbc/3.53.4.0/sqlite-jdbc-3.53.4.0.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.339 s -- in de.ids_mannheim.korap.server.TestDatabase
+[INFO] Running de.ids_mannheim.korap.cache.TestInvalidVcId
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.243 s -- in de.ids_mannheim.korap.cache.TestInvalidVcId
+[INFO] Running de.ids_mannheim.korap.cache.TestCache
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.ids_mannheim.korap.cache.TestCache
+[INFO] Running de.ids_mannheim.korap.cache.TestVirtualCorpusCache
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.773 s -- in de.ids_mannheim.korap.cache.TestVirtualCorpusCache
+[INFO] Running de.ids_mannheim.korap.highlight.TestHighlight
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.913 s -- in de.ids_mannheim.korap.highlight.TestHighlight
+[INFO] Running de.ids_mannheim.korap.highlight.TestClass
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.164 s -- in de.ids_mannheim.korap.highlight.TestClass
+[INFO] Running de.ids_mannheim.korap.index.TestPrimaryDataProtection
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.039 s -- in de.ids_mannheim.korap.index.TestPrimaryDataProtection
+[INFO] Running de.ids_mannheim.korap.index.TestUnorderedDistanceIndex
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in de.ids_mannheim.korap.index.TestUnorderedDistanceIndex
+[INFO] Running de.ids_mannheim.korap.index.TestMemoryLimit
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.243 s -- in de.ids_mannheim.korap.index.TestMemoryLimit
+[INFO] Running de.ids_mannheim.korap.index.TestRegexWildcardIndex
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in de.ids_mannheim.korap.index.TestRegexWildcardIndex
+[INFO] Running de.ids_mannheim.korap.index.TestSpanExpansionIndex
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.06 s -- in de.ids_mannheim.korap.index.TestSpanExpansionIndex
+[INFO] Running de.ids_mannheim.korap.index.TestKrillIndex
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.328 s -- in de.ids_mannheim.korap.index.TestKrillIndex
+[INFO] Running de.ids_mannheim.korap.index.TestElementDistanceExclusionIndex
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in de.ids_mannheim.korap.index.TestElementDistanceExclusionIndex
+[INFO] Running de.ids_mannheim.korap.index.TestMatchIndex
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.029 s -- in de.ids_mannheim.korap.index.TestMatchIndex
+[INFO] Running de.ids_mannheim.korap.index.TestMaxMatchTokens
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.411 s -- in de.ids_mannheim.korap.index.TestMaxMatchTokens
+[INFO] Running de.ids_mannheim.korap.index.TestKrillDocument
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in de.ids_mannheim.korap.index.TestKrillDocument
+[INFO] Running de.ids_mannheim.korap.index.TestPosToOffset
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.ids_mannheim.korap.index.TestPosToOffset
+[INFO] Running de.ids_mannheim.korap.index.TestMatchIdentifier
+[INFO] Tests run: 31, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.767 s -- in de.ids_mannheim.korap.index.TestMatchIdentifier
+[INFO] Running de.ids_mannheim.korap.index.TestRepetitionIndex
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.113 s -- in de.ids_mannheim.korap.index.TestRepetitionIndex
+[INFO] Running de.ids_mannheim.korap.index.TestRegexIndex
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in de.ids_mannheim.korap.index.TestRegexIndex
+[INFO] Running de.ids_mannheim.korap.index.TestElementIndex
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in de.ids_mannheim.korap.index.TestElementIndex
+[INFO] Running de.ids_mannheim.korap.index.TestSubSpanIndex
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.309 s -- in de.ids_mannheim.korap.index.TestSubSpanIndex
+[INFO] Running de.ids_mannheim.korap.index.TestWildcardIndex
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in de.ids_mannheim.korap.index.TestWildcardIndex
+[INFO] Running de.ids_mannheim.korap.index.TestIndexRevision
+ERROR (KrillIndex.java:668) -> Rejecting document 'TEST/DOC/001': no token stream - the document would not contribute to statistics and cannot be searched
+ERROR (KrillIndex.java:668) -> Rejecting document 'TEST/DOC/001': no token stream - the document would not contribute to statistics and cannot be searched
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.671 s -- in de.ids_mannheim.korap.index.TestIndexRevision
+[INFO] Running de.ids_mannheim.korap.index.TestRelationIndex
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.076 s -- in de.ids_mannheim.korap.index.TestRelationIndex
+[INFO] Running de.ids_mannheim.korap.index.TestNextIndex
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.066 s -- in de.ids_mannheim.korap.index.TestNextIndex
+[INFO] Running de.ids_mannheim.korap.index.TestSegmentIndex
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in de.ids_mannheim.korap.index.TestSegmentIndex
+[INFO] Running de.ids_mannheim.korap.index.TestAttributeIndex
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.156 s -- in de.ids_mannheim.korap.index.TestAttributeIndex
+[INFO] Running de.ids_mannheim.korap.index.TestWithinIndex
+[WARNING] Tests run: 29, Failures: 0, Errors: 0, Skipped: 6, Time elapsed: 0.243 s -- in de.ids_mannheim.korap.index.TestWithinIndex
+[INFO] Running de.ids_mannheim.korap.index.TestDistanceExclusionIndex
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s -- in de.ids_mannheim.korap.index.TestDistanceExclusionIndex
+[INFO] Running de.ids_mannheim.korap.index.TestElementDistanceIndex
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.199 s -- in de.ids_mannheim.korap.index.TestElementDistanceIndex
+[INFO] Running de.ids_mannheim.korap.index.TestReferenceIndex
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in de.ids_mannheim.korap.index.TestReferenceIndex
+[INFO] Running de.ids_mannheim.korap.index.TestClassFilterIndex
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in de.ids_mannheim.korap.index.TestClassFilterIndex
+[INFO] Running de.ids_mannheim.korap.index.TestFieldDocument
+ERROR (KrillIndex.java:668) -> Rejecting document 'TEST/META/001': no token stream - the document would not contribute to statistics and cannot be searched
+ERROR (KrillIndex.java:668) -> Rejecting document 'TEST/BAD/001': no token stream - the document would not contribute to statistics and cannot be searched
+ERROR (KrillIndex.java:516) -> Rejecting upsert for document 'TEST/META/002': no token stream - existing document (if any) will not be removed
+ERROR (KrillIndex.java:668) -> Rejecting document 'TEST/WRONG/001': no token stream - the document would not contribute to statistics and cannot be searched
+ERROR (KrillIndex.java:668) -> Rejecting document 'TEST/NODATA/001': no token stream - the document would not contribute to statistics and cannot be searched
+ERROR (KrillIndex.java:516) -> Rejecting upsert for document 'TEST/UPSERT/001': no token stream - existing document (if any) will not be removed
+[INFO] Tests run: 44, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.966 s -- in de.ids_mannheim.korap.index.TestFieldDocument
+[INFO] Running de.ids_mannheim.korap.index.TestTermInfo
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in de.ids_mannheim.korap.index.TestTermInfo
+[INFO] Running de.ids_mannheim.korap.index.TestMaxContext
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.552 s -- in de.ids_mannheim.korap.index.TestMaxContext
+[INFO] Running de.ids_mannheim.korap.index.TestIndex
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in de.ids_mannheim.korap.index.TestIndex
+[INFO] Running de.ids_mannheim.korap.index.TestPagebreakIndex
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s -- in de.ids_mannheim.korap.index.TestPagebreakIndex
+[INFO] Running de.ids_mannheim.korap.index.TestSegmentNegationIndex
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.024 s -- in de.ids_mannheim.korap.index.TestSegmentNegationIndex
+[INFO] Running de.ids_mannheim.korap.index.TestFocusIndex
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.039 s -- in de.ids_mannheim.korap.index.TestFocusIndex
+[INFO] Running de.ids_mannheim.korap.index.TestUnorderedElementDistanceIndex
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in de.ids_mannheim.korap.index.TestUnorderedElementDistanceIndex
+[INFO] Running de.ids_mannheim.korap.index.TestMultipleDistanceIndex
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in de.ids_mannheim.korap.index.TestMultipleDistanceIndex
+[INFO] Running de.ids_mannheim.korap.index.TestTimeout
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.188 s -- in de.ids_mannheim.korap.index.TestTimeout
+[INFO] Running de.ids_mannheim.korap.index.TestMatchCollector
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.ids_mannheim.korap.index.TestMatchCollector
+[INFO] Running de.ids_mannheim.korap.index.TestClassIndex
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s -- in de.ids_mannheim.korap.index.TestClassIndex
+[INFO] Running de.ids_mannheim.korap.index.TestKeywordAnalyzer
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in de.ids_mannheim.korap.index.TestKeywordAnalyzer
+[INFO] Running de.ids_mannheim.korap.index.TestDistanceIndex
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 s -- in de.ids_mannheim.korap.index.TestDistanceIndex
+[INFO] Running de.ids_mannheim.korap.collection.TestDocBits
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.ids_mannheim.korap.collection.TestDocBits
+[INFO] Running de.ids_mannheim.korap.collection.TestKrillCollectionIndex
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.206 s -- in de.ids_mannheim.korap.collection.TestKrillCollectionIndex
+[INFO] Running de.ids_mannheim.korap.collection.TestKrillCollection
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in de.ids_mannheim.korap.collection.TestKrillCollection
+[INFO] Running de.ids_mannheim.korap.collection.TestCollectionBuilder
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s -- in de.ids_mannheim.korap.collection.TestCollectionBuilder
+[INFO] Running de.ids_mannheim.korap.collection.TestKrillCollectionJSON
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.291 s -- in de.ids_mannheim.korap.collection.TestKrillCollectionJSON
+[INFO] Running de.ids_mannheim.korap.query.TestSpanWithinQuery
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in de.ids_mannheim.korap.query.TestSpanWithinQuery
+[INFO] Running de.ids_mannheim.korap.query.TestSpanWithinQueryJSON
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s -- in de.ids_mannheim.korap.query.TestSpanWithinQueryJSON
+[INFO] Running de.ids_mannheim.korap.query.TestSpanElementQuery
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.ids_mannheim.korap.query.TestSpanElementQuery
+[INFO] Running de.ids_mannheim.korap.query.TestTemporaryQueryLimitations
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s -- in de.ids_mannheim.korap.query.TestTemporaryQueryLimitations
+[INFO] Running de.ids_mannheim.korap.query.TestSpanSegmentAlterQuery
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in de.ids_mannheim.korap.query.TestSpanSegmentAlterQuery
+[INFO] Running de.ids_mannheim.korap.query.TestSpanSequenceQueryJSON
+[INFO] Tests run: 40, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 s -- in de.ids_mannheim.korap.query.TestSpanSequenceQueryJSON
+[INFO] Running de.ids_mannheim.korap.query.TestSpanRelationQueryJSON
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s -- in de.ids_mannheim.korap.query.TestSpanRelationQueryJSON
+[INFO] Running de.ids_mannheim.korap.query.TestKrillQueryJSON
+[INFO] Tests run: 68, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.079 s -- in de.ids_mannheim.korap.query.TestKrillQueryJSON
+[INFO] Running de.ids_mannheim.korap.query.TestKrillQuery
+[INFO] Tests run: 32, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s -- in de.ids_mannheim.korap.query.TestKrillQuery
+[INFO] Running de.ids_mannheim.korap.query.TestSpanSegmentSequenceQuery
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.ids_mannheim.korap.query.TestSpanSegmentSequenceQuery
+[INFO] Running de.ids_mannheim.korap.query.TestSpanSequenceQuery
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in de.ids_mannheim.korap.query.TestSpanSequenceQuery
+[INFO] Running de.ids_mannheim.korap.query.TestSpanSegmentQuery
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in de.ids_mannheim.korap.query.TestSpanSegmentQuery
+[INFO] Running de.ids_mannheim.korap.query.TestSpanReferenceQueryJSON
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s -- in de.ids_mannheim.korap.query.TestSpanReferenceQueryJSON
+[INFO] Running de.ids_mannheim.korap.query.TestFrameConstraint
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.ids_mannheim.korap.query.TestFrameConstraint
+[INFO] Running de.ids_mannheim.korap.query.TestSpanSubspanQueryJSON
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in de.ids_mannheim.korap.query.TestSpanSubspanQueryJSON
+[INFO] Running de.ids_mannheim.korap.query.TestSpanAlterQuery
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in de.ids_mannheim.korap.query.TestSpanAlterQuery
+[INFO] Running de.ids_mannheim.korap.query.TestSpanWithAttributeJSON
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in de.ids_mannheim.korap.query.TestSpanWithAttributeJSON
+[INFO] Running de.ids_mannheim.korap.util.TestKrillString
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in de.ids_mannheim.korap.util.TestKrillString
+[INFO] Running de.ids_mannheim.korap.util.TestKrillArray
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s -- in de.ids_mannheim.korap.util.TestKrillArray
+[INFO] Running de.ids_mannheim.korap.util.TestKrillDate
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s -- in de.ids_mannheim.korap.util.TestKrillDate
+[INFO] Running de.ids_mannheim.korap.util.TestKrillFingerprint
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.388 s -- in de.ids_mannheim.korap.util.TestKrillFingerprint
+[INFO] Running de.ids_mannheim.korap.util.TestKrillByte
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s -- in de.ids_mannheim.korap.util.TestKrillByte
+[INFO] Running de.ids_mannheim.korap.search.TestVcField
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in de.ids_mannheim.korap.search.TestVcField
+[INFO] Running de.ids_mannheim.korap.search.TestResult
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.034 s -- in de.ids_mannheim.korap.search.TestResult
+[INFO] Running de.ids_mannheim.korap.search.TestMetaFields
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.629 s -- in de.ids_mannheim.korap.search.TestMetaFields
+[INFO] Running de.ids_mannheim.korap.search.TestKrill
+[INFO] Tests run: 36, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 6.099 s -- in de.ids_mannheim.korap.search.TestKrill
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 845, Failures: 0, Errors: 0, Skipped: 6
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  54.232 s
+[INFO] Finished at: 2026-11-16T23:33:31+01:00
+[INFO] ------------------------------------------------------------------------
