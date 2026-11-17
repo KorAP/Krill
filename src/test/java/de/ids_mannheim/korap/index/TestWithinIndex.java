@@ -22,7 +22,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.Spans;
+import de.ids_mannheim.korap.query.spans.LegacySpans;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.Bits;
 import org.junit.Test;
@@ -1404,7 +1404,8 @@ public class TestWithinIndex {
         Map<Term, TermContext> termContexts = new HashMap<>();
         for (LeafReaderContext atomic : ki.reader().leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
-            Spans spans = sq.getSpans(atomic, bitset, termContexts);
+            LegacySpans spans = LegacySpans
+                    .wrap(sq.getSpans(atomic, bitset, termContexts));
             assertTrue("skipTo() before next() must initialize spans",
                     spans.skipTo(0));
             assertEquals(0, spans.doc());

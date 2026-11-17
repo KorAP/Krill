@@ -55,7 +55,7 @@ public class RelationSpans extends RelationBaseSpans {
     private static final boolean DEBUG = false;
     private int currentDoc, currentPosition;
     private RelationDirection direction;
-    private Spans relationTermSpan;
+    private LegacySpans relationTermSpan;
 
     protected Logger logger = LoggerFactory.getLogger(RelationSpans.class);
     private List<CandidateSpan> candidateList;

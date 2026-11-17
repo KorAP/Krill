@@ -327,7 +327,7 @@ public class SpansWithAttribute extends SimpleSpans {
      * 
      * @throws IOException
      */
-    private void advanceNotAttributes (Spans referentSpans) throws IOException {
+    private void advanceNotAttributes (LegacySpans referentSpans) throws IOException {
 
         for (AttributeSpans a : notAttributeList) {
             // advance the doc# of not AttributeSpans

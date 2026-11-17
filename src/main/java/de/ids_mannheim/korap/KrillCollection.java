@@ -806,7 +806,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
         // No terms were found
         if (terms != null) {
             // Todo: Maybe reuse a termsEnum!
-            final TermsEnum termsEnum = terms.iterator(null);
+            final TermsEnum termsEnum = terms.iterator();
 
             // Set the position in the iterator to the term that is
             // seeked
@@ -939,7 +939,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
                 FixedBitSet bitset = new FixedBitSet(docLength);
     
                 // Iterate over all tokens in this field
-                TermsEnum termsEnum = terms.iterator(null);
+                TermsEnum termsEnum = terms.iterator();
     
                 while (termsEnum.next() != null) {
     

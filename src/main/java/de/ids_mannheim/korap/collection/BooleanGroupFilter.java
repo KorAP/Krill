@@ -103,7 +103,7 @@ public class BooleanGroupFilter extends Filter {
 
 
     @Override
-    public String toString () {
+    public String toString (String field) {
         StringBuilder buffer = new StringBuilder(
                 this.isOptional ? "OrGroup(" : "AndGroup(");
         boolean first = true;

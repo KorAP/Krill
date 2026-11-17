@@ -79,8 +79,11 @@ public class MetaExporter {
     private final DirectoryReader reader;
 
     public MetaExporter (String indexPath) throws IOException {
-        this.reader = DirectoryReader.open(
-                new MMapDirectory(Paths.get(indexPath)));
+        MMapDirectory dir = new MMapDirectory(Paths.get(indexPath));
+        // Unmapping fails on Java 9+ with Lucene 5.2 -
+        // see KrillIndex.disableUnmap()
+        dir.setUseUnmap(false);
+        this.reader = DirectoryReader.open(dir);
     }
 
     public void close () throws IOException {

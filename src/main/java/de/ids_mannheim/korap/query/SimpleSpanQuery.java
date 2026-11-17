@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 
@@ -297,6 +298,37 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
     }
 
 
+    /**
+     * Add all terms of a span query to a set of terms.
+     *
+     * Since Lucene 5.2 <tt>SpanQuery.extractTerms()</tt> is
+     * protected and can't be called on arbitrary span queries
+     * anymore. Krill's own queries are asked directly, the queries
+     * of Lucene that Krill uses as operands are taken apart here.
+     * Other queries contribute no terms.
+     *
+     * @param query
+     *            The span query to get the terms from.
+     * @param terms
+     *            The set the terms are added to.
+     */
+    public static void collectTerms (SpanQuery query, Set<Term> terms) {
+        if (query instanceof SimpleSpanQuery) {
+            ((SimpleSpanQuery) query).extractTerms(terms);
+        }
+        else if (query instanceof SpanWithinQuery) {
+            ((SpanWithinQuery) query).extractTerms(terms);
+        }
+        else if (query instanceof SpanTermQuery) {
+            terms.add(((SpanTermQuery) query).getTerm());
+        }
+        else if (query instanceof SpanOrQuery) {
+            for (SpanQuery clause : ((SpanOrQuery) query).getClauses())
+                collectTerms(clause, terms);
+        };
+    };
+
+
     // For rewriting fuzzy searches like wildcard and regex
     /** {@inheritDoc} */
     @Override
@@ -307,15 +339,15 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
         }
 
         if (firstClause != null) {
-            firstClause.extractTerms(terms);
+            collectTerms(firstClause, terms);
         }
 
         if (secondClause != null) {
-            secondClause.extractTerms(terms);
+            collectTerms(secondClause, terms);
         }
         else if (clauseList != null) {
             for (SpanQuery clause : clauseList) {
-                clause.extractTerms(terms);
+                collectTerms(clause, terms);
             }
         }
     };

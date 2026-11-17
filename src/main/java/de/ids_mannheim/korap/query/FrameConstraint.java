@@ -1,7 +1,7 @@
 package de.ids_mannheim.korap.query;
 
 import de.ids_mannheim.korap.util.QueryException;
-import org.apache.lucene.search.spans.Spans;
+import de.ids_mannheim.korap.query.spans.LegacySpans;
 
 import java.util.*;
 
@@ -351,7 +351,7 @@ public class FrameConstraint {
     // 2. Binary: Go on by forwarding a
     // 3. Binary: Go on by forwarding b
     // 4. The constellation
-    public int _constellation (Spans a, Spans b) {
+    public int _constellation (LegacySpans a, LegacySpans b) {
 
         // Constellation checks are
         // optimized for lazy loading,

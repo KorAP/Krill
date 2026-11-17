@@ -206,7 +206,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
      * @throws IOException
      */
     protected abstract boolean setCandidateList (
-            List<CandidateSpan> candidateList, Spans candidate,
+            List<CandidateSpan> candidateList, LegacySpans candidate,
             boolean hasMoreCandidates, List<CandidateSpan> targetList)
             throws IOException;
 

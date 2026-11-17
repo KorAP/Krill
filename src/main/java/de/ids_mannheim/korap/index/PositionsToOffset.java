@@ -182,7 +182,7 @@ public class PositionsToOffset {
             if (terms != null) {
                 // TODO: Maybe reuse a termsEnum!
 
-                final TermsEnum termsEnum = terms.iterator(null);
+                final TermsEnum termsEnum = terms.iterator();
 
                 for (PositionsToOffsetArray posDoc : positions) {
                     if (this.exists(posDoc))

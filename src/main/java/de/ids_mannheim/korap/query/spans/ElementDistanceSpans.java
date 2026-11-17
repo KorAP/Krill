@@ -27,7 +27,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  */
 public class ElementDistanceSpans extends OrderedDistanceSpans {
 
-    private Spans elements;
+    private LegacySpans elements;
     private boolean hasMoreElements;
     private int elementPosition;
     private int secondSpanPostion;
@@ -50,8 +50,8 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
             throws IOException {
         super(query, context, acceptDocs, termContexts);
 
-        elements = query.getElementQuery().getSpans(context, acceptDocs,
-                termContexts);
+        elements = LegacySpans.wrap(query.getElementQuery().getSpans(context,
+                acceptDocs, termContexts));
 
         hasMoreElements = elements.next();
         hasMoreSpans = hasMoreFirstSpans && hasMoreElements;
@@ -129,7 +129,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
      * 
      * @return true iff an element containing the span, is found.
      */
-    private boolean advanceElementTo (Spans span) throws IOException {
+    private boolean advanceElementTo (LegacySpans span) throws IOException {
         while (hasMoreElements && elements.doc() == candidateListDocNum
                 && elements.start() < span.end()) {
 

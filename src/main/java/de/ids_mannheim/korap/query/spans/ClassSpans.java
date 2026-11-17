@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class ClassSpans extends SimpleSpans {
     protected List<byte[]> classedPayload;
-    protected Spans spans;
+    protected LegacySpans spans;
     protected byte number;
     protected SpanQuery operand;
     protected Boolean hasmorespans = false;
@@ -58,7 +58,8 @@ public class ClassSpans extends SimpleSpans {
                        Bits acceptDocs, Map<Term, TermContext> termContexts,
                        byte number)
             throws IOException {
-        spans = operand.getSpans(context, acceptDocs, termContexts);
+        spans = LegacySpans
+                .wrap(operand.getSpans(context, acceptDocs, termContexts));
 
         // The number of the class
         this.number = number;

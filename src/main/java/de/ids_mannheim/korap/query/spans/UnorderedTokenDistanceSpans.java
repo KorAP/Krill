@@ -77,7 +77,7 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
 
     @Override
     protected boolean setCandidateList (List<CandidateSpan> candidateList,
-            Spans candidate, boolean hasMoreCandidates,
+            LegacySpans candidate, boolean hasMoreCandidates,
             List<CandidateSpan> targetList) throws IOException {
 
         if (!targetList.isEmpty()) {
@@ -106,7 +106,7 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
      *         the maximum distance, <code>false</code> otherwise.
      */
     protected boolean isWithinMaxDistance (CandidateSpan target,
-            Spans candidate) {
+            LegacySpans candidate) {
         // left candidate
         if (candidate.end() < target.getStart()
                 && candidate.end() + maxDistance <= target.getStart()) {

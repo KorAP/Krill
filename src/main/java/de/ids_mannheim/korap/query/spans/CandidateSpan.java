@@ -41,7 +41,7 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
      *            a Span
      * @throws IOException
      */
-    public CandidateSpan (Spans span) throws IOException {
+    public CandidateSpan (LegacySpans span) throws IOException {
         this.doc = span.doc();
         this.start = span.start();
         this.end = span.end();
@@ -76,7 +76,7 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
      *            an element position
      * @throws IOException
      */
-    public CandidateSpan (Spans span, int position) throws IOException {
+    public CandidateSpan (LegacySpans span, int position) throws IOException {
         this(span);
         this.position = position;
     }

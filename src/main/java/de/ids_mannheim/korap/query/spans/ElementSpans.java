@@ -29,7 +29,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
  * @author diewald
  */
 public final class ElementSpans extends SimpleSpans {
-    private final TermSpans termSpans;
+    private final LegacySpans termSpans;
     private boolean isPayloadLoaded;
 
     private final Logger log = LoggerFactory.getLogger(ElementSpans.class);
@@ -70,7 +70,7 @@ public final class ElementSpans extends SimpleSpans {
                          Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanElementQuery, context, acceptDocs, termContexts);
-        termSpans = (TermSpans) this.firstSpans;
+        termSpans = this.firstSpans;
         hasMoreSpans = true;
         if (DEBUG)
             log.trace("Create ElementSpan");

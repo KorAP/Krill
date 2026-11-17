@@ -33,7 +33,7 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
  * 
  * @author diewald
  */
-public class WithinSpans extends Spans {
+public class WithinSpans extends LegacySpans {
 
     // Logger
     private final Logger log = LoggerFactory.getLogger(WithinSpans.class);
@@ -83,10 +83,10 @@ public class WithinSpans extends Spans {
     private SpanWithinQuery query;
 
     // Representing the first operand
-    private final Spans wrapSpans;
+    private final LegacySpans wrapSpans;
 
     // Representing the second operand
-    private final Spans embeddedSpans;
+    private final LegacySpans embeddedSpans;
 
     // Check flag if the current constellation
     // was checked yet
@@ -124,10 +124,10 @@ public class WithinSpans extends Spans {
         this.matchPayload = new LinkedList<byte[]>();
 
         // Get spans
-        this.wrapSpans = spanWithinQuery.wrap().getSpans(context, acceptDocs,
-                termContexts);
-        this.embeddedSpans = spanWithinQuery.embedded().getSpans(context,
-                acceptDocs, termContexts);
+        this.wrapSpans = LegacySpans.wrap(spanWithinQuery.wrap()
+                .getSpans(context, acceptDocs, termContexts));
+        this.embeddedSpans = LegacySpans.wrap(spanWithinQuery.embedded()
+                .getSpans(context, acceptDocs, termContexts));
 
         this.flag = flag;
 

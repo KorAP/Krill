@@ -50,7 +50,7 @@ public class VirtualCorpusFilter extends Filter {
     }
 
     @Override
-    public String toString () {
+    public String toString (String field) {
         return "vcFilter("+vcId+")";
     }
     

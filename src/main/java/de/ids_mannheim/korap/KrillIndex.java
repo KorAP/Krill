@@ -44,7 +44,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.Spans;
+import de.ids_mannheim.korap.query.spans.LegacySpans;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.RAMDirectory;
@@ -258,7 +258,7 @@ public final class KrillIndex implements IndexInfo {
      * @throws IOException
      */
     public KrillIndex (Directory directory) throws IOException {
-        this.directory = directory;
+        this.directory = disableUnmap(directory);
     };
 
 
@@ -271,7 +271,32 @@ public final class KrillIndex implements IndexInfo {
      * @throws IOException
      */
     public KrillIndex (Path path) throws IOException {
-        this.directory = new MMapDirectory(path);
+        this.directory = disableUnmap(new MMapDirectory(path));
+    };
+
+
+    /*
+     * Turn off the unmapping of memory mapped index files.
+     *
+     * Lucene 5.2 unmaps files on close by calling the internal
+     * cleaner() method of the JDK's direct byte buffers through
+     * reflection. Since Java 9 the module system forbids this and
+     * every close of a memory mapped file fails with an
+     * InaccessibleObjectException (unless the JVM is started with
+     * --add-opens for java.nio and jdk.internal.ref).
+     *
+     * Lucene 5.0 never unmapped on Java 9 and later (it looked for
+     * sun.misc.Cleaner, which no longer exists), so turning it off
+     * keeps the behaviour Krill had before the upgrade: mapped files
+     * are released by the garbage collector.
+     *
+     * TODO: Remove when upgrading to a Lucene version that unmaps
+     * on current Java versions by itself (Lucene 6.5 and later).
+     */
+    private static Directory disableUnmap (Directory directory) {
+        if (directory instanceof MMapDirectory)
+            ((MMapDirectory) directory).setUseUnmap(false);
+        return directory;
     };
     
     /**
@@ -1654,8 +1679,8 @@ public final class KrillIndex implements IndexInfo {
                 final PositionsToOffset pto = snippets ? new PositionsToOffset(atomic, field) : null;
 				
                 // Spans spans = NearSpansOrdered();
-                final Spans spans = query.getSpans(atomic, (Bits) bitset,
-                        termContexts);
+                final LegacySpans spans = LegacySpans.wrap(
+                        query.getSpans(atomic, (Bits) bitset, termContexts));
 
                 final IndexReader lreader = atomic.reader();
                 int localDocID, docID;
@@ -2079,8 +2104,8 @@ public final class KrillIndex implements IndexInfo {
 
                 // PositionsToOffset pto = new PositionsToOffset(atomic, field);
 
-                Spans spans = query.getSpans(atomic, (Bits) bitset,
-                        termContexts);
+                LegacySpans spans = LegacySpans.wrap(
+                        query.getSpans(atomic, (Bits) bitset, termContexts));
 
                 IndexReader lreader = atomic.reader();
 

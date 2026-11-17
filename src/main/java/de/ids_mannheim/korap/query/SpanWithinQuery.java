@@ -112,7 +112,7 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
 
     @Override
     public void extractTerms (Set<Term> terms) {
-        embedded.extractTerms(terms);
+        SimpleSpanQuery.collectTerms(embedded, terms);
     };
 
 

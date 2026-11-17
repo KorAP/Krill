@@ -587,7 +587,7 @@ public class KrillBenchmark {
             size = ki.reader().numDocs();
         long step = Math.max(1, size / texts);
 
-        TermsEnum iter = terms.iterator(null);
+        TermsEnum iter = terms.iterator();
         BytesRef term;
         for (long i = 0; (term = iter.next()) != null
                 && sigles.size() < texts; i++) {

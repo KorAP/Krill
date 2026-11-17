@@ -40,7 +40,7 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.NumericRangeQuery;
-import org.apache.lucene.search.spans.Spans;
+import de.ids_mannheim.korap.query.spans.LegacySpans;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
@@ -547,7 +547,8 @@ public class TestIndex { // extends LuceneTestCase {
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             //	    Spans spans = NearSpansOrdered();
-            Spans spans = snquery.getSpans(atomic, bitset, termContexts);
+            LegacySpans spans = LegacySpans
+                    .wrap(snquery.getSpans(atomic, bitset, termContexts));
 
             while (spans.next()) {
                 int docid = atomic.docBase + spans.doc();
@@ -582,7 +583,8 @@ public class TestIndex { // extends LuceneTestCase {
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             //	    Spans spans = NearSpansOrdered();
-            Spans spans = snquery.getSpans(atomic, bitset, termContexts);
+            LegacySpans spans = LegacySpans
+                    .wrap(snquery.getSpans(atomic, bitset, termContexts));
 
             while (spans.next()) {
                 int docid = atomic.docBase + spans.doc();
@@ -611,7 +613,8 @@ public class TestIndex { // extends LuceneTestCase {
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
-            Spans spans = ssequery.toQuery().getSpans(atomic, bitset, termContexts);
+            LegacySpans spans = LegacySpans.wrap(
+                    ssequery.toQuery().getSpans(atomic, bitset, termContexts));
         
             while (spans.next()) {
         	int docid = atomic.docBase + spans.doc();
@@ -636,7 +639,8 @@ public class TestIndex { // extends LuceneTestCase {
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
-            Spans spans = ssequery.toQuery().getSpans(atomic, bitset, termContexts);
+            LegacySpans spans = LegacySpans.wrap(
+                    ssequery.toQuery().getSpans(atomic, bitset, termContexts));
         
             while (spans.next()) {
         	int docid = atomic.docBase + spans.doc();

@@ -27,7 +27,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  */
 public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
-    private Spans elements;
+    private LegacySpans elements;
     private boolean hasMoreElements;
     private int elementPosition;
 
@@ -55,8 +55,8 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
                                           Map<Term, TermContext> termContexts)
             throws IOException {
         super(query, context, acceptDocs, termContexts);
-        elements = query.getElementQuery().getSpans(context, acceptDocs,
-                termContexts);
+        elements = LegacySpans.wrap(query.getElementQuery().getSpans(context,
+                acceptDocs, termContexts));
         hasMoreElements = elements.next();
         elementPosition = 0;
         elementList = new ArrayList<CandidateSpan>();
@@ -122,7 +122,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      *         <code>false</code> otherwise.
      * @throws IOException
      */
-    private boolean addSpan (Spans span, List<CandidateSpan> list,
+    private boolean addSpan (LegacySpans span, List<CandidateSpan> list,
             boolean hasMoreSpan) throws IOException {
         int position;
         while (hasMoreSpan && span.doc() == currentDocNum) {
@@ -148,7 +148,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      * @return the element position
      * @throws IOException
      */
-    private int findElementPosition (Spans span) throws IOException {
+    private int findElementPosition (LegacySpans span) throws IOException {
         // Check in the element list
         if (!elementList.isEmpty() && span.end() <= elementList
                 .get(elementList.size() - 1).getEnd()) {
@@ -174,7 +174,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      *         if the span is not in an element.
      * @throws IOException
      */
-    private boolean advanceElementTo (Spans span) throws IOException {
+    private boolean advanceElementTo (LegacySpans span) throws IOException {
         while (hasMoreElements && elements.doc() == currentDocNum
                 && elements.start() < span.end()) {
 
@@ -193,7 +193,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
     @Override
     protected boolean setCandidateList (List<CandidateSpan> candidateList,
-            Spans candidate, boolean hasMoreCandidates,
+            LegacySpans candidate, boolean hasMoreCandidates,
             List<CandidateSpan> targetList) throws IOException {
 
         if (!targetList.isEmpty()) {

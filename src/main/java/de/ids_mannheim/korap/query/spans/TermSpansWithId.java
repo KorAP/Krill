@@ -26,7 +26,7 @@ import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
  */
 public class TermSpansWithId extends SimpleSpans {
 
-    private TermSpans termSpans;
+    private LegacySpans termSpans;
 
 
     /**
@@ -44,7 +44,7 @@ public class TermSpansWithId extends SimpleSpans {
                             Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanTermWithIdQuery, context, acceptDocs, termContexts);
-        termSpans = (TermSpans) firstSpans;
+        termSpans = firstSpans;
         hasMoreSpans = termSpans.next();
         hasSpanId = true;
     }

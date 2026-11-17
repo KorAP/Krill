@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Collection;
 
-import org.apache.lucene.search.spans.Spans;
+import de.ids_mannheim.korap.query.spans.LegacySpans;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -260,7 +260,7 @@ public class TestFrameConstraint {
                 fc1._constellation(new TestSpans(5, 6), new TestSpans(2, 4)));
     };
 
-    private class TestSpans extends Spans {
+    private class TestSpans extends LegacySpans {
         private int s, e;
 
 

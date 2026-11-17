@@ -26,7 +26,7 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.Spans;
+import de.ids_mannheim.korap.query.spans.LegacySpans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -291,7 +291,8 @@ public class TestSimple {
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
-            Spans spans = query.getSpans(atomic, bitset, termContexts);
+            LegacySpans spans = LegacySpans
+                    .wrap(query.getSpans(atomic, bitset, termContexts));
 
             while (spans.next()) {
                 StringBuffer payloadString = new StringBuffer();

@@ -22,7 +22,7 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
  * 
  * @author margaretha
  */
-public abstract class SimpleSpans extends Spans {
+public abstract class SimpleSpans extends LegacySpans {
     protected final Logger log = LoggerFactory.getLogger(SimpleSpans.class);
     private SimpleSpanQuery query;
     protected boolean isStartEnumeration;
@@ -30,7 +30,7 @@ public abstract class SimpleSpans extends Spans {
 
     protected boolean hasMoreSpans;
     // Enumeration of Spans
-    protected Spans firstSpans, secondSpans;
+    protected LegacySpans firstSpans, secondSpans;
 
     protected int matchDocNumber, matchStartPosition, matchEndPosition;
     protected Collection<byte[]> matchPayload;
@@ -61,10 +61,12 @@ public abstract class SimpleSpans extends Spans {
         // Get the enumeration of the two spans to match
         SpanQuery sq;
         if ((sq = simpleSpanQuery.getFirstClause()) != null)
-            firstSpans = sq.getSpans(context, acceptDocs, termContexts);
+            firstSpans = LegacySpans.wrap(
+                    sq.getSpans(context, acceptDocs, termContexts));
 
         if ((sq = simpleSpanQuery.getSecondClause()) != null)
-            secondSpans = sq.getSpans(context, acceptDocs, termContexts);
+            secondSpans = LegacySpans.wrap(
+                    sq.getSpans(context, acceptDocs, termContexts));
 
     }
 
@@ -80,7 +82,7 @@ public abstract class SimpleSpans extends Spans {
      * 
      * @return true iff such a document exists.
      */
-    protected boolean ensureSameDoc (Spans x, Spans y) throws IOException {
+    protected boolean ensureSameDoc (LegacySpans x, LegacySpans y) throws IOException {
         while (hasMoreSpans && x.doc() != y.doc()) {
             if (x.doc() < y.doc()) {
                 if (!x.skipTo(y.doc())) {
@@ -104,7 +106,7 @@ public abstract class SimpleSpans extends Spans {
      * 
      * @return true iff such a doc is found.
      */
-    protected boolean findSameDoc (Spans x, Spans y, Spans e)
+    protected boolean findSameDoc (LegacySpans x, LegacySpans y, LegacySpans e)
             throws IOException {
 
         while (hasMoreSpans) {
