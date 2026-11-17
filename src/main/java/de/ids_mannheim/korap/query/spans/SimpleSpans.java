@@ -121,21 +121,23 @@ public abstract class SimpleSpans extends LegacySpans {
     }
 
 
+    // Not yet ported classes keep their match in these fields;
+    // for ported classes the old API is derived from the iterator API
     @Override
     public int doc () {
-        return matchDocNumber;
+        return usesIteratorApi() ? super.doc() : matchDocNumber;
     }
 
 
     @Override
     public int start () {
-        return matchStartPosition;
+        return usesIteratorApi() ? super.start() : matchStartPosition;
     }
 
 
     @Override
     public int end () {
-        return matchEndPosition;
+        return usesIteratorApi() ? super.end() : matchEndPosition;
     }
 
 

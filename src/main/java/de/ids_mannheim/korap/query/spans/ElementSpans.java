@@ -11,7 +11,6 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.TermState;
-import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,32 +71,84 @@ public final class ElementSpans extends SimpleSpans {
         super(spanElementQuery, context, acceptDocs, termContexts);
         termSpans = this.firstSpans;
         hasMoreSpans = true;
+        isPayloadLoaded = true;
         if (DEBUG)
             log.trace("Create ElementSpan");
     };
 
 
     @Override
-    public boolean next () throws IOException {
-
-        if (DEBUG)
-            log.trace("Next element span for element");
-
-        if (!hasMoreSpans || !(hasMoreSpans = termSpans.next()))
-            return false;
-
-        isStartEnumeration = false;
-        this.matchPayload = null;
-        matchEndPosition = -1;
-        return advance();
+    protected boolean usesIteratorApi () {
+        return true;
     };
 
 
-    private boolean advance () throws IOException {
-        this.matchStartPosition = termSpans.start();
-        this.matchDocNumber = termSpans.doc();
-        isPayloadLoaded = false;
-        return true;
+    @Override
+    public int docID () {
+        return termSpans.docID();
+    };
+
+
+    @Override
+    public int nextDoc () throws IOException {
+        if (DEBUG)
+            log.trace("Next document for element");
+        isStartEnumeration = false;
+        return this.enterDoc(termSpans.nextDoc());
+    };
+
+
+    @Override
+    public int advance (int target) throws IOException {
+        if (DEBUG)
+            log.trace("Advance ElementSpans {} -> {}", termSpans.docID(),
+                    target);
+        isStartEnumeration = false;
+        return this.enterDoc(termSpans.advance(target));
+    };
+
+
+    // No position of the new document is read yet
+    private int enterDoc (int doc) {
+        this.matchDocNumber = doc;
+        this.matchStartPosition = -1;
+        this.matchEndPosition = -1;
+        this.matchPayload = null;
+        this.isPayloadLoaded = true;
+        if (doc == NO_MORE_DOCS) {
+            hasMoreSpans = false;
+            this.matchStartPosition = NO_MORE_POSITIONS;
+            this.matchEndPosition = NO_MORE_POSITIONS;
+        };
+        return doc;
+    };
+
+
+    @Override
+    public int nextStartPosition () throws IOException {
+        if (DEBUG)
+            log.trace("Next element span for element");
+
+        this.matchPayload = null;
+        this.matchStartPosition = termSpans.nextStartPosition();
+
+        // No more elements in this document
+        if (this.matchStartPosition == NO_MORE_POSITIONS) {
+            this.matchEndPosition = NO_MORE_POSITIONS;
+            this.isPayloadLoaded = true;
+            return NO_MORE_POSITIONS;
+        };
+
+        // The end position is read lazily from the payload
+        this.matchEndPosition = -1;
+        this.isPayloadLoaded = false;
+        return this.matchStartPosition;
+    };
+
+
+    @Override
+    public int startPosition () {
+        return this.matchStartPosition;
     };
 
 
@@ -168,7 +219,7 @@ public final class ElementSpans extends SimpleSpans {
 
 
     @Override
-    public int end () {
+    public int endPosition () {
         this.loadPayload();
         return this.matchEndPosition;
     };
@@ -184,7 +235,7 @@ public final class ElementSpans extends SimpleSpans {
     @Override
     public boolean isPayloadAvailable () {
         this.loadPayload();
-        return !this.matchPayload.isEmpty();
+        return this.matchPayload != null && !this.matchPayload.isEmpty();
     };
 
 
@@ -192,23 +243,6 @@ public final class ElementSpans extends SimpleSpans {
     public short getSpanId () {
         this.loadPayload();
         return spanId;
-    };
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-
-        if (DEBUG)
-            log.trace("Skip ElementSpans {} -> {}", firstSpans.doc(), target);
-
-        if (hasMoreSpans && firstSpans.doc() < target
-                && firstSpans.skipTo(target)) {
-            return this.advance();
-        };
-
-        hasMoreSpans = false;
-        this.matchPayload = null;
-        return false;
     };
 
 

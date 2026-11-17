@@ -53,7 +53,11 @@ import de.ids_mannheim.korap.query.SpanRelationQuery;
 public class RelationSpans extends RelationBaseSpans {
 
     private static final boolean DEBUG = false;
-    private int currentDoc, currentPosition;
+
+    // Start position of the child that is not collected yet,
+    // NO_MORE_POSITIONS when the child has no more positions
+    // in the current document
+    private int childStart = -1;
     private RelationDirection direction;
     private LegacySpans relationTermSpan;
 
@@ -99,77 +103,104 @@ public class RelationSpans extends RelationBaseSpans {
 
         candidateList = new ArrayList<>();
         relationTermSpan = firstSpans;
-        hasMoreSpans = relationTermSpan.next();
+        hasMoreSpans = true;
     }
 
 
     @Override
-    public boolean next () throws IOException {
+    protected boolean usesIteratorApi () {
+        return true;
+    }
+
+
+    @Override
+    public int docID () {
+        return matchDocNumber;
+    }
+
+
+    @Override
+    public int nextDoc () throws IOException {
         isStartEnumeration = false;
-        return advance();
+        return this.enterDoc(relationTermSpan.nextDoc());
     }
 
 
-    /**
-     * Returns true if there is a next match by checking if the
-     * CandidateList is
-     * not empty and set the first element of the list as the next
-     * match.
-     * Otherwise, if the RelationSpan has not ended yet, try to set
-     * the
-     * CandidateList.
-     * 
-     * @return true if there is a next match.
-     * @throws IOException
-     */
-    private boolean advance () throws IOException {
-        while (hasMoreSpans || !candidateList.isEmpty()) {
-            if (!candidateList.isEmpty()) {
-                CandidateSpan cs = candidateList.get(0);
-                this.matchDocNumber = cs.getDoc();
-                this.matchStartPosition = cs.getStart();
-                this.matchEndPosition = cs.getEnd();
-                this.matchPayload = cs.getPayloads();
-                this.setRightStart(cs.getRightStart());
-                this.setRightEnd(cs.getRightEnd());
-                this.spanId = cs.getSpanId(); // relation id
-                this.leftId = cs.getLeftId();
-                this.rightId = cs.getRightId();
-                candidateList.remove(0);
-                return true;
-            }
-            else {
-                setCandidateList();
-                if(hasMoreSpans){
-                    currentDoc = relationTermSpan.doc();
-                    currentPosition = relationTermSpan.start();
-                }
-            }
+    @Override
+    public int advance (int target) throws IOException {
+        isStartEnumeration = false;
+        return this.enterDoc(relationTermSpan.advance(target));
+    }
+
+
+    // Position the child on the first relation of the new document
+    private int enterDoc (int doc) throws IOException {
+        candidateList.clear();
+        matchDocNumber = doc;
+        matchStartPosition = -1;
+        matchEndPosition = -1;
+        if (doc == NO_MORE_DOCS) {
+            hasMoreSpans = false;
+            childStart = NO_MORE_POSITIONS;
+            matchStartPosition = NO_MORE_POSITIONS;
+            matchEndPosition = NO_MORE_POSITIONS;
         }
-        return false;
+        else {
+            childStart = relationTermSpan.nextStartPosition();
+        };
+        return doc;
+    }
+
+
+    @Override
+    public int nextStartPosition () throws IOException {
+        if (candidateList.isEmpty()) {
+            if (childStart == NO_MORE_POSITIONS) {
+                matchStartPosition = NO_MORE_POSITIONS;
+                matchEndPosition = NO_MORE_POSITIONS;
+                return NO_MORE_POSITIONS;
+            };
+            setCandidateList();
+        };
+
+        CandidateSpan cs = candidateList.get(0);
+        this.matchStartPosition = cs.getStart();
+        this.matchEndPosition = cs.getEnd();
+        this.matchPayload = cs.getPayloads();
+        this.setRightStart(cs.getRightStart());
+        this.setRightEnd(cs.getRightEnd());
+        this.spanId = cs.getSpanId(); // relation id
+        this.leftId = cs.getLeftId();
+        this.rightId = cs.getRightId();
+        candidateList.remove(0);
+        return this.matchStartPosition;
+    }
+
+
+    @Override
+    public int startPosition () {
+        return matchStartPosition;
+    }
+
+
+    @Override
+    public int endPosition () {
+        return matchEndPosition;
     }
 
 
     /**
-     * Setting the CandidateList by adding all relationTermSpan whose
-     * start
-     * position is the same as the current span position, and sort the
-     * candidateList.
-     * 
-     * @throws IOException
+     * Collects all the relations at the start position the child is
+     * on, and sorts them.
      */
     private void setCandidateList () throws IOException {
-        if (DEBUG){
-            logger.debug("hasMoreSpans "+hasMoreSpans+" "+relationTermSpan.doc());
-        }
-        while (hasMoreSpans && relationTermSpan.doc() == currentDoc
-                && relationTermSpan.start() == currentPosition) {
-
+        final int position = childStart;
+        while (childStart == position) {
             CandidateSpan cs = new CandidateSpan(relationTermSpan);
             readPayload(cs);
             setPayload(cs);
             candidateList.add(cs);
-            hasMoreSpans = relationTermSpan.next();
+            childStart = relationTermSpan.nextStartPosition();
         }
         Collections.sort(candidateList);
     }
@@ -316,21 +347,6 @@ public class RelationSpans extends RelationBaseSpans {
         buffer.putInt(end);
         buffer.put(classNumber);
         return buffer.array();
-    }
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (firstSpans.doc() < target)) {
-            if (!firstSpans.skipTo(target)) {
-                candidateList.clear();
-                return false;
-            }
-        }
-        setCandidateList();
-        matchPayload.clear();
-        isStartEnumeration = false;
-        return advance();
     }
 
 

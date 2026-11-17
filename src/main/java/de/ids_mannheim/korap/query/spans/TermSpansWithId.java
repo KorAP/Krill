@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
@@ -26,9 +25,6 @@ import de.ids_mannheim.korap.query.SpanTermWithIdQuery;
  */
 public class TermSpansWithId extends SimpleSpans {
 
-    private LegacySpans termSpans;
-
-
     /**
      * Creates TermSpansWithId from the given spanTermWithIdQuery.
      * 
@@ -44,37 +40,54 @@ public class TermSpansWithId extends SimpleSpans {
                             Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanTermWithIdQuery, context, acceptDocs, termContexts);
-        termSpans = firstSpans;
-        hasMoreSpans = termSpans.next();
         hasSpanId = true;
     }
 
 
     @Override
-    public boolean next () throws IOException {
-        isStartEnumeration = false;
-        return advance();
+    protected boolean usesIteratorApi () {
+        return true;
     }
 
 
-    /**
-     * Advances to the next match and set it as the current match.
-     * 
-     * @return <code>true</code> if a match is found,
-     *         <code>false</code>
-     *         otherwise.
-     * @throws IOException
-     */
-    private boolean advance () throws IOException {
-        while (hasMoreSpans) {
+    @Override
+    public int docID () {
+        return firstSpans.docID();
+    }
+
+
+    @Override
+    public int nextDoc () throws IOException {
+        isStartEnumeration = false;
+        return firstSpans.nextDoc();
+    }
+
+
+    @Override
+    public int advance (int target) throws IOException {
+        isStartEnumeration = false;
+        return firstSpans.advance(target);
+    }
+
+
+    @Override
+    public int nextStartPosition () throws IOException {
+        int start = firstSpans.nextStartPosition();
+        if (start != NO_MORE_POSITIONS)
             readPayload();
-            matchDocNumber = firstSpans.doc();
-            matchStartPosition = firstSpans.start();
-            matchEndPosition = firstSpans.end();
-            hasMoreSpans = firstSpans.next();
-            return true;
-        }
-        return false;
+        return start;
+    }
+
+
+    @Override
+    public int startPosition () {
+        return firstSpans.startPosition();
+    }
+
+
+    @Override
+    public int endPosition () {
+        return firstSpans.endPosition();
     }
 
 
@@ -90,19 +103,6 @@ public class TermSpansWithId extends SimpleSpans {
         ByteBuffer bb = ByteBuffer.allocate(payload.get(0).length);
         bb.put(payload.get(0));
         setSpanId(bb.getShort(0)); //term id
-    }
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (firstSpans.doc() < target)) {
-            if (!firstSpans.skipTo(target)) {
-                return false;
-            }
-        }
-        matchPayload.clear();
-        isStartEnumeration = false;
-        return advance();
     }
 
 

@@ -41,8 +41,12 @@ import de.ids_mannheim.korap.query.SpanAttributeQuery;
 public class AttributeSpans extends SimpleSpans {
 
     private List<CandidateAttributeSpan> candidateList;
-    private int currentDoc, currentPosition;
     private boolean isFinish;
+
+    // Start position of the child that is not collected yet,
+    // NO_MORE_POSITIONS when the child has no more positions
+    // in the current document
+    private int childStart = -1;
 
     public static enum PayloadTypeIdentifier {
         TERM_ATTRIBUTE(16), ELEMENT_ATTRIBUTE(17), RELATION_ATTRIBUTE(18);
@@ -80,51 +84,94 @@ public class AttributeSpans extends SimpleSpans {
             throws IOException {
         super(spanAttributeQuery, context, acceptDocs, termContexts);
         this.hasSpanId = true;
-
+        this.hasMoreSpans = true;
         candidateList = new ArrayList<>();
-        hasMoreSpans = firstSpans.next();
-        if (hasMoreSpans) {
-            currentDoc = firstSpans.doc();
-            currentPosition = firstSpans.start();
-        }
     }
 
 
     @Override
-    public boolean next () throws IOException {
+    protected boolean usesIteratorApi () {
+        return true;
+    }
+
+
+    @Override
+    public int docID () {
+        return matchDocNumber;
+    }
+
+
+    @Override
+    public int nextDoc () throws IOException {
         isStartEnumeration = false;
+        return this.enterDoc(firstSpans.nextDoc());
+    }
+
+
+    @Override
+    public int advance (int target) throws IOException {
+        isStartEnumeration = false;
+        return this.enterDoc(firstSpans.advance(target));
+    }
+
+
+    // Position the child on the first attribute of the new document
+    private int enterDoc (int doc) throws IOException {
+        candidateList.clear();
         matchPayload.clear();
-        return advance();
+        matchDocNumber = doc;
+        matchStartPosition = -1;
+        matchEndPosition = -1;
+        if (doc == NO_MORE_DOCS) {
+            hasMoreSpans = false;
+            childStart = NO_MORE_POSITIONS;
+            matchStartPosition = NO_MORE_POSITIONS;
+            matchEndPosition = NO_MORE_POSITIONS;
+        }
+        else {
+            childStart = firstSpans.nextStartPosition();
+        };
+        return doc;
     }
 
 
     /**
      * Moves to the next match by checking the candidate match list or
      * setting the list first when it is empty.
-     * 
-     * @return true if a match is found
-     * @throws IOException
      */
-    private boolean advance () throws IOException {
-        while (hasMoreSpans || !candidateList.isEmpty()) {
-            if (!candidateList.isEmpty()) {
-                // set the current match from the first CandidateAttributeSpan
-                // in the candidate list
-                CandidateAttributeSpan cs = candidateList.get(0);
-                this.matchDocNumber = cs.getDoc();
-                this.matchStartPosition = cs.getStart();
-                this.matchEndPosition = cs.getEnd();
-                this.setSpanId(cs.getSpanId()); // referentId
-                candidateList.remove(0);
-                return true;
-            }
-            else {
-                setCandidateList();
-                currentDoc = firstSpans.doc();
-                currentPosition = firstSpans.start();
-            }
-        }
-        return false;
+    @Override
+    public int nextStartPosition () throws IOException {
+        matchPayload.clear();
+
+        if (candidateList.isEmpty()) {
+            if (childStart == NO_MORE_POSITIONS) {
+                matchStartPosition = NO_MORE_POSITIONS;
+                matchEndPosition = NO_MORE_POSITIONS;
+                return NO_MORE_POSITIONS;
+            };
+            setCandidateList();
+        };
+
+        // set the current match from the first CandidateAttributeSpan
+        // in the candidate list
+        CandidateAttributeSpan cs = candidateList.get(0);
+        this.matchStartPosition = cs.getStart();
+        this.matchEndPosition = cs.getEnd();
+        this.setSpanId(cs.getSpanId()); // referentId
+        candidateList.remove(0);
+        return this.matchStartPosition;
+    }
+
+
+    @Override
+    public int startPosition () {
+        return matchStartPosition;
+    }
+
+
+    @Override
+    public int endPosition () {
+        return matchEndPosition;
     }
 
 
@@ -137,12 +184,11 @@ public class AttributeSpans extends SimpleSpans {
      * @throws IOException
      */
     private void setCandidateList () throws IOException {
+        final int position = childStart;
 
-        while (hasMoreSpans && firstSpans.doc() == currentDoc
-                && firstSpans.start() == currentPosition) {
-
+        while (childStart == position) {
             candidateList.add(createCandidateSpan());
-            hasMoreSpans = firstSpans.next();
+            childStart = firstSpans.nextStartPosition();
         }
 
         Collections.sort(candidateList);
@@ -206,21 +252,6 @@ public class AttributeSpans extends SimpleSpans {
      */
     public void setFinish (boolean isFinish) {
         this.isFinish = isFinish;
-    }
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (firstSpans.doc() < target)) {
-            if (!firstSpans.skipTo(target)) {
-                candidateList.clear();
-                return false;
-            }
-        }
-        setCandidateList();
-        matchPayload.clear();
-        isStartEnumeration = false;
-        return advance();
     }
 
 
