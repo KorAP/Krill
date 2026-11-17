@@ -94,14 +94,25 @@ public class FocusSpans extends SimpleSpans {
         removeTemporaryClasses = query.removeTemporaryClasses();
 
         candidates = new PriorityQueue<>(windowSize, comparator);
-        hasMoreSpans = firstSpans.next();
-        currentDoc = firstSpans.doc();
 
         this.query = query;
     }
 
     @Override
-    public boolean next () throws IOException {
+    protected boolean usesIteratorApi () {
+        return true;
+    };
+
+
+    @Override
+    protected void startDocument () {
+        candidates.clear();
+        currentDoc = firstSpans.docID();
+    };
+
+
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
         matchPayload.clear();
         spanId = 0;
         CandidateSpan cs;
@@ -117,10 +128,10 @@ public class FocusSpans extends SimpleSpans {
                 if (firstSpans.isPayloadAvailable() && updateSpanPositions(
                         cs = new CandidateSpan(firstSpans))) {
                     setMatch(cs);
-                    hasMoreSpans = firstSpans.next();
+                    hasMoreSpans = nextInDocument(firstSpans);
                     return true;
                 }
-                hasMoreSpans = firstSpans.next();
+                hasMoreSpans = nextInDocument(firstSpans);
             }
             else if (candidates.isEmpty()) {
                 currentDoc = firstSpans.doc();
@@ -160,7 +171,7 @@ public class FocusSpans extends SimpleSpans {
                     candidates.add(cs);
                 }
             }
-            hasMoreSpans = firstSpans.next();
+            hasMoreSpans = nextInDocument(firstSpans);
         }
     }
 
@@ -268,24 +279,6 @@ public class FocusSpans extends SimpleSpans {
     }
 
     // Todo: Check for this on document boundaries!
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (candidates.size() > 0) {
-            CandidateSpan cs;
-            while ((cs = candidates.poll()) != null) {
-                if (cs.getDoc() == target) {
-                    return next();
-                }
-            }
-        }
-        if (firstSpans.doc() == target || firstSpans.doc() > target) {
-            return next();
-        }
-        if (firstSpans.doc() < target && firstSpans.skipTo(target)) {
-            return next();
-        }
-        return false;
-    };
 
     @Override
     public String toString () {

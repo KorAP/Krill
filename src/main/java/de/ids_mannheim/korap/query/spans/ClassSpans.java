@@ -96,34 +96,63 @@ public class ClassSpans extends SimpleSpans {
     }
 
 
+
+
+
+    @Override
+    protected boolean usesIteratorApi () {
+        return true;
+    };
+
+
+    @Override
+    protected LegacySpans driver () {
+        return spans;
+    };
+
+
+    // Once exhausted, ClassSpans reported the state of its operand
+    // through the old API - for spans of Lucene that is NO_MORE_DOCS,
+    // while spans of Krill keep their last match
+    private boolean reportsOperand () {
+        return isExhausted() && spans.isLuceneSpans();
+    };
+
+
     @Override
     public int doc () {
-        return spans.doc();
+        return reportsOperand() ? spans.doc() : super.doc();
     };
 
 
     @Override
     public int start () {
-        return spans.start();
+        return reportsOperand() ? spans.start() : super.start();
     };
 
 
     @Override
     public int end () {
-        return spans.end();
+        return reportsOperand() ? spans.end() : super.end();
     };
 
 
     @Override
-    public boolean next () throws IOException {
+    protected boolean nextMatchInDocument () throws IOException {
         if (DEBUG)
             log.trace("Forward next");
 
-        if (spans.next())
-            return this.addClassPayload();
+        if (!hasMoreSpans) {
+            hasmorespans = false;
+            return false;
+        };
 
-        hasmorespans = false;
-        return false;
+        this.matchDocNumber = spans.docID();
+        this.matchStartPosition = spans.startPosition();
+        this.matchEndPosition = spans.endPosition();
+        this.addClassPayload();
+        hasMoreSpans = nextInDocument(spans);
+        return true;
     };
 
 
@@ -141,14 +170,14 @@ public class ClassSpans extends SimpleSpans {
 
         if (DEBUG) {
             log.trace("Wrap class {} around span {} - {}", number,
-                    spans.start(), spans.end());
+                    spans.startPosition(), spans.endPosition());
         };
 
         // Todo: Better allocate using a Factory!
         ByteBuffer bb = ByteBuffer.allocate(10);
         bb.put((byte) 0);
-        bb.putInt(spans.start());
-        bb.putInt(spans.end());
+        bb.putInt(spans.startPosition());
+        bb.putInt(spans.endPosition());
         bb.put(number);
         /*
         System.err.println(
@@ -172,18 +201,6 @@ public class ClassSpans extends SimpleSpans {
         return true;
     };
 
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        classedPayload.clear();
-
-        if (DEBUG)
-            log.trace("Skip ClassSpans {} -> {}", spans.doc(), target);
-
-        if (hasmorespans && spans.doc() < target && spans.skipTo(target))
-            return this.addClassPayload();
-        return false;
-    };
 
 
     @Override

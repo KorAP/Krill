@@ -141,6 +141,156 @@ public abstract class SimpleSpans extends LegacySpans {
     }
 
 
+    // ------------------------------------------------------------
+    // Iterator API for classes ported "document by document"
+    //
+    // A ported class that overrides usesIteratorApi() to return true
+    // and implements nextMatchInDocument() gets the whole iterator
+    // API from here. Its matching logic only ever sees the positions
+    // of its driving child spans (see driver()) in the current
+    // document, and moves that child with nextInDocument(). Classes
+    // that implement the iterator API completely by themselves
+    // override these methods.
+    // ------------------------------------------------------------
+
+    // The first match of the current document was found by
+    // nextDoc() or advance(), but not returned yet by
+    // nextStartPosition()
+    private boolean firstMatchPending = false;
+
+
+    /**
+     * The child spans that drive the iteration over the documents.
+     * 
+     * @return the first child spans by default.
+     */
+    protected LegacySpans driver () {
+        return firstSpans;
+    }
+
+
+    /**
+     * Called whenever a new document is entered - after the driver
+     * was moved to its first position in the document, and before
+     * the first match is searched. Classes reset the state they keep
+     * per document here.
+     */
+    protected void startDocument () throws IOException {}
+
+
+    /**
+     * Find the next match in the current document and set the match
+     * properties (start and end position, payload, ...).
+     * When this is called, the driver is positioned on its next
+     * unprocessed position in the document if
+     * <tt>hasMoreSpans</tt> is true.
+     * 
+     * @return <tt>true</tt> if a match was found, <tt>false</tt>
+     *         if the document has no more matches.
+     */
+    protected boolean nextMatchInDocument () throws IOException {
+        throw new UnsupportedOperationException(getClass().getName()
+                + " has to implement nextMatchInDocument()");
+    }
+
+
+    /**
+     * Move the given child spans to their next position in the
+     * current document.
+     * 
+     * @return <tt>true</tt> if there is such a position.
+     */
+    protected static boolean nextInDocument (LegacySpans spans)
+            throws IOException {
+        return spans.nextStartPosition() != NO_MORE_POSITIONS;
+    }
+
+
+    @Override
+    public int docID () {
+        return usesIteratorApi() ? matchDocNumber : super.docID();
+    }
+
+
+    @Override
+    public int nextDoc () throws IOException {
+        if (!usesIteratorApi())
+            return super.nextDoc();
+        return this.toDocumentWithMatch(driver().nextDoc());
+    }
+
+
+    @Override
+    public int advance (int target) throws IOException {
+        if (!usesIteratorApi())
+            return super.advance(target);
+        return this.toDocumentWithMatch(driver().advance(target));
+    }
+
+
+    // Starting with the given document, find the first document
+    // with a match, and keep that match for nextStartPosition()
+    private int toDocumentWithMatch (int doc) throws IOException {
+        isStartEnumeration = false;
+        firstMatchPending = false;
+        while (doc != NO_MORE_DOCS) {
+            matchDocNumber = doc;
+            hasMoreSpans = nextInDocument(driver());
+            startDocument();
+            if (this.nextMatchInDocument()) {
+                matchDocNumber = doc;
+                firstMatchPending = true;
+                return doc;
+            };
+            doc = driver().nextDoc();
+        };
+        hasMoreSpans = false;
+        matchDocNumber = NO_MORE_DOCS;
+        matchStartPosition = NO_MORE_POSITIONS;
+        matchEndPosition = NO_MORE_POSITIONS;
+        return NO_MORE_DOCS;
+    }
+
+
+    @Override
+    public int nextStartPosition () throws IOException {
+        if (!usesIteratorApi())
+            return super.nextStartPosition();
+
+        if (firstMatchPending) {
+            firstMatchPending = false;
+            return matchStartPosition;
+        };
+
+        if (matchDocNumber == -1 || matchDocNumber == NO_MORE_DOCS)
+            return NO_MORE_POSITIONS;
+
+        if (matchStartPosition != NO_MORE_POSITIONS
+                && this.nextMatchInDocument())
+            return matchStartPosition;
+
+        matchStartPosition = NO_MORE_POSITIONS;
+        matchEndPosition = NO_MORE_POSITIONS;
+        return NO_MORE_POSITIONS;
+    }
+
+
+    @Override
+    public int startPosition () {
+        if (!usesIteratorApi())
+            return super.startPosition();
+        return firstMatchPending ? -1 : matchStartPosition;
+    }
+
+
+    @Override
+    public int endPosition () {
+        if (!usesIteratorApi())
+            return super.endPosition();
+        return firstMatchPending ? -1 : matchEndPosition;
+    }
+
+
     @Override
     public Collection<byte[]> getPayload () throws IOException {
         return matchPayload;

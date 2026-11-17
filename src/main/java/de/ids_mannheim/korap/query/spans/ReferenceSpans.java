@@ -30,21 +30,26 @@ public class ReferenceSpans extends SimpleSpans {
             throws IOException {
         super(query, context, acceptDocs, termContexts);
         this.classNum = query.getClassNum();
-        hasMoreSpans = firstSpans.next();
     }
 
 
     @Override
-    public boolean next () throws IOException {
+    protected boolean usesIteratorApi () {
+        return true;
+    };
+
+
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
         while (hasMoreSpans) {
             if (hasSameClassPosition()) {
-                matchStartPosition = firstSpans.start();
-                matchEndPosition = firstSpans.end();
-                matchDocNumber = firstSpans.doc();
-                hasMoreSpans = firstSpans.next();
+                matchStartPosition = firstSpans.startPosition();
+                matchEndPosition = firstSpans.endPosition();
+                matchDocNumber = firstSpans.docID();
+                hasMoreSpans = nextInDocument(firstSpans);
                 return true;
             }
-            hasMoreSpans = firstSpans.next();
+            hasMoreSpans = nextInDocument(firstSpans);
         }
         return false;
     }
@@ -91,17 +96,6 @@ public class ReferenceSpans extends SimpleSpans {
         return match;
     }
 
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (firstSpans.doc() < target)) {
-            if (!firstSpans.skipTo(target)) {
-                hasMoreSpans = false;
-                return false;
-            }
-        }
-        return next();
-    }
 
 
     @Override

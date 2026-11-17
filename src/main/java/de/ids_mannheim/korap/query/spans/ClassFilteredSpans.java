@@ -29,25 +29,30 @@ public class ClassFilteredSpans extends SimpleSpans {
         this.operation = query.getOperation();
         this.classNum1 = query.getClassNum1();
         this.classNum2 = query.getClassNum2();
-        hasMoreSpans = firstSpans.next();
     }
 
 
     @Override
-    public boolean next () throws IOException {
+    protected boolean usesIteratorApi () {
+        return true;
+    };
+
+
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
         while (hasMoreSpans) {
             matchPayload.clear();
             bitset1 = null;
             bitset2 = null;
             if (isClassOperationValid()) {
-                this.matchStartPosition = firstSpans.start();
-                this.matchEndPosition = firstSpans.end();
-                this.matchDocNumber = firstSpans.doc();
+                this.matchStartPosition = firstSpans.startPosition();
+                this.matchEndPosition = firstSpans.endPosition();
+                this.matchDocNumber = firstSpans.docID();
                 this.matchPayload.addAll(firstSpans.getPayload());
-                hasMoreSpans = firstSpans.next();
+                hasMoreSpans = nextInDocument(firstSpans);
                 return true;
             }
-            hasMoreSpans = firstSpans.next();
+            hasMoreSpans = nextInDocument(firstSpans);
         }
         return false;
     }
@@ -141,12 +146,6 @@ public class ClassFilteredSpans extends SimpleSpans {
 
     }
 
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        // TODO Auto-generated method stub
-        return false;
-    }
 
 
     @Override

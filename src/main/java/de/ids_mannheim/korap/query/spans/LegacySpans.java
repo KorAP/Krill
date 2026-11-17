@@ -127,6 +127,24 @@ public abstract class LegacySpans extends Spans {
     };
 
 
+    /**
+     * Tells if the enumeration of a ported class was exhausted
+     * through the old API.
+     */
+    protected final boolean isExhausted () {
+        return oldExhausted;
+    };
+
+
+    /**
+     * Tells if these are span enumerations of Lucene (made usable
+     * through both APIs by {@link #wrap(Spans)}), and not of Krill.
+     */
+    boolean isLuceneSpans () {
+        return false;
+    };
+
+
     /** The document number of the current match. */
     public int doc () {
         if (!usesIteratorApi())
@@ -408,6 +426,12 @@ public abstract class LegacySpans extends Spans {
 
 
         @Override
+        boolean isLuceneSpans () {
+            return true;
+        };
+
+
+        @Override
         public String toString () {
             return "EmptySpans";
         };
@@ -530,6 +554,12 @@ public abstract class LegacySpans extends Spans {
         @Override
         public long cost () {
             return in.cost();
+        };
+
+
+        @Override
+        boolean isLuceneSpans () {
+            return true;
         };
 
 

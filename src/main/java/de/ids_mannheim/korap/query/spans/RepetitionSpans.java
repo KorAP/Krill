@@ -58,18 +58,24 @@ public class RepetitionSpans extends SimpleSpans {
         this.max = query.getMax();
         matchList = new ArrayList<CandidateSpan>();
         candidates = new ArrayList<CandidateSpan>();
-        hasMoreSpans = firstSpans.next();
     }
+
 
 
     @Override
-    public boolean next () throws IOException {
-        isStartEnumeration = false;
-        matchPayload.clear();
-        return advance();
-    }
+    protected boolean usesIteratorApi () {
+        return true;
+    };
 
 
+    @Override
+    protected void startDocument () {
+        matchList.clear();
+        candidates.clear();
+    };
+
+
+    @Override
     /**
      * Advances the RepetitionSpans to the next match by setting the
      * first element in the matchlist as the current match. When the
@@ -80,8 +86,13 @@ public class RepetitionSpans extends SimpleSpans {
      *         otherwise.
      * @throws IOException
      */
-    private boolean advance () throws IOException {
+    protected boolean nextMatchInDocument () throws IOException {
+        isStartEnumeration = false;
+        matchPayload.clear();
 
+
+        // Candidates left when the operand has no more positions
+        // in this document are dropped
         while (hasMoreSpans || !matchList.isEmpty()) {
             if (!matchList.isEmpty()) {
 
@@ -137,8 +148,8 @@ public class RepetitionSpans extends SimpleSpans {
             }
             i++;
         }
-        while ((hasMoreSpans = firstSpans.next())
-               && startSpan.getDoc() == firstSpans.doc()) {
+        while ((hasMoreSpans = nextInDocument(firstSpans))
+               && startSpan.getDoc() == firstSpans.docID()) {
 
             if (DEBUG) {
                 log.debug("Check adjacency of rep-spans at {}-{}|{}-{} in {}={}={}",
@@ -310,44 +321,6 @@ public class RepetitionSpans extends SimpleSpans {
         }
     }
 
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (DEBUG) {
-            log.debug("Skip repetitionSpans to {}", target);
-        };
-        matchDocNumber = -1;
-        matchStartPosition = -1;
-        matchEndPosition = -1;
-        if (!candidates.isEmpty()) {
-            Iterator<CandidateSpan> i = candidates.iterator();
-            while (i.hasNext()) {
-                CandidateSpan cs = i.next();
-                if (cs.getDoc() < target) {
-                    i.remove();
-                }
-                else if (cs.getDoc() == target) {
-                    matchList.clear();
-                    return advance();
-                }
-            }
-        }
-        if (hasMoreSpans && firstSpans.doc() < target) {
-            if (!firstSpans.skipTo(target)) {
-                hasMoreSpans = false;
-                return false;
-            }
-            if (DEBUG) {
-                log.debug("Skip firstSpans to {}={} succeed with positions {}-{}",
-                          target,
-                          firstSpans.doc(),
-                          firstSpans.start(),
-                          firstSpans.end());
-            };
-        }
-        matchList.clear();
-        return advance();
-    }
 
 
     @Override

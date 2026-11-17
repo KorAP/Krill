@@ -67,16 +67,22 @@ public class ExpandedSpans extends SimpleSpans {
         this.classNumber = spanExpansionQuery.getClassNumber();
 
         candidateSpans = new ArrayList<CandidateSpan>();
-        hasMoreSpans = firstSpans.next();
     }
+
 
     @Override
-    public boolean next () throws IOException {
-        matchPayload.clear();
-        isStartEnumeration = false;
-        return advance();
-    }
+    protected boolean usesIteratorApi () {
+        return true;
+    };
 
+
+    @Override
+    protected void startDocument () {
+        candidateSpans.clear();
+    };
+
+
+    @Override
     /**
      * Advances the ExpandedSpans to the next match by setting the
      * first element
@@ -88,7 +94,9 @@ public class ExpandedSpans extends SimpleSpans {
      *         otherwise.
      * @throws IOException
      */
-    private boolean advance () throws IOException {
+    protected boolean nextMatchInDocument () throws IOException {
+        matchPayload.clear();
+        isStartEnumeration = false;
         while (candidateSpans.size() > 0 || hasMoreSpans) {
             if (candidateSpans.size() > 0) {
                 CandidateSpan cs = candidateSpans.get(0);
@@ -138,7 +146,7 @@ public class ExpandedSpans extends SimpleSpans {
                 }
 
                 int lastPosition = firstSpans.start();
-                if (hasMoreSpans && (hasMoreSpans = firstSpans.next())) {
+                if (hasMoreSpans && (hasMoreSpans = nextInDocument(firstSpans))) {
                     start = Math.max(0, firstSpans.start() - max);
                     if (DEBUG) {
                         log.debug("next candidate start: " + start + ", lastPosition "
@@ -167,7 +175,7 @@ public class ExpandedSpans extends SimpleSpans {
                 }
 
                 int lastPosition = end;
-                if (hasMoreSpans && (hasMoreSpans = firstSpans.next())) {
+                if (hasMoreSpans && (hasMoreSpans = nextInDocument(firstSpans))) {
                     if (DEBUG) {
                         log.debug("next candidate start: " + firstSpans.start()
                                   + ", lastPosition " + lastPosition);
@@ -241,17 +249,6 @@ public class ExpandedSpans extends SimpleSpans {
         matchCost = candidateSpan.getCost();
     }
 
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (firstSpans.doc() < target)) {
-            if (!firstSpans.skipTo(target)) {
-                hasMoreSpans = false;
-                return false;
-            }
-        }
-        matchPayload.clear();
-        return advance();
-    }
 
     @Override
     public long cost () {

@@ -85,16 +85,22 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         this.hasMoreNotClause = notClause.next();
 
         candidateSpans = new ArrayList<CandidateSpan>();
-        hasMoreSpans = firstSpans.next();
     }
+
 
     @Override
-    public boolean next () throws IOException {
-        matchPayload.clear();
-        isStartEnumeration = false;
-        return advance();
-    }
+    protected boolean usesIteratorApi () {
+        return true;
+    };
 
+
+    @Override
+    protected void startDocument () {
+        candidateSpans.clear();
+    };
+
+
+    @Override
     /**
      * Advances the ExpandedExclusionSpans to the next match.
      * 
@@ -103,7 +109,9 @@ public class ExpandedExclusionSpans extends SimpleSpans {
      *         otherwise.
      * @throws IOException
      */
-    private boolean advance () throws IOException {
+    protected boolean nextMatchInDocument () throws IOException {
+        matchPayload.clear();
+        isStartEnumeration = false;
         while (hasMoreSpans || candidateSpans.size() > 0) {
             if (candidateSpans.size() > 0) {
                 // set a candidate span as a match
@@ -118,7 +126,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
             }
             else if (!hasMoreNotClause || notClause.doc() > firstSpans.doc()) {
                 generateCandidates(min, max, direction);
-                hasMoreSpans = firstSpans.next();
+                hasMoreSpans = nextInDocument(firstSpans);
             }
             else
                 findMatches();
@@ -177,7 +185,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         generateCandidates(min, maxPos, direction);
 
         if (lastNotClause != null && hasMoreNotClause)
-            while ((hasMoreSpans = firstSpans.next())
+            while ((hasMoreSpans = nextInDocument(firstSpans))
                     // the next notClause is not in between max and
                     // firstspan.start()
                     && notClause.start() > firstSpans.start()
@@ -190,7 +198,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
                 generateCandidates(min, maxPos, direction);
             }
         else {
-            hasMoreSpans = firstSpans.next();
+            hasMoreSpans = nextInDocument(firstSpans);
         }
     }
 
@@ -223,7 +231,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         generateCandidates(min, maxPos, direction);
 
         if (firstNotClause != null) {
-            while ((hasMoreSpans = firstSpans.next())
+            while ((hasMoreSpans = nextInDocument(firstSpans))
                     // in between
                     && firstNotClause.getStart() < firstSpans.end() + max
                     && firstNotClause.getStart() >= firstSpans.end()) {
@@ -235,7 +243,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
             }
         }
         else {
-            hasMoreSpans = firstSpans.next();
+            hasMoreSpans = nextInDocument(firstSpans);
         }
     }
 
@@ -338,17 +346,6 @@ public class ExpandedExclusionSpans extends SimpleSpans {
         return buffer.array();
     }
 
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (firstSpans.doc() < target)) {
-            if (!firstSpans.skipTo(target)) {
-                hasMoreSpans = false;
-                return false;
-            }
-        }
-        matchPayload.clear();
-        return advance();
-    }
 
     @Override
     public long cost () {

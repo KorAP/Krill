@@ -68,35 +68,37 @@ public class SubSpans extends SimpleSpans {
             log.trace("Init SubSpan at {} with length {}", this.startOffset,
                     this.length);
         };
-        hasMoreSpans = firstSpans.next();
     }
+
 
     @Override
-    public boolean next () throws IOException {
-        isStartEnumeration = false;
-        return advance();
-    }
+    protected boolean usesIteratorApi () {
+        return true;
+    };
 
-    /**
-     * Advances the SubSpans to the next match.
-     * 
-     * @return <code>true</code> if a match is found,
-     *         <code>false</code> otherwise.
-     * @throws IOException
-     */
-    private boolean advance () throws IOException {
+
+    @Override
+    protected void startDocument () {
+        candidates.clear();
+        currentDoc = firstSpans.docID();
+    };
+
+
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
+        isStartEnumeration = false;
         while (hasMoreSpans || candidates.size() > 0) {
-            CandidateSpan cs = new CandidateSpan(firstSpans);
             if (startOffset > 0) {
+                CandidateSpan cs = new CandidateSpan(firstSpans);
                 if (findMatch(cs)) {
                     setMatch(cs);
-                    hasMoreSpans = firstSpans.next();
+                    hasMoreSpans = nextInDocument(firstSpans);
                     return true;
                 }
-                hasMoreSpans = firstSpans.next();
+                hasMoreSpans = nextInDocument(firstSpans);
             }
             else if (candidates.isEmpty()) {
-                currentDoc = firstSpans.doc();
+                currentDoc = firstSpans.docID();
                 collectCandidates();
             }
             else {
@@ -125,7 +127,7 @@ public class SubSpans extends SimpleSpans {
                     candidates.add(cs);
                 }
             }
-            hasMoreSpans = firstSpans.next();
+            hasMoreSpans = nextInDocument(firstSpans);
         }
     }
 
@@ -195,24 +197,6 @@ public class SubSpans extends SimpleSpans {
         matchPayload.addAll(cs.getPayloads());
     }
 
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (candidates.size() > 0) {
-            CandidateSpan cs;
-            while ((cs = candidates.poll()) != null) {
-                if (cs.getDoc() == target) {
-                    return next();
-                }
-            }
-        }
-        if (firstSpans.doc() == target) {
-            return next();
-        }
-        if (firstSpans.doc() < target && firstSpans.skipTo(target)) {
-            return next();
-        }
-        return advance();
-    }
 
     @Override
     public long cost () {
