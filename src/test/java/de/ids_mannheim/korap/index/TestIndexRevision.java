@@ -31,7 +31,7 @@ public class TestIndexRevision {
         ki.commit();
 
         String x1 = ki.getFingerprint();
-        assertEquals("epNSAIMF76lavGtzq649YQ==",x1);
+        assertEquals("-NXimABOO9Bobipysjakug==",x1);
 
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00003.json.gz"), true);
@@ -39,13 +39,13 @@ public class TestIndexRevision {
         ki.commit();
 
         String x2 = ki.getFingerprint();
-        assertEquals("UyTGu8Kyrd80ZpmYjOAitA==",x2);
+        assertEquals("7T5u5Wt6YwIM2Evp00TQ2Q==",x2);
 
         ki.addDoc(getClass().getResourceAsStream("/wiki/00006.json.gz"), true);
         ki.commit();
 
         String x3 = ki.getFingerprint();
-        assertEquals("pBJQpRegnR_YMj0MVge4Iw==",x3);
+        assertEquals("CcKJU2i9WOAyD0EPt-LgWg==",x3);
 
 
         // Check if the same changes will have the same effect
@@ -81,7 +81,7 @@ public class TestIndexRevision {
         ki.commit();
 
         String x1 = ki.getFingerprint();
-        assertEquals("epNSAIMF76lavGtzq649YQ==",x1);
+        assertEquals("-NXimABOO9Bobipysjakug==",x1);
 
         assertTrue(ki.delDocs("title", "A"));
         ki.commit();
@@ -114,7 +114,7 @@ public class TestIndexRevision {
 
         assertEquals(false, ki.isReaderOpen());
 
-        String fingerp = "Z128ECW4lUIcuaExLFj3ZA==";
+        String fingerp = "lmYdDm4DXnNEXB-XLbcsTQ==";
         assertEquals(fingerp, ki.getFingerprint());
 
         assertEquals(true, ki.isReaderOpen());

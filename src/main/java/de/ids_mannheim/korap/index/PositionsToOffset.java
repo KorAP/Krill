@@ -210,7 +210,7 @@ public class PositionsToOffset {
                                     term.toString(), posDoc.docID, posDoc.pos);
 
                         // Start an iterator to fetch all payloads of the term
-                        PostingsEnum docs = termsEnum.postings(null, null,
+                        PostingsEnum docs = termsEnum.postings(null,
                                 PostingsEnum.PAYLOADS);
 
                         if (docs.advance(docID) == docID) {

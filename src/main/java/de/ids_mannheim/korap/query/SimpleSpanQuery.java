@@ -2,26 +2,22 @@ package de.ids_mannheim.korap.query;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermContext;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.util.Bits;
+import org.apache.lucene.search.spans.SpanWeight;
 
 import de.ids_mannheim.korap.query.spans.AttributeSpans;
 import de.ids_mannheim.korap.query.spans.ElementSpans;
-import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * A base class for Spanqueries. It added some properties and methods
@@ -81,14 +77,13 @@ import de.ids_mannheim.korap.query.spans.SpanWeights;
 public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable, KrillSpanQuery {
 
     /**
-     * Lucene asks for the spans with a map of term contexts: create
-     * them with {@link SpanWeights} using that map.
+     * Krill's queries create their spans themselves (see
+     * {@link KrillSpanQuery}), the weight only hands them out.
      */
     @Override
-    public final Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return this.getSpans(context, acceptDocs,
-                new SpanWeights(termContexts));
+    public SpanWeight createWeight (IndexSearcher searcher,
+            boolean needsScores) throws IOException {
+        return new KrillSpanWeight(this, searcher, needsScores);
     };
 
 
@@ -349,7 +344,6 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable, Kr
 
     // For rewriting fuzzy searches like wildcard and regex
     /** {@inheritDoc} */
-    @Override
     public void extractTerms (Set<Term> terms) {
 
         if (terms == null) {

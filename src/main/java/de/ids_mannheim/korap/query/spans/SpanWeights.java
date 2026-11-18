@@ -1,13 +1,14 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermContext;
+import org.apache.lucene.index.ReaderUtil;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.search.spans.SpanWeight;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.KrillSpanQuery;
@@ -17,36 +18,38 @@ import de.ids_mannheim.korap.query.KrillSpanQuery;
  * accepted documents.
  * 
  * Krill's queries ({@link KrillSpanQuery}) create their spans
- * directly. Lucene's queries create them with the term contexts of
- * the search; their spans are made usable by Krill with
- * {@link LegacySpans#wrap(org.apache.lucene.search.spans.Spans)}.
+ * directly. Lucene's queries create them through their
+ * {@link SpanWeight}, which is created once per query; their spans
+ * are made usable by Krill (payloads, accepted documents) with
+ * {@link LegacySpans#wrap(org.apache.lucene.search.spans.Spans, Bits)}.
  * 
- * Instances are created for one search and are not thread-safe.
+ * Instances are created for one searcher (i.e. one top-level reader)
+ * and are not thread-safe.
  */
 public class SpanWeights {
 
-    private final Map<Term, TermContext> termContexts;
+    private final IndexSearcher searcher;
 
-
-    public SpanWeights () {
-        this(new HashMap<Term, TermContext>());
-    };
+    // Weights of Lucene's queries, by query object
+    private final Map<SpanQuery, SpanWeight> weights = new IdentityHashMap<>();
 
 
     /**
-     * @param termContexts
-     *            The term contexts of the search.
+     * @param searcher
+     *            A searcher on the top-level reader of all leaves the
+     *            spans are created for.
      */
-    public SpanWeights (Map<Term, TermContext> termContexts) {
-        this.termContexts = termContexts;
+    public SpanWeights (IndexSearcher searcher) {
+        this.searcher = searcher;
     };
 
 
     /**
-     * Create SpanWeights for a leaf.
+     * Create SpanWeights for the top-level reader of a leaf.
      */
     public static SpanWeights forLeaf (LeafReaderContext context) {
-        return new SpanWeights();
+        return new SpanWeights(
+                new IndexSearcher(ReaderUtil.getTopLevelContext(context)));
     };
 
 
@@ -70,7 +73,13 @@ public class SpanWeights {
             return LegacySpans.wrap(((KrillSpanQuery) query).getSpans(context,
                     acceptDocs, this));
 
+        SpanWeight weight = this.weights.get(query);
+        if (weight == null) {
+            weight = query.createWeight(this.searcher, false);
+            this.weights.put(query, weight);
+        };
         return LegacySpans.wrap(
-                query.getSpans(context, acceptDocs, this.termContexts));
+                weight.getSpans(context, SpanWeight.Postings.PAYLOADS),
+                acceptDocs);
     };
 };

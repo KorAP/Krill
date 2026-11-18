@@ -815,7 +815,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
                 // TODO: Reuse a PostingsEnum!!
 
                 // Start an iterator to fetch all payloads of the term
-                PostingsEnum docs = termsEnum.postings(docvec, null,
+                PostingsEnum docs = termsEnum.postings(null,
                         PostingsEnum.PAYLOADS);
 
 
@@ -829,6 +829,11 @@ public final class KrillCollection extends Notifications implements IndexInfo {
 
                 // Init nextDoc()
                 while (docs.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
+
+                    // Postings no longer skip documents
+                    // that are not accepted (since Lucene 5.3)
+                    if (docvec != null && !docvec.get(docs.docID()))
+                        continue;
 
                     if (docs.freq() < 1) continue;
 
@@ -947,9 +952,17 @@ public final class KrillCollection extends Notifications implements IndexInfo {
     
                     bitset.clear(0, docLength);
     
-                    // Get frequency
-                    bitset.or(termsEnum.postings((Bits) docvec, null,
-                            PostingsEnum.NONE));
+                    // Get frequency (of the accepted documents -
+                    // postings no longer skip the others since
+                    // Lucene 5.3)
+                    PostingsEnum postings = termsEnum.postings(null,
+                            PostingsEnum.NONE);
+                    for (int doc = postings.nextDoc();
+                            doc != DocIdSetIterator.NO_MORE_DOCS;
+                            doc = postings.nextDoc()) {
+                        if (docvec == null || docvec.get(doc))
+                            bitset.set(doc);
+                    };
     
                     long value = 0;
                     if (map.containsKey(termString))

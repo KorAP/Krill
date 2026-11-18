@@ -35,6 +35,7 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 // Lucene classes
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.DocIdSet;
@@ -1378,8 +1379,7 @@ public final class KrillIndex implements IndexInfo {
                     // The bitvector may look different (don't know why)
                     // and so the local ID may differ.
                     // That's why the requesting bitset is null.
-                    docs = termsEnum.postings(null, docs,
-                            PostingsEnum.PAYLOADS);
+                    docs = termsEnum.postings(docs, PostingsEnum.PAYLOADS);
 
                     // Init document iterator
                     docs.nextDoc();
@@ -1619,7 +1619,7 @@ public final class KrillIndex implements IndexInfo {
 
             PrelimCacheKey prelim = new PrelimCacheKey(qHash, collHash, itemsPerResource);
 
-            this.spanWeights = new SpanWeights();
+            this.spanWeights = new SpanWeights(new IndexSearcher(this.reader()));
 
             // Todo: run this in a separated thread
             for (LeafReaderContext atomic : this.reader().leaves()) {
@@ -2093,7 +2093,7 @@ public final class KrillIndex implements IndexInfo {
             String uniqueDocIDString;;
             int uniqueDocID = -1;
 
-            this.spanWeights = new SpanWeights();
+            this.spanWeights = new SpanWeights(new IndexSearcher(this.reader()));
 
             // start thread:
             for (LeafReaderContext atomic : this.reader().leaves()) {

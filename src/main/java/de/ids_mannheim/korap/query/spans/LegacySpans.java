@@ -1,10 +1,13 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.apache.lucene.search.spans.SpanCollector;
 import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.util.Bits;
 
 /**
  * Bridge between the span enumeration API Krill's span classes
@@ -56,6 +59,51 @@ public abstract class LegacySpans extends Spans {
     private UnsupportedOperationException notImplemented (String method) {
         return new UnsupportedOperationException(getClass().getName()
                 + " has to implement " + method + "()");
+    };
+
+
+    // ------------------------------------------------------------
+    // Payloads and the other methods Lucene 5.3 added to Spans
+    // ------------------------------------------------------------
+
+    /**
+     * The payloads of the current match. Krill's span classes keep
+     * their payloads themselves (Lucene's spans no longer provide
+     * them since Lucene 5.3, see {@link PayloadCollector}).
+     */
+    public abstract Collection<byte[]> getPayload () throws IOException;
+
+
+    /**
+     * Tells if the current match has payloads.
+     */
+    public abstract boolean isPayloadAvailable () throws IOException;
+
+
+    /**
+     * Krill's spans hand their payloads over to a
+     * {@link PayloadCollector}, so Lucene's composite spans (e.g. of
+     * a <tt>SpanOrQuery</tt>) consisting of them deliver them.
+     */
+    @Override
+    public void collect (SpanCollector collector) throws IOException {
+        if (collector instanceof PayloadCollector)
+            ((PayloadCollector) collector).collectPayloads(this.getPayload());
+    };
+
+
+    // Only used for scoring, which Krill does not do
+    @Override
+    public int width () {
+        return 0;
+    };
+
+
+    // Only used to order two-phase iteration, which Krill's spans do
+    // not support
+    @Override
+    public float positionsCost () {
+        return 1f;
     };
 
 
@@ -349,11 +397,33 @@ public abstract class LegacySpans extends Spans {
      *         <tt>null</tt>.
      */
     public static LegacySpans wrap (Spans spans) {
+        return wrap(spans, null);
+    };
+
+
+    /**
+     * Make a span enumeration usable through both APIs, limited to
+     * the accepted documents. Krill's span classes are returned as
+     * they are - they are limited to the accepted documents when they
+     * are created.
+     *
+     * @param spans
+     *            A span enumeration, as returned by
+     *            <tt>SpanWeight.getSpans()</tt>. May be
+     *            <tt>null</tt>.
+     * @param acceptDocs
+     *            The documents of Lucene's spans to keep, or
+     *            <tt>null</tt> for all documents (up to Lucene 5.2,
+     *            Lucene's spans were limited to them when created).
+     * @return The enumeration with both APIs. Never
+     *         <tt>null</tt>.
+     */
+    public static LegacySpans wrap (Spans spans, Bits acceptDocs) {
         if (spans == null)
             return new EmptySpans();
         if (spans instanceof LegacySpans)
             return (LegacySpans) spans;
-        return new NativeSpans(spans);
+        return new NativeSpans(spans, acceptDocs);
     };
 
 
@@ -420,6 +490,10 @@ public abstract class LegacySpans extends Spans {
 
 
         @Override
+        public void collect (SpanCollector collector) {};
+
+
+        @Override
         public long cost () {
             return 0;
         };
@@ -445,13 +519,28 @@ public abstract class LegacySpans extends Spans {
 
         private final Spans in;
 
-        // Payload of the current position, read at most once
+        // The documents to keep, or null for all documents
+        private final Bits acceptDocs;
+
+        // Payload of the current position, collected at most once
+        private final PayloadCollector payloadCollector = new PayloadCollector();
         private Collection<byte[]> payload = null;
         private boolean payloadLoaded = false;
 
 
-        private NativeSpans (Spans in) {
+        private NativeSpans (Spans in, Bits acceptDocs) {
             this.in = in;
+            this.acceptDocs = acceptDocs;
+        };
+
+
+        // Skip documents that are not accepted
+        private int toAcceptedDoc (int doc) throws IOException {
+            if (this.acceptDocs == null)
+                return doc;
+            while (doc != NO_MORE_DOCS && !this.acceptDocs.get(doc))
+                doc = this.in.nextDoc();
+            return doc;
         };
 
 
@@ -470,14 +559,14 @@ public abstract class LegacySpans extends Spans {
         @Override
         public int nextDoc () throws IOException {
             this.resetPayload();
-            return in.nextDoc();
+            return this.toAcceptedDoc(in.nextDoc());
         };
 
 
         @Override
         public int advance (int target) throws IOException {
             this.resetPayload();
-            return in.advance(target);
+            return this.toAcceptedDoc(in.advance(target));
         };
 
 
@@ -520,24 +609,25 @@ public abstract class LegacySpans extends Spans {
 
 
         private void resetPayload () {
-            payload = null;
             payloadLoaded = false;
         };
 
 
         /*
-         * Since Lucene 5.2 the payload of a position may only be
-         * read once, and it is null if there is none. Krill's span
-         * classes may ask several times and expect an empty
-         * collection instead of null, like Lucene 5.0 returned.
+         * Since Lucene 5.3 payloads are collected with a
+         * SpanCollector. Krill's span classes may ask several times
+         * and expect an empty collection if there is no payload, like
+         * Lucene 5.0 returned.
          */
         @Override
         public Collection<byte[]> getPayload () throws IOException {
             if (!payloadLoaded) {
                 payloadLoaded = true;
-                payload = in.isPayloadAvailable() ? in.getPayload() : null;
-                if (payload == null)
-                    payload = Collections.emptyList();
+                payloadCollector.reset();
+                in.collect(payloadCollector);
+                // A new collection per position, as callers keep it
+                payload = new ArrayList<byte[]>(
+                        payloadCollector.getPayloads());
             };
             return payload;
         };
@@ -545,9 +635,25 @@ public abstract class LegacySpans extends Spans {
 
         @Override
         public boolean isPayloadAvailable () throws IOException {
-            if (payloadLoaded)
-                return !payload.isEmpty();
-            return in.isPayloadAvailable();
+            return !this.getPayload().isEmpty();
+        };
+
+
+        @Override
+        public void collect (SpanCollector collector) throws IOException {
+            in.collect(collector);
+        };
+
+
+        @Override
+        public int width () {
+            return in.width();
+        };
+
+
+        @Override
+        public float positionsCost () {
+            return in.positionsCost();
         };
 
 
