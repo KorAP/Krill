@@ -403,13 +403,17 @@ public class SpansWithAttribute extends SimpleSpans {
 
     @Override
     public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (referentSpans.doc() < target)) {
-            if (!referentSpans.skipTo(target)) {
+        // With only one (positive) attribute, the attribute spans
+        // are the referent spans
+        SimpleSpans spans = referentSpans != null ? referentSpans
+                : attributeList.get(0);
+        if (hasMoreSpans && (spans.doc() < target)) {
+            if (!spans.skipTo(target)) {
                 return false;
             }
         }
         isStartEnumeration = false;
-        return advance();
+        return referentSpans != null ? advance() : advanceAttribute();
     }
 
 

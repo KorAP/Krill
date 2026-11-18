@@ -17,6 +17,7 @@ import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;
 import de.ids_mannheim.korap.query.SpanElementQuery;
 import de.ids_mannheim.korap.query.SpanNextQuery;
+import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.query.SpanWithAttributeQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
@@ -631,5 +632,41 @@ public class TestAttributeIndex {
         kr = ki.search(sq, (short) 10);
         assertEquals(1, kr.getTotalResults());
         assertEquals("doc-0", kr.getMatch(0).getDocID());
+    }
+
+
+    /**
+     * An attribute without an element (a single attribute) can be
+     * skipped to another document, e.g. by a segment query.
+     */
+    @Test
+    public void testSingleAttributeSkipTo () throws IOException {
+        // The attribute of doc-0 belongs to an element a, not to a div
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-0");
+        fd.addTV("base", "ab", "[(0-1)s:a|_1$<i>0<i>1|"
+                + "<>:a$<b>64<i>0<i>1<i>1<b>0<s>1|"
+                + "@:class=book$<b>17<s>1<i>1]"
+                + "[(1-2)s:b|_2$<i>1<i>2]");
+        ki.addDoc(fd);
+
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "ab", "[(0-1)s:a|_1$<i>0<i>1|"
+                + "<>:div$<b>64<i>0<i>1<i>1<b>0<s>1|"
+                + "@:class=book$<b>17<s>1<i>1]"
+                + "[(1-2)s:b|_2$<i>1<i>2]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        SpanAttributeQuery saq = new SpanAttributeQuery(
+                new SpanTermQuery(new Term("base", "@:class=book")), true);
+        SpanQuery sq = new SpanSegmentQuery(
+                new SpanElementQuery("base", "div"),
+                new SpanWithAttributeQuery(saq, true));
+
+        kr = ki.search(sq, (short) 10);
+        assertEquals(1, kr.getTotalResults());
+        assertEquals("doc-1", kr.getMatch(0).getDocID());
     }
 }
