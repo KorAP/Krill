@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
-import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
@@ -41,8 +40,6 @@ public class WithinSpans extends LegacySpans {
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 
-    private boolean more = false;
-
     // Boolean value indicating if span B
     // should be forwarded next (true)
     // or span A (false);
@@ -55,8 +52,13 @@ public class WithinSpans extends LegacySpans {
     private Collection<byte[]> matchPayload;
     private Collection<byte[]> embeddedPayload;
 
-    // Indicates that the wrap and the embedded spans are in the same doc
-    private boolean inSameDoc = false;
+    // The embedded spans have more positions in the current document
+    private boolean embeddedInDoc = false;
+
+    // The first match of the current document was found by
+    // nextDoc() or advance(), but not returned yet by
+    // nextStartPosition()
+    private boolean firstMatchPending = false;
 
     /*
       Supported flags are currently:
@@ -140,44 +142,149 @@ public class WithinSpans extends LegacySpans {
     };
 
 
-    // Move to next match, returning true iff any such exists.
     @Override
-    public boolean next () throws IOException {
+    protected boolean usesIteratorApi () {
+        return true;
+    };
 
-        if (DEBUG)
-            log.trace("Next with docs {}, {}", wrapDoc, embeddedDoc);
 
-        // Initialize spans
-        if (!this.init()) {
-            this.more = false;
-            this.inSameDoc = false;
-            this.wrapDoc = DocIdSetIterator.NO_MORE_DOCS;
-            this.embeddedDoc = DocIdSetIterator.NO_MORE_DOCS;
-            this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
-            return false;
+    @Override
+    public int docID () {
+        return matchDoc;
+    };
+
+
+    @Override
+    public int nextDoc () throws IOException {
+        if (matchDoc == NO_MORE_DOCS)
+            return NO_MORE_DOCS;
+        return this.toDocumentWithMatch(this.wrapSpans.nextDoc());
+    };
+
+
+    @Override
+    public int advance (int target) throws IOException {
+        if (matchDoc == NO_MORE_DOCS)
+            return NO_MORE_DOCS;
+        return this.toDocumentWithMatch(this.wrapSpans.advance(target));
+    };
+
+
+    @Override
+    public int nextStartPosition () throws IOException {
+        if (firstMatchPending) {
+            firstMatchPending = false;
+            return matchStart;
         };
 
-        // There are more spans and they are in the same document
+        if (matchDoc == -1 || matchDoc == NO_MORE_DOCS)
+            return NO_MORE_POSITIONS;
 
-        while (this.more && (wrapDoc == embeddedDoc ||
-        // this.inSameDoc ||
-                this.toSameDoc())) {
+        if (matchStart != NO_MORE_POSITIONS && this.nextMatchInDocument())
+            return matchStart;
 
-            if (DEBUG)
-                log.trace("We are in the same doc: {}, {}", wrapDoc,
-                        embeddedDoc);
+        matchStart = NO_MORE_POSITIONS;
+        matchEnd = NO_MORE_POSITIONS;
+        return NO_MORE_POSITIONS;
+    };
+
+
+    @Override
+    public int startPosition () {
+        return firstMatchPending ? -1 : matchStart;
+    };
+
+
+    @Override
+    public int endPosition () {
+        return firstMatchPending ? -1 : matchEnd;
+    };
+
+
+    // Starting with the given document of the wrap spans, find the
+    // first document with a match, and keep that match for
+    // nextStartPosition()
+    private int toDocumentWithMatch (int doc) throws IOException {
+        firstMatchPending = false;
+        while ((doc = this.toSameDoc(doc)) != NO_MORE_DOCS) {
+            matchDoc = doc;
+            this.startDocument(doc);
+            if (this.nextMatchInDocument()) {
+                firstMatchPending = true;
+                return doc;
+            };
+            doc = this.wrapSpans.nextDoc();
+        };
+        matchDoc = NO_MORE_DOCS;
+        matchStart = NO_MORE_POSITIONS;
+        matchEnd = NO_MORE_POSITIONS;
+        return NO_MORE_DOCS;
+    };
+
+
+    /**
+     * Move the wrap and the embedded spans to the next document both
+     * of them have, starting with the given document of the wrap
+     * spans.
+     */
+    private int toSameDoc (int doc) throws IOException {
+        while (doc != NO_MORE_DOCS) {
+            int embedded = this.embeddedSpans.docID();
+            if (embedded < doc)
+                embedded = this.embeddedSpans.advance(doc);
+            if (embedded == NO_MORE_DOCS)
+                return NO_MORE_DOCS;
+            if (embedded == doc)
+                return doc;
+            doc = this.wrapSpans.advance(embedded);
+        };
+        return NO_MORE_DOCS;
+    };
+
+
+    // Both spans are in a new document - move them to their first
+    // positions and reset the state kept per document
+    private void startDocument (int doc) throws IOException {
+        this.spanStore1.clear();
+        this.spanStore2.clear();
+
+        this.wrapDoc = doc;
+        this.embeddedDoc = doc;
+
+        this.wrapSpans.nextStartPosition();
+        this.wrapStart = -1;
+        this.wrapEnd = -1;
+
+        this.embeddedInDoc = this.embeddedSpans
+                .nextStartPosition() != NO_MORE_POSITIONS;
+        this.embeddedStart = -1;
+        this.embeddedEnd = -1;
+        this.embeddedPayload = null;
+
+        // Spans returning a document always have a position in it
+        this.tryMatch = this.embeddedInDoc;
+        this.nextSpanB = true;
+    };
+
+
+    // Find the next match in the current document
+    private boolean nextMatchInDocument () throws IOException {
+
+        if (DEBUG)
+            log.trace("Next match in doc {}", matchDoc);
+
+        while (true) {
 
             // Both spans match according to the flag
             // Silently the next operations are prepared
             if (this.tryMatch && this.doesMatch()) {
 
                 if (this.wrapEnd == -1)
-                    this.wrapEnd = this.wrapSpans.end();
+                    this.wrapEnd = this.wrapSpans.endPosition();
 
                 this.matchStart = embeddedStart < wrapStart ? embeddedStart
                         : wrapStart;
                 this.matchEnd = embeddedEnd > wrapEnd ? embeddedEnd : wrapEnd;
-                this.matchDoc = embeddedDoc;
                 this.matchPayload.clear();
 
                 if (this.embeddedPayload != null)
@@ -203,156 +310,66 @@ public class WithinSpans extends LegacySpans {
                 if (DEBUG)
                     log.trace("In the next embedded branch");
 
-                WithinSpan current = null;
-                WithinSpan candidate;
-
-                // Skip stale entries, stop at future documents
-                while (!this.spanStore2.isEmpty()) {
-                    candidate = spanStore2.peekFirst();
-                    if (candidate.doc < this.wrapDoc) {
-                        spanStore2.removeFirst();
-                    }
-                    else if (candidate.doc == this.wrapDoc) {
-                        current = spanStore2.removeFirst();
-                        break;
-                    }
-                    else {
-                        break;
-                    }
-                }
+                WithinSpan current = this.spanStore2.pollFirst();
 
                 if (current == null) {
-
-                    // Future-doc entries remain: advance wrap instead
-                    if (!this.spanStore2.isEmpty()) {
-                        this.nextSpanA();
-                        continue;
-                    }
 
                     if (DEBUG)
                         log.trace("SpanStore 2 is empty");
 
                     // Forward with embedding
-                    if (!this.embeddedSpans.next()) {
+                    if (this.embeddedInDoc)
+                        this.embeddedInDoc = this.embeddedSpans
+                                .nextStartPosition() != NO_MORE_POSITIONS;
 
-                        // TODO: May need storeEmpdedded
+                    // No more embedded spans in the document
+                    if (!this.embeddedInDoc) {
+                        // TODO: May need storeEmbedded
                         this.nextSpanA();
                         continue;
-                    }
-
-                    else if (DEBUG) {
-                        log.trace("Fetch next embedded span");
                     };
 
-                    this.embeddedStart = this.embeddedSpans.start();
+                    this.embeddedStart = this.embeddedSpans.startPosition();
                     this.embeddedEnd = -1;
                     this.embeddedPayload = null;
-                    this.embeddedDoc = this.embeddedSpans.doc();
-
-                    if (this.embeddedDoc != this.wrapDoc) {
-
-                        if (DEBUG) {
-                            log.trace(
-                                    "(A) Embedded span is in a new document {}",
-                                    _currentEmbedded().toString());
-                            log.trace("Reset current embedded doc");
-                        };
-
-                        /*
-                        if (DEBUG)
-                            log.trace("Clear all span stores");
-                        this.spanStore1.clear();
-                        this.spanStore2.clear();
-                        */
-
-                        this.storeEmbedded();
-
-                        // That is necessary to backtrack to the last document!
-                        this.inSameDoc = true;
-                        this.embeddedDoc = wrapDoc;
-                        // this.tryMatch = false; // already covered in nextSpanA
-
-                        this.nextSpanA();
-                        continue;
-                    };
 
                     if (DEBUG)
                         log.trace("   Forward embedded span to {}",
                                 _currentEmbedded().toString());
 
-                    if (this.embeddedDoc != this.wrapDoc) {
-
-                        if (DEBUG) {
-                            log.trace(
-                                    "(B) Embedded span is in a new document {}",
-                                    _currentEmbedded().toString());
-                            log.trace("Reset current embedded doc");
-                        };
-
-                        // Is this always a good idea?
-                        /*
-                        this.spanStore1.clear();
-                        this.spanStore2.clear();
-                        */
-
-                        this.embeddedStart = -1;
-                        this.embeddedEnd = -1;
-                        this.embeddedPayload = null;
-
-                        if (!this.toSameDoc()) {
-                            this.more = false;
-                            this.inSameDoc = false;
-                            return false;
-                        };
-                    };
-
-                    this.more = true;
-                    this.inSameDoc = true;
-                    this.tryMatch = true;
-
                     this.nextSpanB();
                     continue;
                 }
 
-                // Fetch from second store?
+                // Fetch from second store
+                /**
+                 * TODO: Change this to a single embedded object!
+                 */
+                this.embeddedStart = current.start;
+                this.embeddedEnd = current.end;
+
+                if (current.payload != null) {
+                    this.embeddedPayload = new ArrayList<byte[]>(
+                            current.payload.size());
+                    this.embeddedPayload.addAll(current.payload);
+                }
+                // An empty payload, as storeEmbedded() would
+                // otherwise take the payload of the current
+                // position of the embedded spans
                 else {
-
-                    /**
-                     * TODO: Change this to a single embedded object!
-                     */
-                    this.embeddedStart = current.start;
-                    this.embeddedEnd = current.end;
-                    this.embeddedDoc = current.doc;
-
-                    if (current.payload != null) {
-                        this.embeddedPayload = new ArrayList<byte[]>(
-                                current.payload.size());
-                        this.embeddedPayload.addAll(current.payload);
-                    }
-                    // An empty payload, as storeEmbedded() would
-                    // otherwise take the payload of the current
-                    // position of the embedded spans
-                    else {
-                        this.embeddedPayload = new ArrayList<byte[]>(0);
-                    };
-
-                    if (DEBUG)
-                        log.trace("Fetch current from SpanStore 2: {}",
-                                current.toString());
-
-                    this.tryMatch = true;
+                    this.embeddedPayload = new ArrayList<byte[]>(0);
                 };
+
+                if (DEBUG)
+                    log.trace("Fetch current from SpanStore 2: {}",
+                            current.toString());
+
                 continue;
             };
 
             // get next wrap
             if (DEBUG)
                 log.trace("In the next wrap branch");
-
-            this.tryMatch = true;
-
-            if (DEBUG)
-                log.trace("Try next wrap");
 
             // shift the stored spans
             if (!this.spanStore1.isEmpty()) {
@@ -365,326 +382,28 @@ public class WithinSpans extends LegacySpans {
                 };
 
                 // Move everything to spanStore2
-                this.spanStore2.addAll(0,
-                        (LinkedList<WithinSpan>) this.spanStore1.clone());
+                this.spanStore2.addAll(0, this.spanStore1);
                 this.spanStore1.clear();
-
-                if (DEBUG) {
-                    log.trace("SpanStore 2 now is:");
-                    for (WithinSpan i : this.spanStore2) {
-                        log.trace("     | {}", i.toString());
-                    };
-                };
-
-            }
-            else if (DEBUG) {
-                log.trace("spanStore 1 is empty");
             };
 
-            // Get next wrap
-            if (this.wrapSpans.next()) {
-
-                // Reset wrapping information
-                this.wrapStart = this.wrapSpans.start();
-                this.wrapEnd = -1;
-
-                // Retrieve doc information
-                this.wrapDoc = this.wrapSpans.doc();
-
-                if (DEBUG)
-                    log.trace("   Forward wrap span to {}",
-                            _currentWrap().toString());
-
-                if (this.embeddedDoc != this.wrapDoc) {
-                    if (DEBUG)
-                        log.trace("Delete all span stores");
-                    this.spanStore1.clear();
-                    this.spanStore2.clear();
-
-                    // Reset embedded:
-                    this.embeddedStart = -1;
-                    this.embeddedEnd = -1;
-                    this.embeddedPayload = null;
-
-                    if (!this.toSameDoc()) {
-                        this.inSameDoc = false;
-                        this.more = false;
-                        return false;
-                    };
-                }
-                else {
-                    this.inSameDoc = true;
-                    // Do not match with the current state
-                    this.tryMatch = false;
-                };
-
-                this.nextSpanB();
-                continue;
-            }
-            this.more = false;
-            this.inSameDoc = false;
-            this.spanStore1.clear();
-            this.spanStore2.clear();
-            return false;
-        };
-
-        // No more matches
-        return false;
-    };
-
-
-    /**
-     * Skip to the next document
-     */
-    private boolean toSameDoc () throws IOException {
-
-        if (DEBUG)
-            log.trace("Forward to find same docs");
-
-        /*
-        if (this.embeddedSpans == null) {
-            this.more      = false;
-            this.matchDoc  = DocIdSetIterator.NO_MORE_DOCS;
-            this.inSameDoc = false;
-            return false;
-        };
-        */
-
-        this.more = true;
-        this.inSameDoc = true;
-
-        this.wrapDoc = this.wrapSpans.doc();
-
-        // Last doc was reached
-        if (this.wrapDoc == DocIdSetIterator.NO_MORE_DOCS) {
-            this.more = false;
-            this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
-            this.inSameDoc = false;
-            return false;
-        };
-
-        // This is just a workaround for an issue that seems to be a bug in Lucene's core code.
-        try {
-            this.embeddedDoc = this.embeddedSpans.doc();
-        }
-        catch (NullPointerException e) {
-            this.more = false;
-            this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
-            this.inSameDoc = false;
-            return false;
-        };
-
-
-        // Clear all spanStores
-        if (this.wrapDoc != this.embeddedDoc) {
-            /*
-            if (DEBUG)
-                log.trace("Clear all spanStores when moving forward");
-            // Why??
-            this.spanStore1.clear();
-            this.spanStore2.clear();
-            */
-        }
-
-        else {
-            if (DEBUG) {
-                log.trace("Current position already is in the same doc");
-                log.trace("Embedded: {}", _currentEmbedded().toString());
-            };
-            this.matchDoc = this.embeddedDoc;
-            return true;
-        };
-
-
-        // Forward till match
-        while (this.wrapDoc != this.embeddedDoc) {
-
-            // Forward wrapInfo
-            if (this.wrapDoc < this.embeddedDoc) {
-
-                // Set document information
-                if (!wrapSpans.skipTo(this.embeddedDoc)) {
-                    this.more = false;
-                    this.inSameDoc = false;
-                    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
-                    return false;
-                };
-
-                if (DEBUG)
-                    log.trace("Skip wrap to doc {}", this.embeddedDoc);
-
-                this.wrapDoc = this.wrapSpans.doc();
-
-                if (wrapDoc == DocIdSetIterator.NO_MORE_DOCS) {
-                    this.more = false;
-                    this.inSameDoc = false;
-                    this.embeddedDoc = DocIdSetIterator.NO_MORE_DOCS;
-                    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
-                    return false;
-                };
-
-                /*
-                  Remove stored information
-                 */
-                if (DEBUG)
-                    log.trace("Delete all span stores");
-
+            // No more wrap spans in the document
+            if (this.wrapSpans.nextStartPosition() == NO_MORE_POSITIONS) {
                 this.spanStore1.clear();
                 this.spanStore2.clear();
-
-                if (wrapDoc == embeddedDoc) {
-                    this.wrapStart = this.wrapSpans.start();
-                    this.embeddedStart = this.embeddedSpans.start();
-                    this.matchDoc = this.embeddedDoc;
-                    return true;
-                };
-
-                this.wrapStart = -1;
-                this.embeddedStart = -1;
-            }
-
-            // Forward embedInfo
-            else if (this.wrapDoc > this.embeddedDoc) {
-
-                // Set document information
-                if (!this.embeddedSpans.skipTo(this.wrapDoc)) {
-                    this.more = false;
-                    this.inSameDoc = false;
-                    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
-                    return false;
-                };
-
-                this.embeddedDoc = this.embeddedSpans.doc();
-
-                if (this.embeddedDoc == DocIdSetIterator.NO_MORE_DOCS) {
-                    this.more = false;
-                    this.inSameDoc = false;
-                    this.wrapDoc = DocIdSetIterator.NO_MORE_DOCS;
-                    this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
-                    return false;
-                };
-
-                if (DEBUG)
-                    log.trace("Skip embedded to doc {}", this.embeddedDoc);
-
-                this.embeddedStart = this.embeddedSpans.start();
-                this.embeddedEnd = -1;
-                this.embeddedPayload = null;
-
-                if (this.wrapDoc == this.embeddedDoc) {
-                    this.matchDoc = this.embeddedDoc;
-                    return true;
-                };
-            }
-            else {
-                this.matchDoc = DocIdSetIterator.NO_MORE_DOCS;
                 return false;
             };
-        };
 
-        this.matchDoc = this.wrapDoc;
-        return true;
-    };
-
-
-    // Initialize spans
-    private boolean init () throws IOException {
-
-        // There is a missing span
-        if (this.embeddedDoc >= 0)
-            return true;
-
-        if (DEBUG)
-            log.trace("Initialize spans");
-
-        // First tick for both spans
-        if (!(this.embeddedSpans.next() && this.wrapSpans.next())) {
+            // Reset wrapping information
+            this.wrapStart = this.wrapSpans.startPosition();
+            this.wrapEnd = -1;
 
             if (DEBUG)
-                log.trace("No spans initialized");
+                log.trace("   Forward wrap span to {}",
+                        _currentWrap().toString());
 
-            this.embeddedDoc = -1;
-            this.more = false;
-            return false;
-        };
-        this.more = true;
-
-        // Store current positions for wrapping and embedded spans
-        this.wrapDoc = this.wrapSpans.doc();
-        this.embeddedDoc = this.embeddedSpans.doc();
-
-        // Set inSameDoc to true, if it is true
-        if (this.embeddedDoc == this.wrapDoc)
-            this.inSameDoc = true;
-
-        return true;
-    };
-
-
-    /**
-     * Skips to the first match beyond the current, whose document
-     * number is
-     * greater than or equal to <i>target</i>. <p>Returns true iff
-     * there is such
-     * a match. <p>Behaves as if written: <pre class="prettyprint">
-     * boolean skipTo(int target) {
-     * do {
-     * if (!next())
-     * return false;
-     * } while (target > doc());
-     * return true;
-     * }
-     * </pre>
-     * Most implementations are considerably more efficient than that.
-     */
-    public boolean skipTo (int target) throws IOException {
-
-        if (DEBUG)
-            log.trace("skipTo document {}/{} -> {}", this.embeddedDoc,
-                    this.wrapDoc, target);
-
-        if (!this.init())
-            return false;
-
-        // Already at or past target: just find next match
-        if (this.matchDoc >= target)
-            return this.next() && this.matchDoc >= target;
-
-        // Fast-forward operands when both are behind target
-        if (this.embeddedDoc >= 0 && this.wrapDoc < target
-                && this.embeddedDoc < target) {
-
-            if (!this.wrapSpans.skipTo(target))
-                return false;
-            this.wrapDoc = this.wrapSpans.doc();
-            if (this.wrapDoc == DocIdSetIterator.NO_MORE_DOCS)
-                return false;
-
-            if (!this.embeddedSpans.skipTo(this.wrapDoc))
-                return false;
-            this.embeddedDoc = this.embeddedSpans.doc();
-            if (this.embeddedDoc == DocIdSetIterator.NO_MORE_DOCS)
-                return false;
-
-            // Reset internal state after skip
-            this.spanStore1.clear();
-            this.spanStore2.clear();
-            this.wrapStart = this.wrapSpans.start();
-            this.embeddedStart = this.embeddedSpans.start();
-            this.wrapEnd = -1;
-            this.embeddedEnd = -1;
-            this.embeddedPayload = null;
-            this.inSameDoc = (this.wrapDoc == this.embeddedDoc);
-            this.more = true;
-            this.tryMatch = true;
-            this.nextSpanB = true;
-        }
-
-        while (true) {
-            if (!this.next())
-                return false;
-            if (this.matchDoc >= target)
-                return true;
+            // Do not match with the current state
+            this.tryMatch = false;
+            this.nextSpanB();
         }
     };
 
@@ -711,10 +430,10 @@ public class WithinSpans extends LegacySpans {
             log.trace("In the match test branch");
 
         if (this.wrapStart == -1)
-            this.wrapStart = this.wrapSpans.start();
+            this.wrapStart = this.wrapSpans.startPosition();
 
         if (this.embeddedStart == -1) {
-            this.embeddedStart = this.embeddedSpans.start();
+            this.embeddedStart = this.embeddedSpans.startPosition();
         };
 
         this.wrapEnd = -1;
@@ -753,7 +472,7 @@ public class WithinSpans extends LegacySpans {
         };
 
         if (this.embeddedEnd == -1) {
-            this.embeddedEnd = this.embeddedSpans.end();
+            this.embeddedEnd = this.embeddedSpans.endPosition();
         };
 
         // Now check correctly
@@ -880,9 +599,9 @@ public class WithinSpans extends LegacySpans {
     private WithinSpan _currentWrap () {
         WithinSpan _wrap = new WithinSpan();
         _wrap.start = this.wrapStart != -1 ? this.wrapStart
-                : this.wrapSpans.start();
-        _wrap.end = this.wrapEnd != -1 ? this.wrapEnd : this.wrapSpans.end();
-        _wrap.doc = this.wrapDoc != -1 ? this.wrapDoc : this.wrapSpans.doc();
+                : this.wrapSpans.startPosition();
+        _wrap.end = this.wrapEnd != -1 ? this.wrapEnd : this.wrapSpans.endPosition();
+        _wrap.doc = this.wrapDoc != -1 ? this.wrapDoc : this.wrapSpans.docID();
         return _wrap;
     };
 
@@ -890,11 +609,11 @@ public class WithinSpans extends LegacySpans {
     private WithinSpan _currentEmbedded () {
         WithinSpan _embedded = new WithinSpan();
         _embedded.start = this.embeddedStart != -1 ? this.embeddedStart
-                : this.embeddedSpans.start();
+                : this.embeddedSpans.startPosition();
         _embedded.end = this.embeddedEnd != -1 ? this.embeddedEnd
-                : this.embeddedSpans.end();
+                : this.embeddedSpans.endPosition();
         _embedded.doc = this.embeddedDoc != -1 ? this.embeddedDoc
-                : this.embeddedSpans.doc();
+                : this.embeddedSpans.docID();
         return _embedded;
     };
 
@@ -981,9 +700,9 @@ public class WithinSpans extends LegacySpans {
         // Create a current copy
         WithinSpan embedded = new WithinSpan();
         embedded.start = this.embeddedStart != -1 ? this.embeddedStart
-                : this.embeddedSpans.start();
+                : this.embeddedSpans.startPosition();
         embedded.end = this.embeddedEnd != -1 ? this.embeddedEnd
-                : this.embeddedSpans.end();
+                : this.embeddedSpans.endPosition();
         embedded.doc = this.embeddedDoc;
 
         // Copy payloads
@@ -1014,8 +733,8 @@ public class WithinSpans extends LegacySpans {
 
         if (DEBUG) {
             log.trace(">>>>>>>>>>>>>> {}-{}|{}-{}", this.wrapStart,
-                    this.wrapSpans.end(), this.embeddedStart,
-                    this.embeddedSpans.end());
+                    this.wrapSpans.endPosition(), this.embeddedStart,
+                    this.embeddedSpans.endPosition());
         };
 
         // case 1-5
@@ -1036,7 +755,7 @@ public class WithinSpans extends LegacySpans {
             };
 
             // Load wrapEnd
-            this.wrapEnd = this.wrapSpans.end();
+            this.wrapEnd = this.wrapSpans.endPosition();
 
             // Case 3
             //   |---|
@@ -1062,8 +781,8 @@ public class WithinSpans extends LegacySpans {
         else if (this.wrapStart == this.embeddedStart) {
 
             // Load wrapEnd
-            this.wrapEnd = this.wrapSpans.end();
-            // this.embeddedEnd = this.embeddedSpans.end();
+            this.wrapEnd = this.wrapSpans.endPosition();
+            // this.embeddedEnd = this.embeddedSpans.endPosition();
 
             // Case 6
             // |---|
@@ -1088,7 +807,7 @@ public class WithinSpans extends LegacySpans {
         // wrapStart < embeddedStart
 
         // Load wrapEnd
-        this.wrapEnd = this.wrapSpans.end();
+        this.wrapEnd = this.wrapSpans.endPosition();
 
         // Case 13
         // |-|
@@ -1122,36 +841,6 @@ public class WithinSpans extends LegacySpans {
         // |-|
         //   |-|
         return (byte) 12;
-    };
-
-
-    /**
-     * Returns the document number of the current match. Initially
-     * invalid.
-     */
-    @Override
-    public int doc () {
-        return matchDoc;
-    };
-
-
-    /**
-     * Returns the start position of the embedding wrap. Initially
-     * invalid.
-     */
-    @Override
-    public int start () {
-        return matchStart;
-    };
-
-
-    /**
-     * Returns the end position of the embedding wrap. Initially
-     * invalid.
-     */
-    @Override
-    public int end () {
-        return matchEnd;
     };
 
 
@@ -1212,8 +901,9 @@ public class WithinSpans extends LegacySpans {
     @Override
     public String toString () {
         return getClass().getName() + "(" + query.toString() + ")@"
-                + (embeddedDoc <= 0 ? "START"
-                        : (more ? (doc() + ":" + start() + "-" + end())
+                + (matchDoc == -1 ? "START"
+                        : (matchDoc != NO_MORE_DOCS
+                                ? (matchDoc + ":" + matchStart + "-" + matchEnd)
                                 : "END"));
     };
 
