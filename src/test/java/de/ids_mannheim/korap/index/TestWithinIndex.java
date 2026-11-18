@@ -21,6 +21,7 @@ import static de.ids_mannheim.korap.TestSimple.*;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.spans.LegacySpans;
 import org.apache.lucene.search.spans.SpanTermQuery;
@@ -2074,5 +2075,54 @@ public class TestWithinIndex {
                 ki.close();
             }
         });
+    }
+
+
+    /**
+     * An embedded span without a payload keeps having no payload
+     * when it is fetched from a span store again, instead of getting
+     * the payload of the current embedded span.
+     */
+    @Test
+    public void testStoredEmbeddedSpanPayload () throws IOException {
+        KrillIndex ki = new KrillIndex();
+        FieldDocument fd = new FieldDocument();
+        fd.addString("ID", "doc-0");
+        // Three divs contain b (no payload) and a (with a class
+        // payload); another a follows the divs
+        fd.addTV("base", "xbaya", "[(0-1)s:x|_1$<i>0<i>1|"
+                + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>1|"
+                + "<>:div$<b>64<i>0<i>3<i>3<b>0<s>2]"
+                + "[(1-2)s:b|_2$<i>1<i>2|"
+                + "<>:div$<b>64<i>1<i>3<i>3<b>0<s>3]"
+                + "[(2-3)s:a|_3$<i>2<i>3]"
+                + "[(3-4)s:y|_4$<i>3<i>4]"
+                + "[(4-5)s:a|_5$<i>4<i>5]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        SpanQuery sq = new SpanWithinQuery("div",
+                new SpanOrQuery(
+                        new SpanClassQuery(
+                                new SpanTermQuery(new Term("base", "s:a")),
+                                (byte) 1),
+                        new SpanTermQuery(new Term("base", "s:b"))));
+
+        // b and a within each div
+        List<String> spans = getSpanInfo(ki.reader(), sq);
+        assertEquals(6, spans.size());
+        for (int i = 0; i < spans.size(); i += 2) {
+            // b: only the payload of the div
+            assertEquals(spans.get(i), 1, payloadCount(spans.get(i)));
+            // a: the payload of the class and of the div
+            assertEquals(spans.get(i + 1), 2,
+                    payloadCount(spans.get(i + 1)));
+        }
+    }
+
+
+    // The number of payloads in a line of getSpanInfo()
+    private static int payloadCount (String spanInfo) {
+        return spanInfo.split(" \\(", -1).length - 1;
     }
 };

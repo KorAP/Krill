@@ -329,8 +329,11 @@ public class WithinSpans extends LegacySpans {
                                 current.payload.size());
                         this.embeddedPayload.addAll(current.payload);
                     }
+                    // An empty payload, as storeEmbedded() would
+                    // otherwise take the payload of the current
+                    // position of the embedded spans
                     else {
-                        this.embeddedPayload = null;
+                        this.embeddedPayload = new ArrayList<byte[]>(0);
                     };
 
                     if (DEBUG)
