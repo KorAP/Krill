@@ -606,4 +606,40 @@ public class TestMultipleDistanceIndex {
         assertEquals(7, kr.getMatch(0).getEndPos());
 
     }
+
+
+    /**
+     * A match taken from the second distance spans keeps its payload
+     * when these spans are moved forward right after the match was
+     * found (here, with an exclusion constraint and the second span
+     * occurring first).
+     */
+    @Test
+    public void testExclusionMatchPayload () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createFieldDoc4());
+        ki.commit();
+
+        List<DistanceConstraint> constraints =
+                new ArrayList<DistanceConstraint>();
+        // Moderator does not occur within one token of Begin
+        constraints.add(createConstraint("w", 0, 1, false, true));
+        // Moderator occurs within five tokens of Begin
+        constraints.add(createConstraint("w", 0, 5, false, false));
+
+        SpanQuery mdq = new SpanMultipleDistanceQuery(
+                new SpanClassQuery(
+                        new SpanTermQuery(new Term("base", "s:Moderator")),
+                        (byte) 1),
+                new SpanClassQuery(
+                        new SpanTermQuery(new Term("base", "s:Begin")),
+                        (byte) 2),
+                constraints, false, true);
+
+        List<String> spans = getSpanInfo(ki.reader(), mdq);
+        assertEquals(1, spans.size());
+        // The payloads of both classes
+        assertEquals(spans.get(0), 2,
+                spans.get(0).split(" \\(", -1).length - 1);
+    }
 }

@@ -183,7 +183,9 @@ public class MultipleDistanceSpans extends DistanceSpans {
         matchStartPosition = span.start();
         matchEndPosition = span.end();
         matchDocNumber = span.doc();
-        matchPayload = span.matchPayload;
+        // Copy the payload, the span clears its own when it is moved
+        // forward
+        matchPayload.addAll(span.matchPayload);
 
         setMatchFirstSpan(span.getMatchFirstSpan());
         if (!exclusion)
