@@ -23,7 +23,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.DocsAndPositionsEnum;
+import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -1364,7 +1364,7 @@ public final class KrillIndex implements IndexInfo {
                 // Limit the terms to all the terms of interest
                 TermsEnum termsEnum = docTerms.intersect(fst, null);
 
-                DocsAndPositionsEnum docs = null;
+                PostingsEnum docs = null;
 
                 // List of terms to populate
                 SpanInfo termList = new SpanInfo(pto, localDocID);
@@ -1376,8 +1376,8 @@ public final class KrillIndex implements IndexInfo {
                     // The bitvector may look different (don't know why)
                     // and so the local ID may differ.
                     // That's why the requesting bitset is null.
-                    docs = termsEnum.docsAndPositions(null, docs,
-                            DocsAndPositionsEnum.FLAG_PAYLOADS);
+                    docs = termsEnum.postings(null, docs,
+                            PostingsEnum.PAYLOADS);
 
                     // Init document iterator
                     docs.nextDoc();

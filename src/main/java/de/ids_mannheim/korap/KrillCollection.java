@@ -11,7 +11,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.lucene.index.DocsAndPositionsEnum;
+import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
@@ -800,7 +800,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
     private long _numberOfAtomic (Bits docvec, LeafReaderContext atomic,
             Term term) throws IOException {
 
-        // This reimplements docsAndPositionsEnum with payloads
+        // This reimplements PostingsEnum with payloads
         final Terms terms = atomic.reader().fields().terms(term.field());
 
         // No terms were found
@@ -812,23 +812,23 @@ public final class KrillCollection extends Notifications implements IndexInfo {
             // seeked
             if (termsEnum.seekExact(term.bytes())) {
 
-                // TODO: Reuse a DocsAndPositionsEnum!!
+                // TODO: Reuse a PostingsEnum!!
 
                 // Start an iterator to fetch all payloads of the term
-                DocsAndPositionsEnum docs = termsEnum.docsAndPositions(docvec,
-                        null, DocsAndPositionsEnum.FLAG_PAYLOADS);
+                PostingsEnum docs = termsEnum.postings(docvec, null,
+                        PostingsEnum.PAYLOADS);
 
 
                 // The iterator is empty
                 // This may even be an error, but we return 0
-                if (docs.docID() == DocsAndPositionsEnum.NO_MORE_DOCS) return 0;
+                if (docs.docID() == PostingsEnum.NO_MORE_DOCS) return 0;
 
                 // Init some variables for data copying
                 long occurrences = 0;
                 BytesRef payload;
 
                 // Init nextDoc()
-                while (docs.nextDoc() != DocsAndPositionsEnum.NO_MORE_DOCS) {
+                while (docs.nextDoc() != PostingsEnum.NO_MORE_DOCS) {
 
                     if (docs.freq() < 1) continue;
 
@@ -948,8 +948,8 @@ public final class KrillCollection extends Notifications implements IndexInfo {
                     bitset.clear(0, docLength);
     
                     // Get frequency
-                    bitset.or((DocIdSetIterator) termsEnum.docs((Bits) docvec,
-                            null));
+                    bitset.or(termsEnum.postings((Bits) docvec, null,
+                            PostingsEnum.NONE));
     
                     long value = 0;
                     if (map.containsKey(termString))

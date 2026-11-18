@@ -5,7 +5,7 @@ import java.io.*;
 
 import java.nio.ByteBuffer;
 
-import org.apache.lucene.index.DocsAndPositionsEnum;
+import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.Term;
@@ -210,8 +210,8 @@ public class PositionsToOffset {
                                     term.toString(), posDoc.docID, posDoc.pos);
 
                         // Start an iterator to fetch all payloads of the term
-                        DocsAndPositionsEnum docs = termsEnum.docsAndPositions(
-                                null, null, DocsAndPositionsEnum.FLAG_PAYLOADS);
+                        PostingsEnum docs = termsEnum.postings(null, null,
+                                PostingsEnum.PAYLOADS);
 
                         if (docs.advance(docID) == docID) {
                             docs.nextPosition();
