@@ -594,4 +594,42 @@ public class TestAttributeIndex {
         Result kr = krill.apply(ki);
         assertEquals(6, kr.getTotalResults());
     }
+
+
+    /**
+     * A negated attribute only excludes elements of its own
+     * document, even if an element in an earlier document has the
+     * same position and id.
+     */
+    @Test
+    public void testNegatedAttributeInLaterDocument () throws IOException {
+        // The div of doc-0 has no attribute
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-0");
+        fd.addTV("base", "ab", "[(0-1)s:a|_1$<i>0<i>1|"
+                + "<>:div$<b>64<i>0<i>1<i>1<b>0<s>1]"
+                + "[(1-2)s:b|_2$<i>1<i>2]");
+        ki.addDoc(fd);
+
+        // The div of doc-1 has the same position and id,
+        // and the negated attribute
+        fd = new FieldDocument();
+        fd.addString("ID", "doc-1");
+        fd.addTV("base", "ab", "[(0-1)s:a|_1$<i>0<i>1|"
+                + "<>:div$<b>64<i>0<i>1<i>1<b>0<s>1|"
+                + "@:class=book$<b>17<s>1<i>1]"
+                + "[(1-2)s:b|_2$<i>1<i>2]");
+        ki.addDoc(fd);
+        ki.commit();
+
+        SpanAttributeQuery saq = new SpanAttributeQuery(
+                new SpanTermQuery(new Term("base", "@:class=book")), true,
+                true);
+        SpanQuery sq = new SpanWithAttributeQuery(
+                new SpanElementQuery("base", "div"), saq, true);
+
+        kr = ki.search(sq, (short) 10);
+        assertEquals(1, kr.getTotalResults());
+        assertEquals("doc-0", kr.getMatch(0).getDocID());
+    }
 }

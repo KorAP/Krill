@@ -388,7 +388,9 @@ public class SpansWithAttribute extends SimpleSpans {
     private boolean checkNotReferentId (SimpleSpans referentSpans)
             throws IOException {
         for (AttributeSpans notAttribute : notAttributeList) {
+            // The not-attribute may already be in a following document
             if (!notAttribute.isFinish()
+                    && referentSpans.doc() == notAttribute.doc()
                     && referentSpans.start() == notAttribute.start()
                     && referentSpans.getSpanId() == notAttribute.getSpanId()) {
                 hasMoreSpans = referentSpans.next();
