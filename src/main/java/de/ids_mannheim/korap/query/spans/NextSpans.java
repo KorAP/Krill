@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,11 @@ public class NextSpans extends SimpleSpans {
     private List<CandidateSpan> matchList;
     private List<CandidateSpan> candidateList;
     private int candidateListDocNum;
-    private boolean hasMoreFirstSpan;
+    // The first span of the document is not processed yet
+    private boolean atFirstSpan;
+
+    // The second span has more positions in the document
+    private boolean hasMoreSecondSpan;
 
     /**
      * Constructs NextSpans for the given {@link SpanNextQuery}.
@@ -55,116 +60,72 @@ public class NextSpans extends SimpleSpans {
             throws IOException {
         super(spanNextQuery, context, acceptDocs, termContexts);
         collectPayloads = spanNextQuery.isCollectPayloads();
-        hasMoreSpans = secondSpans.next();
         matchList = new ArrayList<>();
         candidateList = new ArrayList<>();
     }
 
 
+
     @Override
-    public boolean next () throws IOException {        
+    protected boolean usesIteratorApi () {
+        return true;
+    };
+
+
+    @Override
+    protected List<? extends LegacySpans> requiredOperands () {
+        return Collections.singletonList(secondSpans);
+    };
+
+
+    @Override
+    protected void startDocument () throws IOException {
+        matchList.clear();
+        candidateList.clear();
+        candidateListDocNum = firstSpans.docID();
+        hasMoreSecondSpan = nextInDocument(secondSpans);
+        atFirstSpan = true;
+    };
+
+
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
         isStartEnumeration = false;
         matchPayload.clear();
-        return advance();
-    }
 
-
-    /**
-     * Advances the NextSpans to the next match by checking the
-     * matchList or
-     * setting the matchlist first, if it is empty.
-     * 
-     * @return <code>true</code> if a match is found,
-     *         <code>false</code>
-     *         otherwise.
-     * @throws IOException
-     */
-    private boolean advance () throws IOException {
-        while (hasMoreSpans || !matchList.isEmpty()
-                || !candidateList.isEmpty()) {
-
-            // Check, if the matchlist is fine
-            if (!matchList.isEmpty() &&
-                candidateListDocNum != firstSpans.doc()) {
-
-                if (DEBUG) {
-                    log.debug(
-                        "Remove entries from matchlist because " +
-                        "it's not in the same doc {}!={}",
-                        firstSpans.doc(),
-                        candidateListDocNum);
-                };
-
-                // Clear matchList
-                matchList.clear();
-
-                // Set new matchlist
-                setMatchList();
-            };
-
-            if (!matchList.isEmpty()) {                
-                matchDocNumber = firstSpans.doc();
-                matchStartPosition = firstSpans.start();
+        while (true) {
+            if (!matchList.isEmpty()) {
+                matchDocNumber = firstSpans.docID();
+                matchStartPosition = firstSpans.startPosition();
                 matchEndPosition = matchList.get(0).getEnd();
-                
                 spanId = matchList.get(0).getSpanId();
                 if (collectPayloads)
                     matchPayload.addAll(matchList.get(0).getPayloads());
                 matchList.remove(0);
                 return true;
-            }
-            
+            };
+
+            // No more matches in this document
+            if (!hasMoreSecondSpan && candidateList.isEmpty())
+                return false;
+
             // Forward firstspan
-            hasMoreFirstSpan = firstSpans.next();
-            if (hasMoreFirstSpan){
-                if (DEBUG) {
-                    log.debug("FirstSpan [{}]", firstSpans.toString());
-                    log.debug("FirstSpan ({}) {}-{}", firstSpans.doc(), firstSpans.start(), firstSpans.end());
-                }
-                setMatchList();
-            }
-            else {
-                hasMoreSpans = false;
-                candidateList.clear();
-            }
-        }
-        return false;
-    }
+            if (atFirstSpan)
+                atFirstSpan = false;
+            else if (!(hasMoreSpans = nextInDocument(firstSpans)))
+                return false;
 
+            if (DEBUG) {
+                log.debug("FirstSpan [{}]", firstSpans.toString());
+                log.debug("FirstSpan ({}) {}-{}", firstSpans.doc(),
+                        firstSpans.start(), firstSpans.end());
+            };
 
-    /**
-     * Sets the matchlist by first searching the candidates and then
-     * find all
-     * the matches.
-     * 
-     * @throws IOException
-     */
-    private void setMatchList () throws IOException {
-        if (firstSpans.doc() == candidateListDocNum) {
             searchCandidates();
             searchMatches();
         }
-        else {
-            candidateList.clear();
-            if (hasMoreSpans && ensureSameDoc(firstSpans, secondSpans)) {
-                if (DEBUG) {
-                    log.debug("First and second span now in same doc: {}-{} and {}-{} in {}={}",
-                              firstSpans.start(),
-                              firstSpans.end(),
-                              secondSpans.start(),
-                              secondSpans.end(),
-                              firstSpans.doc(),
-                              secondSpans.doc()
-                        );
-                    log.debug("First span [{}]",firstSpans.toString());
-                    log.debug("Second span [{}]",secondSpans.toString());
-
-                }
-                candidateListDocNum = firstSpans.doc();
-                searchMatches();
-            }
-        }
     }
+
 
 
     /**
@@ -209,7 +170,7 @@ public class NextSpans extends SimpleSpans {
      */
     private void searchMatches () throws IOException {
 
-        while (hasMoreSpans && candidateListDocNum == secondSpans.doc()) {
+        while (hasMoreSecondSpan) {
             if (DEBUG) {
                 log.debug("SecondSpan [{}]", secondSpans.toString());
                 log.debug("SecondSpan ({}) {}-{}", secondSpans.doc(), secondSpans.start(), secondSpans.end());
@@ -229,7 +190,7 @@ public class NextSpans extends SimpleSpans {
                 candidateList.add(new CandidateSpan(secondSpans));
                 addMatch(new CandidateSpan(secondSpans));
             }
-            hasMoreSpans = secondSpans.next();
+            hasMoreSecondSpan = nextInDocument(secondSpans);
         }
     }
 
@@ -262,43 +223,6 @@ public class NextSpans extends SimpleSpans {
                 cost, payloads));
     }
 
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (firstSpans.doc() < target)) {
-
-            if (!firstSpans.skipTo(target)) {
-                hasMoreSpans = false;
-                return false;
-            }
-            else {
-                // removed all matches found in the previous doc.
-                matchList.clear();
-            }
-
-            if (DEBUG) {
-                log.debug("Skip firstSpans to {}={} succeed with positions {}-{}",
-                          target,
-                          firstSpans.doc(),
-                          firstSpans.start(),
-                          firstSpans.end());
-                log.debug("secondSpans is at positions {}-{} at {}",
-                          secondSpans.start(),
-                          secondSpans.end(),
-                          secondSpans.doc());
-            };
-            
-            if (hasMoreFirstSpan){
-                setMatchList();
-            }
-            else {
-                hasMoreSpans = false;
-                candidateList.clear();
-            }
-        }
-        matchPayload.clear();
-        return advance();
-    }
 
 
     @Override

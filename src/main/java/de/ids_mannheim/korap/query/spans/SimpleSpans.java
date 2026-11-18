@@ -3,6 +3,8 @@ package de.ids_mannheim.korap.query.spans;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.LeafReaderContext;
@@ -170,6 +172,50 @@ public abstract class SimpleSpans extends LegacySpans {
 
 
     /**
+     * Further operands that have to be in the same document as the
+     * driver for the document to have a match at all. Before a
+     * document is searched for matches, they are moved to the
+     * document of the driver (and the driver to theirs, if they are
+     * ahead), see {@link #alignOperands(int)}. They are not moved
+     * to a position in the document - see {@link #startDocument()}.
+     * 
+     * @return no further operands by default.
+     */
+    protected List<? extends LegacySpans> requiredOperands () {
+        return Collections.emptyList();
+    }
+
+
+    /**
+     * Move the driver and all required operands to the next document
+     * all of them have, starting with the document the driver is in.
+     * 
+     * @param doc
+     *            The document the driver is in.
+     * @return The common document, or NO_MORE_DOCS.
+     */
+    private int alignOperands (int doc) throws IOException {
+        boolean aligned = false;
+        while (doc != NO_MORE_DOCS && !aligned) {
+            aligned = true;
+            for (LegacySpans operand : requiredOperands()) {
+                int operandDoc = operand.docID();
+                if (operandDoc < doc)
+                    operandDoc = operand.advance(doc);
+                if (operandDoc == NO_MORE_DOCS)
+                    return NO_MORE_DOCS;
+                if (operandDoc > doc) {
+                    doc = driver().advance(operandDoc);
+                    aligned = false;
+                    break;
+                };
+            };
+        };
+        return doc;
+    }
+
+
+    /**
      * Called whenever a new document is entered - after the driver
      * was moved to its first position in the document, and before
      * the first match is searched. Classes reset the state they keep
@@ -216,6 +262,8 @@ public abstract class SimpleSpans extends LegacySpans {
     public int nextDoc () throws IOException {
         if (!usesIteratorApi())
             return super.nextDoc();
+        if (matchDocNumber == NO_MORE_DOCS)
+            return NO_MORE_DOCS;
         return this.toDocumentWithMatch(driver().nextDoc());
     }
 
@@ -224,6 +272,8 @@ public abstract class SimpleSpans extends LegacySpans {
     public int advance (int target) throws IOException {
         if (!usesIteratorApi())
             return super.advance(target);
+        if (matchDocNumber == NO_MORE_DOCS)
+            return NO_MORE_DOCS;
         return this.toDocumentWithMatch(driver().advance(target));
     }
 
@@ -233,7 +283,7 @@ public abstract class SimpleSpans extends LegacySpans {
     private int toDocumentWithMatch (int doc) throws IOException {
         isStartEnumeration = false;
         firstMatchPending = false;
-        while (doc != NO_MORE_DOCS) {
+        while ((doc = alignOperands(doc)) != NO_MORE_DOCS) {
             matchDocNumber = doc;
             hasMoreSpans = nextInDocument(driver());
             startDocument();

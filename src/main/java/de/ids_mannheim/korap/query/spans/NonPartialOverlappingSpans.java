@@ -2,6 +2,8 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.LeafReaderContext;
@@ -40,44 +42,56 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
         // Warning: not implemented, results in errors for SpanNextQuery 
         // This.collectPayloads = simpleSpanQuery.isCollectPayloads()
         collectPayloads = true;
-        hasMoreSpans = secondSpans.next();
-
     }
+
+
+    // The first span of the document is not processed yet
+    private boolean atFirstSpan;
 
 
     @Override
-    public boolean next () throws IOException {
+    protected boolean usesIteratorApi () {
+        return true;
+    };
+
+
+    @Override
+    protected List<? extends LegacySpans> requiredOperands () {
+        return Collections.singletonList(secondSpans);
+    };
+
+
+    @Override
+    protected void startDocument () throws IOException {
+        if (hasMoreSpans)
+            hasMoreSpans = nextInDocument(secondSpans);
+        atFirstSpan = true;
+    };
+
+
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
         // Warning: this does not work for overlapping spans 
         // e.g. get multiple second spans in a firstspan
-        hasMoreSpans &= firstSpans.next();
+        if (!atFirstSpan && hasMoreSpans)
+            hasMoreSpans = nextInDocument(firstSpans);
+        atFirstSpan = false;
         isStartEnumeration = false;
         matchPayload.clear();
-        return advance();
-    }
 
-
-    /**
-     * Advances to the next match.
-     * 
-     * @return <code>true</code> if a match is found,
-     *         <code>false</code>
-     *         otherwise.
-     * @throws IOException
-     */
-    protected boolean advance () throws IOException {
         // The complexity is linear for searching in a document. 
         // It's better if we can skip to >= position in a document.
-        while (hasMoreSpans && ensureSameDoc(firstSpans, secondSpans)) {
+        while (hasMoreSpans) {
             int matchCase = findMatch();
             if (matchCase == 0) {
                 doCollectPayloads();
                 return true;
             }
             else if (matchCase == 1) {
-                hasMoreSpans = secondSpans.next();
+                hasMoreSpans = nextInDocument(secondSpans);
             }
             else {
-                hasMoreSpans = firstSpans.next();
+                hasMoreSpans = nextInDocument(firstSpans);
             }
         }
         return false;
@@ -112,19 +126,6 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
                 matchPayload.addAll(payload);
             }
         }
-    }
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (firstSpans.doc() < target)) {
-            if (!firstSpans.skipTo(target)) {
-                hasMoreSpans = false;
-                return false;
-            }
-        }
-        matchPayload.clear();
-        return advance();
     }
 
 

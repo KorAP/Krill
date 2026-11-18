@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,8 @@ public class SpansWithAttribute extends SimpleSpans {
     private SimpleSpans referentSpans;
     private List<AttributeSpans> attributeList;
     private List<AttributeSpans> notAttributeList;
+    // The not-attribute has (more) positions in the current document
+    private boolean[] notAttributeInDoc;
 
     protected Logger logger = LoggerFactory.getLogger(SpansWithAttribute.class);
 
@@ -66,7 +69,6 @@ public class SpansWithAttribute extends SimpleSpans {
         // IllegalArgumentException("Referent spans must have ids.");
         // }
         this.referentSpans = referentSpans;
-        hasMoreSpans = referentSpans.next();
         setAttributeList(spanWithAttributeQuery, context, acceptDocs,
                 termContexts);
     }
@@ -79,7 +81,6 @@ public class SpansWithAttribute extends SimpleSpans {
                                Map<Term, TermContext> termContexts)
             throws IOException {
         super(spanWithAttributeQuery, context, acceptDocs, termContexts);
-        hasMoreSpans = true;
         setAttributeList(spanWithAttributeQuery, context, acceptDocs,
                 termContexts);
         if (attributeList.size() == 0) {
@@ -124,6 +125,7 @@ public class SpansWithAttribute extends SimpleSpans {
         else {
             throw new NullPointerException("No attribute is defined.");
         }
+        notAttributeInDoc = new boolean[notAttributeList.size()];
     }
 
 
@@ -148,42 +150,82 @@ public class SpansWithAttribute extends SimpleSpans {
                 termContexts);
         if (sq.isNegation()) {
             notAttributeList.add(as);
-            as.next();
         }
         else {
             attributeList.add(as);
-            hasMoreSpans &= as.next();
         }
     }
 
 
     @Override
-    public boolean next () throws IOException {
+    protected boolean usesIteratorApi () {
+        return true;
+    };
+
+
+    // With a single (positive) attribute and no referent spans,
+    // the attribute spans are the referent spans
+    @Override
+    protected LegacySpans driver () {
+        return referentSpans != null ? referentSpans : attributeList.get(0);
+    };
+
+
+    @Override
+    protected List<? extends LegacySpans> requiredOperands () {
+        if (referentSpans == null)
+            return Collections.emptyList();
+        return attributeList;
+    };
+
+
+    @Override
+    protected void startDocument () throws IOException {
+        int doc = driver().docID();
+
+        // The attributes were moved to the document, but not to a
+        // position in it yet
+        if (referentSpans != null) {
+            for (AttributeSpans a : attributeList) {
+                if (hasMoreSpans)
+                    hasMoreSpans = nextInDocument(a);
+            };
+        };
+
+        // The not-attributes are optional: only those having
+        // positions in this document are considered
+        for (int i = 0; i < notAttributeList.size(); i++) {
+            AttributeSpans a = notAttributeList.get(i);
+            if (a.docID() < doc)
+                a.advance(doc);
+            notAttributeInDoc[i] = a.docID() == doc && nextInDocument(a);
+        };
+    };
+
+
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
         isStartEnumeration = false;
         matchPayload.clear();
         if (referentSpans == null) { // only one (positive) attribute
             return advanceAttribute();
         }
         else {
-            return advance();
+            return advanceReferent();
         }
     }
 
 
     private boolean advanceAttribute () throws IOException {
+        SimpleSpans referentSpans = attributeList.get(0);
         while (hasMoreSpans) {
-            SimpleSpans referentSpans = attributeList.get(0);
             advanceNotAttributes(referentSpans);
             if (checkNotReferentId(referentSpans)) {
-                this.matchDocNumber = referentSpans.doc();
-                this.matchStartPosition = referentSpans.start();
-                this.matchEndPosition = referentSpans.end();
-                this.matchPayload = referentSpans.getPayload();
-                this.spanId = referentSpans.getSpanId();
+                setMatch(referentSpans);
                 if (this.spanId > 0) {
                     hasSpanId = true;
                 }
-                hasMoreSpans = referentSpans.next();
+                hasMoreSpans = nextInDocument(referentSpans);
                 return true;
             }
         }
@@ -192,39 +234,40 @@ public class SpansWithAttribute extends SimpleSpans {
 
 
     /**
-     * Searches for the next match by first identify a possible
-     * element
-     * position, and then ensuring that the element contains all the
-     * attributes
-     * and <em>do not</em> contain any of the not attributes.
+     * Searches for the next match in the current document by first
+     * identify a possible element position, and then ensuring that
+     * the element contains all the attributes and <em>do not</em>
+     * contain any of the not attributes.
      * 
      * @return <code>true</code> if the a match is found,
      *         <code>false</code>
      *         otherwise.
      * @throws IOException
      */
-    private boolean advance () throws IOException {
+    private boolean advanceReferent () throws IOException {
 
         while (hasMoreSpans && searchSpanPosition()) {
-            // System.out.println(referentSpans.start() + ","
-            // + referentSpans.end() + " " +
-            // referentSpans.getSpanId());
-
             if (checkReferentId() && checkNotReferentId(referentSpans)) {
-                this.matchDocNumber = referentSpans.doc();
-                this.matchStartPosition = referentSpans.start();
-                this.matchEndPosition = referentSpans.end();
-                this.matchPayload.addAll(referentSpans.getPayload());
-                this.spanId = referentSpans.getSpanId();
+                setMatch(referentSpans);
 
                 if (attributeList.size() > 0)
-                    hasMoreSpans = attributeList.get(0).next();
+                    hasMoreSpans = nextInDocument(attributeList.get(0));
 
-                hasMoreSpans &= referentSpans.next();
+                hasMoreSpans &= nextInDocument(referentSpans);
                 return true;
             }
         }
         return false;
+    }
+
+
+    // The current position of the referent spans is a match
+    private void setMatch (SimpleSpans referentSpans) throws IOException {
+        this.matchDocNumber = referentSpans.docID();
+        this.matchStartPosition = referentSpans.startPosition();
+        this.matchEndPosition = referentSpans.endPosition();
+        this.matchPayload.addAll(referentSpans.getPayload());
+        this.spanId = referentSpans.getSpanId();
     }
 
 
@@ -247,7 +290,7 @@ public class SpansWithAttribute extends SimpleSpans {
                 if (attributeList.size() == 0) {
                     return true;
                 }
-                hasMoreSpans = referentSpans.next();
+                hasMoreSpans = nextInDocument(referentSpans);
                 continue;
             }
             if (checkAttributeListPosition()) {
@@ -271,7 +314,7 @@ public class SpansWithAttribute extends SimpleSpans {
      * @throws IOException
      */
     private boolean checkAttributeListPosition () throws IOException {
-        int currentPosition = referentSpans.start();
+        int currentPosition = referentSpans.startPosition();
         boolean isSame = true;
         boolean isFirst = true;
 
@@ -281,10 +324,10 @@ public class SpansWithAttribute extends SimpleSpans {
             //	    logger.info("pos:" + withAttributeSpans.start());
             if (isFirst) {
                 isFirst = false;
-                currentPosition = referentSpans.start();
+                currentPosition = referentSpans.startPosition();
             }
-            else if (currentPosition != referentSpans.start()) {
-                currentPosition = referentSpans.start();
+            else if (currentPosition != referentSpans.startPosition()) {
+                currentPosition = referentSpans.startPosition();
                 isSame = false;
 
             }
@@ -295,21 +338,20 @@ public class SpansWithAttribute extends SimpleSpans {
 
 
     /**
-     * Advances the element or attribute spans to be in the same
-     * document and
-     * start position.
+     * Advances the element or attribute spans in the current
+     * document to be in the same start and end position.
      */
     private boolean ensureSamePosition (SimpleSpans spans,
             AttributeSpans attributes) throws IOException {
 
-        while (hasMoreSpans && ensureSameDoc(spans, attributes)) {
-            if (attributes.start() == spans.start()
-                    && attributes.end() == spans.end())
+        while (hasMoreSpans) {
+            if (attributes.startPosition() == spans.startPosition()
+                    && attributes.endPosition() == spans.endPosition())
                 return true;
-            else if (attributes.start() >= spans.start())
-                hasMoreSpans = spans.next();
+            else if (attributes.startPosition() >= spans.startPosition())
+                hasMoreSpans = nextInDocument(spans);
             else
-                hasMoreSpans = attributes.next();
+                hasMoreSpans = nextInDocument(attributes);
         }
 
         return false;
@@ -317,29 +359,19 @@ public class SpansWithAttribute extends SimpleSpans {
 
 
     /**
-     * Advances the <em>not-attributes</em> to be in the same or
-     * greater
-     * document number than referentSpans' document number. If a
-     * <em>not-attribute</em> is in the same document, it is advanced
-     * to be in
-     * the same as or greater start position than the current
-     * referentSpan.
+     * Advances the <em>not-attributes</em> in the current document
+     * to be in the same as or greater start position than the
+     * current referentSpan.
      * 
      * @throws IOException
      */
-    private void advanceNotAttributes (LegacySpans referentSpans) throws IOException {
-
-        for (AttributeSpans a : notAttributeList) {
-            // advance the doc# of not AttributeSpans
-            // logger.info("a "+a.start());
-            while (!a.isFinish() && a.doc() <= referentSpans.doc()) {
-
-                if (a.doc() == referentSpans.doc()
-                        && a.start() >= referentSpans.start())
-                    break;
-
-                if (!a.next())
-                    a.setFinish(true);
+    private void advanceNotAttributes (LegacySpans referentSpans)
+            throws IOException {
+        for (int i = 0; i < notAttributeList.size(); i++) {
+            AttributeSpans a = notAttributeList.get(i);
+            while (notAttributeInDoc[i]
+                    && a.startPosition() < referentSpans.startPosition()) {
+                notAttributeInDoc[i] = nextInDocument(a);
             }
         }
     }
@@ -361,9 +393,9 @@ public class SpansWithAttribute extends SimpleSpans {
         for (AttributeSpans attribute : attributeList) {
             if (referentSpans.getSpanId() != attribute.getSpanId()) {
                 if (referentSpans.getSpanId() < attribute.getSpanId())
-                    hasMoreSpans = attribute.next();
+                    hasMoreSpans = nextInDocument(attribute);
                 else {
-                    hasMoreSpans = referentSpans.next();
+                    hasMoreSpans = nextInDocument(referentSpans);
                 }
 
                 return false;
@@ -387,33 +419,17 @@ public class SpansWithAttribute extends SimpleSpans {
      */
     private boolean checkNotReferentId (SimpleSpans referentSpans)
             throws IOException {
-        for (AttributeSpans notAttribute : notAttributeList) {
-            // The not-attribute may already be in a following document
-            if (!notAttribute.isFinish()
-                    && referentSpans.doc() == notAttribute.doc()
-                    && referentSpans.start() == notAttribute.start()
+        for (int i = 0; i < notAttributeList.size(); i++) {
+            AttributeSpans notAttribute = notAttributeList.get(i);
+            if (notAttributeInDoc[i]
+                    && referentSpans.startPosition() == notAttribute
+                            .startPosition()
                     && referentSpans.getSpanId() == notAttribute.getSpanId()) {
-                hasMoreSpans = referentSpans.next();
+                hasMoreSpans = nextInDocument(referentSpans);
                 return false;
             }
         }
         return true;
-    }
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        // With only one (positive) attribute, the attribute spans
-        // are the referent spans
-        SimpleSpans spans = referentSpans != null ? referentSpans
-                : attributeList.get(0);
-        if (hasMoreSpans && (spans.doc() < target)) {
-            if (!spans.skipTo(target)) {
-                return false;
-            }
-        }
-        isStartEnumeration = false;
-        return referentSpans != null ? advance() : advanceAttribute();
     }
 
 
