@@ -70,21 +70,12 @@ public abstract class DistanceSpans extends SimpleSpans {
     }
 
 
+    // All distance spans find their matches document by document,
+    // see SimpleSpans
     @Override
-    public boolean next () throws IOException {
-        isStartEnumeration = false;
-        matchPayload.clear();
-        return advance();
+    protected boolean usesIteratorApi () {
+        return true;
     }
-
-
-    /**
-     * Advances the current span enumeration to the next span match.
-     * 
-     * @return <code>true</code> if a span match is available,
-     *         <code>false</code> otherwise.
-     */
-    protected abstract boolean advance () throws IOException;
 
 
     /**

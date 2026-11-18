@@ -73,56 +73,6 @@ public abstract class SimpleSpans extends LegacySpans {
     }
 
 
-    /**
-     * If the current x and y are not in the same document, to skip
-     * the
-     * span with the smaller document number, to the same OR a greater
-     * document number than, the document number of the other span. Do
-     * this until the x and the y are in the same doc, OR until the
-     * last
-     * document.
-     * 
-     * @return true iff such a document exists.
-     */
-    protected boolean ensureSameDoc (LegacySpans x, LegacySpans y) throws IOException {
-        while (hasMoreSpans && x.doc() != y.doc()) {
-            if (x.doc() < y.doc()) {
-                if (!x.skipTo(y.doc())) {
-                    hasMoreSpans = false;
-                    return false;
-                }
-            }
-            else {
-                if (!y.skipTo(x.doc())) {
-                    hasMoreSpans = false;
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-
-    /**
-     * Find the same doc shared by element, firstspan and secondspan.
-     * 
-     * @return true iff such a doc is found.
-     */
-    protected boolean findSameDoc (LegacySpans x, LegacySpans y, LegacySpans e)
-            throws IOException {
-
-        while (hasMoreSpans) {
-            if (ensureSameDoc(x, y) && e.doc() == x.doc()) {
-                return true;
-            }
-            if (!ensureSameDoc(e, y)) {
-                return false;
-            };
-        }
-        return false;
-    }
-
-
     // Not yet ported classes keep their match in these fields;
     // for ported classes the old API is derived from the iterator API
     @Override

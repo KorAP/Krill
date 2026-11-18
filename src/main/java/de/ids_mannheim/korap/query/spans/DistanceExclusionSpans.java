@@ -49,50 +49,58 @@ public class DistanceExclusionSpans extends DistanceSpans {
         minDistance = query.getMinDistance();
         maxDistance = query.getMaxDistance();
         this.isOrdered = query.isOrdered();
-        hasMoreSpans = firstSpans.next();
-        hasMoreSecondSpans = secondSpans.next();
+    }
+
+
+    // The second spans are optional: a document without them has
+    // matches as well. They are moved to the document of the first
+    // spans, and hasMoreSecondSpans tells if they have positions in
+    // it.
+    @Override
+    protected void startDocument () throws IOException {
+        int doc = firstSpans.docID();
+        if (secondSpans.docID() < doc)
+            secondSpans.advance(doc);
+        hasMoreSecondSpans = secondSpans.docID() == doc
+                && nextInDocument(secondSpans);
     }
 
 
     @Override
-    protected boolean advance () throws IOException {
+    protected boolean nextMatchInDocument () throws IOException {
+        isStartEnumeration = false;
+        matchPayload.clear();
 
         while (hasMoreSpans) {
             if (hasMoreSecondSpans)
                 forwardSecondSpans();
 
-            if (findMatch()) {
-                hasMoreSpans = firstSpans.next();
+            boolean isMatch = findMatch();
+            hasMoreSpans = nextInDocument(firstSpans);
+            if (isMatch)
                 return true;
-            }
-            hasMoreSpans = firstSpans.next();
         }
         return false;
     }
 
 
     /**
-     * Advance the second span until it occurs on the right side of
-     * the first
-     * span.
+     * Advance the second span in the current document until it
+     * occurs on the right side of the first span.
      * 
      * @throws IOException
      */
     private void forwardSecondSpans () throws IOException {
 
-        if (secondSpans.doc() < firstSpans.doc()) {
-            hasMoreSecondSpans = secondSpans.skipTo(firstSpans.doc());
-        }
-
         // skip the secondSpan to the right side of the firstSpan
-        while (hasMoreSecondSpans && secondSpans.doc() == firstSpans.doc()
-                && firstSpans.start() >= secondSpans.end()) {
+        while (hasMoreSecondSpans
+                && firstSpans.startPosition() >= secondSpans.endPosition()) {
 
             // the firstspan is within maxDistance
             if (!isOrdered && calculateActualDistance() <= maxDistance) {
                 break;
             }
-            hasMoreSecondSpans = secondSpans.next();
+            hasMoreSecondSpans = nextInDocument(secondSpans);
         }
     }
 
@@ -108,10 +116,10 @@ public class DistanceExclusionSpans extends DistanceSpans {
      */
     private int calculateActualDistance () {
         // right secondSpan
-        if (firstSpans.end() <= secondSpans.start())
-            return secondSpans.start() - firstSpans.end() + 1;
+        if (firstSpans.endPosition() <= secondSpans.startPosition())
+            return secondSpans.startPosition() - firstSpans.endPosition() + 1;
         // left secondSpan
-        return firstSpans.start() - secondSpans.end() + 1;
+        return firstSpans.startPosition() - secondSpans.endPosition() + 1;
     }
 
 
@@ -126,12 +134,14 @@ public class DistanceExclusionSpans extends DistanceSpans {
      *         distance.
      */
     private boolean findMatch () throws IOException {
-        if (!hasMoreSecondSpans || secondSpans.doc() > firstSpans.doc()) {
+        // No more second spans in the document
+        if (!hasMoreSecondSpans) {
             setMatchProperties();
             return true;
         }
-        if (minDistance == 0 && firstSpans.start() < secondSpans.end()
-                && secondSpans.start() < firstSpans.end()) {
+        if (minDistance == 0
+                && firstSpans.startPosition() < secondSpans.endPosition()
+                && secondSpans.startPosition() < firstSpans.endPosition()) {
             return false;
         }
 
@@ -151,26 +161,14 @@ public class DistanceExclusionSpans extends DistanceSpans {
      * @throws IOException
      */
     private void setMatchProperties () throws IOException {
-        matchDocNumber = firstSpans.doc();
-        matchStartPosition = firstSpans.start();
-        matchEndPosition = firstSpans.end();
+        matchDocNumber = firstSpans.docID();
+        matchStartPosition = firstSpans.startPosition();
+        matchEndPosition = firstSpans.endPosition();
 
         if (collectPayloads && firstSpans.isPayloadAvailable())
             matchPayload.addAll(firstSpans.getPayload());
 
         setMatchFirstSpan(new CandidateSpan(firstSpans));
-    }
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && firstSpans.doc() < target) {
-            if (!firstSpans.skipTo(target)) {
-                hasMoreSpans = false;
-                return false;
-            }
-        }
-        return advance();
     }
 
 

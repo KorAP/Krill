@@ -32,7 +32,6 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
     protected List<CandidateSpan> firstSpanList, secondSpanList;
     protected List<CandidateSpan> matchList;
     private long matchCost;
-    protected int currentDocNum;
 
     /**
      * Constructs UnorderedDistanceSpans for the given
@@ -56,14 +55,29 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         firstSpanList = new ArrayList<CandidateSpan>();
         secondSpanList = new ArrayList<CandidateSpan>();
         matchList = new ArrayList<CandidateSpan>();
-
-        hasMoreFirstSpans = firstSpans.next();
-        hasMoreSecondSpans = secondSpans.next();
-        hasMoreSpans = hasMoreFirstSpans && hasMoreSecondSpans;
     }
 
+
     @Override
-    protected boolean advance () throws IOException {
+    protected List<? extends LegacySpans> requiredOperands () {
+        return Collections.singletonList(secondSpans);
+    }
+
+
+    @Override
+    protected void startDocument () throws IOException {
+        firstSpanList.clear();
+        secondSpanList.clear();
+        matchList.clear();
+        hasMoreFirstSpans = hasMoreSpans;
+        hasMoreSecondSpans = nextInDocument(secondSpans);
+    }
+
+
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
+        isStartEnumeration = false;
+        matchPayload.clear();
         while (hasMoreSpans || !matchList.isEmpty()) {
             if (!matchList.isEmpty()) {
                 setMatchProperties();
@@ -76,8 +90,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
 
     /**
      * Updates the firstSpanList and secondSpanList by adding the next
-     * possible first and second spans. Both the spans must be in the
-     * same document. In UnorderedElementDistanceSpans, a span that is
+     * possible first and second spans in the current document. In UnorderedElementDistanceSpans, a span that is
      * not in an element (distance unit), is not added to its
      * candidate list. The element must also be in the same document.
      * 
@@ -289,22 +302,6 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
         // log.trace("secondspan " + getMatchSecondSpan().getStart() +
         // " "
         // + getMatchSecondSpan().getEnd());
-    }
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (secondSpans.doc() < target)) {
-            if (!secondSpans.skipTo(target)) {
-                hasMoreSpans = false;
-                return false;
-            }
-        }
-
-        firstSpanList.clear();
-        secondSpanList.clear();
-        matchPayload.clear();
-        isStartEnumeration = false;
-        return advance();
     }
 
     @Override

@@ -42,29 +42,14 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
                                Map<Term, TermContext> termContexts)
             throws IOException {
         super(query, context, acceptDocs, termContexts);
-        hasMoreSpans = hasMoreFirstSpans;
     }
 
 
     @Override
     protected void setCandidateList () throws IOException {
-		if (hasMoreSpans) {
-			if (candidateListDocNum == secondSpans.doc()) {
-				copyPossibleCandidates();
-				addNewCandidates();
-				candidateListIndex = -1;
-			} else {
-				candidateList.clear();
-				if (hasMoreFirstSpans && ensureSameDoc(firstSpans, secondSpans)) {
-					candidateListDocNum = firstSpans.doc();
-					addNewCandidates();
-					candidateListIndex = -1;
-				}
-			}
-		}
-		else {
-			candidateList.clear();
-		}
+        copyPossibleCandidates();
+        addNewCandidates();
+        candidateListIndex = -1;
     }
 
 
@@ -79,7 +64,7 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
     private void copyPossibleCandidates () {
         List<CandidateSpan> temp = new ArrayList<>();
         for (CandidateSpan cs : candidateList) {
-            if (cs.getEnd() + maxDistance > secondSpans.start())
+            if (cs.getEnd() + maxDistance > secondSpans.startPosition())
                 temp.add(cs);
         }
         candidateList = temp;
@@ -91,13 +76,14 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
      * secondspan.
      */
     private void addNewCandidates () throws IOException {
-        while (hasMoreFirstSpans && firstSpans.doc() == candidateListDocNum
-                && firstSpans.start() < secondSpans.end()) {
+        while (hasMoreFirstSpans
+                && firstSpans.startPosition() < secondSpans.endPosition()) {
 
-            if (firstSpans.end() + maxDistance > secondSpans.start())
+            if (firstSpans.endPosition() + maxDistance > secondSpans
+                    .startPosition())
                 candidateList.add(new CandidateSpan(firstSpans));
 
-            hasMoreFirstSpans = firstSpans.next();
+            hasMoreFirstSpans = nextInDocument(firstSpans);
         }
     }
 
@@ -107,15 +93,16 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
         CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
         if (minDistance == 0 &&
         // intersection
-                candidateSpan.getStart() < secondSpans.end()
-                && secondSpans.start() < candidateSpan.getEnd()) {
+                candidateSpan.getStart() < secondSpans.endPosition()
+                && secondSpans.startPosition() < candidateSpan.getEnd()) {
 
             setMatchProperties(candidateSpan, true);
             return true;
         }
 
-        int actualDistance = secondSpans.start() - candidateSpan.getEnd() + 1;
-        if (candidateSpan.getStart() < secondSpans.start()
+        int actualDistance = secondSpans.startPosition()
+                - candidateSpan.getEnd() + 1;
+        if (candidateSpan.getStart() < secondSpans.startPosition()
                 && minDistance <= actualDistance
                 && actualDistance <= maxDistance) {
 

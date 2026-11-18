@@ -48,28 +48,24 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
     protected boolean prepareLists () throws IOException {
 
         if (firstSpanList.isEmpty() && secondSpanList.isEmpty()) {
-            if (hasMoreFirstSpans && hasMoreSecondSpans
-                    && ensureSameDoc(firstSpans, secondSpans)) {
+            if (hasMoreFirstSpans && hasMoreSecondSpans) {
                 firstSpanList.add(new CandidateSpan(firstSpans));
                 secondSpanList.add(new CandidateSpan(secondSpans));
-                currentDocNum = firstSpans.doc();
-                hasMoreFirstSpans = firstSpans.next();
-                hasMoreSecondSpans = secondSpans.next();
+                hasMoreFirstSpans = nextInDocument(firstSpans);
+                hasMoreSecondSpans = nextInDocument(secondSpans);
             }
             else {
                 hasMoreSpans = false;
                 return false;
             }
         }
-        else if (firstSpanList.isEmpty() && hasMoreFirstSpans
-                && firstSpans.doc() == currentDocNum) {
+        else if (firstSpanList.isEmpty() && hasMoreFirstSpans) {
             firstSpanList.add(new CandidateSpan(firstSpans));
-            hasMoreFirstSpans = firstSpans.next();
+            hasMoreFirstSpans = nextInDocument(firstSpans);
         }
-        else if (secondSpanList.isEmpty() && hasMoreSecondSpans
-                && secondSpans.doc() == currentDocNum) {
+        else if (secondSpanList.isEmpty() && hasMoreSecondSpans) {
             secondSpanList.add(new CandidateSpan(secondSpans));
-            hasMoreSecondSpans = secondSpans.next();
+            hasMoreSecondSpans = nextInDocument(secondSpans);
         }
         return true;
     }
@@ -82,10 +78,10 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
 
         if (!targetList.isEmpty()) {
             CandidateSpan target = targetList.get(0);
-            while (hasMoreCandidates && candidate.doc() == target.getDoc()
+            while (hasMoreCandidates
                     && isWithinMaxDistance(target, candidate)) {
                 candidateList.add(new CandidateSpan(candidate));
-                hasMoreCandidates = candidate.next();
+                hasMoreCandidates = nextInDocument(candidate);
             }
         }
         return hasMoreCandidates;
@@ -108,13 +104,14 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
     protected boolean isWithinMaxDistance (CandidateSpan target,
             LegacySpans candidate) {
         // left candidate
-        if (candidate.end() < target.getStart()
-                && candidate.end() + maxDistance <= target.getStart()) {
+        if (candidate.endPosition() < target.getStart()
+                && candidate.endPosition() + maxDistance <= target.getStart()) {
             return false;
         }
         // right candidate
-        if (candidate.start() > target.getEnd()
-                && target.getEnd() + maxDistance <= candidate.start()) {
+        if (candidate.startPosition() > target.getEnd()
+                && target.getEnd() + maxDistance <= candidate
+                        .startPosition()) {
             return false;
         }
         return true;

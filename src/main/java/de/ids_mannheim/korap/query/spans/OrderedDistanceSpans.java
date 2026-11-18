@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +25,10 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
 
     protected List<CandidateSpan> candidateList;
     protected int candidateListIndex;
-    protected int candidateListDocNum;
+
+    // The candidates have to be checked against the current
+    // second span
+    private boolean candidatesPending;
 
 
     /**
@@ -47,36 +51,65 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
         minDistance = query.getMinDistance();
         maxDistance = query.getMaxDistance();
 
-        hasMoreFirstSpans = firstSpans.next();
-
         candidateList = new ArrayList<>();
         candidateListIndex = -1;
-        if (hasMoreFirstSpans){
-            candidateListDocNum = firstSpans.doc();
-        }
+    }
+
+
+    // The second spans drive the iteration: the matches are
+    // collected for each second span
+    @Override
+    protected LegacySpans driver () {
+        return secondSpans;
+    }
+
+
+    @Override
+    protected List<? extends LegacySpans> requiredOperands () {
+        return Collections.singletonList(firstSpans);
+    }
+
+
+    @Override
+    protected void startDocument () throws IOException {
+        candidateList.clear();
+        candidateListIndex = -1;
+        candidatesPending = false;
+        hasMoreFirstSpans = nextInDocument(firstSpans);
     }
 
 
     /**
-     * Finds a span match in the candidate list.
+     * Finds the next span match in the current document by checking
+     * the candidates of each second span.
      */
     @Override
-    protected boolean advance () throws IOException {
-        while (hasMoreSpans && candidateListIndex < candidateList.size()) {
+    protected boolean nextMatchInDocument () throws IOException {
+        isStartEnumeration = false;
+        matchPayload.clear();
+
+        while (true) {
             // Check candidates
-            for (candidateListIndex++; candidateListIndex < candidateList
-                    .size(); candidateListIndex++) {
-                if (findMatch())
-                    return true;
+            if (candidatesPending) {
+                for (candidateListIndex++; candidateListIndex < candidateList
+                        .size(); candidateListIndex++) {
+                    if (findMatch())
+                        return true;
+                }
+                candidatesPending = false;
+                // Forward secondspan
+                hasMoreSpans = nextInDocument(secondSpans);
             }
 
-            do { // Forward secondspan
-                hasMoreSpans = secondSpans.next();
-                setCandidateList();
-            }
-            while (hasMoreSpans && !isSecondSpanValid());
+            if (!hasMoreSpans)
+                return false;
+
+            setCandidateList();
+            if (isSecondSpanValid())
+                candidatesPending = true;
+            else
+                hasMoreSpans = nextInDocument(secondSpans);
         }
-        return false;
     }
 
 
@@ -99,7 +132,7 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
     /**
      * Stores/collects the states of all possible firstspans as
      * candidate spans
-     * for the current secondspan. The candidate spans must be within
+     * for the current secondspan (in the current document). The candidate spans must be within
      * the
      * maximum distance from the current secondspan.
      * 
@@ -144,16 +177,16 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
 
         if (isDistanceZero) {
             matchStartPosition = Math.min(candidateSpan.getStart(),
-                    secondSpans.start());
+                    secondSpans.startPosition());
             matchEndPosition = Math.max(candidateSpan.getEnd(),
-                    secondSpans.end());
+                    secondSpans.endPosition());
         }
         else {
             matchStartPosition = candidateSpan.getStart();
-            matchEndPosition = secondSpans.end();
+            matchEndPosition = secondSpans.endPosition();
         }
 
-        this.matchDocNumber = secondSpans.doc();
+        this.matchDocNumber = secondSpans.docID();
         if (collectPayloads) {
             if (candidateSpan.getPayloads() != null) {
                 matchPayload.addAll(candidateSpan.getPayloads());
@@ -162,21 +195,5 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
                 matchPayload.addAll(secondSpans.getPayload());
             }
         }
-    }
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (secondSpans.doc() < target)) {
-            if (!secondSpans.skipTo(target)) {
-                candidateList.clear();
-                return false;
-            }
-        }
-
-        setCandidateList();
-        matchPayload.clear();
-        isStartEnumeration = false;
-        return advance();
     }
 }

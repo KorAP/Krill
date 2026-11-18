@@ -2,6 +2,7 @@ package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,6 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.util.Bits;
 
 
@@ -47,7 +47,6 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
     protected List<CandidateSpan> targetList;
     // secondSpans occurring near the firstSpans
     protected List<CandidateSpan> candidateList;
-    private int currentDocNum;
 
     private int minDistance, maxDistance;
     private int firstSpanPostion;
@@ -73,29 +72,49 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
         
         elements = LegacySpans.wrap(query.getElementQuery().getSpans(context,
                 acceptDocs, termContexts));
-        hasMoreElements = elements.next();
-        hasMoreSpans = firstSpans.next() && hasMoreElements;
-        hasMoreSecondSpans = secondSpans.next();
-
         elementPosition = 0;
         this.isOrdered = query.isOrdered();
         candidateList = new ArrayList<CandidateSpan>();
         targetList = new ArrayList<CandidateSpan>();
-        
-        if (hasMoreSpans)
-            currentDocNum = firstSpans.doc();
-        else
-            currentDocNum = DocIdSetIterator.NO_MORE_DOCS;
 
         minDistance = query.getMinDistance();
         maxDistance = query.getMaxDistance();
     }
 
 
+    // Only first spans in an element can be matches
     @Override
-    protected boolean advance () throws IOException {
-        while (!targetList.isEmpty()
-                || (hasMoreSpans && ensureSameDoc(firstSpans, elements))) {
+    protected List<? extends LegacySpans> requiredOperands () {
+        return Collections.singletonList(elements);
+    }
+
+
+    // The second spans are optional: a document without them has
+    // matches as well. They are moved to the document of the first
+    // spans, and hasMoreSecondSpans tells if they have positions in
+    // it.
+    @Override
+    protected void startDocument () throws IOException {
+        int doc = firstSpans.docID();
+        candidateList.clear();
+        targetList.clear();
+
+        hasMoreElements = nextInDocument(elements);
+        elementPosition = 0;
+
+        if (secondSpans.docID() < doc)
+            secondSpans.advance(doc);
+        hasMoreSecondSpans = secondSpans.docID() == doc
+                && nextInDocument(secondSpans);
+    }
+
+
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
+        isStartEnumeration = false;
+        matchPayload.clear();
+
+        while (!targetList.isEmpty() || hasMoreSpans) {
             if (!targetList.isEmpty()) {
                 if (isFirstTargetValid())
                     return true;
@@ -141,19 +160,8 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
      * @throws IOException
      */
     private boolean findMatch () throws IOException {
-        if (firstSpans.doc() != currentDocNum) {
-            currentDocNum = firstSpans.doc();
-            candidateList.clear();
-        }
-
         if (hasMoreSecondSpans) {
-            if (secondSpans.doc() == firstSpans.doc()) {
-                return (isFirstSpanValid() ? true : false);
-            }
-            else if (secondSpans.doc() < firstSpans.doc()) {
-                hasMoreSecondSpans = secondSpans.skipTo(firstSpans.doc());
-                return false;
-            }
+            return (isFirstSpanValid() ? true : false);
         }
 
         // return (isFirstSpanValid() ? true : false);
@@ -162,10 +170,10 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
             if (isFirstSpanInElement()) {
                 setMatchProperties(
                         new CandidateSpan(firstSpans, elementPosition));
-                hasMoreSpans = firstSpans.next();
+                hasMoreSpans = nextInDocument(firstSpans);
                 return true;
             }
-            hasMoreSpans = firstSpans.next();
+            hasMoreSpans = nextInDocument(firstSpans);
             return false;
         }
         return (isFirstSpanValid() ? true : false);
@@ -186,10 +194,10 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
      *             if (isFirstSpanInElement()) {
      *             setMatchProperties(new CandidateSpan(firstSpans,
      *             elementPosition));
-     *             hasMoreSpans = firstSpans.next();
+     *             hasMoreSpans = nextInDocument(firstSpans);
      *             return true;
      *             }
-     *             hasMoreSpans = firstSpans.next();
+     *             hasMoreSpans = nextInDocument(firstSpans);
      *             return false;
      *             }
      *             return (findMatch() ? true : false);
@@ -210,15 +218,15 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
      * @throws IOException
      */
     private boolean advanceElementTo (LegacySpans span) throws IOException {
-        while (hasMoreElements && elements.doc() == currentDocNum
-                && elements.start() < span.end()) {
+        while (hasMoreElements
+                && elements.startPosition() < span.endPosition()) {
 
-            if (span.start() >= elements.start()
-                    && span.end() <= elements.end()) {
+            if (span.startPosition() >= elements.startPosition()
+                    && span.endPosition() <= elements.endPosition()) {
                 return true;
             }
 
-            hasMoreElements = elements.next();
+            hasMoreElements = nextInDocument(elements);
             elementPosition++;
         }
         return false;
@@ -240,7 +248,7 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
         if (isFirstSpanInElement()) {
             CandidateSpan target = new CandidateSpan(firstSpans,
                     elementPosition);
-            hasMoreSpans = firstSpans.next();
+            hasMoreSpans = nextInDocument(firstSpans);
             // Checking if the secondspans in the *left* side are not within the
             // distance range
             if (!isOrdered && isWithinDistance())
@@ -254,7 +262,7 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
             setMatchProperties(target);
             return true;
         }
-        hasMoreSpans = firstSpans.next();
+        hasMoreSpans = nextInDocument(firstSpans);
         return false;
     }
 
@@ -269,20 +277,20 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
      * @throws IOException
      */
     private void collectRightCandidates () throws IOException {
-        while (hasMoreSecondSpans && secondSpans.doc() == currentDocNum) {
+        while (hasMoreSecondSpans) {
 
             if (elementPosition > firstSpanPostion + maxDistance) {
                 break;
             }
             // stores all first spans occurring before the current second span
             // in the target list.
-            if (hasMoreSpans && firstSpans.start() < secondSpans.start()
-                    && firstSpans.doc() == currentDocNum) {
+            if (hasMoreSpans && firstSpans.startPosition() < secondSpans
+                    .startPosition()) {
                 if (advanceElementTo(firstSpans)) {
                     targetList.add(
                             new CandidateSpan(firstSpans, elementPosition));
                 }
-                hasMoreSpans = firstSpans.next();
+                hasMoreSpans = nextInDocument(firstSpans);
                 continue;
             }
             // collects only second spans occurring inside an element
@@ -290,7 +298,7 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
                 candidateList
                         .add(new CandidateSpan(secondSpans, elementPosition));
             }
-            hasMoreSecondSpans = secondSpans.next();
+            hasMoreSecondSpans = nextInDocument(secondSpans);
         }
     }
 
@@ -303,14 +311,14 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
      * @throws IOException
      */
     private void collectLeftCandidates () throws IOException {
-        while (hasMoreSecondSpans && secondSpans.doc() == firstSpans.doc()
-                && secondSpans.start() < firstSpans.end()) {
+        while (hasMoreSecondSpans
+                && secondSpans.startPosition() < firstSpans.endPosition()) {
             if (advanceElementTo(secondSpans)) {
                 candidateList
                         .add(new CandidateSpan(secondSpans, elementPosition));
                 filterCandidateList(elementPosition);
             }
-            hasMoreSecondSpans = secondSpans.next();
+            hasMoreSecondSpans = nextInDocument(secondSpans);
         }
     }
 
@@ -404,18 +412,6 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
             matchPayload.addAll(match.getPayloads());
 
         setMatchFirstSpan(match);
-    }
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && firstSpans.doc() < target) {
-            if (!firstSpans.skipTo(target)) {
-                hasMoreSpans = false;
-                return false;
-            }
-        }
-        return advance();
     }
 
 

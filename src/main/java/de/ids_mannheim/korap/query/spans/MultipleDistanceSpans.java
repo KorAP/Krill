@@ -1,6 +1,8 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.LeafReaderContext;
@@ -71,23 +73,36 @@ public class MultipleDistanceSpans extends DistanceSpans {
         this.exclusion = exclusion;
         x = (DistanceSpans) firstSpans;
         y = (DistanceSpans) secondSpans;
-        hasMoreSpans = x.next() && y.next();
     }
 
 
     @Override
-    public boolean next () throws IOException {
-        isStartEnumeration = false;
-        matchPayload.clear();
-        return advance();
+    protected LegacySpans driver () {
+        return x;
+    }
+
+
+    @Override
+    protected List<? extends LegacySpans> requiredOperands () {
+        return Collections.singletonList(y);
+    }
+
+
+    @Override
+    protected void startDocument () throws IOException {
+        if (hasMoreSpans)
+            hasMoreSpans = nextInDocument(y);
     }
 
 
     /**
-     * Finds the next match.
+     * Finds the next match in the current document.
      */
-    protected boolean advance () throws IOException {
-        while (hasMoreSpans && ensureSameDoc(x, y)) {
+    @Override
+    protected boolean nextMatchInDocument () throws IOException {
+        isStartEnumeration = false;
+        matchPayload.clear();
+        while (hasMoreSpans) {
             if (findMatch()) {
                 moveForward();
                 return true;
@@ -105,20 +120,22 @@ public class MultipleDistanceSpans extends DistanceSpans {
      */
     private void moveForward () throws IOException {
         if (isOrdered) {
-            if (x.end() < y.end()
-                    || (x.end() == y.end() && x.start() < y.start()))
-                hasMoreSpans = x.next();
+            if (x.endPosition() < y.endPosition()
+                    || (x.endPosition() == y.endPosition()
+                            && x.startPosition() < y.startPosition()))
+                hasMoreSpans = nextInDocument(x);
             else
-                hasMoreSpans = y.next();
+                hasMoreSpans = nextInDocument(y);
         }
         // The matches of unordered distance spans are ordered by the 
         // start position
         else {
-            if (x.start() < y.start()
-                    || (x.start() == y.start() && x.end() < y.end()))
-                hasMoreSpans = x.next();
+            if (x.startPosition() < y.startPosition()
+                    || (x.startPosition() == y.startPosition()
+                            && x.endPosition() < y.endPosition()))
+                hasMoreSpans = nextInDocument(x);
             else
-                hasMoreSpans = y.next();
+                hasMoreSpans = nextInDocument(y);
         }
     }
 
@@ -180,9 +197,9 @@ public class MultipleDistanceSpans extends DistanceSpans {
      *            together, <code>false</code> otherwise.
      */
     private void setMatchProperties (DistanceSpans span, boolean exclusion) {
-        matchStartPosition = span.start();
-        matchEndPosition = span.end();
-        matchDocNumber = span.doc();
+        matchStartPosition = span.startPosition();
+        matchEndPosition = span.endPosition();
+        matchDocNumber = span.docID();
         // Copy the payload, the span clears its own when it is moved
         // forward
         matchPayload.addAll(span.matchPayload);
@@ -190,19 +207,6 @@ public class MultipleDistanceSpans extends DistanceSpans {
         setMatchFirstSpan(span.getMatchFirstSpan());
         if (!exclusion)
             setMatchSecondSpan(span.getMatchSecondSpan());
-    }
-
-
-    @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (y.doc() < target)) {
-            if (!y.skipTo(target)) {
-                return false;
-            }
-        }
-        matchPayload.clear();
-        isStartEnumeration = false;
-        return advance();
     }
 
 

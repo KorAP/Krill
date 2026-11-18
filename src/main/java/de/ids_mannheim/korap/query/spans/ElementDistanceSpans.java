@@ -1,7 +1,9 @@
 package de.ids_mannheim.korap.query.spans;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.LeafReaderContext;
@@ -53,8 +55,20 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
         elements = LegacySpans.wrap(query.getElementQuery().getSpans(context,
                 acceptDocs, termContexts));
 
-        hasMoreElements = elements.next();
-        hasMoreSpans = hasMoreFirstSpans && hasMoreElements;
+        elementPosition = 0;
+    }
+
+
+    @Override
+    protected List<? extends LegacySpans> requiredOperands () {
+        return Arrays.asList(firstSpans, elements);
+    }
+
+
+    @Override
+    protected void startDocument () throws IOException {
+        super.startDocument();
+        hasMoreElements = nextInDocument(elements);
         elementPosition = 0;
     }
 
@@ -81,23 +95,10 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
 
     @Override
     protected void setCandidateList () throws IOException {
-        if (hasMoreSpans && hasMoreElements
+        if (hasMoreElements
                 && (hasMoreFirstSpans || !candidateList.isEmpty())) {
-            if (candidateListDocNum == elements.doc()
-                    && candidateListDocNum == secondSpans.doc()) {
-                candidateListIndex = -1;
-                addNewCandidates();
-            }
-            else {
-                candidateList.clear();
-                if (hasMoreFirstSpans
-                        && findSameDoc(firstSpans, secondSpans, elements)) {
-                    candidateListDocNum = firstSpans.doc();
-                    elementPosition = 0;
-                    candidateListIndex = -1;
-                    addNewCandidates();
-                }
-            }
+            candidateListIndex = -1;
+            addNewCandidates();
         }
         else {
             candidateList.clear();
@@ -111,34 +112,34 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
      * @throws IOException
      */
     private void addNewCandidates () throws IOException {
-        while (hasMoreFirstSpans && firstSpans.doc() == candidateListDocNum
-                && firstSpans.start() < secondSpans.end()) {
+        while (hasMoreFirstSpans
+                && firstSpans.startPosition() < secondSpans.endPosition()) {
             if (advanceElementTo(firstSpans)) {
                 candidateList
                         .add(new CandidateSpan(firstSpans, elementPosition));
                 filterCandidateList(elementPosition);
             }
-            hasMoreFirstSpans = firstSpans.next();
+            hasMoreFirstSpans = nextInDocument(firstSpans);
         }
     }
 
 
     /**
-     * Advance elements until encountering a span within the given
-     * document.
+     * Advance elements in the current document until encountering
+     * the given span.
      * 
      * @return true iff an element containing the span, is found.
      */
     private boolean advanceElementTo (LegacySpans span) throws IOException {
-        while (hasMoreElements && elements.doc() == candidateListDocNum
-                && elements.start() < span.end()) {
+        while (hasMoreElements
+                && elements.startPosition() < span.endPosition()) {
 
-            if (span.start() >= elements.start()
-                    && span.end() <= elements.end()) {
+            if (span.startPosition() >= elements.startPosition()
+                    && span.endPosition() <= elements.endPosition()) {
                 return true;
             }
 
-            hasMoreElements = elements.next();
+            hasMoreElements = nextInDocument(elements);
             elementPosition++;
         }
         return false;
@@ -179,29 +180,11 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
     }
 
     @Override
-    public boolean skipTo (int target) throws IOException {
-        if (hasMoreSpans && (secondSpans.doc() < target)) {
-            if (!secondSpans.skipTo(target)) {
-                candidateList.clear();
-                return false;
-            }
-        }
-
-        setCandidateList();
-       
-        while (hasMoreSpans && !isSecondSpanValid()){
-            hasMoreSpans = secondSpans.next();
-            setCandidateList();
-        }
-        
-        matchPayload.clear();
-        isStartEnumeration = false;
-        return advance();
-    }
-
-    @Override
     public long cost () {
-        if (!candidateList.isEmpty()){
+        // The index is beyond the list once all candidates of the
+        // current second span were checked
+        if (candidateListIndex >= 0
+                && candidateListIndex < candidateList.size()) {
             CandidateSpan candidateSpan = candidateList.get(candidateListIndex);
             return elements.cost() + candidateSpan.getCost() + secondSpans.cost();
         }
