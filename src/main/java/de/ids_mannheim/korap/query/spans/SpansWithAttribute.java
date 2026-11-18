@@ -244,7 +244,7 @@ public class SpansWithAttribute extends SimpleSpans {
         while (hasMoreSpans) {
             // the element does not have an attribute
             if (referentSpans.getSpanId() < 1) {
-                if (attributeList.size() == 0 || notAttributeList.size() > 0) {
+                if (attributeList.size() == 0) {
                     return true;
                 }
                 hasMoreSpans = referentSpans.next();
