@@ -32,15 +32,15 @@ public class UnorderedTokenDistanceSpans extends UnorderedDistanceSpans {
      *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public UnorderedTokenDistanceSpans (SpanDistanceQuery query,
                                         LeafReaderContext context,
                                         Bits acceptDocs,
-                                        Map<Term, TermContext> termContexts)
+                                        SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
     }
 
 

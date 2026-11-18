@@ -2,20 +2,26 @@ package de.ids_mannheim.korap.query;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.AttributeSpans;
 import de.ids_mannheim.korap.query.spans.ElementSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * A base class for Spanqueries. It added some properties and methods
@@ -72,7 +78,19 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  * 
  * @author margaretha
  */
-public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable {
+public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable, KrillSpanQuery {
+
+    /**
+     * Lucene asks for the spans with a map of term contexts: create
+     * them with {@link SpanWeights} using that map.
+     */
+    @Override
+    public final Spans getSpans (LeafReaderContext context, Bits acceptDocs,
+            Map<Term, TermContext> termContexts) throws IOException {
+        return this.getSpans(context, acceptDocs,
+                new SpanWeights(termContexts));
+    };
+
 
     protected SpanQuery firstClause = null, secondClause = null;
     protected List<SpanQuery> clauseList = null;

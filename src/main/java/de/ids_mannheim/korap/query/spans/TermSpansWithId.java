@@ -32,14 +32,14 @@ public class TermSpansWithId extends SimpleSpans {
      *            a spanTermWithIdQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public TermSpansWithId (SpanTermWithIdQuery spanTermWithIdQuery,
                             LeafReaderContext context, Bits acceptDocs,
-                            Map<Term, TermContext> termContexts)
+                            SpanWeights weights)
             throws IOException {
-        super(spanTermWithIdQuery, context, acceptDocs, termContexts);
+        super(spanTermWithIdQuery, context, acceptDocs, weights);
         hasSpanId = true;
     }
 

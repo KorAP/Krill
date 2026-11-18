@@ -15,13 +15,26 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 import de.ids_mannheim.korap.query.spans.WithinSpans;
 
 
 /**
  * Matches spans that are within certain elements.
  */
-public class SpanWithinQuery extends SpanQuery implements Cloneable {
+public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQuery {
+
+    /**
+     * Lucene asks for the spans with a map of term contexts: create
+     * them with {@link SpanWeights} using that map.
+     */
+    @Override
+    public final Spans getSpans (LeafReaderContext context, Bits acceptDocs,
+            Map<Term, TermContext> termContexts) throws IOException {
+        return this.getSpans(context, acceptDocs,
+                new SpanWeights(termContexts));
+    };
+
     private SpanQuery wrap;
     private SpanQuery embedded;
     public String field;
@@ -154,8 +167,8 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable {
 
     @Override
     public Spans getSpans (final LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return (Spans) new WithinSpans(this, context, acceptDocs, termContexts,
+            SpanWeights weights) throws IOException {
+        return (Spans) new WithinSpans(this, context, acceptDocs, weights,
                 this.flag);
     };
 

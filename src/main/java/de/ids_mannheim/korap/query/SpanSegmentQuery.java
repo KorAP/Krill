@@ -12,6 +12,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.SegmentSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * SpanSegmentQuery matches two spans having exactly the same start
@@ -71,9 +72,9 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+            SpanWeights weights) throws IOException {
         return (Spans) new SegmentSpans(this, context, acceptDocs,
-                termContexts);
+                weights);
     }
 
 

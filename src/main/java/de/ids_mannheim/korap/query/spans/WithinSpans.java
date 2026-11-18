@@ -108,15 +108,15 @@ public class WithinSpans extends LegacySpans {
      * @param acceptDocs
      *            Bit vector representing the documents
      *            to be searched in.
-     * @param termContexts
-     *            A map managing {@link TermState TermStates}.
+     * @param weights
+     *            Creates the spans of the operands.
      * @param flag
      *            A byte flag indicating the positional condition of
      *            the sub spans.
      */
     public WithinSpans (SpanWithinQuery spanWithinQuery,
                         LeafReaderContext context, Bits acceptDocs,
-                        Map<Term, TermContext> termContexts, byte flag)
+                        SpanWeights weights, byte flag)
             throws IOException {
 
         if (DEBUG)
@@ -126,10 +126,8 @@ public class WithinSpans extends LegacySpans {
         this.matchPayload = new LinkedList<byte[]>();
 
         // Get spans
-        this.wrapSpans = LegacySpans.wrap(spanWithinQuery.wrap()
-                .getSpans(context, acceptDocs, termContexts));
-        this.embeddedSpans = LegacySpans.wrap(spanWithinQuery.embedded()
-                .getSpans(context, acceptDocs, termContexts));
+        this.wrapSpans = weights.getSpans(spanWithinQuery.wrap(), context, acceptDocs);
+        this.embeddedSpans = weights.getSpans(spanWithinQuery.embedded(), context, acceptDocs);
 
         this.flag = flag;
 

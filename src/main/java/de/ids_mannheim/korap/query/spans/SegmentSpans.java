@@ -31,14 +31,14 @@ public class SegmentSpans extends SimpleSpans {
      *            a spanSegmentQuery.
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public SegmentSpans (SpanSegmentQuery spanSegmentQuery,
                          LeafReaderContext context, Bits acceptDocs,
-                         Map<Term, TermContext> termContexts)
+                         SpanWeights weights)
             throws IOException {
-        super(spanSegmentQuery, context, acceptDocs, termContexts);
+        super(spanSegmentQuery, context, acceptDocs, weights);
         if (spanSegmentQuery.isRelation()) {
             isRelation = true;
         }

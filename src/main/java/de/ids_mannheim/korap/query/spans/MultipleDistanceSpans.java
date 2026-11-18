@@ -48,7 +48,7 @@ public class MultipleDistanceSpans extends DistanceSpans {
      *            a SpanMultipleDistanceQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @param firstSpans
      *            the firstspans
      * @param secondSpans
@@ -64,11 +64,11 @@ public class MultipleDistanceSpans extends DistanceSpans {
      */
     public MultipleDistanceSpans (SpanMultipleDistanceQuery query,
                                   LeafReaderContext context, Bits acceptDocs,
-                                  Map<Term, TermContext> termContexts,
+                                  SpanWeights weights,
                                   Spans firstSpans, Spans secondSpans,
                                   boolean isOrdered, boolean exclusion)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
         this.isOrdered = isOrdered;
         this.exclusion = exclusion;
         x = (DistanceSpans) firstSpans;

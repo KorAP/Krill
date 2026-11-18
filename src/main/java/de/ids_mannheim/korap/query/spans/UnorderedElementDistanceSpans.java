@@ -47,17 +47,16 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public UnorderedElementDistanceSpans (SpanDistanceQuery query,
                                           LeafReaderContext context,
                                           Bits acceptDocs,
-                                          Map<Term, TermContext> termContexts)
+                                          SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
-        elements = LegacySpans.wrap(query.getElementQuery().getSpans(context,
-                acceptDocs, termContexts));
+        super(query, context, acceptDocs, weights);
+        elements = weights.getSpans(query.getElementQuery(), context, acceptDocs);
         elementPosition = 0;
         elementList = new ArrayList<CandidateSpan>();
     }

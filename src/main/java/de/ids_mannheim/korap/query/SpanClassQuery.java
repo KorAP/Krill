@@ -14,6 +14,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.ClassSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * Marks spans with a special class payload.
@@ -46,9 +47,9 @@ public class SpanClassQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (final LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+            SpanWeights weights) throws IOException {
         return (Spans) new ClassSpans(this.firstClause, context, acceptDocs,
-                termContexts, number);
+                weights, number);
     };
 
     @Override

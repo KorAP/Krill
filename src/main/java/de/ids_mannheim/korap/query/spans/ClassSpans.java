@@ -49,17 +49,16 @@ public class ClassSpans extends SimpleSpans {
      * @param acceptDocs
      *            Bit vector representing the documents
      *            to be searched in.
-     * @param termContexts
-     *            A map managing {@link TermState TermStates}.
+     * @param weights
+     *            Creates the spans of the operands.
      * @param number
      *            The identifying class number.
      */
     public ClassSpans (SpanQuery operand, LeafReaderContext context,
-                       Bits acceptDocs, Map<Term, TermContext> termContexts,
+                       Bits acceptDocs, SpanWeights weights,
                        byte number)
             throws IOException {
-        spans = LegacySpans
-                .wrap(operand.getSpans(context, acceptDocs, termContexts));
+        spans = weights.getSpans(operand, context, acceptDocs);
 
         // The number of the class
         this.number = number;

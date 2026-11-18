@@ -11,6 +11,7 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.ClassFilteredSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /** Filters query results by means of class operations.
  * 
@@ -46,8 +47,8 @@ public class SpanClassFilterQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return new ClassFilteredSpans(this, context, acceptDocs, termContexts);
+            SpanWeights weights) throws IOException {
+        return new ClassFilteredSpans(this, context, acceptDocs, weights);
     }
 
 

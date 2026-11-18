@@ -13,6 +13,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.MultipleDistanceSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * SpanMultipleDistanceQuery matches two spans with respect to a list
@@ -162,7 +163,7 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery {
      */
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+            SpanWeights weights) throws IOException {
 
         SpanDistanceQuery sdq, sdq2;
         Spans ds, ds2;
@@ -171,16 +172,16 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery {
 
         sdq = new SpanDistanceQuery(firstClause, secondClause,
                 constraints.get(0), collectPayloads);
-        ds = sdq.getSpans(context, acceptDocs, termContexts);
+        ds = weights.getSpans(sdq, context, acceptDocs);
 
         for (int i = 1; i < constraints.size(); i++) {
             sdq2 = new SpanDistanceQuery(firstClause, secondClause,
                     constraints.get(i), collectPayloads);
-            ds2 = sdq2.getSpans(context, acceptDocs, termContexts);
+            ds2 = weights.getSpans(sdq2, context, acceptDocs);
 
             exclusion = sdq.isExclusion() && sdq2.isExclusion();
             mds = new MultipleDistanceSpans(this, context, acceptDocs,
-                    termContexts, ds, ds2, isOrdered, exclusion);
+                    weights, ds, ds2, isOrdered, exclusion);
             ds = mds;
         }
 

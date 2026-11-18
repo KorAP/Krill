@@ -12,6 +12,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.RepetitionSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * SpanRepetitionQuery means that the given SpanQuery must appears
@@ -89,8 +90,8 @@ public class SpanRepetitionQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return new RepetitionSpans(this, context, acceptDocs, termContexts);
+            SpanWeights weights) throws IOException {
+        return new RepetitionSpans(this, context, acceptDocs, weights);
     }
 
 

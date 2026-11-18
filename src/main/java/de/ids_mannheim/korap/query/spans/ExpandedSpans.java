@@ -53,14 +53,14 @@ public class ExpandedSpans extends SimpleSpans {
      *            a SpanExpansionQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public ExpandedSpans (SpanExpansionQuery spanExpansionQuery,
                           LeafReaderContext context, Bits acceptDocs,
-                          Map<Term, TermContext> termContexts)
+                          SpanWeights weights)
             throws IOException {
-        super(spanExpansionQuery, context, acceptDocs, termContexts);
+        super(spanExpansionQuery, context, acceptDocs, weights);
         this.min = spanExpansionQuery.getMin();
         this.max = spanExpansionQuery.getMax();
         this.direction = spanExpansionQuery.getDirection();

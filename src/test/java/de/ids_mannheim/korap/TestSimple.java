@@ -27,6 +27,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.spans.LegacySpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.util.Bits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -285,14 +286,13 @@ public class TestSimple {
     // getSpan Info
     public static List<String> getSpanInfo (IndexReader reader, SpanQuery query)
             throws IOException {
-        Map<Term, TermContext> termContexts = new HashMap<>();
         List<String> spanArray = new ArrayList<>();
 
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
-            LegacySpans spans = LegacySpans
-                    .wrap(query.getSpans(atomic, bitset, termContexts));
+            LegacySpans spans = SpanWeights.forLeaf(atomic)
+                    .getSpans(query, atomic, bitset);
 
             while (spans.next()) {
                 StringBuffer payloadString = new StringBuffer();

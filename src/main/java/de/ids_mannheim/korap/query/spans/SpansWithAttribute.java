@@ -55,22 +55,22 @@ public class SpansWithAttribute extends SimpleSpans {
      *            a SpansWithId
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public SpansWithAttribute (SpanWithAttributeQuery spanWithAttributeQuery,
                                SimpleSpans referentSpans,
                                LeafReaderContext context, Bits acceptDocs,
-                               Map<Term, TermContext> termContexts)
+                               SpanWeights weights)
             throws IOException {
-        super(spanWithAttributeQuery, context, acceptDocs, termContexts);
+        super(spanWithAttributeQuery, context, acceptDocs, weights);
         // if (!referentSpans.hasSpanId) {
         // throw new
         // IllegalArgumentException("Referent spans must have ids.");
         // }
         this.referentSpans = referentSpans;
         setAttributeList(spanWithAttributeQuery, context, acceptDocs,
-                termContexts);
+                weights);
     }
 
 
@@ -78,11 +78,11 @@ public class SpansWithAttribute extends SimpleSpans {
     // hasmorespan = true
     public SpansWithAttribute (SpanWithAttributeQuery spanWithAttributeQuery,
                                LeafReaderContext context, Bits acceptDocs,
-                               Map<Term, TermContext> termContexts)
+                               SpanWeights weights)
             throws IOException {
-        super(spanWithAttributeQuery, context, acceptDocs, termContexts);
+        super(spanWithAttributeQuery, context, acceptDocs, weights);
         setAttributeList(spanWithAttributeQuery, context, acceptDocs,
-                termContexts);
+                weights);
         if (attributeList.size() == 0) {
             throw new IllegalArgumentException(
                     "No (positive) attribute is defined.");
@@ -96,7 +96,7 @@ public class SpansWithAttribute extends SimpleSpans {
 
     public void setAttributeList (SpanWithAttributeQuery swaq,
             LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+            SpanWeights weights) throws IOException {
 
         attributeList = new ArrayList<AttributeSpans>();
         notAttributeList = new ArrayList<AttributeSpans>();
@@ -106,7 +106,7 @@ public class SpansWithAttribute extends SimpleSpans {
             if (attributeList != null) {
                 for (SpanQuery sq : attributeList) {
                     addAttributes((SpanAttributeQuery) sq, context, acceptDocs,
-                            termContexts);
+                            weights);
                 }
             }
             else {
@@ -115,12 +115,12 @@ public class SpansWithAttribute extends SimpleSpans {
         }
         else if (swaq.getSecondClause() != null) {
             addAttributes((SpanAttributeQuery) swaq.getSecondClause(), context,
-                    acceptDocs, termContexts);
+                    acceptDocs, weights);
         }
         else if (swaq.getType().equals("spanWithAttribute")
                 && swaq.getFirstClause() != null) {
             addAttributes((SpanAttributeQuery) swaq.getFirstClause(), context,
-                    acceptDocs, termContexts);
+                    acceptDocs, weights);
         }
         else {
             throw new NullPointerException("No attribute is defined.");
@@ -139,15 +139,14 @@ public class SpansWithAttribute extends SimpleSpans {
      *            a SpanAttributeQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     private void addAttributes (SpanAttributeQuery sq,
             LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+            SpanWeights weights) throws IOException {
 
-        AttributeSpans as = (AttributeSpans) sq.getSpans(context, acceptDocs,
-                termContexts);
+        AttributeSpans as = (AttributeSpans) weights.getSpans(sq, context, acceptDocs);
         if (sq.isNegation()) {
             notAttributeList.add(as);
         }

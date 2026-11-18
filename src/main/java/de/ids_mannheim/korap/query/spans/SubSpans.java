@@ -51,13 +51,13 @@ public class SubSpans extends SimpleSpans {
      *            a SpanSubspanQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public SubSpans (SpanSubspanQuery subspanQuery, LeafReaderContext context,
-                     Bits acceptDocs, Map<Term, TermContext> termContexts)
+                     Bits acceptDocs, SpanWeights weights)
             throws IOException {
-        super(subspanQuery, context, acceptDocs, termContexts);
+        super(subspanQuery, context, acceptDocs, weights);
         this.startOffset = subspanQuery.getStartOffset();
         this.length = subspanQuery.getLength();
         this.matchPayload = new ArrayList<byte[]>(6);

@@ -43,17 +43,16 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
      *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public ElementDistanceSpans (SpanDistanceQuery query,
                                  LeafReaderContext context, Bits acceptDocs,
-                                 Map<Term, TermContext> termContexts)
+                                 SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
 
-        elements = LegacySpans.wrap(query.getElementQuery().getSpans(context,
-                acceptDocs, termContexts));
+        elements = weights.getSpans(query.getElementQuery(), context, acceptDocs);
 
         elementPosition = 0;
     }

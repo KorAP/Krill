@@ -14,6 +14,7 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.SimpleSpans;
 import de.ids_mannheim.korap.query.spans.SpansWithAttribute;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * <p>
@@ -192,17 +193,16 @@ public class SpanWithAttributeQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+            SpanWeights weights) throws IOException {
 
         if (type.equals("spanWithAttribute")) {
             return new SpansWithAttribute(this, context, acceptDocs,
-                    termContexts);
+                    weights);
         }
 
-        SimpleSpans spans = (SimpleSpans) this.getFirstClause()
-                .getSpans(context, acceptDocs, termContexts);
+        SimpleSpans spans = (SimpleSpans) weights.getSpans(this.getFirstClause(), context, acceptDocs);
         return new SpansWithAttribute(this, spans, context, acceptDocs,
-                termContexts);
+                weights);
     }
 
 

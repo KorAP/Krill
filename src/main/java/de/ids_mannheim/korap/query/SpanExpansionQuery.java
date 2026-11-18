@@ -13,6 +13,7 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.ExpandedExclusionSpans;
 import de.ids_mannheim.korap.query.spans.ExpandedSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * SpanExpansionQuery makes a span longer by stretching out the start
@@ -261,15 +262,15 @@ public class SpanExpansionQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+            SpanWeights weights) throws IOException {
 
         //	      Temporary:
         if (isExclusion)
             return new ExpandedExclusionSpans(this, context, acceptDocs,
-                    termContexts);
+                    weights);
         else
 
-            return new ExpandedSpans(this, context, acceptDocs, termContexts);
+            return new ExpandedSpans(this, context, acceptDocs, weights);
     }
 
 

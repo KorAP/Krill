@@ -26,9 +26,9 @@ public class ReferenceSpans extends SimpleSpans {
 
 
     public ReferenceSpans (SpanReferenceQuery query, LeafReaderContext context,
-                           Bits acceptDocs, Map<Term, TermContext> termContexts)
+                           Bits acceptDocs, SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
         this.classNum = query.getClassNum();
     }
 

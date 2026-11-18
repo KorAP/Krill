@@ -40,6 +40,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.NumericRangeQuery;
 import de.ids_mannheim.korap.query.spans.LegacySpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
@@ -542,12 +543,11 @@ public class TestIndex { // extends LuceneTestCase {
         */
 
         StringBuilder payloadString = new StringBuilder();
-        Map<Term, TermContext> termContexts = new HashMap<>();
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             //	    Spans spans = NearSpansOrdered();
-            LegacySpans spans = LegacySpans
-                    .wrap(snquery.getSpans(atomic, bitset, termContexts));
+            LegacySpans spans = SpanWeights.forLeaf(atomic)
+                    .getSpans(snquery, atomic, bitset);
 
             while (spans.next()) {
                 int docid = atomic.docBase + spans.doc();
@@ -578,12 +578,11 @@ public class TestIndex { // extends LuceneTestCase {
         assertEquals(1, searcher.search(snquery, 10).totalHits);
 
         payloadString = new StringBuilder();
-        termContexts = new HashMap<>();
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             //	    Spans spans = NearSpansOrdered();
-            LegacySpans spans = LegacySpans
-                    .wrap(snquery.getSpans(atomic, bitset, termContexts));
+            LegacySpans spans = SpanWeights.forLeaf(atomic)
+                    .getSpans(snquery, atomic, bitset);
 
             while (spans.next()) {
                 int docid = atomic.docBase + spans.doc();

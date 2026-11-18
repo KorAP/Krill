@@ -11,6 +11,7 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.SubSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * This query extracts a subspan from another span. The subspan starts
@@ -76,8 +77,8 @@ public class SpanSubspanQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return new SubSpans(this, context, acceptDocs, termContexts);
+            SpanWeights weights) throws IOException {
+        return new SubSpans(this, context, acceptDocs, weights);
     }
 
 

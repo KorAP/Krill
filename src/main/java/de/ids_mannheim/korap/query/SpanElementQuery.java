@@ -14,6 +14,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.ElementSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * SpanElementQuery retrieves {@link ElementSpans} which are special
@@ -70,8 +71,8 @@ public final class SpanElementQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (final LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return new ElementSpans(this, context, acceptDocs, termContexts);
+            SpanWeights weights) throws IOException {
+        return new ElementSpans(this, context, acceptDocs, weights);
     };
 
 

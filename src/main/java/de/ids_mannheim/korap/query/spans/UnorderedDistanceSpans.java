@@ -41,14 +41,14 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
      *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public UnorderedDistanceSpans (SpanDistanceQuery query,
                                    LeafReaderContext context, Bits acceptDocs,
-                                   Map<Term, TermContext> termContexts)
+                                   SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
         minDistance = query.getMinDistance();
         maxDistance = query.getMaxDistance();
 

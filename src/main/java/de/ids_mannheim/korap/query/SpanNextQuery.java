@@ -15,6 +15,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.NextSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /*
  * Based on SpanNearQuery
@@ -87,8 +88,8 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
     @Override
     // TODO: 5.3 removes getSpans fro SpanQuery ... oh, well ...
     public Spans getSpans (final LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return (Spans) new NextSpans(this, context, acceptDocs, termContexts);
+            SpanWeights weights) throws IOException {
+        return (Spans) new NextSpans(this, context, acceptDocs, weights);
     }
 
 

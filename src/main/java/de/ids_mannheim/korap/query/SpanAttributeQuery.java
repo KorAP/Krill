@@ -12,6 +12,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.AttributeSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * SpanAttributeQuery retrieves {@link AttributeSpans}, that are
@@ -109,8 +110,8 @@ public class SpanAttributeQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return new AttributeSpans(this, context, acceptDocs, termContexts);
+            SpanWeights weights) throws IOException {
+        return new AttributeSpans(this, context, acceptDocs, weights);
     }
 
 

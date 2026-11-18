@@ -44,14 +44,14 @@ public abstract class RelationBaseSpans extends SimpleSpans {
      *            {@link SpanRelationQuery}.
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public RelationBaseSpans (SimpleSpanQuery spanWithIdQuery,
                               LeafReaderContext context, Bits acceptDocs,
-                              Map<Term, TermContext> termContexts)
+                              SpanWeights weights)
             throws IOException {
-        super(spanWithIdQuery, context, acceptDocs, termContexts);
+        super(spanWithIdQuery, context, acceptDocs, weights);
         this.hasSpanId = true;
     }
 

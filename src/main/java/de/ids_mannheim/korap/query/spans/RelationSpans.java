@@ -87,14 +87,14 @@ public class RelationSpans extends RelationBaseSpans {
      *            a SpanRelationQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public RelationSpans (SpanRelationQuery relationSpanQuery,
                           LeafReaderContext context, Bits acceptDocs,
-                          Map<Term, TermContext> termContexts)
+                          SpanWeights weights)
             throws IOException {
-        super(relationSpanQuery, context, acceptDocs, termContexts);
+        super(relationSpanQuery, context, acceptDocs, weights);
         direction = relationSpanQuery.getDirection();
         tempSourceNum = relationSpanQuery.getTempSourceNum();
         tempTargetNum = relationSpanQuery.getTempTargetNum();

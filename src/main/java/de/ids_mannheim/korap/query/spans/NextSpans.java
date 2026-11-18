@@ -52,13 +52,13 @@ public class NextSpans extends SimpleSpans {
      *            a SpanNextQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public NextSpans (SpanNextQuery spanNextQuery, LeafReaderContext context,
-                      Bits acceptDocs, Map<Term, TermContext> termContexts)
+                      Bits acceptDocs, SpanWeights weights)
             throws IOException {
-        super(spanNextQuery, context, acceptDocs, termContexts);
+        super(spanNextQuery, context, acceptDocs, weights);
         collectPayloads = spanNextQuery.isCollectPayloads();
         matchList = new ArrayList<>();
         candidateList = new ArrayList<>();

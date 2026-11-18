@@ -13,6 +13,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import de.ids_mannheim.korap.query.spans.LegacySpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
 import org.slf4j.Logger;
@@ -961,9 +962,8 @@ public class Match extends AbstractDocument {
 			if (DEBUG)
 				log.trace("Check markers with {}", stq.toString());
 
-			LegacySpans markerSpans = LegacySpans.wrap(stq.getSpans(
-				atomic, bitset, new HashMap<Term, TermContext>()
-				));
+			LegacySpans markerSpans = SpanWeights.forLeaf(atomic)
+					.getSpans(stq, atomic, bitset);
 
 			// Iterate over all markers
 			while (markerSpans.next() == true) {
@@ -1272,8 +1272,8 @@ public class Match extends AbstractDocument {
 
             SpanElementQuery cquery = new SpanElementQuery(field, element);
 
-            LegacySpans contextSpans = LegacySpans.wrap(cquery.getSpans(atomic,
-                    bitset, new HashMap<Term, TermContext>()));
+            LegacySpans contextSpans = SpanWeights.forLeaf(atomic)
+                    .getSpans(cquery, atomic, bitset);
 
             int newStart = -1, newEnd = -1;
             int newStartChar = -1, newEndChar = -1;

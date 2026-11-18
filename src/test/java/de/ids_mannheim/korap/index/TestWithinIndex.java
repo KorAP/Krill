@@ -24,6 +24,7 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.spans.LegacySpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.Bits;
 import org.junit.Test;
@@ -1402,11 +1403,10 @@ public class TestWithinIndex {
                 new SpanElementQuery("tokens", "base/s:s"),
                 new SpanTermQuery(new Term("tokens", "s:a")));
 
-        Map<Term, TermContext> termContexts = new HashMap<>();
         for (LeafReaderContext atomic : ki.reader().leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
-            LegacySpans spans = LegacySpans
-                    .wrap(sq.getSpans(atomic, bitset, termContexts));
+            LegacySpans spans = SpanWeights.forLeaf(atomic)
+                    .getSpans(sq, atomic, bitset);
             assertTrue("skipTo() before next() must initialize spans",
                     spans.skipTo(0));
             assertEquals(0, spans.doc());

@@ -40,13 +40,13 @@ public abstract class DistanceSpans extends SimpleSpans {
      *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public DistanceSpans (SpanDistanceQuery query, LeafReaderContext context,
-                          Bits acceptDocs, Map<Term, TermContext> termContexts)
+                          Bits acceptDocs, SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
         exclusion = query.isExclusion();
     }
 
@@ -59,14 +59,14 @@ public abstract class DistanceSpans extends SimpleSpans {
      *            a SpanMultipleDistanceQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public DistanceSpans (SpanMultipleDistanceQuery query,
                           LeafReaderContext context, Bits acceptDocs,
-                          Map<Term, TermContext> termContexts)
+                          SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
     }
 
 

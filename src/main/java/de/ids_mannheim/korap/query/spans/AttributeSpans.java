@@ -75,14 +75,14 @@ public class AttributeSpans extends SimpleSpans {
      *            a spanAttributeQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public AttributeSpans (SpanAttributeQuery spanAttributeQuery,
                            LeafReaderContext context, Bits acceptDocs,
-                           Map<Term, TermContext> termContexts)
+                           SpanWeights weights)
             throws IOException {
-        super(spanAttributeQuery, context, acceptDocs, termContexts);
+        super(spanAttributeQuery, context, acceptDocs, weights);
         this.hasSpanId = true;
         this.hasMoreSpans = true;
         candidateList = new ArrayList<>();

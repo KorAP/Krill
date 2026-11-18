@@ -11,6 +11,7 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.ReferenceSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * SpanReferenceQuery ensures that a span involving in more than one
@@ -64,8 +65,8 @@ public class SpanReferenceQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return new ReferenceSpans(this, context, acceptDocs, termContexts);
+            SpanWeights weights) throws IOException {
+        return new ReferenceSpans(this, context, acceptDocs, weights);
     }
 
 

@@ -55,14 +55,14 @@ public class ExpandedExclusionSpans extends SimpleSpans {
      *            a SpanExpansionQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public ExpandedExclusionSpans (SpanExpansionQuery spanExpansionQuery,
                                    LeafReaderContext context, Bits acceptDocs,
-                                   Map<Term, TermContext> termContexts)
+                                   SpanWeights weights)
             throws IOException {
-        super(spanExpansionQuery, context, acceptDocs, termContexts);
+        super(spanExpansionQuery, context, acceptDocs, weights);
 
         if (spanExpansionQuery.getSecondClause() == null) {
             throw new IllegalArgumentException("The SpanExpansionQuery "

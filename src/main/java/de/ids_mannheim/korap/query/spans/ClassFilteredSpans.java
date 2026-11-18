@@ -23,9 +23,9 @@ public class ClassFilteredSpans extends SimpleSpans {
 
     public ClassFilteredSpans (SpanClassFilterQuery query,
                                LeafReaderContext context, Bits acceptDocs,
-                               Map<Term, TermContext> termContexts)
+                               SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
         this.operation = query.getOperation();
         this.classNum1 = query.getClassNum1();
         this.classNum2 = query.getClassNum2();

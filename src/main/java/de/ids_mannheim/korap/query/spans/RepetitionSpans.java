@@ -46,14 +46,14 @@ public class RepetitionSpans extends SimpleSpans {
      *            a SpanRepetitionQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public RepetitionSpans (SpanRepetitionQuery query,
                             LeafReaderContext context, Bits acceptDocs,
-                            Map<Term, TermContext> termContexts)
+                            SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
         this.min = query.getMin();
         this.max = query.getMax();
         matchList = new ArrayList<CandidateSpan>();

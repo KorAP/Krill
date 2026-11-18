@@ -45,6 +45,7 @@ import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.spans.LegacySpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.RAMDirectory;
@@ -178,7 +179,8 @@ public final class KrillIndex implements IndexInfo {
     // counting unstaged changes per thread (for bulk insertions)
     // It does not represent real unstaged documents.
     private int commitCounter = 0;
-    private HashMap termContexts;
+    // Creates the spans of the current search
+    private SpanWeights spanWeights;
     private ObjectMapper mapper = new ObjectMapper();
 
     // Prelim CacheKey
@@ -1513,8 +1515,6 @@ public final class KrillIndex implements IndexInfo {
         if (DEBUG)
             log.trace("Start search");
 
-        this.termContexts = new HashMap<Term, TermContext>();
-
         final KrillCollection collection = ks.getCollection();
         collection.setIndex(this);
 
@@ -1618,7 +1618,9 @@ public final class KrillIndex implements IndexInfo {
             };
 
             PrelimCacheKey prelim = new PrelimCacheKey(qHash, collHash, itemsPerResource);
-            
+
+            this.spanWeights = new SpanWeights();
+
             // Todo: run this in a separated thread
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
@@ -1679,8 +1681,8 @@ public final class KrillIndex implements IndexInfo {
                 final PositionsToOffset pto = snippets ? new PositionsToOffset(atomic, field) : null;
 				
                 // Spans spans = NearSpansOrdered();
-                final LegacySpans spans = LegacySpans.wrap(
-                        query.getSpans(atomic, (Bits) bitset, termContexts));
+                final LegacySpans spans = this.spanWeights.getSpans(query,
+                        atomic, (Bits) bitset);
 
                 final IndexReader lreader = atomic.reader();
                 int localDocID, docID;
@@ -2062,8 +2064,6 @@ public final class KrillIndex implements IndexInfo {
         KrillCollection collection = ks.getCollection();
         collection.setIndex(this);
 
-        // Init term context
-        this.termContexts = new HashMap<Term, TermContext>();
 
         // Get span query
         SpanQuery query = ks.getSpanQuery();
@@ -2093,6 +2093,8 @@ public final class KrillIndex implements IndexInfo {
             String uniqueDocIDString;;
             int uniqueDocID = -1;
 
+            this.spanWeights = new SpanWeights();
+
             // start thread:
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
@@ -2104,8 +2106,8 @@ public final class KrillIndex implements IndexInfo {
 
                 // PositionsToOffset pto = new PositionsToOffset(atomic, field);
 
-                LegacySpans spans = LegacySpans.wrap(
-                        query.getSpans(atomic, (Bits) bitset, termContexts));
+                LegacySpans spans = this.spanWeights.getSpans(query, atomic,
+                        (Bits) bitset);
 
                 IndexReader lreader = atomic.reader();
 

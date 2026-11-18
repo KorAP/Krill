@@ -17,6 +17,7 @@ import de.ids_mannheim.korap.query.spans.ElementDistanceSpans;
 import de.ids_mannheim.korap.query.spans.TokenDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedElementDistanceSpans;
 import de.ids_mannheim.korap.query.spans.UnorderedTokenDistanceSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * SpanDistanceQuery calculates the distance between two spans and
@@ -206,31 +207,31 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+            SpanWeights weights) throws IOException {
 
         if (this.elementQuery != null) {
             if (isExclusion()) {
                 return new ElementDistanceExclusionSpans(this, context,
-                        acceptDocs, termContexts);
+                        acceptDocs, weights);
             }
             else if (isOrdered) {
                 return new ElementDistanceSpans(this, context, acceptDocs,
-                        termContexts);
+                        weights);
             }
             return new UnorderedElementDistanceSpans(this, context, acceptDocs,
-                    termContexts);
+                    weights);
 
         }
         else if (isExclusion()) {
             return new DistanceExclusionSpans(this, context, acceptDocs,
-                    termContexts);
+                    weights);
         }
         else if (isOrdered) {
             return new TokenDistanceSpans(this, context, acceptDocs,
-                    termContexts);
+                    weights);
         }
         return new UnorderedTokenDistanceSpans(this, context, acceptDocs,
-                termContexts);
+                weights);
     }
 
 

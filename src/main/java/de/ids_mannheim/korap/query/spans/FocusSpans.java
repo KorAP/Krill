@@ -73,16 +73,16 @@ public class FocusSpans extends SimpleSpans {
      * @param acceptDocs
      *            Bit vector representing the documents
      *            to be searched in.
-     * @param termContexts
-     *            A map managing {@link TermState TermStates}.
+     * @param weights
+     *            Creates the spans of the operands.
      * @param number
      *            The class number to focus on.
      * @throws IOException
      */
     public FocusSpans (SpanFocusQuery query, LeafReaderContext context,
-                       Bits acceptDocs, Map<Term, TermContext> termContexts)
+                       Bits acceptDocs, SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
         if (query.getClassNumbers() == null) {
             throw new IllegalArgumentException(
                     "At least one class number must be specified.");

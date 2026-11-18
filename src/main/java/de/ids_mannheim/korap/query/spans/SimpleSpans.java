@@ -55,7 +55,7 @@ public abstract class SimpleSpans extends LegacySpans {
 
     public SimpleSpans (SimpleSpanQuery simpleSpanQuery,
                         LeafReaderContext context, Bits acceptDocs,
-                        Map<Term, TermContext> termContexts)
+                        SpanWeights weights)
             throws IOException {
         this();
         query = simpleSpanQuery;
@@ -63,12 +63,10 @@ public abstract class SimpleSpans extends LegacySpans {
         // Get the enumeration of the two spans to match
         SpanQuery sq;
         if ((sq = simpleSpanQuery.getFirstClause()) != null)
-            firstSpans = LegacySpans.wrap(
-                    sq.getSpans(context, acceptDocs, termContexts));
+            firstSpans = weights.getSpans(sq, context, acceptDocs);
 
         if ((sq = simpleSpanQuery.getSecondClause()) != null)
-            secondSpans = LegacySpans.wrap(
-                    sq.getSpans(context, acceptDocs, termContexts));
+            secondSpans = weights.getSpans(sq, context, acceptDocs);
 
     }
 

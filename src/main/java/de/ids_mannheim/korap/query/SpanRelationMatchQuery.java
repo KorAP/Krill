@@ -12,6 +12,7 @@ import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.spans.FocusSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * Matches the source and/or target of a SpanRelationQuery to specific
@@ -191,10 +192,10 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
+            SpanWeights weights) throws IOException {
 
         return new FocusSpans((SpanFocusQuery) firstClause, context, acceptDocs,
-                termContexts);
+                weights);
     }
 
 

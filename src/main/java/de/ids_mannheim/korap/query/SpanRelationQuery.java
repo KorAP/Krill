@@ -15,6 +15,7 @@ import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.spans.RelationSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * SpanRelationQuery retrieves spans representing a relation between
@@ -107,8 +108,8 @@ public class SpanRelationQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return new RelationSpans(this, context, acceptDocs, termContexts);
+            SpanWeights weights) throws IOException {
+        return new RelationSpans(this, context, acceptDocs, weights);
     }
 
 

@@ -33,7 +33,7 @@ public class DistanceExclusionSpans extends DistanceSpans {
      *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @param isOrdered
      *            a boolean flag representing the value
      *            <code>true</code>
@@ -43,9 +43,9 @@ public class DistanceExclusionSpans extends DistanceSpans {
      */
     public DistanceExclusionSpans (SpanDistanceQuery query,
                                    LeafReaderContext context, Bits acceptDocs,
-                                   Map<Term, TermContext> termContexts)
+                                   SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
         minDistance = query.getMinDistance();
         maxDistance = query.getMaxDistance();
         this.isOrdered = query.isOrdered();

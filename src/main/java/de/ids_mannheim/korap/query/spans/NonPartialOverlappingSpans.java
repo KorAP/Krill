@@ -29,15 +29,15 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
      *            a SimpleSpanQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public NonPartialOverlappingSpans (SimpleSpanQuery simpleSpanQuery,
                                        LeafReaderContext context,
                                        Bits acceptDocs,
-                                       Map<Term, TermContext> termContexts)
+                                       SpanWeights weights)
             throws IOException {
-        super(simpleSpanQuery, context, acceptDocs, termContexts);
+        super(simpleSpanQuery, context, acceptDocs, weights);
 
         // Warning: not implemented, results in errors for SpanNextQuery 
         // This.collectPayloads = simpleSpanQuery.isCollectPayloads()

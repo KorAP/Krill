@@ -16,6 +16,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.FocusSpans;
+import de.ids_mannheim.korap.query.spans.SpanWeights;
 
 /**
  * Modify the span of a match to the boundaries of a certain class.
@@ -110,8 +111,8 @@ public class SpanFocusQuery extends SimpleSpanQuery {
 
     @Override
     public Spans getSpans (final LeafReaderContext context, Bits acceptDocs,
-            Map<Term, TermContext> termContexts) throws IOException {
-        return new FocusSpans(this, context, acceptDocs, termContexts);
+            SpanWeights weights) throws IOException {
+        return new FocusSpans(this, context, acceptDocs, weights);
     };
 
 

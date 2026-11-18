@@ -60,15 +60,15 @@ public final class ElementSpans extends SimpleSpans {
      * @param acceptDocs
      *            Bit vector representing the documents
      *            to be searched in.
-     * @param termContexts
-     *            A map managing {@link TermState TermStates}.
+     * @param weights
+     *            Creates the spans of the operands.
      * @throws IOException
      */
     public ElementSpans (SpanElementQuery spanElementQuery,
                          LeafReaderContext context, Bits acceptDocs,
-                         Map<Term, TermContext> termContexts)
+                         SpanWeights weights)
             throws IOException {
-        super(spanElementQuery, context, acceptDocs, termContexts);
+        super(spanElementQuery, context, acceptDocs, weights);
         termSpans = this.firstSpans;
         hasMoreSpans = true;
         isPayloadLoaded = true;

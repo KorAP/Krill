@@ -34,14 +34,14 @@ public class TokenDistanceSpans extends OrderedDistanceSpans {
      *            a SpanDistanceQuery
      * @param context
      * @param acceptDocs
-     * @param termContexts
+     * @param weights
      * @throws IOException
      */
     public TokenDistanceSpans (SpanDistanceQuery query,
                                LeafReaderContext context, Bits acceptDocs,
-                               Map<Term, TermContext> termContexts)
+                               SpanWeights weights)
             throws IOException {
-        super(query, context, acceptDocs, termContexts);
+        super(query, context, acceptDocs, weights);
     }
 
 
