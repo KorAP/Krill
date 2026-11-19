@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.search.LegacyNumericRangeQuery;
+import org.apache.lucene.document.DoublePoint;
+import org.apache.lucene.document.IntPoint;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RegexpQuery;
@@ -448,8 +449,8 @@ public class CollectionBuilder {
 
 
         public Query toQuery () {
-            return LegacyNumericRangeQuery.newIntRange(this.field, this.start,
-                    this.end, true, true);
+            // Both bounds are included
+            return IntPoint.newRangeQuery(this.field, this.start, this.end);
         };
 
 
@@ -485,8 +486,9 @@ public class CollectionBuilder {
 
 
         public Query toQuery () {
-            return LegacyNumericRangeQuery.newDoubleRange(this.field, (double) this.start,
-                                                     (double) this.end, true, true);
+            // Both bounds are included
+            return DoublePoint.newRangeQuery(this.field, (double) this.start,
+                    (double) this.end);
         };
 
 

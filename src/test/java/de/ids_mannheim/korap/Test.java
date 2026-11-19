@@ -12,7 +12,8 @@ import de.ids_mannheim.korap.util.CorpusDataException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.LegacyIntField;
+import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexWriter;
@@ -43,8 +44,9 @@ public class Test {
 
         // Integer fields
         for (String s : strInt) {
-            doc.add(new LegacyIntField(s, Integer.parseInt(m.get(s)),
-                    Field.Store.YES));
+            int val = Integer.parseInt(m.get(s));
+            doc.add(new StoredField(s, val));
+            doc.add(new IntPoint(s, val));
         };
 
         FieldType textFieldWithTermVectors = new FieldType(
