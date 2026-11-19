@@ -71,11 +71,6 @@ public class SubSpans extends SimpleSpans {
     }
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     protected void startDocument () {
@@ -113,7 +108,7 @@ public class SubSpans extends SimpleSpans {
     private void collectCandidates () throws IOException {
 
         while (hasMoreSpans && candidates.size() < windowSize
-                && firstSpans.doc() == currentDoc) {
+                && firstSpans.docID() == currentDoc) {
             CandidateSpan cs;
             if (findMatch(cs = new CandidateSpan(firstSpans))) {
                 if (cs.getDoc() == prevDoc && cs.getStart() < prevStart) {
@@ -140,15 +135,15 @@ public class SubSpans extends SimpleSpans {
 
         // Check at span ending
         if (this.startOffset < 0) {
-            cs.setStart(firstSpans.end() + startOffset);
-            if (cs.getStart() < firstSpans.start()) {
-                cs.setStart(firstSpans.start());
+            cs.setStart(firstSpans.endPosition() + startOffset);
+            if (cs.getStart() < firstSpans.startPosition()) {
+                cs.setStart(firstSpans.startPosition());
             };
         }
         // Check at span beginning
         else {
-            cs.setStart(firstSpans.start() + startOffset);
-            if (cs.getStart() >= firstSpans.end()) {
+            cs.setStart(firstSpans.startPosition() + startOffset);
+            if (cs.getStart() >= firstSpans.endPosition()) {
                 return false;
             }
         }
@@ -156,12 +151,12 @@ public class SubSpans extends SimpleSpans {
         // Find end position of span
         if (this.length > 0) {
             cs.setEnd(cs.getStart() + this.length);
-            if (cs.getEnd() > firstSpans.end()) {
-                cs.setEnd(firstSpans.end());
+            if (cs.getEnd() > firstSpans.endPosition()) {
+                cs.setEnd(firstSpans.endPosition());
             }
         }
         else {
-            cs.setEnd(firstSpans.end());
+            cs.setEnd(firstSpans.endPosition());
         }
 
         // Claer payloads of candidatespan
@@ -175,7 +170,7 @@ public class SubSpans extends SimpleSpans {
             cs.getPayloads().add(payload.clone());
         };
 
-        cs.setDoc(firstSpans.doc());
+        cs.setDoc(firstSpans.docID());
 
         if (DEBUG) {
             log.trace(

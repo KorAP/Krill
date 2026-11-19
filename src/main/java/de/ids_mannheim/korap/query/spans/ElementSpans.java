@@ -77,11 +77,6 @@ public final class ElementSpans extends SimpleSpans {
     };
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     public int docID () {

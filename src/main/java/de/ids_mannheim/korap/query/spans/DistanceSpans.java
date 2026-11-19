@@ -72,11 +72,6 @@ public abstract class DistanceSpans extends SimpleSpans {
 
     // All distance spans find their matches document by document,
     // see SimpleSpans
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    }
-
 
     /**
      * Returns the first span of the current match.

@@ -44,11 +44,6 @@ public class TermSpansWithId extends SimpleSpans {
     }
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    }
-
 
     @Override
     public int docID () {

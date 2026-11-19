@@ -1407,11 +1407,11 @@ public class TestWithinIndex {
             Bits bitset = atomic.reader().getLiveDocs();
             LegacySpans spans = SpanWeights.forLeaf(atomic)
                     .getSpans(sq, atomic, bitset);
-            assertTrue("skipTo() before next() must initialize spans",
-                    spans.skipTo(0));
-            assertEquals(0, spans.doc());
-            assertEquals(0, spans.start());
-            assertEquals(3, spans.end());
+            assertEquals("advance() before nextDoc() must initialize spans",
+                    0, spans.advance(0));
+            assertEquals(0, spans.nextStartPosition());
+            assertEquals(0, spans.startPosition());
+            assertEquals(3, spans.endPosition());
         }
 
         ki.close();

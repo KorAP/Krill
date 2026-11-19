@@ -156,11 +156,6 @@ public class SpansWithAttribute extends SimpleSpans {
     }
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     // With a single (positive) attribute and no referent spans,
     // the attribute spans are the referent spans
@@ -294,7 +289,7 @@ public class SpansWithAttribute extends SimpleSpans {
             }
             if (checkAttributeListPosition()) {
                 advanceNotAttributes(referentSpans);
-                // logger.info("element is found: "+ withAttributeSpans.start());
+                // logger.info("element is found: "+ withAttributeSpans.startPosition());
                 return true;
             }
         }
@@ -320,7 +315,7 @@ public class SpansWithAttribute extends SimpleSpans {
         for (AttributeSpans a : attributeList) {
             if (!ensureSamePosition(referentSpans, a))
                 return false;
-            //	    logger.info("pos:" + withAttributeSpans.start());
+            //	    logger.info("pos:" + withAttributeSpans.startPosition());
             if (isFirst) {
                 isFirst = false;
                 currentPosition = referentSpans.startPosition();
@@ -331,7 +326,7 @@ public class SpansWithAttribute extends SimpleSpans {
 
             }
         }
-        //    logger.info("same pos: "+isSame+ ", pos "+withAttributeSpans.start());
+        //    logger.info("same pos: "+isSame+ ", pos "+withAttributeSpans.startPosition());
         return isSame;
     }
 

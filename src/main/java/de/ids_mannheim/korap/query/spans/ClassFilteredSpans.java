@@ -32,11 +32,6 @@ public class ClassFilteredSpans extends SimpleSpans {
     }
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     protected boolean nextMatchInDocument () throws IOException {

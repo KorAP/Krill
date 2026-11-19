@@ -98,41 +98,10 @@ public class ClassSpans extends SimpleSpans {
 
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     protected LegacySpans driver () {
         return spans;
-    };
-
-
-    // Once exhausted, ClassSpans reported the state of its operand
-    // through the old API - for spans of Lucene that is NO_MORE_DOCS,
-    // while spans of Krill keep their last match
-    private boolean reportsOperand () {
-        return isExhausted() && spans.isLuceneSpans();
-    };
-
-
-    @Override
-    public int doc () {
-        return reportsOperand() ? spans.doc() : super.doc();
-    };
-
-
-    @Override
-    public int start () {
-        return reportsOperand() ? spans.start() : super.start();
-    };
-
-
-    @Override
-    public int end () {
-        return reportsOperand() ? spans.end() : super.end();
     };
 
 
@@ -181,9 +150,9 @@ public class ClassSpans extends SimpleSpans {
         /*
         System.err.println(
                            "####################### " + 
-                           spans.start() +
+                           spans.startPosition() +
                            "|" + 
-                           spans.end() +
+                           spans.endPosition() +
                            ":" +
                            number
                            );
@@ -205,7 +174,7 @@ public class ClassSpans extends SimpleSpans {
     @Override
     public String toString () {
         return getClass().getName() + "(" + this.operand.toString() + ")@"
-                + (doc() + ":" + start() + "-" + end());
+                + (docID() + ":" + startPosition() + "-" + endPosition());
     };
 
 

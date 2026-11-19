@@ -98,11 +98,6 @@ public class FocusSpans extends SimpleSpans {
         this.query = query;
     }
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     protected void startDocument () {
@@ -119,7 +114,7 @@ public class FocusSpans extends SimpleSpans {
 
         if (DEBUG) {
             log.debug("FirstSpan [{}]", firstSpans.toString());
-            log.debug("FirstSpan: ({}) {}-{}", firstSpans.doc(), firstSpans.start(), firstSpans.end());
+            log.debug("FirstSpan: ({}) {}-{}", firstSpans.docID(), firstSpans.startPosition(), firstSpans.endPosition());
         }
         
         while (hasMoreSpans || candidates.size() > 0) {
@@ -134,7 +129,7 @@ public class FocusSpans extends SimpleSpans {
                 hasMoreSpans = nextInDocument(firstSpans);
             }
             else if (candidates.isEmpty()) {
-                currentDoc = firstSpans.doc();
+                currentDoc = firstSpans.docID();
                 collectCandidates();
             }
             else {
@@ -151,11 +146,11 @@ public class FocusSpans extends SimpleSpans {
         CandidateSpan cs = null;
         CandidateSpan head = null;
 
-        while (hasMoreSpans && firstSpans.doc() == currentDoc) {
+        while (hasMoreSpans && firstSpans.docID() == currentDoc) {
             if (head == null) {
                 head = candidates.peek();
             }
-            else if (head.getStart() < firstSpans.start()) {
+            else if (head.getStart() < firstSpans.startPosition()) {
                 break;
             }
 
@@ -283,7 +278,7 @@ public class FocusSpans extends SimpleSpans {
     @Override
     public String toString () {
         return getClass().getName() + "(" + this.query.toString() + ")@"
-                + (doc() + ":" + start() + "-" + end());
+                + (docID() + ":" + startPosition() + "-" + endPosition());
     };
 
     @Override

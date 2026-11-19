@@ -107,11 +107,6 @@ public class RelationSpans extends RelationBaseSpans {
     }
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    }
-
 
     @Override
     public int docID () {

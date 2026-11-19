@@ -48,11 +48,6 @@ public class SegmentSpans extends SimpleSpans {
 
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     // The first span of the document is not processed yet
     private boolean atFirstSpan;
@@ -108,8 +103,8 @@ public class SegmentSpans extends SimpleSpans {
      * 
      */
     protected int findMatch () {
-        if (firstSpans.start() == secondSpans.start()
-                && firstSpans.end() == secondSpans.end()) {
+        if (firstSpans.startPosition() == secondSpans.startPosition()
+                && firstSpans.endPosition() == secondSpans.endPosition()) {
 
             if (isRelation) {
                 RelationSpans s1 = (RelationSpans) firstSpans;
@@ -155,8 +150,8 @@ public class SegmentSpans extends SimpleSpans {
             }
         }
 
-        if (firstSpans.start() < secondSpans.start()
-                || firstSpans.end() < secondSpans.end())
+        if (firstSpans.startPosition() < secondSpans.startPosition()
+                || firstSpans.endPosition() < secondSpans.endPosition())
             return -1;
 
         return 1;
@@ -164,9 +159,9 @@ public class SegmentSpans extends SimpleSpans {
 
 
     private void setMatch () {
-        matchDocNumber = firstSpans.doc();
-        matchStartPosition = firstSpans.start();
-        matchEndPosition = firstSpans.end();
+        matchDocNumber = firstSpans.docID();
+        matchStartPosition = firstSpans.startPosition();
+        matchEndPosition = firstSpans.endPosition();
     }
 
 

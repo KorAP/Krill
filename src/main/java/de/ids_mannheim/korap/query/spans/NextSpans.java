@@ -66,11 +66,6 @@ public class NextSpans extends SimpleSpans {
 
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     protected List<? extends LegacySpans> requiredOperands () {
@@ -117,8 +112,8 @@ public class NextSpans extends SimpleSpans {
 
             if (DEBUG) {
                 log.debug("FirstSpan [{}]", firstSpans.toString());
-                log.debug("FirstSpan ({}) {}-{}", firstSpans.doc(),
-                        firstSpans.start(), firstSpans.end());
+                log.debug("FirstSpan ({}) {}-{}", firstSpans.docID(),
+                        firstSpans.startPosition(), firstSpans.endPosition());
             };
 
             searchCandidates();
@@ -146,11 +141,11 @@ public class NextSpans extends SimpleSpans {
         while (i.hasNext()) {
             cs = i.next();
 
-            if (cs.getStart() == firstSpans.end()) {
+            if (cs.getStart() == firstSpans.endPosition()) {
                 addMatch(cs);
             }
-            else if (cs.getEnd() < firstSpans.end() 
-                    && cs.getStart() <firstSpans.start()){
+            else if (cs.getEnd() < firstSpans.endPosition() 
+                    && cs.getStart() <firstSpans.startPosition()){
                 i.remove();
             }
         }
@@ -173,18 +168,18 @@ public class NextSpans extends SimpleSpans {
         while (hasMoreSecondSpan) {
             if (DEBUG) {
                 log.debug("SecondSpan [{}]", secondSpans.toString());
-                log.debug("SecondSpan ({}) {}-{}", secondSpans.doc(), secondSpans.start(), secondSpans.end());
+                log.debug("SecondSpan ({}) {}-{}", secondSpans.docID(), secondSpans.startPosition(), secondSpans.endPosition());
             };
-            if (secondSpans.start() > firstSpans.end()) {
+            if (secondSpans.startPosition() > firstSpans.endPosition()) {
                 break;
             }
-            if (secondSpans.start() == firstSpans.end()) {
+            if (secondSpans.startPosition() == firstSpans.endPosition()) {
                 
                 if (DEBUG) {
                     log.debug("Check adjacency at {}-{}|{}-{} in {}={}={}",
-                              firstSpans.start(), firstSpans.end(),
-                              secondSpans.start(), secondSpans.end(),
-                              firstSpans.doc(), secondSpans.doc(), candidateListDocNum);
+                              firstSpans.startPosition(), firstSpans.endPosition(),
+                              secondSpans.startPosition(), secondSpans.endPosition(),
+                              firstSpans.docID(), secondSpans.docID(), candidateListDocNum);
                 };
                 
                 candidateList.add(new CandidateSpan(secondSpans));
@@ -208,7 +203,7 @@ public class NextSpans extends SimpleSpans {
      */
     private void addMatch (CandidateSpan cs) throws IOException {
 
-        int start = firstSpans.start();
+        int start = firstSpans.startPosition();
         long cost = firstSpans.cost() + cs.getCost();
 
         List<byte[]> payloads = new ArrayList<byte[]>();

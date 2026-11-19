@@ -42,9 +42,9 @@ public class CandidateSpan implements Comparable<CandidateSpan>, Cloneable {
      * @throws IOException
      */
     public CandidateSpan (LegacySpans span) throws IOException {
-        this.doc = span.doc();
-        this.start = span.start();
-        this.end = span.end();
+        this.doc = span.docID();
+        this.start = span.startPosition();
+        this.end = span.endPosition();
         this.cost = span.cost();
 
         this.payloads = new ArrayList<>();

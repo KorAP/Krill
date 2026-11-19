@@ -140,11 +140,6 @@ public class WithinSpans extends LegacySpans {
     };
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     public int docID () {
@@ -436,7 +431,7 @@ public class WithinSpans extends LegacySpans {
 
         this.wrapEnd = -1;
 
-        // Shortcut to prevent lazyloading of .end()
+        // Shortcut to prevent lazyloading of .endPosition()
         //   [---
         // [---
         if (this.wrapStart > this.embeddedStart) {

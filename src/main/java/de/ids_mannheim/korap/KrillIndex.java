@@ -1697,7 +1697,7 @@ public final class KrillIndex implements IndexInfo {
                         log.trace("Match Nr {}/{}", i, count);
                    
                     // There are no more spans to find
-                    if (!spans.next()) {
+                    if (!spans.nextMatch()) {
                         if (foundCache == null)
                             foundCache = new SearchCacheValue(i - li, j - lj);
                             searchCache.put(
@@ -1736,7 +1736,7 @@ public final class KrillIndex implements IndexInfo {
                         break;
                     };
 
-                    localDocID = spans.doc();
+                    localDocID = spans.docID();
 
                     // IDS are identical
                     if (localDocID == oldLocalDocID
@@ -1749,12 +1749,12 @@ public final class KrillIndex implements IndexInfo {
                             if (itemsPerResourceCounter > itemsPerResource) {
 
                                 // Skip to next resource
-                                if (spans.skipTo(localDocID + 1) != true) {
+                                if (spans.advanceToMatch(localDocID + 1) != true) {
                                     break;
                                 }
 
                                 itemsPerResourceCounter = 1;
-                                localDocID = spans.doc();
+                                localDocID = spans.docID();
                             };
                         }
                     }
@@ -1789,7 +1789,7 @@ public final class KrillIndex implements IndexInfo {
                     
                     // Create new Match
                     final Match match = new Match(maxMatchSize, pto, localDocID,
-                            spans.start(), spans.end());
+                            spans.startPosition(), spans.endPosition());
                     
                     // Add snippet if existing
                     if (snippets) {
@@ -1841,7 +1841,7 @@ public final class KrillIndex implements IndexInfo {
                 };
 
                 // Can be disabled TEMPORARILY
-                while (!cutoff && !stopSearching && spans.next()) {
+                while (!cutoff && !stopSearching && spans.nextMatch()) {
 
                     // TODO: Deprecated
                     if (limit > 0 && i >= limit)
@@ -1864,7 +1864,7 @@ public final class KrillIndex implements IndexInfo {
                     // Increment resource counter
                     itemsPerResourceCounter++;
                     
-                    localDocID = spans.doc();
+                    localDocID = spans.docID();
 
                     if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
                         break;
@@ -1881,11 +1881,11 @@ public final class KrillIndex implements IndexInfo {
 
                             // End of resourcecounter is reached
                             if (itemsPerResourceCounter > itemsPerResource) {
-                                if (spans.skipTo(localDocID + 1) != true) {
+                                if (spans.advanceToMatch(localDocID + 1) != true) {
                                     break;
                                 };
                                 itemsPerResourceCounter = 1;
-                                localDocID = spans.doc();
+                                localDocID = spans.docID();
                             };
                         }
                     }
@@ -2111,15 +2111,15 @@ public final class KrillIndex implements IndexInfo {
 
                 IndexReader lreader = atomic.reader();
 
-                while (spans.next()) {
-                    int localDocID = spans.doc();
+                while (spans.nextMatch()) {
+                    int localDocID = spans.docID();
 
                     // New match
                     // MatchIdentifier possibly needs more
                     /*
                       Match match = new Match();
-                      match.setStartPos(spans.start());
-                      match.setEndPos(spans.end());
+                      match.setStartPos(spans.startPosition());
+                      match.setEndPos(spans.endPosition());
                       
                       // Add payload information to match
                       if (spans.isPayloadAvailable())

@@ -49,11 +49,6 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
     private boolean atFirstSpan;
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     protected List<? extends LegacySpans> requiredOperands () {

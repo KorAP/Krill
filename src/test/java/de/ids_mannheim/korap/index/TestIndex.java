@@ -549,8 +549,8 @@ public class TestIndex { // extends LuceneTestCase {
             LegacySpans spans = SpanWeights.forLeaf(atomic)
                     .getSpans(snquery, atomic, bitset);
 
-            while (spans.next()) {
-                int docid = atomic.docBase + spans.doc();
+            while (spans.nextMatch()) {
+                int docid = atomic.docBase + spans.docID();
                 if (spans.isPayloadAvailable()) {
                     for (byte[] payload : spans.getPayload()) {
                         /* retrieve payload for current matching span */
@@ -584,8 +584,8 @@ public class TestIndex { // extends LuceneTestCase {
             LegacySpans spans = SpanWeights.forLeaf(atomic)
                     .getSpans(snquery, atomic, bitset);
 
-            while (spans.next()) {
-                int docid = atomic.docBase + spans.doc();
+            while (spans.nextMatch()) {
+                int docid = atomic.docBase + spans.docID();
                 for (byte[] payload : spans.getPayload()) {
                     /* retrieve payload for current matching span */
                     payloadString.append(new String(payload));
@@ -614,8 +614,8 @@ public class TestIndex { // extends LuceneTestCase {
             LegacySpans spans = LegacySpans.wrap(
                     ssequery.toQuery().getSpans(atomic, bitset, termContexts));
         
-            while (spans.next()) {
-        	int docid = atomic.docBase + spans.doc();
+            while (spans.nextMatch()) {
+        	int docid = atomic.docBase + spans.docID();
         	for (byte[] payload : spans.getPayload()) {
         	/// retrieve payload for current matching span
         	    payloadString.append(new String(payload));
@@ -640,14 +640,14 @@ public class TestIndex { // extends LuceneTestCase {
             LegacySpans spans = LegacySpans.wrap(
                     ssequery.toQuery().getSpans(atomic, bitset, termContexts));
         
-            while (spans.next()) {
-        	int docid = atomic.docBase + spans.doc();
+            while (spans.nextMatch()) {
+        	int docid = atomic.docBase + spans.docID();
         	for (byte[] payload : spans.getPayload()) {
         	    // retrieve payload for current matching span
         	    payloadString.append(new String(payload));
         	    payloadString.append(" | ");
         	};
-        	fail("Doc: " + docid + " with " + spans.start() + "-" + spans.end() + " || " + payloadString.toString());
+        	fail("Doc: " + docid + " with " + spans.startPosition() + "-" + spans.endPosition() + " || " + payloadString.toString());
             };
         };
         assertEquals(20, payloadString.length());
@@ -663,7 +663,7 @@ public class TestIndex { // extends LuceneTestCase {
         TopDocs topDocs = is.search(snq, 1);
         Set<String> payloadSet = new HashSet<String>();
         for (int i = 0; i < topDocs.scoreDocs.length; i++) {
-          while (spans.next()) {
+          while (spans.nextMatch()) {
             Collection<byte[]> payloads = spans.getPayload();
         
             for (final byte [] payload : payloads) {

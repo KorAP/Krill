@@ -966,22 +966,22 @@ public class Match extends AbstractDocument {
 					.getSpans(stq, atomic, bitset);
 
 			// Iterate over all markers
-			while (markerSpans.next() == true) {
+			while (markerSpans.nextMatch() == true) {
 
 				if (DEBUG) {
 					log.debug("There is a marker at {}/{} and we are at {}",
-							  markerSpans.doc(),
-							  markerSpans.start(),
+							  markerSpans.docID(),
+							  markerSpans.startPosition(),
                               this.localDocID);
 				};
 				
 				// Current marker is not in the correct document
-                if (markerSpans.doc() != this.localDocID) {
-                    if (markerSpans.doc() < this.localDocID) {
-                        markerSpans.skipTo(this.localDocID);
+                if (markerSpans.docID() != this.localDocID) {
+                    if (markerSpans.docID() < this.localDocID) {
+                        markerSpans.advanceToMatch(this.localDocID);
                         
                         // No pagebreaks in this document
-                        if (markerSpans.doc() != this.localDocID)
+                        if (markerSpans.docID() != this.localDocID)
                             break;
                     }
                     else {
@@ -995,15 +995,15 @@ public class Match extends AbstractDocument {
 
 				// There is a marker found - check,
 				// if it is in the correct area
-				if (markerSpans.start() < minStartPos) {
+				if (markerSpans.startPosition() < minStartPos) {
                     
 					// Only the first payload is relevant
 					b = markerSpans.getPayload().iterator().next();
-					start = markerSpans.start();
+					start = markerSpans.startPosition();
 
                     if (DEBUG)
 						log.debug("Marker start position is before match at {}:{}",
-								  markerSpans.start(),
+								  markerSpans.startPosition(),
                                   b);
 					
 				}
@@ -1051,7 +1051,7 @@ public class Match extends AbstractDocument {
 					};
 
 					// b wasn't used yet
-					if (markerSpans.start() <= maxEndPos) {
+					if (markerSpans.startPosition() <= maxEndPos) {
 
 						// Set new marker
 						// Only the first payload is relevant
@@ -1286,23 +1286,23 @@ public class Match extends AbstractDocument {
             while (true) {
 
                 // Game over
-                if (contextSpans.next() != true)
+                if (contextSpans.nextMatch() != true)
                     break;
 
-                if (contextSpans.doc() != this.localDocID) {
-                    contextSpans.skipTo(this.localDocID);
-                    if (contextSpans.doc() != this.localDocID)
+                if (contextSpans.docID() != this.localDocID) {
+                    contextSpans.advanceToMatch(this.localDocID);
+                    if (contextSpans.docID() != this.localDocID)
                         break;
                 };
 
                 // There's a <context> found -- I'm curious,
                 // if it's closer to the match than everything before
-                if (contextSpans.start() <= this.getStartPos()
-                        && contextSpans.end() >= this.getStartPos()) {
+                if (contextSpans.startPosition() <= this.getStartPos()
+                        && contextSpans.endPosition() >= this.getStartPos()) {
 
                     // Set as newStart
-                    newStart = contextSpans.start() > newStart
-                            ? contextSpans.start() : newStart;
+                    newStart = contextSpans.startPosition() > newStart
+                            ? contextSpans.startPosition() : newStart;
 
                     if (DEBUG)
                         log.trace("NewStart is at {}", newStart);
@@ -1337,8 +1337,8 @@ public class Match extends AbstractDocument {
                 };
 
                 // There's an s found, that ends after the match
-                if (contextSpans.end() >= this.getEndPos()) {
-                    newEnd = contextSpans.end();
+                if (contextSpans.endPosition() >= this.getEndPos()) {
+                    newEnd = contextSpans.endPosition();
 
                     // Get character offset (end)
                     if (newEndChar == 0 && contextSpans.isPayloadAvailable()) {

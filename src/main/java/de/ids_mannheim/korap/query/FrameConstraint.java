@@ -355,72 +355,72 @@ public class FrameConstraint {
 
         // Constellation checks are
         // optimized for lazy loading,
-        // i.e. trying to minimize callings of end()
+        // i.e. trying to minimize callings of endPosition()
 
         // A starts after B
-        if (a.start() > b.start()) {
+        if (a.startPosition() > b.startPosition()) {
 
             // if (this.vector & next_b(SUCCEEDS_DIRECTLY) > 0)
 
-            // Don't call end() on A
-            if (a.start() == b.end())
+            // Don't call endPosition() on A
+            if (a.startPosition() == b.endPosition())
                 return SUCCEEDS_DIRECTLY;
 
-            if (a.start() > b.end())
+            if (a.startPosition() > b.endPosition())
                 return SUCCEEDS;
 
             // a) Check if match is possible
             // b) Check if mext is possible on A
 
-            // Call end() on A
-            else if (a.end() == b.end()) {
+            // Call endPosition() on A
+            else if (a.endPosition() == b.endPosition()) {
                 return ALIGNS_RIGHT;
             }
 
-            else if (a.end() < b.end()) {
+            else if (a.endPosition() < b.endPosition()) {
                 return IS_WITHIN;
             };
 
-            // a.end() > b.end() &&
-            // a.start() < b.end()
+            // a.endPosition() > b.endPosition() &&
+            // a.startPosition() < b.endPosition()
             return OVERLAPS_RIGHT;
         }
 
         // A starts before B
-        else if (a.start() < b.start()) {
+        else if (a.startPosition() < b.startPosition()) {
 
-            // Don't call end() on b
-            if (a.end() == b.start()) {
+            // Don't call endPosition() on b
+            if (a.endPosition() == b.startPosition()) {
                 return PRECEDES_DIRECTLY;
             }
 
-            else if (a.end() < b.start()) {
+            else if (a.endPosition() < b.startPosition()) {
                 return PRECEDES;
             }
 
-            // Call end() on B
-            else if (a.end() == b.end()) {
+            // Call endPosition() on B
+            else if (a.endPosition() == b.endPosition()) {
                 return ENDS_WITH;
             }
 
-            else if (a.end() > b.end()) {
+            else if (a.endPosition() > b.endPosition()) {
                 return IS_AROUND;
             };
 
-            // a.end() > b.start()
+            // a.endPosition() > b.startPosition()
             return OVERLAPS_LEFT;
         }
 
         // A and B start at the same position
-        // a.start() == b.start()
-        else if (a.end() > b.end()) {
+        // a.startPosition() == b.startPosition()
+        else if (a.endPosition() > b.endPosition()) {
             return STARTS_WITH;
         }
-        else if (a.end() < b.end()) {
+        else if (a.endPosition() < b.endPosition()) {
             return ALIGNS_LEFT;
         };
 
-        // a.end() == b.end()
+        // a.endPosition() == b.endPosition()
         return MATCHES;
     };
 };

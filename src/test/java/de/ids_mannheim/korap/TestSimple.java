@@ -294,9 +294,9 @@ public class TestSimple {
             LegacySpans spans = SpanWeights.forLeaf(atomic)
                     .getSpans(query, atomic, bitset);
 
-            while (spans.next()) {
+            while (spans.nextMatch()) {
                 StringBuffer payloadString = new StringBuffer();
-                int docid = atomic.docBase + spans.doc();
+                int docid = atomic.docBase + spans.docID();
                 if (spans.isPayloadAvailable()) {
                     for (byte[] payload : spans.getPayload()) {
                         /* retrieve payload for current matching span */
@@ -308,8 +308,8 @@ public class TestSimple {
                         payloadString.append(" | ");
                     };
                 };
-                spanArray.add("Doc: " + docid + " with " + spans.start() + "-"
-                        + spans.end() + " || " + payloadString.toString());
+                spanArray.add("Doc: " + docid + " with " + spans.startPosition() + "-"
+                        + spans.endPosition() + " || " + payloadString.toString());
             };
         };
         return spanArray;

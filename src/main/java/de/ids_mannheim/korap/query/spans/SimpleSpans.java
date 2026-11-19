@@ -71,32 +71,12 @@ public abstract class SimpleSpans extends LegacySpans {
     }
 
 
-    // Not yet ported classes keep their match in these fields;
-    // for ported classes the old API is derived from the iterator API
-    @Override
-    public int doc () {
-        return usesIteratorApi() ? super.doc() : matchDocNumber;
-    }
-
-
-    @Override
-    public int start () {
-        return usesIteratorApi() ? super.start() : matchStartPosition;
-    }
-
-
-    @Override
-    public int end () {
-        return usesIteratorApi() ? super.end() : matchEndPosition;
-    }
-
-
     // ------------------------------------------------------------
-    // Iterator API for classes ported "document by document"
+    // Iterator API for classes finding their matches "document by
+    // document"
     //
-    // A ported class that overrides usesIteratorApi() to return true
-    // and implements nextMatchInDocument() gets the whole iterator
-    // API from here. Its matching logic only ever sees the positions
+    // A class that implements nextMatchInDocument() gets the whole
+    // iterator API from here. Its matching logic only ever sees the positions
     // of its driving child spans (see driver()) in the current
     // document, and moves that child with nextInDocument(). Classes
     // that implement the iterator API completely by themselves
@@ -202,14 +182,12 @@ public abstract class SimpleSpans extends LegacySpans {
 
     @Override
     public int docID () {
-        return usesIteratorApi() ? matchDocNumber : super.docID();
+        return matchDocNumber;
     }
 
 
     @Override
     public int nextDoc () throws IOException {
-        if (!usesIteratorApi())
-            return super.nextDoc();
         if (matchDocNumber == NO_MORE_DOCS)
             return NO_MORE_DOCS;
         return this.toDocumentWithMatch(driver().nextDoc());
@@ -218,8 +196,6 @@ public abstract class SimpleSpans extends LegacySpans {
 
     @Override
     public int advance (int target) throws IOException {
-        if (!usesIteratorApi())
-            return super.advance(target);
         if (matchDocNumber == NO_MORE_DOCS)
             return NO_MORE_DOCS;
         return this.toDocumentWithMatch(driver().advance(target));
@@ -252,8 +228,6 @@ public abstract class SimpleSpans extends LegacySpans {
 
     @Override
     public int nextStartPosition () throws IOException {
-        if (!usesIteratorApi())
-            return super.nextStartPosition();
 
         if (firstMatchPending) {
             firstMatchPending = false;
@@ -275,16 +249,12 @@ public abstract class SimpleSpans extends LegacySpans {
 
     @Override
     public int startPosition () {
-        if (!usesIteratorApi())
-            return super.startPosition();
         return firstMatchPending ? -1 : matchStartPosition;
     }
 
 
     @Override
     public int endPosition () {
-        if (!usesIteratorApi())
-            return super.endPosition();
         return firstMatchPending ? -1 : matchEndPosition;
     }
 
@@ -305,7 +275,7 @@ public abstract class SimpleSpans extends LegacySpans {
     public String toString () {
         return getClass().getName() + "(" + query.toString() + ")@"
                 + (isStartEnumeration ? "START"
-                        : (hasMoreSpans ? (doc() + ":" + start() + "-" + end())
+                        : (hasMoreSpans ? (docID() + ":" + startPosition() + "-" + endPosition())
                                 : "END"));
     }
 

@@ -70,11 +70,6 @@ public class ExpandedSpans extends SimpleSpans {
     }
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     protected void startDocument () {
@@ -134,20 +129,20 @@ public class ExpandedSpans extends SimpleSpans {
 
                 counter = max;
                 while (counter >= min) {
-                    start = firstSpans.start() - counter;
+                    start = firstSpans.startPosition() - counter;
                     if (start >= 0) {
-                        cs = new CandidateSpan(start, firstSpans.end(),
-                                firstSpans.doc(), firstSpans.cost(),
-                                createPayloads(start, firstSpans.start()));
+                        cs = new CandidateSpan(start, firstSpans.endPosition(),
+                                firstSpans.docID(), firstSpans.cost(),
+                                createPayloads(start, firstSpans.startPosition()));
 
                         candidateSpans.add(cs);
                     }
                     counter--;
                 }
 
-                int lastPosition = firstSpans.start();
+                int lastPosition = firstSpans.startPosition();
                 if (hasMoreSpans && (hasMoreSpans = nextInDocument(firstSpans))) {
-                    start = Math.max(0, firstSpans.start() - max);
+                    start = Math.max(0, firstSpans.startPosition() - max);
                     if (DEBUG) {
                         log.debug("next candidate start: " + start + ", lastPosition "
                                   + lastPosition);
@@ -166,10 +161,10 @@ public class ExpandedSpans extends SimpleSpans {
                 while (counter <= max) {
                     // TODO: How do I know if the end is already too far
                     // (over the end of the doc)?
-                    end = firstSpans.end() + counter;
-                    cs = new CandidateSpan(firstSpans.start(), end,
-                            firstSpans.doc(), firstSpans.cost(),
-                            createPayloads(firstSpans.end(), end));
+                    end = firstSpans.endPosition() + counter;
+                    cs = new CandidateSpan(firstSpans.startPosition(), end,
+                            firstSpans.docID(), firstSpans.cost(),
+                            createPayloads(firstSpans.endPosition(), end));
                     candidateSpans.add(cs);
                     counter++;
                 }
@@ -177,10 +172,10 @@ public class ExpandedSpans extends SimpleSpans {
                 int lastPosition = end;
                 if (hasMoreSpans && (hasMoreSpans = nextInDocument(firstSpans))) {
                     if (DEBUG) {
-                        log.debug("next candidate start: " + firstSpans.start()
+                        log.debug("next candidate start: " + firstSpans.startPosition()
                                   + ", lastPosition " + lastPosition);
                     };
-                    if (firstSpans.start() <= lastPosition) {
+                    if (firstSpans.startPosition() <= lastPosition) {
                         continueCandidateLoop = true;
                     }
                 }

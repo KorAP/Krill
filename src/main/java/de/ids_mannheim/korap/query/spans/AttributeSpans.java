@@ -89,11 +89,6 @@ public class AttributeSpans extends SimpleSpans {
     }
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    }
-
 
     @Override
     public int docID () {
@@ -222,7 +217,7 @@ public class AttributeSpans extends SimpleSpans {
 
         // Associated with a milestone element
         else {
-            end = firstSpans.start();
+            end = firstSpans.startPosition();
         }
 
         return new CandidateAttributeSpan(firstSpans, payloadTypeIdentifier,

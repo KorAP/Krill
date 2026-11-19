@@ -10,56 +10,21 @@ import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
 
 /**
- * Bridge between the span enumeration API Krill's span classes
- * were written for (Lucene up to 5.1: <tt>next()</tt>,
- * <tt>skipTo()</tt>, <tt>doc()</tt>, <tt>start()</tt>,
- * <tt>end()</tt>) and the iterator API of Lucene 5.2 and later
- * (<tt>nextDoc()</tt>, <tt>advance()</tt>,
- * <tt>nextStartPosition()</tt>, <tt>docID()</tt>,
- * <tt>startPosition()</tt>, <tt>endPosition()</tt>).
- *
- * Every subclass implements <b>one</b> of the two APIs, and gets
- * the other one from this class:
+ * Base class of Krill's span enumerations, and wrapper of Lucene's
+ * ones (see {@link #wrap(Spans, Bits)}), giving all of them
  *
  * <ul>
- * <li><b>Not yet ported classes</b> implement the old methods.
- * The iterator API is derived from them here, so Lucene and ported
- * classes can consume them.</li>
- * <li><b>Ported classes</b> return <tt>true</tt> from
- * {@link #usesIteratorApi()} and implement the iterator API. The
- * old methods are derived from it here, so not yet ported classes
- * can still consume them.</li>
+ * <li>the payloads of the current match ({@link #getPayload()}),
+ * which Lucene's spans no longer provide since Lucene 5.3,</li>
+ * <li>a walk through all matches of all documents
+ * ({@link #nextMatch()}, {@link #advanceToMatch(int)}).</li>
  * </ul>
  *
- * Span enumerations created by Lucene itself (for example by a
- * <tt>SpanTermQuery</tt> or a <tt>SpanOrQuery</tt>) are made
- * available through both APIs by {@link #wrap(Spans)}.
- *
- * A single enumeration has to be consumed through one of the two
- * APIs only - never both.
- *
- * This class is a migration aid: once all span classes are ported,
- * it can be removed and the classes can extend {@link Spans}
- * directly.
+ * Spans are iterated with the iterator API of Lucene
+ * (<tt>nextDoc()</tt>, <tt>advance()</tt>,
+ * <tt>nextStartPosition()</tt>, ...).
  */
 public abstract class LegacySpans extends Spans {
-
-    /**
-     * Tells which API the class implements.
-     *
-     * @return <tt>true</tt> if the class implements the iterator
-     *         API, <tt>false</tt> (the default) if it implements the
-     *         old API.
-     */
-    protected boolean usesIteratorApi () {
-        return false;
-    };
-
-
-    private UnsupportedOperationException notImplemented (String method) {
-        return new UnsupportedOperationException(getClass().getName()
-                + " has to implement " + method + "()");
-    };
 
 
     // ------------------------------------------------------------
@@ -108,274 +73,51 @@ public abstract class LegacySpans extends Spans {
 
 
     // ------------------------------------------------------------
-    // The old API: implemented by not yet ported classes,
-    // derived from the iterator API for ported classes
+    // Walking through all matches
     // ------------------------------------------------------------
 
-    // The iterator API has no more matches (ported classes only)
-    private boolean oldExhausted = false;
-
-    // The last match - Krill's span classes keep reporting it
-    // once the enumeration is exhausted
-    private int oldDoc = -1, oldStart = -1, oldEnd = -1;
-
-
     /**
-     * Move to the next match, returning true iff any such exists.
+     * Move to the next match, in the current document or in a
+     * following one. For consumers that walk through all matches of
+     * all documents (as <tt>next()</tt> of Lucene up to 5.1 did).
+     *
+     * @return <tt>true</tt> if there is such a match.
      */
-    public boolean next () throws IOException {
-        if (!usesIteratorApi())
-            throw notImplemented("next");
-
-        if (oldExhausted)
+    public final boolean nextMatch () throws IOException {
+        if (this.docID() == NO_MORE_DOCS)
             return false;
-
         if (this.docID() == -1 && this.nextDoc() == NO_MORE_DOCS)
-            return !(oldExhausted = true);
-
-        return this.oldNextPosition();
+            return false;
+        return this.toNextPosition();
     };
 
 
     /**
-     * Skip to the first match beyond the current one, whose
-     * document number is greater than or equal to <i>target</i>.
-     * Returns true iff there is such a match.
+     * Move to the first match beyond the current one in a document
+     * greater than or equal to <i>target</i> (as <tt>skipTo()</tt> of
+     * Lucene up to 5.1 did).
+     *
+     * @return <tt>true</tt> if there is such a match.
      */
-    public boolean skipTo (int target) throws IOException {
-        if (!usesIteratorApi())
-            throw notImplemented("skipTo");
-
-        if (oldExhausted)
+    public final boolean advanceToMatch (int target) throws IOException {
+        if (this.docID() == NO_MORE_DOCS)
             return false;
-
-        // The current document is fine already -
-        // move to the match beyond the current one
         if (this.docID() >= target)
-            return this.next();
-
+            return this.nextMatch();
         if (this.advance(target) == NO_MORE_DOCS)
-            return !(oldExhausted = true);
-
-        return this.oldNextPosition();
+            return false;
+        return this.toNextPosition();
     };
 
 
-    // Move to the next position, in the current document
-    // or in the following ones
-    private boolean oldNextPosition () throws IOException {
+    // Move to the next position, in the current document or in the
+    // following ones
+    private boolean toNextPosition () throws IOException {
         while (this.nextStartPosition() == NO_MORE_POSITIONS) {
             if (this.nextDoc() == NO_MORE_DOCS)
-                return !(oldExhausted = true);
+                return false;
         };
-        oldDoc = this.docID();
-        oldStart = this.startPosition();
-        oldEnd = this.endPosition();
         return true;
-    };
-
-
-    /**
-     * Tells if the enumeration of a ported class was exhausted
-     * through the old API.
-     */
-    protected final boolean isExhausted () {
-        return oldExhausted;
-    };
-
-
-    /**
-     * Tells if these are span enumerations of Lucene (made usable
-     * through both APIs by {@link #wrap(Spans)}), and not of Krill.
-     */
-    boolean isLuceneSpans () {
-        return false;
-    };
-
-
-    /** The document number of the current match. */
-    public int doc () {
-        if (!usesIteratorApi())
-            throw notImplemented("doc");
-        return oldExhausted ? oldDoc : this.docID();
-    };
-
-
-    /** The start position of the current match. */
-    public int start () {
-        if (!usesIteratorApi())
-            throw notImplemented("start");
-        return oldExhausted ? oldStart : this.startPosition();
-    };
-
-
-    /** The end position of the current match. */
-    public int end () {
-        if (!usesIteratorApi())
-            throw notImplemented("end");
-        return oldExhausted ? oldEnd : this.endPosition();
-    };
-
-
-    // ------------------------------------------------------------
-    // The iterator API: implemented by ported classes,
-    // derived from the old API for not yet ported classes
-    // ------------------------------------------------------------
-
-    // Document the iterator API is positioned on
-    private int iterDoc = -1;
-
-    // The old API has no more matches
-    private boolean iterExhausted = false;
-
-    // The old API is positioned on a match the iterator API
-    // has not delivered yet
-    private boolean iterLookahead = false;
-
-    // The match the old API is positioned on is the current
-    // position of the iterator API
-    private boolean iterOnPosition = false;
-
-    // All positions of the current document were delivered
-    private boolean iterDocDone = false;
-
-
-    @Override
-    public int docID () {
-        if (usesIteratorApi())
-            throw notImplemented("docID");
-        return iterDoc;
-    };
-
-
-    @Override
-    public int nextDoc () throws IOException {
-        if (usesIteratorApi())
-            throw notImplemented("nextDoc");
-
-        if (iterDoc == NO_MORE_DOCS)
-            return NO_MORE_DOCS;
-
-        // The match read ahead is already in a following document
-        if (iterLookahead && this.doc() != iterDoc)
-            return iterEnterDoc();
-
-        if (iterExhausted)
-            return iterEnd();
-
-        // Skip the remaining matches of the current document
-        do {
-            if (!this.next())
-                return iterEnd();
-        } while (this.doc() == iterDoc);
-
-        return iterEnterDoc();
-    };
-
-
-    @Override
-    public int advance (int target) throws IOException {
-        if (usesIteratorApi())
-            throw notImplemented("advance");
-
-        if (iterDoc == NO_MORE_DOCS)
-            return NO_MORE_DOCS;
-
-        if (target <= iterDoc)
-            return this.nextDoc();
-
-        // The match read ahead is already in a matching document
-        if (iterLookahead && this.doc() != iterDoc && this.doc() >= target)
-            return iterEnterDoc();
-
-        if (iterExhausted)
-            return iterEnd();
-
-        if (!this.skipTo(target))
-            return iterEnd();
-
-        // Be lenient with implementations of skipTo() that do
-        // not reach the target
-        while (this.doc() < target) {
-            if (!this.next())
-                return iterEnd();
-        };
-
-        return iterEnterDoc();
-    };
-
-
-    @Override
-    public int nextStartPosition () throws IOException {
-        if (usesIteratorApi())
-            throw notImplemented("nextStartPosition");
-
-        if (iterDoc == -1 || iterDoc == NO_MORE_DOCS || iterDocDone)
-            return NO_MORE_POSITIONS;
-
-        // The first match of the document was already read
-        if (iterLookahead) {
-            iterLookahead = false;
-            iterOnPosition = true;
-            return this.start();
-        };
-
-        if (!this.next()) {
-            iterExhausted = true;
-            iterOnPosition = false;
-            iterDocDone = true;
-            return NO_MORE_POSITIONS;
-        };
-
-        // The next match is in a following document -
-        // keep it for nextDoc() or advance()
-        if (this.doc() != iterDoc) {
-            iterLookahead = true;
-            iterOnPosition = false;
-            iterDocDone = true;
-            return NO_MORE_POSITIONS;
-        };
-
-        return this.start();
-    };
-
-
-    @Override
-    public int startPosition () {
-        if (usesIteratorApi())
-            throw notImplemented("startPosition");
-        if (iterOnPosition)
-            return this.start();
-        return iterDocDone ? NO_MORE_POSITIONS : -1;
-    };
-
-
-    @Override
-    public int endPosition () {
-        if (usesIteratorApi())
-            throw notImplemented("endPosition");
-        if (iterOnPosition)
-            return this.end();
-        return iterDocDone ? NO_MORE_POSITIONS : -1;
-    };
-
-
-    // The old API is positioned on the first match of a new document
-    private int iterEnterDoc () {
-        iterDoc = this.doc();
-        iterLookahead = true;
-        iterOnPosition = false;
-        iterDocDone = false;
-        return iterDoc;
-    };
-
-
-    private int iterEnd () {
-        iterExhausted = true;
-        iterLookahead = false;
-        iterOnPosition = false;
-        iterDocDone = true;
-        return (iterDoc = NO_MORE_DOCS);
     };
 
 
@@ -384,7 +126,7 @@ public abstract class LegacySpans extends Spans {
     // ------------------------------------------------------------
 
     /**
-     * Make a span enumeration usable through both APIs.
+     * Make a span enumeration usable by Krill.
      * Enumerations that are {@link LegacySpans} already are returned
      * as they are, so casts to Krill's span classes keep working.
      *
@@ -393,7 +135,7 @@ public abstract class LegacySpans extends Spans {
      *            <tt>SpanQuery.getSpans()</tt>. May be
      *            <tt>null</tt>, which Lucene returns when there
      *            are no matches at all.
-     * @return The enumeration with both APIs. Never
+     * @return The enumeration. Never
      *         <tt>null</tt>.
      */
     public static LegacySpans wrap (Spans spans) {
@@ -402,7 +144,7 @@ public abstract class LegacySpans extends Spans {
 
 
     /**
-     * Make a span enumeration usable through both APIs, limited to
+     * Make a span enumeration usable by Krill, limited to
      * the accepted documents. Krill's span classes are returned as
      * they are - they are limited to the accepted documents when they
      * are created.
@@ -415,7 +157,7 @@ public abstract class LegacySpans extends Spans {
      *            The documents of Lucene's spans to keep, or
      *            <tt>null</tt> for all documents (up to Lucene 5.2,
      *            Lucene's spans were limited to them when created).
-     * @return The enumeration with both APIs. Never
+     * @return The enumeration. Never
      *         <tt>null</tt>.
      */
     public static LegacySpans wrap (Spans spans, Bits acceptDocs) {
@@ -434,11 +176,6 @@ public abstract class LegacySpans extends Spans {
 
         private int doc = -1;
 
-
-        @Override
-        protected boolean usesIteratorApi () {
-            return true;
-        };
 
 
         @Override
@@ -499,11 +236,6 @@ public abstract class LegacySpans extends Spans {
         };
 
 
-        @Override
-        boolean isLuceneSpans () {
-            return true;
-        };
-
 
         @Override
         public String toString () {
@@ -513,7 +245,7 @@ public abstract class LegacySpans extends Spans {
 
 
     /**
-     * A span enumeration of Lucene, made usable through both APIs.
+     * A span enumeration of Lucene, made usable by Krill.
      */
     private static final class NativeSpans extends LegacySpans {
 
@@ -543,11 +275,6 @@ public abstract class LegacySpans extends Spans {
             return doc;
         };
 
-
-        @Override
-        protected boolean usesIteratorApi () {
-            return true;
-        };
 
 
         @Override
@@ -588,24 +315,6 @@ public abstract class LegacySpans extends Spans {
             return in.endPosition();
         };
 
-
-        // Lucene's own spans report NO_MORE_DOCS when exhausted
-        @Override
-        public int doc () {
-            return in.docID();
-        };
-
-
-        @Override
-        public int start () {
-            return in.startPosition();
-        };
-
-
-        @Override
-        public int end () {
-            return in.endPosition();
-        };
 
 
         private void resetPayload () {
@@ -662,11 +371,6 @@ public abstract class LegacySpans extends Spans {
             return in.cost();
         };
 
-
-        @Override
-        boolean isLuceneSpans () {
-            return true;
-        };
 
 
         @Override

@@ -272,32 +272,38 @@ public class TestFrameConstraint {
 
 
         @Override
-        public int doc () {
+        public int docID () {
             return 0;
         };
 
 
         @Override
-        public int start () {
+        public int nextDoc () {
+            return 0;
+        };
+
+
+        @Override
+        public int advance (int target) {
+            return 0;
+        };
+
+
+        @Override
+        public int nextStartPosition () {
             return this.s;
         };
 
 
         @Override
-        public int end () {
+        public int startPosition () {
+            return this.s;
+        };
+
+
+        @Override
+        public int endPosition () {
             return this.e;
-        };
-
-
-        @Override
-        public boolean skipTo (int target) {
-            return true;
-        };
-
-
-        @Override
-        public boolean next () {
-            return true;
         };
 
 

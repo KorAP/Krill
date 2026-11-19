@@ -62,11 +62,6 @@ public class RepetitionSpans extends SimpleSpans {
 
 
 
-    @Override
-    protected boolean usesIteratorApi () {
-        return true;
-    };
-
 
     @Override
     protected void startDocument () {
@@ -154,11 +149,11 @@ public class RepetitionSpans extends SimpleSpans {
             if (DEBUG) {
                 log.debug("Check adjacency of rep-spans at {}-{}|{}-{} in {}={}={}",
                           prevSpan.getStart(), prevSpan.getEnd(),
-                          firstSpans.start(), firstSpans.end(),
-                          startSpan.getDoc(), firstSpans.doc(), prevSpan.getDoc());
+                          firstSpans.startPosition(), firstSpans.endPosition(),
+                          startSpan.getDoc(), firstSpans.docID(), prevSpan.getDoc());
             };
 
-            if (firstSpans.start() > prevSpan.getEnd()) {
+            if (firstSpans.startPosition() > prevSpan.getEnd()) {
                 candidates.add(new CandidateSpan(firstSpans));
                 break;
             }
@@ -167,12 +162,12 @@ public class RepetitionSpans extends SimpleSpans {
              * ND: This seems to be suboptimal, in cases of searching
              *     for "ab{2,3}c" and a match like "abbbbbbbbbbbbbbbbbbbbbbbbbbc".
              */
-            else if (firstSpans.start() == prevSpan.getEnd()) {
+            else if (firstSpans.startPosition() == prevSpan.getEnd()) {
                 prevSpan = new CandidateSpan(firstSpans);
                 adjacentSpans.add(prevSpan);
             }
 
-            // firstSpan.start() < prevSpan.getEnd()
+            // firstSpan.startPosition() < prevSpan.getEnd()
             else {
                 candidates.add(new CandidateSpan(firstSpans));
             }
