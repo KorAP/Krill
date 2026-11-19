@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.queries.TermsFilter;
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.search.NumericRangeFilter;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.PhraseQuery;
-import org.apache.lucene.search.QueryWrapperFilter;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RegexpQuery;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.util.automaton.RegExp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +26,6 @@ import de.ids_mannheim.korap.util.QueryException;
  *   - Remove identical object in Boolean groups
  *   - Flatten boolean groups
  *   - create "between" ranges for multiple date objects
- *
- * TODO:
- *   - Filters are deprecated, they should be ported to queries
  */
 
 public class CollectionBuilder {
@@ -182,7 +178,7 @@ public class CollectionBuilder {
         public String toString ();
 
 
-        public Filter toFilter () throws QueryException;
+        public Query toQuery () throws QueryException;
 
 
         public boolean isNegative ();
@@ -211,24 +207,23 @@ public class CollectionBuilder {
         };
 
 
-        public Filter toFilter () {
+        public Query toQuery () {
             // Regular expression
             if (this.regex)
-                return new QueryWrapperFilter(
-                        new RegexpQuery(new org.apache.lucene.index.Term(
-                                            this.field, this.term), RegExp.NONE));
+                return new RegexpQuery(new org.apache.lucene.index.Term(
+                        this.field, this.term), RegExp.NONE);
 
             // Simple term
-            return new TermsFilter(
+            return new TermQuery(
                     new org.apache.lucene.index.Term(this.field, this.term));
         };
 
 
         public String toString () {
-            Filter filter = this.toFilter();
-            if (filter == null)
+            Query query = this.toQuery();
+            if (query == null)
                 return "";
-            return filter.toString();
+            return query.toString();
         };
 
 
@@ -259,8 +254,8 @@ public class CollectionBuilder {
 		// TODO:
 		//   Currently this treatment is language specific and
 		//    does too much, I guess.
-        public Filter toFilter () {
-			PhraseQuery pq = new PhraseQuery();
+        public Query toQuery () {
+			PhraseQuery.Builder pq = new PhraseQuery.Builder();
 			int pos = 0;
 			try {
 				TextPrependedTokenStream tpts = new TextPrependedTokenStream(this.text);
@@ -278,15 +273,15 @@ public class CollectionBuilder {
 				return null;
 			};
 			
-			return new QueryWrapperFilter(pq);
+			return pq.build();
         };
 
 
         public String toString () {
-            Filter filter = this.toFilter();
-            if (filter == null)
+            Query query = this.toQuery();
+            if (query == null)
                 return "";
-            return filter.toString();
+            return query.toString();
         };
 
 
@@ -305,17 +300,17 @@ public class CollectionBuilder {
     public class VirtualCorpusReference implements CollectionBuilder.Interface {
         private boolean isNegative = false;
         private String vcId;
-        private VirtualCorpusFilter vcFilter;
+        private VirtualCorpusQuery vcQuery;
         
                 
         public VirtualCorpusReference (String vcId) {
             this.vcId = vcId;
-            vcFilter = new VirtualCorpusFilter(vcId);
+            vcQuery = new VirtualCorpusQuery(vcId);
 //            VirtualCorpusCache.setIndexInfo(indexInfo);
         };
 
-        public Filter toFilter () throws QueryException {
-            return vcFilter;
+        public Query toQuery () throws QueryException {
+            return vcQuery;
         };
 
 
@@ -378,28 +373,27 @@ public class CollectionBuilder {
         };
 
 
-        public Filter toFilter () throws QueryException {
+        public Query toQuery () throws QueryException {
             if (this.operands == null || this.operands.isEmpty())
                 return null;
 
             // Shortcut for a single positive operand. A negative
-            // operand must go through the BooleanGroupFilter so that
+            // operand must go through the BooleanGroupQuery so that
             // its negation is preserved.
             if (this.operands.size() == 1
                     && !this.operands.get(0).isNegative())
-                return this.operands.get(0).toFilter();
+                return this.operands.get(0).toQuery();
 
-            // BooleanFilter bool = new BooleanFilter();
-            BooleanGroupFilter bool = new BooleanGroupFilter(this.isOptional);
+            BooleanGroupQuery bool = new BooleanGroupQuery(this.isOptional);
 
             Iterator<CollectionBuilder.Interface> i = this.operands.iterator();
             while (i.hasNext()) {
                 CollectionBuilder.Interface cb = i.next();
                 if (cb.isNegative()) {
-                    bool.without(cb.toFilter());
+                    bool.without(cb.toQuery());
                 }
                 else {
-                    bool.with(cb.toFilter());
+                    bool.with(cb.toQuery());
                 };
             };
 
@@ -409,10 +403,10 @@ public class CollectionBuilder {
 
         public String toString () {
 			try {
-				Filter filter = this.toFilter();
-				if (filter == null)
+				Query query = this.toQuery();
+				if (query == null)
 					return "";
-				return filter.toString();
+				return query.toString();
 			}
 			catch (QueryException qe) {
 				log.warn(qe.getLocalizedMessage());
@@ -446,15 +440,15 @@ public class CollectionBuilder {
 
 
         public String toString () {
-            Filter filter = this.toFilter();
-            if (filter == null)
+            Query query = this.toQuery();
+            if (query == null)
                 return "";
-            return filter.toString();
+            return query.toString();
         };
 
 
-        public Filter toFilter () {
-            return NumericRangeFilter.newIntRange(this.field, this.start,
+        public Query toQuery () {
+            return NumericRangeQuery.newIntRange(this.field, this.start,
                     this.end, true, true);
         };
 
@@ -483,15 +477,15 @@ public class CollectionBuilder {
 
 
         public String toString () {
-            Filter filter = this.toFilter();
-            if (filter == null)
+            Query query = this.toQuery();
+            if (query == null)
                 return "";
-            return filter.toString();
+            return query.toString();
         };
 
 
-        public Filter toFilter () {
-            return NumericRangeFilter.newDoubleRange(this.field, (double) this.start,
+        public Query toQuery () {
+            return NumericRangeQuery.newDoubleRange(this.field, (double) this.start,
                                                      (double) this.end, true, true);
         };
 

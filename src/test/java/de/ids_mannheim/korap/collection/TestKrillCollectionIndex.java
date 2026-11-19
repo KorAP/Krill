@@ -62,6 +62,45 @@ public class TestKrillCollectionIndex {
 
 
     @Test
+    public void testIndexWithDeletedDocuments () throws IOException {
+        ki = new KrillIndex();
+        ki.addDoc(createDoc1());
+        ki.addDoc(createDoc2());
+        ki.addDoc(createDoc3());
+        ki.commit();
+
+        // Delete the document of Peter
+        assertTrue(ki.delDocs("author", "Peter"));
+        ki.commit();
+
+        CollectionBuilder cb = new CollectionBuilder();
+        KrillCollection kcn = new KrillCollection(ki);
+
+        // All documents are about reisen
+        kcn.fromBuilder(cb.term("textClass", "reisen"));
+        assertEquals(2, kcn.docCount());
+
+        kcn.fromBuilder(cb.term("author", "Peter"));
+        assertEquals(0, kcn.docCount());
+
+        kcn.fromBuilder(cb.re("author", "P.*"));
+        assertEquals(0, kcn.docCount());
+
+        // Negations do not bring back deleted documents
+        kcn.fromBuilder(cb.term("author", "Frank").not());
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.orGroup().with(cb.term("author", "Frank"))
+                .with(cb.term("author", "Peter")));
+        assertEquals(1, kcn.docCount());
+
+        kcn.fromBuilder(cb.andGroup().with(cb.term("textClass", "reisen"))
+                .with(cb.term("author", "Frank").not()));
+        assertEquals(1, kcn.docCount());
+    };
+
+
+    @Test
     public void testIndexWithCollectionBuilder () throws IOException {
         ki = new KrillIndex();
         ki.addDoc(createDoc1());
@@ -282,7 +321,7 @@ public class TestKrillCollectionIndex {
                     )
                 )
             );
-        assertEquals("AndGroup(QueryWrapperFilter(textClass:/reis.*/) AndGroup(-author:Frank -author:Sebastian))", kcn.toString());
+        assertEquals("AndGroup(textClass:/reis.*/ AndGroup(-author:Frank -author:Sebastian))", kcn.toString());
         assertEquals(1, kcn.docCount());
     };
 
@@ -358,7 +397,7 @@ public class TestKrillCollectionIndex {
                     )
                 )
             );
-        assertEquals("AndGroup(QueryWrapperFilter(textClass:/reis../) AndGroup(-author:Frank -author:Sebastian))", kcn.toString());
+        assertEquals("AndGroup(textClass:/reis../ AndGroup(-author:Frank -author:Sebastian))", kcn.toString());
         assertEquals(1, kcn.docCount());
     };
 
@@ -426,7 +465,7 @@ public class TestKrillCollectionIndex {
                 cb.re("textClass", "reis..")
                 )
             );
-        assertEquals("AndGroup(AndGroup(-author:Sebastian -author:Frank) QueryWrapperFilter(textClass:/reis../))", kcn.toString());
+        assertEquals("AndGroup(AndGroup(-author:Sebastian -author:Frank) textClass:/reis../)", kcn.toString());
         assertEquals(1, kcn.docCount());
     };  
     
@@ -728,7 +767,7 @@ public class TestKrillCollectionIndex {
         assertEquals(1, kcn.docCount());
 
 		kcn.fromBuilder(cb.text("text", "Der alte Mann"));
-		assertEquals("QueryWrapperFilter(text:\"der alte mann\")", kcn.toString());
+		assertEquals("text:\"der alte mann\"", kcn.toString());
         assertEquals(1, kcn.docCount());
 	};
 

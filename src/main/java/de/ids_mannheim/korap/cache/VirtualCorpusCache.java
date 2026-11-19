@@ -23,8 +23,8 @@ import de.ids_mannheim.korap.IndexInfo;
 import de.ids_mannheim.korap.Krill;
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.collection.DocBits;
-import de.ids_mannheim.korap.collection.VirtualCorpusFilter;
-import de.ids_mannheim.korap.collection.VirtualCorpusFilter.DocBitsSupplier;
+import de.ids_mannheim.korap.collection.VirtualCorpusQuery;
+import de.ids_mannheim.korap.collection.VirtualCorpusQuery.DocBitsSupplier;
 import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.QueryException;
 
@@ -144,7 +144,7 @@ public class VirtualCorpusCache {
             throw new IllegalArgumentException("Cannot cache VC due to invalid VC ID");
         }
         
-        DocBitsSupplier docBitsSupplier = new VirtualCorpusFilter(
+        DocBitsSupplier docBitsSupplier = new VirtualCorpusQuery(
                 vcId).getDocBitsSupplier();
         String leafFingerprint;
         for (LeafReaderContext context : index.reader().leaves()) {

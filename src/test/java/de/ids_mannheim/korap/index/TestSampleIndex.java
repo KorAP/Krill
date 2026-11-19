@@ -182,7 +182,7 @@ public class TestSampleIndex {
                 .getFile());
         krill = new Krill(json);
         assertEquals(
-            "QueryWrapperFilter(availability:/QAO.*/)",
+            "availability:/QAO.*/",
             krill.getCollection().toString());
         kr = krill.apply(sample);
         assertEquals(4, kr.getMatches().size());

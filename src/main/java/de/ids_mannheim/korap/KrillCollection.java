@@ -11,16 +11,18 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.lucene.index.IndexReaderContext;
 import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.ReaderUtil;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
-import org.apache.lucene.search.BitsFilteredDocIdSet;
 import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.search.Filter;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Weight;
 import org.apache.lucene.util.BitDocIdSet;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
@@ -32,6 +34,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import de.ids_mannheim.korap.collection.CollectionBuilder;
+import de.ids_mannheim.korap.collection.QueryDocs;
 import de.ids_mannheim.korap.response.Notifications;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
@@ -64,7 +67,13 @@ public final class KrillCollection extends Notifications implements IndexInfo {
 
     private ObjectMapper mapper = new ObjectMapper();
     
-	private Filter prefiltered = null;
+	private Query prefiltered = null;
+
+    // The weight of the query for a top-level reader,
+    // created once for all of its leaves
+    private Query weightQuery = null;
+    private IndexReaderContext weightTop = null;
+    private Weight weight = null;
     // private static ByteBuffer bb = ByteBuffer.allocate(4);
 
     // Logger
@@ -537,16 +546,19 @@ public final class KrillCollection extends Notifications implements IndexInfo {
 
 
     /**
-     * Serialize collection to a {@link Filter} object.
+     * Serialize collection to a {@link Query} object.
+     * The query only tells which documents are part of the
+     * collection - negation (see {@link #isNegative()})
+     * and deleted documents are not taken into account.
      */
-    public Filter toFilter () throws QueryException {
+    public Query toQuery () throws QueryException {
         if (this.cbi == null)
 			return null;
 	
 		if (this.prefiltered != null)
 			return this.prefiltered;
 		
-		this.prefiltered = this.cbi.toFilter();
+		this.prefiltered = this.cbi.toQuery();
 		return this.prefiltered;
     };
 
@@ -573,9 +585,9 @@ public final class KrillCollection extends Notifications implements IndexInfo {
      */
     public String toString () {
 		try {
-			Filter filter = this.toFilter();
-			if (filter == null) return "";
-			return (this.isNegative() ? "-" : "") + filter.toString();
+			Query query = this.toQuery();
+			if (query == null) return "";
+			return (this.isNegative() ? "-" : "") + query.toString();
 		}
 		catch (QueryException qe) {
             log.warn(qe.getLocalizedMessage());
@@ -679,9 +691,9 @@ public final class KrillCollection extends Notifications implements IndexInfo {
         int maxDoc = atomic.reader().maxDoc();
         FixedBitSet bitset = new FixedBitSet(maxDoc);
 
-        final Filter filter = this.toFilter();
+        final Query query = this.toQuery();
 
-        if (filter == null) {
+        if (query == null) {
             if (acceptDocs == null)
                 return null;
             bitset.set(0, maxDoc);
@@ -689,10 +701,8 @@ public final class KrillCollection extends Notifications implements IndexInfo {
 		else {
 
 			// Init vector
-			DocIdSet docids = filter.getDocIdSet(atomic, null);
-
-			DocIdSetIterator filterIter =
-				(docids == null) ? null : docids.iterator();
+			DocIdSetIterator filterIter = QueryDocs
+                    .iterator(this.weight(query, atomic), atomic);
 				
 			if (filterIter == null) {
                 
@@ -716,8 +726,31 @@ public final class KrillCollection extends Notifications implements IndexInfo {
         };
 
         // Remove deleted docs
-        return (DocIdSet) BitsFilteredDocIdSet
-			.wrap((DocIdSet) new BitDocIdSet(bitset), acceptDocs);
+        if (acceptDocs != null) {
+            for (int doc = 0; doc < maxDoc; doc++) {
+                if (!acceptDocs.get(doc))
+                    bitset.clear(doc);
+            };
+        };
+
+        return (DocIdSet) new BitDocIdSet(bitset);
+    };
+
+
+    /**
+     * The weight of the query of the collection for the top-level
+     * reader of a leaf. It is created once for all leaves.
+     */
+    private Weight weight (Query query, LeafReaderContext atomic)
+            throws IOException {
+        IndexReaderContext top = ReaderUtil.getTopLevelContext(atomic);
+        if (this.weight == null || this.weightQuery != query
+                || this.weightTop != top) {
+            this.weight = QueryDocs.createWeight(query, top);
+            this.weightQuery = query;
+            this.weightTop = top;
+        };
+        return this.weight;
     };
 
 

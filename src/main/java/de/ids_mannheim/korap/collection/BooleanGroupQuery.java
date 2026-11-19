@@ -3,15 +3,16 @@ package de.ids_mannheim.korap.collection;
 import java.io.IOException;
 import java.util.*;
 
-import org.apache.lucene.search.Filter;
-import org.apache.lucene.util.FixedBitSet;
-import org.apache.lucene.search.DocIdSet;
-import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.search.BitsFilteredDocIdSet;
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.index.LeafReader;
-import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.BitDocIdSet;
+import org.apache.lucene.search.ConstantScoreScorer;
+import org.apache.lucene.search.ConstantScoreWeight;
+import org.apache.lucene.search.DocIdSetIterator;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.Weight;
+import org.apache.lucene.util.BitSetIterator;
+import org.apache.lucene.util.FixedBitSet;
 
 import de.ids_mannheim.korap.KrillCollection;
 
@@ -19,15 +20,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A container Filter that allows Boolean composition of Filters
- * in groups (either or-groups or and-groups).
- * 
+ * A container query that allows Boolean composition of queries
+ * in groups (either or-groups or and-groups). It matches documents
+ * only, without scores.
+ *
  * @author Nils Diewald
- * 
- *         This filter is roughly based on
+ *
+ *         This query is roughly based on
  *         org.apache.lucene.queries.BooleanFilter.
  */
-public class BooleanGroupFilter extends Filter {
+public class BooleanGroupQuery extends Query {
     // Group is either an or- or an and-Group
     private boolean isOptional;
 
@@ -39,66 +41,81 @@ public class BooleanGroupFilter extends Filter {
     public static final boolean DEBUG = false;
 
     // Init operands list
-    private final List<GroupFilterOperand> operands = new ArrayList<>(3);
+    private final List<GroupQueryOperand> operands = new ArrayList<>(3);
 
-    // Operand in the filter group
-    private class GroupFilterOperand {
-        public Filter filter;
+    // Operand in the query group
+    private static class GroupQueryOperand {
+        public Query query;
         public boolean isNegative;
 
 
-        // Operand has filter and negativity information
-        public GroupFilterOperand (Filter filter, boolean negative) {
-            this.filter = filter;
+        // Operand has query and negativity information
+        public GroupQueryOperand (Query query, boolean negative) {
+            this.query = query;
             this.isNegative = negative;
+        };
+
+
+        @Override
+        public boolean equals (Object obj) {
+            if (!(obj instanceof GroupQueryOperand))
+                return false;
+            GroupQueryOperand other = (GroupQueryOperand) obj;
+            return this.isNegative == other.isNegative
+                    && this.query.equals(other.query);
+        };
+
+
+        @Override
+        public int hashCode () {
+            return this.query.hashCode() ^ (this.isNegative ? 1 : 0);
         };
     };
 
 
     /**
-     * Create a new BooleanGroupFilter.
+     * Create a new BooleanGroupQuery.
      * Accepts a boolean parameter to make it an or-Group
-     * (<pre>true</pre>) or an and-Group (<pre>true</pre>).
+     * (<pre>true</pre>) or an and-Group (<pre>false</pre>).
      */
-    public BooleanGroupFilter (boolean optional) {
+    public BooleanGroupQuery (boolean optional) {
         this.isOptional = optional;
     };
 
 
     /**
-     * Add an operand to the list of filter operands.
-     * The operand is a positive filter that won't be flipped.
+     * Add an operand to the list of query operands.
+     * The operand is a positive query that won't be flipped.
      */
-    public final void with (Filter filter) {
-        this.operands.add(new GroupFilterOperand(filter, false));
+    public final void with (Query query) {
+        this.operands.add(new GroupQueryOperand(query, false));
     };
 
 
     /**
-     * Add an operand to the list of filter operands.
-     * The operand is a negative filter that will be flipped.
+     * Add an operand to the list of query operands.
+     * The operand is a negative query that will be flipped.
      */
-    public final void without (Filter filter) {
-        this.operands.add(new GroupFilterOperand(filter, true));
+    public final void without (Query query) {
+        this.operands.add(new GroupQueryOperand(query, true));
     };
 
 
     @Override
     public boolean equals (Object obj) {
-        if (this == obj)
-            return true;
-
-        if ((obj == null) || (obj.getClass() != this.getClass()))
+        if (!super.equals(obj))
             return false;
 
-        final BooleanGroupFilter other = (BooleanGroupFilter) obj;
-        return operands.equals(other.operands);
+        final BooleanGroupQuery other = (BooleanGroupQuery) obj;
+        return this.isOptional == other.isOptional
+                && operands.equals(other.operands);
     };
 
 
     @Override
     public int hashCode () {
-        return 657153719 ^ operands.hashCode();
+        return 31 * super.hashCode()
+                + (657153719 ^ operands.hashCode() ^ (isOptional ? 1 : 0));
     };
 
 
@@ -107,7 +124,7 @@ public class BooleanGroupFilter extends Filter {
         StringBuilder buffer = new StringBuilder(
                 this.isOptional ? "OrGroup(" : "AndGroup(");
         boolean first = true;
-        for (final GroupFilterOperand operand : this.operands) {
+        for (final GroupQueryOperand operand : this.operands) {
             if (first)
                 first = false;
             else
@@ -116,17 +133,41 @@ public class BooleanGroupFilter extends Filter {
             if (operand.isNegative)
                 buffer.append('-');
 
-            buffer.append(operand.filter.toString());
+            buffer.append(operand.query.toString());
         };
         return buffer.append(')').toString();
     };
 
 
     @Override
-    public DocIdSet getDocIdSet (LeafReaderContext atomic, Bits acceptDocs)
+    public Weight createWeight (IndexSearcher searcher, boolean needsScores)
             throws IOException {
-        final LeafReader reader = atomic.reader();
-        int maxDoc = reader.maxDoc();
+
+        // The weights of the operands are created once for all leaves
+        final Weight[] operandWeights = new Weight[this.operands.size()];
+        for (int i = 0; i < operandWeights.length; i++) {
+            operandWeights[i] = searcher.createNormalizedWeight(
+                    this.operands.get(i).query, false);
+        };
+
+        return new ConstantScoreWeight(this) {
+            @Override
+            public Scorer scorer (LeafReaderContext atomic)
+                    throws IOException {
+                DocIdSetIterator docs = BooleanGroupQuery.this.docs(atomic,
+                        operandWeights);
+                if (docs == null)
+                    return null;
+                return new ConstantScoreScorer(this, score(), docs);
+            };
+        };
+    };
+
+
+    // The documents of the group in a leaf, or null if there are none
+    private DocIdSetIterator docs (LeafReaderContext atomic,
+            Weight[] operandWeights) throws IOException {
+        int maxDoc = atomic.reader().maxDoc();
         FixedBitSet bitset = new FixedBitSet(maxDoc);
         FixedBitSet combinator = new FixedBitSet(maxDoc);
         boolean init = true;
@@ -135,14 +176,14 @@ public class BooleanGroupFilter extends Filter {
             log.debug("Filter on group {} in a corpus of {} docs", this.toString(), maxDoc);
         }
 
-        for (GroupFilterOperand operand : this.operands) {
-            DocIdSet docids = operand.filter.getDocIdSet(atomic, null);
-            DocIdSetIterator filterIter = (docids == null) ? null
-                : docids.iterator();
+        for (int i = 0; i < operandWeights.length; i++) {
+            GroupQueryOperand operand = this.operands.get(i);
+            DocIdSetIterator filterIter = QueryDocs
+                    .iterator(operandWeights[i], atomic);
 
             if (DEBUG)
                 log.debug("> Filter to bitset of {} ({} negative)",
-                          operand.filter.toString(), operand.isNegative);
+                          operand.query.toString(), operand.isNegative);
 
 
             // Filter resulted in no docs
@@ -163,9 +204,8 @@ public class BooleanGroupFilter extends Filter {
                         // bitset.set(1, maxDoc);
                         bitset.set(0, maxDoc);
 
-                        // Match all accepted documents!
-                        return BitsFilteredDocIdSet
-                            .wrap(new BitDocIdSet(bitset), acceptDocs);
+                        // Match all documents!
+                        return new BitSetIterator(bitset, maxDoc);
                     }
 
 
@@ -279,7 +319,7 @@ public class BooleanGroupFilter extends Filter {
 
         if (DEBUG)
             log.debug("- Operand list ends");
-        
-        return BitsFilteredDocIdSet.wrap(new BitDocIdSet(bitset), acceptDocs);
+
+        return new BitSetIterator(bitset, bitset.cardinality());
     };
 };

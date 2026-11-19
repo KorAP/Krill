@@ -42,10 +42,12 @@ import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.Weight;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.spans.KrillSpans;
+import de.ids_mannheim.korap.collection.QueryDocs;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
@@ -1612,9 +1614,9 @@ public final class KrillIndex implements IndexInfo {
 
             int qHash = query.toString().hashCode();
             int collHash = 0;
-            Filter collf = collection.toFilter();
-            if (collf != null) {
-                collHash = collf.toString().hashCode();
+            Query collq = collection.toQuery();
+            if (collq != null) {
+                collHash = collq.toString().hashCode();
             };
 
             PrelimCacheKey prelim = new PrelimCacheKey(qHash, collHash, itemsPerResource);
@@ -2205,19 +2207,20 @@ public final class KrillIndex implements IndexInfo {
 
         
         try {
-            final Filter filter = collection.toFilter();
+            final Query query = collection.toQuery();
 
             // Get from filtered index
-            if (filter != null) {
-            
+            if (query != null) {
+
+                final Weight weight = QueryDocs.createWeight(query,
+                        this.reader().getContext());
+
                 // Iterate over all atomic readers and collect occurrences
                 for (LeafReaderContext atomic : this.reader().leaves()) {
 
                     LeafReader lreader = atomic.reader();
 
-                    DocIdSet docids = filter.getDocIdSet(atomic, null);
-                
-                    DocIdSetIterator docs = (docids == null) ? null : docids.iterator();
+                    DocIdSetIterator docs = QueryDocs.iterator(weight, atomic);
 
                     if (docs == null)
                         continue;

@@ -27,7 +27,7 @@ public class TestCollectionBuilder {
     @Test
     public void builderRegex () throws IOException {
         CollectionBuilder kc = new CollectionBuilder();
-        assertEquals("QueryWrapperFilter(author:/tre*?/)",
+        assertEquals("author:/tre*?/",
                 kc.re("author", "tre*?").toString());
     };
 

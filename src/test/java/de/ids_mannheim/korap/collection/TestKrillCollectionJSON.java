@@ -74,7 +74,7 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("QueryWrapperFilter(author:/Goethe/)",
+        assertEquals("author:/Goethe/",
                 ks.getCollection().toString());
     };
 
@@ -86,7 +86,7 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("-QueryWrapperFilter(author:/Goethe/)",
+        assertEquals("-author:/Goethe/",
                 ks.getCollection().toString());
     };
    
@@ -116,7 +116,7 @@ public class TestKrillCollectionJSON {
         String metaQuery = _getJSONString("collection_multine.jsonld");
         KrillCollection kc = new KrillCollection(metaQuery);
         assertEquals(
-            "AndGroup(QueryWrapperFilter(availability:/CC-BY.*/) AndGroup(-corpusSigle:WUD17 -corpusSigle:WDD17))",
+            "AndGroup(availability:/CC-BY.*/ AndGroup(-corpusSigle:WUD17 -corpusSigle:WDD17))",
             kc.toString());
     };
 
@@ -140,7 +140,7 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("-QueryWrapperFilter(author:\"goethe\")",
+        assertEquals("-author:\"goethe\"",
 					 ks.getCollection().toString());
     };
 
@@ -152,7 +152,7 @@ public class TestKrillCollectionJSON {
         assertFalse(ks.hasErrors());
         assertFalse(ks.hasWarnings());
         assertFalse(ks.hasMessages());
-        assertEquals("QueryWrapperFilter(author:/Goe:th=e/)",
+        assertEquals("author:/Goe:th=e/",
                 ks.getCollection().toString());
     };
 
