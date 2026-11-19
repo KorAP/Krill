@@ -12,7 +12,7 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanTermQuery;
-import de.ids_mannheim.korap.query.spans.LegacySpans;
+import de.ids_mannheim.korap.query.spans.KrillSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.FixedBitSet;
@@ -962,7 +962,7 @@ public class Match extends AbstractDocument {
 			if (DEBUG)
 				log.trace("Check markers with {}", stq.toString());
 
-			LegacySpans markerSpans = SpanWeights.forLeaf(atomic)
+			KrillSpans markerSpans = SpanWeights.forLeaf(atomic)
 					.getSpans(stq, atomic, bitset);
 
 			// Iterate over all markers
@@ -1273,7 +1273,7 @@ public class Match extends AbstractDocument {
 
             SpanElementQuery cquery = new SpanElementQuery(field, element);
 
-            LegacySpans contextSpans = SpanWeights.forLeaf(atomic)
+            KrillSpans contextSpans = SpanWeights.forLeaf(atomic)
                     .getSpans(cquery, atomic, bitset);
 
             int newStart = -1, newEnd = -1;

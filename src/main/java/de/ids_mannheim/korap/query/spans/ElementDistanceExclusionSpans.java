@@ -35,7 +35,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  */
 public class ElementDistanceExclusionSpans extends DistanceSpans {
 
-    private LegacySpans elements;
+    private KrillSpans elements;
     private boolean hasMoreElements;
     private int elementPosition;
 
@@ -83,7 +83,7 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
 
     // Only first spans in an element can be matches
     @Override
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         return Collections.singletonList(elements);
     }
 
@@ -216,7 +216,7 @@ public class ElementDistanceExclusionSpans extends DistanceSpans {
      *         contain the given span, <code>false</code> otherwise.
      * @throws IOException
      */
-    private boolean advanceElementTo (LegacySpans span) throws IOException {
+    private boolean advanceElementTo (KrillSpans span) throws IOException {
         while (hasMoreElements
                 && elements.startPosition() < span.endPosition()) {
 

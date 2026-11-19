@@ -32,7 +32,7 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
  * 
  * @author diewald
  */
-public class WithinSpans extends LegacySpans {
+public class WithinSpans extends KrillSpans {
 
     // Logger
     private final Logger log = LoggerFactory.getLogger(WithinSpans.class);
@@ -85,10 +85,10 @@ public class WithinSpans extends LegacySpans {
     private SpanWithinQuery query;
 
     // Representing the first operand
-    private final LegacySpans wrapSpans;
+    private final KrillSpans wrapSpans;
 
     // Representing the second operand
-    private final LegacySpans embeddedSpans;
+    private final KrillSpans embeddedSpans;
 
     // Check flag if the current constellation
     // was checked yet

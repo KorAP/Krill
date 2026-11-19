@@ -59,7 +59,7 @@ public class RelationSpans extends RelationBaseSpans {
     // in the current document
     private int childStart = -1;
     private RelationDirection direction;
-    private LegacySpans relationTermSpan;
+    private KrillSpans relationTermSpan;
 
     protected Logger logger = LoggerFactory.getLogger(RelationSpans.class);
     private List<CandidateSpan> candidateList;

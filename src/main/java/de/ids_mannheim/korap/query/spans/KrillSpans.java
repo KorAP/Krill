@@ -24,7 +24,7 @@ import org.apache.lucene.util.Bits;
  * (<tt>nextDoc()</tt>, <tt>advance()</tt>,
  * <tt>nextStartPosition()</tt>, ...).
  */
-public abstract class LegacySpans extends Spans {
+public abstract class KrillSpans extends Spans {
 
 
     // ------------------------------------------------------------
@@ -127,7 +127,7 @@ public abstract class LegacySpans extends Spans {
 
     /**
      * Make a span enumeration usable by Krill.
-     * Enumerations that are {@link LegacySpans} already are returned
+     * Enumerations that are {@link KrillSpans} already are returned
      * as they are, so casts to Krill's span classes keep working.
      *
      * @param spans
@@ -138,7 +138,7 @@ public abstract class LegacySpans extends Spans {
      * @return The enumeration. Never
      *         <tt>null</tt>.
      */
-    public static LegacySpans wrap (Spans spans) {
+    public static KrillSpans wrap (Spans spans) {
         return wrap(spans, null);
     };
 
@@ -160,11 +160,11 @@ public abstract class LegacySpans extends Spans {
      * @return The enumeration. Never
      *         <tt>null</tt>.
      */
-    public static LegacySpans wrap (Spans spans, Bits acceptDocs) {
+    public static KrillSpans wrap (Spans spans, Bits acceptDocs) {
         if (spans == null)
             return new EmptySpans();
-        if (spans instanceof LegacySpans)
-            return (LegacySpans) spans;
+        if (spans instanceof KrillSpans)
+            return (KrillSpans) spans;
         return new NativeSpans(spans, acceptDocs);
     };
 
@@ -172,7 +172,7 @@ public abstract class LegacySpans extends Spans {
     /**
      * A span enumeration without any matches.
      */
-    private static final class EmptySpans extends LegacySpans {
+    private static final class EmptySpans extends KrillSpans {
 
         private int doc = -1;
 
@@ -247,7 +247,7 @@ public abstract class LegacySpans extends Spans {
     /**
      * A span enumeration of Lucene, made usable by Krill.
      */
-    private static final class NativeSpans extends LegacySpans {
+    private static final class NativeSpans extends KrillSpans {
 
         private final Spans in;
 

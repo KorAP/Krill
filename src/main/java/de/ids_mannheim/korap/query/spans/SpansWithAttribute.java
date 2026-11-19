@@ -160,13 +160,13 @@ public class SpansWithAttribute extends SimpleSpans {
     // With a single (positive) attribute and no referent spans,
     // the attribute spans are the referent spans
     @Override
-    protected LegacySpans driver () {
+    protected KrillSpans driver () {
         return referentSpans != null ? referentSpans : attributeList.get(0);
     };
 
 
     @Override
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         if (referentSpans == null)
             return Collections.emptyList();
         return attributeList;
@@ -359,7 +359,7 @@ public class SpansWithAttribute extends SimpleSpans {
      * 
      * @throws IOException
      */
-    private void advanceNotAttributes (LegacySpans referentSpans)
+    private void advanceNotAttributes (KrillSpans referentSpans)
             throws IOException {
         for (int i = 0; i < notAttributeList.size(); i++) {
             AttributeSpans a = notAttributeList.get(i);

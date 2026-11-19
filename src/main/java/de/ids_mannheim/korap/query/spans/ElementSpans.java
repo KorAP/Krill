@@ -28,7 +28,7 @@ import de.ids_mannheim.korap.query.SpanElementQuery;
  * @author diewald
  */
 public final class ElementSpans extends SimpleSpans {
-    private final LegacySpans termSpans;
+    private final KrillSpans termSpans;
     private boolean isPayloadLoaded;
 
     private final Logger log = LoggerFactory.getLogger(ElementSpans.class);

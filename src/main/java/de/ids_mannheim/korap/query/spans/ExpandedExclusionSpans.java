@@ -43,7 +43,7 @@ public class ExpandedExclusionSpans extends SimpleSpans {
     private byte classNumber;
     private List<CandidateSpan> candidateSpans;
     private boolean hasMoreNotClause;
-    private LegacySpans notClause;
+    private KrillSpans notClause;
 
     private long matchCost;
 

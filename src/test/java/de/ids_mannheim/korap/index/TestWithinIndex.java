@@ -23,7 +23,7 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
-import de.ids_mannheim.korap.query.spans.LegacySpans;
+import de.ids_mannheim.korap.query.spans.KrillSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.util.Bits;
@@ -1405,7 +1405,7 @@ public class TestWithinIndex {
 
         for (LeafReaderContext atomic : ki.reader().leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
-            LegacySpans spans = SpanWeights.forLeaf(atomic)
+            KrillSpans spans = SpanWeights.forLeaf(atomic)
                     .getSpans(sq, atomic, bitset);
             assertEquals("advance() before nextDoc() must initialize spans",
                     0, spans.advance(0));

@@ -29,7 +29,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  */
 public class ElementDistanceSpans extends OrderedDistanceSpans {
 
-    private LegacySpans elements;
+    private KrillSpans elements;
     private boolean hasMoreElements;
     private int elementPosition;
     private int secondSpanPostion;
@@ -59,7 +59,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
 
 
     @Override
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         return Arrays.asList(firstSpans, elements);
     }
 
@@ -129,7 +129,7 @@ public class ElementDistanceSpans extends OrderedDistanceSpans {
      * 
      * @return true iff an element containing the span, is found.
      */
-    private boolean advanceElementTo (LegacySpans span) throws IOException {
+    private boolean advanceElementTo (KrillSpans span) throws IOException {
         while (hasMoreElements
                 && elements.startPosition() < span.endPosition()) {
 

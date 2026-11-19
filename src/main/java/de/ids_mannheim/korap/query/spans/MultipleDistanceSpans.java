@@ -77,13 +77,13 @@ public class MultipleDistanceSpans extends DistanceSpans {
 
 
     @Override
-    protected LegacySpans driver () {
+    protected KrillSpans driver () {
         return x;
     }
 
 
     @Override
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         return Collections.singletonList(y);
     }
 

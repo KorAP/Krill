@@ -59,13 +59,13 @@ public abstract class OrderedDistanceSpans extends DistanceSpans {
     // The second spans drive the iteration: the matches are
     // collected for each second span
     @Override
-    protected LegacySpans driver () {
+    protected KrillSpans driver () {
         return secondSpans;
     }
 
 
     @Override
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         return Collections.singletonList(firstSpans);
     }
 

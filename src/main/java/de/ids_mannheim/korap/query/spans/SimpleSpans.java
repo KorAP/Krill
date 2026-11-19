@@ -24,7 +24,7 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
  * 
  * @author margaretha
  */
-public abstract class SimpleSpans extends LegacySpans {
+public abstract class SimpleSpans extends KrillSpans {
     protected final Logger log = LoggerFactory.getLogger(SimpleSpans.class);
     private SimpleSpanQuery query;
     protected boolean isStartEnumeration;
@@ -32,7 +32,7 @@ public abstract class SimpleSpans extends LegacySpans {
 
     protected boolean hasMoreSpans;
     // Enumeration of Spans
-    protected LegacySpans firstSpans, secondSpans;
+    protected KrillSpans firstSpans, secondSpans;
 
     protected int matchDocNumber, matchStartPosition, matchEndPosition;
     protected Collection<byte[]> matchPayload;
@@ -94,7 +94,7 @@ public abstract class SimpleSpans extends LegacySpans {
      * 
      * @return the first child spans by default.
      */
-    protected LegacySpans driver () {
+    protected KrillSpans driver () {
         return firstSpans;
     }
 
@@ -109,7 +109,7 @@ public abstract class SimpleSpans extends LegacySpans {
      * 
      * @return no further operands by default.
      */
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         return Collections.emptyList();
     }
 
@@ -126,7 +126,7 @@ public abstract class SimpleSpans extends LegacySpans {
         boolean aligned = false;
         while (doc != NO_MORE_DOCS && !aligned) {
             aligned = true;
-            for (LegacySpans operand : requiredOperands()) {
+            for (KrillSpans operand : requiredOperands()) {
                 int operandDoc = operand.docID();
                 if (operandDoc < doc)
                     operandDoc = operand.advance(doc);
@@ -174,7 +174,7 @@ public abstract class SimpleSpans extends LegacySpans {
      * 
      * @return <tt>true</tt> if there is such a position.
      */
-    protected static boolean nextInDocument (LegacySpans spans)
+    protected static boolean nextInDocument (KrillSpans spans)
             throws IOException {
         return spans.nextStartPosition() != NO_MORE_POSITIONS;
     }

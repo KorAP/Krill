@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class ClassSpans extends SimpleSpans {
     protected List<byte[]> classedPayload;
-    protected LegacySpans spans;
+    protected KrillSpans spans;
     protected byte number;
     protected SpanQuery operand;
     protected Boolean hasmorespans = false;
@@ -100,7 +100,7 @@ public class ClassSpans extends SimpleSpans {
 
 
     @Override
-    protected LegacySpans driver () {
+    protected KrillSpans driver () {
         return spans;
     };
 

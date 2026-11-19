@@ -54,7 +54,7 @@ public class SegmentSpans extends SimpleSpans {
 
 
     @Override
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         return Collections.singletonList(secondSpans);
     };
 

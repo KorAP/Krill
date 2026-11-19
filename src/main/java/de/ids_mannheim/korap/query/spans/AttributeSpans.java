@@ -287,7 +287,7 @@ public class AttributeSpans extends SimpleSpans {
          *            belongs to.
          * @throws IOException
          */
-        public CandidateAttributeSpan (LegacySpans span, byte payloadTypeIdenfitier,
+        public CandidateAttributeSpan (KrillSpans span, byte payloadTypeIdenfitier,
                                        short spanId, int elementEnd)
                 throws IOException {
             super(span);

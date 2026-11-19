@@ -59,7 +59,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
 
 
     @Override
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         return Collections.singletonList(secondSpans);
     }
 
@@ -219,7 +219,7 @@ public abstract class UnorderedDistanceSpans extends DistanceSpans {
      * @throws IOException
      */
     protected abstract boolean setCandidateList (
-            List<CandidateSpan> candidateList, LegacySpans candidate,
+            List<CandidateSpan> candidateList, KrillSpans candidate,
             boolean hasMoreCandidates, List<CandidateSpan> targetList)
             throws IOException;
 

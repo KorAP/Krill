@@ -28,7 +28,7 @@ import de.ids_mannheim.korap.query.SpanDistanceQuery;
  */
 public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
-    private LegacySpans elements;
+    private KrillSpans elements;
     private boolean hasMoreElements;
     private int elementPosition;
 
@@ -63,7 +63,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
 
     @Override
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         return Arrays.asList(secondSpans, elements);
     }
 
@@ -128,7 +128,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      *         <code>false</code> otherwise.
      * @throws IOException
      */
-    private boolean addSpan (LegacySpans span, List<CandidateSpan> list,
+    private boolean addSpan (KrillSpans span, List<CandidateSpan> list,
             boolean hasMoreSpan) throws IOException {
         int position;
         while (hasMoreSpan) {
@@ -154,7 +154,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      * @return the element position
      * @throws IOException
      */
-    private int findElementPosition (LegacySpans span) throws IOException {
+    private int findElementPosition (KrillSpans span) throws IOException {
         // Check in the element list
         if (!elementList.isEmpty() && span.endPosition() <= elementList
                 .get(elementList.size() - 1).getEnd()) {
@@ -181,7 +181,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
      *         if the span is not in an element.
      * @throws IOException
      */
-    private boolean advanceElementTo (LegacySpans span) throws IOException {
+    private boolean advanceElementTo (KrillSpans span) throws IOException {
         while (hasMoreElements
                 && elements.startPosition() < span.endPosition()) {
 
@@ -200,7 +200,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
 
     @Override
     protected boolean setCandidateList (List<CandidateSpan> candidateList,
-            LegacySpans candidate, boolean hasMoreCandidates,
+            KrillSpans candidate, boolean hasMoreCandidates,
             List<CandidateSpan> targetList) throws IOException {
 
         if (!targetList.isEmpty()) {

@@ -39,7 +39,7 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.NumericRangeQuery;
-import de.ids_mannheim.korap.query.spans.LegacySpans;
+import de.ids_mannheim.korap.query.spans.KrillSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanOrQuery;
@@ -546,7 +546,7 @@ public class TestIndex { // extends LuceneTestCase {
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             //	    Spans spans = NearSpansOrdered();
-            LegacySpans spans = SpanWeights.forLeaf(atomic)
+            KrillSpans spans = SpanWeights.forLeaf(atomic)
                     .getSpans(snquery, atomic, bitset);
 
             while (spans.nextMatch()) {
@@ -581,7 +581,7 @@ public class TestIndex { // extends LuceneTestCase {
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             //	    Spans spans = NearSpansOrdered();
-            LegacySpans spans = SpanWeights.forLeaf(atomic)
+            KrillSpans spans = SpanWeights.forLeaf(atomic)
                     .getSpans(snquery, atomic, bitset);
 
             while (spans.nextMatch()) {
@@ -611,7 +611,7 @@ public class TestIndex { // extends LuceneTestCase {
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
-            LegacySpans spans = LegacySpans.wrap(
+            KrillSpans spans = KrillSpans.wrap(
                     ssequery.toQuery().getSpans(atomic, bitset, termContexts));
         
             while (spans.nextMatch()) {
@@ -637,7 +637,7 @@ public class TestIndex { // extends LuceneTestCase {
         for (LeafReaderContext atomic : reader.leaves()) {
             Bits bitset = atomic.reader().getLiveDocs();
             // Spans spans = NearSpansOrdered();
-            LegacySpans spans = LegacySpans.wrap(
+            KrillSpans spans = KrillSpans.wrap(
                     ssequery.toQuery().getSpans(atomic, bitset, termContexts));
         
             while (spans.nextMatch()) {

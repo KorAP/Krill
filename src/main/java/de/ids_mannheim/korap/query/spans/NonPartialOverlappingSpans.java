@@ -51,7 +51,7 @@ public abstract class NonPartialOverlappingSpans extends SimpleSpans {
 
 
     @Override
-    protected List<? extends LegacySpans> requiredOperands () {
+    protected List<? extends KrillSpans> requiredOperands () {
         return Collections.singletonList(secondSpans);
     };
 

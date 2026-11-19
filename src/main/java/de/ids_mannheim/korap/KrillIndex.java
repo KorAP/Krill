@@ -45,7 +45,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
-import de.ids_mannheim.korap.query.spans.LegacySpans;
+import de.ids_mannheim.korap.query.spans.KrillSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
@@ -1681,7 +1681,7 @@ public final class KrillIndex implements IndexInfo {
                 final PositionsToOffset pto = snippets ? new PositionsToOffset(atomic, field) : null;
 				
                 // Spans spans = NearSpansOrdered();
-                final LegacySpans spans = this.spanWeights.getSpans(query,
+                final KrillSpans spans = this.spanWeights.getSpans(query,
                         atomic, (Bits) bitset);
 
                 final IndexReader lreader = atomic.reader();
@@ -2106,7 +2106,7 @@ public final class KrillIndex implements IndexInfo {
 
                 // PositionsToOffset pto = new PositionsToOffset(atomic, field);
 
-                LegacySpans spans = this.spanWeights.getSpans(query, atomic,
+                KrillSpans spans = this.spanWeights.getSpans(query, atomic,
                         (Bits) bitset);
 
                 IndexReader lreader = atomic.reader();

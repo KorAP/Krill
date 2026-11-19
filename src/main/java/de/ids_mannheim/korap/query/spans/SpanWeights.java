@@ -21,7 +21,7 @@ import de.ids_mannheim.korap.query.KrillSpanQuery;
  * directly. Lucene's queries create them through their
  * {@link SpanWeight}, which is created once per query; their spans
  * are made usable by Krill (payloads, accepted documents) with
- * {@link LegacySpans#wrap(org.apache.lucene.search.spans.Spans, Bits)}.
+ * {@link KrillSpans#wrap(org.apache.lucene.search.spans.Spans, Bits)}.
  * 
  * Instances are created for one searcher (i.e. one top-level reader)
  * and are not thread-safe.
@@ -66,11 +66,11 @@ public class SpanWeights {
      * @return The spans, never <tt>null</tt>.
      * @throws IOException
      */
-    public LegacySpans getSpans (SpanQuery query, LeafReaderContext context,
+    public KrillSpans getSpans (SpanQuery query, LeafReaderContext context,
             Bits acceptDocs) throws IOException {
 
         if (query instanceof KrillSpanQuery)
-            return LegacySpans.wrap(((KrillSpanQuery) query).getSpans(context,
+            return KrillSpans.wrap(((KrillSpanQuery) query).getSpans(context,
                     acceptDocs, this));
 
         SpanWeight weight = this.weights.get(query);
@@ -78,7 +78,7 @@ public class SpanWeights {
             weight = query.createWeight(this.searcher, false);
             this.weights.put(query, weight);
         };
-        return LegacySpans.wrap(
+        return KrillSpans.wrap(
                 weight.getSpans(context, SpanWeight.Postings.PAYLOADS),
                 acceptDocs);
     };
