@@ -38,12 +38,9 @@ import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.DocIdSet;
 import org.apache.lucene.search.DocIdSetIterator;
-import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Weight;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.spans.SpanQuery;
 import de.ids_mannheim.korap.query.spans.KrillSpans;
@@ -561,9 +558,7 @@ public final class KrillIndex implements IndexInfo {
         if (textSigle != null) {
 
             // First find the document
-            Filter filter = (Filter) new QueryWrapperFilter(
-                new TermQuery(new Term("textSigle", textSigle))
-                );
+            Query query = new TermQuery(new Term("textSigle", textSigle));
             
             try {
                 // Iterate over all atomic indices and find the matching document
@@ -572,7 +567,10 @@ public final class KrillIndex implements IndexInfo {
                 while (true) {
 
                     if (this.reader() != null) {
-                
+
+                        Weight weight = QueryDocs.createWeight(query,
+                                this.reader().getContext());
+
                         for (LeafReaderContext atomic : this.reader().leaves()) {
                         
                             // The reader is closed
@@ -585,18 +583,7 @@ public final class KrillIndex implements IndexInfo {
                             */
                         
                             // Retrieve the single document of interest
-                            DocIdSet filterSet = filter.getDocIdSet(
-                                atomic,
-                                atomic.reader().getLiveDocs());
-                        
-                            DocIdSetIterator filterIterator = filterSet.iterator();
-
-                            if (filterIterator == null) {
-                                continue;
-                            };
-                    
-                            // Go to the matching doc - and remember its ID
-                            int localDocID = filterIterator.nextDoc();
+                            int localDocID = firstLiveDoc(weight, atomic);
 
                             if (localDocID == DocIdSetIterator.NO_MORE_DOCS) {
                                 continue;
@@ -719,6 +706,28 @@ public final class KrillIndex implements IndexInfo {
         catch (IOException e) {
             log.error("Unable to add document");
         };
+        return doc;
+    };
+
+
+    /**
+     * Find the first document of a leaf matched by a weight
+     * (see {@link QueryDocs}) that is not deleted.
+     * 
+     * @return The local document number, or
+     *         <tt>NO_MORE_DOCS</tt> if there is no such document.
+     */
+    private static int firstLiveDoc (Weight weight, LeafReaderContext atomic)
+            throws IOException {
+        DocIdSetIterator docs = QueryDocs.iterator(weight, atomic);
+        if (docs == null)
+            return DocIdSetIterator.NO_MORE_DOCS;
+
+        Bits liveDocs = atomic.reader().getLiveDocs();
+        int doc = docs.nextDoc();
+        while (doc != DocIdSetIterator.NO_MORE_DOCS && liveDocs != null
+                && !liveDocs.get(doc))
+            doc = docs.nextDoc();
         return doc;
     };
 
@@ -972,34 +981,18 @@ public final class KrillIndex implements IndexInfo {
         // Rewrite parse ID
         uid = Integer.valueOf(Integer.parseInt(uid)).toString();
 
-        Filter filter = (Filter) new QueryWrapperFilter(
-            new TermQuery(new Term("UID", uid)));
+        Query query = new TermQuery(new Term("UID", uid));
 
         try {
+
+            Weight weight = QueryDocs.createWeight(query,
+                    this.reader().getContext());
 
             // Iterate over all atomic indices and find the matching document
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 // Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic,
-                        atomic.reader().getLiveDocs());
-
-                DocIdSetIterator filterIterator = filterSet.iterator();
-
-                if (DEBUG) {
-					// Create a bitset for the correct document
-					Bits bitset = filterSet.bits();
-					
-                    log.trace("Checking document in {} with {}", filterSet,
-							  bitset);
-				};
-
-                // No document found
-                if (filterIterator == null)
-                    continue;
-
-                // Go to the matching doc - and remember its ID
-                int localDocID = filterIterator.nextDoc();
+                int localDocID = firstLiveDoc(weight, atomic);
 
                 if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
                     continue;
@@ -1174,7 +1167,6 @@ public final class KrillIndex implements IndexInfo {
         if (DEBUG)
             log.trace("The bool query is {}", bool.toString());
 
-        Filter filter = (Filter) new QueryWrapperFilter(bool);
 
         CompiledAutomaton fst = null;
         ByteBuffer bbTerm = ByteBuffer.allocate(32);
@@ -1266,29 +1258,14 @@ public final class KrillIndex implements IndexInfo {
 
         try {
 
+            Weight weight = QueryDocs.createWeight(bool,
+                    this.reader().getContext());
+
             // Iterate over all atomic indices and find the matching document
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
                 // Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic,
-                        atomic.reader().getLiveDocs());
-
-                DocIdSetIterator filterIterator = filterSet.iterator();
-
-                if (DEBUG) {
-					// Create a bitset for the correct document
-					Bits bitset = filterSet.bits();
-
-                    log.trace("Checking document in {} with {}", filterSet,
-							  bitset);
-				};
-
-                // No document found
-                if (filterIterator == null)
-                    continue;
-
-                // Go to the matching doc - and remember its ID
-                int localDocID = filterIterator.nextDoc();
+                int localDocID = firstLiveDoc(weight, atomic);
 
                 if (DEBUG)
                     log.trace("localDocID is {}", localDocID);
@@ -1981,7 +1958,6 @@ public final class KrillIndex implements IndexInfo {
 		// Create TermQuery for document
 		TermQuery textSigleQuery = new TermQuery(new Term("textSigle", textSigle));
 
-		Filter filter = (Filter) new QueryWrapperFilter(textSigleQuery);
 
 		if (fields.contains("@all"))
 			fields = null;
@@ -1990,21 +1966,14 @@ public final class KrillIndex implements IndexInfo {
 
         try {
 
+            Weight weight = QueryDocs.createWeight(textSigleQuery,
+                    this.reader().getContext());
+
             // Iterate over all atomic indices and find the matching document
             for (LeafReaderContext atomic : this.reader().leaves()) {
 
 				// Retrieve the single document of interest
-                DocIdSet filterSet = filter.getDocIdSet(atomic, atomic.reader().getLiveDocs());
-
-                DocIdSetIterator filterIterator = filterSet.iterator();
-
-				// No document found
-                if (filterIterator == null)
-                    continue;
-
-
-                // Go to the matching doc - and remember its ID
-                int localDocID = filterIterator.nextDoc();
+                int localDocID = firstLiveDoc(weight, atomic);
 
                 if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
                     continue;
