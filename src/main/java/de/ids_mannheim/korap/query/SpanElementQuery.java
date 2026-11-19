@@ -11,7 +11,6 @@ import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.ElementSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -104,7 +103,6 @@ public final class SpanElementQuery extends SimpleSpanQuery {
     public SimpleSpanQuery clone () {
         SpanElementQuery sq = new SpanElementQuery(this.getField(),
                 this.getElementStr());
-        sq.setBoost(this.getBoost());
         return sq;
     };
 
@@ -119,7 +117,6 @@ public final class SpanElementQuery extends SimpleSpanQuery {
     public String toString (String field) {
         StringBuilder buffer = new StringBuilder("<");
         buffer.append(getField()).append(':').append(elementStr);
-        buffer.append(ToStringUtils.boost(getBoost()));
         return buffer.append(" />").toString();
     };
 

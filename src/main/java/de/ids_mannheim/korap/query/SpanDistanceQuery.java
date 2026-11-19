@@ -9,7 +9,6 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.DistanceExclusionSpans;
 import de.ids_mannheim.korap.query.spans.ElementDistanceExclusionSpans;
@@ -185,7 +184,6 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
         sb.append("], ");
         sb.append(isOrdered ? "ordered, " : "notOrdered, ");
         sb.append(exclusion ? "excluded)])" : "notExcluded)])");
-        sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();
     }
 
@@ -193,14 +191,13 @@ public class SpanDistanceQuery extends SimpleSpanQuery {
     @Override
     public SpanDistanceQuery clone () {
         SpanDistanceQuery spanDistanceQuery = new SpanDistanceQuery(
-                (SpanQuery) firstClause.clone(),
-                (SpanQuery) secondClause.clone(), this.constraint,
+                (SpanQuery) cloneClause(firstClause),
+                (SpanQuery) cloneClause(secondClause), this.constraint,
                 this.collectPayloads);
 
         if (this.elementQuery != null) {
             spanDistanceQuery.setElementQuery(this.elementQuery);
         }
-        spanDistanceQuery.setBoost(getBoost());
         return spanDistanceQuery;
     }
 

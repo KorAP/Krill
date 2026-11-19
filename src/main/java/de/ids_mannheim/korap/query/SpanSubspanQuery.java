@@ -70,7 +70,6 @@ public class SpanSubspanQuery extends SimpleSpanQuery {
     public SimpleSpanQuery clone () {
         SpanSubspanQuery sq = new SpanSubspanQuery(this.getFirstClause(),
                 this.startOffset, this.length, this.collectPayloads);
-        sq.setBoost(this.getBoost());
         return sq;
     }
 

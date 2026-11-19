@@ -9,7 +9,6 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.AttributeSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -101,9 +100,8 @@ public class SpanAttributeQuery extends SimpleSpanQuery {
     @Override
     public SimpleSpanQuery clone () {
         SpanAttributeQuery sq = new SpanAttributeQuery(
-                (SpanQuery) this.firstClause.clone(), this.negation,
+                (SpanQuery) cloneClause(this.firstClause), this.negation,
                 this.collectPayloads);
-        sq.setBoost(getBoost());
         return sq;
     }
 
@@ -123,7 +121,6 @@ public class SpanAttributeQuery extends SimpleSpanQuery {
             sb.append("!");
         sb.append(firstClause.toString(field));
         sb.append(")");
-        sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();
     }
 

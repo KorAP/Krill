@@ -10,7 +10,6 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.MultipleDistanceSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -112,11 +111,10 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery {
     @Override
     public SpanMultipleDistanceQuery clone () {
         SpanMultipleDistanceQuery query = new SpanMultipleDistanceQuery(
-                (SpanQuery) firstClause.clone(),
-                (SpanQuery) secondClause.clone(), this.constraints,
+                (SpanQuery) cloneClause(firstClause),
+                (SpanQuery) cloneClause(secondClause), this.constraints,
                 this.isOrdered, collectPayloads);
 
-        query.setBoost(getBoost());
         return query;
     }
 
@@ -149,7 +147,6 @@ public class SpanMultipleDistanceQuery extends SimpleSpanQuery {
                 sb.append(", ");
         }
         sb.append("])");
-        sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();
     }
 

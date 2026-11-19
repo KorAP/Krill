@@ -9,7 +9,6 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.SegmentSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -81,9 +80,8 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
     @Override
     public SpanSegmentQuery clone () {
         SpanSegmentQuery spanSegmentQuery = new SpanSegmentQuery(
-                (SpanQuery) firstClause.clone(),
-                (SpanQuery) secondClause.clone(), collectPayloads);
-        spanSegmentQuery.setBoost(getBoost());
+                (SpanQuery) cloneClause(firstClause),
+                (SpanQuery) cloneClause(secondClause), collectPayloads);
         return spanSegmentQuery;
     }
 
@@ -96,7 +94,6 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
         sb.append(", ");
         sb.append(secondClause.toString(field));
         sb.append(")");
-        sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();
     }
 
@@ -117,7 +114,7 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
         if (!secondClause.equals(spanSegmentQuery.secondClause))
             return false;
 
-        return getBoost() == spanSegmentQuery.getBoost();
+        return true;
     }
 
 
@@ -126,7 +123,6 @@ public class SpanSegmentQuery extends SimpleSpanQuery {
         int result;
         result = firstClause.hashCode() + secondClause.hashCode();
         result ^= (31 * result) + (result >>> 3);
-        result += Float.floatToRawIntBits(getBoost());
         return result;
     }
 

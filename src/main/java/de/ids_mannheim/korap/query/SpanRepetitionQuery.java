@@ -9,7 +9,6 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.RepetitionSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -81,9 +80,8 @@ public class SpanRepetitionQuery extends SimpleSpanQuery {
     @Override
     public SimpleSpanQuery clone () {
         SpanRepetitionQuery sq = new SpanRepetitionQuery(
-                (SpanQuery) this.firstClause.clone(), this.min, this.max,
+                (SpanQuery) cloneClause(this.firstClause), this.min, this.max,
                 this.collectPayloads);
-        sq.setBoost(getBoost());
         return sq;
     }
 
@@ -105,7 +103,6 @@ public class SpanRepetitionQuery extends SimpleSpanQuery {
         sb.append(",");
         sb.append(max);
         sb.append("})");
-        sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();
     }
 

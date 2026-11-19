@@ -156,13 +156,13 @@ public class SpanWithAttributeQuery extends SimpleSpanQuery {
         if (secondClause != null) {
             if (isMultipleAttributes) {
                 return new SpanWithAttributeQuery(
-                        (SimpleSpanQuery) firstClause.clone(),
+                        (SimpleSpanQuery) cloneClause(firstClause),
                         cloneClauseList(), collectPayloads);
             }
             else {
                 return new SpanWithAttributeQuery(
-                        (SimpleSpanQuery) firstClause.clone(),
-                        (SpanAttributeQuery) secondClause.clone(),
+                        (SimpleSpanQuery) cloneClause(firstClause),
+                        (SpanAttributeQuery) cloneClause(secondClause),
                         collectPayloads);
             }
         }
@@ -173,7 +173,7 @@ public class SpanWithAttributeQuery extends SimpleSpanQuery {
             }
             else {
                 return new SpanWithAttributeQuery(
-                        (SpanAttributeQuery) firstClause.clone(),
+                        (SpanAttributeQuery) cloneClause(firstClause),
                         collectPayloads);
             }
         }

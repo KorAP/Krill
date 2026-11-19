@@ -180,13 +180,13 @@ public class SpanRelationMatchQuery extends SimpleSpanQuery {
         if (operand2Query != null) {
             return new SpanRelationMatchQuery(
                     (SpanRelationQuery) relationQuery.clone(),
-                    (SpanQuery) operandQuery.clone(),
-                    (SpanQuery) operand2Query.clone(), collectPayloads);
+                    (SpanQuery) cloneClause(operandQuery),
+                    (SpanQuery) cloneClause(operand2Query), collectPayloads);
         }
 
         return new SpanRelationMatchQuery(
                 (SpanRelationQuery) relationQuery.clone(),
-                (SpanQuery) operandQuery.clone(), collectPayloads);
+                (SpanQuery) cloneClause(operandQuery), collectPayloads);
     }
 
 

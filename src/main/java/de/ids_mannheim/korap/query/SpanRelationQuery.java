@@ -11,7 +11,6 @@ import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.constants.RelationDirection;
 import de.ids_mannheim.korap.query.spans.RelationSpans;
@@ -100,7 +99,7 @@ public class SpanRelationQuery extends SimpleSpanQuery {
     @Override
     public SimpleSpanQuery clone () {
         SimpleSpanQuery sq = new SpanRelationQuery(
-                (SpanQuery) this.firstClause.clone(), this.collectPayloads, 
+                (SpanQuery) cloneClause(this.firstClause), this.collectPayloads, 
                 this.direction);
         return sq;
     }
@@ -135,7 +134,6 @@ public class SpanRelationQuery extends SimpleSpanQuery {
         if (targetClass > 0) {
             sb.append("}");
         }
-        sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();
     }
 

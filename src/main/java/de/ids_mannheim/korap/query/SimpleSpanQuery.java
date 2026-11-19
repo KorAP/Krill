@@ -485,11 +485,28 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable, Kr
             }
         }
         hc ^= (hc << 31) | (hc >>> 3);
-        hc += Float.floatToRawIntBits(getBoost());
         return hc;
     };
 
 
     public abstract SimpleSpanQuery clone ();
 
+
+    /**
+     * Clone a clause for the clone of a query. Krill's queries are
+     * cloned, as rewriting a clone replaces their clauses. Lucene's
+     * queries are immutable (and have no <tt>clone()</tt> since
+     * Lucene 6), so they are shared.
+     * 
+     * @param clause
+     *            A clause, may be <tt>null</tt>.
+     * @return The clone of a query of Krill, or the clause itself.
+     */
+    protected static SpanQuery cloneClause (SpanQuery clause) {
+        if (clause instanceof SimpleSpanQuery)
+            return ((SimpleSpanQuery) clause).clone();
+        if (clause instanceof SpanWithinQuery)
+            return ((SpanWithinQuery) clause).clone();
+        return clause;
+    };
 }

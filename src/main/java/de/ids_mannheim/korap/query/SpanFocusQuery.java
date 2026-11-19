@@ -13,7 +13,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.FocusSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -104,7 +103,6 @@ public class SpanFocusQuery extends SimpleSpanQuery {
             buffer.append(",sorting");
         }
         buffer.append(')');
-        buffer.append(ToStringUtils.boost(getBoost()));
         return buffer.toString();
     };
 
@@ -137,8 +135,7 @@ public class SpanFocusQuery extends SimpleSpanQuery {
     @Override
     public SpanFocusQuery clone () {
         SpanFocusQuery spanFocusQuery = new SpanFocusQuery(
-                (SpanQuery) this.firstClause.clone(), this.getClassNumbers());
-        spanFocusQuery.setBoost(getBoost());
+                (SpanQuery) cloneClause(this.firstClause), this.getClassNumbers());
         spanFocusQuery.setMatchTemporaryClass(this.matchTemporaryClass);
         spanFocusQuery.setSorted(this.isSorted);
         spanFocusQuery.setRemoveTemporaryClasses(this.removeTemporaryClasses);
@@ -160,8 +157,7 @@ public class SpanFocusQuery extends SimpleSpanQuery {
         if (this.getClassNumbers() != spanFocusQuery.getClassNumbers())
             return false;
 
-        // Probably not necessary
-        return getBoost() == spanFocusQuery.getBoost();
+        return true;
     };
 
 
@@ -170,7 +166,6 @@ public class SpanFocusQuery extends SimpleSpanQuery {
         int result = firstClause.hashCode();
         for (byte number : classNumbers)
             result = 31 * result + number;
-        result += Float.floatToRawIntBits(getBoost());
         return result;
     }
 

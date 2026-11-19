@@ -12,7 +12,6 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.search.spans.TermSpans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.NextSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -96,9 +95,8 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
     @Override
     public SpanNextQuery clone () {
         SpanNextQuery spanNextQuery = new SpanNextQuery(
-                (SpanQuery) firstClause.clone(),
-                (SpanQuery) secondClause.clone(), collectPayloads);
-        spanNextQuery.setBoost(getBoost());
+                (SpanQuery) cloneClause(firstClause),
+                (SpanQuery) cloneClause(secondClause), collectPayloads);
         return spanNextQuery;
     }
 
@@ -142,7 +140,6 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
         sb.append(", ");
         sb.append(secondClause.toString(field));
         sb.append(")");
-        sb.append(ToStringUtils.boost(getBoost()));
         return sb.toString();
     }
 
@@ -164,7 +161,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
         if (!secondClause.equals(spanNextQuery.secondClause))
             return false;
 
-        return getBoost() == spanNextQuery.getBoost();
+        return true;
     }
 
 
@@ -173,7 +170,6 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
         int result;
         result = firstClause.hashCode() + secondClause.hashCode();
         result ^= (result << 31) | (result >>> 2); // reversible
-        result += Float.floatToRawIntBits(getBoost());
         return result;
     }
 }

@@ -11,7 +11,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.ClassSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -40,7 +39,6 @@ public class SpanClassQuery extends SimpleSpanQuery {
         short classNr = (short) this.number;
         buffer.append(classNr & 0xFF).append(": ");
         buffer.append(this.firstClause.toString()).append('}');
-        buffer.append(ToStringUtils.boost(getBoost()));
         return buffer.toString();
     };
 
@@ -76,8 +74,7 @@ public class SpanClassQuery extends SimpleSpanQuery {
     @Override
     public SpanClassQuery clone () {
         SpanClassQuery spanClassQuery = new SpanClassQuery(
-                (SpanQuery) this.firstClause.clone(), this.number);
-        spanClassQuery.setBoost(getBoost());
+                (SpanQuery) cloneClause(this.firstClause), this.number);
         return spanClassQuery;
     };
 
@@ -98,7 +95,7 @@ public class SpanClassQuery extends SimpleSpanQuery {
         if (this.number != spanClassQuery.number)
             return false;
 
-        return getBoost() == spanClassQuery.getBoost();
+        return true;
     };
 
 
@@ -109,7 +106,6 @@ public class SpanClassQuery extends SimpleSpanQuery {
         result = firstClause.hashCode();
         result += (int) number;
         result ^= (result << 15) | (result >>> 18);
-        result += Float.floatToRawIntBits(getBoost());
         return result;
     }
 

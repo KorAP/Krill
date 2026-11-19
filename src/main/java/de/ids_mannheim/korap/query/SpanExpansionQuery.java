@@ -255,7 +255,6 @@ public class SpanExpansionQuery extends SimpleSpanQuery {
             sq = new SpanExpansionQuery(firstClause, min, max, direction,
                     classNumber, collectPayloads);
         }
-        //sq.setBoost(sq.getBoost());
         return sq;
     }
 

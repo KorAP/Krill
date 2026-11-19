@@ -40,7 +40,7 @@ public class SpanClassFilterQuery extends SimpleSpanQuery {
 
     @Override
     public SimpleSpanQuery clone () {
-        return new SpanClassFilterQuery((SpanQuery) firstClause.clone(),
+        return new SpanClassFilterQuery((SpanQuery) cloneClause(firstClause),
                 operation, classNum1, classNum2, collectPayloads);
     }
 

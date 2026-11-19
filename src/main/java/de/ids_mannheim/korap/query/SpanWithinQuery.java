@@ -15,7 +15,6 @@ import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanWeight;
 import org.apache.lucene.search.spans.Spans;
 import org.apache.lucene.util.Bits;
-import org.apache.lucene.util.ToStringUtils;
 
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 import de.ids_mannheim.korap.query.spans.WithinSpans;
@@ -139,7 +138,6 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQu
         buffer.append(", ");
         buffer.append(embedded.toString(field));
         buffer.append(")");
-        buffer.append(ToStringUtils.boost(getBoost()));
         return buffer.toString();
     };
 
@@ -207,9 +205,8 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQu
     @Override
     public SpanWithinQuery clone () {
         SpanWithinQuery spanWithinQuery = new SpanWithinQuery(
-                (SpanQuery) wrap.clone(), (SpanQuery) embedded.clone(),
+                (SpanQuery) SimpleSpanQuery.cloneClause(wrap), (SpanQuery) SimpleSpanQuery.cloneClause(embedded),
                 this.flag, this.collectPayloads);
-        spanWithinQuery.setBoost(getBoost());
         return spanWithinQuery;
     };
 
@@ -233,7 +230,7 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQu
         if (!embedded.equals(spanWithinQuery.embedded))
             return false;
 
-        return getBoost() == spanWithinQuery.getBoost();
+        return true;
     };
 
 
@@ -244,7 +241,6 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQu
         result = embedded.hashCode();
         result += wrap.hashCode();
         result ^= (result << 4) | (result >>> 29);
-        result += Float.floatToRawIntBits(getBoost());
         return result;
     };
 };
