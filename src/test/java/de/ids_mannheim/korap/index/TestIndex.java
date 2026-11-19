@@ -267,17 +267,17 @@ public class TestIndex { // extends LuceneTestCase {
         // All docs containing "s:den" and "l:sie"
         TermQuery s_den = new TermQuery(new Term("text", "s:den"));
         TermQuery l_sie = new TermQuery(new Term("text", "l:sie"));
-        BooleanQuery bool = new BooleanQuery();
-        bool.add(s_den, BooleanClause.Occur.MUST);
-        bool.add(l_sie, BooleanClause.Occur.MUST);
+        BooleanQuery bool = new BooleanQuery.Builder()
+                .add(s_den, BooleanClause.Occur.MUST)
+                .add(l_sie, BooleanClause.Occur.MUST).build();
 
         assertEquals(1, searcher.search(bool, 10).totalHits);
 
         // BooleanQuery
         // All docs containing "s:den" or "l:sie"
-        bool = new BooleanQuery();
-        bool.add(s_den, BooleanClause.Occur.SHOULD);
-        bool.add(l_sie, BooleanClause.Occur.SHOULD);
+        bool = new BooleanQuery.Builder()
+                .add(s_den, BooleanClause.Occur.SHOULD)
+                .add(l_sie, BooleanClause.Occur.SHOULD).build();
         assertEquals(2, searcher.search(bool, 10).totalHits);
 
 
@@ -566,15 +566,16 @@ public class TestIndex { // extends LuceneTestCase {
 
 
         // [][][p:VAFIN]
-        // without collecting payloads
+        // (Since Lucene 5.3, SpanNearQuery has no option
+        // to not collect payloads anymore)
         snquery = new SpanNearQuery(
                 new SpanQuery[] {
                         new SpanNearQuery(new SpanQuery[] {
                                 new SpanTermQuery(new Term("text", "T")),
                                 new SpanTermQuery(new Term("text", "T")) }, 0,
-                                true, false),
+                                true),
                         new SpanTermQuery(new Term("text", "p:VAFIN")) },
-                0, true, false);
+                0, true);
         assertEquals(1, searcher.search(snquery, 10).totalHits);
 
         payloadString = new StringBuilder();

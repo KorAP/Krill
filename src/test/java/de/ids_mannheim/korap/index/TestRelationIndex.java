@@ -5,7 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.sandbox.queries.regex.RegexQuery;
+import org.apache.lucene.search.RegexpQuery;
+import org.apache.lucene.util.automaton.RegExp;
 import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
@@ -269,16 +270,18 @@ public class TestRelationIndex {
 
         SpanQuery sq;
         sq = new SpanRelationQuery(
-                new SpanMultiTermQueryWrapper<RegexQuery>(
-                        new RegexQuery(new Term("base", ">:xip/.*"))),
+                new SpanMultiTermQueryWrapper<RegexpQuery>(
+                        new RegexpQuery(new Term("base", ">:xip/.*"),
+                                RegExp.NONE)),
                 true, RelationDirection.RIGHT);
         kr = ki.search(sq, (short) 10);
 
         assertEquals((long) 7, kr.getTotalResults());
 
         sq = new SpanRelationQuery(
-                new SpanMultiTermQueryWrapper<RegexQuery>(
-                        new RegexQuery(new Term("base", "<:xip/.*"))),
+                new SpanMultiTermQueryWrapper<RegexpQuery>(
+                        new RegexpQuery(new Term("base", "<:xip/.*"),
+                                RegExp.NONE)),
                 true, RelationDirection.LEFT);
         kr = ki.search(sq, (short) 10);
 

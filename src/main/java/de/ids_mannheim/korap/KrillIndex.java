@@ -1143,17 +1143,17 @@ public final class KrillIndex implements IndexInfo {
         };
         
         // Create a filter based on the corpusID and the docID
-        BooleanQuery bool = new BooleanQuery();
+        BooleanQuery.Builder boolBuilder = new BooleanQuery.Builder();
         if (match.getTextSigle() != null) {
-            bool.add(new TermQuery(new Term("textSigle", match.getTextSigle())),
+            boolBuilder.add(new TermQuery(new Term("textSigle", match.getTextSigle())),
                     BooleanClause.Occur.MUST);
         }
 
         // <legacy>
         else if (match.getDocID() != null) {
-            bool.add(new TermQuery(new Term("ID", match.getDocID())),
+            boolBuilder.add(new TermQuery(new Term("ID", match.getDocID())),
                     BooleanClause.Occur.MUST);
-            bool.add(new TermQuery(new Term("corpusID", match.getCorpusID())),
+            boolBuilder.add(new TermQuery(new Term("corpusID", match.getCorpusID())),
                     BooleanClause.Occur.MUST);
         }
         // </legacy>
@@ -1163,6 +1163,8 @@ public final class KrillIndex implements IndexInfo {
             match.addError(730, "Invalid match identifier", idString);
             return match;
         };
+
+        BooleanQuery bool = boolBuilder.build();
 
         if (DEBUG)
             log.trace("The bool query is {}", bool.toString());

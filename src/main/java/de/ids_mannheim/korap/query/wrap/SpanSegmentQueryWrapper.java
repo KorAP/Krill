@@ -238,12 +238,11 @@ public class SpanSegmentQueryWrapper extends SpanQueryWrapper {
             return (SpanQuery) list.get(0).toFragmentQuery();
         };
 
-        Iterator<SpanQueryWrapper> clause = list.iterator();
-        SpanOrQuery soquery = new SpanOrQuery(clause.next().toFragmentQuery());
-        while (clause.hasNext()) {
-            soquery.addClause(clause.next().toFragmentQuery());
+        SpanQuery[] clauses = new SpanQuery[list.size()];
+        for (int i = 0; i < clauses.length; i++) {
+            clauses[i] = list.get(i).toFragmentQuery();
         };
-        return (SpanQuery) soquery;
+        return (SpanQuery) new SpanOrQuery(clauses);
     };
 
 

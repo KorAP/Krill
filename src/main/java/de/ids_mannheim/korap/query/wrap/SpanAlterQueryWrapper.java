@@ -116,13 +116,11 @@ public class SpanAlterQueryWrapper extends SpanQueryWrapper {
                     .retrieveNode(this.retrieveNode).toFragmentQuery();
         };
 
-        Iterator<SpanQueryWrapper> clause = this.alternatives.iterator();
-        SpanOrQuery soquery = new SpanOrQuery(clause.next()
-                .retrieveNode(this.retrieveNode).toFragmentQuery());
-        while (clause.hasNext()) {
-            soquery.addClause(clause.next().retrieveNode(this.retrieveNode)
-                    .toFragmentQuery());
+        SpanQuery[] clauses = new SpanQuery[this.alternatives.size()];
+        for (int i = 0; i < clauses.length; i++) {
+            clauses[i] = this.alternatives.get(i)
+                    .retrieveNode(this.retrieveNode).toFragmentQuery();
         };
-        return (SpanQuery) soquery;
+        return (SpanQuery) new SpanOrQuery(clauses);
     };
 };
