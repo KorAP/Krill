@@ -94,6 +94,47 @@ public class TestPagebreakIndex {
                      kr.getMatch(3).getSnippetBrackets());
     };
 
+    private FieldDocument createFieldDoc2 () {
+        // abcde, with pagebreaks
+        FieldDocument fd = new FieldDocument();
+        fd.addTV("tokens", "abcde",
+                 "[(0-1)s:a|i:a|_0$<i>0<i>1|-:t$<i>5|~:base/s:pb$<i>100<i>0]" +
+                 "[(1-2)s:b|i:b|_1$<i>1<i>2]" +
+                 "[(2-3)s:c|i:c|_2$<i>2<i>3]" +
+                 "[(3-4)s:a|i:d|_3$<i>3<i>4|~:base/s:pb$<i>101<i>3]" +
+                 "[(4-5)s:b|i:e|_4$<i>4<i>5]"
+                 );
+        return fd;
+    }
+
+
+    @Test
+    public void testFirstPageBreakAfterPageBreaksOfLowerDocs ()
+            throws IOException {
+        KrillIndex ki = new KrillIndex();
+        ki.addDoc(createFieldDoc2());
+        ki.addDoc(createFieldDoc1());
+        ki.commit();
+
+        SpanTermQuery sq = new SpanTermQuery(new Term("tokens", "s:c"));
+        Result kr = ki.search(sq, (short) 10);
+        assertEquals(4, kr.getMatches().size());
+
+        // Doc 0
+        assertEquals(2, kr.getMatch(0).getStartPos());
+        assertEquals(100, kr.getMatch(0).getStartPage());
+
+        // Doc 1: the first pagebreak of the document is not skipped,
+        // although the pagebreaks of doc 0 come first
+        assertEquals(2, kr.getMatch(1).getStartPos());
+        assertEquals(3, kr.getMatch(1).getEndPos());
+        assertEquals(528, kr.getMatch(1).getStartPage());
+        assertEquals(-1, kr.getMatch(1).getEndPage());
+        assertEquals("{%528}ab[[c]]ab{%529}cab{%530}a ...",
+                     kr.getMatch(1).getSnippetBrackets());
+    };
+
+
     @Test
     public void indexExample1 () throws Exception {
 		KrillIndex ki = new KrillIndex();

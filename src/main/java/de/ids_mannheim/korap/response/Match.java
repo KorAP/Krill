@@ -983,11 +983,12 @@ public class Match extends AbstractDocument {
                         // No pagebreaks in this document
                         if (markerSpans.docID() != this.localDocID)
                             break;
+
+                        // Go on with the first marker of the document
                     }
                     else {
                         break;
                     };
-                    continue;
                 };
 
 				if (DEBUG)
