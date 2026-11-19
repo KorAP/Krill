@@ -12,7 +12,7 @@ import de.ids_mannheim.korap.util.CorpusDataException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.LegacyIntField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexWriter;
@@ -43,7 +43,7 @@ public class Test {
 
         // Integer fields
         for (String s : strInt) {
-            doc.add(new IntField(s, Integer.parseInt(m.get(s)),
+            doc.add(new LegacyIntField(s, Integer.parseInt(m.get(s)),
                     Field.Store.YES));
         };
 

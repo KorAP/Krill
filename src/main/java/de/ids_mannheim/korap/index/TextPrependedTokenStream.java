@@ -2,7 +2,7 @@ package de.ids_mannheim.korap.index;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.*;
 import org.apache.lucene.analysis.standard.StandardTokenizerImpl;
-import org.apache.lucene.analysis.util.CharacterUtils;
+import org.apache.lucene.analysis.CharacterUtils;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -14,7 +14,6 @@ import java.io.StringReader;
 public class TextPrependedTokenStream extends TokenStream {
 	private final CharTermAttribute charTermAttr = this.addAttribute(CharTermAttribute.class);
 	private final PositionIncrementAttribute posIncrAttr = this.addAttribute(PositionIncrementAttribute.class);
-	private final CharacterUtils charUtils = CharacterUtils.getInstance();
     private Boolean init;
 	private String verbatim;
 	private int skippedPositions;
@@ -68,7 +67,7 @@ public class TextPrependedTokenStream extends TokenStream {
 					skippedPositions+1
 					);
 				scanner.getText(charTermAttr);
-				charUtils.toLowerCase(charTermAttr.buffer(), 0, charTermAttr.length());
+				CharacterUtils.toLowerCase(charTermAttr.buffer(), 0, charTermAttr.length());
 				return true;
 			} else
 				skippedPositions++;

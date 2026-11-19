@@ -292,8 +292,13 @@ public final class KrillIndex implements IndexInfo {
      * keeps the behaviour Krill had before the upgrade: mapped files
      * are released by the garbage collector.
      *
-     * TODO: Remove when upgrading to a Lucene version that unmaps
-     * on current Java versions by itself (Lucene 6.5 and later).
+     * Lucene 6.5 to 8 unmap on Java 9 and later through
+     * sun.misc.Unsafe.invokeCleaner(), which is terminally deprecated:
+     * the JVM prints a warning, and a future Java version will remove
+     * it. So unmapping stays turned off.
+     *
+     * TODO: Remove when upgrading to Lucene 9, which unmaps through
+     * the MemorySegment API instead.
      */
     private static Directory disableUnmap (Directory directory) {
         if (directory instanceof MMapDirectory)

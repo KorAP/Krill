@@ -38,7 +38,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PhraseQuery;
-import org.apache.lucene.search.NumericRangeQuery;
 import de.ids_mannheim.korap.query.spans.KrillSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.search.spans.SpanQuery;

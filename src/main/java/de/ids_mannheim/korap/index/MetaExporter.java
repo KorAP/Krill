@@ -80,7 +80,7 @@ public class MetaExporter {
 
     public MetaExporter (String indexPath) throws IOException {
         MMapDirectory dir = new MMapDirectory(Paths.get(indexPath));
-        // Unmapping fails on Java 9+ with Lucene 5.2 -
+        // Unmapping stays turned off until Lucene 9 -
         // see KrillIndex.disableUnmap()
         dir.setUseUnmap(false);
         this.reader = DirectoryReader.open(dir);

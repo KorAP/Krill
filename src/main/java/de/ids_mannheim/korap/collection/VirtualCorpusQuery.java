@@ -82,14 +82,14 @@ public class VirtualCorpusQuery extends Query {
 
     @Override
     public boolean equals (Object obj) {
-        return super.equals(obj)
+        return sameClassAs(obj)
                 && this.vcId.equals(((VirtualCorpusQuery) obj).vcId);
     }
 
 
     @Override
     public int hashCode () {
-        return 31 * super.hashCode() + this.vcId.hashCode();
+        return 31 * classHash() + this.vcId.hashCode();
     }
 
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
-import org.apache.lucene.search.NumericRangeQuery;
+import org.apache.lucene.search.LegacyNumericRangeQuery;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.RegexpQuery;
@@ -448,7 +448,7 @@ public class CollectionBuilder {
 
 
         public Query toQuery () {
-            return NumericRangeQuery.newIntRange(this.field, this.start,
+            return LegacyNumericRangeQuery.newIntRange(this.field, this.start,
                     this.end, true, true);
         };
 
@@ -485,7 +485,7 @@ public class CollectionBuilder {
 
 
         public Query toQuery () {
-            return NumericRangeQuery.newDoubleRange(this.field, (double) this.start,
+            return LegacyNumericRangeQuery.newDoubleRange(this.field, (double) this.start,
                                                      (double) this.end, true, true);
         };
 

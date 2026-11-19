@@ -103,7 +103,7 @@ public class BooleanGroupQuery extends Query {
 
     @Override
     public boolean equals (Object obj) {
-        if (!super.equals(obj))
+        if (!sameClassAs(obj))
             return false;
 
         final BooleanGroupQuery other = (BooleanGroupQuery) obj;
@@ -114,7 +114,7 @@ public class BooleanGroupQuery extends Query {
 
     @Override
     public int hashCode () {
-        return 31 * super.hashCode()
+        return 31 * classHash()
                 + (657153719 ^ operands.hashCode() ^ (isOptional ? 1 : 0));
     };
 
@@ -290,7 +290,9 @@ public class BooleanGroupQuery extends Query {
                     else {
                         if (DEBUG)
                             log.debug("- Filter is negative not optional");
-                        bitset.andNot(filterIter);
+                        combinator.or(filterIter);
+                        bitset.andNot(combinator);
+                        combinator.clear(0, maxDoc);
                         if (DEBUG)
                             log.debug("- Filter is negative - so andNotted");
                     }
@@ -303,7 +305,9 @@ public class BooleanGroupQuery extends Query {
                 else {
                     if (DEBUG)
                         log.debug("- Filter is simply not optional");
-                    bitset.and(filterIter);
+                    combinator.or(filterIter);
+                    bitset.and(combinator);
+                    combinator.clear(0, maxDoc);
                     // TODO: Check with nextSetBit() if the filter is not applicable
                 };
 
