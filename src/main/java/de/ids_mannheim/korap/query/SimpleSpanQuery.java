@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreMode;
@@ -341,16 +340,16 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable, Kr
 
     /** {@inheritDoc} */
     @Override
-    public Query rewrite (IndexReader reader) throws IOException {
+    public Query rewrite (IndexSearcher searcher) throws IOException {
         SimpleSpanQuery clone = null;
         if (firstClause != null) {
-            clone = updateClone(reader, clone, firstClause, 1);
+            clone = updateClone(searcher, clone, firstClause, 1);
         }
         if (secondClause != null) {
-            clone = updateClone(reader, clone, secondClause, 2);
+            clone = updateClone(searcher, clone, secondClause, 2);
         }
         else if (clauseList != null) {
-            clone = updateClone(reader, clone, clauseList);
+            clone = updateClone(searcher, clone, clauseList);
         }
         return (clone != null ? clone : this);
     }
@@ -361,19 +360,19 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable, Kr
      * the clone,
      * and return the clone.
      * 
-     * @param reader
+     * @param searcher
      * @param clone
      * @param spanQueries
      * @return a SimpleSpanQuery
      * @throws IOException
      */
-    private SimpleSpanQuery updateClone (IndexReader reader,
+    private SimpleSpanQuery updateClone (IndexSearcher searcher,
             SimpleSpanQuery clone, List<SpanQuery> spanQueries)
             throws IOException {
 
         for (int i = 0; i < spanQueries.size(); i++) {
             final SpanQuery query = (SpanQuery) spanQueries.get(i)
-                    .rewrite(reader);
+                    .rewrite(searcher);
             if (!query.equals(spanQueries.get(i))) {
                 if (clone == null)
                     clone = clone();
@@ -389,17 +388,17 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable, Kr
      * the first
      * or the second child {@link SpanQuery} of the clone.
      * 
-     * @param reader
+     * @param searcher
      * @param clone
      * @param sq
      * @param clauseNumber
      * @return a SimpleSpanQuery
      * @throws IOException
      */
-    private SimpleSpanQuery updateClone (IndexReader reader,
+    private SimpleSpanQuery updateClone (IndexSearcher searcher,
             SimpleSpanQuery clone, SpanQuery sq, int clauseNumber)
             throws IOException {
-        final SpanQuery query = (SpanQuery) sq.rewrite(reader);
+        final SpanQuery query = (SpanQuery) sq.rewrite(searcher);
         if (!query.equals(sq)) {
             if (clone == null)
                 clone = clone();

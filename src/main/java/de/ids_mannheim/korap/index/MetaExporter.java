@@ -28,6 +28,7 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.util.Bits;
 
@@ -95,12 +96,13 @@ public class MetaExporter {
         Set<String> names = new TreeSet<>();
         for (LeafReaderContext lrc : reader.leaves()) {
             LeafReader lr = lrc.reader();
+            StoredFields storedFields = lr.storedFields();
             Bits liveDocs = lr.getLiveDocs();
             int max = lr.maxDoc();
             for (int i = 0; i < max; i++) {
                 if (liveDocs != null && !liveDocs.get(i))
                     continue;
-                Document doc = lr.document(i);
+                Document doc = storedFields.document(i);
                 for (IndexableField f : doc.getFields()) {
                     String name = f.name();
                     if (!SKIP_FIELDS.contains(name))
@@ -146,12 +148,13 @@ public class MetaExporter {
         long count = 0;
         for (LeafReaderContext lrc : reader.leaves()) {
             LeafReader lr = lrc.reader();
+            StoredFields storedFields = lr.storedFields();
             Bits liveDocs = lr.getLiveDocs();
             int max = lr.maxDoc();
             for (int i = 0; i < max; i++) {
                 if (liveDocs != null && !liveDocs.get(i))
                     continue;
-                Document doc = lr.document(i);
+                Document doc = storedFields.document(i);
 
                 if (format == Format.JSON) {
                     writeJson(out, mapper, doc, fields);

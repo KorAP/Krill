@@ -3,7 +3,6 @@ package de.ids_mannheim.korap.query;
 // Based on SpanNearQuery
 import java.io.IOException;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.IndexSearcher;
@@ -182,11 +181,11 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQu
      * Rewrite query in case it includes regular expressions or wildcards
      */
     @Override
-    public Query rewrite (IndexReader reader) throws IOException {
+    public Query rewrite (IndexSearcher searcher) throws IOException {
         SpanWithinQuery clone = null;
 
         // Does the embedded query needs a rewrite?
-        SpanQuery query = (SpanQuery) embedded.rewrite(reader);
+        SpanQuery query = (SpanQuery) embedded.rewrite(searcher);
         if (query != embedded) {
             if (clone == null)
                 clone = this.clone();
@@ -194,7 +193,7 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQu
         };
 
         // Does the wrap query needs a rewrite?
-        query = (SpanQuery) wrap.rewrite(reader);
+        query = (SpanQuery) wrap.rewrite(searcher);
         if (query != wrap) {
             if (clone == null)
                 clone = this.clone();

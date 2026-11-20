@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.queries.spans.SpanQuery;
 import org.apache.lucene.queries.spans.Spans;
@@ -104,11 +104,11 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
      * Rewrite query in case it includes regular expressions or wildcards
      */
     @Override
-    public Query rewrite (IndexReader reader) throws IOException {
+    public Query rewrite (IndexSearcher searcher) throws IOException {
         SpanNextQuery clone = null;
 
         // Does the first clause needs a rewrite?
-        SpanQuery query = (SpanQuery) firstClause.rewrite(reader);
+        SpanQuery query = (SpanQuery) firstClause.rewrite(searcher);
         if (query != firstClause) {
             if (clone == null)
                 clone = this.clone();
@@ -116,7 +116,7 @@ public class SpanNextQuery extends SimpleSpanQuery implements Cloneable {
         };
 
         // Does the second clause needs a rewrite?
-        query = (SpanQuery) secondClause.rewrite(reader);
+        query = (SpanQuery) secondClause.rewrite(searcher);
         if (query != secondClause) {
             if (clone == null)
                 clone = this.clone();

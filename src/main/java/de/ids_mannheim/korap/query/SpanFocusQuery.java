@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.queries.spans.SpanQuery;
 import org.apache.lucene.queries.spans.Spans;
@@ -114,9 +114,9 @@ public class SpanFocusQuery extends SimpleSpanQuery {
 
 
     @Override
-    public Query rewrite (IndexReader reader) throws IOException {
+    public Query rewrite (IndexSearcher searcher) throws IOException {
         SpanFocusQuery clone = null;
-        SpanQuery query = (SpanQuery) this.firstClause.rewrite(reader);
+        SpanQuery query = (SpanQuery) this.firstClause.rewrite(searcher);
 
         if (query != this.firstClause) {
             if (clone == null)

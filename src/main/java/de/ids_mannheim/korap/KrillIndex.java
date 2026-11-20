@@ -30,6 +30,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.LeafReader;
 import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
@@ -571,7 +572,8 @@ public final class KrillIndex implements IndexInfo {
                             
                             // TODO: Probably use
                             // document(int docID, StoredFieldVisitor visitor)
-                            Document storedDoc = atomic.reader().document(localDocID);
+                            Document storedDoc = atomic.reader().storedFields()
+                                    .document(localDocID);
 
                             // Document is loadable
                             if (storedDoc != null) {
@@ -985,7 +987,8 @@ public final class KrillIndex implements IndexInfo {
 
                 // TODO: Probably use
                 // document(int docID, StoredFieldVisitor visitor)
-                Document doc = atomic.reader().document(localDocID);
+                Document doc = atomic.reader().storedFields()
+                        .document(localDocID);
                 text.populateFields(doc);
 
                 return text;
@@ -1256,8 +1259,8 @@ public final class KrillIndex implements IndexInfo {
                     log.trace("We've found a matching document");
 
                 // Get terms from the document
-                Terms docTerms = atomic.reader().getTermVector(localDocID,
-                        field);
+                Terms docTerms = atomic.reader().termVectors()
+                        .get(localDocID, field);
 
 				// The following fields should be lifted for the match
                 List<String> fields = (ArrayList<String>) new Krill().getMeta()
@@ -1273,9 +1276,10 @@ public final class KrillIndex implements IndexInfo {
                 fieldsSet.add(field);
                 
                 // Load the necessary fields of the document
+                StoredFields storedFields = atomic.reader().storedFields();
                 Document doc = (fields != null)
-                    ? atomic.reader().document(localDocID, fieldsSet)
-                    : atomic.reader().document(localDocID);
+                    ? storedFields.document(localDocID, fieldsSet)
+                    : storedFields.document(localDocID);
 
                 // Put some more information to the match
                 PositionsToOffset pto = new PositionsToOffset(atomic, field);
@@ -1558,9 +1562,10 @@ public final class KrillIndex implements IndexInfo {
             // Based on core/src/java/org/apache/lucene/search/IndexSearcher.java
             // and highlighter/src/java/org/apache/lucene/search/
 			//   postingshighlight/PostingsHighlighter.java
-            for (Query rewrittenQuery = query.rewrite(this.reader());
+            IndexSearcher searcher = new IndexSearcher(this.reader());
+            for (Query rewrittenQuery = query.rewrite(searcher);
 				 !rewrittenQuery.equals(query);
-				 rewrittenQuery = query.rewrite(this.reader())) {
+				 rewrittenQuery = query.rewrite(searcher)) {
                 query = (SpanQuery) rewrittenQuery;
             };
 
@@ -1576,7 +1581,7 @@ public final class KrillIndex implements IndexInfo {
 
             PrelimCacheKey prelim = new PrelimCacheKey(qHash, collHash, itemsPerResource);
 
-            this.spanWeights = new SpanWeights(new IndexSearcher(this.reader()));
+            this.spanWeights = new SpanWeights(searcher);
 
             // Todo: run this in a separated thread
             for (LeafReaderContext atomic : this.reader().leaves()) {
@@ -1641,7 +1646,8 @@ public final class KrillIndex implements IndexInfo {
                 final KrillSpans spans = this.spanWeights.getSpans(query,
                         atomic, (Bits) bitset);
 
-                final IndexReader lreader = atomic.reader();
+                final StoredFields storedFields = atomic.reader()
+                        .storedFields();
                 int localDocID, docID;
 
                 long li = i;
@@ -1735,8 +1741,8 @@ public final class KrillIndex implements IndexInfo {
 
                     // Do not load all of this, in case the doc is the same!
                     final Document doc = (fields != null)
-                            ? lreader.document(localDocID, fieldsSet)
-                            : lreader.document(localDocID);
+                            ? storedFields.document(localDocID, fieldsSet)
+                            : storedFields.document(localDocID);
                     
                     int maxMatchSize = ks.getMaxTokenMatchSize();
                     if (maxMatchSize <= 0
@@ -1956,7 +1962,8 @@ public final class KrillIndex implements IndexInfo {
                 if (localDocID == DocIdSetIterator.NO_MORE_DOCS)
                     continue;
 
-                Document doc = atomic.reader().document(localDocID);
+                Document doc = atomic.reader().storedFields()
+                        .document(localDocID);
                 if (fields == null)
                     metaFields.populateFields(doc);
                 else
@@ -2032,9 +2039,10 @@ public final class KrillIndex implements IndexInfo {
         try {
 
             // Rewrite query (for regex and wildcard queries)
+            IndexSearcher searcher = new IndexSearcher(this.reader());
             for (Query rewrittenQuery = query.rewrite(
-                    this.reader()); rewrittenQuery != (Query) query; rewrittenQuery = query
-                            .rewrite(this.reader())) {
+                    searcher); rewrittenQuery != (Query) query; rewrittenQuery = query
+                            .rewrite(searcher)) {
                 query = (SpanQuery) rewrittenQuery;
             };
 
@@ -2042,7 +2050,7 @@ public final class KrillIndex implements IndexInfo {
             String uniqueDocIDString;;
             int uniqueDocID = -1;
 
-            this.spanWeights = new SpanWeights(new IndexSearcher(this.reader()));
+            this.spanWeights = new SpanWeights(searcher);
 
             // start thread:
             for (LeafReaderContext atomic : this.reader().leaves()) {
@@ -2058,7 +2066,7 @@ public final class KrillIndex implements IndexInfo {
                 KrillSpans spans = this.spanWeights.getSpans(query, atomic,
                         (Bits) bitset);
 
-                IndexReader lreader = atomic.reader();
+                StoredFields storedFields = atomic.reader().storedFields();
 
                 while (spans.nextMatch()) {
                     int localDocID = spans.docID();
@@ -2082,7 +2090,7 @@ public final class KrillIndex implements IndexInfo {
                         };
 
                         // Read document id from index
-                        uniqueDocIDString = lreader.document(localDocID, fields)
+                        uniqueDocIDString = storedFields.document(localDocID, fields)
                                 .get("UID");
 
                         if (uniqueDocIDString != null)
@@ -2165,7 +2173,7 @@ public final class KrillIndex implements IndexInfo {
                 // Iterate over all atomic readers and collect occurrences
                 for (LeafReaderContext atomic : this.reader().leaves()) {
 
-                    LeafReader lreader = atomic.reader();
+                    StoredFields storedFields = atomic.reader().storedFields();
 
                     DocIdSetIterator docs = QueryDocs.iterator(weight, atomic);
 
@@ -2173,7 +2181,7 @@ public final class KrillIndex implements IndexInfo {
                         continue;
                 
                     while (docs.nextDoc() != DocIdSetIterator.NO_MORE_DOCS) {
-                        fieldValue = lreader.document(docs.docID()).get(field);
+                        fieldValue = storedFields.document(docs.docID()).get(field);
                         if (fieldValue != null && fieldValue != "")
                             fieldValues.add(fieldValue);
                     };
@@ -2185,13 +2193,14 @@ public final class KrillIndex implements IndexInfo {
                 for (LeafReaderContext atomic : this.reader().leaves()) {
 
                     LeafReader lreader = atomic.reader();
+                    StoredFields storedFields = lreader.storedFields();
                     Bits live = lreader.getLiveDocs();
 
                     for (int i=0; i<lreader.maxDoc(); i++) {
                         if (live != null && !live.get(i))
                             continue;
                         
-                        Document doc = lreader.document(i);
+                        Document doc = storedFields.document(i);
                         fieldValue = doc.get(field);
                         if (fieldValue != null && fieldValue != "")
                             fieldValues.add(fieldValue);
