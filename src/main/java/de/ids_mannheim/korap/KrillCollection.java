@@ -834,7 +834,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
             Term term) throws IOException {
 
         // This reimplements PostingsEnum with payloads
-        final Terms terms = atomic.reader().fields().terms(term.field());
+        final Terms terms = atomic.reader().terms(term.field());
 
         // No terms were found
         if (terms != null) {
@@ -967,7 +967,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
                     docNumber += docvec.cardinality();
                 };
     
-                Terms terms = atomic.reader().fields().terms(field);
+                Terms terms = atomic.reader().terms(field);
     
                 if (terms == null) {
                     continue;

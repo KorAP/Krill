@@ -27,6 +27,7 @@ import de.ids_mannheim.korap.collection.VirtualCorpusQuery;
 import de.ids_mannheim.korap.collection.VirtualCorpusQuery.DocBitsSupplier;
 import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.ReaderKeys;
 
 /**
  * 
@@ -149,7 +150,7 @@ public class VirtualCorpusCache {
         String leafFingerprint;
         for (LeafReaderContext context : index.reader().leaves()) {
             leafFingerprint = Fingerprinter.create(
-                    context.reader().getCombinedCoreAndDeletesKey().toString());
+                    ReaderKeys.of(context.reader()));
 
             getDocBits(vcId, leafFingerprint, () -> {
                 try {

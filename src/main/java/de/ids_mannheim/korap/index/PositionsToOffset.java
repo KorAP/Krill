@@ -177,7 +177,7 @@ public class PositionsToOffset {
         StringBuilder sb = new StringBuilder().append('_');
 
         try {
-            Terms terms = atomic.reader().fields().terms(field);
+            Terms terms = atomic.reader().terms(field);
 
             if (terms != null) {
                 // TODO: Maybe reuse a termsEnum!

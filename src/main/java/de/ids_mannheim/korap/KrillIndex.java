@@ -80,6 +80,7 @@ import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.KrillDate;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.ReaderKeys;
 
 import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRING_LEN;
 
@@ -1615,14 +1616,14 @@ public final class KrillIndex implements IndexInfo {
                 if (stopSearching)
                     break;
 
-                SearchCacheKey finalCacheKey = new SearchCacheKey(prelim, atomic.reader().getCombinedCoreAndDeletesKey().toString());
+                SearchCacheKey finalCacheKey = new SearchCacheKey(prelim, ReaderKeys.of(atomic.reader()));
                 SearchCacheValue foundCache = searchCache.getIfPresent(finalCacheKey);
                 
                 if (foundCache != null) {
                     if (DEBUG) {
                         log.trace(
                             "Found cache for Query: {}, Collection: {}, itemsPerRessource: {}, Reader: {}",
-                            qHash, collHash, itemsPerResource, atomic.reader().getCombinedCoreAndDeletesKey().toString()
+                            qHash, collHash, itemsPerResource, ReaderKeys.of(atomic.reader())
                             );
                     };
 
@@ -1635,7 +1636,7 @@ public final class KrillIndex implements IndexInfo {
                 } else if (DEBUG) {
                     log.trace(
                         "Found no cache for Query: {}, Collection: {}, itemsPerRessource: {}, Reader: {}",
-                        qHash, collHash, itemsPerResource, atomic.reader().getCombinedCoreAndDeletesKey().toString()
+                        qHash, collHash, itemsPerResource, ReaderKeys.of(atomic.reader())
                         );
                 } 
 
@@ -1658,7 +1659,7 @@ public final class KrillIndex implements IndexInfo {
                             qHash,
                             collHash,
                             itemsPerResource,
-                            atomic.reader().getCombinedCoreAndDeletesKey().toString()
+                            ReaderKeys.of(atomic.reader())
                             );
                     };
 					continue;
@@ -1697,7 +1698,7 @@ public final class KrillIndex implements IndexInfo {
                                 qHash,
                                 collHash,
                                 itemsPerResource,
-                                atomic.reader().getCombinedCoreAndDeletesKey().toString(),
+                                ReaderKeys.of(atomic.reader()),
                                 i - li,
                                 j - lj
                                 );
@@ -1899,7 +1900,7 @@ public final class KrillIndex implements IndexInfo {
                                 qHash,
                                 collHash,
                                 itemsPerResource,
-                                atomic.reader().getCombinedCoreAndDeletesKey().toString(),
+                                ReaderKeys.of(atomic.reader()),
                                 i - li,
                                 j - lj
                                 );
@@ -2027,7 +2028,7 @@ public final class KrillIndex implements IndexInfo {
             return "null";
         }
         
-        String hash = this.reader().getCombinedCoreAndDeletesKey().toString();
+        String hash = ReaderKeys.of(this.reader());
         this.indexRevision = Fingerprinter.create(hash);
 
         return this.indexRevision;
@@ -2159,7 +2160,7 @@ public final class KrillIndex implements IndexInfo {
         Set<String> fingerprints = new HashSet<>(leaves.size() * 2);
         for (LeafReaderContext context : leaves) {
             String fp = Fingerprinter.create(
-                    context.reader().getCombinedCoreAndDeletesKey().toString());
+                    ReaderKeys.of(context.reader()));
             fingerprints.add(fp);
         }
         return fingerprints;

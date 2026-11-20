@@ -140,8 +140,8 @@ public class BooleanGroupQuery extends Query {
 
 
     @Override
-    public Weight createWeight (IndexSearcher searcher, boolean needsScores)
-            throws IOException {
+    public Weight createWeight (IndexSearcher searcher, boolean needsScores,
+            float boost) throws IOException {
 
         // The weights of the operands are created once for all leaves
         final Weight[] operandWeights = new Weight[this.operands.size()];
@@ -150,7 +150,14 @@ public class BooleanGroupQuery extends Query {
                     this.operands.get(i).query, false);
         };
 
-        return new ConstantScoreWeight(this) {
+        return new ConstantScoreWeight(this, boost) {
+            // Not cached by Lucene's query cache
+            @Override
+            public boolean isCacheable (LeafReaderContext context) {
+                return false;
+            };
+
+
             @Override
             public Scorer scorer (LeafReaderContext atomic)
                     throws IOException {

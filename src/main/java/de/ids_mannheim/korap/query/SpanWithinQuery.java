@@ -31,8 +31,8 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQu
      */
     @Override
     public SpanWeight createWeight (IndexSearcher searcher,
-            boolean needsScores) throws IOException {
-        return new KrillSpanWeight(this, searcher, needsScores);
+            boolean needsScores, float boost) throws IOException {
+        return new KrillSpanWeight(this, searcher, needsScores, boost);
     };
 
     private SpanQuery wrap;

@@ -36,15 +36,17 @@ public class KrillSpanWeight extends SpanWeight {
 
 
     public KrillSpanWeight (SpanQuery query, IndexSearcher searcher,
-            boolean needsScores) throws IOException {
+            boolean needsScores, float boost) throws IOException {
         this(query, searcher,
-                needsScores ? buildTermContexts(query, searcher) : null);
+                needsScores ? buildTermContexts(query, searcher) : null,
+                boost);
     };
 
 
     private KrillSpanWeight (SpanQuery query, IndexSearcher searcher,
-            Map<Term, TermContext> termContexts) throws IOException {
-        super(query, searcher, termContexts);
+            Map<Term, TermContext> termContexts, float boost)
+            throws IOException {
+        super(query, searcher, termContexts, boost);
         this.query = (KrillSpanQuery) query;
         this.weights = new SpanWeights(searcher);
         this.termContexts = termContexts;
@@ -73,6 +75,13 @@ public class KrillSpanWeight extends SpanWeight {
     @Override
     public void extractTerms (Set<Term> terms) {
         SimpleSpanQuery.collectTerms((SpanQuery) this.getQuery(), terms);
+    };
+
+
+    // Krill's spans are not cached by Lucene's query cache
+    @Override
+    public boolean isCacheable (LeafReaderContext context) {
+        return false;
     };
 
 

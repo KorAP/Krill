@@ -20,6 +20,7 @@ import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.cache.VirtualCorpusCache;
 import de.ids_mannheim.korap.util.Fingerprinter;
 import de.ids_mannheim.korap.util.QueryException;
+import de.ids_mannheim.korap.util.ReaderKeys;
 
 /**
  * Matches the documents of a stored virtual corpus. The documents
@@ -41,9 +42,16 @@ public class VirtualCorpusQuery extends Query {
 
 
     @Override
-    public Weight createWeight (IndexSearcher searcher, boolean needsScores)
-            throws IOException {
-        return new ConstantScoreWeight(this) {
+    public Weight createWeight (IndexSearcher searcher, boolean needsScores,
+            float boost) throws IOException {
+        return new ConstantScoreWeight(this, boost) {
+            // Not cached by Lucene's query cache
+            @Override
+            public boolean isCacheable (LeafReaderContext context) {
+                return false;
+            };
+
+
             @Override
             public Scorer scorer (LeafReaderContext context)
                     throws IOException {
@@ -60,7 +68,7 @@ public class VirtualCorpusQuery extends Query {
     // The documents of the virtual corpus in a leaf
     private DocBits docBits (LeafReaderContext context) throws IOException {
         String leafFingerprint = Fingerprinter.create(
-                context.reader().getCombinedCoreAndDeletesKey().toString());
+                ReaderKeys.of(context.reader()));
 
         return VirtualCorpusCache.getDocBits(vcId, leafFingerprint,
                 () -> {

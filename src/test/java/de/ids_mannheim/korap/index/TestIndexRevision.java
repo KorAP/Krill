@@ -18,6 +18,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;
+import de.ids_mannheim.korap.util.ReaderKeys;
 
 public class TestIndexRevision {
 
@@ -31,7 +32,7 @@ public class TestIndexRevision {
         ki.commit();
 
         String x1 = ki.getFingerprint();
-        assertEquals("QoTZzTj64n0gQ_CqYsnF0g==",x1);
+        assertEquals("_RcICpBBhbQcAvE2xlnzDA==",x1);
 
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00003.json.gz"), true);
@@ -39,13 +40,13 @@ public class TestIndexRevision {
         ki.commit();
 
         String x2 = ki.getFingerprint();
-        assertEquals("pltkIlgQmBsfhMbKKXJmQA==",x2);
+        assertEquals("3mcR6EHSS5jRav25xg0w9g==",x2);
 
         ki.addDoc(getClass().getResourceAsStream("/wiki/00006.json.gz"), true);
         ki.commit();
 
         String x3 = ki.getFingerprint();
-        assertEquals("MCyq6CT8dBmff4Xv3dlk_w==",x3);
+        assertEquals("7pmU9wTCGK6uBG5I8PQdlA==",x3);
 
 
         // Check if the same changes will have the same effect
@@ -81,7 +82,7 @@ public class TestIndexRevision {
         ki.commit();
 
         String x1 = ki.getFingerprint();
-        assertEquals("QoTZzTj64n0gQ_CqYsnF0g==",x1);
+        assertEquals("_RcICpBBhbQcAvE2xlnzDA==",x1);
 
         assertTrue(ki.delDocs("title", "A"));
         ki.commit();
@@ -114,7 +115,7 @@ public class TestIndexRevision {
 
         assertEquals(false, ki.isReaderOpen());
 
-        String fingerp = "Nuei3i_uCjXOMZu-3yU0AQ==";
+        String fingerp = "rVNKeiGdSI3DY4M39YtYaA==";
         assertEquals(fingerp, ki.getFingerprint());
 
         assertEquals(true, ki.isReaderOpen());
@@ -132,6 +133,7 @@ public class TestIndexRevision {
         ki.close();
     };
     
+    @Test
     public void testIndexRevisionLeafTempFile () throws IOException {
 
         String x1, x2, x3;
@@ -146,8 +148,8 @@ public class TestIndexRevision {
 
         List<LeafReaderContext> contexts = ki.reader().leaves();
         assertEquals(1, contexts.size());
-        x1 = contexts.get(0).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_0(5.0.0):c1", x1);
+        x1 = ReaderKeys.of(contexts.get(0).reader());
+        assertEquals("_0(7.7.3):c1", x1);
         
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00003.json.gz"), true);
@@ -159,12 +161,12 @@ public class TestIndexRevision {
 
         contexts = ki.reader().leaves();
         assertEquals(3, contexts.size());
-        x1 = contexts.get(0).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_0(5.0.0):c1", x1);
-        x2 = contexts.get(1).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_1(5.0.0):c3", x2);
-        x3 = contexts.get(2).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_2(5.0.0):c1", x3);
+        x1 = ReaderKeys.of(contexts.get(0).reader());
+        assertEquals("_0(7.7.3):c1", x1);
+        x2 = ReaderKeys.of(contexts.get(1).reader());
+        assertEquals("_1(7.7.3):c3", x2);
+        x3 = ReaderKeys.of(contexts.get(2).reader());
+        assertEquals("_2(7.7.3):c1", x3);
         
         assertTrue(ki.delDocs("title", "A (Band)"));
         ki.commit();
@@ -173,14 +175,14 @@ public class TestIndexRevision {
 
         contexts = ki.reader().leaves();
         assertEquals(3, contexts.size());
-        x1 = contexts.get(0).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_0(5.0.0):c1", x1);
-        x2 = contexts.get(1).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_1(5.0.0):c3/1:delGen=1", x2);
-        x3 = contexts.get(2).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_2(5.0.0):c1", x3);
+        x1 = ReaderKeys.of(contexts.get(0).reader());
+        assertEquals("_0(7.7.3):c1", x1);
+        x2 = ReaderKeys.of(contexts.get(1).reader());
+        assertEquals("_1(7.7.3):c3/1:delGen=1", x2);
+        x3 = ReaderKeys.of(contexts.get(2).reader());
+        assertEquals("_2(7.7.3):c1", x3);
         
-        String fingerp = "241/XHj/9ZxeO5Lm3zZ+iw==";
+        String fingerp = "xf0XjLYwQZGMqleOZBN4Tw==";
         assertEquals(fingerp, ki.getFingerprint());
 
         ki.close();
@@ -192,12 +194,12 @@ public class TestIndexRevision {
 
         contexts = ki.reader().leaves();
         assertEquals(3, contexts.size());
-        x1 = contexts.get(0).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_0(5.0.0):c1", x1);
-        x2 = contexts.get(1).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_1(5.0.0):c3/1:delGen=1", x2);
-        x3 = contexts.get(2).reader().getCombinedCoreAndDeletesKey().toString();
-        assertEquals("_2(5.0.0):c1", x3);
+        x1 = ReaderKeys.of(contexts.get(0).reader());
+        assertEquals("_0(7.7.3):c1", x1);
+        x2 = ReaderKeys.of(contexts.get(1).reader());
+        assertEquals("_1(7.7.3):c3/1:delGen=1", x2);
+        x3 = ReaderKeys.of(contexts.get(2).reader());
+        assertEquals("_2(7.7.3):c1", x3);
         
         ki.close();
     };

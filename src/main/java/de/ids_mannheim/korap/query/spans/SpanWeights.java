@@ -75,7 +75,7 @@ public class SpanWeights {
 
         SpanWeight weight = this.weights.get(query);
         if (weight == null) {
-            weight = query.createWeight(this.searcher, false);
+            weight = query.createWeight(this.searcher, false, 1f);
             this.weights.put(query, weight);
         };
         return KrillSpans.wrap(
