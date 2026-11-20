@@ -8,6 +8,7 @@ import org.apache.lucene.search.ConstantScoreWeight;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.util.BitSetIterator;
@@ -42,8 +43,8 @@ public class VirtualCorpusQuery extends Query {
 
 
     @Override
-    public Weight createWeight (IndexSearcher searcher, boolean needsScores,
-            float boost) throws IOException {
+    public Weight createWeight (IndexSearcher searcher,
+            ScoreMode scoreMode, float boost) throws IOException {
         return new ConstantScoreWeight(this, boost) {
             // Not cached by Lucene's query cache
             @Override
@@ -58,7 +59,7 @@ public class VirtualCorpusQuery extends Query {
                 DocBits docBits = VirtualCorpusQuery.this.docBits(context);
                 FixedBitSet bitset = new FixedBitSet(docBits.bits,
                         docBits.numbits);
-                return new ConstantScoreScorer(this, score(),
+                return new ConstantScoreScorer(this, score(), scoreMode,
                         new BitSetIterator(bitset, bitset.cardinality()));
             };
         };

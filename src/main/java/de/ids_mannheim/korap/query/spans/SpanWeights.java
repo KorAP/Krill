@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.ReaderUtil;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanWeight;
 import org.apache.lucene.util.Bits;
@@ -75,7 +76,8 @@ public class SpanWeights {
 
         SpanWeight weight = this.weights.get(query);
         if (weight == null) {
-            weight = query.createWeight(this.searcher, false, 1f);
+            weight = query.createWeight(this.searcher,
+                    ScoreMode.COMPLETE_NO_SCORES, 1f);
             this.weights.put(query, weight);
         };
         return KrillSpans.wrap(

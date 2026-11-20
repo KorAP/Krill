@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiTerms;
 import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.store.Directory;
@@ -576,7 +576,7 @@ public class KrillBenchmark {
         if (texts == 0)
             return sigles;
 
-        Terms terms = MultiFields.getTerms(ki.reader(), "textSigle");
+        Terms terms = MultiTerms.getTerms(ki.reader(), "textSigle");
         if (terms == null)
             return sigles;
 

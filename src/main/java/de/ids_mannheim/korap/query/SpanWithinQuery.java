@@ -8,8 +8,8 @@ import java.util.Set;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermContext;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanWeight;
@@ -31,8 +31,9 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQu
      */
     @Override
     public SpanWeight createWeight (IndexSearcher searcher,
-            boolean needsScores, float boost) throws IOException {
-        return new KrillSpanWeight(this, searcher, needsScores, boost);
+            ScoreMode scoreMode, float boost) throws IOException {
+        return new KrillSpanWeight(this, searcher, scoreMode.needsScores(),
+                boost);
     };
 
     private SpanQuery wrap;

@@ -9,7 +9,7 @@ import java.util.TreeSet;
 import org.apache.lucene.index.IndexReaderContext;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermContext;
+import org.apache.lucene.index.TermStates;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanWeight;
@@ -32,43 +32,43 @@ public class KrillSpanWeight extends SpanWeight {
     private final SpanWeights weights;
 
     // Term statistics, only if scores are needed
-    private final Map<Term, TermContext> termContexts;
+    private final Map<Term, TermStates> termStates;
 
 
     public KrillSpanWeight (SpanQuery query, IndexSearcher searcher,
             boolean needsScores, float boost) throws IOException {
         this(query, searcher,
-                needsScores ? buildTermContexts(query, searcher) : null,
+                needsScores ? buildTermStates(query, searcher) : null,
                 boost);
     };
 
 
     private KrillSpanWeight (SpanQuery query, IndexSearcher searcher,
-            Map<Term, TermContext> termContexts, float boost)
+            Map<Term, TermStates> termStates, float boost)
             throws IOException {
-        super(query, searcher, termContexts, boost);
+        super(query, searcher, termStates, boost);
         this.query = (KrillSpanQuery) query;
         this.weights = new SpanWeights(searcher);
-        this.termContexts = termContexts;
+        this.termStates = termStates;
     };
 
 
-    private static Map<Term, TermContext> buildTermContexts (SpanQuery query,
+    private static Map<Term, TermStates> buildTermStates (SpanQuery query,
             IndexSearcher searcher) throws IOException {
         Set<Term> terms = new TreeSet<>();
         SimpleSpanQuery.collectTerms(query, terms);
         IndexReaderContext top = searcher.getTopReaderContext();
-        Map<Term, TermContext> termContexts = new TreeMap<>();
+        Map<Term, TermStates> termStates = new TreeMap<>();
         for (Term term : terms)
-            termContexts.put(term, TermContext.build(top, term));
-        return termContexts;
+            termStates.put(term, TermStates.build(top, term, true));
+        return termStates;
     };
 
 
     @Override
-    public void extractTermContexts (Map<Term, TermContext> contexts) {
-        if (this.termContexts != null)
-            contexts.putAll(this.termContexts);
+    public void extractTermStates (Map<Term, TermStates> contexts) {
+        if (this.termStates != null)
+            contexts.putAll(this.termStates);
     };
 
 

@@ -19,7 +19,6 @@ import java.util.TreeSet;
 import static de.ids_mannheim.korap.TestSimple.*;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermContext;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;

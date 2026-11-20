@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spans.SpanOrQuery;
 import org.apache.lucene.search.spans.SpanQuery;
@@ -82,8 +83,9 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable, Kr
      */
     @Override
     public SpanWeight createWeight (IndexSearcher searcher,
-            boolean needsScores, float boost) throws IOException {
-        return new KrillSpanWeight(this, searcher, needsScores, boost);
+            ScoreMode scoreMode, float boost) throws IOException {
+        return new KrillSpanWeight(this, searcher, scoreMode.needsScores(),
+                boost);
     };
 
 

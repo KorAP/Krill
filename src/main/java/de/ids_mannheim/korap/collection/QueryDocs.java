@@ -8,6 +8,7 @@ import org.apache.lucene.index.ReaderUtil;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Weight;
 
@@ -31,7 +32,8 @@ public final class QueryDocs {
             throws IOException {
         IndexSearcher searcher = new IndexSearcher(top);
         searcher.setQueryCache(null);
-        return searcher.createWeight(searcher.rewrite(query), false, 1f);
+        return searcher.createWeight(searcher.rewrite(query),
+                ScoreMode.COMPLETE_NO_SCORES, 1f);
     };
 
 

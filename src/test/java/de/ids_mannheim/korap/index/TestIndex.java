@@ -21,7 +21,6 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermsEnum;
-import org.apache.lucene.index.TermContext;
 
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
@@ -231,25 +230,25 @@ public class TestIndex { // extends LuceneTestCase {
         // All texts of text class "news"
         assertEquals(2,
                 searcher.search(new TermQuery(new Term("textClass", "news")),
-                        10).totalHits);
+                        10).totalHits.value);
 
         // textClass
         // All texts of text class "sports"
         assertEquals(2,
                 searcher.search(new TermQuery(new Term("textClass", "sports")),
-                        10).totalHits);
+                        10).totalHits.value);
 
         // TextIndex
         // All docs containing "l:nehmen"
         assertEquals(1,
                 searcher.search(new TermQuery(new Term("text", "l:nehmen")),
-                        10).totalHits);
+                        10).totalHits.value);
 
         // TextIndex
         // All docs containing "s:den"
         assertEquals(2,
                 searcher.search(new TermQuery(new Term("text", "s:den")),
-                        10).totalHits);
+                        10).totalHits.value);
 
         /*
         assertEquals(3,
@@ -257,7 +256,7 @@ public class TestIndex { // extends LuceneTestCase {
                 new TermQuery(
                   new Term("text", "T")
             ), 10
-          ).totalHits
+          ).totalHits.value
             );
         */
 
@@ -269,60 +268,60 @@ public class TestIndex { // extends LuceneTestCase {
                 .add(s_den, BooleanClause.Occur.MUST)
                 .add(l_sie, BooleanClause.Occur.MUST).build();
 
-        assertEquals(1, searcher.search(bool, 10).totalHits);
+        assertEquals(1, searcher.search(bool, 10).totalHits.value);
 
         // BooleanQuery
         // All docs containing "s:den" or "l:sie"
         bool = new BooleanQuery.Builder()
                 .add(s_den, BooleanClause.Occur.SHOULD)
                 .add(l_sie, BooleanClause.Occur.SHOULD).build();
-        assertEquals(2, searcher.search(bool, 10).totalHits);
+        assertEquals(2, searcher.search(bool, 10).totalHits.value);
 
 
         // RegexpQuery
         // All docs containing ".{4}en" (liefen und Hunden)
         RegexpQuery srquery = new RegexpQuery(new Term("text", "s:.{4}en"));
-        assertEquals(2, searcher.search(srquery, 10).totalHits);
+        assertEquals(2, searcher.search(srquery, 10).totalHits.value);
 
         // RegexpQuery
         // All docs containing "E." (Er) (2x)
         srquery = new RegexpQuery(new Term("text", "s:E."));
-        assertEquals(2, searcher.search(srquery, 10).totalHits);
+        assertEquals(2, searcher.search(srquery, 10).totalHits.value);
 
         SpanRegexQueryWrapper ssrquery = new SpanRegexQueryWrapper("text",
                 "s:E.");
-        assertEquals(2, searcher.search(ssrquery.toQuery(), 10).totalHits);
+        assertEquals(2, searcher.search(ssrquery.toQuery(), 10).totalHits.value);
 
 
         // RegexpQuery
         // All docs containing "E." (er) (0x)
         srquery = new RegexpQuery(new Term("text", "s:e."));
-        assertEquals(0, searcher.search(srquery, 10).totalHits);
+        assertEquals(0, searcher.search(srquery, 10).totalHits.value);
 
         ssrquery = new SpanRegexQueryWrapper("text", "s:e.");
-        assertEquals(0, searcher.search(ssrquery.toQuery(), 10).totalHits);
+        assertEquals(0, searcher.search(ssrquery.toQuery(), 10).totalHits.value);
 
         // RegexpQuery
         // All docs containing "E."/i ([Ee]r) (2x)
         srquery = new RegexpQuery(new Term("text", "i:e."));
-        assertEquals(2, searcher.search(srquery, 10).totalHits);
+        assertEquals(2, searcher.search(srquery, 10).totalHits.value);
 
         ssrquery = new SpanRegexQueryWrapper("text", "s:e.", true);
         assertEquals("SpanMultiTermQueryWrapper(text:/i:e./)",
                 ssrquery.toQuery().toString());
-        assertEquals(2, searcher.search(ssrquery.toQuery(), 10).totalHits);
+        assertEquals(2, searcher.search(ssrquery.toQuery(), 10).totalHits.value);
 
         // All docs containing "ng"/x (Angst) (2x)
         srquery = new RegexpQuery(new Term("text", "s:.*ng.*"));
-        assertEquals(2, searcher.search(srquery, 10).totalHits);
+        assertEquals(2, searcher.search(srquery, 10).totalHits.value);
 
         // All docs containing "ng"/x (optional Regex enabled by default)
         srquery = new RegexpQuery(new Term("text", "s:@ng@"));
-        assertEquals(2, searcher.search(srquery, 10).totalHits);
+        assertEquals(2, searcher.search(srquery, 10).totalHits.value);
 
         // All docs containing "@ng@" (no optional query operators enabled)
         ssrquery = new SpanRegexQueryWrapper("text", "s:@ng@");
-        assertEquals(0, searcher.search(ssrquery.toQuery(), 10).totalHits);
+        assertEquals(0, searcher.search(ssrquery.toQuery(), 10).totalHits.value);
 
         // Check http://comments.gmane.org/gmane.comp.jakarta.lucene.user/52283
         // for Carstens question on wildcards
@@ -330,11 +329,11 @@ public class TestIndex { // extends LuceneTestCase {
         // All docs containing ".{4}en" (liefen und Hunden)
         WildcardQuery swquery = new WildcardQuery(new Term("text", "s:*ng*"));
 		assertEquals("text:s:*ng*", swquery.toString());
-		assertEquals(2, searcher.search(swquery, 10).totalHits);
+		assertEquals(2, searcher.search(swquery, 10).totalHits.value);
 
         // [base=angst]
         SpanTermQuery stq = new SpanTermQuery(new Term("text", "l:angst"));
-        assertEquals(2, searcher.search(srquery, 10).totalHits);
+        assertEquals(2, searcher.search(srquery, 10).totalHits.value);
 
         // vor Angst
         // [orth=vor][orth=Angst]
@@ -342,7 +341,7 @@ public class TestIndex { // extends LuceneTestCase {
                 new SpanQuery[] { new SpanTermQuery(new Term("text", "s:vor")),
                         new SpanTermQuery(new Term("text", "s:Angst")) },
                 1, true);
-        assertEquals(1, searcher.search(snquery, 10).totalHits);
+        assertEquals(1, searcher.search(snquery, 10).totalHits.value);
 
         // Spannearquery [p:VVFIN][]{,5}[m:nom:sg:fem]
         snquery = new SpanNearQuery(
@@ -354,7 +353,7 @@ public class TestIndex { // extends LuceneTestCase {
                 true   // inOrder
             // Possible: CollectPayloads
         );
-        assertEquals(1, searcher.search(snquery, 10).totalHits);
+        assertEquals(1, searcher.search(snquery, 10).totalHits.value);
 
 
         // Spannearquery [p:VVFIN][m:acc:sg:masc]
@@ -379,7 +378,7 @@ public class TestIndex { // extends LuceneTestCase {
                 true   // inOrder
             // Possible: CollectPayloads
         );
-        assertEquals(1, searcher.search(snquery, 10).totalHits);
+        assertEquals(1, searcher.search(snquery, 10).totalHits.value);
 
 
         // Spannearquery [p:VVFIN|m:3:sg:past:ind]
@@ -408,7 +407,7 @@ public class TestIndex { // extends LuceneTestCase {
                 false   // inOrder
         // Possible: CollectPayloads
         );
-        assertEquals(2, searcher.search(snquery, 10).totalHits);
+        assertEquals(2, searcher.search(snquery, 10).totalHits.value);
 
         // To make sure, this is not equal:
         // Spannearquery [p:VVFIN & m:3:sg:past:ind]
@@ -425,13 +424,13 @@ public class TestIndex { // extends LuceneTestCase {
                 false   // inOrder
         // Possible: CollectPayloads
         );
-        assertNotEquals(2, searcher.search(snquery, 10).totalHits);
-        // assertEquals(2, searcher.search(snquery, 10).totalHits);
+        assertNotEquals(2, searcher.search(snquery, 10).totalHits.value);
+        // assertEquals(2, searcher.search(snquery, 10).totalHits.value);
 
         // Spannearquery [p:VVFIN & m:3:sg & past:ind]
         SpanSegmentQueryWrapper sniquery = new SpanSegmentQueryWrapper("text",
                 "p:VVFIN", "m:p:3", "m:n:sg", "m:t:past", "m:m:ind");
-        assertEquals(2, searcher.search(sniquery.toQuery(), 10).totalHits);
+        assertEquals(2, searcher.search(sniquery.toQuery(), 10).totalHits.value);
 
 
         // Todo:
@@ -457,11 +456,11 @@ public class TestIndex { // extends LuceneTestCase {
                 true   // inOrder
             // Possible: CollectPayloads
         );
-        assertEquals(1, searcher.search(snquery, 10).totalHits);
+        assertEquals(1, searcher.search(snquery, 10).totalHits.value);
 
         sniquery = new SpanSegmentQueryWrapper("text", "p:VVFIN", "m:p:3",
                 "m:t:past", "m:m:ind", "m:n:sg");
-        assertEquals(2, searcher.search(sniquery.toQuery(), 10).totalHits);
+        assertEquals(2, searcher.search(sniquery.toQuery(), 10).totalHits.value);
 
         // [p = VVFIN & m:p = 3 & m:t = past & m:n != pl] or
         // [p = VVFIN & m:p = 3 & m:t = past & !m:n = pl]
@@ -471,7 +470,7 @@ public class TestIndex { // extends LuceneTestCase {
                 "m:t:past");
         SpanQuery snqquery = new SpanNotQuery(sniquery.toQuery(),
                 new SpanTermQuery(new Term("text", "m:n:pl")));
-        assertEquals(2, searcher.search(snqquery, 10).totalHits);
+        assertEquals(2, searcher.search(snqquery, 10).totalHits.value);
 
         // [p = NN & (m:c: = dat | m:c = acc)]
         snquery = new SpanNearQuery(
@@ -482,23 +481,23 @@ public class TestIndex { // extends LuceneTestCase {
                                         new Term("text", "m:c:acc"))) },
                 -1, false);
 
-        assertEquals(2, searcher.search(snqquery, 10).totalHits);
+        assertEquals(2, searcher.search(snqquery, 10).totalHits.value);
 
         // [p = NN & !(m:c: = nom | m:c = acc)]
         snqquery = new SpanNotQuery(new SpanTermQuery(new Term("text", "p:NN")),
                 new SpanOrQuery(new SpanTermQuery(new Term("text", "m:c:nom")),
                         new SpanTermQuery(new Term("text", "m:c:acc"))));
-        assertEquals(1, searcher.search(snqquery, 10).totalHits);
+        assertEquals(1, searcher.search(snqquery, 10).totalHits.value);
 
         // [p = NN & !(m:c = nom)]
         snqquery = new SpanNotQuery(new SpanTermQuery(new Term("text", "p:NN")),
                 new SpanTermQuery(new Term("text", "m:c:nom")));
-        assertEquals(3, searcher.search(snqquery, 10).totalHits);
+        assertEquals(3, searcher.search(snqquery, 10).totalHits.value);
 
         // [p=NN & !(m:c = acc)]
         snqquery = new SpanNotQuery(new SpanTermQuery(new Term("text", "p:NN")),
                 new SpanTermQuery(new Term("text", "m:c:acc")));
-        assertEquals(2, searcher.search(snqquery, 10).totalHits);
+        assertEquals(2, searcher.search(snqquery, 10).totalHits.value);
 
         // [p=PPER][][p=ART]
         snquery = new SpanNearQuery(
@@ -508,7 +507,7 @@ public class TestIndex { // extends LuceneTestCase {
                                 new SpanTermQuery(new Term("text", "p:ART")) },
                                 0, true), },
                 0, true);
-        assertEquals(1, searcher.search(snquery, 10).totalHits);
+        assertEquals(1, searcher.search(snquery, 10).totalHits.value);
 
 
         // Todo:
@@ -534,7 +533,7 @@ public class TestIndex { // extends LuceneTestCase {
                                 true),
                         new SpanTermQuery(new Term("text", "p:VAFIN")) },
                 0, true);
-        assertEquals(1, searcher.search(snquery, 10).totalHits);
+        assertEquals(1, searcher.search(snquery, 10).totalHits.value);
 
         /*
         http://stackoverflow.com/questions/1311199/finding-the-position-of-search-hits-from-lucene
@@ -574,7 +573,7 @@ public class TestIndex { // extends LuceneTestCase {
                                 true),
                         new SpanTermQuery(new Term("text", "p:VAFIN")) },
                 0, true);
-        assertEquals(1, searcher.search(snquery, 10).totalHits);
+        assertEquals(1, searcher.search(snquery, 10).totalHits.value);
 
         payloadString = new StringBuilder();
         for (LeafReaderContext atomic : reader.leaves()) {
@@ -603,7 +602,7 @@ public class TestIndex { // extends LuceneTestCase {
         SpanSegmentWithinQuery ssequery = new SpanSegmentWithinQuery(
             "text","s", new SpanSegmentSequenceQuery("text", "T", "T", "p:VAFIN")
             );
-        assertEquals(0, searcher.search(ssequery.toQuery(), 10).totalHits);
+        assertEquals(0, searcher.search(ssequery.toQuery(), 10).totalHits.value);
         
         payloadString = new StringBuilder();
         termContexts = new HashMap<>();
@@ -629,7 +628,7 @@ public class TestIndex { // extends LuceneTestCase {
             );
         
         assertEquals("for " + ssequery.toQuery(),
-        	     1, searcher.search(ssequery.toQuery(), 10).totalHits);
+        	     1, searcher.search(ssequery.toQuery(), 10).totalHits.value);
         
         payloadString = new StringBuilder();
         termContexts = new HashMap<>();

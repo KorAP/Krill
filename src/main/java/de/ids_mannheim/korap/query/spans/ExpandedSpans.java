@@ -10,7 +10,6 @@ import java.util.TreeSet;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.index.TermContext;
 import org.apache.lucene.util.Bits;
 
 import org.slf4j.Logger;

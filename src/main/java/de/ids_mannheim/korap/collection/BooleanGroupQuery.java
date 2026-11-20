@@ -9,6 +9,7 @@ import org.apache.lucene.search.ConstantScoreWeight;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.util.BitSetIterator;
@@ -140,14 +141,15 @@ public class BooleanGroupQuery extends Query {
 
 
     @Override
-    public Weight createWeight (IndexSearcher searcher, boolean needsScores,
-            float boost) throws IOException {
+    public Weight createWeight (IndexSearcher searcher,
+            ScoreMode scoreMode, float boost) throws IOException {
 
         // The weights of the operands are created once for all leaves
         final Weight[] operandWeights = new Weight[this.operands.size()];
         for (int i = 0; i < operandWeights.length; i++) {
             operandWeights[i] = searcher.createWeight(
-                    searcher.rewrite(this.operands.get(i).query), false, 1f);
+                    searcher.rewrite(this.operands.get(i).query),
+                    ScoreMode.COMPLETE_NO_SCORES, 1f);
         };
 
         return new ConstantScoreWeight(this, boost) {
@@ -165,7 +167,7 @@ public class BooleanGroupQuery extends Query {
                         operandWeights);
                 if (docs == null)
                     return null;
-                return new ConstantScoreScorer(this, score(), docs);
+                return new ConstantScoreScorer(this, score(), scoreMode, docs);
             };
         };
     };
