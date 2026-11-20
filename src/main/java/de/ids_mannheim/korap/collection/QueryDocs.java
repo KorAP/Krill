@@ -31,7 +31,7 @@ public final class QueryDocs {
             throws IOException {
         IndexSearcher searcher = new IndexSearcher(top);
         searcher.setQueryCache(null);
-        return searcher.createNormalizedWeight(query, false);
+        return searcher.createWeight(searcher.rewrite(query), false, 1f);
     };
 
 

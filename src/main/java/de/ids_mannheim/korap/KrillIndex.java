@@ -48,7 +48,7 @@ import de.ids_mannheim.korap.collection.QueryDocs;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.FixedBitSet;
@@ -249,7 +249,7 @@ public final class KrillIndex implements IndexInfo {
      * @throws IOException
      */
     public KrillIndex () throws IOException {
-        this((Directory) new RAMDirectory());
+        this((Directory) new ByteBuffersDirectory());
     };
 
 

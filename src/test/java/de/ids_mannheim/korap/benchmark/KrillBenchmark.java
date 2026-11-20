@@ -26,7 +26,7 @@ import org.apache.lucene.index.Terms;
 import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.util.BytesRef;
 
 import de.ids_mannheim.korap.Krill;
@@ -660,7 +660,7 @@ public class KrillBenchmark {
 
 
     private Directory buildSampleIndex () throws IOException {
-        Directory dir = new RAMDirectory();
+        Directory dir = new ByteBuffersDirectory();
         KrillIndex ki = new KrillIndex(dir);
         for (String doc : SAMPLE_DOCS) {
             String name = "/wiki/" + doc + ".json.gz";

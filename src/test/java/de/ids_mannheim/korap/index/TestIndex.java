@@ -54,7 +54,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.RegexpQuery;
 
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.SimpleFSDirectory; // temporary
 
 import org.apache.lucene.util.Version;
@@ -70,9 +70,8 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestIndex { // extends LuceneTestCase {
     // Create index in RAM
-    //    private Directory index = new RAMDirectory();
 
-    private Directory index = new RAMDirectory();
+    private Directory index = new ByteBuffersDirectory();
 
 
     @Test
@@ -216,7 +215,7 @@ public class TestIndex { // extends LuceneTestCase {
             addDoc(w, i.next());
         };
 
-        assertEquals(3, w.numDocs());
+        assertEquals(3, w.getDocStats().numDocs);
 
         w.close();
 

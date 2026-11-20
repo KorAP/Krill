@@ -146,8 +146,8 @@ public class BooleanGroupQuery extends Query {
         // The weights of the operands are created once for all leaves
         final Weight[] operandWeights = new Weight[this.operands.size()];
         for (int i = 0; i < operandWeights.length; i++) {
-            operandWeights[i] = searcher.createNormalizedWeight(
-                    this.operands.get(i).query, false);
+            operandWeights[i] = searcher.createWeight(
+                    searcher.rewrite(this.operands.get(i).query), false, 1f);
         };
 
         return new ConstantScoreWeight(this, boost) {
