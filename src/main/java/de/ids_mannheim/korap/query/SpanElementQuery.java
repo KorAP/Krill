@@ -1,8 +1,6 @@
 package de.ids_mannheim.korap.query;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
@@ -47,7 +45,6 @@ import de.ids_mannheim.korap.query.spans.SpanWeights;
  * @author margaretha
  */
 public final class SpanElementQuery extends SimpleSpanQuery {
-    private static Term elementTerm;
     private String elementStr;
 
 
@@ -61,8 +58,7 @@ public final class SpanElementQuery extends SimpleSpanQuery {
      *            a term
      */
     public SpanElementQuery (String field, String term) {
-        super(new SpanTermQuery((elementTerm = new Term(field, "<>:" + term))),
-                true);
+        super(new SpanTermQuery(new Term(field, "<>:" + term)), true);
         this.elementStr = term;
     };
 
@@ -103,12 +99,6 @@ public final class SpanElementQuery extends SimpleSpanQuery {
         SpanElementQuery sq = new SpanElementQuery(this.getField(),
                 this.getElementStr());
         return sq;
-    };
-
-
-    @Override
-    public void extractTerms (Set<Term> terms) {
-        terms.add(elementTerm);
     };
 
 

@@ -2,15 +2,14 @@ package de.ids_mannheim.korap.query;
 
 // Based on SpanNearQuery
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryVisitor;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanWeight;
 import org.apache.lucene.search.spans.Spans;
@@ -124,8 +123,15 @@ public class SpanWithinQuery extends SpanQuery implements Cloneable, KrillSpanQu
     };
 
 
-    public void extractTerms (Set<Term> terms) {
-        SimpleSpanQuery.collectTerms(embedded, terms);
+    @Override
+    public void visit (QueryVisitor visitor) {
+        if (!visitor.acceptField(field))
+            return;
+
+        QueryVisitor v = visitor.getSubVisitor(BooleanClause.Occur.MUST,
+                this);
+        wrap.visit(v);
+        embedded.visit(v);
     };
 
 

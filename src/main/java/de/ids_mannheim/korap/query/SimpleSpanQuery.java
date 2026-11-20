@@ -2,17 +2,16 @@ package de.ids_mannheim.korap.query;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.spans.SpanOrQuery;
+import org.apache.lucene.search.QueryVisitor;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanTermQuery;
 import org.apache.lucene.search.spans.SpanWeight;
@@ -314,54 +313,27 @@ public abstract class SimpleSpanQuery extends SpanQuery implements Cloneable, Kr
 
 
     /**
-     * Add all terms of a span query to a set of terms.
-     *
-     * Since Lucene 5.2 <tt>SpanQuery.extractTerms()</tt> is
-     * protected and can't be called on arbitrary span queries
-     * anymore. Krill's own queries are asked directly, the queries
-     * of Lucene that Krill uses as operands are taken apart here.
-     * Other queries contribute no terms.
-     *
-     * @param query
-     *            The span query to get the terms from.
-     * @param terms
-     *            The set the terms are added to.
+     * Visit the clauses of the query. All clauses are visited as
+     * required clauses, even negated ones, so a term collector (as
+     * used by {@link KrillSpanWeight}) gets all terms of the query.
      */
-    public static void collectTerms (SpanQuery query, Set<Term> terms) {
-        if (query instanceof SimpleSpanQuery) {
-            ((SimpleSpanQuery) query).extractTerms(terms);
-        }
-        else if (query instanceof SpanWithinQuery) {
-            ((SpanWithinQuery) query).extractTerms(terms);
-        }
-        else if (query instanceof SpanTermQuery) {
-            terms.add(((SpanTermQuery) query).getTerm());
-        }
-        else if (query instanceof SpanOrQuery) {
-            for (SpanQuery clause : ((SpanOrQuery) query).getClauses())
-                collectTerms(clause, terms);
-        };
-    };
+    @Override
+    public void visit (QueryVisitor visitor) {
+        if (!visitor.acceptField(getField()))
+            return;
 
-
-    // For rewriting fuzzy searches like wildcard and regex
-    /** {@inheritDoc} */
-    public void extractTerms (Set<Term> terms) {
-
-        if (terms == null) {
-            throw new IllegalArgumentException("The term set cannot be null.");
-        }
-
+        QueryVisitor v = visitor.getSubVisitor(BooleanClause.Occur.MUST,
+                this);
         if (firstClause != null) {
-            collectTerms(firstClause, terms);
+            firstClause.visit(v);
         }
 
         if (secondClause != null) {
-            collectTerms(secondClause, terms);
+            secondClause.visit(v);
         }
         else if (clauseList != null) {
             for (SpanQuery clause : clauseList) {
-                collectTerms(clause, terms);
+                clause.visit(v);
             }
         }
     };

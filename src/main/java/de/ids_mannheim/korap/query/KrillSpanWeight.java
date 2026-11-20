@@ -11,6 +11,7 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermStates;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.QueryVisitor;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.apache.lucene.search.spans.SpanWeight;
 import org.apache.lucene.search.spans.Spans;
@@ -56,7 +57,7 @@ public class KrillSpanWeight extends SpanWeight {
     private static Map<Term, TermStates> buildTermStates (SpanQuery query,
             IndexSearcher searcher) throws IOException {
         Set<Term> terms = new TreeSet<>();
-        SimpleSpanQuery.collectTerms(query, terms);
+        query.visit(QueryVisitor.termCollector(terms));
         IndexReaderContext top = searcher.getTopReaderContext();
         Map<Term, TermStates> termStates = new TreeMap<>();
         for (Term term : terms)
@@ -72,9 +73,11 @@ public class KrillSpanWeight extends SpanWeight {
     };
 
 
+    // Abstract up to Lucene 8, removed in Lucene 9
+    @Deprecated
     @Override
     public void extractTerms (Set<Term> terms) {
-        SimpleSpanQuery.collectTerms((SpanQuery) this.getQuery(), terms);
+        this.getQuery().visit(QueryVisitor.termCollector(terms));
     };
 
 

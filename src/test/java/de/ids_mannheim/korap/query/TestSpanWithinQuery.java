@@ -2,6 +2,11 @@ package de.ids_mannheim.korap.query;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.QueryVisitor;
 import org.apache.lucene.search.spans.SpanQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,5 +61,21 @@ public class TestSpanWithinQuery {
 		catch (QueryException qe) {
 			assertEquals(772, qe.getErrorCode());
 		};
+    };
+
+
+    @Test
+    public void spanWithinQueryTerms () throws QueryException {
+        SpanSequenceQueryWrapper ssquery = new SpanSequenceQueryWrapper("field",
+                "a", "b");
+        SpanWithinQuery swquery = new SpanWithinQuery(
+                new SpanElementQuery("field", "s"),
+                new SpanNextQuery(ssquery.toQuery(),
+                        new SpanElementQuery("field", "np")));
+
+        Set<Term> terms = new TreeSet<>();
+        swquery.visit(QueryVisitor.termCollector(terms));
+        assertEquals("[field:<>:np, field:<>:s, field:a, field:b]",
+                terms.toString());
     };
 };

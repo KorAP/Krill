@@ -4,11 +4,13 @@ import java.io.IOException;
 import java.util.*;
 
 import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.ConstantScoreScorer;
 import org.apache.lucene.search.ConstantScoreWeight;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryVisitor;
 import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Scorer;
 import org.apache.lucene.search.Weight;
@@ -137,6 +139,18 @@ public class BooleanGroupQuery extends Query {
             buffer.append(operand.query.toString());
         };
         return buffer.append(')').toString();
+    };
+
+
+    @Override
+    public void visit (QueryVisitor visitor) {
+        for (final GroupQueryOperand operand : this.operands) {
+            BooleanClause.Occur occur = operand.isNegative
+                    ? BooleanClause.Occur.MUST_NOT
+                    : (this.isOptional ? BooleanClause.Occur.SHOULD
+                            : BooleanClause.Occur.MUST);
+            operand.query.visit(visitor.getSubVisitor(occur, this));
+        };
     };
 
 
