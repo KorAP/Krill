@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.lucene.index.PostingsEnum;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanCollector;
+import org.apache.lucene.queries.spans.SpanCollector;
 import org.apache.lucene.util.BytesRef;
 
 /**

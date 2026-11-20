@@ -28,7 +28,7 @@ import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.response.SearchContext;
 import de.ids_mannheim.korap.util.KrillProperties;
 import de.ids_mannheim.korap.util.QueryException;
-import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.SpanTermQuery;
 
 
 public class TestMaxContext {

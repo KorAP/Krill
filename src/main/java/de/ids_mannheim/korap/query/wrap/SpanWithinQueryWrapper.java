@@ -1,6 +1,6 @@
 package de.ids_mannheim.korap.query.wrap;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 
 import de.ids_mannheim.korap.query.SpanWithinQuery;
 import de.ids_mannheim.korap.util.QueryException;

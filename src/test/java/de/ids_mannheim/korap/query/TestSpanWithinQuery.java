@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.QueryVisitor;
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;

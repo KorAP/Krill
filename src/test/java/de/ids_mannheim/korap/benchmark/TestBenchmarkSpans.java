@@ -11,7 +11,7 @@ import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.KrillQuery;
 import de.ids_mannheim.korap.query.QueryBuilder;
 import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.util.QueryException;
 

@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.RegexpQuery;
 import org.apache.lucene.util.automaton.RegExp;
-import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.SpanMultiTermQueryWrapper;
+import org.apache.lucene.queries.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;

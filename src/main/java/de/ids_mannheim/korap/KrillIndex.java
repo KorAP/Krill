@@ -41,7 +41,7 @@ import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import de.ids_mannheim.korap.query.spans.KrillSpans;
 import de.ids_mannheim.korap.collection.QueryDocs;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -260,7 +260,7 @@ public final class KrillIndex implements IndexInfo {
      * @throws IOException
      */
     public KrillIndex (Directory directory) throws IOException {
-        this.directory = disableUnmap(directory);
+        this.directory = directory;
     };
 
 
@@ -273,39 +273,10 @@ public final class KrillIndex implements IndexInfo {
      * @throws IOException
      */
     public KrillIndex (Path path) throws IOException {
-        this.directory = disableUnmap(new MMapDirectory(path));
+        this.directory = new MMapDirectory(path);
     };
 
 
-    /*
-     * Turn off the unmapping of memory mapped index files.
-     *
-     * Lucene 5.2 unmaps files on close by calling the internal
-     * cleaner() method of the JDK's direct byte buffers through
-     * reflection. Since Java 9 the module system forbids this and
-     * every close of a memory mapped file fails with an
-     * InaccessibleObjectException (unless the JVM is started with
-     * --add-opens for java.nio and jdk.internal.ref).
-     *
-     * Lucene 5.0 never unmapped on Java 9 and later (it looked for
-     * sun.misc.Cleaner, which no longer exists), so turning it off
-     * keeps the behaviour Krill had before the upgrade: mapped files
-     * are released by the garbage collector.
-     *
-     * Lucene 6.5 to 8 unmap on Java 9 and later through
-     * sun.misc.Unsafe.invokeCleaner(), which is terminally deprecated:
-     * the JVM prints a warning, and a future Java version will remove
-     * it. So unmapping stays turned off.
-     *
-     * TODO: Remove when upgrading to Lucene 9, which unmaps through
-     * the MemorySegment API instead.
-     */
-    private static Directory disableUnmap (Directory directory) {
-        if (directory instanceof MMapDirectory)
-            ((MMapDirectory) directory).setUseUnmap(false);
-        return directory;
-    };
-    
     /**
      * Get the version number of the index.
      * 

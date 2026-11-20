@@ -3,7 +3,7 @@ package de.ids_mannheim.korap;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

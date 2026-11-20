@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import java.io.*;
 import static de.ids_mannheim.korap.TestSimple.*;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;

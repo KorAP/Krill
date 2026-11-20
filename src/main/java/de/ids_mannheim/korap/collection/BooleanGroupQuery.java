@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.*;
 
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.ConstantScoreScorer;
 import org.apache.lucene.search.ConstantScoreWeight;
 import org.apache.lucene.search.DocIdSetIterator;
@@ -142,15 +141,18 @@ public class BooleanGroupQuery extends Query {
     };
 
 
+    /*
+     * The group is visited as a leaf, not its operands: since Lucene
+     * 9, IndexSearcher counts all clauses of a query when rewriting
+     * it and fails beyond IndexSearcher.getMaxClauseCount() (1024),
+     * e.g. for a vector of thousands of document IDs. The limit is
+     * meant for BooleanQuery, which scores all clauses together -
+     * the group matches its operands one after another into a bit
+     * set.
+     */
     @Override
     public void visit (QueryVisitor visitor) {
-        for (final GroupQueryOperand operand : this.operands) {
-            BooleanClause.Occur occur = operand.isNegative
-                    ? BooleanClause.Occur.MUST_NOT
-                    : (this.isOptional ? BooleanClause.Occur.SHOULD
-                            : BooleanClause.Occur.MUST);
-            operand.query.visit(visitor.getSubVisitor(occur, this));
-        };
+        visitor.visitLeaf(this);
     };
 
 

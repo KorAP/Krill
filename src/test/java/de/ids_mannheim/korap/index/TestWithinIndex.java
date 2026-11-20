@@ -20,11 +20,11 @@ import static de.ids_mannheim.korap.TestSimple.*;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanOrQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import de.ids_mannheim.korap.query.spans.KrillSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
-import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.SpanTermQuery;
 import org.apache.lucene.util.Bits;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -1160,7 +1160,7 @@ public class TestWithinIndex {
     public void queryJSONcomplexSpanOrTerm ()
             throws QueryException, IOException {
         /*
-          at org.apache.lucene.search.spans.SpanOrQuery$1.doc(SpanOrQuery.java:234)
+          at org.apache.lucene.queries.spans.SpanOrQuery$1.doc(SpanOrQuery.java:234)
           at de.ids_mannheim.korap.query.spans.WithinSpans.toSameDoc(WithinSpans.java:423)
           at de.ids_mannheim.korap.query.spans.WithinSpans.next(WithinSpans.java:375)
           at de.ids_mannheim.korap.KrillIndex.search(KrillIndex.java:1293)

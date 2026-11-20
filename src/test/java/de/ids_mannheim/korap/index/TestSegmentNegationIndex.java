@@ -2,7 +2,7 @@ package de.ids_mannheim.korap.index;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;

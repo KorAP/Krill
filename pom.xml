@@ -79,7 +79,7 @@
     <log4j.version>2.26.1</log4j.version>
     <jackson.version>2.22.3</jackson.version>
     <jackson.mainversion>2.22</jackson.mainversion>
-    <lucene.version>8.11.4</lucene.version>
+    <lucene.version>9.12.3</lucene.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -155,17 +155,26 @@
       <version>${lucene.version}</version>
     </dependency>
     
-    <!-- Lucene queryparser dependency -->
+    <!-- Lucene queries dependency (span queries) -->
     <dependency>
-      <artifactId>lucene-queryparser</artifactId>
+      <artifactId>lucene-queries</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
       <version>${lucene.version}</version>
     </dependency>
     
+    <!-- Lucene queryparser dependency (only used by tests) -->
+    <dependency>
+      <artifactId>lucene-queryparser</artifactId>
+      <groupId>org.apache.lucene</groupId>
+      <type>jar</type>
+      <version>${lucene.version}</version>
+      <scope>test</scope>
+    </dependency>
+    
     <!-- Lucene analyzers dependency -->
     <dependency>
-      <artifactId>lucene-analyzers-common</artifactId>
+      <artifactId>lucene-analysis-common</artifactId>
       <groupId>org.apache.lucene</groupId>
       <type>jar</type>
       <version>${lucene.version}</version>
@@ -287,6 +296,10 @@
 		<transformer
 		    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 		  <mainClass>de.ids_mannheim.korap.index.Indexer</mainClass>
+		  <manifestEntries>
+		    <!-- Lucene's MMapDirectory needs the classes for newer Java versions -->
+		    <Multi-Release>true</Multi-Release>
+		  </manifestEntries>
 		</transformer>
 	      </transformers>
 	      <finalName>${project.artifactId}-Indexer</finalName>
@@ -304,6 +317,10 @@
 		<transformer
 		    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 		  <mainClass>de.ids_mannheim.korap.index.MetaExporter</mainClass>
+		  <manifestEntries>
+		    <!-- Lucene's MMapDirectory needs the classes for newer Java versions -->
+		    <Multi-Release>true</Multi-Release>
+		  </manifestEntries>
 		</transformer>
 	      </transformers>
 	      <finalName>${project.artifactId}-MetaExporter</finalName>
@@ -321,6 +338,10 @@
 		<transformer
 		    implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 		  <mainClass>de.ids_mannheim.korap.server.Node</mainClass>
+		  <manifestEntries>
+		    <!-- Lucene's MMapDirectory needs the classes for newer Java versions -->
+		    <Multi-Release>true</Multi-Release>
+		  </manifestEntries>
 		</transformer>
 		<transformer
 		    implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">

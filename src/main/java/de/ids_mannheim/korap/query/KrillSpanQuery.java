@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.query;
 import java.io.IOException;
 
 import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.queries.spans.Spans;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.SpanWeights;
@@ -14,7 +14,7 @@ import de.ids_mannheim.korap.query.spans.SpanWeights;
  * get the spans of their operands from {@link SpanWeights}.
  * 
  * Lucene (since 5.3) creates spans only through a
- * {@link org.apache.lucene.search.spans.SpanWeight}: Krill's queries
+ * {@link org.apache.lucene.queries.spans.SpanWeight}: Krill's queries
  * provide a {@link KrillSpanWeight} for that, so they can be used
  * where Lucene asks for a weight, e.g. as clauses of a
  * <tt>SpanOrQuery</tt>.

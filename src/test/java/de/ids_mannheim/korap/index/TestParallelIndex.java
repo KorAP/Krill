@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.concurrent.*;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.query.QueryBuilder;

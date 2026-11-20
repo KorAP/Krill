@@ -10,9 +10,9 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreMode;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryVisitor;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanWeight;
-import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.queries.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanWeight;
+import org.apache.lucene.queries.spans.Spans;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.SpanWeights;

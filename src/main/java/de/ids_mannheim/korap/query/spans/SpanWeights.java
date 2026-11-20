@@ -8,8 +8,8 @@ import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.ReaderUtil;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreMode;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanWeight;
+import org.apache.lucene.queries.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanWeight;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.KrillSpanQuery;
@@ -22,7 +22,7 @@ import de.ids_mannheim.korap.query.KrillSpanQuery;
  * directly. Lucene's queries create them through their
  * {@link SpanWeight}, which is created once per query; their spans
  * are made usable by Krill (payloads, accepted documents) with
- * {@link KrillSpans#wrap(org.apache.lucene.search.spans.Spans, Bits)}.
+ * {@link KrillSpans#wrap(org.apache.lucene.queries.spans.Spans, Bits)}.
  * 
  * Instances are created for one searcher (i.e. one top-level reader)
  * and are not thread-safe.

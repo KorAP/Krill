@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.query.wrap;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 
 import de.ids_mannheim.korap.query.SimpleSpanQuery;
 import de.ids_mannheim.korap.query.SpanAttributeQuery;

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.Krill;

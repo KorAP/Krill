@@ -24,7 +24,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import de.ids_mannheim.korap.query.spans.KrillSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 import org.apache.lucene.util.Bits;

@@ -3,8 +3,8 @@ package de.ids_mannheim.korap.query.wrap;
 import java.util.ArrayList;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanTermQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.highlight;
 import java.util.*;
 import java.io.IOException;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 
 import de.ids_mannheim.korap.KrillIndex;
 import de.ids_mannheim.korap.KrillQuery;

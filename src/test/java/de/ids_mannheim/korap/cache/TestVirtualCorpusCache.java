@@ -143,10 +143,11 @@ public class TestVirtualCorpusCache {
         result = krill.apply(ki);
         assertEquals(17, result.getTotalResults());
 
-        // The old leaf fingerprint should be cleaned up, thus the map 
-        // should have the same size. But the fingerprints should be 
-        // different from before the 1st cleaning up
-        assertEquals(2, VirtualCorpusCache.map.get(vcId).keySet().size());
+        // The old leaf fingerprints should be cleaned up, thus the map
+        // should only have the fingerprints of the current leaves.
+        // Since Lucene 9, the commit also merges the small segments,
+        // so there is only one leaf left.
+        assertEquals(fp2, VirtualCorpusCache.map.get(vcId).keySet());
 
         // VC cache will be cleaned up for the 2nd time 
         // resulting the same leaf-fingerprints
@@ -154,7 +155,7 @@ public class TestVirtualCorpusCache {
         result = krill.apply(ki);
         assertEquals(17, result.getTotalResults());
 
-        assertEquals(2, VirtualCorpusCache.map.get(vcId).keySet().size());
+        assertEquals(fp2, VirtualCorpusCache.map.get(vcId).keySet());
 
         ki.close();
 

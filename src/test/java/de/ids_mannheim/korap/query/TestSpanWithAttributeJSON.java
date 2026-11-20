@@ -4,7 +4,7 @@ import static de.ids_mannheim.korap.TestSimple.getJsonQuery;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;

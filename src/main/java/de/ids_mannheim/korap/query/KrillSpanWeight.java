@@ -6,15 +6,14 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.lucene.index.IndexReaderContext;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermStates;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.QueryVisitor;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanWeight;
-import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.queries.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanWeight;
+import org.apache.lucene.queries.spans.Spans;
 
 import de.ids_mannheim.korap.query.spans.SpanWeights;
 
@@ -58,10 +57,9 @@ public class KrillSpanWeight extends SpanWeight {
             IndexSearcher searcher) throws IOException {
         Set<Term> terms = new TreeSet<>();
         query.visit(QueryVisitor.termCollector(terms));
-        IndexReaderContext top = searcher.getTopReaderContext();
         Map<Term, TermStates> termStates = new TreeMap<>();
         for (Term term : terms)
-            termStates.put(term, TermStates.build(top, term, true));
+            termStates.put(term, TermStates.build(searcher, term, true));
         return termStates;
     };
 
@@ -70,14 +68,6 @@ public class KrillSpanWeight extends SpanWeight {
     public void extractTermStates (Map<Term, TermStates> contexts) {
         if (this.termStates != null)
             contexts.putAll(this.termStates);
-    };
-
-
-    // Abstract up to Lucene 8, removed in Lucene 9
-    @Deprecated
-    @Override
-    public void extractTerms (Set<Term> terms) {
-        this.getQuery().visit(QueryVisitor.termCollector(terms));
     };
 
 

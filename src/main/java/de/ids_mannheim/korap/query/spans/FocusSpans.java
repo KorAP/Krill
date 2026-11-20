@@ -10,7 +10,7 @@ import java.util.PriorityQueue;
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermState;
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.apache.lucene.util.Bits;
 
 import org.slf4j.Logger;

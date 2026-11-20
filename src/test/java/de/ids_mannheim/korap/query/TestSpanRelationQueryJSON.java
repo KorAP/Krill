@@ -3,7 +3,7 @@ package de.ids_mannheim.korap.query;
 import static de.ids_mannheim.korap.TestSimple.*;
 import static org.junit.Assert.assertEquals;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

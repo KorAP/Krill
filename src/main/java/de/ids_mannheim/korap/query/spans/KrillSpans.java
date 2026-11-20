@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.lucene.search.spans.SpanCollector;
-import org.apache.lucene.search.spans.Spans;
+import org.apache.lucene.queries.spans.SpanCollector;
+import org.apache.lucene.queries.spans.Spans;
 import org.apache.lucene.util.Bits;
 
 /**

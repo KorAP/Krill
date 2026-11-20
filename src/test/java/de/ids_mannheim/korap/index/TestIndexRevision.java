@@ -32,7 +32,7 @@ public class TestIndexRevision {
         ki.commit();
 
         String x1 = ki.getFingerprint();
-        assertEquals("8bdyBR79CB7jRi8NNg7jkQ==",x1);
+        assertEquals("LCD55963wTixzn1yLBTYQQ==",x1);
 
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00003.json.gz"), true);
@@ -40,13 +40,13 @@ public class TestIndexRevision {
         ki.commit();
 
         String x2 = ki.getFingerprint();
-        assertEquals("ZxM7aEBK-xyKmDcnrLRjwQ==",x2);
+        assertEquals("i7eHROmpWqo-e7kEZMjWPw==",x2);
 
         ki.addDoc(getClass().getResourceAsStream("/wiki/00006.json.gz"), true);
         ki.commit();
 
         String x3 = ki.getFingerprint();
-        assertEquals("yLne3Zz5y7coxnKSL6Masg==",x3);
+        assertEquals("aEjAQN9tzqDZjng0jJpq_A==",x3);
 
 
         // Check if the same changes will have the same effect
@@ -82,7 +82,7 @@ public class TestIndexRevision {
         ki.commit();
 
         String x1 = ki.getFingerprint();
-        assertEquals("8bdyBR79CB7jRi8NNg7jkQ==",x1);
+        assertEquals("LCD55963wTixzn1yLBTYQQ==",x1);
 
         assertTrue(ki.delDocs("title", "A"));
         ki.commit();
@@ -115,7 +115,7 @@ public class TestIndexRevision {
 
         assertEquals(false, ki.isReaderOpen());
 
-        String fingerp = "knCyYH9cGzyKFUp-On93Mg==";
+        String fingerp = "L3cwJpxkRHHOo_4jOXJC-A==";
         assertEquals(fingerp, ki.getFingerprint());
 
         assertEquals(true, ki.isReaderOpen());
@@ -149,7 +149,7 @@ public class TestIndexRevision {
         List<LeafReaderContext> contexts = ki.reader().leaves();
         assertEquals(1, contexts.size());
         x1 = ReaderKeys.of(contexts.get(0).reader());
-        assertEquals("_0(8.11.4):c1", x1);
+        assertEquals("_0(9.12.3):c1", x1);
         
         ki.addDoc(getClass().getResourceAsStream("/wiki/00002.json.gz"), true);
         ki.addDoc(getClass().getResourceAsStream("/wiki/00003.json.gz"), true);
@@ -162,11 +162,11 @@ public class TestIndexRevision {
         contexts = ki.reader().leaves();
         assertEquals(3, contexts.size());
         x1 = ReaderKeys.of(contexts.get(0).reader());
-        assertEquals("_0(8.11.4):c1", x1);
+        assertEquals("_0(9.12.3):c1", x1);
         x2 = ReaderKeys.of(contexts.get(1).reader());
-        assertEquals("_1(8.11.4):c3", x2);
+        assertEquals("_1(9.12.3):c3", x2);
         x3 = ReaderKeys.of(contexts.get(2).reader());
-        assertEquals("_2(8.11.4):c1", x3);
+        assertEquals("_2(9.12.3):c1", x3);
         
         assertTrue(ki.delDocs("title", "A (Band)"));
         ki.commit();
@@ -176,13 +176,13 @@ public class TestIndexRevision {
         contexts = ki.reader().leaves();
         assertEquals(3, contexts.size());
         x1 = ReaderKeys.of(contexts.get(0).reader());
-        assertEquals("_0(8.11.4):c1", x1);
+        assertEquals("_0(9.12.3):c1", x1);
         x2 = ReaderKeys.of(contexts.get(1).reader());
-        assertEquals("_1(8.11.4):c3/1:delGen=1", x2);
+        assertEquals("_1(9.12.3):c3/1:delGen=1", x2);
         x3 = ReaderKeys.of(contexts.get(2).reader());
-        assertEquals("_2(8.11.4):c1", x3);
+        assertEquals("_2(9.12.3):c1", x3);
         
-        String fingerp = "kv6YXOuHowkxecB1e42Thw==";
+        String fingerp = "B3ih84IOJP7UNb28e1k8Dw==";
         assertEquals(fingerp, ki.getFingerprint());
 
         ki.close();
@@ -195,11 +195,11 @@ public class TestIndexRevision {
         contexts = ki.reader().leaves();
         assertEquals(3, contexts.size());
         x1 = ReaderKeys.of(contexts.get(0).reader());
-        assertEquals("_0(8.11.4):c1", x1);
+        assertEquals("_0(9.12.3):c1", x1);
         x2 = ReaderKeys.of(contexts.get(1).reader());
-        assertEquals("_1(8.11.4):c3/1:delGen=1", x2);
+        assertEquals("_1(9.12.3):c3/1:delGen=1", x2);
         x3 = ReaderKeys.of(contexts.get(2).reader());
-        assertEquals("_2(8.11.4):c1", x3);
+        assertEquals("_2(9.12.3):c1", x3);
         
         ki.close();
     };

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;

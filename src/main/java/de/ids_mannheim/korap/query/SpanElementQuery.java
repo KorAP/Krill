@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.Spans;
-import org.apache.lucene.search.spans.TermSpans;
+import org.apache.lucene.queries.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.Spans;
+import org.apache.lucene.queries.spans.TermSpans;
 import org.apache.lucene.util.Bits;
 
 import de.ids_mannheim.korap.query.spans.ElementSpans;

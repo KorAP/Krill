@@ -11,7 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URLDecoder;
 
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 import org.junit.Test;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;

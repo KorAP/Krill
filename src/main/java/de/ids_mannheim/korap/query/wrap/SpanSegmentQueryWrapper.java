@@ -3,9 +3,9 @@ package de.ids_mannheim.korap.query.wrap;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.apache.lucene.search.spans.SpanNotQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.search.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanNotQuery;
+import org.apache.lucene.queries.spans.SpanOrQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
 
 import de.ids_mannheim.korap.query.SpanSegmentQuery;
 import de.ids_mannheim.korap.util.QueryException;

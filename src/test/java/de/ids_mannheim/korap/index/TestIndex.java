@@ -39,13 +39,13 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PhraseQuery;
 import de.ids_mannheim.korap.query.spans.KrillSpans;
 import de.ids_mannheim.korap.query.spans.SpanWeights;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.search.spans.SpanMultiTermQueryWrapper;
-import org.apache.lucene.search.spans.SpanTermQuery;
-import org.apache.lucene.search.spans.SpanNearQuery;
-import org.apache.lucene.search.spans.SpanNotQuery;
-import org.apache.lucene.search.spans.NearSpansOrdered;
+import org.apache.lucene.queries.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanOrQuery;
+import org.apache.lucene.queries.spans.SpanMultiTermQueryWrapper;
+import org.apache.lucene.queries.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.SpanNearQuery;
+import org.apache.lucene.queries.spans.SpanNotQuery;
+import org.apache.lucene.queries.spans.NearSpansOrdered;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
@@ -54,7 +54,6 @@ import org.apache.lucene.search.RegexpQuery;
 
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.ByteBuffersDirectory;
-import org.apache.lucene.store.SimpleFSDirectory; // temporary
 
 import org.apache.lucene.util.Version;
 import org.apache.lucene.util.BytesRef;

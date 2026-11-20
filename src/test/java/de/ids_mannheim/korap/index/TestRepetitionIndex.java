@@ -10,9 +10,9 @@ import static de.ids_mannheim.korap.TestSimple.getJsonString;
 import static de.ids_mannheim.korap.TestSimple.simpleFieldDoc;
 import static de.ids_mannheim.korap.TestSimple.simpleFuzzyFieldDoc;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanOrQuery;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.SpanOrQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanTermQuery;
 import org.junit.Test;
 import org.junit.Ignore;
 

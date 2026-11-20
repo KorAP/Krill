@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.SpanTermQuery;
 import org.junit.Test;
 
 import de.ids_mannheim.korap.KrillIndex;

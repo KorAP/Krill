@@ -8,8 +8,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.spans.SpanQuery;
-import org.apache.lucene.search.spans.SpanTermQuery;
+import org.apache.lucene.queries.spans.SpanQuery;
+import org.apache.lucene.queries.spans.SpanTermQuery;
 import org.apache.lucene.store.MMapDirectory;
 import org.junit.Test;
 
