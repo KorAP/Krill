@@ -50,10 +50,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
     private boolean storeOffsets = false;
     public BytesRef payload = null;
 
-    private static ByteBuffer bb = ByteBuffer.allocate(64);
-    private static String[] stringOffset;
 
-    private static short i, l;
 
     private static final int MAX_TERM_LENGTH = 1024;
     
@@ -392,16 +389,17 @@ public class MultiTerm implements Comparable<MultiTerm> {
             // Payload has a type
             if (payloadStr.charAt(0) == '<' && payloadStr.charAt(2) == '>') {
 
-                // Rewind bytebuffer
-                bb.rewind();
+                // Local buffer (must not be shared, as terms
+                // may be parsed concurrently by multiple threads)
+                ByteBuffer bb = ByteBuffer.allocate(64);
 
                 // Split payload at type marker boundaries
                 String[] pls = payloadStr.split("((?=<)|(?<=>))(?!\\A)");
 
-                l = 0; // Bytearray length
+                short l = 0; // Bytearray length
 
                 try {
-                    for (i = 1; i < pls.length;) {
+                    for (int i = 1; i < pls.length;) {
                         // Resize the bytebuffer
                         if ((bb.capacity() - l) < 8) {
                             bb = ByteBuffer.allocate(bb.capacity() + 8)
@@ -461,7 +459,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
         };
 
         // Parse offset information
-        stringOffset = termSurface[0].split("(?<!\\\\)\\#", 2);
+        String[] stringOffset = termSurface[0].split("(?<!\\\\)\\#", 2);
 
         if (stringOffset.length == 2) {
 

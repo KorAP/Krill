@@ -1,3 +1,8 @@
+0.67 2026-11-23
+    - [bugfix] Make MultiTerm parsing thread-safe by replacing
+      static parsing buffers and counters with local variables
+      (kupietz; AI-assisted Claude Opus 5.5)
+
 0.66 2026-11-09
     - Add memory limit (#267, margaretha, AI assisted) 
     - Add methods to reset Krill properties. (margaretha)

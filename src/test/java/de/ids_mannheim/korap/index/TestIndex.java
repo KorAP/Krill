@@ -112,6 +112,64 @@ public class TestIndex { // extends LuceneTestCase {
     };
 
 
+    // MultiTerm parsing has to be thread-safe, as documents
+    // may be indexed concurrently by multiple threads
+    @Test
+    public void multiTermConcurrent () throws Exception {
+        final String[] terms = new String[] {
+            "<>:s:test#0-4$<i>67",
+            "xip/l:\\#normal#0-5$<i>3999",
+            "<>:base/s:s#12-345$<i>12<i>345<i>77<b>1<s>3",
+            "tt/p:NN#100-104$<b>12<s>4321<l>123456789",
+            ">:mate/d:SUBJ$<b>32<i>1234<i>5678<i>9101<s>12<s>13",
+            "a#1-2",
+            "@:dereko/s:text$<b>17<s>2<i>6",
+            "<>:corenlp/c:NP#5-6$<x>foobarbaz<i>4",
+        };
+
+        // Reference results, parsed sequentially
+        final String[] expected = new String[terms.length];
+        for (int i = 0; i < terms.length; i++) {
+            MultiTerm mt = new MultiTerm(terms[i]);
+            expected[i] = mt.getTerm() + "|" + mt.getStart() + "|"
+                    + mt.getEnd() + "|" + mt.getPayload();
+        };
+
+        final int threads = 16;
+        final java.util.concurrent.atomic.AtomicInteger mismatches =
+            new java.util.concurrent.atomic.AtomicInteger(0);
+        final java.util.concurrent.CountDownLatch start =
+            new java.util.concurrent.CountDownLatch(1);
+        List<Thread> workers = new ArrayList<>();
+        for (int t = 0; t < threads; t++) {
+            final int offset = t;
+            Thread worker = new Thread(() -> {
+                try {
+                    start.await();
+                    for (int n = 0; n < 20000; n++) {
+                        int i = (n + offset) % terms.length;
+                        MultiTerm mt = new MultiTerm(terms[i]);
+                        String result = mt.getTerm() + "|" + mt.getStart()
+                                + "|" + mt.getEnd() + "|" + mt.getPayload();
+                        if (!expected[i].equals(result))
+                            mismatches.incrementAndGet();
+                    };
+                }
+                catch (Exception e) {
+                    mismatches.incrementAndGet();
+                };
+            });
+            workers.add(worker);
+            worker.start();
+        };
+        start.countDown();
+        for (Thread worker : workers)
+            worker.join();
+
+        assertEquals(0, mismatches.get());
+    };
+
+
     @Test
     public void multiTermToken () throws CorpusDataException {
         MultiTermToken test = new MultiTermToken("hunde", "pos:n", "m:gen:pl");
