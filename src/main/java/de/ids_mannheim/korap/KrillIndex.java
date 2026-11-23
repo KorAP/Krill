@@ -1231,7 +1231,7 @@ public final class KrillIndex implements IndexInfo {
             if (DEBUG)
                 log.trace("The final regexString is {}", regex.toString());
 
-            RegExp regexObj = new RegExp(regex.toString(), RegExp.COMPLEMENT);
+            RegExp regexObj = new RegExp(regex.toString(), RegExp.NONE);
             fst = new CompiledAutomaton(regexObj.toAutomaton());
             if (DEBUG)
                 log.trace("The final regexObj is {}", regexObj.toString());
