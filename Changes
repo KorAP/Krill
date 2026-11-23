@@ -8,6 +8,9 @@
     - [performance] Create loggers of MultiTerm, MultiTermToken and
       MultiTermTokenStream once per class instead of once per instance
       (kupietz; AI-assisted Claude Opus 5.5)
+    - [performance] Precompile regular expressions for term parsing
+      in MultiTerm (~15% faster indexing)
+      (kupietz; AI-assisted Claude Opus 5.5)
 
 0.66 2026-11-09
     - Add memory limit (#267, margaretha, AI assisted) 

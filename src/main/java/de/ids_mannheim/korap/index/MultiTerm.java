@@ -3,6 +3,7 @@ package de.ids_mannheim.korap.index;
 import de.ids_mannheim.korap.util.CorpusDataException;
 import org.apache.lucene.util.BytesRef;
 import java.nio.ByteBuffer;
+import java.util.regex.Pattern;
 import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
@@ -56,6 +57,15 @@ public class MultiTerm implements Comparable<MultiTerm> {
     
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
+    // Precompiled patterns (String.split() would recompile
+    // lookaround patterns for every term)
+    private static final Pattern PAYLOAD_SPLIT =
+            Pattern.compile("(?<!\\\\)\\$");
+    private static final Pattern PAYLOAD_TYPE_SPLIT =
+            Pattern.compile("((?=<)|(?<=>))(?!\\A)");
+    private static final Pattern OFFSET_SPLIT =
+            Pattern.compile("(?<!\\\\)\\#");
+
     private static final Logger log = LoggerFactory
             .getLogger(MultiTermTokenStream.class);
 
@@ -380,7 +390,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
      * Deserialize MultiTerm from string representation.
      */
     private void _fromString (String term) throws CorpusDataException {
-        String[] termSurface = term.split("(?<!\\\\)\\$", 2);
+        String[] termSurface = PAYLOAD_SPLIT.split(term, 2);
 
         // Payload is given
         if (termSurface.length == 2) {
@@ -394,7 +404,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
                 ByteBuffer bb = ByteBuffer.allocate(64);
 
                 // Split payload at type marker boundaries
-                String[] pls = payloadStr.split("((?=<)|(?<=>))(?!\\A)");
+                String[] pls = PAYLOAD_TYPE_SPLIT.split(payloadStr);
 
                 short l = 0; // Bytearray length
 
@@ -459,7 +469,7 @@ public class MultiTerm implements Comparable<MultiTerm> {
         };
 
         // Parse offset information
-        String[] stringOffset = termSurface[0].split("(?<!\\\\)\\#", 2);
+        String[] stringOffset = OFFSET_SPLIT.split(termSurface[0], 2);
 
         if (stringOffset.length == 2) {
 
