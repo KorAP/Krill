@@ -48,7 +48,7 @@ import de.ids_mannheim.korap.query.spans.ElementSpans;
  * @author margaretha
  */
 public final class SpanElementQuery extends SimpleSpanQuery {
-    private static Term elementTerm;
+    private final Term elementTerm;
     private String elementStr;
 
 
@@ -62,8 +62,8 @@ public final class SpanElementQuery extends SimpleSpanQuery {
      *            a term
      */
     public SpanElementQuery (String field, String term) {
-        super(new SpanTermQuery((elementTerm = new Term(field, "<>:" + term))),
-                true);
+        super(new SpanTermQuery(new Term(field, "<>:" + term)), true);
+        this.elementTerm = ((SpanTermQuery) this.getFirstClause()).getTerm();
         this.elementStr = term;
     };
 
