@@ -1,4 +1,4 @@
-image: maven:3-eclipse-temurin-21-alpine
+image: maven:3-eclipse-temurin-25-alpine
 
 stages:
     - build
