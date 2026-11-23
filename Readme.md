@@ -85,7 +85,7 @@ The `Indexer` reads corpus documents and adds/updates them in a Krill
 ```
 java -jar Krill-Indexer.jar -c <properties file> \
      [-i <input paths>] [-D <field> <value>] \
-     [-o <output directory>] [-a] [--progress]
+     [-o <output directory>] [-a] [-t <threads>] [--progress]
 ```
 
 - `-c`, `--config <properties file>` — configuration file (required),
@@ -101,10 +101,23 @@ java -jar Krill-Indexer.jar -c <properties file> \
   GOE/AGX/00002`).
 - `-a`, `--addInsteadofUpsert` — always add documents, never update
   existing ones (upsert is the default).
+- `-t`, `--threads <threads>` — number of concurrent indexing threads
+  (default 1). Values greater than 1 require `-a`; without it, the
+  indexer falls back to a single thread.
+- `--ramBufferMB <MB>` — RAM buffer of the index writer, shared by all
+  threads (default: 16 MB for one thread, 64 MB per thread otherwise).
 - `--progress` — show a progress bar with ETA while indexing.
 
 Documents are upserted by default, so an interrupted run can simply
 be restarted with the same input paths.
+
+Indexing is CPU-bound, so building a new index with `-a` and multiple
+threads scales almost linearly with the number of cores: on a 128-core
+machine, 96 threads indexed DeReKo data about 60 times faster than a
+single thread. Leave some cores for Lucene's merge threads (one per
+four indexing threads). The index content is identical to a
+single-threaded build, but the internal document order (and thus the
+order of search results) is not preserved exactly.
 
 ### Metadata Exporter
 

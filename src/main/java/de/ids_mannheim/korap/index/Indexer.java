@@ -2,12 +2,19 @@ package de.ids_mannheim.korap.index;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.Locale;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -74,7 +81,11 @@ import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRIN
  */
 public class Indexer {
     private KrillIndex index;
-    private int count;
+    private final AtomicInteger count = new AtomicInteger(0);
+    private int threads = 1;
+    private ExecutorService pool = null;
+    private Semaphore slots = null;
+    private final AtomicBoolean committing = new AtomicBoolean(false);
     private int commitCount;
     private boolean progressEnabled = false;
     private SimpleProgressBar progressBar;
@@ -108,7 +119,6 @@ public class Indexer {
 
         // Create a new index object based on the directory
         this.index = new KrillIndex(new MMapDirectory(Paths.get(path)));
-        this.count = 0;
         this.commitCount = Integer.parseInt(commitCount);
 
         jsonFilePattern = Pattern.compile(".*\\.json\\.gz$");
@@ -141,6 +151,134 @@ public class Indexer {
 
 
     /**
+     * Start the worker pool for concurrent indexing.
+     * With a single thread, documents are indexed
+     * inline by the reading thread.
+     *
+     * @param threads
+     *            Number of indexing threads.
+     */
+    private void startWorkers (int threads) {
+        this.threads = threads;
+        if (threads <= 1)
+            return;
+
+        AtomicInteger threadNo = new AtomicInteger(0);
+        this.pool = Executors.newFixedThreadPool(threads, r -> {
+            Thread t = new Thread(r, "krill-indexer-" + threadNo.incrementAndGet());
+            return t;
+        });
+
+        // Bound the number of documents read ahead
+        this.slots = new Semaphore(threads * 4);
+    }
+
+
+    /**
+     * Wait for all queued documents to be indexed.
+     */
+    private void finishWorkers () {
+        if (this.pool == null)
+            return;
+        this.pool.shutdown();
+        try {
+            while (!this.pool.awaitTermination(1, TimeUnit.MINUTES)) {
+                if (DEBUG)
+                    log.debug("Waiting for indexing threads ...");
+            }
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Interrupted while waiting for indexing threads");
+        }
+        this.pool = null;
+    }
+
+
+    /**
+     * Index a single document, either inline or
+     * by handing it over to the worker pool.
+     *
+     * @param label
+     *            Name of the document for logging.
+     * @param data
+     *            The (possibly gzipped) JSON document.
+     * @param gzip
+     *            Whether the data is gzipped.
+     */
+    private void dispatch (String label, byte[] data, boolean gzip) {
+        if (this.pool == null) {
+            this.indexDocument(label, data, gzip);
+            return;
+        }
+
+        this.slots.acquireUninterruptibly();
+        try {
+            this.pool.execute(() -> {
+                try {
+                    this.indexDocument(label, data, gzip);
+                }
+                catch (Throwable t) {
+                    log.error("Unable to index " + label, t);
+                }
+                finally {
+                    this.slots.release();
+                }
+            });
+        }
+        catch (RuntimeException e) {
+            this.slots.release();
+            throw e;
+        }
+    }
+
+
+    // Add or upsert a single document
+    private void indexDocument (String label, byte[] data, boolean gzip) {
+        InputStream entryStream = new ByteArrayInputStream(data);
+        if (addInsteadOfUpsert) {
+            if (!progressEnabled)
+                log.info("{} Add {} to the index. ", this.count.get(), label);
+            if (this.index.addDoc(entryStream, gzip) == null) {
+                log.warn("fail.");
+                return;
+            }
+        }
+        else {
+            if (!progressEnabled)
+                log.info("{} Add or update {} to the index. ", this.count.get(), label);
+            if (this.index.upsertDoc(entryStream, gzip) == null) {
+                log.warn("fail.");
+                return;
+            }
+        }
+
+        int c = this.count.incrementAndGet();
+        if (DEBUG) {
+            log.debug("Finished adding files. (" + c + ").");
+        }
+
+        // Commit in case the commit count is reached
+        // (in addition to the autocommit initiated by KrillIndex).
+        // With concurrent indexing, skip the commit if another
+        // thread is still committing, instead of blocking.
+        if ((c % this.commitCount) == 0) {
+            if (this.committing.compareAndSet(false, true)) {
+                try {
+                    this.commit();
+                }
+                finally {
+                    this.committing.set(false);
+                }
+            }
+            else if (DEBUG) {
+                log.debug("Skip commit - commit already in progress");
+            }
+        }
+    }
+
+
+    /**
      * Parse a directory for document files.
      * 
      * @param dir
@@ -153,41 +291,12 @@ public class Indexer {
             matcher = jsonFilePattern.matcher(file);
             if (matcher.find()) {
                 file = dir.getPath() + '/' + file;
-
                 try {
-                    if (addInsteadOfUpsert) {
-                        if (!progressEnabled)
-                            log.info("{} Add {} to the index. ", this.count, file);
-                        if (this.index.addDoc(new FileInputStream(file),
-                                              true) == null) {
-                            log.warn("fail.");
-                            continue;
-                        }
-                    }
-                    else {
-                        if (!progressEnabled)
-                            log.info("{} Add or update {} to the index. ", this.count, file);
-                        if (this.index.upsertDoc(new FileInputStream(file),
-                                                 true) == null) {
-                            log.warn("fail.");
-                            continue;
-                        };
-                    };
-                    this.count++;
-                    if (DEBUG){
-                        log.debug("Finished adding files. (" + count + ").");
-                    }
-
-                    // Commit in case the commit count is reached
-                    if ((this.count % this.commitCount) == 0) {
-
-                        // This will be done in addition to the
-                        // autocommit initiated by KrillIndex
-                        this.commit();
-                    }
-                    this.stepProgress(new File(file).length());
+                    byte[] data = Files.readAllBytes(Paths.get(file));
+                    this.dispatch(file, data, true);
+                    this.stepProgress(data.length);
                 }
-                catch (FileNotFoundException e) {
+                catch (IOException e) {
                     log.error("File " + file + " is not found!");
                 }
             }
@@ -243,40 +352,13 @@ public class Indexer {
                             if (bytesRead == -1) break;
                             totalRead += bytesRead;
                         }
-                        
-                        try (InputStream entryStream = new java.io.ByteArrayInputStream(entryData)) {
-                            if (addInsteadOfUpsert) {
-                                if (!progressEnabled)
-                                    log.info("{} Add {} from tar {} to the index. ", 
-                                            this.count, entryName, tarFile.getName());
-                                if (this.index.addDoc(entryStream, isGzipped) == null) {
-                                    log.warn("fail.");
-                                    continue;
-                                }
-                            }
-                            else {
-                                if (!progressEnabled)
-                                    log.info("{} Add or update {} from tar {} to the index. ", 
-                                            this.count, entryName, tarFile.getName());
-                                if (this.index.upsertDoc(entryStream, isGzipped) == null) {
-                                    log.warn("fail.");
-                                    continue;
-                                }
-                            }
-                            
-                            this.count++;
-                            if (DEBUG) {
-                                log.debug("Finished adding files. (" + count + ").");
-                            }
 
-                            // Commit in case the commit count is reached
-                            if ((this.count % this.commitCount) == 0) {
-                                this.commit();
-                            }
-                            long nowBytes = countingStream.getBytesRead();
-                            this.stepProgress(nowBytes - prevCompressedBytes);
-                            prevCompressedBytes = nowBytes;
-                        }
+                        this.dispatch(entryName + " from tar " + tarFile.getName(),
+                                      entryData, isGzipped);
+
+                        long nowBytes = countingStream.getBytesRead();
+                        this.stepProgress(nowBytes - prevCompressedBytes);
+                        prevCompressedBytes = nowBytes;
                     }
                     else {
                         log.warn("Skip " + entryName + " from tar " + tarFile.getName()
@@ -318,34 +400,8 @@ public class Indexer {
                 
                 if (isGzipped || isPlainJson) {
                     try (InputStream entryStream = zip.getInputStream(entry)) {
-                        if (addInsteadOfUpsert) {
-                            if (!progressEnabled)
-                                log.info("{} Add {} from zip {} to the index. ", 
-                                        this.count, entryName, zipFile.getName());
-                            if (this.index.addDoc(entryStream, isGzipped) == null) {
-                                log.warn("fail.");
-                                continue;
-                            }
-                        }
-                        else {
-                            if (!progressEnabled)
-                                log.info("{} Add or update {} from zip {} to the index. ", 
-                                        this.count, entryName, zipFile.getName());
-                            if (this.index.upsertDoc(entryStream, isGzipped) == null) {
-                                log.warn("fail.");
-                                continue;
-                            }
-                        }
-                        
-                        this.count++;
-                        if (DEBUG) {
-                            log.debug("Finished adding files. (" + count + ").");
-                        }
-
-                        // Commit in case the commit count is reached
-                        if ((this.count % this.commitCount) == 0) {
-                            this.commit();
-                        }
+                        this.dispatch(entryName + " from zip " + zipFile.getName(),
+                                      entryStream.readAllBytes(), isGzipped);
                         long compSize = entry.getCompressedSize();
                         this.stepProgress(compSize > 0 ? compSize : entry.getSize());
                     }
@@ -422,6 +478,15 @@ public class Indexer {
         options.addOption(Option.builder().longOpt("progress")
                 .desc("Show progress bar with ETA")
                 .build());
+        options.addOption(Option.builder("t").longOpt("threads")
+                .desc("number of concurrent indexing threads (default 1). "
+                        + "Values > 1 require -a/--addInsteadofUpsert.")
+                .hasArg().argName("threads").build());
+        options.addOption(Option.builder().longOpt("ramBufferMB")
+                .desc("RAM buffer of the index writer in MB, shared by all "
+                        + "threads (default: Lucene default of 16 MB for one "
+                        + "thread, 64 MB per thread otherwise).")
+                .hasArg().argName("MB").build());
 
         CommandLineParser parser = new DefaultParser();
 
@@ -430,6 +495,8 @@ public class Indexer {
         String deleteField = null;
         String deleteValue = null;
         boolean showProgress = false;
+        int threads = 1;
+        double ramBufferMB = 0;
         try {
             CommandLine cmd = parser.parse(options, argv);
             log.info("Configuration file: " + cmd.getOptionValue("c"));
@@ -457,11 +524,17 @@ public class Indexer {
                         "Missing required option: either -i/--input or -D/--delete");
             }
 
-            if (cmd.hasOption("a")) {
-                addInsteadOfUpsert = true;
-            };
+            // Set explicitly, as the flag is static and main()
+            // may be called repeatedly (e.g. in tests)
+            addInsteadOfUpsert = cmd.hasOption("a");
             if (cmd.hasOption("progress")) {
                 showProgress = true;
+            }
+            if (cmd.hasOption("t")) {
+                threads = Integer.parseInt(cmd.getOptionValue("t"));
+            }
+            if (cmd.hasOption("ramBufferMB")) {
+                ramBufferMB = Double.parseDouble(cmd.getOptionValue("ramBufferMB"));
             }
         }
         catch (MissingOptionException e) {
@@ -491,6 +564,33 @@ public class Indexer {
                 log.info("Setting max text length to " + KrillProperties.maxTextSize);
                 indexer.index.setMaxStringLength(KrillProperties.maxTextSize);
             }
+
+            // Concurrent indexing is only supported for plain additions,
+            // as upserts are neither atomic nor aware of concurrently
+            // added documents with the same text sigle
+            if (threads > 1 && !addInsteadOfUpsert) {
+                log.warn("Multiple threads require -a/--addInsteadofUpsert "
+                        + "- indexing with a single thread");
+                threads = 1;
+            }
+
+            if (threads > 1) {
+                if (ramBufferMB <= 0)
+                    ramBufferMB = 64.0 * threads;
+                indexer.index.configureWriter(threads, ramBufferMB);
+
+                // Commit intervals count documents per thread,
+                // as every commit flushes the buffers of all threads
+                indexer.index.setAutoCommit(
+                        indexer.index.getAutoCommit() * threads);
+                indexer.commitCount *= threads;
+                log.info("Commit every {} documents", indexer.commitCount);
+                log.info("Indexing with {} threads", threads);
+            }
+            else if (ramBufferMB > 0) {
+                indexer.index.configureWriter(1, ramBufferMB);
+            }
+            indexer.startWorkers(threads);
 
             // Initialize progress bar; total is computed instantly from compressed file sizes
             if (showProgress) {
@@ -523,6 +623,9 @@ public class Indexer {
                 }
             }
 
+            // Wait for all documents to be indexed
+            indexer.finishWorkers();
+
             if (deleteField != null && deleteValue != null) {
                 indexer.index.delDocs(deleteField, deleteValue);
             }
@@ -537,8 +640,8 @@ public class Indexer {
                 String message = "Added ";
                 if (!addInsteadOfUpsert)
                     message += "or updated ";
-                message += indexer.count + " file";
-                if (indexer.count > 1) {
+                message += indexer.count.get() + " file";
+                if (indexer.count.get() > 1) {
                     message += "s";
                 }
                 System.out.println(message + ".");

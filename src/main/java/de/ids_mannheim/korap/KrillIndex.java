@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
@@ -22,6 +23,7 @@ import com.fasterxml.jackson.core.StreamReadConstraints;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.ConcurrentMergeScheduler;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.DocsAndPositionsEnum;
 import org.apache.lucene.index.IndexReader;
@@ -169,15 +171,19 @@ public final class KrillIndex implements IndexInfo {
     // Temp:
     private IndexReader reader;
 
-    private IndexWriter writer;
+    private volatile IndexWriter writer;
     private boolean readerOpen = false;
-    private boolean writerOpen = false;
+    private volatile boolean writerOpen = false;
+
+    // Writer tuning for concurrent bulk indexing (0 = Lucene defaults)
+    private int writerThreads = 0;
+    private double ramBufferSizeMB = 0;
     private Directory directory;
 
     // The commit counter is only there for
     // counting unstaged changes per thread (for bulk insertions)
     // It does not represent real unstaged documents.
-    private int commitCounter = 0;
+    private final AtomicInteger commitCounter = new AtomicInteger(0);
     private HashMap termContexts;
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -363,8 +369,30 @@ public final class KrillIndex implements IndexInfo {
         return usedMB > limitMB;
     };
 
-    // Open index reader
-    private void openWriter () {
+    /**
+     * Tune the {@link IndexWriter} for concurrent bulk indexing.
+     * Has to be called before the writer is opened.
+     *
+     * @param threads
+     *            Number of threads adding documents concurrently.
+     *            Values &gt; 1 raise Lucene's limit of concurrently
+     *            indexing threads (default 8) and the number of
+     *            merge threads.
+     * @param ramBufferSizeMB
+     *            Total RAM buffer of the writer in MB
+     *            (shared by all indexing threads); 0 keeps
+     *            Lucene's default of 16 MB.
+     */
+    public void configureWriter (int threads, double ramBufferSizeMB) {
+        if (writerOpen)
+            log.warn("Writer already open - configuration is ignored");
+        this.writerThreads = threads;
+        this.ramBufferSizeMB = ramBufferSizeMB;
+    };
+
+
+    // Open index writer
+    private synchronized void openWriter () {
         if (writerOpen) {
             return;
         };
@@ -381,7 +409,25 @@ public final class KrillIndex implements IndexInfo {
                 new TextAnalyzer(), analyzerPerField);
 
             // Create configuration with base analyzer
-            this.writer = new IndexWriter(this.directory, new IndexWriterConfig(analyzer));
+            IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+
+            if (this.writerThreads > 1) {
+                iwc.setMaxThreadStates(this.writerThreads);
+                ConcurrentMergeScheduler cms = new ConcurrentMergeScheduler();
+                int mergeThreads = Math.max(4, this.writerThreads / 4);
+                cms.setMaxMergesAndThreads(mergeThreads + 5, mergeThreads);
+                cms.disableAutoIOThrottle();
+                iwc.setMergeScheduler(cms);
+                log.info("Writer configured for {} indexing threads, {} merge threads",
+                         this.writerThreads, mergeThreads);
+            };
+
+            if (this.ramBufferSizeMB > 0) {
+                iwc.setRAMBufferSizeMB(this.ramBufferSizeMB);
+                log.info("Writer RAM buffer set to {} MB", this.ramBufferSizeMB);
+            };
+
+            this.writer = new IndexWriter(this.directory, iwc);
             writerOpen = true;
         }
 
@@ -460,7 +506,7 @@ public final class KrillIndex implements IndexInfo {
      */
     public void commit (boolean force) throws IOException {
         // There is something to commit
-        if (commitCounter > 0 || force)
+        if (commitCounter.get() > 0 || force)
             this.commit();
     };
 
@@ -473,7 +519,7 @@ public final class KrillIndex implements IndexInfo {
     public void commit () throws IOException {
         log.info("Internal committing index ... ");
         this.writer().commit();
-        commitCounter = 0;
+        commitCounter.set(0);
         this.closeReader();
     };
 
@@ -678,9 +724,9 @@ public final class KrillIndex implements IndexInfo {
 
             // Add document to writer
             this.writer().addDocument(doc.compile());
-            if (++commitCounter > autoCommit) {
+            if (commitCounter.incrementAndGet() > autoCommit) {
+                commitCounter.set(0);
                 this.commit();
-                commitCounter = 0;
             };
             this.indexRevision = null;
         }
@@ -706,9 +752,9 @@ public final class KrillIndex implements IndexInfo {
             return false;
         try {
             this.writer().deleteDocuments(new Term(field, term));
-            if (++commitCounter > autoCommit) {
+            if (commitCounter.incrementAndGet() > autoCommit) {
+                commitCounter.set(0);
                 this.commit();
-                commitCounter = 0;
             };
 
             this.indexRevision = null;

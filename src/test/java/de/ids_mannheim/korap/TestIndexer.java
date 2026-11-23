@@ -123,7 +123,7 @@ public class TestIndexer {
                 "-o", getTestOutputPath("test-index2")
             });
         logger.info(outputStream.toString());
-        assertTrue(outputStream.toString().startsWith("Added 1 file."));
+        assertTrue(outputStream.toString().startsWith("Added or updated 1 file."));
     }
 
     @Test
@@ -314,6 +314,33 @@ public class TestIndexer {
 
         long invalidZip = Indexer.countTargetFiles(new String[] { "src/test/resources/nonexistent.zip" });
         assertEquals(0L, invalidZip);
+    }
+
+    @Test
+    public void testMultithreadedIndexing () throws IOException {
+        String input = "src/test/resources/wiki;"
+                + "src/test/resources/rei/rei_sample_krill.tar";
+        String singleDir = getTestOutputPath("test-single-thread-index");
+        String multiDir = getTestOutputPath("test-multi-thread-index");
+
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                "-i", input, "-a", "-o", singleDir });
+        assertTrue(outputStream.toString().startsWith("Added 22 files."));
+        outputStream.reset();
+
+        Indexer.main(new String[] { "-c", "src/test/resources/krill.properties",
+                "-i", input, "-a", "-t", "4", "-o", multiDir });
+        assertTrue(outputStream.toString().startsWith("Added 22 files."));
+
+        KrillIndex single = new KrillIndex(Paths.get(singleDir));
+        KrillIndex multi = new KrillIndex(Paths.get(multiDir));
+        assertEquals(22, multi.numberOf("documents"));
+        for (String type : new String[] { "documents", "tokens", "sentences",
+                "paragraphs" }) {
+            assertEquals(type, single.numberOf(type), multi.numberOf(type));
+        }
+        single.close();
+        multi.close();
     }
 
     @Test
