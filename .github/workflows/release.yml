@@ -18,7 +18,7 @@ jobs:
           java-version: '25'
           cache: 'maven'
 
-      - name: Build Indexer jar
+      - name: Build jars
         run: mvn -B package
 
       - name: Get version and pre-release status
@@ -68,5 +68,8 @@ jobs:
           prerelease: ${{ steps.get_version.outputs.prerelease }}
           files: |
             target/Krill-Indexer.jar
+            target/Krill-MetaExporter.jar
+          # Fail instead of silently publishing a release without a jar
+          fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
