@@ -14,6 +14,8 @@
     - [feature] Add multithreaded indexing to the Indexer
       (-t/--threads, --ramBufferMB; requires -a)
       (kupietz; AI-assisted Claude Opus 5.5)
+    - [feature] Make the configuration file of the Indexer optional
+      and add --maxTextSize (kupietz; AI-assisted Claude Opus 5.5)
 
 0.66 2026-11-09
     - Add memory limit (#267, margaretha, AI assisted) 

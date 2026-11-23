@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.ids_mannheim.korap.index.Indexer;
+import de.ids_mannheim.korap.util.KrillProperties;
 
 /**
  * @author margaretha
@@ -100,11 +101,37 @@ public class TestIndexer {
 
 
     @Test
-    public void testMissingConfig () throws IOException {
+    public void testWithoutConfig () throws IOException {
+        // The configuration file is optional
         Indexer.main(new String[] { "-i", "src/test/resources/bzk",
-                                    "-o " + getTestOutputPath("test-index")});
+                                    "-o", getTestOutputPath("test-no-config-index")});
         logger.info(outputStream.toString());
-        assertEquals(true, outputStream.toString().startsWith(info));
+        assertTrue(outputStream.toString().startsWith("Added or updated 1 file."));
+    }
+
+    @Test
+    public void testNonexistentConfig () throws IOException {
+        Indexer.main(new String[] { "-c", "src/test/resources/nonexistent.properties",
+                                    "-i", "src/test/resources/bzk",
+                                    "-o", getTestOutputPath("test-nonexistent-config-index")});
+        assertEquals("", outputStream.toString());
+        assertTrue(!new File(getTestOutputPath("test-nonexistent-config-index")).exists());
+    }
+
+    @Test
+    public void testMissingOutputDirectory () throws IOException {
+        // Neither -o nor a configuration with krill.indexDir
+        Indexer.main(new String[] { "-i", "src/test/resources/bzk" });
+        assertEquals("", outputStream.toString());
+    }
+
+    @Test
+    public void testMaxTextSizeArgument () throws IOException {
+        Indexer.main(new String[] { "-i", "src/test/resources/bzk",
+                                    "--maxTextSize", "25000000",
+                                    "-o", getTestOutputPath("test-max-text-size-arg-index")});
+        assertTrue(outputStream.toString().startsWith("Added or updated 1 file."));
+        assertEquals(25000000, KrillProperties.maxTextSize);
     }
     
     @Test

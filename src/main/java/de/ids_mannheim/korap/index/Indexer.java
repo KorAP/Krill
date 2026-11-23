@@ -62,11 +62,13 @@ import static com.fasterxml.jackson.core.StreamReadConstraints.DEFAULT_MAX_STRIN
  * <pre>
  * Usage:
  * 
- * java -jar Krill-Indexer.jar -c [propfile] -i [input paths] -o
- * [output directory]
+ * java -jar Krill-Indexer.jar [-c propfile] -i [input paths] -o
+ * [output directory] [-a] [-t threads]
  * 
- * java -jar Krill-Indexer.jar --config [propfile] --input [input paths]
- * --output [output directory]
+ * java -jar Krill-Indexer.jar [--config propfile] --input [input paths]
+ * --outputDir [output directory] [--addInsteadofUpsert] [--threads threads]
+ * 
+ * The configuration file is optional.
  * 
  * Input paths can be:
  * - Directories containing .json.gz files
@@ -453,10 +455,9 @@ public class Indexer {
         
         Options options = new Options();
         options.addOption(Option.builder("c").longOpt("config")
-                .desc("configuration file (defaults to "
-                        + KrillProperties.DEFAULT_PROPERTIES_LOCATION
-                        + ").")
-                .hasArg().argName("properties file").required().build());
+                .desc("configuration file (optional; "
+                        + "built-in defaults are used otherwise).")
+                .hasArg().argName("properties file").build());
         options.addOption(Option.builder("i").longOpt("input")
                 .desc("input paths separated by semicolons. Can be directories containing "
                         + "<filename>.json.gz files, zip files containing .json or .json.gz files, "
@@ -482,6 +483,11 @@ public class Indexer {
                 .desc("number of concurrent indexing threads (default 1). "
                         + "Values > 1 require -a/--addInsteadofUpsert.")
                 .hasArg().argName("threads").build());
+        options.addOption(Option.builder().longOpt("maxTextSize")
+                .desc("maximum text size of a document in characters "
+                        + "(overrides krill.index.textSize.max; "
+                        + "default " + DEFAULT_MAX_STRING_LEN + ").")
+                .hasArg().argName("characters").build());
         options.addOption(Option.builder().longOpt("ramBufferMB")
                 .desc("RAM buffer of the index writer in MB, shared by all "
                         + "threads (default: Lucene default of 16 MB for one "
@@ -495,22 +501,25 @@ public class Indexer {
         String deleteField = null;
         String deleteValue = null;
         boolean showProgress = false;
+        String maxTextSizeArg = null;
         int threads = 1;
         double ramBufferMB = 0;
         try {
             CommandLine cmd = parser.parse(options, argv);
-            log.info("Configuration file: " + cmd.getOptionValue("c"));
             propFile = cmd.getOptionValue("c");
+            if (propFile != null)
+                log.info("Configuration file: " + propFile);
 
             if (cmd.hasOption("i")) {
                 inputPaths = cmd.getOptionValues("i");
                 log.info("Input paths: " + StringUtils.join(inputPaths, ";"));
             }
 
-            if (cmd.hasOption("o")) {
-                log.info("Output directory: " + cmd.getOptionValue("o"));
-                path = cmd.getOptionValue("o");
-            }
+            // Set explicitly, as the path is static and main()
+            // may be called repeatedly (e.g. in tests)
+            path = cmd.getOptionValue("o");
+            if (path != null)
+                log.info("Output directory: " + path);
 
             if (cmd.hasOption("D")) {
                 String[] deleteArgs = cmd.getOptionValues("D");
@@ -533,15 +542,19 @@ public class Indexer {
             if (cmd.hasOption("t")) {
                 threads = Integer.parseInt(cmd.getOptionValue("t"));
             }
+            if (cmd.hasOption("maxTextSize")) {
+                maxTextSizeArg = cmd.getOptionValue("maxTextSize");
+            }
             if (cmd.hasOption("ramBufferMB")) {
                 ramBufferMB = Double.parseDouble(cmd.getOptionValue("ramBufferMB"));
             }
         }
         catch (MissingOptionException e) {
             HelpFormatter formatter = new HelpFormatter();
-            String helpSyntax = "Krill indexer\n java -jar Krill-Indexer.jar -c <properties file> "
+            String helpSyntax = "Krill indexer\n java -jar Krill-Indexer.jar "
+                    + "[-c <properties file>] "
                     + "[-i <input paths>] [-D <field> <value>] "
-                    + "[-o <output directory> -a --progress]";
+                    + "[-o <output directory> -a -t <threads> --progress]";
             formatter.printHelp(
                     helpSyntax,
                     options);
@@ -553,7 +566,48 @@ public class Indexer {
         }
 
         // Load properties
-        Properties prop = KrillProperties.loadProperties(propFile);
+        Properties prop;
+        if (propFile == null) {
+            log.info("No configuration file given - using built-in defaults");
+            prop = KrillProperties.useBuiltInDefaults();
+        }
+        else {
+            prop = KrillProperties.loadProperties(propFile);
+            if (prop == null) {
+                log.error("Unable to load configuration file " + propFile);
+                System.err.println("Unable to load configuration file "
+                        + propFile);
+                return;
+            }
+        }
+
+        // The maximum text size given as an argument
+        // overrides the configuration
+        if (maxTextSizeArg != null) {
+            try {
+                int maxTextSize = Integer.parseInt(maxTextSizeArg.trim());
+                if (maxTextSize < DEFAULT_MAX_STRING_LEN) {
+                    log.warn("--maxTextSize is too small. Using default value: "
+                            + DEFAULT_MAX_STRING_LEN);
+                    maxTextSize = DEFAULT_MAX_STRING_LEN;
+                }
+                KrillProperties.maxTextSize = maxTextSize;
+            }
+            catch (NumberFormatException e) {
+                log.error("--maxTextSize expects a number: " + maxTextSizeArg);
+                System.err.println("--maxTextSize expects a number: "
+                        + maxTextSizeArg);
+                return;
+            }
+        }
+
+        // An output directory is required
+        if (path == null && prop.getProperty("krill.indexDir") == null) {
+            log.error("No output directory given");
+            System.err.println("No output directory given "
+                    + "(use -o or krill.indexDir in the configuration file)");
+            return;
+        }
 
         try {
             // Get indexer object

@@ -86,6 +86,19 @@ public class KrillProperties {
         return prop;
 	}
     
+    /**
+     * Use the built-in default configuration,
+     * without loading any properties file.
+     *
+     * @return Empty {@link Properties}.
+     */
+    public static Properties useBuiltInDefaults () {
+        prop = new Properties();
+        updateConfigurations(prop);
+        return prop;
+    };
+
+
     // Load properties from file
     public static Properties loadDefaultProperties () {
         if (prop != null)

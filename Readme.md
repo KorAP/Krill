@@ -83,19 +83,25 @@ The `Indexer` reads corpus documents and adds/updates them in a Krill
 (Lucene) index.
 
 ```
-java -jar Krill-Indexer.jar -c <properties file> \
+java -jar Krill-Indexer.jar [-c <properties file>] \
      [-i <input paths>] [-D <field> <value>] \
      [-o <output directory>] [-a] [-t <threads>] [--progress]
 ```
 
-- `-c`, `--config <properties file>` — configuration file (required),
-  see `src/main/resources/krill.properties.info`.
+- `-c`, `--config <properties file>` — configuration file (optional),
+  see `src/main/resources/krill.properties.info`. Without it, the
+  built-in defaults are used. The indexer only reads
+  `krill.indexDir` (replaced by `-o`), `krill.index.textSize.max`
+  (replaced by `--maxTextSize`), and the commit intervals
+  `krill.index.commit.count` (default 1000) and
+  `krill.index.commit.auto` (default 10000).
 - `-i`, `--input <input paths>` — semicolon-separated list of input
   paths. Each path can be a directory of `*.json.gz` files, a zip
   file, or a tar file (including `.tar.gz`/`.tgz`), containing
   `.json` or `.json.gz` documents; the type is auto-detected.
 - `-o`, `--outputDir <directory>` — index output directory (defaults
-  to `krill.indexDir` from the configuration).
+  to `krill.indexDir` from the configuration; required without a
+  configuration file).
 - `-D`, `--delete <field> <value>` — delete documents matching
   `field=value` instead of indexing (example: `-D textSigle
   GOE/AGX/00002`).
@@ -104,6 +110,9 @@ java -jar Krill-Indexer.jar -c <properties file> \
 - `-t`, `--threads <threads>` — number of concurrent indexing threads
   (default 1). Values greater than 1 require `-a`; without it, the
   indexer falls back to a single thread.
+- `--maxTextSize <characters>` — maximum text size of a document
+  (default 20,000,000 characters; overrides `krill.index.textSize.max`).
+  Larger documents, e.g. long novels, fail to index otherwise.
 - `--ramBufferMB <MB>` — RAM buffer of the index writer, shared by all
   threads (default: 16 MB for one thread, 64 MB per thread otherwise).
 - `--progress` — show a progress bar with ETA while indexing.
