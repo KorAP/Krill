@@ -108,7 +108,9 @@ java -jar Krill-Indexer.jar [-c <properties file>] \
 - `-a`, `--addInsteadofUpsert` — always add documents, never update
   existing ones (upsert is the default).
 - `-t`, `--threads <threads>` — number of concurrent indexing threads
-  (default 1). Values greater than 1 require `-a`; without it, the
+  (default 1). `-t 0` uses about 75% of the available cores (e.g. 96
+  threads on 128 cores), leaving room for merge threads and garbage
+  collection. Values other than 1 require `-a`; without it, the
   indexer falls back to a single thread.
 - `--maxTextSize <characters>` — maximum text size of a document
   (default 20,000,000 characters; overrides `krill.index.textSize.max`).
@@ -124,7 +126,7 @@ Indexing is CPU-bound, so building a new index with `-a` and multiple
 threads scales almost linearly with the number of cores: on a 128-core
 machine, 96 threads indexed DeReKo data about 60 times faster than a
 single thread. Leave some cores for Lucene's merge threads (one per
-four indexing threads). The index content is identical to a
+four indexing threads); `-t 0` does this automatically. The index content is identical to a
 single-threaded build, but the internal document order (and thus the
 order of search results) is not preserved exactly.
 

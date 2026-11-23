@@ -371,6 +371,30 @@ public class TestIndexer {
     }
 
     @Test
+    public void testAutoThreads () throws IOException {
+        // -t 0 uses about 75% of the available cores
+        assertEquals(1, Indexer.autoThreads(1));
+        assertEquals(1, Indexer.autoThreads(2));
+        assertEquals(3, Indexer.autoThreads(4));
+        assertEquals(9, Indexer.autoThreads(12));
+        assertEquals(96, Indexer.autoThreads(128));
+
+        Indexer.main(new String[] { "-i", "src/test/resources/wiki",
+                "-a", "-t", "0", "-o", getTestOutputPath("test-auto-thread-index") });
+        assertTrue(outputStream.toString().startsWith("Added 19 files."));
+    }
+
+    @Test
+    public void testInvalidThreads () throws IOException {
+        Indexer.main(new String[] { "-i", "src/test/resources/wiki",
+                "-a", "-t", "-2", "-o", getTestOutputPath("test-invalid-thread-index") });
+        assertEquals("", outputStream.toString());
+        Indexer.main(new String[] { "-i", "src/test/resources/wiki",
+                "-a", "-t", "many", "-o", getTestOutputPath("test-invalid-thread-index") });
+        assertEquals("", outputStream.toString());
+    }
+
+    @Test
     public void testDeleteByTextSigleOption () throws IOException {
         Path inputDir = Files.createTempDirectory(tempBaseDirectory.toPath(),
                 "delete-input");

@@ -480,8 +480,9 @@ public class Indexer {
                 .desc("Show progress bar with ETA")
                 .build());
         options.addOption(Option.builder("t").longOpt("threads")
-                .desc("number of concurrent indexing threads (default 1). "
-                        + "Values > 1 require -a/--addInsteadofUpsert.")
+                .desc("number of concurrent indexing threads (default 1; "
+                        + "0 = 75% of the available cores). "
+                        + "Values other than 1 require -a/--addInsteadofUpsert.")
                 .hasArg().argName("threads").build());
         options.addOption(Option.builder().longOpt("maxTextSize")
                 .desc("maximum text size of a document in characters "
@@ -502,6 +503,7 @@ public class Indexer {
         String deleteValue = null;
         boolean showProgress = false;
         String maxTextSizeArg = null;
+        String threadsArg = null;
         int threads = 1;
         double ramBufferMB = 0;
         try {
@@ -540,7 +542,7 @@ public class Indexer {
                 showProgress = true;
             }
             if (cmd.hasOption("t")) {
-                threads = Integer.parseInt(cmd.getOptionValue("t"));
+                threadsArg = cmd.getOptionValue("t");
             }
             if (cmd.hasOption("maxTextSize")) {
                 maxTextSizeArg = cmd.getOptionValue("maxTextSize");
@@ -563,6 +565,28 @@ public class Indexer {
         catch (ParseException e) {
             log.error("Unexpected error: " + e);
             e.printStackTrace();
+        }
+
+        // Number of indexing threads (0 = depending on the available cores)
+        if (threadsArg != null) {
+            try {
+                threads = Integer.parseInt(threadsArg.trim());
+            }
+            catch (NumberFormatException e) {
+                threads = -1;
+            }
+            if (threads < 0) {
+                log.error("--threads expects a number >= 0: " + threadsArg);
+                System.err.println("--threads expects a number >= 0: "
+                        + threadsArg);
+                return;
+            }
+            if (threads == 0) {
+                int cores = Runtime.getRuntime().availableProcessors();
+                threads = autoThreads(cores);
+                log.info("Using {} threads for {} available cores",
+                        threads, cores);
+            }
         }
 
         // Load properties
@@ -625,6 +649,9 @@ public class Indexer {
             if (threads > 1 && !addInsteadOfUpsert) {
                 log.warn("Multiple threads require -a/--addInsteadofUpsert "
                         + "- indexing with a single thread");
+                // Also shown with the default log level (error)
+                System.err.println("Warning: Multiple threads require "
+                        + "-a/--addInsteadofUpsert - indexing with a single thread");
                 threads = 1;
             }
 
@@ -640,6 +667,7 @@ public class Indexer {
                 indexer.commitCount *= threads;
                 log.info("Commit every {} documents", indexer.commitCount);
                 log.info("Indexing with {} threads", threads);
+                System.err.println("Indexing with " + threads + " threads");
             }
             else if (ramBufferMB > 0) {
                 indexer.index.configureWriter(1, ramBufferMB);
@@ -711,6 +739,23 @@ public class Indexer {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Number of indexing threads to use for a number of available
+     * cores, when the number of threads is not given explicitly
+     * (-t 0).
+     * About a quarter of the cores is left for Lucene's merge
+     * threads (one per four indexing threads) and garbage
+     * collection.
+     *
+     * @param cores
+     *            Number of available cores.
+     * @return Number of indexing threads (at least 1).
+     */
+    public static int autoThreads (int cores) {
+        return Math.max(1, (cores * 3) / 4);
+    }
+
 
     public static long countTargetFiles (String[] inputPaths) {
         if (inputPaths == null)
