@@ -6,6 +6,8 @@ import org.apache.lucene.queries.spans.SpanMultiTermQueryWrapper;
 import org.apache.lucene.queries.spans.SpanQuery;
 import org.apache.lucene.util.automaton.RegExp;
 
+import de.ids_mannheim.korap.util.KrillString;
+
 /*
   TODO: Don't allow queries like ".*?"!!!
 */
@@ -34,6 +36,7 @@ public class SpanRegexQueryWrapper extends SpanQueryWrapper {
 
     public SpanRegexQueryWrapper (String field, String re, int flags,
                                   boolean caseinsensitive) {
+        re = KrillString.literalEscapes(re);
         if (caseinsensitive) {
             if (re.startsWith("s:")) {
                 re = re.replaceFirst("s:", "i:");

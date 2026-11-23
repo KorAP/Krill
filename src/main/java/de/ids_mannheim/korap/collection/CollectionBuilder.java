@@ -19,6 +19,7 @@ import de.ids_mannheim.korap.IndexInfo;
 import de.ids_mannheim.korap.KrillCollection;
 import de.ids_mannheim.korap.index.TextPrependedTokenStream;
 import de.ids_mannheim.korap.util.KrillDate;
+import de.ids_mannheim.korap.util.KrillString;
 import de.ids_mannheim.korap.util.QueryException;
 
 
@@ -212,7 +213,8 @@ public class CollectionBuilder {
             // Regular expression
             if (this.regex)
                 return new RegexpQuery(new org.apache.lucene.index.Term(
-                        this.field, this.term), RegExp.NONE);
+                        this.field, KrillString.literalEscapes(this.term)),
+                        RegExp.NONE);
 
             // Simple term
             return new TermQuery(

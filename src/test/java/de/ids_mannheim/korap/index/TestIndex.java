@@ -310,6 +310,23 @@ public class TestIndex { // extends LuceneTestCase {
                 ssrquery.toQuery().toString());
         assertEquals(2, searcher.search(ssrquery.toQuery(), 10).totalHits.value);
 
+        // A backslash only makes the next character literal,
+        // \D and \r are letters, not character classes
+        ssrquery = new SpanRegexQueryWrapper("text", "s:\\E\\r");
+        assertEquals("SpanMultiTermQueryWrapper(text:/s:Er/)",
+                ssrquery.toQuery().toString());
+        assertEquals(2, searcher.search(ssrquery.toQuery(), 10).totalHits.value);
+
+        ssrquery = new SpanRegexQueryWrapper("text", "s:\\E\\R", true);
+        assertEquals("SpanMultiTermQueryWrapper(text:/i:er/)",
+                ssrquery.toQuery().toString());
+        assertEquals(2, searcher.search(ssrquery.toQuery(), 10).totalHits.value);
+
+        ssrquery = new SpanRegexQueryWrapper("text", "s:\\Dr", true);
+        assertEquals("SpanMultiTermQueryWrapper(text:/i:dr/)",
+                ssrquery.toQuery().toString());
+        assertEquals(0, searcher.search(ssrquery.toQuery(), 10).totalHits.value);
+
         // All docs containing "ng"/x (Angst) (2x)
         srquery = new RegexpQuery(new Term("text", "s:.*ng.*"));
         assertEquals(2, searcher.search(srquery, 10).totalHits.value);

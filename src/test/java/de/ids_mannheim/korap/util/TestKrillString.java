@@ -23,6 +23,19 @@ public class TestKrillString {
 
 
     @Test
+    public void testLiteralEscapes () {
+        assertEquals("E.", literalEscapes("E."));
+        assertEquals("dsw\\.DSW", literalEscapes("\\d\\s\\w\\.\\D\\S\\W"));
+        assertEquals("tr", literalEscapes("\\t\\r"));
+        assertEquals("\\\u00c4\\.\\*\\[", literalEscapes("\\\u00c4\\.\\*\\["));
+        // An escaped backslash is kept, the letter after it is plain
+        assertEquals("\\\\W", literalEscapes("\\\\W"));
+        assertEquals("[d-z]", literalEscapes("[\\d-z]"));
+        assertEquals("a\\", literalEscapes("a\\"));
+    };
+
+
+    @Test
     public void testQuote () {
         assertEquals("\"hallo\"", quote("hallo"));
         assertEquals("\"h'all'o\"", quote("h'all'o"));

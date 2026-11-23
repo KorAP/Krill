@@ -214,6 +214,10 @@ public class TestKrillCollectionIndex {
 		// No optional regex support enabled
 		kcn.fromBuilder(cb.re("author", "@an@"));
         assertEquals(0, kcn.docCount());
+
+        // A backslash only makes the next character literal
+        kcn.fromBuilder(cb.re("author", ".*\\a\\n.*"));
+        assertEquals(2, kcn.docCount());
         
 		// Kultur & Reisen,
 		// Reisen & Finanzen,

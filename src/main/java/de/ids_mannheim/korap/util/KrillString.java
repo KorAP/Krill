@@ -123,4 +123,38 @@ public class KrillString {
     public static String codePointSubstring(String text, int start) {
         return text.substring(text.offsetByCodePoints(0, start));
     };
+
+
+    /**
+     * Make all escapes of a regular expression literal: a backslash
+     * only removes the special meaning of the following character.
+     * Since Lucene 9, <tt>\\d</tt>, <tt>\\s</tt>, <tt>\\w</tt>
+     * and <tt>\\D</tt>, <tt>\\S</tt>, <tt>\\W</tt> are character
+     * classes and other escaped ASCII letters are errors. As letters
+     * have no special meaning, their backslash is removed.
+     * 
+     * @param regex
+     *            The regular expression.
+     * @return The regular expression with literal escapes.
+     */
+    public static String literalEscapes (String regex) {
+        if (regex.indexOf('\\') < 0)
+            return regex;
+
+        StringBuilder sb = new StringBuilder(regex.length());
+        for (int i = 0; i < regex.length(); i++) {
+            char c = regex.charAt(i);
+            if (c == '\\' && i + 1 < regex.length()) {
+                char next = regex.charAt(++i);
+                if (!((next >= 'a' && next <= 'z')
+                        || (next >= 'A' && next <= 'Z')))
+                    sb.append(c);
+                sb.append(next);
+            }
+            else {
+                sb.append(c);
+            };
+        };
+        return sb.toString();
+    };
 };
