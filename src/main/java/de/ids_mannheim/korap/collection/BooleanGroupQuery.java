@@ -11,7 +11,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryVisitor;
 import org.apache.lucene.search.ScoreMode;
-import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.ScorerSupplier;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.util.BitSetIterator;
 import org.apache.lucene.util.FixedBitSet;
@@ -177,13 +177,14 @@ public class BooleanGroupQuery extends Query {
 
 
             @Override
-            public Scorer scorer (LeafReaderContext atomic)
+            public ScorerSupplier scorerSupplier (LeafReaderContext atomic)
                     throws IOException {
                 DocIdSetIterator docs = BooleanGroupQuery.this.docs(atomic,
                         operandWeights);
                 if (docs == null)
                     return null;
-                return new ConstantScoreScorer(this, score(), scoreMode, docs);
+                return new DefaultScorerSupplier(
+                        new ConstantScoreScorer(score(), scoreMode, docs));
             };
         };
     };

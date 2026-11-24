@@ -177,9 +177,7 @@ public class FieldDocument extends AbstractDocument {
 
 
     public void addTV (String key, String value, MultiTermTokenStream ts) {
-        Field textField = new Field(key, value, tvField);
-        textField.setTokenStream(ts);
-        doc.add(textField);
+        doc.add(new StoredTokenStreamField(key, value, ts, tvField));
     };
 
 

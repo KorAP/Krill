@@ -6,6 +6,7 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 import de.ids_mannheim.korap.index.MultiTermTokenStream;
+import de.ids_mannheim.korap.index.StoredTokenStreamField;
 import de.ids_mannheim.korap.index.MultiTermToken;
 import de.ids_mannheim.korap.util.CorpusDataException;
 
@@ -56,12 +57,10 @@ public class Test {
         textFieldWithTermVectors.setStoreTermVectorPositions(true);
         textFieldWithTermVectors.setStoreTermVectorPayloads(true);
 
-        Field textFieldAnalyzed = new Field("text", m.get("textStr"),
-                textFieldWithTermVectors);
-
         MultiTermTokenStream ts = getTermVector(m.get("text"));
 
-        textFieldAnalyzed.setTokenStream(ts);
+        Field textFieldAnalyzed = new StoredTokenStreamField("text",
+                m.get("textStr"), ts, textFieldWithTermVectors);
 
         doc.add(textFieldAnalyzed);
 

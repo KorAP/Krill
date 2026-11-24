@@ -53,6 +53,7 @@ import org.apache.lucene.util.Bits;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.FixedBitSet;
 import org.apache.lucene.util.automaton.CompiledAutomaton;
+import org.apache.lucene.util.automaton.Operations;
 import org.apache.lucene.util.automaton.RegExp;
 // Log4j Logger classes
 import org.slf4j.Logger;
@@ -1231,8 +1232,12 @@ public final class KrillIndex implements IndexInfo {
             if (DEBUG)
                 log.trace("The final regexString is {}", regex.toString());
 
+            // Since Lucene 10, RegExp no longer determinizes the
+            // automaton, so it is determinized here as before
             RegExp regexObj = new RegExp(regex.toString(), RegExp.NONE);
-            fst = new CompiledAutomaton(regexObj.toAutomaton());
+            fst = new CompiledAutomaton(Operations.determinize(
+                    regexObj.toAutomaton(),
+                    Operations.DEFAULT_DETERMINIZE_WORK_LIMIT));
             if (DEBUG)
                 log.trace("The final regexObj is {}", regexObj.toString());
         };

@@ -10,7 +10,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryVisitor;
 import org.apache.lucene.search.ScoreMode;
-import org.apache.lucene.search.Scorer;
+import org.apache.lucene.search.ScorerSupplier;
 import org.apache.lucene.search.Weight;
 import org.apache.lucene.util.BitSetIterator;
 import org.apache.lucene.util.Bits;
@@ -55,13 +55,14 @@ public class VirtualCorpusQuery extends Query {
 
 
             @Override
-            public Scorer scorer (LeafReaderContext context)
+            public ScorerSupplier scorerSupplier (LeafReaderContext context)
                     throws IOException {
                 DocBits docBits = VirtualCorpusQuery.this.docBits(context);
                 FixedBitSet bitset = new FixedBitSet(docBits.bits,
                         docBits.numbits);
-                return new ConstantScoreScorer(this, score(), scoreMode,
-                        new BitSetIterator(bitset, bitset.cardinality()));
+                return new DefaultScorerSupplier(new ConstantScoreScorer(
+                        score(), scoreMode,
+                        new BitSetIterator(bitset, bitset.cardinality())));
             };
         };
     }

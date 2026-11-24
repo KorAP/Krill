@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import de.ids_mannheim.korap.index.FieldDocument;
 import de.ids_mannheim.korap.index.MultiTermToken;
 import de.ids_mannheim.korap.index.MultiTermTokenStream;
+import de.ids_mannheim.korap.index.StoredTokenStreamField;
 import de.ids_mannheim.korap.query.wrap.SpanQueryWrapper;
 import de.ids_mannheim.korap.response.Result;
 import de.ids_mannheim.korap.util.CorpusDataException;
@@ -63,12 +64,10 @@ public class TestSimple {
         textFieldWithTermVectors.setStoreTermVectorPositions(true);
         textFieldWithTermVectors.setStoreTermVectorPayloads(true);
 
-        Field textFieldAnalyzed = new Field("text", m.get("textStr"),
-                textFieldWithTermVectors);
-
         MultiTermTokenStream ts = getTermVector(m.get("text"));
 
-        textFieldAnalyzed.setTokenStream(ts);
+        Field textFieldAnalyzed = new StoredTokenStreamField("text",
+                m.get("textStr"), ts, textFieldWithTermVectors);
 
         doc.add(textFieldAnalyzed);
 
