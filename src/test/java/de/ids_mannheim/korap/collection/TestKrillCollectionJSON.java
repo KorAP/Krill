@@ -146,6 +146,17 @@ public class TestKrillCollectionJSON {
 
 
     @Test
+    public void collectionWithNegativeRegexContainment () {
+        String query = _getJSONString("collection_containsnot_regex.jsonld");
+        Krill ks = new Krill(query);
+        assertFalse(ks.hasErrors());
+        assertFalse(ks.hasWarnings());
+        assertFalse(ks.hasMessages());
+        assertEquals("-author:/Goethe/", ks.getCollection().toString());
+    };
+
+
+    @Test
     public void collectionWithSpecialcharacter () {
         String query = _getJSONString("collection_with_special_char.jsonld");
         Krill ks = new Krill(query);

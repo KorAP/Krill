@@ -422,7 +422,7 @@ public final class KrillCollection extends Notifications implements IndexInfo {
                     return this.cb.re(key, json.get("value").asText());
                 }
                 else if (match.equals("match:containsnot")) {
-                    return this.cb.re(key, json.get("value").asText());
+                    return this.cb.re(key, json.get("value").asText()).not();
                 }
                 // <LEGACY>
                 else if (match.equals("match:excludes")) {
