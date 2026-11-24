@@ -1,0 +1,36 @@
+Krill benchmark - 2026-11-24 11:43:51
+  index:     in-memory wiki sample (10 docs, 1 segments)
+  queries:   9 (built-in)
+  rounds:    3 cold, 5 warm-up, 20 warm
+  snippets:  true
+  java:      25.0.2, max heap 2048 MB
+
+Search - response times in ms, json = search + JSON serialization
+query                                         results    texts |  cold med |  warm min    median      mean       p95       max |  json med
+-------------------------------------------------------------------------------------------------------------------------------------------------
+term [s:der]                                      207       10 |     2.791 |     2.235     2.472     2.627     3.221     5.033 |      15.1
+annotation [mate/m:gender:masc]                   497        7 |     3.240 |     2.216     2.787     2.913     3.367     5.619 |      12.8
+segment [tt/p:NN & mate/m:number:pl]              120        7 |     3.621 |     2.259     2.571     2.974     4.743     4.883 |      10.3
+regex [s:.*ung]                                    69        8 |     3.803 |     2.668     2.971     3.149     3.623     5.723 |      10.6
+sequence [tt/p:ART][tt/p:ADJA][tt/p:NN]           127        9 |     2.844 |     2.239     2.496     2.514     2.669     2.819 |     8.056
+repetition [tt/p:ADJA]{2,3}[tt/p:NN]               29        8 |     3.431 |     2.302     2.749     2.720     3.099     3.273 |     8.196
+class {1:[tt/p:ADJA]}[s:Sprache]                    2        2 |     0.816 |     0.738     0.963     0.979     1.151     1.275 |     1.922
+contains(<base/s:s>, [tt/p:NE][tt/p:NE])          133        9 |     2.423 |     1.929     2.299     2.827     4.272     4.445 |     6.716
+startswith(<base/s:s>, [tt/p:ART])                 43        8 |     1.957 |     1.383     1.603     1.649     1.984     2.016 |     5.297
+
+Match info - response times in ms over 42 matches, json = getMatchInfo + JSON serialization
+request                                    calls  failed |       min    median      mean       p95       max |  json med
+-----------------------------------------------------------------------------------------------------------------------
+snippet only                                 840       0 |     0.020     0.032     0.053     0.138     1.773 |     0.131
+tokens: all annotations                      840       0 |     0.775     0.963     1.049     1.491     2.681 |     1.085
+tokens+spans: all annotations                840       0 |     0.256     0.332     0.347     0.454     2.088 |     0.436
+tokens+spans, sentence: all annotations      840       0 |     0.254     0.268     0.280     0.304     2.259 |     0.348
+
+Statistics and metadata fields - response times in ms, getFields over 3 texts, json = call + JSON serialization
+request                                        value   calls  failed |  cold med |  warm min    median      mean       p95       max |  json med
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+numberOf("documents")                             10      20       0 |     0.011 |     0.002     0.002     0.005     0.005     0.053 |         -
+getFields(id)                                      -      60       0 |         - |     0.104     0.142     0.142     0.180     0.226 |     0.253
+getFields(id, [textSigle,title,author])            -      60       0 |         - |     0.057     0.075     0.088     0.125     0.386 |     0.151
+
+CSV written to misc/baseline/benchmark-lucene-9.12.3-wiki.csv
