@@ -48,7 +48,7 @@ public class FocusSpans extends SimpleSpans {
     private SpanQuery query;
 
     // Logger
-    private final Logger log = LoggerFactory.getLogger(FocusSpans.class);
+    private static final Logger log = LoggerFactory.getLogger(FocusSpans.class);
     
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;

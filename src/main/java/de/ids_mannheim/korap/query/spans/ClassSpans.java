@@ -32,7 +32,7 @@ public class ClassSpans extends SimpleSpans {
     protected SpanQuery operand;
     protected Boolean hasmorespans = false;
 
-    private final Logger log = LoggerFactory.getLogger(ClassSpans.class);
+    private static final Logger log = LoggerFactory.getLogger(ClassSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;

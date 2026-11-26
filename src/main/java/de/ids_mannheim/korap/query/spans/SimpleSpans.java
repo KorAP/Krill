@@ -24,7 +24,7 @@ import de.ids_mannheim.korap.query.SimpleSpanQuery;
  * @author margaretha
  */
 public abstract class SimpleSpans extends KrillSpans {
-    protected final Logger log = LoggerFactory.getLogger(SimpleSpans.class);
+    protected static final Logger log = LoggerFactory.getLogger(SimpleSpans.class);
     private SimpleSpanQuery query;
     protected boolean isStartEnumeration;
     protected boolean collectPayloads;

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class RepetitionSpans extends SimpleSpans {
 
     // Logger
-    private final Logger log = LoggerFactory.getLogger(RepetitionSpans.class);
+    private static final Logger log = LoggerFactory.getLogger(RepetitionSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;

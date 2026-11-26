@@ -30,7 +30,7 @@ public final class ElementSpans extends SimpleSpans {
     private final KrillSpans termSpans;
     private boolean isPayloadLoaded;
 
-    private final Logger log = LoggerFactory.getLogger(ElementSpans.class);
+    private static final Logger log = LoggerFactory.getLogger(ElementSpans.class);
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
 

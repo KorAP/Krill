@@ -38,7 +38,7 @@ public class ExpandedSpans extends SimpleSpans {
     private long matchCost;
 
     // Logger
-    private final Logger log = LoggerFactory.getLogger(ExpandedSpans.class);
+    private static final Logger log = LoggerFactory.getLogger(ExpandedSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;

@@ -34,7 +34,7 @@ import de.ids_mannheim.korap.query.SpanWithinQuery;
 public class WithinSpans extends KrillSpans {
 
     // Logger
-    private final Logger log = LoggerFactory.getLogger(WithinSpans.class);
+    private static final Logger log = LoggerFactory.getLogger(WithinSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;

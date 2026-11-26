@@ -49,7 +49,7 @@ public class MultiTermTokenStream extends TokenStream {
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
-    private final Logger log = LoggerFactory
+    private static final Logger log = LoggerFactory
             .getLogger(MultiTermTokenStream.class);
 
     private List<MultiTermToken> multiTermTokens;

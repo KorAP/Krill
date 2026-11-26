@@ -35,7 +35,7 @@ public class UnorderedElementDistanceSpans extends UnorderedDistanceSpans {
     // target span
     private List<CandidateSpan> elementList;
 
-    private Logger log = LogManager.getLogger(UnorderedElementDistanceSpans.class);
+    private static final Logger log = LogManager.getLogger(UnorderedElementDistanceSpans.class);
     boolean DEBUG = false;
 
     /**

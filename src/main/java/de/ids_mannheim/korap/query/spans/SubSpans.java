@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class SubSpans extends SimpleSpans {
 
     // Logger
-    private final Logger log = LoggerFactory.getLogger(SubSpans.class);
+    private static final Logger log = LoggerFactory.getLogger(SubSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;

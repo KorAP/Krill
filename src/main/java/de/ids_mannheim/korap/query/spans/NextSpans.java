@@ -30,7 +30,7 @@ import de.ids_mannheim.korap.query.SpanNextQuery;
 public class NextSpans extends SimpleSpans {
 
     // Logger
-    private final Logger log = LoggerFactory.getLogger(NextSpans.class);
+    private static final Logger log = LoggerFactory.getLogger(NextSpans.class);
 
     // This advices the java compiler to ignore all loggings
     public static final boolean DEBUG = false;
