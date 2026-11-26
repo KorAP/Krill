@@ -159,6 +159,22 @@ possible:
 java -cp Krill-Server.jar org.apache.lucene.index.CheckIndex -exorcise /path/to/indexDir
 ```
 
+## Upgrading to Krill 1.0
+
+Krill 1.0 is based on Lucene 10, which only opens indices created with
+Lucene 9 or later. Indices created with earlier versions of Krill
+(based on Lucene 5) cannot be opened anymore; `CheckIndex` reports
+them as too old. They have to be rebuilt from the KorAP JSON sources
+with the `Indexer` of Krill 1.0:
+
+```
+java -jar Krill-Indexer.jar -c <properties file> \
+     -i <input paths> -o <new index directory>
+```
+
+The fingerprints of the rebuilt indices change, so cached results,
+e.g. the `krill_cache` of Kustvakt, have to be invalidated.
+
 ## Caveats
 
 Krill operates on tokens and is limited to a single tokenization stream.
