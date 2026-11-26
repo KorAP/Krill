@@ -153,10 +153,12 @@ public class SpanFocusQuery extends SimpleSpanQuery {
 
         if (!this.firstClause.equals(spanFocusQuery.firstClause))
             return false;
-        if (this.getClassNumbers() != spanFocusQuery.getClassNumbers())
+        if (!this.classNumbers.equals(spanFocusQuery.classNumbers))
             return false;
 
-        return true;
+        return this.isSorted == spanFocusQuery.isSorted
+                && this.matchTemporaryClass == spanFocusQuery.matchTemporaryClass
+                && this.removeTemporaryClasses == spanFocusQuery.removeTemporaryClasses;
     };
 
 
