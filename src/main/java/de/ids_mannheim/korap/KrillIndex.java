@@ -1592,6 +1592,10 @@ public final class KrillIndex implements IndexInfo {
 
                 int oldLocalDocID = -1;
 
+                // A document is never split across segments, so the
+                // matches of a document are counted per segment
+                itemsPerResourceCounter = 0;
+
                 if (stopSearching)
                     break;
 

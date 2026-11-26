@@ -567,6 +567,59 @@ public class TestKrill {
 
 
     @Test
+    public void searchJSONitemsPerResourceSegments () throws IOException {
+        // Construct index with one segment per document
+        KrillIndex ki = new KrillIndex();
+        for (String i : new String[] { "00001", "00002", "00003", "00004",
+                "00005", "00006", "02439" }) {
+            ki.addDoc(getClass().getResourceAsStream("/wiki/" + i + ".json.gz"),
+                    true);
+            ki.commit();
+        };
+        assertTrue(ki.reader().leaves().size() > 1);
+
+        String json = getJsonString(getClass()
+                .getResource("/queries/bsp-itemsPerResource.jsonld").getFile());
+
+        Krill ks;
+        Result kr;
+        KrillMeta meta;
+
+        // The texts are counted in every segment
+        ks = new Krill(json);
+        kr = ks.apply(ki);
+        assertEquals(10, kr.getTotalResults());
+        assertEquals(3, kr.getTotalResources());
+
+        // Also when the matches are only counted beyond the page
+        ks = new Krill(json);
+        ks.getMeta().setCount(1);
+        kr = ks.apply(ki);
+        assertEquals(10, kr.getTotalResults());
+        assertEquals(3, kr.getTotalResources());
+
+        // The first text of a segment is not skipped
+        ks = new Krill(json);
+        ks.getMeta().setItemsPerResource(1);
+        kr = ks.apply(ki);
+        assertEquals("WPD_AAA.00001", kr.getMatch(0).getDocID());
+        assertEquals("WPD_AAA.00002", kr.getMatch(1).getDocID());
+        assertEquals("WPD_AAA.00004", kr.getMatch(2).getDocID());
+        assertEquals(3, kr.getTotalResults());
+        assertEquals(3, kr.getTotalResources());
+
+        ks = new Krill(json);
+        meta = ks.getMeta();
+        meta.setItemsPerResource(2);
+        meta.setCount(1);
+        kr = ks.apply(ki);
+        assertEquals("WPD_AAA.00001", kr.getMatch(0).getDocID());
+        assertEquals(5, kr.getTotalResults());
+        assertEquals(3, kr.getTotalResources());
+    };
+
+
+    @Test
     public void searchJSONitemsPerResourceServer () throws IOException {
         /*
          * This test is a server-only implementation of
