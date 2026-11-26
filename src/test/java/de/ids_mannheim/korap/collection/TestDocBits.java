@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.lucene.index.LeafReaderContext;
 import org.apache.lucene.util.BitDocIdSet;
+import org.apache.lucene.util.BitSetIterator;
 import org.apache.lucene.util.FixedBitSet;
 import org.junit.Test;
 
@@ -32,7 +33,10 @@ public class TestDocBits {
             FixedBitSet bitset = kc.bits(context);
             DocBits docBits = new DocBits(bitset.getBits(), bitset.length());
             BitDocIdSet bitDocIdSet = docBits.createBitDocIdSet();
-            assertEquals(bitset.length(), bitDocIdSet.bits().length());
+            FixedBitSet recreated = BitSetIterator
+                    .getFixedBitSetOrNull(bitDocIdSet.iterator());
+            assertEquals(bitset.length(), recreated.length());
+            assertEquals(bitset, recreated);
         }
     }
 }
