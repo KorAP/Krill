@@ -1,3 +1,35 @@
+1.0 2026-11-26
+    - [feature] Upgrade Lucene from 5.0.0 to 10.5.1
+      (margaretha; AI-assisted Claude Opus 5.5)
+      * [incompatible] Indexes of earlier Krill versions must be
+        rebuilt; dates and integers are indexed as points
+      * [incompatible] Index fingerprints change, so caches
+        (e.g. krill_cache in Kustvakt) must be invalidated
+      * [incompatible] Virtual corpora are built from queries
+        instead of filters (toFilter() is now toQuery(),
+        BooleanGroupFilter is now BooleanGroupQuery,
+        VirtualCorpusFilter is now VirtualCorpusQuery)
+      * [incompatible] Applications that bundle Krill into a
+        shaded jar must mark it as Multi-Release: since Lucene 9,
+        MMapDirectory fails without it
+      * Regexes keep their syntax: a backslash only escapes the
+        following character, so \d is the letter d and not a
+        digit class as in Lucene 9 and later
+    - [performance] Create loggers once per class instead of once
+      per object; indexing was 2.3 times slower since Lucene 9
+      (margaretha; AI-assisted Claude Opus 5.5)
+    - [bugfix] Negate corpus regexes with match:containsnot
+      (margaretha; AI-assisted Claude Opus 5.5)
+    - [bugfix] Count the matching texts in every segment; with
+      itemsPerResource, the first matching text of every segment
+      after the first one was skipped
+      (margaretha; AI-assisted Claude Opus 5.5)
+    - [bugfix] Do not skip the first page break of a document in
+      matches (margaretha; AI-assisted Claude Opus 5.5)
+    - [bugfix] Fix matches and payloads of span classes at document
+      boundaries and after skipping
+      (margaretha; AI-assisted Claude Opus 5.5)
+
 0.66 2026-11-09
     - Add memory limit (#267, margaretha, AI assisted) 
     - Add methods to reset Krill properties. (margaretha)
